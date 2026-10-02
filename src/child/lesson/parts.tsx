@@ -47,26 +47,26 @@ export function ledgeChipFits(c: { kind: string; value: string }, family: Family
 
 /**
  * The chalk ledge (§3.7): 1-3 chips, newest on the right with a white chalk underline (shape, not hue).
- * Older: a chip is a button (replays her line) at the band's --hit-min. Young: the chips are display-only
- * (the 56-72 dp ledge cannot hold 64 dp targets; phir se replays her line).
+ * Every chip replays the same thing (her last line), so for Older the WHOLE ledge is one button: the full
+ * 48-56 dp row is the target (A6), where per-chip buttons inside the framed ledge could not reach --hit-min.
+ * Young: display-only (the 56-72 dp ledge cannot hold 64 dp targets; phir se replays her line).
  */
-export function ChalkLedge({ chips, family, rail, onChip, flat }: { chips: LedgeChip[]; family: Family; rail?: boolean; onChip?: (c: LedgeChip) => void; flat?: boolean }) {
-  const tappable = family === "older" && !!onChip;
-  return (
-    <div className={`tx-ledge ${rail ? "tx-ledge--rail" : ""} ${flat ? "tx-ledge--flat" : ""}`} data-family={family} role={tappable ? undefined : "img"} aria-label={tappable ? "board" : chips.map((c) => (c.kind === "image" ? "picture" : c.value)).join(", ") || "board"}>
-      {chips.map((c, i) => {
-        const cls = `tx-chip ${i === chips.length - 1 ? "tx-chip--new" : ""} ${c.kind !== "image" && c.value.length > 16 ? "tx-chip--long" : ""} ${tappable ? "tx-chip--tap" : ""}`;
-        const inner = c.kind === "image" ? <img src={c.value} alt="" /> : <span className={c.kind === "math" ? "tx-num" : undefined}>{c.value}</span>;
-        return tappable ? (
-          <button key={c.id} type="button" className={cls} onClick={() => onChip?.(c)} aria-label={c.kind === "image" ? "picture" : c.value}>
-            {inner}
-          </button>
-        ) : (
-          <span key={c.id} className={cls} aria-hidden="true">
-            {inner}
-          </span>
-        );
-      })}
+export function ChalkLedge({ chips, family, rail, onChip, flat, label }: { chips: LedgeChip[]; family: Family; rail?: boolean; onChip?: () => void; flat?: boolean; label?: string }) {
+  const tappable = family === "older" && !!onChip && chips.length > 0;
+  const said = chips.map((c) => (c.kind === "image" ? "picture" : c.value)).join(", ");
+  const cls = `tx-ledge ${rail ? "tx-ledge--rail" : ""} ${flat ? "tx-ledge--flat" : ""} ${tappable ? "tx-ledge--tap" : ""}`;
+  const body = chips.map((c, i) => (
+    <span key={c.id} className={`tx-chip ${i === chips.length - 1 ? "tx-chip--new" : ""} ${c.kind !== "image" && c.value.length > 16 ? "tx-chip--long" : ""}`} aria-hidden="true">
+      {c.kind === "image" ? <img src={c.value} alt="" /> : <span className={c.kind === "math" ? "tx-num" : undefined}>{c.value}</span>}
+    </span>
+  ));
+  return tappable ? (
+    <button type="button" className={cls} data-family={family} onClick={onChip} aria-label={`${label ?? "phir se"}: ${said}`} data-testid="ledge">
+      {body}
+    </button>
+  ) : (
+    <div className={cls} data-family={family} role="img" aria-label={said || "board"} data-testid="ledge">
+      {body}
     </div>
   );
 }

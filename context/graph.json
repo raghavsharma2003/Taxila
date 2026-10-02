@@ -885,6 +885,12 @@
    "kind": "measurement",
    "title": "Cascade lane 4.2-5.7 s median vs 2.0 s target; Director's serial model calls dominate; DeepSeek swap doesn't fix it",
    "at": "2026-10-02"
+  },
+  {
+   "id": "language-core-hinglish-english-hindi",
+   "kind": "constraint",
+   "title": "Core = English + Hindi + Hinglish; regional languages later \u2014 keep language a parameter",
+   "at": "2026-10-02"
   }
  ],
  "edges": [
@@ -1652,6 +1658,11 @@
    "src": "voice-lane-cascade-default",
    "rel": "measured_by",
    "dst": "cascade-latency-2026-10-02"
+  },
+  {
+   "src": "language-core-hinglish-english-hindi",
+   "rel": "supersedes",
+   "dst": "language-english-first-bilingual"
   }
  ]
 }

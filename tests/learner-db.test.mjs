@@ -26,6 +26,7 @@ let reachable = false;
 describe("learner writer on Neon", { skip: !sql && "no DATABASE_URL", concurrency: false, timeout: 120_000 }, () => {
   let guardian, kid;
   before(async () => {
+    console.error("[learner-db] fetch native:", String(globalThis.fetch).includes("fetchImpl"));
     reachable = await Promise.race([sql.query("select 1 from kt_evidence limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 15_000))]);
     if (!reachable) return;
     guardian = (await sql.query("insert into guardian (email, pw_hash, name) values ($1, 'x', 'learner-test') returning id", [`learner-test+${randomUUID()}@test.invalid`]))[0].id;

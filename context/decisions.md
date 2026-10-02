@@ -702,3 +702,10 @@ transfer to new contexts, and voice/vibe features as tie-breakers; fused into an
 when not understood, re-teach using the representation that this child's own history shows works. Also: the whole
 tutor persona (pace, humour, formality, examples, challenge framing) adapts to the child's vibe profile.
 Built as `server/comprehension/**` with a simulator-based evaluation before any claim.
+
+## language-core-hinglish-english-hindi
+**Owner (2026-10-02, refines `language-english-first-bilingual`): Hinglish-speaking students are core too.** The core
+audience speaks English, Hindi and Hinglish (code-mixed) — all three must be first-class in voice, text, kits and
+reports; the teacher mirrors the child's mix. Regional languages (Marathi, Bengali, Tamil, …) come later: keep
+language a parameter end-to-end (no hard-coded en/hi pairs in schemas, prompts or TTS/STT config) so they can be
+added without rework. Reverse/extend when the first regional language is scheduled.
