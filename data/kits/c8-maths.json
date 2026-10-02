@@ -735,14 +735,14 @@
      ],
      "hints": [
       "What are 44² and 45²?",
-      "44² = 1936, 45² = 2025.",
+      "44² is a little under 2000. Now work out 45² and see which side of 2000 it lands.",
       "2000 lies between ___ and ___.",
       "1936 < 2000 < 2025, so √2000 is between 44 and 45."
      ],
      "verified": {
       "solverAnswer": "44^2=1936<2000<2025=45^2",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -881,14 +881,14 @@
      ],
      "hints": [
       "Which digits, when squared, end in 4?",
-      "2² = 4 and 8² = 64.",
+      "Square each digit 0 to 9 and look only at the last digit of each square.",
       "So the root ends in ___ or ___.",
       "The root ends in 2 or 8; in fact √7,744 = 88."
      ],
      "verified": {
       "solverAnswer": "2 or 8 (7744=88^2)",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 rewritten as a nudge that no longer states the answer."
      }
     }
    ],
@@ -1249,14 +1249,14 @@
      ],
      "hints": [
       "List the cubes up to 1729: 1, 8, 27, …",
-      "12³ = 1728 and 10³ = 1000.",
+      "Start with the biggest cube that fits under 1729, then try the next biggest one.",
       "1729 − 1728 = ___ and 1729 − 1000 = ___; are those cubes?",
       "1³ + 12³ and 9³ + 10³ both make 1729."
      ],
      "verified": {
       "solverAnswer": "1729=1^3+12^3=9^3+10^3",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -2452,7 +2452,7 @@
        },
        {
         "text": "4.5 × 10⁴",
-        "misconceptionId": "c8-maths-ch02-t03-m-exp-compare",
+        "misconceptionId": null,
         "correct": false
        }
       ]
@@ -2585,7 +2585,7 @@
      ],
      "hints": [
       "Where must the decimal point go so only one digit is before it?",
-      "1.5 needs the point moved 8 places left.",
+      "Count how many places the point jumps, from the end of the number to just after the first digit.",
       "15,00,00,000 = 1.5 × 10 to the power ___",
       "1.5 × 10⁸ km."
      ],
@@ -2593,7 +2593,7 @@
      "verified": {
       "solverAnswer": "1.5 x 10^8 km",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -3368,8 +3368,8 @@
         "correct": false
        },
        {
-        "text": "2",
-        "misconceptionId": "c8-maths-ch03-t02-m-digit-limit",
+        "text": "3",
+        "misconceptionId": "c8-maths-ch03-t02-m-zero-nothing",
         "correct": false
        }
       ]
@@ -3436,7 +3436,7 @@
         "correct": false
        },
        {
-        "text": "11",
+        "text": "It can't be written that way; 10 always means ten",
         "misconceptionId": "c8-maths-ch03-t02-m-only-base10",
         "correct": false
        }
@@ -4795,7 +4795,7 @@
        },
        {
         "text": "No, then it would be a kite",
-        "misconceptionId": "c8-maths-ch04-t03-m-kite-bisect",
+        "misconceptionId": null,
         "correct": false
        }
       ]
@@ -5307,7 +5307,7 @@
         "correct": false
        },
        {
-        "text": "Yes, because 18 is even",
+        "text": "Yes; 1 + 8 = 9 passes the 3 test, and its last digit 8 is divisible by 4",
         "misconceptionId": "c8-maths-ch05-t01-m-last-digit-4",
         "correct": false
        }
@@ -5716,7 +5716,7 @@
        },
        {
         "text": "Yes, but only if A is written first",
-        "misconceptionId": "c8-maths-ch05-t02-m-leading-zero",
+        "misconceptionId": null,
         "correct": false
        }
       ]
@@ -5856,13 +5856,13 @@
      "hints": [
       "Square each digit 0 to 9.",
       "Check the last digit of each square.",
-      "0→0, 1→1, 5→25, 6→36; any others?",
+      "0 and 1 work at once. Which of 2² up to 9² end in their own digit?",
       "0, 1, 5, 6."
      ],
      "verified": {
       "solverAnswer": "A = 0, 1, 5, 6",
       "agrees": true,
-      "note": "Hint rung 3 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 3 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -7835,15 +7835,15 @@
      ],
      "hints": [
       "Can you get each one by multiplying 3 and 4 by the same number?",
-      "6 : 8 is × 2; 9 : 12 is × 3.",
-      "4 : 5 and 13 : 14 were made by ___ the same number.",
+      "For each pair: what times 3 gives the first term? Does the same number times 4 give the second?",
+      "A pair made by adding, not multiplying, is not equivalent. Which pairs were made that way?",
       "6 : 8 and 9 : 12 only."
      ],
      "targetsMisconception": "c8-maths-ch07-t01-m-ratio-additive",
      "verified": {
       "solverAnswer": "6:8 and 9:12",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 and 3 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -8240,15 +8240,15 @@
      ],
      "hints": [
       "Proportional means 3 times the age gives 3 times the height.",
-      "3 × 100 = 300 cm.",
-      "Is a 12-year-old ever 3 m tall?",
+      "Age goes from 4 to 12: by what factor? Height would have to grow by the same factor.",
+      "Picture a 12-year-old that tall. Would she fit through a classroom door?",
       "300 cm is absurd: age and height are not proportional."
      ],
      "targetsMisconception": "c8-maths-ch07-t02-m-all-proportional",
      "verified": {
       "solverAnswer": "300 cm; does not make sense",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 and 3 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -10599,7 +10599,7 @@
      ],
      "hints": [
       "Try a 1 by 1 square and a 2 by 2 square.",
-      "1 square becomes 4 squares.",
+      "Count how many 1 by 1 squares fit inside the 2 by 2 square.",
       "2 × 2 = ___",
       "4 times bigger."
      ],
@@ -10607,7 +10607,7 @@
      "verified": {
       "solverAnswer": "4 times",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -11229,14 +11229,14 @@
      ],
      "hints": [
       "Area of a square on a side = side².",
-      "3² = 9, 4² = 16, 5² = 25.",
-      "9 + 16 = ___",
+      "Work out 3², 4² and 5² one by one.",
+      "Add the two smaller areas: ___. Compare with the biggest.",
       "The two smaller squares add up to the square on the hypotenuse."
      ],
      "verified": {
       "solverAnswer": "9, 16, 25; 9+16=25",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 and 3 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -11615,14 +11615,14 @@
      ],
      "hints": [
       "Find 2m, m² − 1 and m² + 1 for m = 4.",
-      "2 × 4 = 8; 16 − 1 = 15; 16 + 1 = 17.",
-      "Check: 64 + 225 = ___ = 17²?",
+      "Find m² for m = 4 first, then subtract 1 and add 1.",
+      "Check: is (2m)² + (m² − 1)² equal to (m² + 1)²?",
       "8, 15, 17."
      ],
      "verified": {
       "solverAnswer": "8, 15, 17 (64+225=289)",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 and 3 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -11707,14 +11707,14 @@
      ],
      "hints": [
       "Compute m² − n².",
-      "9 − 4 = 5, 2 × 3 × 2 = 12.",
+      "Now 2mn: multiply 2, m and n together.",
       "m² + n² = ___",
       "5, 12, 13."
      ],
      "verified": {
       "solverAnswer": "(5,12,13): right triangle with legs 5,12, hypotenuse 13",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -12135,15 +12135,15 @@
      ],
      "hints": [
       "Check: was each term multiplied by the same number?",
-      "4 : 6 : 10 is × 2 for all.",
-      "4 : 6 : 5 left one term; 4 : 5 : 7 ___ 2.",
+      "Divide each term of an option by the matching term of 2 : 3 : 5. Do all three give the same number?",
+      "If even one term was changed differently, the ratio breaks. Which option passes for all three terms?",
       "Only 4 : 6 : 10."
      ],
      "targetsMisconception": "c8-maths-ch10-t01-m-partial-scale",
      "verified": {
       "solverAnswer": "4:6:10",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 and 3 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -12205,15 +12205,15 @@
      ],
      "hints": [
       "B appears in both ratios as 3 and 4. Make them equal.",
-      "Use 12 for B: 2 : 3 = 8 : 12 and 4 : 5 = 12 : 15.",
-      "So A : B : C = 8 : 12 : ___",
+      "Find the smallest number both 3 and 4 go into. Scale each ratio so B becomes that number.",
+      "So A : B : C = ___ : ___ : ___",
       "8 : 12 : 15."
      ],
      "targetsMisconception": "c8-maths-ch10-t01-m-partial-scale",
      "verified": {
       "solverAnswer": "8:12:15",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 and 3 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -14082,14 +14082,14 @@
      ],
      "hints": [
       "How many shaded triangles does stage 2 have?",
-      "9.",
+      "Stage 1 keeps 3 of every 4 triangles. Stage 2 does the same thing again inside each kept one.",
       "Out of 16, the fraction is ___",
       "9/16, which is (3/4)²."
      ],
      "verified": {
       "solverAnswer": "9 tiny triangles, 9/16",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -14543,7 +14543,7 @@
      "verified": {
       "solverAnswer": "Front: L of 4 squares (3 along bottom, 1 on top at left); top: row of 3 squares; right side: 2 squares stacked (silhouette includes the taller left tower behind)",
       "agrees": true,
-      "note": "First blind pass said right-side view is 1 square high; on re-check the silhouette from the right includes the 2-high left tower behind the end cube, so the key (2 squares stacked) is correct."
+      "note": "Key kept (author correct). First blind pass said the right-side view is 1 square high; on re-check the right-side silhouette includes the 2-high left tower behind the end cube, so the view is 2 squares stacked."
      }
     },
     {
@@ -15847,15 +15847,15 @@
      ],
      "hints": [
       "What did the algebra say the answer is?",
-      "Always 3.",
-      "Check: 200, 206, 103, 103 − 100 = ___",
+      "Run 100 through the steps one at a time. Double it first.",
+      "Doubled, plus 6, halved, then take away 100: ___",
       "3."
      ],
      "targetsMisconception": "c8-maths-ch13-t01-m-x-fixed",
      "verified": {
       "solverAnswer": "3",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 and 3 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -16281,7 +16281,7 @@
      ],
      "hints": [
       "Build the pyramid for 3, 5, 2.",
-      "The top is 15.",
+      "Make the middle row first: 3 + 5 and 5 + 2. Then add those two bricks.",
       "Which brick did his rule count too few times?",
       "The middle one: a + 2b + c."
      ],
@@ -16289,7 +16289,7 @@
      "verified": {
       "solverAnswer": "Top is 15 not 10; rule a+2b+c",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 rewritten as a nudge that no longer states the answer."
      }
     },
     {
@@ -16516,14 +16516,14 @@
      ],
      "hints": [
       "Try 1, 2, 3, 4.",
-      "The sum is 10.",
+      "Is that total a multiple of 4? Try one more set, like 2, 3, 4, 5.",
       "In algebra: n + (n + 1) + (n + 2) + (n + 3) = ___",
       "4n + 6: never divisible by 4."
      ],
      "verified": {
       "solverAnswer": "1+2+3+4=10 not divisible by 4; sum = 4n+6, never divisible by 4 (always leaves 2)",
       "agrees": true,
-      "note": "Hint rung 2 states the key outright before the final rung; the loader's revealsAnswer swaps it for a default rung at runtime, but rewrite the hint to stay a nudge."
+      "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 rewritten as a nudge that no longer states the answer."
      }
     }
    ],
@@ -17090,21 +17090,21 @@
       "Uses the perimeter for questions about covering"
      ],
      "diagnostic": {
-      "prompt_en": "A trapezium has parallel sides 8 cm and 12 cm, slant sides 5 cm each and height 4 cm. What is its area?",
-      "prompt_hi": "Ek trapezium ki parallel sides 8 cm aur 12 cm, tirchhi sides 5-5 cm aur height 4 cm hai. Area kya hai?",
+      "prompt_en": "A trapezium has parallel sides 8 cm and 14 cm, slant sides 5 cm each and height 4 cm. What is its area?",
+      "prompt_hi": "Ek trapezium ki parallel sides 8 cm aur 14 cm hain, dono tirchhi sides 5-5 cm, aur height 4 cm. Iska area kitna hoga?",
       "options": [
        {
-        "text": "40 cm²",
+        "text": "44 cm²",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "30 cm², adding the sides",
+        "text": "32 cm², adding all the sides",
         "misconceptionId": "c8-maths-ch14-t02-m-sum-sides",
         "correct": false
        },
        {
-        "text": "80 cm²",
+        "text": "88 cm²",
         "misconceptionId": "c8-maths-ch14-t02-m-trap-no-half",
         "correct": false
        }
