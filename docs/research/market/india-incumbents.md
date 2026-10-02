@@ -564,3 +564,16 @@ Adversarial pass, 2026-10-02. Primary pages re-fetched; Play Store numbers and t
 - LEAD: animated character, ₹2,000 Fluento price and 40% AI revenue are unverified; ₹943 mixes books and devices into the numerator.
 - Unverified (source blocked or not located): NCLT K3 stay and bidding pause, Doubtnut ~$10M sale price and 32M MAU, Extramarks ₹616/month, CuriousJr ₹29 demo, the Seekho Jr 9-year-old review, the Seekho ₹1 to ₹199/₹799 auto-pay complaints, and the Vedantu/Extramarks/Embibe/Aakash AI launch dates.
 - Theme percentages are English-regex keyword rates with overlap, and "parent" is a loose regex.
+
+### Fact-check addendum (second pass, 2026-10-02)
+Independent re-fetch of Vedantu, Cuemath, Medianama (x2), Tribune, CXO Digital Pulse, Entrackr, The Wire, Business Today. Business Standard and Magzter still 403.
+
+| Claim | Verdict | Corrected value | Source |
+|---|---|---|---|
+| Cuemath ₹610-678 for KG-G5; 12-mo G3-5 = ₹63,458 + GST (~₹74,880) | wrong | The pricing page gives KG-G2 at ₹678 (6-mo) / ₹610 (12-mo) per class, and G3-5 and G6-8 both at ₹900 (6-mo) / ₹800 (12-mo). The 12-month G3-5 coaching fee is ₹83,200 (104 classes) + 18% GST. This corrects the first pass, which treated ₹63,440 as the G3-5 total; that figure is the KG-G2 plan. The ₹74,880 is not on the page. | cuemath.com/en-in/pricing/ |
+| Vedantu 1:1 from ₹800/h (class 8) and ₹888/h (home) | supported | Home page also lists JEE/NEET from ₹1,049/h and IB/IGCSE from ₹1,249/h. The ₹1,030 top of the range is not sourced. | vedantu.com ; vedantu.com/cbse/class-8 |
+| PW voice AI tutor: 300+ students, 95%, ~$0.20/h, next quarter | supported | Also <1% error rate, 1.8-2.2 s latency, 1,000+ queries. "Q2 FY27" is the article's "next quarter" and was inferred. | medianama.com/2026/08/223-physicswallah-personal-ai-tutoring-services/ |
+| LEAD FY26 ₹386.6 cr, ~41 lakh students, EBITDA ₹30 cr, 100% NRR | supported | Net loss ₹34.5 cr. NRR is self-reported in a press release. | entrackr.com ; m.thewire.in |
+| Ms Curie: animated character, ₹2,000 Fluento price, 40% AI revenue | unsupported | Tribune and CXO confirm the April 2026 launch, K-8, 1:1 in classrooms, Indian accents, and 1,000+ schools / 400k+ students in 12-18 months. Neither mentions an animated character, a Fluento price, or the 40% claim. | tribuneindia.com ; cxodigitalpulse.com |
+| Unacademy: $200M all-stock, closed 2026-09-01, -94%, FY25 loss ₹436 cr | partly | ₹435 cr loss; FY25 revenue ₹702 cr (-16%). | businesstoday.in |
+| Aakash 73% Manipal, ₹2,041 cr, EBITDA ₹15.3 cr | supported | EBITDA down 65% from ₹43.3 cr. | entrackr.com |

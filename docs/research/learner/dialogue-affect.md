@@ -538,7 +538,7 @@ All of DA-M1..M7 reuse pilot transcripts that are already parent-visible (LS §4
 
 ## Review
 
-**Reviewer stance:** skeptical learning scientist plus engineer, 2026-10-02. This review checked the file against its own text, its cited numbers and the stated stack (Azure Container Apps, gpt-realtime-2.1, Neon). No new literature search was run. Legal points are tagged [S] (from memory of the DPDP Act 2023 and Rules 2025, **not re-fetched**) and need counsel. The file's strongest idea, verify-before-act with a no-regret move, survives. Its numbers, its legal posture (DA8), several rules promoted to hard invariants, and the arbiter code do not survive as written. Corrections are numbered R1-R30 and each says what to change.
+**Reviewer stance:** skeptical learning scientist plus engineer, 2026-10-02. This review checked the file against its own text, its cited numbers and the stated stack (Azure Container Apps, gpt-realtime-2.1, Neon). No new literature search was run. Legal points are tagged [S] (from memory of the DPDP Act 2023 and Rules 2025, **not re-fetched**) and need counsel. The file's strongest idea, verify-before-act with a no-regret move, survives. Its numbers, its legal posture (DA8), several rules promoted to hard invariants, and the arbiter code do not survive as written. Corrections are numbered R1-R34 and each says what to change.
 
 ### A. Child safety and DPDP 9(3): blocking
 

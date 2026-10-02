@@ -936,3 +936,44 @@ Sources added in this review
 - Brink, Gray and Wellman 2019, "Creepiness Creeps In: Uncanny Valley Feelings Are Acquired in Childhood", *Child Development*, doi:10.1111/cdev.12999 **[V, abstract]**
 - Mitchell et al. 2011, "A Mismatch in the Human Realism of Face and Voice Produces an Uncanny Valley", *i-Perception*, doi:10.1068/i0415 **[V, abstract]**
 - Micro-bench: `bench/student-ort/` (`mk.py`, `b.mjs`, README) **[M]**
+
+### G-8. Second-pass verification (resumed after the session limit, 2026-10-02)
+
+The review above was complete when the session stopped. On resume I re-checked the event and transport claims that both the
+document and G-3 lean on. Three of them change the design, and one corrects this review.
+
+1. **The realtime endpoint is not in India.** The Azure WebRTC how-to lists East US 2 and Sweden Central as the regions for
+   `gpt-realtime-2.1` (version 2026-07-07) and its siblings **[V, learn.microsoft.com realtime-audio-webrtc, updated 2026-09-23]**.
+   The tutor audio therefore crosses an intercontinental path, roughly 150–250 ms RTT from India **[U, measure]**. Consequences:
+   - NetEq runs a larger and more variable target delay. Accelerate/expand time-stretching and PLC (G-3.2) happen more often,
+     so the Opus/jitter augmentation is essential, not nice to have.
+   - A §8 relay VM "in Central India" sits on the wrong side of the long hop. A live A2F relay would have to sit in East US 2 or
+     Sweden Central, beside the model, and that region's GPU quota and price apply, not the Central India figures in §2.2.
+2. **`output_audio_buffer.*` is an undocumented dependency.** The current OpenAI realtime-conversations guide does not mention
+   `output_audio_buffer.started/stopped/cleared`. It says only that over WebRTC "the server manages a buffer of output audio" and
+   "will automatically truncate unplayed audio when there's a user interruption" **[V]**. The Azure WebRTC page does not list
+   these events either **[V, searched]**. Community threads report them being removed from the docs while still being sent **[S]**.
+   The faceTap VAD therefore has to be the **canonical** "audible speech started/stopped" signal (G-3.3, G-3.4). The events can
+   be used as hints only, and nothing may break if they stop arriving. Add a contract test that runs with the events suppressed.
+3. **Correction to G-3.4.** The data channel (SCTP/DTLS) and the RTP audio share one ICE transport, so the network term mostly
+   cancels. `output_audio_buffer.started` leads the audible sound by roughly the **jitter-buffer delay plus the output-path
+   latency**: about 60–200 ms on a speaker and 200–400 ms on BT A2DP **[U]**. It is not "network + jitter + output". The fix
+   (arm on the event, fire on the first voiced faceTap frame plus `latencyComp`) is unchanged. On lossy links, SCTP's reliable,
+   ordered delivery can also hold an event back behind a retransmission. That is one more reason not to time anything off events.
+4. **HeadAudio numbers, restated from the current README** **[V]**:
+   - "total end-to-end latency is approximately 50 ms" (as G-1 says);
+   - MFCC window 512 samples and hop 256 at 16 kHz, so 32 ms and 16 ms, not the 25/10 ms of our student front end;
+   - p99.9 processing under 0.1 ms per 128-sample block (about 0.035 ms typical at speech peaks).
+
+   §2.1's "0.025 + 0.005 ms per frame" is consistent but describes an older measurement. The `speakerMeanHz` guidance is
+   confirmed (male 100–130, female 200–250, **child 300–400**; default 150; marked EXPERIMENTAL). It is a client-side constant
+   per tutor voice, never per child.
+5. **Still open (unchanged from G-4):** whether the Azure OpenAI terms allow training a lip model on gpt-realtime output audio.
+   Microsoft's public pages talk about Microsoft not training on *customer* data. They say nothing either way about the customer
+   training on outputs. It stays **[U, legal sign-off]**.
+
+Sources added in this pass
+- Azure "Use the GPT Realtime API via WebRTC" (regions, model versions): https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/realtime-audio-webrtc **[V]**
+- OpenAI realtime conversations guide (server-side output buffer and auto-truncation on WebRTC): https://developers.openai.com/api/docs/guides/realtime-conversations **[V]**
+- OpenAI community, "Why is the Realtime server event output_audio_buffer.stopped not documented?": https://community.openai.com/t/why-is-the-realtime-server-event-output-audio-buffer-stopped-not-documented/1132028 **[S]**
+- HeadAudio README: https://github.com/met4citizen/HeadAudio **[V]**
