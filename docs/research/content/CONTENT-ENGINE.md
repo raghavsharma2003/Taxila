@@ -1408,7 +1408,7 @@ Estimates are engineer-days for one engineer who knows the repo, excluding art a
   - the scheduler reproduces the §5.2 figures in CI;
   - M-TV-2 field skip rate ≤ 15%.
 
-### Wave 3: science v1 and chant (≈ 75 d)
+### Wave 3: science v1 and chant (≈ 85–105 d)
 
 - **Science engines:** `sky@1` 2D (15–20), `water-cycle@1` (12–15, plus art), `motion-lab@1` slice (kinematics/graphs, forces/friction, pendulum; 20–25), `poe-harness@1` (8–10), `measure@1` science scenes (5).
 - **Chant:** `chant-track@1` v1a + `pahada@1` + Forge chant render + review tool (8–9).
