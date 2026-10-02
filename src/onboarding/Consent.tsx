@@ -3,7 +3,7 @@
 // by default. Writes POST /api/consent (account-level rows, child_id null: they apply to every child).
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, ButtonLink, ErrorNote, Icon, TileGroup } from "../ui/index.ts";
+import { Button, ButtonLink, ErrorNote, Icon, Speaker, TileGroup } from "../ui/index.ts";
 import { ApiError, errText, postJson } from "../app/api.ts";
 import { PROMISES } from "../app/Public.tsx";
 import { StepFrame } from "./Layout.tsx";
@@ -26,10 +26,15 @@ export function TrustStep() {
   );
 }
 
-function Row({ title, body, children, detail }: { title: string; body: string; children: ReactNode; detail?: ReactNode }) {
+// Each row: sentence + speaker + toggle (§2.2 P5). The spoken text is server-held (CONSENT_SPEECH in
+// server/routes/parent.js); keep the two in step when this copy changes.
+function Row({ title, body, children, detail, speak }: { title: string; body: string; children: ReactNode; detail?: ReactNode; speak: string }) {
   return (
     <section className="card card-flat stack-sm consent-row">
-      <h2 className="t-h3" style={{ fontFamily: "var(--font-text)" }}>{title}</h2>
+      <div className="row" style={{ alignItems: "center" }}>
+        <h2 className="t-h3" style={{ fontFamily: "var(--font-text)", flex: 1 }}>{title}</h2>
+        <Speaker src={`/api/parent/speak?what=consent&row=${speak}`} label={`Listen: ${title}`} />
+      </div>
       <p className="muted">{body}</p>
       {detail && <details><summary className="summary">What is kept</summary><div style={{ marginTop: 8 }}>{detail}</div></details>}
       {children}
@@ -64,27 +69,27 @@ export function ConsentStep() {
     <StepFrame step="consent" title="What she may keep"
       why="Each one is separate. You can change any of them later in the Parent corner."
       footer={<Button block disabled={!ready || busy} onClick={save}>{busy ? "Saving" : "Save and continue"}</Button>}>
-      <Row title="Lessons" body="She teaches your child live and keeps their answers, so you can see what they learned. Needed to use Taxila.">
+      <Row speak="core_tutoring" title="Lessons" body="She teaches your child live and keeps their answers, so you can see what they learned. Needed to use Taxila.">
         <p className="row"><Icon name="tick" /> <strong>Yes</strong> <span className="t-meta">(required)</span></p>
       </Row>
-      <Row title="Remember learning across days" body="So the next lesson starts from where your child is, and she checks again on a later day."
+      <Row speak="learning_profile" title="Remember learning across days" body="So the next lesson starts from where your child is, and she checks again on a later day."
         detail={<ul className="plain-list"><li>Which topics are practised, got, or secure, with the checks behind them.</li><li>Which ways of explaining worked when checked on a later day.</li><li>With "only this session", each lesson starts fresh and nothing about how she teaches is kept.</li></ul>}>
         <TileGroup label="Remember learning across days" columns={2} value={across === null ? null : across ? "yes" : "no"}
           onChange={(v) => set({ learningAcrossDays: v === "yes" })}
           options={[{ value: "yes", label: "Yes, remember" }, { value: "no", label: "Only this session" }]} />
       </Row>
-      <Row title="Remember what your child says they like" body="Cricket, cooking, a pet's name. She uses it in examples. You can see and delete each one.">
+      <Row speak="memory" title="Remember what your child says they like" body="Cricket, cooking, a pet's name. She uses it in examples. You can see and delete each one.">
         <TileGroup label="Remember what your child likes" columns={2} value={d.likes ? "yes" : "no"} onChange={(v) => set({ likes: v === "yes" })}
           options={[{ value: "no", label: "No" }, { value: "yes", label: "Yes" }]} />
       </Row>
-      <Row title="Research" body="We do not use your child's data for research now. If that changes, we will ask you here first.">
+      <Row speak="research" title="Research" body="We do not use your child's data for research now. If that changes, we will ask you here first.">
         <p className="row"><Icon name="cross" /> <strong>Off</strong></p>
       </Row>
-      <Row title="Where reports go" body="One short weekly report with what your child can now do and one thing to try at home.">
+      <Row speak="reports" title="Where reports go" body="One short weekly report with what your child can now do and one thing to try at home.">
         <TileGroup label="Where reports go" columns={2} value={d.reportChannel ?? null} onChange={(v) => set({ reportChannel: v })}
           options={[{ value: "whatsapp", label: "WhatsApp" }, { value: "app", label: "Only in the app" }]} />
       </Row>
-      {!ready && <p className="t-meta">Choose an answer for "Remember learning across days" and "Where reports go" to continue.</p>}
+      {!ready && <p className="t-note">Choose an answer for "Remember learning across days" and "Where reports go" to continue.</p>}
       <ErrorNote>{err}</ErrorNote>
     </StepFrame>
   );

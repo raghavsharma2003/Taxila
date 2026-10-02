@@ -3,7 +3,8 @@
 //   2) creates `taxila-worker` in taxila-web's managed environment if it does not exist, else rolls a new revision:
 //      min 1 / max 1 replica, NO ingress, DB_DRIVER=pg, DATABASE_URL = the DIRECT (unpooled) Neon URL, because
 //      the ticker's session advisory lock does not survive Neon's pooler (X1);
-//   3) waits until the new revision is Running (there is no HTTP health endpoint: the worker has no ingress).
+//   3) waits until the new revision is Running and not Unhealthy (liveness: GET /healthz on :8081, container-local;
+//      the worker still has no ingress).
 // Freeze: deploys that touch the Conductor are refused 18:00-21:30 IST (X37); --force overrides.
 // Needs AZURE_SP_CLIENT_ID / AZURE_SP_SECRET / AZURE_TENANT_ID (+ .env.local). PUSH FIRST: ACR builds what is on
 // GitHub, not the working tree. Deploy order (§3.12): taxila-web (scripts/deploy-azure.mjs) first, then this.
@@ -78,10 +79,14 @@ const env = [
   { name: "DATABASE_URL", secretRef: "database-url-direct" },
   { name: "DB_DRIVER", value: "pg" }, { name: "NODE_ENV", value: "production" }, { name: "TAXILA_HOST", value: "azure" },
   { name: "TAXILA_ROLE", value: "worker" }, { name: "GIT_SHA", value: sha },
+  { name: "WORKER_HEALTH_PORT", value: "8081" }, { name: "CONDUCTOR_STATEMENT_TIMEOUT_MS", value: "15000" },
 ];
 const template = {
   revisionSuffix: `w${sha}-${Date.now().toString(36).slice(-4)}`,          // unique per revision
-  containers: [{ name: APP, image, env, resources: { cpu: 0.5, memory: "1Gi" } }],
+  containers: [{ name: APP, image, env, resources: { cpu: 0.5, memory: "1Gi" },
+    // Liveness: /healthz on the container port (no ingress needed) answers 503 when a loop has stalled; ACA then
+    // restarts the replica. The in-process watchdog (server/worker.mjs) exits on the same condition as a backstop.
+    probes: [{ type: "Liveness", httpGet: { path: "/healthz", port: 8081 }, initialDelaySeconds: 20, periodSeconds: 30, timeoutSeconds: 5, failureThreshold: 3 }] }],
   // min 1: timers and the dirty set must always have a host. max 1 at M0 (leader election makes 2 safe; §8.1 allows 2).
   scale: { minReplicas: 1, maxReplicas: 1, rules: [] },
 };

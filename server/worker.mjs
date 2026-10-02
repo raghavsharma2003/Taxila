@@ -10,6 +10,7 @@
 //
 // Usage: node server/worker.mjs            (production: env from the Container App)
 //        node --env-file=.env.local server/worker.mjs --once   (local: one pass of every loop, then exit)
+import { createServer } from "http";
 import { hostname } from "os";
 import { configure, directUrl, q, sessionClient, closePool } from "./conductor/pg.js";
 import { step } from "./conductor/step.js";
@@ -22,11 +23,18 @@ const ID = `${process.env.CONTAINER_APP_REPLICA_NAME || hostname()}:${process.pi
 const TICK_MS = 15_000, POLL_BUSY = 1_000, POLL_IDLE = 5_000, DIRTY_GRACE_S = 2, STEP_CONC = 8, SHUTDOWN_MS = 25_000;
 const LANES = { fast: 4, slow: 2 };                    // concurrent jobs per lane per replica [U]
 const TICKER_KEY = "taxila:ticker";
+const STATEMENT_TIMEOUT_MS = Number(process.env.CONDUCTOR_STATEMENT_TIMEOUT_MS || 15_000);
+const LOCK_CHECK_MS = 60_000;                          // a leader re-confirms it still holds the advisory lock
+// Watchdog: a loop that has not completed an iteration in this long is wedged (a hung query, a dead socket).
+// The process exits and ACA restarts it; the /healthz liveness probe reports the same thing first.
+const STALL_MS = { ticker: 6 * TICK_MS, dirty: 180_000, fast: 120_000, slow: 120_000 };
+const HEALTH_PORT = Number(process.env.WORKER_HEALTH_PORT || 8081);
 
 const raw = process.env.DATABASE_URL_DIRECT || process.env.DATABASE_URL;
 if (!raw) { console.error("[worker] DATABASE_URL not set"); process.exit(1); }
 const URL_ = directUrl(raw);                            // never the pooler: it drops session advisory locks
-await configure({ url: URL_, max: Number(process.env.CONDUCTOR_POOL_MAX || 12) });
+// statement_timeout on every pool connection and the session client: one hung query can never block a loop forever
+await configure({ url: URL_, max: Number(process.env.CONDUCTOR_POOL_MAX || 12), statementTimeoutMs: STATEMENT_TIMEOUT_MS });
 
 const log = (msg, extra = {}) => console.log(JSON.stringify({ at: new Date().toISOString(), worker: ID, msg, ...extra }));
 let stopping = false;
@@ -34,20 +42,47 @@ const inflight = new Set();
 const track = (p) => { inflight.add(p); p.finally(() => inflight.delete(p)); return p; };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// ───────────── liveness ─────────────
+const lastOk = { ticker: Date.now(), dirty: Date.now(), fast: Date.now(), slow: Date.now() };
+const beat = (loop) => { lastOk[loop] = Date.now(); };
+const stalled = () => Object.entries(STALL_MS).filter(([k, ms]) => Date.now() - lastOk[k] > ms).map(([k]) => k);
+
 // ───────────── ticker (leader) ─────────────
-let leaderConn = null, leader = false;
+// The session client gets its listeners ONCE, when it is created ('error' AND 'end': a session that dies quietly
+// must also drop leadership). A leader re-confirms the lock every LOCK_CHECK_MS against pg_locks.
+let leaderConn = null, leader = false, lockCheckedAt = 0;
+function dropLeader(why, extra = {}) {
+  if (leader) log("ticker leadership lost", { why, ...extra });
+  const c = leaderConn;
+  leader = false; leaderConn = null;
+  if (c) c.end?.().catch?.(() => {});
+}
+async function newSession() {
+  const c = await sessionClient(URL_);
+  c.on?.("error", (e) => { if (leaderConn === c) dropLeader("connection error", { error: e.message }); });
+  c.on?.("end", () => { if (leaderConn === c) dropLeader("connection ended"); });
+  await c.query(`set statement_timeout = ${Math.floor(STATEMENT_TIMEOUT_MS)}`);
+  return c;
+}
 async function ensureLeader() {
-  if (leader && leaderConn) return true;
   try {
-    leaderConn = leaderConn || (await sessionClient(URL_));
-    leaderConn.on?.("error", (e) => { log("leader connection lost", { error: e.message }); leader = false; leaderConn = null; });
+    if (leader && leaderConn) {
+      if (Date.now() - lockCheckedAt < LOCK_CHECK_MS) return true;
+      const r = await leaderConn.query(`select 1 from pg_locks where locktype = 'advisory' and pid = pg_backend_pid()
+          and objsubid = 1 and objid = (hashtext($1)::bigint & 4294967295)::oid and granted`, [TICKER_KEY]);
+      lockCheckedAt = Date.now();
+      if (r.rows.length) return true;
+      dropLeader("advisory lock not held");
+      return false;
+    }
+    leaderConn = leaderConn || (await newSession());
     const r = await leaderConn.query("select pg_try_advisory_lock(hashtext($1)) as ok", [TICKER_KEY]);
-    leader = !!r.rows[0]?.ok;
+    leader = !!r.rows[0]?.ok; lockCheckedAt = Date.now();
     if (leader) log("ticker leader");
     return leader;
   } catch (e) {
     log("leader election failed", { error: e.message });
-    leader = false; try { await leaderConn?.end(); } catch {} leaderConn = null;
+    dropLeader("election error", { error: e.message });
     return false;
   }
 }
@@ -59,7 +94,7 @@ async function tickOnce() {
 }
 async function tickerLoop() {
   while (!stopping) {
-    try { await tickOnce(); } catch (e) { log("tick failed", { error: e.message, code: e.code }); }
+    try { await tickOnce(); beat("ticker"); } catch (e) { log("tick failed", { error: e.message, code: e.code }); }
     await sleep(TICK_MS);
   }
 }
@@ -85,7 +120,7 @@ async function dirtyLoop() {
   let wait = POLL_BUSY;
   while (!stopping) {
     let n = 0;
-    try { n = await dirtyOnce(); } catch (e) { log("dirty scan failed", { error: e.message }); }
+    try { n = await dirtyOnce(); beat("dirty"); } catch (e) { log("dirty scan failed", { error: e.message }); }
     wait = n ? POLL_BUSY : Math.min(POLL_IDLE, wait + 1000);
     await sleep(wait);
   }
@@ -109,7 +144,7 @@ async function laneLoop(lane) {
   let wait = POLL_BUSY;
   while (!stopping) {
     let n = 0;
-    try { n = await laneOnce(lane); } catch (e) { log("claim failed", { lane, error: e.message }); }
+    try { n = await laneOnce(lane); beat(lane); } catch (e) { log("claim failed", { lane, error: e.message }); }
     wait = n ? POLL_BUSY : Math.min(POLL_IDLE, wait + 1000);
     await sleep(wait);
   }
@@ -121,7 +156,8 @@ async function shutdown(sig) {
   stopping = true;
   log("shutting down", { sig, inflight: inflight.size });
   try { if (leader && leaderConn) await leaderConn.query("select pg_advisory_unlock(hashtext($1))", [TICKER_KEY]); } catch {}
-  try { await leaderConn?.end(); } catch {}
+  const c = leaderConn; leaderConn = null; leader = false;     // before end(): its 'end' listener must not log a loss
+  try { await c?.end(); } catch {}
   await Promise.race([Promise.allSettled([...inflight]), sleep(SHUTDOWN_MS)]);
   await closePool();
   log("bye");
@@ -129,6 +165,25 @@ async function shutdown(sig) {
 }
 process.on("SIGTERM", () => shutdown("SIGTERM"));
 process.on("SIGINT", () => shutdown("SIGINT"));
+
+function startLiveness() {
+  // /healthz for the ACA liveness probe (no ingress: the probe reaches the container port directly)
+  const srv = createServer((req, res) => {
+    const bad = stalled();
+    res.writeHead(bad.length ? 503 : 200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ ok: !bad.length, stalled: bad, leader }));
+  });
+  srv.on("error", (e) => log("health server failed", { error: e.message }));
+  srv.listen(HEALTH_PORT);
+  srv.unref();
+  // the watchdog: exit on a wedged loop so ACA restarts the replica even if the probe is misconfigured
+  setInterval(() => {
+    const bad = stalled();
+    if (!bad.length || stopping) return;
+    console.error(`[worker] watchdog: loop(s) ${bad.join(",")} stalled; exiting for a restart`);
+    process.exit(2);
+  }, 10_000).unref();
+}
 
 log("worker up", { once: ONCE, direct: !/-pooler\./.test(URL_), driver: process.env.DB_DRIVER || "neon-ws" });
 if (ONCE) {
@@ -139,5 +194,6 @@ if (ONCE) {
   log("once", { leader, fired, dirty, claimed: fast + slow });
   await shutdown("once");
 } else {
+  startLiveness();
   tickerLoop(); dirtyLoop(); laneLoop("fast"); laneLoop("slow");
 }

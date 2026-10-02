@@ -4,6 +4,7 @@ import { NotFound } from "../app/Shell.tsx";
 import { AccountStep } from "./Account.tsx";
 import { ConsentStep, TrustStep } from "./Consent.tsx";
 import { ChildStep } from "./ChildProfile.tsx";
+import { GateIfPin } from "../parent/Gate.tsx";
 import { LangStep, MeetStep, TasteStep } from "./Intro.tsx";
 import { ControlsStep, HandoverStep, StudentStep, SummaryStep, VerifyStep } from "./Setup.tsx";
 import "../styles/onboarding.css";
@@ -18,9 +19,12 @@ export default function Onboarding() {
       <Route path="phone" element={<AccountStep />} />
       <Route path="trust" element={<TrustStep />} />
       <Route path="verify" element={<VerifyStep />} />
-      <Route path="consent" element={<ConsentStep />} />
-      <Route path="child" element={<ChildStep />} />
-      <Route path="controls" element={<ControlsStep />} />
+      {/* Consent-grade steps: behind the parent gate once a PIN exists (add a child, change consent). */}
+      <Route element={<GateIfPin />}>
+        <Route path="consent" element={<ConsentStep />} />
+        <Route path="child" element={<ChildStep />} />
+        <Route path="controls" element={<ControlsStep />} />
+      </Route>
       <Route path="handover" element={<HandoverStep />} />
       <Route path="student" element={<StudentStep />} />
       <Route path="summary" element={<SummaryStep />} />

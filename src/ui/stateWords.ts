@@ -7,7 +7,7 @@ export interface LedgerState { level: 0 | 1 | 2 | 3; key: StateKey; recheck?: bo
 export const STATE_WORDS: Record<StateKey, Record<Lang, string>> = {
   unseen: { hi: "अभी नहीं", hinglish: "Abhi nahi", en: "Not yet" },
   practising: { hi: "अभ्यास में", hinglish: "Abhyaas mein", en: "Practising" },
-  learned_today: { hi: "आ गया", hinglish: "Aa gaya", en: "Got it" },
+  learned_today: { hi: "आ गया", hinglish: "Aa gaya", en: "Got it today" },
   mastered: { hi: "पक्का", hinglish: "Pakka", en: "Secure" },
 };
 export const RECHECK_TAG: Record<Lang, string> = { hi: "दोबारा जाँच", hinglish: "dobara jaanch", en: "re-check due" };

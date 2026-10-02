@@ -2,8 +2,8 @@
 // sentences, skill chips with Kaise pata?, one quote <= 25 words, the next re-check date. Full verbatim
 // transcripts: Class 1-4 visible; Class 5-9 on request (§6.11), and that request path is not built yet.
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Card, Icon, StateChip, readLang } from "../ui/index.ts";
-import { parentApi } from "./api.ts";
+import { Card, Icon, Speaker, StateChip, readLang } from "../ui/index.ts";
+import { parentApi, speakUrl } from "./api.ts";
 import { EvidenceSheet } from "./EvidenceSheet.tsx";
 import { PageState, ParentShell, useChildren, useParentData } from "./Shell.tsx";
 import { fmtDayLong, SUBJECT_NAME } from "./words.ts";
@@ -26,7 +26,7 @@ export function LessonList() {
               {data.lessons.map((l) => (
                 <li key={l.id}>
                   <Link to={`/parent/${cid}/lessons/${l.id}`} className="lesson-row card card-flat">
-                    <span className="t-meta">{fmtDayLong(l.startedAt)}{l.minutes ? ` · ${l.minutes} min` : ""}{l.topic.subject ? ` · ${SUBJECT_NAME[l.topic.subject] ?? l.topic.subject}` : ""}</span>
+                    <span className="t-note">{fmtDayLong(l.startedAt)}{l.minutes ? ` · ${l.minutes} min` : ""}{l.topic.subject ? ` · ${SUBJECT_NAME[l.topic.subject] ?? l.topic.subject}` : ""}</span>
                     <strong>{l.topic.title}</strong>
                     {firstLine(l.note) && <span className="muted">{firstLine(l.note)}</span>}
                     {!l.endedAt && <span className="t-meta">Not finished</span>}
@@ -55,8 +55,11 @@ export function LessonCard() {
       <PageState err={err} loading={!data} />
       {data && (
         <div className="stack">
-          <p className="t-meta">{fmtDayLong(data.lesson.startedAt)}{data.lesson.topic.chapter ? ` · ${data.lesson.topic.chapter}` : ""}</p>
+          <p className="t-note">{fmtDayLong(data.lesson.startedAt)}{data.lesson.topic.chapter ? ` · ${data.lesson.topic.chapter}` : ""}</p>
           <h1 className="t-title">{data.lesson.topic.title}</h1>
+          {/* §6.6: a spoken summary (the default view for Class 1-4 families; offered to every family). */}
+          <Speaker key={data.lesson.id} src={speakUrl({ what: "lesson", childId: cid, lessonId: data.lesson.id })} label="Listen to this lesson's summary"
+            className="speaker speaker-wide"><span>Suno · Listen</span></Speaker>
           {data.lesson.note ? <p className="t-lead">{data.lesson.note}</p> : <p className="muted">{data.lesson.endedAt ? "The summary for this lesson is not ready." : "This lesson did not finish, so there is no summary."}</p>}
           {data.quote && (
             <Card title={`${current?.first_name ?? "Your child"} said`}>

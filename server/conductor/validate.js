@@ -3,6 +3,7 @@
 // falls back to the frozen slots only (a plan that cannot be wrong).
 import { BAND, PLAN } from "./config.js";
 import { jcs } from "./ids.js";
+import { dayMin, localTime } from "./clock.js";
 import { teachingEnd } from "./planner.js";
 
 const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
@@ -10,10 +11,10 @@ const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
 /**
  * @param {any} plan     planDay(inputs).plan
  * @param {any} inputs   the PlannerInputs it was built from
- * @param {{ childId: string }} ctx
+ * @param {{ childId: string, now?: Date, tz?: string }} ctx  now/tz: the real current instant for V2
  * @returns {Array<{ rule: string, detail: string }>}
  */
-export function validatePlan(plan, inputs, { childId } = {}) {
+export function validatePlan(plan, inputs, { childId, now, tz } = {}) {
   const out = [];
   const bad = (rule, detail) => out.push({ rule, detail });
   const b = BAND[inputs.child.band];
@@ -23,13 +24,19 @@ export function validatePlan(plan, inputs, { childId } = {}) {
   if (plan.plannedMin > plan.capMin) bad("V1", `plannedMin ${plan.plannedMin} > cap ${plan.capMin}`);
   const hw = plan.slots.filter((s) => s.kind === "homework_help").reduce((a, s) => a + s.targetMin, 0);
   if (hw > b.hwSubCapMin) bad("V1", `homework ${hw} > sub-cap ${b.hwSubCapMin}`);
-  // V2: inside allowed hours ∩ learning window; no teaching after bedtime − 60.
-  const end = teachingEnd(inputs);
+  // V2: inside allowed hours ∩ learning window; no teaching after bedtime − 60; never a window already gone.
+  // Compared in minutes since the 04:00 learning-day anchor (clock.dayMin), never as 'HH:MM' strings: 00:30
+  // is AFTER 20:30 in a learning day. With ctx.now (decide passes the batch's recorded now), a new slot must
+  // also start no earlier than the real current instant and end after it.
+  const end = dayMin(teachingEnd(inputs));
+  const nowDM = now && tz ? dayMin(localTime(now, tz)) : null;
+  const wFrom = dayMin(inputs.window.from), wTo = dayMin(inputs.window.to);
   for (const s of plan.slots) {
     if (inputs.frozen.slots.some((f) => f.id === s.id)) continue;   // frozen slots were valid when shown (V10 wins)
-    const [from, to] = s.window;
-    if (from < inputs.window.from || to > inputs.window.to || from >= to) bad("V2", `slot ${s.id} window ${from}-${to} outside ${inputs.window.from}-${inputs.window.to}`);
-    if (to > end) bad("V2", `slot ${s.id} ends after bedtime − 60 (${end})`);
+    const from = dayMin(s.window[0]), to = dayMin(s.window[1]);
+    if (from < wFrom || to > wTo || from >= to) bad("V2", `slot ${s.id} window ${s.window[0]}-${s.window[1]} outside ${inputs.window.from}-${inputs.window.to}`);
+    if (to > end) bad("V2", `slot ${s.id} ends after bedtime − 60 (${teachingEnd(inputs)})`);
+    if (nowDM !== null && (from < nowDM - 15 || to <= nowDM)) bad("V2", `slot ${s.id} window ${s.window[0]}-${s.window[1]} already past at ${localTime(now, tz)}`);
   }
   // V3: realtime wanted within the remaining tier budget.
   const rt = plan.slots.reduce((a, s) => a + (s.voiceSecWanted?.realtime || 0), 0);

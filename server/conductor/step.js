@@ -98,10 +98,12 @@ async function stepOnce(childId, token, { maxEvents, maxBatches, now }) {
     const rows = await q("select seq, id, type, body, correlation_id from student_event where child_id = $1 and seq > $2 order by seq limit $3",
       [childId, cursor, maxEvents]);
     if (!rows.length) {
-      // nothing to fold: clear a stale dirty mark (child_seq is the only lock here) and release the lease
+      // nothing to fold: release the lease, then clear a stale dirty mark, in the X29 order every writer follows
+      // (conductor_state → … → child_seq LAST). An ingest racing this either commits before the child_seq update
+      // (last > cursor keeps pending_since) or waits on it and sets pending_since after: never lost.
       await withTx(async (tx) => {
-        await tx.q("update child_seq set pending_since = case when last > $2 then pending_since else null end where child_id = $1", [childId, cursor]);
         await tx.q("update conductor_state set lease_token = null, lease_until = null where child_id = $1 and lease_token = $2", [childId, token]);
+        await tx.q("update child_seq set pending_since = case when last > $2 then pending_since else null end where child_id = $1", [childId, cursor]);
       });
       return { events, batches, version };
     }
@@ -125,8 +127,8 @@ async function stepOnce(childId, token, { maxEvents, maxBatches, now }) {
 
 /**
  * Replay (§3.11): fold the log again from decision_log v0 using only recorded inputs (now_used, brief_snapshot)
- * and compare every batch's commands and the final state. READ-ONLY by construction: it is handed a reader,
- * never q/withTx/commit (X31, I-R9).
+ * and compare every batch's commands and the final state. Pure: it is handed recorded rows, never a handle
+ * (X31, I-R9); replay() below loads those rows in a read-only transaction.
  * @param {{ decisions: any[], events: any[], snapshots: Record<string, any>, current?: any }} rec
  */
 export function replayRecorded({ decisions, events, snapshots, current }) {
@@ -151,13 +153,30 @@ export function replayRecorded({ decisions, events, snapshots, current }) {
   return { state, mismatches };
 }
 
-/** Load a child's replay record with plain reads, then replay it. */
-export async function replay(childId) {
-  const [decisions, events, snaps, cur] = await Promise.all([
-    q("select version, now_used, from_seq, to_seq, brief_digest, commands from decision_log where child_id = $1 order by version", [childId]),
-    q("select seq, type, body from student_event where child_id = $1 order by seq", [childId]),
-    q("select digest, value from brief_snapshot where child_id = $1", [childId]),
-    one("select state from conductor_state where child_id = $1", [childId]),
-  ]);
+/**
+ * Load a child's replay record, then replay it. The loads run in ONE `begin transaction read only` transaction
+ * (Postgres refuses any write in it, 25006), so replay has no write path even by accident (X31, I-R9). Tests pass
+ * `reader` (a write-counting shim) to assert it issues zero writes.
+ * @param {string} childId
+ * @param {{ reader?: { q: (text: string, params?: unknown[]) => Promise<any[]> } }} [o]
+ */
+export async function replay(childId, { reader } = {}) {
+  const load = async (r) => {
+    const rows = async (text, params) => r.q(text, params);
+    // sequential: one connection, one snapshot
+    const decisions = await rows("select version, now_used, from_seq, to_seq, brief_digest, commands from decision_log where child_id = $1 order by version", [childId]);
+    const events = await rows("select seq, type, body from student_event where child_id = $1 order by seq", [childId]);
+    const snaps = await rows("select digest, value from brief_snapshot where child_id = $1", [childId]);
+    const cur = (await rows("select state from conductor_state where child_id = $1", [childId]))[0] ?? null;
+    return { decisions, events, snaps, cur };
+  };
+  const { decisions, events, snaps, cur } = reader ? await load(reader) : await withTx(load, { readOnly: true });
   return replayRecorded({ decisions, events, snapshots: Object.fromEntries(snaps.map((r) => [r.digest, r.value])), current: cur?.state });
+}
+
+/** A reader wrapper that counts statements that could write (tests, I-R9). */
+export function writeCountingReader(inner) {
+  const WRITE = /^\s*(insert|update|delete|merge|truncate|create|alter|drop|grant|lock|copy|call|do)\b|\b(ingest_event|fire_wakeups|complete_job|nextval|setval|pg_advisory\w*)\s*\(|\bfor\s+update\b/i;
+  const r = { writes: 0, reads: 0, q: async (text, params) => { if (WRITE.test(text)) r.writes++; else r.reads++; return inner.q(text, params); } };
+  return r;
 }

@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "fs";
-import { addDays, clockPhase, dayKindLookup, isoWeek, jitterSec, learningDay, localTime, zonedToUtc } from "../server/conductor/clock.js";
+import { addDays, clockPhase, dayKindLookup, dayMin, isoWeek, jitterSec, learningDay, localTime, zonedToUtc } from "../server/conductor/clock.js";
 import { buildPlannerInputs, fitSegments, inputsHash, planDay } from "../server/conductor/planner.js";
 import { validatePlan } from "../server/conductor/validate.js";
 import { initialState } from "../server/conductor/state.js";
@@ -180,4 +180,50 @@ test("004_conductor.sql survives migrate.mjs's split: every $$ body stays one st
   for (const s of stmts) assert.equal((s.match(/\$\$/g) || []).length % 2, 0, `unbalanced $$ in: ${s.slice(0, 80)}`);
   const fns = stmts.filter((s) => /^create or replace function/i.test(s)).map((s) => s.match(/function (\w+)/)[1]);
   assert.deepEqual(fns.sort(), ["complete_job", "fire_wakeups", "gen_ulid", "ingest_event"]);
+});
+
+test("004_conductor_notification.sql survives the same split and aligns notification with §4.10.3", () => {
+  const body = readFileSync(new URL("../db/migrations/004_conductor_notification.sql", import.meta.url), "utf8");
+  const stmts = body.split(/;\s*$/m).map((s) => s.replace(/^\s*--.*$/gm, "").trim()).filter(Boolean);
+  for (const s of stmts) assert.equal((s.match(/\$\$/g) || []).length % 2, 0, `unbalanced $$ in: ${s.slice(0, 80)}`);
+  assert.ok(stmts.some((s) => /references child\(id\) on delete cascade/.test(s)), "child_id cascades");
+  assert.ok(stmts.some((s) => /guardian_id set not null/.test(s)));
+});
+
+// ───────────── after midnight: the learning day runs 04:00 → 04:00 ─────────────
+test("planner: an open at 23:50, 00:30 or 03:59 IST (same learning day, past the window) plans NO new slot", () => {
+  assert.ok(dayMin("00:30") > dayMin("20:30"), "00:30 is after 20:30 in a learning day");
+  assert.ok(dayMin("03:59") > dayMin("00:30") && dayMin("04:00") === 0);
+  for (const [day, hhmm] of [["2026-10-05", "23:50"], ["2026-10-06", "00:30"], ["2026-10-06", "03:59"]]) {
+    const now = ist(day, hhmm);
+    const inp = inputsFor({ now, due: 5 });
+    assert.equal(inp.day.learningDay, "2026-10-05");
+    assert.equal(inp.window.effFrom, inp.window.to, `${hhmm}: effFrom clamps to the window end`);
+    const { plan } = planDay(inp);
+    assert.deepEqual(plan.slots, [], `${hhmm}: no slot offered past bedtime`);
+    assert.deepEqual(validatePlan(plan, inp, { childId: CHILD, now, tz: "Asia/Kolkata" }), []);
+  }
+  // after the window closes the clock is not an input either: no replan churn every quarter hour
+  assert.equal(inputsHash(inputsFor({ now: ist("2026-10-05", "23:50") })), inputsHash(inputsFor({ now: ist("2026-10-06", "03:59") })));
+});
+
+test("V2 checks the real current instant: a 16:10 plan validated at 00:30 is rejected (negative control)", () => {
+  const plan = planDay(inputsFor({ now: ist("2026-10-05", "16:10") })).plan;
+  assert.ok(plan.slots.length, "a lesson was planned at 16:10");
+  const late = inputsFor({ now: ist("2026-10-06", "00:30") });
+  const v = validatePlan(plan, late, { childId: CHILD, now: ist("2026-10-06", "00:30"), tz: "Asia/Kolkata" });
+  assert.ok(v.some((x) => x.rule === "V2" && /already past/.test(x.detail)), JSON.stringify(v));
+  // and the same plan is fine at the moment it was made
+  assert.deepEqual(validatePlan(plan, inputsFor({ now: ist("2026-10-05", "16:10") }), { childId: CHILD, now: ist("2026-10-05", "16:10"), tz: "Asia/Kolkata" }), []);
+});
+
+test("events: parent.setting_changed values are per-key and refused at ingest (never clamped or quarantined later)", () => {
+  const sc = (key, value) => ({ type: "parent.setting_changed", key, value, by: "owner", settingsVersion: 1 });
+  for (const [k, v] of [["tz", "Asia/Kolkata"], ["tz", "America/Argentina/Buenos_Aires"], ["dailyMinutes", 10], ["dailyMinutes", 120], ["hoursEnd", "20:30"], ["bedtime", "00:15"], ["restDays", [0, 6]]]) {
+    assert.doesNotThrow(() => validateEvent(sc(k, v)), `${k}=${JSON.stringify(v)}`);
+  }
+  for (const [k, v] of [["tz", "Mars/Olympus"], ["tz", "Asia/Kolkata; drop"], ["dailyMinutes", "07:00"], ["dailyMinutes", 9], ["dailyMinutes", 121], ["dailyMinutes", 20.5],
+    ["hoursEnd", 20], ["hoursEnd", "24:00"], ["restDays", [7]], ["restDays", "0"], ["wakeTime", "6:30"]]) {
+    assert.throws(() => validateEvent(sc(k, v)), EventInvalid, `${k}=${JSON.stringify(v)} must be refused`);
+  }
 });

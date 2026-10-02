@@ -25,6 +25,14 @@ function safetyGuard(cmd, s) {
   }
 }
 
+/** §3.6 sticky fail-safe: until an operator clears it, nothing new is offered and no work is queued. */
+function failSafeGuard(cmd, s) {
+  if (!s.failSafe) return { cmd };
+  if (cmd.kind === "enqueue") return { drop: "fail_safe" };
+  if (cmd.kind === "plan.adopt" && cmd.plan.mode !== "rest_day") return { cmd: narrowToRest(cmd, s), narrowed: "fail_safe" };
+  return { cmd };
+}
+
 function consentGuard(cmd, s) {
   if (cmd.kind === "enqueue") {
     const p = JOB_KINDS[cmd.job.kind]?.purpose;
@@ -64,7 +72,7 @@ function governorGuard(cmd, s) {
   return changed ? { cmd: { ...cmd, plan: { ...cmd.plan, slots } }, narrowed: "budget_low" } : { cmd };
 }
 
-export const GUARDS = [["safety", safetyGuard], ["consent", consentGuard], ["parentControl", parentControlGuard],
+export const GUARDS = [["safety", safetyGuard], ["failSafe", failSafeGuard], ["consent", consentGuard], ["parentControl", parentControlGuard],
   ["policyCap", policyCapGuard], ["governor", governorGuard]];
 
 /** Run the guards in authority order → { kept, blocked }. */

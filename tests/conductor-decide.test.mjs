@@ -268,3 +268,78 @@ test("guards never add commands: every kept command was proposed (drop/narrow on
   // memory.consolidate is allowed while paused (§3.2: consolidation and erase only)
   assert.ok(out.commands.some((c) => c.kind === "enqueue" && c.job.kind === "memory.consolidate"));
 });
+
+// ───────────── fail-safe is sticky and paged (§3.6) ─────────────
+test("fail-safe: paged, sticky (rest plans, no enqueues) until ops.fail_safe_cleared; a fail-safe pause still ends", () => {
+  const boom = { get() { throw new Error("view down"); }, recorded: () => ({}) };
+  const errs = [];
+  const orig = console.error; console.error = (...a) => errs.push(a.join(" "));
+  let fs;
+  try { fs = decideOrFailSafe(fresh(), { type: "parent.pause", until: "2026-10-05T14:00:00.000Z" }, { now: ist("2026-10-05", "16:00"), view: boom }); }
+  finally { console.error = orig; }
+  assert.ok(errs.some((e) => /FAIL-SAFE/.test(e)), "ops is paged");
+  assert.equal(fs.state.mode, "paused");
+  const pe = fs.commands.find((c) => c.kind === "wakeup" && c.reason === "pause_end");
+  assert.ok(pe, "the fail-safe pause arms pause_end");
+  assert.equal(pe.at, "2026-10-05T14:00:00.000Z");
+  // the pause ends normally, but the actor stays conservative: rest plan, enqueue dropped
+  const o = run(fs.state, { type: "clock.wakeup", reason: "pause_end", wakeupId: pe.dedupe }, ist("2026-10-05", "19:31"));
+  assert.equal(o.state.mode, "free");
+  const adopt = o.commands.find((c) => c.kind === "plan.adopt");
+  assert.equal(adopt.plan.mode, "rest_day");
+  assert.ok(o.blocked.some((b) => b.guard === "failSafe"));
+  const le = run(o.state, { type: "lesson.ended", lessonId: "L-fs", reason: "completed", minutes: 3 }, ist("2026-10-05", "19:40"));
+  assert.ok(!le.commands.some((c) => c.kind === "enqueue"), "no work queued while fail-safe");
+  // an operator clears it → a normal plan again
+  const cl = run(le.state, { type: "ops.fail_safe_cleared", by: "ops", ticket: "T-1" }, ist("2026-10-05", "19:45"));
+  assert.equal(cl.state.failSafe, undefined);
+  assert.equal(cl.commands.find((c) => c.kind === "plan.adopt")?.plan.mode, "school_day", "normal planning resumes");
+  assert.ok(cl.commands.some((c) => c.kind === "audit" && c.code === "fail_safe_cleared:T-1"));
+});
+
+test("fail-safe limits are validated, clamped and never loosened", () => {
+  const boom = { get() { throw new Error("view down"); }, recorded: () => ({}) };
+  const orig = console.error; console.error = () => {};
+  try {
+    const ctx = { now: ist("2026-10-05", "16:00"), view: boom };
+    const st = fresh();                                                      // dailyMinutes 30
+    assert.equal(decideOrFailSafe(st, { type: "parent.setting_changed", key: "dailyMinutes", value: "07:00", by: "owner", settingsVersion: 1 }, ctx).state.limits.dailyMinutes, 10, "NaN → the floor");
+    assert.equal(decideOrFailSafe(st, { type: "parent.setting_changed", key: "dailyMinutes", value: 5, by: "owner", settingsVersion: 1 }, ctx).state.limits.dailyMinutes, 10);
+    assert.equal(decideOrFailSafe(st, { type: "parent.setting_changed", key: "dailyMinutes", value: 20, by: "owner", settingsVersion: 1 }, ctx).state.limits.dailyMinutes, 20);
+    assert.equal(decideOrFailSafe(st, { type: "parent.setting_changed", key: "hoursEnd", value: 20, by: "owner", settingsVersion: 1 }, ctx).state.limits.allowedTo, st.limits.allowedTo, "a non-HH:MM value is ignored");
+    assert.equal(decideOrFailSafe(st, { type: "parent.pause", until: "2026-10-05T00:00:00.000Z" }, ctx).state.mode, "free", "a pause in the past does nothing");
+  } finally { console.error = orig; }
+});
+
+test("lowersLimit orders times by the learning day: bedtime 23:30 → 00:15 is later, 21:30 → 21:00 earlier", () => {
+  const s = { ...fresh(), routine: { ...fresh().routine, bedtime: "23:30" } };
+  assert.equal(isAuthority(s, { type: "parent.setting_changed", key: "bedtime", value: "00:15", by: "owner", settingsVersion: 1 }), false);
+  assert.equal(isAuthority(s, { type: "parent.setting_changed", key: "bedtime", value: "21:00", by: "owner", settingsVersion: 1 }), true);
+});
+
+// ───────────── replay has no write path (I-R9) ─────────────
+test("replay: loads through a reader that a write-counting shim proves issues 0 writes, and reproduces the log", async () => {
+  const { replay, writeCountingReader } = await import("../server/conductor/step.js");
+  const { logForm } = await import("../server/conductor/commit.js");
+  const s0 = fresh();
+  const now = ist("2026-10-05", "16:10");
+  const view = viewOf();
+  const out = foldEvent(s0, { body: opened }, { now, view });
+  const rows = {
+    decision_log: [{ version: 0, now_used: now.toISOString(), from_seq: 0, to_seq: 0, brief_digest: null, commands: [{ kind: "audit", code: "actor_created", state: s0 }] },
+      { version: 1, now_used: now.toISOString(), from_seq: 0, to_seq: 1, brief_digest: "d1", commands: JSON.parse(JSON.stringify(out.commands.map(logForm))) }],
+    student_event: [{ seq: 1, type: "app.opened", body: opened }],
+    brief_snapshot: [{ digest: "d1", value: view.recorded() }],
+    conductor_state: [{ state: JSON.parse(JSON.stringify(out.state)) }],
+  };
+  const inner = { q: async (text) => rows[text.match(/from (\w+)/)[1]] };
+  const shim = writeCountingReader(inner);
+  const r = await replay(CHILD, { reader: shim });
+  assert.deepEqual(r.mismatches, []);
+  assert.equal(shim.writes, 0);
+  assert.equal(shim.reads, 4);
+  // negative control: the shim does count writes
+  const ctl = writeCountingReader({ q: async () => [] });
+  for (const t of ["insert into job values (1)", "update conductor_state set x = 1", "select ingest_event($1)", "select * from job for update skip locked"]) await ctl.q(t);
+  assert.equal(ctl.writes, 4);
+});

@@ -22,6 +22,21 @@ const SafetyCategory = z.enum(["self_harm", "abuse", "neglect", "violence_at_hom
 /** Parent settings the Conductor folds at M0 (parent_setting / child_controls is the source of truth). */
 export const SETTING_KEYS = ["dailyMinutes", "hoursStart", "hoursEnd", "restDays", "bedtime", "schoolStart", "schoolEnd", "wakeTime", "tz"];
 
+/** An IANA zone the runtime knows ('Asia/Kolkata'); Intl throws a RangeError on anything else. */
+const Tz = z.string().regex(/^[A-Za-z][A-Za-z0-9_+\-]*(\/[A-Za-z0-9_+\-]+){0,2}$/, "tz: IANA zone").max(64).refine((tz) => {
+  try { new Intl.DateTimeFormat("en-US", { timeZone: tz }); return true; } catch { return false; }
+}, "tz: unknown IANA zone");
+/**
+ * parent.setting_changed's value is tied to its key and REFUSED at ingest when out of range: decide() never has
+ * to clamp, coerce or quarantine a setting (a clamped limit is a silent lie to the parent).
+ */
+export const SETTING_VALUE = {
+  dailyMinutes: z.number().int().min(10).max(120),
+  hoursStart: HHMM, hoursEnd: HHMM, bedtime: HHMM, schoolStart: HHMM, schoolEnd: HHMM, wakeTime: HHMM,
+  restDays: z.array(z.number().int().min(0).max(6)).max(7),
+  tz: Tz,
+};
+
 const OutcomeDigest = z.strictObject({
   itemsAttempted: z.number().int().min(0).max(500).optional(),
   independentCorrect: z.number().int().min(0).max(500).optional(),
@@ -52,8 +67,11 @@ export const StudentEvent = z.discriminatedUnion("type", [
   ev("skill.milestone", { skillId: Id, to: z.enum(["learned_today", "mastered", "due", "wheel_spin"]), evidenceSeq: z.number().int().min(0) }),
   ev("teacher.promise", { promiseId: Id, what: z.strictObject({ kind: z.enum(["game", "topic", "revisit"]), ref: Id }), by: Id }),
   // parent (settings row + event in ONE transaction, orch §6)
-  ev("parent.setting_changed", { key: z.enum(SETTING_KEYS), value: z.union([z.number(), HHMM, z.array(z.number().int().min(0).max(6)).max(7), Id]),
-    by: z.literal("owner"), settingsVersion: z.number().int().min(0) }),
+  ev("parent.setting_changed", { key: z.enum(SETTING_KEYS), value: z.unknown(), by: z.literal("owner"), settingsVersion: z.number().int().min(0) })
+    .superRefine((e, ctx) => {
+      const r = SETTING_VALUE[e.key]?.safeParse(e.value);
+      if (!r || !r.success) ctx.addIssue({ code: "custom", path: ["value"], message: `value for ${e.key}: ${r ? r.error.issues.map((i) => i.message).join(", ") : "unknown key"}` });
+    }),
   ev("parent.pause", { until: Ts }),
   ev("parent.resume"),
   ev("parent.consent_changed", { purpose: Purpose, granted: z.boolean(), consentVersion: z.union([z.number().int(), Id]) }),
@@ -69,7 +87,8 @@ export const StudentEvent = z.discriminatedUnion("type", [
   ev("safety.incident", { incidentId: Id, severity: z.enum(["high", "critical"]), category: SafetyCategory }),
   ev("safety.incident_updated", { incidentId: Id, familyImplicated: z.enum(["yes", "no", "unknown"]), category: SafetyCategory }),
   ev("safety.cleared", { incidentId: Id, by: Id }),
-  // system
+  // system / ops
+  ev("ops.fail_safe_cleared", { by: Id, ticket: Id }),
   ev("budget.threshold", { scope: z.enum(["child_day", "child_month", "global"]), pct: z.union([z.literal(80), z.literal(100)]) }),
 ]);
 
@@ -120,6 +139,7 @@ export function idemKeyFor(e) {
     case "safety.cleared": return `safety.cleared:${e.incidentId}`;
     case "job.done": return `job:${e.jobId}:done`;
     case "job.failed": return `job:${e.jobId}:dead`;
+    case "ops.fail_safe_cleared": return `failsafe.cleared:${e.ticket}`;
     default: return null;
   }
 }

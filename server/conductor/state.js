@@ -21,6 +21,7 @@ import { PURPOSES } from "./events.js";
  *   counters: { lastActiveDay?: string, activeDays: string[], lastOpenDay?: string },
  *   adapt: { foldedDay?: string, closes: CloseLite[], successFirstNext: boolean },
  *   household?: null,
+ *   failSafe?: { type: string, error: string },   // sticky (§3.6): set by decideOrFailSafe, cleared only by ops.fail_safe_cleared
  * }} ConductorState
  */
 

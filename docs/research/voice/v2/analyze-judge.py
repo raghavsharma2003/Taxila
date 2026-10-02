@@ -12,6 +12,9 @@ ka = json.load(open(os.path.join(HERE, "samples", "KEY.json"))) if os.path.exist
 kr = json.load(open(os.path.join(HERE, "samples", "KEY-ref.json")))["clips"]
 AX = ["native_indian", "naturalness", "hindi_pronunciation", "warmth_child"]
 JUDGES = R["judges"]
+# Headline judges: gpt-audio is reported but excluded (calibration: 90% of TTS clips got naturalness 5 and the
+# American-accent negative control got native_indian 5.0). Override with HEADLINE env (comma list).
+HEAD = os.environ.get("HEADLINE", "google/gemini-3.1-pro-preview,qwen/qwen3.8-omni-flash").split(",")
 
 def arm_of(cid, v):
     if v["set"] == "human-anchor": return "HUMAN anchor (IndicTTS-Hindi studio read speech)"
@@ -54,8 +57,15 @@ for a in arms:
     e["leak_rate"] = round(sum(r["leak"] for r in rs) / len(rs), 2); e["judged_human_rate"] = round(sum(r["human"] for r in rs) / len(rs), 2)
     e["by_judge_composite"] = {j: round(st.mean(r["comp"] for r in rs if r["judge"] == j), 2) for j in JUDGES if any(r["judge"] == j for r in rs)}
     e["min_judge_composite"] = min(e["by_judge_composite"].values())
+    hj = [e["by_judge_composite"][j] for j in HEAD if j in e["by_judge_composite"]]
+    e["headline"] = round(st.mean(hj), 2) if hj else None
+    hr = [r for r in rs if r["judge"] in HEAD]
+    e["headline_leak_rate"] = round(sum(r["leak"] for r in hr) / len(hr), 2) if hr else None
+    e["headline_judged_human_rate"] = round(sum(r["human"] for r in hr) / len(hr), 2) if hr else None
+    for ax in AX: e["headline_" + ax] = round(st.mean(r[ax] for r in hr), 2) if hr else None
     out["per_arm"].append(e)
-out["per_arm"].sort(key=lambda e: (-e["composite"], -e["min_judge_composite"]))
+out["per_arm"].sort(key=lambda e: (-(e["headline"] or 0), -e["composite"]))
+out["headline_judges"] = HEAD
 
 # calibration: do judges separate real humans and the American-accent negative control from the rest?
 for j in JUDGES:
@@ -97,7 +107,8 @@ for r in main:
 out["best_per_passage"] = {p: sorted(((round(st.mean(v), 2), a) for a, v in d.items()), reverse=True)[:5] for p, d in pp.items()}
 
 json.dump(out, open(os.path.join(HERE, "judge-summary.json"), "w"), indent=1, ensure_ascii=False)
-print(f"{'arm':58s} n  comp  nat  natr hpron warm leak human minJ")
+print(f"{'arm':58s} n  HEAD gemP qwen gpta | nat  natr hpron warm leak human (headline judges)")
 for e in out["per_arm"]:
-    print(f"{e['arm'][:58]:58s} {e['n_clips']:2d} {e['composite']:.2f} {e['native_indian']:.2f} {e['naturalness']:.2f} {e['hindi_pronunciation']:.2f} {e['warmth_child']:.2f} {e['leak_rate']:.2f} {e['judged_human_rate']:.2f} {e['min_judge_composite']:.2f}")
+    bj = e["by_judge_composite"]; g = lambda j: f"{bj[j]:.2f}" if j in bj else "  - "
+    print(f"{e['arm'][:58]:58s} {e['n_clips']:2d} {e['headline']:.2f} {g(JUDGES[0])} {g(JUDGES[1])} {g(JUDGES[2])} | {e['headline_native_indian']:.2f} {e['headline_naturalness']:.2f} {e['headline_hindi_pronunciation']:.2f} {e['headline_warmth_child']:.2f} {e['headline_leak_rate']:.2f} {e['headline_judged_human_rate']:.2f}")
 print(json.dumps({k: out[k] for k in ["calibration", "agreement", "family_means"]}, indent=1))

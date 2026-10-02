@@ -7,6 +7,10 @@ export function Sheet({ open, onClose, title, children, closeLabel = "Close" }:
   { open: boolean; onClose: () => void; title: ReactNode; children: ReactNode; closeLabel?: string }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
+  // The native 'close' event also fires when WE close the dialog after `open` went false; calling onClose
+  // then would navigate twice (a duplicate history entry). Only a close the user made (Esc) reports back.
+  const openRef = useRef(open);
+  openRef.current = open;
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
@@ -15,7 +19,7 @@ export function Sheet({ open, onClose, title, children, closeLabel = "Close" }:
     } else if (!open && d.open) d.close();
   }, [open]);
   return (
-    <dialog ref={ref} className="sheet" aria-labelledby={titleId} onClose={onClose}
+    <dialog ref={ref} className="sheet" aria-labelledby={titleId} onClose={() => { if (openRef.current) onClose(); }}
       onClick={(e) => { if (e.target === ref.current) onClose(); }}>
       <div className="sheet-head">
         <h2 id={titleId}>{title}</h2>

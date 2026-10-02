@@ -2,8 +2,9 @@
 // mode: /who, /c/:cid/... (workstream ui-b's `childRoutes` from src/child/routes.tsx when it exists, else the
 // stubs in ./childStubs.tsx). Parent corner: /parent/* behind the guardian gate. Dev: /dev/lesson (dev builds
 // or VITE_DEV_ROUTES=1 only). Page groups load lazily so the cold path to the picker stays small (§7.3).
-import { lazy, Suspense, type ReactNode } from "react";
-import type { RouteObject } from "react-router-dom";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { Outlet, type RouteObject } from "react-router-dom";
+import { lockBeacon } from "./api.ts";
 import { childStubRoutes } from "./childStubs.tsx";
 import { Leaving, Privacy, Trust } from "./Public.tsx";
 import { Loading, NotFound, RouteError } from "./Shell.tsx";
@@ -33,6 +34,12 @@ function childRouteTree(): RouteObject[] {
   return [...top, ...(nested.length ? [{ path: "/c/:cid", children: nested } as RouteObject] : [])];
 }
 
+/** Child mode never runs inside an open Parent corner: entering any child screen locks this session's unlock. */
+function ChildMode() {
+  useEffect(() => { lockBeacon(); }, []);
+  return <Outlet />;
+}
+
 const s = (el: ReactNode) => <Suspense fallback={<Loading />}>{el}</Suspense>;
 
 export const routes: RouteObject[] = [
@@ -46,7 +53,7 @@ export const routes: RouteObject[] = [
       { path: "/help", element: s(<PublicHelp />) },
       { path: "/start/*", element: s(<Onboarding />) },
       { path: "/who", element: <Who /> },
-      ...childRouteTree(),
+      { element: <ChildMode />, children: childRouteTree() },
       { path: "/parent/*", element: s(<ParentCorner />) },
       ...(LessonDev ? [{ path: "/dev/lesson", element: s(<LessonDev />) }] : []),
       { path: "*", element: <NotFound /> },

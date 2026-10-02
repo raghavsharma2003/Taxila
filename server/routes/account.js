@@ -2,6 +2,7 @@
 import { q, one } from "../db.js";
 import { need, bad, send } from "../http.js";
 import { hashPassword, verifyPassword, createSession, destroySession, requireGuardian, requireChild } from "../auth.js";
+import { requireParentIfPinSet } from "./parent.js";
 
 export const CONSENT_VERSION = "2026-10-02.v1";
 // core_tutoring is required to use the product; the others are separately optional and revocable.
@@ -45,8 +46,10 @@ export async function me(req, res) {
 }
 
 /** body: { childId?: uuid|null, grants: { [purpose]: boolean } } */
+// Consent changes, adding a second child, editing the profile and erasure are grown-up acts: once a guardian
+// PIN exists they need an unlocked Parent corner (requireParentIfPinSet), because the child shares the cookie.
 export async function setConsent(req, res, body) {
-  const g = await requireGuardian(req);
+  const g = await requireParentIfPinSet(req);
   const childId = body.childId || null;
   if (childId) await requireChild(req, childId);
   const grants = body.grants || {};
@@ -60,13 +63,15 @@ export async function setConsent(req, res, body) {
 }
 
 const BOARDS = ["cbse", "ncert", "rbse", "icse", "other-state"];
+const MEDIUMS = ["english", "hindi", "other"];
 export async function createChild(req, res, body) {
-  const g = await requireGuardian(req);
+  let g = await requireGuardian(req);
+  if (await one("select 1 from child where guardian_id = $1 limit 1", [g.id])) g = await requireParentIfPinSet(req);
   const { firstName, classLevel } = need(body, "firstName", "classLevel");
   const cl = Number(classLevel);
   if (!(cl >= 1 && cl <= 9)) throw bad("class must be 1-9");
   const board = BOARDS.includes(body.board) ? body.board : "cbse";
-  const medium = ["english", "hindi", "other"].includes(body.schoolMedium) ? body.schoolMedium : "english";
+  const medium = MEDIUMS.includes(body.schoolMedium) ? body.schoolMedium : "english";
   const lang = ["hinglish", "hindi", "english"].includes(body.languagePref) ? body.languagePref : "hinglish";
   const interests = Array.isArray(body.interests) ? body.interests.slice(0, 8).map((s) => String(s).slice(0, 30)) : [];
   const teacher = cl <= 4 ? "asha" : "arjun";
@@ -81,7 +86,13 @@ export async function createChild(req, res, body) {
 
 export async function updateChild(req, res, body) {
   const { child } = await requireChild(req, need(body, "childId").childId);
-  const fields = { first_name: body.firstName, class_level: body.classLevel, language_pref: body.languagePref, interests: body.interests, teacher_id: body.teacherId, avatar: body.avatar };
+  if (body.board !== undefined && !BOARDS.includes(body.board)) throw bad("unknown board");
+  if (body.schoolMedium !== undefined && !MEDIUMS.includes(body.schoolMedium)) throw bad("unknown school medium");
+  if (body.classLevel !== undefined && !(Number(body.classLevel) >= 1 && Number(body.classLevel) <= 9)) throw bad("class must be 1-9");
+  const fields = { first_name: body.firstName, class_level: body.classLevel, board: body.board, school_medium: body.schoolMedium,
+    language_pref: body.languagePref, interests: body.interests, teacher_id: body.teacherId, avatar: body.avatar };
+  // The child's own picks (avatar, interests: C1-C3) stay child-writable; the profile facts are the parent's.
+  if (["first_name", "class_level", "board", "school_medium", "language_pref", "teacher_id"].some((k) => fields[k] !== undefined)) await requireParentIfPinSet(req);
   const sets = [], vals = [];
   for (const [k, v] of Object.entries(fields)) if (v !== undefined) { vals.push(v); sets.push(`${k} = $${vals.length}`); }
   if (!sets.length) return send(res, 200, { child });
@@ -93,6 +104,7 @@ export async function updateChild(req, res, body) {
 /** Erasure: deletes the child and every row that cascades from it. */
 export async function deleteChild(req, res, body) {
   const { guardian, child } = await requireChild(req, need(body, "childId").childId);
+  await requireParentIfPinSet(req);
   await q("delete from consent where child_id = $1", [child.id]);
   await q("delete from child where id = $1", [child.id]);
   await q("insert into audit(guardian_id, action, detail) values ($1, 'child_erase', $2)", [guardian.id, { childId: child.id }]);

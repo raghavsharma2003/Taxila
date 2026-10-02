@@ -870,7 +870,12 @@ async function missReason(specs, key) {
     if (!s) return "failed";
     if (s.key === key) return "unavailable";
     const k = JSON.parse(s.key);
-    return KEY_PARTS.filter((_, i) => JSON.stringify(k[i]) !== JSON.stringify(real[i])).join("+");
+    const parts = KEY_PARTS.filter((_, i) => JSON.stringify(k[i]) !== JSON.stringify(real[i])).join("+");
+    if (k[0] === real[0]) return parts;
+    // The first instruction line that differs (debug only: instructions carry the key).
+    const a = String(k[0]).split("\n"), b = String(real[0]).split("\n");
+    const i = a.findIndex((line, j) => line !== b[j]);
+    return `${parts} [spec: ${String(a[i] ?? "").slice(0, 120)} || real: ${String(b[i] ?? "").slice(0, 120)}]`;
   }));
 }
 

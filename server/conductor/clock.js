@@ -53,6 +53,15 @@ export const maxTime = (a, b) => (a >= b ? a : b);
 export const minTime = (a, b) => (a <= b ? a : b);
 export const floorTo = (hhmm, step) => fromMin(Math.floor(toMin(hhmm) / step) * step);
 
+/**
+ * Minutes since the learning-day anchor (04:00 local). 'HH:MM' strings compare correctly only inside one
+ * calendar day, but the learning day runs 04:00 → 04:00, so 00:30 must order AFTER 20:30 (00:30 → 1230).
+ * Every comparison of "now" against a window (planner effFrom, V2) goes through this, never string order.
+ */
+export const DAY_ANCHOR_MIN = 4 * 60;
+export const dayMin = (hhmm) => (toMin(hhmm) - DAY_ANCHOR_MIN + 1440) % 1440;
+export const fromDayMin = (dm) => fromMin(Math.max(0, Math.min(1439, dm)) + DAY_ANCHOR_MIN);
+
 /** The UTC instant of local wall time `hhmm` on calendar `day` in tz (DST-safe for the zones we serve). */
 export function zonedToUtc(day, hhmm, tz) {
   const [y, m, d] = day.split("-").map(Number);

@@ -1,13 +1,15 @@
 // P6 child profile (§2.2): a name, then taps. Class 1-9 as 3 × 3 tiles (>= 48 dp), board, school medium,
 // how she should speak, tum / aap (aap default for Class 5-9; the child may override from B3 up), optional
 // interests from a gender-neutral vetted set (no festival or religion tiles), optional comfort and
-// hard-to-hear switches that never name a condition. Creates via POST /api/children, then stores the
-// controls row (address, comfort, captions, report channel) via POST /api/parent/controls.
-// `?add=1` is the second-child edge flow (P6 → P8 only).
+// hard-to-hear switches that never name a condition. Creates via POST /api/children; the controls row
+// (address, comfort, captions, report channel) is written once at P7 from the draft.
+// `?add=1` is the second-child edge flow (P6 → P8 only), behind the parent gate (GateIfPin in ./index.tsx).
 import { useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Chip, ErrorNote, Field, Icon, TileGroup } from "../ui/index.ts";
 import { ApiError, errText, postJson, refreshMe, request } from "../app/api.ts";
+import { useGate } from "../parent/Gate.tsx";
+import { isGateError } from "../parent/api.ts";
 import { StepFrame } from "./Layout.tsx";
 import { useDraft } from "./draft.ts";
 
@@ -28,6 +30,7 @@ export function ChildStep() {
   const [sp] = useSearchParams();
   const adding = !!sp.get("add");
   const [d, set] = useDraft();
+  const { relock } = useGate();
   const c = d.child ?? {};
   const setC = (patch: Partial<NonNullable<typeof d.child>>) => set((cur) => ({ child: { ...(cur.child ?? {}), ...patch } }));
   const [busy, setBusy] = useState(false);
@@ -47,19 +50,23 @@ export function ChildStep() {
         languagePref: c.languagePref ?? (d.lang === "hi" ? "hindi" : d.lang === "en" ? "english" : "hinglish"), interests: c.interests ?? [],
       };
       // Coming back to this step edits the profile made a moment ago instead of creating a second one.
+      // Only a "not your child" refusal (deleted since) falls back to creating; a gate refusal must not make a twin.
       let child: { id: string } | null = null;
       if (d.childId) {
-        child = await request<{ child: { id: string } }>("PATCH", "/api/children", { childId: d.childId, ...body }).then((r) => r.child, () => null);
+        child = await request<{ child: { id: string } }>("PATCH", "/api/children", { childId: d.childId, ...body }).then((r) => r.child, (e) => {
+          if (isGateError(e) || !(e instanceof ApiError && (e.status === 403 || e.status === 404))) throw e;
+          return null;
+        });
       }
       if (!child) child = (await postJson<{ child: { id: string } }>("/api/children", body)).child;
-      set({ childId: child.id });
-      await postJson("/api/parent/controls", {
-        childId: child.id, address, comfortMode: !!c.comfort, captionsAlways: !!c.hardToHear, reportChannel: d.reportChannel ?? "whatsapp",
-      }).catch(() => { /* gate already set on a second child: controls are saved on the next step instead */ });
+      // P6's address / comfort / captions choices stay in the draft and are written with P7's controls (one
+      // write, after the gate), so they cannot be silently lost here.
+      set({ childId: child.id, child: { ...c, address } });
       await refreshMe();
       nav(`/start/controls${adding ? "?add=1" : ""}`);
     } catch (e2) {
       if (e2 instanceof ApiError && e2.status === 401) return nav("/start/phone?next=/start/child");
+      if (isGateError(e2)) { relock(); return; }
       setErr(errText(e2));
     } finally {
       setBusy(false);
@@ -95,11 +102,11 @@ export function ChildStep() {
           <fieldset className="fs"><legend className="label">She calls your child</legend>
             <TileGroup label="Address" columns={2} value={address ?? null} onChange={(v) => setC({ address: v as "tum" | "aap" })}
               options={[{ value: "tum", label: "tum" }, { value: "aap", label: "aap" }]} />
-            {cl >= 5 && <p className="t-meta">From Class 5 your child can change this themselves.</p>}
+            {cl >= 5 && <p className="t-note">From Class 5 your child can change this themselves.</p>}
           </fieldset>
         )}
         <fieldset className="fs"><legend className="label">Likes <span className="muted">(optional)</span></legend>
-          <p className="t-meta">She uses these in examples. Your child can tell her more in the first lesson.</p>
+          <p className="t-note">She uses these in examples. Your child can tell her more in the first lesson.</p>
           <div className="chips">
             {INTERESTS.map((x) => <Chip key={x} selected={(c.interests ?? []).includes(x)} onClick={() => toggleInterest(x)}>{x}</Chip>)}
           </div>
@@ -111,7 +118,7 @@ export function ChildStep() {
           </div>
         </fieldset>
         <ErrorNote>{err}</ErrorNote>
-        {!ready && <p className="t-meta">Add a name and a class to continue.</p>}
+        {!ready && <p className="t-note">Add a name and a class to continue.</p>}
         <Button type="submit" block disabled={!ready || busy} icon={<Icon name="chevron" />}>{busy ? "Saving" : "Continue"}</Button>
       </form>
     </StepFrame>

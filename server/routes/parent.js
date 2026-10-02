@@ -5,17 +5,21 @@
 // per-session unlock: POST /api/parent/unlock with the guardian PIN stamps auth_session.parent_unlocked_until
 // for THIS session only. Every read below goes through requireParent / requireParentChild, which checks the
 // child belongs to the guardian (requireChild) AND that this session is unlocked. The PIN itself is stored
-// only as a scrypt hash; wrong tries are counted server-side (5 → a 15 min wait, §6.2).
+// only as a scrypt hash; wrong tries are counted server-side, atomically (5 → a 15 min wait, §6.2). The client
+// locks the corner on every exit (ParentCorner unmount, pagehide, the P8 handover, the child shell mounting),
+// and the onboarding P7 PIN set never opens it, so a phone handed to the child is never left unlocked.
 //
 // Routes are exact-match (server/router.js), so ids travel in the query string: ?childId=…&skill=….
-import { createHash } from "crypto";
+import { createHash, randomBytes, scrypt, timingSafeEqual } from "crypto";
 import { q, one } from "../db.js";
 import { bad, need, send, parseCookies, HttpError } from "../http.js";
-import { hashPassword, verifyPassword, requireGuardian, requireChild } from "../auth.js";
+import { requireGuardian, requireChild } from "../auth.js";
 import { getTopic, topicSequence, SUBJECT_ORDER } from "../content/curriculum.js";
 import { kitFromFile } from "../content/kits.js";
 import { topicOf, skillById, misconceptionById } from "../content/index.js";
 import { topicStatus } from "../content/next-topic.js";
+import { AzureError, tts } from "../azure.js";
+import { allowSpeech, DEFAULT_VOICE, MAX_TTS_CHARS } from "./tts.js";
 
 export const PIN_RE = /^\d{4,6}$/;
 export const PIN_MAX_TRIES = 5;
@@ -24,6 +28,14 @@ export const PIN_LOCK_MIN = 15;
 export const UNLOCK_MIN = 10;
 /** Child quotes on parent surfaces are capped (§6.4, R23). */
 export const QUOTE_WORDS = 25;
+/** Account-password tries on the shared device (first PIN outside onboarding, PIN change, forgotten PIN) per 24 h. */
+export const PW_MAX_TRIES = 5;
+/** A forgotten-PIN reset takes effect this long after it is asked for (§6.2 interim: no off-device factor yet). */
+export const RESET_DELAY_H = 24;
+/** A first PIN may be set without the account password only on a session signed in this recently (onboarding P7). */
+export const FIRST_PIN_FRESH_MIN = 60;
+/** Per-session (or per-IP) burst limit on every secret-checking endpoint, on top of the DB counters [I]. */
+export const ATTEMPTS_PER_MIN = 8;
 
 const sha = (s) => createHash("sha256").update(s).digest("hex");
 const sessionHash = (req) => {
@@ -31,6 +43,39 @@ const sessionHash = (req) => {
   return t ? sha(t) : null;
 };
 const locked = (gate, extra = {}) => new HttpError(403, gate === "set" ? "set a guardian PIN first" : "parent corner is locked", { gate, ...extra });
+const audit = (guardianId, action, detail = {}) => q("insert into audit(guardian_id, action, detail) values ($1, $2, $3)", [guardianId, action, detail]);
+
+// Async scrypt in the same `scrypt$N$r$p$salt$hash` format as server/auth.js, so a burst of guesses does not
+// block the event loop for every other family (scryptSync is ~50 ms of CPU each).
+const scryptP = (pw, salt, len, opts) => new Promise((res, rej) => scrypt(pw, salt, len, opts, (e, k) => (e ? rej(e) : res(k))));
+export async function hashSecret(pw) {
+  const salt = randomBytes(16);
+  const h = await scryptP(String(pw), salt, 32, { N: 16384, r: 8, p: 1 });
+  return `scrypt$16384$8$1$${salt.toString("base64")}$${h.toString("base64")}`;
+}
+export async function verifySecret(pw, stored) {
+  const [alg, n, r, p, salt, hash] = String(stored || "").split("$");
+  if (alg !== "scrypt" || !salt || !hash) return false;
+  const want = Buffer.from(hash, "base64");
+  const got = await scryptP(String(pw), Buffer.from(salt, "base64"), want.length, { N: +n, r: +r, p: +p });
+  return want.length === got.length && timingSafeEqual(want, got);
+}
+
+// In-process burst limiter. The DB counters below are the real bound (they hold across replicas); this only
+// stops one session from queueing hundreds of scrypt calls in a second.
+const bursts = new Map();
+export function rateLimit(req, route, now = Date.now()) {
+  const who = sessionHash(req) || req.headers?.["x-forwarded-for"]?.split(",")[0]?.trim() || req.socket?.remoteAddress || "anon";
+  const key = `${route}:${who}`;
+  const list = (bursts.get(key) || []).filter((t) => now - t < 60_000);
+  if (list.length >= ATTEMPTS_PER_MIN) {
+    bursts.set(key, list);
+    throw new HttpError(429, "too many tries; wait a minute", { gate: "wait", lockedUntil: new Date(list[0] + 60_000).toISOString() });
+  }
+  list.push(now);
+  bursts.set(key, list);
+  if (bursts.size > 5000) for (const [k, v] of bursts) if (!v.length || now - v.at(-1) > 60_000) bursts.delete(k);
+}
 
 /** Trivially guessable PINs a child would try first. */
 export function weakPin(pin) {
@@ -39,17 +84,71 @@ export function weakPin(pin) {
   if (asc.includes(pin) || desc.includes(pin)) return true;        // 1234, 4321
   return false;
 }
+const checkPinShape = (p) => {
+  if (!PIN_RE.test(p)) throw bad("PIN must be 4 to 6 digits");
+  if (weakPin(p)) throw bad("choose a PIN that is not a simple run like 1234 or 1111");
+};
+
+/**
+ * The latest PIN event decides whether a forgotten-PIN reset is pending: a `pin_reset_pending` row not yet
+ * followed by an apply, a cancel, or a fresh set/change. Kept in audit (no schema change) because it IS the
+ * audit trail, and the pending hash never leaves the server.
+ */
+async function pendingReset(guardianId) {
+  const r = await one(`select id, detail, at from audit where guardian_id = $1
+      and action in ('pin_reset_pending','pin_reset_applied','pin_reset_cancelled','pin_set','pin_change') order by id desc limit 1`, [guardianId]);
+  return r?.detail && r.detail.pinHash && r.detail.effectiveAt ? { id: r.id, requestedAt: r.at, effectiveAt: r.detail.effectiveAt, pinHash: r.detail.pinHash } : null;
+}
+/** Apply a pending reset whose delay has passed. Idempotent (same hash). */
+async function applyDueReset(guardianId) {
+  const p = await pendingReset(guardianId);
+  if (!p || new Date(p.effectiveAt).getTime() > Date.now()) return;
+  await q("update guardian_pin set pin_hash = $2, failed = 0, locked_until = null, updated_at = now() where guardian_id = $1", [guardianId, p.pinHash]);
+  await audit(guardianId, "pin_reset_applied", { requestId: String(p.id) });
+}
 
 async function gateState(req, guardianId) {
   const pin = await one("select failed, locked_until, locked_until > now() as is_locked from guardian_pin where guardian_id = $1", [guardianId]);
   const h = sessionHash(req);
-  const s = h ? await one("select parent_unlocked_until, parent_unlocked_until > now() as unlocked from auth_session where token_hash = $1", [h]) : null;
+  const s = h ? await one(`select parent_unlocked_until, parent_unlocked_until > now() as unlocked,
+      created_at > now() - ($2 || ' minutes')::interval as fresh from auth_session where token_hash = $1`, [h, String(FIRST_PIN_FRESH_MIN)]) : null;
+  const pend = pin ? await pendingReset(guardianId) : null;
   return {
     hasPin: !!pin,
     unlocked: !!pin && !!s?.unlocked,
-    unlockedUntil: s?.unlocked ? s.parent_unlocked_until : null,
+    unlockedUntil: pin && s?.unlocked ? s.parent_unlocked_until : null,
     lockedUntil: pin?.is_locked ? pin.locked_until : null,
+    // A first PIN outside onboarding asks for the account password, so a child who reaches the gate first
+    // cannot claim the corner (onboarding P7 runs on a session signed in minutes ago).
+    firstSetNeedsPassword: !pin && !s?.fresh,
+    pendingResetAt: pend ? pend.effectiveAt : null,
   };
+}
+const stampUnlock = async (req) => {
+  const h = sessionHash(req);
+  if (h) await q(`update auth_session set parent_unlocked_until = now() + ($2 || ' minutes')::interval where token_hash = $1`, [h, String(UNLOCK_MIN)]);
+};
+
+/**
+ * One account-password try on the shared device, counted before it is checked. Insert-then-count bounds a
+ * burst: of any set of concurrent tries, the one that counts last sees every insert of the set, so at most
+ * PW_MAX_TRIES of them can see a count within the limit. A correct password resets the window.
+ */
+async function checkAccountPassword(guardianId, password, purpose) {
+  await audit(guardianId, "pw_attempt", { purpose });
+  const c = await one(`select count(*)::int as n, min(at) as first from audit where guardian_id = $1 and action = 'pw_attempt'
+      and at > now() - ($2 || ' hours')::interval
+      and id > coalesce((select max(id) from audit where guardian_id = $1 and action = 'pw_attempt_ok'), 0)`, [guardianId, String(RESET_DELAY_H)]);
+  if (c.n > PW_MAX_TRIES) {
+    const until = new Date(new Date(c.first).getTime() + RESET_DELAY_H * 3600_000).toISOString();
+    throw new HttpError(403, "too many password tries; try again later", { gate: "wait", lockedUntil: until });
+  }
+  const row = await one("select pw_hash from guardian where id = $1", [guardianId]);
+  if (!password || !(await verifySecret(String(password), row?.pw_hash))) {
+    await audit(guardianId, `${purpose}_denied`, { triesLeft: PW_MAX_TRIES - c.n });
+    throw bad("account password is incorrect", { triesLeft: PW_MAX_TRIES - c.n });
+  }
+  await audit(guardianId, "pw_attempt_ok", { purpose });
 }
 
 /** → guardian, or 403 { gate: "set" | "locked" }. */
@@ -58,6 +157,17 @@ export async function requireParent(req) {
   const st = await gateState(req, g.id);
   if (!st.hasPin) throw locked("set");
   if (!st.unlocked) throw locked("locked");
+  return g;
+}
+/**
+ * Consent-grade account actions (consent, add/edit/delete a child): open while no PIN exists (first-run
+ * setup, before P7), otherwise only inside an unlocked Parent corner. The child shares the guardian cookie,
+ * so the cookie alone is not "a grown-up is here" (§6.2, §2.3).
+ */
+export async function requireParentIfPinSet(req) {
+  const g = await requireGuardian(req);
+  const st = await gateState(req, g.id);
+  if (st.hasPin && !st.unlocked) throw locked("locked");
   return g;
 }
 /** → { guardian, child } for a child of this guardian, inside an unlocked Parent corner. */
@@ -72,83 +182,96 @@ const query = (req) => new URL(req.url || "/", "http://x").searchParams;
 
 async function getPin(req, res) {
   const g = await requireGuardian(req);
+  await applyDueReset(g.id);
   send(res, 200, await gateState(req, g.id));
 }
 
 /**
- * Set or change the PIN. First set (onboarding P7): the signed-in guardian. Change: the Parent corner must be
- * unlocked AND the account password re-entered (stand-in for the §6.2 OTP re-auth until OTP ships).
- * body: { pin, password? }
+ * Set or change the PIN. body: { pin, password? }
+ * - First set during onboarding P7 (session signed in < FIRST_PIN_FRESH_MIN ago): no password, and the corner
+ *   is NOT opened: the phone is about to be handed to the child (P8).
+ * - First set anywhere else: the account password is required (counted), and this session's corner opens.
+ * - Change: the corner must be unlocked AND the account password re-entered (stand-in for §6.2 OTP re-auth).
  */
 async function setPin(req, res, body) {
   const g = await requireGuardian(req);
+  rateLimit(req, "pin");
   const { pin } = need(body, "pin");
   const p = String(pin);
-  if (!PIN_RE.test(p)) throw bad("PIN must be 4 to 6 digits");
-  if (weakPin(p)) throw bad("choose a PIN that is not a simple run like 1234 or 1111");
-  const existing = await one("select 1 from guardian_pin where guardian_id = $1", [g.id]);
-  if (existing) {
-    const st = await gateState(req, g.id);
+  checkPinShape(p);
+  const st = await gateState(req, g.id);
+  if (st.hasPin) {
     if (!st.unlocked) throw locked("locked");
-    const row = await one("select pw_hash from guardian where id = $1", [g.id]);
-    if (!body.password || !verifyPassword(String(body.password), row.pw_hash)) throw bad("account password is incorrect");
+    await checkAccountPassword(g.id, body.password, "pin_change");
+  } else if (body.password || st.firstSetNeedsPassword) {
+    if (!body.password) throw new HttpError(403, "enter the account password to set the first PIN", { gate: "password" });
+    await checkAccountPassword(g.id, body.password, "pin_first");
   }
+  const hash = await hashSecret(p);
   await q(`insert into guardian_pin(guardian_id, pin_hash) values ($1,$2)
-    on conflict (guardian_id) do update set pin_hash = excluded.pin_hash, failed = 0, locked_until = null, updated_at = now()`, [g.id, hashPassword(p)]);
-  // Setting the PIN is a grown-up act on this session: leave the corner open for this visit.
-  const h = sessionHash(req);
-  if (h) await q(`update auth_session set parent_unlocked_until = now() + ($2 || ' minutes')::interval where token_hash = $1`, [h, String(UNLOCK_MIN)]);
-  await q("insert into audit(guardian_id, action, detail) values ($1, $2, '{}')", [g.id, existing ? "pin_change" : "pin_set"]);
+    on conflict (guardian_id) do update set pin_hash = excluded.pin_hash, failed = 0, locked_until = null, updated_at = now()`, [g.id, hash]);
+  // Only a password-verified first set opens the corner; the onboarding set hands the phone on locked.
+  if (!st.hasPin && body.password) await stampUnlock(req);
+  await audit(g.id, st.hasPin ? "pin_change" : "pin_set");
   send(res, 200, await gateState(req, g.id));
 }
 
 /**
- * Forgotten PIN: re-authenticate with the account password, then set a new PIN. INTERIM stand-in for §6.2
- * (recovery must use a factor off the shared device, or a 24 h delay with a WhatsApp notice): a browser that
- * autofills the password weakens this, which is why it is audited and why OTP recovery replaces it.
- * body: { pin, password }
+ * Forgotten PIN: re-authenticate with the account password (counted: PW_MAX_TRIES per 24 h), then the new PIN
+ * takes effect RESET_DELAY_H later, and only if nobody unlocks with the current PIN first (which cancels it).
+ * The gate screen shows the pending reset, which is the notice on the device. INTERIM for §6.2 (an off-device
+ * factor such as OTP replaces this); the WhatsApp/email notice is not wired, so the audit row is the record.
+ * The corner is never opened by a reset. body: { pin, password }
  */
 async function resetPin(req, res, body) {
   const g = await requireGuardian(req);
+  rateLimit(req, "reset");
   const { pin, password } = need(body, "pin", "password");
   const p = String(pin);
-  if (!PIN_RE.test(p)) throw bad("PIN must be 4 to 6 digits");
-  if (weakPin(p)) throw bad("choose a PIN that is not a simple run like 1234 or 1111");
-  const row = await one("select pw_hash from guardian where id = $1", [g.id]);
-  if (!verifyPassword(String(password), row.pw_hash)) {
-    await q("insert into audit(guardian_id, action, detail) values ($1, 'pin_reset_denied', '{}')", [g.id]);
-    throw bad("account password is incorrect");
-  }
-  await q(`insert into guardian_pin(guardian_id, pin_hash) values ($1,$2)
-    on conflict (guardian_id) do update set pin_hash = excluded.pin_hash, failed = 0, locked_until = null, updated_at = now()`, [g.id, hashPassword(p)]);
-  const h = sessionHash(req);
-  if (h) await q(`update auth_session set parent_unlocked_until = now() + ($2 || ' minutes')::interval where token_hash = $1`, [h, String(UNLOCK_MIN)]);
-  await q("insert into audit(guardian_id, action, detail) values ($1, 'pin_reset', '{}')", [g.id]);
+  checkPinShape(p);
+  const has = await one("select 1 from guardian_pin where guardian_id = $1", [g.id]);
+  if (!has) throw locked("set");
+  await checkAccountPassword(g.id, password, "pin_reset");
+  const effectiveAt = new Date(Date.now() + RESET_DELAY_H * 3600_000).toISOString();
+  await audit(g.id, "pin_reset_pending", { pinHash: await hashSecret(p), effectiveAt });
   send(res, 200, await gateState(req, g.id));
 }
 
 /** body: { pin } → gate state, or 403 with { gate: "locked", triesLeft } / { gate: "wait", lockedUntil }. */
 async function unlock(req, res, body) {
   const g = await requireGuardian(req);
+  rateLimit(req, "unlock");
   const { pin } = need(body, "pin");
-  const row = await one("select pin_hash, failed, locked_until, locked_until > now() as is_locked from guardian_pin where guardian_id = $1", [g.id]);
-  if (!row) throw locked("set");
-  if (row.is_locked) throw new HttpError(403, "too many tries; wait", { gate: "wait", lockedUntil: row.locked_until });
-  if (!verifyPassword(String(pin), row.pin_hash)) {
-    const failed = row.failed + 1;
-    if (failed >= PIN_MAX_TRIES) {
+  await applyDueReset(g.id);
+  // Count the try BEFORE checking it, atomically: concurrent guesses each take their own number, so a burst
+  // cannot share one "failed" read (the 5-tries bound holds under parallel requests).
+  const row = await one(`update guardian_pin set failed = failed + 1
+      where guardian_id = $1 and (locked_until is null or locked_until <= now()) returning pin_hash, failed`, [g.id]);
+  if (!row) {
+    const cur = await one("select locked_until from guardian_pin where guardian_id = $1", [g.id]);
+    if (!cur) throw locked("set");
+    throw new HttpError(403, "too many tries; wait", { gate: "wait", lockedUntil: cur.locked_until });
+  }
+  if (row.failed > PIN_MAX_TRIES) {
+    // Beyond the limit inside one burst: never checked.
+    const cur = await one("select locked_until from guardian_pin where guardian_id = $1", [g.id]);
+    throw new HttpError(403, "too many tries; wait", { gate: "wait", lockedUntil: cur?.locked_until ?? null });
+  }
+  if (!(await verifySecret(String(pin), row.pin_hash))) {
+    if (row.failed >= PIN_MAX_TRIES) {
       const r = await one(`update guardian_pin set failed = 0, locked_until = now() + ($2 || ' minutes')::interval where guardian_id = $1 returning locked_until`,
         [g.id, String(PIN_LOCK_MIN)]);
       // §6.2 says the guardian is notified; WhatsApp is not wired yet, so the audit row is the record.
-      await q("insert into audit(guardian_id, action, detail) values ($1, 'pin_lockout', $2)", [g.id, { minutes: PIN_LOCK_MIN }]);
+      await audit(g.id, "pin_lockout", { minutes: PIN_LOCK_MIN });
       throw new HttpError(403, "too many tries; wait", { gate: "wait", lockedUntil: r.locked_until });
     }
-    await q("update guardian_pin set failed = $2 where guardian_id = $1", [g.id, failed]);
-    throw new HttpError(403, "wrong PIN", { gate: "locked", triesLeft: PIN_MAX_TRIES - failed });
+    throw new HttpError(403, "wrong PIN", { gate: "locked", triesLeft: PIN_MAX_TRIES - row.failed });
   }
   await q("update guardian_pin set failed = 0, locked_until = null where guardian_id = $1", [g.id]);
-  const h = sessionHash(req);
-  if (h) await q(`update auth_session set parent_unlocked_until = now() + ($2 || ' minutes')::interval where token_hash = $1`, [h, String(UNLOCK_MIN)]);
+  // Whoever knows the current PIN is the parent: a pending forgotten-PIN reset (maybe not theirs) is cancelled.
+  const pend = await pendingReset(g.id);
+  if (pend) await audit(g.id, "pin_reset_cancelled", { requestId: String(pend.id) });
+  await stampUnlock(req);
   send(res, 200, await gateState(req, g.id));
 }
 
@@ -164,14 +287,15 @@ async function lock(req, res) {
 /**
  * skill_state row → the parent's state (§6.4 table; R11 words). `due` in server/learner/bkt.js means the
  * scheduled re-check date has passed, not that a check was missed, so it never reads as a demotion: a skill
- * with a delayed pass stays Pakka with the re-check tag, otherwise it stays Aa gaya.
+ * with a delayed pass stays Pakka with the re-check tag, otherwise it stays Aa gaya (untagged; the client shows the date).
  * @returns {{ level: 0|1|2|3, key: "unseen"|"practising"|"learned_today"|"mastered", recheck: boolean }}
  */
 export function parentState(row) {
   const s = row?.status ?? "unseen";
   if (s === "mastered") return { level: 3, key: "mastered", recheck: false };
   if (s === "learned_today") return { level: 2, key: "learned_today", recheck: false };
-  if (s === "due") return row.delayed_pass ? { level: 3, key: "mastered", recheck: true } : { level: 2, key: "learned_today", recheck: true };
+  // The re-check tag belongs to Pakka only (§6.4); a non-Pakka "due" shows its re-check date instead.
+  if (s === "due") return row.delayed_pass ? { level: 3, key: "mastered", recheck: true } : { level: 2, key: "learned_today", recheck: false };
   if (s === "introduced" || s === "practising") return { level: 1, key: "practising", recheck: false };
   return { level: 0, key: "unseen", recheck: false };
 }
@@ -249,14 +373,16 @@ async function getControls(req, res) {
 }
 
 /**
- * body: { childId, ...partial controls }. Gate: an unlocked Parent corner, EXCEPT during setup (onboarding P6-P7,
- * before any PIN exists), when the signed-in guardian may write the first row.
+ * body: { childId, ...partial controls }. Gate: an unlocked Parent corner, EXCEPT during setup (onboarding P7,
+ * before any PIN exists, on a freshly signed-in session), when the signed-in guardian may write the first row.
  */
 async function setControls(req, res, body) {
   const childId = need(body, "childId").childId;
   const g = await requireGuardian(req);
   const st = await gateState(req, g.id);
   if (st.hasPin && !st.unlocked) throw locked("locked");
+  // No PIN yet: only the onboarding session (signed in minutes ago) may write the first row.
+  if (!st.hasPin && st.firstSetNeedsPassword) throw locked("set");
   const { child } = await requireChild(req, childId);
   const row = await one("select * from child_controls where child_id = $1", [child.id]);
   const c = mergeControls(controlsOut(row, child), body);
@@ -275,6 +401,11 @@ async function setControls(req, res, body) {
 /** GET /api/parent/overview?childId= → Home's three things (§6.3) + the skill list one level down. */
 async function overview(req, res) {
   const { child } = await requireParentChild(req, query(req).get("childId"));
+  send(res, 200, await homeData(child));
+}
+
+/** Everything Parent Home shows for one child (overview, and the IS HAFTE read-aloud). */
+async function homeData(child) {
   const [skills, mis, lessons, week, controls] = await Promise.all([
     q("select * from skill_state where child_id = $1 order by last_seen desc limit 60", [child.id]),
     q(`select misconception_id, evidence_count, last_seen from misconception_state
@@ -303,7 +434,7 @@ async function overview(req, res) {
   if (!tricky) tricky = titled.find((s) => s.level === 1 && new Date(s.lastSeen).getTime() > weekAgo && s.skillId !== canNow?.skillId) ?? null;
   const last = lessons[0];
   const homeTask = last?.parent_note ? { lessonId: last.id, text: last.parent_note, at: last.started_at } : null;
-  send(res, 200, {
+  return {
     child: childOut(child),
     isHafte: { canNow, tricky },
     homeTask,
@@ -311,7 +442,7 @@ async function overview(req, res) {
     skills: titled,
     controls: controlsOut(controls, child),
     updatedAt: new Date().toISOString(),
-  });
+  };
 }
 
 /** GET /api/parent/evidence?childId=&skill= → the Kaise pata? sheet (§6.4). */
@@ -432,12 +563,88 @@ async function syllabus(req, res) {
 /** POST /api/parent/hometask { childId, lessonId, done } — "Ho gaya" / "Is hafte nahi". Logged only; never a KPI (§6.7). */
 async function homeTask(req, res, body) {
   const { childId, lessonId } = need(body, "childId", "lessonId");
+  if (!/^[0-9a-f-]{36}$/i.test(String(lessonId))) throw bad("invalid lessonId");
   const { guardian, child } = await requireParentChild(req, childId);
+  if (!(await one("select 1 from lesson where id = $1 and child_id = $2", [lessonId, child.id]))) throw new HttpError(404, "lesson not found");
   await q("insert into audit(guardian_id, action, detail) values ($1, 'home_task', $2)", [guardian.id, { childId: child.id, lessonId, done: !!body.done }]);
   send(res, 200, { ok: true });
 }
 
+// ───────────────────────────── read-aloud (PX10) ─────────────────────────────
+
+/**
+ * Spoken versions of the P5 consent rows. KEEP IN STEP with src/onboarding/Consent.tsx (same sentences):
+ * the speech route speaks only server-held or server-composed text, never text from the client, so it is
+ * not a speech proxy on the Azure grant.
+ */
+export const CONSENT_SPEECH = {
+  core_tutoring: "Lessons. She teaches your child live and keeps their answers, so you can see what they learned. Needed to use Taxila.",
+  learning_profile: "Remember learning across days. So the next lesson starts from where your child is, and she checks again on a later day. Choose: yes, remember. Or: only this session.",
+  memory: "Remember what your child says they like. Cricket, cooking, a pet's name. She uses it in examples. You can see and delete each one. Choose no, or yes.",
+  research: "Research. We do not use your child's data for research now. If that changes, we will ask you here first.",
+  reports: "Where reports go. One short weekly report with what your child can now do and one thing to try at home. Choose WhatsApp, or only in the app.",
+};
+const SPOKEN_STATE = { unseen: "not yet", practising: "practising", learned_today: "got it today", mastered: "secure" };
+
+/** IS HAFTE as one short paragraph (§6.3), from the same rows the card shows. */
+export function hafteSpeech(name, d) {
+  const { canNow, tricky } = d.isHafte;
+  if (!canNow && !tricky) return d.week.lessons ? "This week: nothing new to report yet from this week's lessons." : "This week: no lessons. Nothing to fix.";
+  const parts = ["This week."];
+  if (canNow) parts.push(`${name} can now do: ${canNow.title}. ${SPOKEN_STATE[canNow.key] ?? ""}.`);
+  if (tricky) parts.push(`Still tricky: ${tricky.title}.${tricky.misconception ? ` The mix-up: ${tricky.misconception}.` : ""}`);
+  return parts.join(" ").replace(/\s+\./g, ".");
+}
+
+const clipCache = new Map(); // fixed consent text → mp3 (the same for every family)
+
+/**
+ * GET /api/parent/speak?what=consent&row=… | what=hafte&childId=… | what=lesson&childId=…&lessonId=… → audio/mpeg.
+ * Consent rows: any signed-in guardian (onboarding P5, before a PIN). Child data: inside an unlocked corner.
+ */
+async function speakCard(req, res) {
+  const sp = query(req);
+  const what = sp.get("what");
+  let guardianId, text, cache = false;
+  if (what === "consent") {
+    guardianId = (await requireGuardian(req)).id;
+    text = CONSENT_SPEECH[sp.get("row")];
+    if (!text) throw bad("unknown consent row");
+    cache = true;
+  } else if (what === "hafte") {
+    const { guardian, child } = await requireParentChild(req, sp.get("childId"));
+    guardianId = guardian.id;
+    text = hafteSpeech(child.first_name, await homeData(child));
+  } else if (what === "lesson") {
+    const { guardian, child } = await requireParentChild(req, sp.get("childId"));
+    guardianId = guardian.id;
+    const lid = sp.get("lessonId");
+    if (!lid || !/^[0-9a-f-]{36}$/i.test(lid)) throw bad("invalid lessonId");
+    const l = await one("select topic_id, parent_note, ended_at from lesson where id = $1 and child_id = $2", [lid, child.id]);
+    if (!l) throw new HttpError(404, "lesson not found");
+    const t = getTopic(l.topic_id);
+    text = `${t?.title ?? "Lesson"}. ${l.parent_note || (l.ended_at ? "The summary for this lesson is not ready." : "This lesson did not finish, so there is no summary.")}`;
+  } else throw bad("unknown what");
+  if (!allowSpeech(guardianId)) throw new HttpError(429, "too many speech requests");
+  let audio = cache ? clipCache.get(text) : null;
+  if (!audio) {
+    try {
+      audio = await tts(text.slice(0, MAX_TTS_CHARS), DEFAULT_VOICE);
+    } catch (e) {
+      if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
+      throw e;
+    }
+    if (cache) clipCache.set(text, audio);
+  }
+  res.statusCode = 200;
+  res.setHeader("content-type", "audio/mpeg");
+  res.setHeader("content-length", String(audio.length));
+  res.setHeader("cache-control", cache ? "private, max-age=86400" : "no-store");
+  res.end(audio);
+}
+
 export const routes = {
+  "GET /api/parent/speak": speakCard,
   "GET /api/parent/pin": getPin,
   "POST /api/parent/pin": setPin,
   "POST /api/parent/pin/reset": resetPin,

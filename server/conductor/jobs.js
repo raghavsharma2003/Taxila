@@ -29,14 +29,15 @@ export async function enqueueJob(childId, job, { correlationId = "direct", causa
 
 /**
  * Claim up to `limit` ready jobs on a lane: queued/retry whose run_after passed, or running whose lease expired
- * (the previous worker died). attempts + 1 is the new fencing token. A not_before_lesson_end job waits while its
+ * (the previous worker died) with attempts left. attempts + 1 is the new fencing token. A not_before_lesson_end job waits while its
  * child is in a lesson. `kinds` / `childIds` narrow the claim (tests; a worker serving only some kinds).
  */
 export async function claimJobs(lane, { limit = 4, worker = "worker", kinds = null, childIds = null } = {}) {
+  await sweepPoison(lane, { kinds, childIds });
   return q(`with c as (
       select j.id from job j
        where j.lane = $1
-         and ((j.status in ('queued','retry') and j.run_after <= now()) or (j.status = 'running' and j.lease_until < now()))
+         and ((j.status in ('queued','retry') and j.run_after <= now()) or (j.status = 'running' and j.lease_until < now() and j.attempts < j.max_attempts))
          and ($4::text[] is null or j.kind = any($4))
          and ($5::uuid[] is null or j.child_id = any($5))
          and (not j.not_before_lesson_end or j.child_id is null
@@ -47,6 +48,27 @@ export async function claimJobs(lane, { limit = 4, worker = "worker", kinds = nu
            lease_until = now() + make_interval(secs => j.lease_sec)
       from c where j.id = c.id
     returning j.*`, [lane, limit, worker, kinds, childIds]);
+}
+
+/**
+ * A running job whose lease expired on its LAST attempt killed its worker (OOM, segfault: complete_job never ran).
+ * It is never re-claimed (a poison job would loop across restarts forever): complete_job(final) marks it dead and
+ * ingests job.failed{final} atomically, exactly like a handler's final failure. One row per statement, so this is
+ * never a multi-child_seq writer (X29: fire_wakeups stays the only one).
+ * @returns {Promise<number>} jobs declared dead
+ */
+export async function sweepPoison(lane, { kinds = null, childIds = null, max = 20 } = {}) {
+  let n = 0;
+  for (; n < max; n++) {
+    const r = await one(`select complete_job(j.id, j.attempts, false, null, 'poison: lease expired on the final attempt', true) as ok
+        from (select id, attempts from job
+               where lane = $1 and status = 'running' and lease_until < now() and attempts >= max_attempts
+                 and ($2::text[] is null or kind = any($2)) and ($3::uuid[] is null or child_id = any($3))
+               order by id for update skip locked limit 1) j`, [lane, kinds, childIds]);
+    if (!r) break;
+    console.error(`[conductor] poison job declared dead on lane ${lane}`);
+  }
+  return n;
 }
 
 /** Extend the lease (every lease_sec/3), fenced by attempt. → { alive, cancelRequested }. */

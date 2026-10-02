@@ -1,9 +1,16 @@
 // Parent-corner API (server/routes/parent.js). Every read is gated server-side (requireParentChild); a 403
 // carrying { gate } means the corner re-locked (unlock expired) and the gate must show again.
 import { ApiError, getJson, postJson } from "../app/api.ts";
+export { lockBeacon } from "../app/api.ts";
 import type { LedgerState } from "../ui/index.ts";
 
-export interface GateState { hasPin: boolean; unlocked: boolean; unlockedUntil: string | null; lockedUntil: string | null }
+export interface GateState {
+  hasPin: boolean; unlocked: boolean; unlockedUntil: string | null; lockedUntil: string | null;
+  /** No PIN yet and this session is not the fresh onboarding one: the first PIN needs the account password. */
+  firstSetNeedsPassword?: boolean;
+  /** A forgotten-PIN reset is waiting and takes effect at this time (cancelled by an unlock with the current PIN). */
+  pendingResetAt?: string | null;
+}
 export interface SkillLine extends LedgerState { skillId: string; title: string; nextReview: string | null; lastSeen?: string; misconception?: string | null }
 export interface ControlsT {
   dailyMinutes: number; hoursStart: string; hoursEnd: string; captionsAlways: boolean; comfortMode: boolean;
@@ -47,6 +54,9 @@ export interface SyllabusOut {
 
 export const isGateError = (e: unknown): e is ApiError =>
   e instanceof ApiError && e.status === 403 && !!(e.body as { gate?: string } | null)?.gate;
+
+/** Read-aloud (PX10): server-composed speech of a parent card; the client never sends the text. */
+export const speakUrl = (o: Record<string, string>) => `/api/parent/speak?${new URLSearchParams(o).toString()}`;
 
 const qs = (o: Record<string, string>) => new URLSearchParams(o).toString();
 export const parentApi = {

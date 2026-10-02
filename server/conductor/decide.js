@@ -3,7 +3,7 @@
 // never mutated. Handlers propose candidate commands; GUARDS (authority order) drop or narrow them; the
 // surviving plan.adopt is what state.plan records. step.js gives decide one recorded `now` per batch.
 import { JOB_KINDS, PLAN, WAKE, authorityClass } from "./config.js";
-import { addDays, daysBetween, dayKindLookup, jitterSec, learningDay, localParts, zonedToUtc } from "./clock.js";
+import { addDays, dayMin, daysBetween, dayKindLookup, jitterSec, learningDay, localParts, zonedToUtc } from "./clock.js";
 import { runGuards, summarize } from "./guards.js";
 import { buildPlannerInputs, inputsHash, planDay } from "./planner.js";
 import { validatePlan } from "./validate.js";
@@ -18,9 +18,10 @@ export function lowersLimit(state, ev) {
   if (ev.type !== "parent.setting_changed") return false;
   const { key, value } = ev;
   if (key === "dailyMinutes") return Number(value) < state.limits.dailyMinutes;
-  if (key === "hoursEnd") return String(value) < state.limits.allowedTo;
-  if (key === "hoursStart") return String(value) > state.limits.allowedFrom;
-  if (key === "bedtime") return String(value) < state.routine.bedtime;
+  // learning-day minutes, not string order: a bedtime moved from 23:30 to 00:15 is LATER, not earlier
+  if (key === "hoursEnd") return dayMin(String(value)) < dayMin(state.limits.allowedTo);
+  if (key === "hoursStart") return dayMin(String(value)) > dayMin(state.limits.allowedFrom);
+  if (key === "bedtime") return dayMin(String(value)) < dayMin(state.routine.bedtime);
   if (key === "restDays") return Array.isArray(value) && value.some((d) => !(state.limits.restDays || []).includes(d));
   return false;
 }
@@ -100,7 +101,7 @@ function replan(s, reason, pctx, H) {
   const hash = inputsHash(inputs);
   if (s.plan?.day === s.learningDay && s.plan.inputsHash === hash) { H.rule(`plan_unchanged:${reason}`); return; }
   let { plan, firings } = planDay(inputs);
-  const violations = validatePlan(plan, inputs, { childId: s.childId });
+  const violations = validatePlan(plan, inputs, { childId: s.childId, now: pctx.now, tz: s.tz });
   if (violations.length) {
     for (const v of violations) H.audit(`plan.rejected:${v.rule}`);
     // fall back to a plan that cannot be wrong: the frozen slots only
@@ -221,7 +222,7 @@ const HANDLERS = {
     const lowers = lowersLimit(s, ev);
     const v = ev.value;
     switch (ev.key) {
-      case "dailyMinutes": s.limits.dailyMinutes = Math.max(10, Math.min(120, Math.round(Number(v)))); break;
+      case "dailyMinutes": s.limits.dailyMinutes = v; break;           // int 10-120, refused at ingest otherwise (events.SETTING_VALUE)
       case "hoursStart": s.limits.allowedFrom = String(v); break;
       case "hoursEnd": s.limits.allowedTo = String(v); break;
       case "restDays": s.limits.restDays = [...new Set(v)].sort(); break;
@@ -314,6 +315,13 @@ const HANDLERS = {
     s.modeSince = t.iso;
     H.replanNow("replan:safety_cleared");
   },
+  "ops.fail_safe_cleared"(s, ev, H) {
+    // the ONLY way out of the sticky fail-safe (§3.6): an operator replayed and fixed the poison, then cleared it
+    if (!s.failSafe) return H.rule("fail_safe_not_set");
+    delete s.failSafe;
+    H.audit(`fail_safe_cleared:${ev.ticket}`);
+    H.replanNow("replan:fail_safe_cleared");
+  },
   "budget.threshold"(s, ev, H, t) {
     if (ev.scope === "global" || ev.pct < 80) return;
     if (!s.budget.low) s.budget = { low: true, since: t.today };
@@ -321,26 +329,41 @@ const HANDLERS = {
   },
 };
 
+const HHMM_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+const minTimeStr = (a, b) => (dayMin(a) <= dayMin(b) ? a : b);   // learning-day order (00:30 is after 21:30)
+
 /**
  * §3.6: an authority event whose handler throws three times gets the minimal, dependency-free handler, and the
- * actor stays in that conservative state (s.failSafe) until an operator replays.
+ * actor stays in that conservative state (s.failSafe) until an operator clears it (ops.fail_safe_cleared): while
+ * it is set, the failSafe guard narrows every plan.adopt to rest and drops every enqueue (guards.js). Ops is paged
+ * (console.error → App Insights), like a quarantine. The fail-safe only ever makes limits stricter.
  */
 export function decideOrFailSafe(state, ev, ctx) {
   let err;
   for (let i = 0; i < 3; i++) {
     try { return decide(state, ev, ctx); } catch (e) { err = e; }
   }
+  const error = String(err?.message || err).slice(0, 200);
+  console.error(`[conductor] FAIL-SAFE ${state.childId} type=${ev.type}: ${error}`);
   const s = structuredClone(state);
   const cmds = [{ kind: "audit", code: `fail_safe:${ev.type}` }];
   if (ev.type === "safety.incident") { s.mode = "safety_hold"; s.hold = { incidentId: ev.incidentId, level: ev.severity }; s.modeSince = ctx.now.toISOString(); }
   else if (ev.type === "parent.consent_changed" && !ev.granted) {
     s.consent = { ...s.consent, [ev.purpose]: false };
     for (const [idem, j] of Object.entries(s.pending?.jobs || {})) if (JOB_KINDS[j.kind]?.purpose === ev.purpose) cmds.push({ kind: "cancel", jobKind: j.kind, idemKey: idem, reason: "fail_safe" });
-  } else if (ev.type === "parent.pause" && s.mode !== "safety_hold") { s.mode = "paused"; s.pauseUntil = ev.until; }
-  else if (ev.type === "parent.setting_changed" && ev.key === "dailyMinutes") s.limits = { ...s.limits, dailyMinutes: Number(ev.value) };
-  else if (ev.type === "parent.setting_changed" && ev.key === "hoursEnd") s.limits = { ...s.limits, allowedTo: String(ev.value) };
-  else if (ev.type === "parent.setting_changed" && ev.key === "bedtime") s.routine = { ...s.routine, bedtime: String(ev.value) };
-  s.failSafe = { type: ev.type, error: String(err?.message || err).slice(0, 200) };
+  } else if (ev.type === "parent.pause" && s.mode !== "safety_hold") {
+    const until = Date.parse(ev.until);
+    if (Number.isFinite(until) && until > ctx.now.getTime()) {
+      s.mode = "paused"; s.pauseUntil = new Date(until).toISOString(); s.modeSince = ctx.now.toISOString();
+      cmds.push({ kind: "wakeup", at: s.pauseUntil, reason: "pause_end", dedupe: `pause_end:${ev.until}` });   // the pause still ends
+    }
+  } else if (ev.type === "parent.setting_changed" && ev.key === "dailyMinutes") {
+    const n = Math.round(Number(ev.value));
+    // validated, clamped, and never raised by the fail-safe (a non-number falls to the floor)
+    s.limits = { ...s.limits, dailyMinutes: Number.isFinite(n) ? Math.min(s.limits.dailyMinutes, Math.max(10, Math.min(120, n))) : 10 };
+  } else if (ev.type === "parent.setting_changed" && ev.key === "hoursEnd" && HHMM_RE.test(String(ev.value))) s.limits = { ...s.limits, allowedTo: minTimeStr(s.limits.allowedTo, String(ev.value)) };
+  else if (ev.type === "parent.setting_changed" && ev.key === "bedtime" && HHMM_RE.test(String(ev.value))) s.routine = { ...s.routine, bedtime: minTimeStr(s.routine.bedtime, String(ev.value)) };
+  s.failSafe = { type: ev.type, error };
   return { state: s, commands: cmds, rulesFired: ["fail_safe"], blocked: [], viewRead: ctx.view.recorded() };
 }
 

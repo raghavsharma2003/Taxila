@@ -20,7 +20,17 @@ export function HoldButton({ ms = 1200, onConfirm, children, variant = "primary"
     <button type="button" className={["btn", `btn-${variant}`, "hold", block && "btn-block"].filter(Boolean).join(" ")}
       data-holding={holding} style={{ ["--hold-ms" as string]: `${ms}ms` }}
       aria-describedby={undefined}
-      onPointerDown={(e) => { e.currentTarget.setPointerCapture?.(e.pointerId); start(); }}
+      onPointerDown={(e) => {
+        // No pointer capture: touch pointers are implicitly captured, which would hide a slide-off. Release it,
+        // and also test the position on every move, so sliding off cancels on every input type (2.5.2).
+        try { if (e.currentTarget.hasPointerCapture?.(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId); } catch { /* not captured */ }
+        start();
+      }}
+      onPointerMove={(e) => {
+        if (!timer.current) return;
+        const r = e.currentTarget.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) cancel();
+      }}
       onPointerUp={cancel} onPointerCancel={cancel} onPointerLeave={cancel}
       onKeyDown={(e) => { if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); start(); } }}
       onKeyUp={(e) => { if (e.key === " " || e.key === "Enter") cancel(); }}

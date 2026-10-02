@@ -896,8 +896,8 @@
           "skillId": "c7-hindi-ch02-t01-s1",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Put in order: (क) सबने राजा को सच बता दिया (ख) एक दिन राजा का घोड़ा खो गया (ग) तीनों ने खुरों के निशान ध्यान से देखे (घ) राजा ने तीन चतुर दोस्तों को बुलाया",
-          "prompt_hi": "इन घटनाओं को सही क्रम में लगाओ — (क) सबने राजा को सच बता दिया (ख) एक दिन राजा का घोड़ा खो गया (ग) तीनों ने खुरों के निशान ध्यान से देखे (घ) राजा ने तीन चतुर दोस्तों को बुलाया",
+          "prompt_en": "This is a short tale of my own, like the one in the book. Put its events in order: (क) तीनों ने राजा को बताया कि घोड़ा किस ओर गया (ख) एक दिन राजा का घोड़ा खो गया (ग) तीनों ने खुरों के निशान ध्यान से देखे (घ) राजा ने तीन चतुर दोस्तों को बुलाया",
+          "prompt_hi": "यह किताब वाली कहानी नहीं, उसी जैसी मेरी एक छोटी कथा है। इसकी घटनाओं को सही क्रम में लगाओ — (क) तीनों ने राजा को बताया कि घोड़ा किस ओर गया (ख) एक दिन राजा का घोड़ा खो गया (ग) तीनों ने खुरों के निशान ध्यान से देखे (घ) राजा ने तीन चतुर दोस्तों को बुलाया",
           "answer": "ख, घ, ग, क",
           "acceptable": [
             "ख घ ग क",
@@ -914,7 +914,7 @@
           "verified": {
             "solverAnswer": "ख, घ, ग, क",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Sequence is self-contained and correct. Text-dependence caveat: the 'king's lost horse' framing was not checked against the chapter text of तीन बुद्धिमान; if the lesson's lost animal or cast differs, reword so it does not contradict the child's book."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): text-dependence resolved by framing, not by guessing the chapter: the item now says it is an original parallel tale ('किताब वाली कहानी नहीं, उसी जैसी मेरी एक छोटी कथा'), so its lost horse and cast cannot contradict तीन बुद्धिमान whatever the book's details are. (क) reworded to 'तीनों ने राजा को बताया कि घोड़ा किस ओर गया'. Sequence self-contained; key unchanged."
           }
         },
         {
@@ -1413,7 +1413,7 @@
           "skillId": "c7-hindi-ch03-t01-s2",
           "kind": "contrast",
           "difficulty": 3,
-          "prompt_en": "Complete with ‘जबकि’: 'फूल सबको सुगंध देता है, ___ काँटा…'",
+          "prompt_en": "Complete the sentence using ‘जबकि’: 'फूल सबको सुगंध देता है, जबकि काँटा…'",
           "prompt_hi": "‘जबकि’ से वाक्य पूरा करो — ‘फूल सबको सुगंध देता है, जबकि काँटा…’",
           "answer": "फूल सबको सुगंध देता है, जबकि काँटा सबको चुभकर दुख देता है।",
           "acceptable": [
@@ -1431,7 +1431,7 @@
           "verified": {
             "solverAnswer": "…जबकि काँटा सबको चुभता है/दुख देता है।",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. FIDELITY: prompt_en puts the blank where जबकि goes ('…देता है, ___ काँटा…') but prompt_hi already supplies जबकि and asks to complete the clause. Align prompt_en: \"Complete: 'फूल सबको सुगंध देता है, जबकि काँटा…'\"."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): prompt_en now matches prompt_hi: जबकि is supplied and the child completes the clause."
           }
         },
         {
@@ -1748,8 +1748,8 @@
             "Says the two words sound 'bilkul same'"
           ],
           "diagnostic": {
-            "prompt_en": "Which word means a flood?",
-            "prompt_hi": "‘बाढ़’ (flood) का सही रूप कौन-सा है?",
+            "prompt_en": "Which word is correct for 'flood' — when a river's water fills the village?",
+            "prompt_hi": "flood के लिए सही शब्द कौन-सा है — जब नदी का पानी गाँव में भर जाए?",
             "options": [
               {
                 "text": "बाढ़",
@@ -2323,8 +2323,8 @@
           "skillId": "c7-hindi-ch05-t01-s1",
           "kind": "retrieval",
           "difficulty": 2,
-          "prompt_en": "What did being ill actually turn out to be like?",
-          "prompt_hi": "बीमार होने पर असल में कैसा अनुभव हुआ?",
+          "prompt_en": "Once everyone at home treated the narrator as ill, what was it actually like for him?",
+          "prompt_hi": "जब घर में सब कथावाचक को बीमार मानकर उसकी देखभाल करने लगे, तब उसे असल में कैसा अनुभव हुआ?",
           "answer": "बिल्कुल अच्छा नहीं — कड़वी दवा, परहेज़ का फीका खाना, बिस्तर पर पड़े रहना और खेल-दोस्तों से दूर रहना",
           "acceptable": [
             "कड़वी दवा",
@@ -2345,7 +2345,7 @@
           "verified": {
             "solverAnswer": "बुरा: कड़वी दवा, परहेज़ का फीका खाना, बिस्तर पर पड़े रहना, खेल-दोस्त छूटे",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Text-dependence caveat: whether the narrator falls ill for real or feigns it was not checked against Swayam Prakash's story; i07's hint 1 ('once everyone believed he was ill') sits slightly against i08's 'वह सच में बीमार पड़ गया'. Confirm against the chapter."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): text-dependence resolved by wording: i02, i08 and i13 no longer assert whether the narrator really fell ill or only had to be believed ill ('सब उसे बीमार मानकर देखभाल करने लगे' holds either way), which also makes them consistent with i07 hint 1. Key unchanged."
           }
         },
         {
@@ -2494,8 +2494,8 @@
           "skillId": "c7-hindi-ch05-t01-s1",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Put in order: (क) उसने तय किया कि अब कभी बीमार नहीं होना (ख) उसे लगा, बीमार होकर मज़े होंगे (ग) उसे कड़वी दवा और फीका खाना मिला (घ) वह सच में बीमार पड़ गया",
-          "prompt_hi": "सही क्रम लगाओ — (क) उसने तय किया कि अब कभी बीमार नहीं होना (ख) उसे लगा, बीमार होकर मज़े होंगे (ग) उसे कड़वी दवा और फीका खाना मिला (घ) वह सच में बीमार पड़ गया",
+          "prompt_en": "Put in order: (क) उसने तय किया कि अब कभी बीमार नहीं होना (ख) उसे लगा, बीमार होकर मज़े होंगे (ग) उसे कड़वी दवा और फीका खाना मिला (घ) घर में सब उसे बीमार मानकर उसकी देखभाल करने लगे",
+          "prompt_hi": "सही क्रम लगाओ — (क) उसने तय किया कि अब कभी बीमार नहीं होना (ख) उसे लगा, बीमार होकर मज़े होंगे (ग) उसे कड़वी दवा और फीका खाना मिला (घ) घर में सब उसे बीमार मानकर उसकी देखभाल करने लगे",
           "answer": "ख, घ, ग, क",
           "acceptable": [
             "ख घ ग क",
@@ -2506,13 +2506,13 @@
           "hints": [
             "What comes first — the wish or the illness?",
             "Then what happens when he is ill?",
-            "Wish → ill → ___ → decision.",
+            "Wish → treated as ill → ___ → decision.",
             "ख, घ, ग, क."
           ],
           "verified": {
             "solverAnswer": "ख, घ, ग, क",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Hindi (spelling, matras, grammar) correct; class-7 appropriate; original text, not NCERT copy; prompt_en a faithful gloss; hints graded with no early leak."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): (घ) 'वह सच में बीमार पड़ गया' → 'घर में सब उसे बीमार मानकर उसकी देखभाल करने लगे', true whether the illness was real or feigned. Order ख, घ, ग, क unchanged."
           }
         },
         {
@@ -2575,8 +2575,8 @@
           "skillId": "c7-hindi-ch05-t01-s2",
           "kind": "far_transfer",
           "difficulty": 4,
-          "prompt_en": "Listen: 'सोचा था छुट्टी है, सोऊँगा जी भर, पर माँ ने थमा दिया झाड़ू का बंडल हाथ पर!' What feeling do these lines carry, and what idea do they share with the story?",
-          "prompt_hi": "ये पंक्तियाँ सुनो — ‘सोचा था छुट्टी है, सोऊँगा जी भर, पर माँ ने थमा दिया झाड़ू का बंडल हाथ पर!’ इनमें कैसा भाव है, और कहानी से कौन-सी बात मिलती है?",
+          "prompt_en": "Listen: 'सोचा था छुट्टी है, सोऊँगा जी भर, पर माँ ने हाथ में थमा दी झाड़ू — ‘चलो, साफ़ करो घर!’' What feeling do these lines carry, and what idea do they share with the story?",
+          "prompt_hi": "ये पंक्तियाँ सुनो — ‘सोचा था छुट्टी है, सोऊँगा जी भर, पर माँ ने हाथ में थमा दी झाड़ू — ‘चलो, साफ़ करो घर!’’ इनमें कैसा भाव है, और कहानी से कौन-सी बात मिलती है?",
           "answer": "हल्की हँसी और निराशा का भाव; कहानी की तरह — सोची हुई मौज कुछ और निकली, उम्मीद और असलियत में फ़र्क़",
           "acceptable": [
             "निराशा",
@@ -2595,7 +2595,7 @@
           "verified": {
             "solverAnswer": "हास्य भरी निराशा; सोचा कुछ, हुआ कुछ — कहानी जैसा",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. HINDI: the original couplet's 'झाड़ू का बंडल हाथ पर' is unidiomatic — one hands a broom 'हाथ में', and 'झाड़ू का बंडल' is odd. Suggest e.g. 'पर माँ ने पकड़ा दी झाड़ू, बोलीं — चलो, लगाओ घर!' or keep the rhyme with 'हाथ में थमा दी झाड़ू, बोलीं — साफ़ करो घर'. Key itself fine."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): couplet rewritten idiomatically: 'माँ ने हाथ में थमा दी झाड़ू — चलो, साफ़ करो घर!' (रोज़मर्रा: हाथ में थमाना; झाड़ू f. → थमा दी; rhyme भर/घर kept). Key unchanged."
           }
         },
         {
@@ -2632,7 +2632,7 @@
           "difficulty": 4,
           "prompt_en": "Tell this story to a younger child in 4-5 sentences, ending with what the narrator learnt.",
           "prompt_hi": "इस कहानी को किसी छोटे बच्चे को 4-5 वाक्यों में सुनाओ और अंत में बताओ कि कथावाचक ने क्या सीखा।",
-          "answer": "एक बच्चा मज़े और छुट्टी के लिए बीमार होना चाहता था; वह बीमार पड़ा; उसे कड़वी दवा, फीका खाना और बिस्तर मिला, खेल छूट गए; तब उसने तय किया — नहीं होना बीमार; सीख: सेहत सबसे बड़ा सुख है",
+          "answer": "एक बच्चा मज़े और छुट्टी के लिए बीमार होना चाहता था; जब सब उसे बीमार मानकर देखभाल करने लगे, तो उसे कड़वी दवा, फीका खाना और बिस्तर मिला, खेल छूट गए; तब उसने तय किया — नहीं होना बीमार; सीख: सेहत सबसे बड़ा सुख है",
           "acceptable": [
             "नहीं होना बीमार",
             "सेहत अच्छी रखो",
@@ -2650,7 +2650,7 @@
           "verified": {
             "solverAnswer": "इच्छा → बीमारी → तकलीफ़ → 'नहीं होना बीमार'; सेहत ज़रूरी",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Hindi (spelling, matras, grammar) correct; class-7 appropriate; original text, not NCERT copy; prompt_en a faithful gloss; hints graded with no early leak."
+            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Hindi (spelling, matras, grammar) correct; class-7 appropriate; original text, not NCERT copy; prompt_en a faithful gloss; hints graded with no early leak. Fix pass 2026-10-02 (c7-hindi checker flags): key no longer asserts 'वह बीमार पड़ा' (real vs feigned illness unconfirmed against the chapter)."
           }
         }
       ],
@@ -2766,7 +2766,7 @@
           "belief": "Believes old dialect forms like पाछे, गुन, कहै are spelling mistakes that should be corrected",
           "signs": [
             "Says 'yahan galat likha hai, peechhe hona chahiye'",
-            "Reads पाछे as पीछे while reciting, breaking the rhythm"
+            "Reads पाछे as पीछे while reciting, swapping the poet's words for today's forms"
           ],
           "diagnostic": {
             "prompt_en": "In an old poem the word ‘पाछे’ appears. What is it?",
@@ -2791,7 +2791,7 @@
           },
           "remediation": {
             "representation": "Then-and-now word pairs on two shelves: 'पुरानी बोली' (पाछे, गुन, कहै, सदा) and 'आज की हिंदी' (पीछे, गुण, कहे, हमेशा), joined by arrows",
-            "moveShape": "Point out that nani's way of speaking also differs and is not 'wrong'; let the child match four pairs, then recite keeping the old forms for the rhythm"
+            "moveShape": "Point out that nani's way of speaking also differs and is not 'wrong'; let the child match four pairs, then recite keeping the old forms exactly as the poet wrote them"
           }
         },
         {
@@ -2978,27 +2978,28 @@
           "difficulty": 3,
           "prompt_en": "A student 'corrected' an old poem by changing ‘गुन’ to ‘गुण’ and ‘पाछे’ to ‘पीछे’ everywhere. What went wrong?",
           "prompt_hi": "एक विद्यार्थी ने पुरानी कविता ‘सुधारने’ के लिए हर जगह ‘गुन’ को ‘गुण’ और ‘पाछे’ को ‘पीछे’ कर दिया। क्या गड़बड़ हुई?",
-          "answer": "ये ग़लतियाँ नहीं थीं, कवि की लोकभाषा के रूप थे; बदलने से कविता की लय, तुक और मूल रूप बिगड़ गया",
+          "answer": "ये ग़लतियाँ नहीं थीं, कवि के जान-बूझकर लिखे लोकभाषा (अवधी/ब्रज) के रूप थे; इन्हें बदलने से कविता की मूल भाषा और कवि के अपने शब्द बदल गए",
           "acceptable": [
             "ये ग़लती नहीं थी",
-            "लय बिगड़ गई",
+            "लोकभाषा के रूप थे",
             "पुरानी भाषा है",
+            "मूल भाषा बदल गई",
             "galti nahi thi",
-            "lay bigad gayi",
             "purani bhasha",
-            "rhythm broke"
+            "mool bhasha badal gayi",
+            "they were dialect words"
           ],
           "hints": [
             "Were they really mistakes?",
-            "What happens to the beat when you change sounds?",
-            "They were dialect forms; changing them breaks the ___.",
-            "They were deliberate old forms; changing them spoils the rhythm and the original."
+            "Did old poets write in today's school Hindi?",
+            "They were dialect forms; changing them alters the poet's ___.",
+            "They were deliberate old dialect forms; changing them alters the original language of the poem."
           ],
           "targetsMisconception": "c7-hindi-ch06-t01-mc-dialect-wrong",
           "verified": {
-            "solverAnswer": "ये ग़लतियाँ नहीं, कवि के जान-बूझकर लिखे लोकभाषा रूप थे; मूल कविता का रूप-स्वाद बिगड़ा",
+            "solverAnswer": "ये ग़लतियाँ नहीं, कवि के जान-बूझकर लिखे लोकभाषा रूप थे; बदलने से मूल भाषा बदली",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. ACCURACY: the key and hint 3 say changing गुन→गुण and पाछे→पीछे 'breaks the rhythm' (acceptable 'लय बिगड़ गई'). These swaps keep the same mātrā count (गु-न = गु-ण = 1+1; पा-छे = पी-छे = 2+2), so the meter does not change. The true point is that they are the poet's deliberate dialect (Awadhi/Braj) forms and 'correcting' them changes the original language and sound. Suggest dropping the rhythm claim from answer/hint 3/acceptable, or using an example that really changes the meter."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): dropped the false rhythm claim (गुन→गुण and पाछे→पीछे keep the same mātrā count, 1+1 and 2+2, so the meter is unchanged) from answer, hint 3 and acceptable; key now says they are the poet's deliberate dialect forms and 'correcting' them changes the original language."
           }
         },
         {
@@ -3020,14 +3021,14 @@
           "hints": [
             "Look at the word कविराय.",
             "कवि + राय = ?",
-            "A poet famous for ___ (lessons) in kundaliyas.",
+            "He wrote ___ (practical lessons) in kundaliya form.",
             "A poet known for kundaliyas of practical wisdom."
           ],
           "targetsMisconception": "c7-hindi-ch06-t01-mc-giridhar-krishna",
           "verified": {
             "solverAnswer": "नीति की कुंडलियों के लिए प्रसिद्ध कवि",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Hint rung 3 ('A poet famous for…') states 'poet', which is in acceptable — revealsAnswer trips, so the loader will swap it for a default rung. Rephrase rung 3 as a blank that does not name 'poet'."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): rung 3 no longer names 'poet'."
           }
         },
         {
@@ -3100,19 +3101,18 @@
             "sahara",
             "bachav",
             "gehrai napna",
-            "support",
-            "defence"
+            "support"
           ],
           "hints": [
             "Imagine walking through a forest and a stream.",
             "What could a stick do for safety and for tired legs?",
-            "Support while ___, defence from ___.",
+            "Lean on it when ___; wave it at ___.",
             "Support, defence from animals, measuring water depth, carrying a bundle."
           ],
           "verified": {
-            "solverAnswer": "नदी-नाले की गहराई नापना/पार करना; कुत्ते-जानवर से बचाव (सहारा भी)",
+            "solverAnswer": "नदी-नाले की गहराई नापना; कुत्ते-जानवर से बचाव (सहारा भी)",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Pre-reading predict for Giridhar's famous लाठी kundaliya — good, not copied text. Hint rung 3 ('Support while ___') names 'support', which is in acceptable — revealsAnswer trips; reword."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): rung 3 no longer names 'support'. Acceptable trimmed to the loader cap of 8 so no form is dropped silently."
           }
         },
         {
@@ -3121,13 +3121,13 @@
           "kind": "far_transfer",
           "difficulty": 4,
           "prompt_en": "Write a two-line नीति saying of your own about phones or screens, in simple Hindi, that starts and ends with the same word.",
-          "prompt_hi": "फ़ोन या स्क्रीन पर अपनी ओर से दो पंक्तियों की एक नीति-बात सरल हिंदी में बनाओ, जो एक ही शब्द से शुरू और उसी पर ख़त्म हो।",
-          "answer": "कोई भी दो पंक्तियाँ जो एक सीख दें और एक ही शब्द से शुरू-ख़त्म हों; जैसे — ‘फ़ोन चलाओ सोच के, समय न जाए खोय; आँख, नींद सब ठीक रहें, जब कम चलाओ फ़ोन।’",
+          "prompt_hi": "फ़ोन या स्क्रीन के बारे में अपनी ओर से दो पंक्तियों की एक नीति-बात सरल हिंदी में बनाओ, जो एक ही शब्द से शुरू और उसी पर ख़त्म हो।",
+          "answer": "कोई भी दो पंक्तियाँ जो फ़ोन/स्क्रीन के बारे में एक साफ़ सीख दें और एक ही शब्द से शुरू होकर उसी पर ख़त्म हों; जैसे — ‘फ़ोन चलाओ सोच के, समय न जाए खोय; आँख, नींद सब ठीक रहें, जब कम चलाओ फ़ोन।’",
           "acceptable": [
-            "फ़ोन से शुरू फ़ोन पर ख़त्म",
-            "समय सोच के",
-            "phone se shuru phone pe khatam",
-            "same word start and end"
+            "फ़ोन चलाओ सोच के, समय न जाए खोय; कम चलाओ फ़ोन",
+            "स्क्रीन देखो कम, आँखें रहें ठीक; बाहर खेलो, कम स्क्रीन",
+            "phone chalao soch ke, kam chalao phone",
+            "screen dekho kam, bahar khelo, kam screen"
           ],
           "hints": [
             "Pick your key word first.",
@@ -3137,9 +3137,9 @@
           ],
           "targetsMisconception": "c7-hindi-ch06-t01-mc-any-six-lines",
           "verified": {
-            "solverAnswer": "खुला उत्तर: दो पंक्तियाँ, एक सीख, एक ही शब्द से शुरू-ख़त्म",
+            "solverAnswer": "खुला उत्तर: दो पंक्तियाँ, फ़ोन/स्क्रीन पर एक सीख, एक ही शब्द से शुरू-ख़त्म",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. prompt_hi 'फ़ोन या स्क्रीन पर … बनाओ' reads ambiguously as 'make it on a phone/screen'; prompt_en means 'about phones or screens'. Suggest 'फ़ोन या स्क्रीन के बारे में'. Acceptable list is weak for an open composition (any mention of फ़ोन passes)."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): prompt_hi now 'फ़ोन या स्क्रीन के बारे में' (was readable as 'make it on a phone'); acceptable now holds whole example couplets that meet both criteria (a lesson; same first and last word) instead of fragments, and the key states the criteria. Open composition: judge on structure."
           }
         },
         {
@@ -3314,19 +3314,19 @@
           },
           "remediation": {
             "representation": "Build card: व + र् (half र drawn as the hook ‘रेफ’ on top of the next letter) + षा; ष family words beside it: वर्ष, हर्ष, संघर्ष",
-            "moveShape": "Point to the little hook on top, ask which letter it is, then let the child write two more रेफ+ष words"
+            "moveShape": "Point to the little hook on top, ask which letter it is, then let the child write two more words from the same ष family (वर्ष, हर्ष) — as a word family, not a rule, since दर्शन and स्पर्श take श"
           }
         },
         {
           "id": "c7-hindi-ch07-t01-mc-anupras-rhyme",
-          "belief": "Believes अनुप्रास means rhyming line-ends (तुक), not the repetition of a letter-sound within a line",
+          "belief": "Believes अनुप्रास is only matching word-ends (तुक / अंत्यानुप्रास), and misses वर्ण-आवृत्ति — the same letter-sound coming again and again within a line",
           "signs": [
             "Points at rhyming end words when asked for अनुप्रास",
             "Cannot find a repeated letter in 'चम-चम चमकी चंचल चपला'"
           ],
           "diagnostic": {
-            "prompt_en": "In which line is there अनुप्रास?",
-            "prompt_hi": "किस पंक्ति में अनुप्रास है?",
+            "prompt_en": "In which line does the same letter-sound come again and again (वर्ण-आवृत्ति अनुप्रास)?",
+            "prompt_hi": "किस पंक्ति में एक ही वर्ण की ध्वनि बार-बार आती है — यानी वर्ण-आवृत्ति वाला अनुप्रास?",
             "options": [
               {
                 "text": "चम-चम चमकी चंचल चपला",
@@ -3334,19 +3334,19 @@
                 "correct": true
               },
               {
-                "text": "बादल आए, गीत सुनाए (क्योंकि आए-सुनाए की तुक मिलती है)",
+                "text": "बादल आए, गीत सुनाए (यहाँ सिर्फ़ आए-सुनाए की तुक मिलती है)",
                 "misconceptionId": "c7-hindi-ch07-t01-mc-anupras-rhyme",
                 "correct": false
               },
               {
-                "text": "आज बहुत बारिश हुई",
+                "text": "आज दिन में धूप खिली",
                 "misconceptionId": null,
                 "correct": false
               }
             ]
           },
           "remediation": {
-            "representation": "Sound-highlighter: every च in the line coloured the same; a separate panel shows तुक as matching line-ENDS in a different colour",
+            "representation": "Sound-highlighter: every च in the line coloured the same (वर्ण-आवृत्ति); a separate panel shows तुक as matching word-ENDS in a different colour, labelled अंत्यानुप्रास",
             "moveShape": "Read the line slowly and ask the child to clap each time the same first sound comes; then contrast with two rhyming lines"
           }
         }
@@ -3396,26 +3396,23 @@
           "acceptable": [
             "मेघ",
             "घन",
-            "जलद",
             "दामिनी",
             "चपला",
             "मयूर",
             "megh",
-            "ghan",
             "damini",
-            "chapla",
             "mayur"
           ],
           "hints": [
-            "Poems often use Sanskrit words.",
-            "मेघ, दामिनी, मयूर — which fits which?",
-            "बादल–___, बिजली–___, मोर–___.",
+            "Poems often use Sanskrit words for nature.",
+            "First sounds: बादल → म…, बिजली → द…, मोर → म…",
+            "बादल–मे__, बिजली–दा___, मोर–म___.",
             "मेघ, दामिनी, मयूर."
           ],
           "verified": {
             "solverAnswer": "मेघ/घन; दामिनी/चपला; मयूर",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. EARLY LEAK: hint rung 2 'मेघ, दामिनी, मयूर — which fits which?' hands over all three answers at rung 2 (revealsAnswer trips). Rung 2 should narrow without naming them, e.g. ‘Poems borrow Sanskrit words for sky things and birds.’"
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): rung 2 no longer names मेघ/दामिनी/मयूर; it gives first sounds only, rung 3 gives partial words. Acceptable trimmed to the loader cap of 8 so no form is dropped silently."
           }
         },
         {
@@ -3481,29 +3478,30 @@
           "skillId": "c7-hindi-ch07-t01-s4",
           "kind": "error_spot",
           "difficulty": 3,
-          "prompt_en": "I say: 'आए–सुनाए की तुक मिलती है, इसलिए यहाँ अनुप्रास है।' Is that right?",
-          "prompt_hi": "मैं कहती हूँ — ‘आए–सुनाए की तुक मिलती है, इसलिए यहाँ अनुप्रास है।’ क्या यह सही है?",
-          "answer": "नहीं; पंक्तियों के अंत में मेल तुक है; अनुप्रास में एक ही वर्ण की ध्वनि बार-बार आती है",
+          "prompt_en": "I say: 'आए–सुनाए की तुक मिलती है, इसलिए यहाँ वैसा ही अनुप्रास है जैसा ‘चम-चम चमकी चंचल चपला’ में — एक ही वर्ण का बार-बार आना।' Is that right?",
+          "prompt_hi": "मैं कहती हूँ — ‘आए–सुनाए की तुक मिलती है, इसलिए यहाँ वैसा ही अनुप्रास है जैसा ‘चम-चम चमकी चंचल चपला’ में — एक ही वर्ण का बार-बार आना।’ क्या यह सही है?",
+          "answer": "नहीं; आए–सुनाए में शब्दों के अंत की ध्वनि मिलती है — यह तुक है (इसे अंत्यानुप्रास भी कहते हैं); ‘चम-चम चमकी चंचल चपला’ में एक ही वर्ण ‘च’ बार-बार आता है — वह वर्ण-आवृत्ति वाला अनुप्रास है",
           "acceptable": [
             "नहीं",
             "यह तुक है",
-            "अनुप्रास में वर्ण दोहराते हैं",
+            "यह अंत्यानुप्रास है",
+            "वहाँ वर्ण नहीं दोहराया",
             "nahi",
             "yeh tuk hai",
-            "varn dohrate hain",
+            "antyanupras",
             "that is rhyme"
           ],
           "hints": [
-            "Where do आए and सुनाए sit — at the ends or the starts?",
-            "Is a letter repeated, or an ending matching?",
-            "Ending match = ___; letter repeat = अनुप्रास.",
-            "No — that is तुक; अनुप्रास repeats a letter-sound."
+            "Do आए and सुनाए match at their ends or at their first sounds?",
+            "In ‘चम-चम चमकी…’, which letter keeps coming back?",
+            "Ending match = ___; same letter again and again = वर्ण-आवृत्ति.",
+            "No — आए–सुनाए is तुक (अंत्यानुप्रास); the ‘च’ line repeats one letter: वर्ण-आवृत्ति अनुप्रास."
           ],
           "targetsMisconception": "c7-hindi-ch07-t01-mc-anupras-rhyme",
           "verified": {
-            "solverAnswer": "नहीं — यह तुक है; अनुप्रास में एक ही वर्ण बार-बार आता है (पर तुक को अंत्यानुप्रास भी कहते हैं)",
+            "solverAnswer": "नहीं — आए-सुनाए तुक (अंत्यानुप्रास) है; च-वाली पंक्ति में वर्ण-आवृत्ति है",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. PEDAGOGY: in Hindi grammar, end-rhyme (तुक) is itself classed as अंत्यानुप्रास, a sub-type of अनुप्रास. Saying flatly 'तुक है, अनुप्रास नहीं' can be marked wrong by a school teacher. Suggest the key say: 'यह तुक (अंत्यानुप्रास) है; हम जिस वर्ण-आवृत्ति वाले अनुप्रास को खोज रहे हैं, उसमें शब्दों में एक ही वर्ण बार-बार आता है'. Also the key says 'पंक्तियों के अंत में' though आए–सुनाए sit inside one line in mc anupras-rhyme."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): reworded so the error is a real one: the claim now says आए–सुनाए is the SAME kind of अनुप्रास as the च-repeat line; key separates तुक (= अंत्यानुप्रास, a type of अनुप्रास) from वर्ण-आवृत्ति, so a school teacher cannot mark it wrong; dropped 'पंक्तियों के अंत में' (आए–सुनाए sit inside one line)."
           }
         },
         {
@@ -3513,7 +3511,7 @@
           "difficulty": 2,
           "prompt_en": "Spot the spelling mistake: 'आज ज़ोर की वर्शा हुई।'",
           "prompt_hi": "वर्तनी की ग़लती पकड़ो — ‘आज ज़ोर की वर्शा हुई।’",
-          "answer": "सही ‘वर्षा’ है — र् (रेफ) के बाद ‘ष’ आता है, ‘श’ नहीं",
+          "answer": "सही ‘वर्षा’ है — इस शब्द में ‘ष’ आता है, जैसे वर्ष, हर्ष",
           "acceptable": [
             "वर्षा",
             "ष",
@@ -3524,15 +3522,15 @@
           ],
           "hints": [
             "Which श/ष/स does this word take?",
-            "Think of वर्ष (year) and हर्ष.",
+            "Think of the word for 'year' — it is spelled the same way.",
             "व + र् + ___ा.",
-            "वर्षा, with ष."
+            "वर्षा, with ष — like वर्ष and हर्ष."
           ],
           "targetsMisconception": "c7-hindi-ch07-t01-mc-varsha-spelling",
           "verified": {
             "solverAnswer": "वर्शा → वर्षा (ष)",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. ACCURACY: the key's explanation 'र् (रेफ) के बाद ‘ष’ आता है, ‘श’ नहीं' is a false rule — दर्शन, आदर्श, स्पर्श all have रेफ followed by श. Correct spelling वर्षा is right; replace the rule with 'इस शब्द में ‘ष’ आता है — जैसे वर्ष, हर्ष'. Hint rung 2 ('वर्ष and हर्ष') also trips revealsAnswer (acceptable 'ष')."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): replaced the false rule 'र् (रेफ) के बाद ष आता है' (दर्शन, आदर्श, स्पर्श have रेफ + श) with a word-family note 'इस शब्द में ष आता है, जैसे वर्ष, हर्ष'; rung 2 no longer names ष-words (pointer to 'year' instead). Key वर्षा correct."
           }
         },
         {
@@ -3957,7 +3955,7 @@
             "poochne wala aur batane wala"
           ],
           "hints": [
-            "English word: interview.",
+            "Break it: साक्षात् (face to face) + कार.",
             "One person asks, one answers.",
             "Asker = साक्षात्कार___; answerer = उत्तर___.",
             "An interview; the interviewer and the interviewee."
@@ -3966,7 +3964,7 @@
           "verified": {
             "solverAnswer": "प्रश्न-उत्तर के रूप में बातचीत; साक्षात्कारकर्ता और साक्षात्कार देने वाला",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Hint rung 1 'English word: interview.' names an acceptable answer at the very first rung (revealsAnswer trips). Move to rung 3 or drop 'interview' from acceptable."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): rung 1 no longer names 'interview' (moved to rung 4); rung 1 now breaks the word साक्षात् + कार."
           }
         },
         {
@@ -3985,20 +3983,18 @@
             "परिवार की परंपरा",
             "riyaz",
             "mehnat",
-            "lagan",
-            "abhyas",
             "practice"
           ],
           "hints": [
             "Was it only talent?",
-            "Think of daily practice.",
+            "What does a dancer do every single morning?",
             "Love + family tradition + ___.",
             "Lifelong love, family tradition and years of riyaz."
           ],
           "verified": {
             "solverAnswer": "नृत्य से प्रेम, परिवार की कथक परंपरा, बरसों का रियाज़",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Hint rung 2 'Think of daily practice.' names acceptable 'practice' (revealsAnswer trips); rung 1 already asks 'only talent?'. Suggest rung 2 'What does a dancer do every single morning?'."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): rung 2 no longer names 'practice'. Acceptable trimmed to the loader cap of 8 so no form is dropped silently."
           }
         },
         {
@@ -4123,7 +4119,7 @@
           "kind": "predict",
           "difficulty": 3,
           "prompt_en": "Before reading: what do you think a great dancer will say about how many hours they practised as a child?",
-          "prompt_hi": "पढ़ने से पहले अनुमान लगाओ — एक महान नर्तक बचपन में रोज़ कितने अभ्यास की बात करेगा, और क्यों?",
+          "prompt_hi": "पढ़ने से पहले अनुमान लगाओ — एक महान नर्तक बचपन में रोज़ कितने घंटे अभ्यास करने की बात करेगा, और क्यों?",
           "answer": "वह कई घंटों के रोज़ के रियाज़ की बात करेगा, क्योंकि शास्त्रीय कला में महारत लगातार अभ्यास से ही आती है",
           "acceptable": [
             "कई घंटे",
@@ -4143,7 +4139,7 @@
           "verified": {
             "solverAnswer": "रोज़ कई घंटे रियाज़ की, क्योंकि शास्त्रीय कला लगातार अभ्यास माँगती है",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. HINDI: prompt_hi 'रोज़ कितने अभ्यास की बात करेगा' is ungrammatical/unidiomatic; prompt_en asks 'how many hours'. Suggest 'रोज़ कितने घंटे अभ्यास करने की बात करेगा, और क्यों?'."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): prompt_hi now 'रोज़ कितने घंटे अभ्यास करने की बात करेगा' — idiomatic, and faithful to prompt_en's 'how many hours'."
           }
         },
         {
@@ -4182,27 +4178,26 @@
           "difficulty": 4,
           "prompt_en": "Write three open questions you would ask a farmer in an interview about the monsoon.",
           "prompt_hi": "मानसून के बारे में किसी किसान से साक्षात्कार के लिए तीन खुले प्रश्न लिखो।",
-          "answer": "तीन कैसे/क्यों/क्या-क्या वाले प्रश्न, जैसे — ‘बारिश देर से आए तो आप क्या करते हैं?’, ‘आपने खेती कैसे सीखी?’, ‘अच्छी फ़सल के लिए क्या-क्या ज़रूरी है?’",
+          "answer": "तीन खुले प्रश्न (जिनका जवाब हाँ/ना में न हो, बल्कि किसान अपने अनुभव से विस्तार से बताए), जैसे — ‘बारिश देर से आए तो आप क्या करते हैं?’, ‘आपने खेती कैसे सीखी?’, ‘अच्छी फ़सल के लिए क्या-क्या ज़रूरी है?’",
           "acceptable": [
-            "कैसे",
-            "क्यों",
-            "क्या-क्या",
-            "kaise",
-            "kyun",
-            "kya kya",
-            "open questions"
+            "बारिश देर से आए तो आप क्या करते हैं?",
+            "आपने खेती कैसे सीखी?",
+            "अच्छी फ़सल के लिए क्या-क्या ज़रूरी है?",
+            "मानसून आने पर खेत में क्या-क्या काम होते हैं?",
+            "baarish der se aaye to aap kya karte hain?",
+            "aapne kheti kaise seekhi?"
           ],
           "hints": [
             "Avoid questions answered by yes/no.",
-            "Start with कैसे, क्यों, क्या-क्या.",
+            "Use question words that make the farmer explain in detail.",
             "e.g. 'आपने खेती ___ सीखी?'",
             "Three open questions on how, why and what the farmer does."
           ],
           "targetsMisconception": "c7-hindi-ch08-t01-mc-closed-questions",
           "verified": {
-            "solverAnswer": "खुला उत्तर: तीन कैसे/क्यों/क्या-क्या प्रश्न",
+            "solverAnswer": "खुला उत्तर: तीन प्रश्न जो हाँ/ना से न निपटें",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Hint rung 2 'Start with कैसे, क्यों, क्या-क्या' names acceptable entries (revealsAnswer trips). More importantly acceptable ['कैसे','क्यों',…] lets a one-word reply pass for 'write three open questions'; this should be judged on structure, not matched."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): rung 2 no longer names कैसे/क्यों/क्या-क्या; acceptable now holds whole example open questions instead of single question words, and the key states the criterion (three questions, none answerable by yes/no), so a one-word reply cannot match. Open composition: judge on structure."
           }
         },
         {
@@ -4610,27 +4605,29 @@
           "skillId": "c7-hindi-ch09-t01-s2",
           "kind": "near_transfer",
           "difficulty": 2,
-          "prompt_en": "Listen: 'फुर्र-फुर्र उड़ी चिड़िया रानी, चोंच में लाई बूँद-भर पानी; तिनका-तिनका जोड़ा उसने, घर बनाया छोटा-सा अपने।' What two things did the bird do?",
-          "prompt_hi": "ये पंक्तियाँ सुनो — ‘फुर्र-फुर्र उड़ी चिड़िया रानी, चोंच में लाई बूँद-भर पानी; तिनका-तिनका जोड़ा उसने, घर बनाया छोटा-सा अपने।’ चिड़िया ने कौन-से दो काम किए?",
-          "answer": "चोंच में पानी लाई और तिनके जोड़कर अपना घोंसला बनाया",
+          "prompt_en": "Listen: 'फुर्र-फुर्र उड़ी चिड़िया रानी, चोंच में लाई बूँद-भर पानी; तिनका-तिनका चुन-चुन लाई, छोटी-सी फिर कुटिया बनाई।' What two things did the bird do?",
+          "prompt_hi": "ये पंक्तियाँ सुनो — ‘फुर्र-फुर्र उड़ी चिड़िया रानी, चोंच में लाई बूँद-भर पानी; तिनका-तिनका चुन-चुन लाई, छोटी-सी फिर कुटिया बनाई।’ चिड़िया ने कौन-से दो काम किए?",
+          "answer": "चोंच में पानी लाई और तिनके चुन-चुनकर अपना छोटा-सा घर (घोंसला) बनाया",
           "acceptable": [
             "पानी लाई",
             "घोंसला बनाया",
-            "तिनके जोड़े",
+            "घर बनाया",
+            "तिनके लाई",
             "paani laayi",
             "ghonsla banaya",
-            "tinke jode"
+            "ghar banaya",
+            "tinke laayi"
           ],
           "hints": [
             "What was in its beak?",
             "What did it make from straws?",
-            "It brought ___ and built a ___.",
-            "Brought water and built its nest straw by straw."
+            "It brought ___ and built a little ___.",
+            "Brought water and built its little home straw by straw."
           ],
           "verified": {
-            "solverAnswer": "चोंच में पानी लाई; तिनके जोड़कर घोंसला बनाया",
+            "solverAnswer": "चोंच में पानी लाई; तिनके चुनकर घर (कुटिया) बनाया",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. HINDI: the original lines end 'घर बनाया छोटा-सा अपने' — ungrammatical (should be 'अपना'; 'अपने' needs a following oblique noun). The child hears this as model Hindi. Suggest 'तिनका-तिनका जोड़ा उसने, सुंदर-सा घर बुना अपना' or rhyme on 'उसने/सपने': 'तिनका-तिनका जोड़ा उसने, घर बनाया, पूरे सपने'. Key itself fine; i11's answer lists the rhyme words and would need the same update."
+            "note": "Fix pass 2026-10-02 (c7-hindi checker flags): rewrote the original lines: 'घर बनाया छोटा-सा अपने' (ungrammatical; needed अपना) → 'तिनका-तिनका चुन-चुन लाई, छोटी-सी फिर कुटिया बनाई' (कुटिया f. → बनाई agrees; rhymes लाई/बनाई). i11's rhyme words updated to match."
           }
         },
         {
@@ -4756,7 +4753,7 @@
           "difficulty": 2,
           "prompt_en": "Recite the four lines about 'चिड़िया रानी' with a light, quick beat. Where will you pause?",
           "prompt_hi": "‘चिड़िया रानी’ वाली चार पंक्तियाँ हल्की, तेज़ लय में बोलो। तुम कहाँ-कहाँ रुकोगे?",
-          "answer": "हर पंक्ति के अंत में (रानी, पानी, उसने, अपने) छोटा विराम; आवाज़ हल्की और फुर्तीली, जैसे चिड़िया फुदकती है",
+          "answer": "हर पंक्ति के अंत में (रानी, पानी, लाई, बनाई) छोटा विराम; आवाज़ हल्की और फुर्तीली, जैसे चिड़िया फुदकती है",
           "acceptable": [
             "हर पंक्ति के अंत में",
             "रानी पानी के बाद",
@@ -4772,7 +4769,7 @@
           "verified": {
             "solverAnswer": "हर पंक्ति के अंत में छोटा विराम; हल्की, फुर्तीली आवाज़",
             "agrees": true,
-            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Hindi (spelling, matras, grammar) correct; class-7 appropriate; original text, not NCERT copy; prompt_en a faithful gloss; hints graded with no early leak."
+            "note": "Blind check 2026-10-02 (c7-hindi Hindi-pedagogy pass): solved from prompt_hi before reading the key; matches. Hindi (spelling, matras, grammar) correct; class-7 appropriate; original text, not NCERT copy; prompt_en a faithful gloss; hints graded with no early leak. Fix pass 2026-10-02 (c7-hindi checker flags): rhyme words updated to रानी, पानी, लाई, बनाई after i06's lines were corrected."
           }
         },
         {

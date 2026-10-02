@@ -5,10 +5,9 @@
 // R8's re-anchor opener, R10 (voice rung) and the frozen-slot rule V10. R2-R7, R9, R11-R14 need the
 // ConductorChildView keys from the learner workstream and are not built yet.
 import { BAND, PLAN, PLANNER_V, TIER, cfgDigest } from "./config.js";
-import { addMin, daysBetween, fromMin, learningWindow, localTime, maxTime, minTime, toMin, weekday } from "./clock.js";
+import { addMin, dayMin, daysBetween, fromDayMin, learningWindow, localTime, minTime, weekday } from "./clock.js";
 import { jcs, sha256hex } from "./ids.js";
 
-const ceilTo = (hhmm, step) => { const m = toMin(hhmm); return m >= 1440 - step ? "23:59" : fromMin(Math.ceil(m / step) * step); };
 /** Quantised view value: counts as ints, ratios to .1 (X43). */
 const qCount = (n) => Math.max(0, Math.round(Number(n) || 0));
 
@@ -24,9 +23,13 @@ export function buildPlannerInputs(state, ctx) {
   const dayKind = ctx.cal.kind(day);
   const win = learningWindow(r, { ...l, allowedTo: minTime(l.allowedTo, b.allowedTo) }, day, ctx.cal);
   // A late open shortens the sitting only by time left before bedtime − 60 (§4.4), never by lateness itself.
-  // Ceiled to 15 min: hash-stable inside a quarter hour, and never plans minutes that have already gone.
-  const nowLocal = ceilTo(localTime(ctx.now, tz), 15);
-  const effFrom = nowLocal > win.from ? nowLocal : win.from;     // planning always runs for learningDay(now)
+  // All in minutes since the 04:00 learning-day anchor (an open at 00:30 is 20:30 AFTER the anchor, i.e. after
+  // the window, never "before it opens"). Ceiled to 15 min: hash-stable inside a quarter hour, and never plans
+  // minutes that have already gone. Clamped into [from, to]: before the window opens and after it closes the
+  // clock is not an input (effFrom = to → timeLeft 0 → no new slot tonight).
+  const fromDM = dayMin(win.from), toDM = dayMin(win.to);
+  const nowDM = Math.min(1439, Math.ceil(dayMin(localTime(ctx.now, tz)) / 15) * 15);
+  const effFrom = fromDayMin(Math.max(fromDM, Math.min(nowDM, Math.max(fromDM, toDM))));
   const due = ctx.view.get("kt.dueCount");
   const used = ctx.view.get("usage.usedMin");
   const today = state.plan?.day === day ? state.plan : null;
@@ -109,11 +112,12 @@ export function planDay(inputs) {
   // Shown-but-not-started slots still need their minutes; started ones are already in usage.usedMin.
   const frozenMin = slots.filter((s) => !frozen.startedIds.includes(s.id)).reduce((a, s) => a + s.targetMin, 0);
   let remaining = Math.max(0, limits.capMin - usage.usedMin - frozenMin);
-  const timeLeft = Math.max(0, toMin(win.to) - toMin(maxTime(win.from, win.effFrom)));
+  const startDM = Math.max(dayMin(win.from), dayMin(win.effFrom));
+  const timeLeft = Math.max(0, dayMin(win.to) - startDM);   // learning-day minutes: 00:30 is after 20:30
   const lessonToday = slots.some((s) => s.kind === "live_lesson");
   const due = inputs.view["kt.dueCount"];
   const dueCount = due.stale ? 0 : due.value;                      // a stale key never fires a rule (V25)
-  const slotWindow = [maxTime(win.from, win.effFrom), win.to];
+  const slotWindow = [fromDayMin(startDM), win.to];
 
   if (!lessonToday && timeLeft > 0) {
     const aim = Math.max(b.segments.filter((s) => s[3]).reduce((a, s) => a + s[1], 0), Math.floor(PLAN.capShare * limits.capMin));

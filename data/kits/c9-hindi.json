@@ -59,11 +59,6 @@
             "prompt_hi": "बैल भागकर झूरी के पास लौटे तो उसकी पत्नी ने उन्हें ‘नमकहराम’ कहा। कहानी की नज़र से, क्या वह सही थी?",
             "options": [
               {
-                "text": "नहीं, वे झूरी और अपने घर से प्रेम के कारण लौटे थे",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "हाँ, वे काम से बचने के लिए भागे थे",
                 "misconceptionId": "c9-hindi-ch01-t01-mc-namakharam",
                 "correct": false
@@ -72,6 +67,11 @@
                 "text": "हाँ, क्योंकि उन्होंने रस्सी तोड़ी थी",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "नहीं, वे झूरी और अपने घर से प्रेम के कारण लौटे थे",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -92,14 +92,14 @@
             "prompt_hi": "‘ईंट का जवाब पत्थर से देना’ का अर्थ क्या है?",
             "options": [
               {
-                "text": "किसी के वार का और कड़ा जवाब देना",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "सच में ईंट के बदले पत्थर फेंकना",
                 "misconceptionId": "c9-hindi-ch01-t01-mc-literal-idiom",
                 "correct": false
+              },
+              {
+                "text": "किसी के वार का और कड़ा जवाब देना",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "घर बनाने के लिए पत्थर लाना",
@@ -158,10 +158,10 @@
           "answer": "हीरा और मोती; उनका मालिक झूरी था",
           "acceptable": [
             "हीरा मोती, झूरी",
-            "हीरा और मोती",
+            "हीरा और मोती, मालिक झूरी",
             "heera moti jhuri",
-            "hira moti",
-            "heera aur moti"
+            "hira moti jhuri",
+            "heera aur moti, maalik jhuri"
           ],
           "hints": [
             "Think of the farmer who loved them.",
@@ -172,7 +172,7 @@
           "verified": {
             "solverAnswer": "हीरा और मोती; मालिक झूरी",
             "agrees": true,
-            "note": "Agrees. Some acceptables (e.g. \"हीरा और मोती\") omit the owner, so a half answer would pass; H2 (diamond/pearl) nearly gives the names."
+            "note": "Fixed: removed acceptables that leave out the owner (हीरा और मोती, hira moti, heera aur moti); every acceptable now names both bullocks and झूरी."
           }
         },
         {
@@ -381,7 +381,9 @@
             "साँड़ लड़ाई",
             "दोनों में ड़",
             "ड़, ड़",
-            "saand ladai"
+            "दोनों में नीचे बिंदु वाला ड़",
+            "dono mein bindu wala da",
+            "dono mein neeche bindu wala"
           ],
           "hints": [
             "Say both words slowly. Does the tongue press or tap?",
@@ -393,7 +395,7 @@
           "verified": {
             "solverAnswer": "साँड़, लड़ाई (दोनों ड़)",
             "agrees": true,
-            "note": "Agrees. Romanized acceptable \"saand ladai\" cannot distinguish ड from ड़, so it cannot grade this spelling item."
+            "note": "Fixed: removed romanized 'saand ladai' (cannot distinguish ड from ड़). Spoken answers are accepted only when they name the dotted letter."
           }
         },
         {
@@ -401,7 +403,7 @@
           "skillId": "c9-hindi-ch01-t01-s4",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Make it plural and fix the verb: ‘बैल खेत में चर रहा है।’ → ‘दो …’",
+          "prompt_en": "Change this sentence to plural: ‘बैल खेत में चर रहा है।’ → ‘दो …’",
           "prompt_hi": "इस वाक्य को बहुवचन में बदलो — ‘बैल खेत में चर रहा है।’ → ‘दो …’",
           "answer": "दो बैल खेत में चर रहे हैं।",
           "acceptable": [
@@ -419,7 +421,7 @@
           "verified": {
             "solverAnswer": "दो बैल खेत में चर रहे हैं।",
             "agrees": true,
-            "note": "Agrees. prompt_en adds \"and fix the verb\", which prompt_hi does not say (minor gloss drift)."
+            "note": "Fixed: prompt_en no longer adds 'and fix the verb'; it matches prompt_hi."
           }
         },
         {
@@ -481,7 +483,7 @@
           "skillId": "c9-hindi-ch01-t01-s5",
           "kind": "teachback",
           "difficulty": 4,
-          "prompt_en": "Explain to your younger cousin in 3-4 sentences what this story teaches.",
+          "prompt_en": "Explain to your younger brother or sister in 3-4 sentences what this story teaches.",
           "prompt_hi": "अपने छोटे भाई या बहन को 3-4 वाक्यों में समझाओ कि यह कहानी क्या सिखाती है।",
           "answer": "हीरा-मोती की दोस्ती, घर से प्रेम और वफ़ादारी; वे अन्याय सहन नहीं करते और मिलकर आज़ादी पाते हैं; जानवर भी प्रेम और दर्द महसूस करते हैं",
           "acceptable": [
@@ -501,7 +503,7 @@
           "verified": {
             "solverAnswer": "दोस्ती, वफ़ादारी, घर से प्रेम, मिलकर अन्याय का विरोध, आज़ादी की चाह",
             "agrees": true,
-            "note": "Agrees. Gloss drift: prompt_hi says छोटे भाई या बहन, prompt_en says \"younger cousin\"."
+            "note": "Fixed: prompt_en now matches prompt_hi (younger brother or sister)."
           }
         }
       ],
@@ -596,14 +598,14 @@
             "prompt_hi": "किस स्थिति पर ‘दूर के ढोल सुहावने’ ठीक बैठती है?",
             "options": [
               {
-                "text": "शहर की ज़िंदगी दूर से मज़ेदार लगी, पर वहाँ जाकर उसकी मुश्किलें दिखीं",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "शादी में ढोल बहुत ज़ोर से बज रहा था",
                 "misconceptionId": "c9-hindi-ch02-t01-mc-dhol-literal",
                 "correct": false
+              },
+              {
+                "text": "शहर की ज़िंदगी दूर से मज़ेदार लगी, पर वहाँ जाकर उसकी मुश्किलें दिखीं",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "ढोल वाला दूर गाँव से आया था",
@@ -629,14 +631,14 @@
             "prompt_hi": "इनमें से कौन-सी पंक्ति ललित (व्यक्तिगत) निबंध की हो सकती है?",
             "options": [
               {
+                "text": "साहित्य समाज का दर्पण है — यह कथन पूर्णतः सत्य है।",
+                "misconceptionId": "c9-hindi-ch02-t01-mc-nibandh-formal",
+                "correct": false
+              },
+              {
                 "text": "आज सुबह से मैं सोच रहा हूँ कि क्या लिखूँ, और कलम है कि चलती ही नहीं।",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "व्यक्तिगत निबंध में ‘मैं’ लिखना मना है, इसलिए यह पंक्ति नहीं हो सकती।",
-                "misconceptionId": "c9-hindi-ch02-t01-mc-nibandh-formal",
-                "correct": false
               },
               {
                 "text": "भारत की जनसंख्या एक अरब चालीस करोड़ से अधिक है।",
@@ -662,11 +664,6 @@
             "prompt_hi": "सही वर्तनी चुनो।",
             "options": [
               {
-                "text": "लिखूँ",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "लिखु",
                 "misconceptionId": "c9-hindi-ch02-t01-mc-u-oo-chandra",
                 "correct": false
@@ -675,6 +672,11 @@
                 "text": "लीखूँ",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "लिखूँ",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -806,14 +808,14 @@
           ],
           "hints": [
             "Which one is a full sentence on its own?",
-            "A मुहावरा ends in ‘-ना’ and needs a sentence around it.",
+            "A मुहावरा changes form in a sentence (होना → हो गए); a लोकोक्ति stays as it is.",
             "पूरा वाक्य = ___; वाक्यांश = ___।",
             "The dhol saying is a लोकोक्ति; ‘नौ दो ग्यारह होना’ is a मुहावरा."
           ],
           "verified": {
             "solverAnswer": "पहला लोकोक्ति, दूसरा मुहावरा",
             "agrees": true,
-            "note": "Agrees. H2 (\"मुहावरा ends in -ना\") effectively gives the answer at the second rung."
+            "note": "Fixed: H2 now gives the rule to apply (form changes vs used unchanged), so the child does the sorting."
           }
         },
         {
@@ -1084,7 +1086,7 @@
         },
         {
           "id": "c9-hindi-ch03-t01-s3",
-          "title": "Identifies story elements (पात्र, परिवेश, समस्या, अंत) and how what is NOT said carries meaning",
+          "title": "Identifies कहानी के तत्व (कथानक, पात्र, संवाद, देशकाल-वातावरण, भाषा-शैली, उद्देश्य) and how what is NOT said carries meaning",
           "prereqSkillIds": [
             "c9-hindi-ch03-t01-s2"
           ]
@@ -1122,14 +1124,14 @@
             "prompt_hi": "‘संवादहीन’ का अर्थ क्या है?",
             "options": [
               {
-                "text": "जिसमें आपसी बातचीत न हो",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "जिसमें बहुत ज़्यादा बातचीत हो",
                 "misconceptionId": "c9-hindi-ch03-t01-mc-heen-meaning",
                 "correct": false
+              },
+              {
+                "text": "जिसमें आपसी बातचीत न हो",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "जो अच्छा भाषण देता हो",
@@ -1151,18 +1153,18 @@
             "Skips gestures when retelling"
           ],
           "diagnostic": {
-            "prompt_en": "‘चारों खाने की मेज़ पर बैठे थे। पापा अख़बार में, दीदी फ़ोन में थी। दादी ने दो बार कुछ कहना चाहा, फिर चुपचाप थाली सरका दी।’ What does Dadi's action show?",
-            "prompt_hi": "‘चारों खाने की मेज़ पर बैठे थे। पापा अख़बार में, दीदी फ़ोन में थी। दादी ने दो बार कुछ कहना चाहा, फिर चुपचाप थाली सरका दी।’ दादी के इस काम से क्या पता चलता है?",
+            "prompt_en": "‘चारों खाने की मेज़ पर बैठे थे। पापा अख़बार में डूबे थे, दीदी फ़ोन में। दादी ने दो बार कुछ कहना चाहा, फिर चुपचाप थाली सरका दी।’ What does Dadi's action show?",
+            "prompt_hi": "‘चारों खाने की मेज़ पर बैठे थे। पापा अख़बार में डूबे थे, दीदी फ़ोन में। दादी ने दो बार कुछ कहना चाहा, फिर चुपचाप थाली सरका दी।’ दादी के इस काम से क्या पता चलता है?",
             "options": [
-              {
-                "text": "दादी को लगा कोई उनकी बात नहीं सुन रहा, वे अकेली और दुखी थीं",
-                "misconceptionId": null,
-                "correct": true
-              },
               {
                 "text": "कुछ नहीं, सब बस चुपचाप खाना खा रहे थे",
                 "misconceptionId": "c9-hindi-ch03-t01-mc-silence-empty",
                 "correct": false
+              },
+              {
+                "text": "दादी को लगा कोई उनकी बात नहीं सुन रहा, वे अकेली और दुखी थीं",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "दादी को खाना पसंद नहीं था",
@@ -1188,14 +1190,14 @@
             "prompt_hi": "सही वर्तनी चुनो।",
             "options": [
               {
-                "text": "संवाद",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "संबाद",
                 "misconceptionId": "c9-hindi-ch03-t01-mc-ba-va",
                 "correct": false
+              },
+              {
+                "text": "संवाद",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "सवाद",
@@ -1301,8 +1303,8 @@
           "skillId": "c9-hindi-ch03-t01-s2",
           "kind": "why",
           "difficulty": 3,
-          "prompt_en": "‘Four sat at the dinner table. Papa in the newspaper, Didi on her phone. Dadi tried twice to say something, then quietly pushed her plate away.’ Why did Dadi push her plate away?",
-          "prompt_hi": "‘चारों खाने की मेज़ पर बैठे थे। पापा अख़बार में, दीदी फ़ोन में थी। दादी ने दो बार कुछ कहना चाहा, फिर चुपचाप थाली सरका दी।’ दादी ने थाली क्यों सरका दी?",
+          "prompt_en": "‘Four sat at the dinner table. Papa was lost in the newspaper, Didi in her phone. Dadi tried twice to say something, then quietly pushed her plate away.’ Why did Dadi push her plate away?",
+          "prompt_hi": "‘चारों खाने की मेज़ पर बैठे थे। पापा अख़बार में डूबे थे, दीदी फ़ोन में। दादी ने दो बार कुछ कहना चाहा, फिर चुपचाप थाली सरका दी।’ दादी ने थाली क्यों सरका दी?",
           "answer": "क्योंकि किसी ने उनकी बात नहीं सुनी; वे अनसुनी, अकेली और दुखी महसूस कर रही थीं",
           "acceptable": [
             "किसी ने बात नहीं सुनी",
@@ -1322,7 +1324,7 @@
           "verified": {
             "solverAnswer": "किसी ने उनकी बात नहीं सुनी; वे अनसुनी, अकेली, दुखी महसूस कर रही थीं",
             "agrees": true,
-            "note": "Agrees. Prompt Hindi is slightly elliptical (\"पापा अख़बार में, दीदी फ़ोन में थी\" — verb only agrees with दीदी); consider \"पापा अख़बार में डूबे थे, दीदी फ़ोन में।\""
+            "note": "Fixed: passage now 'पापा अख़बार में डूबे थे, दीदी फ़ोन में।' (each clause has its own verb); same fix applied in diagnostic mc-silence-empty."
           }
         },
         {
@@ -1358,25 +1360,29 @@
           "skillId": "c9-hindi-ch03-t01-s3",
           "kind": "retrieval",
           "difficulty": 1,
-          "prompt_en": "Name four elements of a story (कहानी के तत्व) you look for while reading.",
-          "prompt_hi": "कहानी पढ़ते समय किन चार तत्वों को देखते हैं? नाम बताओ।",
-          "answer": "पात्र, परिवेश (वातावरण), समस्या या द्वंद्व, अंत (उद्देश्य)",
+          "prompt_en": "Name four elements of a story (कहानी के तत्व) that you look for while reading.",
+          "prompt_hi": "कहानी पढ़ते समय कहानी के कौन-से चार तत्व देखते हैं? नाम बताओ।",
+          "answer": "कहानी के तत्व: कथावस्तु/कथानक, पात्र/चरित्र-चित्रण, संवाद/कथोपकथन, देशकाल-वातावरण, भाषा-शैली, उद्देश्य — इनमें से कोई चार",
           "acceptable": [
-            "पात्र परिवेश समस्या अंत",
-            "पात्र, वातावरण, द्वंद्व, उद्देश्य",
-            "patra parivesh samasya ant",
-            "characters setting problem ending"
+            "कथानक, पात्र, संवाद, देशकाल-वातावरण",
+            "कथावस्तु पात्र संवाद वातावरण",
+            "कथानक, चरित्र-चित्रण, कथोपकथन, उद्देश्य",
+            "पात्र, संवाद, भाषा-शैली, उद्देश्य",
+            "kathanak patra samvad vatavaran",
+            "kathavastu patra samvad deshkaal vatavaran",
+            "kathanak patra samvad uddeshya",
+            "plot characters dialogue setting"
           ],
           "hints": [
-            "Who? Where? What goes wrong? How does it end?",
-            "Each question names one element.",
-            "___, परिवेश, ___, अंत",
-            "पात्र, परिवेश, समस्या/द्वंद्व, अंत."
+            "What happens, to whom, in what words, and where and when?",
+            "Each of those questions names one element — and this chapter's title is about one of them.",
+            "___ (क्या हुआ), पात्र, ___ (बातचीत), देशकाल-___",
+            "कथानक, पात्र, संवाद, देशकाल-वातावरण (भाषा-शैली और उद्देश्य भी तत्व हैं)."
           ],
           "verified": {
             "solverAnswer": "कथावस्तु/कथानक, पात्र (चरित्र-चित्रण), संवाद (कथोपकथन), देशकाल-वातावरण (भाषा-शैली, उद्देश्य भी)",
-            "agrees": false,
-            "note": "Partial disagreement: the key gives पात्र, परिवेश, समस्या/द्वंद्व, अंत (an English story-grammar list). Standard Hindi pedagogy names the कहानी के तत्व as कथावस्तु/कथानक, पात्र/चरित्र-चित्रण, संवाद/कथोपकथन, देशकाल-वातावरण, भाषा-शैली, उद्देश्य. The key leaves out कथानक and संवाद, which is odd in a chapter about संवाद. Add these to answer/acceptable, or reword the prompt as \"कहानी पढ़ते समय कौन-से चार प्रश्न पूछते हैं\"."
+            "agrees": true,
+            "note": "Settled: key now uses the standard Hindi list (कथावस्तु/कथानक, पात्र/चरित्र-चित्रण, संवाद/कथोपकथन, देशकाल-वातावरण, भाषा-शैली, उद्देश्य; any four), matching the solver. Dropped the English story-grammar acceptables that had only two of the standard elements. Skill s3 title updated to match."
           }
         },
         {
@@ -1472,7 +1478,7 @@
           ],
           "hints": [
             "Watch your lips: do they press or does a tooth touch the lip?",
-            "Both words use the teeth-on-lip letter.",
+            "Lips pressed shut = ब; upper teeth lightly on the lower lip = व. Say each word slowly and feel which.",
             "सं___ाद, ___ि___ाद",
             "संवाद and विवाद — both with व."
           ],
@@ -1480,7 +1486,7 @@
           "verified": {
             "solverAnswer": "संवाद, विवाद",
             "agrees": true,
-            "note": "Agrees. H2 (\"Both words use the teeth-on-lip letter\") gives away this two-way choice at rung 2."
+            "note": "Fixed: H2 now gives the method (lip vs teeth-on-lip) without saying which letter either word takes."
           }
         },
         {
@@ -1653,14 +1659,14 @@
             "prompt_hi": "इस पाठ में प्रश्न कौन पूछता है?",
             "options": [
               {
-                "text": "यतींद्र मिश्र",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "लता मंगेशकर",
                 "misconceptionId": "c9-hindi-ch04-t01-mc-who-wrote",
                 "correct": false
+              },
+              {
+                "text": "यतींद्र मिश्र",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "दीनानाथ मंगेशकर",
@@ -1686,11 +1692,6 @@
             "prompt_hi": "किस प्रश्न से ज़्यादा गहरा उत्तर मिलेगा?",
             "options": [
               {
-                "text": "पहली बार माइक के सामने गाते समय आपको कैसा लगा था?",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "क्या आपको गाना पसंद है?",
                 "misconceptionId": "c9-hindi-ch04-t01-mc-closed-q",
                 "correct": false
@@ -1699,6 +1700,11 @@
                 "text": "आपका नाम क्या है?",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "पहली बार माइक के सामने गाते समय आपको कैसा लगा था?",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -1719,14 +1725,14 @@
             "prompt_hi": "कौन-सा वाक्य सही है?",
             "options": [
               {
-                "text": "आप कब से गा रही हैं?",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "आप कब से गा रही है?",
                 "misconceptionId": "c9-hindi-ch04-t01-mc-aap-agreement",
                 "correct": false
+              },
+              {
+                "text": "आप कब से गा रही हैं?",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "आप कब से गा रहा हो?",
@@ -1757,8 +1763,8 @@
             "लेखक पूछते हैं, लता जी उत्तर देती हैं"
           ],
           "hints": [
-            "Look at the chapter's subtitle.",
-            "The author of the chapter is the one asking.",
+            "Look at the chapter title's bracket and the name printed beside it.",
+            "The writer named with the chapter is the one asking.",
             "प्रश्न: ___; उत्तर: ___",
             "Yatindra Mishra asks; Lata Mangeshkar answers."
           ],
@@ -1766,7 +1772,7 @@
           "verified": {
             "solverAnswer": "लेखक (साक्षात्कारकर्ता) प्रश्न पूछते हैं, लता मंगेशकर उत्तर देती हैं",
             "agrees": true,
-            "note": "Agrees in structure. Cannot independently confirm from the 2026-27 गंगा text that the interviewer is यतींद्र मिश्र; H1 and H2 also assume a chapter subtitle that I could not check. Verify against the book."
+            "note": "Verified 2026-10-02 against the NCERT गंगा prelims PDF (ncert.nic.in/textbook/pdf/ihga1ps.pdf) table of contents: chapter 4 is 'ऐसी भी बातें होती हैं (लता मंगेशकर से साक्षात्कार)', author यतींद्र मिश्र. The bracket is part of the title, so the hints now say 'title's bracket'. That the named author is the interviewer is inferred from the genre (a साक्षात्कार's credited author is the interviewer); the chapter body was not checked."
           }
         },
         {
@@ -1793,7 +1799,7 @@
           "verified": {
             "solverAnswer": "साक्षात्कार (भेंटवार्ता/इंटरव्यू)",
             "agrees": true,
-            "note": "Agrees."
+            "note": "Agrees. H1 ('title bracket') checked against the NCERT गंगा TOC (ihga1ps.pdf): the title reads 'ऐसी भी बातें होती हैं (लता मंगेशकर से साक्षात्कार)'."
           }
         },
         {
@@ -2183,14 +2189,14 @@
             "prompt_hi": "इनमें से कौन-सी पंक्ति यात्रा-वृत्तांत जैसी है?",
             "options": [
               {
-                "text": "सुबह पाँच बजे हमारी बस चली; खिड़की से नारियल के पेड़ भागते दिखे और मुझे पहली बार समुद्र की नमकीन हवा महसूस हुई।",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "पहले मदुरै, फिर तिरुनेलवेली, फिर कन्याकुमारी।",
                 "misconceptionId": "c9-hindi-ch05-t01-mc-travel-story",
                 "correct": false
+              },
+              {
+                "text": "सुबह पाँच बजे हमारी बस चली; खिड़की से नारियल के पेड़ भागते दिखे और मुझे पहली बार समुद्र की नमकीन हवा महसूस हुई।",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "एक जंगल में एक बातूनी कछुआ रहता था जो उड़ना चाहता था।",
@@ -2216,11 +2222,6 @@
             "prompt_hi": "कन्याकुमारी पर कौन-से तीन जल मिलते हैं?",
             "options": [
               {
-                "text": "बंगाल की खाड़ी, अरब सागर और हिंद महासागर",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "गंगा, यमुना और सरस्वती नदियाँ",
                 "misconceptionId": "c9-hindi-ch05-t01-mc-three-seas",
                 "correct": false
@@ -2229,6 +2230,11 @@
                 "text": "कावेरी, कृष्णा और गोदावरी नदियाँ",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "बंगाल की खाड़ी, अरब सागर और हिंद महासागर",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -2438,24 +2444,28 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Add two sensory adjectives: ‘समुद्र की ___ लहरें ___ चट्टानों से टकरा रही थीं।’",
-          "prompt_hi": "दो इंद्रियों वाले विशेषण भरो — ‘समुद्र की ___ लहरें ___ चट्टानों से टकरा रही थीं।’",
-          "answer": "कोई भी उपयुक्त विशेषण, जैसे ‘ऊँची/झागदार’ लहरें और ‘काली/कठोर’ चट्टानें",
+          "prompt_hi": "इंद्रियों से जुड़े दो विशेषण भरो — ‘समुद्र की ___ लहरें ___ चट्टानों से टकरा रही थीं।’",
+          "answer": "कोई भी उपयुक्त इंद्रिय-विशेषण, जैसे ‘गरजती/झागदार’ लहरें और ‘कठोर/खुरदुरी’ चट्टानें",
           "acceptable": [
+            "गरजती, कठोर",
+            "झागदार, खुरदुरी",
             "ऊँची, काली",
             "झागदार, कठोर",
+            "garajti, kathor",
+            "jhaagdar, khurduri",
             "unchi, kali",
             "jhaagdar, kathor"
           ],
           "hints": [
-            "What do the waves look like? The rocks?",
+            "What do the waves look or sound like? How would the rocks feel?",
             "Think of size, colour, sound or touch.",
-            "समुद्र की ___ (आकार) लहरें ___ (रंग) चट्टानों से…",
-            "e.g., ऊँची/झागदार लहरें, काली/कठोर चट्टानें."
+            "समुद्र की ___ (आवाज़ या रूप) लहरें ___ (छूने का एहसास) चट्टानों से…",
+            "e.g., गरजती/झागदार लहरें, कठोर/खुरदुरी चट्टानें."
           ],
           "verified": {
             "solverAnswer": "जैसे ‘झागदार/गरजती’ लहरें, ‘कठोर/काली’ चट्टानें",
             "agrees": true,
-            "note": "Agrees. Hindi wording \"दो इंद्रियों वाले विशेषण\" reads as \"adjectives with two senses\". Prefer \"इंद्रियों से जुड़े दो विशेषण\" (sensory). H3 also asks for आकार and रंग, which are both visual and so contradict \"two senses\"."
+            "note": "Fixed: prompt_hi now 'इंद्रियों से जुड़े दो विशेषण'; H3 now cues sound/sight + touch (two different senses) instead of आकार + रंग; answer examples match."
           }
         },
         {
@@ -2498,7 +2508,7 @@
           ],
           "hints": [
             "Is the mark under the letter a hook or a slash?",
-            "The 'ri' sound here is a मात्रा, not a joined र.",
+            "Compare the mark with द in each option: a hook under it (ृ), a joined र (्र), or an ि matra before it.",
             "द + ___ + श्य",
             "दृश्य — with the ऋ hook ृ."
           ],
@@ -2506,7 +2516,7 @@
           "verified": {
             "solverAnswer": "दृश्य",
             "agrees": true,
-            "note": "Agrees. H2 (\"a मात्रा, not a joined र\") settles the choice at rung 2."
+            "note": "Fixed: H2 now only describes the three marks; it no longer says which one is right."
           }
         },
         {
@@ -2524,14 +2534,14 @@
           ],
           "hints": [
             "Which letter doubles in chattan?",
-            "ट is doubled; द and र are joined in the last word.",
+            "Listen for one doubled sound in the second word and two sounds joined at the end of the last word.",
             "आख़िरी च___ान, समु___",
             "आख़िरी चट्टान, समुद्र."
           ],
           "verified": {
             "solverAnswer": "आख़िरी चट्टान, समुद्र",
             "agrees": true,
-            "note": "Agrees. H2 gives the full spelling of both conjuncts early."
+            "note": "Fixed: H2 now points at where the conjuncts are without giving the letters."
           }
         },
         {
@@ -2705,11 +2715,6 @@
             "prompt_hi": "शरीर के अलावा, नाटक में ‘रीढ़ की हड्डी’ किस बात की ओर संकेत करती है?",
             "options": [
               {
-                "text": "आत्मसम्मान और अपने विचारों पर टिके रहने की हिम्मत",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "केवल शंकर की झुकी हुई कमर",
                 "misconceptionId": "c9-hindi-ch06-t01-mc-spine-literal",
                 "correct": false
@@ -2718,6 +2723,11 @@
                 "text": "अच्छी सेहत के लिए व्यायाम",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "आत्मसम्मान और अपने विचारों पर टिके रहने की हिम्मत",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -2738,14 +2748,14 @@
             "prompt_hi": "नाटक की नज़र से, क्या उमा का बोलना सही था?",
             "options": [
               {
-                "text": "हाँ, उसने अपमान के ख़िलाफ़ आत्मसम्मान से सच कहा",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "नहीं, बड़ों के सामने लड़की को चुप ही रहना चाहिए",
                 "misconceptionId": "c9-hindi-ch06-t01-mc-uma-rude",
                 "correct": false
+              },
+              {
+                "text": "हाँ, उसने अपमान के ख़िलाफ़ आत्मसम्मान से सच कहा",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "नहीं, उसे रिश्ते के लिए झूठ बोलते रहना चाहिए था",
@@ -2771,14 +2781,14 @@
             "prompt_hi": "सही वर्तनी चुनो।",
             "options": [
               {
-                "text": "रीढ़",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "रीड़",
                 "misconceptionId": "c9-hindi-ch06-t01-mc-dha-rha",
                 "correct": false
+              },
+              {
+                "text": "रीढ़",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "रीड",
@@ -2836,14 +2846,14 @@
           ],
           "hints": [
             "What kind of bride did the visitor want?",
-            "He wanted a bride with less schooling.",
+            "Recall what Gopal Prasad says about girls who study in college.",
             "गोपाल प्रसाद को ___ बहू नहीं चाहिए थी।",
             "Gopal Prasad did not want a highly educated bride."
           ],
           "verified": {
             "solverAnswer": "गोपाल प्रसाद को ज़्यादा पढ़ी-लिखी बहू नहीं चाहिए थी; रिश्ता न टूटे",
             "agrees": true,
-            "note": "Agrees. H2 (\"He wanted a bride with less schooling\") states the answer at rung 2."
+            "note": "Fixed: H2 now points to Gopal Prasad's view without stating the answer."
           }
         },
         {
@@ -3090,7 +3100,7 @@
           "kind": "far_transfer",
           "difficulty": 4,
           "prompt_en": "Where do you still see people judged like goods — by marks, looks or skin colour? Give one example and say what Uma might reply.",
-          "prompt_hi": "आज भी लोगों को चीज़ों की तरह कहाँ परखा जाता है — नंबरों, रूप-रंग या रंग से? एक उदाहरण दो और बताओ कि उमा क्या जवाब देती।",
+          "prompt_hi": "आज भी लोगों को चीज़ों की तरह कहाँ परखा जाता है — नंबरों, रूप या रंग से? एक उदाहरण दो और बताओ कि उमा क्या जवाब देती।",
           "answer": "कोई वास्तविक उदाहरण (जैसे गोरे रंग वाले विज्ञापन, केवल नंबरों से बच्चे को आँकना) और उमा-जैसा जवाब — इंसान को सम्मान दो, उसके गुण और विचार देखो",
           "acceptable": [
             "रंग से परखना ग़लत",
@@ -3108,7 +3118,7 @@
           "verified": {
             "solverAnswer": "खुला उत्तर: रंग/नंबर/रूप से परखने का उदाहरण + सम्मान माँगने वाला उमा-जैसा जवाब",
             "agrees": true,
-            "note": "Agrees. Hindi wording \"रूप-रंग या रंग\" is redundant (रूप-रंग already includes रंग). Prefer \"नंबरों, रूप या रंग से\"."
+            "note": "Fixed: wording now 'नंबरों, रूप या रंग से'."
           }
         },
         {
@@ -3232,11 +3242,6 @@
             "prompt_hi": "निबंध के विचार से, कौन-सा काम देश को ज़्यादा बनाता है?",
             "options": [
               {
-                "text": "स्टेशन पर कचरा न फैलाना और रास्ता भूले यात्री की मदद करना",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "केवल 15 अगस्त को ज़ोर से नारे लगाना",
                 "misconceptionId": "c9-hindi-ch07-t01-mc-big-acts",
                 "correct": false
@@ -3245,6 +3250,11 @@
                 "text": "दूसरे देशों की बुराई करना",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "स्टेशन पर कचरा न फैलाना और रास्ता भूले यात्री की मदद करना",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -3298,14 +3308,14 @@
             "prompt_hi": "सही वर्तनी चुनो।",
             "options": [
               {
-                "text": "राष्ट्र",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "राश्ट्र",
                 "misconceptionId": "c9-hindi-ch07-t01-mc-sha-shha",
                 "correct": false
+              },
+              {
+                "text": "राष्ट्र",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "रास्ट्र",
@@ -3563,7 +3573,14 @@
           "prompt_hi": "सही वर्तनी कौन-सी है — राष्ट्र, राश्ट्र, रास्ट्र?",
           "answer": "राष्ट्र",
           "acceptable": [
-            "rashtra"
+            "राष्ट्र",
+            "पहला",
+            "पहला वाला",
+            "मूर्धन्य ष वाला",
+            "पेट-कटा ष वाला",
+            "pehla",
+            "pehla wala",
+            "murdhanya sh wala"
           ],
           "hints": [
             "Which sibilant likes to sit before ट?",
@@ -3575,7 +3592,7 @@
           "verified": {
             "solverAnswer": "राष्ट्र",
             "agrees": true,
-            "note": "Agrees. The romanized acceptable \"rashtra\" is the same for राष्ट्र and राश्ट्र, so it cannot grade this श/ष item."
+            "note": "Fixed: removed romanized 'rashtra' (same for राष्ट्र and राश्ट्र). Acceptables are now the Devanagari form, the option position (पहला), or the letter named unambiguously (मूर्धन्य/पेट-कटा ष)."
           }
         },
         {
@@ -3750,14 +3767,14 @@
             "prompt_hi": "‘चंदन और पानी’ की जोड़ी में चंदन कौन है?",
             "options": [
               {
-                "text": "प्रभु (ईश्वर)",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "भक्त (कवि)",
                 "misconceptionId": "c9-hindi-ch08-t01-mc-pair-flip",
                 "correct": false
+              },
+              {
+                "text": "प्रभु (ईश्वर)",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "कोई पेड़",
@@ -3783,11 +3800,6 @@
             "prompt_hi": "‘प्रभु दीपक, भक्त बाती’ — इसमें कौन-सा अलंकार है?",
             "options": [
               {
-                "text": "रूपक — प्रभु को दीपक ही मान लिया",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "उपमा — क्योंकि तुलना है",
                 "misconceptionId": "c9-hindi-ch08-t01-mc-rupak-upma",
                 "correct": false
@@ -3796,6 +3808,11 @@
                 "text": "अनुप्रास — क्योंकि अक्षर दोहराए हैं",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "रूपक — प्रभु को दीपक ही मान लिया",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -3816,14 +3833,14 @@
             "prompt_hi": "कविता में ‘बिना’ की जगह ‘बिनु’ क्यों है?",
             "options": [
               {
-                "text": "यह उस समय की लोकभाषा (ब्रज/अवधी) का रूप है",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "कवि से वर्तनी की ग़लती हुई",
                 "misconceptionId": "c9-hindi-ch08-t01-mc-old-word-wrong",
                 "correct": false
+              },
+              {
+                "text": "यह उस समय की लोकभाषा (ब्रज/अवधी) का रूप है",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "छापने वाले ने ग़लत छाप दिया",
@@ -4273,14 +4290,14 @@
             "prompt_hi": "राम ने परशुराम से विनम्रता से बात क्यों की?",
             "options": [
               {
-                "text": "वे स्थिति शांत करना और मुनि का सम्मान करना चाहते थे",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "वे परशुराम के फरसे से डर गए थे",
                 "misconceptionId": "c9-hindi-ch09-t01-mc-ram-fear",
                 "correct": false
+              },
+              {
+                "text": "वे स्थिति शांत करना और मुनि का सम्मान करना चाहते थे",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "उन्हें धनुष तोड़ने का पता ही नहीं था",
@@ -4306,11 +4323,6 @@
             "prompt_hi": "एक खिलाड़ी ने डींग मारी थी — ‘मैं तो छक्के ही मारता हूँ’ — और वह शून्य पर आउट हो गया। साथी कहता है — ‘वाह, आज तो आपके छक्कों ने कमाल कर दिया!’ यह क्या है?",
             "options": [
               {
-                "text": "व्यंग्य — उलटा कहकर डींग का मज़ाक",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "सच्ची तारीफ़",
                 "misconceptionId": "c9-hindi-ch09-t01-mc-sarcasm-literal",
                 "correct": false
@@ -4319,6 +4331,11 @@
                 "text": "एक सवाल",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "व्यंग्य — उलटा कहकर डींग का मज़ाक",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -4339,11 +4356,6 @@
             "prompt_hi": "किस छंद में चार चरण होते हैं और हर चरण में 16 मात्राएँ?",
             "options": [
               {
-                "text": "चौपाई",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "दोहा",
                 "misconceptionId": "c9-hindi-ch09-t01-mc-chaupai-doha",
                 "correct": false
@@ -4352,6 +4364,11 @@
                 "text": "सोरठा",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "चौपाई",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -4588,7 +4605,7 @@
           ],
           "hints": [
             "Which name has 'four' hidden in it?",
-            "चौ = चार.",
+            "Recall any दोहा you know (Kabir's, say) — does it have two lines or four?",
             "चार चरण = ___; 13-11 = ___",
             "चौपाई has 4 × 16; दोहा has 13 + 11 per line."
           ],
@@ -4596,7 +4613,7 @@
           "verified": {
             "solverAnswer": "चौपाई (4 × 16), दोहा (13 + 11)",
             "agrees": true,
-            "note": "Agrees. H2 (\"चौ = चार\") gives half the answer at rung 2."
+            "note": "Fixed: H2 now asks the child to recall a दोहा instead of stating चौ = चार."
           }
         },
         {
@@ -4864,11 +4881,6 @@
             "prompt_hi": "‘शतदल’ का अर्थ क्या है?",
             "options": [
               {
-                "text": "सौ पंखुड़ियों वाला, यानी कमल",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "सौ दल या सेनाएँ",
                 "misconceptionId": "c9-hindi-ch10-t01-mc-shatdal",
                 "correct": false
@@ -4877,6 +4889,11 @@
                 "text": "सौ बार दलना",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "सौ पंखुड़ियों वाला, यानी कमल",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -5105,18 +5122,19 @@
           "acceptable": [
             "शुभ्र तुषार सागर",
             "श, ष, स",
-            "shubhra tushar sagar"
+            "तालव्य श, मूर्धन्य ष, दंत्य स",
+            "talavya, murdhanya, dantya"
           ],
           "hints": [
             "Say each slowly — where is your tongue?",
-            "Snow word takes the curled-back sibilant.",
-            "___ुभ्र, तु___ार, ___ागर",
+            "The three blanks take three different letters; no letter repeats.",
+            "शुभ्र ‘शिव’ वाले अक्षर से, सागर ‘सात’ वाले अक्षर से; तु___ार में बचा हुआ अक्षर।",
             "शुभ्र, तुषार, सागर."
           ],
           "verified": {
             "solverAnswer": "शुभ्र, तुषार, सागर",
             "agrees": true,
-            "note": "Agrees. The romanized acceptable \"shubhra tushar sagar\" cannot tell तुषार from तुशार, so it cannot grade a श/ष/स item. H2 also names the ष slot."
+            "note": "Fixed: removed romanized 'shubhra tushar sagar' (cannot tell तुषार from तुशार); added names of the letters (तालव्य/मूर्धन्य/दंत्य), which are unambiguous. H2 no longer points at the ष slot; it states a constraint only."
           }
         },
         {
@@ -5390,14 +5408,14 @@
             "prompt_hi": "अंग्रेज़ों ने झाँसी पर कब्ज़ा क्यों किया?",
             "options": [
               {
-                "text": "हड़प नीति से — राजा की मृत्यु के बाद दत्तक पुत्र को उत्तराधिकारी नहीं माना",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "क्योंकि रानी पहले युद्ध में हार गई थीं",
                 "misconceptionId": "c9-hindi-ch11-t01-mc-hadap",
                 "correct": false
+              },
+              {
+                "text": "हड़प नीति से — राजा की मृत्यु के बाद दत्तक पुत्र को उत्तराधिकारी नहीं माना",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "क्योंकि झाँसी ने ख़ुद राज्य सौंप दिया",
@@ -5422,9 +5440,13 @@
           "prompt_hi": "रानी लक्ष्मीबाई का बचपन का नाम क्या था?",
           "answer": "मनु (मणिकर्णिका)",
           "acceptable": [
+            "मनु",
             "manu",
             "मणिकर्णिका",
-            "manikarnika"
+            "manikarnika",
+            "छबीली",
+            "chhabili",
+            "chabili"
           ],
           "hints": [
             "It is a short, loving name.",
@@ -5435,7 +5457,7 @@
           "verified": {
             "solverAnswer": "मनु (मणिकर्णिका)",
             "agrees": true,
-            "note": "Agrees. Consider also accepting \"छबीली\", the nickname the poem itself uses."
+            "note": "Fixed: added छबीली (the poem's own nickname for her) and its romanizations, plus Devanagari मनु."
           }
         },
         {
@@ -5848,11 +5870,6 @@
             "prompt_hi": "कवि क्यों चाहता है कि सावन उसके माता-पिता से कहे कि वह ख़ुश है?",
             "options": [
               {
-                "text": "ताकि माता-पिता उसकी चिंता में दुखी न हों",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "क्योंकि उसे झूठ बोलने की आदत है",
                 "misconceptionId": "c9-hindi-ch12-t01-mc-why-hide",
                 "correct": false
@@ -5861,6 +5878,11 @@
                 "text": "क्योंकि उसे घर की याद नहीं आती",
                 "misconceptionId": null,
                 "correct": false
+              },
+              {
+                "text": "ताकि माता-पिता उसकी चिंता में दुखी न हों",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -5914,14 +5936,14 @@
             "prompt_hi": "सही रूप चुनो — ‘मेरी चार ___ हैं।’ (बहन)",
             "options": [
               {
-                "text": "बहनें",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "बहनों",
                 "misconceptionId": "c9-hindi-ch12-t01-mc-plural-bahan",
                 "correct": false
+              },
+              {
+                "text": "बहनें",
+                "misconceptionId": null,
+                "correct": true
               },
               {
                 "text": "बहनियाँ",
@@ -6008,14 +6030,14 @@
           ],
           "hints": [
             "It is the same number for both.",
-            "The number is between three and five.",
+            "Picture the line where the brothers are called arms (भुजा) and the sisters love (प्यार).",
             "___ भाई और ___ बहनें",
             "Four brothers and four sisters."
           ],
           "verified": {
             "solverAnswer": "चार भाई और चार बहनें",
             "agrees": true,
-            "note": "Agrees. H2 (\"between three and five\") gives the number at rung 2; replace it with a non-numeric cue."
+            "note": "Fixed: H2 replaced with a non-numeric cue pointing to the line, not the number."
           }
         },
         {

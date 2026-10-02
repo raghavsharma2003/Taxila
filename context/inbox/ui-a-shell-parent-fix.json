@@ -1,0 +1,61 @@
+{
+ "nodes": [
+  {
+   "id": "ds-parent-gate-lock-on-exit",
+   "kind": "decision",
+   "title": "Parent corner locks on every exit (unmount, pagehide, tab hidden, P8 handover, picker/child-shell mount); the onboarding P7 PIN set never opens it",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ds-parent-gate-consent-grade",
+   "kind": "decision",
+   "title": "Consent, add-a-child, profile edit (name/class/board/medium/language/teacher) and erasure need an unlocked corner once a PIN exists (requireParentIfPinSet); avatar/interests stay child-writable",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ds-pin-reset-interim-delay",
+   "kind": "decision",
+   "title": "INTERIM forgotten-PIN reset: account password (5 tries / 24 h, insert-then-count) + a 24 h delay shown on the gate, cancelled by an unlock with the current PIN; no off-device factor yet",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "parent-gate-e2e-2026-10-02",
+   "kind": "measurement",
+   "title": "tests/parent-gate-e2e.mjs 35/35 PASS (Neon, n=1 run): onboarding PIN leaves corner locked; burst of 8 wrong PINs → 4 'wrong' + lockout; burst of 7 wrong passwords → 0 checked; Playwright walk 12/12",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ui-a-gaps-2026-10-02",
+   "kind": "rejection",
+   "title": "NOT built in ui-a (recorded so coverage is not implied): /who speaks the name on tap; P6 NameSayer + optional first subject; P7 first-day cap ≥ child path; P8 MB estimate on cellular; WhatsApp/email notice of a PIN reset or lockout; Class 1-4 spoken summary as the DEFAULT lesson view (a speaker is offered, not autoplayed)",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "ds-parent-gate-lock-on-exit",
+   "rel": "part_of",
+   "dst": "ds-parent-gate-pin-default"
+  },
+  {
+   "src": "ds-parent-gate-consent-grade",
+   "rel": "part_of",
+   "dst": "ds-parent-gate-pin-default"
+  },
+  {
+   "src": "ds-pin-reset-interim-delay",
+   "rel": "part_of",
+   "dst": "ds-parent-gate-pin-default"
+  },
+  {
+   "src": "ds-parent-gate-lock-on-exit",
+   "rel": "measured_by",
+   "dst": "parent-gate-e2e-2026-10-02"
+  }
+ ],
+ "md": {
+  "decisions": "## ds-parent-gate-lock-on-exit\n**The Parent corner locks on every exit, and onboarding never leaves it open.** The unlock is per guardian session and the child shares the cookie, so an unlock that outlives the grown-up's visit is an open door (review blocker: P7 setPin stamped a 10-minute unlock and P8 'Abhi' handed the phone straight to the child). Now: P7's PIN set (no password, fresh session) does not stamp an unlock; the Gate locks (keepalive POST /api/parent/lock) on unmount unless the next path is another gated screen, on pagehide and when the tab goes hidden; P8, /who and every child route lock on mount. Reverse if: the Android app gets a device-credential gate (BiometricPrompt) that re-asks per entry, at which point the server unlock can be shortened to per-request. (2026-10-02)\n\n## ds-parent-gate-consent-grade\n**Consent-grade account actions need the PIN once one exists.** POST /api/consent, POST /api/children (when the guardian already has a child), PATCH /api/children for name/class/board/medium/language/teacher, DELETE /api/children → requireParentIfPinSet (open before any PIN = first run). The child's own picks (avatar, interests) stay child-writable because the child shell PATCHes them. Client: /start/consent, /start/child, /start/controls sit under GateIfPin. A first PIN set outside the fresh (< 60 min) onboarding session needs the account password, so a child reaching the gate first cannot claim the corner; controls with no PIN follow the same rule. Reverse if: OTP/device-credential auth lands and replaces the PIN as the grown-up proof. (2026-10-02)\n\n## ds-pin-reset-interim-delay\n**Forgotten-PIN reset is an INTERIM stand-in for §6.2 until OTP ships.** Password tries (reset, first set outside onboarding, PIN change) are counted insert-then-count in audit (PW_MAX_TRIES=5 per 24 h; of any concurrent burst at most 5 see a count within the limit), checked with async scrypt, plus an 8/min in-process burst limit per session/IP. A correct password records a pending reset (audit `pin_reset_pending`, hash server-only) that takes effect after RESET_DELAY_H=24 h; the gate shows it; an unlock with the current PIN cancels it; a reset never opens the corner. No WhatsApp/email notice yet (audit is the record). Kept in audit, not a new column, so no migration is needed at deploy. Reverse if: OTP to the guardian's phone ships (then: OTP → immediate reset, drop the delay). (2026-10-02)",
+  "measurements": "## parent-gate-e2e-2026-10-02\n`NODE_USE_ENV_PROXY=1 node tests/parent-gate-e2e.mjs` against Neon, one run, 35/35 PASS: onboarding PIN set → overview 403 {gate:'locked'}; consent/add/edit-class/delete/controls 403 once a PIN exists, avatar PATCH 200; parallel burst of 8 wrong PINs → 4 'wrong PIN', 1 lockout, rest wait/429 (pre-fix all 8 would read the same `failed`); burst of 7 wrong passwords → 0 checked (all saw count > 5); reset pending → new PIN refused until delay, cancelled by current PIN, applied after (delay forced via SQL). Playwright (Chromium, dev server, 360x640) walk 12/12: consent rows each have a speaker, handover locked, child at /parent meets PIN pad, browser Back out of corner → 403, /who 'Add a child' and post-setup /start/consent gated, P6 comfort saved via P7. Read-aloud: GET /api/parent/speak consent row → 200 audio/mpeg 172 KB (Azure gpt-4o-mini-tts), cached repeat 53 ms. (2026-10-02)",
+  "rejected": "## ui-a-gaps-2026-10-02\n**Not built in ui-a — listed so coverage is not implied.** /who does not speak the child's name on tap; P6 has no NameSayer and no optional first subject; P7 does not enforce 'first-day cap ≥ child path'; P8 has no MB estimate on cellular; no WhatsApp/email notice of a PIN reset or lockout (audit only); the Class 1-4 lesson card OFFERS a spoken summary (speaker) but it is not the default view; the read-aloud voice is the default TTS voice in English sentences (not measured by ear, not Hindi-first). (2026-10-02)"
+ }
+}

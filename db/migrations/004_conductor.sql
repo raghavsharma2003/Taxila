@@ -6,11 +6,12 @@
 --   complete_job:     job -> workspace (read) -> child_seq (via ingest_event).
 --   fire_wakeups:     wakeup (SKIP LOCKED) -> each child's child_seq (the ONLY multi-child_seq writer).
 --   domain write + ingest_event: own domain row -> child_seq.
--- Every child-keyed row cascades on the child's erasure.
+-- Every child-keyed row cascades on the child's erasure (notification: fixed in 004_conductor_notification.sql;
+-- notify_slot.child_id is a deliberate set-null tombstone).
 --
 -- scripts/migrate.mjs splits on a ';' at END OF LINE and runs one statement per HTTP call. Inside every
 -- $$ body below no line ends with ';' (each internal statement ends '; --'), so a function is one statement.
--- tests/conductor-migration.test.mjs checks that split. Everything is re-runnable (if not exists / or replace).
+-- tests/conductor-planner.test.mjs checks that split. Everything is re-runnable (if not exists / or replace).
 
 -- ULID (Crockford base32, 48-bit ms time + 80 random bits): event ids minted inside SQL (complete_job, fire_wakeups).
 create or replace function gen_ulid() returns text language plpgsql volatile as $$
@@ -277,6 +278,7 @@ returns table (child_id uuid, dedupe text, seq bigint) language sql as $$
 $$;
 
 -- ───────────── notification outbox (§4.10; the Notifier itself is M1) ─────────────
+-- Superseded shape: 004_conductor_notification.sql aligns this table with §4.10.3 (cascade, cls, status enum, …).
 create table if not exists notification (
   id          bigint generated always as identity primary key,
   child_id    uuid references child(id) on delete set null,

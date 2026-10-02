@@ -3,8 +3,8 @@
 // lessons sit one level down as plain facts; no week-on-week deltas, no tallies (R10).
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Button, ButtonLink, Card, Icon, StateChip, readLang } from "../ui/index.ts";
-import { parentApi, type SkillLine } from "./api.ts";
+import { Button, ButtonLink, Card, Icon, Speaker, StateChip, readLang } from "../ui/index.ts";
+import { parentApi, speakUrl, type SkillLine } from "./api.ts";
 import { EvidenceSheet } from "./EvidenceSheet.tsx";
 import { PageState, ParentShell, useChildren, useParentData } from "./Shell.tsx";
 import { fmtDay, fmtTime } from "./words.ts";
@@ -52,6 +52,10 @@ export default function ParentHome() {
           <div className="stack">
             <p className="t-meta">{name} · Class {data.child.classLevel} · {data.child.board.toUpperCase()}</p>
             <Card title="Is hafte · this week">
+              {/* Read-aloud first (PX10): the same paragraph, spoken (Azure TTS, composed on the server). */}
+              <Speaker key={cid} src={speakUrl({ what: "hafte", childId: cid })} label="Listen to this week" className="speaker speaker-wide">
+                <span>Suno · Listen</span>
+              </Speaker>
               {data.isHafte.canNow || data.isHafte.tricky ? (
                 <div className="stack">
                   {data.isHafte.canNow && <SkillLink s={data.isHafte.canNow} cid={cid} lead="Can now do:" />}
@@ -64,7 +68,7 @@ export default function ParentHome() {
 
             {data.homeTask && (
               <Card turn title="Ghar par ek kaam · from the last lesson">
-                <p className="t-meta">From the lesson on {fmtDay(data.homeTask.at)}</p>
+                <p className="t-note">From the lesson on {fmtDay(data.homeTask.at)}</p>
                 <p>{data.homeTask.text}</p>
                 {task ? (
                   <p className="row"><Icon name="tick" /> {task === "done" ? "Noted. Thank you." : "That is fine. It stays here."}</p>
@@ -78,14 +82,14 @@ export default function ParentHome() {
             )}
 
             <Card title="Aur dekhein · more">
-              <p className="t-meta">This week: {data.week.lessons} {data.week.lessons === 1 ? "lesson" : "lessons"}, {data.week.minutes} minutes.</p>
+              <p className="t-note">This week: {data.week.lessons} {data.week.lessons === 1 ? "lesson" : "lessons"}, {data.week.minutes} minutes.</p>
               <ul className="link-list">
                 <li><Link to={`/parent/${cid}/syllabus`}>Skills and syllabus <Icon name="chevron" size={18} /></Link></li>
                 <li><Link to={`/parent/${cid}/lessons`}>Lessons <Icon name="chevron" size={18} /></Link></li>
                 <li><Link to={`/parent/${cid}/teaching`}>How she teaches {name} <Icon name="chevron" size={18} /></Link></li>
                 <li><Link to="/parent/ptm">Talk to her about {name} (PTM) <Icon name="chevron" size={18} /></Link></li>
               </ul>
-              <p className="t-meta">Last updated {fmtTime(data.updatedAt)}</p>
+              <p className="t-note">Last updated {fmtTime(data.updatedAt)}</p>
             </Card>
           </div>
 

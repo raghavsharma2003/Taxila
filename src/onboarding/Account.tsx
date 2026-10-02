@@ -16,7 +16,7 @@ function NoCallsPromise() {
 
 /** Where the OTP field goes once a provider is approved (manual entry first, autofill as enhancement). */
 function OtpSlot() {
-  return <p className="t-meta">Signing in with a code sent to your phone is coming. For now, use an email and a password.</p>;
+  return <p className="t-note">Signing in with a code sent to your phone is coming. For now, use an email and a password.</p>;
 }
 
 export function AccountStep() {
@@ -33,7 +33,8 @@ export function AccountStep() {
 
   useEffect(() => { loadMe().then(setMe, () => setMe(null)); }, []);
   const after = (m: Me | null) => {
-    if (next && next.startsWith("/")) return nav(next, { replace: true });
+    // Same-origin paths only: "//host" would make pushState throw (cross-origin URL).
+    if (next && /^\/(?!\/)/.test(next) && !next.startsWith("/\\")) return nav(next, { replace: true });
     if (m && m.children.length && mode === "login") return nav("/who", { replace: true });
     nav("/start/trust");
   };
@@ -74,7 +75,7 @@ export function AccountStep() {
       <StepFrame step="phone" title="This part is for a grown-up"
         why="Next we ask for your details. Press and hold the button to show you are the parent or guardian.">
         <HoldButton ms={1500} block onConfirm={() => setGateOpen(true)}>I am the parent</HoldButton>
-        <p className="t-meta">Hold for about 2 seconds. If you let go early, nothing happens.</p>
+        <p className="t-note">Hold for about 2 seconds. If you let go early, nothing happens.</p>
       </StepFrame>
     );
   }
@@ -103,7 +104,7 @@ export function AccountStep() {
         <Field label="Email" type="email" autoComplete="email" inputMode="email" value={d.email ?? ""} onChange={(e) => set({ email: e.target.value.trim() })} required />
         <Field label="Password" type="password" autoComplete={signup ? "new-password" : "current-password"} value={password}
           hint={signup ? "At least 8 characters." : undefined} onChange={(e) => setPassword(e.target.value)} required />
-        {signup && <p className="t-meta">By continuing you confirm you are 18 or older and this child's parent or guardian.</p>}
+        {signup && <p className="t-note">By continuing you confirm you are 18 or older and this child's parent or guardian.</p>}
         <ErrorNote>{err}</ErrorNote>
         <Button type="submit" block disabled={busy}>{busy ? "Please wait" : signup ? "Create account" : "Sign in"}</Button>
         <Button variant="quiet" onClick={() => { setErr(null); setMode(signup ? "login" : "signup"); }}>

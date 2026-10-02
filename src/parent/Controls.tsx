@@ -47,7 +47,7 @@ export default function Controls() {
           <section className="card card-flat stack-sm">
             <h2 className="t-h3 row"><Icon name="clock" /> Time each day</h2>
             <MinutesStepper value={c.dailyMinutes} onChange={(n) => patch({ dailyMinutes: n })} />
-            <p className="t-meta">At the limit she finishes at the next natural stop. Your child never sees a countdown.</p>
+            <p className="t-note">At the limit she finishes at the next natural stop. Your child never sees a countdown.</p>
           </section>
           <section className="card card-flat stack-sm">
             <h2 className="t-h3">Allowed hours</h2>
@@ -60,7 +60,7 @@ export default function Controls() {
             <h2 className="t-h3">She calls {current.first_name}</h2>
             <TileGroup label="Address" columns={2} value={c.address} onChange={(v) => patch({ address: v as "tum" | "aap" })}
               options={[{ value: "tum", label: "tum" }, { value: "aap", label: "aap" }]} />
-            {current.class_level >= 5 && <p className="t-meta">From Class 5 your child can change this themselves.</p>}
+            {current.class_level >= 5 && <p className="t-note">From Class 5 your child can change this themselves.</p>}
           </section>
           <section className="card card-flat stack-sm">
             <h2 className="t-h3">Seeing and hearing</h2>
@@ -73,7 +73,7 @@ export default function Controls() {
             <h2 className="t-h3">Weekly report</h2>
             <TileGroup label="Where reports go" columns={2} value={c.reportChannel} onChange={(v) => patch({ reportChannel: v as "whatsapp" | "app" })}
               options={[{ value: "whatsapp", label: "WhatsApp" }, { value: "app", label: "Only in the app" }]} />
-            <p className="t-meta">WhatsApp reports start when the WhatsApp service is connected.</p>
+            <p className="t-note">WhatsApp reports start when the WhatsApp service is connected.</p>
           </section>
           <ErrorNote>{saveErr}</ErrorNote>
           <div className="row sticky-save">

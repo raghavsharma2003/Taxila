@@ -44,3 +44,15 @@ export async function request<T>(method: "PATCH" | "DELETE", path: string, body:
 }
 
 export const errText = (e: unknown) => (e instanceof Error ? e.message : String(e));
+
+/**
+ * Lock the Parent corner for this session, surviving a page unload (keepalive). Fire-and-forget: used on
+ * every exit from the corner, at the P8 handover, and when the picker or a child screen mounts. A signed-out
+ * 401 is fine to ignore.
+ */
+export function lockBeacon(): void {
+  try {
+    void fetch("/api/parent/lock", { method: "POST", credentials: "same-origin", keepalive: true, headers: { "content-type": "application/json" }, body: "{}" })
+      .catch(() => {});
+  } catch { /* no fetch: nothing to lock from here */ }
+}

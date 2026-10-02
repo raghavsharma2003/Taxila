@@ -19,6 +19,7 @@ function Stub({ name }: { name: string }) {
         <h1 className="t-title">{name}</h1>
         <p className="muted">This screen is still being built.</p>
         <Link to="/who">Back to the picker</Link>
+        <Link to="/help" className="t-note">Help and helplines</Link>
       </div>
     </main>
   );

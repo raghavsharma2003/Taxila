@@ -7,14 +7,21 @@
 
 /** @typedef {{ query: (text: string, params?: unknown[]) => Promise<{ rows: any[], rowCount: number }>, release: (e?: unknown) => void }} PgClient */
 
-let cfg = { url: null, driver: null, max: null };
+let cfg = { url: null, driver: null, max: null, statementTimeoutMs: null };
 let _pool = null;
 
 /** Point the Conductor at a database (tests, the worker's direct URL). Resets the pool. */
-export async function configure({ url, driver, max } = {}) {
+/** statementTimeoutMs: `set statement_timeout` on every new pool connection (the worker, on the DIRECT URL). */
+export async function configure({ url, driver, max, statementTimeoutMs } = {}) {
   if (_pool) await closePool();
-  cfg = { url: url ?? null, driver: driver ?? null, max: max ?? null };
+  cfg = { url: url ?? null, driver: driver ?? null, max: max ?? null, statementTimeoutMs: statementTimeoutMs ?? null };
 }
+const withTimeout = (pool) => {
+  const ms = Math.floor(Number(cfg.statementTimeoutMs) || 0);
+  // queued before any caller query on that client, so every statement on it runs under the timeout
+  if (ms > 0) pool.on("connect", (c) => { c.query(`set statement_timeout = ${ms}`).catch((e) => console.error("[conductor] statement_timeout", e.message)); });
+  return pool;
+};
 
 /** The unpooled Neon endpoint for a pooled URL (host `ep-x-pooler.…` → `ep-x.…`). */
 export const directUrl = (url) => url.replace(/(ep-[a-z0-9-]+?)-pooler\./, "$1.");
@@ -31,12 +38,12 @@ async function makePool() {
     const pool = new pg.Pool({ connectionString: url.replace(/[?&]channel_binding=require/, (m) => (m[0] === "?" ? "?" : "")),
       max, idleTimeoutMillis: 60_000, connectionTimeoutMillis: 10_000, ssl: { rejectUnauthorized: true } });
     pool.on("error", (e) => console.error("[conductor] pg pool error", e.message));
-    return pool;
+    return withTimeout(pool);
   }
   const { Pool } = await import("@neondatabase/serverless");
   const pool = new Pool({ connectionString: url, max, idleTimeoutMillis: 30_000, connectionTimeoutMillis: 15_000 });
   pool.on("error", (e) => console.error("[conductor] neon pool error", e.message));
-  return pool;
+  return withTimeout(pool);
 }
 
 export async function pool() {
@@ -55,13 +62,14 @@ export async function one(text, params = []) { return (await q(text, params))[0]
 
 /**
  * Run fn(t) inside ONE interactive transaction. t.q/t.one read results mid-transaction. Any throw rolls back.
+ * readOnly: `begin transaction read only`, so Postgres itself refuses any write (25006) — replay uses it (I-R9).
  * @template T @param {(t: { q: typeof q, one: typeof one }) => Promise<T>} fn @returns {Promise<T>}
  */
-export async function withTx(fn) {
+export async function withTx(fn, { readOnly = false } = {}) {
   const c = await (await pool()).connect();
   let broken = false;
   try {
-    await c.query("begin");
+    await c.query(readOnly ? "begin transaction read only" : "begin");
     const t = {
       q: async (text, params = []) => (await c.query(text, params)).rows,
       one: async (text, params = []) => (await c.query(text, params)).rows[0] ?? null,

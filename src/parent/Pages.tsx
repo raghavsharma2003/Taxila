@@ -65,7 +65,7 @@ export function Data() {
             <h2 className="t-h3 row"><Icon name="trash" /> Delete {current.first_name}'s profile</h2>
             <p>This deletes {current.first_name}'s profile, every lesson, every answer and the evidence behind every skill, and the consent rows for this child. It cannot be undone.</p>
             <HoldButton ms={2000} variant="danger" onConfirm={del} hint="Press and hold">Hold to delete {current.first_name}'s profile</HoldButton>
-            <p className="t-meta">Hold for 2 seconds. Letting go early cancels.</p>
+            <p className="t-note">Hold for 2 seconds. Letting go early cancels.</p>
           </section>
         )}
         <section className="card card-flat stack-sm">

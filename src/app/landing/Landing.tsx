@@ -69,7 +69,14 @@ export default function Landing() {
   useSurface({ surface: "parent" });
   const [speaking, setSpeaking] = useState<string | null>(null);
   const [signedIn, setSignedIn] = useState(false);
-  useEffect(() => { loadMe().then((m) => setSignedIn(!!m), () => {}); }, []);
+  // Off the critical path (§7.3 budget): ask "signed in?" after first paint, when the browser is idle.
+  useEffect(() => {
+    const run = () => { loadMe().then((m) => setSignedIn(!!m), () => {}); };
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    if (w.requestIdleCallback) { const id = w.requestIdleCallback(run, { timeout: 2000 }); return () => w.cancelIdleCallback?.(id); }
+    const t = window.setTimeout(run, 300);
+    return () => window.clearTimeout(t);
+  }, []);
   useEffect(() => { document.title = "Taxila · an AI teacher who notices"; }, []);
 
   return (

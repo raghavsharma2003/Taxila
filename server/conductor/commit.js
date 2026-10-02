@@ -48,9 +48,11 @@ export function commit({ childId, token, expected, state, fromSeq, cursor, comma
 
     // 4. notification outbox (only safety/account intents pass the M0 guards; the Notifier is M1).
     for (const c of commands.filter((x) => x.kind === "notify")) {
-      await t.q(`insert into notification (child_id, guardian_id, dedupe, class, intent)
-        select $1, c.guardian_id, $2, $3, $4 from child c where c.id = $1 on conflict (guardian_id, dedupe) do nothing`,
-        [childId, c.dedupe, c.intent.class, JSON.stringify(c.intent)]);
+      // §4.10.3 columns (db/migrations/004_conductor_notification.sql); the window defaults to now → +7 days
+      await t.q(`insert into notification (child_id, guardian_id, dedupe, cls, intent, not_before, not_after, correlation_id)
+        select $1, c.guardian_id, $2, $3, $4, coalesce($5::timestamptz, now()), coalesce($6::timestamptz, now() + interval '7 days'), $7
+          from child c where c.id = $1 on conflict (guardian_id, dedupe) do nothing`,
+        [childId, c.dedupe, c.intent.class, JSON.stringify(c.intent), c.notBefore ?? null, c.notAfter ?? null, correlationId]);
     }
 
     // 5. brand-new rows (wait on nothing): plans, the recorded view, the decision record.

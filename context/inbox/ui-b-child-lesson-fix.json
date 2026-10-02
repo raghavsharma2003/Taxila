@@ -1,0 +1,26 @@
+{
+ "nodes": [
+  {
+   "id": "ui-child-home-from-server",
+   "kind": "decision",
+   "title": "Child home state comes from the server plan (GET /api/child/plan, requireChild) with a per-child plan-day marker as interim; never from router navigation state; another lesson only via POST /api/lesson/request",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ui-child-voice-on-cascade",
+   "kind": "decision",
+   "title": "Child voice lessons start on the cascade lane; UiBridge keeps the CascadeLink (wrapping its PCM stream into the phir-se buffer) and owns its push-to-talk state; open mic gated on headset detection + EchoGuard (2 flags demote)",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "ui-child-voice-on-cascade",
+   "rel": "implements",
+   "dst": "voice-lane-cascade-default"
+  }
+ ],
+ "md": {
+  "decisions": "## ui-child-home-from-server\n**Decision.** `homeState` on /c/:cid is read from the server on every home render (`src/child/day.ts`: `GET /api/child/plan?childId=` → `{ homeState, plan:{openLesson,window}, capRemaining, packReady }`). Until that endpoint exists, the finish tile writes a per-child marker keyed by the IST plan day carrying the `/api/lesson/end` answer; react-router `location.state` is no longer read. A child request for another lesson calls `POST /api/lesson/request { cid }` and navigates only on `granted` with a `lid`; a refusal (or the endpoint missing: 404) shows the resting shape once and the request is not offered again that day. Both endpoints must be `requireChild(req, childId)`-scoped. Why: review found the done home lived only in navigation state, so Bagiya then the house re-ringed the lesson tile (PD-G-RET1 negative control), and the client granted lessons past the cap. **Reverse** when the plan read lands: drop the marker and read only the server; if the marker is ever seen to disagree with the server on the same day, the server wins.\n\n## ui-child-voice-on-cascade\n**Decision.** `LessonScreen` starts voice as `runtime.start(cid, \"cascade\")`; mic logic keys on a spoken lane, not LessonMode (cascade reports `text`). `UiBridge.createLink` builds a CascadeLink for `ctx.cascade` (never a TextLink), copies its PCM stream into a WAV clip for phir se, mirrors its push-to-talk state (tap by default, set before connect), holds speech during pause, and offers a quiet stop that does not report a child barge-in. Open mic needs an Older child + headset label from enumerateDevices (EchoProbe not built) and is demoted after 2 EchoGuard flags. **Reverse** if on-device runs show headset labels misdetect (open mic on a loudspeaker) — then require the EchoProbe — or if the WAV copy measurably delays first audio."
+ }
+}

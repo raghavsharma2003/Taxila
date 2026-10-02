@@ -1,28 +1,41 @@
-// The Conductor substrate against the REAL Neon database (migration 004_conductor.sql applied): idempotent and
+// The Conductor substrate against a REAL Neon database (migration 004_conductor.sql applied): idempotent and
 // concurrent ingest, exactly-once timers, job locking and fencing, the step lease, has_more and replay.
-// Isolation by careful cleanup: one throwaway guardian + children, every row keyed by them cascades on the
-// guardian's delete; fire_wakeups / claimJobs are always narrowed to these children so production rows are never
-// touched. Skips when no DATABASE_URL is available (read from .env.local WITHOUT touching process.env, so other
-// test files in this process see an unchanged environment).
+//
+// NEVER the production branch. Runs only when CONDUCTOR_TEST_DATABASE_URL points at a DEDICATED Neon branch
+// (create one with Neon branching, e.g. `conductor-test`, and reset it from its parent between runs when it
+// drifts); skips when that is unset, and refuses (skips loudly) when its host is the production endpoint
+// (DATABASE_URL / .env.local). A production worker would otherwise race these tests (its ticker is not narrowed
+// to the test children, its claim loop is not narrowed to test.echo) and production would process test rows.
+// Every idem key, lessonId and job key is salted with a per-run id so two concurrent runs never collide, and
+// before() sweeps test guardians left by a killed run (after() is skipped on SIGINT / timeout).
 import { after, before, describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "fs";
 import { randomUUID } from "crypto";
 
 const envFile = new URL("../.env.local", import.meta.url);
-const URL_ = process.env.CONDUCTOR_TEST_DATABASE_URL || process.env.DATABASE_URL
-  || (existsSync(envFile) ? (readFileSync(envFile, "utf8").split("\n").find((l) => l.startsWith("DATABASE_URL=")) || "").slice(13).replace(/^"(.*)"$/, "$1") : "");
+const fromEnvFile = (name) => (existsSync(envFile) ? (readFileSync(envFile, "utf8").split("\n").find((l) => l.startsWith(name + "=")) || "").slice(name.length + 1).replace(/^"(.*)"$/, "$1") : "");
+const hostOf = (u) => { try { return new URL(u).hostname.replace(/-pooler\./, "."); } catch { return ""; } };
+const URL_ = process.env.CONDUCTOR_TEST_DATABASE_URL || fromEnvFile("CONDUCTOR_TEST_DATABASE_URL");
+const PROD = process.env.DATABASE_URL || fromEnvFile("DATABASE_URL");
+const SKIP = !URL_ ? "CONDUCTOR_TEST_DATABASE_URL not set (a dedicated Neon test branch; never production)"
+  : PROD && hostOf(URL_) === hostOf(PROD) ? "CONDUCTOR_TEST_DATABASE_URL is the PRODUCTION endpoint: refusing" : false;
+if (SKIP && URL_) console.error(`[conductor-db] ${SKIP}`);
+const RUN = randomUUID().slice(0, 8);                       // salts every globally-unique key of this run
 
 const C = await import("../server/conductor/index.js");
-const { configure, closePool, q, one } = await import("../server/conductor/pg.js");
+const { configure, closePool, q, one, withTx } = await import("../server/conductor/pg.js");
 const { registerJobKind } = await import("../server/conductor/config.js");
 const { upsertWakeupSql } = await import("../server/conductor/timers.js");
 
-describe("conductor on Neon", { skip: !URL_ && "no DATABASE_URL", concurrency: false, timeout: 240_000 }, () => {
+describe("conductor on Neon (test branch)", { skip: SKIP, concurrency: false, timeout: 240_000 }, () => {
   let guardian, kid, kid2;
+  const LT1 = `LT-${RUN}-1`, LT2 = `LT-${RUN}-2`;
   const echoRuns = [];
   before(async () => {
     await configure({ url: URL_, driver: "neon-ws", max: 8 });
+    // orphans of a killed run (its after() never ran): cascades to every conductor row of those children
+    await q("delete from guardian where email like 'conductor-test+%@test.invalid' and created_at < now() - interval '1 hour'");
     const g = await one(`insert into guardian (email, pw_hash, name) values ($1, 'x', 'conductor-test') returning id`, [`conductor-test+${randomUUID()}@test.invalid`]);
     guardian = g.id;
     kid = (await one(`insert into child (guardian_id, first_name, class_level) values ($1, 'Test', 4) returning id`, [guardian])).id;
@@ -88,16 +101,16 @@ describe("conductor on Neon", { skip: !URL_ && "no DATABASE_URL", concurrency: f
   });
 
   test("lesson boundary: started → in_lesson; ended → memory job queued + debounced replan row", async () => {
-    await C.emit(kid, { type: "lesson.started", lessonId: "LT-1", topicId: "c4-maths-fractions", kind: "live", lanes: ["realtime"] }, { step: "await" });
+    await C.emit(kid, { type: "lesson.started", lessonId: LT1, topicId: "c4-maths-fractions", kind: "live", lanes: ["realtime"] }, { step: "await" });
     assert.equal((await one("select mode from conductor_state where child_id = $1", [kid])).mode, "in_lesson");
-    await C.emit(kid, { type: "lesson.ended", lessonId: "LT-1", reason: "completed", minutes: 18, outcomeDigest: { vibeClose: "fine" } }, { step: "await" });
+    await C.emit(kid, { type: "lesson.ended", lessonId: LT1, reason: "completed", minutes: 18, outcomeDigest: { vibeClose: "fine" } }, { step: "await" });
     assert.equal((await one("select mode from conductor_state where child_id = $1", [kid])).mode, "free");
-    const job = await one("select status, lane, priority from job where child_id = $1 and kind = 'memory.consolidate' and idem_key = 'memory.consolidate:LT-1'", [kid]);
+    const job = await one("select status, lane, priority from job where child_id = $1 and kind = 'memory.consolidate' and idem_key = $2", [kid, `memory.consolidate:${LT1}`]);
     assert.equal(job?.status, "queued");
     const w = await one("select due_at from wakeup where child_id = $1 and dedupe like 'replan:%' and fired_at is null", [kid]);
     assert.ok(w && new Date(w.due_at) > new Date(), "replan debounce in the future");
     // a re-sent close is one event and enqueues nothing new
-    await C.emit(kid, { type: "lesson.ended", lessonId: "LT-1", reason: "completed", minutes: 18 }, { step: "await" });
+    await C.emit(kid, { type: "lesson.ended", lessonId: LT1, reason: "completed", minutes: 18 }, { step: "await" });
     assert.equal(Number((await one("select count(*) as n from job where child_id = $1 and kind = 'memory.consolidate'", [kid])).n), 1);
   });
 
@@ -126,8 +139,8 @@ describe("conductor on Neon", { skip: !URL_ && "no DATABASE_URL", concurrency: f
   });
 
   test("job locking: concurrent claimers get disjoint jobs (SKIP LOCKED); attempts fence zombies; lease expiry re-claims", async () => {
-    for (let n = 0; n < 6; n++) await C.enqueueJob(kid, { kind: "test.echo", idemKey: `echo:${n}`, input: { n }, lane: "fast", leaseSec: 30, maxAttempts: 3 });
-    assert.equal(await C.enqueueJob(kid, { kind: "test.echo", idemKey: "echo:0", input: { n: 0 }, lane: "fast" }), null, "duplicate enqueue is a no-op");
+    for (let n = 0; n < 6; n++) await C.enqueueJob(kid, { kind: "test.echo", idemKey: `echo:${RUN}:${n}`, input: { n }, lane: "fast", leaseSec: 30, maxAttempts: 3 });
+    assert.equal(await C.enqueueJob(kid, { kind: "test.echo", idemKey: `echo:${RUN}:0`, input: { n: 0 }, lane: "fast" }), null, "duplicate enqueue is a no-op");
     const claims = await Promise.all(Array.from({ length: 4 }, (_, i) => C.claimJobs("fast", { limit: 2, worker: `w${i}`, kinds: ["test.echo"], childIds: [kid] })));
     const ids = claims.flat().map((j) => Number(j.id));
     assert.equal(ids.length, 6, "all six claimed");
@@ -151,7 +164,7 @@ describe("conductor on Neon", { skip: !URL_ && "no DATABASE_URL", concurrency: f
   });
 
   test("job outcomes: retry with backoff, dead + job.failed after max attempts, cancel_requested → cancelled, erasing fences", async () => {
-    const id = await C.enqueueJob(kid, { kind: "test.echo", idemKey: "echo:fail", input: { fail: true }, lane: "fast", maxAttempts: 2 });
+    const id = await C.enqueueJob(kid, { kind: "test.echo", idemKey: `echo:${RUN}:fail`, input: { fail: true }, lane: "fast", maxAttempts: 2 });
     let [j] = await C.claimJobs("fast", { limit: 1, kinds: ["test.echo"], childIds: [kid] });
     assert.equal(Number(j.id), Number(id));
     await C.runJob(j);
@@ -164,14 +177,14 @@ describe("conductor on Neon", { skip: !URL_ && "no DATABASE_URL", concurrency: f
     assert.equal(row.status, "dead");
     assert.equal(await evCount(kid, "idem_key = $2 and type = 'job.failed'", [`job:${id}:dead`]), 1);
     // cancel_requested while running → cancelled, no event
-    const id2 = await C.enqueueJob(kid, { kind: "test.echo", idemKey: "echo:cancel", input: { n: 7 }, lane: "fast" });
+    const id2 = await C.enqueueJob(kid, { kind: "test.echo", idemKey: `echo:${RUN}:cancel`, input: { n: 7 }, lane: "fast" });
     const [j2] = await C.claimJobs("fast", { limit: 1, kinds: ["test.echo"], childIds: [kid] });
     await q("update job set cancel_requested = true where id = $1", [id2]);
     assert.equal(await C.completeJob(j2.id, j2.attempts, { ok: true, result: "x" }), true);
     assert.equal((await one("select status from job where id = $1", [id2])).status, "cancelled");
     assert.equal(await evCount(kid, "idem_key like $2", [`job:${id2}:%`]), 0);
     // an erasing workspace fences completion
-    const id3 = await C.enqueueJob(kid2, { kind: "test.echo", idemKey: "echo:erase", input: { n: 8 }, lane: "fast" });
+    const id3 = await C.enqueueJob(kid2, { kind: "test.echo", idemKey: `echo:${RUN}:erase`, input: { n: 8 }, lane: "fast" });
     await C.step(kid2);                                       // ensures the workspace row exists
     const [j3] = await C.claimJobs("fast", { limit: 1, kinds: ["test.echo"], childIds: [kid2] });
     await q("update workspace set state = 'erasing' where child_id = $1", [kid2]);
@@ -203,7 +216,7 @@ describe("conductor on Neon", { skip: !URL_ && "no DATABASE_URL", concurrency: f
   test("X29 lock order: commit ‖ complete_job ‖ fire_wakeups on one child, 5 rounds, 0 deadlocks", async () => {
     let deadlocks = 0;
     for (let round = 0; round < 5; round++) {
-      const jid = await C.enqueueJob(kid2, { kind: "test.echo", idemKey: `echo:lock:${round}`, input: { n: round }, lane: "fast" });
+      const jid = await C.enqueueJob(kid2, { kind: "test.echo", idemKey: `echo:${RUN}:lock:${round}`, input: { n: round }, lane: "fast" });
       const [j] = await C.claimJobs("fast", { limit: 1, kinds: ["test.echo"], childIds: [kid2] });
       assert.equal(Number(j.id), Number(jid));
       await q(upsertWakeupSql, [kid2, `test:lock:${round}`, new Date(Date.now() - 1000).toISOString(), "dormancy_check"]);
@@ -230,14 +243,53 @@ describe("conductor on Neon", { skip: !URL_ && "no DATABASE_URL", concurrency: f
   });
 
   test("safety incident through the log: hold, the queued memory job cancelled, rest plan", async () => {
-    await C.emit(kid, { type: "lesson.ended", lessonId: "LT-2", reason: "completed", minutes: 3 }, { step: "await" });
-    assert.equal((await one("select status from job where child_id = $1 and idem_key = 'memory.consolidate:LT-2'", [kid])).status, "queued");
+    await C.emit(kid, { type: "lesson.ended", lessonId: LT2, reason: "completed", minutes: 3 }, { step: "await" });
+    assert.equal((await one("select status from job where child_id = $1 and idem_key = $2", [kid, `memory.consolidate:${LT2}`])).status, "queued");
     await C.emit(kid, { type: "safety.incident", incidentId: "inc-t1", severity: "high", category: "other" }, { step: "await" });
     const st = await one("select mode, plan_version, state from conductor_state where child_id = $1", [kid]);
     assert.equal(st.mode, "safety_hold");
-    assert.equal((await one("select status from job where child_id = $1 and idem_key = 'memory.consolidate:LT-2'", [kid])).status, "cancelled");
+    assert.equal((await one("select status from job where child_id = $1 and idem_key = $2", [kid, `memory.consolidate:${LT2}`])).status, "cancelled");
     const p = await one("select plan from day_plan where child_id = $1 order by day desc, version desc limit 1", [kid]);
     assert.equal(p.plan.mode, "rest_day");
     assert.deepEqual((await C.replay(kid)).mismatches, []);
+  });
+
+  test("poison job: a lease that expired on the LAST attempt is declared dead + job.failed, never re-claimed", async () => {
+    const id = await C.enqueueJob(kid, { kind: "test.echo", idemKey: `echo:${RUN}:poison`, input: { n: 66 }, lane: "fast", maxAttempts: 1 });
+    const [j] = await C.claimJobs("fast", { limit: 1, kinds: ["test.echo"], childIds: [kid] });
+    assert.equal(Number(j.id), Number(id));
+    await q("update job set lease_until = now() - interval '1 second' where id = $1", [id]);   // the worker died mid-handler
+    const orig = console.error; console.error = () => {};
+    let again;
+    try { again = await C.claimJobs("fast", { limit: 5, kinds: ["test.echo"], childIds: [kid] }); } finally { console.error = orig; }
+    assert.ok(!again.some((x) => Number(x.id) === Number(id)), "not re-claimed");
+    assert.equal((await one("select status from job where id = $1", [id])).status, "dead");
+    assert.equal(await evCount(kid, "idem_key = $2 and type = 'job.failed'", [`job:${id}:dead`]), 1);
+  });
+
+  test("replay runs in a read-only transaction and a write-counting shim sees 0 writes (I-R9)", async () => {
+    const r = await withTx(async (t) => {
+      const shim = C.writeCountingReader(t);
+      const out = await C.replay(kid, { reader: shim });
+      return { out, writes: shim.writes, reads: shim.reads };
+    }, { readOnly: true });
+    assert.deepEqual(r.out.mismatches, []);
+    assert.equal(r.writes, 0);
+    assert.equal(r.reads, 4);
+    // negative control: the read-only transaction really refuses writes
+    await assert.rejects(withTx((t) => t.q("update conductor_state set updated_at = now() where child_id = $1", [kid]), { readOnly: true }), (e) => e.code === "25006");
+  });
+
+  test("syncParentFacts: a revoked consent and a lowered limit written without an event reach the actor once", async () => {
+    await q(`insert into consent (guardian_id, child_id, purpose, version, granted, method) values ($1, $2, 'memory', 'test', false, 'test')`, [guardian, kid2]);
+    await q(`insert into child_controls (child_id, daily_minutes) values ($1, 15) on conflict (child_id) do update set daily_minutes = 15, updated_at = now()`, [kid2]);
+    const n = await C.syncParentFacts(kid2);
+    assert.equal(n, 2, "consent + dailyMinutes");
+    assert.equal(await C.syncParentFacts(kid2), 0, "a re-run is a duplicate no-op");
+    await C.step(kid2);
+    const st = (await one("select state from conductor_state where child_id = $1", [kid2])).state;
+    assert.equal(st.consent.memory, false);
+    assert.equal(st.limits.dailyMinutes, 15);
+    assert.equal(await C.syncParentFacts(kid2), 0, "in line after the fold");
   });
 });

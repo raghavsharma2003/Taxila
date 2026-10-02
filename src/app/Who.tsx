@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Icon } from "../ui/index.ts";
 import { ErrorNote } from "../ui/index.ts";
-import { errText, loadMe, type ChildRow } from "./api.ts";
+import { errText, loadMe, lockBeacon, type ChildRow } from "./api.ts";
 import { bandForClass, useSurface } from "./band.ts";
 import { Loading } from "./Shell.tsx";
 import { readStore, writeStore } from "./storage.ts";
@@ -25,6 +25,9 @@ export default function Who() {
 
   const young = !!kids?.some((c) => c.class_level <= 4);
   useSurface({ band: kids ? (young ? "b1" : "b3") : null });
+
+  // The picker is child mode: whatever brought the phone here (Lock, Back, the P8 handover), the corner is shut.
+  useEffect(() => { lockBeacon(); }, []);
 
   useEffect(() => {
     document.title = "Who is learning? · Taxila";
@@ -81,6 +84,8 @@ export default function Who() {
             </>
           )}
         </div>
+        {/* Behind the gate: /start/child?add=1 sits under GateIfPin, so a child tapping it meets the PIN pad. */}
+        <Link to="/start/child?add=1" className="who-add t-note"><Icon name="lock" size={16} /> Add a child (parent)</Link>
       </div>
     </main>
   );
