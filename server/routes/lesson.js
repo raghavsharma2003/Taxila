@@ -392,6 +392,10 @@ async function turn(req, res, body) {
   // Consent is checked per turn, like start and token: once core_tutoring is withdrawn the child's words are
   // not stored, classified or sent to a model. The safety predicate still reads them (on this server only),
   // and a disclosure still leaves an incident row — without the transcript.
+  // The pinned kit is read alongside the consent check (both are on the reply's critical path); it is only
+  // used once consent holds.
+  const kitP = kitFor(lesson.topic_id, lesson.state);
+  kitP.catch(() => {});
   if (!(await hasConsent(guardian.id, child.id, "core_tutoring"))) {
     const safety = scanSafety(childText);
     if (safety.distress) {
@@ -408,7 +412,7 @@ async function turn(req, res, body) {
   const voiceP = body.voiceFeatures && !body.typed
     ? turnVoice({ lessonId: lesson.id, childId: child.id, itemId: prev.activeItemId, voiceFeatures: body.voiceFeatures })
     : Promise.resolve(null);
-  const kit = await kitFor(lesson.topic_id, state);
+  const kit = await kitP;
   // The lane is the lesson's mode. `typed` only says there was no ASR: a typed or tapped turn in a voice
   // lesson is still voice-lane (a text reply for it was never heard, yet was stored as a teacher turn).
   const { textLane, typed } = turnLane(state.mode, body);
@@ -454,6 +458,9 @@ async function turn(req, res, body) {
   const tapped = body.chipId?.startsWith("opt:") ? activeItem?.options?.[Number(body.chipId.slice(4))]?.text : body.chipId?.split(":")[1];
   const said = childText || (moduleOnly ? `(no words; in the activity: ${activitySummary(moduleEvents, 0)})` : `(tapped: ${tapped ?? "nothing"})`);
   const planCtx = { kit, child, lesson, activeItem, moduleOnly, moduleEvents, chipId: body.chipId, answer, leaked, loadSkills: skillLoader(child.id) };
+  // The active item's skill state is what this turn's evidence almost always folds into: read it while the
+  // classifier runs, not after.
+  if (activeItem?.skillId && classified) planCtx.loadSkills([activeItem.skillId]).catch(() => {});
   // A module-only turn stored no child row, so the whole recent transcript is history.
   const historyOf = (next) => (moduleOnly ? next.recent : next.recent.slice(0, -1));
 
