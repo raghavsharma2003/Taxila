@@ -77,3 +77,19 @@ blob read, CORS GET from *).** (2026-10-02)
   sandboxed iframe (no same-origin) — public URLs carry unguessable ids, never child names.
 - Reverse if: per-student isolation needs real sandboxes (→ Container Apps dynamic sessions), or blob public read
   becomes unacceptable (→ SAS-signed URLs minted by the API).
+
+## azure-only-compute
+**Constraint (owner directive, 2026-10-02): all paid AI and compute comes from the Azure startup grant —
+Azure AI Foundry first-party (Azure OpenAI) models and Azure services only.** Neon stays (separate owner grant).
+- Allowed models: taxila-realtime (gpt-realtime-2.1), gpt-realtime-2.1-mini, taxila-live (gpt-live-1),
+  taxila-brain (gpt-5.6-sol), taxila-fast (gpt-5.6-luna), taxila-codex (gpt-5.3-codex), taxila-image (gpt-image-2),
+  taxila-sora (sora-2), gpt-4o-mini-tts, taxila-transcribe (gpt-4o-transcribe), taxila-live-transcribe,
+  text-embedding-3-small.
+- Removed: taxila-opus / taxila-sonnet deployments deleted (Marketplace; `claude-on-foundry-credits`).
+- Excluded from builds even where research recommends them: ElevenLabs, Sarvam, Simli, HeyGen, Tavus, D-ID, Suno,
+  Meshy/Tripo SaaS, Vercel Sandbox, E2B. Open-source code run on Azure compute is fine (e.g. MuseTalk on an Azure
+  GPU, three.js avatars in the browser).
+- Hosting: migrate web + API from Vercel to Azure Container Apps (`taxila-env`), images built in ACR `taxilacr`
+  (Basic, eastus2). Vercel stays only until the Azure deployment is verified, then the Vercel project is removed.
+- Reverse if: the owner adds another grant/budget, or a required capability has no Azure-native option (escalate
+  to the owner instead of silently adding a vendor).

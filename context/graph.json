@@ -101,6 +101,12 @@
    "title": "Forge on Azure Container Apps + Blob Storage taxilaforge",
    "at": "2026-10-02",
    "status": "provisioned"
+  },
+  {
+   "id": "azure-only-compute",
+   "kind": "constraint",
+   "title": "Owner directive: only Azure-grant AI/compute (first-party Foundry + Azure services); Neon allowed",
+   "at": "2026-10-02"
   }
  ],
  "edges": [
@@ -168,6 +174,21 @@
    "src": "forge-models",
    "rel": "part_of",
    "dst": "forge-infra-azure"
+  },
+  {
+   "src": "forge-models",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "deploy-vercel-single-function",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "forge-infra-azure",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
   }
  ]
 }
