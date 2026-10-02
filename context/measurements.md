@@ -473,3 +473,8 @@ arXiv 2604.21481: 5,357 sentences, 10 Indian languages, 120k+ pairwise compariso
 
 ## snac-82-tokens-per-audio-second
 2026-10-02. Veena (maya-research/Veena, SNAC 24 kHz, 7 tokens/frame) on passage (b), 5 sentences: 308/217/511/308/476 tokens for 3.75/2.65/6.23/3.75/5.80 s = 82.1 tokens per audio second. Method: count of generated audio-code tokens vs decoded sample length. A real-time stream therefore needs >=82 tok/s of decode, with headroom ~1.5x.
+
+
+<!-- merged from inbox/hindi-kits-open-flags.json -->
+## hindi-kits-open-flags (2026-10-02)
+n=2,688 items across c1-c9 Hindi (workflow wf_bc812b62-cb1, blind solve then fix). Disagreements per class: c1 3, c2 1, c3 13, c4 59, c5 12, c6 9, c7 15, c8 5, c9 28; all fixed except c7 1, c9 3. The unfixed ones are NOT disputed keys (verified.agrees is true, so the loader serves them): loose acceptable answers (c5 गाय for बछिया, दर for द्वार), d1 recall hints that nearly give the answer (c8), an interviewer name unverifiable against the 2026-27 गंगा text (c9-hindi-ch04-t01-i01), and gloss drift between prompt_hi and prompt_en (c9 ch01 i10/i13). Correction: commit cee90ee says these items are dropped; they are not. Next: human check against the books.
