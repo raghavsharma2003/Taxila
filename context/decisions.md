@@ -57,3 +57,11 @@ raghavsharma2003/Taxila, one catch-all function `api/[...route].js` in sin1, Vit
 - Vercel Authentication (SSO) is ON for all non-custom domains — the app is private to the team until launch.
 - Reverse if: a route needs a different runtime/timeout (e.g. long consolidation → split it out), or Vercel Pro
   makes multiple functions free of cold-start cost.
+
+## forge-models
+**Forge (content factory) coder = `taxila-codex` (gpt-5.3-codex, 500 cap); designer/planner = `taxila-brain`
+(gpt-5.6-sol); fast planning = `taxila-fast`; video = `taxila-sora` (sora-2 2025-12-08, preview).** (2026-10-02)
+- codex smoke test: correct JS in 2.36 s via `/openai/v1/responses` (n=1).
+- Claude Opus 5.5 was the first choice for game code and is blocked by billing (`claude-on-foundry-credits`).
+- Reverse if: the Marketplace purchase is unblocked AND Claude beats codex on the Forge QA pass rate for the same
+  game briefs (measure, don't assume).

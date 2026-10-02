@@ -81,6 +81,19 @@
    "title": "Vercel project taxila, one catch-all function in sin1, SSO-private until launch",
    "at": "2026-10-02",
    "status": "live"
+  },
+  {
+   "id": "claude-on-foundry-credits",
+   "kind": "rejection",
+   "title": "Claude Opus/Sonnet 5.5 on Foundry fail provisioning: Marketplace purchase blocked on this subscription",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "forge-models",
+   "kind": "decision",
+   "title": "Forge coder gpt-5.3-codex, designer gpt-5.6-sol, video sora-2",
+   "at": "2026-10-02",
+   "status": "live"
   }
  ],
  "edges": [
@@ -126,6 +139,16 @@
   },
   {
    "src": "deploy-vercel-single-function",
+   "rel": "part_of",
+   "dst": "infra-segment"
+  },
+  {
+   "src": "forge-models",
+   "rel": "caused_by",
+   "dst": "claude-on-foundry-credits"
+  },
+  {
+   "src": "forge-models",
    "rel": "part_of",
    "dst": "infra-segment"
   }
