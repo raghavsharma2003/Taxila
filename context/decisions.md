@@ -108,3 +108,14 @@ replicas, HTTP scale at 50 concurrent) at https://taxila-web.nicebay-a0d3a12f.ea
   (~200 ms). Measure /api/lesson/turn; if DB latency dominates, move Neon to US East (aws-us-east-1/2 are offered).
 - Reverse if: latency from India is unacceptable (→ Central India region for the app + Azure Front Door), or
   Container Apps cost exceeds the grant budget.
+
+## scope-classes-1-9
+**Owner directive (2026-10-02): Taxila serves every class from 1 to 9 at launch — not the classes 6-8 wedge
+recommended in `docs/research/tech-and-market.md` §8.** Subjects: Maths 1-9, EVS 3-5 / Science 6-9, English 1-9,
+Hindi 1-9, Social Science 6-9 (classes 1-2: EVS content is integrated into language/maths under NCF-SE 2023 — covered
+through those kits, verified by the curriculum-fill workflow).
+- Consequence: the foundational stage (ages 6-8, pre- and early readers) is first-class from day one — voice-first
+  UI, oral placement (ASER-style), phonics/varnamala engines, tap-to-answer fallback when ASR confidence is low,
+  10-20 min sessions, a care-receiving protégé for teach-back.
+- Reverse if: owner narrows scope; or measured learning/engagement for classes 1-2 is far below other bands and
+  needs a dedicated product track.

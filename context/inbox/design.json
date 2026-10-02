@@ -1,0 +1,116 @@
+{
+ "nodes": [
+  {
+   "id": "ds-layout-dp-budget",
+   "kind": "decision",
+   "title": "Lesson stage budgets in dp, solved at a 584 dp floor and 744 dp; geometry changes only at phase boundaries",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ds-mic-tap-default",
+   "kind": "decision",
+   "title": "Tap-to-talk is the default for every band on loudspeaker; open mic opt-in on headset or after EchoProbe; end-of-speech ramp 3 s Young / 2 s Older",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ds-status-carriers",
+   "kind": "decision",
+   "title": "Each of the four states is carried by pose + glyph + accessible name, colour last; turn ring darkened to #7A4800",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ds-captions-by-reading-level",
+   "kind": "decision",
+   "title": "Caption defaults follow reading level (R0 icon strip, R1 word follow-along, R2 subtitle on); captions-always is one child tap away",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ds-band-fork-older",
+   "kind": "decision",
+   "title": "B3-B4 fork: Mukta display, flat tiles, hideable face, explainer notes, honest placement framing, study-tool home",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ds-progress-no-meters",
+   "kind": "decision",
+   "title": "No in-lesson progress meter; progress is a monotone, absence-invariant map with a list view; no props, name boards or reaction chips",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ds-parent-gate-pin-default",
+   "kind": "decision",
+   "title": "Guardian PIN is the default parent gate; phone lock optional; consent-grade actions and PIN recovery need OTP off the shared device or a 24 h delay",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ds-rejected-percentage-layout",
+   "kind": "rejection",
+   "title": "Percentage shares for the lesson stage overflow budget phones (~117% of 800 dp)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ds-rejected-chalk-mark-gold",
+   "kind": "rejection",
+   "title": "Pale-gold chalk-mark underline beside the turn ring breaks the one-marigold rule (dE 6.7 under deuteranopia)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "design-token-contrast-2026-10-02",
+   "kind": "measurement",
+   "title": "Design-token contrast and CVD: turn ring 3.01 -> 4.23:1 vs its fill; status pairs below dE 15 need glyphs; 0 failures",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "ds-layout-dp-budget",
+   "rel": "supersedes",
+   "dst": "ds-rejected-percentage-layout"
+  },
+  {
+   "src": "ds-status-carriers",
+   "rel": "measured_by",
+   "dst": "design-token-contrast-2026-10-02"
+  },
+  {
+   "src": "ds-rejected-chalk-mark-gold",
+   "rel": "measured_by",
+   "dst": "design-token-contrast-2026-10-02"
+  },
+  {
+   "src": "ds-rejected-chalk-mark-gold",
+   "rel": "caused_by",
+   "dst": "ds-status-carriers"
+  },
+  {
+   "src": "ds-mic-tap-default",
+   "rel": "measured_by",
+   "dst": "realtime-audio-in-2026-10-02"
+  },
+  {
+   "src": "ds-mic-tap-default",
+   "rel": "blocks",
+   "dst": "open-real-child-audio"
+  },
+  {
+   "src": "voice-turn-config",
+   "rel": "constrains",
+   "dst": "ds-mic-tap-default"
+  },
+  {
+   "src": "ds-captions-by-reading-level",
+   "rel": "blocks",
+   "dst": "open-real-child-audio"
+  },
+  {
+   "src": "ds-progress-no-meters",
+   "rel": "constrains",
+   "dst": "ds-status-carriers"
+  }
+ ],
+ "md": {
+  "decisions": "## ds-layout-dp-budget\n**The live-lesson stage is laid out in dp budgets solved for a 584 dp floor (360 x 640 phone, and the ~650 dp web viewport) and a 744 dp comfortable case, with a micro layout below 584 and a keyboard-open mode; geometry (L1-L5) changes only at phase boundaries.** (2026-10-02)\n- Rationale: lesson-arc's percentage shares overflow (see `ds-rejected-percentage-layout`); ui-teardown's 744 dp budgets assumed a best-case phone. Every column of the new tables sums exactly; minimums (band targets, mic hit, caption, canvas 184 dp Young L3, faceMin) are never broken; the ledge overlays the stage below 680 dp. Holding one geometry per phase removes reflow jank on tier C and gives her pointing a large canvas in P3.\n- Gate: PD-G1 (layout fit on the real signed-in lesson across 9 containers x font scale 1.0/1.3/2.0 x keyboard), PD-G3 (geometry stability).\n- Reverse if: M-UT-2 shows the teacher-below-content order wins by >= 15% on YOUR TURN latency for B1-B2; or a pilot shows tiles inside the canvas lower answer accuracy vs a control-bar row; or M-ARC-1 shows P3 explanation needs a larger face (then give P3 its own L2 explain geometry, still switching only at a phase boundary).\n- Source: `docs/research/design/PRODUCT-DESIGN.md` §3.3.\n\n## ds-mic-tap-default\n**Tap-to-toggle talk is the default for every band when audio plays on the loudspeaker. Open mic (server VAD per `voice-turn-config`) is opt-in for B3-B4 and offered only on a headset or after a 10 s EchoProbe passes. End of speech: a second tap, or a local silence ramp of 3 s (Young) / 2 s (Older), +1.5 s after a filler, shown as a draining ring. Hold-to-talk is never required; \"tap instead\" is present from turn one.** (2026-10-02)\n- Rationale: three sibling critiques independently flagged open mic on shared loudspeaker phones (self-echo, siblings, TV) and short endpoints cutting off children who pause mid-thought; `realtime-audio-in-2026-10-02` already showed 600 ms splitting a child's pause, and its 900 ms result is synthetic, n=1. Long-press is banned for Young, so tap-to-toggle is the only safe manual mode.\n- Reverse if: M-LE-6 + M-UX-3 show open mic on loudspeaker with EchoGuard has self-interrupt and cut-off rates no worse than tap mode; or M-LE-15 on real child audio shows the 3 s / 2 s ramp cuts off < 2% of turns at a shorter value (then shorten it).\n- Source: `docs/research/design/PRODUCT-DESIGN.md` §3.9.\n\n## ds-status-carriers\n**Each of the four states (YOUR TURN, LISTENING, THINKING, SPEAKING) is carried by a teacher pose, a glyph beside the mic, a sound rule and an accessible name; colour is the last carrier. The marigold ring appears only in YOUR TURN on one element, drawn as an outline with a darkened `#7A4800` ring. YOUR TURN requires a hand-over (`handover` != chain); with no pending hand-over the honest state is THINKING.** (2026-10-02)\n- Rationale: `design-token-contrast-2026-10-02` shows done vs stop 13.0 (deutan) / 14.1 (protan), listen vs think 14.4 (tritan), listen vs brand jamun 10.4 (deutan), all below the dE 15 floor, so colour cannot carry state; the kids-ux ring had only 3.01:1 against its own fill. `src/lesson/status.ts` currently falls through to your_turn whenever nothing is pending, which would ring an ambiguous idle screen.\n- Gates: PD-G2 (one ring, exhaustive), PD-G5 (status from events), PD-G6 (glyph + greyscale/CVD screenshots).\n- Reverse if: M-ARC-1 shows > 15% of YOUR TURN windows reach the tap fallback (add a spoken cue, never a second ring); or the glyph row tests as noise with no effect on missed turns in the accessibility pilot M-ARC-12.\n- Source: `docs/research/design/PRODUCT-DESIGN.md` §3.9.\n\n## ds-captions-by-reading-level\n**Caption defaults follow measured reading level, not class: R0 gets an icon strip (phir se, slower) and no text; R1 gets the phrase with one or two words lit at her pace; R2 (B3-B4 included) gets a plain one-line subtitle, on by default. A captions-always switch is one child tap away (CC pictogram) and settable at onboarding (\"hard to hear\") and by the parent. Word highlighting ships only if transcript lead >= 150 ms (E-8) or the lane moves to Voice Live; the lit word keeps its weight and gets a 2 dp jamun bar.** (2026-10-02)\n- Rationale: sibling docs conflicted (karaoke on for Young; off for R0 as text noise; on for every band as an access need). Both access and text load hold, so the default is by reading level and access is a switch, not a default. The WebRTC lane carries no word timestamps, so a drifting highlight would teach the wrong word.\n- Reverse if: M-UX-8 shows captions on for R0 improve delayed recall or word recognition (then default the phrase line on for R0); or R1 follow-along shows no benefit over a static phrase line.\n- Source: `docs/research/design/PRODUCT-DESIGN.md` §3.8.\n\n## ds-band-fork-older\n**B3-B4 get a distinct fork, not B1-B2 with fewer tiles: Mukta 700 display (no Baloo), flat bordered tiles with no press ledge, radii 16/10, a study-tool home with doubts and test-week windows, a phase word instead of progress, face / small / voice-only presentation modes from day one, explainer notes instead of a protégé (B3 opt-in), honest-purpose placement framing, the child owning tum/aap, earcons off by default, two teacher characters (woman, man) the child chooses.** (2026-10-02)\n- Rationale: NN/g and ICO evidence via kids-ux (babyish design repels; teens respond to respect), and every sibling critique found the Older path wearing the B1 costume (Baloo display, protégé creature, walkie-talkie art, story-framed diagnostic).\n- Reverse if: M-VI-8 (embarrassment) and M-UX-5 / MW-M5 (who is this app for) show no difference between the forked and unforked Older treatments at n >= 8-15 per band; or B3 week-4 return drops against the unforked arm with no learning gain.\n- Source: `docs/research/design/PRODUCT-DESIGN.md` §5.\n\n## ds-progress-no-meters\n**No in-lesson progress meter for any band (Young: nothing, she says where we are; Older: the current phase word). Progress lives in a monotone, absence-invariant map of the parent's ledger (Bagiya for Young, Aasmaan for Older, child-switchable) with a list view as the source of truth. The review-due bird renders only from a server `recheck_scheduled` row; v1 has no protégé props, no bed name boards, no persistent family-reaction chip (reactions are relayed once in speech).** (2026-10-02)\n- Rationale: stepping stones that fill are a goal-gradient bar (four critiques); FSRS retrievability is time-dependent and broke the 365-day invariance gate; props and chips are surprise drops and visible absence of approval (motivation critique C1-C4).\n- Gates: PD-G19 (absence invariance), PD-G20 (no meters or time grids importable from child routes).\n- Reverse if: MW-M1 / MW-M7 show a lesson-position cue raises free-choice persistence with delayed retention unchanged (a position cue only, never a fill); or MW-M2 shows children cannot find their place without one.\n- Source: `docs/research/design/PRODUCT-DESIGN.md` §8.\n\n## ds-parent-gate-pin-default\n**The guardian PIN (set at onboarding) is the default gate for the Parent corner; \"use phone lock\" (BiometricPrompt / KeyguardManager) is an option. Consent-grade actions (consent change, export, delete, co-parent, PIN reset) re-authenticate by OTP; PIN recovery needs a factor off the shared device or a 24 h delay with a WhatsApp notice, with OTP autofill disabled on the reset screen.** (2026-10-02)\n- Rationale: on shared family phones children often know the unlock pattern, and the OTP lands on the very device the child holds (kids-ux critique C6.1, parent-experience critique B20); a maths gate is solved by a Class 6 child.\n- Reverse if: M-UX-9 (1-week home diary, 20 families) shows zero child entries with the phone-lock gate and parents prefer it (then make phone lock the default where the parent says the child does not know it).\n- Source: `docs/research/design/PRODUCT-DESIGN.md` §6.2.\n",
+  "measurements": "## design-token-contrast-2026-10-02\n**Design-token contrast and colour-vision checks for PRODUCT-DESIGN.md (deterministic computation, 2026-10-02).**\nMethod: `python3 docs/research/design/product-design-contrast.py`, reusing the WCAG 2 relative-luminance and Machado-2009 (severity 1.0, [M] matrix digits) + CIEDE2000 helpers in `visual-identity-contrast.py`. n = 37 colour pairs (one deterministic computation each; no human or device measurement). Result: 0 failures against the stated floors.\n- Turn ring vs its own marigold fill `#FFB21E`: kids-ux `#9A5B00` 3.01:1 (no margin); `#8A4F00` 3.64; **`#7A4800` 4.23** (7.23 on cream, 7.62 on white). Adopted `#7A4800`.\n- Two-tone focus ring (2 px `#1F1A14` + 2 px white): best tone >= 9.36 on cream, white, board, jamun, marigold, dusk, dark bg, sky panel; 4.48 on a worst-case mid grey.\n- Caption lit-word bar: jamun on cream 8.87, dark jamun on dark bg 8.85. White chalk underline on board 10.86 (dark board 9.82). ink-2 on new light surface-2 `#F1E8D9` 6.39. Status glyphs on cream 5.04-6.20.\n- Status pairs, CIEDE2000 normal/protan/deutan/tritan: done vs stop 59.7/14.1/13.0/58.6; listen vs think 15.9/19.7/19.2/14.4; listen vs jamun 21.5/14.8/10.4/34.8; turn vs parent your-turn fill 10.5/9.9/8.4/9.7; turn vs the removed chalk-mark `#F2CF6B` 11.6/7.9/6.7/9.0. Pairs below 15 under any simulation must carry a glyph.\n- Limits: pixel arithmetic, not legibility for children; no sunlight or cheap-LCD measurement; Machado digits unverified.\n",
+  "rejected": "## ds-rejected-percentage-layout\nTried (lesson-arc §3, 2026-10-02): lesson-stage layout as percentage shares of an 800 dp phone (e.g. L2 Teach Young: teacher 40%, module 35%, plus a 72 dp whiteboard, two >= 96 dp tiles, an 88 dp mic, caption and top bar). What broke: the regions sum to ~117% of 800 dp (ui-teardown measured ~854 dp of 744 usable) before system insets; the micro-session wireframe overflowed the same way; and budget phones are 360 x 640-720 dp after browser and system bars, so the wireframes could not render. Replaced by `ds-layout-dp-budget`. Lesson: never specify a stage in percentages without summing the fixed-size rows at the floor height.\n\n## ds-rejected-chalk-mark-gold\nTried (visual-identity §3.2, §9, 2026-10-02): a `chalk-mark #F2CF6B` gold underline on the newest chalk-ledge chip, on the same screen as the marigold YOUR TURN ring. What broke: it is a pale marigold (hue 44 deg); CIEDE2000 vs `turn` is 6.7 under deuteranopia and 7.9 under protanopia (`design-token-contrast-2026-10-02`), so a colour-blind child sees two gold highlights and cannot tell which is the turn; it violates the one-marigold rule that `ds-status-carriers` depends on. Replaced by a white hand-drawn chalk underline (shape, not hue; 10.86:1 on the board) and a lint: no token within 12 deg of `turn`'s hue on a screen that renders YourTurn.\n"
+ }
+}
