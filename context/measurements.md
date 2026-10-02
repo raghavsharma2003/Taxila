@@ -176,3 +176,40 @@ Results:
   - Meshopt on a 7.9k-vertex, 67-morph head: 4.05 MB → 0.82 MB.
   - MPFB headless `create_human`: 1.3 s, with a 4,048-vertex head.
 - **TalkingHead's 30 fps frame cap** delivers ≈ 23 fps on a 60 Hz panel (simulation with jitter).
+
+
+<!-- merged from inbox/market.json -->
+## mk-tam-k9-tuition
+- **Values.** K-9 enrolled 185.1M (UDISE+ 2025-26; class 9 estimated at 52% of classes 9-10, ±0.8M). Private unaided 37.9%. Hindi belt 93.5M (50.5%).
+- **Coaching (CMS:E 2025).** 26.8% of K-9 take coaching, 49.6M children. TAM-1 is Rs35,554 cr/yr (~$4.0B at Rs88/$).
+- **SAM-1.** Hindi-belt takers with phones plus non-belt CBSE takers: 19.1M heads (22.1M on the raw ASER basis). They spend Rs12.3-14.5k cr today. At Rs299-499 x 10 months the SAM is Rs5.7-9.5k cr.
+- **n / method.**
+  - CMS:E n=57,742 households, fieldwork Apr-Jun 2025. The reference period is open, so TAM-1 may be a floor.
+  - ASER 2024 rural state rates, calibrated x0.72/x0.96.
+  - BaSE 2025 phone access.
+  - Model: docs/research/market/market_size_model.py. It reproduced exactly in fact-check.
+- **Date.** 2026-10-02.
+- **Source.** docs/research/market/market-size.md §5. PIB PRID=2160863. UDISE+ 2025-26 booklet.
+- **Most sensitive inputs.** Bihar (−37% of SAM-1 if removed) and price.
+
+## mk-azure-voice-cost-per-hour
+- **Values (two-way voice per session-hour, GST excluded, modelled).**
+  - DIY cascade (MAI-Transcribe-2 -> GPT-6 Luna/terra -> Azure Neural TTS, 50% of narration pre-rendered): Rs28.
+  - Luna-only: Rs19 ($0.198, which matches PW's claimed ~$0.20/h).
+  - gpt-realtime-2.1-mini with a 1-turn audio window: Rs132. Unpruned: Rs1,063.
+  - gpt-realtime-2.1 windowed: Rs512.
+  - GPT-Live-1 Rs299: UNVERIFIED, because $3/h is not on the Azure page.
+  - Cascade split: TTS 52%, terra 34%, STT 9%, Luna 6%.
+- **n / method.** Model docs/research/market/pricing_unit_econ_model.py plus docs/research/realtime-cost-model.py. Inputs are Azure pricing-page data read 2026-10-02. Assumptions: VAD gating, a 15% terra share, pre-render share, and FX of Rs96/$.
+- **Date.** 2026-10-02.
+- **Source.** pricing-unit-econ.md §2-3. azure.microsoft.com/en-us/pricing/details/speech/ and /azure-openai/.
+- **Supersedes.** Earlier sibling estimates: Rs68-126/h (Sarvam), Rs85-140/h (rt-mini) and Rs42/h (cascade).
+
+## mk-discovery-channels-base2025
+- **Values.**
+  - How children discover EdTech: school or teachers 63%, friends 58%, tuition teachers 22%, community influencer 7%, ads 6%. 23% say use was mandated.
+  - Tools used: YouTube 94%, WhatsApp 67%, DIKSHA 2%. 6% use a dedicated EdTech app (among EdTech users).
+- **n / method.** BaSE 2025 survey of low-resource settings across 10 states. N=7,866 students for the tool and discovery items; 12,500 households overall.
+- **Date.** Report 2025; read 2026-10-02.
+- **Source.** https://www.edtechbase.centralsquarefoundation.org/BaSE%20Report%202025.pdf via gtm-distribution.md §1.
+- **Caveat.** The sample is low-resource households, so it may understate app discovery among mid-fee urban families.

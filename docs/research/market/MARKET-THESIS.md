@@ -717,3 +717,64 @@ for `context/` — `rj-undisclosed-ai-substitution`:**
 - PlanetSpark's public price list (none exists on its site);
 - any Jio or Airtel kids' AI-tutor bundle beyond `india-ai-native.md` §2.4;
 - any Leverage-Edu-style kids pivot.
+
+## Addendum: gap-3-play-store-organic-and-oem-channel
+
+Full analysis: `gap-gap-3-play-store-organic-and-oem-channel.md`. Data: `gap3-*-2026-10-02.json`. Scripts:
+`gap3_play_search.py`, `gap3_trends*.py` and `gap3_channel_model.py`.
+
+1. **Q9 closed on policy text. Web or WhatsApp UPI checkout is compliant only if the Android app is consumption-only**
+   [V, Play Payments-policy FAQ].
+   - Allowed: login with parent OTP and access what was paid elsewhere. Outside the app, "you are free to communicate"
+     purchase options.
+   - Banned inside the app: links, buttons, webview checkout, price-bearing CTAs, and any "account creation or sign-up
+     flow" that leads to a non-Play payment.
+   - Unlinked text ("Go to our website to upgrade") is allowed.
+   - **An in-app "Pay on web" link is not allowed in India.** The billing-choice program with external links (10% on
+     subscriptions) covers only AU, JP, UK, EEA and US as of 2026-10-02 [V].
+   - India's fallback is user choice billing: Taxila's UPI, embedded webview allowed, shown alongside Play Billing at
+     **11%** (15 − 4) plus the gateway fee, ≈ 13.4% in all [V].
+   - Risk: CCI (March 2024) called the free consumption-only path "not reasonable", and the Supreme Court appeal is
+     pending (admitted August 2025) [S]. Model a downside where 11% applies to Android-sourced payers.
+   - The 1:1 live-class exemption needs a human on both sides, so it does not cover an AI tutor [V].
+   - Counsel item: the WhatsApp payment offer must not be fired by the in-app sign-up event [I].
+2. **Organic Play: no phase-1 cell** [D, model].
+   - Year 1: ~8k–62k non-paid installs → **27–830 payers, base ~170**.
+   - Marginal CAC: **₹300–9,200, base ~₹1,500**, against the ₹316–344 ceiling.
+   - The wedge queries are long-tail. Each is owned by ad-funded "NCERT solutions" apps (median 50k–100k installs;
+     Tiwari Academy and EduRev) [M]. No K-8 Hindi voice tutor appears in any curriculum query [M].
+   - Web interest in "ncert solutions" fell ~45% from Q3 2024 to Q3 2026, while "chatgpt" grew ~2.6× [M, Trends].
+   - In the Hindi belt "ncert solutions" takes 61–72% of the set's share and "tuition" only 12–23%. The South is the
+     reverse [M].
+   - Devanagari queries are about 2–3% of the Latin-script ones [M].
+   - Action: ~₹2.5 lakh of ASO hygiene on Latin-script "hindi medium" class/subject terms, and track **non-brand**
+     organic installs.
+3. **OEM and telco preload: no phase-1 cell. Defer it with the telco item to ~100k payers.**
+   - Modelled CAC: **₹15k–57k per payer, best-case bound ₹3.7k** [D; preload fee rate unpublished, U].
+   - The slots are closed:
+     - Jio is integrating its own Embibe (April 2025) [S];
+     - JioBharat is a feature phone;
+     - Lava now markets "no bloatware" [S];
+     - the only edtech precedent, Lava × Doubtnut (2023), gave away a free 1-year subscription [S].
+   - Zero-cost moves:
+     - list on **Indus Appstore** (zero commission, any gateway; 100M+ devices claimed) [S];
+     - opt in to **Families/Teacher Approved** review. Whether the Kids tab exists in India is unconfirmed [U].
+4. **Benchmarks.**
+   - Found:
+     - RevenueCat IN/SEA D35 download→paid: 0.7% median, 1.9% top quartile [V];
+     - Education D30 download→trial: 6.5% median [V/S];
+     - AppsFlyer 2026: Indian-subcontinent education Android UA spend **+184%**, paid installs +66% YoY [S]. Paid CPIs
+       are inflating.
+   - Not found: **no public 2024–26 India education organic-vs-paid split**. Treat any "organic is 50–70%" claim as
+     [U].
+5. **Reversal triggers** (any one of these):
+   - non-brand organic installs > 5k/month with install→payer ≥ 1.5%;
+   - an OEM CPA or rev-share deal at ≤ ₹300 per payer with no free-bundle term;
+   - India added to the billing-choice program. That would allow a "Pay on web" link at 10% and remove the
+     consumption-only leak.
+
+Proposed context entries:
+- **decision** `android-consumption-only`: reverse if India gets external links or consumption-only gets a fee.
+- **rejection** `oem-preload-phase1`: preload pays for every buyer's device; ≥ 11× the CAC ceiling even in the best
+  case.
+- **measurement** `play-wedge-serp-2026-10-02`: n = 16 query×language pulls of 10–30 results each.

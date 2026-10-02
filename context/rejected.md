@@ -89,3 +89,67 @@ Avatar asset approaches measured in `avatar-asset-perf-2026-10-02` and `characte
    - **Broke:** 102,530 GPU vertices from 25,959 mesh vertices (3.95×). That inflates the morph texture to 110 MB. Clear the split normals and shade smooth (27,956), and gate GPU/Blender vertices at ≤ 1.3.
 5. **WebP textures for GPU memory.**
    - **Broke:** WebP saves wire bytes but lands as RGBA8: 5.59 MB per 1024² against 0.70 MB for ETC1S, with a 6–10× slower decode.
+
+
+<!-- merged from inbox/market.json -->
+## rj-paid-install-engine
+**Tried (by incumbents).** Ad-led app-install growth.
+- Seekho spent Rs134.2 cr on ads for Rs141.5 cr of revenue (FY25).
+- Doubtnut spent Rs194 cr to earn Rs10 cr (FY22) and was later sold for ~Rs83 cr.
+
+**What broke.**
+- At Rs299/month the base contribution LTV is about Rs1,267, so CAC must stay at or below about Rs422 for 3x.
+- Paid installs would then need about 9.5% install-to-payer. The global median is 2.1% for freemium (RevenueCat 2026).
+- Only 6% of children discover EdTech through ads (BaSE).
+
+**Instead.** School-seeded, referral and CTWA. Paid social is capped at 15% of the budget until measured install-to-payer reaches 8% or more.
+- Source: gtm-distribution.md §2, §5. failures.md B4/B9.
+
+## rj-hour-for-hour-realtime
+**Tried (modelled).** Replacing a tutor hour for hour with realtime two-way voice: 26 h/month at a 55% gross margin.
+
+**What broke.**
+- The price would have to be Rs10,106/month on rt-2.1-mini and Rs22,653 on GPT-Live (the GPT-Live price is unverified).
+- Even the cascade needs Rs2,283, which is at par with a Rs1,500-3,000 tutor, not cheaper.
+
+**Instead.** Lane mix: about 30-35% two-way voice and the rest tap practice with cached narration (mk-tiers-as-voice-budgets).
+- Source: pricing-unit-econ.md §4.3.
+
+## rj-passive-tutor
+**Tried (Khanmigo, two-year independent RCT, Tennessee, 18 schools).** A Socratic tutor that waits for the student to ask.
+
+**What broke.**
+- Students messaged it in a median of 17% of practice sessions with a mistake.
+- The ITT effect was 0.06-0.08 SD per year, resembling Khan Academy practice without AI.
+
+**Instead.**
+- The tutor leads every exchange: auto-start, specific answerable questions, "show me how you got that".
+- The Conductor schedules sessions. There is no "ask me anything" home screen.
+- Release metric: tutor dialogue in at least 80% of mistake moments, reported as the median.
+- Source: https://edworkingpapers.com/sites/default/files/ai26-1551.pdf via global-ai-tutors.md and failures.md P2.
+
+## ct-no-voice-emotion-inference
+**Constraint (sourced).** The Microsoft AI Code of Conduct v4.0 bans inferring emotional states from speech patterns or facial expressions. It binds Taxila under the Azure-only directive.
+
+**Consequence.** The child's "vibe" and engagement are inferred only from task evidence and what the child says. Prosody-based affect detection is rejected.
+
+**Open.** Ask Microsoft in writing whether text-only affect signals are allowed.
+- Source: https://learn.microsoft.com/en-us/legal/ai-code-of-conduct via bigtech.md.
+
+## ct-no-gemini-api-for-minors
+**Constraint (sourced).** The Gemini API terms bar services likely to be accessed by under-18s. Gemini is also outside the Azure-only directive.
+
+**Consequence.** Never propose Gemini Live, or any Gemini Developer API path, as a voice or LLM fallback for a child-facing lane.
+- Source: https://ai.google.dev/gemini-api/terms via bigtech.md.
+
+## op-pw-k8-ai-tutor-watch
+**Open.** PhysicsWallah's Socratic AI Tutor is in beta: 300+ users, ~95% satisfaction, ~$0.20/h, "remembers mistakes" (all company-reported via MediaNama, 2026-08).
+
+**Inference.** It extends to K-8 within 6-12 months. CuriousJr already has 5.5M installs and 4x revenue YoY.
+
+**Watch.**
+- PW's Q2 FY27 shareholder letter (~Nov 2026).
+- LEAD Ms Curie expanding beyond English.
+- Google: Gemini Live Hindi for Family Link children, or an NCERT deal.
+
+**If PW ships K-8 at Rs300/month or less,** re-run the wedge and pricing decisions.

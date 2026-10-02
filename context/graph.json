@@ -376,6 +376,111 @@
    "title": "Avatar asset dead ends: Draco with unquantized morphs, naive shape-key delta transfer under stylisation (1.3-8.1% cornea leak), decimating a realistic head (lids/lips break), exporting with custom split normals (3.95x verts), WebP on the GPU",
    "at": "2026-10-02",
    "source": "inbox/avatar.json"
+  },
+  {
+   "id": "mk-wedge-k4-7-hinglish-tier2",
+   "kind": "decision",
+   "title": "Wedge = classes 4-7 (open 3-8), CBSE/NCERT maths+science, Hinglish voice, mid-fee APS families in Lucknow-Kanpur (school cell) + Patna (D2C cell)",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "mk-no-sales-no-emi-monthly",
+   "kind": "decision",
+   "title": "No commission sales, counsellor calls, EMI/loans, device bundles or multi-year prepaid; monthly or annual (10x) with pro-rata refund and one-tap cancel",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "mk-tiers-as-voice-budgets",
+   "kind": "decision",
+   "title": "Paid tiers are absolute monthly two-way-voice budgets (realtime/cascade/tap) enforced by the cost governor; child never sees a counter",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "mk-year1-lead-699-999",
+   "kind": "decision",
+   "title": "Year 1 leads with Tutor Rs699 and Ghar Tutor Rs999 (+Rs499/sibling); Saathi Rs299 at volume only after the central catalogue pre-build",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "mk-school-seeded-parent-paid",
+   "kind": "decision",
+   "title": "GTM = school-seeded, parent-paid, WhatsApp-carried (structured flows only); paid social capped at 15% of acquisition; B2G after RCT; telco at ~100k payers",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "mk-warmth-not-intimacy",
+   "kind": "decision",
+   "title": "Relational OS = warmth and continuity, never simulated intimacy; three-way bond teacher-child-parent; persona frozen and versioned",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "mk-tam-k9-tuition",
+   "kind": "measurement",
+   "title": "K-9 India: 185.1M enrolled; 49.6M (26.8%) pay for coaching; TAM-1 Rs35,554 cr/yr; SAM-1 19.1M heads",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "mk-azure-voice-cost-per-hour",
+   "kind": "measurement",
+   "title": "Azure two-way voice per session-hour (modelled): cascade Rs28, rt-2.1-mini windowed Rs132, rt-2.1 Rs512; TTS ~52% of cascade",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "mk-discovery-channels-base2025",
+   "kind": "measurement",
+   "title": "Child EdTech discovery: school/teacher 63%, friends 58%, tuition teacher 22%, ads 6%; use YouTube 94%, WhatsApp 67%, DIKSHA 2% (BaSE 2025, N=7,866)",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "rj-paid-install-engine",
+   "kind": "rejection",
+   "title": "Paid app-install ads as the growth engine (needs ~9.5% install-to-payer vs 2.1% freemium median; Seekho 95% ads/revenue, Doubtnut Rs194 cr for Rs10 cr)",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "rj-hour-for-hour-realtime",
+   "kind": "rejection",
+   "title": "Hour-for-hour tutor replacement on realtime voice (26 h/mo needs Rs10,106 on rt-mini at 55% GM; cascade only at par with the tutor)",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "rj-passive-tutor",
+   "kind": "rejection",
+   "title": "Ask-me-anything tutor that waits for the child (Khanmigo: 17% of mistake sessions used it; effect = KA without AI)",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "ct-no-voice-emotion-inference",
+   "kind": "constraint",
+   "title": "Azure AI Code of Conduct bars inferring emotional state from voice prosody or face; 'vibe' only from task evidence and what the child says",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "ct-no-gemini-api-for-minors",
+   "kind": "constraint",
+   "title": "Gemini API terms bar services likely used by under-18s; no Gemini Live fallback in any child path (also outside the Azure-only directive)",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
+  },
+  {
+   "id": "op-pw-k8-ai-tutor-watch",
+   "kind": "open",
+   "title": "PhysicsWallah Socratic AI Tutor (beta, ~$0.20/h) expected to reach K-8 in 6-12 months (inference); re-plan on PW Q2 FY27 letter (~Nov 2026)",
+   "at": "2026-10-02",
+   "source": "inbox/market.json"
   }
  ],
  "edges": [
@@ -708,6 +813,61 @@
    "src": "avatar-v2-prerender-first",
    "rel": "constrains",
    "dst": "avatar-lipsync-rms-jaw"
+  },
+  {
+   "src": "mk-tiers-as-voice-budgets",
+   "rel": "measured_by",
+   "dst": "mk-azure-voice-cost-per-hour"
+  },
+  {
+   "src": "rj-hour-for-hour-realtime",
+   "rel": "measured_by",
+   "dst": "mk-azure-voice-cost-per-hour"
+  },
+  {
+   "src": "mk-tiers-as-voice-budgets",
+   "rel": "constrains",
+   "dst": "voice-realtime-model"
+  },
+  {
+   "src": "mk-year1-lead-699-999",
+   "rel": "part_of",
+   "dst": "mk-tiers-as-voice-budgets"
+  },
+  {
+   "src": "mk-school-seeded-parent-paid",
+   "rel": "measured_by",
+   "dst": "mk-discovery-channels-base2025"
+  },
+  {
+   "src": "rj-paid-install-engine",
+   "rel": "caused_by",
+   "dst": "mk-discovery-channels-base2025"
+  },
+  {
+   "src": "mk-school-seeded-parent-paid",
+   "rel": "part_of",
+   "dst": "mk-wedge-k4-7-hinglish-tier2"
+  },
+  {
+   "src": "mk-wedge-k4-7-hinglish-tier2",
+   "rel": "measured_by",
+   "dst": "mk-tam-k9-tuition"
+  },
+  {
+   "src": "op-pw-k8-ai-tutor-watch",
+   "rel": "constrains",
+   "dst": "mk-wedge-k4-7-hinglish-tier2"
+  },
+  {
+   "src": "ct-no-voice-emotion-inference",
+   "rel": "constrains",
+   "dst": "mk-warmth-not-intimacy"
+  },
+  {
+   "src": "mk-no-sales-no-emi-monthly",
+   "rel": "part_of",
+   "dst": "mk-school-seeded-parent-paid"
   }
  ]
 }

@@ -1,0 +1,183 @@
+{
+  "nodes": [
+    {
+      "id": "content-live-tiers",
+      "kind": "decision",
+      "title": "Live modules = T1 engine params (taxila-fast, effort none) or T2a scene template fill; T2b free scenes near-line (>=45 s ahead); T3 free code offline with V0-V9 + two-key; no live images, video, songs or free code; router is deterministic server code",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "content-v1-engine-set",
+      "kind": "decision",
+      "title": "v1 ships 12 hand-built engines (number-line, collections, place-value, fractions, multiply-divide, data-graphs, patterns+grid, geoboard, measure, motion-lab slice, sky 2D, water-cycle): primary for 229/514 maths+science topics (44.6%), 273/514 with the T2a/diagram layer",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "bridge-v2-host-grades",
+      "kind": "decision",
+      "title": "One module protocol (bridge v2.1 over a MessagePort); observations are manifest key=value facts only; the host grades every answer and the module only claims; three lanes plus a talk gate",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "engines-in-sandbox-frame-v1",
+      "kind": "decision",
+      "title": "v1: every visual module (T0-T3) mounts in the sandboxed opaque-origin frame on a vanilla-TS engine-kit (no React/zod in frame); audio/mic/stage components (chant-track, read-along speech window, board, pointer, LockPanel, word-chain) are host-side first-party code",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "diagram-router-no-baked-labels",
+      "kind": "decision",
+      "title": "Diagram renderer chosen by content shape (engines, flow/concept-map/label-diagram/formula, cached rasters); no raster carries text; labels are kit-term overlays at human-verified anchors; no Mermaid/Graphviz/live free SVG in the child frame",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "explainer-templates-live",
+      "kind": "decision",
+      "title": "Live animation = explainer@1 templates (code computes geometry, one beat per teacher turn, GSAP player on HTML layers); pre-render is the same DSL + TTS bookmarks; Sora is B-roll only behind an off-by-default flag",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "chant-not-song-v1",
+      "kind": "decision",
+      "title": "Verbatim content (tables, varnamala, sequences, poems) gets a beat-locked chant: pre-rendered deterministic Azure Speech (Swara) clips gated by phonkey ASR + human ear, scheduled by a host Web Audio track; the teacher frames and reacts, never holds the beat; <=60 s per unheard segment",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "teacher-stage-cue-scheduler",
+      "kind": "decision",
+      "title": "Board and pointer cues are data (CueAt say/turn_start) placed by estimator L with 400 ms pre-roll on the playback clock; pointer is host-drawn via locate/rects; word-lit karaoke only with exact alignment; sprite2d worker face default on tiers C/D",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "content-generation-bench-2026-10-02",
+      "kind": "measurement",
+      "title": "Content-generation benches (US container to eastus2, 2026-10-02): T1 1.88/2.05 s 10/10; T2a 3.08/3.35 s; explainer templates 8/8 at 2.88 s; free scenes 0/8 first call; free explainers 3/8 and 2/8; free SVG 12/12 sol at 8-25 s, 10/12 luna; gpt-image-2 fully-correct labelled diagrams EN 4/6 HI 1/6; Sora 1/3 correct; cue estimator L 372 ms median",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "live-free-generation",
+      "kind": "rejection",
+      "title": "Free-form generation on the live path (free scene@1 composition, free explainers, free SVG, json_object mode): too slow and self-contradictory - 0/8 first-call scenes, 3/8 explainers at 13.6 s, 7/8 json_object schema failures unrepaired, luna triangle 13/19/148 deg",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "generated-media-carries-facts",
+      "kind": "rejection",
+      "title": "Letting generated pixels carry facts: gpt-image-2 baked labels put Hindi leaders on the wrong part 5/32 (OCR gate passed a corrupted glyph), 3/3 'closed' circuits drawn open; Sora drew 3+3 apples under '3+4=7' and leaves opening underground",
+      "at": "2026-10-02"
+    },
+    {
+      "id": "karaoke-from-transcript-estimate",
+      "kind": "rejection",
+      "title": "Word-lit karaoke captions placed by a live transcript-timing estimate: best estimator puts only 35% of words within +/-250 ms (would light the wrong word about two times in three); envelope-pause and syllable-nucleus trackers did worse",
+      "at": "2026-10-02"
+    }
+  ],
+  "edges": [
+    {
+      "src": "content-live-tiers",
+      "rel": "measured_by",
+      "dst": "content-generation-bench-2026-10-02"
+    },
+    {
+      "src": "content-live-tiers",
+      "rel": "caused_by",
+      "dst": "live-free-generation"
+    },
+    {
+      "src": "azure-only-compute",
+      "rel": "constrains",
+      "dst": "content-live-tiers"
+    },
+    {
+      "src": "content-v1-engine-set",
+      "rel": "part_of",
+      "dst": "content-live-tiers"
+    },
+    {
+      "src": "scope-classes-1-9",
+      "rel": "constrains",
+      "dst": "content-v1-engine-set"
+    },
+    {
+      "src": "bridge-v2-host-grades",
+      "rel": "part_of",
+      "dst": "content-live-tiers"
+    },
+    {
+      "src": "engines-in-sandbox-frame-v1",
+      "rel": "part_of",
+      "dst": "bridge-v2-host-grades"
+    },
+    {
+      "src": "forge-sandbox-lanes",
+      "rel": "constrains",
+      "dst": "engines-in-sandbox-frame-v1"
+    },
+    {
+      "src": "learner-safety-gate-first",
+      "rel": "constrains",
+      "dst": "bridge-v2-host-grades"
+    },
+    {
+      "src": "diagram-router-no-baked-labels",
+      "rel": "caused_by",
+      "dst": "generated-media-carries-facts"
+    },
+    {
+      "src": "diagram-router-no-baked-labels",
+      "rel": "measured_by",
+      "dst": "content-generation-bench-2026-10-02"
+    },
+    {
+      "src": "explainer-templates-live",
+      "rel": "caused_by",
+      "dst": "generated-media-carries-facts"
+    },
+    {
+      "src": "explainer-templates-live",
+      "rel": "measured_by",
+      "dst": "content-generation-bench-2026-10-02"
+    },
+    {
+      "src": "explainer-templates-live",
+      "rel": "part_of",
+      "dst": "content-live-tiers"
+    },
+    {
+      "src": "azure-only-compute",
+      "rel": "constrains",
+      "dst": "chant-not-song-v1"
+    },
+    {
+      "src": "teacher-stage-cue-scheduler",
+      "rel": "caused_by",
+      "dst": "karaoke-from-transcript-estimate"
+    },
+    {
+      "src": "teacher-stage-cue-scheduler",
+      "rel": "measured_by",
+      "dst": "content-generation-bench-2026-10-02"
+    },
+    {
+      "src": "live-free-generation",
+      "rel": "measured_by",
+      "dst": "content-generation-bench-2026-10-02"
+    },
+    {
+      "src": "generated-media-carries-facts",
+      "rel": "measured_by",
+      "dst": "content-generation-bench-2026-10-02"
+    },
+    {
+      "src": "karaoke-from-transcript-estimate",
+      "rel": "measured_by",
+      "dst": "content-generation-bench-2026-10-02"
+    }
+  ],
+  "md": {
+    "decisions": "## content-live-tiers\n**The live path generates data for tested code, never code: T1 = a hand-built engine whose params are filled by code plus `taxila-fast` at effort `none` (language fields only); T2a = a `scene@1` template chosen by the router on mechanic tags and slot-filled live; T2b = free `scene@1` composition, near-line only (requested >= 45 s ahead, cached, promoted after review); T3 = free HTML/p5/SVG offline only, behind gates V0-V9 and two-key human review. Images, video, songs and free code never run on the live path. The router is deterministic server code; the model never picks its tier, template or renderer.** (2026-10-02)\n- Rationale: measured on our Azure deployments, T1 fills in 1.88 s p50 / 2.05 s p90 (10/10 valid) and T2a in 3.08 / 3.35 s, inside the teacher's 2-3 s spoken preamble; free composition takes 12-29 s per call plus 10-13 s per repair and still fails (`content-generation-bench-2026-10-02`, `live-free-generation`). Literature agrees: one-shot generated educational interactives pass 3.5% (69.3% after 10 critique rounds); functional correctness of generated pages 24.4 vs visual 64.3 (IWR-Bench); decoupled IR beats end-to-end 99.8% vs 82.5% (ALGOGEN). Template fit is a judgement no validator makes (flower labelling squeezed into sort-bins 2/2), hence routing by mechanic tag.\n- Correctness is engine maths or the shared EXPR@1 solver, never the model; T1 gets zero model repairs, T2 one, T3 up to five keeping the Pareto-best build.\n- Reverse if: a live free-form generator passes >= 7/8 lint+solver on the genui bench briefs at p90 <= 3.5 s (then T2b may go live for that model), or the A1/M-TV-1 style RCTs show template modules teach no better than board + voice (then shrink the tier).\n- Source: `docs/research/content/CONTENT-ENGINE.md` §1, `genui-reliability.md` §0-§6.\n\n## content-v1-engine-set\n**v1 builds 12 hand-built engines for maths and science: number-line, collections, place-value, fractions, multiply-divide, data-graphs, patterns (with number grid), geoboard, measure (with science measure-lab), motion-lab (kinematics + forces + pendulum slice), sky (2D only), water-cycle. They are the primary engine for 229/514 maths+EVS+science topics (44.6%: maths 179/304, science 50/210); with the T2a template + diagram layer, 273/514 (53.1%). The full catalogue is 45 engines (21 maths, 14 science, 10 language/SST) after seven renderer merges.** (2026-10-02)\n- Rationale: coverage computed by `docs/research/content/content-engine-coverage.py` over the verified engine maps. Pure greedy by topic count would take geo-construct (17 topics, 10+ days, JSXGraph licence check, C6-9 only) over water-cycle (10 topics), but water-cycle is the only science engine reaching C3/C5 EVS, where science coverage is otherwise near zero; motion-lab ships as a slice because the full engine is really four renderers (XL). balance is the first v1.1 engine despite 4 primary topics because it targets the Class 1 equal-sign misconception.\n- The other 241 topics are served by explainer templates, flow/label diagrams, T2a templates or board + voice, each mount logging a gap ticket; v1.1 is ordered by topics gained per day.\n- Reverse if: the launch classes are narrowed (e.g. Class 9 first: pull geo-construct presets and algebra-tiles forward, maths C9 is the weakest column at 15/41), or gap-ticket telemetry after 4 weeks shows a non-v1 engine's topics dominate fallback mounts.\n- Source: `CONTENT-ENGINE.md` §2.2-§2.3, §9.\n\n## bridge-v2-host-grades\n**Every module (engines, scenes, diagrams, explainers) speaks one protocol, bridge v2.1: window `hello`, then `init` with a transferred `MessagePort`; strictly increasing seq; facts of <= 12 primitive keys from the engine manifest vocabulary; 8 KiB per event (64 KiB for init/restore/state blobs); token bucket 20/s burst 40; caps declared in `ready`. The host grades every answer with the engine's pure `grade()`, the verified kit key or the shared EXPR@1 evaluator; a module `claim` counts only for T0/T1 and only when it agrees. The teacher sees observation lines of key=value facts (never sentences, never module or child free text) in three lanes (log, fold every <= 2.5 s, milestone) behind a talk gate (hold while she speaks; >= 4 s apart, <= 3/min).** (2026-10-02)\n- Rationale: four incompatible event dialects existed (shipped v1, tech-and-market, maths, science) plus diagram, explainer and chant additions; `classify.js` turned `moduleAnswer.correct` straight into evidence; sentence-shaped prompt text gets recited (html-portfolio 4/5 -> 0), so facts-only lines double as the prompt-injection firewall. Detectors only schedule verifying probes (<= 1 per 3 min) and need >= 2 independent signals before \"likely\".\n- Reverse if: field logs show the facts-only line makes the teacher misreference the module (blind-rated, n >= 30 turns, worse than a template sentence) — then add a fixed-vocabulary renderer, never free text.\n- Source: `CONTENT-ENGINE.md` §4-§5, `sandbox-telemetry.md` §4-§5.\n\n## engines-in-sandbox-frame-v1\n**In v1 every visual module, first-party T0/T1 engines included, mounts in the sandboxed opaque-origin iframe (`sandbox=\"allow-scripts\"`, strict CSP, RTC* deleted, load-count kill), built as vanilla TS on a shared engine-kit with no React and no zod inside the frame; engine chunks and Devanagari fonts ship as hashed APK assets; raster bases arrive once in `init` as data: URLs. Components that own audio, the mic or the teacher stage (chant-track, pahada audio, the read-along speech window, board@1, pointer overlay, LockPanel, word-chain) are host-side first-party code.** (2026-10-02)\n- Rationale: one protocol, one budget, one freeze/teardown path for every tier; generated code must be sandboxed (`forge-sandbox-lanes`), so first-party engines share the path rather than fork it. The diagrams review proposed host React components for T1 to avoid per-frame font, image and mount costs; the songs review showed audio cannot live in a frame with `microphone 'none'`/`media-src 'none'`. The frame shares the WebView main thread anyway (a 1.5 s busy loop froze the host 1.5 s), so isolation buys protocol hygiene, not thread safety; freezes are prevented by budgets.\n- Reverse if: V15 on the reference ₹8-10k phone shows engine mount > 1.5 s warm or a Devanagari font fallback inside the frame; then move T0/T1 in-process behind the same bridge API (an in-page MessageChannel adapter), keeping T2/T3 in the frame.\n- Source: `CONTENT-ENGINE.md` §0.2 A2, §1.5.\n\n## diagram-router-no-baked-labels\n**The renderer for a visual is chosen by its content shape, by a deterministic table: quantities/geometry/phenomena -> T1 engines; process/cycle -> flow@1 (dagre or a polar cycle layout); hierarchy -> concept-map@1; parts -> label-diagram@1 over a library base; equations -> formula@1 (KaTeX, named formulas by id); bespoke exact figures -> offline svg-figure@1 with an assertion manifest; mood/context -> illustration@1 (cached raster). No raster carries text; labels are kit-term overlays at human-verified anchors; no Mermaid, Graphviz or live free SVG in the child frame.** (2026-10-02)\n- Rationale: gpt-image-2 spells well and places wrongly (Hindi leaders wrong 5/32, fully-correct Hindi images 1/6, VLM OCR passed a corrupted glyph); free SVG is accurate only when geometry is pinned and still too slow live (sol 12/12 at 8-25 s; luna 10/12 with a 13/19/148 deg triangle); Mermaid is 1.58 MB gz with sanitiser advisories; Graphviz mis-measures Devanagari by >= 70 px.\n- Reverse if: n >= 40 labelled images per language reach >= 99% spelling and leader accuracy with zero science errors and two-rater kappa >= 0.8 (relax baked labels, possibly B4 English first); or a model reaches >= 99% on the extended free-SVG set at p95 <= 3 s.\n- Source: `CONTENT-ENGINE.md` §6.1-§6.2, `diagrams-images.md` §0-§5.\n\n## explainer-templates-live\n**Live narrated animation is `explainer@1`: the model picks one of 8 templates and fills enum/number slots plus one note-shape per beat; code computes every count, coordinate, angle and shadow on a 6x6 anchor grid; a GSAP player (HTML layers on translate3d, one SVG overlay) plays one beat per teacher turn on the audio playback clock, pauses before a predict reveal, and grades the probe against a template-computed key. Pre-rendered explainers are the same DSL plus Azure Speech bookmarks (MP4 only for sharing and the lite tier). Generated video (Sora) is B-roll with no assertions, behind an off-by-default flag; no Remotion, Manim optional offline only.** (2026-10-02)\n- Rationale: template arm 8/8 valid at 2.88 s p50 vs free-form 3/8 at 13.6 s and 2/8 at 29.7 s; Sora drew 3+3 apples under \"3+4=7\" and leaves opening underground, and OpenAI removed Sora from its own API on 2026-09-24; DSL delivery is 0.12 MB/min vs 0.48 MB/min MP4 and stays interactive. Per-template slot sanity rules are a ship blocker (split-share `take: 4` showed 4/4).\n- Reverse if: free-form passes >= 7/8 under 5 s; or the per-template micro-RCT (A1) shows no delayed-retrieval gain over a static diagram + voice (that template becomes static); or a first-party Azure video model passes the count/direction/causality probe at >= 9/10.\n- Source: `CONTENT-ENGINE.md` §6.3-§6.4, `animation-video.md`.\n\n## chant-not-song-v1\n**Verbatim content (पहाड़े, varnamala, barahkhadi, ginti, months, planets, public-domain poems) is taught with a beat-locked chant, not generated songs: one library of about 3,500 lines pre-rendered with deterministic Azure Speech hi-IN Swara, each clip gated by script-agnostic phonkey ASR (gate A) and a human ear (gate B); a host-side Web Audio track synthesises the groove and schedules each clip's p-centre on the beat. The realtime teacher frames the chant and reacts to a facts-only summary; she never holds the beat. Any window in which she is not listening is <= 60 s, with the crisis predicate applied to child audio in v1b. LLM surface: kitId, mode, tempo slow|base|fast, lines, passes, arc preset. Every pahada pass hands over to shuffled retrieval.** (2026-10-02)\n- Rationale: no Azure first-party model sings (gpt-4o-mini-tts \"sing\" showed no measurable singing, n = 18); Swara is deterministic (one reviewed render stays reviewed) and fast (160 ms first byte); a realtime voice drifting 100-300 ms off a beat and leaking into VAD is worse than no beat; the song effect is largely pacing and chunking (Kilgour 2000) and serial recall needs random-access practice; ASR returned non-Devanagari script for 7-9/15 Hindi clips even with language=hi.\n- Reverse if: an allowed singing model (open weights on Azure GPU) passes gates A and B at >= 95% on 20 lines (songs become an alternative mode); or M-SONG-5 shows chant does not beat spoken repetition on day-7 shuffled retrieval (drop chant from the default arc); or a measured realtime chant stays within +/-60 ms of a click track over 8 bars.\n- Source: `CONTENT-ENGINE.md` §6.5, `songs-rhymes-audio.md`.\n\n## teacher-stage-cue-scheduler\n**The teacher stage owns one playback clock (her first played audio frame), one rAF loop and a CueScheduler. The Director emits board ops and pointer cues as data anchored to her next turn (`CueAt` say-strings that are numbers, symbols or kit terms, never sentences; <= 3 board ops, <= 2 point cues per turn). Placement is estimator L (rate until `response.done`, then text-proportional with the exact duration from audio_tokens = 20/s) with a 400 ms pre-roll, held to sentence end; pointers never fire before the previous cue's word + 300 ms and are skipped on no-match. Pointer marks are host-drawn over the module via a validated locate/rects handshake. Phrase captions ship; word-lit karaoke only with exact alignment. sprite2d in a worker is the tier C/D face; rive2d must earn tier B (p95 <= 4 ms).** (2026-10-02)\n- Rationale: 16 real realtime turns, 60 anchors: transcript leads playback by 6.5 s median, but L places words at 372 ms median error; 400 ms pre-roll shows the mark at word onset in 86.7% of cues and never > 2.0 s early, inside the only measured harm boundary (-2 s, Porte et al. 2026).\n- Reverse if: E-TV-5 or M-TV-1 shows another pre-roll or untimed writes do as well (M-TV-1 bar: >= 0.1 SD delayed recall); or E-TV-2 makes exact live alignment cheap (then word-lit captions may ship when >= 90% of words fall within +/-150 ms on 50 turns).\n- Source: `CONTENT-ENGINE.md` §7, `teacher-visual.md` §2-§9.",
+    "measurements": "## content-generation-bench-2026-10-02\n**Content-generation measurements made by the content/ workstreams on 2026-10-02, US build container -> eastus2, synthetic briefs, no child data.** Compiled in `docs/research/content/CONTENT-ENGINE.md`; raw outputs beside each script.\n- T1 engine spec fill (`genui-bench.mjs`, fractions@1, strict schema): taxila-fast effort none n=10, 10/10 valid incl. engine-maths checks, 1,876 ms p50 / 2,050 ms p90, 191 output tokens; effort low 9/10, 3,459/5,094 ms.\n- T2a scene template fill: 3.08 s p50 / 3.35 s p90 (n=8 briefs), 6/8 lint-clean as run, 8/8 after validator v1.1-v1.3 (in-sample). T2b free scene: 0/8 first call on fast (11.9 s p50), 6/8 after one repair; brain 3/8 -> 7/8 (18.2 s p50); json_object mode 7/8 schema-invalid, 0 repaired. Strict-mode null tax 24.5% of payload.\n- Azure strict structured outputs (n=1 per probe): 400 properties accepted; nesting > 10 rejected; > 1000 total enum values rejected.\n- explainer@1 (`explainer-bench.mjs`, 8 curriculum topics x 5 arms x 1 rep): template on taxila-fast effort none 8/8 at 2.88 s p50 / 3.46 s max (~$0.0007 each); free-form 3/8 at 13.55 s (fast, low) and 2/8 at 29.70 s (brain, low). Template choice right 24/24.\n- Free SVG (`diagrams-images-svg-probe.mjs`, 4 pinned diagrams x 2 deployments x n=3): gpt-5.6-sol medium 12/12 exact at 8-25 s; luna low 10/12 at 5-11 s (one triangle 13.1/18.8/148 deg instead of 50/60/70; one minute hand 14 deg off).\n- gpt-image-2 labelled science diagrams (`diagrams-images-image-probe.mjs`, 12 images, one rater): spelling EN 32/32, HI 31/32; leaders on the right part EN 31/32, HI 27/32; fully correct EN 4/6, HI 1/6; 3/3 circuits drawn with an open switch when \"closed\" was asked; VLM OCR passed the one corrupted glyph (1/1 false pass); text-free bases 4/4 clean. Low quality $0.0059 / 16-22 s; medium $0.0527 / 39-43 s.\n- Sora 2 on Azure (`animation-video-sora-probe.mjs`, n=3 clips, 4 s 720p): 51-57 s each, 2-3 Mbps; 1/3 fully correct (count wrong, germination wrong, shadow right); text 2/2.\n- Chant TTS (`songs-chant-probe.mjs`, 4 arms x 6 lines x 3 reps = 72 clips): Azure Speech Swara deterministic, 160 ms first byte / 297 ms total, table lines 12/12 phonetically right (hand-coded from ASR); gpt-4o-mini-tts \"sing\" held-note share 0.83 vs 0.80 plain (no measurable singing); ASR with language=hi returned non-Devanagari script for 7-9/15 mini-tts clips (Swara 1/15); ङ heard as म in every Swara condition.\n- Teacher speech timing (`teacher-visual-sync-*.mjs`, 16 realtime turns, 60 digit anchors, Azure fast-transcription ground truth): transcript lead median 6.46 s, p10 0.94 s; audio_tokens = 20.00 per second in 15/16 turns; estimator L median 372 ms / p90 863 ms error, 35% within +/-250 ms; 400 ms pre-roll -> mark visible at word onset 86.7%, max 2.0 s early.\n- Sandbox (`sandbox-probe.mjs`, headless Chromium 141): fraction-bars@1 first engine DOM 46/119/148 ms at 1x/4x/6x CPU (n=10); ~1.0 MB heap per frame; round trip p90 <= 11.2 ms; WebView-like (no site isolation) 1,500 ms frame busy loop froze host 1,501-1,503 ms (n=9).\n- Caveat: small n everywhere; desktop/US-container numbers are proxies until the reference-phone device lab (V15) and India-latency runs.",
+    "rejected": "## live-free-generation\n**Tried (2026-10-02, genui and animation benches): free-form generation for the live lesson — free `scene@1` composition from primitives, free-form `explainer@1` beats, free SVG for exact school diagrams, and schema-less `json_object` output.** What broke:\n- Latency: free scenes 11.9-18.2 s p50 per call plus 10-13 s per repair; free explainers 13.6-29.7 s; free SVG 8-25 s (sol) — all far past the 2-3.5 s the teacher's preamble covers.\n- Validity: free scenes 0/8 (fast) and 3/8 (brain) lint-clean on the first call; free explainers 3/8 and 2/8, failing on geometric self-contradiction (morning shadow shorter than noon, integer marker placed by value not pixel, groundwater above rain, overlapping actors); json_object 7/8 schema-invalid and one repair fixed 0/7.\n- Silent wrongness: luna drew a 13/19/148 deg triangle with the right labels, which a VLM glance or CLIP score would pass.\n- Replaced by `content-live-tiers` (templates + engines live; free composition near-line or offline behind validators and review).\n\n## generated-media-carries-facts\n**Tried (2026-10-02): letting generated pixels carry curriculum facts — gpt-image-2 labelled science diagrams (EN and HI, low and medium) and Sora 2 explainer clips.** What broke:\n- gpt-image-2 spells labels but places them wrongly: Hindi leader lines on the wrong part 5/32 (परागकोश -> filament, वर्तिकाग्र -> style, बाह्यदल -> a petal), English 1/32; medium quality did not fix Hindi (3/6 wrong on the flower); every \"closed circuit\" (3/3, incl. a text-free base) showed an open switch; fully correct images EN 4/6, HI 1/6.\n- The VLM OCR \"spelling gate\" transcribed the requested string for an image with a visibly corrupted glyph (false pass 1/1): it reads what it expects. OCR is valid only as a no-text presence check.\n- Sora 2: asked for 3 red + 4 green apples merging under \"3 + 4 = 7\", it drew 3 + 3 merging into 6 under a perfect \"3 + 4 = 7\"; the germination clip opened leaves underground. Literature agrees (Code2Video: Veo3 2.5 vs agentic Manim 86.0 on TeachQuiz; PhysicsLENS 34/47 videos ignore the stated property).\n- A child learning a wrong label or count from a picture learns a misconception no gate catches. Replaced by `diagram-router-no-baked-labels` and `explainer-templates-live`.\n\n## karaoke-from-transcript-estimate\n**Tried (2026-10-02, teacher-visual sync probe): placing word-lit karaoke captions and word-level board/pointer cues from a live estimate of when each transcript word is spoken.** What broke:\n- The best live estimator (L) has 372 ms median / 863 ms p90 error and puts only 35% of words within +/-250 ms, while a spoken word lasts ~300-450 ms: it would light the wrong word about two times in three.\n- Acoustic re-anchoring was worse, not better: envelope-pause re-anchoring (Q) 885 ms median (her pauses do not map one-to-one to punctuation); syllable-nucleus tracking (Y) 340 ms even tuned in-sample, not beating text-proportional S.\n- Kept: phrase-level captions and clause-level board/pointer cues with 400 ms pre-roll (`teacher-stage-cue-scheduler`). Supersedes the PRODUCT-DESIGN R5 \"lead >= 150 ms\" gate as the wrong test (lead is plentiful; placement is the problem)."
+  }
+}

@@ -371,3 +371,98 @@ folder per STUDENT, a sandboxed iframe per PLAY.** Source: `docs/research/factor
   - a model of 1B parameters or less reaches 4 or more streams per T4 at the latency bar;
   - an A/B shows video lifts paid conversion enough to fund it.
 - Source: AVATAR.md §8; `video-avatar-v2.md` + R1…R6; `video-avatar-v2-cost.py`.
+
+
+<!-- merged from inbox/market.json -->
+## mk-wedge-k4-7-hinglish-tier2
+**Decision.** Launch on classes 4-7 (product usable from class 3 through class 8). Use a CBSE/NCERT chapter graph, maths and science, a Hinglish voice teacher, and mid-fee affordable-private-school families (fees Rs500-2,000/month). Run two cells: Lucknow-Kanpur (school-seeded, parent-paid) and Patna (direct to parent). Classes 8-9 are for retention, not acquisition.
+
+**Rationale.**
+- Big tech serves 13+ for free, and four of five platforms stay out of under-13 consumer products by policy (bigtech.md).
+- PW below class 9 is still human mega-batches (CuriousJr, ~Rs30k/yr).
+- BaSE puts maths and science first among EdTech subjects (74% / 57%).
+- UP has 32% of India's private unaided schools. Bihar has ~60% tuition incidence and 37% of SAM-1 (market-size.md).
+- Low-income Rs400/month group-tuition homes are excluded: Taxila is not cheaper for them, and they buy custody and routine, which Taxila cannot replace (tutor-substitution.md).
+
+**Reversal.**
+- If UP school sign rate is below 15% after 60 qualified visits, move the school cell to Rajasthan.
+- If Rajasthan B2C conversion comes within 30% of UP's, add Rajasthan B2C.
+- If PW ships a K-8 AI tutor at under Rs300/month before the pilot, re-plan the wedge against it (op-pw-k8-ai-tutor-watch).
+- Source: docs/research/market/MARKET-THESIS.md §1.3.
+
+## mk-no-sales-no-emi-monthly
+**Decision.**
+- No outbound sales paid per conversion. No counsellor visits or calls.
+- No EMI, NBFC or loan partners. No device bundles. No multi-year prepaid plans.
+- Plans are monthly, or annual at 10x monthly with a stated pro-rata refund. Revenue is recognised over the term.
+- Cancellation is one tap. A 48 h reminder goes out before the first charge, and the full price is shown when the mandate is set up.
+- The diagnostic and the learner model never sell: a diagnostic reaches the parent only with a plan and a free next step.
+
+**Rationale.**
+- BYJU'S, WhiteHat Jr and Lido died of selling and financing, not content (failures.md B1-B3).
+- Mis-selling, paywalls and refunds are the top parent complaints (india-incumbents.md §3).
+
+**Reversal.** An A/B test shows assisted (non-commission) sales raise 90-day paid retention while refund requests stay at or below 5%, with zero pressure-selling complaints.
+
+## mk-tiers-as-voice-budgets
+**Decision.**
+- Every paid tier is an absolute monthly budget of two-way voice minutes, split by lane: realtime, cascade, then tap.
+- Saathi Rs299: 90 cascade minutes.
+- Tutor Rs699: 300 cascade + 30 realtime minutes.
+- Ghar Tutor Rs999: 420 cascade + 60 realtime minutes.
+- The cost governor degrades realtime to cascade to tap when a budget runs out. The lesson never stops.
+- The child never sees a counter; the parent sees usage.
+- The free Shuru tier is cache-only (one-way narration). No live model calls, and no ads (DPDP s.9(3)).
+
+**Rationale.**
+- Hour-for-hour voice is at best at par with a tutor on any Azure lane (mk-azure-voice-cost-per-hour).
+- The price advantage comes from the lane mix: about 30-35% voice, the rest tap with cached narration (pricing-unit-econ.md §3-7).
+
+**Reversal.**
+- If the PU-2 A/B shows cascade voice lowers M3 retention by more than 5 points vs realtime, re-price the tiers on realtime minutes.
+- If Azure realtime prices fall by more than 3x, revisit the budgets.
+
+## mk-year1-lead-699-999
+**Decision.**
+- In year 1, lead with Tutor Rs699 for tutor-substituting families and Ghar Tutor Rs999 (+Rs499 per sibling) for families paying a Rs1,500-3,000 tutor.
+- Sell Saathi Rs299 at volume only after the grant-funded central catalogue pre-build. Per-lesson personalisation is capped at about $0.02.
+
+**Rationale.**
+- At $1.5 per child-month of year-1 Forge content, Rs299's gross margin falls from 55% to 8.5%, and contribution falls from Rs136 to Rs21 per payer-month.
+- That makes year-1 LTV about Rs105, so the CAC ceiling is about Rs35, far below any measured channel.
+- Rs699 and Rs999 hold 37-44% gross margin in year 1 (pricing-unit-econ.md §4).
+
+**Reversal.** Measured year-1 Forge spend at or below $0.3 per child-month, or Rs299 cohort contribution positive by month 3.
+
+## mk-school-seeded-parent-paid
+**Decision.**
+- GTM is school-seeded, parent-paid and carried on WhatsApp, which runs structured flows only: the diagnostic, weekly report, billing and referral. It never runs open-ended tutoring.
+- Pilot 20 mid-fee APS in Lucknow-Kanpur in Nov 2026-Mar 2027, comparing Offer A (free to the school, parent upgrade) with Offer B (school-paid Lite at Rs600-1,200 per pupil per year).
+- Patna D2C cell: CTWA + YouTube to mothers.
+- Paid social is capped at 15% of acquisition spend.
+- B2G waits for an independent result of at least 0.2 SD. Telco waits for ~100k payers.
+- Ad audiences are parents and teachers only.
+
+**Rationale.**
+- Discovery is school/teacher 63% and ads 6% (mk-discovery-channels-base2025).
+- The WhatsApp general-purpose chatbot ban applies from 2026-01-15.
+- DPDP s.9(3) bans child-directed targeted ads from 13 May 2027.
+
+**Reversal.**
+- Measured install-to-payer at or above 8% makes paid social a primary channel.
+- If Offer B beats Offer A on contribution per school-year by more than 1.5x, lead with B.
+- If payers per Offer-A school stay below 7, redirect the school cell.
+
+## mk-warmth-not-intimacy
+**Decision.**
+- The relational OS gives warmth, memory and continuity, never simulated intimacy: no "I love you", no "I'm real", and regular plain reminders that the teacher is an AI.
+- The bond is three-way: teacher, child and parent.
+- There are parent-set session caps and no guilt-tripping register.
+- The persona is frozen and versioned. Persona-regression evals run before any model upgrade, and parents are told of any change the child would notice.
+
+**Rationale.**
+- Ello's published hard lines and SB 243 (global-ai-tutors.md).
+- The Character.AI under-18 ban and the Replika Garante order (failures.md P4/P6).
+- Childline 1098 / Tele-MANAS 14416 and the never-deny-being-an-AI rule are already product invariants.
+
+**Reversal.** None on intimacy, which is a child-safety floor. The "cadence of AI reminders" may be tuned if a measured study shows a lower cadence does not raise dependency signals.
