@@ -12,7 +12,7 @@ const ROUTES = {
   "PATCH /api/children": account.updateChild,
   "DELETE /api/children": account.deleteChild,
   "GET /api/health": async (req, res) => {
-    const out = { ok: true, at: new Date().toISOString(), driver: process.env.DB_DRIVER || "neon-http" };
+    const out = { ok: true, at: new Date().toISOString(), driver: process.env.DB_DRIVER || "neon-http", revision: process.env.CONTAINER_APP_REVISION || null };
     if ((req.url || "").includes("db=1")) {       // DB round-trip probe: 5 sequential `select 1`
       const { q } = await import("./db.js");
       const ms = [];

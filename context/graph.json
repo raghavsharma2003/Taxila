@@ -119,6 +119,13 @@
    "id": "open-db-region",
    "kind": "open",
    "title": "App in eastus2 but Neon in Singapore: cross-Pacific DB latency unmeasured",
+   "at": "2026-10-02",
+   "status": "resolved: Neon moved to us-east-1; pg pool on Azure"
+  },
+  {
+   "id": "db-driver-latency-2026-10-02",
+   "kind": "measurement",
+   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 \u2192 Neon us-east-1",
    "at": "2026-10-02"
   }
  ],
@@ -217,6 +224,11 @@
    "src": "open-db-region",
    "rel": "caused_by",
    "dst": "hosting-azure-container-apps"
+  },
+  {
+   "src": "open-db-region",
+   "rel": "measured_by",
+   "dst": "db-driver-latency-2026-10-02"
   }
  ]
 }

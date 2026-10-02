@@ -78,3 +78,13 @@ is still speaking (barge-in probe). Measured from the US build container.
 - **Browser WebRTC (`evals/webrtc/`)**: from headless Chromium the ephemeral-key SDP POST to
   `/openai/v1/realtime/calls` returned **201** and a remote track — the browser signalling path is proven. ICE
   then failed because this sandbox cannot carry UDP/TURN (3478) — media must be verified on a real device.
+
+## db-driver-latency-2026-10-02
+**DB round-trip from the Azure Container App (eastus2) to Neon `taxila-us` (aws-us-east-1), 2026-10-02.**
+Method: `/api/health?db=1` runs 5 sequential `select 1` inside the container (n=3 calls × 5).
+- Neon HTTP driver (one HTTPS request per query): ~230 ms/query (inferred: `/api/me` = 3 queries took 0.9 s vs
+  0.2 s for `/api/health`, n=5).
+- Persistent `pg` Pool (`DB_DRIVER=pg`): **9-12 ms/query** (15 samples). `/api/me` end-to-end from the US build
+  sandbox 0.26-0.58 s, now dominated by client↔Azure network/TLS.
+- Neon moved from Singapore (`billowing-glitter-91836156`, test data only, left in place) to US East
+  (`royal-fire-14595065`) to sit beside eastus2; migrations re-applied.

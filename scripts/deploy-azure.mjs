@@ -40,15 +40,24 @@ if (st !== "Succeeded") {
   console.error((await (await fetch(logLink)).text()).split("\n").slice(-40).join("\n")); process.exit(1);
 }
 const app = await arm("GET", "/providers/Microsoft.App/containerApps/taxila-web?api-version=2024-03-01");
-app.properties.template.containers[0].image = `taxilacr.azurecr.io/taxila-web:${sha}`;
-await arm("PATCH", "/providers/Microsoft.App/containerApps/taxila-web?api-version=2024-03-01", { properties: { template: app.properties.template } });
+const tpl = app.properties.template;
+tpl.revisionSuffix = `s${sha}-${Date.now().toString(36).slice(-4)}`;   // must be unique per revision
+const c0 = tpl.containers[0];
+c0.image = `taxilacr.azurecr.io/taxila-web:${sha}`;
+// host-level env the image expects on Azure (idempotent)
+for (const [name, value] of Object.entries({ DB_DRIVER: "pg", NODE_ENV: "production", TAXILA_HOST: "azure" })) {
+  const e = c0.env.find((x) => x.name === name); if (e) { e.value = value; delete e.secretRef; } else c0.env.push({ name, value });
+}
+await arm("PATCH", "/providers/Microsoft.App/containerApps/taxila-web?api-version=2024-03-01", { properties: { template: tpl } });
 const fqdn = app.properties.configuration.ingress.fqdn;
 for (let i = 0; i < 40; i++) {
   await sleep(6000);
   const a = await arm("GET", "/providers/Microsoft.App/containerApps/taxila-web?api-version=2024-03-01");
+  if (a.properties.provisioningState === "Failed") throw new Error(`provisioning failed (latest ready revision ${a.properties.latestReadyRevisionName} keeps serving)`);
   if (a.properties.provisioningState === "Succeeded" && a.properties.template.containers[0].image.endsWith(sha)) {
-    const h = await fetch(`https://${fqdn}/api/health`).then((r) => r.status).catch(() => 0);
-    if (h === 200) { console.log(`live: https://${fqdn}  (image ${sha})`); process.exit(0); }
+    // Azure sets CONTAINER_APP_REVISION; only a response from the NEW revision counts as live
+    const h = await fetch(`https://${fqdn}/api/health`).then((r) => r.json()).catch(() => null);
+    if (h?.ok && String(h.revision || "").endsWith(tpl.revisionSuffix)) { console.log(`live: https://${fqdn}  (image ${sha}, revision ${h.revision})`); process.exit(0); }
   }
 }
 throw new Error("revision did not become healthy in time");
