@@ -164,3 +164,25 @@ Proposed (`docs/research/psychology/metacognition-srl.md` §6.3 rule 2; similar 
 
 ## grade-equivalent-parent-band
 Proposed (`docs/research/psychology/learning-over-time.md` §3.7, §7 principle 7, [Progress] block; `parent-reports.md` level ribbon, 2026-10-02; rejected in review): show parents a grade-equivalent band for subject ability ("working at early Class 5 level"), framed as level, never rank. What breaks (LOT review R6): grade equivalents are not equal-interval, depend on a norming sample Taxila does not have, extrapolate beyond tested grades, and Taxila has no vertical scale yet; the statement is norm-referenced, contradicting the no-comparison rule, and for a Class 6 child it is a high-stakes below-grade label; parents misread GEs (Smith 1999: 76.7% of 30 parents misinterpreted them, as confident as those who were right [S]). Replacement: criterion-referenced rows against NCERT learning outcomes, and a theta trajectory with its uncertainty ribbon on an unlabelled scale at term (`psych-claim-tiers`). Could be revisited only after vertical scaling, a representative norming study and a parent-comprehension test; the default is never.
+
+
+<!-- merged from inbox/content.json -->
+## live-free-generation
+**Tried (2026-10-02, genui and animation benches): free-form generation for the live lesson — free `scene@1` composition from primitives, free-form `explainer@1` beats, free SVG for exact school diagrams, and schema-less `json_object` output.** What broke:
+- Latency: free scenes 11.9-18.2 s p50 per call plus 10-13 s per repair; free explainers 13.6-29.7 s; free SVG 8-25 s (sol) — all far past the 2-3.5 s the teacher's preamble covers.
+- Validity: free scenes 0/8 (fast) and 3/8 (brain) lint-clean on the first call; free explainers 3/8 and 2/8, failing on geometric self-contradiction (morning shadow shorter than noon, integer marker placed by value not pixel, groundwater above rain, overlapping actors); json_object 7/8 schema-invalid and one repair fixed 0/7.
+- Silent wrongness: luna drew a 13/19/148 deg triangle with the right labels, which a VLM glance or CLIP score would pass.
+- Replaced by `content-live-tiers` (templates + engines live; free composition near-line or offline behind validators and review).
+
+## generated-media-carries-facts
+**Tried (2026-10-02): letting generated pixels carry curriculum facts — gpt-image-2 labelled science diagrams (EN and HI, low and medium) and Sora 2 explainer clips.** What broke:
+- gpt-image-2 spells labels but places them wrongly: Hindi leader lines on the wrong part 5/32 (परागकोश -> filament, वर्तिकाग्र -> style, बाह्यदल -> a petal), English 1/32; medium quality did not fix Hindi (3/6 wrong on the flower); every "closed circuit" (3/3, incl. a text-free base) showed an open switch; fully correct images EN 4/6, HI 1/6.
+- The VLM OCR "spelling gate" transcribed the requested string for an image with a visibly corrupted glyph (false pass 1/1): it reads what it expects. OCR is valid only as a no-text presence check.
+- Sora 2: asked for 3 red + 4 green apples merging under "3 + 4 = 7", it drew 3 + 3 merging into 6 under a perfect "3 + 4 = 7"; the germination clip opened leaves underground. Literature agrees (Code2Video: Veo3 2.5 vs agentic Manim 86.0 on TeachQuiz; PhysicsLENS 34/47 videos ignore the stated property).
+- A child learning a wrong label or count from a picture learns a misconception no gate catches. Replaced by `diagram-router-no-baked-labels` and `explainer-templates-live`.
+
+## karaoke-from-transcript-estimate
+**Tried (2026-10-02, teacher-visual sync probe): placing word-lit karaoke captions and word-level board/pointer cues from a live estimate of when each transcript word is spoken.** What broke:
+- The best live estimator (L) has 372 ms median / 863 ms p90 error and puts only 35% of words within +/-250 ms, while a spoken word lasts ~300-450 ms: it would light the wrong word about two times in three.
+- Acoustic re-anchoring was worse, not better: envelope-pause re-anchoring (Q) 885 ms median (her pauses do not map one-to-one to punctuation); syllable-nucleus tracking (Y) 340 ms even tuned in-sample, not beating text-proportional S.
+- Kept: phrase-level captions and clause-level board/pointer cues with 400 ms pre-roll (`teacher-stage-cue-scheduler`). Supersedes the PRODUCT-DESIGN R5 "lead >= 150 ms" gate as the wrong test (lead is plentiful; placement is the problem).

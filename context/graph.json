@@ -33,7 +33,7 @@
   {
    "id": "realtime-teacher-bakeoff-2026-10-02",
    "kind": "measurement",
-   "title": "Realtime 2.1 vs mini with teacher prompt: 64\u219225 words/turn when brevity is structural",
+   "title": "Realtime 2.1 vs mini with teacher prompt: 64→25 words/turn when brevity is structural",
    "at": "2026-10-02"
   },
   {
@@ -125,7 +125,7 @@
   {
    "id": "db-driver-latency-2026-10-02",
    "kind": "measurement",
-   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 \u2192 Neon us-east-1",
+   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 → Neon us-east-1",
    "at": "2026-10-02"
   },
   {
@@ -575,7 +575,7 @@
   {
    "id": "voice-lane-cascade-default",
    "kind": "decision",
-   "title": "Default voice = STT\u2192Director\u2192TTS cascade (~\u20b928/h); realtime 2.1 premium share",
+   "title": "Default voice = STT→Director→TTS cascade (~₹28/h); realtime 2.1 premium share",
    "at": "2026-10-02"
   },
   {
@@ -589,6 +589,90 @@
    "kind": "constraint",
    "title": "Compliance parked until launch; safety floor stays",
    "at": "2026-10-02"
+  },
+  {
+   "id": "content-live-tiers",
+   "kind": "decision",
+   "title": "Live modules = T1 engine params (taxila-fast, effort none) or T2a scene template fill; T2b free scenes near-line (>=45 s ahead); T3 free code offline with V0-V9 + two-key; no live images, video, songs or free code; router is deterministic server code",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "content-v1-engine-set",
+   "kind": "decision",
+   "title": "v1 ships 12 hand-built engines (number-line, collections, place-value, fractions, multiply-divide, data-graphs, patterns+grid, geoboard, measure, motion-lab slice, sky 2D, water-cycle): primary for 229/514 maths+science topics (44.6%), 273/514 with the T2a/diagram layer",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "bridge-v2-host-grades",
+   "kind": "decision",
+   "title": "One module protocol (bridge v2.1 over a MessagePort); observations are manifest key=value facts only; the host grades every answer and the module only claims; three lanes plus a talk gate",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "engines-in-sandbox-frame-v1",
+   "kind": "decision",
+   "title": "v1: every visual module (T0-T3) mounts in the sandboxed opaque-origin frame on a vanilla-TS engine-kit (no React/zod in frame); audio/mic/stage components (chant-track, read-along speech window, board, pointer, LockPanel, word-chain) are host-side first-party code",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "diagram-router-no-baked-labels",
+   "kind": "decision",
+   "title": "Diagram renderer chosen by content shape (engines, flow/concept-map/label-diagram/formula, cached rasters); no raster carries text; labels are kit-term overlays at human-verified anchors; no Mermaid/Graphviz/live free SVG in the child frame",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "explainer-templates-live",
+   "kind": "decision",
+   "title": "Live animation = explainer@1 templates (code computes geometry, one beat per teacher turn, GSAP player on HTML layers); pre-render is the same DSL + TTS bookmarks; Sora is B-roll only behind an off-by-default flag",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "chant-not-song-v1",
+   "kind": "decision",
+   "title": "Verbatim content (tables, varnamala, sequences, poems) gets a beat-locked chant: pre-rendered deterministic Azure Speech (Swara) clips gated by phonkey ASR + human ear, scheduled by a host Web Audio track; the teacher frames and reacts, never holds the beat; <=60 s per unheard segment",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "teacher-stage-cue-scheduler",
+   "kind": "decision",
+   "title": "Board and pointer cues are data (CueAt say/turn_start) placed by estimator L with 400 ms pre-roll on the playback clock; pointer is host-drawn via locate/rects; word-lit karaoke only with exact alignment; sprite2d worker face default on tiers C/D",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "content-generation-bench-2026-10-02",
+   "kind": "measurement",
+   "title": "Content-generation benches (US container to eastus2, 2026-10-02): T1 1.88/2.05 s 10/10; T2a 3.08/3.35 s; explainer templates 8/8 at 2.88 s; free scenes 0/8 first call; free explainers 3/8 and 2/8; free SVG 12/12 sol at 8-25 s, 10/12 luna; gpt-image-2 fully-correct labelled diagrams EN 4/6 HI 1/6; Sora 1/3 correct; cue estimator L 372 ms median",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "live-free-generation",
+   "kind": "rejection",
+   "title": "Free-form generation on the live path (free scene@1 composition, free explainers, free SVG, json_object mode): too slow and self-contradictory - 0/8 first-call scenes, 3/8 explainers at 13.6 s, 7/8 json_object schema failures unrepaired, luna triangle 13/19/148 deg",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "generated-media-carries-facts",
+   "kind": "rejection",
+   "title": "Letting generated pixels carry facts: gpt-image-2 baked labels put Hindi leaders on the wrong part 5/32 (OCR gate passed a corrupted glyph), 3/3 'closed' circuits drawn open; Sora drew 3+3 apples under '3+4=7' and leaves opening underground",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "karaoke-from-transcript-estimate",
+   "kind": "rejection",
+   "title": "Word-lit karaoke captions placed by a live transcript-timing estimate: best estimator puts only 35% of words within +/-250 ms (would light the wrong word about two times in three); envelope-pause and syllable-nucleus trackers did worse",
+   "at": "2026-10-02",
+   "source": "inbox/content.json"
   }
  ],
  "edges": [
@@ -1061,6 +1145,106 @@
    "src": "launch-focus-classes-4-7",
    "rel": "constrains",
    "dst": "scope-classes-1-9"
+  },
+  {
+   "src": "content-live-tiers",
+   "rel": "measured_by",
+   "dst": "content-generation-bench-2026-10-02"
+  },
+  {
+   "src": "content-live-tiers",
+   "rel": "caused_by",
+   "dst": "live-free-generation"
+  },
+  {
+   "src": "azure-only-compute",
+   "rel": "constrains",
+   "dst": "content-live-tiers"
+  },
+  {
+   "src": "content-v1-engine-set",
+   "rel": "part_of",
+   "dst": "content-live-tiers"
+  },
+  {
+   "src": "scope-classes-1-9",
+   "rel": "constrains",
+   "dst": "content-v1-engine-set"
+  },
+  {
+   "src": "bridge-v2-host-grades",
+   "rel": "part_of",
+   "dst": "content-live-tiers"
+  },
+  {
+   "src": "engines-in-sandbox-frame-v1",
+   "rel": "part_of",
+   "dst": "bridge-v2-host-grades"
+  },
+  {
+   "src": "forge-sandbox-lanes",
+   "rel": "constrains",
+   "dst": "engines-in-sandbox-frame-v1"
+  },
+  {
+   "src": "learner-safety-gate-first",
+   "rel": "constrains",
+   "dst": "bridge-v2-host-grades"
+  },
+  {
+   "src": "diagram-router-no-baked-labels",
+   "rel": "caused_by",
+   "dst": "generated-media-carries-facts"
+  },
+  {
+   "src": "diagram-router-no-baked-labels",
+   "rel": "measured_by",
+   "dst": "content-generation-bench-2026-10-02"
+  },
+  {
+   "src": "explainer-templates-live",
+   "rel": "caused_by",
+   "dst": "generated-media-carries-facts"
+  },
+  {
+   "src": "explainer-templates-live",
+   "rel": "measured_by",
+   "dst": "content-generation-bench-2026-10-02"
+  },
+  {
+   "src": "explainer-templates-live",
+   "rel": "part_of",
+   "dst": "content-live-tiers"
+  },
+  {
+   "src": "azure-only-compute",
+   "rel": "constrains",
+   "dst": "chant-not-song-v1"
+  },
+  {
+   "src": "teacher-stage-cue-scheduler",
+   "rel": "caused_by",
+   "dst": "karaoke-from-transcript-estimate"
+  },
+  {
+   "src": "teacher-stage-cue-scheduler",
+   "rel": "measured_by",
+   "dst": "content-generation-bench-2026-10-02"
+  },
+  {
+   "src": "live-free-generation",
+   "rel": "measured_by",
+   "dst": "content-generation-bench-2026-10-02"
+  },
+  {
+   "src": "generated-media-carries-facts",
+   "rel": "measured_by",
+   "dst": "content-generation-bench-2026-10-02"
+  },
+  {
+   "src": "karaoke-from-transcript-estimate",
+   "rel": "measured_by",
+   "dst": "content-generation-bench-2026-10-02"
   }
  ]
 }
