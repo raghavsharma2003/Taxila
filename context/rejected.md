@@ -49,3 +49,43 @@ Tried (visual-identity §3.2, §9, 2026-10-02): a `chalk-mark #F2CF6B` gold unde
 - What broke (on review, before build): (1) processing, not storage, is the regulated act, so not storing does not take real-time affect inference out of 'behavioural monitoring' [needs counsel]; (2) the LLM dialogue-act labeller is non-deterministic, so replay requires stored labels (a 30-day turn->acts cache), which is stored affect-adjacent data; (3) the session state has to live somewhere on Azure Container Apps.
 - Replaced by: learner-legal-mode-ratchet (session-only processing in M1 with a defined in-memory home and an explicit-only fallback; research telemetry only under P4 with a 30-day TTL).
 - Would be revisited if: counsel's opinion on dpdp-deep Q1(a) says within-session adaptation from a child's dialogue is not monitoring at all.
+
+
+<!-- merged from inbox/avatar.json -->
+## avatar-lipsync-dead-ends
+Three lip-sync approaches were measured on the Hindi bench (`avatar-lipsync-bench-2026-10-02`, 2026-10-02) and rejected:
+
+1. **wawa-lipsync 0.0.2 on live audio.**
+   - **Tried:** the real code over a spec-faithful AnalyserNode.
+   - **Broke:** its best alignment lags the audio by 217–233 ms, because of analyser smoothing 0.8 plus a 10-frame history. It closed the lips on 0 of 34 English bilabials and 11 of 84 Hindi ones.
+   - **Reverse if:** a new version removes the smoothing and the history, and re-benches under 60 ms lag.
+2. **A 120 ms minimum viseme hold** (the fix proposed in HeadAudio issue #3 to stop chatter).
+   - **Tried:** the hold applied to HeadAudio's output.
+   - **Broke:** r fell from 0.43 to 0.16, and closures fell from 55 to 14 of 84. A hold buys smoothness by keeping wrong mouths on screen longer. Hold time is the wrong knob; RMS for the jaw plus classes for lip shape is the structure.
+3. **wav2vec2/HuBERT-class face models on the phone** (`wav2arkit_cpu` in onnxruntime-web).
+   - **Tried:** the model in onnxruntime-web WASM.
+   - **Broke:**
+     - The "1.8 MB" model needs a 402 MB `.onnx.data` weight file.
+     - It ran at 491 ms per audio second on one Xeon thread (165 ms on 4 threads), so it is at or past real time on an A55.
+     - Its output leads the audio by 100–167 ms, so it needs lookahead that the WebRTC path does not have, and delaying the audio is forbidden.
+   - **Reverse if:** a model of 1.5 MB or less meets p95 < 2 ms per frame on an A55 with no lookahead. That is what the v1.5 distilled student targets.
+
+## avatar-asset-dead-ends
+Avatar asset approaches measured in `avatar-asset-perf-2026-10-02` and `character-pipeline-proto/` (2026-10-02) and rejected:
+
+1. **Draco (KHR_draco_mesh_compression) for face avatars with unquantized morphs.**
+   - **Tried:** Draco on 5 face avatars.
+   - **Broke:** files stayed at 89–96% of raw, because the encoder leaves morph targets uncompressed, and morphs are 80–91% of the geometry. Decoding was 2–5× slower than meshopt, and the decoder is 15× larger.
+   - **Caveat:** the comparison did not quantize the Draco arm. The spec is silent on morph targets, so this is a property of the encoder.
+   - **Reverse if:** a Draco encoder compresses morph targets and beats meshopt's decode time on device.
+2. **Naive shape-key delta transfer onto a stylised identity**, i.e. W(neutral) + δ.
+   - **Tried:** enlarging the eyes ×1.15 / 1.3 / 1.5 on the ICT head, then adding the original blink delta.
+   - **Broke:** 1.3% / 3.4% / 8.1% of the cornea stayed visible at blink = 1 (3, 8 and 19 of 236 rays). Baking each key through the warp, W(neutral + δ), gave 0.0%.
+   - **Note:** warp-baking is exact only at weight 1 and one key at a time, so partial weights and combinations still need tests and in-between correctives.
+3. **Decimating a finished realistic head for mobile.**
+   - **Tried:** ICT 26k → 6.7k / 3.3k vertices, with closest-point shape transfer.
+   - **Broke:** the lid and lip loops were destroyed. Cornea stayed visible at blink (6 of 56 and 1 of 27 rays), and open-eye visibility fell to 82% and 78%. Author low-poly topology with lid and lip loops instead (MPFB has them).
+4. **Exporting OBJ-imported heads with custom split normals.**
+   - **Broke:** 102,530 GPU vertices from 25,959 mesh vertices (3.95×). That inflates the morph texture to 110 MB. Clear the split normals and shade smooth (27,956), and gate GPU/Blender vertices at ≤ 1.3.
+5. **WebP textures for GPU memory.**
+   - **Broke:** WebP saves wire bytes but lands as RGBA8: 5.59 MB per 1024² against 0.70 MB for ETC1S, with a 6–10× slower decode.

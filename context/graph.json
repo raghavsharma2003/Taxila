@@ -33,7 +33,7 @@
   {
    "id": "realtime-teacher-bakeoff-2026-10-02",
    "kind": "measurement",
-   "title": "Realtime 2.1 vs mini with teacher prompt: 64\u219225 words/turn when brevity is structural",
+   "title": "Realtime 2.1 vs mini with teacher prompt: 64→25 words/turn when brevity is structural",
    "at": "2026-10-02"
   },
   {
@@ -125,7 +125,7 @@
   {
    "id": "db-driver-latency-2026-10-02",
    "kind": "measurement",
-   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 \u2192 Neon us-east-1",
+   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 → Neon us-east-1",
    "at": "2026-10-02"
   },
   {
@@ -306,6 +306,76 @@
    "kind": "measurement",
    "title": "First prod lesson on Azure: start 2.5 s, text turns 2.4-4.0 s, realtime token OK",
    "at": "2026-10-02"
+  },
+  {
+   "id": "avatar-v1-stack",
+   "kind": "decision",
+   "title": "3D tutor v1 = three.js 0.180.0 + TalkingHead 1.7 (b3e277b, vendored, avatarOnly, patched) + HeadAudio (d3af5f9, patched); WebGL2 only; meshopt + KTX2 ETC1S; face tiers B / B-lite knobs / D plate / E, tier C cut; supersedes the 2D Rive launch face",
+   "at": "2026-10-02",
+   "source": "inbox/avatar.json"
+  },
+  {
+   "id": "avatar-lipsync-rms-jaw",
+   "kind": "decision",
+   "title": "Lips from an analysis-only second AnalyserNode on VoiceLink's existing remote-stream source: jaw = RMS, lip shape = Hindi-retrained HeadAudio classes via a per-character matrix; tap VAD canonical, output_audio_buffer.* hints; delay the face per audio route, never the audio",
+   "at": "2026-10-02",
+   "source": "inbox/avatar.json"
+  },
+  {
+   "id": "avatar-behaviour-controller",
+   "kind": "decision",
+   "title": "Client behaviour controller owns gaze/blink/brows/head on a floor FSM driven by local signals; nods only in open turns; verdict-neutral THINKING; expressive budget + band scale; sim invariants + mutation check are a CI gate",
+   "at": "2026-10-02",
+   "source": "inbox/avatar.json"
+  },
+  {
+   "id": "avatar-cast-shared-mpfb-s2",
+   "kind": "decision",
+   "title": "S2 stylised Indian cast on one MPFB (CC0) base topology, keys baked through each identity, 52 ARKit position-only on a split head; launch ids asha / arjun / nandini / senior-m (name TBD), bounded by voices passing the ear test",
+   "at": "2026-10-02",
+   "source": "inbox/avatar.json"
+  },
+  {
+   "id": "avatar-tutor-selection",
+   "kind": "decision",
+   "title": "Child picks the tutor at C1b from 2 / 2-3 / 2-4 (B1 / B2 / B3-B4), seeded shuffle, no default; runtime-rendered muxed previews; memory scope 'taxila' + voiced_by; switch only between lessons; parent allow-list with no reason field",
+   "at": "2026-10-02",
+   "source": "inbox/avatar.json"
+  },
+  {
+   "id": "avatar-v2-prerender-first",
+   "kind": "decision",
+   "title": "v2 = pre-rendered narration video (MuseTalk 1.5 on Spot A100, ~$200/character) first; live video only as a gated Studio tier; Azure TTS avatar rejected for lessons; nothing commercially usable fits full live lessons",
+   "at": "2026-10-02",
+   "source": "inbox/avatar.json"
+  },
+  {
+   "id": "avatar-lipsync-bench-2026-10-02",
+   "kind": "measurement",
+   "title": "Hindi lip-sync bench (14 Azure TTS utterances): RMS jaw r 0.563 hi / 0.697 en at lag 0; HeadAudio r 0.431 hi but 55/84 bilabial closures and 35% vowel false-close; wawa 217-233 ms lag; wav2arkit 402 MB, RTF 0.49",
+   "at": "2026-10-02",
+   "source": "inbox/avatar.json"
+  },
+  {
+   "id": "avatar-asset-perf-2026-10-02",
+   "kind": "measurement",
+   "title": "Avatar asset + perf benches: meshopt 0.96-2.86 MB vs Draco 2.15-19.6 MB; ETC1S 0.70 MB GPU vs WebP 5.59 MB; tier-B GLB 0.87-1.44 MB / 10-17 MB resident; main-thread 3.9/19.4 ms at 4x; lip gap p99 76 vs 35-40 ms worker; split normals 3.95x",
+   "at": "2026-10-02",
+   "source": "inbox/avatar.json"
+  },
+  {
+   "id": "avatar-lipsync-dead-ends",
+   "kind": "rejection",
+   "title": "Lip-sync dead ends: wawa-lipsync on live audio (217-233 ms lag, 0/34 closures), 120 ms viseme min-hold (r 0.43 -> 0.16), wav2vec-class face models on the phone (402 MB, RTF 0.49, needs lookahead)",
+   "at": "2026-10-02",
+   "source": "inbox/avatar.json"
+  },
+  {
+   "id": "avatar-asset-dead-ends",
+   "kind": "rejection",
+   "title": "Avatar asset dead ends: Draco with unquantized morphs, naive shape-key delta transfer under stylisation (1.3-8.1% cornea leak), decimating a realistic head (lids/lips break), exporting with custom split normals (3.95x verts), WebP on the GPU",
+   "at": "2026-10-02",
+   "source": "inbox/avatar.json"
   }
  ],
  "edges": [
@@ -543,6 +613,101 @@
    "src": "hosting-azure-container-apps",
    "rel": "measured_by",
    "dst": "prod-lesson-e2e-2026-10-02"
+  },
+  {
+   "src": "avatar-v1-stack",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "avatar-v1-stack",
+   "rel": "measured_by",
+   "dst": "avatar-asset-perf-2026-10-02"
+  },
+  {
+   "src": "avatar-lipsync-rms-jaw",
+   "rel": "part_of",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "avatar-lipsync-rms-jaw",
+   "rel": "measured_by",
+   "dst": "avatar-lipsync-bench-2026-10-02"
+  },
+  {
+   "src": "avatar-lipsync-rms-jaw",
+   "rel": "caused_by",
+   "dst": "avatar-lipsync-dead-ends"
+  },
+  {
+   "src": "avatar-lipsync-rms-jaw",
+   "rel": "constrains",
+   "dst": "voice-realtime-model"
+  },
+  {
+   "src": "avatar-lipsync-dead-ends",
+   "rel": "measured_by",
+   "dst": "avatar-lipsync-bench-2026-10-02"
+  },
+  {
+   "src": "avatar-behaviour-controller",
+   "rel": "part_of",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "avatar-behaviour-controller",
+   "rel": "constrains",
+   "dst": "voice-turn-config"
+  },
+  {
+   "src": "avatar-behaviour-controller",
+   "rel": "constrains",
+   "dst": "ds-status-carriers"
+  },
+  {
+   "src": "avatar-cast-shared-mpfb-s2",
+   "rel": "measured_by",
+   "dst": "avatar-asset-perf-2026-10-02"
+  },
+  {
+   "src": "avatar-cast-shared-mpfb-s2",
+   "rel": "caused_by",
+   "dst": "avatar-asset-dead-ends"
+  },
+  {
+   "src": "avatar-cast-shared-mpfb-s2",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "avatar-asset-dead-ends",
+   "rel": "measured_by",
+   "dst": "avatar-asset-perf-2026-10-02"
+  },
+  {
+   "src": "avatar-tutor-selection",
+   "rel": "constrains",
+   "dst": "avatar-cast-shared-mpfb-s2"
+  },
+  {
+   "src": "avatar-tutor-selection",
+   "rel": "constrains",
+   "dst": "ds-band-fork-older"
+  },
+  {
+   "src": "avatar-tutor-selection",
+   "rel": "constrains",
+   "dst": "scope-classes-1-9"
+  },
+  {
+   "src": "avatar-v2-prerender-first",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "avatar-v2-prerender-first",
+   "rel": "constrains",
+   "dst": "avatar-lipsync-rms-jaw"
   }
  ]
 }

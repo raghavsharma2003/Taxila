@@ -1,0 +1,166 @@
+{
+ "nodes": [
+  {
+   "id": "avatar-v1-stack",
+   "kind": "decision",
+   "title": "3D tutor v1 = three.js 0.180.0 + TalkingHead 1.7 (b3e277b, vendored, avatarOnly, patched) + HeadAudio (d3af5f9, patched); WebGL2 only; meshopt + KTX2 ETC1S; face tiers B / B-lite knobs / D plate / E, tier C cut; supersedes the 2D Rive launch face",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "avatar-lipsync-rms-jaw",
+   "kind": "decision",
+   "title": "Lips from an analysis-only second AnalyserNode on VoiceLink's existing remote-stream source: jaw = RMS, lip shape = Hindi-retrained HeadAudio classes via a per-character matrix; tap VAD canonical, output_audio_buffer.* hints; delay the face per audio route, never the audio",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "avatar-behaviour-controller",
+   "kind": "decision",
+   "title": "Client behaviour controller owns gaze/blink/brows/head on a floor FSM driven by local signals; nods only in open turns; verdict-neutral THINKING; expressive budget + band scale; sim invariants + mutation check are a CI gate",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "avatar-cast-shared-mpfb-s2",
+   "kind": "decision",
+   "title": "S2 stylised Indian cast on one MPFB (CC0) base topology, keys baked through each identity, 52 ARKit position-only on a split head; launch ids asha / arjun / nandini / senior-m (name TBD), bounded by voices passing the ear test",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "avatar-tutor-selection",
+   "kind": "decision",
+   "title": "Child picks the tutor at C1b from 2 / 2-3 / 2-4 (B1 / B2 / B3-B4), seeded shuffle, no default; runtime-rendered muxed previews; memory scope 'taxila' + voiced_by; switch only between lessons; parent allow-list with no reason field",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "avatar-v2-prerender-first",
+   "kind": "decision",
+   "title": "v2 = pre-rendered narration video (MuseTalk 1.5 on Spot A100, ~$200/character) first; live video only as a gated Studio tier; Azure TTS avatar rejected for lessons; nothing commercially usable fits full live lessons",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "avatar-lipsync-bench-2026-10-02",
+   "kind": "measurement",
+   "title": "Hindi lip-sync bench (14 Azure TTS utterances): RMS jaw r 0.563 hi / 0.697 en at lag 0; HeadAudio r 0.431 hi but 55/84 bilabial closures and 35% vowel false-close; wawa 217-233 ms lag; wav2arkit 402 MB, RTF 0.49",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "avatar-asset-perf-2026-10-02",
+   "kind": "measurement",
+   "title": "Avatar asset + perf benches: meshopt 0.96-2.86 MB vs Draco 2.15-19.6 MB; ETC1S 0.70 MB GPU vs WebP 5.59 MB; tier-B GLB 0.87-1.44 MB / 10-17 MB resident; main-thread 3.9/19.4 ms at 4x; lip gap p99 76 vs 35-40 ms worker; split normals 3.95x",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "avatar-lipsync-dead-ends",
+   "kind": "rejection",
+   "title": "Lip-sync dead ends: wawa-lipsync on live audio (217-233 ms lag, 0/34 closures), 120 ms viseme min-hold (r 0.43 -> 0.16), wav2vec-class face models on the phone (402 MB, RTF 0.49, needs lookahead)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "avatar-asset-dead-ends",
+   "kind": "rejection",
+   "title": "Avatar asset dead ends: Draco with unquantized morphs, naive shape-key delta transfer under stylisation (1.3-8.1% cornea leak), decimating a realistic head (lids/lips break), exporting with custom split normals (3.95x verts), WebP on the GPU",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "avatar-v1-stack",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "avatar-v1-stack",
+   "rel": "measured_by",
+   "dst": "avatar-asset-perf-2026-10-02"
+  },
+  {
+   "src": "avatar-lipsync-rms-jaw",
+   "rel": "part_of",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "avatar-lipsync-rms-jaw",
+   "rel": "measured_by",
+   "dst": "avatar-lipsync-bench-2026-10-02"
+  },
+  {
+   "src": "avatar-lipsync-rms-jaw",
+   "rel": "caused_by",
+   "dst": "avatar-lipsync-dead-ends"
+  },
+  {
+   "src": "avatar-lipsync-rms-jaw",
+   "rel": "constrains",
+   "dst": "voice-realtime-model"
+  },
+  {
+   "src": "avatar-lipsync-dead-ends",
+   "rel": "measured_by",
+   "dst": "avatar-lipsync-bench-2026-10-02"
+  },
+  {
+   "src": "avatar-behaviour-controller",
+   "rel": "part_of",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "avatar-behaviour-controller",
+   "rel": "constrains",
+   "dst": "voice-turn-config"
+  },
+  {
+   "src": "avatar-behaviour-controller",
+   "rel": "constrains",
+   "dst": "ds-status-carriers"
+  },
+  {
+   "src": "avatar-cast-shared-mpfb-s2",
+   "rel": "measured_by",
+   "dst": "avatar-asset-perf-2026-10-02"
+  },
+  {
+   "src": "avatar-cast-shared-mpfb-s2",
+   "rel": "caused_by",
+   "dst": "avatar-asset-dead-ends"
+  },
+  {
+   "src": "avatar-cast-shared-mpfb-s2",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "avatar-asset-dead-ends",
+   "rel": "measured_by",
+   "dst": "avatar-asset-perf-2026-10-02"
+  },
+  {
+   "src": "avatar-tutor-selection",
+   "rel": "constrains",
+   "dst": "avatar-cast-shared-mpfb-s2"
+  },
+  {
+   "src": "avatar-tutor-selection",
+   "rel": "constrains",
+   "dst": "ds-band-fork-older"
+  },
+  {
+   "src": "avatar-tutor-selection",
+   "rel": "constrains",
+   "dst": "scope-classes-1-9"
+  },
+  {
+   "src": "avatar-v2-prerender-first",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "avatar-v2-prerender-first",
+   "rel": "constrains",
+   "dst": "avatar-lipsync-rms-jaw"
+  }
+ ],
+ "md": {
+  "decisions": "## avatar-v1-stack\n**The v1 3D tutor runs on three.js 0.180.0 + TalkingHead 1.7.0 vendored at commit b3e277b in `avatarOnly` mode with our own WebGLRenderer and GLTFLoader (KTX2Loader with `setWorkerLimit(1)` + MeshoptDecoder), plus HeadAudio vendored at d3af5f9 (MFCC + classifier modules only). It is WebGL2-only and mounted imperatively by `<TutorStage>` in the existing StageFrame. Assets are meshopt + KHR_mesh_quantization + KTX2 ETC1S. v1 ships face tier B (≤15k tris, ≤4 draws, GLB ≤1.5 MB, resident ≤20 MB, 30/30/20 fps), B-lite as runtime knobs on the same GLB, D (an illustrated plate + mouth strip rendered from the same GLB with the B shader) and E (voice-only). Tier C (sprite rig) is cut. Tier choice uses static facts, then a 2 s probe on the chosen tutor, then one merged governor. This supersedes PRODUCT-DESIGN §3.5's 2D Rive launch face (owner directive, 2026-10-02); M-AV-1 replaces M-UX-6.** (2026-10-02)\n- Rationale:\n  - TalkingHead already ships blinks, moods, gaze, dynamic bones and an avatarOnly mode. It is MIT.\n  - JS size, measured: three + TalkingHead 217.5 KB gz, against Babylon at 777.8 KB. model-viewer has no morph API [V].\n  - Android WebView has no WebGPU [V].\n  - meshopt and ETC1S win on size, decode time and GPU memory (`avatar-asset-perf-2026-10-02`).\n  - Rive costs 368–821 KB gz and would show a different-looking person.\n  - TalkingHead's shipped defaults break or misbehave and must be patched: frame-cap judder (≈23 fps), the clamped-dt clock, no KTX2 loader, an AudioContext at construction, `getBoundingClientRect` on a null node, and an `mtRandomized` crash (patch list TH-1…TH-8 in AVATAR.md §1.3).\n- Reverse if:\n  - E-P3 fails the tier-B bars on the G85 at minute 30 (then tighten the budget), or passes with more than 2× headroom (then loosen it);\n  - a WebView build on the lab phones exposes `navigator.gpu` and a morph benchmark beats WebGL2;\n  - TalkingHead upstream diverges so that the patch list cannot be carried; then keep the scheduler ideas and drive three directly;\n  - M-AV-1 fails at every stylisation level for a band, in which case that band defaults to the small or voice-only presentation and the owner is told.\n- Source: `docs/research/avatar/AVATAR.md` §1, §6; `web-3d-talking-heads.md`; `performance-android.md`.\n\n## avatar-lipsync-rms-jaw\n**Lip-sync never touches the playback path. The `<audio>` element stays unmuted and plays the WebRTC stream. A second AnalyserNode (fftSize 2048) hangs off the `MediaStreamAudioSourceNode` that VoiceLink already creates. It is never connected to `destination`, and the avatar adds no AudioContext, worklet or DelayNode in phase 1.**\n- The jaw follows the RMS envelope, with level-normalised gate and gain and the benched filter.\n- Lip shape comes from HeadAudio classes, patched (aa fix, ring of 3, predict every frame), retrained on our Hindi tutor voices, and mapped to ARKit through a per-character `lipMatrix` at reduced weight. `mouthClose ≤ jawOpen` holds every frame.\n- Her speech start and stop come from the tap's own VAD. `output_audio_buffer.*` events are hints only.\n- A signed, per-output-route `faceDelay` delays the face (the face leads on Bluetooth). Audio is never delayed.\n- Pass bar: −125 ms ≤ offset ≤ +45 ms after compensation, per route (E-P8). A phase-2 AudioWorklet → worker path ships only after E-P1, E-P2 and the audio-floor gate pass. (2026-10-02)\n\n- Rationale:\n  - RMS is the best mouth-openness driver measured at zero lag (`avatar-lipsync-bench-2026-10-02`). Classifiers win only on closure, and they add vowel chatter.\n  - Remote audio replayed through WebAudio leaves Chromium's AEC reference path.\n  - `output_audio_buffer.*` is undocumented and leads the audible sound by 60–400 ms [U].\n  - The dead ends are in `avatar-lipsync-dead-ends`.\n- Reverse if:\n  - the v1.5 causal student beats this on the bench (hi r ≥ 0.65, PP recall ≥ 70%, vowel false-close ≤ 12%) and wins a blind A/B at ≥ 65%;\n  - E-P8 shows the per-route offset cannot be brought inside the bar by delaying the face alone.\n- Source: AVATAR.md §3; `web-3d-talking-heads.md` §5–6 + review; `audio-to-face-ml.md` G-2/G-3/G-8.\n\n## avatar-behaviour-controller\n**A client behaviour controller owns gaze, blinks, brows, head and lean; TalkingHead keeps lips, breathing, pose and rendering, with its random liveliness removed.**\n- **Floor state machine.** States are idle, speaking, yielding, your_turn, listening and thinking, plus a barge transient.\n  - Local signals drive the transitions: her tap VAD; the child's push-to-talk press or release and the echo-gated mic tap; module events.\n  - Link events are hints only.\n- **Gaze and head.**\n  - Gaze distributions follow Andrist 2014 and Ho 2015.\n  - Cognitive aversion starts 0.3 s after the child's local end of speech, and it is head-led on small tiles.\n  - Eye-in-head is clamped to ±25°, with the head carrying up to 20°.\n  - Nods use 4 ms substeps with a peak-normalised impulse.\n- **Blinks.** Intervals are gamma-distributed. An event blink advances a scheduled blink rather than adding one, and a state change time-warps the pending interval. Listening blinks last at most 250 ms.\n- **When the face may react.**\n  - Continuer nods happen only in open turns.\n  - THINKING is verdict-neutral: every expression is released within 300 ms.\n  - Valence for the current answer comes from the engine's `answer.correct`, `goal_met`, or a praise lexicon on her own transcript. The Director's `ui.affect`, `ui.cues` and move are armed for the next audible onset.\n- **Limits on expression.**\n  - At most one big expression per 30 s, and at most one proud face per 5 turns.\n  - Band scale is 1.0 / 0.9 / 0.7 / 0.55 (B1 to B4), applied to amplitudes only.\n  - Never: head shakes, a sad face, mimicry, or emotion recognition.\n- **CI gate.** `behaviour-proto/sim.mjs` grows into `tests/avatar-behaviour.mjs` with invariants I1–I14 plus a mutation check. (2026-10-02)\n\n- Rationale:\n  - TalkingHead's coin-flip gaze and its per-frame random morph jitter are uncontingent motion [V].\n  - In the 40-lesson simulation (n = 421,161 frames, Node 22 on a 2.1 GHz Xeon), all invariants held and 6 of 6 mutations were caught. `update()` cost p99 8.4 µs.\n  - The simulation found two bugs that would have shipped: redrawing blink timers on state changes, and adding event blinks on top of the schedule.\n  - The review found five defects, each now with a fix: a crash, nods 4× too small, a smile snap, unclamped gaze, and a drifting clock.\n- Reverse if:\n  - E-B1 shows TalkingHead's defaults rate equal or better on \"real teacher\" and \"weird\";\n  - E-B2 shows nods do not raise \"she thought I was right\" on wrong answers (then nods may extend to closed turns);\n  - the Director moves onto the critical path with less than about 300 ms added (then it may own current-answer valence).\n- Source: AVATAR.md §4; `behaviour-expressiveness.md` + GR-1…GR-10.\n\n## avatar-cast-shared-mpfb-s2\n**Every tutor is an S2 \"feature-animation stylised\" character: real adult proportions, eyes ×1.15–1.2 with stylised eye materials, painted albedo with AO and cavity only, Lambert or matcap shading, a solid hair shell plus alpha-test fringe cards.**\n- **Topology.** All tutors share one MPFB (CC0) base topology. Each character is a sculpted identity delta.\n- **Expression keys.** Every ARKit key is baked through the identity (`identity(neutral + δk)`), and the basis is baked to `identity(neutral)`. Eyeballs are scaled rigidly, never warped.\n- **Export.** 52 ARKit morphs, position-only, on a morphed head split from an unmorphed torso; subdivision baking off; split normals cleared; all-zero targets dropped; visemes kept only as authoring targets for `lipMatrix`.\n- **Launch identities.** `asha` (24 F, MST 6, offer classes 1–6), `arjun` (26 M, MST 7, 1–8), `nandini` (36 F, MST 8, 4–9), and `senior-m` (42 M, MST 5, 5–9; needs a new name and clearance). This gives 0 of 9 classes failing the roster lint.\n- **Cast size** is bounded by voices that pass the blind ear test. If only two pass, ship `asha` + `arjun` with offer ranges widened to 1–9.\n- **Gates.** G1–G12 run on the decoded, quantised GLB: lid seal by render, lip seal on the shipped PP mix, gaze ≤ 4 s, and rendered-skin L* inside the MST band.\n- **Concept art** comes from the Azure image model only. Image-to-3D (TRELLIS.2, Hunyuan) and third-party services are excluded from shipped assets. (2026-10-02)\n\n- Rationale:\n  - Children older than about 9 find human-like minds creepy (Brink 2019), and a face-voice realism mismatch is eerie (Mitchell 2011). With an exactly-human voice, the face has to sit between the two risks.\n  - The measured dead ends are in `avatar-asset-dead-ends`. MPFB runs headless in 1.3 s with a 4,048-vertex head [M].\n- Reverse if:\n  - M-AV-1, run on voiced tier-B captures with kids' panels split ≤ 9 / ≥ 10, shows S1 or S3 beating S2 for a band; then that band uses the warp-derived arm;\n  - MPFB's face units cannot reach S2 mouth quality after correctives on character 1 (then commission per-character topology with lid and lip loops);\n  - M-AV-2 voice-face pairing falls below 70%.\n- Source: AVATAR.md §5; `character-creation.md` + R-0…R-10; `tutor-selection-ux.md` §6.5.\n\n## avatar-tutor-selection\n**The child picks the tutor at onboarding C1b, after picking their own avatar, in every band.**\n- **Choice set.** 2 options for B1, 2–3 for B2, 2–4 for B3–B4. Eligibility follows the child's class, never their content level or device tier. Order is shuffled from a stable per-child seed, with no pre-highlighted default. \"Pick for me\" draws at random.\n- **Previews.** One muxed MP4 per language: 512² H.264 Main, IDR per tutor segment, loaded as a Blob URL. It is rendered by the tier-B runtime with the live lip driver, in the realtime voice, loudness-matched to the live output.\n- **First words.** The chosen tutor's first words play on a warmed 3D head, never over a still portrait.\n- **Memory** is scoped to the child↔Taxila relationship: `scope='taxila'` plus `voiced_by`. A switch changes zero memory rows; only the address term and the first-meeting flag are per (child, character) pair.\n- **Switching** happens only between lessons (409 during a live session) and only from Home. It is never offered by a tutor, and the child is never asked why.\n- **Parents** get a per-child allow-list and a switch policy (free / ask / locked; B1 defaults to ask), with no reason field.\n- **Never:** tutors gated by payment, rewards or streaks.\n- This amends `ds-band-fork-older`'s \"two teacher characters\" clause and PRODUCT-DESIGN's \"parent picks at P6\" for B1–B2. (2026-10-02)\n\n- Rationale:\n  - Choice effects are strongest in children with 2–4 options (Patall 2008 [V]).\n  - The picker-bias simulation (n = 4,000 per arm, seed 7; primacy ×1.6 and stickiness 0.3 are assumptions) gave 54/15/15/16% shares with a fixed order and default, against ≈ 25% each when shuffled with no default.\n  - A per-character memory scope would silently empty the notebook on every switch.\n  - The realtime API forbids changing voice after the first audio [V].\n- Reverse if:\n  - M-SEL-1 shows a default first lesson followed by an offer beats picking at C1;\n  - M-SEL-2 or M-SEL-3 move the choice counts;\n  - M-SEL-4 shows cross-tutor callbacks raise \"kaise pata\" or surprise by more than 5 pp, and the notebook disclosure does not fix it;\n  - M-SEL-11 \"same teacher?\" falls below 85% (then the previews are overselling the live face).\n- Source: AVATAR.md §7; `tutor-selection-ux.md` + G-0…G-8.\n\n## avatar-v2-prerender-first\n**v2a comes first: narration that is identical for every student is pre-rendered once as video.**\n- **Renderer.** MuseTalk 1.5 (MIT code and weights) on Spot A100 in Central India, about $198 per character for a 30,000-minute library, plus about $0.12 per student-month to stream. The base clips come from a filmed consenting actor, a self-hosted OSS image-to-video model, or a single portrait. Azure Sora 2 rejects input images with faces [V].\n- **Playback.** Only while the realtime session is idle and the uplink is disabled. Each clip carries a persistent AI label and C2PA provenance.\n- **Live video (v2b)** is a Studio tier gated on all of these:\n  - price: a tier of ₹2,999 or more with a per-utterance GPU pool, or moments-only in plans of ₹999 or more;\n  - at least 600 subscribers on that tier;\n  - an A/B lift over the 3D tutor;\n  - added first-audio latency of 250 ms or less at p50 (400 ms at p95), and barge-in to silence in 150 ms or less;\n  - bilabial closure on 90% or more of Hindi /p b m/;\n  - the audio-floor gate unchanged;\n  - GPU quota granted.\n- **The renderer owns the audio clock.** Truncation on barge-in uses the client-reported playout position, and a hot-standby audio track keeps the voice alive if the renderer fails.\n- **Rejected for lessons:** the Azure TTS avatar ($0.50–0.80 per minute, about $450 per student-month for full lessons, and it does not take our audio). Also rejected: InsightFace-based detectors (LivePortrait, Ditto, LatentSync) and Wav2Lip, all non-commercial. (2026-10-02)\n\n- Rationale:\n  - At 20% of revenue, plans from ₹299 to ₹2,999 leave $0.69–6.89 per student-month for the avatar.\n  - Live MuseTalk with pinned sessions costs about $0.044 per session-minute: about $10.4 per student-month for hybrid, $1.74 for moments. The full-fleet peak is about $11.6–19k per month per 1,000 hybrid students.\n  - Live latency is probably 450–700 ms [U].\n  - The A100 has no NVENC.\n- Reverse if:\n  - the owner lifts the Azure-only constraint for avatars;\n  - the Azure avatar is shown to take native gpt-realtime audio and drops below $0.05 per minute;\n  - a model of 1B parameters or less reaches 4 or more streams per T4 at the latency bar;\n  - an A/B shows video lifts paid conversion enough to fund it.\n- Source: AVATAR.md §8; `video-avatar-v2.md` + R1…R6; `video-avatar-v2-cost.py`.",
+  "measurements": "## avatar-lipsync-bench-2026-10-02\n**How well audio-only lip-sync tracks a Hindi and English tutor voice, scored against Azure's phone-aligned viseme timelines (2026-10-02).**\n\nMethod:\n- **Stimuli.** `docs/research/avatar/bench/` (`gen.mjs`, `bench.mjs`). 14 Azure Neural TTS utterances: 10 hi-IN on Swara and Madhur, 4 en-IN on Neerja and Prabhat. That is 93.9 s of Hindi and 29.8 s of English, containing 84 Hindi and 34 English bilabial segments.\n- **Ground truth.** Azure `visemeReceived` events mapped to the 15 Oculus visemes, converted to a fixed openness table and smoothed with a one-pole filter, τ = 50 ms.\n- **Arms.** Each arm runs causally at 48 kHz in 128-sample quanta and is read at 60 fps instants. One fixed lag per arm and language.\n- **Machine.** 4-vCPU Xeon at 2.1 GHz, Node 22.22.\n\nResults, Hindi / English:\n\n| arm | r(open) | bilabial closures (hi) | vowel false-closure (hi) | lag |\n|---|---|---|---|---|\n| RMS envelope | 0.563 / 0.697 | 28/84 | 15.9% | 0 ms |\n| HeadAudio 0.1.0 as shipped | 0.431 / 0.521 | 55/84 | 35.1% | 0–33 ms |\n| HeadAudio + per-voice `speakerMeanHz` | 0.443 / 0.534 | 50/84 | 28.5% | |\n| HeadAudio + 120 ms minimum hold | 0.155 / 0.263 | 14/84 | | |\n| wawa-lipsync 0.0.2 | 0.450 / 0.518 at its best lag | 11/84 (0/34 en) | | 217–233 ms |\n| wav2arkit (wav2vec2 + LAM, offline) | jaw 0.525 / 0.581 | | | leads audio by 100–167 ms |\n\n- **Hindi penalty.** Every arm loses 0.09–0.13 r on Hindi.\n- **HeadAudio processing cost** per 128-sample quantum: p50 0.005 ms, p99 0.076–0.088 ms (n = 46,403), against a 2.667 ms budget.\n- **wav2arkit cost and size.** It needs a 402 MB weight file and takes 491 ms per audio second on 1 thread (165 ms on 4) in onnxruntime-web WASM.\n\nCaveats:\n- The ground truth is TTS phone alignment, not filmed lips.\n- The RMS arm shares the τ = 50 ms smoothing with the ground truth, which flatters its zero lag (review R-2a/R-7). Re-score against unsmoothed ground truth before quoting any lag.\n- The voices are Azure, not gpt-realtime. Received WebRTC/Opus audio is not tested yet (E-3).\n- The sample is small. Differences between HeadAudio variants (±0.03 r) are within noise. The RMS-vs-HeadAudio gap and the wawa lag are not.\n\n## avatar-asset-perf-2026-10-02\n**Asset and runtime cost of a face avatar for ₹10k Android (2026-10-02). All runs were in this container; phone figures are scaled estimates [M→U] until the device lab runs.**\n\nMethod:\n- **Scripts.** `docs/research/avatar/bench/perf/`, `bench/glbstat.mjs`, `bench/review/` and `character-pipeline-proto/`.\n- **Inputs.** TalkingHead's five sample avatars (measurement only; four of them are non-commercial) and the ICT FaceKit head.\n- **Tools.** three 0.180.0 / r186 source, gltf-transform 4.5, Chromium 141 with SwiftShader, and CDP CPU throttling at 4× (≈ G85) and 6× (≈ G35).\n- **Repeats.** Codec timings are the median of 15 runs, textures 9, frame-cadence arms 2–4 runs of 10 s.\n\nResults:\n- **Geometry codec.**\n  - Meshopt with quantize: 0.96–2.86 MB. Draco without quantize: 2.15–19.6 MB (raw 2.3–20.4 MB).\n  - Morphs are 80–91% of a face avatar's geometry bytes.\n  - Decode: 2.0–7.9 ms meshopt against 5.9–17 ms Draco. Decoder: 6.5 KB gz against 100 KB gz.\n- **Textures, one 1024² map.**\n  - WebP lands as RGBA8 and takes 5.59 MB on the GPU; decode 22–31 ms.\n  - KTX2 ETC1S takes 0.70 MB (ETC1) or 1.40 MB (ETC2/ASTC); transcode 3–5 ms. Files: ETC1S ≈ 105 KB, UASTC ≈ 650 KB.\n  - The basis transcoder is 260 KB gz.\n- **Tier-B character pipeline** (drop the 15 visemes, drop morph normals, drop normal and ORM maps, one ETC1S atlas): GLB 0.87–1.44 MB and 10–17 MB resident, against 4.2–8.5 MB and 17–41 MB as shipped.\n- **Morph memory** in three.js: GPU 16·k + JS texel copy 16·k + JS geometry 6–9 B per vertex per target, where k = 1 position-only and 2 with normals. MPFB as optimised: ≈ 111 MB total (GPU 48.6 MB). Eyelashes and eyebrows hold 54% of it.\n- **Main-thread JS per frame,** 13k-triangle avatar: 0.6 / 2.1 ms (p50 / p95) at 1×, 3.9 / 19.4 ms at 4×, 7.1 / 32.8 ms at 6×. First render of MPFB at 4×: 1,771 ms, mostly morph-texture packing.\n- **Same-process iframe busy 50 ms in every 100 ms.** Lip gap p99 ≈ 76 ms via the main thread against 35–40 ms worklet → worker. Maximum 136–303 ms against 42–66 ms. Desktop proxy, n = 4 runs per arm.\n- **Bundles, gz:** three + TalkingHead 217.5 KB, Babylon 777.8 KB, Rive 368–821 KB.\n- **Export.**\n  - Custom split normals: 102,530 GPU vertices against 27,956 after clearing.\n  - Meshopt on a 7.9k-vertex, 67-morph head: 4.05 MB → 0.82 MB.\n  - MPFB headless `create_human`: 1.3 s, with a 4,048-vertex head.\n- **TalkingHead's 30 fps frame cap** delivers ≈ 23 fps on a 60 Hz panel (simulation with jitter).",
+  "rejected": "## avatar-lipsync-dead-ends\nThree lip-sync approaches were measured on the Hindi bench (`avatar-lipsync-bench-2026-10-02`, 2026-10-02) and rejected:\n\n1. **wawa-lipsync 0.0.2 on live audio.**\n   - **Tried:** the real code over a spec-faithful AnalyserNode.\n   - **Broke:** its best alignment lags the audio by 217–233 ms, because of analyser smoothing 0.8 plus a 10-frame history. It closed the lips on 0 of 34 English bilabials and 11 of 84 Hindi ones.\n   - **Reverse if:** a new version removes the smoothing and the history, and re-benches under 60 ms lag.\n2. **A 120 ms minimum viseme hold** (the fix proposed in HeadAudio issue #3 to stop chatter).\n   - **Tried:** the hold applied to HeadAudio's output.\n   - **Broke:** r fell from 0.43 to 0.16, and closures fell from 55 to 14 of 84. A hold buys smoothness by keeping wrong mouths on screen longer. Hold time is the wrong knob; RMS for the jaw plus classes for lip shape is the structure.\n3. **wav2vec2/HuBERT-class face models on the phone** (`wav2arkit_cpu` in onnxruntime-web).\n   - **Tried:** the model in onnxruntime-web WASM.\n   - **Broke:**\n     - The \"1.8 MB\" model needs a 402 MB `.onnx.data` weight file.\n     - It ran at 491 ms per audio second on one Xeon thread (165 ms on 4 threads), so it is at or past real time on an A55.\n     - Its output leads the audio by 100–167 ms, so it needs lookahead that the WebRTC path does not have, and delaying the audio is forbidden.\n   - **Reverse if:** a model of 1.5 MB or less meets p95 < 2 ms per frame on an A55 with no lookahead. That is what the v1.5 distilled student targets.\n\n## avatar-asset-dead-ends\nAvatar asset approaches measured in `avatar-asset-perf-2026-10-02` and `character-pipeline-proto/` (2026-10-02) and rejected:\n\n1. **Draco (KHR_draco_mesh_compression) for face avatars with unquantized morphs.**\n   - **Tried:** Draco on 5 face avatars.\n   - **Broke:** files stayed at 89–96% of raw, because the encoder leaves morph targets uncompressed, and morphs are 80–91% of the geometry. Decoding was 2–5× slower than meshopt, and the decoder is 15× larger.\n   - **Caveat:** the comparison did not quantize the Draco arm. The spec is silent on morph targets, so this is a property of the encoder.\n   - **Reverse if:** a Draco encoder compresses morph targets and beats meshopt's decode time on device.\n2. **Naive shape-key delta transfer onto a stylised identity**, i.e. W(neutral) + δ.\n   - **Tried:** enlarging the eyes ×1.15 / 1.3 / 1.5 on the ICT head, then adding the original blink delta.\n   - **Broke:** 1.3% / 3.4% / 8.1% of the cornea stayed visible at blink = 1 (3, 8 and 19 of 236 rays). Baking each key through the warp, W(neutral + δ), gave 0.0%.\n   - **Note:** warp-baking is exact only at weight 1 and one key at a time, so partial weights and combinations still need tests and in-between correctives.\n3. **Decimating a finished realistic head for mobile.**\n   - **Tried:** ICT 26k → 6.7k / 3.3k vertices, with closest-point shape transfer.\n   - **Broke:** the lid and lip loops were destroyed. Cornea stayed visible at blink (6 of 56 and 1 of 27 rays), and open-eye visibility fell to 82% and 78%. Author low-poly topology with lid and lip loops instead (MPFB has them).\n4. **Exporting OBJ-imported heads with custom split normals.**\n   - **Broke:** 102,530 GPU vertices from 25,959 mesh vertices (3.95×). That inflates the morph texture to 110 MB. Clear the split normals and shade smooth (27,956), and gate GPU/Blender vertices at ≤ 1.3.\n5. **WebP textures for GPU memory.**\n   - **Broke:** WebP saves wire bytes but lands as RGBA8: 5.59 MB per 1024² against 0.70 MB for ETC1S, with a 6–10× slower decode."
+ }
+}

@@ -115,3 +115,64 @@ Method: curl from the US build sandbox: signup → consent → class-4 child →
 turns 3124 / 2443 / 4014 ms (moves hook → explain → worked_example; teacher set up teach-back to protégé "Golu");
 realtime ephemeral token minted for the lesson. Text-mode turn latency is dominated by the taxila-fast reply
 call + guards; voice lane does not wait on it (director runs off the critical path).
+
+
+<!-- merged from inbox/avatar.json -->
+## avatar-lipsync-bench-2026-10-02
+**How well audio-only lip-sync tracks a Hindi and English tutor voice, scored against Azure's phone-aligned viseme timelines (2026-10-02).**
+
+Method:
+- **Stimuli.** `docs/research/avatar/bench/` (`gen.mjs`, `bench.mjs`). 14 Azure Neural TTS utterances: 10 hi-IN on Swara and Madhur, 4 en-IN on Neerja and Prabhat. That is 93.9 s of Hindi and 29.8 s of English, containing 84 Hindi and 34 English bilabial segments.
+- **Ground truth.** Azure `visemeReceived` events mapped to the 15 Oculus visemes, converted to a fixed openness table and smoothed with a one-pole filter, τ = 50 ms.
+- **Arms.** Each arm runs causally at 48 kHz in 128-sample quanta and is read at 60 fps instants. One fixed lag per arm and language.
+- **Machine.** 4-vCPU Xeon at 2.1 GHz, Node 22.22.
+
+Results, Hindi / English:
+
+| arm | r(open) | bilabial closures (hi) | vowel false-closure (hi) | lag |
+|---|---|---|---|---|
+| RMS envelope | 0.563 / 0.697 | 28/84 | 15.9% | 0 ms |
+| HeadAudio 0.1.0 as shipped | 0.431 / 0.521 | 55/84 | 35.1% | 0–33 ms |
+| HeadAudio + per-voice `speakerMeanHz` | 0.443 / 0.534 | 50/84 | 28.5% | |
+| HeadAudio + 120 ms minimum hold | 0.155 / 0.263 | 14/84 | | |
+| wawa-lipsync 0.0.2 | 0.450 / 0.518 at its best lag | 11/84 (0/34 en) | | 217–233 ms |
+| wav2arkit (wav2vec2 + LAM, offline) | jaw 0.525 / 0.581 | | | leads audio by 100–167 ms |
+
+- **Hindi penalty.** Every arm loses 0.09–0.13 r on Hindi.
+- **HeadAudio processing cost** per 128-sample quantum: p50 0.005 ms, p99 0.076–0.088 ms (n = 46,403), against a 2.667 ms budget.
+- **wav2arkit cost and size.** It needs a 402 MB weight file and takes 491 ms per audio second on 1 thread (165 ms on 4) in onnxruntime-web WASM.
+
+Caveats:
+- The ground truth is TTS phone alignment, not filmed lips.
+- The RMS arm shares the τ = 50 ms smoothing with the ground truth, which flatters its zero lag (review R-2a/R-7). Re-score against unsmoothed ground truth before quoting any lag.
+- The voices are Azure, not gpt-realtime. Received WebRTC/Opus audio is not tested yet (E-3).
+- The sample is small. Differences between HeadAudio variants (±0.03 r) are within noise. The RMS-vs-HeadAudio gap and the wawa lag are not.
+
+## avatar-asset-perf-2026-10-02
+**Asset and runtime cost of a face avatar for ₹10k Android (2026-10-02). All runs were in this container; phone figures are scaled estimates [M→U] until the device lab runs.**
+
+Method:
+- **Scripts.** `docs/research/avatar/bench/perf/`, `bench/glbstat.mjs`, `bench/review/` and `character-pipeline-proto/`.
+- **Inputs.** TalkingHead's five sample avatars (measurement only; four of them are non-commercial) and the ICT FaceKit head.
+- **Tools.** three 0.180.0 / r186 source, gltf-transform 4.5, Chromium 141 with SwiftShader, and CDP CPU throttling at 4× (≈ G85) and 6× (≈ G35).
+- **Repeats.** Codec timings are the median of 15 runs, textures 9, frame-cadence arms 2–4 runs of 10 s.
+
+Results:
+- **Geometry codec.**
+  - Meshopt with quantize: 0.96–2.86 MB. Draco without quantize: 2.15–19.6 MB (raw 2.3–20.4 MB).
+  - Morphs are 80–91% of a face avatar's geometry bytes.
+  - Decode: 2.0–7.9 ms meshopt against 5.9–17 ms Draco. Decoder: 6.5 KB gz against 100 KB gz.
+- **Textures, one 1024² map.**
+  - WebP lands as RGBA8 and takes 5.59 MB on the GPU; decode 22–31 ms.
+  - KTX2 ETC1S takes 0.70 MB (ETC1) or 1.40 MB (ETC2/ASTC); transcode 3–5 ms. Files: ETC1S ≈ 105 KB, UASTC ≈ 650 KB.
+  - The basis transcoder is 260 KB gz.
+- **Tier-B character pipeline** (drop the 15 visemes, drop morph normals, drop normal and ORM maps, one ETC1S atlas): GLB 0.87–1.44 MB and 10–17 MB resident, against 4.2–8.5 MB and 17–41 MB as shipped.
+- **Morph memory** in three.js: GPU 16·k + JS texel copy 16·k + JS geometry 6–9 B per vertex per target, where k = 1 position-only and 2 with normals. MPFB as optimised: ≈ 111 MB total (GPU 48.6 MB). Eyelashes and eyebrows hold 54% of it.
+- **Main-thread JS per frame,** 13k-triangle avatar: 0.6 / 2.1 ms (p50 / p95) at 1×, 3.9 / 19.4 ms at 4×, 7.1 / 32.8 ms at 6×. First render of MPFB at 4×: 1,771 ms, mostly morph-texture packing.
+- **Same-process iframe busy 50 ms in every 100 ms.** Lip gap p99 ≈ 76 ms via the main thread against 35–40 ms worklet → worker. Maximum 136–303 ms against 42–66 ms. Desktop proxy, n = 4 runs per arm.
+- **Bundles, gz:** three + TalkingHead 217.5 KB, Babylon 777.8 KB, Rive 368–821 KB.
+- **Export.**
+  - Custom split normals: 102,530 GPU vertices against 27,956 after clearing.
+  - Meshopt on a 7.9k-vertex, 67-morph head: 4.05 MB → 0.82 MB.
+  - MPFB headless `create_human`: 1.3 s, with a 4,048-vertex head.
+- **TalkingHead's 30 fps frame cap** delivers ≈ 23 fps on a 60 Hz panel (simulation with jitter).

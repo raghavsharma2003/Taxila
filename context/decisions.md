@@ -234,3 +234,140 @@ folder per STUDENT, a sandboxed iframe per PLAY.** Source: `docs/research/factor
 - Gate: self-tests H2a-H2e and eight tutor controls plus mutation tests must pass for a run to be valid.
 - Reverse if: a trained simulator passes the fidelity card F1-F8 on >= 300 consented pilot lessons; that family may then carry 'ranking' scope.
 - Source: `docs/research/learner/STUDENT-SIM.md` §0-§11.
+
+
+<!-- merged from inbox/avatar.json -->
+## avatar-v1-stack
+**The v1 3D tutor runs on three.js 0.180.0 + TalkingHead 1.7.0 vendored at commit b3e277b in `avatarOnly` mode with our own WebGLRenderer and GLTFLoader (KTX2Loader with `setWorkerLimit(1)` + MeshoptDecoder), plus HeadAudio vendored at d3af5f9 (MFCC + classifier modules only). It is WebGL2-only and mounted imperatively by `<TutorStage>` in the existing StageFrame. Assets are meshopt + KHR_mesh_quantization + KTX2 ETC1S. v1 ships face tier B (≤15k tris, ≤4 draws, GLB ≤1.5 MB, resident ≤20 MB, 30/30/20 fps), B-lite as runtime knobs on the same GLB, D (an illustrated plate + mouth strip rendered from the same GLB with the B shader) and E (voice-only). Tier C (sprite rig) is cut. Tier choice uses static facts, then a 2 s probe on the chosen tutor, then one merged governor. This supersedes PRODUCT-DESIGN §3.5's 2D Rive launch face (owner directive, 2026-10-02); M-AV-1 replaces M-UX-6.** (2026-10-02)
+- Rationale:
+  - TalkingHead already ships blinks, moods, gaze, dynamic bones and an avatarOnly mode. It is MIT.
+  - JS size, measured: three + TalkingHead 217.5 KB gz, against Babylon at 777.8 KB. model-viewer has no morph API [V].
+  - Android WebView has no WebGPU [V].
+  - meshopt and ETC1S win on size, decode time and GPU memory (`avatar-asset-perf-2026-10-02`).
+  - Rive costs 368–821 KB gz and would show a different-looking person.
+  - TalkingHead's shipped defaults break or misbehave and must be patched: frame-cap judder (≈23 fps), the clamped-dt clock, no KTX2 loader, an AudioContext at construction, `getBoundingClientRect` on a null node, and an `mtRandomized` crash (patch list TH-1…TH-8 in AVATAR.md §1.3).
+- Reverse if:
+  - E-P3 fails the tier-B bars on the G85 at minute 30 (then tighten the budget), or passes with more than 2× headroom (then loosen it);
+  - a WebView build on the lab phones exposes `navigator.gpu` and a morph benchmark beats WebGL2;
+  - TalkingHead upstream diverges so that the patch list cannot be carried; then keep the scheduler ideas and drive three directly;
+  - M-AV-1 fails at every stylisation level for a band, in which case that band defaults to the small or voice-only presentation and the owner is told.
+- Source: `docs/research/avatar/AVATAR.md` §1, §6; `web-3d-talking-heads.md`; `performance-android.md`.
+
+## avatar-lipsync-rms-jaw
+**Lip-sync never touches the playback path. The `<audio>` element stays unmuted and plays the WebRTC stream. A second AnalyserNode (fftSize 2048) hangs off the `MediaStreamAudioSourceNode` that VoiceLink already creates. It is never connected to `destination`, and the avatar adds no AudioContext, worklet or DelayNode in phase 1.**
+- The jaw follows the RMS envelope, with level-normalised gate and gain and the benched filter.
+- Lip shape comes from HeadAudio classes, patched (aa fix, ring of 3, predict every frame), retrained on our Hindi tutor voices, and mapped to ARKit through a per-character `lipMatrix` at reduced weight. `mouthClose ≤ jawOpen` holds every frame.
+- Her speech start and stop come from the tap's own VAD. `output_audio_buffer.*` events are hints only.
+- A signed, per-output-route `faceDelay` delays the face (the face leads on Bluetooth). Audio is never delayed.
+- Pass bar: −125 ms ≤ offset ≤ +45 ms after compensation, per route (E-P8). A phase-2 AudioWorklet → worker path ships only after E-P1, E-P2 and the audio-floor gate pass. (2026-10-02)
+
+- Rationale:
+  - RMS is the best mouth-openness driver measured at zero lag (`avatar-lipsync-bench-2026-10-02`). Classifiers win only on closure, and they add vowel chatter.
+  - Remote audio replayed through WebAudio leaves Chromium's AEC reference path.
+  - `output_audio_buffer.*` is undocumented and leads the audible sound by 60–400 ms [U].
+  - The dead ends are in `avatar-lipsync-dead-ends`.
+- Reverse if:
+  - the v1.5 causal student beats this on the bench (hi r ≥ 0.65, PP recall ≥ 70%, vowel false-close ≤ 12%) and wins a blind A/B at ≥ 65%;
+  - E-P8 shows the per-route offset cannot be brought inside the bar by delaying the face alone.
+- Source: AVATAR.md §3; `web-3d-talking-heads.md` §5–6 + review; `audio-to-face-ml.md` G-2/G-3/G-8.
+
+## avatar-behaviour-controller
+**A client behaviour controller owns gaze, blinks, brows, head and lean; TalkingHead keeps lips, breathing, pose and rendering, with its random liveliness removed.**
+- **Floor state machine.** States are idle, speaking, yielding, your_turn, listening and thinking, plus a barge transient.
+  - Local signals drive the transitions: her tap VAD; the child's push-to-talk press or release and the echo-gated mic tap; module events.
+  - Link events are hints only.
+- **Gaze and head.**
+  - Gaze distributions follow Andrist 2014 and Ho 2015.
+  - Cognitive aversion starts 0.3 s after the child's local end of speech, and it is head-led on small tiles.
+  - Eye-in-head is clamped to ±25°, with the head carrying up to 20°.
+  - Nods use 4 ms substeps with a peak-normalised impulse.
+- **Blinks.** Intervals are gamma-distributed. An event blink advances a scheduled blink rather than adding one, and a state change time-warps the pending interval. Listening blinks last at most 250 ms.
+- **When the face may react.**
+  - Continuer nods happen only in open turns.
+  - THINKING is verdict-neutral: every expression is released within 300 ms.
+  - Valence for the current answer comes from the engine's `answer.correct`, `goal_met`, or a praise lexicon on her own transcript. The Director's `ui.affect`, `ui.cues` and move are armed for the next audible onset.
+- **Limits on expression.**
+  - At most one big expression per 30 s, and at most one proud face per 5 turns.
+  - Band scale is 1.0 / 0.9 / 0.7 / 0.55 (B1 to B4), applied to amplitudes only.
+  - Never: head shakes, a sad face, mimicry, or emotion recognition.
+- **CI gate.** `behaviour-proto/sim.mjs` grows into `tests/avatar-behaviour.mjs` with invariants I1–I14 plus a mutation check. (2026-10-02)
+
+- Rationale:
+  - TalkingHead's coin-flip gaze and its per-frame random morph jitter are uncontingent motion [V].
+  - In the 40-lesson simulation (n = 421,161 frames, Node 22 on a 2.1 GHz Xeon), all invariants held and 6 of 6 mutations were caught. `update()` cost p99 8.4 µs.
+  - The simulation found two bugs that would have shipped: redrawing blink timers on state changes, and adding event blinks on top of the schedule.
+  - The review found five defects, each now with a fix: a crash, nods 4× too small, a smile snap, unclamped gaze, and a drifting clock.
+- Reverse if:
+  - E-B1 shows TalkingHead's defaults rate equal or better on "real teacher" and "weird";
+  - E-B2 shows nods do not raise "she thought I was right" on wrong answers (then nods may extend to closed turns);
+  - the Director moves onto the critical path with less than about 300 ms added (then it may own current-answer valence).
+- Source: AVATAR.md §4; `behaviour-expressiveness.md` + GR-1…GR-10.
+
+## avatar-cast-shared-mpfb-s2
+**Every tutor is an S2 "feature-animation stylised" character: real adult proportions, eyes ×1.15–1.2 with stylised eye materials, painted albedo with AO and cavity only, Lambert or matcap shading, a solid hair shell plus alpha-test fringe cards.**
+- **Topology.** All tutors share one MPFB (CC0) base topology. Each character is a sculpted identity delta.
+- **Expression keys.** Every ARKit key is baked through the identity (`identity(neutral + δk)`), and the basis is baked to `identity(neutral)`. Eyeballs are scaled rigidly, never warped.
+- **Export.** 52 ARKit morphs, position-only, on a morphed head split from an unmorphed torso; subdivision baking off; split normals cleared; all-zero targets dropped; visemes kept only as authoring targets for `lipMatrix`.
+- **Launch identities.** `asha` (24 F, MST 6, offer classes 1–6), `arjun` (26 M, MST 7, 1–8), `nandini` (36 F, MST 8, 4–9), and `senior-m` (42 M, MST 5, 5–9; needs a new name and clearance). This gives 0 of 9 classes failing the roster lint.
+- **Cast size** is bounded by voices that pass the blind ear test. If only two pass, ship `asha` + `arjun` with offer ranges widened to 1–9.
+- **Gates.** G1–G12 run on the decoded, quantised GLB: lid seal by render, lip seal on the shipped PP mix, gaze ≤ 4 s, and rendered-skin L* inside the MST band.
+- **Concept art** comes from the Azure image model only. Image-to-3D (TRELLIS.2, Hunyuan) and third-party services are excluded from shipped assets. (2026-10-02)
+
+- Rationale:
+  - Children older than about 9 find human-like minds creepy (Brink 2019), and a face-voice realism mismatch is eerie (Mitchell 2011). With an exactly-human voice, the face has to sit between the two risks.
+  - The measured dead ends are in `avatar-asset-dead-ends`. MPFB runs headless in 1.3 s with a 4,048-vertex head [M].
+- Reverse if:
+  - M-AV-1, run on voiced tier-B captures with kids' panels split ≤ 9 / ≥ 10, shows S1 or S3 beating S2 for a band; then that band uses the warp-derived arm;
+  - MPFB's face units cannot reach S2 mouth quality after correctives on character 1 (then commission per-character topology with lid and lip loops);
+  - M-AV-2 voice-face pairing falls below 70%.
+- Source: AVATAR.md §5; `character-creation.md` + R-0…R-10; `tutor-selection-ux.md` §6.5.
+
+## avatar-tutor-selection
+**The child picks the tutor at onboarding C1b, after picking their own avatar, in every band.**
+- **Choice set.** 2 options for B1, 2–3 for B2, 2–4 for B3–B4. Eligibility follows the child's class, never their content level or device tier. Order is shuffled from a stable per-child seed, with no pre-highlighted default. "Pick for me" draws at random.
+- **Previews.** One muxed MP4 per language: 512² H.264 Main, IDR per tutor segment, loaded as a Blob URL. It is rendered by the tier-B runtime with the live lip driver, in the realtime voice, loudness-matched to the live output.
+- **First words.** The chosen tutor's first words play on a warmed 3D head, never over a still portrait.
+- **Memory** is scoped to the child↔Taxila relationship: `scope='taxila'` plus `voiced_by`. A switch changes zero memory rows; only the address term and the first-meeting flag are per (child, character) pair.
+- **Switching** happens only between lessons (409 during a live session) and only from Home. It is never offered by a tutor, and the child is never asked why.
+- **Parents** get a per-child allow-list and a switch policy (free / ask / locked; B1 defaults to ask), with no reason field.
+- **Never:** tutors gated by payment, rewards or streaks.
+- This amends `ds-band-fork-older`'s "two teacher characters" clause and PRODUCT-DESIGN's "parent picks at P6" for B1–B2. (2026-10-02)
+
+- Rationale:
+  - Choice effects are strongest in children with 2–4 options (Patall 2008 [V]).
+  - The picker-bias simulation (n = 4,000 per arm, seed 7; primacy ×1.6 and stickiness 0.3 are assumptions) gave 54/15/15/16% shares with a fixed order and default, against ≈ 25% each when shuffled with no default.
+  - A per-character memory scope would silently empty the notebook on every switch.
+  - The realtime API forbids changing voice after the first audio [V].
+- Reverse if:
+  - M-SEL-1 shows a default first lesson followed by an offer beats picking at C1;
+  - M-SEL-2 or M-SEL-3 move the choice counts;
+  - M-SEL-4 shows cross-tutor callbacks raise "kaise pata" or surprise by more than 5 pp, and the notebook disclosure does not fix it;
+  - M-SEL-11 "same teacher?" falls below 85% (then the previews are overselling the live face).
+- Source: AVATAR.md §7; `tutor-selection-ux.md` + G-0…G-8.
+
+## avatar-v2-prerender-first
+**v2a comes first: narration that is identical for every student is pre-rendered once as video.**
+- **Renderer.** MuseTalk 1.5 (MIT code and weights) on Spot A100 in Central India, about $198 per character for a 30,000-minute library, plus about $0.12 per student-month to stream. The base clips come from a filmed consenting actor, a self-hosted OSS image-to-video model, or a single portrait. Azure Sora 2 rejects input images with faces [V].
+- **Playback.** Only while the realtime session is idle and the uplink is disabled. Each clip carries a persistent AI label and C2PA provenance.
+- **Live video (v2b)** is a Studio tier gated on all of these:
+  - price: a tier of ₹2,999 or more with a per-utterance GPU pool, or moments-only in plans of ₹999 or more;
+  - at least 600 subscribers on that tier;
+  - an A/B lift over the 3D tutor;
+  - added first-audio latency of 250 ms or less at p50 (400 ms at p95), and barge-in to silence in 150 ms or less;
+  - bilabial closure on 90% or more of Hindi /p b m/;
+  - the audio-floor gate unchanged;
+  - GPU quota granted.
+- **The renderer owns the audio clock.** Truncation on barge-in uses the client-reported playout position, and a hot-standby audio track keeps the voice alive if the renderer fails.
+- **Rejected for lessons:** the Azure TTS avatar ($0.50–0.80 per minute, about $450 per student-month for full lessons, and it does not take our audio). Also rejected: InsightFace-based detectors (LivePortrait, Ditto, LatentSync) and Wav2Lip, all non-commercial. (2026-10-02)
+
+- Rationale:
+  - At 20% of revenue, plans from ₹299 to ₹2,999 leave $0.69–6.89 per student-month for the avatar.
+  - Live MuseTalk with pinned sessions costs about $0.044 per session-minute: about $10.4 per student-month for hybrid, $1.74 for moments. The full-fleet peak is about $11.6–19k per month per 1,000 hybrid students.
+  - Live latency is probably 450–700 ms [U].
+  - The A100 has no NVENC.
+- Reverse if:
+  - the owner lifts the Azure-only constraint for avatars;
+  - the Azure avatar is shown to take native gpt-realtime audio and drops below $0.05 per minute;
+  - a model of 1B parameters or less reaches 4 or more streams per T4 at the latency bar;
+  - an A/B shows video lifts paid conversion enough to fund it.
+- Source: AVATAR.md §8; `video-avatar-v2.md` + R1…R6; `video-avatar-v2-cost.py`.
