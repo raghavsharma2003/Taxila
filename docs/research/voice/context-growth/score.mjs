@@ -11,7 +11,8 @@ const R = "/home/user/Taxila/server/";
 console.info = () => {};
 const { chat, DEPLOY } = await import(R + "azure.js");
 const HERE = new URL(".", import.meta.url).pathname;
-const files = fs.readdirSync(HERE + "runs").filter((f) => f.endsWith(".jsonl") && !f.includes("pilot"));
+const DIR = process.argv[2] || "runs";
+const files = fs.readdirSync(HERE + DIR).filter((f) => f.endsWith(".jsonl") && !f.includes("pilot"));
 const P = { text: 4e-6, cText: 0.4e-6, audio: 32e-6, cAudio: 0.4e-6, outText: 24e-6, outAudio: 64e-6 };
 const med = (a) => { const b = a.filter((x) => x != null && !Number.isNaN(x)).sort((x, y) => x - y); return b.length ? b[Math.floor((b.length - 1) / 2)] : null; };
 const costOf = (t) => {
@@ -67,7 +68,7 @@ async function unheardRef(heard, unheard, next) {
 
 const runs = {};
 for (const f of files) {
-  const rows = fs.readFileSync(HERE + "runs/" + f, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l));
+  const rows = fs.readFileSync(HERE + DIR + "/" + f, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l));
   const [arm, run] = f.replace(".jsonl", "").split("-");
   (runs[arm] ??= []).push({ run, rows });
 }
@@ -120,7 +121,7 @@ for (const arm of Object.keys(runs).sort()) {
     cachedShare: +(allTurns.reduce((n, t) => n + (t.cached ?? 0), 0) / allTurns.reduce((n, t) => n + (t.inTok ?? 0), 0)).toFixed(3) };
   result[arm] = A;
 }
-fs.writeFileSync(HERE + "results.json", JSON.stringify(result, null, 1));
+fs.writeFileSync(HERE + (DIR === "runs" ? "results.json" : DIR.replace(/\//g, "_") + ".results.json"), JSON.stringify(result, null, 1));
 for (const [arm, A] of Object.entries(result)) {
   console.log(`\n== arm ${arm} (sessions ${A.sessions}) overall`, JSON.stringify(A.overall));
   for (const [m, c] of Object.entries(A.checkpoints)) console.log(`  min ${m}:`, JSON.stringify(c));
