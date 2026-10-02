@@ -43,7 +43,7 @@ export function ChalkLedge({ chips, family, rail, onChip, flat }: { chips: Ledge
         <button
           key={c.id}
           type="button"
-          className={`tx-chip ${i === chips.length - 1 ? "tx-chip--new" : ""}`}
+          className={`tx-chip ${i === chips.length - 1 ? "tx-chip--new" : ""} ${c.kind !== "image" && c.value.length > 16 ? "tx-chip--long" : ""}`}
           onClick={() => onChip?.(c)}
           aria-label={c.kind === "image" ? "picture" : c.value}
         >

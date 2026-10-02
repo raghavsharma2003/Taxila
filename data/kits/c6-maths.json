@@ -563,7 +563,7 @@
         "correct": false
        },
        {
-        "text": "That 5 × 5 = 20",
+        "text": "That 16 + 8 = 24, since the L is 4 dots one way and 4 the other",
         "misconceptionId": "c6-maths-ch01-t02-m-corner",
         "correct": false
        }
@@ -631,8 +631,8 @@
         "correct": false
        },
        {
-        "text": "Yes, because 12 is even",
-        "misconceptionId": null,
+        "text": "Yes, because the dots are in neat rows",
+        "misconceptionId": "c6-maths-ch01-t02-m-any-arrangement",
         "correct": false
        }
       ]
@@ -1683,14 +1683,14 @@
      "hints": [
       "How many old points can the new 6th point join to?",
       "It joins each of the 5 old points once.",
-      "10 + ___ = 15.",
+      "Old lines 10, new lines ___; total ___.",
       "15 lines."
      ],
      "targetsMisconception": "c6-maths-ch01-t04-m-line-jump",
      "verified": {
       "solverAnswer": "15",
       "agrees": true,
-      "note": "HINT-LEAK (mild): hint 3 '10 + ___ = 15' states 15."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -1905,15 +1905,15 @@
       "aath"
      ],
      "hints": [
-      "Think of an octopus.",
-      "'Octa' means 8.",
+      "Think of an octopus: how many arms does it have?",
+      "'Octa' is the same root as in 'octopus'.",
       "Octagon sides = ___.",
       "8."
      ],
      "verified": {
       "solverAnswer": "8",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 says 'Octa means 8', stating the answer."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -2038,7 +2038,7 @@
        },
        {
         "text": "Both are line segments, so they can be measured",
-        "misconceptionId": "c6-maths-ch02-t01-m-ray-two-ends",
+        "misconceptionId": "c6-maths-ch02-t01-m-longer-line",
         "correct": false
        }
       ]
@@ -2071,8 +2071,8 @@
         "correct": false
        },
        {
-        "text": "None",
-        "misconceptionId": "c6-maths-ch02-t01-m-longer-line",
+        "text": "Two, because it is named with two letters",
+        "misconceptionId": "c6-maths-ch02-t01-m-ray-two-ends",
         "correct": false
        }
       ]
@@ -3030,7 +3030,7 @@
         "correct": false
        },
        {
-        "text": "180°",
+        "text": "Either 50° or 130°, both numbers are on the arm",
         "misconceptionId": "c6-maths-ch02-t03-m-wrong-scale",
         "correct": false
        }
@@ -3520,8 +3520,8 @@
         "correct": false
        },
        {
-        "text": "Yes, an obtuse angle",
-        "misconceptionId": null,
+        "text": "No, an angle needs two arms that make a corner",
+        "misconceptionId": "c6-maths-ch02-t04-m-straight-not-angle",
         "correct": false
        }
       ]
@@ -4069,8 +4069,8 @@
         "correct": false
        },
        {
-        "text": "62 and 41",
-        "misconceptionId": null,
+        "text": "Only 62, because 48 is smaller than 62",
+        "misconceptionId": "c6-maths-ch03-t01-m-supercell-biggest",
         "correct": false
        }
       ]
@@ -4087,8 +4087,8 @@
      "skillId": "c6-maths-ch03-t01-s1",
      "kind": "practice",
      "difficulty": 1,
-     "prompt_en": "Five children stand in a line with heights 140, 152, 135, 148 and 150 cm. What number does the 135 cm child say?",
-     "prompt_hi": "Paanch bachche line mein khade hain, unki height 140, 152, 135, 148 aur 150 cm hai. 135 cm wala bachcha kaunsa number bolega?",
+     "prompt_en": "Each child calls out how many of their neighbours (the children standing right next to them) are taller than them. Five children stand in a line with heights 140, 152, 135, 148 and 150 cm. What number does the 135 cm child say?",
+     "prompt_hi": "Har bachcha bolta hai ki uske bilkul bagal wale bachchon mein se kitne usse lambe hain. Paanch bachche line mein khade hain, unki height 140, 152, 135, 148 aur 150 cm hai. 135 cm wala bachcha kaunsa number bolega?",
      "answer": "2",
      "acceptable": [
       "two",
@@ -4103,7 +4103,7 @@
      "verified": {
       "solverAnswer": "2 (assuming rule: number of adjacent children taller; rule not stated in prompt)",
       "agrees": true,
-      "note": "PROMPT: the taller-neighbours rule is not stated in the prompt (only in topic expectations); solved assuming 'number of adjacent children who are taller'. Prompt should restate the rule."
+      "note": "RESOLVED: prompt now states the rule (count of adjacent children who are taller); stored answer correct under that rule."
      }
     },
     {
@@ -4111,8 +4111,8 @@
      "skillId": "c6-maths-ch03-t01-s1",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Same line: 140, 152, 135, 148, 150. What does every child say, in order?",
-     "prompt_hi": "Wahi line: 140, 152, 135, 148, 150. Har bachcha kya bolega, order mein?",
+     "prompt_en": "Each child calls out how many of their neighbours (the children standing right next to them) are taller than them. Same line: 140, 152, 135, 148, 150. What does every child say, in order?",
+     "prompt_hi": "Har bachcha bolta hai ki uske bilkul bagal wale bachchon mein se kitne usse lambe hain. Wahi line: 140, 152, 135, 148, 150. Har bachcha kya bolega, order mein?",
      "answer": "1, 0, 2, 1, 0",
      "acceptable": [
       "1 0 2 1 0"
@@ -4127,7 +4127,7 @@
      "verified": {
       "solverAnswer": "1,0,2,1,0 (same assumed rule)",
       "agrees": true,
-      "note": "PROMPT: same missing rule as i01."
+      "note": "RESOLVED: prompt now states the rule (count of adjacent children who are taller); stored answer correct under that rule."
      }
     },
     {
@@ -4135,8 +4135,8 @@
      "skillId": "c6-maths-ch03-t01-s1",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "Predict: can the child at the very end of the line ever say 2?",
-     "prompt_hi": "Guess karo: kya line ke bilkul aakhri bachche ka number kabhi 2 ho sakta hai?",
+     "prompt_en": "Each child calls out how many of their neighbours (the children standing right next to them) are taller than them. Predict: can the child at the very end of the line ever say 2?",
+     "prompt_hi": "Har bachcha bolta hai ki uske bilkul bagal wale bachchon mein se kitne usse lambe hain. Guess karo: kya line ke bilkul aakhri bachche ka number kabhi 2 ho sakta hai?",
      "answer": "No, the end child has only one neighbour",
      "acceptable": [
       "no",
@@ -4152,7 +4152,7 @@
      "verified": {
       "solverAnswer": "no (end child has one neighbour)",
       "agrees": true,
-      "note": "PROMPT: same missing rule as i01."
+      "note": "RESOLVED: prompt now states the rule (count of adjacent children who are taller); stored answer correct under that rule."
      }
     },
     {
@@ -4160,8 +4160,8 @@
      "skillId": "c6-maths-ch03-t01-s1",
      "kind": "why",
      "difficulty": 3,
-     "prompt_en": "Why must the tallest child always say 0?",
-     "prompt_hi": "Sabse lamba bachcha hamesha 0 hi kyon bolega?",
+     "prompt_en": "Each child calls out how many of their neighbours (the children standing right next to them) are taller than them. Why must the tallest child always say 0?",
+     "prompt_hi": "Har bachcha bolta hai ki uske bilkul bagal wale bachchon mein se kitne usse lambe hain. Sabse lamba bachcha hamesha 0 hi kyon bolega?",
      "answer": "No neighbour can be taller than the tallest child",
      "acceptable": [
       "nobody is taller"
@@ -4175,7 +4175,7 @@
      "verified": {
       "solverAnswer": "nobody is taller",
       "agrees": true,
-      "note": "PROMPT: same missing rule as i01."
+      "note": "RESOLVED: prompt now states the rule (count of adjacent children who are taller); stored answer correct under that rule."
      }
     },
     {
@@ -4280,8 +4280,8 @@
      "skillId": "c6-maths-ch03-t01-s3",
      "kind": "predict",
      "difficulty": 4,
-     "prompt_en": "Predict: can you line up 5 children of different heights so that EVERY child says 1?",
-     "prompt_hi": "Guess karo: kya alag-alag height ke 5 bachchon ko aise line mein khada kar sakte ho ki HAR bachcha 1 bole?",
+     "prompt_en": "Each child calls out how many of their neighbours (the children standing right next to them) are taller than them. Predict: can you line up 5 children of different heights so that EVERY child says 1?",
+     "prompt_hi": "Har bachcha bolta hai ki uske bilkul bagal wale bachchon mein se kitne usse lambe hain. Guess karo: kya alag-alag height ke 5 bachchon ko aise line mein khada kar sakte ho ki HAR bachcha 1 bole?",
      "answer": "No: the tallest child always says 0",
      "acceptable": [
       "no",
@@ -4298,7 +4298,7 @@
      "verified": {
       "solverAnswer": "no; tallest always says 0",
       "agrees": true,
-      "note": "PROMPT: same missing rule as i01."
+      "note": "RESOLVED: prompt now states the rule (count of adjacent children who are taller); stored answer correct under that rule."
      }
     },
     {
@@ -4306,8 +4306,8 @@
      "skillId": "c6-maths-ch03-t01-s3",
      "kind": "far_transfer",
      "difficulty": 4,
-     "prompt_en": "6 cricket players of heights 1 to 6 (shortest to tallest) stand in a row for a photo. Can exactly 3 of them say 0? Give an order.",
-     "prompt_hi": "Photo ke liye 1 se 6 height (chhote se lambe) ke 6 cricket players ek row mein khade hain. Kya theek 3 players 0 bol sakte hain? Ek order batao.",
+     "prompt_en": "Each child calls out how many of their neighbours (the children standing right next to them) are taller than them. 6 cricket players of heights 1 to 6 (shortest to tallest) stand in a row for a photo. Can exactly 3 of them say 0? Give an order.",
+     "prompt_hi": "Har bachcha bolta hai ki uske bilkul bagal wale bachchon mein se kitne usse lambe hain. Photo ke liye 1 se 6 height (chhote se lambe) ke 6 cricket players ek row mein khade hain. Kya theek 3 players 0 bol sakte hain? Ek order batao.",
      "answer": "Yes, e.g. 6, 1, 5, 2, 4, 3 (6, 5 and 4 say 0)",
      "acceptable": [
       "yes",
@@ -4323,7 +4323,7 @@
      "verified": {
       "solverAnswer": "yes, e.g. 6,1,5,2,4,3",
       "agrees": true,
-      "note": "PROMPT: same missing rule as i01."
+      "note": "RESOLVED: prompt now states the rule (count of adjacent children who are taller); stored answer correct under that rule."
      }
     },
     {
@@ -4557,8 +4557,8 @@
         "correct": false
        },
        {
-        "text": "8073",
-        "misconceptionId": null,
+        "text": "873, because a 0 adds nothing",
+        "misconceptionId": "c6-maths-ch03-t02-m-kaprekar-zero",
         "correct": false
        }
       ]
@@ -4808,13 +4808,13 @@
      "hints": [
       "After 12:59 comes which hour?",
       "In the 1 o'clock hour the time has 3 digits: 1 _ _.",
-      "1:0___ reads the same backwards when it is 1:01.",
+      "1:0_ : which last digit makes it read the same backwards? ___",
       "1:01."
      ],
      "verified": {
       "solverAnswer": "1:01",
       "agrees": true,
-      "note": "HINT-LEAK: hint 3 says 'when it is 1:01', stating the answer."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -5121,15 +5121,15 @@
      ],
      "hints": [
       "Try 32: is it even every time you halve?",
-      "32, 16, 8, 4, 2, 1 is just 5 steps.",
-      "7 took ___ steps.",
+      "Count 32's steps: halve, halve, halve… until 1.",
+      "32 takes ___ steps; now count 7's steps.",
       "7: 16 steps against 32's 5."
      ],
      "targetsMisconception": "c6-maths-ch03-t03-m-bigger-longer",
      "verified": {
       "solverAnswer": "7 (16 steps vs 5)",
       "agrees": true,
-      "note": "HINT-LEAK (mild): hint 2 gives '32 ... is just 5 steps', half the answer."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -5295,13 +5295,13 @@
      "hints": [
       "13 is odd, so add 1. Then?",
       "14 is even: halve to 7.",
-      "13 → 14 → 7 → 8 → 4 → 2 → ___.",
+      "13 → 14 → 7 → 8 → ___ … and what happens after you reach 1?",
       "It reaches 1 and then loops 1 → 2 → 1."
      ],
      "verified": {
       "solverAnswer": "13,14,7,8,4,2,1 then loops",
       "agrees": true,
-      "note": "HINT-LEAK (mild): hint 3 gives the whole sequence except the final 1."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -5826,7 +5826,7 @@
      ],
      "hints": [
       "Which thousands is it between?",
-      "2349 is closer to 2000 than to 3000.",
+      "Is 2349 nearer the lower thousand or the higher one?",
       "Look at the hundreds digit: 3 is less than 5, so ___.",
       "2000."
      ],
@@ -5834,7 +5834,7 @@
      "verified": {
       "solverAnswer": "2000",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 says 2349 is closer to 2000 than to 3000, stating the answer."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -5977,8 +5977,8 @@
       "Counts only the upright lines"
      ],
      "diagnostic": {
-      "prompt_en": "A tally shows one bundle of four lines with a line across them, and then three more lines. What number is it?",
-      "prompt_hi": "Ek tally mein chaar lines ka bundle hai jinke upar ek line aar-paar hai, aur phir teen aur lines. Kaunsa number hai?",
+      "prompt_en": "A tally shows one full bundle (four upright lines with a fifth line drawn across them), and then three more lines. What number is it?",
+      "prompt_hi": "Ek tally mein ek poora bundle hai (chaar khadi lines aur unke upar paanchvi line aar-paar), aur phir teen aur lines. Kaunsa number hai?",
       "options": [
        {
         "text": "8",
@@ -6026,7 +6026,7 @@
        },
        {
         "text": "Cricket is the favourite, that's all",
-        "misconceptionId": "c6-maths-ch04-t01-m-raw-organised",
+        "misconceptionId": "c6-maths-ch04-t01-m-total-mismatch",
         "correct": false
        }
       ]
@@ -6166,8 +6166,8 @@
      "skillId": "c6-maths-ch04-t01-s2",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Neha says this tally shows 7: a bundle of four lines crossed through, plus three more lines. Check her.",
-     "prompt_hi": "Neha kehti hai yeh tally 7 dikhati hai: chaar lines ka bundle jinke upar ek line aar-paar hai, aur teen lines. Check karo.",
+     "prompt_en": "Neha says this tally shows 7: one full bundle (four upright lines with a fifth line drawn across them), plus three more lines. Check her.",
+     "prompt_hi": "Neha kehti hai yeh tally 7 dikhati hai: ek poora bundle (chaar khadi lines aur unke upar paanchvi line aar-paar), aur teen aur lines. Check karo.",
      "answer": "It shows 8; the line across counts as the fifth mark",
      "acceptable": [
       "8",
@@ -6183,7 +6183,7 @@
      "verified": {
       "solverAnswer": "8 (bundle=5)",
       "agrees": true,
-      "note": "PROMPT: 'bundle of four lines crossed through' is ambiguous (the crossed bundle already equals 5); answer 8 holds if the bundle is a normal 5-bundle."
+      "note": "RESOLVED: prompt now says the bundle is four upright lines plus a fifth crossing line (a full 5-bundle); 5 + 3 = 8."
      }
     },
     {
@@ -7092,14 +7092,14 @@
      ],
      "hints": [
       "How many units does the biggest value, 80, need with each scale?",
-      "80 ÷ 5 = 16 and 80 ÷ 10 = 8.",
-      "Only ___ fits in 10 units.",
+      "Divide 80 by 5, and 80 by 10.",
+      "Which answer is 10 or less? ___",
       "1 unit = 10 runs, so 80 is 8 units tall."
      ],
      "verified": {
       "solverAnswer": "1 unit = 10 runs",
       "agrees": true,
-      "note": "HINT-LEAK (mild): hint 2 '80/5 = 16 and 80/10 = 8' gives both computations."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -7476,8 +7476,8 @@
         "correct": false
        },
        {
-        "text": "At 10",
-        "misconceptionId": null,
+        "text": "At 2, the number both share",
+        "misconceptionId": "c6-maths-ch05-t01-m-factor-multiple",
         "correct": false
        }
       ]
@@ -7583,15 +7583,15 @@
      ],
      "hints": [
       "List the factors of 18 first.",
-      "18: 1, 2, 3, 6, 9, 18. Now 24: 1, 2, 3, 4, 6, 8, 12, 24.",
-      "In both lists: 1, 2, 3 and ___.",
+      "Now list the factors of 24 and circle the ones that are in both lists.",
+      "Both lists share 1, 2, 3 and one more: ___.",
       "1, 2, 3 and 6."
      ],
      "targetsMisconception": "c6-maths-ch05-t01-m-miss-ends",
      "verified": {
       "solverAnswer": "1,2,3,6",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 gives both full factor lists; only the intersection is left."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -7630,16 +7630,16 @@
       "no, 12"
      ],
      "hints": [
-      "List multiples of 6: 6, 12, …",
-      "Is 12 also in the 4 table?",
-      "4 × 3 = 12 and 6 × 2 = ___.",
+      "List the multiples of 6 in order.",
+      "For each one, ask: is it also in the 4 table?",
+      "6 × 2 = ___; is that in the 4 table too?",
       "12, before 24."
      ],
      "targetsMisconception": "c6-maths-ch05-t01-m-common-product",
      "verified": {
       "solverAnswer": "no; first at 12",
       "agrees": true,
-      "note": "HINT-LEAK: hint 1 lists '6, 12' and hint 2 asks 'Is 12 also in the 4 table?', revealing the answer 12 before step 4."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -7728,16 +7728,16 @@
       "after 20 minutes"
      ],
      "hints": [
-      "List the multiples of 10: 10, 20, …",
-      "Which is also a multiple of 4?",
-      "20 is in both tables, so 9:00 + ___ minutes.",
+      "List the multiples of 10 one by one.",
+      "Stop at the first one that is also a multiple of 4.",
+      "10 is not in the 4 table; what about 10 × 2 = ___?",
       "9:20."
      ],
      "targetsMisconception": "c6-maths-ch05-t01-m-common-product",
      "verified": {
       "solverAnswer": "9:20",
       "agrees": true,
-      "note": "HINT-LEAK: hint 1 lists multiples of 10 ('10, 20'); hint 3 says '20 is in both tables', revealing 20 before step 4."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -8045,15 +8045,15 @@
      ],
      "hints": [
       "Is 21 in the 3 table?",
-      "3 × 7 = 21.",
-      "21 has factors 1, 3, 7 and ___.",
+      "If 3 goes into 21, what times 3 makes 21?",
+      "21 = 3 × ___, so it has more than two factors.",
       "Composite: 1, 3, 7, 21."
      ],
      "targetsMisconception": "c6-maths-ch05-t02-m-odd-prime",
      "verified": {
       "solverAnswer": "composite",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 states 3 x 7 = 21 (the answer's reason)."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -8070,16 +8070,16 @@
       "composite"
      ],
      "hints": [
-      "Try dividing 91 by 7.",
-      "7 × 13 = 91.",
-      "91 has factors 1, 7, ___ and 91.",
+      "Try dividing 91 by small primes: 2, 3, 5, 7.",
+      "7 × 10 = 70. How many more 7s reach 91?",
+      "91 = 7 × ___.",
       "Composite: 91 = 7 × 13."
      ],
      "targetsMisconception": "c6-maths-ch05-t02-m-odd-prime",
      "verified": {
       "solverAnswer": "composite, 7x13",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 states 7 x 13 = 91, giving the answer."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -8167,14 +8167,14 @@
      ],
      "hints": [
       "Which numbers in the 40s are odd?",
-      "41, 43, 45, 47, 49: cross out 45 (5) and 49 (7).",
-      "Left: 41, 43 and ___.",
+      "Check each odd one: is it in the 3, 5 or 7 table?",
+      "Cross out the odd ones that fail; the ones left are: ___.",
       "41, 43 and 47."
      ],
      "verified": {
       "solverAnswer": "41, 43, 47",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 says cross out 45 and 49, giving the survivors 41, 43, 47."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -8314,14 +8314,14 @@
      ],
      "hints": [
       "Skip the even numbers.",
-      "Check 11, 13, 15, 17, 19; 15 = 3 × 5.",
+      "Check each odd number from 11 to 19: does 3 divide it?",
       "11, 13, ___, 19.",
       "11, 13, 17 and 19."
      ],
      "verified": {
       "solverAnswer": "11, 13, 17, 19",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 gives the full check including 15 = 3 x 5."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     }
    ],
@@ -8419,8 +8419,8 @@
         "correct": false
        },
        {
-        "text": "No, because 8 is even",
-        "misconceptionId": "c6-maths-ch05-t03-m-prime-pair-only",
+        "text": "No, because neither of them is a prime",
+        "misconceptionId": "c6-maths-ch05-t03-m-both-prime",
         "correct": false
        }
       ]
@@ -8502,14 +8502,14 @@
      ],
      "hints": [
       "List the factors of 4 and of 9.",
-      "4: 1, 2, 4. 9: 1, 3, 9.",
-      "The only common factor is ___.",
+      "Write the factors of 4, then of 9. Circle any number in both lists.",
+      "Common factors of 4 and 9: ___.",
       "Yes, only 1 is common."
      ],
      "verified": {
       "solverAnswer": "yes",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 lists both factor sets (answer evident)."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -8550,15 +8550,15 @@
      ],
      "hints": [
       "List the factors of 8 and 15.",
-      "8: 1, 2, 4, 8. 15: 1, 3, 5, 15.",
-      "Common factors: only ___.",
+      "Write both lists, then look for any number other than 1 in both.",
+      "Common factors of 8 and 15: ___.",
       "Yes: co-prime is about the pair, not about each being prime."
      ],
      "targetsMisconception": "c6-maths-ch05-t03-m-both-prime",
      "verified": {
       "solverAnswer": "yes",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 lists both factor sets (answer evident)."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -8598,16 +8598,16 @@
       "9 and 14"
      ],
      "hints": [
-      "Does 3 divide 14? Does 3 divide 15?",
-      "9 = 3 × 3, so check 3.",
-      "3 divides 15 but not ___.",
+      "9 = 3 × 3. Which prime could 9 share with another number?",
+      "Check whether 3 divides 14, and whether 3 divides 15.",
+      "The pair where 3 divides the other number is NOT co-prime; so the co-prime pair is ___.",
       "9 and 14 are co-prime; 9 and 15 share 3."
      ],
      "targetsMisconception": "c6-maths-ch05-t03-m-odd-coprime",
      "verified": {
       "solverAnswer": "9 and 14",
       "agrees": true,
-      "note": "HINT-LEAK: hint 3 says '3 divides 15 but not ___', revealing the pair."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -8955,15 +8955,15 @@
      ],
      "hints": [
       "Split 12 into two factors.",
-      "12 = 4 × 3, and 4 = 2 × 2.",
-      "12 = 2 × 2 × ___.",
+      "Is 4 prime? If not, split it too.",
+      "12 = 4 × 3 = ___ × ___ × 3.",
       "12 = 2 × 2 × 3."
      ],
      "targetsMisconception": "c6-maths-ch05-t04-m-stop-composite",
      "verified": {
       "solverAnswer": "2x2x3",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 gives the full decomposition 12 = 4 x 3, 4 = 2 x 2."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -8979,14 +8979,14 @@
      ],
      "hints": [
       "Start with 6 × 10.",
-      "6 = 2 × 3 and 10 = 2 × 5.",
-      "60 = 2 × 2 × 3 × ___.",
+      "Are 6 and 10 prime? Split each into two smaller factors.",
+      "60 = (2 × ___) × (2 × ___).",
       "60 = 2 × 2 × 3 × 5."
      ],
      "verified": {
       "solverAnswer": "2x2x3x5",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 gives 6 = 2x3 and 10 = 2x5 (full decomposition)."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -9002,15 +9002,15 @@
      ],
      "hints": [
       "Start with 36 × 10.",
-      "36 = 2 × 2 × 3 × 3 and 10 = 2 × 5.",
-      "360 = 2 × 2 × 2 × 3 × 3 × ___.",
+      "Keep splitting 36 and 10 until every number is prime.",
+      "36 = 6 × 6 and 10 = 2 × ___; now split each 6.",
       "360 = 2 × 2 × 2 × 3 × 3 × 5."
      ],
      "targetsMisconception": "c6-maths-ch05-t04-m-stop-composite",
      "verified": {
       "solverAnswer": "2x2x2x3x3x5",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 gives 36 = 2x2x3x3 and 10 = 2x5 (full decomposition)."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -9027,15 +9027,15 @@
      ],
      "hints": [
       "Is 8 prime? Is 9?",
-      "8 = 2 × 2 × 2 and 9 = 3 × 3.",
-      "72 = 2 × 2 × 2 × 3 × ___.",
+      "Split 8 and 9 again until only primes are left.",
+      "8 = 2 × ___ × ___ and 9 = ___ × ___.",
       "Keep splitting: 72 = 2 × 2 × 2 × 3 × 3."
      ],
      "targetsMisconception": "c6-maths-ch05-t04-m-stop-composite",
      "verified": {
       "solverAnswer": "8 and 9 not prime; 2x2x2x3x3",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 gives 8 = 2x2x2 and 9 = 3x3 (full answer)."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -9053,15 +9053,15 @@
      ],
      "hints": [
       "Finish Riya's tree: 4 = ? and 9 = ?",
-      "Now Aman's: 6 = 2 × 3, twice.",
-      "Both: 2 × 2 × 3 × ___.",
+      "Now split each of Aman's 6s into primes.",
+      "Riya's primes: ___. Aman's primes: ___. Same?",
       "Yes, both end with 2 × 2 × 3 × 3."
      ],
      "targetsMisconception": "c6-maths-ch05-t04-m-different-trees",
      "verified": {
       "solverAnswer": "yes",
       "agrees": true,
-      "note": "HINT-LEAK: hints 2-3 give the factorisations of both trees."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -9127,14 +9127,14 @@
      ],
      "hints": [
       "Start with 4 × 21.",
-      "4 = 2 × 2 and 21 = 3 × 7.",
-      "84 = 2 × 2 × 3 × ___.",
+      "Are 4 and 21 prime? Split each one.",
+      "4 = 2 × ___ and 21 = 3 × ___.",
       "84 = 2 × 2 × 3 × 7."
      ],
      "verified": {
       "solverAnswer": "2x2x3x7",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 gives 4 = 2x2 and 21 = 3x7 (full decomposition)."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -9197,14 +9197,14 @@
      ],
      "hints": [
       "What does each 10 split into?",
-      "10 = 2 × 5.",
-      "100 = 2 × 5 × 2 × ___.",
+      "10 is not prime. Which two primes multiply to 10?",
+      "100 = (___ × ___) × (___ × ___).",
       "100 = 2 × 2 × 5 × 5."
      ],
      "verified": {
       "solverAnswer": "10x10 -> 2x5 and 2x5 -> 2x2x5x5",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 gives 10 = 2 x 5 and hint 3 nearly the full answer."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -10145,14 +10145,14 @@
      "hints": [
       "How many sides does the room have?",
       "Six sides, but she added five.",
-      "16 + ___ = 20.",
+      "16 + 4 = ___.",
       "She missed the 4 m side: 20 m."
      ],
      "targetsMisconception": "c6-maths-ch06-t01-m-missing-sides",
      "verified": {
       "solverAnswer": "missed side 4 m; 20 m",
       "agrees": true,
-      "note": "HINT-LEAK (mild): hint 3 '16 + ___ = 20' states the total."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -10624,13 +10624,13 @@
      "hints": [
       "How many full squares do 4 halves make?",
       "Two halves make one full square.",
-      "10 + ___ = 12.",
+      "4 halves = ___ full squares; add them to 10.",
       "12 square units."
      ],
      "verified": {
       "solverAnswer": "12",
       "agrees": true,
-      "note": "HINT-LEAK (mild): hint 3 '10 + ___ = 12' states the total."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -10803,8 +10803,8 @@
         "correct": false
        },
        {
-        "text": "10 sq cm",
-        "misconceptionId": null,
+        "text": "About 14 sq cm, using the slanted cut edge × 4 ÷ 2",
+        "misconceptionId": "c6-maths-ch06-t03-m-slant-side",
         "correct": false
        }
       ]
@@ -11885,14 +11885,14 @@
      ],
      "hints": [
       "How many quarters make a whole?",
-      "4 quarters make 1 whole; 3 quarters are left.",
+      "Take 4 quarters out as 1 whole. How many quarters are left?",
       "7 ÷ 4 = 1 remainder ___.",
       "1 3/4."
      ],
      "verified": {
       "solverAnswer": "1 3/4",
       "agrees": true,
-      "note": "HINT-LEAK (mild): hint 2 '4 quarters make 1 whole; 3 quarters are left' gives 1 3/4."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -12032,13 +12032,13 @@
      "hints": [
       "How many 1/4 kg packets in 1 kg?",
       "4 per kg, so 8 in 2 kg; and half a kg?",
-      "8 + ___ = 10.",
+      "Half a kg fills ___ packets; add those to 8.",
       "10 packets."
      ],
      "verified": {
       "solverAnswer": "10",
       "agrees": true,
-      "note": "HINT-LEAK (mild): hint 3 '8 + ___ = 10' states 10."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -12078,14 +12078,14 @@
      ],
      "hints": [
       "Change 13/5 to a mixed fraction.",
-      "13/5 = 2 3/5. Compare 3/5 with 1/2.",
-      "3/5 is ___ than 1/2.",
+      "13 ÷ 5 = 2 remainder ___. Then compare the fraction parts.",
+      "2 ___/5 or 2 1/2: which fraction part is more than half?",
       "13/5 is bigger: 2 3/5 > 2 1/2."
      ],
      "verified": {
       "solverAnswer": "13/5",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 gives 13/5 = 2 3/5 and sets up the final comparison."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -12150,15 +12150,15 @@
       "dedh"
      ],
      "hints": [
-      "2 halves make 1.",
-      "1 half left.",
-      "1 and ___.",
+      "How many halves make one whole?",
+      "Take one whole out of 3 halves. How many halves are left?",
+      "3/2 = 1 and ___/2.",
       "1 1/2."
      ],
      "verified": {
       "solverAnswer": "1 1/2",
       "agrees": true,
-      "note": "HINT-LEAK: hints 1-2 ('2 halves make 1', '1 half left') give 1 1/2 before step 4."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     }
    ],
@@ -12288,7 +12288,7 @@
         "correct": false
        },
        {
-        "text": "1/2, because the pieces are bigger",
+        "text": "4/8, because 8 pieces are more than 2 pieces",
         "misconceptionId": "c6-maths-ch07-t03-m-bigger-numbers-bigger",
         "correct": false
        }
@@ -12746,8 +12746,8 @@
         "correct": false
        },
        {
-        "text": "They are equal, both are one part short",
-        "misconceptionId": "c6-maths-ch07-t04-m-gap",
+        "text": "4/9, because ninths have the bigger denominator",
+        "misconceptionId": "c6-maths-ch07-t04-m-only-num-den",
         "correct": false
        }
       ]
@@ -12996,14 +12996,14 @@
      ],
      "hints": [
       "What is half of 7? Half of 8?",
-      "3 is less than 3.5; 5 is more than 4.",
-      "3/7 < 1/2 < ___.",
+      "Compare 3 with half of 7, and 5 with half of 8.",
+      "3/7 is ___ 1/2, and 5/8 is ___ 1/2.",
       "5/8 is bigger: it is above half and 3/7 is below."
      ],
      "verified": {
       "solverAnswer": "5/8",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 gives both benchmark comparisons."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -13289,7 +13289,7 @@
         "correct": false
        },
        {
-        "text": "2 1/2",
+        "text": "2 (3/4 cannot come out of 1/4, so just subtract the wholes)",
         "misconceptionId": "c6-maths-ch07-t05-m-mixed-wholes",
         "correct": false
        }
@@ -13416,14 +13416,14 @@
      "hints": [
       "Is 2/5 more or less than 1/2?",
       "Adding 1/3 to 1/2 should give more than 1/2.",
-      "3/6 + 2/6 = ___.",
+      "Rename both in sixths: 1/2 = ___/6 and 1/3 = ___/6; now add.",
       "No: it is 5/6; denominators are never added."
      ],
      "targetsMisconception": "c6-maths-ch07-t05-m-add-across",
      "verified": {
       "solverAnswer": "no, 5/6",
       "agrees": true,
-      "note": "HINT-LEAK (mild): hint 3 '3/6 + 2/6 = ___' is the answer sum."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -13565,13 +13565,13 @@
      "hints": [
       "Both start with 1/3. What is different?",
       "One adds 1/3, the other adds 1/6.",
-      "2/3 − 1/2 = 4/6 − 3/6 = ___.",
+      "Write both sums in sixths, then subtract: ___.",
       "2/3 is bigger, by 1/6."
      ],
      "verified": {
       "solverAnswer": "1/3+1/3 bigger by 1/6",
       "agrees": true,
-      "note": "HINT-LEAK (mild): hint 3 '4/6 - 3/6 = ___' gives the difference."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -14686,7 +14686,7 @@
        },
        {
         "text": "Two, where equal arcs cross",
-        "misconceptionId": "c6-maths-ch08-t03-m-unequal-arcs",
+        "misconceptionId": "c6-maths-ch08-t03-m-midpoint-only",
         "correct": false
        }
       ]
@@ -15646,8 +15646,8 @@
         "correct": false
        },
        {
-        "text": "Order 4, angle 90°",
-        "misconceptionId": "c6-maths-ch09-t02-m-full-turn",
+        "text": "Order 120°, angle 120°",
+        "misconceptionId": "c6-maths-ch09-t02-m-angle-order",
         "correct": false
        }
       ]
@@ -15749,14 +15749,14 @@
      ],
      "hints": [
       "How far apart are the blades?",
-      "360° shared by 3 gaps is 120°.",
-      "360 ÷ 120 = ___.",
+      "The 3 gaps between the blades share one full turn of 360°.",
+      "Each turn is 360 ÷ 3 = ___ degrees; how many such turns make 360°?",
       "It matches every 120°, so 3 times in a full turn."
      ],
      "verified": {
       "solverAnswer": "120 degree turns match 3 times in a full turn",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 states the 120 degree turn."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {
@@ -15764,8 +15764,8 @@
      "skillId": "c6-maths-ch09-t02-s3",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "Compare the letters H and N. Which has line symmetry and which has rotational symmetry?",
-     "prompt_hi": "Letters H aur N compare karo. Kisme line symmetry hai aur kisme rotational?",
+     "prompt_en": "Look at the letters H and N. For each letter, say which kinds of symmetry it has: line symmetry, rotational symmetry, or both.",
+     "prompt_hi": "Letters H aur N dekho. Har letter ke liye batao usme kaunsi symmetry hai: line symmetry, rotational symmetry, ya dono.",
      "answer": "H has both (two lines and order 2); N has only rotational symmetry (order 2)",
      "acceptable": [
       "H both, N only rotational"
@@ -15780,7 +15780,7 @@
      "verified": {
       "solverAnswer": "H has line symmetry (and rotation order 2); N has rotation only",
       "agrees": true,
-      "note": "PROMPT: H also has rotational symmetry (order 2), so 'which has line and which has rotational' is slightly misleading; stored answer handles it correctly."
+      "note": "RESOLVED: prompt now asks which kinds each letter has (allowing 'both'); H has both (2 lines, order 2), N has rotational only (order 2)."
      }
     },
     {
@@ -16540,8 +16540,8 @@
         "correct": false
        },
        {
-        "text": "They are equal",
-        "misconceptionId": null,
+        "text": "−7, because it is further from zero",
+        "misconceptionId": "c6-maths-ch10-t02-m-neg-magnitude",
         "correct": false
        }
       ]
@@ -17265,14 +17265,14 @@
      ],
      "hints": [
       "How many floors down to reach 0?",
-      "2 floors to 0, then 3 more below.",
+      "Go down 2 floors to reach 0. How many more floors down are left?",
       "2 + (−5) = ___.",
       "−3, which is B3."
      ],
      "verified": {
       "solverAnswer": "floor -3 (B3)",
       "agrees": true,
-      "note": "HINT-LEAK: hint 2 '2 floors to 0, then 3 more below' gives B3."
+      "note": "RESOLVED: hint ladder rewritten so hints 1-3 nudge without stating the answer; hint 4 (assertion) unchanged. Stored answer re-derived and correct."
      }
     },
     {

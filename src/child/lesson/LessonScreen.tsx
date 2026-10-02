@@ -487,7 +487,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
       <div className="tx-grid tx-grid--split" style={{ gridTemplateRows: `${L.top}px minmax(0,1fr)`, gridTemplateColumns: cols }}>
         <div className="tx-span">{topBar}</div>
         <div className="tx-teachercol" style={{ order: prefs.mirror ? 2 : 0 }}>
-          {L.family === "compact" ? null : <div className="tx-region tx-stagebox">{stage(geometry === "L3" || geometry === "L4" ? "close" : "medium")}</div>}
+          {L.family === "compact" ? null : <div className="tx-region tx-stagebox">{stage("medium")}</div>}
           {L.family === "compact" && <div className="tx-region tx-stagebox">{stage("close")}</div>}
           {!L.captionPill && <div className="tx-region tx-capbox">{caption}</div>}
           <div className="tx-region">{control}</div>
@@ -506,7 +506,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
         style={{ gridTemplateRows: `${L.top}px ${L.stage}px ${ledgeRow}px ${L.captionPill ? 0 : `minmax(${L.caption}px, auto)`} minmax(0,1fr) ${L.control}px` }}
       >
         {topBar}
-        <div className="tx-region tx-stagebox">
+        <div className={`tx-region tx-stagebox ${L.ledgeOverlay ? "tx-stagebox--overlay" : ""}`}>
           {L.stage > 0 && stage(geometry === "L3" || geometry === "L4" ? "close" : "medium")}
           {L.ledgeOverlay && <div className="tx-ledge-overlay">{ledge}</div>}
         </div>

@@ -23,8 +23,10 @@ function LangTile({ l, selected, onPick }: { l: (typeof LANGS)[number]; selected
     <button type="button" role="radio" aria-checked={selected} className="tile lang-tile"
       onClick={() => { onPick(); toggle(); }}>
       <span className="lang-play" aria-hidden="true"><Icon name={playing ? "stop" : "speaker"} /></span>
-      <span lang={l.hi ? "hi" : undefined} className={l.hi ? "deva lang-word" : "lang-word"}>{l.label}</span>
-      <span className="tile-sub">{l.sub}{playing ? " · playing, tap to stop" : ""}</span>
+      <span className="lang-text">
+        <span lang={l.hi ? "hi" : undefined} className={l.hi ? "deva lang-word" : "lang-word"}>{l.label}</span>
+        <span className="tile-sub">{l.sub}{playing ? " · playing, tap to stop" : ""}</span>
+      </span>
       <Icon name="tick" size={18} className="tile-tick" />
     </button>
   );

@@ -3,6 +3,7 @@
 // no testimonials, ratings or outcome numbers (none exist yet), no countdowns, no "replaces tutors" claim.
 // Copy: aap, one idea per section, no dashes or exclamation hype in UI strings (§6.12).
 import { useEffect, useState } from "react";
+import "../../styles/landing.css";
 import { Link } from "react-router-dom";
 import { ButtonLink, Hi, Icon, StateChip, TeacherFace, useClip } from "../../ui/index.ts";
 import { loadMe } from "../api.ts";

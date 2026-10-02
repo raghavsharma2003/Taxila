@@ -276,16 +276,16 @@
             "equal"
           ],
           "hints": [
-            "Will the shells change if we count differently?",
-            "Counting a new way does not add or remove shells.",
-            "Count by 2s: 2, 4, 6, 8, ___.",
+            "What do you think? Why?",
+            "When we count by 2s, do we add any shells or take any away?",
+            "Count by 2s: 2, 4, 6, 8, ___. Where did we reach?",
             "Still 10. The way we count does not change how many there are."
           ],
           "targetsMisconception": "c2-maths-ch01-t01-m-method-changes-total",
           "verified": {
             "solverAnswer": "same, 10",
             "agrees": true,
-            "note": "Key correct. Hint leak: hint 2 ('counting a new way does not add or remove shells') gives away 'same' before step 4."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         },
         {
@@ -447,6 +447,9 @@
           "prompt_hi": "Jaldi se! 10 se 100 tak 10-10 karke gino.",
           "answer": "10, 20, 30, 40, 50, 60, 70, 80, 90, 100",
           "acceptable": [
+            "10, 20, 30, 40, 50, 60, 70, 80, 90, 100",
+            "10 20 30 40 50 60 70 80 90 100",
+            "ten, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred",
             "das, bees, tees, chaalees, pachaas, saath, sattar, assi, nabbe, sau"
           ],
           "hints": [
@@ -458,7 +461,7 @@
           "verified": {
             "solverAnswer": "10 to 100 by 10s",
             "agrees": true,
-            "note": "Key correct. Matcher risk: 'acceptable' is one comma-joined string, not a list of variants."
+            "note": "Key correct. 'acceptable' split into separate full-sequence variants (digits with/without commas, English names, Hindi names)."
           }
         },
         {
@@ -746,16 +749,16 @@
             "utni hi"
           ],
           "hints": [
-            "Will I add or take away any bangle?",
-            "Moving things does not change how many.",
-            "If no bangle is added or removed, there are still ___.",
+            "What do you think? Why?",
+            "When I spread them out, do I add a bangle or take one away?",
+            "Let's count them after spreading: 1, 2, 3 … how many?",
             "Still 8. Spreading out only changes the space, not the number."
           ],
           "targetsMisconception": "c2-maths-ch01-t02-m-space-means-more",
           "verified": {
             "solverAnswer": "same, 8",
             "agrees": true,
-            "note": "Key correct. Hint leak: hints 2-3 ('moving things does not change how many', 'still ___') give the answer early."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         },
         {
@@ -1169,14 +1172,14 @@
           "hints": [
             "Think of the shape of a laddoo too.",
             "It is a solid round shape, not a flat circle.",
-            "It starts with \"sph…\".",
+            "Which shape name did we learn for a laddoo or a globe?",
             "A ball is a sphere."
           ],
           "targetsMisconception": "c2-maths-ch02-t01-m-solid-as-flat",
           "verified": {
             "solverAnswer": "sphere",
             "agrees": true,
-            "note": "Key correct. Hint leak: hint 3 ('starts with sph...') reveals the word."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         },
         {
@@ -1266,15 +1269,15 @@
           ],
           "hints": [
             "What will change when I lay it down?",
-            "Its faces stay the same: two flat circles and a curved side.",
-            "Turning it does not change its ___.",
+            "Count its flat circles when it stands. Now count them when it lies down.",
+            "Did its faces change, or only the way it is turned?",
             "Yes. Lying or standing, it is still a cylinder."
           ],
           "targetsMisconception": "c2-maths-ch02-t01-m-orientation-changes-shape",
           "verified": {
             "solverAnswer": "yes, still a cylinder",
             "agrees": true,
-            "note": "Key correct. Hint leak: hints 2-3 ('faces stay the same', 'turning does not change its ___') give 'yes' early."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         },
         {
@@ -1340,13 +1343,13 @@
           "hints": [
             "Does it have a point?",
             "One round open end and a point at the top.",
-            "Like an ice-cream cone, it is a ___.",
+            "It is the same shape as a carrot or the funnel used to pour oil. What do we call that shape?",
             "A party cap is a cone."
           ],
           "verified": {
             "solverAnswer": "cone",
             "agrees": true,
-            "note": "Key correct. Hint leak: hint 3 ('Like an ice-cream cone, it is a ___') names the answer."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         },
         {
@@ -1651,7 +1654,7 @@
               },
               {
                 "text": "All three",
-                "misconceptionId": null,
+                "misconceptionId": "c2-maths-ch02-t02-m-any-shape-rolls",
                 "correct": false
               }
             ]
@@ -1659,6 +1662,35 @@
           "remediation": {
             "representation": "Rolling race of a ball and a pipe piece down the same ramp",
             "moveShape": "Child feels the curved side of the pipe and predicts; then tests it"
+          }
+        },
+        {
+          "id": "c2-maths-ch02-t02-m-any-shape-rolls",
+          "belief": "Thinks any object can roll if you push it hard enough, including boxes with only flat faces",
+          "signs": [
+            "Says a matchbox or a dice can roll",
+            "Calls tumbling over and over \"rolling\"",
+            "Does not look for a curved face before deciding"
+          ],
+          "diagnostic": {
+            "prompt_en": "Can a dice roll smoothly down a slope like a ball?",
+            "prompt_hi": "Kya dice ball ki tarah dhalaan pe aaram se ludhak sakta hai?",
+            "options": [
+              {
+                "text": "No, it has only flat faces, so it slides or tumbles",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "Yes, if we push it hard",
+                "misconceptionId": "c2-maths-ch02-t02-m-any-shape-rolls",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "Side-by-side ramp with a ball, a pipe piece and a matchbox released together",
+            "moveShape": "Child releases each and watches; ask which ones kept turning smoothly and which face touched the ramp"
           }
         }
       ],
@@ -1751,16 +1783,16 @@
             "sarkega"
           ],
           "hints": [
-            "Which face is touching the slope?",
-            "A flat face slides; a curved face rolls.",
-            "The flat bottom is touching, so it will ___.",
+            "What do you think? Why?",
+            "Which face is touching the slope: the flat one or the curved one?",
+            "Think of a matchbox on a slope. Does a flat face roll or slide?",
             "It slides, because its flat face is on the slope."
           ],
           "targetsMisconception": "c2-maths-ch02-t02-m-curved-cannot-slide",
           "verified": {
             "solverAnswer": "slide",
             "agrees": true,
-            "note": "Key correct. Hint leak: hint 2 ('a flat face slides; a curved face rolls') gives 'slide' early."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         },
         {
@@ -2084,10 +2116,11 @@
         },
         {
           "id": "c2-maths-ch03-t01-m-hundred-as-1000",
-          "belief": "Thinks one hundred must be written with more zeros, such as 1000, because \"hundred\" sounds big",
+          "belief": "Is unsure how many zeros one hundred has, so writes it as 1000 (because \"hundred\" sounds big) or as 10",
           "signs": [
             "Writes 1000 or 10000 for hundred",
-            "Writes 1000 after 99"
+            "Writes 1000 after 99",
+            "Writes one hundred as 10, the same as ten"
           ],
           "diagnostic": {
             "prompt_en": "How do we write one hundred?",
@@ -2105,7 +2138,7 @@
               },
               {
                 "text": "10",
-                "misconceptionId": null,
+                "misconceptionId": "c2-maths-ch03-t01-m-hundred-as-1000",
                 "correct": false
               }
             ]
@@ -2949,15 +2982,15 @@
             "50 ke paas"
           ],
           "hints": [
-            "How many steps from 48 to 50?",
-            "Count the steps both ways.",
-            "48 to 50 is 2 steps; 48 to 40 is ___ steps.",
-            "48 is closer to 50: only 2 steps away."
+            "How could we find out which one is nearer?",
+            "Count the steps both ways on the line.",
+            "Count back from 48 to 40, then forward from 48 to 50. Which took fewer steps?",
+            "48 is closer to 50: only 2 steps away, but 8 steps from 40."
           ],
           "verified": {
             "solverAnswer": "closer to 50",
             "agrees": true,
-            "note": "Key correct. Hint leak: hint 3 ('48 to 50 is 2 steps; 48 to 40 is ___') makes the answer obvious one step early."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         },
         {
@@ -3106,11 +3139,12 @@
       "misconceptions": [
         {
           "id": "c2-maths-ch03-t03-m-down-adds-one",
-          "belief": "Believes moving down one row adds 1, like moving right",
+          "belief": "Believes moving one row down or up changes the number by just 1, like moving right or left",
           "signs": [
             "Says the number below 34 is 35",
             "Treats every move on the grid as +1",
-            "Cannot explain why a column ends in the same digit"
+            "Cannot explain why a column ends in the same digit",
+            "Says the number above 57 is 56"
           ],
           "diagnostic": {
             "prompt_en": "On the 100 grid, put your finger on 34. What number is just below 34?",
@@ -3156,7 +3190,7 @@
               },
               {
                 "text": "56",
-                "misconceptionId": null,
+                "misconceptionId": "c2-maths-ch03-t03-m-down-adds-one",
                 "correct": false
               }
             ]
@@ -3893,16 +3927,16 @@
             "cone"
           ],
           "hints": [
-            "Which one has slanting sides meeting at a point?",
-            "Think of the cone from the side.",
-            "From the side, a ___ looks like a triangle.",
+            "Imagine shining a torch on each one. What shadow would it make?",
+            "A ball's shadow is round. A dice's shadow has 4 corners. What about the third one?",
+            "Which one has slanting sides that meet at a point?",
             "A cone, seen from the side, makes a triangle shadow."
           ],
           "targetsMisconception": "c2-maths-ch04-t01-m-one-object-one-shape",
           "verified": {
             "solverAnswer": "cone",
             "agrees": true,
-            "note": "Key correct. Hint leak: hint 2 names 'the cone'."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         },
         {
@@ -7134,16 +7168,16 @@
             "zyada"
           ],
           "hints": [
-            "Will a short crayon cover more or less of the table?",
-            "Shorter units: we need more of them.",
-            "Shorter units give a ___ number.",
+            "What do you think? Why?",
+            "Put one crayon next to one pencil. Which one covers more of the table?",
+            "If each piece is smaller, do we need more pieces or fewer to cover the same table?",
             "More than 6, because each crayon covers less of the table."
           ],
           "targetsMisconception": "c2-maths-ch07-t01-m-bigger-unit-bigger-number",
           "verified": {
             "solverAnswer": "more than 6",
             "agrees": true,
-            "note": "Key correct. Hint leak: hint 2 ('shorter units: we need more of them') gives the answer at step 2."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         },
         {
@@ -7852,16 +7886,16 @@
             "neeche"
           ],
           "hints": [
-            "Think of carrying a heavy bag.",
-            "Heavy things pull down.",
-            "The heavier side goes ___.",
+            "What do you think? Why?",
+            "Think of a see-saw with a big child on one side and a small child on the other.",
+            "On the see-saw, which side ends up on the ground: the big child's or the small child's?",
             "The heavier side goes down."
           ],
           "targetsMisconception": "c2-maths-ch07-t02-m-up-side-heavier",
           "verified": {
             "solverAnswer": "down",
             "agrees": true,
-            "note": "Key correct. Hint leak: hint 2 ('heavy things pull down') gives the answer."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         }
       ],
@@ -8020,7 +8054,7 @@
               },
               {
                 "text": "3",
-                "misconceptionId": null,
+                "misconceptionId": "c2-maths-ch08-t01-m-counts-groups-not-items",
                 "correct": false
               }
             ]
@@ -8028,6 +8062,40 @@
           "remediation": {
             "representation": "Counters in groups with the skip count shown under each group",
             "moveShape": "Child skip counts by 4 touching each group; ask what the 3 told us and what the 4 told us"
+          }
+        },
+        {
+          "id": "c2-maths-ch08-t01-m-counts-groups-not-items",
+          "belief": "Counts the groups instead of the things inside them, so gives the number of groups as the total",
+          "signs": [
+            "Says 3 groups of 4 balls is 3",
+            "Points to each plate once while counting",
+            "Ignores how many are in each group"
+          ],
+          "diagnostic": {
+            "prompt_en": "There are 2 plates with 5 laddoos on each. How many laddoos in all?",
+            "prompt_hi": "2 plate hain, har plate mein 5 laddoo. Kul kitne laddoo?",
+            "options": [
+              {
+                "text": "10",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "2",
+                "misconceptionId": "c2-maths-ch08-t01-m-counts-groups-not-items",
+                "correct": false
+              },
+              {
+                "text": "7",
+                "misconceptionId": "c2-maths-ch08-t01-m-add-groups-and-size",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "Counters on plates, with each counter touched and counted aloud",
+            "moveShape": "Child touches every laddoo, not every plate; ask whether we were counting plates or laddoos"
           }
         }
       ],
@@ -8485,7 +8553,7 @@
             "prompt_hi": "7 kele 3 bachchon mein barabar baante. Har ek ko 2 mile. Aakhri kele ka kya?",
             "options": [
               {
-                "text": "It is left over (we could cut it into 3 pieces)",
+                "text": "It is left over, so every child still has the same number",
                 "misconceptionId": null,
                 "correct": true
               },
@@ -9508,14 +9576,14 @@
           ],
           "hints": [
             "When does it rain a lot?",
-            "Think of the season with lots of rain.",
-            "The rainy season is also called the ___.",
-            "In the rainy season, the monsoon."
+            "Think of the time of year with dark clouds and puddles.",
+            "Which season comes after the hot summer, when the clouds arrive?",
+            "The rainy season, the monsoon."
           ],
           "verified": {
             "solverAnswer": "monsoon / rainy",
             "agrees": true,
-            "note": "Key correct. Hint leak: hint 3 ('the rainy season is also called the ___') gives the answer."
+            "note": "Key correct. Hints rewritten so the answer appears only at step 4 (assertion)."
           }
         },
         {
@@ -9668,24 +9736,25 @@
           "skillId": "c2-maths-ch09-t02-s2",
           "kind": "far_transfer",
           "difficulty": 3,
-          "prompt_en": "In your town, which months are the hottest?",
-          "prompt_hi": "Tumhare shehar mein sabse garam mahine kaunse hain?",
-          "answer": "Depends on the child's town; for much of north and central India, April, May and June",
+          "prompt_en": "In Delhi, which months are the hottest: December and January, or May and June?",
+          "prompt_hi": "Delhi mein sabse garam mahine kaunse hote hain: December-January, ya May-June?",
+          "answer": "May and June",
           "acceptable": [
-            "April",
-            "May",
-            "June"
+            "May and June",
+            "May, June",
+            "May-June",
+            "mai aur june"
           ],
           "hints": [
-            "When do you feel hottest, and when do fans run all day?",
-            "Think of the months before the rains come.",
-            "Months like April, ___ …",
-            "In much of India, April, May and June are the hottest. Your town may differ a little."
+            "When do fans and coolers run all day?",
+            "December and January are when we wear sweaters.",
+            "Which pair comes just before the rains start?",
+            "In Delhi, May and June are the hottest months."
           ],
           "verified": {
-            "solverAnswer": "April, May, June (varies)",
+            "solverAnswer": "May and June",
             "agrees": true,
-            "note": "Key is town-dependent (typical April-June in north/central India); accept child's own correct months. Not a fixed-key item."
+            "note": "Rewritten: was town-dependent with no fixed key; now fixed to Delhi with a two-choice prompt. Teacher may follow up by asking about the child's own town (unscored)."
           }
         },
         {
@@ -10915,7 +10984,7 @@
               },
               {
                 "text": "3",
-                "misconceptionId": null,
+                "misconceptionId": "c2-maths-ch11-t01-m-bundle-counts-as-one",
                 "correct": false
               }
             ]
@@ -10923,6 +10992,40 @@
           "remediation": {
             "representation": "Tally bundles where each line lights up as it is counted, including the cross",
             "moveShape": "Child touches every line, including the cross, and then counts the bundle as 5"
+          }
+        },
+        {
+          "id": "c2-maths-ch11-t01-m-bundle-counts-as-one",
+          "belief": "Counts a whole tally bundle as 1 instead of 5",
+          "signs": [
+            "Reads a bundle and 2 marks as 3",
+            "Counts bundles and single lines the same way",
+            "Totals come out far too small"
+          ],
+          "diagnostic": {
+            "prompt_en": "There are 2 tally bundles and nothing else. How many is that?",
+            "prompt_hi": "Tally ke 2 bundle hain, aur kuch nahi. Kitne hue?",
+            "options": [
+              {
+                "text": "10",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "2",
+                "misconceptionId": "c2-maths-ch11-t01-m-bundle-counts-as-one",
+                "correct": false
+              },
+              {
+                "text": "8",
+                "misconceptionId": "c2-maths-ch11-t01-m-cross-not-counted",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A bundle that untangles into 5 separate lines and ties back up",
+            "moveShape": "Child unties one bundle, counts its lines, and ties it again; ask how many lines hide in each bundle"
           }
         }
       ],

@@ -4,10 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#FFF8EE" />
-    <title>Taxila — a teacher who notices</title>
+    <meta name="description" content="Taxila is an AI voice teacher for classes 1 to 9 (CBSE, NCERT, RBSE and state boards) in Hindi, Hinglish or English, who shows parents what their child really understood." />
+    <title>Taxila · an AI teacher who notices</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Fonts (PRODUCT-DESIGN §4.3): Mukta 400/600/700 on every path (text + Older display + parent surface).
+         Baloo 2 (Young display) and Andika (early reading) load on demand from src/app/band.ts. Google serves
+         unicode-range subsets, so a page downloads only the Latin / Devanagari files it uses. swap + the
+         Mukta-fb metric fallback in base.css keep text visible while it loads. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>Taxila needs JavaScript to run.</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

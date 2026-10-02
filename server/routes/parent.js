@@ -102,6 +102,31 @@ async function setPin(req, res, body) {
   send(res, 200, await gateState(req, g.id));
 }
 
+/**
+ * Forgotten PIN: re-authenticate with the account password, then set a new PIN. INTERIM stand-in for §6.2
+ * (recovery must use a factor off the shared device, or a 24 h delay with a WhatsApp notice): a browser that
+ * autofills the password weakens this, which is why it is audited and why OTP recovery replaces it.
+ * body: { pin, password }
+ */
+async function resetPin(req, res, body) {
+  const g = await requireGuardian(req);
+  const { pin, password } = need(body, "pin", "password");
+  const p = String(pin);
+  if (!PIN_RE.test(p)) throw bad("PIN must be 4 to 6 digits");
+  if (weakPin(p)) throw bad("choose a PIN that is not a simple run like 1234 or 1111");
+  const row = await one("select pw_hash from guardian where id = $1", [g.id]);
+  if (!verifyPassword(String(password), row.pw_hash)) {
+    await q("insert into audit(guardian_id, action, detail) values ($1, 'pin_reset_denied', '{}')", [g.id]);
+    throw bad("account password is incorrect");
+  }
+  await q(`insert into guardian_pin(guardian_id, pin_hash) values ($1,$2)
+    on conflict (guardian_id) do update set pin_hash = excluded.pin_hash, failed = 0, locked_until = null, updated_at = now()`, [g.id, hashPassword(p)]);
+  const h = sessionHash(req);
+  if (h) await q(`update auth_session set parent_unlocked_until = now() + ($2 || ' minutes')::interval where token_hash = $1`, [h, String(UNLOCK_MIN)]);
+  await q("insert into audit(guardian_id, action, detail) values ($1, 'pin_reset', '{}')", [g.id]);
+  send(res, 200, await gateState(req, g.id));
+}
+
 /** body: { pin } → gate state, or 403 with { gate: "locked", triesLeft } / { gate: "wait", lockedUntil }. */
 async function unlock(req, res, body) {
   const g = await requireGuardian(req);
@@ -415,6 +440,7 @@ async function homeTask(req, res, body) {
 export const routes = {
   "GET /api/parent/pin": getPin,
   "POST /api/parent/pin": setPin,
+  "POST /api/parent/pin/reset": resetPin,
   "POST /api/parent/unlock": unlock,
   "POST /api/parent/lock": lock,
   "GET /api/parent/overview": overview,

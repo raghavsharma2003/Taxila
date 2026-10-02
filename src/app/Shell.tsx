@@ -38,7 +38,7 @@ export function Footer() {
         <nav className="stack-sm" aria-label="Footer">
           <Link to="/trust">Our promises</Link>
           <Link to="/privacy">Privacy</Link>
-          <Link to="/parent/help">Help and grievance</Link>
+          <Link to="/help">Help and helplines</Link>
         </nav>
         <div className="stack-sm">
           <p className="t-meta">If a child needs help now</p>

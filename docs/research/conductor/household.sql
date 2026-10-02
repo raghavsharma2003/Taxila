@@ -108,7 +108,7 @@ create index household_decision_member_child on household_decision_member (child
 alter table wakeup
   add column event_type text not null default 'clock.wakeup'
     check (event_type in ('clock.wakeup','household.window_assigned','session.reassigned')),
-  add column payload jsonb;                          -- merged into the event body; the replay record
+  add column payload jsonb;                          -- merged UNDER the event body's own keys; the replay record
 
 create or replace function fire_wakeups(p_limit int) returns table (child_id uuid, seq bigint) language sql as $$
   with d as (select w.child_id, w.dedupe from wakeup w where w.fired_at is null and w.due_at <= now()
@@ -119,7 +119,8 @@ create or replace function fire_wakeups(p_limit int) returns table (child_id uui
   select f.child_id, ingest_event(f.child_id, gen_ulid(), f.event_type,
            case when f.event_type = 'clock.wakeup' then 'clock' else 'system' end,
            'wake:' || f.dedupe, now(), 'wake:' || f.dedupe, null,
-           jsonb_build_object('reason', f.reason, 'wakeupId', f.dedupe) || coalesce(f.payload, '{}'::jsonb))
+           coalesce(f.payload, '{}'::jsonb) || jsonb_build_object('reason', f.reason, 'wakeupId', f.dedupe))
+           -- the courier's keys win: a payload can never forge `reason` or `wakeupId`
     from f;
 $$;
 -- courier insert (allocator; one row per changed member, dedupe versioned so a later pass never collides):

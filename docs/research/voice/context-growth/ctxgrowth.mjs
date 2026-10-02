@@ -60,13 +60,20 @@ const PERSONA = [
   "Fractions: at first she believes a bigger bottom number means a bigger fraction ('kyunki 8 bada hai 4 se'); after two clear same-size pictures she slowly gets it. She makes ordinary arithmetic slips sometimes.",
   "She answers exactly what the teacher just asked. Sometimes she adds a tiny bit about her day or her cat Chiku, but only rarely.",
   "If the line before her ends with '(Riya cuts in)', she interrupts: a short line showing she did not follow or wants to say something.",
+  "This is a long 30-minute lesson and Riya wants to keep going: she never says goodbye and never ends the lesson. If the teacher offers a break or says bye, she says she wants to continue and asks for the next question.",
   "Never say you are an AI or that this is a simulation.",
 ].join("\n");
 async function childSays(history, bargeIn) {
   const h = history.slice(-24);
   const msgs = [{ role: "system", content: PERSONA }, ...h.map((x) => ({ role: x.who === "teacher" ? "user" : "assistant", content: x.text }))];
   if (bargeIn) msgs[msgs.length - 1] = { ...msgs[msgs.length - 1], content: msgs[msgs.length - 1].content + " … (Riya cuts in)" };
-  const { text } = await chat(DEPLOY.fast, msgs, { maxTokens: 300, effort: "low", timeoutMs: 20_000 });
+  let text = "";
+  try { ({ text } = await chat(DEPLOY.fast, msgs, { maxTokens: 300, effort: "low", timeoutMs: 20_000 })); }
+  catch (e) { // the sim prompt occasionally trips the Azure content filter (HTTP 400): retry on a short history, then a neutral line
+    rec({ kind: "simError", msg: String(e.message).slice(0, 120) });
+    try { ({ text } = await chat(DEPLOY.fast, [msgs[0], ...msgs.slice(-2)], { maxTokens: 300, effort: "low", timeoutMs: 20_000 })); }
+    catch { text = "Hmm, ek baar phir se samjhaiye bhaiya?"; }
+  }
   return text.trim().replace(/^riya:\s*/i, "").replace(/^["“]|["”]$/g, "") || "hmm";
 }
 
@@ -279,8 +286,9 @@ while (clockMs < MINUTES * 60_000) {
   const nowMs = clockMs;
   let r = step(state, { event: "turn", kit, cls: cls ?? undefined, answer: childText.toLowerCase(), now: nowMs });
   let topicSwitch = false;
-  if ((r.end || r.move.kind === "wrap") && clockMs < MINUTES * 60_000 && topicIdx + 1 < SEQ.length) {
-    topicIdx++; topicSwitch = true;
+  // The Conductor's job, simulated: a finished topic chains to the next one in the class sequence (cyclic).
+  if ((r.end || r.move.kind === "wrap") && clockMs < MINUTES * 60_000) {
+    topicIdx = (topicIdx + 1) % SEQ.length; topicSwitch = true;
     move = await startTopic(false, nowMs);
     state.startedAt = 0; state.minutes = Math.round(nowMs / 6000) / 10;
   } else { state = { ...r.state, brief }; move = r.move; }

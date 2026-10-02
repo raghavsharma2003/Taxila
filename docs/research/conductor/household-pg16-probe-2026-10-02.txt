@@ -1,0 +1,28 @@
+server_version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
+PASS F1a I-H1: an overlapping row in the same lane is refused at COMMIT (23P01) :: ERROR:  conflicting key value violates exclusion constraint "household_slot_no_overlap" DETAIL:  Key (household_id, day, lane, tstzrange(starts_at, ends_at, '[)'::text))=(00000000-0000-0000-0000-0000000000f1, 2026-10-05,
+PASS F1b adjacent half-open ranges [16:51,16:56) between two windows are accepted :: ok
+PASS F1c the same time on lane 1 (a second phone) is accepted :: ok
+PASS F1d a pass that re-times all three windows (crossing transiently) commits: the constraint is DEFERRED :: ok
+PASS F1d-control the same pass with the constraint IMMEDIATE fails mid-pass :: ERROR:  conflicting key value violates exclusion constraint "household_slot_no_overlap" DETAIL:  Key (household_id, day, lane, tstzrange(starts_at, ends_at, '[)'::text))=(00000000-0000-0000-0000-0000000000f1, 2026-10-05,
+PASS F2a I-H2: per guardian-week, the family letter takes slot 1 once, ONE other learning push takes slot 2, the rest block :: ['1', 'blocked', '2', 'blocked', 'blocked']
+PASS F2b one wellbeing pointer per guardian-week; the second child coalesces into the in-app note :: ['1', 'coalesced']
+PASS F2c a second guardian (viewer) has her own recipient cap :: 2
+PASS F2d slot 1 cannot hold a milestone (it is the family letter's) :: ERROR:  new row for relation "notify_slot" violates check constraint "notify_slot_check1" DETAIL:  Failing row contains (00000000-0000-0000-0000-0000000000a1, learn:2026-W42, 1, milestone, 00000000-0000-0000-0000-0000000
+PASS F3 I-H2/I-H6: erasing the child who took slot 2 leaves a content-free tombstone; a sibling is still capped :: 2:null:null; next=blocked
+PASS F3-control with ON DELETE CASCADE the erasure frees the slot and the guardian gets a 3rd push :: 2
+PASS F4 I-H6: erasing one sibling leaves the household row, the siblings' members/slots, the decision record and every log unchanged; 0 rows carry the erased id :: unchanged=True; rows left=0
+PASS F5 the courier row becomes ONE household.window_assigned event in that child's log, payload merged under the courier keys (a forged `reason` loses); a re-fire adds nothing :: 1,0: household.window_assigned|system|2|sibling_replan|household
+PASS F6 the allocator's household UPDATE (NO KEY UPDATE) never blocks a child commit's household_inbox insert (FK KEY SHARE) :: 0.03 s
+PASS F6-control an allocator that takes SELECT … FOR UPDATE blocks every child commit's inbox insert :: 1.73 s
+PASS F7a two siblings' commits race for slot 2: exactly one wins, the other blocks, 0/5 deadlocks :: deadlocks 0/5; ['T2', 'Tx']
+PASS F7b two commits each taking slot 1 then slot 2: 0/5 deadlocks :: deadlocks 0/5
+PASS F7-control one commit takes 1 then 2, the other 2 then 1: deadlocks :: deadlocks 5/5
+PASS F8a allocator vs a sibling's Conductor commit, each side first: 0/10 deadlocks :: 0/5 + 0/5
+PASS F8b allocator courier inserts vs a slow two-child fire_wakeups batch, each side first: 0/10 deadlocks :: 0/5 + 0/5; clock.wakeup events 2
+PASS F8c erasure with the household fence (2b) vs an allocator already touching the erased child: 0/5 deadlocks, child erased :: deadlocks 0/5; remaining ['0', '0', '0', '0', '0']
+PASS F8c-control the same erasure WITHOUT the fence: the cascade waits on the allocator's slot row while the allocator's courier FK waits on the deleted child :: deadlocks 5/5
+PASS F8d session.reassign (workspaces in id order, courier rows, no child_seq) vs a Director turn and a two-child fire batch: 0/15 deadlocks :: 0/5 + 0/5 + 0/5
+PASS F8d-control a reassign that ingests straight into both children (A then B) vs a courier batch firing B then A: deadlocks :: deadlocks 5/5
+PASS F10 I-H8: a same-child double tap reuses the wait; a profile switch replaces it; never 2 pending admissions on one device :: 01,reused,02 → 1:0…
+
+25/25 PASS

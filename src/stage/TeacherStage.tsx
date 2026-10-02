@@ -104,7 +104,7 @@ function Room() {
       {/* kolam dot grid, ≤ 6% opacity */}
       <g fill="var(--ink)" opacity="0.06">
         {Array.from({ length: 30 }, (_, k) => (
-          <circle key={k} cx={92 + (k % 6) * 6} cy={64 + Math.floor(k / 6) * 6} r="1.1" />
+          <circle key={k} cx={14 + (k % 6) * 6} cy={68 + Math.floor(k / 6) * 4.5} r="1.1" />
         ))}
       </g>
     </svg>

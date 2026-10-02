@@ -2346,13 +2346,13 @@
      "hints": [
       "What is 10 more than 190?",
       "19 tens and 1 more ten.",
-      "19 tens + 1 ten = ___ tens = 200.",
+      "19 tens + 1 ten = ___ tens.",
       "Page 200, the last page."
      ],
      "verified": {
       "solverAnswer": "Page 200",
       "agrees": true,
-      "note": "Hint 3 (\"19 tens + 1 ten = ___ tens = 200\") states the answer before the 4th step; drop the \"= 200\" from hint 3."
+      "note": "Fixed: hint 3 no longer states 200; answer reached only at the assertion step."
      }
     },
     {
@@ -3561,7 +3561,7 @@
      ],
      "diagnostic": {
       "prompt_en": "Raju had some stamps. Nani gave him 12 more. Now he has 30. How many did he have at first?",
-      "prompt_hi": "Raju ke paas kuch ticket the. Nani ne 12 aur diye. Ab uske paas 30 hain. Shuru mein kitne the?",
+      "prompt_hi": "Raju ke paas kuch daak ticket (stamp) the. Nani ne 12 aur diye. Ab uske paas 30 hain. Shuru mein kitne the?",
       "options": [
        {
         "text": "18",
@@ -3622,7 +3622,7 @@
      "kind": "practice",
      "difficulty": 1,
      "prompt_en": "Nani Maa had 24 stamps. She bought 13 more. How many stamps does she have now?",
-     "prompt_hi": "Nani Maa ke paas 24 ticket the. Unhone 13 aur khareede. Ab kitne hain?",
+     "prompt_hi": "Nani Maa ke paas 24 daak ticket (stamp) the. Unhone 13 aur khareede. Ab kitne hain?",
      "answer": "37",
      "acceptable": [
       "thirty-seven",
@@ -3637,7 +3637,7 @@
      "verified": {
       "solverAnswer": "37",
       "agrees": true,
-      "note": "prompt_hi uses \"ticket\" for postage stamps (same in i05, i09 and the adds-given-numbers diagnostic); understood as daak ticket but could be read as admission tickets. Consider \"dak ticket\" or \"stamp\"."
+      "note": "Fixed: prompt_hi now says 'daak ticket (stamp)' for postage stamps."
      }
     },
     {
@@ -3717,7 +3717,7 @@
      "kind": "predict",
      "difficulty": 2,
      "prompt_en": "Before you work it out: 'Raju had 50 stamps and gave 18 to his friend.' Will the answer be more than 50 or less than 50?",
-     "prompt_hi": "Hal karne se pehle batao: 'Raju ke paas 50 ticket the, usne 18 dost ko de diye.' Jawab 50 se zyada hoga ya kam?",
+     "prompt_hi": "Hal karne se pehle batao: 'Raju ke paas 50 daak ticket (stamp) the, usne 18 dost ko de diye.' Jawab 50 se zyada hoga ya kam?",
      "answer": "Less than 50 (it is 32)",
      "acceptable": [
       "less",
@@ -3733,7 +3733,7 @@
      "verified": {
       "solverAnswer": "Less than 50 (it is 32)",
       "agrees": true,
-      "note": "prompt_hi uses \"ticket\" for stamps (see i01)."
+      "note": "Fixed: prompt_hi now says 'daak ticket (stamp)' for postage stamps."
      }
     },
     {
@@ -3815,7 +3815,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "Raju had some stamps. Nani gave him 15 more. Now he has 42. How many did he have at first?",
-     "prompt_hi": "Raju ke paas kuch ticket the. Nani ne 15 aur diye. Ab 42 hain. Shuru mein kitne the?",
+     "prompt_hi": "Raju ke paas kuch daak ticket (stamp) the. Nani ne 15 aur diye. Ab 42 hain. Shuru mein kitne the?",
      "answer": "27",
      "acceptable": [
       "twenty-seven",
@@ -3831,7 +3831,7 @@
      "verified": {
       "solverAnswer": "27",
       "agrees": true,
-      "note": "prompt_hi uses \"ticket\" for stamps (see i01)."
+      "note": "Fixed: prompt_hi now says 'daak ticket (stamp)' for postage stamps."
      }
     },
     {
@@ -5216,7 +5216,7 @@
      "verified": {
       "solverAnswer": "A square has 4 sides, square corners and equal opposite sides, so it is a special rectangle",
       "agrees": true,
-      "note": "Square-is-a-rectangle is property-based reasoning, at the top of class 3 range; answer is correct and hints scaffold it."
+      "note": "Kept: answer correct; property-based reasoning is at the top of the class 3 range, hints scaffold it. Watch learner outcomes."
      }
     },
     {
@@ -5290,7 +5290,7 @@
      "verified": {
       "solverAnswer": "No, a square is a special rectangle",
       "agrees": true,
-      "note": "Square-is-a-rectangle is property-based reasoning, at the top of class 3 range; answer is correct."
+      "note": "Kept: answer correct; property-based reasoning is at the top of the class 3 range, hints scaffold it. Watch learner outcomes."
      }
     },
     {
@@ -5582,8 +5582,8 @@
      "skillId": "c3-maths-ch05-t02-s1",
      "kind": "practice",
      "difficulty": 1,
-     "prompt_en": "Put two same small triangles together along their long sides. What shape can you make?",
-     "prompt_hi": "Do ek jaise chhote tikon ko unki lambi bhuja se jodo. Kaunsi shape ban sakti hai?",
+     "prompt_en": "Take two same small triangles, each with one square corner and two equal short sides. Put them together along their long sides. What shape do you make?",
+     "prompt_hi": "Do ek jaise chhote tikon lo, dono mein ek square kona aur do barabar chhoti bhujayein. Unki lambi bhuja ko jodo. Kaunsi shape banegi?",
      "answer": "A square",
      "acceptable": [
       "square",
@@ -5598,7 +5598,7 @@
      "verified": {
       "solverAnswer": "A square (if the triangles have a square corner, joined on the long side)",
       "agrees": true,
-      "note": "Prompt underspecified: two \"same small triangles\" joined on the long sides make a square only if they are right-angled isosceles triangles (the hints add the square-corner clue, the stem does not). Say so in the stem."
+      "note": "Rewritten: stem now states the triangles are right-angled isosceles (square corner, equal short sides), so 'a square' is the unique answer."
      }
     },
     {
@@ -5687,14 +5687,14 @@
      "hints": [
       "How many tiles are there before and after?",
       "Moving does not add or remove tiles.",
-      "Still ___ tiles, so the same space.",
+      "Before: 4 tiles. After: ___ tiles. So the space is ___?",
       "The same: 4 tiles cover the same space in any shape."
      ],
      "targetsMisconception": "c3-maths-ch05-t02-m-rearrange-changes-area",
      "verified": {
       "solverAnswer": "The same",
       "agrees": true,
-      "note": "Hint 3 (\"Still ___ tiles, so the same space\") gives away \"same\" before the 4th step."
+      "note": "Fixed: hint 3 no longer states 'the same space'."
      }
     },
     {
@@ -8611,7 +8611,7 @@
      ],
      "hints": [
       "Into how many pieces is it cut for a quarter?",
-      "More pieces means smaller pieces.",
+      "Share one cake among 2, then among 4. When are the pieces bigger?",
       "A quarter is ___ than a half.",
       "Smaller: the cake is shared among 4, not 2."
      ],
@@ -8619,7 +8619,7 @@
      "verified": {
       "solverAnswer": "Smaller",
       "agrees": true,
-      "note": "Hint 2 (\"More pieces means smaller pieces.\") gives away the answer before the 4th step."
+      "note": "Fixed: hint 2 is now a question, not the rule that gives the answer."
      }
     },
     {
@@ -8684,7 +8684,7 @@
      ],
      "hints": [
       "What is true about two halves?",
-      "They must be equal.",
+      "Fold the roti: do two halves match exactly?",
       "If one is bigger, they are not ___.",
       "There is no bigger half: halves are equal."
      ],
@@ -8692,7 +8692,7 @@
      "verified": {
       "solverAnswer": "Halves are equal so there is no bigger half",
       "agrees": true,
-      "note": "Hint 2 (\"They must be equal.\") states the core of the answer before the 4th step."
+      "note": "Fixed: hint 2 now prompts a check instead of stating 'equal'."
      }
     },
     {
@@ -9571,13 +9571,13 @@
      "hints": [
       "How big is the gap from 300 to 400?",
       "Half of 100 is 50.",
-      "300 + ___ = 350.",
+      "300 + 50 = ___.",
       "350."
      ],
      "verified": {
       "solverAnswer": "350",
       "agrees": true,
-      "note": "Hint 3 (\"300 + ___ = 350\") states the answer before the 4th step."
+      "note": "Fixed: hint 3 now leaves the sum blank instead of stating 350."
      }
     },
     {
@@ -10573,14 +10573,14 @@
      ],
      "hints": [
       "Think of a metre scale.",
-      "It has 100 small cm gaps.",
+      "Count the small cm gaps from 0 to the end.",
       "1 m = ___ cm.",
       "100 cm."
      ],
      "verified": {
       "solverAnswer": "100 cm",
       "agrees": true,
-      "note": "Hint 2 (\"It has 100 small cm gaps.\") states the answer before the 4th step."
+      "note": "Fixed: hint 2 no longer states 100."
      }
     },
     {
@@ -10622,14 +10622,14 @@
      ],
      "hints": [
       "How tall is a metre? About up to your chest?",
-      "The door is taller than a grown-up.",
+      "Compare: a grown-up fits under the door. Is a grown-up more than 1 m tall?",
       "The door is ___ than 1 m.",
       "Taller: about 2 metres."
      ],
      "verified": {
       "solverAnswer": "Taller than 1 m",
       "agrees": true,
-      "note": "Hint 2 (\"The door is taller than a grown-up.\") gives away the answer before the 4th step."
+      "note": "Fixed: hint 2 now asks for the comparison instead of stating 'taller'."
      }
     },
     {
@@ -11595,15 +11595,15 @@
      ],
      "hints": [
       "Is any water added or spilt?",
-      "The water only moves.",
-      "Same water, so the amount is the ___.",
+      "Only the glass changes. Does the water itself change?",
+      "Nothing added, nothing spilt, so the amount is ___.",
       "The same: only the shape changed."
      ],
      "targetsMisconception": "c3-maths-ch11-t01-m-pouring-changes-amount",
      "verified": {
       "solverAnswer": "The same",
       "agrees": true,
-      "note": "Hint 3 (\"Same water, so the amount is the ___\") gives away \"same\" before the 4th step; hint 2 (\"The water only moves\") already implies it."
+      "note": "Fixed: hints 2-3 no longer state 'same'; the child must conclude it."
      }
     },
     {
@@ -11895,7 +11895,7 @@
        },
        {
         "text": "The cotton, because there is more of it",
-        "misconceptionId": null,
+        "misconceptionId": "c3-maths-ch11-t02-m-bigger-is-heavier",
         "correct": false
        }
       ]
@@ -13565,8 +13565,8 @@
      "skillId": "c3-maths-ch12-t03-s3",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "Before seeing the price tags: a big plastic ball or a small steel water bottle, which do you think costs more? (The tags say ball ₹40, bottle ₹150.)",
-     "prompt_hi": "Price tag dekhne se pehle: badi plastic ki ball ya chhoti steel ki paani ki bottle, kaun mehengi hogi? (Tag pe ball ₹40, bottle ₹150.)",
+     "prompt_en": "Guess before the price tags are shown: a big plastic ball or a small steel water bottle, which costs more?",
+     "prompt_hi": "Price tag dikhane se pehle guess karo: badi plastic ki ball ya chhoti steel ki paani ki bottle, kaun mehengi hogi?",
      "answer": "The small steel bottle costs more (₹150 vs ₹40)",
      "acceptable": [
       "the bottle",
@@ -13574,15 +13574,15 @@
      ],
      "hints": [
       "What is each one made of?",
-      "Steel costs more than plastic.",
-      "₹150 is ___ than ₹40.",
+      "Does a bigger thing always cost more?",
+      "Now the tags: ball ₹40, bottle ₹150. Which is more, ₹40 or ₹___?",
       "The small steel bottle: ₹150 is more than ₹40."
      ],
      "targetsMisconception": "c3-maths-ch12-t03-m-bigger-costs-more",
      "verified": {
       "solverAnswer": "The steel bottle: 150 is more than 40",
       "agrees": true,
-      "note": "kind=predict but the stem reveals the price tags in the same breath, so nothing is left to predict; answer is correct."
+      "note": "Rewritten: prices moved out of the stem into hint 3 (the reveal), so the stem is a genuine predict-before-reveal; key unchanged (bottle, ₹150 > ₹40)."
      }
     },
     {
@@ -15548,8 +15548,8 @@
      "skillId": "c3-maths-ch14-t02-s2",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "List A: RRB, BRR, RBR, RRB. List B: RRB, RBR, BRR. Which list is complete with no repeats?",
-     "prompt_hi": "List A: RRB, BRR, RBR, RRB. List B: RRB, RBR, BRR. Kaunsi list poori hai aur bina doharaav ke?",
+     "prompt_en": "Two red beads (R) and one blue bead (B) are put in a fixed row, left to right. List A: RRB, BRR, RBR, RRB. List B: RRB, RBR, BRR. Which list has every row once, with no repeats?",
+     "prompt_hi": "Do laal (R) aur ek neela (B) moti ek seedhi line mein, baayein se daayein, rakhte hain. List A: RRB, BRR, RBR, RRB. List B: RRB, RBR, BRR. Kaunsi list mein har line ek baar hai, bina doharaav ke?",
      "answer": "List B: all three, no repeats. List A repeats RRB",
      "acceptable": [
       "B",
@@ -15565,7 +15565,7 @@
      "verified": {
       "solverAnswer": "List B is complete with no repeats",
       "agrees": true,
-      "note": "Stem does not say whether the beads are in a fixed row or on a turnable mala. If turnable, RRB and BRR are the same mala and list B would contain a repeat. Add \"in a fixed row\" to the stem."
+      "note": "Rewritten: stem now says the beads are in a fixed left-to-right row, so RRB and BRR are different and list B is complete (3 arrangements) with no repeats."
      }
     },
     {

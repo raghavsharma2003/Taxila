@@ -110,7 +110,7 @@ export function TeacherFace({
     // The loop reads refs only; it never needs restarting.
   }, []);
 
-  const viewBox = framing === "close" ? "38 30 124 140" : "0 0 200 240";
+  const viewBox = framing === "close" ? "34 22 132 150" : "0 0 200 240";
   const hairBack =
     look.hairStyle === "short" ? null : (
       <>

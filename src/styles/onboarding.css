@@ -1,0 +1,28 @@
+/* Onboarding (/start/*): a centred 480 px column on every width (§2.2). Parent surface tokens. */
+.onb { min-height: 100dvh; display: flex; flex-direction: column; background: var(--p-bg); color: var(--p-ink); }
+.onb-top { padding-inline: var(--space-2); }
+.onb-main { flex: 1; padding-block: var(--space-2) var(--space-6); }
+.onb-title { font-family: var(--font-text); }
+.onb-footer { position: sticky; bottom: 0; padding-block: var(--space-3); padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
+  background: var(--p-bg); border-top: 1px solid var(--surface-2); }
+.lang-tile { flex-direction: row; justify-content: flex-start; gap: var(--space-3); min-height: 72px; text-align: left; position: relative; }
+.lang-tile .tile-tick { margin-left: auto; }
+.lang-word { font-size: 1.25rem; font-weight: 700; }
+.lang-text { display: flex; flex-direction: column; align-items: flex-start; }
+.lang-play { display: inline-flex; width: 44px; height: 44px; border-radius: 50%; align-items: center; justify-content: center; background: var(--jamun); color: var(--surface); flex: none; }
+.meet { display: flex; gap: var(--space-4); align-items: center; flex-wrap: wrap; }
+.summary { cursor: pointer; font-weight: 600; min-height: 48px; display: flex; align-items: center; }
+.phone-row { display: flex; gap: var(--space-2); align-items: stretch; }
+.phone-cc { display: inline-flex; align-items: center; padding: 0 var(--space-3); border-radius: var(--radius-sm); border: 2px solid var(--tile-border); background: var(--surface-2); font-weight: 600; }
+.promise-inline { display: flex; gap: var(--space-2); align-items: center; font-size: 0.9375rem; color: var(--p-ink-2); }
+.promise-li { align-items: flex-start; flex-wrap: nowrap; padding: var(--space-3) 0; border-bottom: 1px solid var(--surface-2); }
+.fs { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.fs legend { font-weight: 600; margin-bottom: var(--space-2); padding: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.consent-row .tiles .tile { min-height: 56px; }
+.stepper { display: grid; grid-template-columns: 56px 1fr 56px; gap: var(--space-2); align-items: center; }
+.stepper .btn { font-size: 1.5rem; padding: 0; }
+.stepper-val { text-align: center; font-size: 1.125rem; }
+.stepper-val strong { font-size: 1.75rem; font-variant-numeric: tabular-nums; }
+.hours { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.handover-tile { min-height: 128px; font-size: 1.25rem; }
