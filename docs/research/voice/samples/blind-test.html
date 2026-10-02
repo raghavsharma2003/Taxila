@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher Voice Blind Test</title>
+<meta name="description" content="Blind listening test for Taxila's Hindi-English teacher voice: play each coded clip and rate it on four axes.">
+<style>
+  :root {
+    --bg: #f7f4ee; --surface: #ffffff; --surface-2: #f1ece3; --ink: #1f1b16; --ink-2: #5b5349; --ink-3: #8a8175;
+    --line: #e2dbcf; --accent: #b4532a; --accent-ink: #ffffff; --accent-soft: #f6e3d8; --ok: #2f7d4f; --ok-soft: #dcefe3;
+    --warn: #9a6a00; --focus: #2b5fb4; --radius: 14px; --shadow: 0 1px 2px rgba(40,30,20,.06), 0 4px 16px rgba(40,30,20,.05);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161411; --surface: #1f1c18; --surface-2: #29251f; --ink: #f1ebe2; --ink-2: #c3b9ab; --ink-3: #8f8679;
+      --line: #3a342c; --accent: #e07a4c; --accent-ink: #1a120d; --accent-soft: #3b271c; --ok: #6cc28f; --ok-soft: #1f3528;
+      --warn: #e0b04a; --focus: #7aa7f0; --shadow: none; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161411; --surface: #1f1c18; --surface-2: #29251f; --ink: #f1ebe2; --ink-2: #c3b9ab; --ink-3: #8f8679;
+    --line: #3a342c; --accent: #e07a4c; --accent-ink: #1a120d; --accent-soft: #3b271c; --ok: #6cc28f; --ok-soft: #1f3528;
+    --warn: #e0b04a; --focus: #7aa7f0; --shadow: none; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 120px; }
+  h1 { font-size: 1.6rem; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h2 { font-size: 1.15rem; margin: 0; }
+  p { margin: 0 0 10px; }
+  .muted { color: var(--ink-2); }
+  .small { font-size: .875rem; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+  .stack > * + * { margin-top: 12px; }
+  .intro ul { margin: 8px 0 0; padding-left: 20px; }
+  .intro li + li { margin-top: 4px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px) { .grid2 { grid-template-columns: 1fr; } }
+  label.f { display: block; font-size: .85rem; color: var(--ink-2); margin-bottom: 4px; }
+  input[type=text], select, textarea { width: 100%; font: inherit; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; }
+  textarea { min-height: 44px; resize: vertical; font-size: .9rem; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .sticky { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0; margin: 0 0 6px; }
+  .bar { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; border: 1px solid var(--line); }
+  .bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+  .progress-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; font-size: .9rem; }
+  .block-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px; margin: 28px 0 10px; }
+  details.script { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; }
+  details.script summary { cursor: pointer; color: var(--ink-2); font-size: .9rem; }
+  details.script p { margin: 8px 0 2px; font-size: .95rem; }
+  .clip { border-left: 4px solid var(--line); }
+  .clip.done { border-left-color: var(--ok); }
+  .clip-top { display: flex; align-items: center; gap: 12px; }
+  .code { font: 600 1.15rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .08em; }
+  .play { flex: none; width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); cursor: pointer; display: grid; place-items: center; }
+  .play svg { width: 20px; height: 20px; fill: currentColor; }
+  .timeline { flex: 1; min-width: 0; }
+  .seek { height: 6px; background: var(--surface-2); border-radius: 99px; cursor: pointer; border: 1px solid var(--line); position: relative; }
+  .seek > i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent); border-radius: 99px; }
+  .time { font-size: .8rem; color: var(--ink-3); margin-top: 4px; display: flex; justify-content: space-between; }
+  .badge { font-size: .75rem; padding: 2px 8px; border-radius: 99px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+  .done .badge { background: var(--ok-soft); color: var(--ok); }
+  .axes { margin-top: 14px; display: grid; gap: 12px; }
+  .axes.locked { opacity: .45; pointer-events: none; }
+  .axis-row { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; }
+  .axis-name { font-size: .92rem; }
+  .axis-val { font: 600 .9rem/1 ui-monospace, monospace; min-width: 4.5em; text-align: right; color: var(--ink-3); }
+  .axis-val.set { color: var(--accent); }
+  .axis-ctl { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; }
+  input[type=range] { flex: 1; accent-color: var(--accent); height: 28px; }
+  input[type=range].unset { accent-color: var(--ink-3); opacity: .55; }
+  .ends { grid-column: 1 / -1; display: flex; justify-content: space-between; font-size: .75rem; color: var(--ink-3); margin-top: -4px; }
+  .na { font-size: .78rem; border: 1px solid var(--line); background: transparent; color: var(--ink-2); border-radius: 99px; padding: 3px 10px; cursor: pointer; white-space: nowrap; }
+  .na[aria-pressed=true] { background: var(--surface-2); color: var(--warn); border-color: var(--warn); }
+  .lock-hint { font-size: .8rem; color: var(--ink-3); margin-top: 8px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn { font: inherit; font-size: .95rem; border-radius: 10px; padding: 10px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .btn.ghost { background: transparent; }
+  .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: .9rem; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: calc(100% - 32px); }
+  .toast.on { opacity: 1; }
+  .theme { position: absolute; top: 20px; right: 16px; }
+  header { position: relative; padding-right: 48px; }
+  .icon-btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); width: 36px; height: 36px; border-radius: 10px; cursor: pointer; }
+  .warn-box { border-color: var(--warn); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Teacher Voice Blind Test</h1>
+    <p class="muted">Short clips of a teacher talking to a child. Each clip has a code; nothing tells you how it was made. Listen and rate how it <em>sounds</em>.</p>
+    <button class="icon-btn theme" id="themeBtn" type="button" aria-label="Toggle light or dark theme" title="Theme">◐</button>
+  </header>
+
+  <section class="card intro stack" aria-labelledby="howTitle">
+    <h2 id="howTitle">How to do it</h2>
+    <ul class="small">
+      <li>Use headphones if you can, in a quiet room.</li>
+      <li>Play each clip to the end at least once. The sliders unlock when it starts playing.</li>
+      <li>Rate each line on its own. A clip can be very clear and still not sound like a real teacher.</li>
+      <li>1 means not at all, 5 means completely. There are no right answers, and some clips will sound alike.</li>
+      <li>Your answers save in this browser as you go. You can stop and come back. When you finish, press <strong>Export ratings</strong> and send the file.</li>
+      <li>If you can't judge a line (for example Hindi pronunciation, if you don't speak Hindi), press <strong>can't judge</strong>.</li>
+    </ul>
+  </section>
+
+  <section class="card stack" style="margin-top:14px" aria-labelledby="youTitle">
+    <h2 id="youTitle">About you</h2>
+    <div class="grid2">
+      <div><label class="f" for="lid">Name or initials</label><input id="lid" type="text" autocomplete="off" placeholder="e.g. RS"></div>
+      <div><label class="f" for="role">You are a</label>
+        <select id="role"><option value="">choose</option><option>child (student)</option><option>parent</option><option>teacher or tutor</option><option>other</option></select></div>
+      <div><label class="f" for="age">Age</label>
+        <select id="age"><option value="">choose</option><option>6-9</option><option>10-12</option><option>13-15</option><option>16-17</option><option>18-29</option><option>30-44</option><option>45+</option></select></div>
+      <div><label class="f" for="lang">Language you speak most at home</label>
+        <select id="lang"><option value="">choose</option><option>Hindi</option><option>Hinglish (mix)</option><option>English</option><option>another Indian language</option><option>other</option></select></div>
+      <div><label class="f" for="dev">Listening on</label>
+        <select id="dev"><option value="">choose</option><option>headphones / earphones</option><option>phone speaker</option><option>laptop or desktop speaker</option><option>other</option></select></div>
+      <div><label class="f" for="city">City or state (optional)</label><input id="city" type="text" autocomplete="off"></div>
+    </div>
+  </section>
+
+  <div class="sticky">
+    <div class="progress-row"><strong id="progLabel">0 of 0 rated</strong><span class="muted small" id="progHint"></span></div>
+    <div class="bar" aria-hidden="true"><i id="progBar"></i></div>
+  </div>
+
+  <main id="blocks"></main>
+
+  <section class="card stack" style="margin-top:28px" aria-labelledby="doneTitle">
+    <h2 id="doneTitle">Finish</h2>
+    <p class="small muted">Export downloads a small JSON file with your ratings and notes (codes only). Send it to whoever gave you this test. Copy puts the same text on your clipboard.</p>
+    <div class="actions">
+      <button class="btn primary" id="exportBtn" type="button">Export ratings</button>
+      <button class="btn" id="copyBtn" type="button">Copy JSON</button>
+      <button class="btn ghost" id="resetBtn" type="button">Start over</button>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<audio id="player" preload="none"></audio>
+
+<script>
+(() => {
+  "use strict";
+  // Injected by the generator: [{code, block}] only. Voice and engine identities live in KEY.json, never here.
+  const MANIFEST = /*MANIFEST*/[]/*END*/;
+  const PAGE_VERSION = "2026-10-02.1";
+  const BLOCKS = {
+    A: { title: "Passage 1: greeting a child", sub: "Hinglish", script: ["Hello Riya! Kaisi ho aaj? Arre haan, pichhli baar tumne bataya tha na ki Sunday ko nani aane wali hain... aur ki nani ke haath ke aloo parathe duniya mein sabse best hote hain. Toh? Aayi nani? Parathe mile?"] },
+    B: { title: "Passage 2: fractions with a pizza", sub: "Hinglish", script: ["Achha, ek pizza socho. Usko do barabar hisson mein kaata, aur tumne ek hissa liya... yaani half, one by two. Ab wahi pizza chaar barabar slices mein kaato. Half pizza ke liye ab kitne slices lene padenge? Do, hai na? Toh one by two aur two by four dikhte alag hain, par pizza utna hi milta hai. Inhe kehte hain equivalent fractions. Achha, ek baat batao... agar pizza aath slices mein kata ho, toh half ke liye kitne slices logi?"] },
+    C: { title: "Passage 3: fractions with a pizza", sub: "Hindi", script: ["अच्छा, एक पिज़्ज़ा सोचो। उसे दो बराबर टुकड़ों में काटा, और तुमने एक टुकड़ा लिया... यानी आधा पिज़्ज़ा। अब वही पिज़्ज़ा चार बराबर टुकड़ों में काटो। आधे पिज़्ज़ा के लिए अब कितने टुकड़े लेने होंगे? दो, है ना? तो एक बटा दो और दो बटा चार देखने में अलग हैं, पर पिज़्ज़ा उतना ही मिलता है। इन्हें तुल्य भिन्न कहते हैं। अच्छा, एक बात बताओ... अगर पिज़्ज़ा आठ टुकड़ों में कटा हो, तो आधे के लिए कितने टुकड़े लोगी?"] },
+  };
+  const AXES = [
+    { id: "real_teacher", name: "Sounds like a real Indian teacher", lo: "not at all", hi: "completely" },
+    { id: "warmth", name: "Warmth", lo: "cold", hi: "very warm" },
+    { id: "clarity", name: "Clarity for a child", lo: "hard to follow", hi: "very clear" },
+    { id: "hindi", name: "Hindi pronunciation", lo: "wrong / foreign", hi: "native" },
+  ];
+
+  // ---------- storage (every access guarded; the page must work without it) ----------
+  const hashStr = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); };
+  const MANIFEST_HASH = hashStr(MANIFEST.map((m) => m.code).join(","));
+  const SKEY = "taxila-blind-test:" + MANIFEST_HASH;
+  const load = () => { try { return JSON.parse(localStorage.getItem(SKEY) || "null"); } catch { return null; } };
+  let state = load() || { started_at: new Date().toISOString(), seed: (() => { try { return crypto.getRandomValues(new Uint32Array(1))[0]; } catch { return Math.floor(Math.random() * 2 ** 32); } })(), listener: {}, clips: {} };
+  let saveWarned = false;
+  const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(state)); } catch { if (!saveWarned) { saveWarned = true; toast("This browser is not saving answers. Export before you close the page."); } } };
+
+  // ---------- per-listener order: blocks A, B, C; clips shuffled within each block ----------
+  const rng = (() => { let a = state.seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; })();
+  const byBlock = {};
+  for (const m of MANIFEST) (byBlock[m.block] ||= []).push(m.code);
+  for (const b of Object.keys(byBlock)) { const xs = byBlock[b]; for (let i = xs.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } }
+  const ORDER = ["A", "B", "C"].filter((b) => byBlock[b]).flatMap((b) => byBlock[b]);
+
+  const clipState = (code) => (state.clips[code] ||= { ratings: {}, note: "", plays: 0, listened_frac: 0 });
+  const isDone = (code) => { const c = state.clips[code]; return !!c && AXES.every((a) => c.ratings[a.id] !== undefined && c.ratings[a.id] !== null); };
+
+  // ---------- render ----------
+  const $ = (s, r = document) => r.querySelector(s);
+  const el = (tag, attrs = {}, kids = []) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v); } for (const k of [].concat(kids)) if (k) e.append(k); return e; };
+  const ICON_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>';
+  const ICON_PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
+  const fmt = (s) => (isFinite(s) ? Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0") : "-:--");
+
+  const blocksEl = $("#blocks");
+  if (!MANIFEST.length) blocksEl.append(el("div", { class: "card warn-box", text: "No clips found: this copy of the page has an empty manifest." }));
+  for (const b of ["A", "B", "C"]) {
+    if (!byBlock[b]) continue;
+    const meta = BLOCKS[b];
+    blocksEl.append(el("div", { class: "block-head" }, [el("h2", { text: meta.title }), el("span", { class: "muted small", text: meta.sub + " · " + byBlock[b].length + " clips" })]));
+    const det = el("details", { class: "script" }, [el("summary", { text: "Show what the teacher is saying" })]);
+    for (const t of meta.script) det.append(el("p", { lang: b === "C" ? "hi" : "hi-Latn", text: t }));
+    blocksEl.append(det);
+    const list = el("div", { class: "stack" });
+    for (const code of byBlock[b]) list.append(renderClip(code));
+    blocksEl.append(list);
+  }
+
+  function renderClip(code) {
+    const cs = clipState(code);
+    const card = el("article", { class: "card clip", id: "clip-" + code, "aria-label": "Clip " + code });
+    const btn = el("button", { class: "play", type: "button", "aria-label": "Play clip " + code });
+    btn.innerHTML = ICON_PLAY;
+    const seek = el("div", { class: "seek", role: "slider", "aria-label": "Position in clip " + code, "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": "0", tabindex: "0" }, [el("i")]);
+    const time = el("div", { class: "time" }, [el("span", { text: "0:00" }), el("span", { text: "-:--" })]);
+    const badge = el("span", { class: "badge", text: "not rated" });
+    card.append(el("div", { class: "clip-top" }, [btn, el("div", { class: "timeline" }, [el("div", { style: "display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px" }, [el("span", { class: "code", text: code }), badge]), seek, time])]));
+    const axes = el("div", { class: "axes" + (cs.plays > 0 ? "" : " locked") });
+    for (const a of AXES) {
+      const v = cs.ratings[a.id];
+      const val = el("span", { class: "axis-val" });
+      const range = el("input", { type: "range", min: "1", max: "5", step: "1", value: typeof v === "number" ? String(v) : "3", "aria-label": a.name + ", clip " + code });
+      const na = el("button", { class: "na", type: "button", "aria-pressed": v === "na" ? "true" : "false", text: "can't judge" });
+      const paint = () => {
+        const cur = cs.ratings[a.id];
+        if (typeof cur === "number") { val.textContent = cur + " / 5"; val.classList.add("set"); range.classList.remove("unset"); range.setAttribute("aria-valuetext", cur + " of 5"); na.setAttribute("aria-pressed", "false"); }
+        else if (cur === "na") { val.textContent = "skipped"; val.classList.remove("set"); range.classList.add("unset"); range.setAttribute("aria-valuetext", "can't judge"); na.setAttribute("aria-pressed", "true"); }
+        else { val.textContent = "not rated"; val.classList.remove("set"); range.classList.add("unset"); range.setAttribute("aria-valuetext", "not rated"); na.setAttribute("aria-pressed", "false"); }
+      };
+      range.addEventListener("input", () => { cs.ratings[a.id] = +range.value; cs.rated_at = new Date().toISOString(); paint(); save(); refresh(code); });
+      na.addEventListener("click", () => { cs.ratings[a.id] = cs.ratings[a.id] === "na" ? undefined : "na"; if (cs.ratings[a.id] === undefined) delete cs.ratings[a.id]; cs.rated_at = new Date().toISOString(); paint(); save(); refresh(code); });
+      paint();
+      axes.append(el("div", { class: "axis-row" }, [el("span", { class: "axis-name", text: a.name }), val, el("div", { class: "axis-ctl" }, [range, na]), el("div", { class: "ends" }, [el("span", { text: "1 " + a.lo }), el("span", { text: "5 " + a.hi })])]));
+    }
+    const note = el("textarea", { placeholder: "Anything you noticed? (accent, a word said wrong, robotic bits, felt too fast...)", "aria-label": "Note for clip " + code });
+    note.value = cs.note || "";
+    note.addEventListener("input", () => { cs.note = note.value; save(); });
+    axes.append(note);
+    card.append(axes);
+    if (!(cs.plays > 0)) card.append(el("div", { class: "lock-hint", text: "Press play to unlock the ratings." }));
+    btn.addEventListener("click", () => toggle(code));
+    const seekTo = (frac) => { if (current !== code) return; if (isFinite(player.duration)) player.currentTime = Math.max(0, Math.min(1, frac)) * player.duration; };
+    seek.addEventListener("click", (e) => { const r = seek.getBoundingClientRect(); seekTo((e.clientX - r.left) / r.width); });
+    seek.addEventListener("keydown", (e) => { if (current !== code || !isFinite(player.duration)) return; if (e.key === "ArrowRight") player.currentTime = Math.min(player.duration, player.currentTime + 2); if (e.key === "ArrowLeft") player.currentTime = Math.max(0, player.currentTime - 2); });
+    card._ui = { btn, seek, time, badge, axes };
+    setTimeout(() => refresh(code), 0);
+    return card;
+  }
+
+  // ---------- one shared player ----------
+  const player = $("#player");
+  let current = null;
+  function toggle(code) {
+    if (current === code && !player.paused) { player.pause(); return; }
+    if (current !== code) {
+      if (current) resetUi(current);
+      current = code; player.src = code + ".mp3"; player.load();
+    }
+    const p = player.play(); if (p && p.catch) p.catch(() => toast("Could not play " + code + ". Check that the audio files sit next to this page."));
+  }
+  function ui(code) { const c = document.getElementById("clip-" + code); return c && c._ui; }
+  function resetUi(code) { const u = ui(code); if (!u) return; u.btn.innerHTML = ICON_PLAY; u.btn.setAttribute("aria-label", "Play clip " + code); }
+  player.addEventListener("play", () => {
+    const u = ui(current); if (!u) return; u.btn.innerHTML = ICON_PAUSE; u.btn.setAttribute("aria-label", "Pause clip " + current);
+    const cs = clipState(current);
+    if (player.currentTime < 0.3) { cs.plays = (cs.plays || 0) + 1; cs.first_play_at ||= new Date().toISOString(); }
+    if (u.axes.classList.contains("locked")) { u.axes.classList.remove("locked"); const hint = u.axes.parentElement.querySelector(".lock-hint"); if (hint) hint.remove(); }
+    save();
+  });
+  player.addEventListener("pause", () => current && resetUi(current));
+  player.addEventListener("ended", () => { if (!current) return; const cs = clipState(current); cs.listened_frac = 1; save(); resetUi(current); });
+  player.addEventListener("timeupdate", () => {
+    const u = ui(current); if (!u) return; const d = player.duration, t = player.currentTime;
+    const f = isFinite(d) && d > 0 ? t / d : 0;
+    u.seek.firstChild.style.width = (f * 100).toFixed(1) + "%"; u.seek.setAttribute("aria-valuenow", String(Math.round(f * 100)));
+    u.time.firstChild.textContent = fmt(t); u.time.lastChild.textContent = fmt(d);
+    const cs = clipState(current); if (f > (cs.listened_frac || 0) + 0.05) { cs.listened_frac = +f.toFixed(2); save(); }
+  });
+  player.addEventListener("loadedmetadata", () => { const u = ui(current); if (u) u.time.lastChild.textContent = fmt(player.duration); });
+  player.addEventListener("error", () => { if (current) toast("Audio for " + current + " did not load."); });
+
+  // ---------- progress ----------
+  function refresh(code) {
+    const u = ui(code); if (u) { const d = isDone(code); u.badge.textContent = d ? "rated" : (Object.keys(clipState(code).ratings).length ? "partly rated" : "not rated"); document.getElementById("clip-" + code).classList.toggle("done", d); }
+    const n = ORDER.filter(isDone).length;
+    $("#progLabel").textContent = n + " of " + ORDER.length + " rated";
+    $("#progBar").style.width = (ORDER.length ? (100 * n) / ORDER.length : 0) + "%";
+    $("#progHint").textContent = n === ORDER.length && n > 0 ? "All done. Please export." : "Saved in this browser";
+  }
+
+  // ---------- listener profile ----------
+  for (const id of ["lid", "role", "age", "lang", "dev", "city"]) {
+    const f = document.getElementById(id); f.value = state.listener[id] || "";
+    f.addEventListener("input", () => { state.listener[id] = f.value; save(); });
+    f.addEventListener("change", () => { state.listener[id] = f.value; save(); });
+  }
+
+  // ---------- export ----------
+  function payload() {
+    const clips = {};
+    for (const code of ORDER) { const c = state.clips[code]; if (!c) continue; clips[code] = { ratings: Object.fromEntries(AXES.map((a) => [a.id, c.ratings[a.id] ?? null])), note: c.note || "", plays: c.plays || 0, listened_frac: c.listened_frac || 0, first_play_at: c.first_play_at || null, rated_at: c.rated_at || null, position: ORDER.indexOf(code) }; }
+    return { schema: "taxila-blind-test-ratings/v1", page_version: PAGE_VERSION, manifest_hash: MANIFEST_HASH, exported_at: new Date().toISOString(), started_at: state.started_at, order_seed: state.seed,
+      listener: { initials: state.listener.lid || "", role: state.listener.role || "", age: state.listener.age || "", home_language: state.listener.lang || "", device: state.listener.dev || "", place: state.listener.city || "" },
+      axes: AXES.map((a) => a.id), n_clips: ORDER.length, n_rated: ORDER.filter(isDone).length, clips };
+  }
+  $("#exportBtn").addEventListener("click", () => {
+    const p = payload(); const name = "taxila-voice-ratings-" + ((p.listener.initials || "anon").replace(/[^\w-]+/g, "_")) + "-" + p.exported_at.slice(0, 16).replace(/[:T]/g, "") + ".json";
+    try { const url = URL.createObjectURL(new Blob([JSON.stringify(p, null, 1)], { type: "application/json" })); const a = el("a", { href: url, download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000); toast("Saved " + name); }
+    catch { toast("Download blocked. Use Copy JSON instead."); }
+  });
+  $("#copyBtn").addEventListener("click", async () => {
+    const text = JSON.stringify(payload(), null, 1);
+    try { await navigator.clipboard.writeText(text); toast("Copied. Paste it into a message."); }
+    catch { const ta = el("textarea"); ta.value = text; document.body.append(ta); ta.select(); try { document.execCommand("copy"); toast("Copied."); } catch { toast("Copy failed."); } ta.remove(); }
+  });
+  $("#resetBtn").addEventListener("click", () => { if (!confirm("Clear all your ratings on this device and start over?")) return; try { localStorage.removeItem(SKEY); } catch {} location.reload(); });
+
+  // ---------- theme ----------
+  const THEME_KEY = "taxila-blind-test:theme";
+  const applyTheme = (t) => { if (t) document.documentElement.setAttribute("data-theme", t); else document.documentElement.removeAttribute("data-theme"); };
+  try { applyTheme(localStorage.getItem(THEME_KEY)); } catch {}
+  $("#themeBtn").addEventListener("click", () => {
+    const dark = document.documentElement.getAttribute("data-theme") ? document.documentElement.getAttribute("data-theme") === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    const next = dark ? "light" : "dark"; applyTheme(next); try { localStorage.setItem(THEME_KEY, next); } catch {}
+  });
+
+  let tt; function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2600); }
+  save();
+})();
+</script>
+</body>
+</html>

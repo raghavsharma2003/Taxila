@@ -120,8 +120,44 @@ const laneRT = (voice) => laneWS({
 const laneVL = (model, voice) => laneWS({
   url: `wss://${FOUNDRY}/voice-live/realtime?api-version=2026-04-10&model=${model}`, headers: { "api-key": KEY }, gapMs: 1500, stims: STIM,
   sessionMsg: { type: "session.update", session: { instructions: READER, modalities: ["text", "audio"], turn_detection: { type: "server_vad", create_response: false },
-    voice: model === "azure-realtime" ? { type: "azure-realtime-native", name: voice } : { type: "azure-standard", name: voice } } },
+    // azure-realtime → its native voices; a bare OpenAI voice name (no locale dash) → type "openai",
+    // which isolates Voice Live's own overhead against the direct lane; otherwise an Azure TTS voice.
+    voice: model === "azure-realtime" ? { type: "azure-realtime-native", name: voice }
+         : /^[a-z]+$/.test(voice) ? { type: "openai", name: voice } : { type: "azure-standard", name: voice } } },
 });
+
+// GPT-Live-1 (full duplex, `/openai/v1/live/sessions`). The model is clocked by input audio: with no
+// input frames, commentary is acknowledged but never spoken (measured 2026-10-02), so 40 ms silence frames
+// are streamed throughout. Each stimulus goes in as `session.commentary.append` ("say aloud, may
+// paraphrase"); its clip ends after 1.5 s without an audio delta.
+function laneGL(voice) {
+  return new Promise((resolve) => {
+    const ws = new WebSocket(`wss://${HOST}/openai/v1/live/sessions`, { headers: { "api-key": KEY } });
+    const res = []; let i = -1, t0 = 0, ttfa = null, pcm = [], tx = "", lastAudio = 0, pump, watch;
+    const finish = (err) => { clearInterval(pump); clearInterval(watch); try { ws.send(JSON.stringify({ type: "session.close" })); } catch {} setTimeout(() => { try { ws.close(); } catch {} resolve({ res, err }); }, 1500); };
+    const next = () => {
+      if (i >= 0) res.push({ stim: STIM[i].id, ttfa, wall: lastAudio - t0, wav: pcmToWav(Buffer.concat(pcm)), said: tx.trim() });
+      i++; if (i >= STIM.length) return finish();
+      t0 = now(); ttfa = null; pcm = []; tx = ""; lastAudio = 0;
+      ws.send(JSON.stringify({ type: "session.commentary.append", delegation_id: null, content: STIM[i].text }));
+    };
+    ws.on("open", () => ws.send(JSON.stringify({ type: "session.start", session: { model: process.env.DEPLOY_LIVE || "taxila-live", instructions: READER, audio: { output: { voice } } } })));
+    ws.on("message", (raw) => {
+      const ev = JSON.parse(raw.toString());
+      if (ev.type === "session.started") {
+        res.sessionEcho = JSON.stringify(ev.session?.audio?.output?.voice ?? null);
+        const sil = Buffer.alloc(1920).toString("base64");
+        pump = setInterval(() => { try { ws.send(JSON.stringify({ type: "session.input_audio.append", audio: sil })); } catch {} }, 40);
+        watch = setInterval(() => { const t = now(); if (i >= 0 && ((lastAudio && t - lastAudio > 1500) || t - t0 > 25000)) next(); }, 100);
+        next();
+      } else if (ev.type === "session.output_audio.delta") { if (ttfa === null) ttfa = now() - t0; lastAudio = now(); pcm.push(Buffer.from(ev.delta, "base64")); }
+      else if (ev.type === "session.output_transcript.delta") tx += ev.delta;
+      else if (ev.type === "error" && i < 0) finish(JSON.stringify(ev.error).slice(0, 200));
+    });
+    ws.on("error", (e) => finish(String(e).slice(0, 200)));
+    ws.on("unexpected-response", (_q, r) => { let b = ""; r.on("data", (d) => (b += d)); r.on("end", () => resolve({ res, err: `HTTP ${r.statusCode} ${b.slice(0, 200)}` })); });
+  });
+}
 
 // ASR round-trip (intelligibility proxy): fraction of key terms recovered in any accepted spelling.
 async function asr(wav) {
@@ -157,9 +193,9 @@ for (const arm of arms) {
       const r = lane === "az" ? await laneAz(voice, s) : await laneTTS(voice, s, lane === "tts");
       results.push(r.err ? { stim: s.id, err: r.err } : { stim: s.id, ...r });
     }
-  } else if (lane === "rt" || lane === "vl") {
+  } else if (lane === "rt" || lane === "vl" || lane === "gl") {
     const [m, v] = lane === "vl" ? voice.split("|") : [null, voice];
-    const r = lane === "rt" ? await laneRT(v) : await laneVL(m, v);
+    const r = lane === "rt" ? await laneRT(v) : lane === "gl" ? await laneGL(v) : await laneVL(m, v);
     results = r.res; if (r.err) results.push({ err: r.err });
     if (r.res.sessionEcho) console.log(`  [${arm}] session voice echo: ${r.res.sessionEcho}`);
   }

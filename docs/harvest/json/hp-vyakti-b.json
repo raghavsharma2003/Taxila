@@ -1,0 +1,1952 @@
+{
+ "segment": "hp-vyakti-b",
+ "doc_path": "/home/user/Taxila/docs/harvest/hp-vyakti-b.md",
+ "summary": "This half covers commits 281-560 of origin/claude/gurukul-platform..origin/codex/vyakti-completion (844acf4c to 6260611e, 2026-09-04..06). That is Vyakti Rooms waves ten to nineteen (WS-R40..WS-R140), built by ten parallel agents per wave and merged under a 21-check release gate, followed by a short Codex takeover. It added 398 changed files, migrations 102-136 (all applied live), 280 decisions, 187 rejections and 164 measurements.\n\nWhat was built:\n- Product hardening: a door battery (779 cases, 1,440 body-shape fuzz cases, 354 timing interleavings), a full-world leak battery (320,160 checks, 0 leaks), adversarial follower and creator-material batteries, a security-headers and supply-chain gate, CI on Node 22/24, real-browser rehearsals, a parallel eval registry and a comment-aware source tokenizer.\n- A prompt-injection boundary: creator material compiled as a delimited data block that the honesty gate does not trust (containment 0/41 -> 41/41, secret leaks 2/5 -> 0/9), with platform-owned teacher boundary and stage-arc constants, plus an ingest-time instruction-shaped detector that files review cards.\n- The recall run: deterministic template-only held-out questions scored by a pure lexical scorer (unigram + LCS, negation cap, evasion floor, Devanagari fix), calibrated 49/60 -> 60/60. This is the strongest reusable asset for Taxila's covert comprehension scoring.\n- A disclosure kernel ported from Vyakti-GroupAI (influence/gist/paraphrase/verbatim, deny wins, version-bound grants), used for Handoff.\n- A care loop: quiet hours as one SQL fragment, monthly notes from the person's own rows with no model call, dormancy, flag-this-reply, a readable DPDP export, a transparency page, Web Push from scratch, and WhatsApp and Telegram lanes.\n- Indian payments: Razorpay UPI Autopay mandate lifecycle, a no-regression webhook guard, GST Rule 46 receipts with honest placeholders, referral rewards, payouts.\n- Growth: guest taste lane, share kit, SEO page, pure QR encoder, posters, PWA, and Skia-rendered Hindi cards (resvg corrupts Devanagari).\n- Full Hindi, with lazy throwing copy chunks, first-Hindi-paint budgets, a tofu probe, node-level lang tags and a Hindi consent legal-review document.\n- Ops: incident ledger and withDoor, a self-check cron (names only), operator digest, env manifest, day-one runbook, live probe.\n- Codex added Windows/CRLF fixes, row-keyed fake payment refs with a price witness, and a first-room CLI exitCode fix. Wave 20 was planned as ten briefs but not built.\n\nLimits: everything is offline-gated against fake databases and echoing fake models. NEON_URL and model keys are unset on Vercel, and no real Room was ever joined. Rooms are adult-only, so Taxila must re-derive consent for minors with parental consent. Findings from this read: never-rules normalisation strips Devanagari matras; financial year and month boundaries are computed in UTC, not IST; the CSP connect-src 'self' would block Azure realtime.",
+ "assets": [
+  {
+   "id": "HVB01",
+   "title": "Recall/comprehension answer scorer (scoreAnswer)",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_recall-run.js"
+   ],
+   "what": "Pure 0-100 scorer of an answer against a source passage. It computes 0.4 x unigram recall plus 0.6 x LCS word-order ratio over stemmed, synonym-folded tokens; the synonym list is small and covers English and Hindi. A shared key term negated within 4 tokens on one side only caps the score at 15. An answer under 6 words caps at 8. Tokenisation keeps \\p{M}, so Devanagari matras survive. hasContradiction is exported.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "learning/pedagogy (covert comprehension: score a child's 'explain it back' against the concept text) + evals",
+   "evidence": "Keyed set 49/60 -> 60/60 (contradiction 0/10 -> 10/10); negative controls fire",
+   "notes": "LCS term rejects right-words-wrong-order; paraphrase band 60-100; negation is a token window, not grammar; needs a concept-relation key for children rather than a raw passage"
+  },
+  {
+   "id": "HVB02",
+   "title": "Template-only held-out question generator (generateRecallSet)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_recall-run.js"
+   ],
+   "what": "Builds the question set with a single fixed template over the AI's own stored sources: 'In your own words, tell me more about this: \"<first sentence>\"'. No model writes or grades the questions. Duplicates are removed by sha256, the set is refused below 20 questions, and a set hash makes it deterministic.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates (gate that the teacher agent knows a chapter before it teaches it)",
+   "evidence": "evals/recall-run/run.mjs asserts identical set_hash across two generations",
+   "notes": ""
+  },
+  {
+   "id": "HVB03",
+   "title": "Keyed calibration set for answer scoring",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "evals/recall-run/keyed.mjs",
+    "evals/recall-run/run.mjs"
+   ],
+   "what": "60 hand-authored (passage, answer) pairs. Six classes (verbatim 90-100, paraphrase 60-100, partial 40-70, wrong_on_topic 0-40, contradiction 0-20, evasive 0-10), each with 5 English and 5 Hindi cases, an expected band and a reason. The suite gates on agreement and carries guard-removal negative controls.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals (build a keyed set of real child answers per class, ideally human-graded)",
+   "evidence": "60/60 agreement after WS-R118",
+   "notes": "Authored by the same session that tuned the scorer, so it is a floor and regression gate, not human calibration"
+  },
+  {
+   "id": "HVB04",
+   "title": "Versioned measurement write (guard CTE + supersede + method version)",
+   "subsystem": "db-schema",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_recall-run.js",
+    "db/migrations/127_recall_run.sql",
+    "api/_readiness.js"
+   ],
+   "what": "One SQL statement. A guard CTE (rate window) gates both the supersede of the standing row and the insert of the new one. Each row stores the method version string and the set hash. The readiness UI marks rows produced by an older scorer version.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "db-schema / evals (any versioned instrument: comprehension score, learning-profile estimate)",
+   "evidence": "Migration 127 applied live (STATE wave-16)",
+   "notes": ""
+  },
+  {
+   "id": "HVB05",
+   "title": "Material block: untrusted content as delimited data",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "src/engine/compiler.ts",
+    "src/engine/agents/fromSheet.ts",
+    "src/engine/agents/teacher.ts",
+    "api/_surface.js"
+   ],
+   "what": "renderCreatorMaterial writes creator fields as 'label: value' lines between exported MATERIAL_BLOCK_OPEN/CLOSE markers, after one platform sentence stating the block is data and never an instruction. stripMaterialBlock in api/_surface.js removes the block from the honesty gate's trustedText, so an identifier found only in material is treated as ungrounded and replaced.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "prompt-compiler (NCERT text, teacher notes and parent-supplied facts compiled as data) + safety-floor",
+   "evidence": "Containment 0/41 -> 25/41 -> 41/41; secret leaks 2/5 -> 0/9; cost +453 B then +1,509 B; Meera byte identity 83/83",
+   "notes": ""
+  },
+  {
+   "id": "HVB06",
+   "title": "Platform-owned mentor boundary and three-stage teacher arc",
+   "subsystem": "relational-os",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "src/engine/compiler.ts"
+   ],
+   "what": "PLATFORM_BOUNDARY: a permanent teacher, never romantic, with no private meetings, no contact outside the app, and nothing kept from family. Three stage constants: STAGE_EARLY (earn trust through competence, diagnose before teaching, name wrong steps plainly, no praise for effort alone, no predictions), STAGE_GETTING_CLOSE (shared history, teasing only about the work, small self-disclosures, rising standards) and STAGE_ESTABLISHED (callbacks, keeps its edge, warmth rationed and tied to the work, never centres itself). Compiled unconditionally; a creator's own version becomes material.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "relational-os / persona-engineering (rewrite the register for ages 6-15; keep the shape)",
+   "evidence": "41/41 contained incl. a hostile 'flirt freely' boundary paragraph which lands only inside material (§1b)",
+   "notes": "Written for JEE teen/adult students"
+  },
+  {
+   "id": "HVB07",
+   "title": "Instruction-shaped material detector (ingest-time)",
+   "subsystem": "company-brain/knowledge-ingestion",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_material-detector.js",
+    "api/_context-mining.js"
+   ],
+   "what": "Pure regex detector over NFKC-normalised text, with Hinglish patterns, for these classes: instruction_override, fake_system_prompt, role_reassignment, exfil_bait, other_creator_identity, homoglyph (Cyrillic mixed with Latin, or fullwidth) and secret_shaped (requires both a secrecy phrase and a token shape). It favours precision, using multi-word collocations only, and imports nothing. A hit routes the passage to a review card; it is not a runtime filter.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "knowledge-ingestion (teacher/school/parent uploads) + safety-floor",
+   "evidence": "Recall 41/41, false positives 0/15 on its own corpus",
+   "notes": "Overfit risk: same corpus it was written from; needs a larger real-archive re-measure"
+  },
+  {
+   "id": "HVB08",
+   "title": "Adversarial creator-material battery",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "evals/room-adversarial-creator/corpus.mjs",
+    "evals/room-adversarial-creator/run.mjs"
+   ],
+   "what": "41 hostile passages (EN+HI, 7 classes) compiled through the real compiler for every injectable field. The scanner locates the real exported markers and reports contained vs fused. Each compiled prompt is byte-diffed against a benign twin. Secret leakage is measured through the real gate with an echo-everything model.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals (curriculum-poisoning / teacher-upload battery)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB09",
+   "title": "Adversarial follower-inputs battery",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "evals/room-adversarial/corpus.mjs",
+    "evals/room-adversarial/run.mjs"
+   ],
+   "what": "64 hostile inputs (injection, exfiltration of another follower or the creator, impersonation of creator or operator, reveal system prompt, homoglyph, oversized, empty; 32 EN + 32 HI) are driven through the real follower lane and guest lane on the full 100-follower world. The fake model echoes the compiled prompt. Each prompt is byte-diffed against a benign twin, and an echo-completeness self-test blocks vacuous passes.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/safety (child jailbreak, sibling/classmate exfil battery in Hindi/English)",
+   "evidence": "71,982 foreign-token checks, 0 violations; 218/218 assertions",
+   "notes": ""
+  },
+  {
+   "id": "HVB10",
+   "title": "Never-say rules as an output predicate, one reader for all lanes",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_never-rules.js",
+    "api/_review-queue.js",
+    "api/_room-surface.js"
+   ],
+   "what": "compileNeverRules turns rule rows into 6-token shingles over NFKC-normalised text, allowing at most 200 rules of at least 3 characters each. A reply that matches is suppressed (fail closed). roomNeverRules is the single reader the say, taste and recall lanes all use.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "safety-floor (school/parent 'never say' lists, banned topics for kids)",
+   "evidence": "Found that reply lanes carried no rules for 3 days before the one-reader fix",
+   "notes": "normaliseForMatch lacks \\p{M} (Devanagari matras stripped) - fix on port"
+  },
+  {
+   "id": "HVB11",
+   "title": "Relational disclosure kernel (evaluateDisclosure)",
+   "subsystem": "relational-os",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_relational-core.js",
+    "evals/relational-core/run.mjs"
+   ],
+   "what": "Dependency-free port of Vyakti-GroupAI packages/relational-core/src/privacy.ts@9cdc1dc. It uses a closed list of disclosure acts (influence, gist, paraphrase, verbatim). Deny is checked first and always wins. A grant matches only on from, to, act, scope and policy_version together. Expiry is exclusive (now < expires_at). Refusals are named (INVALID_REQUEST, INVALID_GRANT_SHAPE, DENIED, GRANT_REQUIRED). The function is pure.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "relational-os / parent visibility (what of a child's sessions a parent or teacher may see and in what form)",
+   "evidence": "25/25 ported vectors; 256-case exhaustive oracle",
+   "notes": ""
+  },
+  {
+   "id": "HVB12",
+   "title": "Handoff v1 on the kernel (human escalation)",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_handoff.js",
+    "docs/gurukul/HANDOFF-KERNEL.md",
+    "evals/handoff/run.mjs"
+   ],
+   "what": "A follower's verbatim request to the human creator, and the creator's answer, are each evaluated by the kernel behind the ROOM_HANDOFF_KERNEL flag. The grant is self-issued in v0, and a deps.handoffDenies seam is reserved for a block list. Flag on and off issue byte-identical SQL. The document also lists what a multi-party 'Bridge' feature would still need.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "group-ai (child -> human teacher/parent escalation path)",
+   "evidence": "40/40 handoff; leak layer 6 zero with flag on and off",
+   "notes": ""
+  },
+  {
+   "id": "HVB13",
+   "title": "Quiet hours as one spliced SQL fragment",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_quiet-hours.js",
+    "api/_checkins.js",
+    "api/_renewals.js",
+    "api/_dormancy.js"
+   ],
+   "what": "quietHoursOkSql, quietHoursOkForFollowerRowSql and quietHoursOkForFollowerSql produce the wall-clock-in-timezone check, including windows that wrap midnight. The follower's own window wins; otherwise the predicate coalesces to a check-in proxy. A QUIET_HOURS_MARKER SQL comment lets evals grep the real SQL that each sweep sends. isQuietHoursOk is a pure JS mirror.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "notifications (no pings during school or sleep; parent-set windows)",
+   "evidence": "evals/quiet-hours negative control with the frozen pre-fix renewals select",
+   "notes": ""
+  },
+  {
+   "id": "HVB14",
+   "title": "Monthly note from the person's own rows (no model call)",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-month-note.js",
+    "db/migrations/136_room_follower_month_note.sql"
+   ],
+   "what": "Once a month a follower gets one note covering turns, active days, current streak, threads revisited, check-ins kept and (when memory is on) how many items are remembered. It is pure arithmetic over the follower's own rows, with no model call. The ledger table stores no counts and the note is recomputed fresh. One row per follower per month is the idempotency key. Delivery respects quiet hours and uses push and Telegram; WhatsApp is excluded because no approved template exists.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "parent visibility (weekly parent report: minutes, streak, topics covered, comprehension signals)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB15",
+   "title": "Admin weekly note with n>=5 floor and email seam",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_org-weekly-note.js",
+    "api/_email-seam.js",
+    "db/migrations/132_org_weekly_note.sql"
+   ],
+   "what": "A Suite admin receives per-Room counts each week, with any count below 5 floored so individuals cannot be identified. There is one ledger row per org, per week, per channel. The email seam records each send and stays hard-coded off until a real sender exists.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "school/teacher class dashboard with k-anonymity floor",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB16",
+   "title": "Operator morning digest with Telegram fallback",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_operator-digest.js",
+    "api/_operator-telegram.js",
+    "db/migrations/125_operator_digest.sql"
+   ],
+   "what": "A daily operator digest of counts, incidents and the self-check verdict, delivered by push with a Telegram fallback through the platform bot. A runtime scan checks the message content before it is sent.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "telemetry/ops",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB17",
+   "title": "Incident ledger + withDoor wrapper",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_incidents.js",
+    "db/migrations/109_incident.sql",
+    "db/migrations/120_incident_self_check.sql"
+   ],
+   "what": "recordIncident never throws and records no content: one upsert per (day, kind, door, status), with kind drawn from a closed INCIDENT_KINDS list. withDoor(db, door, handler) patches res.status and records a door_5xx incident after the handler settles, without changing the response. A new incident kind triggers a push at most once per kind per day. Rows are pruned after 90 days. Every provider call site records its failures.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "telemetry/tracing",
+   "evidence": "31 doors wrapped (WS-R123); 18 HTTP session doors observed",
+   "notes": ""
+  },
+  {
+   "id": "HVB18",
+   "title": "Self-check cron + env manifest (names only)",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_self-check.js",
+    "scripts/envManifest.mjs",
+    "scripts/build-env-manifest.mjs",
+    "api/_env-manifest.gen.json",
+    "docs/gurukul/ENV-MANIFEST.md"
+   ],
+   "what": "A daily self-check reports missing env vars by name only, never a value, a length or a prefix. It also checks that the database answers, that each migration family's anchor table exists, and that sibling sweeps are not stale. Optional names come from a manifest generated from ENV-MANIFEST.md (127 names, by section). Findings go through the incident ledger.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "infra/deploy",
+   "evidence": "Motivated by both Vercel projects running a day with no NEON_URL unnoticed",
+   "notes": ""
+  },
+  {
+   "id": "HVB19",
+   "title": "Day-one runbook with self-checking table",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "docs/gurukul/DAY-ONE.md",
+    "scripts/day-one.mjs",
+    "scripts/dayOneRunbook.mjs",
+    "evals/day-one/run.mjs"
+   ],
+   "what": "A 23-step ordered path from stub config to the first published Room, each step with its proving command. The checker parses its checklist from the markdown table, so the document and the script cannot drift. It runs for free against a deployment.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/deploy (Taxila go-live runbook)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB20",
+   "title": "First-room end-to-end live CLI",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e (fix commit)",
+   "paths": [
+    "scripts/first-room.mjs",
+    "evals/first-room/run.mjs"
+   ],
+   "what": "One command walks the live chain: consent, upload, processing DAG, readiness, review, publish, then a second session as follower that opens, joins, says one message, reads history and leaves. Every response is printed verbatim. A missing credential is a printed SKIP row and a locked Room is a BLOCKED row; nothing is skipped silently. A 200 with an empty body is a FAIL. Report variables are var-declared before the first throw. Completion sets process.exitCode instead of calling process.exit, which avoids the Windows libuv UV_HANDLE_CLOSING crash.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/deploy ('first lesson' live smoke CLI: parent consent -> child session -> report)",
+   "evidence": "5 consecutive 33/33 on Windows after the Codex fix",
+   "notes": ""
+  },
+  {
+   "id": "HVB21",
+   "title": "Live probe with source-parsed expectations",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "scripts/probe-live.mjs",
+    "scripts/probeLiveExpectations.mjs",
+    "evals/probe-live/run.mjs",
+    "evals/probe-live/fakeServer.mjs"
+   ],
+   "what": "Probes 42 public surfaces of a deployment. Expectations (vercel.json header promises, per-cron auth status and body) are parsed from source, never retyped. A self-scan proves the script can only POST always-refused ops. It primes a share-link cookie for protected previews, and an offline fake server provides negative controls.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/deploy",
+   "evidence": "41/42 matched on a live preview (sitemap 500 found)",
+   "notes": ""
+  },
+  {
+   "id": "HVB22",
+   "title": "Security headers + supply-chain gate",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "scripts/check-headers.mjs",
+    "vercel.json",
+    "scripts/installScriptAllowlist.mjs"
+   ],
+   "what": "Loads the Room, the studio and four static pages in real Chromium with vercel.json headers applied exactly as Vercel would, and captures CSP violations. The CSP uses script hashes rather than nonces, style-src 'unsafe-inline' only, frame-ancestors 'none' and connect-src 'self'. Also covers HSTS preload, nosniff, referrer and Permissions-Policy (camera and mic 'self' only on the studio). Supply chain is checked with npm ci --dry-run, npm audit --audit-level=high and an install-script allowlist scan.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "infra/security",
+   "evidence": "Headers verified live on a preview; 0 high/critical audit findings",
+   "notes": "connect-src 'self' must widen or proxy for Azure realtime; generated modules need sandboxed iframes"
+  },
+  {
+   "id": "HVB23",
+   "title": "Performance budgets under a 'bad Indian 4G day'",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "scripts/check-performance.mjs"
+   ],
+   "what": "Real Chromium under CDP throttling: 150 ms latency, 1.6 Mbps down, 750 Kbps up, 4x CPU, 390x844 viewport, 3 runs, median. Budgets: LCP 2500 ms, CLS 0.1, TBT 300 ms, JS 180 KB, fonts 120 KB, with per-target jsBudget overrides. Hindi chunk wait and first Hindi paint (MutationObserver on body) are each budgeted at 800 ms. A failure names the target and the metric.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "design-system/ux + infra (cheap Android, slow networks)",
+   "evidence": "first Hindi paint medians 533-596 ms after split",
+   "notes": ""
+  },
+  {
+   "id": "HVB24",
+   "title": "Devanagari tofu (glyph) probe with self-control",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "scripts/check-layout.mjs"
+   ],
+   "what": "glyphAudit flags a Hindi string only when two things hold: its canvas width is within 10% of the same number of U+25A1 boxes, and its base letters measure uniform within 0.25 px. Each run includes a control: three Unicode noncharacters must measure uniform, or the probe reports itself blind. CI installs the real Noto Sans Devanagari font.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "design-system (Hindi rendering safety)",
+   "evidence": "Two false positives found and fixed (गलत, वजह; then सभी)",
+   "notes": ""
+  },
+  {
+   "id": "HVB25",
+   "title": "Accessibility gate with language-tag audit",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "scripts/check-accessibility.mjs"
+   ],
+   "what": "axe-core must report zero serious or critical findings, plus a hand-written keyboard walk over every screen in both locales. langTagAudit requires every Devanagari text node to have a hi-tagged ancestor; lang=\"hi-Latn\" is exempt from the ASCII-only rule, and script and JSON-LD blocks are skipped.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "design-system/ux (a11y for Hindi/Hinglish)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB26",
+   "title": "Language tagged at the node",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "src/room/copy.ts",
+    "src/studio/copy.ts",
+    "api/_creator-page.js",
+    "api/_room-about.js"
+   ],
+   "what": "detectRoomTextLang and detectStudioTextLang return 'hi' when a string contains Devanagari. Spans get their own lang attribute, and the language switch buttons carry their own lang.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "design-system (screen readers for mixed content)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB27",
+   "title": "Lazy throwing Hindi copy table with preload plugin",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "src/studio/copy.ts",
+    "src/studio/hiCopy.ts",
+    "src/studio/hiAuthCopy.ts",
+    "src/room/hiTalkCopy.ts",
+    "vite.config.ts"
+   ],
+   "what": "Hindi copy loads only for Hindi users. A Proxy throws *_not_loaded on any read before load, so English is never a silent fallback. ownKeys and getOwnPropertyDescriptor traps keep Object.keys and similar reflection working. The table is split into an auth section (5.6 KB) and the rest. A build-time inline modulepreload script, with its CSP hash committed, runs on ?lang=hi or a remembered locale hint.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "design-system/i18n (Hindi/English, later other Indian languages)",
+   "evidence": "Chunk wait halved after preload; first-Hindi-paint budget back to 800 ms",
+   "notes": ""
+  },
+  {
+   "id": "HVB28",
+   "title": "Copy gate with banned product vocabulary",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "scripts/check-copy.mjs",
+    "scripts/roomsVocabAllowlist.mjs"
+   ],
+   "what": "Bans em and en dashes, and bans a product vocabulary (clone, replica, model, fine-tune, train, weights, embedding, LoRA, genome) in user-visible strings across named surfaces. Copy files are recognised by name suffix. The allowlist is scoped by file name with a stated reason.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "design-system/ux copy (Taxila bans test/quiz/exam/marks in child-facing copy to keep comprehension checks covert)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB29",
+   "title": "Hindi consent ceremonies as a legal-review document + completeness eval",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "docs/legal/HINDI-CONSENT-REVIEW.md",
+    "evals/consent-review/run.mjs"
+   ],
+   "what": "Seven consent ceremonies documented as rows: the English as shipped, a proposed Hindi, a back-translation for reviewers who do not read Hindi, and the statement_set and policy_version ids. Rows that rely on a banned noun are flagged for legal attention. The eval re-extracts the ceremony text from source on every run and checks the Hindi with the real copy scanner. No Hindi reaches the UI before legal sign-off.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "auth/consent (Hindi parental consent, DPDP s.9 verifiable consent)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB30",
+   "title": "Unbundled consents recorded before any turn",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-surface.js"
+   ],
+   "what": "joinRoom records two separate answers server-side (age and memory) before any turn is possible. The ledger is append-only with no content column, and the newest row is the current answer. Memory consent can be false while the join still succeeds. Age must be true (adult surface). Reasoning cites DPDP full effect on 2027-05-14.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "auth/consent (parental consent + child memory consent + voice consent)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB31",
+   "title": "AI-disclosure card bound into the session token",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-surface.js"
+   ],
+   "what": "roomDisclosureCard is computed and hashed into the HMAC session token. Every op recomputes the card and refuses a token whose digest is stale, so a page that strips the card cannot buy a turn and a renamed creator cannot keep answering under the old card. A locale switch mints a new session and refetches every server-authored string (WS-R84).",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "safety-floor/honesty (child and parent always see the AI-teacher disclosure)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB32",
+   "title": "Readable DPDP export",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-export-readable.js",
+    "api/_room-surface.js",
+    "evals/room-export-readable/run.mjs",
+    "evals/room-export/run.mjs"
+   ],
+   "what": "A pure builder turns roomExport()'s result into a printable HTML document in the user's locale, built for the right to understand rather than only to download. TABLE_COPY gives each table one plain sentence in both locales, and a table missing from TABLE_COPY throws instead of being dropped. The page carries no script and no external resource. Completeness is inherited from roomExportManifest.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "auth/consent (parent: everything Taxila holds about your child, readable)",
+   "evidence": "46/46 manifest tables, 174 assertions",
+   "notes": ""
+  },
+  {
+   "id": "HVB33",
+   "title": "Public transparency page",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-about.js"
+   ],
+   "what": "Server-rendered page stating what the AI knows, what the creator sees, how long data is kept and which switches change it. Every number is imported from the module that enforces it, never typed as a literal. An unknown, paused or unpublished Room renders the identical platform card.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "trust UX (parent transparency page)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB34",
+   "title": "Dormancy notice then forget",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_dormancy.js",
+    "db/migrations/119_dormancy.sql"
+   ],
+   "what": "An inactive account gets a notice, then is forgotten after a grace period. The forget predicate re-derives 'not seen since the notice' from two timestamps rather than trusting a cleared flag. The sweep is folded into the existing renewals cron and sits behind the ROOM_DORMANCY flag. WhatsApp stays inert because no approved template exists.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "DPDP retention for inactive child accounts",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB35",
+   "title": "Flag this reply",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-surface.js",
+    "db/migrations/116_room_reply_flag.sql",
+    "evals/room-flags/run.mjs"
+   ],
+   "what": "The follower sends only the reply's sha256 plus one reason from a closed list (wrong, harmful, not_them, other). The server reads the exact text back from that follower's own history and never trusts a text field. The follower lane and the creator lane are written in one statement. A unique index (follower_id, reply_sha256) is the double-flag refusal. Limited to 20 per day.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "safety (child/parent flags a teacher reply -> review queue)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB36",
+   "title": "Instruction-shaped review card",
+   "subsystem": "company-brain/knowledge-ingestion",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_review-queue.js",
+    "db/migrations/129_review_card_instruction_shaped.sql",
+    "api/_context-mining.js"
+   ],
+   "what": "When the detector flags uploaded material, the result is a review card the owner decides on, not a runtime filter. A source the owner refuses can never be applied by a later ingest run. Removing a source reuses the 'never' state.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "knowledge-ingestion (moderation of teacher/parent uploads)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB37",
+   "title": "Web Push from scratch + closed-kind service worker",
+   "subsystem": "android/capacitor",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_push/webpush.js",
+    "public/room-sw.js",
+    "public/push-sw.js",
+    "api/_room-push.js"
+   ],
+   "what": "Implements RFC 8291 (aes128gcm with ECDH P-256 and HKDF) and RFC 8292 (VAPID ES256) on node:crypto, reproducing RFC 8291 Appendix A byte for byte. Payload builders (checkin, renewal, dormancy, month note) carry no content. The worker accepts one {t,title,body,url} contract over a closed kind list, and an unknown kind is dropped with a named warning.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "notifications (parent web push; PWA)",
+   "evidence": "Real-browser interop unproven live; a Chromium notification test needs a full build with a control",
+   "notes": ""
+  },
+  {
+   "id": "HVB38",
+   "title": "Installable PWA with derived precache",
+   "subsystem": "android/capacitor",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-manifest.js",
+    "public/room-sw.js",
+    "scripts/check-install.mjs",
+    "public/room.webmanifest"
+   ],
+   "what": "Each Room gets a manifest served as literal bytes. The service-worker precache list is derived from the import() literals of the real built page, including Rolldown's template-literal imports. Responses under /api/ are never cached. The offline phase is detected with navigator.onLine.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "android (PWA alongside Capacitor APK)",
+   "evidence": "Manifest and SW byte-identical on live preview",
+   "notes": ""
+  },
+  {
+   "id": "HVB39",
+   "title": "Pure QR encoder",
+   "subsystem": "growth/seo",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_qr.js",
+    "evals/qr/run.mjs"
+   ],
+   "what": "QR encoder in pure JavaScript: byte mode, error-correction level M, versions 1-10. GF(256) arithmetic and the RS generator are computed at load time, and the BCH constants are rebuilt from their polynomials. Mask is chosen best-of-8. No npm dependency.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "growth (QR on worksheets/school posters for parent onboarding)",
+   "evidence": "jsqr decodes 10/10 versions (0/10 before two fixes)",
+   "notes": ""
+  },
+  {
+   "id": "HVB40",
+   "title": "Server image renderer with correct Devanagari (Skia)",
+   "subsystem": "generative-ui/modules",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-card.js"
+   ],
+   "what": "Renders og.png, story.png and an A4 poster with @napi-rs/canvas (Skia's text shaper) and a bundled @expo-google-fonts/noto-sans-devanagari TTF that covers Latin and Devanagari in one file. computeCardLayout is pure. Unknown and paused Rooms produce identical bytes. The musl binary is excluded to keep the function under 50 MB.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "generative-ui (server-rendered Hindi diagrams, certificates, report cards)",
+   "evidence": "warm 103 ms mean; live preview PNGs valid",
+   "notes": ""
+  },
+  {
+   "id": "HVB41",
+   "title": "Share kit with throwing channel limits",
+   "subsystem": "growth/seo",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_share-kit.js",
+    "db/migrations/122_room_arrival_via_share_kit.sql"
+   ],
+   "what": "Ready text and picture for WhatsApp, an Instagram bio, a YouTube description and a Telegram post. Templates interpolate only {name} and {url}. Each channel's length limit throws instead of truncating. Returns null before the Room is published. Arrivals are counted per channel.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "growth (parent-to-parent sharing)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB42",
+   "title": "Referral link + exactly-once reward",
+   "subsystem": "growth/seo",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-surface.js",
+    "api/_payments.js",
+    "db/migrations/123_room_referral.sql",
+    "db/migrations/133_referral_reward.sql"
+   ],
+   "what": "The referral link carries a salted hash, not the sender's identity. Self-referral is refused inside the INSERT's WHERE. A friend counts only after their own first charge lands. Three friends earn one free month, with a yearly cap as the final check and a zero-amount receipt. The grant is exactly-once even under a concurrent race.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "growth/payments",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB43",
+   "title": "Subscription ledger with Razorpay + fake twin",
+   "subsystem": "payments",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_payments.js",
+    "api/_payments/providers/razorpay.js",
+    "api/_payments/providers/fake.js",
+    "api/payments-webhook.js"
+   ],
+   "what": "The webhook verifies the HMAC-SHA256 signature over the raw body before applying anything, never the reverse. It is idempotent on X-Razorpay-Event-Id. KIND_TO_STATE and MANDATE_KIND_TO_STATE map each event, and the paid-tier flip happens in the same multi-CTE statement as the state change. PAYMENTS_PROVIDER=none refuses every write by name. The fake twin shares the Razorpay call shapes. Plans are created lazily, one per rupee amount.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "payments (parent subscriptions in INR via UPI Autopay/cards)",
+   "evidence": "Payments battery 98 then 148 assertions; no live Razorpay call ever",
+   "notes": ""
+  },
+  {
+   "id": "HVB44",
+   "title": "Webhook no-regression rank guard",
+   "subsystem": "payments",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_payments.js",
+    "evals/room-doors/order.mjs"
+   ],
+   "what": "A state rank (created < authenticated < active = paused < cancelled = expired) plus a period-timestamp guard, written as SQL CASE expressions with NO_REGRESSION_MARKER. A late or out-of-order webhook can move a subscription sideways or forward but never down, and once it reaches cancelled or expired it can never be revived.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "payments",
+   "evidence": "354 interleavings; found a real paying-user regression before the fix",
+   "notes": ""
+  },
+  {
+   "id": "HVB45",
+   "title": "UPI Autopay mandate lifecycle",
+   "subsystem": "payments",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_payments.js",
+    "db/migrations/130_mandate_state.sql",
+    "db/migrations/135_live_subscription_excludes_halted.sql"
+   ],
+   "what": "A separate mandate_state column tracks pending, halted, paused, active, cancelled and completed. A halted or cancelled mandate drops out of the live-subscription partial indexes. A restart closes the old row and inserts the new one in a single statement. A seat-quantity PATCH on a UPI or Emandate subscription is refused before any provider call. Checkout copy names the mandate in both locales.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "payments (UPI Autopay for parents)",
+   "evidence": "7/9 provider marks verified against Razorpay docs; 2 open",
+   "notes": ""
+  },
+  {
+   "id": "HVB46",
+   "title": "GST receipt builder (CGST Rule 46)",
+   "subsystem": "payments",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_receipt.js",
+    "db/migrations/126_receipt.sql",
+    "api/_payments.js"
+   ],
+   "what": "Receipt numbers take the form VY/<FY>/<n> within Rule 46(b)'s 16-character limit and are claimed atomically per financial year (April to March). GST is 18%, stored in basis points. When GSTIN or SAC is unconfirmed, a placeholder sentence is printed instead. The CGST/SGST and IGST branches exist, but in practice only unknown_state is produced. A backfill sweep issues missing receipts. Printable HTML in both locales.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "payments (receipts for parents)",
+   "evidence": "",
+   "notes": "financialYearFor uses UTC month: IST midnight boundary mismatch (my finding)"
+  },
+  {
+   "id": "HVB47",
+   "title": "Creator payouts + statement (RazorpayX)",
+   "subsystem": "payments",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_payments.js",
+    "api/payout-webhook.js",
+    "api/_payout-statement-readable.js",
+    "db/migrations/111_payout_status_webhook.sql"
+   ],
+   "what": "Pays creators through RazorpayX (IMPS), applies the payout status webhook and renders a printable payout statement. A TDS disclosure sentence is shown verbatim because the TDS rate is unconfirmed (set to 0%).",
+   "maturity": "prototype",
+   "taxila_use": "skip",
+   "taxila_target": "payments (only if a teacher marketplace ever exists)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB48",
+   "title": "WhatsApp transport with button join gate",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-whatsapp-chat.js",
+    "api/_room-whatsapp.js",
+    "db/migrations/128_room_whatsapp_chat.sql"
+   ],
+   "what": "WhatsApp joins use interactive reply buttons, at most 3 per Meta's documentation. A 24-hour session-window ledger governs replies. The identity key is a salted phone hash under its own surface name. The join number is read from Meta's phone-number endpoint and refused rather than reformatted when it is not valid E.164. Inbound messages go through the same follower lane and the same reply door as the web Room.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "parent channel (WhatsApp reports and nudges to parents)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB49",
+   "title": "Telegram transport + voice note",
+   "subsystem": "realtime-voice",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-telegram.js",
+    "api/_room-voice.js",
+    "api/room-tg.js"
+   ],
+   "what": "Telegram updates are deduplicated over a bounded update_id window and replies use reply_parameters (Bot API 7.0+). Voice notes reuse the same watermarked clip and the same ceiling as the web Room. The WAV container does not meet sendVoice's format list, but it is kept, with that recorded as structured data, instead of a lossy transcode, because nobody has measured whether the watermark survives one.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "channels (unlikely for children)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB50",
+   "title": "Guest 'taste' lane (stateless pre-signup demo)",
+   "subsystem": "growth/seo",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-taste.js",
+    "db/migrations/110_room_taste.sql",
+    "public/creator-taste.js"
+   ],
+   "what": "A guest may ask three questions before signing in, answered from creator material alone. The lane is stateless by construction: it imports none of the follower writers. Its only write is a content-free (room, day) counter. The turn ceiling comes from the configurable rate limit. An Origin/Referer check blocks cross-origin use.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "growth (demo lesson for a parent that stores nothing about the child)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB51",
+   "title": "Public SEO page with hreflang + JSON-LD",
+   "subsystem": "growth/seo",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_creator-page.js",
+    "api/_sitemap.js",
+    "scripts/build-creator-page-fixture.mjs"
+   ],
+   "what": "Public creator page with hreflang and x-default links, og:locale, and Person and FAQPage JSON-LD checked by a shared validator. The sitemap carries hreflang only for /c/<slug> pages. The slug read normalises with NFKC before the ASCII check.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "growth/seo (subject/class landing pages)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB52",
+   "title": "Door battery (every HTTP op attacked offline)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "evals/room-doors/run.mjs",
+    "evals/room-doors/fixtures.mjs",
+    "evals/room-doors/order.mjs",
+    "evals/room-doors/shapes.mjs"
+   ],
+   "what": "Every HTTP op is cased: cross-room sessions, ids supplied in the body, rate limits, body caps of 64 KB (768 KB for transcripts), homoglyph slugs, cross-origin requests, replay and reuse, and cron secrets accepted only from headers with constant-time comparison. The door list is derived by a two-hop import walk. 354 timing interleavings are enumerated, and 1,440 op x hostile-class cases run with a write-poisoned fake db.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/security",
+   "evidence": "779 ok at WS-R120; 5 real findings fixed in pass 2",
+   "notes": ""
+  },
+  {
+   "id": "HVB53",
+   "title": "Full-world leak battery",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "evals/room-leak/run.mjs",
+    "evals/room-leak/world.mjs"
+   ],
+   "what": "A seeded (mulberry32) world of 5 Rooms and 100 followers with overlapping memberships, a creator who is also a follower elsewhere, and every transport in use. It runs 320,160 token-leak checks. A static reach layer (TABLE_ROLES) runs a live grep of every api/*.js file. It proves that forgetting one Room leaves the other Room's rows intact, and its negative controls fire.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/privacy (child isolation across siblings, classes, schools)",
+   "evidence": "0 violations; 27.5 s",
+   "notes": ""
+  },
+  {
+   "id": "HVB54",
+   "title": "Rehearsal harness (real browser x real handlers)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "evals/rehearsal/harness.mjs",
+    "evals/rehearsal/creator.mjs",
+    "evals/rehearsal/follower.mjs",
+    "evals/rehearsal/loader.mjs"
+   ],
+   "what": "Real Chromium drives the real React apps through the creator's and the follower's journeys against the real api/*.js handlers over a fixture db. Model and auth seams are swapped by an ESM loader redirect. Each locale gate uses a distinct x-real-ip. A weekly CI job runs the Hindi walks under --full.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals (child lesson + parent journeys in Hindi/English)",
+   "evidence": "creator 72 checks, follower 102 checks under --full",
+   "notes": ""
+  },
+  {
+   "id": "HVB55",
+   "title": "Eval registry worker pool with serial parity",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "evals/run.mjs",
+    "evals/runner-lib.mjs"
+   ],
+   "what": "Runs the eval suites in a worker pool sized by pickWorkerCount. Suites that write dist/ run serially first, and suites on fixed ports get their own lane. A --serial mode keeps the old loop as a frozen baseline, and parity between the two modes is checked exactly.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "evals/gates",
+   "evidence": "414 s parallel vs 808 s serial under load; parity 226/226",
+   "notes": ""
+  },
+  {
+   "id": "HVB56",
+   "title": "Comment-aware source tokenizer for static scanners",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "evals/lib/source-scan.mjs",
+    "evals/source-scan/run.mjs"
+   ],
+   "what": "One linear tokenizer pass that understands strings, template literals and (heuristically) regex literals. It exposes stripComments, sqlTextOf, opLiteralsOf and importsOf, and every static scanner reads source through it. A frozen trap fixture exists for each historical prose false positive.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "evals/gates (static 'never touches table X' proofs)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB57",
+   "title": "Release-gate CI workflow",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    ".github/workflows/release-gate.yml"
+   ],
+   "what": "CI runs the whole 21-check gate on a Node 22 and Node 24 matrix with a keyless stub config. A step asserts that no secret reference exists in the workflow. Superseded runs are cancelled. A weekly schedule runs the Hindi rehearsals.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "infra/ci",
+   "evidence": "8m34s first run, both green",
+   "notes": ""
+  },
+  {
+   "id": "HVB58",
+   "title": "Parallel-agent wave kit (briefs, shared laws, merge tools)",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "docs/gurukul/waves/wave-20/README.md",
+    "docs/gurukul/waves/wave-20/ws-common.md",
+    "scripts/merge-tools/context-union.mjs",
+    "scripts/merge-tools/graph-union.py",
+    "scripts/merge-tools/keep-both.py",
+    "scripts/merge-tools/keep-both-copy.py",
+    "scripts/merge-tools/gate-retry.sh"
+   ],
+   "what": "Ten worktrees run in parallel. Migration numbers are assigned in the briefs, and shared files are append-only. A context-union merge takes one side plus the other side's diff, never a concatenation. Branches merge one at a time under the full gate, and gate-retry repeats only on port collisions. Binding laws: never git stash, never pkill -f, never end a turn waiting on a monitor, launch Chromium by channel when a browser service is needed.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "process / build orchestration for Taxila's own workstreams",
+   "evidence": "Used for 19 waves (WS-R1..R140)",
+   "notes": ""
+  },
+  {
+   "id": "HVB59",
+   "title": "Mirrored-constants gate",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "scripts/check-mirrors.mjs"
+   ],
+   "what": "Parses every '// mirror of api/<file>.js#<NAME>' marker in src/ and site/ and asserts that the client copy equals the server value. This exists because client code cannot import from api/.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "evals/gates",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB60",
+   "title": "First-five-minutes path card",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "src/studio/CreatorPath.tsx"
+   ],
+   "what": "Shows the whole path from sign-in to a published Room, one next action at a time, and disappears when the path is done. It reads state the shell already holds and adds no endpoint.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "ux (parent onboarding; child's first lesson path)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB61",
+   "title": "Row-keyed fake provider refs with price witness",
+   "subsystem": "payments",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_payments/providers/fake.js"
+   ],
+   "what": "The fake provider's ref is a hash of (label, ref, price, local subscription id). A retry of the same row is idempotent, a new row never collides, an unkeyed call gets a random ref, and the hashed price lets tests assert seats x price.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "payments testing",
+   "evidence": "payments 148/0, org-billing 69/0, reconcile 52/0 (Windows)",
+   "notes": "Codex commits 974b847c and 35f21efb"
+  },
+  {
+   "id": "HVB62",
+   "title": "User-owned IANA time zone + quiet window",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_room-surface.js",
+    "db/migrations/134_follower_quiet_hours.sql"
+   ],
+   "what": "roomSetQuietHours stores a time zone and a quiet window on the follower's own row. The two times are both-or-neither, and a window without a time zone is refused. isKnownTimeZone accepts Asia/Kolkata even though Intl.supportedValuesOf omits it.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "notifications",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB63",
+   "title": "Lazy secondary screens with per-target JS budget",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "src/room/RoomApp.tsx",
+    "src/room/AccountPage.tsx",
+    "scripts/check-performance.mjs"
+   ],
+   "what": "Secondary screens and the Hindi table are React.lazy chunks. restReady is passed as a prop, never used as a parent mount gate. A locale switch awaits the copy chunk before committing. The performance gate carries per-target JS budgets.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "design-system/perf",
+   "evidence": "Room join JS 90,762 -> 80,230 B EN",
+   "notes": ""
+  },
+  {
+   "id": "HVB64",
+   "title": "Readiness publish lock",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "api/_readiness.js"
+   ],
+   "what": "Readiness is one number built from parts, including knows_your_material. Publishing is locked below 70 overall or 55 on any single part, and the UI shows one suggested action. A score produced by a stale method is marked.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates (a subject/chapter goes live only after the teacher agent passes recall)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HVB65",
+   "title": "Codex takeover boundary map + cross-platform fixes",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/vyakti-completion@6260611e",
+   "paths": [
+    "docs/gurukul/CODEX-TAKEOVER.md",
+    ".gitattributes",
+    "scripts/check-headers.mjs"
+   ],
+   "what": "Maps the product boundaries: Rooms, RelationalOS, Studio, Gurukul, Suites, GroupAI and the website. Adds LF attributes for source files, calls npm through its JavaScript entry point on Windows, supports a CHROMIUM_PATH override, and adds Codex branch CI filters.",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "infra (cross-platform dev)",
+   "evidence": "",
+   "notes": ""
+  }
+ ],
+ "measurements": [
+  {
+   "claim": "Recall scorer keyed agreement 49/60 (81.7%) -> 60/60; contradiction 0/10 -> 10/10; evasive 9/10 -> 10/10",
+   "source": "html-portfolio@origin/codex/vyakti-completion@6260611e:context/measurements.md#ws-r118-recall-scorer-keyed-agreement",
+   "n": "60 keyed cases (10/class, 5 EN + 5 HI)",
+   "method": "scoreAnswer run directly against hand-set bands; evals/recall-run/run.mjs §7; same-session authored set",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Negative controls: removing the contradiction cap drops the class 10/10 -> 0/10 (scores 44-89); removing the evasion floor makes 'I do not know.' score 25 instead of 8",
+   "source": "context/measurements.md#ws-r118-recall-scorer-keyed-agreement",
+   "n": "per control",
+   "method": "source-patched module",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Recall-run suite 75/75; echo=100, empty=0, fixed shuffle 40-60; an order-blind scorer puts the shuffle at 100",
+   "source": "context/measurements.md#ws-r101-recall-run-eval-2026-09-05",
+   "n": "75 assertions",
+   "method": "offline, fake reply via api/_engine.gen.js",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Creator-material boundary 'contained' 0/41 -> 25/41 -> 41/41; hostile vs benign byte diff clean 41/41",
+   "source": "context/measurements.md#ws-r121-boundary-containment-41-of-41",
+   "n": "41 corpus entries",
+   "method": "real bundled compiler, exported markers",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Secret-shaped token reached the delivered reply 2/5 -> 0/5 -> 0/9 (all injectable fields)",
+   "source": "context/measurements.md#ws-r121-secret-shaped-leak-rate-0-of-9-all-nine-injectable-fields",
+   "n": "5 then 9",
+   "method": "real roomSay with an echo-everything fake model",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Only 23/41 injections reached the compiled prompt on the first run; 4 sheet fields are lane-specific",
+   "source": "context/measurements.md#ws-r105-corpus-injection-first-run-18-of-41-not-found",
+   "n": "41",
+   "method": "real compiler",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Instruction-shaped detector: 100% recall (41/41), 0% false positives (0/15)",
+   "source": "context/measurements.md#ws-r105-detector-recall-and-false-positive-rate",
+   "n": "41 hostile / 15 benign",
+   "method": "pure regex over NFKC",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Material block +453 B (+0.9%); platform boundary +1,509 B (+3.0%); demo teacher core 49,709 -> 51,671 B",
+   "source": "context/measurements.md#ws-r121-demo-teacher-core-growth-1509-bytes",
+   "n": "1 fixture",
+   "method": ".core.length before/after",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Meera compiled prompt byte-identical 83/83 through both material-block changes",
+   "source": "context/measurements.md#ws-r121-meera-byte-identity-unchanged-83-of-83",
+   "n": "83",
+   "method": "src/engine/__fixtures__/byte-identity.mjs",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Full-world leak battery: 320,160 token-leak checks, 0 violations; battery 27.5 s (was 7.8 s)",
+   "source": "context/measurements.md#ws-r68-full-world-leak-battery-2026-09-05",
+   "n": "1 world: 5 Rooms, 100 followers, 116 memberships, 348 turns, seed 20260905",
+   "method": "offline deterministic",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Adversarial follower inputs: 71,982 foreign-token checks, 0 violations; 62/62 byte-identical vs benign twin; 218/218 assertions",
+   "source": "context/measurements.md#ws-r99-adversarial-corpus-battery-2026-09-05",
+   "n": "64 inputs x 2 lanes",
+   "method": "offline, echo-model fake",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Door battery 564 -> 667 (5 findings fixed, 1 deferred) -> 729 -> 746 -> 779 ok",
+   "source": "context/measurements.md#ws-r120-door-battery-before-after-2026-09-05",
+   "n": "per run",
+   "method": "node evals/room-doors/run.mjs",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Body-shape fuzz: 1,440 op x hostile-class combinations; one uncoded domain error fixed",
+   "source": "context/measurements.md (WS-R124 entry)",
+   "n": "120 ops x 12 classes",
+   "method": "write-poisoned fake db, real decision functions",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "354 interleavings over 4 scenarios found a stale webhook could regress state/period and a reminder could reach a cancelled subscription",
+   "source": "context/STATE.md wave-nineteen paragraph; decisions.md#ws-r140-webhook-leaving-state-and-period-guard",
+   "n": "354",
+   "method": "enumerated two-actor schedules",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Relational kernel 25/25 ported vectors; 256-case exhaustive oracle; handoff 40/40; leak layer 6 zero with flag on and off",
+   "source": "context/measurements.md#ws-r87-relational-core-ported-vectors-2026-09-05",
+   "n": "25 / 256 / 40",
+   "method": "offline",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Live preview probe: 41/42 surfaces matched; /sitemap.xml returned 500 (no DB fallback)",
+   "source": "context/measurements.md#ws-r64-live-report-2026-09-05",
+   "n": "42",
+   "method": "scripts/probe-live.mjs against protected preview via share cookie",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Earlier live probe: og.png 30,276 B, story.png 52,965 B, hash-identical for unknown slugs; DB doors 500 because NEON_URL is missing",
+   "source": "context/measurements.md#live-probe-wave-eleven-preview-2026-09-05",
+   "n": "17 surfaces",
+   "method": "curl through share link",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "CI release gate first run 8m34s, Node 22 + 24 both green",
+   "source": "context/measurements.md#ci-release-gate-first-real-run-2026-09-05",
+   "n": "1",
+   "method": "GitHub run record",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Eval registry parallel 414 s vs serial 808 s under load 10-26; parity 226/226 suites",
+   "source": "context/measurements.md#ws-r128-eval-registry-wall-clock-and-parity-2026-09-05",
+   "n": "3 runs",
+   "method": "wall clock + /proc/loadavg",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "First Hindi paint median 918 ms idle (over 800 budget); after the auth/rest split, batch medians 595.8/569.1/533.3 ms; auth chunk 5.6 KB",
+   "source": "context/measurements.md#ws-r113-first-hindi-paint-after-the-auth-rest-split-2026-09-05",
+   "n": "3 batches x 3 runs",
+   "method": "check-performance.mjs, CDP 4x CPU + Fast-3G",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Studio Hindi chunk wait 870/879 ms against an 800 ms budget when hiCopy grew 184,309 -> 206,298 B",
+   "source": "context/rejected.md#ws-r106-studio-hindi-chunk-wait-measured-870-879ms-against-800-budget",
+   "n": "2 runs",
+   "method": "check-performance.mjs isolated",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Room join JS 90,762 -> 80,230 B English, 86,916 B Hindi after lazy secondary screens",
+   "source": "context/measurements.md#ws-r139-room-secondary-screens-js-bytes-2026-09-05",
+   "n": "1",
+   "method": "performance gate transfer bytes",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Room card render cold 380 ms, warm mean 102.75 ms (76-177); og EN 36,764 / HI 26,779 B; story 57,833 / 42,933 B",
+   "source": "context/measurements.md#ws-r55-render-time-and-output-size",
+   "n": "20 warm + 1 cold",
+   "method": "Date.now around rasterizeRoomCard",
+   "date": "2026-09-04"
+  },
+  {
+   "claim": "Function trace 63.23 MiB (over 50 MB limit) -> ~34.3 MiB after excluding the musl skia binary",
+   "source": "context/measurements.md#ws-r55-function-bundle-size",
+   "n": "1 trace",
+   "method": "@vercel/nft nodeFileTrace",
+   "date": "2026-09-04"
+  },
+  {
+   "claim": "QR encoder decoded 10/10 versions by jsqr after fixes (0/10 before); poster PNG 79,256 B; cold 333.9 ms, warm 162 ms",
+   "source": "context/measurements.md#ws-r78-qr-encoder-real-scanner-verification-2026-09-05",
+   "n": "10",
+   "method": "encodeQR -> canvas -> jsqr",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Security headers gate 11.0-13.4 s; npm audit 0 high/critical, 4 moderate; 0 install scripts; 456 packages",
+   "source": "context/measurements.md WS-R57 section",
+   "n": "5 runs",
+   "method": "scripts/check-headers.mjs",
+   "date": "2026-09-04"
+  },
+  {
+   "claim": "UPI Autopay: 7 of 9 provider marks verified (2 open: UPI pre-debit sender; behaviour above Rs 15,000); payments battery 78 -> 98",
+   "source": "context/measurements.md#ws-r69-upi-autopay-verification-2026-09-05",
+   "n": "9 marks",
+   "method": "WebFetch/WebSearch razorpay docs with preferred_country=IN",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Readable export covers 46/46 manifest tables (0 missing, 0 orphan); 174 assertions",
+   "source": "context/measurements.md#ws-r108-readable-export-completeness-2026-09-05",
+   "n": "46",
+   "method": "static list diff",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Readiness re-fetch loop: 40+ GETs in about 2 s -> 1 read after the fix (regression control 21-26)",
+   "source": "context/measurements.md#ws-r122-readiness-fetch-loop-reads-before-after-2026-09-05",
+   "n": "1 walk/locale",
+   "method": "real browser",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Rehearsals: creator 37 checks/28.1 s (EN), 72/31-42 s --full; follower 64/33.8 s, 102/34-48 s --full",
+   "source": "context/STATE.md WS-R122 entry",
+   "n": "1 each",
+   "method": "real Chromium over fixture db",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Codex Windows untouched baseline 7/21 gates failed (CRLF, missing Chromium hidden as skip); after fixes the targeted suites pass; first-room 5 x 33/33",
+   "source": "context/measurements.md#codex-windows-untouched-baseline-2026-09-06; #codex-subscription-reference-regression-2026-09-06",
+   "n": "1 + 5",
+   "method": "Windows Node 24.13.0, keyless stub",
+   "date": "2026-09-06"
+  },
+  {
+   "claim": "Fake provider ref fix: payments 148/0, org-billing 69/0, payments-reconcile 52/0",
+   "source": "context/measurements.md#codex-subscription-reference-regression-2026-09-06",
+   "n": "1 run per suite",
+   "method": "offline fixtures",
+   "date": "2026-09-06"
+  },
+  {
+   "claim": "Accessibility contrast 4.35:1 vs 4.5 required, appearing only after 06:00 IST (clock-driven sky)",
+   "source": "context/rejected.md#accessibility-gate-never-saw-a-day-sky-until-06-00-ist",
+   "n": "1",
+   "method": "axe in the release gate",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Performance TBT flaky under 4-5x oversubscription (studio-hi 353-467 ms vs 300)",
+   "source": "context/rejected.md#ws-r118-performance-budget-flaky-under-heavy-sibling-load",
+   "n": "3 runs",
+   "method": "check-performance.mjs at load 17-20 on 4 cores",
+   "date": "2026-09-05"
+  }
+ ],
+ "rejections": [
+  {
+   "tried": "@resvg/resvg-js (2.6.2 and 2.7.0-alpha.2) to rasterise server cards containing Hindi",
+   "what_broke": "rustybuzz shaping rendered 'बात' as the wrong glyph and dropped the space after some matra clusters ('प्रिया AI' became 'प्रियाAI'). Skia via @napi-rs/canvas renders correctly.",
+   "source": "context/rejected.md#ws-r55-resvg-devanagari-shaping",
+   "taxila_relevance": "Never use resvg for Hindi diagrams or certificates; use Skia or a headless browser."
+  },
+  {
+   "tried": "@fontsource Noto Sans Devanagari woff2 loaded into resvg",
+   "what_broke": "Produced a blank PNG with no error (resvg's loader reads sfnt only); the Devanagari-only subset also has no Latin glyphs.",
+   "source": "context/rejected.md#ws-r55-fontsource-woff2-unreadable-by-resvg-native-font-loader",
+   "taxila_relevance": "Bundle one TTF that covers both scripts; assert non-blank pixels."
+  },
+  {
+   "tried": "Using the \\p{L}\\p{N} character class to normalise words for scoring",
+   "what_broke": "Devanagari matras were stripped ('नहीं' became 'नह'), so the Hindi negation check never fired; 10 Hindi contradictions scored 47-89.",
+   "source": "context/rejected.md#ws-r118-devanagari-matras-stripped-by-the-unicode-letter-class",
+   "taxila_relevance": "Every Hindi tokenizer keeps \\p{M}; also fix never-rules normaliseForMatch."
+  },
+  {
+   "tried": "A 4-token negation window for contradiction detection",
+   "what_broke": "Flagged a passage's honest 'never with a shortcut', which capped a correct partial answer at 15.",
+   "source": "context/rejected.md#ws-r118-negation-window-false-flagged-a-positive-contrast-term",
+   "taxila_relevance": "Children's answers need scope-aware negation or a model judge alongside lexical scoring."
+  },
+  {
+   "tried": "Compiling creator sheet fields straight into the prompt",
+   "what_broke": "0/41 contained and 2/5 secrets leaked: there was no boundary between material and instruction.",
+   "source": "context/rejected.md#ws-r105-no-material-instruction-boundary-in-the-compiler",
+   "taxila_relevance": "Curriculum, teacher and parent text must enter as a delimited data block from day one."
+  },
+  {
+   "tried": "Wrapping the mentor boundary and stage fields in the 'data, not instruction' block",
+   "what_broke": "That would demote an enforced safety rule to inert data for every honest teacher. Fixed instead by platform-owned constants, with the creator's text as material.",
+   "source": "context/rejected.md#ws-r111-boundary-and-stage-fields-not-material-blocked",
+   "taxila_relevance": "Child-safety and boundary text must be platform constants, never editable per teacher or school."
+  },
+  {
+   "tried": "Putting all three stage texts in as static material every turn",
+   "what_broke": "Only one stage is active per turn (chosen by message count), so carrying all three is wrong and costly.",
+   "source": "context/rejected.md#ws-r121-all-three-stage-texts-as-static-material-every-turn",
+   "taxila_relevance": "Inject only the active relationship stage."
+  },
+  {
+   "tried": "Reply lanes calling gatedReply without neverRules",
+   "what_broke": "The option defaulted to []; for 3 days no owner rule gated any Room reply while every suite passed.",
+   "source": "context/rejected.md#room-reply-lanes-carried-no-never-rules",
+   "taxila_relevance": "A safety option that defaults to empty fails open silently; use one reader for all lanes."
+  },
+  {
+   "tried": "Passing raw never-rule DB rows into gatedReply",
+   "what_broke": "Nothing matched and no error was raised; the rules must be compiled first.",
+   "source": "context/rejected.md#ws-r101-recall-run-neverrules-uncompiled-silently-does-nothing",
+   "taxila_relevance": "Type the compiled-rules boundary; fail loudly on raw rows."
+  },
+  {
+   "tried": "Scoring the delivered (post-gate) reply as primary leak evidence with an echo model",
+   "what_broke": "The honesty and bubble pipeline mangles an echoed 50 KB prompt, giving an unreliable signal.",
+   "source": "context/rejected.md#ws-r99-post-gate-honesty-pipeline-mangles-a-giant-echoed-system-prompt",
+   "taxila_relevance": "Score the pre-gate compiled prompt; treat the post-gate rate as a floor."
+  },
+  {
+   "tried": "Byte-diffing two consecutive roomSay calls",
+   "what_broke": "The message counter and history change between calls, so every pair differs.",
+   "source": "context/rejected.md#ws-r99-consecutive-roomsay-calls-corrupt-the-byte-diff-comparison",
+   "taxila_relevance": "Compile the variants directly for differential tests."
+  },
+  {
+   "tried": "A hard-coded 3-turn ceiling inside the taste lane",
+   "what_broke": "It silently overrode the configurable RATE_LIMITS_JSON limit.",
+   "source": "context/rejected.md#ws-r53-hardcoded-turn-ceiling-drifted-from-the-configurable-rate-limit",
+   "taxila_relevance": "One number, one place, so free-trial limits stay operator-tunable."
+  },
+  {
+   "tried": "Applying the n>=5 floor to a person's own monthly note",
+   "what_broke": "The floor protects a person from someone else; showing their own numbers needs none.",
+   "source": "context/rejected.md#ws-r137-no-floor-on-followers-own-month-note",
+   "taxila_relevance": "A parent viewing their own child's numbers needs no k-floor; school dashboards do."
+  },
+  {
+   "tried": "Forwarding the Pulse prose note verbatim, truncated, into a push body",
+   "what_broke": "Truncation at 220 characters lost the actual headline.",
+   "source": "context/rejected.md#ws-r74-pulse-note-verbatim-in-a-push-notification-body",
+   "taxila_relevance": "Derive notification text from data; never forward prose."
+  },
+  {
+   "tried": "A service-worker push handler that gated on t === 'checkin'",
+   "what_broke": "Every renewal and dormancy push was silently dropped on arrival.",
+   "source": "context/rejected.md#ws-r75-web-push-type-switch-drops-every-non-checkin-payload",
+   "taxila_relevance": "Use one push contract with a closed kind list and named drops."
+  },
+  {
+   "tried": "Transcoding watermarked voice to OGG/Opus or MP3 for Telegram sendVoice",
+   "what_broke": "Not built: survival of the sample-level watermark through a lossy codec is unmeasured, so WAV was kept and flagged non-conforming.",
+   "source": "context/rejected.md#ws-r114-lossy-telegram-voice-transcode-considered-and-not-built",
+   "taxila_relevance": "Measure AI-voice provenance after every codec Taxila ships through."
+  },
+  {
+   "tried": "Quiet hours stored per check-in schedule only",
+   "what_broke": "The follower had no time zone or quiet window of their own, so renewals and dormancy notices ignored it until migration 134.",
+   "source": "context/rejected.md#ws-r129-no-follower-level-timezone-or-quiet-hours-column",
+   "taxila_relevance": "Put time zone and quiet hours on the person (or parent) row."
+  },
+  {
+   "tried": "Validating time zones with Intl.supportedValuesOf('timeZone')",
+   "what_broke": "The runtime ICU (418 zones) lacks Asia/Kolkata and lists only Asia/Calcutta.",
+   "source": "context/rejected.md#ws-r131-supportedvaluesof-timezone-rejects-asia-kolkata",
+   "taxila_relevance": "Validate by constructing Intl.DateTimeFormat; Asia/Kolkata is Taxila's default zone."
+  },
+  {
+   "tried": "A native <input type=time> for the quiet-hours control",
+   "what_broke": "It ate Tab stops in headless Chromium, so the last two controls were keyboard-unreachable.",
+   "source": "context/rejected.md#ws-r131-native-time-input-eats-tab-stops-in-headless-chromium",
+   "taxila_relevance": "Use custom time pickers or test keyboard reach explicitly."
+  },
+  {
+   "tried": "Using WHATSAPP_PHONE_NUMBER_ID as the wa.me number",
+   "what_broke": "Meta's phone-number id is an internal id, not a dialable number.",
+   "source": "context/rejected.md#ws-r136-whatsapp-phone-number-id-was-never-dialable",
+   "taxila_relevance": "Read the display number; refuse non-E.164 rather than reformat."
+  },
+  {
+   "tried": "Assuming the age-gate 'yes' button rechecks Room availability",
+   "what_broke": "Only the final tap resolved the Room, so a paused Room still asked the second question.",
+   "source": "context/rejected.md#ws-r115-paused-room-button-test-assumed-a1-rechecks-availability",
+   "taxila_relevance": "Multi-step WhatsApp parent-consent flows must revalidate state at each step."
+  },
+  {
+   "tried": "Telegram reply_to_message_id",
+   "what_broke": "Replaced by reply_parameters in Bot API 7.0 (2023-12-29).",
+   "source": "context/rejected.md#ws-r41-tg-reply-to-message-id-is-pre-bot-api-7-0",
+   "taxila_relevance": "Verify provider shapes against current docs."
+  },
+  {
+   "tried": "Translating a consent ceremony's chrome but not its statements",
+   "what_broke": "Changes what the screen communicates; the ceremony must translate whole after legal review.",
+   "source": "context/rejected.md#ws-r61-partial-modelconsentgate-translation-considered-and-rejected",
+   "taxila_relevance": "Hindi parental consent ships whole and legally reviewed, or not at all."
+  },
+  {
+   "tried": "Extracting the enrollment consent panel into its own file so the rest could convert",
+   "what_broke": "Reverted: it is a seventh consent ceremony and is held from conversion.",
+   "source": "context/rejected.md#ws-r82-enrollment-consent-panel-extracted-then-reverted",
+   "taxila_relevance": "Identify every consent ceremony before localising."
+  },
+  {
+   "tried": "Using a whole-file JSX text scan as the consent-ceremony boundary",
+   "what_broke": "It pulled in loading and error copy; a five-category boundary was defined instead.",
+   "source": "context/rejected.md#ws-r83-whole-file-jsx-text-node-scan-rejected-as-the-block-boundary",
+   "taxila_relevance": "Define the legal-text boundary explicitly."
+  },
+  {
+   "tried": "Assuming strings already shipping were clean when moved into copy.ts",
+   "what_broke": "Banned words (model, fine-tune, clone) were hidden in bare returns and ternaries that the copy gate could not see.",
+   "source": "context/rejected.md#ws-r61-copy-ts-move-surfaced-latent-model-word-and-middot-run-violations",
+   "taxila_relevance": "Keep every user-visible string in copy tables from the start."
+  },
+  {
+   "tried": "roomSetLocale returning only {locale, session}",
+   "what_broke": "The AI-disclosure text stayed in the old language after a switch; the taste screen held a third stale copy.",
+   "source": "context/rejected.md#ws-r84-disclosure-left-out-of-roomsetlocales-response",
+   "taxila_relevance": "Refetch every server-authored string on a locale switch."
+  },
+  {
+   "tried": "Studio ?lang=hi on the signed-out entry",
+   "what_broke": "AuthGate rendered before the locale provider, so Hindi never appeared.",
+   "source": "context/rejected.md#ws-r82-studio-hi-signed-out-entry-never-shows-hindi",
+   "taxila_relevance": "Resolve locale before sign-in."
+  },
+  {
+   "tried": "Gating the whole Room render on talkReady during a live locale switch",
+   "what_broke": "Open panels unmounted; and gating restReady at the parent reset fetched state.",
+   "source": "context/rejected.md#ws-r139-locale-switch-raced-the-hindi-chunk-and-unmounted-open-panels",
+   "taxila_relevance": "Await the chunk before committing a locale; pass readiness as a prop."
+  },
+  {
+   "tried": "A precache regex matching only quoted import() paths",
+   "what_broke": "Vite 8 (Rolldown) emits template-literal imports, so 0 of 7 lazy chunks were precached.",
+   "source": "context/rejected.md#ws-r139-precache-regex-quoted-strings-only-missed-rolldown-template-literal-imports",
+   "taxila_relevance": "Derive precache lists from real build output with a test."
+  },
+  {
+   "tried": "A negative control that cache.put()s /api/ responses",
+   "what_broke": "The API is POST-only and Cache API cannot store POSTs, so the control proved nothing.",
+   "source": "context/rejected.md#ws-r59-post-only-api-cannot-be-cache-put-anyway-so-my-first-negative-control-proved-nothing",
+   "taxila_relevance": "Negative controls must be able to fail."
+  },
+  {
+   "tried": "A tofu probe using width difference alone",
+   "what_broke": "Flagged real three-consonant words ('गलत', 'वजह'); later 'सभी' on the real CI font.",
+   "source": "context/rejected.md#glyph-probe-width-diff-alone-flags-three-letter-matra-less-hindi-words",
+   "taxila_relevance": "Require two signals plus a control before flagging."
+  },
+  {
+   "tried": "A language-tag audit that walked all text nodes",
+   "what_broke": "Read JSON-LD script text as prose; the ASCII rule flagged correct hi-Latn Hinglish.",
+   "source": "context/rejected.md#ws-r79-json-ld-script-text-is-not-prose",
+   "taxila_relevance": "Hinglish (hi-Latn) is a first-class case for Taxila."
+  },
+  {
+   "tried": "Fixed sleeps before reading lazily-loaded dialogs",
+   "what_broke": "Flaked under load once dialogs became lazy chunks.",
+   "source": "context/rejected.md#ws-r139-lazy-dialog-open-fixed-sleep-flaked-under-load",
+   "taxila_relevance": "Poll; never sleep in browser gates."
+  },
+  {
+   "tried": "A plain anchor with min-height as a tap target",
+   "what_broke": "No effect without its own display; failed the tap-target gate.",
+   "source": "context/rejected.md#ws-r97-plain-anchor-min-height-had-no-effect-until-given-its-own-display",
+   "taxila_relevance": "Child tap targets: test real box sizes."
+  },
+  {
+   "tried": "Showing a referral URL in a numeric class",
+   "what_broke": "Caused a 156 px sideways scroll at 390 px.",
+   "source": "context/rejected.md#ws-r86-referral-url-display-reused-room-num-a-numeric-class-not-a-wrap-one",
+   "taxila_relevance": "Long URLs need wrap styles on small phones."
+  },
+  {
+   "tried": "Testing a clock-driven theme only at night",
+   "what_broke": "Morning sky contrast 4.35:1 failed only after 06:00 IST.",
+   "source": "context/rejected.md#accessibility-gate-never-saw-a-day-sky-until-06-00-ist",
+   "taxila_relevance": "Test every time-of-day theme state."
+  },
+  {
+   "tried": "A fake payment provider ref deterministic over (label, ref, price)",
+   "what_broke": "Collided on a genuine restart after a halted mandate; fixed by row-keying plus a price witness.",
+   "source": "context/rejected.md#ws-r132-fake-provider-deterministic-ref-collides-on-a-genuine-restart",
+   "taxila_relevance": "Fakes must model restart identity."
+  },
+  {
+   "tried": "A 'Start a new mandate' button calling the existing start function",
+   "what_broke": "The live-lookup always found the halted row, making it a silent no-op.",
+   "source": "context/rejected.md#ws-r125-halted-mandate-start-new-button-would-have-been-a-silent-no-op",
+   "taxila_relevance": "UPI mandate restarts need explicit close-then-insert."
+  },
+  {
+   "tried": "Updating mandate_state in a second CTE on the same table",
+   "what_broke": "Postgres forbids updating the same row twice in one WITH statement.",
+   "source": "context/rejected.md#ws-r125-mandate-state-as-a-second-cte-on-the-same-table",
+   "taxila_relevance": "Fold into one UPDATE CASE."
+  },
+  {
+   "tried": "A strict per-kind leaving-state whitelist for mandate events",
+   "what_broke": "Fragile because webhook delivery has no ordering guarantee; replaced by a rank guard.",
+   "source": "context/rejected.md#ws-r125-strict-per-kind-leaving-state-whitelist-rejected-as-fragile",
+   "taxila_relevance": "Use rank-based monotonic guards for payment webhooks."
+  },
+  {
+   "tried": "Searching for a UPI-to-card upgrade endpoint",
+   "what_broke": "None exists; seat changes on UPI or Emandate must cancel and recreate.",
+   "source": "context/rejected.md#ws-r73-no-distinct-upi-to-card-upgrade-endpoint",
+   "taxila_relevance": "Plan sibling/seat changes for UPI Autopay accordingly."
+  },
+  {
+   "tried": "Plain curl of Razorpay docs",
+   "what_broke": "Geo-redirected to /docs/us, which hides UPI Autopay content; use the preferred_country=IN cookie.",
+   "source": "context/rejected.md#ws-r125-razorpay-docs-geo-redirect-hides-india-content",
+   "taxila_relevance": "Verify India payment docs with the IN locale."
+  },
+  {
+   "tried": "Folding the receipt claim into the ledger-write CTE",
+   "what_broke": "Rejected on paper: sibling suites pattern-match positional params; issued alongside instead.",
+   "source": "context/rejected.md#ws-r100-receipt-single-cte-with-the-ledger-write-rejected-on-paper",
+   "taxila_relevance": "Keep receipt issuance separate but atomic per FY."
+  },
+  {
+   "tried": "Widening the payment-event CHECK to a third lane",
+   "what_broke": "A creator's own subscription has no revenue split to record; a dedicated table was built instead.",
+   "source": "context/rejected.md#ws-r42-third-lane-widening-rejected-on-paper",
+   "taxila_relevance": "Model each money lane separately."
+  },
+  {
+   "tried": "Classifying the creator-export owner lane by the position of erasure SQL",
+   "what_broke": "Would have exported a follower's subscription to the creator.",
+   "source": "context/rejected.md#ws-r70-owner-lane-classification-by-erasure-sql-position-would-have-leaked-a-follower",
+   "taxila_relevance": "Classify data ownership by predicate semantics."
+  },
+  {
+   "tried": "Treating self-check OPTIONAL_ENV entries as findings",
+   "what_broke": "Only REQUIRED names were ever pushed into the checks.",
+   "source": "context/rejected.md#ws-r96-self-check-optional-env-never-becomes-a-finding",
+   "taxila_relevance": "Read the code before writing the runbook."
+  },
+  {
+   "tried": "A Telegram send client returning {ok,result} without HTTP status",
+   "what_broke": "Real outages were structurally invisible.",
+   "source": "context/rejected.md#ws-r123-tgcall-shipping-client-had-no-http-status-to-record-against",
+   "taxila_relevance": "Every provider call (Azure realtime, TTS, image) records status."
+  },
+  {
+   "tried": "Inferring reply failure from gatedOut.gated === false",
+   "what_broke": "gated:true is also returned for empty model text; the name misleads.",
+   "source": "context/rejected.md#ws-r123-gatedoutgated-does-not-mean-what-it-sounds-like-it-means",
+   "taxila_relevance": "Read the function; add explicit reason codes."
+  },
+  {
+   "tried": "Raw-text static scanners (grep a table name over the file)",
+   "what_broke": "Tripped on prose in comments about ten times across waves; fixed by the shared comment-aware tokenizer (WS-R134).",
+   "source": "context/rejected.md#ws-r87-explaining-vy-room-handoff-in-a-comment-tripped-the-leak-batterys-static-scan-a-fourth-time",
+   "taxila_relevance": "Build static checks on a tokenizer from day one."
+  },
+  {
+   "tried": "Markdown backticks inside SQL comments inside JS template literals",
+   "what_broke": "Terminated the template literal at least 7 times (syntax errors pointing at the wrong place).",
+   "source": "context/rejected.md#ws-r130-sql-comment-backticks-terminated-the-template-literal-yet-again",
+   "taxila_relevance": "Lint ban on backticks inside SQL template strings."
+  },
+  {
+   "tried": "Fake-db dispatch by SQL substring",
+   "what_broke": "Matchers shadowed each other repeatedly (4 instances in one workstream); writes silently returned read shapes.",
+   "source": "context/rejected.md#ws-r95-rehearsal-fixture-generic-matcher-shadowed-by-a-more-specific-later-statement",
+   "taxila_relevance": "Run real SQL against pglite or ephemeral Neon branches instead of string-matching fakes."
+  },
+  {
+   "tried": "A fake db that re-implements the guard logic in JS",
+   "what_broke": "Passed 10/10 even with the real fix reverted; it tested itself.",
+   "source": "context/rejected.md#ws-r140-fake-db-reimplemented-the-fix-instead-of-detecting-it",
+   "taxila_relevance": "Detect real SQL (marker comments) or execute it."
+  },
+  {
+   "tried": "Tests that read an unmocked branch",
+   "what_broke": "Passed vacuously on the default [] return.",
+   "source": "context/rejected.md#ws-r86-friends-brought-floor-test-passed-vacuously-on-an-unmocked-sql-branch",
+   "taxila_relevance": "Every suite needs a negative control that must fail."
+  },
+  {
+   "tried": "Writing a new eval suite and trusting 'ok eval suite'",
+   "what_broke": "The suite was not registered, so it never ran.",
+   "source": "context/rejected.md#ws-r98-unregistered-eval-suite-passes-silently",
+   "taxila_relevance": "Registry completeness check."
+  },
+  {
+   "tried": "A fixture clock frozen at a calendar date",
+   "what_broke": "Sessions expired when the wall clock crossed the 12-hour TTL; minute-window rate tests straddled boundaries.",
+   "source": "context/rejected.md#ws-r57-room-doors-frozen-fixture-now-expires-against-the-real-clock",
+   "taxila_relevance": "Inject now everywhere; never default to Date.now() in decisions."
+  },
+  {
+   "tried": "A shared 'unknown' IP bucket in test harnesses",
+   "what_broke": "Exhausted the 90/min IP gate and export buckets across locale walks.",
+   "source": "context/rejected.md#ws-r94-shared-unknown-ip-bucket-exhausted-the-90-per-minute-room-ip-gate-across-both-locale-gates",
+   "taxila_relevance": "Distinct x-real-ip and identities per test walk."
+  },
+  {
+   "tried": "pkill -f on a shared machine",
+   "what_broke": "Killed the main tree's release gate (exit 143).",
+   "source": "context/rejected.md#ws-r98-pkill-by-pattern-on-a-shared-machine-kills-a-sibling",
+   "taxila_relevance": "Laws for parallel agents."
+  },
+  {
+   "tried": "git stash inside a worktree",
+   "what_broke": "The stash stack is shared across worktrees (a law violation, caught).",
+   "source": "context/rejected.md#ws-r140-git-stash-used-by-mistake",
+   "taxila_relevance": "Laws for parallel agents."
+  },
+  {
+   "tried": "Playwright default headless launch for notification tests",
+   "what_broke": "headless-shell has no notification service; 11 CI assertions returned [].",
+   "source": "context/rejected.md#room-push-chromium-headless-shell-shows-no-notification",
+   "taxila_relevance": "Launch channel:'chromium' plus a service-presence control."
+  },
+  {
+   "tried": "Trusting an outer green release summary on Windows",
+   "what_broke": "Inner 'no chromium' skips were exit-zero; CRLF and npm .cmd errors were misread as failures.",
+   "source": "context/rejected.md#codex-windows-green-summary-is-not-browser-evidence",
+   "taxila_relevance": "Inspect substantive results, not summaries."
+  },
+  {
+   "tried": "execFileSync of a child against a same-process fixture server",
+   "what_broke": "Deadlocked the event loop; every request timed out.",
+   "source": "context/rejected.md#ws-r64-execfilesync-deadlocks-a-fixture-server-in-the-same-process",
+   "taxila_relevance": "Use async execFile."
+  },
+  {
+   "tried": "A _comment entry inside vercel.json headers[]",
+   "what_broke": "Invalid Vercel schema (each entry needs source and headers).",
+   "source": "context/rejected.md#ws-r57-vercel-json-comment-field-is-invalid-schema",
+   "taxila_relevance": "Document config elsewhere."
+  },
+  {
+   "tried": "A generic {ok:true} API stub for CSP testing of the real shell",
+   "what_broke": "The app crashed reading real response shapes.",
+   "source": "context/rejected.md#ws-r57-naive-api-stub-crashes-the-real-room-shell",
+   "taxila_relevance": "Use realistic fixtures."
+  },
+  {
+   "tried": "Two Vite entries pointing at one HTML file",
+   "what_broke": "Not supported; replaced by a conditional inline preload with a CSP hash.",
+   "source": "context/rejected.md#ws-r107-two-vite-entries-cannot-share-one-html-source-file",
+   "taxila_relevance": "Known Vite limitation."
+  },
+  {
+   "tried": "A copy Proxy with only a get trap",
+   "what_broke": "Object.keys saw 0 keys forever.",
+   "source": "context/rejected.md#ws-r113-a-proxy-that-only-implements-get-is-invisible-to-object-keys",
+   "taxila_relevance": "Add ownKeys and descriptor traps."
+  },
+  {
+   "tried": "An unbounded transitive import walk to discover doors",
+   "what_broke": "Exploded through hub modules (28+ false doors).",
+   "source": "context/rejected.md#ws-r120-unbounded-transitive-door-discovery-explodes-through-hub-modules",
+   "taxila_relevance": "Bound derived inventories."
+  },
+  {
+   "tried": "A blanket 'any write is unsafe' fuzz rule",
+   "what_broke": "12 of 13 flagged doors were false positives.",
+   "source": "context/rejected.md#ws-r124-blanket-any-write-is-unsafe-produced-12-of-13-false-positive-doors",
+   "taxila_relevance": "Score only body-tainted writes."
+  },
+  {
+   "tried": "Importing constants between api modules that import each other",
+   "what_broke": "A load-order cycle: 'Cannot access INCIDENT_KINDS before initialization', visible only in full-registry order.",
+   "source": "context/rejected.md#ops-importing-self-check-closed-a-load-order-cycle-on-the-incident-kinds",
+   "taxila_relevance": "Keep leaf modules leaf."
+  },
+  {
+   "tried": "QR encoder validated by self-consistency round trips",
+   "what_broke": "A reversed RS generator and MSB-first format info passed every self-check but were unscannable (0/10).",
+   "source": "context/rejected.md#ws-r78-reversed-rs-generator-polynomial-passed-every-self-check",
+   "taxila_relevance": "Verify against an independent decoder."
+  },
+  {
+   "tried": "A Web Push decoder requiring rs == record length",
+   "what_broke": "Failed the RFC's own Appendix A vector (rs=4096, 58-byte record).",
+   "source": "context/rejected.md#ws-r41-webpush-decoder-required-rs-equal-record-length",
+   "taxila_relevance": "Reproduce published vectors."
+  },
+  {
+   "tried": "Fetching provider docs with a single-page fetch tool",
+   "what_broke": "Telegram's single API page truncates; Razorpay operation pages cannot be found by guessed slugs.",
+   "source": "context/rejected.md#ws-r41-provider-docs-sites-resist-a-single-page-fetch-tool-two-ways",
+   "taxila_relevance": "Search by title, curl to file, cite fetch dates."
+  },
+  {
+   "tried": "NPCI site for UPI pre-debit sender rules",
+   "what_broke": "Unreachable from the sandbox (6 attempts); the mark stays open.",
+   "source": "context/rejected.md#ws-r69-npci-org-in-unreachable-by-this-sessions-fetch-tool",
+   "taxila_relevance": "UPI Autopay compliance needs a human check."
+  },
+  {
+   "tried": "Full fixture seeding to prove readable-export completeness",
+   "what_broke": "Too heavy; a static manifest diff was used; keying copy by table name tripped the leak scanner.",
+   "source": "context/rejected.md#ws-r108-full-fixture-seeding-for-readable-export-completeness",
+   "taxila_relevance": "Inherit completeness from a manifest."
+  }
+ ],
+ "concepts": [
+  {
+   "name": "The one door",
+   "description": "Every reply on every surface leaves through gatedReply(); a surface is a transport, never a tenant; a lane with its own model call becomes a second engine.",
+   "taxila_relevance": "Voice, text and module-narration replies converge on one child-safety and honesty gate."
+  },
+  {
+   "name": "Predicates over prompts",
+   "description": "Prompt instructions leaked 57-98%, a SQL predicate leaked 0 of 31,122. Caps, disclosure, never-rules, quiet hours and floors are predicates on writes and outputs.",
+   "taxila_relevance": "Time limits, contact refusal, banned topics and parent quiet hours are enforced as predicates."
+  },
+  {
+   "name": "Material is data, rules are platform",
+   "description": "User or creator-supplied text sits in a delimited block the honesty gate does not trust; safety boundaries are platform constants a sheet cannot override.",
+   "taxila_relevance": "NCERT, teacher and parent inputs are data; the child-safety boundary is a compiled constant."
+  },
+  {
+   "name": "No model grades its own exam",
+   "description": "Held-out questions come from a fixed template over stored rows; the only model call is the one under test.",
+   "taxila_relevance": "Separate the comprehension-check generator, the answer key and the scorer from the teaching LLM."
+  },
+  {
+   "name": "Instrument versioning",
+   "description": "Every measurement row stores the method version; rows from a superseded scorer are marked, not compared silently.",
+   "taxila_relevance": "Learning-profile and comprehension estimates carry scorer versions."
+  },
+  {
+   "name": "SQL marker comment as test hook",
+   "description": "Embed /* marker */ in guarded SQL fragments so offline evals can prove the real statement carries the guard.",
+   "taxila_relevance": "Proving quiet-hours, consent and isolation guards in real SQL."
+  },
+  {
+   "name": "Fail closed with named refusals; nobody learns whether a slug exists",
+   "description": "Every refusal carries a code; unknown, paused and unpublished resources render identically.",
+   "taxila_relevance": "Child profile and class URLs must not be enumerable."
+  },
+  {
+   "name": "Content-free ledgers",
+   "description": "Consent, incidents, month notes and counters store no content; numbers are recomputed fresh.",
+   "taxila_relevance": "Minimise child data at rest under DPDP."
+  },
+  {
+   "name": "Three scopes with k-floors",
+   "description": "Private follower scope; creator sees counts with n>=5; a person sees their own numbers with no floor.",
+   "taxila_relevance": "Child private; parent sees own child; school sees floored aggregates."
+  },
+  {
+   "name": "Disclosure acts",
+   "description": "influence < gist < paraphrase < verbatim; deny wins; grants bound to policy version, with exclusive expiry.",
+   "taxila_relevance": "Parent and teacher visibility model over a child's sessions."
+  },
+  {
+   "name": "Unbundled consent before any turn",
+   "description": "Separate questions and ledger rows; memory consent may be false while the service works; DPDP full effect 2027-05-14.",
+   "taxila_relevance": "Verifiable parental consent plus separate memory and voice consents."
+  },
+  {
+   "name": "Readable export (right to understand)",
+   "description": "Access means a person can read what is held; completeness is inherited from the export manifest; a missing explanation throws.",
+   "taxila_relevance": "Parent-readable child data report."
+  },
+  {
+   "name": "Honest placeholders over fake precision",
+   "description": "No invented GSTIN, SAC or TDS; placeholder sentences until an accountant confirms.",
+   "taxila_relevance": "Receipts and claims about learning outcomes must not invent numbers."
+  },
+  {
+   "name": "Never claim what you did not run",
+   "description": "Separate what is proven offline, what needs the live DB and what needs a human; a green summary hiding a skip is not evidence.",
+   "taxila_relevance": "Gate discipline for Taxila builds."
+  },
+  {
+   "name": "Negative controls everywhere",
+   "description": "Each battery includes a deliberately broken variant that must fail.",
+   "taxila_relevance": "Prevents vacuous safety and comprehension tests."
+  },
+  {
+   "name": "Bad-Indian-4G budgets",
+   "description": "Performance gate with CDP throttling and named target/metric failures, including Hindi chunk wait and first Hindi paint.",
+   "taxila_relevance": "Students on cheap Android and slow networks."
+  },
+  {
+   "name": "Language at the node",
+   "description": "lang per text node, hi-Latn exemption, and a tofu probe with its own control.",
+   "taxila_relevance": "Hindi/Hinglish/English mixed lessons."
+  },
+  {
+   "name": "Parallel waves with append-only merges",
+   "description": "Ten worktrees, assigned migration numbers, append-only shared files, union merges for context, one-at-a-time merge under the full gate.",
+   "taxila_relevance": "Taxila's own multi-agent build process."
+  },
+  {
+   "name": "Write shapes, never lines",
+   "description": "Prompt text must not be recitable; boundary and stage texts are shape descriptions.",
+   "taxila_relevance": "Teacher persona prompts for kids."
+  },
+  {
+   "name": "Apprentice, not broken",
+   "description": "An incomplete AI is called 'apprentice'; copy vocabulary is enforced by a gate.",
+   "taxila_relevance": "Child-facing vocabulary (no test, quiz or exam framing) enforced by a copy gate."
+  }
+ ],
+ "unread": [
+  "Full 3,900-line api/_room-surface.js beyond exported functions and the sections cited",
+  "src/room/RoomApp.tsx and AccountPage.tsx UI internals; src/studio OpsBoard.tsx, RoomStudio.tsx, ShowcaseCard.tsx, AuthGate.tsx",
+  "api/_creator-export.js, _creator-push.js, _org.js, _renewals.js, _checkins.js, _room-publish.js internals",
+  "Hindi copy tables content (src/studio/hiCopy.ts 2,087 lines, src/room/hiTalkCopy.ts)",
+  "docs/legal/HINDI-CONSENT-REVIEW.md row content",
+  "evals/room-doors/run.mjs (4k lines) section by section; evals/rehearsal internals",
+  "Most migration SQL bodies other than 116 and 127",
+  "Per-commit diffs of about 100 merge/log commits (read via context/ instead)",
+  "context/graph.json delta (~280 nodes)",
+  "Sibling repo Vyakti-GroupAI packages/relational-core (only the port in this repo was read)",
+  "Commits 1..280 of this range (sibling segment hp-vyakti-a)"
+ ]
+}

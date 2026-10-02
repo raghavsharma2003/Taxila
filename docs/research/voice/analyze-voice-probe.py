@@ -38,8 +38,8 @@ by = {}
 for r in rows:
     by.setdefault(r["arm"], []).append(r)
 want_loud = "--loudness" in sys.argv
-print("| arm | n ok | err | median TTFA ms | median wall ms | key-term recall (mean) | chars/s | verbatim (S2S) | LUFS (mean) |")
-print("|---|---|---|---|---|---|---|---|---|")
+print("| arm | n | median first audio ms | median wall ms | recall raw | recall script-aware | heard-as-Urdu (of 2 passes x n) | chars/s | verbatim (S2S) | LUFS |")
+print("|---|---|---|---|---|---|---|---|---|---|")
 summary = []
 for arm, rs in by.items():
     ok = [r for r in rs if "err" not in r and r.get("audio_s", 0) > 0.2]
@@ -47,7 +47,9 @@ for arm, rs in by.items():
     if not ok:
         print(f"| `{arm}` | 0 | {len(errs)}: {errs[0]['err'][:60] if errs else ''} | | | | | | |"); continue
     med = lambda k: int(statistics.median([r[k] for r in ok]))
-    rec = [r["key_recall"] for r in ok if r.get("key_recall") is not None]
+    raw = [r.get("recall_nohint", r.get("key_recall")) for r in ok if r.get("key_recall") is not None]
+    sa = [r["recall_sa"] for r in ok if r.get("recall_sa") is not None]
+    urdu = sum(int(bool(r.get("heard_urdu"))) + int(bool(r.get("heard_urdu_hinted"))) for r in ok)
     cps = statistics.median([len(STIM[r["stim"]]) / r["audio_s"] for r in ok])
     fid = "" if not any(r.get("said") for r in ok) else f"{statistics.mean([fidelity(r['stim'], r.get('said')) for r in ok]):.2f}"
     loud = ""
@@ -55,7 +57,8 @@ for arm, rs in by.items():
         vals = [lufs(os.path.join(out, f"{arm.replace(':','_').replace('|','_')}__{r['stim']}.wav")) for r in ok]
         vals = [v for v in vals if v is not None]
         loud = f"{statistics.mean(vals):.1f}" if vals else ""
-    summary.append({"arm": arm, "n": len(ok), "ttfa": med("ttfa_ms"), "wall": med("wall_ms"), "recall": statistics.mean(rec) if rec else None, "cps": cps})
-    print(f"| `{arm}` | {len(ok)} | {len(errs)} | {med('ttfa_ms')} | {med('wall_ms')} | {statistics.mean(rec):.2f} | {cps:.1f} | {fid} | {loud} |" if rec else
-          f"| `{arm}` | {len(ok)} | {len(errs)} | {med('ttfa_ms')} | {med('wall_ms')} | n/a | {cps:.1f} | {fid} | {loud} |")
+    f2 = lambda xs: f"{statistics.mean(xs):.2f}" if xs else "n/a"
+    summary.append({"arm": arm, "n": len(ok), "ttfa": med("ttfa_ms"), "wall": med("wall_ms"), "raw": statistics.mean(raw) if raw else None,
+                    "sa": statistics.mean(sa) if sa else None, "urdu": urdu, "cps": cps, "lufs": loud, "errs": len(errs)})
+    print(f"| `{arm}` | {len(ok)}{'+'+str(len(errs))+'err' if errs else ''} | {med('ttfa_ms')} | {med('wall_ms')} | {f2(raw)} | {f2(sa)} | {urdu}/{2*len(ok)} | {cps:.1f} | {fid} | {loud} |")
 json.dump(summary, open(os.path.join(out, "summary.json"), "w"), indent=1)

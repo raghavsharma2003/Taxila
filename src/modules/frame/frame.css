@@ -1,0 +1,86 @@
+/* Module frame base styles. Functional, not the final visual design (that comes from the design
+   workstream): large targets (>= 48px), legible at 360px wide, light and dark. */
+:root {
+  --fx-bg: #fffaf2;
+  --fx-ink: #2b2620;
+  --fx-ink-soft: #5d554b;
+  --fx-line: #c9bba6;
+  --fx-empty: #ffffff;
+  --fx-fill: #e0892f;
+  --fx-accent: #1f6f5c;
+  --fx-focus: #1f4fbf;
+  --fx-radius: 12px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fx-bg: #1e1b17;
+    --fx-ink: #f4ede3;
+    --fx-ink-soft: #c4b9aa;
+    --fx-line: #6b6152;
+    --fx-empty: #2b2721;
+    --fx-fill: #f0a050;
+    --fx-accent: #5cc8a8;
+    --fx-focus: #8fb0ff;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--fx-bg); color: var(--fx-ink); }
+body {
+  font: 18px/1.35 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", sans-serif;
+  padding: 12px 16px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--fx-focus); outline-offset: 3px; }
+
+.frame-wait { min-height: 120px; }
+.frame-card { text-align: center; padding: 24px 12px; border: 2px dashed var(--fx-line); border-radius: var(--fx-radius); }
+.frame-card-icon { font-size: 32px; }
+.frame-card-title { margin: 8px 0 4px; font-weight: 650; }
+.frame-card-text { margin: 0; color: var(--fx-ink-soft); font-size: 16px; }
+
+/* fraction-bars@1 */
+.fb { display: flex; flex-direction: column; gap: 14px; }
+.fb-prompt { margin: 0; font-weight: 650; }
+.fb-bar { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.fb-choice {
+  padding: 8px; border: 3px solid transparent; border-radius: var(--fx-radius);
+  background: none; cursor: pointer; text-align: left; min-height: 48px;
+}
+.fb-choice:active { transform: scale(0.98); }
+.fb-choice.is-selected { border-color: var(--fx-focus); }
+.fb-choice.is-answer, .fb-same.is-answer { border-color: var(--fx-accent); }
+.fb-head { display: flex; align-items: center; justify-content: space-between; min-height: 48px; gap: 8px; }
+.fb-label { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; padding: 0 6px; border-radius: 8px; }
+.fb-tick { color: var(--fx-accent); font-size: 28px; font-weight: 800; }
+.fb-steps { display: flex; gap: 8px; }
+.fb-step {
+  width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--fx-line);
+  background: var(--fx-empty); font-size: 26px; font-weight: 700; line-height: 1; cursor: pointer;
+}
+.fb-step:active { transform: scale(0.94); }
+.fb-step:disabled { opacity: 0.35; cursor: default; }
+.fb-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.fb-part { fill: var(--fx-empty); stroke: var(--fx-line); stroke-width: 2; transition: fill 120ms ease-out; }
+.fb-part.is-on { fill: var(--fx-fill); }
+.fb-part.is-editable { cursor: pointer; }
+.fb-part.is-ghost { stroke: var(--fx-accent); stroke-width: 4; stroke-dasharray: 8 5; }
+.fb-outline { fill: none; stroke: var(--fx-focus); stroke-width: 4; pointer-events: none; }
+.fb-same {
+  align-self: center; min-width: 120px; min-height: 52px; padding: 0 24px; cursor: pointer;
+  border: 3px solid var(--fx-line); border-radius: 999px; background: var(--fx-empty); font-weight: 650;
+}
+.fb-same.is-selected { border-color: var(--fx-focus); }
+
+/* highlight: a short pulse, restarted per command (the engine re-keys the element) */
+.is-highlight { animation: fx-pulse 900ms ease-out 2; }
+.fb-part.is-highlight { stroke: var(--fx-focus); stroke-width: 5; }
+.fb-label.is-highlight { background: color-mix(in srgb, var(--fx-focus) 18%, transparent); }
+@keyframes fx-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+@media (prefers-reduced-motion: reduce) {
+  .is-highlight { animation: none; }
+  .fb-part { transition: none; }
+}

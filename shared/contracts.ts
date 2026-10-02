@@ -24,9 +24,12 @@ export interface TopicKit {
   topicId: string; topicType: TopicType;
   skills: { id: string; title: string; prereqSkillIds: string[] }[];
   expectations: string[]; misconceptions: KitMisconception[]; items: KitItem[];
-  workedExample: { problem: string; steps: string[]; fadedVersion: string[] };
+  /** null when the kit ships none (the director then skips the worked-example step). */
+  workedExample: { problem: string; steps: string[]; fadedVersion: string[] } | null;
   formats: { primary: FormatFamily; secondary: string[]; engineHints: string[] };
   interestContexts: string[];
+  /** false for an on-the-fly mini-kit (model-written keys): its evidence weighs half. Set by the server loader. */
+  verified?: boolean;
 }
 
 // ───────────────────────────── learner ─────────────────────────────

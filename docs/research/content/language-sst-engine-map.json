@@ -1,0 +1,5135 @@
+{
+ "generatedOn": "2026-10-02",
+ "source": "data/curriculum c1-c9 english, c6-c9 hindi, c6-c9 sst (verified 2026-10-02) + science-engine-map.json generic EVS/science topics",
+ "spec": "docs/research/content/language-sst-engines.md",
+ "generator": "docs/research/content/language_sst_engine_map.py (rules by chapter type and class + explicit per-chapter overrides, listed in overrides)",
+ "layers": "primary = the text-anchor engine for the chapter (what the lesson is built around). Skill engines (phonics, word-builder, sentence-scramble, grammar-transform) are mounted per skill strand, so their counts here are a lower bound: English/Hindi files are titles-only (SOURCES.md).",
+ "totals": {
+  "topics": 228,
+  "bySubject": {
+   "english": 118,
+   "hindi": 45,
+   "sst": 65
+  },
+  "primaryInThisSet": 227,
+  "primaryExternal": [
+   "c9-sst-ch16-t01"
+  ],
+  "absorbedFromScience": 59,
+  "absorbedByGeneric": {
+   "story": 16,
+   "scenario": 8,
+   "map": 9,
+   "sorter": 18,
+   "sequence": 8
+  }
+ },
+ "load": {
+  "phonics@1": {
+   "code": "L1",
+   "primary": 0,
+   "any": 22,
+   "absorbedFromScience": 0,
+   "classes": [
+    1,
+    2
+   ]
+  },
+  "word-builder@1": {
+   "code": "L2",
+   "primary": 0,
+   "any": 106,
+   "absorbedFromScience": 0,
+   "classes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  "sentence-scramble@1": {
+   "code": "L3",
+   "primary": 0,
+   "any": 22,
+   "absorbedFromScience": 0,
+   "classes": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  },
+  "story-sequence@1": {
+   "code": "L4",
+   "primary": 53,
+   "any": 77,
+   "absorbedFromScience": 24,
+   "classes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  "picture-word@1": {
+   "code": "L5",
+   "primary": 4,
+   "any": 34,
+   "absorbedFromScience": 0,
+   "classes": [
+    1,
+    2,
+    3,
+    6
+   ]
+  },
+  "read-along@1": {
+   "code": "L6",
+   "primary": 11,
+   "any": 126,
+   "absorbedFromScience": 0,
+   "classes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  "grammar-transform@1": {
+   "code": "L7",
+   "primary": 0,
+   "any": 68,
+   "absorbedFromScience": 0,
+   "classes": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  "map-explorer@1": {
+   "code": "S1",
+   "primary": 26,
+   "any": 53,
+   "absorbedFromScience": 9,
+   "classes": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  "timeline@1": {
+   "code": "S2",
+   "primary": 18,
+   "any": 36,
+   "absorbedFromScience": 0,
+   "classes": [
+    3,
+    4,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  "compare-venn@1": {
+   "code": "S3",
+   "primary": 18,
+   "any": 49,
+   "absorbedFromScience": 18,
+   "classes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  "role-play@1": {
+   "code": "X1",
+   "primary": 24,
+   "any": 81,
+   "absorbedFromScience": 8,
+   "classes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  "rhythm-poem@1": {
+   "code": "X2",
+   "primary": 69,
+   "any": 70,
+   "absorbedFromScience": 0,
+   "classes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  "source-card@1": {
+   "code": "S4",
+   "primary": 4,
+   "any": 18,
+   "absorbedFromScience": 0,
+   "classes": [
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  "maths:coord-grid@1": {
+   "code": "external",
+   "primary": 0,
+   "any": 1,
+   "absorbedFromScience": 0,
+   "classes": [
+    6
+   ]
+  },
+  "maths:data-graphs@1": {
+   "code": "external",
+   "primary": 0,
+   "any": 7,
+   "absorbedFromScience": 0,
+   "classes": [
+    7,
+    8,
+    9
+   ]
+  },
+  "maths:money@1": {
+   "code": "external",
+   "primary": 1,
+   "any": 4,
+   "absorbedFromScience": 0,
+   "classes": [
+    7,
+    9
+   ]
+  },
+  "science:sky@1": {
+   "code": "external",
+   "primary": 0,
+   "any": 1,
+   "absorbedFromScience": 0,
+   "classes": [
+    6
+   ]
+  },
+  "science:water-cycle@1": {
+   "code": "external",
+   "primary": 0,
+   "any": 0,
+   "absorbedFromScience": 0,
+   "classes": []
+  }
+ },
+ "overrides": [
+  "c1-english-ch02",
+  "c1-english-ch07",
+  "c2-english-ch06",
+  "c2-english-ch07",
+  "c2-english-ch13",
+  "c3-english-ch12",
+  "c4-english-ch03",
+  "c4-english-ch09",
+  "c4-english-ch11",
+  "c4-english-ch12",
+  "c5-english-ch06",
+  "c5-english-ch10",
+  "c6-english-ch09",
+  "c6-english-ch12",
+  "c6-english-ch13",
+  "c6-hindi-ch08",
+  "c7-english-ch03",
+  "c7-english-ch09",
+  "c7-english-ch15",
+  "c7-hindi-ch04",
+  "c8-english-ch01",
+  "c8-english-ch06",
+  "c8-english-ch09",
+  "c9-english-ch05",
+  "c9-english-ch13",
+  "c9-hindi-ch09"
+ ],
+ "byEngine": {
+  "rhythm-poem@1": {
+   "primary": [
+    "c1-english-ch01-t01",
+    "c1-english-ch05-t01",
+    "c1-english-ch08-t01",
+    "c2-english-ch01-t01",
+    "c2-english-ch03-t01",
+    "c2-english-ch05-t01",
+    "c2-english-ch08-t01",
+    "c2-english-ch10-t01",
+    "c2-english-ch12-t01",
+    "c3-english-ch01-t01",
+    "c3-english-ch04-t01",
+    "c3-english-ch07-t01",
+    "c3-english-ch10-t01",
+    "c4-english-ch01-t01",
+    "c4-english-ch04-t01",
+    "c4-english-ch07-t01",
+    "c4-english-ch10-t01",
+    "c5-english-ch01-t01",
+    "c5-english-ch03-t01",
+    "c5-english-ch05-t01",
+    "c5-english-ch07-t01",
+    "c5-english-ch09-t01",
+    "c6-english-ch02-t01",
+    "c6-english-ch05-t01",
+    "c6-english-ch08-t01",
+    "c6-english-ch11-t01",
+    "c6-english-ch14-t01",
+    "c6-english-ch16-t01",
+    "c6-hindi-ch01-t01",
+    "c6-hindi-ch03-t01",
+    "c6-hindi-ch05-t01",
+    "c6-hindi-ch07-t01",
+    "c6-hindi-ch09-t01",
+    "c6-hindi-ch11-t01",
+    "c7-english-ch02-t01",
+    "c7-english-ch05-t01",
+    "c7-english-ch08-t01",
+    "c7-english-ch11-t01",
+    "c7-english-ch14-t01",
+    "c7-hindi-ch01-t01",
+    "c7-hindi-ch03-t01",
+    "c7-hindi-ch06-t01",
+    "c7-hindi-ch07-t01",
+    "c7-hindi-ch09-t01",
+    "c7-hindi-ch10-t01",
+    "c8-english-ch02-t01",
+    "c8-english-ch05-t01",
+    "c8-english-ch08-t01",
+    "c8-english-ch11-t01",
+    "c8-english-ch14-t01",
+    "c8-hindi-ch01-t01",
+    "c8-hindi-ch03-t01",
+    "c8-hindi-ch05-t01",
+    "c8-hindi-ch07-t01",
+    "c8-hindi-ch09-t01",
+    "c8-sst-ch15-t01",
+    "c9-english-ch02-t01",
+    "c9-english-ch04-t01",
+    "c9-english-ch06-t01",
+    "c9-english-ch08-t01",
+    "c9-english-ch10-t01",
+    "c9-english-ch12-t01",
+    "c9-english-ch14-t01",
+    "c9-english-ch16-t01",
+    "c9-hindi-ch08-t01",
+    "c9-hindi-ch09-t01",
+    "c9-hindi-ch10-t01",
+    "c9-hindi-ch11-t01",
+    "c9-hindi-ch12-t01"
+   ],
+   "secondary": [
+    "c9-sst-ch12-t01"
+   ],
+   "absorbed": []
+  },
+  "read-along@1": {
+   "primary": [
+    "c6-english-ch12-t01",
+    "c6-hindi-ch13-t01",
+    "c7-english-ch03-t01",
+    "c7-hindi-ch04-t01",
+    "c8-hindi-ch04-t01",
+    "c8-hindi-ch10-t01",
+    "c9-english-ch09-t01",
+    "c9-english-ch13-t01",
+    "c9-english-ch15-t01",
+    "c9-hindi-ch02-t01",
+    "c9-hindi-ch07-t01"
+   ],
+   "secondary": [
+    "c1-english-ch01-t01",
+    "c1-english-ch02-t01",
+    "c1-english-ch04-t01",
+    "c1-english-ch05-t01",
+    "c1-english-ch07-t01",
+    "c1-english-ch08-t01",
+    "c1-english-ch09-t01",
+    "c2-english-ch01-t01",
+    "c2-english-ch03-t01",
+    "c2-english-ch04-t01",
+    "c2-english-ch05-t01",
+    "c2-english-ch06-t01",
+    "c2-english-ch07-t01",
+    "c2-english-ch08-t01",
+    "c2-english-ch09-t01",
+    "c2-english-ch10-t01",
+    "c2-english-ch11-t01",
+    "c2-english-ch12-t01",
+    "c3-english-ch01-t01",
+    "c3-english-ch02-t01",
+    "c3-english-ch03-t01",
+    "c3-english-ch04-t01",
+    "c3-english-ch05-t01",
+    "c3-english-ch06-t01",
+    "c3-english-ch07-t01",
+    "c3-english-ch08-t01",
+    "c3-english-ch09-t01",
+    "c3-english-ch10-t01",
+    "c3-english-ch11-t01",
+    "c3-english-ch12-t01",
+    "c4-english-ch01-t01",
+    "c4-english-ch03-t01",
+    "c4-english-ch04-t01",
+    "c4-english-ch06-t01",
+    "c4-english-ch07-t01",
+    "c4-english-ch08-t01",
+    "c4-english-ch10-t01",
+    "c4-english-ch12-t01",
+    "c5-english-ch01-t01",
+    "c5-english-ch03-t01",
+    "c5-english-ch05-t01",
+    "c5-english-ch06-t01",
+    "c5-english-ch07-t01",
+    "c5-english-ch09-t01",
+    "c6-english-ch02-t01",
+    "c6-english-ch05-t01",
+    "c6-english-ch07-t01",
+    "c6-english-ch08-t01",
+    "c6-english-ch09-t01",
+    "c6-english-ch11-t01",
+    "c6-english-ch13-t01",
+    "c6-english-ch14-t01",
+    "c6-english-ch15-t01",
+    "c6-english-ch16-t01",
+    "c6-hindi-ch01-t01",
+    "c6-hindi-ch02-t01",
+    "c6-hindi-ch03-t01",
+    "c6-hindi-ch05-t01",
+    "c6-hindi-ch06-t01",
+    "c6-hindi-ch07-t01",
+    "c6-hindi-ch08-t01",
+    "c6-hindi-ch09-t01",
+    "c6-hindi-ch11-t01",
+    "c6-hindi-ch12-t01",
+    "c7-english-ch02-t01",
+    "c7-english-ch05-t01",
+    "c7-english-ch06-t01",
+    "c7-english-ch08-t01",
+    "c7-english-ch09-t01",
+    "c7-english-ch11-t01",
+    "c7-english-ch12-t01",
+    "c7-english-ch13-t01",
+    "c7-english-ch14-t01",
+    "c7-hindi-ch01-t01",
+    "c7-hindi-ch03-t01",
+    "c7-hindi-ch06-t01",
+    "c7-hindi-ch07-t01",
+    "c7-hindi-ch08-t01",
+    "c7-hindi-ch09-t01",
+    "c7-hindi-ch10-t01",
+    "c7-sst-ch10-t01",
+    "c8-english-ch02-t01",
+    "c8-english-ch03-t01",
+    "c8-english-ch04-t01",
+    "c8-english-ch05-t01",
+    "c8-english-ch06-t01",
+    "c8-english-ch08-t01",
+    "c8-english-ch09-t01",
+    "c8-english-ch11-t01",
+    "c8-english-ch14-t01",
+    "c8-english-ch15-t01",
+    "c8-hindi-ch01-t01",
+    "c8-hindi-ch03-t01",
+    "c8-hindi-ch05-t01",
+    "c8-hindi-ch07-t01",
+    "c8-hindi-ch08-t01",
+    "c8-hindi-ch09-t01",
+    "c9-english-ch02-t01",
+    "c9-english-ch04-t01",
+    "c9-english-ch05-t01",
+    "c9-english-ch06-t01",
+    "c9-english-ch08-t01",
+    "c9-english-ch10-t01",
+    "c9-english-ch11-t01",
+    "c9-english-ch12-t01",
+    "c9-english-ch14-t01",
+    "c9-english-ch16-t01",
+    "c9-hindi-ch04-t01",
+    "c9-hindi-ch05-t01",
+    "c9-hindi-ch06-t01",
+    "c9-hindi-ch08-t01",
+    "c9-hindi-ch09-t01",
+    "c9-hindi-ch10-t01",
+    "c9-hindi-ch11-t01",
+    "c9-hindi-ch12-t01"
+   ],
+   "absorbed": []
+  },
+  "picture-word@1": {
+   "primary": [
+    "c1-english-ch03-t01",
+    "c1-english-ch06-t01",
+    "c1-english-ch07-t01",
+    "c2-english-ch02-t01"
+   ],
+   "secondary": [
+    "c1-english-ch01-t01",
+    "c1-english-ch02-t01",
+    "c1-english-ch04-t01",
+    "c1-english-ch05-t01",
+    "c1-english-ch08-t01",
+    "c1-english-ch09-t01",
+    "c2-english-ch01-t01",
+    "c2-english-ch03-t01",
+    "c2-english-ch04-t01",
+    "c2-english-ch05-t01",
+    "c2-english-ch07-t01",
+    "c2-english-ch08-t01",
+    "c2-english-ch09-t01",
+    "c2-english-ch10-t01",
+    "c2-english-ch11-t01",
+    "c2-english-ch12-t01",
+    "c2-english-ch13-t01",
+    "c3-english-ch01-t01",
+    "c3-english-ch02-t01",
+    "c3-english-ch03-t01",
+    "c3-english-ch04-t01",
+    "c3-english-ch05-t01",
+    "c3-english-ch06-t01",
+    "c3-english-ch07-t01",
+    "c3-english-ch08-t01",
+    "c3-english-ch09-t01",
+    "c3-english-ch10-t01",
+    "c3-english-ch11-t01",
+    "c6-english-ch09-t01",
+    "c6-sst-ch08-t01"
+   ],
+   "absorbed": []
+  },
+  "word-builder@1": {
+   "primary": [],
+   "secondary": [
+    "c1-english-ch01-t01",
+    "c1-english-ch05-t01",
+    "c1-english-ch08-t01",
+    "c2-english-ch01-t01",
+    "c2-english-ch03-t01",
+    "c2-english-ch05-t01",
+    "c2-english-ch08-t01",
+    "c2-english-ch10-t01",
+    "c2-english-ch12-t01",
+    "c3-english-ch01-t01",
+    "c3-english-ch04-t01",
+    "c3-english-ch07-t01",
+    "c3-english-ch10-t01",
+    "c4-english-ch01-t01",
+    "c4-english-ch02-t01",
+    "c4-english-ch04-t01",
+    "c4-english-ch05-t01",
+    "c4-english-ch07-t01",
+    "c4-english-ch10-t01",
+    "c4-english-ch11-t01",
+    "c5-english-ch01-t01",
+    "c5-english-ch02-t01",
+    "c5-english-ch03-t01",
+    "c5-english-ch04-t01",
+    "c5-english-ch05-t01",
+    "c5-english-ch07-t01",
+    "c5-english-ch08-t01",
+    "c5-english-ch09-t01",
+    "c6-english-ch01-t01",
+    "c6-english-ch02-t01",
+    "c6-english-ch03-t01",
+    "c6-english-ch04-t01",
+    "c6-english-ch05-t01",
+    "c6-english-ch06-t01",
+    "c6-english-ch08-t01",
+    "c6-english-ch10-t01",
+    "c6-english-ch11-t01",
+    "c6-english-ch14-t01",
+    "c6-english-ch16-t01",
+    "c6-hindi-ch01-t01",
+    "c6-hindi-ch02-t01",
+    "c6-hindi-ch03-t01",
+    "c6-hindi-ch04-t01",
+    "c6-hindi-ch05-t01",
+    "c6-hindi-ch06-t01",
+    "c6-hindi-ch07-t01",
+    "c6-hindi-ch09-t01",
+    "c6-hindi-ch10-t01",
+    "c6-hindi-ch11-t01",
+    "c6-hindi-ch12-t01",
+    "c6-hindi-ch13-t01",
+    "c7-english-ch01-t01",
+    "c7-english-ch02-t01",
+    "c7-english-ch04-t01",
+    "c7-english-ch05-t01",
+    "c7-english-ch07-t01",
+    "c7-english-ch08-t01",
+    "c7-english-ch10-t01",
+    "c7-english-ch11-t01",
+    "c7-english-ch14-t01",
+    "c7-hindi-ch01-t01",
+    "c7-hindi-ch02-t01",
+    "c7-hindi-ch03-t01",
+    "c7-hindi-ch04-t01",
+    "c7-hindi-ch05-t01",
+    "c7-hindi-ch06-t01",
+    "c7-hindi-ch07-t01",
+    "c7-hindi-ch09-t01",
+    "c7-hindi-ch10-t01",
+    "c8-english-ch02-t01",
+    "c8-english-ch05-t01",
+    "c8-english-ch07-t01",
+    "c8-english-ch08-t01",
+    "c8-english-ch10-t01",
+    "c8-english-ch11-t01",
+    "c8-english-ch12-t01",
+    "c8-english-ch13-t01",
+    "c8-english-ch14-t01",
+    "c8-hindi-ch01-t01",
+    "c8-hindi-ch02-t01",
+    "c8-hindi-ch03-t01",
+    "c8-hindi-ch05-t01",
+    "c8-hindi-ch06-t01",
+    "c8-hindi-ch07-t01",
+    "c8-hindi-ch09-t01",
+    "c8-hindi-ch10-t01",
+    "c9-english-ch01-t01",
+    "c9-english-ch02-t01",
+    "c9-english-ch03-t01",
+    "c9-english-ch04-t01",
+    "c9-english-ch06-t01",
+    "c9-english-ch07-t01",
+    "c9-english-ch08-t01",
+    "c9-english-ch10-t01",
+    "c9-english-ch12-t01",
+    "c9-english-ch14-t01",
+    "c9-english-ch16-t01",
+    "c9-hindi-ch01-t01",
+    "c9-hindi-ch02-t01",
+    "c9-hindi-ch03-t01",
+    "c9-hindi-ch05-t01",
+    "c9-hindi-ch07-t01",
+    "c9-hindi-ch08-t01",
+    "c9-hindi-ch10-t01",
+    "c9-hindi-ch11-t01",
+    "c9-hindi-ch12-t01"
+   ],
+   "absorbed": []
+  },
+  "phonics@1": {
+   "primary": [],
+   "secondary": [
+    "c1-english-ch01-t01",
+    "c1-english-ch02-t01",
+    "c1-english-ch03-t01",
+    "c1-english-ch04-t01",
+    "c1-english-ch05-t01",
+    "c1-english-ch06-t01",
+    "c1-english-ch07-t01",
+    "c1-english-ch08-t01",
+    "c1-english-ch09-t01",
+    "c2-english-ch01-t01",
+    "c2-english-ch02-t01",
+    "c2-english-ch03-t01",
+    "c2-english-ch04-t01",
+    "c2-english-ch05-t01",
+    "c2-english-ch06-t01",
+    "c2-english-ch07-t01",
+    "c2-english-ch08-t01",
+    "c2-english-ch09-t01",
+    "c2-english-ch10-t01",
+    "c2-english-ch11-t01",
+    "c2-english-ch12-t01",
+    "c2-english-ch13-t01"
+   ],
+   "absorbed": []
+  },
+  "role-play@1": {
+   "primary": [
+    "c1-english-ch02-t01",
+    "c4-english-ch03-t01",
+    "c4-english-ch08-t01",
+    "c4-english-ch12-t01",
+    "c6-english-ch07-t01",
+    "c6-sst-ch09-t01",
+    "c6-sst-ch11-t01",
+    "c6-sst-ch12-t01",
+    "c7-english-ch06-t01",
+    "c7-english-ch13-t01",
+    "c7-hindi-ch08-t01",
+    "c7-sst-ch11-t01",
+    "c7-sst-ch20-t01",
+    "c8-english-ch03-t01",
+    "c8-hindi-ch08-t01",
+    "c8-sst-ch05-t01",
+    "c8-sst-ch06-t01",
+    "c8-sst-ch11-t01",
+    "c9-english-ch11-t01",
+    "c9-hindi-ch04-t01",
+    "c9-hindi-ch06-t01",
+    "c9-sst-ch08-t01",
+    "c9-sst-ch09-t01",
+    "c9-sst-ch15-t01"
+   ],
+   "secondary": [
+    "c1-english-ch03-t01",
+    "c1-english-ch04-t01",
+    "c1-english-ch06-t01",
+    "c1-english-ch09-t01",
+    "c2-english-ch02-t01",
+    "c2-english-ch04-t01",
+    "c2-english-ch09-t01",
+    "c2-english-ch11-t01",
+    "c3-english-ch02-t01",
+    "c3-english-ch03-t01",
+    "c3-english-ch05-t01",
+    "c3-english-ch06-t01",
+    "c3-english-ch08-t01",
+    "c3-english-ch09-t01",
+    "c3-english-ch11-t01",
+    "c4-english-ch02-t01",
+    "c4-english-ch05-t01",
+    "c4-english-ch09-t01",
+    "c5-english-ch02-t01",
+    "c5-english-ch04-t01",
+    "c5-english-ch08-t01",
+    "c6-english-ch01-t01",
+    "c6-english-ch03-t01",
+    "c6-english-ch04-t01",
+    "c6-english-ch06-t01",
+    "c6-english-ch10-t01",
+    "c6-hindi-ch04-t01",
+    "c6-hindi-ch10-t01",
+    "c6-sst-ch10-t01",
+    "c6-sst-ch13-t01",
+    "c7-english-ch01-t01",
+    "c7-english-ch04-t01",
+    "c7-english-ch07-t01",
+    "c7-english-ch10-t01",
+    "c7-hindi-ch02-t01",
+    "c7-hindi-ch05-t01",
+    "c7-sst-ch09-t01",
+    "c7-sst-ch10-t01",
+    "c7-sst-ch12-t01",
+    "c7-sst-ch18-t01",
+    "c8-english-ch01-t01",
+    "c8-english-ch07-t01",
+    "c8-english-ch10-t01",
+    "c8-english-ch12-t01",
+    "c8-english-ch13-t01",
+    "c8-hindi-ch02-t01",
+    "c8-hindi-ch06-t01",
+    "c8-sst-ch04-t01",
+    "c8-sst-ch12-t01",
+    "c9-english-ch01-t01",
+    "c9-english-ch03-t01",
+    "c9-english-ch07-t01",
+    "c9-hindi-ch01-t01",
+    "c9-hindi-ch03-t01",
+    "c9-hindi-ch09-t01",
+    "c9-sst-ch06-t01",
+    "c9-sst-ch07-t01"
+   ],
+   "absorbed": [
+    "c3-evs-ch02-t02",
+    "c3-evs-ch06-t02",
+    "c3-evs-ch09-t01",
+    "c5-evs-ch04-t01",
+    "c5-evs-ch06-t02",
+    "c5-evs-ch10-t02",
+    "c8-science-ch06-t03",
+    "c9-science-ch13-t04"
+   ]
+  },
+  "sentence-scramble@1": {
+   "primary": [],
+   "secondary": [
+    "c1-english-ch03-t01",
+    "c1-english-ch06-t01",
+    "c2-english-ch02-t01",
+    "c2-english-ch04-t01",
+    "c2-english-ch09-t01",
+    "c2-english-ch11-t01",
+    "c3-english-ch02-t01",
+    "c3-english-ch03-t01",
+    "c3-english-ch05-t01",
+    "c3-english-ch06-t01",
+    "c3-english-ch08-t01",
+    "c3-english-ch09-t01",
+    "c3-english-ch11-t01",
+    "c3-english-ch12-t01",
+    "c4-english-ch02-t01",
+    "c4-english-ch05-t01",
+    "c4-english-ch09-t01",
+    "c4-english-ch11-t01",
+    "c5-english-ch02-t01",
+    "c5-english-ch04-t01",
+    "c5-english-ch08-t01",
+    "c5-english-ch10-t01"
+   ],
+   "absorbed": []
+  },
+  "story-sequence@1": {
+   "primary": [
+    "c1-english-ch04-t01",
+    "c1-english-ch09-t01",
+    "c2-english-ch04-t01",
+    "c2-english-ch09-t01",
+    "c2-english-ch11-t01",
+    "c3-english-ch02-t01",
+    "c3-english-ch03-t01",
+    "c3-english-ch05-t01",
+    "c3-english-ch06-t01",
+    "c3-english-ch08-t01",
+    "c3-english-ch09-t01",
+    "c3-english-ch11-t01",
+    "c3-english-ch12-t01",
+    "c4-english-ch02-t01",
+    "c4-english-ch05-t01",
+    "c4-english-ch09-t01",
+    "c4-english-ch11-t01",
+    "c5-english-ch02-t01",
+    "c5-english-ch04-t01",
+    "c5-english-ch08-t01",
+    "c5-english-ch10-t01",
+    "c6-english-ch01-t01",
+    "c6-english-ch03-t01",
+    "c6-english-ch04-t01",
+    "c6-english-ch06-t01",
+    "c6-english-ch10-t01",
+    "c6-hindi-ch02-t01",
+    "c6-hindi-ch04-t01",
+    "c6-hindi-ch06-t01",
+    "c6-hindi-ch10-t01",
+    "c6-sst-ch10-t01",
+    "c6-sst-ch14-t01",
+    "c7-english-ch01-t01",
+    "c7-english-ch04-t01",
+    "c7-english-ch07-t01",
+    "c7-english-ch10-t01",
+    "c7-hindi-ch02-t01",
+    "c7-hindi-ch05-t01",
+    "c7-sst-ch18-t01",
+    "c8-english-ch01-t01",
+    "c8-english-ch07-t01",
+    "c8-english-ch10-t01",
+    "c8-english-ch12-t01",
+    "c8-english-ch13-t01",
+    "c8-hindi-ch02-t01",
+    "c8-hindi-ch06-t01",
+    "c9-english-ch01-t01",
+    "c9-english-ch03-t01",
+    "c9-english-ch07-t01",
+    "c9-hindi-ch01-t01",
+    "c9-hindi-ch03-t01",
+    "c9-sst-ch02-t01",
+    "c9-sst-ch07-t01"
+   ],
+   "secondary": [
+    "c2-english-ch06-t01",
+    "c4-english-ch03-t01",
+    "c4-english-ch06-t01",
+    "c6-english-ch12-t01",
+    "c6-english-ch15-t01",
+    "c6-hindi-ch12-t01",
+    "c6-sst-ch03-t01",
+    "c6-sst-ch11-t01",
+    "c6-sst-ch12-t01",
+    "c7-english-ch12-t01",
+    "c7-english-ch15-t01",
+    "c7-hindi-ch04-t01",
+    "c7-sst-ch20-t01",
+    "c8-english-ch04-t01",
+    "c8-english-ch06-t01",
+    "c8-english-ch15-t01",
+    "c8-sst-ch05-t01",
+    "c8-sst-ch06-t01",
+    "c8-sst-ch07-t01",
+    "c8-sst-ch11-t01",
+    "c9-hindi-ch05-t01",
+    "c9-sst-ch09-t01",
+    "c9-sst-ch10-t01",
+    "c9-sst-ch15-t01"
+   ],
+   "absorbed": [
+    "c3-evs-ch01-t01",
+    "c3-evs-ch01-t02",
+    "c3-evs-ch02-t01",
+    "c3-evs-ch11-t01",
+    "c4-evs-ch01-t01",
+    "c4-evs-ch01-t02",
+    "c4-evs-ch02-t02",
+    "c4-evs-ch04-t01",
+    "c4-evs-ch06-t01",
+    "c4-evs-ch06-t02",
+    "c4-evs-ch08-t01",
+    "c5-evs-ch05-t02",
+    "c5-evs-ch08-t01",
+    "c5-evs-ch08-t02",
+    "c6-science-ch01-t01",
+    "c6-science-ch10-t03",
+    "c7-science-ch01-t01",
+    "c7-science-ch01-t02",
+    "c8-science-ch13-t03",
+    "c9-science-ch01-t01",
+    "c9-science-ch01-t03",
+    "c9-science-ch02-t02",
+    "c9-science-ch02-t03",
+    "c9-science-ch11-t01"
+   ]
+  },
+  "compare-venn@1": {
+   "primary": [
+    "c5-english-ch06-t01",
+    "c6-english-ch09-t01",
+    "c6-hindi-ch08-t01",
+    "c6-sst-ch03-t01",
+    "c6-sst-ch07-t01",
+    "c6-sst-ch08-t01",
+    "c6-sst-ch13-t01",
+    "c7-sst-ch02-t01",
+    "c7-sst-ch09-t01",
+    "c7-sst-ch12-t01",
+    "c7-sst-ch13-t01",
+    "c8-sst-ch01-t01",
+    "c8-sst-ch07-t01",
+    "c8-sst-ch10-t01",
+    "c8-sst-ch12-t01",
+    "c9-sst-ch01-t01",
+    "c9-sst-ch03-t01",
+    "c9-sst-ch06-t01"
+   ],
+   "secondary": [
+    "c1-english-ch07-t01",
+    "c2-english-ch13-t01",
+    "c6-english-ch13-t01",
+    "c6-hindi-ch13-t01",
+    "c6-sst-ch02-t01",
+    "c6-sst-ch09-t01",
+    "c6-sst-ch10-t01",
+    "c6-sst-ch11-t01",
+    "c6-sst-ch12-t01",
+    "c6-sst-ch14-t01",
+    "c7-english-ch03-t01",
+    "c7-sst-ch01-t01",
+    "c7-sst-ch03-t01",
+    "c7-sst-ch07-t01",
+    "c7-sst-ch08-t01",
+    "c7-sst-ch14-t01",
+    "c7-sst-ch17-t01",
+    "c7-sst-ch18-t01",
+    "c7-sst-ch19-t01",
+    "c8-english-ch09-t01",
+    "c8-sst-ch06-t01",
+    "c8-sst-ch08-t01",
+    "c9-english-ch05-t01",
+    "c9-english-ch09-t01",
+    "c9-english-ch15-t01",
+    "c9-hindi-ch02-t01",
+    "c9-hindi-ch07-t01",
+    "c9-sst-ch08-t01",
+    "c9-sst-ch11-t01",
+    "c9-sst-ch14-t01",
+    "c9-sst-ch16-t01"
+   ],
+   "absorbed": [
+    "c3-evs-ch03-t02",
+    "c3-evs-ch04-t02",
+    "c3-evs-ch08-t01",
+    "c3-evs-ch08-t02",
+    "c3-evs-ch10-t01",
+    "c3-evs-ch12-t01",
+    "c3-evs-ch12-t02",
+    "c4-evs-ch04-t02",
+    "c4-evs-ch08-t02",
+    "c5-evs-ch03-t02",
+    "c6-science-ch02-t01",
+    "c6-science-ch03-t01",
+    "c6-science-ch06-t02",
+    "c6-science-ch10-t01",
+    "c6-science-ch11-t01",
+    "c6-science-ch11-t02",
+    "c7-science-ch04-t03",
+    "c8-science-ch02-t03"
+   ]
+  },
+  "map-explorer@1": {
+   "primary": [
+    "c2-english-ch06-t01",
+    "c2-english-ch07-t01",
+    "c2-english-ch13-t01",
+    "c6-english-ch13-t01",
+    "c6-hindi-ch12-t01",
+    "c6-sst-ch01-t01",
+    "c6-sst-ch02-t01",
+    "c7-english-ch09-t01",
+    "c7-sst-ch01-t01",
+    "c7-sst-ch03-t01",
+    "c7-sst-ch04-t01",
+    "c7-sst-ch08-t01",
+    "c7-sst-ch14-t01",
+    "c7-sst-ch17-t01",
+    "c7-sst-ch19-t01",
+    "c8-english-ch09-t01",
+    "c8-sst-ch02-t01",
+    "c8-sst-ch03-t01",
+    "c8-sst-ch08-t01",
+    "c8-sst-ch13-t01",
+    "c8-sst-ch14-t01",
+    "c9-english-ch05-t01",
+    "c9-hindi-ch05-t01",
+    "c9-sst-ch10-t01",
+    "c9-sst-ch11-t01",
+    "c9-sst-ch13-t01"
+   ],
+   "secondary": [
+    "c4-english-ch09-t01",
+    "c4-english-ch11-t01",
+    "c4-english-ch12-t01",
+    "c5-english-ch06-t01",
+    "c5-english-ch10-t01",
+    "c6-hindi-ch08-t01",
+    "c6-sst-ch03-t01",
+    "c6-sst-ch05-t01",
+    "c6-sst-ch06-t01",
+    "c6-sst-ch08-t01",
+    "c7-english-ch15-t01",
+    "c7-sst-ch05-t01",
+    "c7-sst-ch06-t01",
+    "c7-sst-ch13-t01",
+    "c7-sst-ch15-t01",
+    "c7-sst-ch16-t01",
+    "c8-hindi-ch04-t01",
+    "c8-sst-ch01-t01",
+    "c8-sst-ch09-t01",
+    "c8-sst-ch10-t01",
+    "c8-sst-ch15-t01",
+    "c9-english-ch13-t01",
+    "c9-sst-ch02-t01",
+    "c9-sst-ch03-t01",
+    "c9-sst-ch04-t01",
+    "c9-sst-ch05-t01",
+    "c9-sst-ch12-t01"
+   ],
+   "absorbed": [
+    "c3-evs-ch03-t01",
+    "c4-evs-ch02-t01",
+    "c4-evs-ch09-t01",
+    "c4-evs-ch09-t02",
+    "c5-evs-ch05-t01",
+    "c5-evs-ch06-t01",
+    "c6-science-ch03-t04",
+    "c8-science-ch08-t03",
+    "c9-science-ch12-t01"
+   ]
+  },
+  "timeline@1": {
+   "primary": [
+    "c4-english-ch06-t01",
+    "c6-english-ch15-t01",
+    "c6-sst-ch04-t01",
+    "c7-english-ch12-t01",
+    "c7-english-ch15-t01",
+    "c7-sst-ch05-t01",
+    "c7-sst-ch06-t01",
+    "c7-sst-ch07-t01",
+    "c7-sst-ch10-t01",
+    "c7-sst-ch15-t01",
+    "c7-sst-ch16-t01",
+    "c8-english-ch04-t01",
+    "c8-english-ch06-t01",
+    "c8-english-ch15-t01",
+    "c8-sst-ch04-t01",
+    "c8-sst-ch09-t01",
+    "c9-sst-ch04-t01",
+    "c9-sst-ch12-t01"
+   ],
+   "secondary": [
+    "c3-english-ch12-t01",
+    "c6-hindi-ch02-t01",
+    "c6-hindi-ch06-t01",
+    "c6-sst-ch05-t01",
+    "c6-sst-ch06-t01",
+    "c6-sst-ch07-t01",
+    "c7-sst-ch04-t01",
+    "c7-sst-ch11-t01",
+    "c7-sst-ch13-t01",
+    "c7-sst-ch17-t01",
+    "c8-english-ch01-t01",
+    "c8-sst-ch02-t01",
+    "c8-sst-ch03-t01",
+    "c8-sst-ch10-t01",
+    "c8-sst-ch14-t01",
+    "c8-sst-ch15-t01",
+    "c9-sst-ch05-t01",
+    "c9-sst-ch13-t01"
+   ],
+   "absorbed": []
+  },
+  "grammar-transform@1": {
+   "primary": [],
+   "secondary": [
+    "c4-english-ch02-t01",
+    "c4-english-ch03-t01",
+    "c4-english-ch05-t01",
+    "c4-english-ch06-t01",
+    "c4-english-ch08-t01",
+    "c4-english-ch09-t01",
+    "c4-english-ch11-t01",
+    "c4-english-ch12-t01",
+    "c5-english-ch02-t01",
+    "c5-english-ch04-t01",
+    "c5-english-ch06-t01",
+    "c5-english-ch08-t01",
+    "c5-english-ch10-t01",
+    "c6-english-ch01-t01",
+    "c6-english-ch03-t01",
+    "c6-english-ch04-t01",
+    "c6-english-ch06-t01",
+    "c6-english-ch07-t01",
+    "c6-english-ch09-t01",
+    "c6-english-ch10-t01",
+    "c6-english-ch12-t01",
+    "c6-english-ch13-t01",
+    "c6-english-ch15-t01",
+    "c6-hindi-ch04-t01",
+    "c6-hindi-ch10-t01",
+    "c6-hindi-ch13-t01",
+    "c7-english-ch01-t01",
+    "c7-english-ch03-t01",
+    "c7-english-ch04-t01",
+    "c7-english-ch06-t01",
+    "c7-english-ch07-t01",
+    "c7-english-ch09-t01",
+    "c7-english-ch10-t01",
+    "c7-english-ch12-t01",
+    "c7-english-ch13-t01",
+    "c7-english-ch15-t01",
+    "c7-hindi-ch02-t01",
+    "c7-hindi-ch05-t01",
+    "c7-hindi-ch08-t01",
+    "c8-english-ch01-t01",
+    "c8-english-ch03-t01",
+    "c8-english-ch04-t01",
+    "c8-english-ch06-t01",
+    "c8-english-ch07-t01",
+    "c8-english-ch09-t01",
+    "c8-english-ch10-t01",
+    "c8-english-ch12-t01",
+    "c8-english-ch13-t01",
+    "c8-english-ch15-t01",
+    "c8-hindi-ch02-t01",
+    "c8-hindi-ch04-t01",
+    "c8-hindi-ch06-t01",
+    "c8-hindi-ch08-t01",
+    "c8-hindi-ch10-t01",
+    "c9-english-ch01-t01",
+    "c9-english-ch03-t01",
+    "c9-english-ch05-t01",
+    "c9-english-ch07-t01",
+    "c9-english-ch09-t01",
+    "c9-english-ch11-t01",
+    "c9-english-ch13-t01",
+    "c9-english-ch15-t01",
+    "c9-hindi-ch01-t01",
+    "c9-hindi-ch02-t01",
+    "c9-hindi-ch03-t01",
+    "c9-hindi-ch04-t01",
+    "c9-hindi-ch06-t01",
+    "c9-hindi-ch07-t01"
+   ],
+   "absorbed": []
+  },
+  "maths:coord-grid@1": {
+   "primary": [],
+   "secondary": [
+    "c6-sst-ch01-t01"
+   ],
+   "absorbed": []
+  },
+  "science:sky@1": {
+   "primary": [],
+   "secondary": [
+    "c6-sst-ch01-t01"
+   ],
+   "absorbed": []
+  },
+  "source-card@1": {
+   "primary": [
+    "c6-sst-ch05-t01",
+    "c6-sst-ch06-t01",
+    "c9-sst-ch05-t01",
+    "c9-sst-ch14-t01"
+   ],
+   "secondary": [
+    "c6-sst-ch04-t01",
+    "c6-sst-ch07-t01",
+    "c7-sst-ch04-t01",
+    "c7-sst-ch05-t01",
+    "c7-sst-ch06-t01",
+    "c7-sst-ch07-t01",
+    "c7-sst-ch15-t01",
+    "c7-sst-ch16-t01",
+    "c8-sst-ch02-t01",
+    "c8-sst-ch04-t01",
+    "c8-sst-ch09-t01",
+    "c9-sst-ch01-t01",
+    "c9-sst-ch04-t01",
+    "c9-sst-ch13-t01"
+   ],
+   "absorbed": []
+  },
+  "maths:data-graphs@1": {
+   "primary": [],
+   "secondary": [
+    "c7-sst-ch02-t01",
+    "c7-sst-ch03-t01",
+    "c8-sst-ch13-t01",
+    "c8-sst-ch14-t01",
+    "c9-sst-ch03-t01",
+    "c9-sst-ch09-t01",
+    "c9-sst-ch16-t01"
+   ],
+   "absorbed": []
+  },
+  "maths:money@1": {
+   "primary": [
+    "c9-sst-ch16-t01"
+   ],
+   "secondary": [
+    "c7-sst-ch11-t01",
+    "c7-sst-ch20-t01",
+    "c9-sst-ch08-t01"
+   ],
+   "absorbed": []
+  }
+ },
+ "topics": [
+  {
+   "id": "c1-english-ch01-t01",
+   "chapter": "c1-english-ch01",
+   "class": 1,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Two Little Hands",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c1-english-ch02-t01",
+   "chapter": "c1-english-ch02",
+   "class": 1,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Greetings",
+   "primary": "role-play@1",
+   "secondary": [
+    "picture-word@1",
+    "read-along@1",
+    "phonics@1"
+   ],
+   "note": "greetings by time of day are a dialogue skill",
+   "misconceptions": []
+  },
+  {
+   "id": "c1-english-ch03-t01",
+   "chapter": "c1-english-ch03",
+   "class": 1,
+   "subject": "english",
+   "chapterType": "picture",
+   "title": "Picture Time",
+   "primary": "picture-word@1",
+   "secondary": [
+    "role-play@1",
+    "sentence-scramble@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c1-english-ch04-t01",
+   "chapter": "c1-english-ch04",
+   "class": 1,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Cap-seller and the Monkeys",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c1-english-ch05-t01",
+   "chapter": "c1-english-ch05",
+   "class": 1,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "A Farm",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c1-english-ch06-t01",
+   "chapter": "c1-english-ch06",
+   "class": 1,
+   "subject": "english",
+   "chapterType": "picture",
+   "title": "Fun with Pictures",
+   "primary": "picture-word@1",
+   "secondary": [
+    "role-play@1",
+    "sentence-scramble@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c1-english-ch07-t01",
+   "chapter": "c1-english-ch07",
+   "class": 1,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "The Food we Eat",
+   "primary": "picture-word@1",
+   "secondary": [
+    "compare-venn@1",
+    "read-along@1",
+    "phonics@1"
+   ],
+   "note": "food words + 'same and different homes'",
+   "misconceptions": []
+  },
+  {
+   "id": "c1-english-ch08-t01",
+   "chapter": "c1-english-ch08",
+   "class": 1,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "The Four Seasons",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c1-english-ch09-t01",
+   "chapter": "c1-english-ch09",
+   "class": 1,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Anandi’s Rainbow",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch01-t01",
+   "chapter": "c2-english-ch01",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "My Bicycle",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch02-t01",
+   "chapter": "c2-english-ch02",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "picture",
+   "title": "Picture Reading",
+   "primary": "picture-word@1",
+   "secondary": [
+    "role-play@1",
+    "sentence-scramble@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch03-t01",
+   "chapter": "c2-english-ch03",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "It is Fun",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch04-t01",
+   "chapter": "c2-english-ch04",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Seeing without Seeing",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "phonics@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch05-t01",
+   "chapter": "c2-english-ch05",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Come Back Soon",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch06-t01",
+   "chapter": "c2-english-ch06",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Between Home and School",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "story-sequence@1",
+    "read-along@1",
+    "phonics@1"
+   ],
+   "note": "schematic route map of the walk to school",
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch07-t01",
+   "chapter": "c2-english-ch07",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "This is My Town",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "picture-word@1",
+    "read-along@1",
+    "phonics@1"
+   ],
+   "note": "schematic town map, places vocabulary",
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch08-t01",
+   "chapter": "c2-english-ch08",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "A Show of Clouds",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch09-t01",
+   "chapter": "c2-english-ch09",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "My Name",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "phonics@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch10-t01",
+   "chapter": "c2-english-ch10",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "The Crow",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch11-t01",
+   "chapter": "c2-english-ch11",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Smart Monkey",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "phonics@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch12-t01",
+   "chapter": "c2-english-ch12",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Little Drops of Water",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1",
+    "phonics@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c2-english-ch13-t01",
+   "chapter": "c2-english-ch13",
+   "class": 2,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "We are all Indians",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1",
+    "picture-word@1",
+    "phonics@1"
+   ],
+   "note": "languages and festivals of states",
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch01-t01",
+   "chapter": "c3-english-ch01",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Colours",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch02-t01",
+   "chapter": "c3-english-ch02",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Badal and Moti",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch03-t01",
+   "chapter": "c3-english-ch03",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Best Friends",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch04-t01",
+   "chapter": "c3-english-ch04",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Out in the Garden",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch05-t01",
+   "chapter": "c3-english-ch05",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Talking Toys",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch06-t01",
+   "chapter": "c3-english-ch06",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Paper Boats",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch07-t01",
+   "chapter": "c3-english-ch07",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "The Big Laddoo",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch08-t01",
+   "chapter": "c3-english-ch08",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Thank God",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch09-t01",
+   "chapter": "c3-english-ch09",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Madhu’s Wish",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch10-t01",
+   "chapter": "c3-english-ch10",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Night",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch11-t01",
+   "chapter": "c3-english-ch11",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Chanda Mama Counts the Stars",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "read-along@1",
+    "picture-word@1",
+    "role-play@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c3-english-ch12-t01",
+   "chapter": "c3-english-ch12",
+   "class": 3,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Chandrayaan",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "timeline@1",
+    "read-along@1",
+    "sentence-scramble@1"
+   ],
+   "note": "mission stages are a causal sequence",
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch01-t01",
+   "chapter": "c4-english-ch01",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Together We Can",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch02-t01",
+   "chapter": "c4-english-ch02",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Tinkling Bells",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch03-t01",
+   "chapter": "c4-english-ch03",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Be Smart, Be Safe",
+   "primary": "role-play@1",
+   "secondary": [
+    "story-sequence@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": "road-safety scenario, third-person choices",
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch04-t01",
+   "chapter": "c4-english-ch04",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "One Thing at a Time",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch05-t01",
+   "chapter": "c4-english-ch05",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Old Stag",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch06-t01",
+   "chapter": "c4-english-ch06",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "biography",
+   "title": "Braille",
+   "primary": "timeline@1",
+   "secondary": [
+    "story-sequence@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch07-t01",
+   "chapter": "c4-english-ch07",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Fit Body, Fit Mind, Fit Nation",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch08-t01",
+   "chapter": "c4-english-ch08",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "play",
+   "title": "The Lagori Champions",
+   "primary": "role-play@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch09-t01",
+   "chapter": "c4-english-ch09",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Hekko",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "map-explorer@1",
+    "role-play@1",
+    "sentence-scramble@1",
+    "grammar-transform@1"
+   ],
+   "note": "folk game from Nagaland: locate it",
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch10-t01",
+   "chapter": "c4-english-ch10",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "The Swing",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch11-t01",
+   "chapter": "c4-english-ch11",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "A Journey to the Magical Mountains",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "map-explorer@1",
+    "word-builder@1",
+    "sentence-scramble@1",
+    "grammar-transform@1"
+   ],
+   "note": "Himalayas journey",
+   "misconceptions": []
+  },
+  {
+   "id": "c4-english-ch12-t01",
+   "chapter": "c4-english-ch12",
+   "class": 4,
+   "subject": "english",
+   "chapterType": "play",
+   "title": "Maheshwar",
+   "primary": "role-play@1",
+   "secondary": [
+    "map-explorer@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": "play set on the Narmada",
+   "misconceptions": []
+  },
+  {
+   "id": "c5-english-ch01-t01",
+   "chapter": "c5-english-ch01",
+   "class": 5,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Papa’s Spectacles",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c5-english-ch02-t01",
+   "chapter": "c5-english-ch02",
+   "class": 5,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Gone with the Scooter",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c5-english-ch03-t01",
+   "chapter": "c5-english-ch03",
+   "class": 5,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "The Rainbow",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c5-english-ch04-t01",
+   "chapter": "c5-english-ch04",
+   "class": 5,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Wise Parrot",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c5-english-ch05-t01",
+   "chapter": "c5-english-ch05",
+   "class": 5,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "The Frog",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c5-english-ch06-t01",
+   "chapter": "c5-english-ch06",
+   "class": 5,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "What a Tank!",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "map-explorer@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": "traditional water structures compared",
+   "misconceptions": []
+  },
+  {
+   "id": "c5-english-ch07-t01",
+   "chapter": "c5-english-ch07",
+   "class": 5,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Gilli Danda",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c5-english-ch08-t01",
+   "chapter": "c5-english-ch08",
+   "class": 5,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Decision of the Panchayat",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1",
+    "sentence-scramble@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c5-english-ch09-t01",
+   "chapter": "c5-english-ch09",
+   "class": 5,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Vocation",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c5-english-ch10-t01",
+   "chapter": "c5-english-ch10",
+   "class": 5,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Glass Bangles",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "map-explorer@1",
+    "grammar-transform@1",
+    "sentence-scramble@1"
+   ],
+   "note": "bangle-making is a process sequence; Firozabad",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch01-t01",
+   "chapter": "c6-english-ch01",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "A Bottle of Dew",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch02-t01",
+   "chapter": "c6-english-ch02",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "The Raven and the Fox",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch03-t01",
+   "chapter": "c6-english-ch03",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Rama to the Rescue",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch04-t01",
+   "chapter": "c6-english-ch04",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Unlikely Best Friends",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch05-t01",
+   "chapter": "c6-english-ch05",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "A Friend’s Prayer",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch06-t01",
+   "chapter": "c6-english-ch06",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Chair",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch07-t01",
+   "chapter": "c6-english-ch07",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "dialogue",
+   "title": "Neem Baba",
+   "primary": "role-play@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch08-t01",
+   "chapter": "c6-english-ch08",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "What a Bird Thought",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch09-t01",
+   "chapter": "c6-english-ch09",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Spices that Heal Us",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "picture-word@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": "spices: properties compared",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch10-t01",
+   "chapter": "c6-english-ch10",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Change of Heart",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch11-t01",
+   "chapter": "c6-english-ch11",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "The Winner",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch12-t01",
+   "chapter": "c6-english-ch12",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Yoga—A Way of Life",
+   "primary": "read-along@1",
+   "secondary": [
+    "story-sequence@1",
+    "grammar-transform@1"
+   ],
+   "note": "asana sequences",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch13-t01",
+   "chapter": "c6-english-ch13",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Hamara Bharat—Incredible India!",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": "cultural diversity across states",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch14-t01",
+   "chapter": "c6-english-ch14",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "The Kites",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch15-t01",
+   "chapter": "c6-english-ch15",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "biography",
+   "title": "Ila Sachani: Embroidering Dreams with her Feet",
+   "primary": "timeline@1",
+   "secondary": [
+    "story-sequence@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-english-ch16-t01",
+   "chapter": "c6-english-ch16",
+   "class": 6,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "National War Memorial",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch01-t01",
+   "chapter": "c6-hindi-ch01",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "मातृभूमि",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch02-t01",
+   "chapter": "c6-hindi-ch02",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "sansmaran (संस्मरण)",
+   "title": "गोल",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "timeline@1",
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch03-t01",
+   "chapter": "c6-hindi-ch03",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "पहली बूँद",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch04-t01",
+   "chapter": "c6-hindi-ch04",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "kahani (कहानी)",
+   "title": "हार की जीत",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch05-t01",
+   "chapter": "c6-hindi-ch05",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "doha (दोहा)",
+   "title": "रहीम के दोहे",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch06-t01",
+   "chapter": "c6-hindi-ch06",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "atmakatha (आत्मकथा)",
+   "title": "मेरी माँ",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "timeline@1",
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch07-t01",
+   "chapter": "c6-hindi-ch07",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "जलाते चलो",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch08-t01",
+   "chapter": "c6-hindi-ch08",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "nibandh (निबंध)",
+   "title": "सत्रिया और बिहू नृत्य",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "map-explorer@1",
+    "read-along@1"
+   ],
+   "note": "Sattriya and Bihu: two dances compared",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch09-t01",
+   "chapter": "c6-hindi-ch09",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "pad (पद)",
+   "title": "मैया मैं नहिं माखन खायो",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch10-t01",
+   "chapter": "c6-hindi-ch10",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "kahani (कहानी)",
+   "title": "परीक्षा",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch11-t01",
+   "chapter": "c6-hindi-ch11",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "चेतक की वीरता",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch12-t01",
+   "chapter": "c6-hindi-ch12",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "yatra (यात्रा वृत्तांत)",
+   "title": "हिंद महासागर में छोटा-सा हिंदुस्तान",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "read-along@1",
+    "story-sequence@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-hindi-ch13-t01",
+   "chapter": "c6-hindi-ch13",
+   "class": 6,
+   "subject": "hindi",
+   "chapterType": "nibandh (निबंध)",
+   "title": "पेड़ की बात",
+   "primary": "read-along@1",
+   "secondary": [
+    "compare-venn@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c6-sst-ch01-t01",
+   "chapter": "c6-sst-ch01",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Locating Places on the Earth",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "maths:coord-grid@1",
+    "science:sky@1"
+   ],
+   "note": "graticule layer; Ujjain meridian",
+   "misconceptions": [
+    "Thinks latitude lines and longitude lines are the same thing"
+   ]
+  },
+  {
+   "id": "c6-sst-ch02-t01",
+   "chapter": "c6-sst-ch02",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Oceans and Continents",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1"
+   ],
+   "note": "world layer; 'India is a continent' detector",
+   "misconceptions": [
+    "Believes India is a continent"
+   ]
+  },
+  {
+   "id": "c6-sst-ch03-t01",
+   "chapter": "c6-sst-ch03",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Landforms and Life",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "map-explorer@1",
+    "story-sequence@1"
+   ],
+   "note": "mountain/plateau/plain: 3-set compare",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-sst-ch04-t01",
+   "chapter": "c6-sst-ch04",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Timeline and Sources of History",
+   "primary": "timeline@1",
+   "secondary": [
+    "source-card@1"
+   ],
+   "note": "BCE/CE; sources",
+   "misconceptions": [
+    "Thinks BCE years count upward like CE years"
+   ]
+  },
+  {
+   "id": "c6-sst-ch05-t01",
+   "chapter": "c6-sst-ch05",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "India, That Is Bharat",
+   "primary": "source-card@1",
+   "secondary": [
+    "timeline@1",
+    "map-explorer@1"
+   ],
+   "note": "names of the land in texts and inscriptions",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-sst-ch06-t01",
+   "chapter": "c6-sst-ch06",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Beginnings of Indian Civilisation",
+   "primary": "source-card@1",
+   "secondary": [
+    "map-explorer@1",
+    "timeline@1"
+   ],
+   "note": "Harappan sites and artefacts",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-sst-ch07-t01",
+   "chapter": "c6-sst-ch07",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "India’s Cultural Roots",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "timeline@1",
+    "source-card@1"
+   ],
+   "note": "schools of thought compared",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-sst-ch08-t01",
+   "chapter": "c6-sst-ch08",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Unity in Diversity, or ‘Many in the One’",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "map-explorer@1",
+    "picture-word@1"
+   ],
+   "note": "one harvest, many festivals",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-sst-ch09-t01",
+   "chapter": "c6-sst-ch09",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Family and Community",
+   "primary": "role-play@1",
+   "secondary": [
+    "compare-venn@1"
+   ],
+   "note": "who does which work at home",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-sst-ch10-t01",
+   "chapter": "c6-sst-ch10",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Grassroots Democracy — Part 1: Governance",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "compare-venn@1"
+   ],
+   "note": "three organs: who does what",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-sst-ch11-t01",
+   "chapter": "c6-sst-ch11",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Grassroots Democracy — Part 2: Local Government in Rural Areas",
+   "primary": "role-play@1",
+   "secondary": [
+    "story-sequence@1",
+    "compare-venn@1"
+   ],
+   "note": "gram sabha meeting",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-sst-ch12-t01",
+   "chapter": "c6-sst-ch12",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Grassroots Democracy — Part 3: Local Government in Urban Areas",
+   "primary": "role-play@1",
+   "secondary": [
+    "compare-venn@1",
+    "story-sequence@1"
+   ],
+   "note": "ward complaint; rural vs urban bodies",
+   "misconceptions": []
+  },
+  {
+   "id": "c6-sst-ch13-t01",
+   "chapter": "c6-sst-ch13",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Value of Work",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "role-play@1"
+   ],
+   "note": "economic vs non-economic, paid vs unpaid",
+   "misconceptions": [
+    "Thinks unpaid work at home is not \"real\" work"
+   ]
+  },
+  {
+   "id": "c6-sst-ch14-t01",
+   "chapter": "c6-sst-ch14",
+   "class": 6,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Economic Activities Around Us",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "compare-venn@1"
+   ],
+   "note": "cotton to cloth: sector chain",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch01-t01",
+   "chapter": "c7-english-ch01",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Day the River Spoke",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch02-t01",
+   "chapter": "c7-english-ch02",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Try Again",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch03-t01",
+   "chapter": "c7-english-ch03",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Three Days to See",
+   "primary": "read-along@1",
+   "secondary": [
+    "compare-venn@1",
+    "grammar-transform@1"
+   ],
+   "note": "senses compared",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch04-t01",
+   "chapter": "c7-english-ch04",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Animals, Birds, and Dr. Dolittle",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch05-t01",
+   "chapter": "c7-english-ch05",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "A Funny Man",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch06-t01",
+   "chapter": "c7-english-ch06",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "play",
+   "title": "Say the Right Thing",
+   "primary": "role-play@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch07-t01",
+   "chapter": "c7-english-ch07",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "My Brother’s Great Invention",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch08-t01",
+   "chapter": "c7-english-ch08",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Paper Boats",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch09-t01",
+   "chapter": "c7-english-ch09",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "letter",
+   "title": "North, South, East, West",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": "letters from four directions of India",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch10-t01",
+   "chapter": "c7-english-ch10",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Tunnel",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch11-t01",
+   "chapter": "c7-english-ch11",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Travel",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch12-t01",
+   "chapter": "c7-english-ch12",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "biography",
+   "title": "Conquering the Summit",
+   "primary": "timeline@1",
+   "secondary": [
+    "story-sequence@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch13-t01",
+   "chapter": "c7-english-ch13",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "dialogue",
+   "title": "A Homage to Our Brave Soldiers",
+   "primary": "role-play@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch14-t01",
+   "chapter": "c7-english-ch14",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "My Dear Soldiers",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-english-ch15-t01",
+   "chapter": "c7-english-ch15",
+   "class": 7,
+   "subject": "english",
+   "chapterType": "biography",
+   "title": "Rani Abbakka",
+   "primary": "timeline@1",
+   "secondary": [
+    "map-explorer@1",
+    "story-sequence@1",
+    "grammar-transform@1"
+   ],
+   "note": "Rani Abbakka: Ullal on the coast",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-hindi-ch01-t01",
+   "chapter": "c7-hindi-ch01",
+   "class": 7,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "माँ, कह एक कहानी",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-hindi-ch02-t01",
+   "chapter": "c7-hindi-ch02",
+   "class": 7,
+   "subject": "hindi",
+   "chapterType": "lokkatha (लोककथा)",
+   "title": "तीन बुद्धिमान",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-hindi-ch03-t01",
+   "chapter": "c7-hindi-ch03",
+   "class": 7,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "फूल और काँटा",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-hindi-ch04-t01",
+   "chapter": "c7-hindi-ch04",
+   "class": 7,
+   "subject": "hindi",
+   "chapterType": "nibandh (निबंध)",
+   "title": "पानी रे पानी",
+   "primary": "read-along@1",
+   "secondary": [
+    "story-sequence@1",
+    "word-builder@1"
+   ],
+   "note": "water's journey as a sequence",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-hindi-ch05-t01",
+   "chapter": "c7-hindi-ch05",
+   "class": 7,
+   "subject": "hindi",
+   "chapterType": "kahani (कहानी)",
+   "title": "नहीं होना बीमार",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-hindi-ch06-t01",
+   "chapter": "c7-hindi-ch06",
+   "class": 7,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "गिरिधर कविराय की कुंडलिया",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-hindi-ch07-t01",
+   "chapter": "c7-hindi-ch07",
+   "class": 7,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "वर्षा-बहार",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-hindi-ch08-t01",
+   "chapter": "c7-hindi-ch08",
+   "class": 7,
+   "subject": "hindi",
+   "chapterType": "sakshatkar (साक्षात्कार)",
+   "title": "बिरजू महाराज से साक्षात्कार",
+   "primary": "role-play@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-hindi-ch09-t01",
+   "chapter": "c7-hindi-ch09",
+   "class": 7,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "चिड़िया",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-hindi-ch10-t01",
+   "chapter": "c7-hindi-ch10",
+   "class": 7,
+   "subject": "hindi",
+   "chapterType": "pad (पद)",
+   "title": "मीरा के पद",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch01-t01",
+   "chapter": "c7-sst-ch01",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Geographical Diversity of India",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1"
+   ],
+   "note": "physical regions",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch02-t01",
+   "chapter": "c7-sst-ch02",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Understanding the Weather",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "maths:data-graphs@1"
+   ],
+   "note": "weather vs climate",
+   "misconceptions": [
+    "Thinks weather and climate mean the same thing"
+   ]
+  },
+  {
+   "id": "c7-sst-ch03-t01",
+   "chapter": "c7-sst-ch03",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Climates of India",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "maths:data-graphs@1",
+    "compare-venn@1"
+   ],
+   "note": "climate regions; climographs",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch04-t01",
+   "chapter": "c7-sst-ch04",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "New Beginnings: Cities and States",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "timeline@1",
+    "source-card@1"
+   ],
+   "note": "mahajanapadas",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch05-t01",
+   "chapter": "c7-sst-ch05",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Rise of Empires",
+   "primary": "timeline@1",
+   "secondary": [
+    "map-explorer@1",
+    "source-card@1"
+   ],
+   "note": "Mauryas; edicts",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch06-t01",
+   "chapter": "c7-sst-ch06",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Age of Reorganisation",
+   "primary": "timeline@1",
+   "secondary": [
+    "source-card@1",
+    "map-explorer@1"
+   ],
+   "note": "coins as sources",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch07-t01",
+   "chapter": "c7-sst-ch07",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Gupta Era: An Age of Tireless Creativity",
+   "primary": "timeline@1",
+   "secondary": [
+    "source-card@1",
+    "compare-venn@1"
+   ],
+   "note": "Gupta achievements",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch08-t01",
+   "chapter": "c7-sst-ch08",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "How the Land Becomes Sacred",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1"
+   ],
+   "note": "pilgrimage routes",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch09-t01",
+   "chapter": "c7-sst-ch09",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "From the Rulers to the Ruled: Types of Governments",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "role-play@1"
+   ],
+   "note": "types of government",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch10-t01",
+   "chapter": "c7-sst-ch10",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Constitution of India — An Introduction",
+   "primary": "timeline@1",
+   "secondary": [
+    "role-play@1",
+    "read-along@1"
+   ],
+   "note": "making of the Constitution; Preamble read aloud",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch11-t01",
+   "chapter": "c7-sst-ch11",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "From Barter to Money",
+   "primary": "role-play@1",
+   "secondary": [
+    "timeline@1",
+    "maths:money@1"
+   ],
+   "note": "barter at a haat",
+   "misconceptions": [
+    "Thinks money has value in itself rather than because people trust it"
+   ]
+  },
+  {
+   "id": "c7-sst-ch12-t01",
+   "chapter": "c7-sst-ch12",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Understanding Markets",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "role-play@1"
+   ],
+   "note": "haat vs mall vs online (3-set)",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch13-t01",
+   "chapter": "c7-sst-ch13",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Story of Indian Farming",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "map-explorer@1",
+    "timeline@1"
+   ],
+   "note": "kharif vs rabi",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch14-t01",
+   "chapter": "c7-sst-ch14",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "India and Her Neighbours",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1"
+   ],
+   "note": "neighbours; cross-border rivers",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch15-t01",
+   "chapter": "c7-sst-ch15",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Empires and Kingdoms: 6th to 10th Centuries",
+   "primary": "timeline@1",
+   "secondary": [
+    "map-explorer@1",
+    "source-card@1"
+   ],
+   "note": "parallel dynasty lanes",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch16-t01",
+   "chapter": "c7-sst-ch16",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Turning Tides: 11th and 12th Centuries",
+   "primary": "timeline@1",
+   "secondary": [
+    "map-explorer@1",
+    "source-card@1"
+   ],
+   "note": "Cholas",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch17-t01",
+   "chapter": "c7-sst-ch17",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "India, a Home to Many",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "timeline@1",
+    "compare-venn@1"
+   ],
+   "note": "communities on the west coast",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch18-t01",
+   "chapter": "c7-sst-ch18",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The State, the Government, and You",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "compare-venn@1",
+    "role-play@1"
+   ],
+   "note": "birth certificate to licence",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch19-t01",
+   "chapter": "c7-sst-ch19",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Infrastructure: Engine of India’s Development",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1"
+   ],
+   "note": "networks layer",
+   "misconceptions": []
+  },
+  {
+   "id": "c7-sst-ch20-t01",
+   "chapter": "c7-sst-ch20",
+   "class": 7,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Banks and the Magic of Finance",
+   "primary": "role-play@1",
+   "secondary": [
+    "story-sequence@1",
+    "maths:money@1"
+   ],
+   "note": "opening an account",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch01-t01",
+   "chapter": "c8-english-ch01",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Wit that Won Hearts",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "timeline@1",
+    "grammar-transform@1"
+   ],
+   "note": "Vijayanagara court",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch02-t01",
+   "chapter": "c8-english-ch02",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "A Concrete Example",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch03-t01",
+   "chapter": "c8-english-ch03",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "play",
+   "title": "Wisdom Paves the Way",
+   "primary": "role-play@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch04-t01",
+   "chapter": "c8-english-ch04",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "biography",
+   "title": "A Tale of Valour: Major Somnath Sharma and the Battle of Badgam",
+   "primary": "timeline@1",
+   "secondary": [
+    "story-sequence@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch05-t01",
+   "chapter": "c8-english-ch05",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Somebody’s Mother",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch06-t01",
+   "chapter": "c8-english-ch06",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "letter",
+   "title": "Verghese Kurien— I Too Had A Dream",
+   "primary": "timeline@1",
+   "secondary": [
+    "story-sequence@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": "dairy cooperative movement over time",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch07-t01",
+   "chapter": "c8-english-ch07",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Case of the Fifth Word",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch08-t01",
+   "chapter": "c8-english-ch08",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "The Magic Brush of Dreams",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch09-t01",
+   "chapter": "c8-english-ch09",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Spectacular Wonders",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": "natural wonders of India",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch10-t01",
+   "chapter": "c8-english-ch10",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Cherry Tree",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch11-t01",
+   "chapter": "c8-english-ch11",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Harvest Hymn",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch12-t01",
+   "chapter": "c8-english-ch12",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Waiting for the Rain",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch13-t01",
+   "chapter": "c8-english-ch13",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Feathered Friend",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch14-t01",
+   "chapter": "c8-english-ch14",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Magnifying Glass",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-english-ch15-t01",
+   "chapter": "c8-english-ch15",
+   "class": 8,
+   "subject": "english",
+   "chapterType": "biography",
+   "title": "Bibha Chowdhuri: The Beam of Light that Lit the Path for Women in Indian Science",
+   "primary": "timeline@1",
+   "secondary": [
+    "story-sequence@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-hindi-ch01-t01",
+   "chapter": "c8-hindi-ch01",
+   "class": 8,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "स्वदेश",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-hindi-ch02-t01",
+   "chapter": "c8-hindi-ch02",
+   "class": 8,
+   "subject": "hindi",
+   "chapterType": "kahani (कहानी)",
+   "title": "दो गौरैया",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-hindi-ch03-t01",
+   "chapter": "c8-hindi-ch03",
+   "class": 8,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "एक आशीर्वाद",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-hindi-ch04-t01",
+   "chapter": "c8-hindi-ch04",
+   "class": 8,
+   "subject": "hindi",
+   "chapterType": "patra (पत्र)",
+   "title": "हरिद्वार",
+   "primary": "read-along@1",
+   "secondary": [
+    "map-explorer@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-hindi-ch05-t01",
+   "chapter": "c8-hindi-ch05",
+   "class": 8,
+   "subject": "hindi",
+   "chapterType": "doha (दोहा)",
+   "title": "कबीर के दोहे",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-hindi-ch06-t01",
+   "chapter": "c8-hindi-ch06",
+   "class": 8,
+   "subject": "hindi",
+   "chapterType": "kahani (कहानी)",
+   "title": "एक टोकरी भर मिट्टी",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-hindi-ch07-t01",
+   "chapter": "c8-hindi-ch07",
+   "class": 8,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "मत बाँधो",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-hindi-ch08-t01",
+   "chapter": "c8-hindi-ch08",
+   "class": 8,
+   "subject": "hindi",
+   "chapterType": "ekanki (एकांकी)",
+   "title": "नए मेहमान",
+   "primary": "role-play@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-hindi-ch09-t01",
+   "chapter": "c8-hindi-ch09",
+   "class": 8,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "आदमी का अनुपात",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-hindi-ch10-t01",
+   "chapter": "c8-hindi-ch10",
+   "class": 8,
+   "subject": "hindi",
+   "chapterType": "udbodhan (उद्बोधन)",
+   "title": "तरुण के स्वप्न",
+   "primary": "read-along@1",
+   "secondary": [
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch01-t01",
+   "chapter": "c8-sst-ch01",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Natural Resources and Their Use",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "map-explorer@1"
+   ],
+   "note": "renewable vs non-renewable",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch02-t01",
+   "chapter": "c8-sst-ch02",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Reshaping India’s Political Map",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "timeline@1",
+    "source-card@1"
+   ],
+   "note": "political map over time",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch03-t01",
+   "chapter": "c8-sst-ch03",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Rise of the Marathas",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "timeline@1"
+   ],
+   "note": "hill and sea forts",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch04-t01",
+   "chapter": "c8-sst-ch04",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Colonial Era in India",
+   "primary": "timeline@1",
+   "secondary": [
+    "role-play@1",
+    "source-card@1"
+   ],
+   "note": "Champaran: fictional farmer roles",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch05-t01",
+   "chapter": "c8-sst-ch05",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Universal Franchise and India’s Electoral System",
+   "primary": "role-play@1",
+   "secondary": [
+    "story-sequence@1"
+   ],
+   "note": "polling booth; EVM/VVPAT steps",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch06-t01",
+   "chapter": "c8-sst-ch06",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Parliamentary System: Legislature and Executive",
+   "primary": "role-play@1",
+   "secondary": [
+    "compare-venn@1",
+    "story-sequence@1"
+   ],
+   "note": "Question Hour; bill to law",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch07-t01",
+   "chapter": "c8-sst-ch07",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Factors of Production",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "story-sequence@1"
+   ],
+   "note": "sort into land/labour/capital/entrepreneurship",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch08-t01",
+   "chapter": "c8-sst-ch08",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "World Geography: Some Glimpses",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1"
+   ],
+   "note": "world regions",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch09-t01",
+   "chapter": "c8-sst-ch09",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "India’s Long Road to Independence",
+   "primary": "timeline@1",
+   "secondary": [
+    "map-explorer@1",
+    "source-card@1"
+   ],
+   "note": "Dandi route",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch10-t01",
+   "chapter": "c8-sst-ch10",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "A Journey Through Indian Architecture",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "map-explorer@1",
+    "timeline@1"
+   ],
+   "note": "Nagara vs Dravida",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch11-t01",
+   "chapter": "c8-sst-ch11",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Role of the Judiciary in Our Society",
+   "primary": "role-play@1",
+   "secondary": [
+    "story-sequence@1"
+   ],
+   "note": "Lok Adalat",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch12-t01",
+   "chapter": "c8-sst-ch12",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Citizenship: Rights and Duties",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "role-play@1"
+   ],
+   "note": "rights vs duties",
+   "misconceptions": [
+    "Thinks rights come without any duties"
+   ]
+  },
+  {
+   "id": "c8-sst-ch13-t01",
+   "chapter": "c8-sst-ch13",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Dynamics of Population",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "maths:data-graphs@1"
+   ],
+   "note": "density choropleth",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch14-t01",
+   "chapter": "c8-sst-ch14",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "India’s Urban Landscape",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "timeline@1",
+    "maths:data-graphs@1"
+   ],
+   "note": "city growth",
+   "misconceptions": []
+  },
+  {
+   "id": "c8-sst-ch15-t01",
+   "chapter": "c8-sst-ch15",
+   "class": 8,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Cultural Currents: 13th to 17th Centuries",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "timeline@1",
+    "map-explorer@1"
+   ],
+   "note": "Kabir dohas, Tukaram abhangs",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch01-t01",
+   "chapter": "c9-english-ch01",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "How I Taught My Grandmother to Read",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch02-t01",
+   "chapter": "c9-english-ch02",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Bharat Our Land",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch03-t01",
+   "chapter": "c9-english-ch03",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "The Pot Maker",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch04-t01",
+   "chapter": "c9-english-ch04",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Gifts of Grace: Honouring Our Vocations",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch05-t01",
+   "chapter": "c9-english-ch05",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Winds of Change",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1",
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": "hand-fan crafts across India",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch06-t01",
+   "chapter": "c9-english-ch06",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Canvas of Soil",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch07-t01",
+   "chapter": "c9-english-ch07",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "story",
+   "title": "Vitamin-M",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch08-t01",
+   "chapter": "c9-english-ch08",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "I Cannot Remember My Mother",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch09-t01",
+   "chapter": "c9-english-ch09",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "The World of Limitless Possibilities",
+   "primary": "read-along@1",
+   "secondary": [
+    "compare-venn@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch10-t01",
+   "chapter": "c9-english-ch10",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Nine Gold Medals",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch11-t01",
+   "chapter": "c9-english-ch11",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "play",
+   "title": "Twin Melodies",
+   "primary": "role-play@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch12-t01",
+   "chapter": "c9-english-ch12",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "A Friend Found in Music",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch13-t01",
+   "chapter": "c9-english-ch13",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Carrier of Words",
+   "primary": "read-along@1",
+   "secondary": [
+    "map-explorer@1",
+    "grammar-transform@1"
+   ],
+   "note": "remote postal routes",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch14-t01",
+   "chapter": "c9-english-ch14",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Words",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch15-t01",
+   "chapter": "c9-english-ch15",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "prose",
+   "title": "Follow That Dream",
+   "primary": "read-along@1",
+   "secondary": [
+    "compare-venn@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-english-ch16-t01",
+   "chapter": "c9-english-ch16",
+   "class": 9,
+   "subject": "english",
+   "chapterType": "poem",
+   "title": "Believe in Yourself",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch01-t01",
+   "chapter": "c9-hindi-ch01",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "kahani (कहानी)",
+   "title": "दो बैलों की कथा",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch02-t01",
+   "chapter": "c9-hindi-ch02",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "nibandh (निबंध)",
+   "title": "क्या लिखूँ?",
+   "primary": "read-along@1",
+   "secondary": [
+    "compare-venn@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch03-t01",
+   "chapter": "c9-hindi-ch03",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "kahani (कहानी)",
+   "title": "संवादहीन",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch04-t01",
+   "chapter": "c9-hindi-ch04",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "sakshatkar (साक्षात्कार)",
+   "title": "ऐसी भी बातें होती हैं (लता मंगेशकर से साक्षात्कार)",
+   "primary": "role-play@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch05-t01",
+   "chapter": "c9-hindi-ch05",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "yatra (यात्रा वृत्तांत)",
+   "title": "आखिरी चट्टान तक",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "read-along@1",
+    "story-sequence@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch06-t01",
+   "chapter": "c9-hindi-ch06",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "ekanki (एकांकी)",
+   "title": "रीढ़ की हड्डी",
+   "primary": "role-play@1",
+   "secondary": [
+    "read-along@1",
+    "grammar-transform@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch07-t01",
+   "chapter": "c9-hindi-ch07",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "nibandh (निबंध)",
+   "title": "मैं और मेरा देश",
+   "primary": "read-along@1",
+   "secondary": [
+    "compare-venn@1",
+    "grammar-transform@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch08-t01",
+   "chapter": "c9-hindi-ch08",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "pad (पद)",
+   "title": "पद",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch09-t01",
+   "chapter": "c9-hindi-ch09",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "राम-लक्ष्मण-परशुराम संवाद",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "role-play@1",
+    "read-along@1"
+   ],
+   "note": "a dialogue in verse",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch10-t01",
+   "chapter": "c9-hindi-ch10",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "भारति, जय, विजयकरे!",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch11-t01",
+   "chapter": "c9-hindi-ch11",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "झाँसी की रानी",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-hindi-ch12-t01",
+   "chapter": "c9-hindi-ch12",
+   "class": 9,
+   "subject": "hindi",
+   "chapterType": "kavita (कविता)",
+   "title": "घर की याद",
+   "primary": "rhythm-poem@1",
+   "secondary": [
+    "read-along@1",
+    "word-builder@1"
+   ],
+   "note": null,
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch01-t01",
+   "chapter": "c9-sst-ch01",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Understanding Social Science",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "source-card@1"
+   ],
+   "note": "one story, four lenses (table mode)",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch02-t01",
+   "chapter": "c9-sst-ch02",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Shaping of the Earth’s Surface",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "map-explorer@1"
+   ],
+   "note": "plate movement, erosion as process chains",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch03-t01",
+   "chapter": "c9-sst-ch03",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Atmosphere and Climate",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "maths:data-graphs@1",
+    "map-explorer@1"
+   ],
+   "note": "weather vs climate; layers",
+   "misconceptions": [
+    "Thinks climate and weather are the same"
+   ]
+  },
+  {
+   "id": "c9-sst-ch04-t01",
+   "chapter": "c9-sst-ch04",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Early Humans and Beginning of Civilisation",
+   "primary": "timeline@1",
+   "secondary": [
+    "source-card@1",
+    "map-explorer@1"
+   ],
+   "note": "Bhimbetka; deep time (log scale)",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch05-t01",
+   "chapter": "c9-sst-ch05",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "State and Society up to 1000 CE",
+   "primary": "source-card@1",
+   "secondary": [
+    "timeline@1",
+    "map-explorer@1"
+   ],
+   "note": "inscriptions",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch06-t01",
+   "chapter": "c9-sst-ch06",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Democracy",
+   "primary": "compare-venn@1",
+   "secondary": [
+    "role-play@1"
+   ],
+   "note": "class vote two ways",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch07-t01",
+   "chapter": "c9-sst-ch07",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Elections",
+   "primary": "story-sequence@1",
+   "secondary": [
+    "role-play@1"
+   ],
+   "note": "election process; model code",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch08-t01",
+   "chapter": "c9-sst-ch08",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Building Blocks in Economics: The Problem of Choice",
+   "primary": "role-play@1",
+   "secondary": [
+    "maths:money@1",
+    "compare-venn@1"
+   ],
+   "note": "Rs 100: opportunity cost",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch09-t01",
+   "chapter": "c9-sst-ch09",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "The Price Puzzle: What Drives the Market",
+   "primary": "role-play@1",
+   "secondary": [
+    "maths:data-graphs@1",
+    "story-sequence@1"
+   ],
+   "note": "mandi price simulation",
+   "misconceptions": [
+    "Thinks shopkeepers alone decide prices"
+   ]
+  },
+  {
+   "id": "c9-sst-ch10-t01",
+   "chapter": "c9-sst-ch10",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Oceans and Life",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "story-sequence@1"
+   ],
+   "note": "currents; tsunami warning chain",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch11-t01",
+   "chapter": "c9-sst-ch11",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Life on Earth",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "compare-venn@1"
+   ],
+   "note": "biomes; biosphere reserves",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch12-t01",
+   "chapter": "c9-sst-ch12",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Resistance and Resilience (1000 CE – 1700 CE)",
+   "primary": "timeline@1",
+   "secondary": [
+    "map-explorer@1",
+    "rhythm-poem@1"
+   ],
+   "note": "regional kingdoms; Bhakti",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch13-t01",
+   "chapter": "c9-sst-ch13",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "India and the World-I (1900 BCE – 1200 CE)",
+   "primary": "map-explorer@1",
+   "secondary": [
+    "timeline@1",
+    "source-card@1"
+   ],
+   "note": "trade routes to SE Asia",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch14-t01",
+   "chapter": "c9-sst-ch14",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Authority",
+   "primary": "source-card@1",
+   "secondary": [
+    "compare-venn@1"
+   ],
+   "note": "Arthashastra excerpt",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch15-t01",
+   "chapter": "c9-sst-ch15",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "From Ideas to Startups",
+   "primary": "role-play@1",
+   "secondary": [
+    "story-sequence@1"
+   ],
+   "note": "canteen business plan",
+   "misconceptions": []
+  },
+  {
+   "id": "c9-sst-ch16-t01",
+   "chapter": "c9-sst-ch16",
+   "class": 9,
+   "subject": "sst",
+   "chapterType": null,
+   "title": "Smart Ways to Manage Your Finances",
+   "primary": "maths:money@1",
+   "secondary": [
+    "maths:data-graphs@1",
+    "compare-venn@1"
+   ],
+   "note": "budget is a maths-engine job",
+   "misconceptions": []
+  }
+ ],
+ "absorbed": [
+  {
+   "id": "c3-evs-ch01-t01",
+   "class": 3,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c3-evs-ch01-t02",
+   "class": 3,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c3-evs-ch02-t01",
+   "class": 3,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c3-evs-ch02-t02",
+   "class": 3,
+   "generic": "scenario",
+   "engine": "role-play@1"
+  },
+  {
+   "id": "c3-evs-ch03-t01",
+   "class": 3,
+   "generic": "map",
+   "engine": "map-explorer@1"
+  },
+  {
+   "id": "c3-evs-ch03-t02",
+   "class": 3,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c3-evs-ch04-t02",
+   "class": 3,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c3-evs-ch06-t02",
+   "class": 3,
+   "generic": "scenario",
+   "engine": "role-play@1"
+  },
+  {
+   "id": "c3-evs-ch08-t01",
+   "class": 3,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c3-evs-ch08-t02",
+   "class": 3,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c3-evs-ch09-t01",
+   "class": 3,
+   "generic": "scenario",
+   "engine": "role-play@1"
+  },
+  {
+   "id": "c3-evs-ch10-t01",
+   "class": 3,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c3-evs-ch11-t01",
+   "class": 3,
+   "generic": "sequence",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c3-evs-ch12-t01",
+   "class": 3,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c3-evs-ch12-t02",
+   "class": 3,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c4-evs-ch01-t01",
+   "class": 4,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c4-evs-ch01-t02",
+   "class": 4,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c4-evs-ch02-t01",
+   "class": 4,
+   "generic": "map",
+   "engine": "map-explorer@1"
+  },
+  {
+   "id": "c4-evs-ch02-t02",
+   "class": 4,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c4-evs-ch04-t01",
+   "class": 4,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c4-evs-ch04-t02",
+   "class": 4,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c4-evs-ch06-t01",
+   "class": 4,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c4-evs-ch06-t02",
+   "class": 4,
+   "generic": "sequence",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c4-evs-ch08-t01",
+   "class": 4,
+   "generic": "sequence",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c4-evs-ch08-t02",
+   "class": 4,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c4-evs-ch09-t01",
+   "class": 4,
+   "generic": "map",
+   "engine": "map-explorer@1"
+  },
+  {
+   "id": "c4-evs-ch09-t02",
+   "class": 4,
+   "generic": "map",
+   "engine": "map-explorer@1"
+  },
+  {
+   "id": "c5-evs-ch03-t02",
+   "class": 5,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c5-evs-ch04-t01",
+   "class": 5,
+   "generic": "scenario",
+   "engine": "role-play@1"
+  },
+  {
+   "id": "c5-evs-ch05-t01",
+   "class": 5,
+   "generic": "map",
+   "engine": "map-explorer@1"
+  },
+  {
+   "id": "c5-evs-ch05-t02",
+   "class": 5,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c5-evs-ch06-t01",
+   "class": 5,
+   "generic": "map",
+   "engine": "map-explorer@1"
+  },
+  {
+   "id": "c5-evs-ch06-t02",
+   "class": 5,
+   "generic": "scenario",
+   "engine": "role-play@1"
+  },
+  {
+   "id": "c5-evs-ch08-t01",
+   "class": 5,
+   "generic": "sequence",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c5-evs-ch08-t02",
+   "class": 5,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c5-evs-ch10-t02",
+   "class": 5,
+   "generic": "scenario",
+   "engine": "role-play@1"
+  },
+  {
+   "id": "c6-science-ch01-t01",
+   "class": 6,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c6-science-ch02-t01",
+   "class": 6,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c6-science-ch03-t01",
+   "class": 6,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c6-science-ch03-t04",
+   "class": 6,
+   "generic": "map",
+   "engine": "map-explorer@1"
+  },
+  {
+   "id": "c6-science-ch06-t02",
+   "class": 6,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c6-science-ch10-t01",
+   "class": 6,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c6-science-ch10-t03",
+   "class": 6,
+   "generic": "sequence",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c6-science-ch11-t01",
+   "class": 6,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c6-science-ch11-t02",
+   "class": 6,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c7-science-ch01-t01",
+   "class": 7,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c7-science-ch01-t02",
+   "class": 7,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c7-science-ch04-t03",
+   "class": 7,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c8-science-ch02-t03",
+   "class": 8,
+   "generic": "sorter",
+   "engine": "compare-venn@1"
+  },
+  {
+   "id": "c8-science-ch06-t03",
+   "class": 8,
+   "generic": "scenario",
+   "engine": "role-play@1"
+  },
+  {
+   "id": "c8-science-ch08-t03",
+   "class": 8,
+   "generic": "map",
+   "engine": "map-explorer@1"
+  },
+  {
+   "id": "c8-science-ch13-t03",
+   "class": 8,
+   "generic": "sequence",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c9-science-ch01-t01",
+   "class": 9,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c9-science-ch01-t03",
+   "class": 9,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c9-science-ch02-t02",
+   "class": 9,
+   "generic": "sequence",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c9-science-ch02-t03",
+   "class": 9,
+   "generic": "story",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c9-science-ch11-t01",
+   "class": 9,
+   "generic": "sequence",
+   "engine": "story-sequence@1"
+  },
+  {
+   "id": "c9-science-ch12-t01",
+   "class": 9,
+   "generic": "map",
+   "engine": "map-explorer@1"
+  },
+  {
+   "id": "c9-science-ch13-t04",
+   "class": 9,
+   "generic": "scenario",
+   "engine": "role-play@1"
+  }
+ ]
+}

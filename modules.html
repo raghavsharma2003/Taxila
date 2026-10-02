@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Module frame: loaded in <iframe sandbox="allow-scripts"> by src/modules/host.tsx. Engines get no
+         network (connect-src 'none'), cannot submit forms or retarget URLs. -->
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'" />
+    <title>Taxila activity</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/modules/frame/main.tsx"></script>
+  </body>
+</html>
