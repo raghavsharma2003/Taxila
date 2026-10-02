@@ -20,8 +20,8 @@ const YIN_UNVOICED = 0.35;
 
 /** A gap in speech at least this long is a pause; shorter dips are inter-syllable (child-reading convention). */
 export const MIN_PAUSE_MS = 250;
-/** A speech run shorter than this is a click or a breath, not speech. */
-export const MIN_RUN_MS = 60;
+/** A speech run shorter than this is a click or a breath, not speech (a 40 ms window smears a 30 ms click over 3 frames; a syllable is ≥100 ms). */
+export const MIN_RUN_MS = 100;
 /** Speech gate: this far above the adaptive noise floor, and never below the absolute floor. */
 export const SPEECH_ABOVE_FLOOR_DB = 12;
 export const SPEECH_ABS_MIN_DB = -50;

@@ -12,6 +12,7 @@
 //      and fold them into a rolling text recap rendered as one row of the CHILD brief (notes, never lines).
 //   C  audio→text: keep the last 8-16 exchanges as audio; when 16 are held, replace the oldest 8 audio items
 //      with text items carrying the HEARD transcript (conversation.item.create previous_item_id + delete).
+//   E  (control) the tail placement of D with NO pruning or replacement: separates placement from replacement.
 //   D  (cache arm) as C, but the per-turn sections (LESSON..TURN SHAPE) ride in a system item appended at the
 //      end of the conversation and the stable CORE+CHILD sits in session instructions.
 //
@@ -33,6 +34,8 @@ const { CHARACTERS } = await import(R + "compiler/characters/index.js");
 
 const arg = (n, d) => { const i = process.argv.indexOf(`--${n}`); return i > 0 ? process.argv[i + 1] : d; };
 const ARM = arg("arm", "A"), RUN = arg("run", "1"), MINUTES = +arg("minutes", 30);
+// D and E put the per-turn sections in a system item at the conversation tail (stable session prefix).
+const TAIL = ARM === "D" || ARM === "E";
 const HERE = new URL(".", import.meta.url).pathname;
 const OUT = `${HERE}runs/${ARM}-${RUN}.jsonl`;
 fs.mkdirSync(`${HERE}runs`, { recursive: true }); fs.mkdirSync(`${HERE}clips`, { recursive: true });
@@ -144,7 +147,7 @@ const baseSession = { type: "realtime", output_modalities: ["audio"],
   audio: { input: { format: { type: "audio/pcm", rate: 24000 }, turn_detection: sessionTd }, output: { voice: teacher.voice } } };
 let firstMove = await startTopic(true, 0);
 let ins0 = instructionsFor(state, kit, "voice");
-send({ type: "session.update", session: { ...baseSession, instructions: ARM === "D" ? splitIns(ins0)[0] : ins0 } });
+send({ type: "session.update", session: { ...baseSession, instructions: TAIL ? splitIns(ins0)[0] : ins0 } });
 const upd = await waitFor((e) => e.type === "session.updated");
 rec({ kind: "session", arm: ARM, run: RUN, truncation: upd.session.truncation, expires_in_s: created.session.expires_at - Math.floor(Date.now() / 1000), model: upd.session.model });
 
@@ -158,7 +161,7 @@ const words = (t) => String(t || "").trim().split(/\s+/).filter(Boolean).length;
 async function respond(instructions) {
   curResp = { t0: 0, ttfa: null, audioBytes: 0, itemId: null };
   let response;
-  if (ARM === "D") {
+  if (TAIL) {
     // per-turn sections ride in a system item at the END of the conversation; removed after the reply.
     const [, dyn] = splitIns(instructions);
     const id = `sys_${turn}_${crypto.randomBytes(3).toString("hex")}`;
@@ -178,12 +181,12 @@ async function respond(instructions) {
     say("failed", JSON.stringify(done.response.status_details).slice(0, 300));
     await new Promise((r) => setTimeout(r, 2000 * (a + 1)));
     curResp = { t0: performance.now(), ttfa: null, audioBytes: 0, itemId: null };
-    send({ type: "response.create", response: ARM === "D" ? {} : { instructions } });
+    send({ type: "response.create", response: TAIL ? {} : { instructions } });
     done = await waitFor((e) => e.type === "response.done", 90_000);
   }
   response = done.response;
   const r = curResp; curResp = null;
-  if (ARM === "D" && sysItemId) { send({ type: "conversation.item.delete", item_id: sysItemId }); await waitFor((e) => e.type === "conversation.item.deleted" && e.item_id === sysItemId).catch(() => {}); sysItemId = null; }
+  if (TAIL && sysItemId) { send({ type: "conversation.item.delete", item_id: sysItemId }); await waitFor((e) => e.type === "conversation.item.deleted" && e.item_id === sysItemId).catch(() => {}); sysItemId = null; }
   const out = (response.output || []).find((o) => o.role === "assistant");
   const transcript = (out?.content || []).map((c) => c.transcript ?? c.text ?? "").join(" ").trim();
   return { ...r, itemId: out?.id ?? r.itemId, transcript, usage: response.usage, status: response.status, audioMs: Math.round(r.audioBytes / 48), modalities: (out?.content || []).map((c) => c.type) };

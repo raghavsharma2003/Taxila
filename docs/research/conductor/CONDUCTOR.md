@@ -36,6 +36,20 @@ two lock cycles (publish/supersede, two reviewers), and a child-carrying `two_we
 New pieces: `forge.*` job kinds (§8.2), degrade rows (§9.5), invariants I-F1…I-F16 (§9.9), CM4 defined (§9.12),
 owner decisions D-VIDEO, D-ASR, D-SPEECH, D-SONG, D-REVIEW (§10.5). Every revision-4 edit is marked "(gap-fill G2-content-orchestration-media)".
 The note on the "(X31)" tag in `content-orchestration.sql` is resolved: the `lib/` prefix check now cites §5.8.
+**Revision 5 (gap-fill G3-household-siblings, 2026-10-02).** Siblings and the shared phone. `household.md` is written
+and ruled in as X59-X66 (§0.2). §4.4's "younger-first; the second child's plan shifts by the first's" read a sibling
+from inside a per-child `decide()`, so it could be neither deterministic nor replayed. Caps, the anchor reminder,
+admission and erasure were also keyed as if each child had her own phone. Revision 5 adds a small household actor. Its
+single owner, the pure `allocate()`, writes `household_slot`, where an exclusion constraint makes overlap impossible.
+Children report to it by inserting `household_inbox` rows. It answers each child only through a `wakeup` courier row,
+so a sibling's change enters the child's own log as `household.window_assigned` and replay holds. Caps move to the
+recipient guardian, with one family letter a week. Admission and the anchor reminder move to the device.
+`session.reassign` and erasure gain courier and fence steps. New pieces: events (§2.2), `ConductorState.household`
+(§3.1), the allocator's lock row and the amended commit, reassign and erasure rows (§3.4), V28-V30 (§4.5), the
+per-guardian `notify_slot` (§4.10.3), I-H1…I-H12 (§9.9), and the `three_siblings_one_phone` persona (§9.10). It was
+measured on scratch PG 16.14 (25/25, `household-pg16-probe-2026-10-02.txt`) and in the sim (8 seeds × 28 days, 0 slot
+overlaps, 0 cap breaches, 7/7 controls trip: `household-sim-2026-10-02.txt`). Every revision-5 edit is marked
+"(gap-fill G3-household-siblings)".
 **Tags:** **[V]** checked against the primary source (this session or by the cited sibling doc). **[S]** secondary.
 **[U]** unmeasured design default or estimate. **[I]** inference. **[repo]** a fact in this repository.
 Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `dc AR-4`, `ws SW3`, `ss AR-2`,
@@ -164,6 +178,14 @@ Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `
 | X56 | songs (gap-fill G2-content-orchestration-media) | CONDUCTOR: none | **v1 = `chant-track@1` (Azure Speech Swara clips on a client beat) + v1.5 `jingle@1` (a reviewed, codex-composed tune template under the chant). Sung render rejected. Eligibility is the predicate `verbatim_sequence` (LS rule 24); every kit passes the recitation lint L1-L5 and a native-ear lang key** | no first-party model sings (n = 18, SR §4) [Me]; lint 11/11 golden cases [M] |
 | X57 | lesson images and CM4 (gap-fill G2-content-orchestration-media) | X10 "topic-level prefetch of the next two weeks of syllabus"; CM4 undefined | **`prefetch` ranked by cohort demand Σ P(child on topic, day d)·γ^d within the nightly image quota; CM4/CM4b/CM4-img computed from `module_run.source` (Director-only writer)** | calendar-only prefetch plateaus at 86%; demand ranking 99% at 300 images/night [sim, `image-prefetch-sim.py`] |
 | X58 | model retirement dates (gap-fill G2-content-orchestration-media) | `allowed_model.allowed_until` null for most rows | **every row carries the Foundry date; `verify` fails at < 30 days (I-F13); `taxila-transcribe` must be re-pinned before 2026-10-15 (D-ASR)** | gpt-4o-transcribe 2025-03-20 retires 2026-10-15 [V] and gates the TTS WER and chant ASR checks |
+| X59 | sibling order (gap-fill G3-household-siblings) | §4.4 revisions 1-3: "younger-first; the second child's plan shifts by the first's", with no input path, record or owner | **a household actor with one owner, the pure `allocate()`**. It is the only writer of `household_slot`, whose `EXCLUDE … DEFERRABLE` makes overlap impossible. A child reaches the household only by inserting a `household_inbox` row in its own commit, and hears back only through a `wakeup` courier row ingested as `household.window_assigned`. `decide` never reads a household table; `decision_log.household_v` records what it folded | a rule that reads a sibling breaks I-C6/I-R3. With the courier the window is in the child's own log, so replay needs nothing new (household.md §3); the allocator replays from `household_decision` (sim: 1,106/1,106 byte-equal) |
+| X60 | re-plan propagation (G3) | none | **presence wins, order plans**: a child who starts while the phone is free becomes a fixed fact. Inbox rows are debounced 60 s per household [U] and windows have a 10-min hysteresis [U]. **No cascade**: a `household`-caused re-plan never reports its length back (V29, I-H3). Only unshown slots move | without the rule a trigger runs up to n − 1 extra passes (fixture 1 → 2 passes, 3 → 5 deliveries); with it 1 pass per trigger and ≤ 1 delivery per member per pass over 1,116 passes [sim] |
+| X61 | cap scope (G3) | §4.10.3: `notify_slot` per (guardian, **child**) | **per recipient guardian**: `(guardian_id, scope, slot)`. Slot 1 = the family letter only; slot 2 = one other learning push from any child; one wellbeing pointer (the rest coalesce in-app). `child_id`/`notification_id` are `ON DELETE SET NULL`, so an erasure leaves a tombstone and never frees a slot | 3 children made it 6 learning pushes + 3 pointers a week (sim C1: 6). A cascading FK frees a slot on erasure (probe F3 control, sim C5: 3) |
+| X62 | weekly letter for siblings (G3) | one WhatsApp letter per child | **one family letter envelope per recipient guardian-week** (`child_id` null, dedupe `letter:{isoWeek}`), filled at send time from each child's own `weekly_letter`. Per-child letters open separately and are never shown side by side; no envelope string compares children (I-H11, PP4) | the cap needs one slot for the letter; a merged letter must not become a sibling comparison |
+| X63 | shared device (G3) | orch R7.8 "one pending admission per device" without a table; reminder per child; switches end lessons | **`device_admission(device_id PK)`**. A profile switch replaces the wait, and the old session closes and drops its token before the new child's token is minted (I-H8). `EndedBy` gains `profile_switch`, resumable for 15 min. Reserves, caps and budgets are against the **profile in use**. The anchor reminder is scheduled **per device** from the household anchor (≤ 1/day, ≤ 5/week, ignored = no open by any profile) | the device is shared but the money, cap and evidence are not; a per-child reminder made 3 a day on one phone (sim C6) |
+| X64 | `session.reassign` (G3) | ws R7.5: "re-folds both children" | **one transaction, courier delivery, never two `child_seq` locks**: workspaces in id order → moved rows → usage → budget (money only within the target's headroom, I-C7) → `session_reassign` → two courier rows `session.reassigned{reassignId, direction}`. The profile owner's sitting is voided for a fresh window | a two-child ingest deadlocks 5/5 against a courier batch in the opposite order; the courier shape is 0/15 (probe F8d) |
+| X65 | erasing a sibling (G3) | §5.7: no household step | **fence (2b)** before the cascade: `update household set version = version` + member `leaving`, which waits out an in-flight allocator. **No re-allocation on leave**: siblings' windows, plans and logs do not move that day | unfenced, the cascade deadlocks 5/5 with an in-flight allocator (probe F8c); re-allocating disturbed 7/8 seeds (sim C4) |
+| X66 | sibling data in a child's record (G3) | `session.reassign{toChild}` puts a sibling id in the log | **no sibling id, name, band, length or count in any child's event, plan, brief or device doc** (V30, I-H7). Window causes are kinds; reassign carries a `reassignId` resolving to a row that is set null on erasure | the append-only log would keep an erased child's id; PP4 forbids comparison |
 
 ---
 
@@ -220,6 +242,7 @@ Five rules make it safe (orch §2, R5, R10):
 | Letter writer / parent agent | `weekly_letter`, `parent_conversation/turn`, worries, commitments | worker (letter, inbound); web (PTM turns) | luna; TTS; realtime (1 PTM/month) | WeekStory, ParentBrief, claim-checker §7 |
 | Homework pipeline | `capture*`, `homework_*` | web (child waiting, job-row backed), worker (cleanup) | DI Read, luna | pick-first §6 |
 | Notifier | `notification`, `notify_slot` | worker | none (templates) | `mayNotify()` §4.10 |
+| Household allocator (`server/household/`) (gap-fill G3-household-siblings) | `household_slot`, `household_decision`(`_member`), `household_member.est_min`, courier `wakeup` rows | worker (dirty set: `household_inbox` rows ≥ 60 s old) | none | pure `allocate()` (household.md §3; X59) |
 | Cost governor + admission | `budget`, `conductor_usage`, `rate_bucket`, `cost_ledger` | in-process library | none | reserve/settle §9.5 |
 | Workspace/sync | `workspace`, `device*`, `sync_op_seen`, notebook, shelf | web | none | `/api/ws/sync` §5.5 |
 | Safety monitor + protocol | `incident`, safeguarding queue | web (per turn) + human | classifier | `safety.incident*` events; `safetyParentNotice()` §7.6 |
@@ -252,7 +275,8 @@ export interface EventEnvelope<E extends StudentEvent = StudentEvent> {
 
 ```ts
 export type Lane = 'realtime' | 'realtime_mini' | 'cascade' | 'tap';
-export type EndedBy = 'completed' | 'time_limit' | 'cap' | 'bedtime' | 'child_left' | 'idle' | 'network' | 'safety' | 'outage';
+export type EndedBy = 'completed' | 'time_limit' | 'cap' | 'bedtime' | 'child_left' | 'idle' | 'network' | 'safety' | 'outage'
+  | 'profile_switch';   (gap-fill G3-household-siblings) resumable 15 min like 'network' (X63)
 export type StudentEvent =
   // device / session (pre-profile device events NEVER enter a child's log: orch R7.8)
   | { type: 'app.opened'; device: 'web' | 'android'; replicaId: string; cachedPlanVersion?: number }
@@ -260,7 +284,14 @@ export type StudentEvent =
   | { type: 'slot.shown'; planDay: string; planVersion: number; slotId: string }          // freezes the slot (V10)
   | { type: 'slot.started' | 'slot.completed' | 'slot.skipped'; slotId: string; kind: SlotKind; minutes?: number; endedBy?: EndedBy }
   | { type: 'practice.completed'; setId: string; packId: string; items: number }          // outcomes re-graded server-side (§5.5)
-  | { type: 'session.reassign'; scope: { lessonId?: string; packId?: string }; toChild: ChildId; byGuardian: string }
+  // (gap-fill G3-household-siblings) was session.reassign{toChild}: a sibling id in an append-only log (X64, X66). Delivered to BOTH children by
+  // courier wakeup rows; the other child's id lives only in session_reassign (set null on erasure)
+  | { type: 'session.reassigned'; reassignId: string; direction: 'out' | 'in'; scope: { lessonId?: string; packId?: string };
+      minutesMoved: number; voiceSecMoved: Partial<Record<Lane, number>>; byGuardian: string }
+  // (gap-fill G3-household-siblings) the household's answer, by courier (X59); no sibling id, name, band, length or count (I-H7)
+  | { type: 'household.window_assigned'; day: string; hhVersion: number; lane: number; state: 'planned' | 'none';
+      from?: string; to?: string;                 // household-tz HH:MM, floored to 5 min; present iff 'planned'
+      cause: 'morning' | 'sibling_plan' | 'sibling_started' | 'sibling_ended' | 'sibling_overrun' | 'sibling_voided' | 'routine_changed' }
   // Director (boundary facts only; turn-level data stays in turn / turn_trace / KT ledger)
   | { type: 'lesson.started'; lessonId: string; slotId?: string; topicId: string;
       kind: 'live' | 'practice' | 'diagnostic' | 'homework'; lanes: Lane[]; resumeOf?: string }
@@ -322,7 +353,7 @@ export type AdaptEvent =
 
 export type WakeReason = 'day_start' | 'night' | 'replan' | 'debounce_flush' | 'job_deadline' | 'weekly_letter'
   | 'commitment_due' | 'care_note_expiry' | 'safety_settle' | 'safety_escalate' | 'resume_window_end'
-  | 'pause_end' | 'dormancy_check';
+  | 'pause_end' | 'dormancy_check' | 'household' | 'reassign';   (gap-fill G3-household-siblings) courier reasons
 export interface LessonOutcomeDigest {              // computed by the Director's close step from the ledger
   itemsAttempted: number; independentCorrect: number; probesPassed: string[];
   misconceptionsOpened: string[]; misconceptionsResolved: string[];
@@ -415,6 +446,8 @@ export interface ConductorState {
   consent: Record<Purpose, boolean>;
   counters: { lastActiveDay?: string; activeDays7: number };
   adapt: AdaptMemory;                            // (gap-fill G1-adaptation-policy) cross-day adaptation memory, below
+  household?: { day: string; hhVersion: number; lane: number; state: 'planned' | 'none'; from?: string; to?: string;
+               cause: string };                  // (gap-fill G3-household-siblings) folded ONLY from household.window_assigned (X59)
 }
 // (gap-fill G1-adaptation-policy) adaptation.contracts.ts §2; written only by decide (writer 'conductor.fold')
 export interface AdaptMemory {
@@ -460,6 +493,7 @@ create table decision_log (                          -- the Conductor's turn_tra
   at timestamptz not null default now(), now_used timestamptz not null,
   state_v int not null, build_sha text not null, from_seq bigint not null, to_seq bigint not null,
   brief_digest text,                                 -- → brief_snapshot (X34): the recorded ViewReader map; no value copy per row
+  household_v bigint,                                -- (gap-fill G3-household-siblings) state.household.hhVersion after the batch (I-H4)
   arms text[] not null default '{}',
   decisions jsonb not null,                          -- [{seq, rules[], blocked:[{cmd, guard, reason}]}]
   commands jsonb not null, correlation_id text not null,
@@ -540,8 +574,8 @@ bounded by bedtime − 30, and the stricter of parent and band wins.
 |---|---|
 | `app.opened` | if no plan for `learningDay`: build the **code plan now** and commit it as `day_plan` v1 (`first_open`). The device has already painted from its cached plan in < 300 ms (orch R7.9). If `resumable` is live: emit `brief.refresh{resumeOf}`. Drain due wakeups (piggyback). If the child was dormant (no open for ≥ 14 days), re-arm the recurring wakeups (X36) |
 | `slot.shown` / `slot.started` | add the slot to `shownSlotIds` / `startedSlotIds`: it is frozen for the day (V10) |
-| `lesson.started` | mode → `in_lesson` |
-| `lesson.ended` | mode → `free`. `network` → `resumable` until +15 min. Enqueue `memory.consolidate:{lessonId}`. Debounce a re-plan by 5 min over **unshown** slots. Run detectors (§7.6). Append one `CloseLite` to `adapt.closes` (gap-fill G1-adaptation-policy). A `strained`/`tired` close makes the next opener success-first **only**; segments shorten only while the R1 latch is on (X45). Never a parent line |
+| `lesson.started` | mode → `in_lesson`. Emit `household.report{sitting_started}` (gap-fill G3-household-siblings) |
+| `lesson.ended` | mode → `free`. `network` → `resumable` until +15 min. Enqueue `memory.consolidate:{lessonId}`. Debounce a re-plan by 5 min over **unshown** slots. Emit `household.report{sitting_ended}` (with `resumableUntil` for `network`/`profile_switch`) (gap-fill G3-household-siblings). Run detectors (§7.6). Append one `CloseLite` to `adapt.closes` (gap-fill G1-adaptation-policy). A `strained`/`tired` close makes the next opener success-first **only**; segments shorten only while the R1 latch is on (X45). Never a parent line |
 | `skill.milestone` | `wheel_spin` → re-plan unshown slots: R5 (a prerequisite with pL < .4 at depth ≤ 3, not checked in 3 days) first, else R4 (a different representation family, not switched in 3 days) (LS-10; gap-fill G1-adaptation-policy); `mastered` on a parent-asked skill → a milestone candidate (§4.10) |
 | `learner.params_refit` (G1) | `eta_theta` → evaluate R6 against `kt.eta` (recorded read) and move `adapt.paceBudget` by its hysteresis; `format` → nothing (read at plan time) |
 | `learner.dependency_flag` (G1) | mirror into `adapt.depFlag`; R7/R12 act at the next night fold / weekly intent |
@@ -555,6 +589,9 @@ bounded by bedtime − 30, and the stricter of parent and band wins.
 | `capture.committed` | if a sitting is open, the Director's homework mode picks it up; otherwise add a `homework_help` slot at the head of the next sitting |
 | `clock.wakeup` | `day_start`: refresh the code plan only if `inputsHash` changed (X43). `night`: close the learning day with `foldNight` (gap-fill G1-adaptation-policy, adaptation-policy §7.2). It runs once per `learningDay` (`adapt.foldedDay`) and does five things: (1) trims the CloseLite ring to 16 closes and 14 days; (2) evaluates the R1, R2, R3, R7 and R14 latches in `RULES` order, counting **closes, not days**, and resetting R1/R2/R14 on an empty ring; (3) expires TTLs: `repSwitch` 30 d, `prereqChecked` 14 d, a choice past its `forDay`, a goal past its ISO week; (4) recounts `lastActiveDay`/`activeDays7`; (5) re-arms tomorrow's `day_start`/`night` only if `counters.lastActiveDay` is within 14 days (X36). It never builds tomorrow's plan (X10). A missed `night` is caught up by the first event of a later learning day, once. `weekly_letter`: enqueue `parent.letter`. `commitment_due`, `safety_settle`, `safety_escalate`, `resume_window_end`, `pause_end`, `care_note_expiry`: as named |
 | `job.done` / `job.failed{final}` | clear `pending.jobs`; on a final failure take that kind's fallback (§8.2) |
+| `household.window_assigned` (gap-fill G3-household-siblings) | if `hhVersion` > `state.household.hhVersion` (or a new day): replace `state.household`; if a plan has unshown slots, `pending.replanAfter = now + 5 min` with cause `household`. That re-plan fits the window and **never** emits `household.report{plan_reported}` (no-cascade, X60, V29). Never a parent line or a child-visible change |
+| `session.reassigned` (gap-fill G3-household-siblings) | re-fold from the moved rows (ws R7.5). `out`: the sitting is voided, so emit `household.report{sitting_voided}` and the allocator may give a fresh window. `in`: nothing more. Anything already shown stays (I18) |
+| own plan adopted with `plannedMin` moved ≥ 5 min, cause ≠ `household` (gap-fill G3-household-siblings) | emit `household.report{plan_reported}` (first open, own re-plan, parent change, test window) |
 | `safety.incident` | **pre-empts everything**: mode → `safety_hold` (every severity until D-SAFE rules: X33); cancel child-facing queued jobs; hand to the protocol. The Conductor never decides safety content |
 | `safety.incident_updated` | re-evaluate `safetyParentNotice()` (§7.6) |
 | `budget.threshold` | tomorrow's plan uses lower lanes; the child is never told about money |
@@ -644,6 +681,9 @@ export async function step(childId, { maxEvents = 50 } = {}) {
 // server/conductor/commit.js — one interactive transaction over the pg Pool (X5). db.tx() is new in server/db.js.
 // LOCK ORDER (X29, measured): conductor_state → [forge_request → forge_waiter] → job → wakeup → notification /
 // notify_slot → child_seq LAST. Inserts of brand-new rows (day_plan, decision_log, brief_snapshot) wait on nothing.
+// (gap-fill G3-household-siblings) notify_slot keys are now per GUARDIAN, so two siblings' commits can wait on each other's slot key: take
+// slot 1 before slot 2 (probe F7: 0/5; the reverse order deadlocks 5/5). household_inbox is a new-row insert whose FK
+// takes KEY SHARE on household, which the allocator's NO KEY UPDATE never blocks (probe F6: 0.05 s).
 // Revision 1 took child_seq FIRST and deadlocked 5/5 against complete_job (job → child_seq) and fire_wakeups
 // (wakeup → child_seq) (orch R10.1).
 // Correctness rests on the child_seq row lock plus has_more, not on conductor_state (orch B2). A competing step()
@@ -661,7 +701,8 @@ export const commit = (childId, token, expected, state, cursor, commands, decisi
   await insertJobs(t, childId, commands);                       // multi-row VALUES, on conflict per §3.8
   await cancelJobs(t, childId, commands);                       // match (child_id, kind, idem_key)
   await upsertWakeups(t, childId, commands);
-  await insertNotifications(t, childId, commands);              // slot insert = cap (§4.10.3)
+  await insertNotifications(t, childId, commands);              // slot insert = cap (§4.10.3); slot 1 before slot 2 (G3)
+  await insertHouseholdReports(t, childId, commands);           // 'household.report' → household_inbox (new rows) (gap-fill G3-household-siblings)
   await insertPlans(t, childId, commands);                      // 'plan.adopt' → day_plan row (new row)
   const digest = await insertBriefSnapshot(t, childId, view.recorded());  // the ViewReader map (X41); on conflict do nothing (X34)
   await t.q(`insert into decision_log (child_id, version, now_used, state_v, build_sha, from_seq, to_seq,
@@ -684,13 +725,15 @@ lock-order probe as a fixture:
 | writer | locks, in order |
 |---|---|
 | domain write + `ingest_event` (parent settings, lesson close, capture commit, notifier status) | its own domain row → `child_seq` |
-| Conductor commit | `conductor_state` → (`forge_request` → `forge_waiter`) → `job` → `wakeup` → `notification`/`notify_slot` → `child_seq` → (`conductor_state` again, already held) |
+| Conductor commit | `conductor_state` → (`forge_request` → `forge_waiter`) → `job` → `wakeup` → `notification`/`notify_slot` (guardian-scoped keys, slot 1 before slot 2: G3) → `household_inbox` (new rows: G3) → `child_seq` → (`conductor_state` again, already held) |
 | `complete_job` | `job` → `workspace` (read; `FOR SHARE` in a job's own final write transaction: ws SW6) → `child_seq` |
-| `fire_wakeups` | `wakeup` (SKIP LOCKED, a batch of ≤ 500, possibly many children) → each child's `child_seq` |
+| `fire_wakeups` | `wakeup` (SKIP LOCKED, a batch of ≤ 500, possibly many children) → each child's `child_seq`. (gap-fill G3-household-siblings) It also delivers the courier rows (`event_type`, `payload`), and it stays the **only** writer that locks more than one `child_seq`, so no two multi-`child_seq` writers can form a cycle |
+| household allocator (gap-fill G3-household-siblings) | `household` (lease and CAS by `UPDATE` = `FOR NO KEY UPDATE`; never `SELECT … FOR UPDATE`) → `household_slot` (this household, **active** members only; the exclusion constraint is deferred to COMMIT) → `household_inbox` (delete consumed ids) → new rows only: `household_decision`(`_member`), courier `wakeup` rows. **Never** `child_seq`, `conductor_state`, `notify_slot` or another household. Probe F8a/F8b: 0/10 and 0/10 |
+| `session.reassign` (gap-fill G3-household-siblings) | `workspace` (lower child id, then higher) `FOR UPDATE` → moved ledger rows → `conductor_usage` (lower, higher) → `budget` (lower, higher) → `session_reassign` (new) → two courier `wakeup` rows. **Never `child_seq`** (probe F8d: 0/15; ingesting into both children directly deadlocks 5/5) |
 | `create_commitment` | `child_seq` as the mutex, first, then **only inserts of new rows**. It locks no other existing row, which is the one allowed exception |
 | sync `applyBatch`, Director turn, `kt.refold` | `workspace` (`FOR UPDATE`, the KT lock: §5.6) → ledger inserts → `child_seq` (through `ingest_event`) |
 | Forge functions (`content-orchestration.sql`) | `forge_request` (several: ascending `library_key`; publish locks {new, superseded} in one statement) → `forge_waiter`/`module_ready`/`review_item`. `review_decide`: `forge_request` → the artefact's items in id order. `review_next`, `review_escalate`, `forge_sweep`: single statements with `SKIP LOCKED`. Never `child_seq` (gap-fill G2-content-orchestration-media): X53, probe D1-D4 |
-| erasure | (1) `→ erasing` as a single-statement transaction; (2) take the lease; (3) the cascade delete, which is unordered by nature. It runs only after the fence, and retries on `40P01` |
+| erasure | (1) `→ erasing` as a single-statement transaction; (2) take the lease; **(2b) household fence** (gap-fill G3-household-siblings): one short transaction `update household set version = version` + `update household_member set state = 'leaving'`, which waits out an in-flight allocator (later passes skip `leaving`); (3) the cascade delete, which is unordered by nature. It runs only after the fences, and retries on `40P01`. Probe F8c: fenced 0/5, unfenced 5/5 |
 
 ### 3.5 Commands
 
@@ -706,7 +749,9 @@ export type Command =
       meta: { tier: ForgeTier; buildClass: string; modality: Modality };
       horizon: 'in_lesson' | 'next_lesson' | 'two_weeks' | 'term'; childScoped: boolean;   // false for two_weeks/term/promote (X49)
       lessonId?: string; slotId?: string; wantedBy: string; predicted?: number }  // (gap-fill G2-content-orchestration-media): content-orchestration §2-§3
+  | { kind: 'household.report'; report: HouseholdReport }    (gap-fill G3-household-siblings) → household_inbox; never with cause 'household' (V29)
   | { kind: 'audit'; code: string };
+// HouseholdReport = plan_reported | sitting_started | sitting_ended | sitting_voided (household.contracts.ts §2.2)
 ```
 
 ### 3.6 Authority events and poison handling
@@ -746,7 +791,9 @@ const { plan, firings } = planDay(inputs);                  // PURE over `inputs
 day{learningDay, dayKind, reason, anchor{kind, localHHMM floored to 15 min}}, window, limits{capMin, hwSubCapMin,
 restDay, careEffect}, mode, school{testWindows (sorted), pointers}, homework (sorted), promises (sorted),
 frozen{planVersion, slots[{slotId, digest}]}, usage (whole minutes), voice{leftSec (30 s), activeDaysLeftEst},
-adapt (packed), view{key: {value (quantised: pL .01, η .05, ratios .1), src, stale}}, arms }`. Excluded from the hash:
+adapt (packed), view{key: {value (quantised: pL .01, η .05, ratios .1), src, stale}}, arms, household{lane, state,
+from, to (5 min)} }` (household: gap-fill G3-household-siblings; a `limits`-layer constraint that can only shorten and
+place the sitting, never lengthen it). Excluded from the hash:
 the raw `now`, every `asOf`, `homeAdultName`, all parent text and `ChildBrief`. G3 checks that two processes give
 byte-equal plans for equal inputs, that excluded-field mutations leave the hash unchanged, and that included-field
 mutations change it. A planted `Date.now()` and an unsorted array are the negative controls.
@@ -886,6 +933,10 @@ $$;
   22:30-04:30. Dedupe keys stay semantic (`day_start:2026-10-03`, `weekly_letter:2026-W40`).
 - **Piggyback:** any request from a child's device runs that child's due wakeups before answering. Ticker
   outage degrades to a delay for active children (CM8).
+- **Courier** (gap-fill G3-household-siblings): a wakeup row with `event_type` ≠ `clock.wakeup` and a `payload` is how another actor (the
+  household allocator, `session.reassign`) puts an event into a child's log without locking that child's `child_seq`.
+  `fire_wakeups` merges the payload *under* its own keys, so a payload cannot forge `reason`/`wakeupId` (probe F5).
+  Dedupe is versioned (`hh:{day}:v{hhVersion}`, `ra:{reassignId}`); the child's fold ignores a stale `hhVersion`.
 
 ### 3.10 Idempotency keys (derived from facts, never from a clock or a random value)
 
@@ -896,7 +947,7 @@ $$;
 | parent → ingest | `setting:{key}:{settingsVersion}`, `consent:{purpose}:{consentVersion}`, `commit:{commitmentId}` | a double tap is one change |
 | clock / jobs → ingest | `wake:{dedupe}`, `job:{id}:{done|dead}` | ticker overlap and zombie workers are harmless |
 | Conductor → jobs | `memory.consolidate:{lessonId}`, `parent.letter:{child}:{isoWeek}`, `kt.refold:{child}:{fromTs}`, `plan.day.llm:{child}:{day}:{inputsHash}`, `forge.spec:{objective}:{engine}:{specHash}:{modelV}`, `forge.build:{objective}:{engine}:{specHash}:{modelV}` | `unique(kind, idem_key)` |
-| Notifier | `notification.dedupe` (`letter:{child}:{isoWeek}`, `S:{incidentId}`, `wb:{child}:{isoWeek}`), provider idempotency keyed by `notification.id` | at-least-once delivery, effectively-once effect |
+| Notifier | `notification.dedupe` (`letter:{isoWeek}` per recipient guardian: the family envelope, G3; `S:{incidentId}`, `wb:{isoWeek}`, `test:{eventId}`), provider idempotency keyed by `notification.id` | at-least-once delivery, effectively-once effect |
 | model calls | `agent_run.step_key`; realtime `(lesson_id, response_id)` | a crash replays the stored output, not the paid call |
 | inbound WhatsApp | `wa_inbound.message_id` | Event Grid at-least-once (pl PA-10) |
 
@@ -910,6 +961,12 @@ clock. A key missing from the map throws `ReplayMiss`, the view analogue of `Cas
 at all: it is pure over `PlannerInputs`, whose `view` was filled from this same map (§3.7).
 Assignment is a pure hash passed into `decide` (obs O10). L2 replay on release starts at M1; the nightly production
 sample starts at M2 (§9.8).
+(gap-fill G3-household-siblings) A sibling's change reaches `decide` only as `household.window_assigned` in the
+child's own log, so child replay needs nothing new. `decision_log.household_v` records the folded `hhVersion` and
+I-H4 asserts that a replay reproduces it; the replay reader has no household handle (any access throws). The household
+is replayed separately: `allocate(household_decision facts + household_decision_member inputs + now_used)` must be
+byte-equal to `household_decision.output`. A pass whose member was later erased is `member_erased`, not a failure
+(sim: 1,106/1,106 nightly replays byte-equal; a planted clock read breaks it).
 
 **Replay never commits** (X31; orch B5). `replay(childId, fromSeq, reader)` gets a read-only reader with no `tx` or
 `commit` handle, and returns `(state, commands[])` to compare against `decision_log`. Idempotency keys protect a
@@ -996,8 +1053,14 @@ Adaptation rules (dc §3.4, AR-10):
 - **Late start** collapses only on *time left before bedtime − 60*, never on lateness against the anchor. A child
   whose phone comes home at 19:30 with a 22:00 bedtime gets a full sitting.
 - **Heavy homework** shrinks the lesson to the minimum segment set. It never raises the cap.
-- **Siblings on one phone:** the anchor belongs to the household. Sittings are ordered younger-first, and the
-  second child's plan shifts by the first child's planned length.
+- **Siblings on one phone** (gap-fill G3-household-siblings): the anchor belongs to the household, and so does the order. The single owner is
+  the household allocator (X59), never a sibling's `decide()`. Its pure `allocate()` lays planned windows younger-first
+  (or in a parent-fixed order) among the children available at each moment, after every started or ended sitting,
+  with a 5-min hand-over [U] and each window clipped to that child's `min(allowedTo, bedtime − 60)`. A child hears her
+  window only as `household.window_assigned` in her own log, and `planDay` reads it from `PlannerInputs.household`.
+  **Presence wins** (X60): a child who starts while the phone is free becomes a fixed fact, and the others' unshown
+  windows re-flow after her. An overrun or an out-of-order start moves later siblings by ≥ 10 min (hysteresis) after a
+  60 s debounce. A `household`-caused re-plan never reports back (the no-cascade rule, V29). household.md §3.
 - **Learning ability** (KT η, θ) may change pace and difficulty. It never changes the cap or the praise dose.
 
 **Cross-day adaptation rules R0-R14** (gap-fill G1-adaptation-policy). The full table is adaptation-policy §4: the
@@ -1111,6 +1174,9 @@ export interface LessonBrief {
 | V25 | has a firing whose evidence includes a stale key | X41 |
 | V26 | raises `plannedMin` or the cap through any rule, changes the praise dose, or puts η, θ or a gap number on any child- or parent-facing field | §4.4, kt R18 |
 | V27 | has a routine card whose evidence includes a vibe key, more than one in 14 d, or one sent as a push | R14, pl PA-6 |
+| V28 | puts the sitting slot outside a planned, future `household.window_assigned` window (gap-fill G3-household-siblings) | X59 |
+| V29 | is a `household`-caused re-plan that raises `plannedMin` or carries a `household.report{plan_reported}` (the no-cascade rule) | X60, I-H3 |
+| V30 | carries a sibling's id, name, band, length or count in any slot, brief field or device doc | X66, I-H7 |
 
 ### 4.6 In-lesson boundary contract (Director ↔ Conductor ↔ governor)
 
@@ -1161,7 +1227,8 @@ device's offline pack (ws R7.1).
 
 #### 4.10.1 Principles (dc §10, pl PL8, PX)
 Recipients are parents. A child on a shared device gets **0** notifications (a B4 on their own phone may get only
-reminders they set). Content is logistics, never pressure. Quiet hours are 20:30-08:00 in the **guardian's** tz plus
+reminders they set). **Caps belong to the recipient guardian, not to (guardian, child)** (gap-fill G3-household-siblings): a parent of three
+gets the same ≤ 2 learning pushes a week as a parent of one (X61). Content is logistics, never pressure. Quiet hours are 20:30-08:00 in the **guardian's** tz plus
 `at_school`; only the safety class is exempt. The lock screen never shows performance, a topic weakness or a child
 quote. Every string is written as if the child will read it, and as if it plays aloud on speaker (pl PA-21 C3).
 
@@ -1169,14 +1236,14 @@ quote. Every string is written as if the child will read it, and as if it plays 
 
 | class | channel (v1) | cap | counts in the ≤ 2 learning/week cap |
 |---|---|---|---|
-| `weekly_letter` | WhatsApp utility template (image header + text + buttons) via ACS Advanced Messaging; app view | 1 / child / week | yes (slot 1) |
-| `milestone` (a parent-asked skill became pakka) | WhatsApp utility | ≤ 1 / week | yes (slot 2) |
-| `test_window` ("plan for the half-yearly is ready") | WhatsApp utility | 1 per window | yes |
-| `wellbeing_note` | in-app note + a WhatsApp pointer with no content | ≤ 1 / week, coalesced | no |
+| `weekly_letter` | WhatsApp utility template (image header + text + buttons) via ACS Advanced Messaging; app view. (G3) **One family envelope per recipient guardian**, listing the children's letters; each child's letter opens on its own (X62) | 1 / **guardian** / week | yes (slot 1, the envelope only) |
+| `milestone` (a parent-asked skill became pakka) | WhatsApp utility | ≤ 1 / guardian / week, any child (G3) | yes (slot 2) |
+| `test_window` ("plan for the half-yearly is ready") | WhatsApp utility | 1 per window (dedupe `test:{eventId}`), and it competes for slot 2 (G3) | yes (slot 2) |
+| `wellbeing_note` | in-app note + a WhatsApp pointer with no content | ≤ 1 pointer / guardian / week; a sibling's statement that week coalesces into the in-app note (G3) | no |
 | `safety_notice` | WhatsApp pointer + push, content behind the PIN, delivery ladder (§7.6) | none | no |
 | `ptm_summary` | WhatsApp utility (parent-requested) | 1 per PTM | no |
 | `account`, `payment` | WhatsApp | per event | no |
-| `anchor_reminder` | **on-device local notification** (Capacitor Local Notifications, inexact) | ≤ 1/day, ≤ 5/week; self-pauses after 3 ignored (ignored = no `app.opened` in the window); silent on backup windows | no (parent-requested) |
+| `anchor_reminder` | **on-device local notification** (Capacitor Local Notifications, inexact) | ≤ 1/day, ≤ 5/week **per device**, scheduled from the household anchor, never per child (G3, X63); self-pauses after 3 ignored (ignored = no `app.opened` by **any** household profile on that device in the window; device-local, never in a child's log); silent on backup windows; household-neutral copy (no name, order or count) | no (parent-requested) |
 | `daily_note`, `school_ask`, `commitment_result`, `struggle` | **in-app only** in v1 (the letter carries commitment results and struggle lines) | — | — |
 | absence, streak, come-back, offer, countdown | **no class exists** | — | — |
 
@@ -1218,13 +1285,25 @@ create table notification (
   block_reason text, channel text, provider_id text, attempts int not null default 0,
   sent_at timestamptz, delivered_at timestamptz, opened_at timestamptz, correlation_id text not null,
   unique (guardian_id, dedupe));
+-- (gap-fill G3-household-siblings, X61) notify_slot is keyed by the RECIPIENT guardian. Revisions 1-4 keyed it by
+-- (guardian, child): 3 children = 6 learning pushes + 3 wellbeing pointers a week (sim C1: 6). household.sql has the DDL.
+alter table notification add column household_id uuid references household(id) on delete cascade;  -- the family letter:
+                                                      -- child_id null, dedupe 'letter:{isoWeek}' (X62)
 create table notify_slot (                            -- capped classes: the INSERT is the cap (dc AR-5 R5)
-  guardian_id uuid not null references guardian(id) on delete cascade,
-  child_id uuid not null references child(id) on delete cascade,
-  scope text not null,                                -- 'learn:2026-W40' | 'wb:2026-W40' | 'test:{eventId}'
-  slot smallint not null, notification_id bigint not null references notification(id) on delete cascade,
-  primary key (guardian_id, child_id, scope, slot));
--- learning: try slot 1, then slot 2; both taken → status 'blocked', block_reason 'cap' (the letter carries it instead)
+  guardian_id uuid not null references guardian(id) on delete cascade,              -- the recipient
+  scope text not null,                                -- 'learn:2026-W40' | 'wb:2026-W40' (ISO week, guardian tz)
+  slot smallint not null, cls text not null,
+  child_id uuid references child(id) on delete set null,                            -- attribution only; null = family
+  notification_id bigint references notification(id) on delete set null,            -- tombstone: erasure never frees a slot
+  taken_at timestamptz not null default now(),
+  primary key (guardian_id, scope, slot),
+  check ((scope like 'learn:%' and slot between 1 and 2) or (scope like 'wb:%' and slot = 1)),
+  check (slot <> 1 or scope not like 'learn:%' or cls = 'weekly_letter'),         -- slot 1 = the family letter only
+  check (slot <> 2 or cls in ('milestone','test_window')));
+-- notify_take(guardian, scope, cls, child, notification) → slot | null (household.sql): the letter takes slot 1, every
+-- other learning class competes for slot 2; null → status 'blocked', block_reason 'cap' (the family letter carries it).
+-- A commit taking two slots takes 1 before 2 (probe F7: 0/5; reversed 5/5). Erasing the child who took slot 2 leaves
+-- '2:null:null' and a sibling stays capped (probe F3; with ON DELETE CASCADE the slot frees: the control).
 ```
 
 #### 4.10.4 Copy and channel rules
@@ -1359,6 +1438,14 @@ export async function applyBatch(h, req, db) {
 - **Shared phone:** one realtime session per child, torn down on every profile switch (low-end rule 14). Share
   intents always ask "kiska hai?" (ss AR-4 R8). A wrong-profile session is moved with `session.reassign`
   (same guardian only), which re-folds both children (ws R7.5).
+  (gap-fill G3-household-siblings, X63-X64) The switch order is: close the session and WebRTC → `lesson/end
+  {reason:'profile_switch'}` (resumable 15 min, like `network`) → flush evidence under the old token → drop it → pick →
+  mint the new child's token → that child's admission. Reserves, caps and budgets are always against the **profile in
+  use**. A reassign moves evidence, turns, pages and `used_min` in full, but money only within the target's headroom
+  (I-C7); the excess stays booked to the source in `session_reassign.micro_usd_kept`. It voids the source's sitting so
+  the allocator can give her a fresh window, and it reaches both logs as `session.reassigned{reassignId, direction}` by
+  courier, never by locking two `child_seq` rows. A sixth device doc, `household` (anchor, lanes, today's windows as
+  times only), is fetched with the device credential; it drives the per-device anchor reminder.
 
 ### 5.6 KT writes, late evidence, and never retracting what the child saw
 
@@ -1386,6 +1473,12 @@ The `notice → erasing` transition is one guarded UPDATE, so an app open betwee
 (ws R3.5). Erasure order: revoke the device docs (wipe flag) → set the workspace to `erasing` (fences every job
 through `complete_job`, §3.8) → cascade delete → delete Blob prefixes → sweeper at +24 h and +7 d → receipt. The
 parent promise: "removed now; backup copies expire within 7 days" (X15).
+(gap-fill G3-household-siblings, X65) **Erasing one sibling** adds the household fence (2b) before the cascade (§3.4)
+and **re-allocates nothing**. The siblings' windows, plans and logs do not move that day; the next morning's pass
+has one member fewer. Her `household_slot`, member, inbox, `household_decision_member`, `wakeup` and
+`device_admission` rows cascade. Her `notify_slot` rows become tombstones, so the week's cap is unchanged. The family
+letter's send-time gate drops her letter, and `session_reassign` ids set null. Probe F4: the household and the
+siblings' rows are md5-identical and 0 rows carry her id. Sim: 0 sibling windows disturbed, 0 events on 8/8 seeds.
 
 ### 5.8 Library artefacts, shelf, and the module sandbox
 
@@ -1559,6 +1652,11 @@ Claim-checking (pl PA-13):
    5. weekly_letter row (unique child_id, iso_week; ledger_hash is audit only; render_version for operator re-renders)
    6. notify(weekly_letter) → SEND-TIME gate (pl PA-7, PLI17): re-read safety hold, consent version, reports on/off,
       STOP, and that every factId still resolves (a deleted lesson → re-render)
+      (gap-fill G3-household-siblings, X62) the notify is the guardian's FAMILY envelope (dedupe `letter:{isoWeek}`,
+      child_id null): the first sibling's job.done inserts it, the others merge on unique (guardian_id, dedupe). With
+      ≥ 2 children the letter wakeups run at sendAt − 2 h [U]; the envelope's notBefore = sendAt. At send time the
+      gate fills letters[] from the weekly_letter rows that resolve. An erased child, or one in safety_hold, is
+      omitted with no wording that reveals why. Lint I-H11: no envelope string compares children (PP4)
  voice note: rendered lazily when "Suno (1 min)" is tapped (that opens the 24 h service window; audio cannot be a
    template header [V Meta]); gpt-4o-mini-tts speaks the lint-passed script verbatim; cached 30 d
  zero-lesson week: still sent on its day, no guilt framing; a ≥ 14-day gap after regular use becomes a fact line +
@@ -1727,6 +1825,11 @@ Buckets: `taxila-realtime` (session starts; 10 RPM today: refill 10/60 s, capaci
 against 4 RPM); `taxila-brain` (homework check-my-working crops at priority 1, above Forge, below lesson starts: ss
 AR-1). One pending admission per **device**, so siblings tapping twice don't double-book (orch R7.8). Waiting clients
 poll every 2 s during the off-voice warm-up.
+(gap-fill G3-household-siblings, X63) The per-device rule is a table: `device_admission(device_id PK, child_id,
+lesson_id, priority, since)`. A tap upserts it. The same child's double tap reuses the wait; another profile's tap
+replaces it (the old client has already torn down); never two rows per device (probe F10, I-H8). A waiting admission
+holds no bucket token. A granted start consumes one, and a later profile switch does not refund it (the bucket counts
+starts that happened). Budgets are never pooled across siblings: each start reserves against the profile in use.
 
 ### 8.4 Storage and identities
 

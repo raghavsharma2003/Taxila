@@ -141,3 +141,6 @@ button.chip[aria-pressed="true"] { border-color: var(--jamun); background: var(-
 @keyframes tf-talk { from { transform: scaleY(0.35); } to { transform: scaleY(1); } }
 @media (prefers-reduced-motion: reduce) { .teacher-face .tf-eyes, .teacher-face .tf-talk { animation: none !important; } }
 :root[data-motion="reduce"] .teacher-face .tf-eyes, :root[data-motion="reduce"] .teacher-face .tf-talk { animation: none !important; }
+
+/* <details> summaries are targets too (A6) */
+.summary { cursor: pointer; font-weight: 600; min-height: 52px; display: flex; align-items: center; }

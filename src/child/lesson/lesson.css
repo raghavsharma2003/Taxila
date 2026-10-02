@@ -177,3 +177,9 @@
 .tx-tiny { height: 100%; display: flex; align-items: center; justify-content: center; }
 
 @media (prefers-reduced-motion: reduce) { .tx-mic, .tx-tile { transition: none; } }
+
+/* Older input line: the field keeps a usable width; the status word drops before the field shrinks */
+.tx-control--older { container-type: inline-size; }
+.tx-inputline .tx-inputrow { flex: 1 1 180px; min-width: 150px; }
+.tx-chiprow .tx-tile { white-space: nowrap; }
+@container (max-width: 420px) { .tx-status-word, .tx-moment { display: none; } }

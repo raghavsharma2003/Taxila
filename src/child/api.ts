@@ -43,14 +43,11 @@ export interface ChildMap {
 export const getMe = () => getJson<MeResponse>("/api/me");
 
 /**
- * Endpoints tried in order. The first is the contract this workstream asks for; the others are the parent
- * reads PRODUCT-DESIGN §1.4 names, which carry the same ledger rows.
+ * The child-scoped ledger read this workstream asks for. The parent reads (/api/parent/overview, /syllabus)
+ * sit behind the guardian PIN gate and answer 403 to a child surface, which is correct: a child screen must
+ * never depend on the Parent corner being unlocked. So there is no parent fallback here.
  */
-const MAP_ENDPOINTS = (cid: string) => [
-  `/api/child/map?childId=${encodeURIComponent(cid)}`,
-  `/api/parent/skills?childId=${encodeURIComponent(cid)}`,
-  `/api/parent/overview?childId=${encodeURIComponent(cid)}`,
-];
+const MAP_ENDPOINTS = (cid: string) => [`/api/child/map?childId=${encodeURIComponent(cid)}`];
 
 export async function getChildMap(cid: string, signal?: AbortSignal): Promise<ChildMap> {
   for (const url of MAP_ENDPOINTS(cid)) {
@@ -60,7 +57,7 @@ export async function getChildMap(cid: string, signal?: AbortSignal): Promise<Ch
       if (skills) return { skills, source: url.split("?")[0] };
     } catch (e) {
       if (signal?.aborted) throw e;
-      if (e instanceof ApiError && (e.status === 401 || e.status === 403)) throw e;
+      if (e instanceof ApiError && e.status === 401) throw e;
       // 404 / shape mismatch: try the next one
     }
   }
