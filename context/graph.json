@@ -94,6 +94,13 @@
    "title": "Forge coder gpt-5.3-codex, designer gpt-5.6-sol, video sora-2",
    "at": "2026-10-02",
    "status": "live"
+  },
+  {
+   "id": "forge-infra-azure",
+   "kind": "decision",
+   "title": "Forge on Azure Container Apps + Blob Storage taxilaforge",
+   "at": "2026-10-02",
+   "status": "provisioned"
   }
  ],
  "edges": [
@@ -151,6 +158,16 @@
    "src": "forge-models",
    "rel": "part_of",
    "dst": "infra-segment"
+  },
+  {
+   "src": "forge-infra-azure",
+   "rel": "part_of",
+   "dst": "infra-segment"
+  },
+  {
+   "src": "forge-models",
+   "rel": "part_of",
+   "dst": "forge-infra-azure"
   }
  ]
 }

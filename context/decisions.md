@@ -65,3 +65,15 @@ raghavsharma2003/Taxila, one catch-all function `api/[...route].js` in sin1, Vit
 - Claude Opus 5.5 was the first choice for game code and is blocked by billing (`claude-on-foundry-credits`).
 - Reverse if: the Marketplace purchase is unblocked AND Claude beats codex on the Forge QA pass rate for the same
   game briefs (measure, don't assume).
+
+## forge-infra-azure
+**Forge workers run on Azure Container Apps (env `taxila-env`, eastus2, Consumption profile, default domain
+nicebay-a0d3a12f.eastus2.azurecontainerapps.io); artifacts go to Blob Storage `taxilaforge`/`forge` (public
+blob read, CORS GET from *).** (2026-10-02)
+- Why not Vercel: an agentic build + headless-Chromium validation loop runs for minutes; Vercel functions cap at
+  60 s here. Why Azure: the owner's credits; the service principal can create Microsoft.App and Microsoft.Storage
+  resources in `rg-raghavsharma1729-7190` (verified: both PUTs accepted).
+- Generated games are static files under `forge/<childId?>/<artifactId>/index.html`; the app loads them in a
+  sandboxed iframe (no same-origin) — public URLs carry unguessable ids, never child names.
+- Reverse if: per-student isolation needs real sandboxes (→ Container Apps dynamic sessions), or blob public read
+  becomes unacceptable (→ SAS-signed URLs minted by the API).
