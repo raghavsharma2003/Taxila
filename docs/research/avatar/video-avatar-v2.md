@@ -597,3 +597,165 @@ Internal
   `web-3d-talking-heads.md` §1; `/home/user/Taxila/context/decisions.md#azure-only-compute`; `../market/market-size.md` (₹299–499 anchors).
 - Not fetched this session (web-search budget exhausted): Simli per-minute pricing, D-ID pricing, ITU-R BT.1359 text
   (cited via the siblings), and MeitY synthetic-media rules. These carry **[S]** or **[U]** above.
+
+---
+
+## Graphics review
+
+Reviewer stance: an adversarial real-time graphics engineer, 2026-10-02. I read the doc above as a design that will ship, and tried to break its performance claims, licences, A/V sync, child-facing quality and effort assumptions.
+
+**What I re-checked this session:**
+- Ditto: the paper HTML, plus `inference.py`, `stream_pipeline_online.py`, `core/atomic_components/source2info.py` and the HF model card API.
+- LiveTalking: `base_asr.py`, `whisper.py`, `base_avatar.py`, `server/webrtc.py`, `config.py` and README-EN.
+- MuseTalk: README.
+- LatentSync: `latentsync/utils/face_detector.py` and `requirements.txt`.
+- Wav2Lip: README.
+- Azure Retail Prices API: queried again for NC24ads A100 v4 and all avatar meters in centralindia, plus the NC RTX PRO 6000 v6 SKUs.
+- Azure docs: the NC RTX PRO 6000 BSE v6 size page and the Azure Sora 2 concept page.
+- LiveKit: the avatar page, the KB article on A/V sync, and `TrackPublishOptions`.
+- Through search: the BT.1359 thresholds, the NVIDIA NVENC matrix, Chromium issue 687574, Brink et al. 2019 and the MeitY 2026 rules.
+
+**Overall verdict.** The strategic conclusion holds and gets stronger: no live video in v1, pre-rendered narration first, and live video only behind gates. Eight findings, however, change a design, a number or an experiment (R1). Live video is more expensive, slower to barge in, and more work than §2–§5 say.
+
+### R1. Errors that change a design, a number or an experiment
+
+1. **The A100 has no hardware video encoder. §5.4's "NVENC H.264" cannot run on the recommended VM.**
+   - GA100 (A100) has zero NVENC engines; it has NVDEC only. The usual workaround is CPU x264 **[S, NVIDIA forum and support-matrix summaries]**. H100 has no NVENC either.
+   - Fix: on NC24ads A100 v4, encode on the 24 vCPUs with x264 `ultrafast`/`zerolatency` (or openh264), at about 0.3–0.5 vCPU per 540p25 stream **[U]**. That CPU is shared with MuseTalk's CPU blending (LiveTalking pastes the mouth back with cv2 on the CPU) and with aiortc/PyAV in one Python process. CPU, not GPU, may then set the session ceiling, and LiveTalking's README says as much: "concurrent sessions when not speaking depend on CPU" **[V]**.
+   - Alternatively, pick a GPU that has NVENC: A10 (NVads A10 v5), T4, or the RTX PRO 6000 v6. E-3 must report CPU% per session, not only GPU fps.
+2. **Azure Sora 2 rejects input images with human faces. §5.5 step 1(a) and E-6 cannot work as written.**
+   - The Azure Sora 2 page states: "Real people—including public figures—cannot be generated. **Input images with faces of humans are currently rejected.**" **[V, learn.microsoft.com video-generation, updated 2026-06-05]**.
+   - The route "`gpt-image-2` portrait → `sora-2` image-to-video loops" is therefore blocked. Text-to-video can produce *a* person, but not the *same* person across 6–7 clip-bank loops, which MuseTalk needs. Identity would drift between idle and explaining clips.
+   - Buildable alternatives:
+     - (b) a filmed, consenting actor (the most reliable route);
+     - a self-hosted OSS image-to-video model on Azure GPU (Wan-2.x-class I2V, Apache-2.0), run through E-6 instead of Sora;
+     - Ditto or LivePortrait from a single generated portrait, which needs no clips at all.
+   - Rewrite E-6 to test one of these.
+3. **Licences: three more traps the doc misses or under-states.**
+   - **LatentSync is not clean.** Its inference-time face detector is `insightface.app.FaceAnalysis(allowed_modules=["detection","landmark_2d_106"])`, and `requirements.txt` pins `insightface==0.7.3` **[V, source]**. That is the same non-commercial model trap as LivePortrait and Ditto. §5.1 lists LatentSync as plain Apache-2.0, and §5.5 and §9 v2a put it on the pre-render path. Add it to rejection #6 and to E-10.
+   - **Ditto is worse than "swap the detector".**
+     - `source2info.py` loads InsightFace **detection and the 106-point landmark model** (plus MediaPipe 478) **[V, source]**. The 106 landmarks feed the crop and keypoints, so the swap needs a quality re-validation, not only a dependency change.
+     - The HF checkpoint repo `digital-avatar/ditto-talkinghead` **declares no licence** in its model card metadata **[V, HF API returned `license: None`]**. The Apache-2.0 badge covers the GitHub code. The weights need a written grant, or legal sign-off, before commercial use.
+   - **Wav2Lip is non-commercial, code and weights.** The upstream README says: "This repository can only be used for personal/research/non-commercial purposes", and the LRS2-trained models make "any form of commercial use … strictly prohibited" **[V]**. LiveTalking's `wav2lip256` reuses that architecture with weights of unknown provenance.
+     - Remove the "Wav2Lip-256 on ACA T4" row as a buildable option. It is the only row in §8 that fits full lessons, so §8's "only Wav2Lip-on-T4 fits full lessons at ₹1,499+" becomes "**nothing commercially usable fits full live lessons at any tier**".
+   - **Unchanged, and verified:**
+     - MuseTalk: code MIT; "the trained model are available for any purpose, even commercially"; dependencies (whisper, ft-mse-vae, dwpose, S3FD) carry their own licences **[V]**. It is the cleanest renderer in the table.
+     - LiveTalking: the LICENSE is Apache-2.0. The watermark sentence applies to videos "published on platforms such as Bilibili, WeChat Channels, and Douyin" **[V]**. It is a README request, not a LICENSE term, so it probably does not bind in-app playback **[U, counsel]**.
+4. **BT.1359 is cited in the wrong direction, and the correct bound is stricter.**
+   - BT.1359-1 gives detectability **+45 ms (audio leads) / −125 ms (audio lags)** and acceptability **+90 / −185 ms** **[S, ITU text via search summaries; ITU PDF R-REC-BT.1359-1]**.
+   - "Video lagging audio" means *audio leads*. That is the **+45 / +90 ms** side, not −125 ms.
+   - The §2.1 and §11.1 conclusion stands, more firmly: playing direct Azure audio with renderer video (audio 300–400 ms early) is about 4× past acceptability.
+   - It also means any residual A/V skew on the phone must stay **under about 45 ms in the audio-early direction**. Low-end Android audio output latency and WebView compositor delay can eat that budget even when the renderer is perfectly synchronised (see 5 and R2).
+5. **Barge-in as designed fails its own ≤ 150 ms bar, and truncates at the wrong offset.**
+   - **The wrong clock.** `renderer.interrupt()` returns the renderer's *sent* position. The child hears that position later, by the SFU hop, the 4G path and the receiver's jitter buffer (typically 80–250 ms on 4G **[U]**).
+     - Truncating at `playedMs` from the renderer therefore repeats §11.3's error at a smaller scale: the model believes the child heard roughly 100–250 ms of words that were never played.
+     - Fix: the client reports its own playout position for the tutor audio track over the data channel. Use `RTCRtpReceiver.getSynchronizationSources()` `rtpTimestamp`, mapped to utterance start, or `getStats()` `jitterBufferDelay`/`jitterBufferEmittedCount`. The worker truncates at `min(rendererSent − measuredDownstreamDelay, clientReported)`.
+   - **Stale queues in LiveTalking.** Its `flush_talk()` clears only the **input** audio queue (`self.queue.queue.clear()`) **[V, base_asr.py]**. Frames already generated stay queued in:
+     - `feat_queue` (maxsize 2 batches);
+     - `res_frame_queue` (`batch_size*2` frames);
+     - the aiortc track queue (`maxsize=100`) **[V, base_avatar.py, server/webrtc.py]**.
+     - At the default `batch_size=16`, roughly 1–3 s of already-rendered speech keeps playing after an interrupt **[U, from queue sizes]**. A fork must flush every stage, and must close the mouth on the next frame instead of freezing mid-phoneme.
+   - **The detection chain alone exceeds 150 ms.** Server-VAD detection (≥ 100–300 ms after onset), then a server round trip, then the downstream buffer, cannot meet "≤ 150 ms barge-in to silence".
+     - The only way to meet it is the **client-side local VAD → immediate mute/fade of the `<video>` element's audio, plus a freeze to the "listening" clip**, with the server truncation following.
+     - Add this to §5.4's client and to E-3. Measure it as onset-to-silence at the phone speaker.
+6. **The renderer becomes a single point of failure for the *voice*, not only the face.**
+   - In architecture B, the child hears the renderer's audio (§2.1). A `starved` event or a renderer or pod crash therefore silences the tutor mid-sentence. "Swap back to 3D driven by the same audio" (§5.4, Client) is impossible, because that audio dies with the renderer.
+   - Fix:
+     - The session worker keeps a **hot standby audio publication**: it publishes its own Opus track to the SFU, muted, and the SFU or client switches to it.
+     - The worker retains the unplayed PCM, so it can resume from the client-reported playout position.
+     - Fail over at an utterance boundary where possible.
+   - Add an experiment for this (E-12 below).
+7. **The RTX PRO 6000 v6 row is misread.** `Standard_NC24lds_xl_RTXPRO6000BSE_v6` is **¼ of a GPU (24 GB)** at $1.582/h. A full GPU (`NC144lds_xl`) costs **$7.70/h**, Spot $1.54 **[V, Azure size doc + Retail Prices API]**.
+   - So it is not "Blackwell at a quarter of the A100 price". Per full GPU it costs **1.5× the A100**.
+   - It is still worth one benchmark for a different reason: a ¼-GPU slice at $1.58/h that sustains **one** MuseTalk stream at 25 fps *with* NVENC would be the cheapest live unit. Whether a vGPU slice exposes NVENC needs measuring **[U]**.
+8. **The capacity model assumes free statistical multiplexing and elastic VMs. Neither holds by default.**
+   - **Pinned sessions.** "3.5 sessions per GPU" for MuseTalk (2 talking streams, 40% talk share, 0.7 derate) assumes that any talking utterance can land on any GPU. If a session is *pinned* to a GPU, which is LiveTalking's model (one avatar process with its latents and queues), then 3 sessions on a 2-stream GPU overrun **6.4%** of the time and 4 sessions **17.9%** (binomial, p = 0.4) **[U, arithmetic]**. Overrun means stutter or `starved`.
+     - With pinning: **2 sessions per GPU for MuseTalk**, and **1 for Ditto**. Ditto's online pipeline is stateful per session (motion history, DiT window), and RTF 0.895 leaves no room for a second stream.
+     - Revised marginal cost: **MuseTalk ≈ $0.044 per session-minute** (hybrid $10.4, moments $1.74 per student-month). **Ditto ≈ $0.086** (hybrid $20.7, moments $3.45) **[U, the doc's script with sessions_per_gpu = 2 and 1]**.
+     - Recovering the doc's numbers needs **per-utterance scheduling across a GPU pool**: stateless MuseTalk workers with every character's latents preloaded on every GPU. That is feasible for MuseTalk and not for Ditto, and it is an engineering item missing from §5.4.
+   - **Peak-hours fleet.** The fleet cost in `video-avatar-v2-cost.py` is `max(floor, gpu_hours × price)`, using **average** GPU-hours as if VMs tracked load minute by minute. A 15-GPU evening peak (1,000 hybrid students) must be allocated for the whole window plus warm-up, about 5 h/day: 15 × 150 h × $5.142 ≈ **$11.6k/month ≈ $11.6 per student**, not $5.88 **[U]**. With pinned sessions it is about 25 GPUs ≈ **$19k/month**.
+   - VM boot plus model load is minutes, so scale-up must be scheduled, not reactive.
+
+### R2. Performance claims to relabel or tighten
+
+| § | claim in doc | what the source actually says | correction |
+|---|---|---|---|
+| 5.1, Ditto | "per frame: audio 23 ms, DiT 62 ms, render 15 ms" | the paper calls these "**single-step**" timings. Online steps are `chunksize=(3,5,2)`: 5 new frames per step **[V, paper + `inference.py`]** | per step, not per frame. 100 ms per frame would be 10 fps, which contradicts RTF 0.895 at 25 fps. Streams per GPU cannot be derived from RTF (a single-stream latency measure on a 12-core host); measure GPU occupancy with 2 sessions in E-3 |
+| 5.1/5.3, MuseTalk | 2 talking streams per A100 "from 72 fps on a 4090" | 72 fps is LiveTalking at default `batch_size=16`. MuseTalk's own "30 fps+ on V100" is `realtime_inference.py` at `batch_size=20` with `--skip_save_images` **[V]** | §5.4 runs `batch_size` 4 for latency. Throughput at batch 4 is unmeasured and lower **[U]**, so the stream count and every $/min derived from it are **[U]** until E-3 reports fps at batch 4 *with* blending and encode on |
+| 2.3, MuseTalk | "≈ 250–350 ms tuned" | the queue depths above, plus `r=10` lookahead, inference, CPU blend, x264, the SFU and the 4G jitter buffer, plus receiver A/V sync, which holds audio back to match video | my estimate is **≈ 450–700 ms tuned** unless every queue is held at ≤ 1 batch **[U]**. The ≤ 250 ms p50 bar in §9/E-3 is very likely to fail. Keep the bar (owner directive); expect E-3 to be what kills live video |
+| 2.3 / 5.4 | LiveTalking as the harness | `get_audio_frame()` returns **silence** after a 10 ms queue timeout, and that silence is also pushed to the output audio **[V, base_asr.py]** | if Azure's first deltas arrive in bursts slower than real time, silence is spliced *into* the utterance: audible stutter, plus a lip closure mid-word. Add a 100–200 ms pre-roll per utterance (more latency) or pace from the worker |
+| 5.4 | "Opus audio on the same RTP clock" | Opus RTP runs at 48 kHz and video at 90 kHz. Receivers sync through RTCP SR NTP mapping | "same capture wall-clock, with RTCP SRs". In LiveKit, publish both tracks with the **same `TrackPublishOptions.stream`** so they share one MediaStream; only camera+mic are grouped by default **[V, LiveKit TrackPublishOptions]**. Use `AVSynchronizer` with `queue_size_ms ≈ 200`, because large queues "introduce significant lag" and 1,500 ms is called out **[V, LiveKit KB]** |
+| 5.4 / 7 | "fork LiveTalking" + "LiveKit SFU" | LiveTalking's WebRTC output is **aiortc** (Python, software VP8/H.264 via PyAV, one GIL) **[V, requirements + server/webrtc.py]** | the output layer must be rewritten onto `livekit.rtc` (or GStreamer), which is not a config change |
+| 6.4 | 500 kbps → ≈ 170 MB per 45 min | video only | add Opus (≈ 32 kbps) and RTP/NACK/FEC overhead (≈ 5–10%): ≈ **190 MB**. The E-9 360p bar (≤ 120 MB) is marginal: 300 + 32 kbps × 1.08 ≈ 121 MB |
+| 2.1 / E-4 | Chromium cancels echo for remote tracks on media elements | true, **but** remote WebRTC audio played through Web Audio is *not* echo-cancelled (Chromium issue 687574) **[S]** | the 3D fallback must not take over playback through an `AudioContext`. Analyse levels with a `MediaStreamSource` while the `<video>` element keeps playing. Put this in the E-4 harness |
+| 5.2 | "Spot $0.950" | **[V]** re-queried: $0.950242. On-demand $5.142 **[V]** | none. All 10 avatar meters match exactly **[V]** |
+
+### R3. Uncanny valley and children
+
+- **Age changes which risk applies.** Brink, Gray and Wellman (Child Development 2019, n = 240, ages 3–18) found that **children older than about 9** rated a very human-like robot creepier than a machine-like one. **Younger children did not** **[V, PubMed 29236300 abstract via search]**.
+  - For Taxila's 6–8-year-olds, the uncanny valley will not protect them: they will not dislike a near-miss face. They are also the group most likely to believe a real person is present.
+  - E-8's "photoreal preferred by ≥ 60%" is therefore the wrong gate for that band. **Stratify E-8 by age (6–8, 9–11, 12–15).** For 6–8, gate on the "is she a real person?" probe (≥ 95%, not 90%), and treat preference as non-informative.
+- **MuseTalk-specific expression failures.** MuseTalk masks and regenerates the **lower face** (`parsing_mode='jaw'` in LiveTalking's v15 path **[V]**). The upper face comes from the base clip.
+  - **(i) Mouth and eyes disagree.** A "proud" or "explaining-warm" clip with smiling eyes, paired with a generated neutral speech mouth, reads as a fake smile.
+  - **(ii) Base-clip leakage.** Base clips must be filmed closed-mouth and lower-face-neutral, or the source mouth leaks into the output. That removes most of the clip bank's expressive range.
+  - **(iii) Pose and resolution limits.** Head turns beyond about 30°, and teeth at a 256² crop, are the documented weak spots ("occasional jitter", lip shape and colour not preserved **[V, paper limits]**).
+  - Expression for MuseTalk therefore means *brows, eyes and head only*. §5.4's seven-clip emotional bank should be re-scoped. Ditto, which re-renders the whole face from controls, is the only candidate where emotion reaches the mouth.
+- **Photoreal-to-stylised swaps are identity breaks.** The §5.4 failover to the 3D tutor mid-sentence will not read as "camera off". It reads as a different person. Fail over to **the last video frame held still, plus the live audio** (a "video paused" chip), and offer 3D only at a turn boundary. A paused photoreal face is also less uncanny than a jittering one.
+- **Interrupt artefact.** A cut mid-phoneme freezes an open mouth. Always render 2–3 closing frames (the silence-feature mouth) before the listening clip.
+- **Labelling is now law, not a rumour.** MeitY notified the IT (Intermediary Guidelines) Amendment Rules 2026 (G.S.R. 120(E), 10 Feb 2026, in force 20 Feb 2026). Synthetically generated video must be "clearly and prominently labelled" and carry **permanent provenance metadata** **[S, Freshfields / Lexology / HLC summaries]**.
+  - Whether Taxila is an "intermediary" under them is for counsel.
+  - Cheap to do regardless: a persistent on-video AI label for live and pre-rendered video, and C2PA-style provenance in every pre-rendered MP4/HLS segment. Replace §6.2's "[U, could not fetch]" with this.
+
+### R4. Production effort (missing from the doc)
+
+All estimates **[U]**, for one strong engineer per line, to production quality rather than a demo:
+
+| work item | effort | why it is not free |
+|---|---|---|
+| Self-hosted LiveKit SFU on Azure VMs (UDP, TURN-TLS fallback, autoscale, monitoring) | 2–3 wk | ACA has no UDP **[V]**; the 4G TURN-over-TCP path needs tuning |
+| Move the realtime voice transport server-side (worker ↔ Azure WS), rewire VAD, and re-run echosim end to end | 3–4 wk | it changes the audio floor the portfolio protects; E-4 |
+| Renderer fork: LiveTalking → livekit.rtc output, every queue flushed on interrupt, pre-roll, closing frames, client playout reporting | 4–6 wk | R1.5, R2 |
+| Per-utterance GPU-pool scheduler and admission control | 3–4 wk | R1.8; otherwise the cost is about 1.75× |
+| Hot-standby audio and failover | 1–2 wk | R1.6 |
+| Detector swap (InsightFace → MediaPipe/S3FD) and re-validation for Ditto or LatentSync | 1–2 wk each | R1.3 |
+| Clip bank per character (film or I2V, loop seams, closed-mouth discipline, `bbox_shift`, `prepare_material`) | 1–2 wk per character | R1.2, R3. For 5 tutors that is 5–10 weeks of content work |
+| Pre-render pipeline (batch on Spot, cache keys, HLS packaging, provenance, QA sampling for lip errors) | 3–4 wk | §5.5 |
+
+Live v2b totals **≈ 5–7 engineer-months plus 5–10 weeks of character content**, before E-3/E-5/E-8 can be run at product quality. v2a (pre-render only) is **≈ 1.5–2 engineer-months plus content**. That strengthens §9: build v2a first, and treat v2b as a research spike (E-3 only, about 1 week on stock LiveTalking) until E-3 shows the latency bar is reachable at all.
+
+### R5. Experiment changes
+
+- **E-3**: add CPU% per session and fps at `batch_size` 4 with blend and encode on. Add *onset-to-speaker-silence* on a real phone with client-side mute. Add A/V skew at the phone, measured with a clapper or flash test (pass: audio-early ≤ 45 ms, audio-late ≤ 125 ms).
+- **E-5**: run it on Ditto *only after* its detector swap, so the result reflects the shippable model.
+- **E-6**: replace Sora I2V (blocked) with filmed-actor, OSS-I2V and single-portrait (Ditto/LivePortrait) arms.
+- **E-8**: stratify by age. The 6–8 band is gated on the AI-probe at ≥ 95%.
+- **E-10**: add LatentSync (InsightFace), Ditto's HF weights (no licence declared) and Wav2Lip (non-commercial: drop it).
+- **E-11 (new) truncation accuracy**: compare client-reported playout vs renderer-sent position on 4G; pass when the truncation error is ≤ 40 ms p95.
+- **E-12 (new) renderer failover**: kill the renderer mid-utterance; pass when the audio gap is ≤ 300 ms, with no repeated or skipped words.
+- **E-13 (new) ¼ RTX PRO 6000 slice**: one MuseTalk stream at 25 fps with NVENC exposed in the vGPU; record $/session-minute.
+
+### R6. What survived scrutiny
+
+- **Azure prices.** All 10 avatar meters and the A100 on-demand and Spot prices match the API exactly **[V]**.
+- **Ditto.** RTF 0.895 and FFD 385 ms on one A100 **[V, paper]**.
+- **MuseTalk.** The MIT licence and the commercial-weights wording **[V]**.
+- **LiveTalking.** Apache-2.0, `fps` "must be 25", `batch_size=16` default **[V]**.
+- **Hedra.** Absent from LiveKit's 16-provider list **[V, re-fetched]**.
+- **The architecture-B principle** (the renderer owns the audio clock) and the §11 rejections. All stand, and §11.1 stands more firmly under the corrected BT.1359 direction.
+
+Sources added by this review:
+- Azure Sora 2 restrictions: https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/video-generation **[V]**
+- NC RTX PRO 6000 BSE v6 sizes (fractional GPU): https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/gpu-accelerated/nc-rtxpro6000-bse-v6-series **[V]**
+- Ditto paper: https://arxiv.org/html/2411.19509 **[V]**
+- Ditto source: https://github.com/antgroup/ditto-talkinghead **[V]**
+- Ditto HF weights: https://huggingface.co/api/models/digital-avatar/ditto-talkinghead **[V]**
+- LiveTalking source: https://github.com/lipku/LiveTalking **[V]**
+- LatentSync source: https://github.com/bytedance/LatentSync **[V]**
+- Wav2Lip licence: https://github.com/Rudrabha/Wav2Lip **[V]**
+- ITU-R BT.1359-1: https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.1359-1-199811-I!!PDF-E.pdf **[S, thresholds via summaries]**
+- A100 has no NVENC: https://forums.developer.nvidia.com/t/nvenc-encoding-support-for-nvidia-a100-gpu-card/193480 **[S]**
+- LiveKit `TrackPublishOptions.stream`: https://docs.livekit.io/reference/client-sdk-js/interfaces/TrackPublishOptions.html **[S]**
+- LiveKit A/V sync KB: https://kb.livekit.io/articles/3726353370-debugging-audio-video-sync-issues-in-livekit-publishing **[V]**
+- Chromium 687574 (no AEC through Web Audio): https://github.com/twilio/twilio-video.js/issues/323 **[S]**
+- Brink, Gray & Wellman 2019: https://pubmed.ncbi.nlm.nih.gov/29236300/ **[S, abstract]**
+- MeitY IT Amendment Rules 2026: https://www.freshfields.com/en/our-thinking/blogs/technology-quotient/india-targets-deepfakes-and-ai-generated-content-key-changes-under-meitys-2026-102mjwn **[S]**

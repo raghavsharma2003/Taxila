@@ -853,3 +853,150 @@ Tags as in the header.
 - Koedinger, K. R., et al. (2010). A data repository for the EDM community: the PSLC DataShop. In *Handbook of Educational Data Mining*. doi:10.1201/b10274-10 [S]
 - Motz, B. A., Carvalho, P. F., de Leeuw, J. R., & Goldstone, R. L. (2018). Embedding experiments: staking causal inference in authentic educational contexts. *J Learn Anal*. doi:10.18608/jla.2018.52.4 [V]
 - Sibling-verified trials cited here (LearnLM × Eedi 2025; Khanmigo two-year RCT, Oreopoulos & Low 2026; Medly micro-RCTs; Kraft et al. tutoring at scale): see `learning-science.md` §10 [V/S, LS].
+
+---
+
+## Methodologist review
+
+**Reviewer stance.** Adversarial review by a developmental psychologist and psychometrician, 2026-10-02. **Re-verified this pass** (Europe PMC, Crossref and arXiv abstracts, plus two web searches): Fisher 2018, Klasnja 2019, Koedinger 2023, Muralidharan 2019, Roschelle 2016, Meyer 2019, Kizilcec 2020, Lortie-Forgues & Inglis 2019, Sher 2011, Galbraith 2017, Brinkhuis 2018 and Schmucker 2025 (arXiv abstract). **New sources** brought in by this review: Karr et al. 2018 (*Psychol Bull*, doi:10.1037/bul0000160) [V], Ondrusek et al. 1998 (*J Med Ethics*, doi:10.1136/jme.24.3.158) [V], Crozier & Hostettler 2003 (*Br J Educ Psychol*, doi:10.1348/000709903322275858) [V], Talsma et al. 2018 (doi:10.1016/j.lindif.2017.11.015; abstract seen only through a search summary, so [S]), Sorjonen & Melin 2023 reanalysis (PsyArXiv doi:10.31234/osf.io/qgcu5) [V], and the "Astonishing Regularity Revisited" reanalysis (arXiv:2605.01690) [S].
+
+**Overall verdict.** The causal-design core is sound and unusually careful: decision records with propensities, MRTs analysed as excursion effects, adaptive-data inference, GMM kept exploratory, no per-child causal claims, and assent through a neutral narrator. The weaknesses are in four places:
+- **measurement** (the scale, what the item model conditions on, unidimensionality);
+- **identification of the three clocks** (an age-period-cohort problem the model does not name);
+- **construct validity of behavioural proxies** used in H7 and H8;
+- **power and falsifiability of several confirmatory hypotheses** as written.
+
+None of these overturns a §0 decision. Several change what the papers may claim.
+
+### R1. Measurement model (§5.1)
+
+1. **The grade-equivalent (GE) scale is the wrong metric for growth inference.**
+   - GE units are not equal-interval across grades. On a GE metric, one grade of schooling is by construction about 1 GE for the norming group, so `ψ·grade`, `μ(age)` and the prior ψ ~ N(0.5, 0.5²) GE/year split a quantity the scale itself defines.
+   - **Fix.** Estimate on a vertically linked logit (IRT) scale and use GE only as a reporting transform. State that conclusions about the size of the "schooling vs age" split depend on the scale. This is the Briggs & Weeks and Bond & Lang point applied to the clocks, not only to group gaps.
+2. **Conditioning on hints and ASR confidence in the item model is post-treatment adjustment.**
+   - Hints requested are a consequence of the child's ability on that item. Putting hints in x_ijt′γ absorbs ability signal and biases θ toward the mean, more for weaker children.
+   - ASR confidence is partly a function of hesitant, uncertain speech, which is itself an ability indicator.
+   - **Fix.** Score hinted responses as a separate response category (partial credit or a sequential model), or exclude them from θ estimation. Use ASR confidence only for an exclusion threshold or as an instrument-quality covariate that is checked in a multiverse. Never use it as a free covariate in the ability model.
+3. **Unidimensionality from class 1 to class 9 is assumed, not tested.**
+   - Maths content changes in kind (counting, then arithmetic, fractions, algebra), and vertical scales are known to bend under construct shift.
+   - Brinkhuis et al. 2018 [V] name "violations of unidimensionality" as a main source of misfit in Math Garden, the closest precedent.
+   - **Fix.** Add a dimensionality gate, G1b: a bifactor or multidimensional IRT per strand, with local-dependence (Q3) checks, before any 6-15 growth curve is drawn.
+4. **Local dependence and irregular spacing.**
+   - Learning happens between responses, and retries and hints create within-episode dependence. An AR(1) "per occasion" is undefined when occasions are irregular.
+   - **Fix.** Use a continuous-time (Ornstein-Uhlenbeck) state process indexed by elapsed time, or define occasions as fixed calendar bins.
+
+### R2. Three clocks: an unacknowledged identification problem (§5.1, §6.1-6.2)
+
+1. **Grade, cohort and time are collinear.** For non-repeaters, grade_it = cohort_i + academic-year index. In 18 months each child crosses one April boundary, so ψ is identified only by the within-child jump at that transition.
+   - That jump is confounded with the summer break, the new curriculum, period effects such as exam seasons and policy versions, and cumulative exposure.
+   - The model has no period term, so ψ absorbs all of them.
+   - **Fix.** Name this an age-period-cohort constraint. Identify age from within-grade birthdate spread and the fuzzy RD, include calendar-period terms, and report ψ only from the RD contrast.
+2. **The exposure clock h(expo) is endogenous.** Within-child use rises when learning goes well and motivation is high, which is reverse causation.
+   - **Fix.** Label h(·) as descriptive. The causal exposure estimate comes only from the delayed-start sub-cohort, which is a different sample and only 3 months long.
+3. **The RD is weaker than stated.**
+   - Indian birthdate records are often imprecise (school-recorded dates of birth, age heaping) [U].
+   - Private schools set their own cutoffs [U].
+   - Month of birth makes the running variable coarse.
+   - On a curriculum-defined θ, the "effect of a year of schooling" is partly mechanical exposure to the tested content.
+   - **Fix.** Keep the F ≥ 10 rule, add a placebo test (a cutoff shifted by 3 months) and donut-RD sensitivity, and describe the estimand as "schooling effect on curriculum knowledge", not on cognitive development.
+4. **Cohorts in the accelerated design differ in selection, not only age.**
+   - A class-1 user is enrolled by a parent. A class-9 user is often exam-driven and self-selected.
+   - A failed convergence test (§6.1) will mostly reflect selection plus differential attrition by age.
+   - **Fix.** Pre-register cohort-specific baseline covariate balance and attrition-by-age models as part of H_conv.
+5. **Galbraith 2017 [V] is slightly misapplied.** The paper shows that rising duration costs push designs toward shorter duration and eventually cross-sectional. Its dropout analysis assumed 30% dropout, with at most 7% power loss.
+   - Taxila assumes about 60% attrition at 18 months, and that attrition is informative. This is outside the paper's range, so "suits Taxila" is [U].
+
+### R3. MRTs (§3)
+
+1. **Missing outcomes that depend on treatment.** The proximal outcome, success at the next-session check, exists only if the child returns.
+   - If a 60-second teach-back changes the chance of returning (fatigue, or satisfaction), then conditioning on return is post-treatment selection, and the excursion effect on "success | returned" is not causal.
+   - **Fix.** Estimate the effect on return within 7 days as its own proximal outcome. Use a composite primary (success at a check within 7 days, with non-return coded as failure) plus a principal-stratification or bounds sensitivity analysis.
+2. **H4's mechanism wording overclaims.** "Probe vs none" also adds time on task and an extra retrieval or feedback exposure. A positive β shows that *delivering the probe* helps. It does not show that *retrieval or explanation* is the active ingredient.
+   - **Fix.** Either add a time-matched re-exposure arm (restudy or worked recap) or reword H4 and paper 3 as "probe delivery".
+3. **H4's band interaction is underpowered.** §13.4 sizes 400 children per band to detect a 3-pp effect *within* a band. Detecting a *difference* between two bands has SE about √2 larger.
+   - Reviewer arithmetic, scaling the §3.4 SE: power ≈ .54 for a 3-pp band difference and ≈ .28 for 2 pp.
+   - **Fix.** Pre-register a linear trend across bands, or double N per band, or label the interaction secondary.
+4. **The simulation is optimistic.**
+   - It assumes independent outcomes within child given the baseline. Decision points in the same session share the next-session context.
+   - It has no outcome missingness and no carry-over.
+   - Treat .83 as an upper bound until LAM2 and pilot data replace the generative model.
+5. **The type-I claim is not supported by the run.** The reported .060 at 1,000 replications has a Monte Carlo SE of .0069, so it is 1.45 SE above .05. That does not show the sandwich is liberal. Keep CR2 on principle and drop "slightly liberal", or rerun with 10,000 replications.
+
+### R4. Hypotheses: falsifiability and construct validity (§13.7)
+
+1. **H1.** The MDES is 0.16 SD, but the predicted range is 0.10-0.25, so the lower half of the prediction is underpowered.
+   - The falsification rule (upper 90% CI bound < 0.10) needs a point estimate near 0, since the CI half-width is about 0.095. A true effect of 0.05 would come out "inconclusive", not falsified.
+   - If partner schools are randomised as clusters, the design effect must be added and the MDES rises well above 0.16.
+   - **Fix.** Pre-register a three-way reading: supported, null-equivalent, or inconclusive. Report control-group use of other EdTech (contamination).
+2. **H2.**
+   - "Ratio > 5" compares an intercept SD in logits with a slope SD in logits per opportunity, so it is not dimensionless. Express it as the slope SD × a stated number of opportunities (for example, 10).
+   - The arXiv:2605.01690 reanalysis [S] of Koedinger 2023 [V] finds that learning-rate dispersion estimates depend strongly on practice-sequence length. Capping at 10 opportunities inflated the median IQR by 75%, and capping at 5 by 205%. So the 0.04 threshold is meaningful only at a pre-registered, fixed calibration-sequence length.
+3. **H3.** "Once degree of original learning is equated" is done statistically, through an *estimated* S_ck. Measurement error in that estimate, if it differs by age (younger children have noisier estimates), leaves residual confounding and regression to the mean in the direction of the hypothesis.
+   - **Fix.** Equate by design (learn-to-criterion inside the fixed calibration sequences). Treat S_ck as latent with error. M-LAG randomises lag, not original learning.
+4. **H5.** Measurement error in θ_it attenuates the moderation slope toward 0, which is toward the falsifier. Also, a subject-wide θ is a coarse proxy for the *task-specific* prior knowledge that expertise-reversal theory refers to.
+   - **Fix.** Use the latent θ with error (errors-in-variables), plus a skill-specific prior-knowledge moderator. Drop the "crossover near median θ" prediction, which has no stated basis.
+5. **H6.** A TOST at ±0.10 SD with power .80 needs about 857 per arm before the ×1.5 bandit inflation, which gives about 2,570 in total, not 2,350.
+6. **H7 has a construct-validity failure.**
+   - "Self-start share" is not autonomous motivation in the self-determination-theory sense. In 6-10-year-olds it mostly indexes parent scheduling and device access, and MH itself says parent-started sessions are the norm at that age.
+   - The indicator is therefore not invariant across bands.
+   - The cited support is about *self-efficacy*, which is a different construct. Talsma 2018 [S] found that performance → self-efficacy dominates (β .205 vs .071) and that in children there was no self-efficacy → performance path, but very few child samples were included. Sorjonen & Melin 2023 [V] argue that even the residual self-efficacy → performance effect is a regression-to-the-mean artefact.
+   - Cross-lag sizes depend on the lag interval, and comparing unstandardised cross-lags between variables on different metrics is meaningless.
+   - **Fix.** Rename the outcome "self-initiated sessions (behavioural)". Restrict the confirmatory test to bands where self-start is plausibly child-driven (≥ 10 [U]). Use continuous-time or multiple-lag RI-CLPM/DSEM with within-person standardised effects.
+7. **H8.**
+   - Logs measure *context-consistent repetition*, not habit (automaticity). MH rates automaticity recovery as poor (r = .26-.42 *computed*).
+   - The anchor slot is parent-set, so for young children this is a family-routine effect.
+   - **Fix.** Reword H8 and paper 6 accordingly.
+
+### R5. Validity programme (§9) and developmental claims
+
+1. **The discriminant target |r(quietness, mastery)| < .10 confuses bias with a true relation.**
+   - Shyness correlates with test scores, and shy children underperform specifically in face-to-face *oral* testing but not in group or written formats (Crozier & Hostettler 2003, n = 240 Year-5 pupils [V]).
+   - A voice tutor may be a quasi-face-to-face condition.
+   - **Fix.** Make the gate a test of modality × shyness DIF: the gap between voice and tap θ as a function of a temperament covariate. Do not require near-zero correlation.
+2. **ASER-style criteria hit a ceiling** above about class 3-5, because the tool targets foundational skills. They cannot serve as the convergent criterion for classes 5-9.
+   - **Fix.** Use grade-appropriate criteria per band. Report disattenuated correlations next to the r ≥ .60 targets.
+3. **"EF structure differentiates around age 10" (§8.1, citing CD-D3) is contested.** Karr et al. 2018 [V], 46 samples:
+   - the most often accepted models were one or two factors in preschool and **three factors in school-age** samples;
+   - in their bootstrap reanalysis, no model consistently converged and met fit criteria.
+   - **Fix.** State that the timing of differentiation is not established. Configural invariance of EF across bands must be tested, not assumed.
+4. **"Easier to tap than to say for a 6-year-old" (§8.1) is too general.** For pre-readers, a tap item with written options is harder, unless the options are read aloud. Modality effects depend on literacy, so model modality × literacy rather than assuming a direction.
+5. **Linking forms (§13.5).**
+   - Reusing common items across waves for the *same child* reintroduces item memory. Rotate anchors across waves.
+   - A 12-minute form for 6-7-year-olds will have modest reliability. Per-child 3-month gains are difference scores and will be unreliable, so use them for group growth only.
+
+### R6. GMM simulation and citation precision (§6.4, LAM-D6, §4-5)
+
+1. **The §C simulation is narrower than its label.** It fits a one-dimensional normal mixture to *estimated* per-child OLS slopes, not a latent-variable GMM with intercepts and within-class covariance. "100/100 at Taxila's data shape" is an illustration consistent with Bauer & Curran, not a replication of it.
+   - **Fix.** Before the number enters `context/` as a measurement, rerun with a proper GMM (for example, R `lcmm` or Mplus).
+   - Skew-t mixtures do not resolve Bauer & Curran's core point: a single non-normal population and a mixture of normal ones can be empirically indistinguishable.
+2. **Sher 2011 [V]** shows the four prototypes recurring across analytic designs that varied age, duration and frequency *within one 3,720-student college panel*. "Recur regardless of data" (LAM-D6) overstates this. Say "across designs within one panel, and often across published studies".
+3. **Schmucker 2025 [V]** compares *population-level (non-personalised) MAB policies*, not a "uniform policy". The outcomes were immediate second-attempt success and session performance, and the actions were hint choices after errors.
+   - Using it as a prior that τ for *teaching-format × child effects on delayed retention* is small (§5.4, H6) is an extrapolation. Tag it [U-extrapolated].
+4. **Rafferty 2019.** §4.2 shows a power loss, not the "≥ 2× participants" finding. Say "consistent with", not "replicates".
+5. **§5.4 V = 2/(n·p(1−p))** ignores item-difficulty heterogeneity and non-stationarity across a school year. The 78/217/487 figures are lower bounds, which strengthens LAM-D7.
+6. **Minor consistency fixes.**
+   - Schultzberg & Muthén: the body says 2017 and the reference says 2018.
+   - The Kramer 2014 Editorial Expression of Concern should be confirmed and tagged [S] rather than left [U].
+
+### R7. Ethics and child wellbeing
+
+1. **Assent quality below 9.** Ondrusek et al. 1998 [V]: under-9s' understanding of a research study was "poor to non-existent", and voluntariness was compromised by fear of displeasing adults. A parent being present for assent at 7-12 can amplify that pressure.
+   - **Fix.**
+     - Keep ICMR's age-7 floor, but treat assent at 7-8 mainly as a check of willingness.
+     - Make *dissent honoured at any time* the operative safeguard.
+     - Raise LAM8 to include understanding *that data are used for research*, not only that the child can stop.
+     - Add an occasional neutral-narrator willingness check with no parent prompt.
+2. **Internal inconsistency in LAM-D10.**
+   - It says service consent (P1) covers equipoise-bounded variation, and also that non-P4 children get a deterministic default.
+   - If the production Director uses a bandit (LS §8.4) for everyone, non-P4 children are not deterministic.
+   - **Fix.** Pick one rule. The reviewer recommends: non-P4 children receive production adaptation without research-only randomisation, and are excluded from extracts. Then fix LAMI4 to match.
+3. **"Dissent signals stop that research task" (§11.2) has no clear target.** MRT components are embedded teaching moves, not separate research tasks, so a child saying "I don't want to" to a teach-back is a pedagogical refusal.
+   - **Fix.** Define research dissent as a refusal of the participation itself, which triggers an assent re-check. Separately, honour task refusals pedagogically for every child.
+4. **The sealed holdout leaks through the product.** Confirmatory children's data feed live dashboards and the Director's learning, so analysts' priors are shaped by holdout data.
+   - **Fix.** Exclude holdout children from analytic dashboards, or declare the seal "partial" in every pre-registration (in line with Weston 2019).
+5. **Inferred harm markers.** Inferring parent pressure, distress or compulsion from logs is error-prone. These markers are for monitoring the study only. They must never become labels shown to parents or children, and their misclassification rates should be reported. This extends LAMI6.
+
+### R8. Parent-facing text (§14)
+
+- **"Remember a week later" is wrong.** The M-PROBE outcome is the *next-session* check, at a variable delay that is often 1-3 days. Say "remember it next time" unless a fixed 7-day outcome is added.
+- **Every aggregate finding shown to parents must carry its uncertainty and the words "on average".** This is consistent with Fisher 2018 [V]: variance was 2-4× larger within individuals than within groups.

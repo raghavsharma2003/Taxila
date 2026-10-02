@@ -646,3 +646,148 @@ Each engine ships with:
 - PhET Equality Explorer source (GPL-3.0). https://github.com/phetsims/equality-explorer **[V]**
 - The Math Learning Center, Apps Terms of Use. https://www.mathlearningcenter.org/apps/apps-terms **[S]**
 - Taxila internal: `docs/research/tech-and-market.md` §1.7, §3.1–3.6, §4; `docs/research/learning-science.md` §2.4, §7.1–7.2; `data/curriculum/SOURCES.md`.
+
+---
+
+## Engineering review
+
+**Reviewer:** senior frontend/game engineer pass, 2026-10-02. **Method:** read-through of §0–§6 against a React 19/TS + canvas/SVG build, Android WebView on a ₹10k-class phone (assumed: 2–3 GB RAM, Mali-G52/Adreno 610 class GPU, WebView possibly several versions behind). No code was run and no device was benchmarked, so every number below is **[U]** (engineering estimate) until a device-lab pass confirms it. Tags follow the file's legend.
+
+### R.1 Verdict
+
+1. **The 25-engine design is sound, but "each engine in ≤ 2 days" is false for the full specs.** Only `number-grid` (hundred, addition, multiplication and sieve layouts only) fits in 2 days. A realistic v1 slice of most engines is 2–3 days. The full spec as written is 12 M-sized and 12 L-sized engines, about **150 engineer-days** plus the shared kit (§R.5). The estimate assumes the shared kit exists first and that art is delivered separately.
+2. **60 fps on a ₹10k Android is achievable for all engines except `solids` in `3d` mode, `algebra-tiles` with `dim: 3`, and `geo-construct` with live measures on large figures.** Those three need a fallback or a budget (§R.3).
+3. **Params are mostly sufficient, but not safe as written.** The spec has several free-text fields that are, in effect, a code-injection surface (§R.4). It also has structural problems for LLM strict-schema output (§R.2).
+4. **Events are enough for the teacher on the happy path, but four gaps matter:** the 4 Hz debounce can drop the very events detectors need, there is no undo, hint or miss-tap event, about a fifth of detectors depend on speech the engine cannot see, and no event carries pointer-level input quality (§R.6).
+5. **Two safety changes are non-negotiable:** remove the "bet after a streak" framing in `chance`, and stop encoding positive/negative by green/red alone (§R.7).
+
+### R.2 Contract-level corrections (apply to all engines)
+
+| # | issue | correction |
+|---|---|---|
+| C1 | **Strict structured output depth.** `ModuleSpec → probe → expect → distractors[] → value (MathValue union)` nests about 6–7 levels with `anyOf` unions. Azure OpenAI strict structured outputs limit nesting depth (about 5 levels) and require `additionalProperties:false` and all-required fields **[M: limits recalled, verify against current Azure docs before relying on them]**. | Flatten. Give `MathValue` a **string form** (`"3/4"`, `"0.125"`, `"₹37"`, `"2:45"`, `"(3,2)"`) parsed by one shared parser in the host, instead of a tagged union. Make `distractors` a flat list `[{v: string, misc: string}]` and `probe` a top-level sibling of `params`. Keep the tagged union only for engine-internal use. Gate M1 must measure this with strict mode on. |
+| C2 | **zod inside every iframe** costs about 13 kB gz **[M]** per engine, and `.refine`/transform logic is duplicated across 25 bundles. | Validate and clamp **on the host (and server) only**; the iframe receives already-clean JSON and does a cheap `clampParams()`. Generate the JSON Schema for the LLM from the same zod source at build time. Drop zod from the 120 kB budget. |
+| C3 | **The "120 kB gz per P0 engine" budget is unrealistic if each engine bundles React.** React 19 plus react-dom is about 45 kB gz **[M]** and is wasted for a canvas engine. | Engines are **vanilla TS (or Preact) on a shared `engine-kit`**, not React. React lives only in the host shell. The kit (canvas scene, hit-test, tween, audio, rational, rng, bridge, summarize helpers) is about 25–35 kB gz **[U]** and is cached once. Budget per engine on top of the kit: 25–60 kB gz for P0/P1; `geo-construct` (JSXGraph core is about 130 kB gz **[M]**) and `solids` (three.js tree-shaken about 150–180 kB gz **[M]**) are lazy chunks. |
+| C4 | **Engine delivery.** The T1 pipeline in tech-and-market uses sandboxed iframes; hand-built engines do not need `srcdoc`. | Ship engines as static, hash-named files **inside the APK** (Capacitor local assets) and on the web behind a service-worker cache. Mount one engine at a time; destroy the previous one fully (a WebView iframe with canvas holds 30–60 MB **[U]**). Iframe `sandbox="allow-scripts"` without `allow-same-origin`; host checks `event.source` and a per-mount nonce on every message. |
+| C5 | **Old WebView.** ₹10k phones often run Android 9–11 with a WebView that may not have been updated. | Set the build target to about Chrome 80 / ES2019 (no top-level await, check `??`, `?.` transpile). Add a device-lab matrix: Android 9 stock WebView, Android 11, and one current. Add `touch-action:none` on canvases and `overscroll-behavior:contain` so pinch and drag do not scroll the host. |
+| C6 | **Event debounce (≤ 4 Hz) drops data.** Counting taps in `collections` can arrive faster than 4 Hz, and double-tag detection needs every tag. | Replace "debounce" with **batching**: queue semantic events and flush `action` as an array (`events: [...]`, ≤ 12 items, ≤ 4 flushes/s). Pointer-move stays unreported. Payload flat-key rule applies per item. |
+| C7 | **Exact arithmetic (R7) vs geometry.** `geo-construct`, `angles`, `symmetry`, `coord-grid` and `measure` use floats. | Allow floats in geometry with a single shared `eq(a,b,eps)` (default eps 1e-6 of scale, snap to 0.5° for angles). Snap-to-grid and snap-to-integer where the maths is integer (geoboard, coord-grid plotting). Keep rational maths for number engines. Golden tests compare with the same eps. |
+| C8 | **`Polygon`, preset ids, and `Check.pred` are undefined types.** The LLM cannot invent polygon coordinates reliably. | Define `Polygon = {pts: [number, number][]}` with ≤ 12 integer points, and expose **named preset registries** per engine (`figure`, `given`, `scene`, `worked`, `cases`). Specs reference preset ids; ad-hoc geometry is only allowed on integer grids. Ship a `list_presets` description inside each engine's `describe` string. |
+| C9 | **Determinism (R10) needs a `seed` param everywhere randomness appears.** `collections` scatter, `data-graphs` generated raw data, `chance`, `patterns` fractals and `rule-lab` all need it. | Add `seed: number` to the common `ModuleSpec` (default = hash of `module_id`). The kit supplies `rng(seed)`. |
+| C10 | **Audio and autoplay.** Android WebView blocks audio until a user gesture unless `mediaPlaybackRequiresUserGesture` is false. | Capacitor config sets it false for the app; on web, the first tap unlocks an `AudioContext`. Sound cues are tiny synthesised tones (no files). |
+| C11 | **Fonts.** Hindi labels need Devanagari; Noto Sans Devanagari is large **[M]**. | Use the system Devanagari font stack first; ship a subsetted woff2 (digits, matras, about 200 glyphs) only if system fallback proves ugly on test devices. |
+
+### R.3 Performance (60 fps on a ₹10k Android)
+
+**Rule:** SVG only when the live node count is ≤ about 250 **[U]**; above that, use one `<canvas>` with a display list and dirty-rect redraw. Animate transforms only. Keep `devicePixelRatio` capped at 2 (a 3x canvas on a 720p panel wastes fill-rate).
+
+Hotspots to fix in the spec:
+
+| engine | risk | fix |
+|---|---|---|
+| `place-value` | 10⁷-scale values ("crore") and `bundles` of 100+ sticks | Render counts above about 20 per place as a **stacked glyph with a numeral badge**, never one node per unit. `maxNodes` is enforced by the clamp. |
+| `collections` | `n` large (estimation items 40–200), scatter layout collisions | Cap `n ≤ 100` in the clamp; Poisson-disk placement precomputed from `seed`, not physics. |
+| `number-grid` | `thousand_window` implies 1,000 cells | Show a **window of ≤ 100 cells** at a time (as the spec's name says), canvas-drawn. |
+| `chance` | 1,000-trial batches with per-trial animation | Animate only the first few trials of a batch; the rest update counts, not sprites. Histogram on canvas. |
+| `algebra-tiles` | `dim: 3` and `x3` blocks | Drop true 3D; use an **isometric 2D projection** (same as `solids` iso2d). Defer cube identities to a static pre-rendered sequence. |
+| `solids` | three.js WebGL on Mali/Adreno low-end: shader compile hitches, context loss on app backgrounding, 150+ kB gz | **Default `render: "iso2d"`** (canvas painter's algorithm, hand-built). Make `3d` opt-in after a GPU capability probe, with `webglcontextlost` handling. Keep polygon counts under about 5k. |
+| `geo-construct` | JSXGraph redraws the whole board per drag; heavy with many measures | `measures: "on_tap"` is the default; cap objects at about 60; throttle `gc.drag` to 10 Hz for events but not for rendering. |
+| `geoboard` / `shape-lab` | polygon clipping and tiling collision per frame | Integer grid and convex-only cuts in v1; compute on `pointerup`, not per move. |
+| `fractions` | `grid100` and `wall` | 100 `<rect>`s is fine; `wall` capped at 12 rows. |
+| `data-graphs` | `raw` data of unbounded size | Cap at 200 points; bin before drawing. |
+
+Fine as-is at 60 fps: `number-line`, `balance`, `integers`, `clock-calendar`, `money`, `symmetry`, `angles`, `coord-grid`, `tape-diagram`, `rule-lab`, `algebra-moves`, `multiply-divide`, `patterns` (except `fractal` depth, cap at 5 levels).
+
+Touch-target arithmetic the spec skips: R8 says ≥ 48 dp for ages 6–9, but a 360 dp-wide screen holds at most **7 targets across** at 48 dp (minus gutters). That caps `geoboard` at about 7 × 9 pegs for young children, a `ten_frame` at 5 columns with the 48 dp rule met, and a `grid100` is **tap-only at cell level for ages ≥ 10**; for younger children it must be a coarser gesture (tap a row/column strip). Add a `minTargetDp` computed from age band and a clamp that rejects layouts that cannot meet it. For precision tasks (`number-line` estimate, protractor) the finger occludes the point: use an **offset handle** (grab a handle below the marker) and a magnifier on long-press, and add snapping that can be disabled only for the `estimate` probe.
+
+### R.4 Parameter sufficiency and LLM-control safety
+
+Params cover each engine's stated scope. Corrections:
+
+- **Free-text expressions are an injection and crash surface.** `patterns.figure.rule` ("n^2", "2n+1"), `patterns.rule.explicit/recursive`, `rule-lab.customRule`, `rule-lab.claim.predicate`, `algebra-moves.expr/goal`, `algebra-tiles.expr/target`, `number-grid.highlight.rule`, `MathValue.expr`. **Never `eval`/`new Function` any of them.** Implement one shared **CAS-lite** in the kit: a Pratt parser over a closed grammar (integers, rationals, one or two variables, `+ − × ÷ ^`, parentheses, a fixed whitelist of functions), with a node-count limit (≤ 200), a depth limit (≤ 20), an exponent limit, and an evaluation step budget. `rule-lab.rule: "custom"` is **removed** unless `customRule` is expressed in that same grammar. Predicates (`claim.predicate`, `Check.pred`) become an **enum of named predicates** with typed args, not strings.
+- **LLM-authored text is rendered.** `story`, `label`, `say`, `ask` are `L10n`. Render them only with `textContent`/canvas `fillText`, never `innerHTML`. Cap each at 200 characters and strip control and bidi-override characters.
+- **Clamp, never trust.** Every numeric param has a min/max in the schema and a clamp in the iframe (`n ≤ 100`, `terms ≤ 20`, `d ≤ 24` for partitions, `base 2–10`, `trials.max ≤ 1000`, `grid ≤ 12 × 12`). A param that breaks R8 touch targets is clamped to the nearest valid layout and emits `error{code:"clamped"}` so the host can log it.
+- **Missing params found:** a `seed` (C9); `minTargetDp` / `ageBand` (derived by the host); `hideLabels`/`labelMask` for `clock-calendar` (reading without numerals) and `coord-grid`; a `target` or `distractorsPreset` for `number-line` `estimate` when no probe is attached; `maxUndo`; `a11y: {shapeCoding: boolean}` (see §R.7); `allowedPresets` per engine. `number-line` needs an explicit `zoom.target` to make "is there a number between" reproducible.
+- **Over-specified params to trim (LLM burden):** `place-value` has 6 models × 11 places × 6 modes, and `fractions` has 5 models × 9 modes. Many combinations are invalid (e.g. `abacus` with `thousandth`; `circle` with `divide`). Add a per-engine **valid-combination table** (a Zod `.superRefine` on the host) and surface it in `describe` as "model → allowed modes". Otherwise M1's 98% first-try-valid gate will be dominated by combinatorial invalidity. Consider splitting `place-value` into three entry points (`place-value`, `column-ops`, `base-n`) that share one renderer.
+
+### R.5 Shared core ("Wave 0") cost and what it must contain
+
+Wave 0 is itself **L (about 8–10 days)** and gates everything, so it must be built first and not in parallel with Wave 1. Contents: `engine-kit` (scene/hit-test/tween/audio), exact rational and money/time types, CAS-lite (§R.4), seeded RNG, `getState/setState` plus golden-test harness (Playwright), fading machine, bridge v2 with nonce and origin checks and event batching (C6), `summarize()` helpers, clamp/valid-combination framework, the touch-target layout helper, and a device-lab FPS harness (`PerformanceObserver` long-frame counts reported through `state`). Without this, 25 engines will each reinvent it, and the "L" estimates below will double.
+
+### R.6 Events: are they enough for the teacher to observe learning?
+
+What works: the semantic-event design, the `summarize()` one-liner, and `probe_result` with a `misc` id. These give the teacher what the child *did* and what the engine concluded.
+
+Gaps and fixes:
+
+1. **Dropped events from debounce** (C6). Batch, do not drop.
+2. **No negative-signal events.** Add to the common set: `undo {of}`, `reset`, `hint_used {level}`, `miss_tap {x,y,near}` (a tap that hit no target, with the nearest target id), `time_to_first_action {ms}`, and `abandon`. Milestone M5 (intended-action rate) cannot be computed without `miss_tap`; the spec currently lists M5 but has no event to measure it.
+3. **Voice-dependent detectors.** `say the value aloud` appears in `number-line`, `collections` (`CARDINALITY`), `place-value` (`TEEN_REVERSAL`), `clock-calendar` (Hindi time words), `money` (`dhai sau`). The engine cannot hear the child; `record_answer` relies on Hinglish ASR for numerals and number words, which is error-prone for Hindi 1–99 **[U]**. About **20% of the ~240 named detectors** (rough count by inspection: any detector whose rule says "says", "answers", "claims verbally", or that needs the child's reasoning, such as `ROUND_IN_STEPS`, `COUNT_ALL`, `NO_NUMBER_BETWEEN`) cannot fire from taps alone. Tag each detector `needs: "taps" | "voice"`; voice detectors fire only after an ASR-confirmed `record_answer` (with ASR confidence), and the teacher can also confirm by asking.
+4. **Single-event detectors are over-trusted.** Many rules ("`UNEQUAL_PARTS` ← accepts an unequal cut") fire from one action. This is fine because the signal only schedules a verifying probe (§0.6), but the schedule rate must be capped (≤ 1 verifying probe per 3 minutes per child) or a noisy detector will turn a session into a quiz. Add this to the lesson state machine, not the engine.
+5. **State-at-time for the teacher.** `state` summaries are on request and at milestones. Add `state` automatically on `idle` and before every `probe_open`, so the teacher always reasons from the current screen.
+6. **Attention and confound signals.** Add `visibility {hidden: bool}` (app backgrounded) and `pointer_class {touch|stylus|mouse}`. An `idle` caused by a notification shade is not a learning signal.
+7. **`translate` correctness.** The checker for `tape.eq` ("equivalent") and `alg.expr` needs CAS-lite equivalence (normal form over rationals), which has real edge cases (`2(x+3)` vs `2x+6`, commutativity, `÷` vs fraction bars). Budget it in Wave 0 and in `tape-diagram`/`algebra-tiles` estimates; M6 (κ ≥ 0.7) is the right gate.
+8. **Payload limits.** 12 flat keys and ≤ 240-char summaries are fine. Add a **per-session event cap** (e.g. 500 events, then aggregate) so a button-mashing child cannot flood the Realtime conversation.
+
+### R.7 Safety, accessibility and compliance issues
+
+| # | issue | action |
+|---|---|---|
+| S1 | **`chance` "bet after a streak" (`ch.bet`)** normalises gambling behaviour for children, and `GAMBLERS_FALLACY` is detected by "bets the opposite after a streak". | Rename to **"predict the next flip"**, with no stake, points, coins or money language anywhere in the engine. Keep the detector, renamed `ch.guess`. The same applies to `money` (`barter`, `pay` modes): use shops and budgets only, no chance mechanics. |
+| S2 | **Colour-only encoding.** Green/red tokens (`integers`, `algebra-tiles`) fail for red-green colour vision deficiency (roughly 5–8% of boys **[M]**). | Always pair colour with a **shape/sign glyph** (+ and − on the token) and a distinct fill pattern. Keep NCERT's green/red as the colour, but never as the only cue. Same for `data-graphs` series and `symmetry` lines. |
+| S3 | **Photosensitivity and flashing.** `collections.flashMs` (subitising), `chance` batch runs, spinners. | Cap flash rate ≤ 3 per second and keep flashes small and low-contrast; no full-screen flicker; honour `prefers-reduced-motion` by replacing animation with a step change. |
+| S4 | **Rendering LLM text** (see §R.4). | `textContent` only; length caps; sanitise. |
+| S5 | **Message-channel trust.** A compromised or malformed engine message could drive the teacher. | Nonce plus `event.source` check; the host validates every payload against the manifest's `events` list; unknown event types are dropped and logged. Engine text fields never reach the LLM as instructions; they enter only as quoted data in the §1.7 observation. |
+| S6 | **Child data.** Events and `state` summaries are performance telemetry about a minor and are persisted for the parent report and misconception tracking. | Taxila's own constraint says compliance is deprioritised, so this is a flag, not a blocker: India's Digital Personal Data Protection Act 2023 restricts tracking and behavioural monitoring of children, with some exemptions **[M: confirm the Act and Rules before launch]**. Keep an identifier minimisation and a retention limit in the event schema from day one, because retrofitting is costly. |
+| S7 | **Money imagery.** Already flagged in §5 E14 (stylised drawings, no scans, legal check). | Confirm: art commissioned as non-replica line art; denominations as flat colour swatches plus numerals; legal sign-off stays a **[U]** gate before shipping. |
+| S8 | **Child-safety floor.** Engines carry no free-text input from the child. | Keep it that way: numeric entry only, with digit-length caps. Any future "type your own rule" in `rule-lab` must route through the host's safety layer, not the engine. |
+| S9 | **Stopwatch/race and score-like UI** (`clock-calendar` stopwatch, `rule-lab` race) can create time-pressure anxiety. | No countdowns or timers visible by default; stopwatch is a measuring tool, not a challenge. |
+
+### R.8 Build-cost estimate per engine
+
+**Scale.** One engineer, shared kit already built, includes: renderer, all listed actions, tap-first interaction, bilingual labels, `getState/setState`, `summarize()`, events, ≥ 80% of the named detectors with unit tests, about 20 golden specs, and 3 on-device 60 fps checks. **Excludes** art and audio assets, device-lab time, and the shared kit. **S** ≤ 2 days (the original claim). **M** 3–5 days. **L** 6–10 days. All **[U]**.
+
+| # | engine | size | days | why, and what to cut or split |
+|---|---|---|---|---|
+| E01 | number-line | **M** | 5 | Hub engine, used by 47 topics. Cost is in `zoom` with rational endpoints, `jumps`, and decimal/fraction/integer/real tick labelling. Defer `real` (irrationals) and `zoom.maxDepth > 3` to v2. Offset handle and PAE logging are required in v1. |
+| E02 | collections | **M** | 4 | 8 layouts, but each is simple. Poisson scatter with seed; `flashMs` and tally/pairs need care. Ten-frame and part-part-whole first (v1 in 2 days). |
+| E03 | place-value | **L** | 9 | Six models, base-n, Indian grouping, column add/subtract with animated exchange, abacus view, decimals. **Split into three:** `place-value` (bundles/blocks/chart, 4 days), `column-ops` (3), abacus + base-n (2). Aggregate-render big counts (§R.3). |
+| E04 | fractions | **L** | 8 | Five models and nine modes. **Split:** core (bar/circle, make, name, compare, equivalent, add: M, 4–5 days) and extensions (multiply overlay, divide measure, grid100 percent, wall: 3–4 days). Exact-equal cutting needs geometry for circles (angle sectors, not freehand). |
+| E05 | multiply-divide | **L** | 8 | Eight models. **Split:** groups/array/area/share (M, 4), factor-rect/tree/Venn/inverse (M–L, 4). Factor tree and Venn drag-drop are fiddly. |
+| E06 | balance | **M** | 4 | Tilt animation is simple (a damped spring). Equation mode with hidden unknowns and "apply to both sides" legality needs CAS-lite. Keep negatives out as specified. |
+| E07 | integers | **M** | 4 | Six contexts share a state model; the lift animation and token zero-pair are the work. Multiplication pattern table is cheap. |
+| E08 | geoboard | **L** | 7 | Cut-and-move dissection and Pythagoras tilting need polygon geometry and rotation handles. v1: integer grid, rectilinear cuts, half-square tools (about 3 days); v2: free dissect, isometric, pythagoras. |
+| E09 | data-graphs | **L** | 7 | Eleven views with editing. **Split:** pictograph/tally/bar/table (M, 4), line/pie/stacked (3), `mean_level`/`mean_balance`/dot plot (2). Pie dragging needs angular snapping. |
+| E10 | tape-diagram | **M** | 5 | The drawing UI is simple; the cost is `tape.eq` equivalence (CAS-lite) and mode coverage. Rated M **only** if CAS-lite exists in the kit; otherwise L. |
+| E11 | patterns | **L** | 7 | Six modes, five element kinds (sound/action), figure rules via CAS-lite, fractal rendering. **Split:** repeat/sequence/function-machine (M, 4), grow/growth_compare (3), fractal (2, can defer). |
+| E12 | number-grid | **S** | 2 | Hundred/addition/multiplication/sieve in 2 days. Magic square and pyramid editing add 1 day (so M if included). The only engine whose original estimate holds. |
+| E13 | clock-calendar | **M** | 5 | Geared draggable analog clock with correct hour-hand coupling and snapping, plus calendar and timeline. Hindi time words (`sawa`, `paune`, `dedh`, `dhai`) are label logic. Stopwatch trivial. |
+| E14 | money | **M** | 4 | Code is simple; **art is the real cost** (12 denominations × 2 faces, stylised, non-replica). Without finished art, blocked. |
+| E15 | measure | **L** | 7 | Nine tools. **Split:** ruler/tape/non-standard units (M, 4), jug/pour (2), map scale, conversion ladder and `circle_roll` (3). The broken-ruler probe needs careful offset logic. |
+| E16 | shape-lab | **L** | 8 | Tangram and pattern-block snapping, constrained morphing (square → rhombus → parallelogram), Venn/tree sorting, tiling. Morph constraint solver is the hard part. Cut `tile` to v2. |
+| E17 | symmetry | **M** | 4 | Mirror line, fold animation, completion on grid, turn tracing. Reflection maths is simple; fold animation is the effort. |
+| E18 | angles | **M** | 5 | Protractor interaction (double scale, rotation, offset handle) is fiddly on touch; transversal and tear-off corners add days. Use 1° snap with an optional "fine" mode. |
+| E19 | algebra-tiles | **L** | 8 | Rectangle packing for factorisation, sign flipping, zero pairs, CAS-lite equivalence. **Drop `dim: 3` to iso2d / static** (§R.3). Without 3D it drops to M (5–6). |
+| E20 | coord-grid | **M** | 5 | Seven modes, but each is plot-and-test; viewer rotation and routes add logic. The finger-precision rule needs snapping to integers. |
+| E21 | geo-construct | **L** | 10+ | Largest risk: JSXGraph integration (drag-test invariance detection, constructed-object events), compass semantics on touch, licence check, 130 kB lazy chunk. Constrain to `presets` of constructions in v1 (about 5–6 days). Consider pulling the Class 6–7 constructions out of JSXGraph into a small custom engine. |
+| E22 | solids | **L** | 10 | Even `iso2d` needs a hand-built painter and fold animation for nets (hardest bit: net-folds-to-cube validity and animation). 3D only after GPU probe. Defer `unroll` and `roll_slide_stack` physics. |
+| E23 | chance | **M** | 3 | Spinner, dice and bag are cheap; sample-space grid and tree add a day. Rename the bet mechanic (S1). |
+| E24 | algebra-moves | **L** | 10 | An expression-tree editor with legal-move validation by gesture is a mini-product (DragonBox/FH2T class). v1: tap-to-evaluate and "mind the mistake" only (about 4 days); gesture-driven commute/distribute in v2. |
+| E25 | rule-lab | **M** | 3 | `trace` and `euclid` are tiny; `claim_test` and the race need the predicate enum (§R.4). Custom rules removed. |
+
+**Totals.** S 1 · M 12 · L 12 (E03, E04, E05, E08, E09, E11, E15, E16, E19, E21, E22, E24). Engine work is about **146 engineer-days** (S 2 + M ≈ 50 + L ≈ 94) plus **Wave 0 about 10 days**, so **about 155 days, roughly 7 engineer-months**, or about 10–12 calendar weeks for a team of three. Detector unit tests and about 20 goldens per engine are already inside each figure; adding the device-lab matrix and bug-fix reserve (15%) gives about 180 days. All **[U]**: the first two engines built will calibrate the rest, so re-estimate after `number-line` and `fractions`.
+
+**Recommended re-ordering of waves** (changes §6): build Wave 0, then `number-line`, `fractions-core`, `place-value`, `collections` and `balance` (the five highest leverage-per-day engines: E01 5 d, E04-core 5 d, E03-core 4 d, E02 4 d, E06 4 d). Defer `geo-construct`, `solids`, `algebra-moves` and `shape-lab` morph until the first 10 engines have telemetry. If Class 9 launches first (§0.1), pull `chance` (3 days) forward as is, and treat `solids` (iso2d only) as the next candidate.
+
+### R.9 Corrections to the document itself
+
+1. §0.1 and §6: "25 engines" should read "about 25 renderers, about 33 shippable units" once the splits in §R.8 are applied (place-value ×3, fractions ×2, multiply-divide ×2, data-graphs ×3, patterns ×2, measure ×2). Coverage maths do not change.
+2. §3.1 `budget: P0 ≤ 120 kB gz` presupposes React per engine. Replace with the kit-based budgets in C3.
+3. §3.1 `paramsSchema: zod` inside the manifest: move to the host (C2). The manifest should carry only `id`, `describe`, `stages`, `representations`, `probes`, `events`, `detectors`, `budget`, plus a `paramsJsonSchema` string.
+4. §3.2 "≤ 4 Hz after debounce": change to batching (C6). Add `undo`, `hint_used`, `miss_tap`, `time_to_first_action`, `visibility`.
+5. §5 E23 `ch.bet`: rename (S1). E25 `customRule`: remove or restrict to the CAS-lite grammar (§R.4).
+6. §5 E19/E22 `dim: 3` and `render: "3d"`: default to iso2d (§R.3).
+7. §5 E03: note the aggregate-rendering rule for large place counts. E02: cap `n`.
+8. §1 R8 "everything works at 360 × 640": qualify with the 7-target-per-row arithmetic and `minTargetDp` (§R.3).
+9. §6 add measurement **M8**: on-device frame-time p95 per engine on a ₹8–10k reference phone (gate: p95 ≤ 20 ms, no long frame > 50 ms in a 60 s scripted session) and **M9**: cold-start-to-interactive for an engine mount (gate: ≤ 1.5 s from a warm kit cache on the same device) **[U]**.
+10. The doc cites "about 240 detectors cover 259 of 304 topics": add the `needs: taps|voice` tag and an expected "fires from taps only" fraction (about 80% by inspection **[U]**).

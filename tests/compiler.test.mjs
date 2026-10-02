@@ -4,7 +4,8 @@ import { compile, compileWithReport, BudgetError, TURN_WORDS, TURN_SHAPE_PREFIX 
 import { FLOOR_HEADING } from "../server/compiler/floor.js";
 import { CHARACTERS } from "../server/compiler/characters/index.js";
 import * as SH from "../server/director/shapes.js";
-import { initLessonState, step } from "../server/director/state.js";
+import { initLessonState, step, branchesFor } from "../server/director/state.js";
+import { instructionsFor, instructionsAfter } from "../server/compiler/instructions.js";
 import { kit, CTX, BRIEF, cls } from "./fixtures/kit.mjs";
 
 const K = kit();
@@ -58,14 +59,51 @@ test("the item prompt is verbatim content; the key is marked unsaid until rung 4
   assert.match(atFour, /rung 4 now: say the key plainly/);
 });
 
-test("lanes share every byte except the voice-only contingency lines", () => {
+test("lanes share every byte except the voice-only branch lines", () => {
   const input = inputAfter(toFirstItem());
-  const voice = compile({ ...input, lane: "voice" });
+  const voice = compile({ ...input, lane: "voice", branches: branchesFor(input.lessonState, K) });
   const text = compile({ ...input, lane: "text" });
-  assert.match(voice, /AFTER their next reply \(not now\)/);
-  assert.doesNotMatch(text, /AFTER their next reply/);
-  const strip = (t) => t.split("\n").filter((l) => !l.includes("AFTER their next reply")).join("\n");
-  assert.equal(strip(voice), text);
+  const check = voice.split("\n").at(-2);
+  assert.ok(check.startsWith("ONE MORE CHECK: when they reply:"), check);
+  assert.match(check, /it matches the key → /, "the branch for the active item is the voice lane's last check");
+  assert.doesNotMatch(text, /when they reply/);
+  // The voice lane adds its branch check and the next turn's content lines; every other line is shared.
+  const strip = (t) => t.split("\n").filter((l) => !l.startsWith("ONE MORE CHECK") && !l.startsWith("- for your next turn")).join("\n");
+  assert.equal(strip(voice), strip(text));
+});
+
+/** A lesson state as the routes store it (brief, lane), after `answers`. */
+function lessonAfter(answers, mode) {
+  const { lessonState } = inputAfter(answers);
+  return { ...lessonState, brief: BRIEF, mode };
+}
+
+test("voice instructions from a stored state carry the active item's branch, never the close fallback", () => {
+  const voice = instructionsFor(lessonAfter(toFirstItem(), "voice"), K);
+  assert.match(voice, /it matches the key →/);
+  assert.doesNotMatch(voice, /short warm close/);
+  assert.ok(voice.split("\n").at(-1).startsWith(TURN_SHAPE_PREFIX));
+  const text = instructionsFor(lessonAfter(toFirstItem(), "text"), K);
+  assert.doesNotMatch(text, /when they reply/);
+});
+
+test("voice: a move the client reported as voiced is framed as already said; a new move clears it", () => {
+  const s = { ...lessonAfter(toFirstItem(), "voice"), moveVoiced: true };
+  assert.match(instructionsFor(s, K), /YOUR LAST TURN \(already said — do not repeat it\)/);
+  const r = step(s, { event: "turn", kit: K, cls: cls("incorrect"), now: 200_000 });
+  assert.equal(r.state.moveVoiced, false);
+  assert.match(instructionsFor({ ...r.state }, K), /YOUR MOVE THIS TURN/);
+});
+
+test("an item whose pinned text cannot compile is skipped once, and the next question is compiled", () => {
+  const s = lessonAfter(toFirstItem(), "text");
+  const bad = s.lastMove.itemId;
+  const huge = { ...K, items: K.items.map((i) => (i.id === bad ? { ...i, prompt_hi: "bahut lamba sawaal ".repeat(400) } : i)) };
+  const out = instructionsAfter({ state: s, move: s.lastMove }, huge, 300_000);
+  assert.equal(out.skipped, bad);
+  assert.ok(out.r.state.skipped.includes(bad));
+  assert.notEqual(out.r.move.itemId, bad);
+  assert.ok(out.instructions.split("\n").at(-1).startsWith(TURN_SHAPE_PREFIX));
 });
 
 test("budget: optional rows are shed first, lowest priority first, the floor and turn shape never", () => {

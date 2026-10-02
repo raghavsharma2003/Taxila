@@ -568,3 +568,121 @@ Primary and secondary sources used in this document (fetched 2026-10-02 unless m
 - Chavan et al., arXiv 2609.23742 [S]; Li et al., *When JSON Is Not Enough*, arXiv 2607.18261 [S]; Ray, *The Constraint Tax*, arXiv 2605.26128 [S]; Tam et al., *Let Me Speak Freely?*, arXiv 2408.02442 [S]; Geng et al., *JSONSchemaBench*, arXiv 2501.10868 [S]
 - Olausson et al., *Is Self-Repair a Silver Bullet for Code Generation?*, arXiv 2306.09896 [S]; Arimbur et al., *How Many Tries Does It Take?*, arXiv 2604.10508 [S]
 - Sibling docs (citations carried, not re-fetched): `factory/llm-game-generation.md` (v0, bolt, Lovable, V-GameGym, Mage, GamED.AI, OpenGame, Play2Code, GameASG-Bench, ArtifactsBench), `tech-and-market.md` §3, `design/kids-ux-ages.md` §4, `conductor/student-workspace.md` (tldraw licence)
+
+---
+
+## Engineering review
+
+**Reviewer:** senior frontend/game engineer pass, 2026-10-02. **Scope:** can `scene@1` and its runtime be built in React/TS plus SVG/canvas, at 60 fps on a ₹10k Android (about 2–3 GB RAM, Helio G35/G85 or Unisoc T606 class, Android Go or 12–13 with an outdated System WebView). Are the params enough for LLM control, are the events enough for the teacher, and are there safety issues. Read: this doc plus `genui-scene-dsl.mjs` (constants, validator, `solve`, text metrics). Tags: **[R]** = read in the code or doc this pass; **[E]** = engineering estimate, unmeasured. No device was available, so every fps claim below is a prediction with a stated test.
+
+### E1. Corrections (ordered by how much they would hurt if built as written)
+
+1. **The frame re-running the whole `validate()` is wrong for the solver.** §5.5 step 1 says the frame runs "the same `validate()` again". The validator imports zod and contains `solve()` with a 200k-state cap **[R]**. 200k states of an interpreted EXPR evaluator on a Helio-class core is seconds on the main thread (an ANR-class stall, **[E]**), and it ships zod plus the solver to every mount.
+   - **Fix:** the server runs S0–S7 and signs `{sceneHash, validatorVersion}`. The frame runs only a cheap structural subset (S1 references, S2 parse, S7 budgets, no solver) from a generated standalone validator (ajv standalone or hand-written), and rejects any scene whose hash does not match the signed one. Defence in depth is kept without the cost.
+   - The overflow check (`ready{overflow}`) is the only layout-dependent check that must run on device.
+2. **`< >` are banned in every string, which blocks content the app needs.** `S = z.string().regex(/^[^<>]*$/)` and the same rule on `math.tex` **[R]**. Class 1–3 maths is full of "3 < 5" and "7 > 2", `compare-choice@1` is the headline template, and Hindi text may legitimately contain them.
+   - **Fix:** ban markup at the sink, not in the data. The runtime renders only through `textContent` and SVG `<text>`, never `innerHTML`, which is the real XSS control. Then allow `<` and `>` in text and expressions. Keep the ban for `lib`, `asset` and ids. (Alternative: `\lt`/`\gt` tokens, but the model will keep writing `<`.)
+3. **The renderer technology is never stated, and it decides the 60 fps answer.** The doc says "canvas/SVG" nowhere for `scene@1`. Decide: **SVG DOM** for `scene@1`, canvas 2D only inside the few T1 engines that need many moving bodies (particles, projectile trails, graph plotters).
+   - **Why SVG for scene@1:** at most 80 nodes plus 100 `repeat` instances means at most about 180 elements, well inside what Android WebView drives at 60 fps. Hit-testing, Devanagari shaping, a11y names and `say` come free. Canvas would need hand-written text shaping for conjuncts.
+   - **Rules to keep 60 fps [E]:** one rAF loop with dirty flags; EXPR compiled once to closures with dependency tracking (re-evaluate only bindings whose vars changed, on slider or drop settle, not on every `pointermove`); animate `transform` only for `x/y/rot/scale`; `op` through the `opacity` attribute; ban SVG `filter`, blur, drop-shadow and `mask` in the sprite library (these are the known low-end killers); one delegated pointer listener, not 100.
+   - **`tween` on `w/h/r`** (§5.2 Step.prop) changes geometry every frame; allow it but count it against a per-scene animated-geometry budget (at most 20 nodes), and lint for it.
+4. **No flash or motion-rate limit exists for `pulse`.** `pulse` is the allowed attention effect **[R]**, but timelines allow 40 steps in 30 s with no per-element rate limit, so a model can emit a pulse every 100 ms. That is a photosensitivity risk (more than 3 flashes per second, WCAG 2.3.1) in a product for children. Add lint **S5.flash**: at most 2 pulses per target per second, none above 0.5 luminance change on areas over 25% of the stage, and `prefers-reduced-motion` already handled. Safety, not polish.
+5. **The S3 text metrics are a guess, and Devanagari is where a guess fails.** The estimator uses `adv = em × (deva ? 0.62 : 0.55)` **[R]**. Conjuncts, matras and the Noto Sans Devanagari line height make real widths vary by more than 15% between strings **[E]**. The doc already schedules a 200-scene measurement (§8.3); build the real metrics table as part of the frame, not after.
+   - Ship **local** Devanagari and Latin fonts (CSP forbids network; subset woff2) and wait on `document.fonts.load()` for the exact weights before measuring, or the overflow check measures the fallback font and passes wrongly.
+   - `math` nodes are measured by nothing (§5.3 says "not in the reference lint"), so S3 cannot guarantee they fit. Render with KaTeX in the frame and report their boxes in `ready{overflow}`.
+6. **The 0.30 dp per unit constant is a lint assumption, not the runtime scale.** `DPU = 0.30` **[R]** means a 300 dp stage. A real stage is whatever the host gives it. With the teacher panel, status bar and the child's controls, a 360×640 dp phone leaves roughly 328 dp of width and 250–330 dp of height **[E]**.
+   - `aspect: "3:4"` needs a 437 dp tall stage at 328 dp wide, and `1:1` needs 328 dp. Neither fits above the teacher on a 640 dp tall phone without scrolling or shrinking. Shrinking breaks the hit-size guarantee.
+   - **Fix:** the host publishes `stageBox` (dp) at init. Lint S3 against the **smallest supported box** (320×240 dp), not a constant, and the frame refuses (not scales) a scene whose computed scale falls below the band's `hit.min`. Confirm 3:4 is reachable at all with `design/kids-ux-ages.md`; if not, drop it.
+7. **Drag needs the finger-occlusion rule or kids cannot drop accurately.** Not in the DSL or §5.5. Specify the runtime defaults: the dragged item floats 24 dp above the touch point; the drop target is chosen by hit-test on the pointer plus a 12 dp slop, falling back to the nearest accepting zone within 40 dp; `touch-action: none` on the stage; the first pointer only (ignore palms and a second finger); capture the pointer; coalesced events through rAF. Without these the S3 "≥ 64 dp targets" guarantee is necessary but not sufficient.
+8. **`tap-to-hear` (`say`) has no audio source.** Each sprite and label carries an `L10n` `say` **[R]**, but nothing says where the audio comes from. Live Azure TTS per tap is a network round trip (hundreds of ms, and a cost) per child tap. Pre-render `say` at validation time (one batch TTS call per scene, cached by text hash, shipped with the scene) and fail the mount rather than fall back to a live TTS call. Note the Hindi and Hinglish voice must match the teacher's.
+9. **Memory and fps gates (V2/V9) are too loose for the target device.** V9 asks "FPS ≥ 45 median under 4× CPU throttle" and 150 MB **[R]**.
+   - A median hides jank; a child's drag feels the p95. Gate on **p95 frame time ≤ 33 ms and zero long tasks > 100 ms** during the bot's drag script, at **6× throttle** (a Helio G35 against a desktop core is about 5–8× **[E]**).
+   - 150 MB of module heap on a 2 GB device that is also holding a live voice call, the 3D or 2D teacher and the app shell is too much. Budget **60 MB for a scene@1 module and 100 MB for a T3 module**, measured in the frame.
+   - Headless Chromium with CPU throttling is not Mali GPU plus an old WebView. Buy two physical ₹10k phones (one 2 GB Android Go) and run the **same bot script weekly on device**. Treat the throttled run as a smoke test only.
+10. **T3 library choices are heavy for this device class.** p5 1.11 (about 1 MB minified), three.js (several hundred kB gzipped) and JSXGraph cost parse and compile time before the first frame, and WebGL context loss on low-end WebViews is real **[E]**.
+    - Limit p5 and three.js to B3–B4 modules that need them, and require the module to handle `webglcontextlost`.
+    - **The 400 kB gz limit is a download budget, not a parse budget.** Add a V2 gate: `ready` ≤ 3 s at 6× throttle, measured from iframe creation.
+    - Prefer plain SVG/canvas for B1–B2.
+11. **`idle 20 s → stuck` will fire while the teacher is simply speaking.** The child is listening, not stuck. Suppress the idle timer while the teacher audio is playing (the host knows) and restart on `your_turn`. Otherwise `stuck` over-fires and the learner model reads listening as struggle.
+12. **`order(list)` and `has/at/count` in EXPR evaluate on every state change in the solver, but the runtime should evaluate them on drop/commit only.** Add a `deps` analysis to the expression compiler (needed for item 3's perf rule) and let the S4 solver reuse it. Currently implicit.
+13. **Streaming node by node (§3.2 "blackboard")** conflicts with layout containers: a `group`'s layout cannot be final until all its children have arrived, so children jump as each arrives. Either stream at group granularity or drop this idea; it saves under 1 s on T2a, which is already 3.1 s. Recommend cutting it from v1.
+14. **A `math` node is a separate trust surface.** KaTeX with `trust: false`, `maxExpand` (about 100), `maxSize`, `strict: "error"` and a macro allowlist is required; recursive `\def` is a known DoS vector. Server-side render only; ship the rendered SVG/HTML, not the engine, where possible (saves about 270 kB plus fonts on the device).
+
+### E2. Are the params enough for the LLM to control the module?
+
+- **T2a slot templates: yes for the coded six.** Slots are small, the expander (code) owns geometry, and the failure mode is a slot error returned to the model. Missing control levers worth adding: `difficulty` (distractor count, item count), `reveal_delay`, and a `seed` for `scatter` so the Director can ask for "a different one" without a new model call.
+- **T2b free scenes: params are sufficient to express, but not to be reliable.** 22 kinds with 590 strict properties works only through the validator and repair loop; this is already measured (6–7/8 after repair) and the doc's near-line decision is right. Do not extend the catalog before `label-diagram@1` exists.
+- **T1 engines: the doc's claim "model writes only `ask`" is the right size, but it means the LLM controls almost nothing at T1.** Personalisation lives in the skin, numbers and traps chosen by code; that is correct for reliability, but say so in the Director spec: LLM control surface at T1 = {engine choice by code, `ask` text, skin, hint wording}. If product wants the model to steer pacing or representation mid-module, add `HostToModule.set_param` for those engines explicitly (already in §5.5 for scene vars; make it an engine-manifest requirement for T1 too).
+- **Missing escape hatch:** no `hint` content in the scene. Hints exist as host `highlight`/`reveal` commands but there is no authored, tiered hint list (nudge, strategy, worked step) per goal. The teacher then improvises hints from the `tl` label line, which is thin. Add `hints: [{when?, target?, tier}]` to `Goal` (data only, 3 tiers max).
+
+### E3. Are the events enough for the teacher to observe learning?
+
+The set (`sc.drop`, `sc.set`, `sc.tap`, `sc.choose`, `sc.order`, `sc.cue`, `goal_met`, `answer`, `stuck`) tells the teacher **what** was done, not **how**. Gaps, in priority order:
+
+1. **No timing.** Add `t` (ms since `your_turn`/mount) and `lat` (ms since the previous event) on every event. Latency to first action and hesitation before a commit are the cheapest covert understanding signals, and they cost nothing to emit.
+2. **No attempt counts or changed answers.** `answer{value, correct, misc}` does not say whether this was attempt 1 or 3, or whether the child changed an earlier choice. Add `attempt` and `changed_from`. A right answer on attempt 3 after two trap hits is a different fact than a right answer first time.
+3. **Slider exploration is one 4 Hz settle event.** For explore/predict scenes the teacher needs a **summary**, not a stream: `explored_min`, `explored_max`, `changes`, `dwell_ms_at_goal`, `reversals` (direction changes show hunting versus systematic sweep). Emit one `sc.explore` summary at idle or every 5 s, not 4 Hz.
+4. **No hint-use or help events.** Record `hint_shown{tier}` and `replay{timeline}` so mastery isn't credited for guided success.
+5. **No drag-quality signal.** `3 rejected drops → stuck` is the only one. Include `rejected_drops` and `first_zone` (the first zone tried) in `sc.drop`; "first zone tried" is how the sort misconceptions show.
+6. **The teacher's line is good but static.** The `[module m7 …]` line is milestone-only. Make sure it also carries the **unit of progress** (`placed=6/6`) AND the **last trap** hit, and cap at 200 chars so it does not bloat the Director's context across many events.
+7. **Flat `data` ≤ 12 keys is fine**, but pin the units (ms, dp or scene units?) and the types in a table, or the learner model will misparse. Document them in the manifest.
+
+### E4. Safety issues (beyond what the doc covers)
+
+| # | issue | severity | fix |
+|---|---|---|---|
+| 1 | `pulse` and tween flash rate unconstrained (E1.4) | high (photosensitivity) | S5.flash lint |
+| 2 | Child `interests`/free text flowing into the T1/T2 fill prompt, and from there into on-screen strings | medium | the Content Safety pass already planned (S6) must run **after** any child-originated text enters the prompt, and the prompt must treat the brief as data; interests are a closed enum, not free text, wherever possible |
+| 3 | `image.asset` ids (`ast_…`) are "verified cached assets" but the id format is the only lint check **[R]** | medium | the frame must resolve ids against the signed asset manifest the host passes, and refuse unknown ones; the model must never supply a URL |
+| 4 | KaTeX trust and expansion (E1.14) | medium | config above |
+| 5 | `connector`/`say` text may contain a phone number or URL the model invents | low–medium | S6 regex for digits-runs (7+), `http`, `www`, `@` in every L10n string except where the math node needs digits |
+| 6 | Sound: `feedback` = tick/shake plus sound (R6). Autoplay of audio in WebView needs a user gesture, and sudden loud sounds startle young children | low | pre-baked normalised sounds at a fixed low gain; no sound before first touch; respect the device's silent mode |
+| 7 | A T3 module ban-list (V1) is an AST check on code that is eventually trusted. Acorn ban-lists on `eval`, `Function`, `import()` are bypassable (`window['ev'+'al']`, `[].constructor.constructor`) | medium | do not rely on V1 for security. The real boundary is the iframe `sandbox` (no `allow-same-origin`), `connect-src 'none'` CSP and no `allow-top-navigation`; V1 is a lint for developer feedback. Say so in §7.3 |
+| 8 | Two-key review is the only barrier for T3 factual and tone errors | medium | keep it, and log reviewer id and module hash with the promotion so a bad module can be pulled by hash |
+
+### E5. Build-cost estimate (S = ≤ 1 engineer-day, M = 2 days, L = > 2 days; one engineer who already owns the shared core)
+
+**Prerequisite (the real cost):** the shared frame core. Without it, none of the "2-day" figures hold. It is one L job, ordinarily 12–18 engineer-days **[E]**: frame bootstrap and `postMessage` bridge, SVG scene runtime, pointer and drag controller (E1.7), zone and snap logic, layout engine, timeline player, EXPR compiler with dependency tracking, telemetry emitter (E3), band tokens, local fonts and metrics, reduced motion, `stageBox` handling, and the signed-scene hash check.
+
+| component | cost | notes |
+|---|---|---|
+| EXPR@1 evaluator | **S** | exists in the `.mjs`; port to TS, add compile-to-closure and deps (E1.12) |
+| validator S0–S7 + autofix (TS port, server) | **M** | exists in `.mjs`; port, wire to the repair loop; add S5.flash and the `<`/`>` change |
+| frame validator subset (no solver) | **S** | generate with ajv standalone |
+| solver (server) | **S** | exists; move to a worker thread, keep the 200k cap |
+| layout engine (`row/column/grid/circle/free/scatter`) | **M** | seeded scatter must be deterministic across devices (use an integer PRNG, not `Math.random`) |
+| timeline player + `trace/count/pulse/cue` | **M** | `trace` needs `stroke-dasharray` length measurement per element |
+| pointer and drag/zone controller | **M–L** | the finger rules (E1.7), capacity, `arrange: grid`, reject animation, multi-touch guard. Treat as **L** on its own; it is the part that makes a kids' app feel good or broken |
+| node kinds, simple (`rect circle ellipse wedge line poly text sprite image group connector axis`) | **M** in total | one renderer file, SVG primitives; `axis` ticks and labels is the fiddly one |
+| `repeat` | **S** | instances through the same drag controller |
+| `choice`, `button`, `toggle`, `stepper`, `keypad` | **M** in total | `keypad` S; large tiles with the band tile sizes |
+| `slider` | **S–M** | thumb at band hit size; step snapping; 4 Hz settle plus the summary event (E3.3) |
+| `order` (tap-swap plus drag) | **M** | two input paths with identical results (R8); keyboard order is not needed |
+| `math` (KaTeX, server render) | **M** | trust config; box reporting; SVG output |
+| `say` tap-to-hear + batch TTS pre-render | **M** | needs the cache, the voice match and the build-time failure path (E1.8) |
+| `sort-bins@1` expander + runtime check | **S** (expander coded) | zone cap and misc mapping live in the shared core |
+| `count-group@1` | **S** | voice commit needs the host speech-recognition hook; confirm it exists, otherwise **M** |
+| `slider-explore@1` | **S** | visual `bar/count/needle` are three small renderers |
+| `sequence-steps@1` | **S** | uses `order` |
+| `compare-choice@1` | **S** | uses `choice` plus `repeat` |
+| `predict-reveal@1` | **S** | needs timeline `effect` presets (`shrink/grow/sink/rise/fade`) |
+| `label-diagram@1` | **M** | zones at part coordinates; leader lines are `connector`; asset or sprite base; depends on the drag controller |
+| `hotspot-explore@1` | **S** | circles plus `say` |
+| `match-pairs@1` | **M** | cross-representation tiles (`tex`, bar, fraction) each need a mini renderer; drag or two-tap matching with line drawing |
+| `story-problem@1` | **M** + dependency | the `handoff: tape-diagram@1` is a separate **L** T1 engine; ship story-problem with `choice`/`keypad` only first |
+| `worked-steps@1` | **M** | `faded[]` blanks need a text-input or keypad commit per blank; B1–B2 should not use it (reading load) |
+| T3 harness gates V0–V2, V9 (Playwright on Container Apps) | **L** | about 8–10 days **[E]**; V9 on the real device farm is separate (two phones, one weekly script) |
+| gate V3 oracle sweep | **M** harness, plus **a reference function authored per module** | the harness is cheap; the per-module oracle is a second implementation of the physics, roughly 0.5–1 day each. That doubles the per-module cost and should be in the T3 budget |
+| gates V4/V5 (bot via `TaxilaTestAPI`, scene graph reuse of S3/S5) | **M** each | V5 reuses the lint on exported boxes; the export contract is the cost |
+| V6 vision critique | **S** harness, **M** to validate the fabrication rate | the §8.4 seeded-bug measurement is the real work |
+| review page (two-key) | **M** | bot replays, event stream, oracle plot, keyframes |
+| router + gap-ticket plumbing | **S–M** | mostly exists in `server/director/modules.js` |
+
+**Roll-up [E]:** shared core 12–18 days, plus the node and controller set about 8–10, plus the six coded templates about 5, plus the five spec templates about 8–10, plus validator port and server wiring about 4, plus T3 harness about 12–15. Roughly **50–60 engineer-days to a shippable T2 with all 11 templates and the T3 pipeline**, versus an implied "each engine in ≤ 2 days" that holds only after the core exists. The 62 T1 engines of the sibling docs are out of this scope: at M each with the shared core that is about 120 days, so the doc's plan must sequence them by curriculum calendar, not build all at once.
+
+### E6. Verdicts and the order to build
+
+1. **Feasible as written, with the corrections above:** `scene@1` on SVG, six coded templates, strict decoding, router, near-line T2b. The 60 fps risk is low for scene@1 (about 180 nodes) once filters are banned and updates are dirty-flagged; **moderate** for T3 modules with p5/three.js.
+2. **Not feasible as written:** the frame running the full validator including the solver (E1.1); `<`/`>` ban (E1.2); the unstated renderer (E1.3); the V9 gate (E1.9).
+3. **Build order:** (a) frame core plus drag controller plus telemetry with timing (E3) on SVG; (b) `sort-bins`, `compare-choice`, `slider-explore`; (c) device lab with two ₹10k phones **before** the other templates, so fps is measured, not predicted; (d) `label-diagram`, `match-pairs`; (e) T3 harness last, because T2a plus T1 already covers the live path.
+4. **Measure before relying on anything tagged [E]:** a prototype of `sort-bins` with 12 draggables and a `slider-explore` with 80 nodes at 6× throttle and on a physical Helio G35 phone (p95 frame time, memory, `ready` time).

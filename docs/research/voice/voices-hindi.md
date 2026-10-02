@@ -510,3 +510,176 @@ Harness and data written by this workstream (all in `docs/research/voice/`): `pr
 In-repo priors: `docs/harvest/companion-tech.md` §1, §2, §11.3 and §R; `docs/harvest/gurukul.md` §0, §3.5-3.7;
 `context/measurements.md` (`realtime-teacher-bakeoff-2026-10-02`, `realtime-audio-in-2026-10-02`);
 `docs/research/tech-and-market.md` §1.6, §1.8-1.9, §5.
+
+
+---
+
+## Review
+
+Skeptical review, 2026-10-02 (voice-AI engineer + child-safety lens). Method: read this file in full, checked
+`probe-voices-hindi.mjs` (ACCENT_NOTE, READER, STIM) and `context/decisions.md`. No audio was re-listened to and no
+vendor page was re-fetched. Items are ordered by severity. Each says what to change.
+
+### R1. Child-safety gaps (blocking before any child panel or lane choice)
+
+1. **The decision rule optimises "sounds like a real person" and has no counter-axis.** §6.3 makes axis 1 a gate
+   to win. The product floor says the teacher never denies being an AI. Nothing in the doc tests whether a
+   6-9 year old *knows* the voice is an AI after hearing the winning voice. Add an axis 7, "is this a person or a
+   computer?" asked of children **after** the clip, with the AI disclosure restored. Add a rule that a lane whose
+   voice raises child misidentification above the human anchor needs an explicit disclosure design (periodic,
+   non-recitable, structural) before it can ship. "Exactly human-like" is a naturalness target, not an
+   identity-concealment target. The doc never states that boundary.
+2. **§6.4 strips the AI disclosure from blind clips and the doc never says where it is re-tested.** It says
+   "disclosure behaviour is a separate gate" but names no gate, owner, or file. Name the eval (the
+   persona-invariants equivalent) and require it to pass on the *winning voice lane*, since Voice Live,
+   `azure-realtime` and GPT-Live have never been run against the never-deny-AI invariant. All pedagogy and
+   safety evidence is on `taxila-realtime`. Lane C and A+ inherit none of it.
+3. **Pairwise forced choice "which didi?" with pictures of two faces (§6.3) is deceptive framing for 6-9 year olds.**
+   It presents a synthetic voice as a person with a face and a kin title. It also pre-loads the relational
+   register that the child-safety floor excludes (no companion register). Use neutral labels (voice A / voice B,
+   or colour tokens) and no human faces. Keep "didi/bhaiya" as an *address-term preference* question for
+   parents, not as the child's stimulus.
+4. **Persona details in the voice note are human-identity claims.** `ACCENT_NOTE` says "a North Indian woman in
+   her late twenties who teaches primary school; Hindi is her first language" and "smiling". It is a test-only
+   READER, so it is not a leak today (verified: it is a description, no sayable line). But §3.2 recommends
+   carrying the note into the production narration twin, and §3.1 recommends prompt-level accent steering. If
+   either goes into a production prompt, the model is given a human biography and will claim it when a child
+   asks "are you a real teacher?". Rule: voice steering in production describes **timbre, accent, pace and
+   warmth only**, never an age, job, family or human identity. State this in §3.1-3.2.
+5. **Consent and data for children's audio are unaddressed.** Round 2 plans "consented real children" voices and
+   scripted child turns; §6.3 recruits Class 3-8 children. Missing: who consents (parent, verifiable, recorded),
+   whether child audio is sent to Azure (abuse-monitoring retention applies to realtime and Voice Live unless
+   exempted; verify, do not assume), storage and deletion of the panel clips, and the DPDP Act 2023 position on
+   processing children's data (verifiable parental consent, no tracking). The compliance directive deprioritises
+   *compliance work*, not recruiting minors into a study. Add a short "panel ethics" subsection and do not run
+   child panels until it exists. Use parents and teachers for Round 1 and children only for the Round-2 forced
+   choice.
+6. **Voice cloning ("real teacher clone", personal voice, MAI instant cloning) has no safeguards written down.**
+   §0.5, §2 and §3.5 present personal voice as a feature and a correction of Gurukul. Missing: it is
+   limited-access (Microsoft approval, recorded consent statement), the cloned person must be a consenting adult
+   and the voice must not be of a real child or a named real teacher without a written agreement, and a
+   cloned human voice raises child misidentification risk further (see item 1). Add a "do not build until"
+   line rather than leaving it as an upside.
+7. **Safety hand-off is spoken, so it is voice-lane-dependent, and no lane is tested for it.** Childline 1098 and
+   Tele-MANAS 14416 numerals read out in Hindi are exactly the kind of text where TTS mispronounces digits and
+   where a lexicon helps. The probe's numerals stimulus (s4) tests area units, not helplines. Add a stimulus
+   class "safety hand-off numerals and short urgent sentences" to Round 1 and a pass criterion (digit-exact ASR,
+   no style that reads as playful). Also pre-render the hand-off clip in the winning voice so it does not depend on
+   a live model turn.
+8. **Preview voices for minors.** §7 already says not to ship Preview to minors without an SLA. It should be
+   promoted to a hard shortlist rule: arm 5 (MAI Preview) cannot be a *winning lane* unless GA, only a
+   benchmark. As written the decision table lets it win.
+
+### R2. Claims without enough evidence, or contradicted by the doc's own numbers
+
+1. **The headline Hindi/Urdu/Bengali result is over-read.** §0.4 puts "6/40 vs 0/84" in the verdict. The ASR
+   chose another *script* on clips of spoken Hindi. Hindi and Urdu are near-identical in speech, so an Urdu
+   transcription of a clean Hindi clip is not an accent defect; it is the ASR (gpt-4o-transcribe) being
+   non-deterministic. The doc concedes it "predicts nothing" and then calls it "the strongest objective hint".
+   Pick one. Also unreconciled: it is stochastic (one clip flipped between runs), so n=1 pass per clip with no
+   repeats cannot support a 6/40-vs-0/84 contrast, and the denominators mix clips and passes (the by-arm table is
+   passes of 8; the lane table is clips of 40; Voice Live marin is "2/4" in one and "3/8" in the other). Report
+   one unit and add repeats before using it as an ordering signal.
+2. **The lane table does not sum to the stated total.** Lane rows give 202 clips; §5 says 221; the arm table has 44
+   arms, so 44 x 5 + 2 = 222. The gpt-4o-mini-tts row says 50 clips for "10 voices + note" but the arm table has
+   12 tts arms (tts and tts0), and the two Dragon/MAI-full arms (hi-IN Diya Dragon, Kavya MAI full) fall in no
+   lane row. Reconcile or the reader cannot tell which clips ship in `prescreen-2026-10-02/` (34 arms; which
+   34 of 44?).
+3. **Latency numbers are not like-for-like and the doc partly admits it.** Text-in `response.create` to first
+   audio ignores VAD end-of-turn, ASR and the model's own reasoning on spoken input. Comparing 476 ms
+   (`azure-realtime`) with 776 ms (gpt-realtime-2.1) says nothing about turn latency a child feels, and
+   `azure-realtime` may be producing audio from a much shorter "thinking" path because it is a different model.
+   n=5 per arm (n=15 per lane for C, n=1 timeout in 4 sessions) is too small for a median to rank lanes. "Fastest
+   in-loop lane measured" in §0.4 and §5 should be softened to "lowest in this probe; not comparable".
+   Likewise "Voice Live does not tax latency" rests on n=5 vs n=5 across different sessions and a US client.
+4. **Cost table.** The native lane is $0.082 in §0/§4 but $0.077 in §2 for the same 20 tok/s assumption (the gap is the
+   text-token cost, undocumented in §2). The 20 tokens/s figure is cited to the Voice Live doc but the OpenAI
+   figure is "1 token per 50 ms" from a prior file; confirm they agree for the Azure meter. Lane C is a pure guess
+   ([U]) but is shown as a number (0.077) in the table. Show "unknown" or a range, not a point value.
+   Realtime session cost is input-dominated for a long tutoring session, which the doc excludes: so the
+   "roughly half the output-speech cost" claim for lane B in §2 is not a cost comparison of the products.
+5. **Third-party facts rest on one fetched vendor page each, in one session with the WebSearch quota exhausted.**
+   The legend admits [T] items. But §3.7-3.11 and §4 still carry dates and ranks ("v4 Turbo 2026-09-28", "Elo
+   #1 1320", "Google prices double on 2027-01-01", "Josh Talks >20k votes") with [V] tags. Marketing-page
+   figures from the vendor being praised are [V-vendor], not independent evidence, and the doc itself says the
+   Artificial Analysis arena is English-accent filtered. Do not let these set priorities; they are context only,
+   which the Azure-only directive already implies.
+6. **"No voice has been tested on human listeners" yet the shortlist ranks reasons by adjectives.** Table §6.1
+   rationales are vendor descriptors ("calm, warm, soothing", "crisp, clear"), which are marketing copy for the
+   voices. Mark these as vendor descriptions, not properties, so nobody pre-judges the pre-screen.
+7. **Intelligibility floor of 0.92 "does not discriminate".** True, and law 3 says so. But the doc still lists
+   recall in the by-arm table next to speed and loudness, inviting ranking. Keep it, but state the pass criterion
+   once (floor 0.8 per §1; "every arm clears" is the result).
+
+### R3. Things the realtime API / Voice Live cannot (or may not) do
+
+1. **"In lane B the model still hears the child" needs a qualifier.** True for input audio. But the model's
+   *replies* are text that is then synthesised by a separate TTS, so the model cannot control laughter, breath,
+   a lowered voice for a distressed child, or emphasis on a misconception except through markup that is
+   unverified (per-turn `style` is flagged "not verified"). For the relational-OS goal (warmth that follows the
+   child) that is not a small loss, and it must be a named Round-2 pass criterion, not an after-thought.
+2. **Barge-in truncation with an external TTS voice is unverified.** On native audio the server knows exactly how
+   many ms were played. With Voice Live plus Azure TTS the session must truncate the assistant item to what the
+   child actually heard. If it does not, the model "remembers" saying sentences the child interrupted, which
+   corrupts misconception handling and learner-model evidence ("the child did not answer what was asked"). The
+   native 7-260 ms cancel figure [P] is for lane A only. Add a test: interrupt mid-sentence, then ask the model
+   what it last said.
+3. **`audio.output.speed` is cited [P] from a secondary file.** Verify on Azure's realtime GA surface before
+   using it for the "0.9x for Classes 1-4" idea; `rate` in Voice Live applies to Azure voices only, not
+   native voices.
+4. **Voice is immutable once audio has flowed** (stated). Then "a Hindi voice and an English voice per mode"
+   (pure Hindi, pure English, Hinglish) cannot be done by switching voice mid-session on lane A, A+ or C. The doc
+   never says how the three language modes map to voices. Either one bilingual voice is mandatory (and the doc
+   should say so as a selection constraint), or modes need separate sessions.
+5. **`custom_lexicon_url` is a strength but is a URL the service fetches.** The doc does not address hosting it
+   (private storage, SAS token, a safe file) nor that lexicons act per voice; NCERT symbols and "formula"
+   pronunciations do not exist as a verified lexicon. Treat it as untested capability, not an advantage already
+   banked (§0.5 says "gives deterministic pronunciation"; no test was run, §5 "Not measured: lexicon effect").
+6. **Voice Live `remove_filler_words` is English-only**, and `azure_semantic_vad_multilingual` is listed for Hindi
+   but untested. Children's hesitations ("umm", "wait") and code-switching at turn end are the main failure
+   mode for end-of-turn detection; no measurement exists. Do not present VAD multilingual as a lane-B
+   advantage until it is run on child-like audio.
+7. **GPT-Live-1 "clocked by input audio"** finding is valuable but implies a cost: the session must stream silence
+   frames continuously. Cost is flat per session-minute only if the session is held open; idle classroom
+   devices will burn it. Mention in §3.1b.
+
+### R4. Recitable-sentence and prompt-hygiene risks
+
+1. The probe stimuli (STIM) are full teacher-register sentences ("Theek hai, toh denominator humein batata
+   hai...", "Good try! Let's check it once more..."). The file header says they are TTS inputs, not prompt text,
+   which is right. Risk is downstream: §6.2 reuses "the same 24 meaning-matched stimuli" and Round 2 builds
+   "scripted child turns". If any of these lines are lifted into `persona.ts`, kit text or a "reference
+   pronunciations" block they become the phrase bank law 1 forbids. Add an explicit line: stimuli live only in
+   `docs/research/voice/` and the eval harness and are never imported by a prompt builder; add a prompt-budget or grep gate
+   that fails if a stimulus string appears in `server/` or `src/engine` prompt assembly.
+2. §3.1 and §2 suggest "reference pronunciations" prompt text for lane A. Word lists with sample sentences are
+   recited. Specify them as **phonetic notes in a lexicon / SSML on lane B**, and for lane A only as a
+   word-class shape ("technical English terms in a Hindi sentence take the local pronunciation"), not example
+   words with respellings.
+3. `ACCENT_NOTE` contains literal phoneme claims ("retroflex t/d, aspirated kh/gh/th/dh, nasal vowels kept"). In a
+   reader-only probe this is fine. In a production prompt such a list tends to cause caricatured hyper-articulation
+   (an accent performed, not held). Test by ear before adopting, and keep it out of the persona prompt by
+   default (the voice doc already sends this to the ear test; make it the default-off rule).
+4. The "Indian-accent shape note" arms (`tts:` vs `tts0:`) are a good control. But the note was only tested on
+   two voices without note (`tts0:marin`, `tts0:coral`, n=10); that cannot show the note's effect for the other
+   eight voices. Say so where the note is recommended.
+
+### R5. Smaller corrections
+
+- §0.2 lists "five Azure in-loop lanes" A, A+, B, C, E, but E (self-built cascade) is by the doc's own definition
+  not in-loop (§2 header definition). Say four in-loop lanes plus one cascade.
+- §3.4 treats the unconfirmed `hi-IN-Swara:DragonHDOmniLatestNeural` HTTP 200 as "unverified"; a 200 with a voice not
+  in the roster may be an alias fall-back to a *different* voice. Do not include it in any pack until an ear
+  check confirms identity (Meera's `cache-outlives-the-voice` law applies to silent voice substitution).
+- §6.3 "≥ 20 listeners and ≥ 800 judgments" is stated as a floor for a "indistinguishable from human" claim; with
+  the safety reframing in R1.1 that claim should not be made at all for a child-facing product. Replace
+  with a naturalness-preference claim.
+- §6.1 R1/R2 "needs an owner-provided key or clips": producing clips from third-party APIs is a build-side call
+  to those APIs. The Azure-only directive says research may cite them, builds may not call them. Get explicit
+  owner approval before making any reference-arm clip, or drop R1/R2 and use the human anchor H plus the
+  best Azure arm only.
+- Both `marin` arms appear as the incumbent and the cold-start outlier (525 ms for `tts:marin`, "first call of the
+  run, cold"); exclude cold-start samples from medians for every arm or include them for all.
+- Loudness: normalising to -20 LUFS removes level cues but not spectral or dynamics cues (HD voices sit at -23/-24 raw).
+  State that residual codec/bandwidth/dynamics differences remain blinding leaks; the 24 kHz mono resample
+  from §6.4 should be applied to the human anchor as well.

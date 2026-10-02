@@ -515,3 +515,125 @@ Prices are Azure Global, read today [V]:
 - Fiorella et al.: https://doi.org/10.1037/edu0000325
 - Guo, Kim & Rubin 2014: https://doi.org/10.1145/2556325.2566239 [V PDF] (https://pg.ucsd.edu/publications/edX-MOOC-video-production-and-engagement_LAS-2014.pdf)
 - Fisch, capacity model: https://doi.org/10.4324/9781410610553-18
+
+---
+
+## Engineering review
+
+**Reviewer:** senior frontend/game engineer, 2026-10-02. **Scope:** can each `explainer@1` engine be built in React/TS + SVG in at most 2 days, does it hold 60 fps on a Rs 10k Android, are the params enough for LLM control, are the events enough for the teacher to observe learning, and what are the safety issues. **Method:** I read this document and the artefacts it cites (`explainer-dsl.mjs`, `explainer-render.mjs`). I ran no device tests, so every performance statement below is [U] (engineering estimate) until measurement A2 is run. Where the document says "measured", only the frame-capture path was measured, and that is not the on-device path.
+
+### E.1 Verdict
+
+The direction is right: model fills slots, code computes, SVG plays a flat plan. The document overstates readiness in six places (E.2). Four of them would break the "2 days per engine" claim if left uncorrected: the shared player is not costed, Devanagari wiping is under-specified, E13 is harder than a lint line, and the planned templates are not equal in cost.
+
+### E.2 Corrections to the document
+
+1. **The player is a separate deliverable, not a free by-product.** The bench player (`explainer-render.mjs`, about 20 lines) is a seek-driven GSAP timeline in a bare SVG. The production player needs everything below, and none of it is in the "8 templates implemented" claim.
+   - Live play/hold/replay of a single beat (a seek-driven timeline plays continuously; it has no hold semantics).
+   - Reduced-motion jump to the end state.
+   - The `anim.*` command and event wiring through the sandbox postMessage bridge.
+   - Font loading, a sprite library, and teardown.
+   - **Cost: L (4-5 days), built once, before any engine.** The per-engine estimates in E.4 assume it exists. Total build is therefore player L + templates, not 8 x S.
+2. **"Bundle GSAP locally" must be checked against the sandbox size budget and the licence reading.** The 28.3 KB gzip core is fine. MorphSVG and DrawSVG are listed as "optional/production". Plan for the core plus MotionPath only (about 38 KB gzip). `draw` can be done with `stroke-dashoffset` and `getTotalLength()` with no plugin, and `morph` as a crossfade (already the stated default). This removes two plugin dependencies and the licence question for them. The GSAP "AI-generated code is allowed" wording was read from the licence page; have counsel confirm before shipping inside a paid app, since the "no-code builder" prohibition is the only open clause.
+3. **`write` as a `clip-path: inset()` wipe on SVG `<text>` is not portable.** CSS `clip-path` on SVG child elements is unreliable on older Android WebViews (Chrome 70-80 era, common on Rs 10k devices on stock Android 9-10 with an un-updated System WebView). Use an SVG `<clipPath>` with a `<rect>` whose width is tweened (attribute animation, no CSS clip-path). Measure at least one WebView 74-90 device. Also tween the rect in the text's writing direction only for LTR; Devanagari is LTR, so this is fine, but a right-to-left Urdu/Arabic-script extension would need a mirrored wipe (note for later).
+4. **Devanagari shaping in SVG `<text>` needs a font fallback test.** The bench ran in desktop Chromium with Noto installed. On a device, SVG text with `font-family` fallback can render conjuncts correctly but at a slow first paint if the font is not bundled. Bundle a subsetted Noto Sans Devanagari (about 100-150 KB woff2 for the used glyphs [U]) and await `document.fonts.load()` before `anim.ready`. Measure text width with `getComputedTextLength()` after load, never estimate it from character count; the `fit` of a Hindi label inside a 6x6 cell is otherwise a layout bug the lint cannot see.
+5. **E13 (bounding-box overlap lint) is not a one-liner.** The compiled plan has anchors and `xy`, not sizes. To intersect boxes the compiler needs sprite sizes, text extents (which depend on the font, correction 4), and `repeat` cluster extents. Do it in two stages: (a) compile-time with conservative per-sprite boxes from the sprite manifest, run in CI and the offline Forge (cost M, 1.5 days); (b) do NOT run text-extent overlap live, because the live path has no DOM. Live remains E2 (one anchor cell). State this limit; the document says E13 runs "before the library ships", which is correct, but the checklist (section 10 item 2) implies it also gates live output.
+6. **The "60 fps" claim is not made anywhere, and `kids-ux-ages` G9 asks for median 16 ms.** The document rests this on "SVG with transform and opacity only". That is true for composited HTML layers, but **SVG element transforms are not GPU-composited in most WebViews**: every frame re-rasterises the SVG layer on the main thread. Expect fine results with fewer than about 40 simple elements and one or two movers, and a cliff past that on a 2 GB device [U]. The E3 (2 movers) and cast <= 24 limits are therefore load-bearing for performance, not just for pedagogy. Recommended rule: **render each actor as an absolutely positioned HTML `<div>`/`<img>` (or a CSS-sized inline SVG sprite) moved with `transform: translate3d()` and `opacity`**, which promotes it to its own compositor layer, and use one SVG overlay only for arrows and paths. This is a cheap architectural decision that should be made before the player is written; retrofitting it is an L task. Add `will-change: transform` only to active movers and remove it at beat end (layer memory on 2 GB devices).
+7. **Timeline library choice under live play.** GSAP timelines use `requestAnimationFrame`; they pause when the page is hidden (good) but the audio clock does not. Section 6.7 says beats start from the audio playback clock; the player must therefore start a *fresh* tween per beat (not seek a single global timeline), and a beat that overruns its audio just holds. Seek-per-frame is a capture technique only. Say so explicitly, otherwise the build workstream will reuse the capture player live and get drift.
+8. **"0.12 MB/min DSL" excludes sprites.** The 14 sprites/bundles (`SPRITES`) are a fixed one-time asset (about 100-200 KB as SVG [U]), cacheable in the WebView, but the first-lesson download must count it. Minor; correct the table footnote.
+9. **Teacher observability is thinner than 6.7 claims.** See E.5.
+10. **The Sora lane needs a safety line the document lacks.** See E.6.
+
+### E.3 Cross-cutting engineering requirements
+
+| requirement | rationale |
+|---|---|
+| Sprite manifest with intrinsic box, anchor point and transform-origin per sprite | needed by E13, `grow` (plants grow from the base), `merge` targets and shadow geometry |
+| Single `AnimEngine` class: `load(plan)`, `play(beat)`, `hold()`, `replay(beat)`, `destroy()`, no React inside the frame | the frame is sandboxed; React only wraps the host side. Keeps the frame bundle small (<= 120 KB gzip including GSAP) |
+| Frame-time counter (rAF delta, p50/p95) reported in `anim.ready`/`anim.error` | feeds the G9 fallback to reduced motion/MP4; without it, A2 cannot be automated |
+| Beats are pure functions of `(plan, beatIndex)` end state | enables reduced motion, replay, and test snapshots; already stated, but make it an invariant tested in CI with a DOM snapshot per beat end |
+| Visibility/AudioFocus handling: pause on `visibilitychange`, resume to the same beat | a child switching apps mid-lesson otherwise desynchronises narration and animation |
+| Touch targets: every `anim.tap`-able actor >= 48 dp hit area even when the sprite is smaller | kids-ux; undersized sprites at 6x6 grid on a 5-inch screen are about 50 px per cell, fine, but `size: "s"` sprites are not |
+| Minimum frame size assumption: 360 x 640 dp portrait | the bench is 854x480 landscape. On a portrait phone the 6x6 grid gives about 60 x 100 dp cells; label text in a cell must fit Hindi at >= 14 sp. Define the stage as landscape and letterbox, or define a portrait grid. This choice is missing and affects every template's coordinates |
+
+### E.4 Per-engine build-cost estimate
+
+Sizes: **S** = at most 1 day, **M** = about 2 days (within the stated budget), **L** = more than 2 days (needs splitting or de-scoping). Estimates assume the shared player (E.2 item 1) and the cross-cutting items exist, one engineer, including unit tests and golden-plan snapshots but excluding the teacher-review time and the micro-RCT.
+
+| engine | in the document | size | notes: feasibility, perf, params, risks |
+|---|---|---|---|
+| **Shared player + sprite lib + bridge** | not costed | **L** (4-5 d) | see E.2 items 1, 3, 4, 6, 7. Prerequisite for everything below. Could be split: player core (2 d), sprite manifest and assets (1-2 d), bridge and events (1 d) |
+| `combine-count@1` | implemented | **S** | up to 20 repeats of a sprite: 20 elements is fine. `merge` of two clusters = 2 movers (at the E3 limit; moving individual copies would break it, so animate the cluster group, not each sprite). Params (a, b in 0-10, op, sprite) are sufficient; LLM cannot go wrong except in sprite choice. Pedagogical gap: no `take_away` visual for b > a (negative). Lint it |
+| `cycle@1` | implemented | **S** | 3-6 stages on an ellipse: easy. Label overflow with Hindi text on 6 stages in portrait is the risk (E.3 stage size). Params fine |
+| `process-steps@1` | implemented | **S** | per-step `change` enum is the right LLM-control surface. `move_down` for roots under the soil needs the sprite to be clipped by a soil band (the Sora-style "leaves open underground" bug has an SVG analogue: a shoot sprite drawn above `soil` layering). Add a z-order layer param (`under: "soil"`) or the template hard-codes layering. |
+| `split-share@1` | implemented | **S-M** | equal partition of circle/bar/roti: bar is trivial; circle sectors need arc path generation (a template-computed `svgpath`, fine). Parts up to 12 on a circle is tight at 360 dp. Needs the pedagogical slot rule (`take < parts`) from section 6.8, which is a small but required validator. |
+| `number-line-hop@1` | implemented | **S** | one axis, up to 4 hops: trivial. Check that tick labels do not collide for ranges > 20 (add an auto-stride param computed in code, not by the LLM) |
+| `sun-shadow@1` | implemented | **M** | trig is easy; the cost is the visual: a shadow polygon with correct skew from an arbitrary sprite needs the sprite's footprint and height from the manifest. A rectangle or the object silhouette as a skewed duplicate (`transform: skewX`) is the cheap version. Perf fine. Teacher-visible risk: the document computes `h/tan(alt)`, which blows up near 0 degrees; clamp altitude to [10, 90] and cap shadow length at the stage edge, or evening shadows leave the frame |
+| `moon-phase@1` | implemented | **M** | terminator drawn as an SVG path (two arcs) is the standard approach and cheap. Hemisphere (northern India vs. the textbook picture) and waxing/waning side must come from a fixed table; this is a known source of textbook errors, so a golden test per phase is mandatory. Params fine |
+| `path-trace@1` | implemented | **S-M** | a mover along a route with 2-6 stations: MotionPath plugin (9.7 KB) or a hand-rolled `getPointAtLength` tween (cheaper, no plugin). Winding routes need a route library, not free coordinates |
+| `build-diagram@1` (planned) | planned | **L** | the template is trivial; the **verified SVG assets with semantic part ids and label anchor points are the work**, and they are Content-team, not engineering, deliverables (about 30-60 min per diagram to author and verify, for flower/cell/heart/etc.). Engineering: M (1.5 d) for stroke-order reveal with `stroke-dashoffset` over arbitrary asset paths (filled shapes need a mask-wipe instead, since `draw` only works on strokes). **Asset pipeline makes this L overall.** Do not promise it for the next release |
+| `ray-path@1` (planned) | planned | **M-L** | tracing is reused maths from the T1 engine (the document says), but SVG rays, reflections, a virtual image shown dotted, and the sign convention (Cartesian, as CBSE uses) are easy to get wrong. M if the maths module is genuinely shared and already tested; L if it must be extracted first. Needs golden tests against the textbook lens formula (the document's check `image position vs the lens formula` is correct and should be a hard gate) |
+| `equation-steps@1` (planned) | planned | **L** | KaTeX in the frame is about 60-80 KB gzip plus fonts (about 100 KB more) [U]: a real cost on a data-capped plan and for the sandbox bundle. "Each step equals the previous under a CAS check" requires a CAS in the shared package (e.g. a tiny rational-function normaliser, or `nerdamer`/`mathjs`, +100 KB+). Term-move highlighting needs a tokeniser for the LaTeX. This is not a 2-day template; either cut scope to **linear equations in one variable with integer/rational terms** (M, 2-3 d, custom mini-CAS) or defer. The document's "optional Manim lane" tests whether this template is good enough, which is premature until the template exists |
+| `bar-grow@1`, `timeline@1` | planned | **S** each | `bar-grow` is trivial; `timeline` needs a date-to-position mapping and label collision handling |
+| `map-route@1` | planned | **L** | blocked by asset licensing and the Survey of India constraint already noted; the engineering is S, the data is not |
+| `story-panels@1` | planned | **M** | pan/zoom on 2-4 pre-generated images is easy (Ken Burns via `transform`). Perf: a 1024x1024 decoded bitmap is 4 MB; four panels on a 2 GB device is borderline and decoding during a pan can jank. Pre-decode (`img.decode()`), downscale to display size at pack time (about 800 px wide), serve WebP. Add a caption-over-image contrast rule. Safety: see E.6 |
+| `fade-concrete@1` | planned | **M** | concrete to pictorial to symbolic crossfades need three matched asset sets per topic; again content-bound |
+| `geometry-construct@1` | planned | **L** | compass-and-straightedge construction with arcs, intersections and a correctness check is a mini geometry engine. It overlaps with the T1 maths engines (the maths-engines doc should own it) rather than the explainer |
+| Lint E13 | to add | **M** | see E.2 item 5 |
+| `forge.explainer` job (steps 1-9) | specified | **L** | TTS bookmark sync, Playwright capture, ffmpeg and blob publish already work as a script; productionising them as a queue job with retries, review state and idempotency is a multi-day task. It is not blocking for the live path |
+| Sora B-roll lane | optional | **S** | submit, poll, download, re-encode, store. Cheap to build; the work is the review checklist. Keep it last |
+| Manim lane | optional | **L** | needs a Python/LaTeX/Pango toolchain image and a repair loop; defer until A6 actually justifies it |
+
+**Totals (one engineer, assuming no content-team dependency):**
+- Player + 8 implemented templates in production quality: **about 12-14 working days** (player 4-5, eight templates about 8, E13 1.5, testing/golden plans 1-2). The document's implied "implemented, ship" is optimistic by about 2x because the bench code skips the player, fonts, lint-in-CI, and events.
+- Planned templates, in order of value per cost: `bar-grow` (S), `timeline` (S), `story-panels` (M), `ray-path` (M-L), `build-diagram` (engineering M + content L), `equation-steps` (L), the rest deferred.
+
+### E.5 Can the teacher observe learning from the events?
+
+The event list (`anim.ready`, `beat_start`, `beat_end`, `replay_req`, `tap`, `probe_commit`, `error`) tells the teacher what the child *did*, not what they *understood*. Gaps:
+
+1. **A beat that merely plays is not evidence of learning.** `beat_end` only says the animation finished. The only comprehension signal is the probe (`probe_commit {answer, ms}`), and the document allows at most one probe per explainer (`probe?: {...}` is a single object). Allow 1 probe per 3 beats (up to 2) for B3-B4, and make `probe.kind: "tap_target"` possible (child taps where the 4th mango goes), which gives richer, language-free evidence than a spoken answer from a 6-year-old.
+2. **The probe answer must be graded by code against the computed key**, not by the model (inherited rule). Add `probe.key` (computed by the template, e.g. 7) and `probe_commit` carries `{answer, correct: boolean, ms, attempts}`. Today `correct` is absent.
+3. **Replay events need context.** `replay_req {beat}` is a confusion signal only if the teacher also knows how many times and whether the narration was playing. Add `replays: n` and `dwell_ms` (time on the beat end state before the child's next utterance).
+4. **Tap events need coordinates relative to the cast.** `anim.tap {actor}` is good; add `{actor|null, role}` so taps on `context` actors (decoration) are distinguishable from taps on content: a child tapping the sun instead of the shadow is information. Also debounce taps (children mash) with a 250 ms window and cap per-beat events at, say, 10.
+5. **Interrupts.** Add `anim.interrupt {beat, by: "child_speech"|"nav"|"background"}` so the Director knows a beat was cut off and should not be assumed seen. Barge-in is common with kids.
+6. **Attention is unobserved.** Without gaze/focus, `beat_end` while the app is backgrounded looks identical to a watched beat. The visibility event in E.3 fixes the worst case.
+7. **Privacy:** events must carry actor ids and numbers only, never free text typed by the child, and only to the learner model (identity is an authenticated child id).
+
+### E.6 Safety review
+
+1. **Sora input and output.** The document covers moderation and no-faces rules. Add: (a) a **perceptual-hash and OCR check on frames** for baked text (the probe showed it can draw exact wrong text, which is also an injection surface for unwanted words); (b) every clip's audio track must be **stripped** at the re-encode step, not merely "no speech" reviewed, since the lane adds no value from audio and any audio is un-reviewable at scale (`-an` in ffmpeg); (c) a hard reviewer sign-off state in the library so an unreviewed clip can never be served, enforced by the server (predicate, not instruction).
+2. **Child-safety floor inside animations.** Child-facing text is generated by the model (`title`, `notes`, `ask`, `L10n` labels). The live path must run Azure Content Safety (or a local blocklist predicate) on **all L10n strings before `anim.load`**, not only on offline output. Section 7 step 8 mentions Content Safety for pre-render only. The latency cost is about 100-300 ms and can run in parallel with the plan compile.
+3. **Prompt-injection through the child's context.** The bench brief includes "one-line child context". If that string includes child-provided words, it can steer the slot-filler. Slots are enum/number-bound, which limits the damage, but the free `L10n` fields (title, ask) accept 80 characters of model text: validate for the 80-char cap, no URLs, no markup, no emoji from a blocklist, and render them as `textContent`, never `innerHTML`. State this as a lint (E14).
+4. **SVG injection.** `svgpath.d` is described as "internal (templates only)". Enforce it by having the *LLM schema* omit it and the validator reject it, which the document says; also reject any `href`, `style`, `on*` and `<foreignObject>` in the player's DOM construction. Build the DOM with `createElementNS` and an attribute allowlist, as the bench player does; never concatenate an HTML string. The 600 KB-class sprite library must itself be sanitised (no scripts in sprite SVG).
+5. **Flashing/photosensitivity.** E9 caps pulse at 3 Hz (WCAG 2.3.1). Also cap **full-frame luminance transitions** (the `focus` dim and the end-of-beat crossfade) and area of flashing; `focus` dim toggled across consecutive short beats can approach flash thresholds on a bright background. Add a lint: no more than 3 `focus`/`pulse` transitions per second of plan time, and no full-stage background change faster than 3 per second. Reduced motion must also disable `pulse` outright, not merely jump to end states.
+6. **Cultural and content sensitivity.** Sprites for `story-panels` and `sun-shadow` (people, deities, food) need the same review as images: no meat sprites in a vegetarian-default context if the school or family context is unknown, no religious symbols in generic scenes, skin tone and clothing variety in people sprites, and an India-appropriate map (already noted). Moon-phase and "sun rises in the east" content must use the correct hemisphere/direction table.
+7. **Wrong-fact safety (the core risk).** The "pedagogically wrong but arithmetically right" slot case (`take: 4`) is a *fact* risk on the live path, where no human reviews. Per-template slot sanity rules are therefore a **ship blocker for live use**, not a nice-to-have. Also log every live explainer to a review queue (already stated) and have a kill switch per template id.
+8. **Memory/DoS.** The frame sandbox must cap plan size (e.g., <= 16 KB), element count (<= 60) and total duration, and `anim.load` must reject over-limit plans; a malformed plan must not hang a child's lesson. Add a watchdog: if `anim.ready` has not fired in 3 s, host falls back to the static diagram.
+
+### E.7 Is the LLM-facing parameter surface sufficient?
+
+- **Yes for the 8 implemented templates.** The slot enums and numeric ranges are the right control surface (8/8 valid). Two additions: (a) a per-template **"intent" enum** (for example `combine-count: "total" | "difference" | "commutativity"`) so the teacher can request the idea, not just numbers (without it, the same a and b always produce the same beats); (b) a **`emphasis`** slot (which beat to focus/pulse), constrained to beat ids, so the teacher can respond to a child's specific confusion without free-form beats.
+- **No for free-form.** The 2-3/8 pass rate stands; do not widen the live schema. Adaptation should be by re-choosing the template and slots, with 2-3 s latency covered by speech.
+- **Cache key** in 6.7 contains `slot_hash` but not `intent`/`emphasis` once added; include them, or personalised variants collide.
+- **Sprites** are an enum of 14 bundles: sufficient for Class 1-3 counting, thin for Class 4-9 science. This is the practical ceiling on LLM control and is a content-team pipeline (sprite authoring), not an LLM problem.
+
+### E.8 Recommended build order
+
+1. Architecture decisions in E.2 item 6 (HTML-layer sprites with `translate3d`) and E.3 stage orientation; one half-day spike on a real Rs 10k device (satisfies A2 early, before 8 templates are built on the wrong substrate).
+2. Shared player, fonts, sprite manifest, bridge, events (E.5 additions), safety validators (E.6 items 2-4, 8).
+3. `combine-count`, `number-line-hop`, `process-steps`, `cycle` (all S), with golden plans and a frame-time CI check.
+4. `split-share`, `path-trace`, `sun-shadow`, `moon-phase` (S-M/M).
+5. E13 offline lint, then `bar-grow`, `timeline`, `story-panels`.
+6. `ray-path`, `build-diagram` (after content assets), `equation-steps` (scoped to linear equations).
+7. Sora lane and Manim lane only after the above are in production and A1/A5/A6 report.
+
+### E.9 Verdict summary
+
+| area | status |
+|---|---|
+| 8 implemented templates, feasible in React/TS + SVG | **yes**, but the player is an extra L and the real total is 12-14 days, not "done" |
+| 60 fps on a Rs 10k Android | **unproven; likely only with HTML-layer compositing and at most about 40 elements**; spike on device first |
+| LLM param sufficiency | yes for templates, plus `intent` and `emphasis`; no for free-form |
+| Teacher observability | insufficient as written; add graded probes, replay context, interrupts, tap role |
+| Safety | adequate offline; **live path needs text safety predicates, template slot sanity rules, SVG allowlist, flash limits and a watchdog** |

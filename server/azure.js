@@ -45,11 +45,12 @@ function log(entry, trace) {
 }
 
 /**
- * POST one JSON body with a timeout that covers the body read, and exactly one retry on
+ * POST one JSON body with a timeout that covers the body read, and (by default) exactly one retry on
  * timeout / network error / 429 / 5xx. A 4xx other than 429 is the caller's bug and is not retried.
+ * `retries: 0` is for a backup call that must not double the latency of the path it rescues.
  * @returns {Promise<any>} parsed JSON, or a Buffer when `binary`.
  */
-async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false } = {}) {
+async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false, retries = 1 } = {}) {
   for (let attempt = 0; ; attempt++) {
     const t0 = performance.now();
     const ctl = new AbortController();
@@ -80,7 +81,7 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
       tokens: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined }, trace);
     if (!err) return out;
     const retryable = status === 0 || status === 429 || status >= 500;
-    if (attempt >= 1 || !retryable) throw err;
+    if (attempt >= retries || !retryable) throw err;
     await sleep(RETRY_DELAY_MS);
   }
 }
@@ -91,7 +92,7 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
  * `effort` maps to reasoning_effort ("none" | "low" | "medium" | "high"; "minimal" is rejected).
  * @param {string} deployment
  * @param {{ role: "system"|"developer"|"user"|"assistant", content: string }[]} messages
- * @param {{ schema?: object, schemaName?: string, maxTokens?: number, effort?: string, timeoutMs?: number, trace?: object[] }} [opts]
+ * @param {{ schema?: object, schemaName?: string, maxTokens?: number, effort?: string, timeoutMs?: number, retries?: number, trace?: object[] }} [opts]
  * @returns {Promise<{ text: string, json?: any, finishReason?: string, usage?: object }>}
  */
 export async function chat(deployment, messages, opts = {}) {

@@ -877,3 +877,314 @@ Probe artefacts (this workstream), all in `docs/research/factory/`:
 - `manim-probe-2026-10-02.json`
 - `gsap-render-probe-2026-10-02.json`
 - `tts-segment-probe-2026-10-02.json`
+
+---
+
+## Principal review
+
+Adversarial review, 2026-10-02. The question: will this lane set put **correct, bug-free, engaging** time-based
+media in front of a 9-year-old within the live-lesson window, on Azure, at the stated cost, without letting LLM
+code hurt anyone? I re-checked the claims that carry the design: vendor pages fetched today, GSAP 3.15.0 run in
+Node, the Manim 0.21.0 namespace inspected in the probe venv, and one new latency probe on `taxila-fast`.
+
+**Overall.** The direction holds: no pixel video, one IR, deterministic renderers, Manim kept off the live path.
+The sora retirement facts are correct. But four things are wrong as written, and any one of them would ship a
+bug or a security hole:
+- the seek renderer's time mapping (R1);
+- the GSAP calls used for cue jumps and resume (R2);
+- the Manim sandbox (R5);
+- free-form generation on the live path (R6).
+
+The economics and voice-identity arguments for "performed" mode also contradict two other documents in this
+repo (R8, R4).
+
+Tags: **[M-R]** = measured in this review (files listed at the end); **[V-R]** = vendor page fetched in this review.
+
+### R0. Claims verified (no change needed)
+
+| claim | check | result |
+|---|---|---|
+| `sora-2 2025-12-08` Preview retires 2026-10-15, no replacement; 2025-10-06 retired 2026-07-15 | Foundry retirement schedule, `updated_at 2026-09-23` | **correct** [V-R] |
+| OpenAI removed the Videos API and every sora-2 snapshot on 2026-09-24, no replacement | developers.openai.com deprecations | **correct** [V-R] |
+| `gpt-4o-mini-tts 2025-12-15` GA to 2027-06-15 on Azure | schedule | correct, but see R4 |
+| Remotion: free ≤ 3 people; Creators $25/seat/mo; Automators $0.01/render, $100/mo minimum; Enterprise from $500/mo | remotion.pro/license | **correct** [V-R] |
+| Revideo README: "A scene is plain TypeScript, so Claude or Codex can produce one from a prompt" | GitHub page (4.1k stars) | quote **correct** [V-R] |
+| ACA dynamic sessions are Hyper-V isolated and pre-warmed | Learn "Dynamic sessions" | correct. Their cost problem is already recorded in `sandboxes-per-student` §0.4 |
+| §2.3 probe used `tl.seek(t, false)` | `gsap-render-probe.mjs:39` | correct for the probe, but the design text drops the `false` (R2) |
+
+One small error: §0.1 and §1 list **MAI-Image-2.5** among the image models that remain. All three MAI-Image-2.5
+variants are Preview and retired on **2026-10-01** [V-R]. Strike them. `gpt-image-2` (GA to 2027-10-21) and
+`gpt-image-2.5-flare`/`-sunburst` (GA to 2027-09-09) are what is left.
+
+### R1. The seek renderer breaks A/V sync for every stretched segment (bug, [M-R])
+
+§6.4 stretches each segment with `tl.timeScale(dur/audio_s)`, clamped to 0.8-1.25×. §2.3 and §6 then export by
+calling `tl.seek(i/fps)`. In GSAP, `seek()` takes **local** time and ignores the timeline's own `timeScale`.
+
+Measured on GSAP 3.15.0: a 10 s tween at `timeScale(2)` after `seek(5)` sits at local 5 s (x = 50), not at the
+end. Wrapping the child in a paused master and calling `master.seek(2.5)` gives the correct x = 50.
+
+The consequence is that every segment with a scale ≠ 1 renders at the wrong speed against its audio track:
+- the error grows across the segment, up to 25% of its length (1.2 s by the end of a 6 s segment at 1.25×);
+- the G-duration gate as written checks the scale factor, not the frames, so it passes the broken export.
+
+**Fix:**
+- Assemble each explainer as `master = gsap.timeline({paused:true})`.
+- Add segments with `master.add(segTl.timeScale(k), audioStartOf(seg))`.
+- The exporter only ever calls `master.seek(i/fps, false)`.
+- Add a gate: sample the frame at each `seg_start` and at `term` beats, and assert that the beat's target node
+  reached its end state within ±1 frame of the `TimingTrack` time.
+
+### R2. `tweenTo` for cue jumps and resume rewinds visibly, and `seek` drops callbacks (bug, [M-R] + [V-R])
+
+**`tweenTo`.** §3.5 and §7.4 use `tl.tweenTo(label)` for cue jumps and for "on resume: `tl.tweenTo(beatStartLabel)`".
+- GSAP's docs say `tweenTo` "creates a linear tween that scrubs the playhead … if you tween to a time/label that
+  precedes the current time, it will appear to go backwards", and it pauses the timeline and does not resume.
+- Measured: from t = 8 s back to a label at 2 s, the `tweenTo` lasts **6 s**, and at half-way the state is mid-rewind
+  (x = 50).
+- So after every barge-in the child would watch the animation play backwards for seconds.
+
+**Fix:** resume with `tl.pause(beatStartLabel)` followed by `tl.play()`, or `tl.play(beatStartLabel)`. Jump with
+`tl.seek(label)`.
+
+**`seek` and callbacks.** `seek()` suppresses events by default: "If there are any events/callbacks inbetween …
+they will not be triggered" [V-R]. Measured: a `tl.call()` at 1 s was skipped by `seek(2)` (`called = 0`), while
+`tl.set()` was applied.
+
+**Rule for the scene@1 compiler:**
+- Never implement visual state with `call()`/`add(fn)`. That covers `show`/`hide`/`set`/`count` and text swaps.
+  Use zero-duration `set` tweens or `onUpdate`-driven tweens.
+- Telemetry (`beat` events) comes from a playhead watcher that compares `master.time()` to label times. It must
+  not come from timeline callbacks, which would also fire spuriously during export with `suppressEvents=false`.
+- Export mode mutes the bridge.
+
+### R3. The playback-clock events exist only on WebRTC, and Voice Live word timing needs an Azure voice ([V-R])
+
+**WebRTC-only events.** §6.4 keys `seg_start`/`seg_end` on `output_audio_buffer.started/stopped`. Those events
+are sent **only for WebRTC and SIP** connections, because only there does the server own the playback buffer.
+- Lane A on WebRTC (tech-and-market §1.5) is fine.
+- Any WebSocket path does not get them: the server-side observer, a Node relay, or a test harness. There the
+  client must clock beats from its own player (`AudioContext.currentTime` of the queued PCM), plus
+  `conversation.item.truncate` on barge-in.
+- State the transport per lane in `TimingTrack.source`.
+
+**Voice Live word timing.** The Voice Live word source is `session.update`
+`output_audio_timestamp_types:["word"]` → `response.audio_timestamp.delta {audio_offset_ms, audio_duration_ms,
+text}`. It is returned **when Azure voices are used**. A Voice Live session running a native gpt-realtime voice
+gets no word timestamps. Lane B's "best" sync source therefore exists only with an Azure TTS voice (`meera`/`diya`).
+
+### R4. The narration voice contradicts the doc's own voice-identity argument, and the TTS lifecycle is shorter than stated ([V-R])
+
+**Voice mismatch.** §5 argues that performed mode wins because "a clip narrated by a different TTS voice in the
+middle of her lesson breaks the illusion". Yet:
+- clip mode, notebook replay and chapter videos are voiced by `gpt-4o-mini-tts` `coral` (§2.4) or by "the
+  teacher's chosen Azure voice" (§7.2 step 2);
+- the live teacher on lane A is a **native gpt-realtime voice**;
+- so every replay and every chapter video is in a different voice from the child's teacher.
+
+**Lifecycle.** OpenAI lists **both** `gpt-4o-mini-tts` snapshots (2025-03-20 and 2025-12-15) as deprecated, removed
+2027-01-06, replacement **`gpt-realtime-2.1-mini`** [V-R]. Azure still shows 2025-12-15 GA to 2027-06-15, but the
+upstream direction is clear.
+
+**Fix:**
+- Synthesise offline narration with `gpt-realtime-2.1-mini` (text in, audio out, same voice id as the live
+  teacher), one response per segment. That keeps §2.4's segment-exact durations.
+- Or, if lane B wins, use the same Azure voice live and offline.
+- Add V-11: blind same/different-voice test (n ≥ 10 children) between the live teacher and the replay clip.
+- Keep the V-1 pin as a bridge to 2027-06-15, not as the plan.
+
+### R5. Security: the Manim lane executes LLM Python with network access and an escapable allow-list ([M-R])
+
+§7.2 step 3 runs LLM-written `TaxilaScene` code in "one ACA job per segment, egress denied", and G-schema relies
+on an AST lint ("allowed imports; no file or network"). Three problems:
+
+1. **ACA Jobs have no egress-deny switch.** Egress control needs a VNet with UDR/NSG/Firewall, or ACA Sandboxes'
+   egress policy. The "block network" in `sandboxes-per-student` §0.5 is enforced **inside Chromium** and does
+   nothing for a Python process.
+2. **An import allow-list does not contain Manim code.** In the probe venv (Manim 0.21.0), `from manim import *`
+   (which every scene does) exposes `utils.file_ops.os`, so `utils.file_ops.os.system(...)` is reachable with no
+   `import` statement. It also exposes `np.ctypeslib.ctypes` (native calls). An AST lint has to forbid every
+   attribute chain, and that is a losing game.
+3. **Ambient credentials.** Any job identity can be read via `IDENTITY_ENDPOINT`/IMDS, as can env vars and the
+   upload SAS. `sandboxes-per-student` §3 already names managed-identity tokens "the crown jewels".
+
+**Fix, in order:**
+- **(a)** Make the default Manim path **IR → code**: a `manim_seg@1` JSON IR (mobjects, placements, claims and
+  timings), compiled to Python by our own deterministic generator. This is the ALGOGEN shape §0.2 already cites.
+  The LLM writes data; no model-written Python ever executes. The codex `AnnularSector` hallucination and the
+  layout collisions become generator bugs we fix once.
+- **(b)** Run LLM-authored Python (research or rare precise geometry) only in **ACA Sandboxes with egress `Deny`**
+  (Phase 1 in `sandboxes-per-student`), or in a dynamic-session pool with `EgressDisabled`. The sandbox has no
+  managed identity, no secrets in env, a read-only root filesystem except `/tmp/out`, and a wall cap of 90 s.
+- **(c)** The orchestrator pulls the MP4 out after exit and gates it (`ffprobe`, hash). The sandbox never holds a
+  write SAS.
+- **(d)** Keep the AST lint as defence in depth: forbid `import`, `__*__`, `getattr`, `eval`/`exec`/`open` and any
+  attribute chain through `utils`/`np.ctypeslib`/`os`. Never treat it as the boundary.
+
+### R6. Free-form explainers do not belong on the live path (contradicts genui-reliability, [P] + [M-R])
+
+§6.3 and §7.1 allow a free-form explainer live with "p50 ≈ 12-18 s" and a 20 s hard deadline. That uses the p50.
+`genui-reliability` §0 and §6.3 measured T2b at **p90 24-41 s with a repair** and concluded "**near-line only**,
+requested ≥ 45 s ahead". An `explainer@1` is strictly larger than a `scene@1`: it carries the scene, 3-8 L10n
+segments in two scripts and ≤ 24 beats. It will be slower, not faster. Twenty seconds of teacher filler is also a
+long time for a 9-year-old.
+
+**Fix:**
+- The live deadline admits **template fills only** (≤ 5 s).
+- Free-form explainers are generated near-line. At lesson start, the Director pre-generates for the kit's top 3
+  misconceptions on the day's objectives (≈ $0.03 per lesson). On a miss, the fallback is T1 with cues, never a
+  wait.
+- Log the prefetch hit rate.
+
+### R7. Template-fill latency confirmed, but 2/6 fills broke the hard limits, and `say` comes back as lines ([M-R])
+
+The new probe filled a `partition-equal@1` explainer slot schema on `taxila-fast` (effort none, strict
+`json_schema`): 4-6 segments, `say{hi, hi_latn}`, bilingual terms, and a predict probe. n = 6 fraction briefs.
+
+**Latency:**
+- **p50 3.47 s, max 3.73 s**;
+- **≈ 470 output tokens** (vs 381 for scene@1 T2a);
+- every segment's terms appeared in its `say`.
+
+The "≈ 3-4 s" claim holds **[M-R, n = 6]**.
+
+**But:**
+- 1/6 returned **3 segments** (the limit was 4-6). 1/6 summed **est_s = 19** (< 20). The strict schema carried no
+  `minItems`, and the "last line" limits were not obeyed every time. The validator must enforce cardinality and
+  Σ est_s, and the autofixer should pad, merge or clamp deterministically. A repair round costs another ≈ 3.5 s,
+  which the live budget cannot absorb.
+- Register drifted between briefs (बाँटें formal vs बाँटो familiar). The band and register must be a slot enum
+  that the template renders, not free text.
+- `say` came back as **complete sentences**. In performed mode the realtime teacher is handed model-written lines,
+  which is exactly the repo's "sentence-shaped text gets recited" law, and it reads as robotic. Decide this
+  explicitly:
+  - **performed mode** gets `{goal, must_say[], max_words}` only, and the teacher improvises. `est_s` then becomes
+    unknown, so beats must be `seg_start`/`term`, never `offset`.
+  - **clip mode** gets lines, which are synthesised, not recited by the live model.
+
+  The current `NarrationSeg.say` comment ("shape") and the slot output (lines) disagree.
+
+### R8. "It costs nothing extra" is false, and conflicts with the unit-economics model ([P])
+
+`market/pricing-unit-econ.md` assumes "half of teacher speech is pre-rendered narration, cached and shared across
+children" and prices the live lane at **$1.377/h** on rt-2.1-mini (≈ $0.023 per minute of session).
+- Performing every explainer live moves that narration from cached (≈ $0) onto the realtime meter.
+- A 45 s performed explainer costs **≈ $0.015-0.02 of realtime**, which is 2× the "≤ $0.01 per explainer" total.
+- It also needs 4-6 separate `response.create` turns. Each adds first-audio latency (hundreds of ms), giving
+  1.5-4 s of dead air and audible seams across one explainer.
+
+**Fix:**
+- Make **clip mode in the teacher's voice (R4) the default** for template explainers. It is cached per
+  (template, slots without child data, voice) and shared.
+- The live teacher speaks only the predict question, the confrontation line and anything the child interrupts
+  with.
+- "Performed" stays the mode for free, personalised talk.
+- V-7 should A/B performed vs teacher-voice clip on comprehension and on cost.
+
+### R9. Cache keys can leak one child's personalisation to another (privacy, [I])
+
+§7.1 caches by `hash(objective, template, slots-skeleton, style_v)`. If a skin or slot carries the child's name,
+interest ("Arjun's cricket bat") or misconception history, a cache hit serves it to another child.
+
+**Fix:**
+- Cached `explainer@1` documents and MP4s must be **child-free**. This is the same rule as `sandboxes-per-student`
+  §0.8: "content-addressed and shared … never contain child data".
+- Personal strings and skins arrive at runtime through the bridge `init` and are drawn as overlays.
+- An MP4 with a baked-in personal skin is per-child and goes to the child's private Blob prefix, never the shared
+  library.
+- Add a gate: lint every cached doc against the child-profile field list.
+
+### R10. Layout lint and the device disagree on font metrics; low-end devices are unmeasured ([I])
+
+**Font metrics.** scene@1 S3 checks overlap "on real font metrics". These are the server's metrics. On the child's
+Android WebView, Devanagari falls back to whatever the OEM ships, with different advance widths and
+matra/shirorekha heights. The lint can pass while the device overlaps.
+
+**Fix:**
+- The frame ships its own **subset woff2** (Noto Sans Devanagari plus the Latin face, about 100-200 kB).
+- It waits on `document.fonts.ready` before init.
+- The linter, the seek renderer and Manim all load that **same font file**.
+
+**Device performance.** Nothing measures fps on a ₹7-10k phone (2-3 GB RAM, Android Go WebView) with DrawSVG
+over many paths.
+
+**Add V-12:**
+- 5 templates on a low-end device, 60 s each;
+- a target of ≥ 50 fps p50, and frames dropped ≤ 5%;
+- above a node or path budget, fall back to the reduced-motion end states.
+
+### R11. Seek-renderer determinism and throughput gaps ([I])
+
+- **Determinism.** It needs `document.fonts.ready`, every `<image>` decoded and every sprite loaded before frame 0.
+  It also needs no CSS animations or transitions in the frame: ban them in lint, or install Playwright
+  `page.clock` to freeze `Date` and rAF. Without these, frame 0 can render tofu or missing sprites, and V-5's
+  frame-hash check will flake.
+- **Throughput.** On 4 vCPU, 4 software-rastered Chromium pages plus x264 compete for the same cores, so the
+  "8-10 s on 4 pages" is optimistic.
+- **Cold start.** It is unmodelled. `sandboxes-per-student` gives 20-90 s for an ACA Job [U], which dominates a
+  30 s render. That is fine for the async notebook-replay job; never quote it as user-facing.
+- **Image quality.** JPEG frames into libx264 compress twice and smear chalk-on-board text. Use quality ≥ 90 or
+  PNG for board-surface scenes.
+
+### R12. Safety gates overstate their Hindi coverage ([V-R])
+
+Azure AI Content Safety's harm models were "trained and tested on Chinese, English, French, German, Spanish,
+Italian, Japanese, and Portuguese … other languages … quality might vary". Hindi and Romanised Hinglish are not
+on the list, so G-safety "Content Safety on every string" is a weak backstop for this product.
+
+**Fix (the repo law "safety by predicate, not instruction"):**
+- Every displayed or spoken string is kit-sourced, template-rendered, or matched against the kit glossary. Free
+  strings in Devanagari or Roman are bounded by length and checked against a Hindi/Hinglish blocklist.
+- Content Safety stays as a second layer.
+- Measure Content Safety recall on a 200-string Hinglish red-team set before relying on it.
+
+**Photosensitivity.** Replace the home-made luminance diff with **EA IRIS** (BSD-3-Clause, C++). It detects
+luminance flashes, **red-saturation flashes** and harmful spatial patterns, using the 3-per-second and
+5-second-window rules. A luminance diff misses red flashes and the area threshold of WCAG 2.3.1.
+
+### R13. Engagement: as written this is TV, not play ([S] + [I])
+
+Nothing in §5-§7 makes the child *do* anything during the explainer: `checks.probe_after` is optional, and
+interaction is limited to pause and tap. Animation helps on average only modestly, and mainly when the motion *is*
+the content (Höffler & Leutner 2007 meta-analysis, d ≈ 0.37 [S, from memory, not fetched today]). Passive viewing
+is the weak arm.
+
+**Fix:**
+- Make one **predict-before-reveal** beat mandatory for B2+. The timeline pauses at beat k and the child taps a
+  prediction; the reveal plays. The prediction is a learner-model signal against a verified key, not a model grade.
+- The explainer's **final scene state is the starting state of the follow-on manipulative or game** (same scene@1
+  document, frozen and then unfrozen at `your_turn`). The child goes from watching to playing without a reload.
+- Cap in-lesson explainers at 30 s for B1-B2.
+
+### R14. Smaller corrections
+
+- **Cost figures disagree.** §0.4 gives $0.2-2 per 5-min chapter, §4 gives $0.2-1.5 and §7.2 gives $0.6-1.3.
+  Pick §7.2's itemised figure. Tag the luna ($1.20/M out) and sol (implied ≈ $20/M out) prices **[U]** until a
+  price page or the invoice confirms them.
+- **Review load is unsized.** Use a rough guess at scale: ≈ 9 classes × 4-5 subjects × ~12 chapters ≈ 500 chapters
+  per board-language. At 20-30 min of two-key review each, that is **≈ 350-500 reviewer-hours per language**
+  before any re-render. Plan staffing, or confine chapter videos to the top-N chapters by misconception load.
+- **Model scope.** The workflow brief that triggered this review lists `taxila-opus`/`taxila-sonnet` as available.
+  `context/decisions.md:88` records them deleted, and CLAUDE.md's Azure-only directive bars Claude-on-Foundry and
+  Marketplace models. This doc's exclusion is right. Cite the **directive** as the reason, not only the
+  provisioning failure, and flag the brief conflict to the main loop.
+- **Barge-in false positives.** TV, siblings and pressure-cooker whistles in Indian homes trigger VAD and would
+  pause the timeline constantly. Pause visuals only on a confirmed interrupt: VAD ≥ 400 ms **and** a non-empty
+  partial transcript. Until then, dim the scene.
+- **Term matching.** The realtime transcript script (Devanagari vs Roman) and numeral form (`3/4`, "teen bata
+  chaar", "three-fourths", तीन-चौथाई) are not controllable. Match `term` cues on a normalised form: transliterate
+  to one script, map numerals, and use edit distance ≤ 1. Count misses in `cue_fired` telemetry.
+- **Manim timing.** "Render ≤ 6 s" excludes Python and Manim import, Pango font-cache build on a cold container
+  (`fc-cache`) and job start. Bake the font cache into the image.
+
+### Review artefacts
+
+- `factory/video-review-explainer-fill-probe.mjs` → `video-review-explainer-fill-probe-2026-10-02.json`
+  (n = 6, `taxila-fast`, chat/completions, strict schema, US build container, ≈ $0.005).
+- GSAP semantics: an inline Node script on gsap 3.15.0 (not kept). It checked `seek` under `timeScale`, master
+  nesting, `call()` suppression and the `tweenTo` rewind duration. The numbers are in R1 and R2.
+- Manim namespace check: probe venv, Manim 0.21.0, `from manim import *` → `utils.file_ops.os` and
+  `np.ctypeslib.ctypes` reachable.
+- Fetched: Foundry retirement schedule (updated 2026-09-23); OpenAI deprecations; GSAP `tweenTo()`/`seek()` docs;
+  ACA dynamic sessions; Voice Live how-to (audio timestamps); Content Safety language availability; EA IRIS README;
+  remotion.pro/license; the redotvideo/revideo README.

@@ -17,7 +17,8 @@ export interface KitItem {
 }
 export interface KitMisconception {
   id: string; belief: string; signs: string[];
-  diagnostic: { prompt_en: string; prompt_hi: string; options: { text: string; misconceptionId: string | null; correct: boolean }[] };
+  /** null when the kit's diagnostic is invalid or cannot be pinned in the prompt budget (server/content/kits.js normalizeKit). */
+  diagnostic: { prompt_en: string; prompt_hi: string; options: { text: string; misconceptionId: string | null; correct: boolean }[] } | null;
   remediation: { representation: string; moveShape: string };
 }
 export interface TopicKit {

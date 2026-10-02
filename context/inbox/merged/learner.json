@@ -1,0 +1,153 @@
+{
+ "nodes": [
+  {
+   "id": "learner-legal-mode-ratchet",
+   "kind": "decision",
+   "title": "One legal_mode ratchet (M0-M3) gates every learner-layer write in code; M1 academic record at launch; M0 stateless fallback buildable in one transaction",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-safety-gate-first",
+   "kind": "decision",
+   "title": "One safety gate runs first on every child/parent utterance and pre-empts KT, need, memory, detectors, vibe, solo rounds and MRT arms; its output is never learner state",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-bktr-ledger",
+   "kind": "decision",
+   "title": "Knowledge = BKT-R per (child, skill) with review fixes: one transition per item-episode, per-session evidence budget, pL0=(P-g)/(1-g-s), retention=pL*R, idk outcome, mastered vs durable",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-ge-scale-one-cat",
+   "kind": "decision",
+   "title": "One grade-equivalent scale (GE 0 = start of Class 1) and one success-first mixture-prior CAT for onboarding, need gap and KT priors; placement provisional until ~16 items per strand",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-one-engagement-machine",
+   "kind": "decision",
+   "title": "One session-only engagement machine at launch (VT 5 states) fed by DA rule detectors via a verify-before-act arbiter; MI 11-moment filter deferred to v2 behind MM2",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-brief-and-tail-order",
+   "kind": "decision",
+   "title": "Realtime teacher gets a <=600-token key=value CHILD brief plus rung-gated LESSON NOW and a fixed tail VIBE -> PEDAGOGY NOW -> SAFETY -> TURN SHAPE (last), each budgeted",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "sim-code-truth-two-families",
+   "kind": "decision",
+   "title": "Student simulator: code decides, skin words, verifier checks; every learning-inference metric reported under two truth families and three gain tables; never efficacy",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "dpdp-9-3-learner-gate",
+   "kind": "constraint",
+   "title": "DPDP s.9(3) bars tracking/behavioural monitoring of children; D2C 'educational institution' status unsettled, so every persisted behavioural layer waits for counsel",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "onboarding-cat-sim-2026-10-02",
+   "kind": "measurement",
+   "title": "Onboarding CAT simulation (computed, 1,500-3,000 sim children per row): SD<0.35 unreachable in 12 items; success-first cuts 3+-wrong runs 44%->8%; mixture prior 28%->7% placed >1 GE too high",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "cat-sd035-first-session",
+   "kind": "rejection",
+   "title": "First-session CAT stop at SD<0.35 (kt-algorithms D4): unreachable within 12 items, mean posterior SD 0.52-0.63 in simulation",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "affect-not-stored-as-legal-shield",
+   "kind": "rejection",
+   "title": "'Recompute affect on replay, never store it' as a DPDP 9(3) shield: processing is the act, and the non-deterministic labeller makes replay need stored labels (rejected by review)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "open-learner-calibration-gate",
+   "kind": "open",
+   "title": "No parent-facing mastery words until K7: delayed accuracy of 'mastered' >= 0.9 at 1 and 4 weeks, ECE <= 0.05, n >= 200 children; until then 'answers observed'",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dpdp-9-3-learner-gate",
+   "rel": "constrains",
+   "dst": "learner-legal-mode-ratchet"
+  },
+  {
+   "src": "learner-legal-mode-ratchet",
+   "rel": "constrains",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-legal-mode-ratchet",
+   "rel": "constrains",
+   "dst": "learner-one-engagement-machine"
+  },
+  {
+   "src": "azure-only-compute",
+   "rel": "constrains",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-safety-gate-first",
+   "rel": "constrains",
+   "dst": "learner-one-engagement-machine"
+  },
+  {
+   "src": "learner-safety-gate-first",
+   "rel": "constrains",
+   "dst": "learner-brief-and-tail-order"
+  },
+  {
+   "src": "sim-code-truth-two-families",
+   "rel": "constrains",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-ge-scale-one-cat",
+   "rel": "supersedes",
+   "dst": "cat-sd035-first-session"
+  },
+  {
+   "src": "cat-sd035-first-session",
+   "rel": "measured_by",
+   "dst": "onboarding-cat-sim-2026-10-02"
+  },
+  {
+   "src": "learner-ge-scale-one-cat",
+   "rel": "measured_by",
+   "dst": "onboarding-cat-sim-2026-10-02"
+  },
+  {
+   "src": "affect-not-stored-as-legal-shield",
+   "rel": "caused_by",
+   "dst": "dpdp-9-3-learner-gate"
+  },
+  {
+   "src": "learner-legal-mode-ratchet",
+   "rel": "supersedes",
+   "dst": "affect-not-stored-as-legal-shield"
+  },
+  {
+   "src": "open-learner-calibration-gate",
+   "rel": "blocks",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "open-real-child-audio",
+   "rel": "blocks",
+   "dst": "learner-one-engagement-machine"
+  }
+ ],
+ "md": {
+  "decisions": "## learner-legal-mode-ratchet\n**Every learner layer writes through one module that checks `child.legal_mode` (M0 stateless, M1 academic record, M2 school mode under a DPA, M3 full consumer). A layer not permitted in a mode has no write path. Consumer default at launch is M1; the mode only ratchets down, and every change is audited.** (2026-10-02)\n- Rationale: each sibling learner doc invented its own persistence flag (KT_MODE, VibeMode, PP_MODE, profile_enabled, cri_persist), and every sibling review independently found its layer inside the DPDP s.9(3) exposure. One flag enforced in code (dpdp-deep NM-1) makes the narrow mode real and testable: M0 is built from M1 by deleting every learner row in one transaction. NM-3 items (latency, affect, engagement, vibe estimates, trust, format posteriors, free text about the child) are never persisted in any mode.\n- Gate: schema test (no NM-3 columns outside M3-only tables), M1->M0 ratchet test leaves zero learner rows, erasure cascade test.\n- Reverse if: counsel's written opinion on dpdp-deep Q1 permits a layer in a lower mode, or a s.9(5) notification issues; then that layer's mode floor moves. Nothing else about the ratchet changes.\n- Source: `docs/research/learner/LEARNER-MODEL.md` §4, §12.\n\n## learner-safety-gate-first\n**A single safety predicate (distress, self-harm, abuse or secrecy disclosure, unsafe adult) runs first on every child and parent utterance. A fired gate yields a safeguard move, writes only an incident row, and freezes MRT arms, solo rounds, wait timers, verify budgets, vibe adaptation and memory candidates for the lesson. Simulated traffic routes to a sink.** (2026-10-02)\n- Rationale: seven sibling reviews (need, motivation, affect, onboarding, metacognition, personalisation, simulators) each found the same missing hook; silence-in-solo-round and wait-time invariants would otherwise override the child-safety floor. Safety by predicate, not instruction (inherited law).\n- Gate: crisis battery inside a solo round still passes; sim safety-sink test (SM12) before any --live run.\n- Reverse if: never (the predicate set and thresholds change; the position does not).\n- Source: `docs/research/learner/LEARNER-MODEL.md` §2, §10.\n\n## learner-bktr-ledger\n**The knowledge ledger is BKT-R per (child, skill): categorical hint-ladder outcomes (C0-C4 plus idk and no-attempt), grader confusion folded into emissions (LLM default diagonal 0.7), a symmetric FSRS-6 retrievability gate (so LR(C0) >= 1, never 1.5), one learning transition per item-episode, a per-(skill, session) evidence budget (1/j weights per class, clamp +/- log 50), cold-start pL0 = (P-g)/(1-g-s), and a separate retention = pL*R that the tutor and parent read. States: learned_today, mastered (delayed >= 20 h success), durable (7 d and 30 d).** (2026-10-02)\n- Rationale: kt-algorithms D1-D7 with its review R1-R4, R7, R14, R20, R27, R30 applied. Without the budget, three strong same-session events take pL 0.39 -> 0.997; with it the in-session ceiling from that prior is 0.970 (computed), so mastery needs diversity and a delayed success. Updates run in the evidence route on Azure Container Apps under a per-child advisory lock ordered by server seq; refits run as an ACA scheduled job.\n- Gate: property tests (LR(C0) >= 1 for all R, ASR-dropped events change nothing, absence never lowers display, shuffled-arrival replay = online fold, every class x outcome has an emission), simulator R2b false mastery <= 5% under both truth families.\n- Reverse if: PFA, Elo or a small neural KT beats BKT-R by >= 0.02 AUC on delayed items in 2 consecutive monthly refits (K6).\n- Source: `docs/research/learner/LEARNER-MODEL.md` §6.1.\n\n## learner-ge-scale-one-cat\n**One grade-equivalent scale with GE 0 = start of Class 1 (so 5.0 = start of Class 6) and one engine: a success-first Bayesian CAT on a 281-point grid with a 4PL item model and a mixture prior (0.6 on-track, 0.4 far-behind). Session 1 caps 6-8 items per strand, stops at SD < 0.55 after >= 4 items or on strain/exit/time, always closes on a likely success, and seeds skills only up to 'practising'. Placement stays provisional until ~16 items per strand via just-in-time items in lessons 2-3.** (2026-10-02)\n- Rationale: three sibling docs used three scales and three stopping rules; the onboarding simulation showed SD < 0.35 is unreachable in 12 items and that a single class prior misplaces far-behind children (see onboarding-cat-sim-2026-10-02).\n- Reverse if: M-OD-1 placement agrees with a trained ASER-style oral tester on < 70% of children, or the K4 cross-class 2PL pilot shows a non-linear grade scale fits >= 0.05 log-likelihood better.\n- Source: `docs/research/learner/LEARNER-MODEL.md` §6.3; `docs/research/learner/onboarding-diagnostic.md`.\n\n## learner-one-engagement-machine\n**There is one engagement state machine, session-only: warming, engaged, strained, disengaging, stopped. Rule detectors (gaming, impasse/wheel-spin, confusion clock, frustration, drift) raise suspicions; a suspicion buys at most one budgeted no-regret verifying move; costly moves need the child's pick or a confirmed state. Strain suppression sits above explicit preferences; child META requests (stop, slow, break) are honoured the same turn. The 11-moment motivation filter is deferred.** (2026-10-02)\n- Rationale: vibe, motivation and dialogue-affect each specified their own state; at published base rates (boredom 4-6% of observations) a boredom flag acted on directly has PPV about 0.20 (computed in dialogue-affect §6.1). Rule detectors transferred across systems at kappa 0.23-0.26 where ML fell to 0.00-0.06 (Paquette & Baker 2019, via dialogue-affect). The motivation review asked for the 5-state version first.\n- Reverse if: MM2 shows the 11 causes are separable at kappa >= 0.6 and change the chosen move, or a Taxila-trained detector beats the rules by >= 0.10 kappa on held-out children.\n- Source: `docs/research/learner/LEARNER-MODEL.md` §6.7.\n\n## learner-brief-and-tail-order\n**The realtime teacher's instructions are compiled in one order for every lane: PERSONA, CHILD brief (<= 600 tokens, key=value rows, drop-not-rewrite, no levels/gaps/day counts/labels/ids), LESSON NOW (rung-gated: no answer below ceiling 4), then a budgeted tail VIBE -> PEDAGOGY NOW -> SAFETY -> TURN SHAPE (last). Address lives in the CHILD row, so the pedagogy directive is byte-identical under identity swaps.** (2026-10-02)\n- Rationale: vibe, personalisation, CLAUDE.md and the G1 gate each claimed the last position; position is mechanism (a rule mid-brief fired 0/8, last 8/8, inherited) and truncation is silent. A filled 17-row brief measured 1,086 chars, about 311 estimated tokens (computed), leaving room for Devanagari titles and one memory opener.\n- Gate: G1 on a 2x fixture; identity-swap byte identity; R13 in the simulator battery.\n- Reverse if: G1/G6 show a different tail order fires the safety and pedagogy attributes more often on the Taxila Tutor Bench.\n- Source: `docs/research/learner/LEARNER-MODEL.md` §9.\n\n## sim-code-truth-two-families\n**The simulated student is a seeded code state machine with a verified language skin; it never decides with an LLM. Every learning-inference metric is reported under two truth families (bkt2, matching Taxila's KT, and cfrag: continuous mastery, transfer penalty, fragile knowledge, strategy mixture) and three gain tables (author, flat, inverted); a conclusion counts only if it holds under all. Metrics carry a validity scope and can never claim efficacy.** (2026-10-02)\n- Rationale: LLM-decided sims are too competent and flip on 50-97% of feedback regardless of relevance (Do et al. 2026, via student-simulators); a BKT-generated child makes a BKT tutor look good by construction (simulators review B1); a single gain table measures agreement with its author (review A1).\n- Gate: self-tests H2a-H2e and eight tutor controls plus mutation tests must pass for a run to be valid.\n- Reverse if: a trained simulator passes the fidelity card F1-F8 on >= 300 consented pilot lessons; that family may then carry 'ranking' scope.\n- Source: `docs/research/learner/STUDENT-SIM.md` §0-§11.\n",
+  "measurements": "## onboarding-cat-sim-2026-10-02\n**Onboarding CAT simulation, Class 6 maths strand unless noted (computed, not children).** (2026-10-02)\n- Method: `docs/research/learner/onboarding-cat-sim.mjs`, seeded, about 45 s, byte-identical output across runs; 1,500-3,000 simulated children per row; item parameters misspecified (b +/- 0.4 GE, a x e^N(0, 0.25)); mixed oral/tap; ASR miss 15-25% and per-item times are model inputs [U].\n- Results: mean posterior SD after 12 items 0.52-0.63 (SD < 0.35 unreachable); success-first targeting cut runs of 3+ wrong answers from 44% to 8% at +0.13 GE RMSE; a single class-based prior placed 28% of far-behind children > 1 GE too high vs 7% with the 0.6/0.4 mixture (2% when the prior matches the population); within 1 GE of truth: 78% at 8 items, 91% at 16, 96% at 24.\n- Limits: the generating model shares the estimator's family and is unimodal, so every 'within 1 GE' rate is an upper bound; the ASER-ladder arm was scored with the grid posterior mean, not the bracket rung, so its '40% too high' figure measures prior shrinkage and is NOT evidence against ASER's rule (onboarding review R1). Re-run with a bracket-rung arm and 15-20% non-monotone responders before any further entry.\n",
+  "rejected": "## cat-sd035-first-session\n**Tried (in simulation): stopping the first-session placement CAT at posterior SD < 0.35, as kt-algorithms D4 specified.** (2026-10-02)\n- What broke: within the 12-item first-session budget the stop is never reached; mean posterior SD at 12 items was 0.52-0.63 (onboarding-cat-sim-2026-10-02), so the rule silently degrades to 'always hit the item cap', which lengthens session 1 for 6-9-year-olds without the precision it promises.\n- Replaced by: learner-ge-scale-one-cat (SD < 0.55 after >= 4 items, strain/time/cap stops, provisional placement topped up by just-in-time items).\n- Would be revisited if: an item bank with much higher information per item (a > 2.5 per GE) is calibrated on Taxila children.\n\n## affect-not-stored-as-legal-shield\n**Tried (as a proposed decision, dialogue-affect DA8): keep affect detectors as pure functions of the turn log, never store their outputs, recompute on replay, and treat that as keeping affect inference outside DPDP s.9(3).** (2026-10-02)\n- What broke (on review, before build): (1) processing, not storage, is the regulated act, so not storing does not take real-time affect inference out of 'behavioural monitoring' [needs counsel]; (2) the LLM dialogue-act labeller is non-deterministic, so replay requires stored labels (a 30-day turn->acts cache), which is stored affect-adjacent data; (3) the session state has to live somewhere on Azure Container Apps.\n- Replaced by: learner-legal-mode-ratchet (session-only processing in M1 with a defined in-memory home and an explicit-only fallback; research telemetry only under P4 with a 30-day TTL).\n- Would be revisited if: counsel's opinion on dpdp-deep Q1(a) says within-session adaptation from a child's dialogue is not monitoring at all.\n"
+ }
+}

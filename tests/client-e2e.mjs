@@ -117,6 +117,10 @@ const LEAK = "http://leak.invalid";
 const leaks = [];
 await context.route(`${LEAK}/**`, (route) => {
   const url = route.request().url();
+  if (url.startsWith(`${LEAK}/nav-silent`)) {
+    // A foreign page that never speaks: only the frame's load events can give it away.
+    return route.fulfill({ contentType: "text/html", body: "<!doctype html><p>a page that is not the lesson</p>" });
+  }
   if (url.startsWith(`${LEAK}/nav`)) {
     const id = decodeURIComponent(new URL(url).searchParams.get("id") ?? "");
     return route.fulfill({
@@ -152,7 +156,6 @@ if (mockDirector) {
       return json({
         lessonId: "mock-lesson-1",
         topic: { id: "c4-maths-fractions", title: "Halves and quarters", chapter: "Fractions" },
-        instructions: "MOCK INSTRUCTIONS 0",
         teacher: { id: "asha", name: "Asha", voice: "marin" },
         moduleCommands: [],
         ui: { whiteboard: { kind: "text", value: "3/4" } },
@@ -167,7 +170,6 @@ if (mockDirector) {
       const mount = n === 2 && [{ op: "mount", moduleId: "fb-1", engine: "fraction-bars@1", params: { denominators: [4], target: "3/4" }, goal: "shade 3/4" }];
       const moduleOnly = !body.childText && !body.chipId && !!body.moduleEvents?.length;
       return json({
-        instructions: `MOCK INSTRUCTIONS ${n}`,
         move: { kind: mount ? "show_module" : goal ? "celebrate" : "probe", shape: "mock" },
         moduleCommands: mount || [],
         ui: mount ? { chips: [{ id: "c-ready", label: "Ready" }] } : {},
@@ -194,9 +196,14 @@ page.on("request", (r) => {
   if (r.url().endsWith("/api/tts")) ttsRequests.push(r.postDataJSON());
 });
 const turnResponses = [];
+/** Text-lane lesson responses that carried the compiled instructions (they hold the answer key). */
+const instructionLeaks = [];
 page.on("response", async (r) => {
-  if (!r.url().endsWith("/api/lesson/turn") || r.status() !== 200) return;
+  const lessonRoute = r.url().endsWith("/api/lesson/turn") || r.url().endsWith("/api/lesson/start");
+  if (!lessonRoute || r.status() >= 300) return;
   const b = await r.json().catch(() => null);
+  if (b && "instructions" in b) instructionLeaks.push(new URL(r.url()).pathname);
+  if (!r.url().endsWith("/api/lesson/turn")) return;
   if (b) turnResponses.push({ move: b.move?.kind, moduleCommands: b.moduleCommands, end: b.end, speakNow: b.speakNow, debug: b.debug && { teachIdx: b.debug.teachIdx, unclear: b.debug.unclear, moduleOnly: b.debug.moduleOnly, hold: b.debug.hold, phase: b.debug.phase } });
 });
 const ttsResponses = [];
@@ -307,7 +314,8 @@ try {
     // The background image is fetched only once the div's style is resolved and painted: force both, then
     // wait for its violation (bounded) instead of a fixed sleep that could end first.
     void getComputedStyle(div).backgroundImage;
-    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    // (Chromium throttles rAF in an off-screen cross-origin frame, so the wait is bounded.)
+    await Promise.race([new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))), new Promise((r) => setTimeout(r, 500))]);
     const fetched = await fetch(`${leak}/fetch`).then(() => "reached", () => "blocked");
     const local = await fetch("/api/health").then(() => "reached", () => "blocked");
     const want = ["/img?leak=childdata", "/x.js", "/css", "/fetch"];
@@ -394,6 +402,17 @@ try {
     forged === 0 && turnRequests.slice(navCallsBefore).every((t) => !JSON.stringify(t.moduleEvents ?? []).includes("forged")),
     `${forged} forged events shown, ${turnRequests.length - navCallsBefore} calls`);
 
+  // The same, for a page that sends nothing: the host sees a second load event on the frame and drops it.
+  await settled();
+  await tap(page.getByTestId("dev-mount"));
+  const silentId = await lastMountedId();
+  await page.frameLocator(`iframe[src$="#${silentId}"]`).locator(".fb-part").first().waitFor({ timeout: 15_000 });
+  await moduleFrame(silentId).evaluate((url) => { location.href = url; }, `${LEAK}/nav-silent`);
+  await page.locator(`[data-module-id="${silentId}"][data-status="dead"]`).waitFor({ timeout: 10_000 }).catch(() => {});
+  const silentDead = await page.locator(`[data-module-id="${silentId}"][data-status="dead"]`).count();
+  const silentFrames = await page.locator(`[data-module-id="${silentId}"] iframe`).count();
+  check("a frame that navigates silently is dropped and taken off screen", silentDead === 1 && silentFrames === 0, `dead=${silentDead} frames=${silentFrames}`);
+
   await settled();
   await tap(page.getByTestId("end"));
   await page.waitForFunction(() => document.querySelector('[data-testid="phase"]')?.textContent?.includes("ended"), null, { timeout: 30_000 });
@@ -407,6 +426,7 @@ try {
     check("serve.mjs: /modules.html carries the HTTP sandbox + frame-ancestors policy", frameHeaders?.["content-security-policy"] === "sandbox allow-scripts; frame-ancestors 'self'", frameHeaders?.["content-security-policy"]);
     check("serve.mjs: hashed bundles are CORS-readable (the opaque-origin frame loads them with Origin: null)", assetHeaders.length > 0 && assetHeaders.every((h) => h === "*"), `${assetHeaders.length} bundles`);
   }
+  check("text lane: the compiled instructions (they carry the answer key) never reach the browser", instructionLeaks.length === 0, instructionLeaks.join(" "));
   // Expected: the signed-out /api/me probe (401), the app shell's missing favicon (dev server), and the
   // frame's CSP refusing Vite's HMR socket (dev) and this test's own probes.
   const cspRefusal = (e) => /Content Security Policy/.test(e) && (/'ws:\/\//.test(e) || /\/api\/health/.test(e) || e.includes(LEAK));

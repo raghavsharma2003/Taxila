@@ -237,13 +237,47 @@ function cutOptionSpan(ws, item) {
 }
 
 /**
+ * Comparison words: what turns "2 tukdon wala tukda ... bada" into the answer said in other words. Only
+ * comparisons — "sahi, 3 groups mein…" affirms a reply and was a false leak (evals/director-sim.mjs) — and
+ * not as a size of something else ("ek chhoti galti", "chhoti si baat").
+ */
+const COMPARE = new Set(["bada", "badi", "bade", "zyada", "jyada", "bigger", "biggest", "larger", "greater", "more", "chhota", "chhoti", "chhote",
+  "smaller", "smallest", "less", "kam", "lamba", "lambi", "lambe", "longer"]);
+const NOT_COMPARING = new Set(["galti", "gadbad", "si", "sa", "se", "baat", "mistake", "deal", "time", "baar"]);
+const compares = (ws) => ws.some((w, i) => COMPARE.has(w) && !NOT_COMPARING.has(ws[i + 1]));
+// Number words for the paraphrase check. "do" (2) is left out: it is also "give" ("bata do").
+const SPOKEN_NUM = { ...NUM, do: undefined };
+const numbersIn = (w) => (/^\d+\/\d+$/.test(w) ? w.split("/") : /^\d+$/.test(w) ? [w] : SPOKEN_NUM[w] ? [String(SPOKEN_NUM[w])] : []);
+/**
+ * For an item that asks the child to choose between named values (a diagnostic, or "which is bigger: 1/2 or
+ * 1/3?"), each choice's numbers that no other choice has: 2 for 1/2 and 3 for 1/3. [] for other items.
+ */
+function distinguishingNumbers(item) {
+  const valuesOf = (t) => {
+    const { fractions, numbers } = extractValues(norm(t));
+    return fractions.length ? fractions.map(([n, d]) => `${n}/${d}`) : numbers.map(String);
+  };
+  let choices;
+  if (item.diagnostic) choices = item.options.map((o) => valuesOf(headOf(o.text)));
+  else {
+    const named = [...new Set(valuesOf(item.prompt_en))];
+    if (named.length < 2 || !named.includes(norm(item.answer))) return [];
+    choices = named.map((v) => [v]);
+  }
+  const nums = choices.map((vs) => new Set(vs.flatMap(numbersIn)));
+  return nums.flatMap((own, i) => [...own].filter((n) => nums.every((other, j) => j === i || !other.has(n))));
+}
+
+/**
  * Code-level answer-leak check (rule 15: guard leakage on the bytes, not only by instruction).
  * First the question itself is cut out of the text — runs quoted from the item's own prompt (both
  * languages), and for a diagnostic the options read out as a sequence — because posing an item whose
  * statement names the answer ("Billi almari ke upar baithi hai…", an error-spot claim) is not a leak.
  * Then: a key form the question does not name is a leak wherever it appears; a form the question names
  * (one of two fractions compared, a diagnostic's correct option) is a leak only in a statement — not a
- * question — that puts a verdict word next to it.
+ * question — that puts a verdict word next to it. For a choice between named values, a statement that
+ * pairs a comparison verdict with a number only one choice has ("2 tukdon wali bar ka har tukda bada hai")
+ * says the answer in other words, and is a leak too (measured in evals/director-sim.mjs at hint rung 2).
  */
 export function revealsAnswer(text, item) {
   if (!item) return false;
@@ -265,5 +299,6 @@ export function revealsAnswer(text, item) {
       if (at >= 0 && ws.slice(Math.max(0, at - 3), at + form.length + 4).some((w) => VERDICT.has(w))) return true;
     }
   }
-  return false;
+  const marks = new Set(distinguishingNumbers(item));
+  return marks.size > 0 && sentences.some((ws) => compares(ws) && ws.some((w) => numbersIn(w).some((n) => marks.has(n))));
 }

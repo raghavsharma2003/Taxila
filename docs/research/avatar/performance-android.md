@@ -739,3 +739,371 @@ Phones: one each of a Helio G35, a Helio G85 (or G88) and an SD 662/680, plus on
 - ktx2-encoder 0.6.0 (MIT; basis encoder wasm; gltf-transform plugin). https://github.com/gz65555/ktx2-encoder
 - Rive web runtimes 2.44.0 (`@rive-app/canvas`, `@rive-app/canvas-lite`), wasm sizes measured from the npm tarballs. https://www.npmjs.com/package/@rive-app/canvas
 - Sibling docs: `web-3d-talking-heads.md` (§3.1, §6, §9, three.js #29980 and #24545), `audio-to-face-ml.md` (§5.1 FaceFrame), `../tech-and-market.md` §2, `../../harvest/companion-tech.md` §13.
+
+---
+
+## Graphics review
+
+Adversarial review by a real-time graphics engineer, 2026-10-02. I re-read the sources this doc leans on and checked its
+code against them: TalkingHead @ b3e277b (`modules/talkinghead.mjs`), three 0.180.0 (`WebGLRenderer.js`,
+`WebGLMorphtargets.js`, `KTX2Loader.js`, `utils/WorkerPool.js`), Chromium `audio_worklet_handler.cc` and
+`android_webview/renderer/README.md`, Capacitor `JSObject.java`, the Android ADPF thermal page, the KHR_draco spec, the
+WebGPU-on-Android blink-dev Intent to Ship, W3C webrtc-stats, MDN browser-compat-data, detect-gpu 5.0.70's `m-*.json`, and
+`bench/perf/{asset,run-web}.mjs` plus the result JSON.
+
+This review does not repeat the sibling reviews. Those are `web-3d-talking-heads.md` "## Graphics review" (R-1 frame-cap
+judder, R-2 face-leads-audio on Bluetooth, R-5 morph memory, R-8 licences, R-9 Brink 2019 and the art direction) and
+`character-creation.md` "## Graphics review". It cites them only where this doc contradicts them.
+
+Tags as above, plus **[V-src]**: I read the line myself, at the stated line number.
+
+### P-0. The corrections that change the build (ranked)
+
+1. **The §5.2 worker shim throws before the first frame** (P-3.1).
+   - TalkingHead calls `audioCtx.resume()`, the AudioParam automation methods, and `nodeAvatar.getBoundingClientRect()`. The shim provides none of them.
+   - Its own GLTFLoader cannot load the KTX2 textures this doc specifies.
+   - A vendored patch is required, not a 10-line shim.
+2. **The governor demotes the face because of the network** (P-4.5). `concealedSamples` measures lost or late
+   *packets*. Device-side starvation, which is what the avatar could cause, is `media-playout.synthesizedSamplesDuration`.
+3. **No experiment measures the signed A/V offset the child actually perceives** (P-4.1–4.3).
+   - "Lip gap" measures how fresh the lip data is, not sync.
+   - The design has no clock bridge from the worklet to the worker, and no delay compensation for the playout path or the audio route.
+   - Add E-P8.
+4. **"MSAA off, raise DPR instead" is backwards for tile-based GPUs** (P-2.6).
+   - Make it an E-P5 arm.
+   - Default to MSAA ×4 plus `alphaToCoverage` on hair and lashes, if the device confirms it.
+5. **`compileAsync` does not remove the first-render stall** (P-2.2). The morph texture is packed on the first
+   *render*, and that packing is the part that scaled with the CPU throttle. Render a hidden warm-up frame during the picker.
+6. **The thermal plugin turns every supported device into "unsupported"** (P-3.5).
+   - The facts call and the first tick fall inside the 10 s window, so the second headroom read returns NaN.
+   - Capacitor then silently drops the NaN key.
+   - The governor can never promote.
+7. **The device band and GPU table describe 2020–22 silicon** (P-2.7, P-2.8).
+   - The 2026 ₹10k listings are Dimensity 6300 and Unisoc T7250 phones with 120 Hz 720p panels.
+   - The regex sends Mali-G71/G72 to tier A, and it cannot tell Mali-G57 MP1 from MC2.
+8. **Cut tier C from v1** (P-6.4, P-7).
+   - It costs a per-character bake pipeline.
+   - Its plate cross-fade double-exposes the face, which is the tier's main uncanny risk.
+   - B with in-tier knobs, plus D and E, covers the floor until telemetry says otherwise.
+
+### P-1. Verified as stated
+
+- **No WebGPU in Android WebView [V].**
+  - The WebGPU-on-Android Intent to Ship (blink-dev, 2023-10-27) answers **"No"** to "supported on all six Blink platforms (… Android, and Android WebView)?"
+  - It launched only on "Adreno and Mali GPUs … on Android 12+".
+  - Nothing found since contradicts the doc's chromestatus and caniuse reading. The decision stands.
+- **Thermal headroom [V].**
+  - "You shouldn't call it more than once every 10 seconds", or it returns NaN.
+  - The thresholds are > 0.85 for LIGHT ("keep watch… reduce workload if possible"), > 0.95 for MODERATE ("reduce workload immediately") and 1.0 for SEVERE.
+  - §7's paraphrase "≤ 0.85: reduce workload" inverts the first one. The table's mapping is right anyway.
+- **An output-less AudioWorklet is pulled without a connection to `destination` [V-src].**
+  - `audio_worklet_handler.cc`: "If no output is connected, add the node to the automatic pull list."
+  - Upgrade §5.1's [U] to [V], and **delete the zero-gain `GainNode` fallback**. It is never needed, and it would touch the output graph (echosim).
+- **The KHR_draco spec is silent on morph targets [V].** The spec text has no mention of "target" or "morph".
+  - So "Draco does not touch morph targets" is a property of the encoder used (glTF-Transform `draco()` + `draco3dgltf`), not of the format.
+  - It is still true for every encoder we would use. Reword the rejected entry to say so.
+- **The detect-gpu numbers reproduce from `m-*.json` [V].** But the GE8320 row and the Adreno 610 row each rest on **one device**
+  (Galaxy A12, Moto G30). The index is a ranking hint with n = 1 at both of its anchors.
+- **three's KTX2Loader priorities, and optional morph normals (`vertexDataCount`) [V-src].**
+
+### P-2. Wrong or overstated performance claims
+
+1. **The meshopt-vs-Draco comparison is not like for like [V-src, `asset.mjs`].**
+   - The meshopt arm runs `reorder → quantize → meshopt` (l.33). The Draco arm runs `draco()` only (l.38).
+   - So the meshopt file carries **Int16-quantized morphs** and the Draco file carries **Float32 morphs**. Half of the size gap is `quantize()`, not the codec.
+   - A Draco + `quantize()` arm would land near 50–55% of raw, not 89–96% **[U, not run]**.
+   - The decision still holds: meshopt also entropy-codes the morphs, decodes faster, and its decoder is 15× smaller.
+   - But the `rejected.md` entry must say "Draco, morphs unquantized". Otherwise it rejects a straw man.
+2. **"Shader compile is the worst single stall … use `compileAsync`" misattributes the stall [V-src, S].**
+   - CDP `Emulation.setCPUThrottlingRate` throttles only the page's main thread [S: Chromium returns "only supported for pages, not workers"].
+   - SwiftShader compiles in the GPU process, which is not throttled. So mpfb's first frame growing from 480 to 1,771 ms at 4× is mostly **main-thread JS**.
+   - The biggest piece of that JS is `WebGLMorphtargets` packing a Float32 `DataArrayTexture` with a per-vertex × per-target `fromBufferAttribute` loop (l.50–96).
+   - That runs inside `setProgram()` on the first **render** (`WebGLRenderer.js` l.2480), not in `compile()`/`compileAsync()` (l.1301/l.1408).
+   - **Fix:** after `compileAsync`, do one hidden warm-up `renderer.render` during the picker.
+   - E-P7 must time compile and first render separately.
+3. **No worker-arm number was CPU-throttled, and none can be.** Every §3.4(b) run used throttle = 1 (`web-result-*.json`),
+   because CDP cannot throttle workers.
+   - §4.4's "render worker ≤ 6 ms (§3.4 scaled)" is extrapolated from the *main-thread* 4× runs. Tag it [M→U].
+   - It also leaves out the GPU-side CPU cost: Chrome's command-buffer decode and the GLES driver. In WebView those run in the app's process on the GPU/viz thread, and the main-thread proxy does not see them.
+4. **TL;DR item 2 oversells the frame result [M re-read].**
+   - The recommended arm (worker + direct) had 21, 22, 12 and 9 frames > 50 ms. Main + relay had 44, 20, 18 and 21. The medians are 16.5 against 20.5, and the ranges overlap.
+   - "Fell to about 10" pools in the relay arm, which is not the design.
+   - Say "no demonstrated frame benefit at n = 4. The lip-path result is the robust one."
+5. **Lip gap judged against ITU-R BT.1359 is a category error.**
+   - BT.1359 bounds a *constant* A/V offset. The gap metric is data staleness, which shows as a freeze or stutter.
+   - A 136–303 ms freeze is bad, but not because of BT.1359. The doc measures no absolute offset anywhere (P-4).
+6. **"Antialias off: the higher DPR is cheaper than MSAA on tilers" is backwards [S].**
+   - On tile-based GPUs the multisample buffer lives in tile memory and resolves on-chip. Android Developers ("MSAA for almost free on tile-based hardware") and Arm's samples put 4× MSAA at about 1–2%.
+   - DPR 1.25 against 1.0 costs +56% fragments *and* +56% framebuffer bandwidth.
+   - What is [U] is whether Chrome's WebGL back buffer uses multisampled-render-to-texture on these drivers rather than an explicit blit resolve.
+   - Without MSAA, alpha-tested hair and lash cards shimmer at bust framing. With it, `material.alphaToCoverage = true` gives soft card edges with no sorting.
+   - **Change §4.2 tier B to an E-P5 decision between two arms:** {DPR 1.0 + MSAA×4 + A2C} and {DPR 1.25, no AA}. My expectation is that the first wins.
+7. **The device band is out of date [S].**
+   - September 2026 ₹10k listings are led by **Dimensity 6300** phones (Mali-G57 MC2: Tecno Spark 30C, Infinix Hot 50, Narzo N65, Vivo T3 Lite) and **Unisoc T7250** (Mali-G57 MP1: Poco C81x), mostly with **720p 120 Hz** panels.
+   - The doc's "tier-A boundary reference" (G57 MC2) is therefore the *new-phone median*. G35/G85 is the hand-me-down floor.
+   - Add a T7250 or T606 phone and an **Exynos 850** (Mali-G52 MP1) phone to the lab. detect-gpu has the Exynos 850 in the Galaxy A12 (SM-A127F) at 16 fps @ 1473×720 = **17 Mpx/s, below the GE8320** the doc treats as the floor.
+8. **The GPU regex table misclassifies [V detect-gpu data].**
+   - `mali-g(…|7\d|…)` → A sends **Mali-G71/G72** to tier A. detect-gpu has G72 at 21–24 fps @ 1080p (Galaxy A51, Moto One Vision), about 45–52 Mpx/s, which is G52-MC2 class (B).
+   - `mali-g…57` → B treats G57 MP1 and MC2 the same. detect-gpu also has a bare "arm mali-g57" string, so the core count is not reliably in the renderer string.
+   - Adreno 512, 530 and 540 fall through to C.
+   - **Fix:**
+     - Use the regex only to send known-bad GPUs to C or D, and start everything else at B.
+     - State that the §6.2 probe runs for **every** non-D start tier. Today "unknown → C until probed" contradicts a probe that only confirms or demotes.
+     - Reconcile GE83xx: §0 says C, while `tier.ts` says B-lite.
+9. **On 120 Hz panels the frame budget is 8.3 ms per vsync, not 33 ms.**
+   - §4.4 adds GPU work against 33 ms. But the WebView compositor, the module canvas and the avatar all contend inside 8.3 ms windows, so a 6 ms avatar draw can make the *whole UI* jank.
+   - **Fix:**
+     - During lessons, pin the activity to 60 Hz natively (`WindowManager.LayoutParams.preferredDisplayModeId`, API 23, or `Surface.setFrameRate`, API 30). This also saves display power on 120 Hz LCDs **[U magnitude]**.
+     - Note that with the §5.2 cap, "24 fps" on 60 Hz is really 20 fps (41.7 − 2 > 33.3, so the cap waits for the 50 ms vsync). At 60 Hz the only real steps are 30, 20 and 15.
+10. **The Rive size argument is cherry-picked.**
+    - three + TalkingHead re-measured at **217.5 KB** gz (sibling R-4.8), not 204.
+    - Tier B also needs the **260 KB** basis transcoder. That is 478 KB, against Rive canvas-lite's 368 KB.
+    - Size is not a reason to reject Rive for C. "Not the same person" is.
+11. **KTX2Loader spins up 4 nested workers [V-src, `WorkerPool.js` l.13 `pool = 4`].**
+    - Each one instantiates the 527 KB basis wasm. On a 3 GB phone, inside an already-worker renderer, that is wasted memory and compile time for one texture set.
+    - **Fix:** `ktx2.setWorkerLimit(1)`, and count the wasm compile (≈ 100–300 ms on an A53 **[U]**) in the picker budget.
+12. **Stage 1 "< 50 ms" is optimistic.**
+    - The first WebGL context in a WebView process initialises the GPU thread and the driver. 100–400 ms is common on low-end parts **[U]**.
+    - The throwaway context in `staticTier()` followed by the worker's own context pays that twice.
+    - Keep it off the first screen's critical path, or run the static probe *inside* the worker and reuse that context.
+13. **B-lite memory contradicts itself.**
+    - §8.1 says B-lite is "the B GLB with targets disabled at runtime". But §4.1 budgets B-lite at ≤ 8 MB resident with 1.8 MB of morphs.
+    - Zeroed influences save fetches, not memory: the `DataArrayTexture` still holds all 52 targets.
+    - Either ship a separate 28-target GLB, or budget B-lite at B's ≤ 20 MB.
+14. **In-process WebView on old low-RAM phones [V-src, chromium README].**
+    - "Low memory 32-bit devices running API26-29 still use an in-process renderer". As of M139 Android Q low-memory is the only supported configuration of that kind.
+    - On those phones `onRenderProcessGone` cannot help, because an OOM kills the app.
+    - Map `lowRam && sdk < 30` to tier D at most.
+
+### P-3. Code bugs (each verified against source)
+
+1. **The §5.2 shim fails at `showAvatar()` [V-src, talkinghead.mjs @ b3e277b].**
+   - `showAvatar()` ends with `this.start()` (l.1457), and `start()` calls `this.audioCtx.resume()` (l.4297). The shim's AudioContext has no `resume`.
+   - `initAudioGraph()` → `setMixerGain()` (l.966–967, l.3079 ff.) calls `gain.cancelScheduledValues`, `setValueAtTime` and `exponentialRampToValueAtTime`, and reads `audioCtx.currentTime`. The shim's gain is `{ value: 1 }`.
+   - `lookAtCamera()` → `lookAt()` (l.3970, l.4051–4055) calls **`this.nodeAvatar.getBoundingClientRect()`** with `node = null`.
+     - It is reached on speech start, stream start and gestures (l.3320, l.3642, l.4655).
+     - The doc's grep for `document.`/`window.` misses it because the DOM access goes through `nodeAvatar`.
+   - `showAvatar()` builds its own `GLTFLoader` with only `setMeshoptDecoder` (l.1232–1242). The `KHR_texture_basisu`-required GLBs from §9 therefore **fail to load** (same finding as `character-creation.md`).
+     - In avatarOnly mode TalkingHead has no renderer to pass to `KTX2Loader.detectSupport`.
+   - **Fix:** a vendored patch rather than a shim:
+     - `opt.gltfLoader` (ours, with KTX2 + meshopt),
+     - `opt.noAudio` (skip `initAudioGraph` and `resume`),
+     - `opt.viewportRect()` for `lookAt`, or `avatarIgnoreCamera`,
+     - the `isSpeaking` hook from the sibling's R-4.3.
+   - Add a CI smoke test that boots the worker in headless Chromium and renders 30 frames.
+2. **The first frame jumps.** `let last = 0` makes the first `dt` equal to `performance.now()` (seconds to minutes), and
+   `head.animate(dt)` advances `animClock` and every queued animation by that much.
+   - Initialise `last` at the start of the loop.
+   - Use an accumulating cap (`last += frameMs`, re-anchored after a long gap), per sibling R-1.
+3. **The "interpolates to its own rAF time" logic does not exist.**
+   - `port.onmessage = m => lip = m.data` keeps only the newest packet, and `driveLips` ignores the stamp. At 47 Hz in and 30 fps out, a frame sees 1–2 packets, so a 40–60 ms bilabial closure can fall between frames.
+   - **Fix:**
+     - Keep a ring of the last ~8 packets.
+     - Per frame, evaluate at `frameTime − faceDelay` (P-4.3).
+     - Apply a **min-hold** on jaw and closure keys over the frame window, and a max-hold on opens, so closures are never skipped.
+4. **There is no clock bridge.**
+   - The worklet stamps AudioContext `currentTime`. The worker's rAF `now` is on the worker's own `performance` timeline, which has its own `timeOrigin`.
+   - The only API that relates the two clocks, `AudioContext.getOutputTimestamp()` (Chrome 57+, WebView mirrors **[V BCD]**), runs on the main thread and returns *document* performance time.
+   - **Fix:**
+     - Every 1 s, the main thread sends `{contextTime, performanceTime + performance.timeOrigin}`. The worker subtracts its own `timeOrigin`.
+     - A main-thread freeze then delays only clock *updates*, which drift at ppm rates, not the lips.
+5. **The thermal path reports NaN as "unsupported" [V ADPF, V-src Capacitor].**
+   - `facts()` and the first `tick` both call `getThermalHeadroom()` within 10 s, so the second call returns NaN.
+   - org.json throws on NaN, and Capacitor's `JSObject.put(String, double)` catches the exception and silently drops the key (`catch (JSONException ex) {}`). JS sees `undefined`.
+   - Three consequences:
+     - §7's rule "a NaN or 0 first reading means unsupported" misclassifies supported phones.
+     - The governor's `bad` term `headroom > 0.85` never fires.
+     - The `good` term `(headroom < 0 || headroom < 0.6)` is false for `undefined`, so a demoted device **never promotes**.
+   - **Fix:**
+     - Use a single native caller with a cached `{value, at}`.
+     - Encode the value as −1 for unsupported and −2 for rate-limited, never NaN.
+     - Check `Number.isFinite` in JS.
+     - Decide "unsupported" only after two readings at least 10 s apart.
+6. **The governor ratchets on battery saver.**
+   - `bad` includes `powerSave`, so with saver on, every 5 s of silence steps down one tier until E. Battery saver alone drives the child to voice-only within the first minute of conversation.
+   - Apply saver **once**, to the start tier and the fps cap, and not as a repeating bad signal.
+   - Also:
+     - The `hard` path ignores `speaking`. That is acceptable for CRITICAL, but keep the 200 ms crossfade rather than a cut.
+     - The code sends battery < 10% to D, while §7 says E. §7's "< 15% → D" is not in the code at all.
+7. **`currentNowUA` is not a power meter as written [U/S].**
+   - Its units (µA or mA) and sign (charge or discharge) vary by OEM, and it returns `Long.MIN_VALUE` when unsupported.
+   - Calibrate it per device against a known load before E-P3, and sample at ≥ 1 Hz, not every 10 s.
+8. **The refresh-rate read is unreliable.** `getDisplay(0).refreshRate` is the *current* mode, which may be a 60 Hz idle mode on
+   adaptive panels. Read `Display.getSupportedModes()` and the mode actually set (P-2.9).
+
+### P-4. Lip-sync latency and desync risks on the WebRTC path
+
+1. **Two outputs, two clocks.**
+   - The child hears `<audio srcObject>` through WebRTC's audio-device playout path.
+   - The face is timed by a tap in a *separate* AudioContext, fed through the MediaStream → WebAudio FIFO.
+   - The perceived offset is the playout-path delay (jitter buffer → device → route) minus (FIFO + port hop + frame wait + render + compositor).
+   - Nothing in §3 or §10 measures this signed number. "Lip gap" is a freshness metric.
+2. **Its likely size.**
+   - On the speaker the terms roughly cancel. On A2DP earbuds (cheap TWS buds are common among students) the face **leads** by 100–250 ms (sibling R-2) **[U]**.
+   - That is beyond BT.1359's −125 ms detectability bound for video-early.
+   - The WebView synchronous compositor adds at least one vsync that desktop Chromium does not have, so the §3.4 proxy understates the visual path **[U]**.
+3. **The compensation signals already exist.**
+   - `getStats()` `media-playout`: `totalPlayoutDelay / totalSamplesCount` is "the estimated delay of the playout path" for the WebRTC audio (W3C webrtc-stats; Chrome M111+) **[S; accuracy on Android U]**.
+   - `AudioContext.outputLatency` (Chrome 102, WebView mirrors **[V BCD]**) for the tap's own context.
+   - The native audio route from `AudioManager.getDevices()` (A2DP, LE Audio, wired or speaker), indexing a per-route offset table that E-P8 fills.
+   - Combine them as `faceDelay = clamp(playoutDelay(route) − visualPipeline, 0, 400 ms)`, applied as a delay line on the FaceFrame stream inside the worker. Delaying the face is free. Never delay the audio.
+4. **Drift over a lesson.**
+   - The WebRTC playout clock and the AudioContext device clock differ at ppm rates. Chromium's FIFO absorbs that by dropping or inserting samples, so the offset can wander over 45 minutes **[U]**.
+   - E-P1 should log the offset at 0, 15 and 45 minutes.
+5. **The governor's audio signal is the wrong one [V W3C].**
+   - `concealedSamples` counts samples replaced because packets were "lost … or arrive too late", which is the network.
+   - On Indian 4G, loss-driven concealment will repeatedly demote the face, although the avatar did not cause it and demoting cannot fix it.
+   - Starvation the avatar *could* cause shows up as **`media-playout.synthesizedSamplesDuration`** ("unable to produce audio samples on time for device playout").
+   - **Fix:**
+     - Demote on the synthesized share.
+     - Use `concealedSamples − silentConcealedSamples` only alongside `packetsLost` and `jitter`, to label a cause in telemetry.
+     - Never demote on a signal that is purely network.
+6. **Gate silence locally.**
+   - `output_audio_buffer.stopped` is a server-side event. The last syllable is still audible for the playout delay plus the route delay.
+   - Gate tier switches and crossfades on **local RMS silence ≥ 300 ms**, not on the event.
+7. **Allocation on the real-time thread.**
+   - `port.postMessage(new Float32Array(8))` at 47 Hz allocates and structured-clones on the audio render thread.
+   - §5.1's option of forwarding 512-sample windows sends 2 KB per message.
+   - Minor GC in the worklet isolate on an A53 is a glitch risk the doc does not price.
+   - **Fix:**
+     - Prefer a preallocated `SharedArrayBuffer` ring with `Atomics`. That needs `crossOriginIsolated`, so COOP/COEP headers from the Capacitor asset loader **[U]**.
+     - Otherwise keep the 8-quanta batching and never forward raw windows.
+     - Run classification in the worklet only after E-P1 passes.
+
+### P-5. Licence traps
+
+- **detect-gpu** is MIT, but its tables are scraped GFXBench (Kishonti) results. Seeding our own regex from them is fine.
+  Do **not** ship the JSON in the APK or present it as our data **[U, legal]**.
+- **Notices we must ship:**
+  - Basis Universal (transcoder and encoder) is **Apache-2.0**, so its NOTICE goes in the in-app open-source screen.
+  - TalkingHead is MIT, © 2023-2024 Mika Suominen **[V LICENSE]**. A *modified* vendored copy (P-3.1) must keep that notice.
+  - meshoptimizer and three are MIT.
+- **sharp/libvips is LGPL-3.0.** It is build-time only. Keep it out of any runtime bundle.
+- **§3.3's T2 figures come from non-commercial sample avatars** (sibling R-8: avaturn, avatarsdk and vroid, not only brunette).
+  The §9 CI gates must be validated on our own character before any of those figures becomes a `measurements.md` row
+  for the product.
+- **Rive:** the runtime is MIT, but the editor is per-seat SaaS. This only matters if C is ever authored in Rive.
+
+### P-6. Uncanny-valley risks for children that are specific to the tiers
+
+The sibling R-9 covers art direction and the Brink, Gray & Wellman 2019 finding that uncanny feelings emerge after about
+age 9, which covers classes 4–9.
+
+1. **Tier B's lighting removes the catchlight.**
+   - MeshLambert with one directional light, a hemisphere light and no environment map gives the cornea **no specular highlight**. "Dead eyes" is the strongest single uncanny cue.
+   - **Requirement for B:**
+     - a catchlight painted into the eye texture, or a tiny camera-space additive sprite,
+     - or a matcap on the cornea only.
+   - The cost is about zero.
+2. **The mouth interior glows.**
+   - Lambert-lit teeth and tongue with no occlusion turn bright white when the jaw opens.
+   - Drive a darkening uniform on teeth, tongue and mouth bag from `jawOpen`, or bake vertex AO into them.
+   - Cap teeth luminance below the sclera.
+3. **Dropping morph normals is acceptable only with toon or flat shading.** On a semi-realistic head lit with Lambert, a smile
+   without cheek-shading change reads as a mask. Tie §3.3's "acceptable" to the art-direction decision; it is not a separate call.
+4. **Tier C's plate cross-fade double-exposes the face.**
+   - Cross-fading two renders 12° apart in yaw superimposes two noses and two sets of eyes.
+   - A static chin under a swapped mouth cell is the ventriloquist-dummy look.
+   - If C survives:
+     - use 5–7 yaw plates 4–6° apart,
+     - snap between plates under a blink with a dissolve of ≤ 2 frames,
+     - make the mouth cells include the chin and jawline, or warp the lower face (a mesh-warp 2.5D rig).
+5. **Identity jumps between tiers.**
+   - B → C → D mid-lesson changes the shading model, which a child can read as a different person or a glitch.
+   - Bake C and D plates **in headless Chromium with the B GLB, the same shader and the same lights**, not in Blender Eevee or Cycles, so the look matches by construction.
+   - Allow at most one demotion per lesson unless the reason is thermal.
+6. **Tier D is the "talking photo".**
+   - A static portrait with a flapping mouth is a known creepy register for older children.
+   - Use an *illustrated* plate, not a photoreal one, and prefer E's ring for long degradations.
+7. **Low fps reads as puppetry.** At 15–20 fps (B-lite, idle) lips look puppet-like.
+   - Inside B, give up pixels before frames: DPR → PiP size → fps.
+   - Reverse §6.3's order, which drops fps first.
+
+### P-7. Production effort is unestimated
+
+The doc costs only the lab (≈ 6.5 days). These estimates are engineering judgement **[U]**:
+
+| work | estimate |
+|---|---|
+| Worker renderer, plus TalkingHead patches (P-3.1, sibling R-1/R-4), plus the CI smoke test | 1.5–2 engineer-weeks |
+| DeviceTier plugin, `tier.ts`, probe, governor, cache and telemetry | 1.5–2 engineer-weeks |
+| Clock bridge, `faceDelay` compensation and the E-P8 rig | 1 engineer-week |
+| Tier-C bake tool (headless three.js plates, atlases, compositor) | 2–3 engineer-weeks, plus 2–4 artist-days of QA per character (≥ 54 mouth cells across angles) |
+| Tier-D plate per character | 0.5–1 day |
+| Release QA matrix: tiers × characters × 5 phones × 3 audio routes | about 1 QA-week per release |
+| E-P3 realistically: 5 tiers × 5 phones × 45 min, plus cool-down to ambient between runs | 3–4 days, not 2 |
+| E-P4 with children: recruiting and consent | 1–2 weeks of calendar time |
+
+- **Scope cut.** v1 ships **B** (with B-lite as runtime knobs only), **D** and **E**. Build C only if telemetry shows more
+  than 15% of sessions ending below B-lite. That removes a per-character pipeline and the P-6.4 risks from v1.
+- **E-P4 is underpowered.**
+  - With 10 children and 5 parents, the 95% interval on a preference share is about ±25 pp. "≥ 40% prefer or no difference" cannot be distinguished from a coin flip.
+  - Either run ≥ 30 children paired within-subject, or call it qualitative.
+
+### P-8. Changes to §10's experiments
+
+- **E-P1:** add `media-playout.synthesizedSamplesDuration` as the underrun count, and the offset log at 0, 15 and 45 minutes.
+- **E-P5:**
+  - add the MSAA arms (P-2.6),
+  - record whether `EXT_multisampled_render_to_texture` and `KHR_parallel_shader_compile` are present,
+  - record the renderer-string shape, ANGLE-wrapped or not,
+  - add a Unisoc T7250 or T606 phone and an Exynos 850 phone.
+- **E-P7:** time `compileAsync` and the first render (morph packing) separately.
+- **E-P8 (new): signed A/V offset**, per phone × {speaker, wired, A2DP TWS}.
+  - Method: a click and jaw-flash train through the real PeerConnection, filmed at 240 fps next to the speaker, or a photodiode plus a mic.
+  - Pass: within −125 / +45 ms after compensation on every route, with drift < 20 ms over 45 minutes.
+- **E-P9 (new): Indian-summer thermal.**
+  - Method: a 45-minute lesson at about 35 °C ambient, and again while charging, with the avatar on against tier E.
+  - If MODERATE or worse fires in most runs, the policy needs a hot-weather budget (a lower fps cap inside B) instead of tier drops. Otherwise the face disappears from most summer-afternoon lessons.
+- **E-P3:**
+  - Measure battery as the fuel-gauge Δ% over 3 repeat runs, plus `currentNowUA` at 1 Hz after per-device sign and unit calibration.
+  - Pin the panel to 60 Hz in one arm (P-2.9).
+
+### Net verdict
+
+Keep:
+- WebGL2 only,
+- meshopt,
+- KTX2 ETC1S (check the face albedo for skin banding in E-P4; sibling R-10),
+- the worklet → port → worker lip path,
+- the three-stage detection,
+- one `FaceFrame` for every tier,
+- small resident budgets.
+
+Change:
+- P-3.1, the vendored patch;
+- P-4.3, the clock bridge and `faceDelay`, with E-P8;
+- P-4.5, the governor's audio signal;
+- P-2.6, MSAA + A2C as an E-P5 arm;
+- P-2.2, the warm-up render;
+- P-2.11, `setWorkerLimit(1)`;
+- P-3.5 and P-3.6, the thermal NaN and power-save ratchet;
+- P-6.1 and P-6.2, the catchlight and mouth darkening as B asset requirements;
+- P-7, cut C from v1.
+
+**Candidate `context/rejected.md` entries:**
+- **`concealment-as-avatar-load-signal`:**
+  - **Tried:** `concealedSamples` as the governor's audio-health input.
+  - **Broke:** by definition it counts network loss, which the avatar neither causes nor fixes.
+  - **Reverse if:** on-device data shows concealment rising with avatar tier while packet loss stays flat.
+- **`compileAsync-removes-first-render-stall`:** morph texture packing happens in `setProgram` on the first render, not in compile.
+
+### Review sources
+
+- blink-dev, "Intent to Ship: WebGPU on Android" (2023-10-27). https://groups.google.com/a/chromium.org/g/blink-dev/c/YFWuDlCKTP4
+- Android ADPF Thermal API. https://developer.android.com/games/optimize/adpf/thermal
+- Chromium `third_party/blink/renderer/modules/webaudio/audio_worklet_handler.cc` (automatic pull, l.263–269). https://chromium.googlesource.com/chromium/src/third_party/+/refs/heads/main/blink/renderer/modules/webaudio/
+- Chromium `android_webview/renderer/README.md` (in-process renderer on low-memory API 26–29). https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/renderer/README.md
+- Capacitor `JSObject.java` (`put(String,double)` swallows `JSONException`). https://github.com/ionic-team/capacitor/blob/main/android/capacitor/src/main/java/com/getcapacitor/JSObject.java
+- KHR_draco_mesh_compression spec (no mention of targets). https://github.com/KhronosGroup/glTF/blob/main/extensions/2.0/Khronos/KHR_draco_mesh_compression/README.md
+- W3C webrtc-stats (`concealedSamples`, `silentConcealedSamples`, `media-playout` `synthesizedSamplesDuration`, `totalPlayoutDelay`). https://w3c.github.io/webrtc-stats/
+- MDN browser-compat-data `api/AudioContext.json` (`outputLatency` Chrome 102, `getOutputTimestamp` 57, WebView mirrors). https://github.com/mdn/browser-compat-data
+- Android Developers, "Multisampled Anti-aliasing For Almost Free — On Tile-Based Rendering Hardware". https://medium.com/androiddevelopers/multisampled-anti-aliasing-for-almost-free-on-tile-based-rendering-hardware-21794c479cb9
+- Arm Vulkan SDK, Multisampling. https://arm-software.github.io/vulkan-sdk/multisampling.html
+- CDP CPU throttling is page-main-thread only, secondary reports. https://github.com/daintreehq/daintree/issues/12456
+- ₹10k band, Sept 2026 listings. https://www.smartprix.com/mobiles/price-below_10000 and https://www.gadgetbridge.com/top-10-phones-under-rs-10000/
+- Read locally:
+  - TalkingHead @ b3e277b `modules/talkinghead.mjs` (l.966–967, 1232–1242, 1457, 3079, 3320, 3642, 3970, 4051–4055, 4085, 4295–4297, 4655) and `LICENSE`.
+  - three 0.180.0 `WebGLRenderer.js` (l.1301, 1408, 2480), `WebGLMorphtargets.js` (l.50–96) and `examples/jsm/utils/WorkerPool.js` (l.13).
+  - detect-gpu 5.0.70 `dist/benchmarks/m-{mali,powervr,adreno}.json`.
+  - `bench/perf/asset.mjs` (l.33, 38), `run-web.mjs` and `web-result-{tiny,repeat}.json`.

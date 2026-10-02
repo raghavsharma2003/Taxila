@@ -80,9 +80,6 @@ test("classify: deterministic paths never call the model", async () => {
   const t = targetOn("i3");
   assert.equal((await classify({ target: t, childText: "1/2", typed: true, classLevel: 4 })).outcome, "correct");
   assert.equal((await classify({ target: t, childText: "aadha", typed: true, classLevel: 4 })).source, "exact");
-  const asr = await classify({ target: t, childText: "ek tihai shayad", asrConfidence: 0.3, classLevel: 4 });
-  assert.equal(asr.outcome, "no_evidence");
-  assert.equal(asr.source, "asr");
   const dk = await classify({ target: t, childText: "pata nahi", typed: true, classLevel: 4 });
   assert.equal(dk.outcome, "no_evidence");
   assert.equal(dk.flags.dontKnow, true);
@@ -93,6 +90,18 @@ test("classify: deterministic paths never call the model", async () => {
   const mod = await classify({ target: t, childText: "", moduleAnswer: { correct: true }, classLevel: 4 });
   assert.equal(mod.source, "module");
   assert.equal(calls.length, 0);
+});
+
+test("classify: a low-ASR turn is no evidence, but its words still get a distress-only check", async () => {
+  reply = { distress: true };
+  const asr = await classify({ target: targetOn("i3"), childText: "ghar pe sab gussa", asrConfidence: 0.3, classLevel: 4 });
+  assert.equal(asr.outcome, "no_evidence");
+  assert.equal(asr.source, "asr");
+  assert.equal(asr.flags.distress, true, "the model's distress read is the predicate's backup on this path");
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].body.response_format.json_schema.name, "distress");
+  reply = { distress: false };
+  assert.equal((await classify({ target: targetOn("i3"), childText: "ek tihai shayad", asrConfidence: 0.3, classLevel: 4 })).flags.distress, false);
 });
 
 test("classify: the safeguarding predicate fires on the bytes, without the model", async () => {
@@ -113,7 +122,9 @@ test("classify: model flags merge in, and an outage costs evidence, never the tu
   const down = await classify({ target: targetOn("i1"), childText: "teen", typed: true, classLevel: 4 });
   assert.equal(down.outcome, "no_evidence");
   assert.equal(down.source, "error");
-  assert.equal(calls.length, 3, "one call, then the failed call and its single retry");
+  assert.equal(down.flags.distress, false, "a failed backup leaves the predicate's verdict");
+  assert.equal(calls.length, 4, "one call, the failed call and its single retry, then one distress-only try (no retry)");
+  assert.equal(calls[3].body.response_format.json_schema.name, "distress");
 });
 
 test("parse: a reason volunteered with a correct answer is labelled right or as the misconception it expresses", () => {

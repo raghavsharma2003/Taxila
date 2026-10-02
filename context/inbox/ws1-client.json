@@ -1,0 +1,26 @@
+{
+ "nodes": [
+  {
+   "id": "voice-instructions-client-visible",
+   "kind": "decision",
+   "title": "Text lane and the realtime token no longer send compiled instructions to the browser; the voice lane still does (accepted risk until a sideband owns session.update)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "realtime-create-after-cancel",
+   "kind": "decision",
+   "title": "response.create after response.cancel waits for the cancelled response's response.done (1.5 s fallback); 'conversation_already_has_active_response' is retried, at most 3 times",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "voice-instructions-client-visible",
+   "rel": "constrains",
+   "dst": "voice-realtime-model"
+  }
+ ],
+ "md": {
+  "decisions": "## voice-instructions-client-visible\n**The compiled instructions carry the answer key (`- key, for checking only: …`, and on the voice lane `key ideas to listen for` and the branch conditions). They now reach the browser only where the browser must apply them: `TurnResponse.instructions` and `LessonStartResponse.instructions` are voice-lane only (optional in `shared/contracts.ts`), and `/api/realtime/token` returns the minted session WITHOUT `instructions` (the ephemeral secret was minted with them, so the model already holds them). Text mode never needed them (the server writes the reply), so it now receives none. On the voice lane a class 6-9 child can still read the key in the network tab before rung 4, and the ephemeral token lets the client send its own `session.update`, so the floor holds there only while the client cooperates.** (2026-10-02)\n- Rationale: the voice model answers the child before the Director runs, from the instructions it holds; without the key and the branch conditions its immediate reply to an answer cannot be right, which trades the product's quality (owner directive: never). Moving `session.update` server-side was not landed now because it does not close the leak by itself: every event on the call, including `session.updated` (which echoes the full instructions), is also delivered to the browser's data channel unless the call is opened with `webrtcfilter=on`, and that filter also withholds `response.created`/`response.done`, which `src/lesson/realtime.ts` depends on for turn attribution, interruption and context pruning (docs/research/tech-and-market.md §1.3). A sideband also needs the SDP exchange proxied by the server (for the `Location` call id) and a socket held for the whole call, which belongs to the planned `taxila-worker`, not an HTTP replica (docs/research/conductor/parent-loop.md PA3). Whether closing a sideband socket ends the call is unverified [U].\n- Reverse when: `taxila-worker` exists and a probe shows (a) a server sideband `session.update` is applied to a WebRTC call, (b) with `webrtcfilter=on` the client can still attribute turns and prune context (or the server relays the needed events), and (c) the filtered data channel never carries `session.updated`. Then the server owns `session.update` and `instructions` leaves every client-facing response.\n\n## realtime-create-after-cancel\n**In `RealtimeProtocol`, a `response.create` sent while a response we cancelled is still active is held until that response's `response.done` (or 1.5 s, if it never comes), and a create the server refuses with `conversation_already_has_active_response` is re-sent after the next `response.done` (same fallback), at most 3 times per request, then surfaced.** (2026-10-02)\n- Rationale: cancel-then-create back to back raced the server; the refusal was a non-fatal store error with no retry. On `speakNow: \"interrupt\"` that create IS the safeguarding hand-off (Childline 1098 / Tele-MANAS 14416), so the predicate fired and the hand-off could go unspoken; typed and chip turns could lose the teacher's reply the same way.\n- Covered by unit tests against a fake protocol only (tests/client-runtime.test.mjs); not yet measured against Azure. Reverse if: a live probe shows Azure accepts create immediately after cancel (then the hold only costs latency on the barge-in path), or the 1.5 s fallback is shown to fire before a real cancelled `response.done` on slow links (then lengthen it)."
+ }
+}

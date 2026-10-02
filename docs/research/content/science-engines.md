@@ -1432,3 +1432,239 @@ From memory, not re-checked this session **[M]**. Verify each before a `context/
 - *Density, measurement, instruction:* Smith, Carey & Wiser 1985 (*Cognition* 21:177); Bragg & Outhred 2000; Klahr & Nigam 2004 (*Psych Sci* 15:661).
 - *Vultures:* Green et al. 2004 (diclofenac).
 - *Finkelstein et al. 2005* (*PRST-PER* 1:010103): the ERIC snippet confirms the design (a DC-circuit lab replaced by a simulation) **[S]**; the outcome is from memory.
+
+
+---
+
+## Engineering review
+
+Reviewer: senior frontend/game engineer pass, 2026-10-02. Scope: feasibility in React/TS + Canvas2D/SVG, low-end Android, LLM parameter sufficiency, observability of learning, safety. Evidence tags as in the header: **[Me]** measured in this repo (cited file), **[M]** prior knowledge, not re-checked, **[U]** estimate. No new web measurements were made in this pass; every performance figure below is a reasoned estimate until the device pass (measurement 1) runs.
+
+### R0. Verdict
+
+1. **No engine as specified fits "≤ 2 days".** One *scene* (a vertical slice: one scene, one POE, facts, 2-3 detectors, golden test) fits 2 days for most engines. A full engine does not. The doc's own total (about 40 engineer-weeks) already implies 2.5 weeks per engine; its own table sums to 42.5-45 weeks, not 40.
+2. **The 40-week total is low, about 60-75 engineer-weeks [U]**, because it omits:
+   - **Shared engine kit (3-4 weeks):** touch drag/snap/hit-test toolkit, label and i18n layer, graph/plot widget, particle renderer (reused by E1, E9, E11, E12, E13), geometry helpers, fixed-step loop with render-on-demand, snapshot/restore, postMessage batching.
+   - **POE hook authoring:** 82 hooks across the 16 engines (E1 5, E2 6, E3 5, E4 6, E5 5, E6 4, E7 5, E8 6, E9 5, E10 8, E11 5, E12 5, E13 5, E14 4, E15 4, E16 4). Each needs option icons, bilingual labels, a scripted reveal, a `ghost` overlay, detectors and a test. At 0.5-1 day each that is 8-16 weeks.
+   - **Detector precision/recall harness (golden test c):** about 130 `mc.*` rows at 1-2 h each, roughly 4-5 weeks.
+   - **Art:** body-systems, plant-lab, water-cycle and sky need illustration. Art is the critical path for E7 and E12, and is not engineering time.
+3. **60 fps on a ₹10k phone is the wrong target and the doc already does not claim it** (cap 30 fps, p95 ≤ 33 ms in §2.6 and measurement 1). Keep 30 fps for continuous sims, and make the other engines **render on demand with no loop at all** (see R1.1). That is cheaper, and better for battery and heat.
+4. **Two engines are mis-scoped.** `motion-lab` is 19 scenes in one manifest, which is really four engines (XL). `sky` should drop three.js (R2 E8).
+5. **Strongest part of the design:** semantic facts plus salience plus detectors. Keep it. The gaps are in capture modes, a missing `variables` declaration for the investigation harness, free-string params (a safety hole), and audio/mic interaction.
+
+### R1. Cross-cutting corrections
+
+**R1.1 Rendering and performance**
+- **Render on demand, not rAF-always.** E2, E4, E9, E13, E14, E15 (after settling), E3 (static field) are state-driven. Redraw only on input or state change and stop the loop when idle. Continuous loop only for E1, E5 (time-lapse), E6 (run), E8 (when `timeSpeed > 0`), E10, E11, E12 (tracer), E16 (convection).
+- **Layered canvases.** Static background (illustration, labels as SVG), one dynamic canvas, one overlay (ghost, highlight). Never redraw illustrations per frame.
+- **Backing-store cap.** DPR cap of 2 on a 1080 x 2400 screen is a large fill area on Mali-G52-class GPUs. Cap the backing store to about 1.5 x the CSS size, or 720 px wide, whichever is smaller. Avoid `shadowBlur`, `ctx.filter = "blur()"` (pinhole sharpness: use stacked translucent copies instead), per-frame gradients, and full-screen alpha layers **[M]**.
+- **Fixed dt 1/120 at a 30 fps cap means 4 substeps per frame.** That is fine for 150 discs (about 22k pair tests x 4, roughly 1 ms on a flagship, so about 4-6 ms on a low-end CPU at 4-6x slowdown **[U]**), but use a cell grid above about 200 bodies and make `timeScale` change steps-per-frame, not `dt`, or replay breaks.
+- **Determinism (golden test f).** V8 is the same engine in Node CI and Android WebView, so IEEE results match for `+ - * /` and `Math.*` in practice **[M]**. Replay must be driven by **step counts and logged inputs**, never wall time. Do not store salience-0 events for replay (see R1.3).
+- **Sandbox constraint already measured:** on WebView the module shares the host main thread, and a busy loop froze the host timer for about 1,500 ms (P12 in `sandbox-telemetry.md`) **[Me]**. So a heavy engine freezes the *voice UI*, not just itself. Each engine needs a per-frame budget guard (skip sim substeps when a frame exceeds 25 ms) and `freeze` on teacher speech must actually stop the loop.
+- **Bundle budget:** per-engine lazy chunk about 120 kB gzip (the P0 budget in `sandbox-telemetry.md`, V10). Noto Sans Devanagari subset must be packaged in the APK assets, not fetched. `show_module` to interactive in ≤ 3 s is realistic only with engine chunks preloaded or bundled in the Capacitor assets.
+- **Validation location:** run zod host-side, not in each engine iframe (saves about 50 kB per chunk). Engines receive already-validated params and only clamp.
+
+**R1.2 Parameters and LLM control**
+- **Measured limits now exist** **[Me, `genui-reliability.md`, `genui-azure-limits-*.json`]**: Azure strict structured output accepted 400 properties and rejects nesting beyond 10 levels and more than 1000 enum values in total, and strict mode costs a null-tax of about 24.5% of payload. So the doc's `Partial<P>` / optional-field style must be converted to strict-wire (optional becomes nullable) and enums hoisted into `$defs`.
+- **Shrink the LLM surface.** The T1 call should choose `engine + scene + poe` and at most about 4 overrides. Today E10 `MotionParams` exposes about 20 unrelated fields across 19 scenes, E2 about 15, E1 about 14. Mark each param `llm: true | false`. Most params (`showLabels`, `strobe_s`, `reactionNoise_s`, `eyeAngle_deg`) should be scene-internal. A wide sparse param object also raises the odds of invalid combinations.
+- **Make params per-scene discriminated unions** (`anyOf` keyed by `scene`) so a scene only exposes the fields it uses.
+- **Free strings are a safety hole.** These accept arbitrary LLM text: `substances: string[]` (E13), `testItem` (E2), `items: string[]` (E3), `objects[].id` and `material` (E15), `species[].id` and `role` (E6), `object: string` (E14), `source.colour`, `text` (E4). Required: replace each with an enum from a **registry with `safe: true`**, and reject unknown IDs. The registry must exclude bleach, toilet cleaner, phenyl, pesticide, medicines and anything not intended for children. Free `text` (E4 "AMBULANCE") must be length-capped (about 16 chars), allowlisted charset, and drawn with `fillText` or SVG `textContent`, never `innerHTML`.
+- **Cross-field constraints need `refine()` and a "safe state" rather than a crash.** Examples: E1 `container: "sealed"` + `heat_W > 0` must render a valve or "stop" state, never an explosion. E5 `temp_C` and `water` extremes. E10 `mu_s < mu_k` swapped values. E8 `tilt_deg` 90 is allowed but sunlight geometry degenerate (sin(alt) = 0), clamp. E4 `object_cm < focal` for real images.
+- **`goals[].check` on facts** needs fact type information at validation time, so the manifest's `facts` must be machine-readable (it is) and the checker must reject comparisons on the wrong type.
+- **Missing manifest field: `variables`.** The investigation harness "reads `paramSchema` and lets the child assign roles". That cannot work by reflection: `heat_W` is a variable, `showLabels` is not, and there is no dependent measure. Add `variables: { id, kind: "ind"|"dep"|"ctl", range, unit, measure?: () => number }[]` and a seeded-noise function per engine. Cost: 0.5 day per engine that supports CVS (E1 evaporation, E2 electromagnet, E5 germination, E9 solubility, E10 pendulum). Budget the harness at 4 weeks, not 3.
+
+**R1.3 Events and what the teacher can observe**
+- **Capture modes are too few for the hooks that rely on them.** `PoeHook.capture` has choice, multi, slider, draw (ray/shadow/graph/path/level) and voice. Hooks in the doc need, and cannot express:
+  - **per-item matrix** (E6 remove-frog: up/same/down for each of 3 species; E5 jars: sprout yes/no for 6 jars; E3 tray sorting; E13 sorting);
+  - **tap-target** (E7 where-absorbed, E3 filings where-most);
+  - **vector/arrow draw** (E10 book-on-table forces, E4 eye-ray direction, E15 upthrust, E5 water direction);
+  - **region draw** (E12 aquifer cavity, E4 image position);
+  - **ordering** (E7 levels, E12 river);
+  - **numeric entry** (E6 tally of creatures, E14 readings).
+  Add `matrix`, `tap`, `arrow`, `region`, `order`, `number` modes. On a 360 dp screen avoid freehand: use waypoint placement and snap-to-target scoring (`err_px` tolerance of about 24 dp, not px).
+- **Several detectors cite UI that is not specced:** "taps 'glow?'" (E2), "sort" and "classification task" (E3, E9, E13, E15, depends on the generic sorter from another workstream), "sequencing task" (E9). Either spec them or mark the detector as blocked on that engine.
+- **Event volume.** `energy` (E10), `tracer_step` (E12), per-frame `drag` are salience 0. Require engines to sample salience-0 at ≤ 10 Hz and batch postMessage per frame, otherwise 60 msg/s x a 30-min session is over 100k messages for no model benefit.
+- **Add generic facts to every engine** (they are cheap and are the best "is the child lost" signal): `idle_s`, `interactions_30s`, `undo_count`, `random_tap_flag` (more than N taps with no state change). The doc's random-tap mitigation exists only in prose (§8).
+- **Constant facts waste the 12-key budget:** E1 `gap_contents` (always "nothing"), E5 `respiring` (always true). Put them in the scene notes or detector, not the fact line.
+- **Event integrity:** the same child taps while the teacher is speaking. Events during `freeze` must be queued or dropped consistently, and the host must know the sequence number at which the freeze took effect, otherwise `poe.predicted` can race `reveal`.
+- **Detector rule 2-signal minimum** is good. Add that `utterance` detectors return an **enum + confidence** (never free text) and are given the child's transcript as quoted data, so a child saying "ignore your rules" cannot steer the classifier.
+
+**R1.4 Safety (cross-cutting)**
+- **Audio vs voice call (E11 and any songs).** Playing WebAudio tones through the speaker while the realtime mic is open triggers VAD barge-in and contaminates ASR. Needs host protocol: `audio_begin`/`audio_end` events, host mutes or ducks the mic and suppresses barge-in, and `mediaPlaybackRequiresUserGesture` / iframe `allow="autoplay"` configured in the Capacitor WebView. Default `audio: false` is right.
+- **Cheap phone speakers do not reproduce below about 300-400 Hz [M].** E11 allows 100-2000 Hz: restrict to 400-2000 Hz, and do not rely on audible pitch difference for the veena thick/thin POE. Show the pitch visually as well.
+- **Photosensitivity:** E10 strobe and any flashing (E2 short circuit, E4 lamp) must obey ≤ 3 flashes/s (WCAG 2.3.1; the sandbox gate V9 already encodes this).
+- **Burns and heat in twins.** Replace "steel vs wooden spoon in hot chai" (E16) and "boiling/steam" twins with warm tap water at ≤ 45 °C poured by an adult, or a fridge-cold spoon comparison. Cap the E14 three-bowls twin at 45 °C. Pressure cookers (E1 hook) are fine in simulation, but the teacher must never suggest opening or watching one at home.
+- **Sharp objects:** replace E10's "pencil point on the palm" with pencil point vs eraser end pressed into dough or soft clay.
+- **Water and drowning:** E15 twin stays "bucket or basin, adult nearby"; the teacher must never suggest ponds, wells or rivers.
+- **Small magnets:** add to E3 safety strings: button and neodymium magnets are swallowing hazards, keep magnets away from phones, cards and pacemakers (fridge magnets only, never in the mouth).
+- **Mercury thermometers (E14):** many Indian homes still have them. Add "if it breaks, do not touch the silver, tell an adult". Never frame readings as a diagnosis of the child's fever (already excluded as "no medical advice").
+- **Maps (E12 river scene, `Godavari`):** political boundaries must come from a vetted Survey-of-India-compliant asset, or the scene should be a schematic profile without borders (legal and product risk for India).
+- **Illustrations (gpt-image-2):** E7 is clothed and non-sexualised, but a generated anatomy sprite can still produce anatomy errors or disturbing renderings. Anatomy must be hand-authored SVG or artist-made and reviewed, not model-generated.
+- **Golden test (e) safety greps** should also cover E13 `substances` registry contents, E11 volume and frequency caps, and E4 "look at the Sun" phrasing. Greps cover strings only: add a registry test that no unsafe item ID exists.
+
+### R2. Per-engine review and build cost
+
+Scale (one experienced engineer, working engine plus tests, **excluding** art, Hindi review, and the shared kit): **S** ≤ 1 week, **M** 1-2 weeks, **L** 2-4 weeks, **XL** > 4 weeks. "Slice" = one scene + one POE + facts + 2-3 detectors, which is what the 2-day budget can buy.
+
+| engine | doc estimate | review estimate | slice in 2 days? | perf on ₹10k | verdict |
+|---|---|---|---|---|---|
+| E1 particles | 3 w | **L** (2.5-3 w) | yes (`boil` plateau) | fine at 40-80 particles | scope down the micro model |
+| E2 circuits | 3 w | **L** (3 w) | yes (series + 1 POE), editor is the cost | fine, render on demand | solver easy, editor UX is the work |
+| E3 magnets | 1.5-2 w | **M** (1.5 w) | yes (`test-tray`) | fine, static field | add safety strings |
+| E4 optics | 3 w | **L** (3 w) | yes (`shadows`) | fine at 24-64 rays | 8 scenes, not one tracer |
+| E5 plant-lab | 2.5 w | **L** (3 w, plus art) | slice yes (`jars`) | fine | use parametric SVG plants |
+| E6 ecosystem | 2.5 w | **M** (2 w) | yes (`farm-chain` build) | trivial CPU | needs auto-balancing |
+| E7 body-systems | 2.5 w | **L** (3 w, **art-blocked**) | `digestion` slice only if art exists | fine | art is the critical path |
+| E8 sky | 4 w | **L** (3-4 w, 2D only) | yes (`shadow-stick`) | 2D fine, three.js risky | drop three.js |
+| E9 mixtures-lab | 2.5 w | **L** (3 w) | yes (`dissolve`) | fine | many tool animations |
+| E10 motion-lab | 4 w | **XL** (7-9 w; split in four) | yes (`pendulum`) | fine | split; fix integrator and tests |
+| E11 sound | 1.5-2 w | **M** (1.5 w) | yes (`belljar`) | fine | audio and mic protocol |
+| E12 water-cycle | 2.5 w | **L** (3 w, plus art) | yes (`seabreeze`) | fine if kinematic | 9 scenes; avoid fluid solver |
+| E13 indicator-lab | 2.5 w | **M** (2 w) | yes (`indicators`) | trivial | registry and swatches |
+| E14 measure-lab | 1.5-2 w | **M** (2 w) | yes (`ruler`) | trivial | no voice readings |
+| E15 float-sink | 1.5-2 w | **S-M** (1 w) | yes | trivial | cheapest engine |
+| E16 heat-flow | 1.5-2 w | **M** (1.5 w) | yes (`conduction`) | fine with prescribed flow | skip real fluid solver |
+| poe-harness | in 3 w | **L** (3 w) | no | n/a | ghost needs per-engine work |
+| investigation-harness | in 3 w | **L** (4 w) | no | n/a | needs `variables` |
+| engine kit | not counted | **L** (3-4 w) | no | n/a | build first |
+
+Sum of review estimates: about 43-50 w for engines + harnesses + kit, plus about 12 w of hook authoring and detector tests, i.e. **60-75 w** with art and review extra. With 3 engineers this is about 6 months, in line with the doc's own recommended first four-engine order.
+
+**E1 `particles@1`: L.**
+- Feasible, but the micro model is the trap. "Soft discs with weak attraction slaved to a macro enthalpy model" invites a Lennard-Jones tuning project in 2D (liquids crystallise or evaporate, thermostat drift). **Do not simulate real MD.** Use a *behavioural* model: lattice springs for the solid fraction, cohesive random-walk for the liquid fraction, free flight for the gas fraction, with per-particle state flips driven by the latent-heat fraction. This is deterministic, cheap, always looks right, and honours the plateau by construction.
+- Four views (macro, lens, split, micro) are three renderers (pot with bubbles, particles, magnifier). Bubble rendering in the macro view is separate from the particle view. The matka scene (seepage plus evaporation heat balance, T_water < T_amb) is its own small model and needs a parameter pass to give a believable 5-8 °C difference **[U]**.
+- Physics checks pass: water boils at about 120 °C at 2 atm **[M]**. The macro model is trivial CPU. 40 particles on low end is enough for every POE except `gas-massless` and diffusion, so keep lowEnd at 40-60.
+- Params: sufficient, but `container: "sealed"` with positive `heat_W` needs the safe-state rule (R1.2). `substance: "camphor"` should be gated to band C.
+- Events: sufficient. `bubbles` and `gap_contents` POEs are choice captures, so cheap and clean.
+
+**E2 `circuits@1`: L.**
+- The MNA solver is S (a day) for ≤ 12 components. LED needs a diode companion model with a few Newton or state-guess iterations: cap at 20 iterations and fall back to "off". Reverse LED `led_reversed` is fine.
+- **The cost is the circuit editor**: free wiring, terminal snap, junction handling, delete and undo, pictures vs symbols morph (two sprite sets per part), on touch. A 24 px snap radius is too small for a child's finger: use at least 48 dp hit targets with a visible snap preview. Consider a **constrained editor** (tray plus fixed sockets and wire-by-tap-two-terminals) for band A and free wiring only for B/C. This halves the cost and avoids the worst UX failures.
+- **Heating scene model conflict:** "fixed-current framing" contradicts `cells` and the series loop the child can edit. Lock the topology in that scene (non-editable) and say so in `MODEL.md`, or the child who adds a second bulb sees inconsistent heating.
+- `same_current_everywhere` and `I_A` should be band-gated facts (hidden for A and B).
+- Events sufficient. Add `loop_count` and `wire_to_bulb_count` as facts (needed for `mc.elec.unipolar` and `mc.elec.clashing`). `circuit_changed` is salience 1 but must fire on **drop/commit**, not per drag frame.
+
+**E3 `magnets@1`: M.**
+- Monopole-pair model is adequate for filings, compasses and pole interactions. Clamp 1/r² with a softening length or magnets snap and jitter. Magnets floating on cork need torque from pole forces (free from the pair model).
+- Pins are induced dipoles: use a heuristic chain model (pins hang from the nearest pole, `pins_count` from strength and area), not real induction.
+- Filings: 400 segments is fine as static render, recompute only on magnet move (150 on low end).
+- Add safety strings (R1.4 small magnets). `items: string[]` becomes a registry enum.
+- Params sufficient. Events good: `magnet_cut` and `pole_interaction` are exactly the facts the teacher needs.
+
+**E4 `optics@1`: L.**
+- A 64-ray tracer is trivial, but this is eight scenes with different geometry: shadow regions (analytic umbra/penumbra), plane-mirror eye visibility (use the image-point method, not search), pinhole image with blur (stacked translucent copies, not `ctx.filter`), periscope, thin lens and mirror principal rays, vision.
+- Principal-ray drawing through an "ideal" lens is not real refraction: that is fine for classes 7-8, but state it in `MODEL.md`.
+- Prediction capture by freehand `draw` is the weak point on touch (R1.3): use waypoints with a ghost and tolerance.
+- Safety wording is consistent: "never look at the Sun" and projection-only eclipse viewing. Add: no lens or mirror scenes that aim sunlight at the viewer's eye or at paper in the sim as an instruction to try at home.
+- Params sufficient; `text` needs charset and length limits (R1.2).
+
+**E5 `plant-lab@1`: L (plus art).**
+- Model maths is cheap. Art is not: a plant at several growth stages under several conditions (wilted, etiolated, flowering) across five species is a lot of sprites, and gpt-image-2 (about 23 s per image) will not give consistent stage-to-stage art. **Build plants as parametric SVG** (stem, leaves, roots from a few parameters), which also makes `coverFraction` and wilting free.
+- Van Helmont figures check out against the historical record **[M]**: willow about 5 lb to about 169 lb (about 74 kg), soil lost about 2 oz (about 57 g).
+- Time-lapse of 3 s per simulated day: 30 days is 90 s, so cap `days` and let the child skip or scrub.
+- Bubble counting: the child's tap count and the engine count can differ. Give the child a counter but do not grade it. Use only the engine count as the fact.
+- Starch test is a band C twin with an adult (hot alcohol), correctly flagged.
+
+**E6 `ecosystem@1`: M.**
+- RK4 on 12 species is trivial CPU. The risk is **instability and arbitrary LLM input**: Holling II with logistic producers oscillates, collapses or explodes for arbitrary `n0` and `links`. Fix: derive rate constants from `role` so the scene starts at (or near) equilibrium, clamp populations, and **golden-test the sign of every scripted perturbation** (remove frog: grasshoppers up, snake down, paddy down; remove vultures: carcasses and dogs up). Directional correctness is the pedagogical product, not quantitative fidelity.
+- Check the vulture hook sources before use **[M]**: the more-than-95% Gyps decline is Prakash et al. (2003), diclofenac as the cause is Oaks et al./Green et al. (2004), and the feral-dog rise with rabies cost is Markandya et al. (2008). Keep the child-facing version to carcasses and dogs, with no dog-bite or rabies imagery.
+- Missing: a numeric capture for the neem-tree tally (R1.3).
+- Events good; `indirect_effects` is the best fact in the doc for observing understanding.
+
+**E7 `body-systems@1`: L, art-blocked.**
+- The logic (token through stages, nutrient vector, breath bars, joint angle) is S-M (1 week). The layered anatomy art at five zoom levels is the real cost. Commission or hand-author SVG; do not generate anatomy with a model.
+- Colour rule (dark red, never blue) and exclusion of reproduction are right.
+- Joints: biceps and triceps "only pulls" must be enforced visually (a muscle cannot lengthen actively). Add a test that a muscle never shows a push force.
+- Facts fine. The `run` hook (child counts breaths physically) is voice or tap input; do not use the camera or microphone to measure it.
+
+**E8 `sky@1`: L (3-4 w) if 2D only.**
+- **Drop three.js.** About 170 kB gzip, WebGL context-loss and driver variance on Mali WebViews, and a heavy path for little gain. A 2D oblique orbit (ellipse plus shaded Earth with analytic terminator), a top-down view, an observer sky dome, and a lamp-and-ball view cover every POE. Phase view from Earth is a circle with an elliptical terminator arc.
+- Astronomy numbers check out **[M]**: perihelion about 3 January, about 3% distance variation (147.1 to 152.1 million km), obliquity 23.44 degrees, synodic month 29.53 d, lunar inclination 5.1 degrees, observer latitudes plausible.
+- Scales: solar-system size and distance need separate toggles and a log or segmented view. Keep "not to scale" labels.
+- `tilt_deg` slider to 90 is fine as a counterfactual but clamp near-degenerate day lengths.
+- Events good, `phase_predicted {pred, actual}` is exactly what the teacher needs.
+
+**E9 `mixtures-lab@1`: L.**
+- The operator model (properties and preconditions) is a data-driven S-M job. The cost is **animation per tool**: winnow trajectories, sieve, filter paper, funnel, sublime, chromatography Rf, crystallise. About 0.5 day each is 5-6 days. Treat `method_failed` reasons as authored data.
+- Solubility values are plausible **[M]** (salt about 36 g per 100 g water at 20 degrees, nearly flat; sugar about 200 g per 100 g, steeply rising).
+- Depends on the shared particle renderer (build the kit first).
+- Safety: no tasting (already stated), no heating hazard instructions, no sublimation twin.
+
+**E10 `motion-lab@1`: XL, split into four.**
+- 19 scenes with unrelated state is four engines: (1) kinematics and graphs (spinner, speed, strobe, track, graphs, auto-graph), (2) forces (push-cart, friction, tug of war, bus-brake, recoil, freefall), (3) pendulum and energy (pendulum, swing-energy, sling), (4) machines and pressure (lever, pulley, work, pressure). Ship in that order. One shared `params` object with 20 mixed fields is also bad for strict LLM output (R1.2).
+- **Integrator:** semi-implicit Euler at 1/120 s has bounded energy error, but test (d) "energy conserved within 1%" is **vacuous if thermal is computed as `E0 − KE − PE`**. Use velocity-Verlet, or RK4 for the pendulum, and compute TH from friction work independently so the test can fail. Pendulum "period independent of mass within 0.5%" holds only with drag off. Large-amplitude period grows (about 7% at 60 degrees) so default `amp_deg` ≤ 20 and compare measured T against the small-angle formula only in that range.
+- **Static to kinetic friction chatter** near v = 0 needs an explicit sticking clamp.
+- **Graph prediction** (`graph_predicted {rmse}`) requires a curve-drawing capture; use control points, not freehand.
+- Params: too many; make per-scene sub-schemas. Events are good and some of the best in the doc (`net_force` sign change, `friction_regime`).
+- Safety: replace the pencil-point-on-palm twin (R1.4). Bus-brake scene must not show injury.
+
+**E11 `sound@1`: M.**
+- 60-particle chain is trivial. WebAudio needs the gesture and mic protocol above (R1.4), and frequency floor of about 400 Hz.
+- Volume cap −18 dBFS with a 50 ms ramp is a good default, but device volume is not under our control: also cap session audio time.
+- Keep the tracked-particle `net_displacement_mm: 0` fact: it is the cleanest observation of understanding in the doc.
+
+**E12 `water-cycle@1`: L (plus art).**
+- Nine scenes. The compartment fluxes are cheap. **Do not build a fluid solver for the sea breeze or monsoon:** use a kinematic convection cell with temperature-driven strength and H/L labels. The groundwater table is a single-bucket ODE (recharge minus pumping).
+- Illustrated cross-sections (Western Ghats, borewell village, city vs forest) are art work.
+- Map scenes: boundary compliance (R1.4).
+- "Follow one drop" stochastic path needs a seeded RNG so replay is deterministic.
+
+**E13 `indicator-lab@1`: M.**
+- All logic is data and simple functions: indicator colour from pH thresholds, mole-balance neutralisation, rust and candle timers, mass balance. Checked against standard ranges **[M]**: litmus about 4.5-8.3, turmeric turns red-brown at alkaline pH, phenolphthalein about 8.2-10, saturated lime water about 12.4.
+- The real work is the **substance registry and swatch calibration** (photograph real extracts as already noted in §8). Hard-exclude bleach, drain and toilet cleaners from the registry (R1.2). Keep chuna and washing soda visible only as sim items with a "do not handle" tag, band B and up.
+- Particle inset reuses E1's renderer.
+
+**E14 `measure-lab@1`: M.**
+- Eight small instruments, each S, with parallax and zero-error physics being simple geometry. Total 1.5-2 weeks is right.
+- **Do not use voice or free typing for readings.** Hindi number words ("saadhe teen", "dhai", "derh") break numeric ASR. Use a stepper or number pad tap, with unit chosen from a list (also needed for `mc.unit.optional`).
+- "Shake the thermometer" must be a swipe gesture; do not use device motion permissions in WebView.
+- Mercury note (R1.4).
+
+**E15 `float-sink@1`: S-M.**
+- Cheapest engine: damped vertical dynamics and Archimedes. Hull volume for katori vs lump needs a `shape` parameter and displaced-volume calculation, nothing more. Clay-boat reshaping is a single "boat-ness" slider.
+- Kitchen object behaviour stays [U] until the 1-day bench test. Do the bench test before art.
+- Mandatory physical twin is correct and cheap. Safety line about water (R1.4).
+
+**E16 `heat-flow@1`: M.**
+- Conduction rods are a 1D diffusion with wax thresholds: S. Radiation patches and wool tests are lumped thermal models: S.
+- **Convection:** a 24 x 32 stable-fluids Boussinesq grid is feasible CPU-wise (well under 1 ms per step) but tuning a plume that looks right takes days and is fragile. A **prescribed stream function** with buoyancy-scaled amplitude and advected dye particles is robust and deterministic, and good enough for class 7.
+- Safety: twin change (R1.4).
+
+### R3. Corrections to the document (summary)
+
+1. §7 effort table: engines total 42.5-45 w, not 40, and the review estimate is 60-75 w with kit, hooks and detectors (R0.2).
+2. §2.6: keep 30 fps for continuous sims, and add **render-on-demand** for state-driven engines; cap the backing store; list banned canvas features (R1.1).
+3. §2.1 manifest: add `variables`, `llm: boolean` per param, per-scene param sub-schemas, scene-scoped `facts` (≤ 12 each), and registries instead of free strings.
+4. §3.1 `PoeHook.capture`: add `matrix`, `tap`, `arrow`, `region`, `order`, `number` modes; waypoint-based draw.
+5. §3.2: the investigation harness cannot reflect on `paramSchema`; it consumes `variables` (R1.2).
+6. §2.2: salience-0 sampling ≤ 10 Hz and no replay from events (replay from inputs and step counts).
+7. §2.4: remove constant facts; add `idle_s`, `interactions_30s`, `undo_count`, `random_tap_flag`.
+8. E1: use a behavioural particle model, not MD (R2).
+9. E2: constrained editor for band A; lock topology in the heating scene; 48 dp targets.
+10. E8: drop three.js.
+11. E10: split into four engines; fix the energy test; sticking clamp.
+12. E11: tone floor 400 Hz; host mute/duck protocol for the live voice session.
+13. E14: no voice readings.
+14. E13 and others: unsafe substances excluded from registries by construction.
+15. Twins: E10 pencil point, E16 hot chai, E14 bowls above 45 degrees, E3 small magnets, E15 water bodies (R1.4).
+16. E12: political boundaries from a vetted asset only.
+17. Art as a named dependency for E5, E7, E8 (sky illustrations), E12.
+
+### R4. Recommended build order (engineering, revised)
+
+1. **Engine kit + contract + poe-harness skeleton** (3-4 w), with `float-sink` as the first engine to prove the contract end to end (S-M, 1 w, low risk).
+2. `circuits` (constrained editor first) and `particles` (behavioural model), with real-device frame-time measurement 1 on `particles` at 40-80 bodies as the first gate.
+3. `motion-lab` part 1 (kinematics and graphs) and part 2 (pendulum and energy), `sky` (2D), `optics`.
+4. The rest in the doc's order, with `plant-lab`, `body-systems`, `water-cycle` started only after art is delivered.
+5. Run the **kitchen bench test** (objects, indicator swatches, magnet behaviour) before E3, E13, E15 asset work.
+
+### R5. Measurements to add to §7
+
+| # | measurement | method | pass bar |
+|---|---|---|---|
+| 6 | render-on-demand idle cost | rAF count and CPU on an idle `circuits` scene, 3 phones | 0 frames while idle |
+| 7 | host freeze under engine load | `freeze` honoured within 100 ms with `particles` at 150 bodies, WebView on a ₹8-10k phone | no host timer gap > 200 ms (P12 baseline was 1,500 ms) |
+| 8 | tone audibility | E11 400 Hz, 800 Hz, 2 kHz on 3 cheap phones at max media volume | audible at 400 Hz on all three, else raise the floor |
+| 9 | mic contamination | tone playback during a live voice turn, count of false barge-ins | 0 in 20 plays with the mute/duck protocol |
+| 10 | strict-schema fit | each engine's per-scene T1 schema through Azure strict mode | accepted, ≤ 400 properties, nesting ≤ 10, null tax reported |
+| 11 | ecosystem direction tests | scripted perturbations over 50 random `n0` draws | sign correct in 100% of runs |

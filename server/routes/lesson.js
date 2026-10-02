@@ -2,24 +2,27 @@
 // Every route acts for an authenticated guardian's child (requireChild). One compile() feeds both lanes:
 // the voice client applies `instructions` verbatim via session.update, and text mode generates its reply
 // from the SAME string (inherited rejection: two prompts for two lanes).
-import { q, one } from "../db.js";
+import { randomUUID } from "crypto";
+import { q, one, tx, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, send, HttpError } from "../http.js";
 import { requireChild, hasConsent } from "../auth.js";
 import { chat, mintRealtimeSecret, endpoint, DEPLOY } from "../azure.js";
-import { getTopic, getKit, topicOf, topicSequence } from "../content/index.js";
+import { getTopic, getKit, pinKit, pinnedKit, topicOf, topicSequence } from "../content/index.js";
 import { nextTopicFor } from "../content/next-topic.js";
 import { applyEvidence, markIntroduced, newSkillState } from "../learner/bkt.js";
-import { gamingDiscount } from "../learner/affect.js";
+import { gamingDiscount, nextAffect } from "../learner/affect.js";
 import { hasAbilityLabel } from "../learner/brief.js";
 import {
-  buildChildBrief, loadSkillStates, saveSkillState, insertEvidence, flagMisconception, resolveMisconception,
-  loadActiveMisconceptionIds, loadRecentOutcomes, loadDueSkills,
+  buildChildBrief, loadSkillStates, loadActiveMisconceptionIds, loadRecentOutcomes, loadDueSkills,
+  skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt,
 } from "../learner/model.js";
 import { classify, targetFor } from "../director/classify.js";
-import { initLessonState, step, describe, evidenceFrom, snapshotSkill, LIMITS } from "../director/state.js";
+import { scanSafety } from "../director/safety.js";
+import { initLessonState, step, evidenceFrom, snapshotSkill, upcomingItem, LIMITS } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, norm as normAnswer } from "../director/items.js";
-import { compile, TURN_WORDS } from "../compiler/compile.js";
-import { CHARACTERS, teacherFor } from "../compiler/characters/index.js";
+import { TURN_WORDS } from "../compiler/compile.js";
+import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
+import { teacherFor } from "../compiler/characters/index.js";
 
 /**
  * Debug payloads carry answer keys, so they go only to a loopback caller on a dev machine (never on a
@@ -44,38 +47,46 @@ async function loadLessonFor(req, lessonId) {
 }
 
 /**
- * Kit for a lesson's topic, pinned to the kind the lesson started on (state.kitVerified). Content can
- * vanish (a file mid-rewrite), so a missing kit is a 503, not a crash.
+ * The exact kit a lesson started on (state.kitHash, content/index.js pinnedKit): kit files are rewritten
+ * while lessons run, and a lesson's item ids mean nothing in any other version. Never generated mid-lesson;
+ * unavailable is a 503, not a crash. A lesson stored before pinning existed reads the current kit.
  */
-async function kitFor(topicId, state, trace) {
-  const kit = await getKit(topicId, { trace, mini: state?.kitVerified === false });
+async function kitFor(topicId, state) {
+  const kit = state?.kitHash ? await pinnedKit(topicId, state.kitHash) : await getKit(topicId, { generate: false });
   if (!kit) throw new HttpError(503, "no teaching content is available for this topic yet");
   return kit;
 }
 
-/** One compile() for both lanes; the lane only decides whether the voice-only contingency lines appear. */
-function instructionsFor(state, kit, lane = state.mode === "text" ? "text" : "voice") {
-  const topic = getTopic(state.topicId);
-  return compile({
-    character: CHARACTERS[state.ctx.teacherId], brief: state.brief, lessonState: state, move: state.lastMove,
-    ...describe(state, kit), topic, language: state.ctx.lang, lane,
+/**
+ * Give turn rows their seq (from the lesson state) and remember the last few for text-mode context. Pure:
+ * the rows are written by the turn's single transaction (turnInsertStmt).
+ */
+function stageTurns(state, rows) {
+  return rows.map((r) => {
+    state.seq += 1;
+    if (r.speaker !== "system") state.recent = [...state.recent, { who: r.speaker, text: r.text.slice(0, 400) }].slice(-RECENT_TURNS);
+    return { ...r, seq: state.seq };
   });
 }
 
-/** Append turns (seq from the lesson state) and remember the last few for text-mode context. */
-async function insertTurns(lessonId, state, rows) {
-  if (!rows.length) return [];
+/** One insert for staged turn rows; (lesson_id, seq) is unique, so a replayed turn cannot write twice. */
+function turnInsertStmt(lessonId, rows) {
   const params = [];
   const values = rows.map((r, i) => {
-    state.seq += 1;
-    params.push(lessonId, state.seq, r.speaker, r.text, r.asrConf ?? null, r.meta ?? {});
+    params.push(lessonId, r.seq, r.speaker, r.text, r.asrConf ?? null, r.meta ?? {});
     const b = i * 6;
     return `($${b + 1},$${b + 2},$${b + 3},$${b + 4},$${b + 5},$${b + 6})`;
   });
-  const out = await q(`insert into turn(lesson_id, seq, speaker, text, asr_conf, meta) values ${values.join(",")} returning id, seq`, params);
-  if (out.length !== rows.length) throw new Error(`turn insert: expected ${rows.length} rows, wrote ${out.length}`);
-  for (const r of rows) if (r.speaker !== "system") state.recent = [...state.recent, { who: r.speaker, text: r.text.slice(0, 400) }].slice(-RECENT_TURNS);
-  return out;
+  return { text: `insert into turn(lesson_id, seq, speaker, text, asr_conf, meta) values ${values.join(",")} returning seq`, params };
+}
+
+/** A safeguarding incident row. turnSeq: the child turn it came from (same transaction), or null. */
+function incidentStmt(childId, lessonId, turnSeq, detail) {
+  return {
+    text: `insert into incident(child_id, lesson_id, kind, severity, detail)
+           values ($1, $2, 'safeguarding', 'high', jsonb_build_object('turnId', (select id from turn where lesson_id = $2 and seq = $3)) || $4::jsonb) returning id`,
+    params: [childId, lessonId, turnSeq, detail],
+  };
 }
 
 /** Keep whole sentences up to `max` words (last-resort guard after one rewrite failed). */
@@ -94,6 +105,12 @@ const POSING_MOVES = new Set(["practice", "probe", "retrieval", "greet"]);
 /** Moves that end the exchange or hold it; every other turn must hand the floor back. */
 const CLOSING_MOVES = new Set(["wrap", "safeguard"]);
 /**
+ * Teaching turns with no item on the table: what they say must not answer the question that comes next
+ * (measured in evals/director-sim.mjs: an explain turn said "use one-fourth kehte hain", and the next item,
+ * "Ek tukde ko kya kehte hain?", was scored as an unaided correct answer).
+ */
+const TEACHING_MOVES = new Set(["hook", "explain", "worked_example", "reteach"]);
+/**
  * Scripts a written reply may use: Roman for Hinglish/English (the compiled rule asks for it), Roman or
  * Devanagari for Hindi. Measured in evals/director-sim.mjs: a stray Gujarati word and Devanagari fragments
  * inside Roman Hinglish both reached the child before this check.
@@ -104,12 +121,37 @@ const OFF_SCRIPT = { hinglish: /[^\p{Script=Latin}\p{Script=Common}\p{M}]/gu, en
   hindi: /[^\p{Script=Latin}\p{Script=Devanagari}\p{Script=Common}\p{M}]/gu };
 
 /**
+ * What the child reads when no reply could be written (the model failed twice): content where there is
+ * some — the question on the table — else a fixed line for the move. Never a throw after the turn's
+ * evidence is decided: the lesson goes on. The safeguard line carries the helpline (the floor's contract).
+ */
+const FALLBACK = {
+  english: { wrap: "That's all for today. See you next time!", safeguard: "What you said matters. Please tell a grown-up you trust, or call Childline 1098. Are you okay right now?",
+    other: "Sorry, I lost my words for a second. Can you say that again?" },
+  hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: "Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya Childline 1098 pe call karo. Kya tum abhi theek ho?",
+    other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?" },
+};
+function fallbackReply(state, item) {
+  const lang = state.ctx.lang;
+  const kind = state.lastMove?.kind;
+  if (item && !CLOSING_MOVES.has(kind)) return promptFor(item, lang);
+  const lines = FALLBACK[lang === "english" ? "english" : "hinglish"];
+  return lines[kind] ?? lines.other;
+}
+
+/** Sentences of `text` that do not state `item`'s key (what is left of a teaching turn after a leak survived). */
+const withoutLeaks = (text, item) => (String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !revealsAnswer(x, item)).join("").trim();
+
+/**
  * Text-mode teacher reply from the SAME compiled instructions, guarded on the bytes: an answer leak before
- * rung 4, a posing turn that does not pose the item (drift), or an over-long turn gets one rewrite; a leak
- * or drift that survives is replaced by the question itself (content), never shipped.
+ * rung 4 (on the active item, or — on a teaching turn — on the item that comes next), a posing turn that
+ * does not pose the item (drift), or an over-long turn gets one rewrite; a leak or drift that survives is
+ * replaced by the question itself (content), or the leaking sentences are dropped, never shipped. A model
+ * failure falls back (fallbackReply) instead of throwing.
  */
 async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1) }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
+  const ahead = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
   const lang = state.ctx.lang;
   // A diagnostic's options are content read aloud, so they do not count against the turn length.
   const max = REPLY_MAX_WORDS[state.ctx.ageBand] + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
@@ -118,7 +160,7 @@ async function textReply({ instructions, state, kit, childText, trace, history =
   const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind);
   const whyProbe = !!item && state.pendingWhy === item.id;
   const problems = (t) => [
-    guardable && revealsAnswer(t, item) && "leak",
+    (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mustPose && !posesItem(t, item, lang) && "drift",
     whyProbe && !asksWhy(t) && "nowhy",
     mustHandBack && !handsBack(t) && "flat",
@@ -133,22 +175,39 @@ async function textReply({ instructions, state, kit, childText, trace, history =
   ];
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
   const ask = (msgs) => chat(DEPLOY.fast, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace }).then((r) => r.text.trim());
-  let reply = await ask(messages);
+  let reply;
+  try {
+    reply = await ask(messages);
+  } catch (e) {
+    console.warn("[lesson] reply unavailable, falling back:", e.message);
+    return { reply: fallbackReply(state, item), guard: { caught: ["unavailable"], rewritten: false, replaced: true } };
+  }
   let found = problems(reply);
   const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}) };
   if (found.length) {
-    const why = [found.includes("leak") && "it gives away the key answer — the hint ladder has not reached rung 4",
+    const why = [found.includes("leak") && (ahead
+      ? "it states the answer to the practice question that comes next — explain with different numbers or a different example, and do not answer that question"
+      : "it gives away the key answer — the hint ladder has not reached rung 4"),
       found.includes("drift") && `it must ask exactly this question and no other: "${promptFor(item, lang)}"`,
       found.includes("nowhy") && "it must ask how they knew or why — about the question they just answered, not a new problem; the reason is theirs to give",
       found.includes("flat") && !found.includes("nowhy") && "it never hands the floor back — end with one question for the child about the same thing (and do not answer it yourself)",
       found.includes("script") && (lang === "hindi" ? "write it in Roman or Devanagari only" : "write it in Roman script only — no Devanagari or any other script"),
       found.includes("long") && `it is too long — at most ${TURN_WORDS[state.ctx.ageBand]} words`].filter(Boolean).join("; and ");
-    reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: `Rewrite that turn: ${why}. Same move, same language, one idea, end by handing the floor back.` }]);
-    guard.rewritten = true;
-    found = problems(reply);
+    try {
+      reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: `Rewrite that turn: ${why}. Same move, same language, one idea, end by handing the floor back.` }]);
+      guard.rewritten = true;
+      found = problems(reply);
+    } catch (e) {
+      console.warn("[lesson] rewrite unavailable, guarding the draft:", e.message); // the draft's problems stand
+    }
     guard.afterRewrite = found;
-    if (found.includes("leak") || found.includes("drift")) { reply = promptFor(item, lang); guard.replaced = true; }
-    else {
+    if (found.includes("leak") && ahead) {
+      reply = withoutLeaks(reply, ahead) || fallbackReply(state, null);
+      guard.replaced = true;
+    } else if (found.includes("leak") || found.includes("drift")) {
+      reply = promptFor(item, lang);
+      guard.replaced = true;
+    } else {
       if (found.includes("script")) reply = reply.replace(OFF_SCRIPT[lang] ?? OFF_SCRIPT.english, "").replace(/\s{2,}/g, " ").trim();
       if (found.includes("long")) reply = trimToWords(reply, max);
     }
@@ -198,7 +257,10 @@ async function start(req, res, body) {
   const mode = body.mode === "text" ? "text" : "voice";
   const topic = body.topicId ? getTopic(body.topicId) : await nextTopicFor(child);
   if (!topic) throw bad(body.topicId ? `unknown topic ${body.topicId}` : "no topic available for this class");
-  const kit = await kitFor(topic.id, null, trace);
+  const kit = await getKit(topic.id, { trace });
+  if (!kit) throw new HttpError(503, "no teaching content is available for this topic yet");
+  // Every later request of this lesson reads back exactly this kit (kitFor).
+  await pinKit(kit);
   const warmupItems = await warmupItemsFor(child.id);
   const skillIds = [...new Set([...kit.skills.map((s) => s.id), ...warmupItems.map((w) => w.skillId)])];
   const [skills, history, activeMisconceptionIds, brief] = await Promise.all([
@@ -219,22 +281,27 @@ async function start(req, res, body) {
       topicTitle: topic.title, nextTitle: nextTopic?.title,
     },
   });
-  const r = step(state0, { event: "start", kit, now });
-  const state = { ...r.state, brief, mode, kitVerified: kit.verified };
-  const instructions = instructionsFor(state, kit);
-  const lesson = await one("insert into lesson(child_id, topic_id, kind, state) values ($1,$2,'live',$3) returning id", [child.id, topic.id, state]);
-  if (!lesson) throw new Error("lesson insert did not land");
+  const first = step(state0, { event: "start", kit, now });
+  const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
+  const state = r.state;
+  const lessonId = randomUUID();
 
-  let teacherOpening, teacherOpeningSeq;
+  let teacherOpening, teacherOpeningSeq, rows = [];
   if (mode === "text") {
     teacherOpening = (await textReply({ instructions, state, kit, childText: "", trace })).reply;
-    [{ seq: teacherOpeningSeq }] = await insertTurns(lesson.id, state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind } }]);
-    await q("update lesson set state = $2 where id = $1", [lesson.id, state]);
+    rows = stageTurns(state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind } }]);
+    teacherOpeningSeq = rows[0].seq;
   }
-  console.info(`[lesson] start ${lesson.id} topic=${topic.id} kit=${kit.verified ? "verified" : "mini"} ${Math.round(performance.now() - t0)}ms`);
+  // The lesson and its opening turn land together, or not at all.
+  const [created] = await tx([
+    { text: "insert into lesson(id, child_id, topic_id, kind, state) values ($1,$2,$3,'live',$4) returning id", params: [lessonId, child.id, topic.id, state] },
+    ...(rows.length ? [turnInsertStmt(lessonId, rows)] : []),
+  ]);
+  if (created.length !== 1) throw new Error("lesson insert did not land");
+  console.info(`[lesson] start ${lessonId} topic=${topic.id} kit=${kit.verified ? "verified" : "mini"} ${Math.round(performance.now() - t0)}ms`);
   /** @type {import("../../shared/contracts").LessonStartResponse} */
   const out = {
-    lessonId: lesson.id, topic: { id: topic.id, title: topic.title, chapter: topic.chapter.title },
+    lessonId, topic: { id: topic.id, title: topic.title, chapter: topic.chapter.title },
     ...clientInstructions(mode, instructions), teacher: { id: teacher.id, name: teacher.name, voice: teacher.voice }, moduleCommands: r.moduleCommands, ui: r.ui,
     ...(teacherOpening ? { teacherOpening, teacherOpeningSeq } : {}),
   };
@@ -294,14 +361,25 @@ async function turn(req, res, body) {
   const trace = [];
   const { lesson, guardian, child } = await loadLessonFor(req, need(body, "lessonId").lessonId);
   if (lesson.ended_at) throw new HttpError(409, "lesson has ended");
+  const childText = String(body.childText || "").slice(0, 2000).trim();
+  // Consent is checked per turn, like start and token: once core_tutoring is withdrawn the child's words are
+  // not stored, classified or sent to a model. The safety predicate still reads them (on this server only),
+  // and a disclosure still leaves an incident row — without the transcript.
+  if (!(await hasConsent(guardian.id, child.id, "core_tutoring"))) {
+    const safety = scanSafety(childText);
+    if (safety.distress) {
+      await q("insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3) returning id",
+        [child.id, lesson.id, { source: "predicate", family: safety.kind, consentWithdrawn: true }]);
+    }
+    throw forbidden("core_tutoring consent withdrawn");
+  }
   const prev = lesson.state;
   const state = structuredClone(prev);
-  const [kit, core] = await Promise.all([kitFor(lesson.topic_id, state, trace), hasConsent(guardian.id, child.id, "core_tutoring")]);
+  const kit = await kitFor(lesson.topic_id, state);
   // The lane is the lesson's mode. `typed` only says there was no ASR: a typed or tapped turn in a voice
   // lesson is still voice-lane (a text reply for it was never heard, yet was stored as a teacher turn).
   const textLane = state.mode === "text";
   const typed = !!body.typed || textLane;
-  const childText = String(body.childText || "").slice(0, 2000).trim();
   const moduleEvents = Array.isArray(body.moduleEvents) ? body.moduleEvents : [];
   const dropped = Number.isInteger(body.droppedEvents) && body.droppedEvents > 0 ? body.droppedEvents : 0;
   // contracts.ts TurnRequest: the child acted in an activity and said nothing. Never graded as a reply —
@@ -312,10 +390,20 @@ async function turn(req, res, body) {
   // teacher line, and an echo of it stored each one twice), then the child's turn.
   const activeItem = findItem(state, kit, state.activeItemId);
   const teacherText = textLane ? "" : String(body.teacherText || "").slice(0, 2000);
+  // The client heard the teacher voice lastMove (contracts.ts TurnRequest.teacherText): until step() plans a
+  // new move, the instructions frame it as already said.
+  if (teacherText) state.moveVoiced = true;
   const heard = teacherText || state.recent.findLast((t) => t.who === "teacher")?.text;
   const leaked = !!teacherText && !!activeItem && state.hintLevel < 4 && state.pendingWhy !== activeItem.id && revealsAnswer(teacherText, activeItem);
+  // A voice turn can state the key of the question that comes NEXT (an explain turn, a re-teach): that item's
+  // answer is then worth nothing. The text lane's reply is guarded before it is sent, and checked below.
+  const spoils = teacherText ? spoiledBy(teacherText, state, kit, activeItem) : null;
+  if (spoils) state.spoiled = [...(state.spoiled ?? []), spoils];
   const turnRows = [];
-  if (teacherText) turnRows.push({ speaker: "teacher", text: teacherText, meta: { interrupted: !!body.teacherInterrupted, ...(leaked ? { answerLeak: true } : {}) } });
+  if (teacherText) {
+    turnRows.push({ speaker: "teacher", text: teacherText,
+      meta: { interrupted: !!body.teacherInterrupted, ...(leaked ? { answerLeak: true } : {}), ...(spoils ? { spoils } : {}) } });
+  }
   const extra = dropped ? { droppedEvents: dropped } : {};
   turnRows.push(moduleOnly
     ? { speaker: "system", text: `[activity: ${activitySummary(moduleEvents, dropped)}]`, meta: { module: true, ...extra } }
@@ -323,15 +411,8 @@ async function turn(req, res, body) {
       speaker: "child", text: childText || (body.chipId ? `[tap ${body.chipId}]` : "[no speech]"),
       asrConf: typed ? null : body.asrConfidence, meta: { typed, ...(body.chipId ? { chipId: body.chipId } : {}), ...extra },
     });
-  const [inserted] = await Promise.all([
-    insertTurns(lesson.id, state, turnRows),
-    // Text lane: the child cut off the latest stored teacher line; mark that row rather than storing it again.
-    textLane && body.teacherInterrupted
-      ? q(`update turn set meta = meta || '{"interrupted": true}'::jsonb
-           where id = (select id from turn where lesson_id = $1 and speaker = 'teacher' order by seq desc limit 1) returning id`, [lesson.id])
-      : null,
-  ]);
-  const childTurnId = inserted.at(-1).id; // the child's row, or a module-only turn's activity row
+  const staged = stageTurns(state, turnRows);
+  const childSeq = staged.at(-1).seq; // the child's row, or a module-only turn's activity row
 
   // Classify against the active item's key (never free grading). A module answer on the active item's own
   // module is machine truth; a module-only turn has nothing else to classify.
@@ -344,63 +425,89 @@ async function turn(req, res, body) {
     moduleAnswer, classLevel: child.class_level, trace,
   });
 
-  // Evidence → learner model (only with core_tutoring consent).
-  const evidence = cls ? evidenceFrom(state, cls, kit, { leaked, discount: gamingDiscount(state.affect) }) : [];
+  // Evidence → learner model, all staged as statements for the turn's one transaction (below). Gaming is
+  // read from the affect AFTER this turn (the same update step() makes), so the second "just tell me" or the
+  // third different wrong answer is already discounted.
+  const answer = normAnswer(childText);
+  const affectNow = moduleOnly ? state.affect
+    : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer });
+  const evidence = cls ? evidenceFrom(state, cls, kit, { leaked, discount: gamingDiscount(affectNow) }) : [];
+  const writes = [];
   const skillChanges = {};
-  if (core && evidence.length) {
+  if (evidence.length) {
     const current = await loadSkillStates(child.id, [...new Set(evidence.map((e) => e.skillId))]);
     const topicType = activeItem?.topicType ?? kit.topicType;
     const now = new Date();
-    const writes = [];
     // Fold rows for the same skill in order (an answer and its volunteered reason are two rows).
     for (const ev of evidence) {
       const before = current[ev.skillId] ?? newSkillState(ev.skillId, topicType, now);
       const after = applyEvidence(before, ev, { topicType, now, lessonStartedAt: lesson.started_at });
       current[ev.skillId] = after;
-      writes.push(insertEvidence(child.id, lesson.id, ev, childTurnId));
-      if (ev.misconceptionId) writes.push(flagMisconception(child.id, ev.misconceptionId));
+      writes.push(evidenceStmt(child.id, lesson.id, ev, { lessonId: lesson.id, seq: childSeq }));
+      if (ev.misconceptionId) writes.push(misconceptionFlagStmt(child.id, ev.misconceptionId));
       state.history[ev.skillId] = [...(state.history[ev.skillId] ?? []), ev.outcome].slice(-10);
       skillChanges[ev.skillId] ??= { before: Math.round(before.pKnown * 1000) / 1000 };
       Object.assign(skillChanges[ev.skillId], { after: Math.round(after.pKnown * 1000) / 1000, status: after.status });
     }
     for (const id of Object.keys(skillChanges)) {
-      writes.push(saveSkillState(child.id, current[id]));
+      writes.push(skillStateStmt(child.id, current[id]));
       state.skills[id] = snapshotSkill(current[id]);
     }
     const resolved = activeItem?.targetsMisconception && cls.outcome === "correct" && cls.reason !== "misconception"
       && state.hintLevel === 0 && state.pendingWhy !== activeItem.id;
-    if (resolved) writes.push(resolveMisconception(child.id, activeItem.targetsMisconception));
-    await Promise.all(writes);
+    if (resolved) writes.push(misconceptionResolveStmt(child.id, activeItem.targetsMisconception));
   }
   // A belief voiced outside a keyed item counts on the misconception ledger, never as graded evidence.
-  if (core && cls?.voiced) await flagMisconception(child.id, cls.voiced);
-  if (cls?.flags.distress) {
-    await q("insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3)",
-      [child.id, lesson.id, { turnId: childTurnId, source: cls.source === "predicate" ? "predicate" : "classifier", family: cls.flags.distressKind }]);
-  }
+  if (cls?.voiced) writes.push(misconceptionFlagStmt(child.id, cls.voiced));
+  const incident = cls?.flags.distress ? { source: cls.source === "predicate" ? "predicate" : "classifier", family: cls.flags.distressKind } : null;
+  if (incident) writes.push(incidentStmt(child.id, lesson.id, childSeq, incident));
 
   // Director step → compile → (text lane) reply from the same instructions.
-  const r = moduleOnly
-    ? step(state, { event: "module", kit, cls: cls ?? undefined, moduleEvents, now: Date.now() })
-    : step(state, { event: "turn", kit, cls, chipId: body.chipId, answer: normAnswer(childText), now: Date.now() });
-  const next = r.state;
-  if (core && r.move.kind === "explain" && r.move.skillId && !next.skills[r.move.skillId]) {
-    const intro = markIntroduced(newSkillState(r.move.skillId, kit.topicType));
-    await saveSkillState(child.id, intro);
-    next.skills[r.move.skillId] = snapshotSkill(intro);
+  const now = Date.now();
+  const stepped = moduleOnly
+    ? step(state, { event: "module", kit, cls: cls ?? undefined, moduleEvents, now })
+    : step(state, { event: "turn", kit, cls, chipId: body.chipId, answer, now });
+  if (stepped.move.kind === "explain" && stepped.move.skillId && !stepped.state.skills[stepped.move.skillId]) {
+    const intro = markIntroduced(newSkillState(stepped.move.skillId, kit.topicType));
+    writes.push(skillStateStmt(child.id, intro));
+    stepped.state.skills[stepped.move.skillId] = snapshotSkill(intro);
   }
-  const instructions = instructionsFor(next, kit);
+  const { r, instructions, skipped } = instructionsAfter(stepped, kit, now);
+  const next = r.state;
   let teacherReply, teacherReplySeq, guard;
   if (textLane && !r.hold) {
     const tapped = body.chipId?.startsWith("opt:") ? activeItem?.options?.[Number(body.chipId.slice(4))]?.text : body.chipId?.split(":")[1];
     const said = childText || (moduleOnly ? `(no words; in the activity: ${activitySummary(moduleEvents, 0)})` : `(tapped: ${tapped ?? "nothing"})`);
     // A module-only turn stored no child row, so the whole recent transcript is history.
     ({ reply: teacherReply, guard } = await textReply({ instructions, state: next, kit, childText: said, trace, ...(moduleOnly ? { history: next.recent } : {}) }));
-    [{ seq: teacherReplySeq }] = await insertTurns(lesson.id, next, [{ speaker: "teacher", text: teacherReply, meta: { move: r.move.kind, ...(guard.caught.length ? { guard: guard.caught } : {}) } }]);
+    const replyItem = next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null;
+    const replySpoils = spoiledBy(teacherReply, next, kit, replyItem);
+    if (replySpoils) next.spoiled = [...(next.spoiled ?? []), replySpoils];
+    const [row] = stageTurns(next, [{ speaker: "teacher", text: teacherReply,
+      meta: { move: r.move.kind, ...(guard.caught.length ? { guard: guard.caught } : {}), ...(replySpoils ? { spoils: replySpoils } : {}) } }]);
+    staged.push(row);
+    teacherReplySeq = row.seq;
   }
-  // `and ended_at is null`: a turn still in flight when the lesson ends must not rewrite its state.
-  const saved = await q("update lesson set state = $2 where id = $1 and ended_at is null and (state->>'turn')::int = $3 returning id", [lesson.id, next, prev.turn]);
-  if (saved.length !== 1) {
+
+  // One transaction: the state check first (`and ended_at is null`: a turn still in flight when the lesson
+  // ends must not rewrite it; the turn number: a concurrent or replayed turn loses), then every row this
+  // turn produced. A loser, a failure or a 409 leaves nothing behind, so a retry cannot double the evidence.
+  try {
+    await tx([
+      guardStmt("update lesson set state = $2 where id = $1 and ended_at is null and (state->>'turn')::int = $3 returning id", [lesson.id, next, prev.turn]),
+      // Text lane: the child cut off the latest stored teacher line; mark that row rather than storing it again.
+      ...(textLane && body.teacherInterrupted ? [{ text: `update turn set meta = meta || '{"interrupted": true}'::jsonb
+           where id = (select id from turn where lesson_id = $1 and speaker = 'teacher' order by seq desc limit 1) returning id`, params: [lesson.id] }] : []),
+      turnInsertStmt(lesson.id, staged),
+      ...writes,
+    ]);
+  } catch (e) {
+    // A disclosure is recorded even when its turn is not (without the turn it came from).
+    if (incident) {
+      await q("insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3) returning id",
+        [child.id, lesson.id, { ...incident, turnUnsaved: true }]).catch((err) => console.error("[lesson] incident write failed:", err.message));
+    }
+    if (e?.code !== GUARD_FAILED) throw e;
     const ended = (await one("select ended_at from lesson where id = $1", [lesson.id]))?.ended_at;
     throw new HttpError(409, ended ? "lesson has ended" : "another turn for this lesson landed first; retry");
   }
@@ -421,12 +528,22 @@ async function turn(req, res, body) {
     out.debug = {
       phase: next.phase, turn: next.turn, teachIdx: next.teachIdx, hintLevel: next.hintLevel, unclear: next.unclear, moduleOnly, hold: !!r.hold,
       classification: cls ? { outcome: cls.outcome, misconceptionId: cls.misconceptionId, voiced: cls.voiced, confidence: cls.confidence, source: cls.source, flags: cls.flags } : null,
-      evidence, skills: skillChanges, flagged: next.flagged, guard,
+      evidence, skills: skillChanges, flagged: next.flagged, guard, spoiled: next.spoiled, ...(skipped ? { skipped } : {}),
       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
       kitVerified: kit.verified, ms, timings: trace,
     };
   }
   send(res, 200, out);
+}
+
+/**
+ * The id of the not-yet-posed item whose key `teacherText` states (state.js upcomingItem), or null. The
+ * active item is the leak check's business (`leaked`), not this one's.
+ */
+function spoiledBy(teacherText, state, kit, activeItem) {
+  const ahead = upcomingItem(state, kit);
+  if (!ahead || ahead.id === activeItem?.id || state.spoiled?.includes(ahead.id)) return null;
+  return revealsAnswer(teacherText, ahead) ? ahead.id : null;
 }
 
 // ───────────────────────────── POST /api/lesson/end ─────────────────────────────
@@ -492,13 +609,20 @@ function lessonFacts(state, evidence, kit) {
 async function end(req, res, body) {
   const trace = [];
   const { lesson, guardian, child } = await loadLessonFor(req, need(body, "lessonId").lessonId);
-  if (lesson.ended_at) return send(res, 200, { summary: lesson.summary, parentNote: lesson.parent_note, alreadyEnded: true });
-  const state = lesson.state;
+  const already = (row) => send(res, 200, { summary: row?.summary ?? null, parentNote: row?.parent_note ?? null, alreadyEnded: true });
+  if (lesson.ended_at) return already(lesson);
+  // Claim the lesson BEFORE the slow summary: of two overlapping ends (a double tap, a retry on timeout) only
+  // one gets the row back; the other writes nothing (sessions were once counted twice, memories duplicated).
+  // The claim also closes the lesson to turns, so the facts below are final.
+  const claimed = await one(`update lesson set ended_at = now(), state = jsonb_set(state, '{phase}', '"done"')
+    where id = $1 and ended_at is null returning state`, [lesson.id]);
+  if (!claimed) return already(await one("select summary, parent_note from lesson where id = $1", [lesson.id]));
+  const state = claimed.state;
   const [turns, evidence, memoryOk, profileOk, kit] = await Promise.all([
     q("select id, seq, speaker, text from turn where lesson_id = $1 order by seq", [lesson.id]),
     q("select skill_id, item_id, probe, outcome, misconception_id, hints_used from evidence where lesson_id = $1 order by at", [lesson.id]),
     hasConsent(guardian.id, child.id, "memory"), hasConsent(guardian.id, child.id, "learning_profile"),
-    getKit(lesson.topic_id, { generate: false, mini: state.kitVerified === false }),
+    state.kitHash ? pinnedKit(lesson.topic_id, state.kitHash) : getKit(lesson.topic_id, { generate: false }),
   ]);
   const facts = kit ? lessonFacts(state, evidence, kit) : { topic: getTopic(lesson.topic_id)?.title, skills: [] };
   const childTurns = turns.filter((t) => t.speaker === "child" && !t.text.startsWith("["));
@@ -530,26 +654,25 @@ async function end(req, res, body) {
     saved.push([child.id, m.kind, m.text.trim(), t.id]);
   }
   const writes = [
-    q("update lesson set ended_at = now(), summary = $2, parent_note = $3, state = jsonb_set(state, '{phase}', '\"done\"') where id = $1 and ended_at is null returning id",
-      [lesson.id, summary, parentNote]),
+    { text: "update lesson set summary = $2, parent_note = $3 where id = $1 returning id", params: [lesson.id, summary, parentNote] },
     // Trust moves at most once a day (rate-limited, inherited rel-state law); sessions always count.
-    q(`insert into rel_state(child_id, sessions, stage, last_trust_update) values ($1, 1, 'getting_to_know', current_date)
+    { text: `insert into rel_state(child_id, sessions, stage, last_trust_update) values ($1, 1, 'getting_to_know', current_date)
        on conflict (child_id) do update set sessions = rel_state.sessions + 1,
          stage = case when rel_state.sessions + 1 >= 20 then 'established' when rel_state.sessions + 1 >= 5 then 'familiar' else 'getting_to_know' end,
          trust = case when rel_state.last_trust_update is distinct from current_date then least(0.9, rel_state.trust + 0.03) else rel_state.trust end,
          last_trust_update = current_date, updated_at = now()
-       returning sessions`, [child.id]),
-    ...saved.map((m) => q("insert into memory(child_id, kind, text, source_turn) values ($1,$2,$3,$4) returning id", m)),
+       returning sessions`, params: [child.id] },
+    ...saved.map((m) => ({ text: "insert into memory(child_id, kind, text, source_turn) values ($1,$2,$3,$4) returning id", params: m })),
   ];
   // Learning-profile rows only with that consent: one format trial per skill practised, immediate outcome only.
   if (profileOk && kit) {
     for (const s of new Set(evidence.map((e) => e.skill_id))) {
       const rows = evidence.filter((e) => e.skill_id === s);
-      writes.push(q("insert into format_trial(child_id, skill_id, topic_type, format, allocated_by, immediate) values ($1,$2,$3,$4,'prior',$5) returning id",
-        [child.id, s, kit.topicType, kit.formats.primary, rows.filter((e) => e.outcome === "correct" && e.hints_used === 0).length / rows.length]));
+      writes.push({ text: "insert into format_trial(child_id, skill_id, topic_type, format, allocated_by, immediate) values ($1,$2,$3,$4,'prior',$5) returning id",
+        params: [child.id, s, kit.topicType, kit.formats.primary, rows.filter((e) => e.outcome === "correct" && e.hints_used === 0).length / rows.length] });
     }
   }
-  const results = await Promise.all(writes);
+  const results = await tx(writes);
   if (results.some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");
   send(res, 200, { summary, parentNote, memoriesSaved: saved.length, sessions: results[1][0].sessions, ...(debugFor(req) ? { debug: { facts, timings: trace } } : {}) });
 }

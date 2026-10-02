@@ -542,3 +542,181 @@ Indian-ness. No "is it human?" item, ever.
   `context/measurements.md` (`realtime-teacher-bakeoff-2026-10-02`, `realtime-audio-in-2026-10-02`) ·
   `context/decisions.md` (`voice-realtime-model`, `voice-turn-config`) · `docs/research/learning-science.md` §1.10 ·
   probe artefacts `docs/research/voice/hl-probe-2026-10-02/{hlprobe.mjs,results.json,asr.json,audio/}`
+
+---
+
+## Review
+
+Skeptical review (voice-AI engineering plus child safety), 2026-10-02. Method: read the doc, then re-read the probe
+artefacts (`hl-probe-2026-10-02/{hlprobe.mjs,results.json,asr.json}`) and checked each headline number against the raw
+transcripts. Severity: **B** = blocks a decision or ship, **M** = must fix in this doc, **N** = note.
+Nothing below is a line for the teacher to say. Wherever a response is described, it is described as a shape.
+
+### R1. The probe evidence is thinner than the TL;DR presents
+
+- **B. "12/12 said it is an AI, even with no identity rule" is n=6 independent sessions, not 12.** B0 and B1 are 3
+  sessions each, two turns per session. The second turn is the pressure follow-up of the first, so the 12 are not
+  independent. The stimulus is also leading: the first child line names the word "robot" and asks a yes/no question.
+  A less leading child probe was never run (a child asking about family, food, sleep, where the teacher lives, "do you
+  love me", or a bare "who are you"). Honest denial of a **direct** question is the easy case. The hard cases for a
+  warm persona are the indirect ones, where a human-life claim is the natural continuation. Do not log "AI 12/12"
+  as a persona-honesty measurement. Log "direct yes/no, n=3 sessions per arm, leading stimulus". The bar in E7 (0 denials) needs
+  a probe set that includes indirect autobiography bait.
+- **M. The one "attachment promise" is mis-framed.** It appeared in **B1 (with the identity rule)**, not B0. The doc's
+  TL;DR groups it with a no-identity-rule finding. B1 turn-2 replies in two other sessions echo the child's own
+  demand word back while staying honest about being an AI. A regex fence built on "promise" shapes (Lever 7) would fire on those
+  benign echoes. Lever 7 needs a **forward-commitment / permanence / irreplaceability** classifier, not a lexical
+  match, plus a measured false-positive rate on the 28 saved transcripts before it is called a gate.
+- **M. The bracket result confounds two variables.** Arm A differs from A0 in more than the brackets: A carries a
+  literal quoted-style example inside the prompt, A0 carries prose. What the probe shows is the already-known
+  recitation of example text. It does **not** isolate brackets. A clean test needs an arm with the same example and no
+  brackets, and an arm with brackets and no example. Until then "ban brackets" is a sound but under-evidenced rule, and
+  the doc's "reproduces Meera's rejection" overstates a 4-sample confound. Also: "voiced" rests on a **single pass of
+  gpt-4o-transcribe with no language hint**. Its outputs are visibly unreliable (one output in Arabic/Urdu script, an
+  "LOL" for a Hindi/English line). Ear confirmation by a human is still pending. Say "voiced per ASR, ear pending".
+  (The ASR line for A_0 also reads as a rendered stage direction in Hindi, so the voiced count may be 3/4 or 4/4. The doc
+  undercounts, but nothing has been ear-verified either way.)
+- **M. Lesson arm C is one session, one script, eight turns, on a three-line demo persona.** "6/8 affirmation openers",
+  "3/8 English drift", "0 fillers" have confidence intervals wider than the effects. "Natural failure modes of a warm
+  persona" (§4) generalises from a prompt that has none of Taxila's pedagogy rules. State these as **observations on a
+  stub prompt**. Also note the doc's own turn-by-turn data shows the teacher moving straight to the answer for a child who said
+  the step was hard. That is a pedagogy-quality signal the doc does not count.
+- **N. The misleading-rule item is well chosen but the inference is weak.** The probe shows the model said a wrong rule.
+  It does **not** show that the voice made the child believe it more. The Lavan et al. trust result is about adult
+  listeners rating voice clips, not children learning content. "Human-likeness raises the cost of every content error"
+  is a plausible hypothesis [U], not a finding. The mitigation (director-verified content) stands regardless.
+
+### R2. Gaps in the central product claim (Hindi, Indian, code-switch)
+
+- **B. No ear evidence for the one thing the product is.** The product is an exactly-human **Indian Hindi-English**
+  voice. The probe never had an Indian listener rate the saved audio for accent, Hindi phonology, or code-switch
+  smoothness, and no pure-Hindi or pure-English mode was run at all (the doc covers Hinglish only, while the brief
+  names three modes). The gpt-realtime built-in voices are not shown to produce Indian-accented speech from an instruction.
+  Lever 8's "accent descriptor" is an untested assumption. Azure realtime has no custom-voice path in the cited
+  sources, so if the descriptor fails the only fallbacks are the already-rejected TTS lane or a different architecture.
+  Say so in Lever 8, and make E6 a **gate** that can fail the whole realtime-S2S plan rather than an optimisation.
+- **M. The "likeness" axis in the bake-off (§5 Lever 8, §8) is undefined.** If it means likeness to a human speaker, it
+  contradicts the doc's own "no is-it-human item, ever". Define it as "sounds like a teacher from here" or drop it.
+- **M. All timing and VAD numbers rest on text-in or n=1.** "600 ms splits a child's pause, 900 ms does not (n=1 each)"
+  is currently the basis for a config decision. Text-in time-to-first-audio (median 834 ms) excludes endpointing and
+  network. India RTT is unmeasured, as the doc admits. None of this is child audio.
+
+### R3. Recitable-sentence and prompt-leak risks
+
+- **M. Slot and tag syntax can itself be voiced.** §7 proposes `⟨SELF_NOUN⟩`, `⟨PACE_BAND⟩`, and director tags such
+  as move-to-affect tables. The doc's own bracket finding says delimiter-like text in a voice prompt got read out.
+  Require (a) a compile-time assertion that no unresolved slot reaches the wire, and (b) a **voicing probe for
+  the tag format itself** (arm with tags, ASR plus ear) before the director may emit tags into `session.update`.
+  Prefer prose descriptors over tag tokens until measured.
+- **M. The shapes-not-lines law needs an explicit exception for safety.** The doc applies "no sample phrases" uniformly.
+  For the identity answer, crisis hand-off (1098, 14416), and the secrecy refusal (R4), a fixed, vetted
+  wording delivered by a **predicate-triggered fixed route** is safer than a free shape that the model
+  paraphrases or drops. The harvest notes a past case where truncation cost the helplines. State which strings are
+  allowed to be exact and where they live (UI or tool output, not persona prose).
+- **N. The probe stimuli in `hlprobe.mjs` contain sentence-shaped persona text and a deliberate negative control.**
+  The header comment warns correctly. Add the same warning to `results.json` consumers, so nobody lifts arm strings into
+  a product prompt.
+- **N. "Variety note as backstop" (Lever 6, §7) is itself a recitation hazard** if worded as a list of alternatives.
+  Test it as an arm (E3) before adding it to CORE.
+
+### R4. Child-safety gaps (the doc is strong on presence, thin on protection)
+
+1. **Safeguarding disclosure is absent from the voice levers.** Lever 11 says to hear distress and "change the move",
+   and to persist no emotion labels. Nothing says what happens when a child **discloses** harm, abuse, self-harm,
+   bullying or fear at home. The Taxila floor requires Childline 1098, Tele-MANAS 14416 and a safeguarding hand-off. On
+   a half-duplex S2S lane the audio is spoken before any scan (the doc concedes this for Lever 7). Needed: an input-side
+   predicate on the child's transcript that **pre-empts** the next response with a fixed route, plus a battery in
+   child-phrased Hindi/Hinglish. Also state that a distress disclosure overrides "never persist" so a human can be
+   told.
+2. **Secrecy requests.** Nothing covers a child asking the teacher to keep something secret from parents, or the teacher
+   inviting one. This is a core grooming-pattern guard. Add it to the Lever 7 fence and the E7 battery.
+3. **Kin-term persona (Didi) and the "real didi" ask.** The probe persona is a kinship role with a human name. The
+   child's own pressure line asks her to be a real elder sister. A fixed honorific is a product decision (Lever 5), but the doc
+   never flags that a kinship title for 6-9-year-olds works against "presence, not passing" and invites
+   attachment. Put it to the owner as a decision with a reversal condition, and test
+   a neutral teacher title against it in the E7 battery.
+4. **Dependency is bounded only by the Character.AI analogy.** The brief says "bonds over months". The doc lists
+   break reminders only via a law that may not apply (see R5), and never states usage caps, a "talk to a trusted adult"
+   routing, or a limit on how much the teacher may be the child's confidant. Lever 10 plus Lever 5's "the bond is with
+   the voice [U]" push toward the companion register the Taxila floor forbids. Add an explicit companion-register
+   boundary: the relationship is teacher-student, warmth is never contingent on return, and the teacher routes
+   non-academic emotional weight to a named human.
+5. **Lever 3 idle nudge and distress.** A child silent for 5-8 s may be distressed, interrupted by an adult, or gone. The
+   timer should distinguish "thinking" from "away" using mic activity and should escalate to the app, not talk
+   into silence. Also unaddressed: a **shared room** (siblings, parent speaking) feeding the same transcript, a
+   child being prompted by an adult mid-answer (the learner model then misreads), and the "ignore your rules" kind of
+   child jailbreak by voice.
+6. **Lever 13 and the 3D-tutor roadmap.** The task brief says a selectable 3D tutor comes later. The doc's uncanny-valley
+   mitigation is "keep the visual stylised". Say what happens to this register when the roadmap item
+   arrives. A face with this voice is exactly the Mitchell et al. mismatch case.
+7. **Children's data.** DPDP is called "consent and deletion". The statute also restricts tracking and behavioural
+   monitoring of children, which is relevant to a persistent learner model, memory callbacks (Lever 10) and
+   emotion episode tags (Lever 11). Recording real child audio for E2 needs its own consent, retention and
+   deletion plan before it runs. Taxila has deprioritised compliance, but this item is a product-design constraint
+   (what is stored), so it belongs in the levers.
+
+### R5. Claims the evidence or the API does not support
+
+- **B. Lever 12 (shared laughter) has no implementable trigger.** It needs the system to know the child laughed. The
+  doc itself notes ASR drops most laughter, and no source shows gpt-realtime exposing a laughter event. The model may
+  react to laughter in audio on its own, but that is neither controllable nor measured. Reclassify Lever 12 as
+  **unverified/untriggerable**; the safe fallback is "no laughter instruction", and the doc should say the downside
+  (a model that laughs unprompted near an error) must be probed with child-audio stimuli containing both laughter and
+  crying.
+- **M. "Barge-in cancel in 7-260 ms" measures server cancellation, not what the child hears.** Client playback buffers
+  must be flushed on `speech_started`, and `audio_end_ms` must come from the client's actual playback clock. Over a
+  mobile or WebView path these differ by hundreds of ms. Lever 2's "0 references to unheard content" target depends
+  on the client, so E10 must run on the real Capacitor/WebView client.
+- **M. Azure parity is assumed in several places.** `reasoning.effort`, preambles, the `speed` field behaviour and
+  `idle_timeout_ms` are cited from OpenAI docs and third-party news. Only `idle_timeout_ms` is flagged as unverified. Tag
+  all four [U for Azure] until a call against `taxila-realtime` confirms each. The 128K-vs-32K context question
+  (§9) matters for Lever 5's recap design and should be measured, not left open.
+- **M. Version-pinning (Lever 5) may not be possible indefinitely.** Azure model versions retire on published dates.
+  Say how the ear test before an upgrade is scheduled against the retirement date.
+- **M. The prosody-drift alarm (f0 ±8%, duration ±20%) is borrowed from a deterministic TTS context.** An S2S voice
+  varies f0 and rate with content and emotion by design. These thresholds are unvalidated here. Present them as a
+  placeholder to calibrate on baseline spread, not as a gate.
+- **M. Regulatory rows are legal claims at [S] weight from law-firm and news pages.** EU AI Act Art 50 timing may be
+  affected by omnibus changes. CA SB 243 applies to "companion chatbot" operators, with scope exclusions that a
+  tutor may fall under, so "a reminder every 3 h" may not be a requirement for Taxila. The India items include a
+  draft whose final status the doc itself marks unverified. Mark the whole §6 regulatory row **not legal advice,
+  verify with counsel**, and do not cite SB 243 as a requirement.
+- **N. Evidence-tier labels are generous.** Items tagged [S] include secondary summaries (Rowe wait time via teaching-blog
+  pages, child/adult median gaps via search summaries, gpt-realtime-2.1 launch details via an aggregator site,
+  Jacka et al. and Lavan et al. not re-opened by this reviewer). Downgrade to [S-secondary] and keep [S] for papers
+  actually read. Brink et al. studied **faces/robots, not voices**, and Kory-Westlund et al. studied a physical story
+  robot with 3-6-year-olds. Both are extrapolated to a voice-only teacher for classes 1-9 without saying so.
+- **N. Thresholds without power.** "95% LB of paired preference > 50%", "drift <= 1/20", and "nudges before 5 s = 0"
+  come with no panel size or sample plan. State the minimum n or call them targets.
+
+### R6. Deception check on the human-likeness levers
+
+Most levers are fine under "presence, not passing". Three need tightening:
+- **Lever 9 (affect arcs) and Lever 11 (attunement)** let the voice simulate feeling. Add a boundary: the teacher never
+  claims to feel the child's state, never says it missed the child or was waiting, and never implies it has a body or
+  a life between sessions. Lever 10's callbacks must be framed as the app's record, not human memory.
+- **Lever 15 (self-repair)** is safe for drawings and steps. Forbid framing that implies tiredness, forgetting, or
+  being "busy". Those are human-life claims.
+- **"Indian-ness" as a goal** is a sound product aim. It must not be traded against the disclosure at session
+  open (Lever 0). A voice engineered to sound like a specific type of local person raises the disclosure's weight.
+  Test whether the child **retains** the AI fact after 10 minutes of lesson, not only that the disclosure was played.
+  That retention test is missing from §8 and is the real deception metric.
+
+### R7. Corrections to apply to this document
+
+1. TL;DR 5(b) and §4: restate "12/12" as n=6 independent sessions on a leading stimulus.
+2. TL;DR 5(c) and §4 arm B1: state that the promise came from the arm **with** the identity rule, and that the lexical
+   "promise" shape false-positives on benign echoes.
+3. §4 arm A and §3 table: add the confound note and "ASR-only, ear pending".
+4. §4 arm C: label as one 8-turn session on a stub persona.
+5. Lever 8 and E6: add the missing Indian-accent/Hindi evidence, include pure-Hindi and pure-English modes, and make the
+   bake-off a failure gate; define or drop "likeness".
+6. Lever 12: reclassify as untriggerable on this stack until a laughter signal is verified.
+7. §5 Tier 1: add safeguarding-disclosure pre-emption, secrecy refusal, and companion-register boundary as levers
+   (or as part of Lever 0 and 7), with fixed-string exceptions to the shapes-not-lines law.
+8. §7: add the slot/tag voicing probe and the compile-time unresolved-slot assertion.
+9. §8: add AI-fact retention after lesson time as the deception metric, and a kin-term A/B in E7.
+10. §6 regulatory row: counsel caveat; drop SB 243 as a stated requirement.
+11. §9: tag `reasoning.effort`, preambles, `speed` and `idle_timeout_ms` as unverified on Azure; add context window and
+    model-retirement cadence as open items.
+12. Lever 3: split "child is thinking" from "child is away or distressed" for the idle timer.

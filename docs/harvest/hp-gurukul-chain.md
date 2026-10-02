@@ -776,3 +776,63 @@ compute rejections, `offline-mocks-cannot-type-check-sql`, `statement-shapes-pos
   not queried with `scripts/context.mjs`.
 - No human listening result exists anywhere in this lineage; no measurement of child voices, of ECAPA on children, or of
   DeepFilterNet3 on vs off; these are open for Taxila to measure, not to assume.
+
+---
+
+## Verification
+
+Adversarial pass, 2026-10-02, against `html-portfolio@771feef9` (read via `git archive`, nothing checked out in the source repo). All cited paths exist at the ref. No secrets present in any cited file (env-var names only). Taxila constraints applied: Azure-only AI (no Sarvam/ElevenLabs/etc.), no voice cloning in scope, Vercel-node plus Azure Container Apps, Neon.
+
+Executed: `evals/earbench/run.mjs` (108 ok), `evals/studiowizard.mjs` (80 checks pass), `evals/speech/hindi-text-frontend.test.mjs` (pass), `check-enrollment-bandwidth.mjs` negative control (ok), `check-enrollment-sample-rate.mjs` (4 sites agree).
+
+Refuted or corrected claims:
+- **HGC-34** scrubPii does NOT cover what it says. Tested: `1234 5678 9012` (spaced Aadhaar), `98765 43210`, `+91 98765 43210` and Devanagari digits all pass through unredacted. Only contiguous digit runs, emails, IPv4 are caught. No names/addresses/school. Not adequate for child transcripts.
+- **HGC-13** "handles 0xFFFFFFFF sizes" is false: no such handling in `_audio/wav.js` or `windows.js`; an unknown-size streaming header is rejected as `wav_chunk_truncated`. LIST-chunk walking is real.
+- **HGC-10** "mode-0600 temp dirs" is not in the code; it uses `mkdtemp` (0700 default). Needs ffmpeg/clamdscan binaries, so runs only in a container, not a Vercel function.
+- **HGC-03** is not a copy: only `capability-codes.js` (29 lines, leaf) is portable; `composition.js` (317 lines) imports native-tools, Azure voice-evidence, Sarvam and storage adapters.
+- **HGC-12 / HGC-23 / HGC-32** depend on third-party or non-Azure-first-party AI (Sarvam, IndicF5, vendor arms in bake-off JSON); barred by the 2026-10-02 directive.
+- **HGC-33** thresholds are stylometry for a speaker-style mirror; the source comment admits its citations are "search-summary tier, both PDFs failed to decode"; imports generated `_engine.gen.js`.
+- **HGC-18 / HGC-17** nonce replay cache is in-process memory: resets on scale-to-zero and is not shared across replicas.
+- **HGC-05** ECAPA (voxceleb) on children is unmeasured; `_signal_quality` SNR degenerates (noise floor 1e-6) when there is no non-speech.
+- **HGC-30** corpus is Meera persona text and the "live lane cannot be probed" argument is about Gemini Live, not gpt-realtime.
+- **HGC-15** threshold calibrated on one replica file (n=1) for a 16 kHz-resample artifact.
+
+| id | exists | impl | portable | Q | use | note |
+|---|---|---|---|---|---|---|
+| HGC-01 | y | y | y | 4 | adapt | 82 lines, deps only `contracts.js`; DAG is audio-specific; blocked only for integrity/malware codes |
+| HGC-02 | y | y | partial | 4 | adapt | real lease CTE; welded to `vy_replica_*` tables and `_provider-budget.js`; default lease 120 s (1 h is the max) |
+| HGC-03 | y | y | partial | 4 | adapt | copy only capability-codes; composition drags Sarvam |
+| HGC-04 | y | y | y | 4 | copy | 10 lines; frame regex hardcodes `api/_replica-processing`; allowed-message regex can still echo short data-bearing text |
+| HGC-05 | y | y | partial | 3 | adapt | GPU image, 4 models; keep VAD+diarize only; nonce cache in-memory; adult-trained ECAPA |
+| HGC-06 | y | y | partial | 3 | adapt | Python/torch; reimplement client-side for mic check |
+| HGC-07 | y | y | y | 4 | adapt | pure JS, no imports; value low without cloning |
+| HGC-08 | y | y | n | 3 | idea | clone reference selection; only dominantShare idea transfers |
+| HGC-09 | y | y | partial | 4 | adapt | `reconcileDiarizationChunks` pure; adapter wrapper is not |
+| HGC-10 | y | y | partial | 4 | adapt | container only; 0600 claim false |
+| HGC-11 | y | y | partial | 4 | adapt | good Container Apps Job template; imports composition/runtime |
+| HGC-12 | y | y | n | 4 | skip | Sarvam third-party API barred |
+| HGC-13 | y | y | y | 4 | copy | parametrise 24 kHz; 0xFFFFFFFF claim false |
+| HGC-14 | y | y | y | 4 | adapt | passes; pattern portable, SITES list is Gurukul-specific |
+| HGC-15 | y | y | y | 3 | adapt | passes; n=1 calibration |
+| HGC-16 | y | y | partial | 3 | adapt | hand-rolled SAS (682 lines); prefer `@azure/storage-blob`; keep CRC64 browser idea |
+| HGC-17 | y | y | n | 3 | idea | only if self-hosting a GPU model; Taxila uses Foundry |
+| HGC-18 | y | y | partial | 3 | adapt | prefer Entra/managed identity inside Container Apps; replay cache weak |
+| HGC-19 | y | y | partial | 3 | adapt | state machine fits slow module generation; coded to GPU cold start |
+| HGC-20 | y | y | n | 4 | skip | Chatterbox cfg_weight; irrelevant to gpt-realtime |
+| HGC-21 | y | y | partial | 3 | idea | test passes; needs a text-to-TTS step Taxila's S2S voice does not have |
+| HGC-23 | y | y | n | 4 | skip | IndicF5 not first-party Azure |
+| HGC-26 | y | y | y | 4 | adapt | 108 tests pass, only node:crypto; identity-ABX is clone-specific, keep naturalness/stats; never used on a human |
+| HGC-27 | y | y | partial | 3 | adapt | listening-bench plumbing; not re-run |
+| HGC-28 | y | y | n | 3 | idea | Chatterbox/Perth specific; reuse spend-ledger idea |
+| HGC-29 | y | y | partial | 3 | idea | 955 lines tied to earbench bundles; RSA attestation overkill |
+| HGC-30 | y | y | partial | 3 | adapt | retarget to Azure/gpt-realtime; scorer reusable, corpus is Meera |
+| HGC-31 | y | y | partial | 3 | adapt | 568 lines clone-specific; copy SKIP-row discipline |
+| HGC-32 | y | y | n | 3 | idea | vendor arms and prices stale/barred |
+| HGC-33 | y | y | n | 3 | idea | named evidence bands idea only |
+| HGC-34 | y | y | y | 2 | adapt | fails spaced Aadhaar/mobile and Devanagari digits |
+| HGC-37 | y | y | n | 3 | idea | imports Gurukul engine (practiceTalk, demoBank, practiceStore) |
+| HGC-38 | y | y | y | 4 | copy | blockerClass.ts only (198 lines, no imports); 80 checks pass |
+| HGC-39 | y | y | partial | 4 | adapt | pure normaliser, imports capability-codes; table is `vy_`-prefixed |
+| HGC-41 | y | y | partial | 3 | adapt | needs playwright + dist; mounts Gurukul StudioApp; skips when dist absent |
+| HGC-42 | y | y | y | 3 | adapt | Taxila already merges via `context/inbox`; union logic only |
+| HGC-43 | y | y | y | 3 | adapt | 124 lines, named refusals; swap limits |

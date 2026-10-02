@@ -568,3 +568,152 @@ should reconcile the two.
   - `ct-no-gemini-api-for-minors`
 - **Open:**
   - `op-pw-k8-ai-tutor-watch`
+
+---
+
+## Addendum: gap-1-retention-benchmark-unit
+
+*2026-10-02. Full workings: `gap-gap-1-retention-benchmark-unit.md`. Model: `retention_benchmark_model.py` →
+`retention-benchmark-model-2026-10-02.json`. This addendum supersedes the retention inputs in §2 row 19, §3.3, §4.3
+and §5.3. It does not replace their text.*
+
+1. **SpeakX's "~30% M3 paid retention" was two figures merged.**
+   - Inc42, 01 Sep 2026: *"paid user retention stands at around 30% on a monthly basis"*. No month index or cohort
+     basis is given [wording V, number S]
+     ([Inc42](https://inc42.com/buzz/exclusive-ms-dhoni-joins-edtech-startup-speakxs-cap-table/)).
+   - Outlook Business, 16 Oct 2025: *"35% retention at month three"*. It is not stated to be paid [wording V,
+     number S]
+     ([Outlook Business](https://www.outlookbusiness.com/corporate/speakxai-raises-16-mn-from-westbridge-capital-eyes-regional-language-expansion-amid-profitable-growth)).
+   - SpeakX sells monthly, quarterly and yearly plans [V] ([T&C](https://speakx.ai/terms-conditions)), so a blended
+     "month three" figure is inflated by plan mix.
+   - The literal reading of the 30% (70% monthly churn) is inconsistent with SpeakX's own stock and LTV/CAC [D].
+   - **SpeakX is a claim, not a floor.**
+2. **The primary benchmark is RevenueCat 2026** [V]
+   ([report](https://www.revenuecat.com/state-of-subscription-apps/)):
+   - monthly first renewal: IN/SEA **46%**; global category medians 53–61%;
+   - second and third renewals: 65–77% and 73–82%;
+   - monthly Y1 median: 8%;
+   - yearly first renewal: IN/SEA **22%**.
+   - These imply **M3 (3 renewals) ≈ 23% (IN/SEA) to 32% (global median)** and **3.4–4.2 paid months**.
+   - Stock-equivalent monthly churn is **24–30%, not the 15% in §3.3** [D].
+3. **Unit economics restated** [D]:
+   - blended contribution LTV: **₹949–1,031**, replacing ₹1,267. The annual renewal input moves from 45% to 30%,
+     and IN/SEA's own first-annual figure is 22% [V].
+   - LTV/CAC = 3 CAC ceiling: **₹316–344**, replacing ₹422.
+   - ₹1,267 is reproduced only at M3 ≈ 40%.
+4. **§4.3 gate: M3 ≥ 35% stays, re-specified.**
+   - Definition: S3 is the share of first *monthly* payments that make 3 consecutive renewals. It is measured at
+     subscription level and excludes annual and quarterly plans, trials and school seats.
+   - Benchmark: top third of global apps; about 1.5× the IN/SEA median.
+   - Kill line: **< 23%**.
+   - It is sufficient for CTWA (S3 ≥ 28.5% gives LTV/CAC 3 at ₹333 CAC) and for referral.
+   - At their base CACs (₹818 and ₹1,000), school-seeded and paid social cannot reach 3× at any M3 under the median
+     tail.
+   - The §5.3 scale gate (≥ 40%) stays. It is now derived: 40% is the M3 that reproduces the GTM base LTV.
+5. **§3.3 base SOM (400k): the inflow is restated.**
+   - "60k/month at 15% churn" needs M3 ≈ 61%, i.e. 15% flat churn. Under the RevenueCat curve shape a 6.67-month
+     life needs ≥ 55% even with a perfect first renewal. That is infeasible unless late renewal is ≥ 93%.
+   - Realistic inflow is **95–118k new payers a month, monthly-only**, or **~46–49k a month with a 35% annual mix**.
+   - With the annual mix, about 70% of the stock is on discounted annual plans, so year-3 gross is **~₹170–175 cr,
+     not ₹218 cr**.
+   - A retention-honest base is **~250–300k average payers** [A]. Keep 400k as the "M3 ≥ 35% and annual mix ≥ 35%"
+     case.
+6. **Docs to correct on their next edit.** Each carries the merged SpeakX figure; the corrected wording is in the
+   gap file §4.
+   - `failures.md`:226 ("as a floor");
+   - `gtm-distribution.md`:61, :136, :374 (17% is the 2025 pooled monthly Y1; the 2026 per-app median is 8%), :411
+     and :478;
+   - `india-ai-native.md`:17 and row 6 ("35% at month 3" *is* in Outlook Business).
+
+---
+
+## Addendum: gap-2-missed-kids-live-and-selfstudy-competitors
+
+*Added 2026-10-02.*
+- **Full file:** `gap-gap-2-missed-kids-live-and-selfstudy-competitors.md`.
+- **Data:** `gap2-playstore-2026-10-02.json` and `gap2-reviews-2026-10-02.json`. These were produced by
+  `playstore_snapshot.py`, run unchanged, and by `gap2_playstore_meta.py`.
+- **Tags:** as in §0.
+
+**Products added to the §2 matrix.** Rows #38–#44 cover:
+- **PlanetSpark** (M);
+- **BrightChamps** (L);
+- **Tata Studi** (L);
+- **Teachmint AI Tutor** (M, as a school channel);
+- **Classplus** (L);
+- **Arivihan** (M);
+- **Sparkl / Codingal** (L).
+
+**None of them is "yes" on two-way Hindi voice, covert assessment, or per-child curriculum generation.** The §2
+claim that "nobody combines all three for classes 1–9 at home" therefore **stands**. One caveat applies:
+- PlanetSpark already sells K-8 parents packages in which AI sessions replace most human sessions. The company calls
+  this "60:40 human:AI" [S]. Parents count only 20–24 human sessions out of every 120–200 [V, reviews].
+- PlanetSpark is profitable by its own claim, with ~₹145 cr guided for FY26 [S].
+- It could add a Hinglish curriculum lane. The estimated chance is ~15% by Oct 2028 [U]. The watch item for this is
+  `op-planetspark-curriculum-lane`.
+
+**Price frame (§4).** The Ghar Tutor ₹999 tier survives, but it is squeezed from both sides:
+
+| reference point | price | relation to ₹999 | tag |
+|---|---|---|---|
+| BrightChamps | ₹600–772 per class + GST, in packages of ₹38.6–90k | ₹999 is 16–21% of the ≈₹4,800–6,200 monthly equivalent | [V/D] |
+| PlanetSpark | ≈₹475–677 per session, in packages of ₹35–42k | ₹999 is 18–26% of the ≈₹3,800–5,400 monthly equivalent | [V reviews/D] |
+| Tata Studi (self-study) | ₹899 per month | about the same | [V] |
+| Arivihan (Hindi belt, classes 10–12) | ₹51 for a full syllabus | near zero | [V] |
+
+The live-class sellers are enrichment products paid in one upfront lump. They are not the anchor; the ₹1,500–3,000
+human tutor remains the anchor.
+
+Tata Studi is the warning:
+- Its newest reviews average 3.21★ [V].
+- Tata Industries' FY26 annual report shows its "After School" content asset impaired to a net block of ₹0.45 cr
+  (gross ₹90.3 cr) [V].
+- The report states that "value in use … is lower than the carrying amount".
+
+Even with the Tata brand, ₹899 a month for passive curriculum content did not sell. **Positioning rule (refines
+`mk-year1-lead-699-999`):**
+- Ghar Tutor is only ever compared with a human tutor.
+- Saathi ₹299 is the only tier that may be compared with apps.
+- **Reversal condition:** the Q1 price smoke test shows that the "tutor" frame converts no better than the "app"
+  frame.
+
+**CAC (§5).** PlanetSpark's advertising and promotion (A&P) fell from 155% of revenue (FY22) to 69% (FY23) and then
+27% (FY24) [S→D]:
+- A&P per payer works out to about ₹10k [D, assuming a ₹38k ticket], or about ₹19k fully loaded once counsellors are
+  included [D/A].
+- 50% of its learners are in tier-2 to tier-4 towns [S].
+- BrightChamps' India entity spent 3.3× its revenue on A&P in FY23 [S→D].
+
+These sellers can therefore bid about 30× the ₹333 payer CAC assumed for the Patna CTWA cell, in overlapping Meta
+audiences. **Add a §5.3 KPI:**
+
+| metric | target | kill or redirect if |
+|---|---|---|
+| cost per CTWA conversation | ≤ ₹20 | > ₹40 for 2 consecutive weeks |
+
+Before any Patna spend, pull Meta Ad Library counts for these sellers' ads targeting Bihar. This has not been done,
+because the Ad Library needs a logged-in session.
+
+**Complaint evidence (confirms `mk-no-sales-no-emi-monthly`).** Share of the newest reviews that are money
+grievances, using the same regexes as §2:
+
+| product | share of newest reviews | sample |
+|---|---|---|
+| BrightChamps | 15.0% | n=193 (all its reviews), so low confidence |
+| PlanetSpark | 12.2% | n=343 (all reviews); 42% of its low-star reviews |
+| Vedantu | 1.75% | newest 400 |
+| PW CuriousJr | 0.75% | newest 400 |
+
+PlanetSpark's low-star text is about counsellors mis-stating how many sessions are taught by humans. **New rejection
+for `context/` — `rj-undisclosed-ai-substitution`:**
+- Never sell AI time as if it were human time.
+- Never sell a pre-paid session count that mixes AI and human sessions.
+- Any human time is a separately named line item.
+
+**Not found (stated as gaps, not filled):**
+- BrightChamps FY24/FY25 filings;
+- Classplus FY25 filings;
+- PlanetSpark FY25 cost lines;
+- PlanetSpark's public price list (none exists on its site);
+- any Jio or Airtel kids' AI-tutor bundle beyond `india-ai-native.md` §2.4;
+- any Leverage-Edu-style kids pivot.

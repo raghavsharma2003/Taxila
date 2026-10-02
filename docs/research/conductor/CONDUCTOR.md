@@ -6,9 +6,23 @@ architect reviews. **Precedence:** this file overrides the sibling conductor doc
 `orchestration-architecture.md` (C1-C9, R0-R9), `day-cycle.md` (DC1-DC12, AR-1…AR-12) and its `.contracts.ts`/
 `.sql`, `student-workspace.md` (W1-W10, SW1-SW18), `school-sync-homework.md` (SS1-SS14, AR-1…AR-10),
 `parent-loop.md` (PL1-PL12, PA1-PA23) and its `.contracts.ts`/`.sql`, `observability-evals.md` (O1-O12,
-B1-B26), `docs/ARCHITECTURE.md`, `learning-science.md` §6 (rules cited as **LS-n**), `learner/kt-algorithms.md`,
+B1-B30 incl. the V9 addendum), `orchestration-architecture.md` R10 (second pass, B1-B11, plus the lock-order probe),
+`docs/ARCHITECTURE.md`, `learning-science.md` §6 (rules cited as **LS-n**), `learner/kt-algorithms.md`,
 `learner/vibe-temperament.md`, `design/parent-experience.md` (PX), `design/low-end-offline.md`, the repo
 `CLAUDE.md`, and `context/`.
+**Revision 2 (resume pass, 2026-10-02 17:40 UTC).** Applies orch R10 (B1-B11) and obs V9 (B27-B30) as rulings
+X29-X40 (§0.2). The largest fix is the lock order in §3.4: revision 1 locked `child_seq` first, and that deadlocks
+5/5 against `complete_job` and `fire_wakeups`. Revision 2 locks it last, and was re-probed in eight race cells with
+0/40 deadlocks (`conductor-lock-order-rev2-probe.sh`). Short refs for the second passes: `orch B4` = orch R10 B4,
+and `obs B27` = obs V9 B27. They do not collide with the first-pass obs B1-B26, which keep their numbers.
+**Gap-fill fragments on disk without their design docs** (not ruled on here): `content-orchestration.sql` (Forge ↔
+Conductor: `forge_request`, `forge_waiter`, `module_ready`, review queue, `allowed_model`) and `adaptation.contracts.ts`
++ `adaptation-hysteresis-sim.py` (cross-day adaptation: the typed `ConductorChildView` with `Fresh<T>` that replaces
+`BriefReader`, the rule latches and `resolveKnob`). Their `.md` docs (`content-orchestration.md`,
+`adaptation-policy.md`) do not exist yet. Two compatibility notes until they do. (a) The header of
+`content-orchestration.sql` says its lock order is "child_seq → conductor_state → forge_request". The leading
+`child_seq` is wrong under X29. Its functions never lock `child_seq`, so they are unaffected; the corrected order is
+in §3.4. (b) Its "(X31)" tag on the `lib/` prefix check means the §5.8 prefix rule, not the X31 row below.
 **Tags:** **[V]** checked against the primary source (this session or by the cited sibling doc). **[S]** secondary.
 **[U]** unmeasured design default or estimate. **[I]** inference. **[repo]** a fact in this repository.
 Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `dc AR-4`, `ws SW3`, `ss AR-2`,
@@ -41,10 +55,12 @@ Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `
    read order equals commit order (orch R2.1). Agents report back with events and never call each other (C6).
 3. **All outbound work leaves through an outbox** (job, wakeup, notification, day_plan, decision_log) written
    in the same transaction as the state change. Small SQL functions make the hand-offs atomic: ingest, firing a
-   wakeup, finishing a job, creating a commitment.
+   wakeup, finishing a job, creating a commitment. **Every multi-table writer locks `child_seq` last** (X29,
+   measured). Replay never commits (X31).
 4. **Hosts.** `taxila-web` serves requests and inline work of ≤ 10 s. A new **`taxila-worker`** ACA app (min 1,
-   not HTTP-scaled, direct Neon connection) runs the leader-elected ticker, the job lanes and the realtime
-   observers. ACA scheduled jobs run the detectors that must outlive the worker. Nothing runs on Vercel.
+   not HTTP-scaled, direct Neon connection) runs the leader-elected ticker, the dirty-set step loop and the job
+   lanes. From M1, a separate **`taxila-observer`** app holds the realtime observer sockets (X37). ACA scheduled
+   jobs run the detectors that must outlive the worker. Nothing runs on Vercel.
 5. **Every slot has a voice lane** (`realtime | realtime_mini | cascade | tap`). The tier's monthly budget per
    lane is enforced by the plan validator and the cost governor. At ₹299, with AI + infra held to 60% of revenue,
    the realtime teacher fits about **16 minutes a month** [I/U, §9.5], so the price-to-minutes call is an owner
@@ -86,9 +102,9 @@ Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `
 | X11 | daily parent note | dc DC9: WhatsApp daily replaces the milestone | **pull-only (in-app) in v1**. A daily push is v2, as a parent-requested class outside the cap that self-pauses after 5 unread | 5-7 a week cannot fit a ≤ 2/week cap, and the Meta category risk is real (dc AR-6.6) |
 | X12 | anchor reminder | server push via Notification Hubs | **on-device local notification**, re-synced when the routine changes | FCM deprioritises silent high-priority messages [V], so "ignored" is unobservable; works offline (dc AR-6.8) |
 | X13 | Blob region | ws: Central India. ss AR-3: captures in Central India | **eastus2 for all v1 storage**. Measure capture upload p90 from India (M-SS7). If it misses the 6 s box budget, move only the ephemeral `captures` container | the hot copy is in the US, so there is no residency gain, and every read would cross twice (ws SW5) |
-| X14 | realtime observer | obs V8: M0. pl PA-3: later | **M1, read-only**, for metering and the staleness SLI. The Director keeps client-applied `session.update` until OM16 is measured | M0 cohort ≤ 30; device usage bounded by wall time is enough. Moving `session.update` server-side is a decision for later |
+| X14 | realtime observer | obs V8: M0. pl PA-3: later | **M1, read-only**, for metering and the staleness SLI, on its own app (X37). The Director keeps client-applied `session.update` until OM16 is measured | M0 cohort ≤ 30; device usage bounded by wall time is enough. Moving `session.update` server-side is a decision for later |
 | X15 | DEK crypto-shred | ws W4 | **deferred.** Hard delete, a 7-day Neon history window, 7-day Blob soft-delete, and the parent promise "removed now; backups expire within 7 days" | a DEK inside the PITR'd database is resurrected by restore (ws SW1); `dek-in-pitr-database` is rejected |
-| X16 | rainbow reducer versions | orch §10 | **dropped.** Use `upgradeState()` plus a deploy freeze from 18:30 to 21:30 IST | a child in `paused`/`safety_hold` never reaches `night`, so two reducers would live forever |
+| X16 | rainbow reducer versions | orch §10 | **dropped.** Use `upgradeState()` plus a deploy freeze from 18:00 to 21:30 IST (X37) | a child in `paused`/`safety_hold` never reaches `night`, so two reducers would live forever |
 | X17 | daily cap scope | orch: lesson minutes. dc: all slots | **all slots**. Homework has its own sub-cap inside the cap | dc wins (orch R5) |
 | X18 | `wrapAt` vs `hardStopAt` | both | **both kept**; the Director wraps at the earlier one, at a natural stop, never mid-item | they have different owners (governor/limits vs bedtime) |
 | X19 | lesson session length | DC4 20/25/35/45 | **session length, not realtime length.** Realtime minutes come from the tier budget | dc AR-1 |
@@ -101,6 +117,18 @@ Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `
 | X26 | `school_mirror` table | ss §8.3 mutable table | **a fold inside `conductor_state.state.school`**, fed by `school.pointer_vote` events | second writer beside the Conductor (ss AR-4 R4) |
 | X27 | struggle push (`struggleSooner`) | pl §8.1 | **deferred to M2**; L is a letter line in v1 | pressure risk without a measured benefit (pl PA-20) |
 | X28 | face blur, test-paper analysis, alias pipeline, transcription-as-evidence | ss §3-§6 | **v2**; v1 photos give help only, never evidence | none of their parameters can be fitted before real use (ss AR-6) |
+| X29 | lock order | revision 1 §3.4: `child_seq` first. orch R2.4 / B1: `child_seq` last | **`child_seq` is the last row any multi-table writer locks** (full writer table in §3.4). Treat SQLSTATE `40P01` like `40001`: retry the batch from a fresh lease read | measured: `child_seq` first deadlocks **5/5** against `complete_job` and **5/5** against `fire_wakeups`. `child_seq` last gives 0/5 against both (orch R10.1), and the revision-2 shape gives 0/40 across 8 cells (§3.8) |
+| X30 | `conductor.step` | revision 1 §8.2: a queued job keyed `step:{child}:{toSeq}` | **not a job kind.** `child_seq.pending_since` is the dirty set: a plain read, then `step()` with the lease as the mutex | about 20 jobs per lesson, most of them skipped on the lease, and a constant key would run only once ever (orch B4) |
+| X31 | replay | orch §4.6: full replay from seq 0 for tests, audits and upgrades | **replay never commits.** It gets a reader with no `tx`/`commit` handle (I-R9). Upgrades go through `upgradeState` | after retention prunes outbox rows, a committing replay re-runs consolidations and re-sends letters (orch B5) |
+| X32 | idle hang-up trigger | orch R3.3 / revision 1 §4.6: "2 turns with no kit-relevant child utterance" | **non-child audio only**: VAD commits whose transcript is empty or low-confidence, or 90 s with no child speech after a hand-over. Off-topic child speech gets the Director's redirect shape | off-topic chat and thinking aloud are the rapport moments, and a 6-8 year old does them constantly (orch B6) |
+| X33 | what `safety_hold` locks | orch R4/R7.4 / revision 1 §3.2, §8.5: only `critical` locks the app; `high` keeps lessons running | **every incident → `safety_hold`** until the safeguarding protocol owner rules on a severity split (D-SAFE). The split is a [U] proposal, not a rule | the Conductor never decides safety content, and the safeguarding hand-off is product floor (orch B7) |
+| X34 | brief record in `decision_log` | orch R2.8: the brief value on every row | **`brief_snapshot(child_id, digest)`**, content-addressed; `decision_log` keeps the digest. Retention follows the replay window (90 d [U]) | ≈ 15 KB per child-day, ≈ 550 GB/year at 100k children [U] (orch B8) |
+| X35 | job wake-up | orch R1: `NOTIFY job_ready` | **poll**: 1 s while busy, backing off to 5 s when idle. `pg_notify` is only a hint, sent from the direct connection inside the committing transaction | the pooler has no LISTEN/NOTIFY [V Neon]. A 1 s poll also keeps Neon from scaling to zero (it suspends after 5 min idle [V]), so price that in CM2 (orch B9) |
+| X36 | dormant children's clock | every child gets `day_start` and night wakeups | **after 14 days with no `app.opened`, recurring wakeups are not re-armed.** Parent-chosen ones (the weekly letter) stay; the next open re-arms the rest | ≥ 200k wake events a day at 100k accounts with no child on the other end (orch B10) |
+| X37 | observer host (amends X14) | X14: M1 on `taxila-worker` | **M1, on a separate `taxila-observer` ACA app** scaled on live-lesson count, with no leader. Deploys freeze 18:00-21:30 IST (this also amends X16 and §3.12) | a worker revision roll would drop every observer at once, and job-loop contention skews staleness timestamps (obs B29) |
+| X38 | `modelCall` cleanup order | obs V2.1 `finally` | **settle the reservation first, in its own `try`**. The ledger insert is best-effort with an `obs.ledger_write_failed` counter, and the original error is re-thrown | a throwing insert leaked the reservation and hid the real error (obs B27) |
+| X39 | Director turn commit | obs V2.8: `lesson_state … for update` | **optimistic**: read `lesson_state.version`, hold no lock across model calls, commit `where version = $v`, and re-fold the newer turn on conflict | otherwise every live lesson pins a pooled Neon connection through its classify/compile calls at the 19:00-21:00 peak (obs B28) |
+| X40 | M0 instruction-lag signal | none until the observer (M1) | **a provisional client-clock OM16 at M0**: `session.update` apply time vs the next `response.created`. Aggregate only, untrusted, replaced at M1 | M0 would otherwise have no child-facing staleness signal (obs B30) |
 
 ---
 
@@ -124,13 +152,13 @@ Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `
                                            ▼                  ▼                                              ▼
               DIRECTOR (per lesson; owns the minute)   WORKSPACE / SYNC (outbox up, ETag docs down)   student_event (append-only)
               /api/lesson/turn on taxila-web           Memory · KT ledger (own writers)
-              ⇄ device ⇄ Azure realtime (WebRTC)  ◄── observer WS on taxila-worker (M1: metering, staleness)
+              ⇄ device ⇄ Azure realtime (WebRTC)  ◄── observer WS on taxila-observer (M1: metering, staleness; X37)
                      │
    SAFETY MONITOR + SAFEGUARDING PROTOCOL (outside Conductor authority) ──► safety.incident → mode=safety_hold; gates every parent notice
    COST GOVERNOR + ADMISSION (budget, conductor_usage, rate_bucket) ◄── every model call and every voice block reserves here ──► cost_ledger
 ```
 
-Four rules make it safe (orch §2, R5):
+Five rules make it safe (orch §2, R5, R10):
 1. **One writer per fact.** Only the Conductor writes `conductor_state` and `day_plan`. Agents write their own
    tables plus events.
 2. **Agents never call agents.** A Forge result reaches the Director only through a `brief.refresh` or the
@@ -140,12 +168,14 @@ Four rules make it safe (orch §2, R5):
 4. **Authority order** (orch §5.9), as ordered guard functions: safety protocol > consent > parent controls >
    law/policy caps (quiet hours, message caps, sleep margins) > cost governor > Conductor plan > Director choice
    > vibe knobs. A lower layer never re-enables what a higher one blocked.
+5. **One lock order.** `child_seq` is the last row any multi-table writer locks (X29, measured; the writer table is
+   in §3.4). A new writer that cannot follow the order does not ship.
 
 ### 1.2 Components
 
 | component | owns (only writer) | runs on | model | key contract |
 |---|---|---|---|---|
-| Conductor (`server/conductor/`) | `conductor_state`, `day_plan`, `decision_log`, outbox rows | inline attempt on `taxila-web`; `conductor.step` jobs on `taxila-worker` | none | `decide()` §3.4 |
+| Conductor (`server/conductor/`) | `conductor_state`, `day_plan`, `decision_log`, `brief_snapshot`, outbox rows | inline attempt on `taxila-web`; the dirty-set step loop on `taxila-worker` (X30) | none | `decide()` §3.4 |
 | Scheduler (library inside `decide`) | nothing (pure) | in-process | none | `clockPhase`, `learningDay`, FSRS due list, jitter §3.2 |
 | Planner | proposals only | code: inline. LLM: worker (M2, shadow) | luna (shadow) | `DayPlan` + validator §4.5 |
 | Director (`server/director/`, existing) | `lesson`, `turn`, `turn_trace`, homework session state | `taxila-web` per turn | luna classify; realtime voice | `LessonBrief` in, `lesson.*` events out §4.6 |
@@ -297,7 +327,8 @@ end $$;
 ```
 
 Ingest paths: (a) server code calls `ingest_event` inside the same transaction as its own domain write (parent
-settings, lesson close, capture commit). (b) The device posts `{k:'event'}` ops through `/api/ws/sync` (§5.5).
+settings, lesson close, capture commit). The domain write comes first and `ingest_event` is the last locking
+statement, so `child_seq` is the last lock (X29). (b) The device posts `{k:'event'}` ops through `/api/ws/sync` (§5.5).
 (c) The ticker fires wakeups (§3.9). After any ingest, the request makes **one inline `step()` attempt** (≤ 10 s
 budget) and otherwise relies on the worker. Retention: no fold-and-delete in v1 (volume is KB per child);
 monthly partitioning of the ledger tables at > 5k DAC (obs V3).
@@ -348,11 +379,18 @@ create table decision_log (                          -- the Conductor's turn_tra
   child_id uuid not null references child(id) on delete cascade, version bigint not null,
   at timestamptz not null default now(), now_used timestamptz not null,
   state_v int not null, build_sha text not null, from_seq bigint not null, to_seq bigint not null,
-  brief_digest text, brief_value jsonb,              -- only the ChildBrief fields fired rules read
+  brief_digest text,                                 -- → brief_snapshot (X34); no value copy per row
   arms text[] not null default '{}',
   decisions jsonb not null,                          -- [{seq, rules[], blocked:[{cmd, guard, reason}]}]
   commands jsonb not null, correlation_id text not null,
   primary key (child_id, version));
+
+create table brief_snapshot (                        -- content-addressed (X34): only the ChildBrief fields fired rules read
+  child_id uuid not null references child(id) on delete cascade,   -- per child, so erasure and the W-map test cover it
+  digest text not null, value jsonb not null, created_at timestamptz not null default now(),
+  primary key (child_id, digest));                   -- insert … on conflict do nothing (a new row, never a lock wait)
+-- retention: delete snapshots no decision_log row inside the replay window (90 d [U]) references; decision_log ages
+-- out on the same window
 
 create table day_plan (                              -- versioned; written ONLY inside the Conductor commit (X2)
   child_id uuid not null references child(id) on delete cascade, day date not null, version int not null,
@@ -408,7 +446,7 @@ bounded by bedtime − 30, and the stricter of parent and band wins.
 
 | clockPhase \ mode | free | in_lesson | paused | safety_hold |
 |---|---|---|---|---|
-| morning, at_school, recovery | no prompts. A child-initiated open gets the rest or "school time" screen, plus a tap burst only inside allowed hours | Director owns the screen | rest card ("aaj chhutti") | `critical`: hold screen (warm, 1098/14416, reveals nothing on a shared phone). `high`: lessons continue under protocol monitoring (orch R7.4) |
+| morning, at_school, recovery | no prompts. A child-initiated open gets the rest or "school time" screen, plus a tap burst only inside allowed hours | Director owns the screen | rest card ("aaj chhutti") | hold screen for **every** incident until D-SAFE rules (X33): warm, 1098/14416, no "suspended" language, reveals nothing on a shared phone. Letting `high` incidents keep lessons running under protocol monitoring is a [U] proposal to the safeguarding owner, not a rule |
 | learning_window, free_day | lesson start (cap + admission + voice budget), homework, bursts | one lesson; no new learning notifications | same | same |
 | wind_down | no new topic or lesson start; a tap review burst and finishing an open wrap are allowed | the Director wraps at `hardStopAt` | same | same |
 | night | calm rest screen only | hard stop already passed | same | same |
@@ -419,7 +457,7 @@ bounded by bedtime − 30, and the stricter of parent and band wins.
 
 | trigger | reducer response (typical) |
 |---|---|
-| `app.opened` | if no plan for `learningDay`: build the **code plan now** and commit it as `day_plan` v1 (`first_open`). The device has already painted from its cached plan in < 300 ms (orch R7.9). If `resumable` is live: emit `brief.refresh{resumeOf}`. Drain due wakeups (piggyback) |
+| `app.opened` | if no plan for `learningDay`: build the **code plan now** and commit it as `day_plan` v1 (`first_open`). The device has already painted from its cached plan in < 300 ms (orch R7.9). If `resumable` is live: emit `brief.refresh{resumeOf}`. Drain due wakeups (piggyback). If the child was dormant (no open for ≥ 14 days), re-arm the recurring wakeups (X36) |
 | `slot.shown` / `slot.started` | add the slot to `shownSlotIds` / `startedSlotIds`: it is frozen for the day (V10) |
 | `lesson.started` | mode → `in_lesson` |
 | `lesson.ended` | mode → `free`. `network` → `resumable` until +15 min. Enqueue `memory.consolidate:{lessonId}`. Debounce a re-plan by 5 min over **unshown** slots. Run detectors (§7.6). A `strained`/`tired` close makes tomorrow's opener success-first with shorter segments (never a parent line) |
@@ -431,9 +469,9 @@ bounded by bedtime − 30, and the stricter of parent and band wins.
 | `parent.focus_requested` / `schedule_proposed` | validate. Adopt into **unshown** slots or the next day, and answer the proposal inline (§7.7) |
 | `school.pointer_vote` / `test_announced` / `day_override` | fold into `school`; re-plan unshown slots; open a test window (§4.8) |
 | `capture.committed` | if a sitting is open, the Director's homework mode picks it up; otherwise add a `homework_help` slot at the head of the next sitting |
-| `clock.wakeup` | `day_start`: refresh the code plan if inputs changed. `night`: close the learning day. `weekly_letter`: enqueue `parent.letter`. `commitment_due`, `safety_settle`, `safety_escalate`, `resume_window_end`, `pause_end`, `care_note_expiry`: as named |
+| `clock.wakeup` | `day_start`: refresh the code plan if inputs changed. `night`: close the learning day, and re-arm tomorrow's `day_start`/`night` only if `counters.lastActiveDay` is within 14 days (X36). `weekly_letter`: enqueue `parent.letter`. `commitment_due`, `safety_settle`, `safety_escalate`, `resume_window_end`, `pause_end`, `care_note_expiry`: as named |
 | `job.done` / `job.failed{final}` | clear `pending.jobs`; on a final failure take that kind's fallback (§8.2) |
-| `safety.incident` | **pre-empts everything**: mode → `safety_hold` (for `critical`); cancel child-facing queued jobs; hand to the protocol. The Conductor never decides safety content |
+| `safety.incident` | **pre-empts everything**: mode → `safety_hold` (every severity until D-SAFE rules: X33); cancel child-facing queued jobs; hand to the protocol. The Conductor never decides safety content |
 | `safety.incident_updated` | re-evaluate `safetyParentNotice()` (§7.6) |
 | `budget.threshold` | tomorrow's plan uses lower lanes; the child is never told about money |
 
@@ -465,7 +503,7 @@ export async function step(childId, { maxEvents = 50 } = {}) {
     const now = clock.now();                                    // one recorded `now` per batch (decision_log.now_used)
     const events = await q(`select * from student_event where child_id=$1 and seq>$2 order by seq limit $3`,
                            [childId, cursor, maxEvents]);
-    const brief = recordingBriefReader(childId);                // records every field read → decision_log.brief_value
+    const brief = recordingBriefReader(childId);                // records every field read → brief_snapshot (X34)
     const commands = [], decisions = [];
     for (const ev of events) {
       const out = authorityClass(ev.type) ? decideOrFailSafe(state, ev, ctx(now, brief))   // §3.6
@@ -474,36 +512,66 @@ export async function step(childId, { maxEvents = 50 } = {}) {
       commands.push(...out.commands);
       decisions.push({ seq: ev.seq, rules: out.rulesFired, blocked: out.blocked });
     }
+    // CasFailed, 40001 and 40P01 (the deadlock backstop: X29) abort the whole batch with nothing written. The caller
+    // re-runs step() from a fresh lease read, at most 3 times; after that pending_since stays set for the dirty-set loop.
     ({ version, hasMore } = await commit(childId, token, version, state, cursor, commands, decisions, brief, now));
   }
 }
+// Replay (§3.11) is a different function with a different handle: replay(childId, fromSeq, reader) folds and returns
+// {state, commands} for comparison. It is never given tx/commit, so it cannot write (X31, I-R9).
 ```
 
 ```js
 // server/conductor/commit.js — one interactive transaction over the pg Pool (X5). db.tx() is new in server/db.js.
-// Lock order everywhere: child_seq BEFORE conductor_state (ingest_event and create_commitment lock only child_seq).
+// LOCK ORDER (X29, measured): conductor_state → [forge_request → forge_waiter] → job → wakeup → notification /
+// notify_slot → child_seq LAST. Inserts of brand-new rows (day_plan, decision_log, brief_snapshot) wait on nothing.
+// Revision 1 took child_seq FIRST and deadlocked 5/5 against complete_job (job → child_seq) and fire_wakeups
+// (wakeup → child_seq) (orch R10.1).
+// Correctness rests on the child_seq row lock plus has_more, not on conductor_state (orch B2). A competing step()
+// holds no other lock: its single-statement lease UPDATE either finds the lease held and returns `skipped`, or waits
+// briefly on this transaction's conductor_state row and then finds it held. So it can never join a cycle.
 export const commit = (childId, token, expected, state, cursor, commands, decisions, brief, now) => tx(async (t) => {
-  // 1. has_more first: if an ingest is in flight, this UPDATE waits for it and re-reads `last` (orch R2.4)
-  const m = await t.one(`update child_seq set pending_since = case when last > $2 then pending_since else null end
-      where child_id=$1 returning (last > $2) as has_more`, [childId, cursor]);
-  // 2. CAS on version AND this invocation's lease token; keep the lease only if the loop continues
+  // 1. CAS on version AND this invocation's lease token. The conductor_state row stays locked until COMMIT.
   const r = await t.one(`update conductor_state set state=$4, state_v=$5, cursor_seq=$6, mode=$7, learning_day=$8,
-        plan_day=$9, plan_version=$10, version=version+1, updated_at=now(),
-        lease_token = case when $11 then lease_token end,
-        lease_until = case when $11 then now() + interval '30 seconds' end
+        plan_day=$9, plan_version=$10, version=version+1, updated_at=now()
       where child_id=$1 and version=$2 and lease_token=$3 returning version`,
-    [childId, expected, token, state, STATE_V, cursor, state.mode, state.learningDay, state.plan?.day, state.plan?.version, m.has_more]);
+    [childId, expected, token, state, STATE_V, cursor, state.mode, state.learningDay, state.plan?.day, state.plan?.version]);
   if (!r) throw new CasFailed();                                // loser re-runs from the fresh snapshot; nothing written
-  await insertPlans(t, childId, commands);                      // 'plan.adopt' → day_plan row
+  await forgeDemand(t, childId, commands);                      // 'forge.demand' → forge_file_demand() (gap-fill
+                                                                //  content-orchestration.sql; its doc is pending)
   await insertJobs(t, childId, commands);                       // multi-row VALUES, on conflict per §3.8
   await cancelJobs(t, childId, commands);                       // match (child_id, kind, idem_key)
   await upsertWakeups(t, childId, commands);
   await insertNotifications(t, childId, commands);              // slot insert = cap (§4.10.3)
+  await insertPlans(t, childId, commands);                      // 'plan.adopt' → day_plan row (new row)
+  const digest = await insertBriefSnapshot(t, childId, brief);  // on conflict (child_id, digest) do nothing (X34)
   await t.q(`insert into decision_log (child_id, version, now_used, state_v, build_sha, from_seq, to_seq,
-               brief_digest, brief_value, arms, decisions, commands, correlation_id) values (...)`, [/* … */]);
+               brief_digest, arms, decisions, commands, correlation_id) values (...)`, [/* … digest … */]);
+  // 2. LAST lock: child_seq. An ingest in flight holds it, so this UPDATE waits and re-reads `last`. An ingest that
+  //    starts after this point waits for COMMIT, then finds the lease released and runs its own inline step().
+  const m = await t.one(`update child_seq set pending_since = case when last > $2 then pending_since else null end
+      where child_id=$1 returning (last > $2) as has_more`, [childId, cursor]);
+  // 3. The lease decision touches the conductor_state row this transaction already holds, so it adds no new lock.
+  await t.q(`update conductor_state set lease_token = case when $3 then lease_token end,
+        lease_until = case when $3 then now() + interval '30 seconds' end
+      where child_id=$1 and lease_token=$2`, [childId, token, m.has_more]);
   return { version: r.version, hasMore: m.has_more };           // no lost wake-ups between steps
 });
 ```
+
+**Every writer's lock sequence** (X29). A new writer goes through code review against this table, and G3 runs the
+lock-order probe as a fixture:
+
+| writer | locks, in order |
+|---|---|
+| domain write + `ingest_event` (parent settings, lesson close, capture commit, notifier status) | its own domain row → `child_seq` |
+| Conductor commit | `conductor_state` → (`forge_request` → `forge_waiter`) → `job` → `wakeup` → `notification`/`notify_slot` → `child_seq` → (`conductor_state` again, already held) |
+| `complete_job` | `job` → `workspace` (read; `FOR SHARE` in a job's own final write transaction: ws SW6) → `child_seq` |
+| `fire_wakeups` | `wakeup` (SKIP LOCKED, a batch of ≤ 500, possibly many children) → each child's `child_seq` |
+| `create_commitment` | `child_seq` as the mutex, first, then **only inserts of new rows**. It locks no other existing row, which is the one allowed exception |
+| sync `applyBatch`, Director turn, `kt.refold` | `workspace` (`FOR UPDATE`, the KT lock: §5.6) → ledger inserts → `child_seq` (through `ingest_event`) |
+| Forge functions (`content-orchestration.sql`) | `forge_request` → `forge_waiter`/`module_ready`/`review_item`. Never `child_seq` |
+| erasure | (1) `→ erasing` as a single-statement transaction; (2) take the lease; (3) the cascade delete, which is unordered by nature. It runs only after the fence, and retries on `40P01` |
 
 ### 3.5 Commands
 
@@ -515,6 +583,8 @@ export type Command =
   | { kind: 'wakeup'; at: string; reason: WakeReason; dedupe: string }          // `at` already jittered (§3.9)
   | { kind: 'notify'; intent: NotifyIntent; dedupe: string; capScope?: CapScope }
   | { kind: 'brief.refresh'; lessonId?: string; resumeOf?: string }
+  | { kind: 'forge.demand'; libraryKey: string; horizon: 'in_lesson' | 'next_lesson' | 'two_weeks' | 'term';
+      lessonId?: string; slotId?: string; wantedBy: string }        // proposed by the content-orchestration gap-fill
   | { kind: 'audit'; code: string };
 ```
 
@@ -614,10 +684,21 @@ until the first committed and got seq + 1 (I-R1). A commit's `has_more` waited f
 true. The run caught one defect, which is fixed above: orch R2.3's `run_after = case … end` wrote NULL into a NOT NULL
 column on every non-retry outcome.
 
+**Lock order, verified** (same measurement id, revision-2 pass, scratch PG 16.14, n = 5 per cell;
+`conductor-lock-order-rev2-probe.sh` plus its `.extra.sql`/`.reset.sql`, on top of orch's probe schema). Both
+revision-1 controls, `child_seq` first against `complete_job` and against `fire_wakeups`, deadlocked **5/5**.
+The revision-2 commit above deadlocked **0/5** in each of eight cells: against `complete_job` and against
+`fire_wakeups`, with each side going first; against a `create_commitment` holding `child_seq`; against an in-flight
+ingest; and with one ticker batch over two children racing two concurrent commits. In every cell where an ingest
+committed, or was in flight, before the commit's `child_seq` update, `has_more` came back `true` (20/20). In every
+run, fired wakeups equalled `clock.wakeup` events (I-R2). Not covered: the parent API under load, and the real
+cascade delete.
+
 - Heartbeat: long jobs extend `lease_until` every `lease_sec/3` with the same `attempts` fence. Workers check
   `cancel_requested` at every `durableStep` boundary and before any child-facing effect.
-- Hard-coded concurrency: the per-child `conductor.step` singleton is the lease, and `azure:image ≤ 3` is the rate
-  bucket. There is no generic concurrency subquery, because it over-admits (orch §7.2 caveat, R6).
+- Hard-coded concurrency: the per-child singleton is the **lease over the `pending_since` dirty set** (X30; there is
+  no `conductor.step` job), and `azure:image ≤ 3` is the rate bucket. There is no generic concurrency subquery, because
+  it over-admits (orch §7.2 caveat, R6).
 - `agent_run(job_id, attempt, step_key, output, spent_micro_usd)` checkpoints exist for Forge and the letter job
   only (orch R6).
 - Library-level jobs (`child_id` null, Forge) fan out to waiting children through the `module.ready` read model,
@@ -648,8 +729,16 @@ $$;
 ```
 
 - **Ticker** (on the `taxila-worker` leader, every 15 s): `fire_wakeups(500)` until it returns fewer than 500
-  rows. Then enqueue `conductor.step` for the returned children, and sweep
-  `select child_id from child_seq where pending_since < now() - interval '30 seconds'` as the backstop.
+  rows. Each call is its own short transaction, so a deadlock abort (X29's backstop) rolls back at most one batch.
+- **Dirty-set step loop** (every `taxila-worker` replica; X30). This replaces both the `conductor.step` job kind and
+  revision 1's 30 s sweep:
+  `select child_id from child_seq where pending_since is not null and pending_since < now() - interval '2 seconds' order by pending_since limit 50`.
+  It is a plain read with no `FOR UPDATE`, so X29's order holds. Each returned child gets `step()` with bounded
+  concurrency (8 per replica [U]), and the lease is the mutex. The 2 s grace leaves the first attempt to the inline
+  `step()` on `taxila-web`. The loop polls every 1 s while it finds work, backing off to 5 s when idle (X35).
+- **Dormant clock** (X36): after 14 days with no `app.opened`, the `night` handler stops re-arming `day_start` and
+  `night`. Parent-chosen wakeups (`weekly_letter`, `commitment_due`, `care_note_expiry`) and safety timers are never
+  dropped. `app.opened` re-arms everything.
 - **Jitter** (orch R3.2): mass reasons get `due_at = base + (hashtext(child_id::text) mod windowSec)`. The windows
   are: `day_start` 05:00-06:00 local; `weekly_letter` across the parent's chosen hour; the M2 night plan across
   22:30-04:30. Dedupe keys stay semantic (`day_start:2026-10-03`, `weekly_letter:2026-W40`).
@@ -672,15 +761,23 @@ $$;
 ### 3.11 Replay contract
 
 `decide` is pure relative to `(event, state, recorded now, recorded brief fields, cfg@build_sha, arms)`. All of
-these are in `decision_log`. Invariant I-R3: a replay that reads anything else fails. Assignment is a pure
-hash passed into `decide` (obs O10). L2 replay on release starts at M1; the nightly production sample starts at
-M2 (§9.8).
+these are in `decision_log` and `brief_snapshot`. Invariant I-R3: a replay that reads anything else fails.
+Assignment is a pure hash passed into `decide` (obs O10). L2 replay on release starts at M1; the nightly production
+sample starts at M2 (§9.8).
+
+**Replay never commits** (X31; orch B5). `replay(childId, fromSeq, reader)` gets a read-only reader with no `tx` or
+`commit` handle, and returns `(state, commands[])` to compare against `decision_log`. Idempotency keys protect a
+committing replay only while the original `job`/`wakeup`/`notification` rows exist. After retention prunes them, a
+replay that wrote would re-run consolidations and re-send letters. **I-R9**: the simulator wraps the DB in a
+write-counting shim and asserts zero writes in replay mode. Reducer upgrades go through `upgradeState` (§3.12), never
+through replay-and-commit.
 
 ### 3.12 Upgrades and deploys
 
 `upgradeState(state, fromV)` is a chain of pure migrations, unit-tested with fixtures from every previous
-`stateV`. Deploys that touch `server/conductor/` or `server/director/` are frozen from 18:30 to 21:30 IST
-(peak). `git push` comes first, then `node scripts/deploy-azure.mjs` for both apps, `taxila-worker` second.
+`stateV`. Deploys that touch `server/conductor/`, `server/director/` or the observer are frozen from 18:00 to
+21:30 IST (peak; X37). `git push` comes first, then `node scripts/deploy-azure.mjs` for the apps: `taxila-web`, then
+`taxila-worker`, then (from M1) `taxila-observer`.
 
 ---
 
@@ -825,7 +922,7 @@ export interface LessonBrief {
 | lesson start | `/api/lesson/start` runs: (1) usage reserve of a 5-min block (§3.1); (2) voice-budget reserve for the first block on the granted lane; (3) a realtime admission token (§9.5); (4) `brief.refresh`. While admission waits, the device runs the **off-voice warm-up** (tap retrieval with cached narration). The teacher then joins and builds on its results. A queue position is never shown to the child; the parent dashboard shows "busy hour" honestly |
 | block renewal | every 5 min at a natural stop: renew usage + voice. On a failure the governor sets `wrapAt` = the next natural stop. An in-flight lesson whose governor DB call errors fails **open for one block**, logged (orch R3.3) |
 | cap or bedtime | wrap at the next natural stop. Finish the current item, at most one wrap per item. A "+10 min" is offered **to the parent behind the PIN**, never to the child (orch R7.5) |
-| idle | 90 s with no child speech, or 2 consecutive turns with no kit-relevant utterance (TV, siblings) → a wrap shape ("main yahin hoon…") and the client closes WebRTC. Reopening is one tap through admission (orch R3.3) |
+| idle (X32) | triggers **only on audio that is not the child**: VAD commits whose transcript is empty or low-confidence (TV, a sibling, a pressure cooker), or 90 s with no child speech after the teacher handed over the turn. At the next natural stop: one "main yahin hoon…" shape, then a wrap, and the client closes WebRTC. Reopening is one tap through admission. **Off-topic child speech is never idle** ("mera kutta aaj…", thinking aloud): the Director answers it with its redirect shape, because those are the rapport moments. CM10 counts the two separately |
 | 60-min / 32k-token session cap [V Azure] | the Director's `session.renew` at a natural stop, carrying the brief + lesson summary |
 | network drop | `lesson.ended{reason:'network'}` → `resumable` for 15 min. A resume keeps the lessonId, the brief and the reservation, gets reconnect priority 0, has no re-greeting, and counts only voice actually used |
 | degrade | the rung is chosen at start for the whole lesson; it changes only on `outage` (I-R7) |
@@ -1370,7 +1467,8 @@ SQL header comment is reworded to "child and parent audio is never stored; gener
 | host | what runs there | must not run there |
 |---|---|---|
 | **`taxila-web`** (ACA, existing; min 1 / max 5, HTTP scale at 50 concurrent; pooled Neon URL) | all routes; the Director turn; ingest + **one inline `step()`**; `/api/lesson/start` admission; sync apply; code planner; `forge.spec`/scene inline; homework extraction while the child waits (job-row backed); PTM text turns and relayed voice routes; WhatsApp inbound ack | anything > 10 s after the response; timers; sockets that must outlive a request (SIGTERM → 30 s → SIGKILL on scale-in [V]) |
-| **`taxila-worker`** (new ACA app, same image, entrypoint `node server/worker/main.mjs`; min 1 / max 2; no ingress; **direct** Neon URL) | leader-elected ticker (`pg_try_advisory_lock(hashtext('taxila:ticker'))` held on a dedicated session); fast + slow claim loops (1 s idle poll; a `NOTIFY job_ready` wake-up is an optimisation only, since it must not depend on Neon's pooler [U]); letter fan-out; voice-note TTS; WhatsApp inbound processing; `memory.*`, `kt.refold`, compaction, erase/export; realtime **observer** WebSockets (M1); safety settle and escalation timers | — |
+| **`taxila-worker`** (new ACA app, same image, entrypoint `node server/worker/main.mjs`; min 1 / max 2; no ingress; **direct** Neon URL) | leader-elected ticker (`pg_try_advisory_lock(hashtext('taxila:ticker'))` held on a dedicated session); the **dirty-set step loop** (§3.9, X30); fast + slow claim loops, polling 1 s while busy and 5 s when idle (X35). `pg_notify('job_ready')` may be sent from this direct connection inside a committing transaction as a hint only, and correctness never depends on it [V Neon: no LISTEN/NOTIFY through the pooler]. Also: letter fan-out; voice-note TTS; WhatsApp inbound processing; `memory.*`, `kt.refold`, compaction, erase/export; safety settle and escalation timers | realtime observer sockets (X37) |
+| **`taxila-observer`** (new ACA app at **M1**, same image, entrypoint `node server/observer/main.mjs`; no ingress; scaled on live-lesson count; no leader) | one observer WebSocket per live lesson (§9.4): metering and the staleness SLI, read-only | anything else, so a worker revision roll never drops every observer at once (obs B29) |
 | **ACA scheduled jobs** (cron in **UTC** [V]) | `canary` `*/30 * * * *` (text modality 47/48 runs, audio once a day); `nightly` `30 21 * * *` (03:00 IST: rollups, DRS, writer census, cost reconcile; `replicaRetryLimit ≥ 1`, idempotent per day) | they exist so the detectors don't die with the worker they watch (obs V1, V4) |
 | **ACA manual jobs** | G4-G6 batteries started by CI with an image tag (≤ 3 h); `--content` operator reads (Entra-authenticated start) | — |
 | **ACA Sandboxes / dynamic sessions** (M3) | Forge T3 builds: egress denied, headless validation, human review before library | anything per child |
@@ -1384,7 +1482,6 @@ resume (orch R1). Tracing is suppressed around the idle claim query (obs V2.3).
 
 | kind | lane / host | prio | idem key | model → fallback | deadline / notes |
 |---|---|---|---|---|---|
-| `conductor.step` | fast / worker (+ inline attempt on web) | 0 | `step:{child}:{toSeq}` (singleton via lease) | — | p95 ingest→decision < 2 s |
 | `memory.consolidate` | fast / worker | 1 | `memory.consolidate:{lessonId}` | luna → skip (no memory written) | consent `P3` re-checked at claim + steps |
 | `memory.nightly` | slow / worker | 3 | `memory.nightly:{child}:{day}` | pure SQL decay | active children only |
 | `kt.refold` | fast / worker | 1 | `kt.refold:{child}:{fromTs}` | code | `not_before_lesson_end` |
@@ -1394,7 +1491,7 @@ resume (orch R1). Tracing is suppressed around the idle claim query (obs V2.3).
 | `forge.prefetch` (library, topic-level) | slow / worker | 3 | `forge.prefetch:{libraryKey}:{modelV}` | luna/image within `budget(global, forge, day)` | demand-ranked, next 2 weeks of syllabus |
 | `forge.image` | slow / worker | 3 | `forge.image:{libraryKey}:{style}:{modelV}` | gpt-image-2 medium → low → SVG / none | `azure:image ≤ 3` bucket (4 RPM quota) |
 | `forge.build` (T3) | sandbox (M3) | 3 | `forge.build:{objective}:{engine}:{specHash}:{modelV}` | codex → existing engine | **offline only**, from `forge_request` demand, → human review |
-| `forge.video` | slow (M3) | 3 | library key | sora-2 → none | library only, never per child, human review |
+| `forge.video` | slow (M3) | 3 | library key | sora-2 → none | library only, never per child, human review. The gap-fill `allowed_model` table records sora-2 as a preview that **retires 2026-10-15 with no replacement** [not re-checked here], so M3 video may have no model at all |
 | `parent.letter` | fast / worker | 2 | `parent.letter:{child}:{isoWeek}` | luna slot fill → template from facts | cutoff send − 30 h |
 | `parent.voice_note` | fast / worker | 1 | `voice:{letterId}:{renderV}` | gpt-4o-mini-tts → text only | on tap |
 | `parent.inbound` | fast / worker | 1 | `wa:{messageId}` | — | ack < 1 s on web |
@@ -1402,6 +1499,10 @@ resume (orch R1). Tracing is suppressed around the idle claim query (obs V2.3).
 | `notify.send` | fast / worker | 0 (S) / 2 | `notification.id` | — | `notBefore`/`notAfter` |
 | `plan.day.llm` (M2, shadow) | fast / worker | 3 | `plan.llm:{child}:{day}:{inputsHash}` | luna → none (shadow) | active in 7 d only; jittered |
 | `ws.compact`, `ws.erase`, `ws.export` | slow / worker | 2-3 | page id / `data_request.id` | — | erase purge < 24 h |
+
+`conductor.step` is **not** a job kind (X30). Conductor latency (ingest → decision p95 < 2 s, CM1) comes from the
+inline `step()` on `taxila-web` plus the dirty-set loop (§3.9). `JobKind` in `shared/conductor/jobs.ts` must not
+contain it, and the I-R2 census does not expect one.
 
 ### 8.3 Admission and rate buckets
 
@@ -1438,9 +1539,10 @@ poll every 2 s during the off-voice warm-up.
 |---|---|---|
 | one Neon compute (ingest, Director, queue, governor) | device keeps the last brief + an outbox; the Director degrades to "no evidence this turn"; lesson start fails before the call connects; a read replica for dashboards and ops at > 5k DAC | cells (ws W9) |
 | one realtime deployment (eastus2, 10 RPM) | lower lanes and tap; the quota request filed before any cohort > 30 (§10.5) | a second deployment in **Sweden Central** (the other supported region [V this session]) behind the admission bucket; quota is pooled per subscription, so this buys availability, not quota |
-| one human clears `safety_hold` and reviews S notices | page on entry; 2 h escalation to a **second named adult**; only `critical` locks the app | staffed rota |
+| one human clears `safety_hold` and reviews S notices | page on entry; 2 h escalation to a **second named adult**. Every incident holds the app until D-SAFE rules on a severity split (X33), so this human's latency is the child's wait: the hold screen must stay warm and useful (1098/14416, a calm activity), and D-SAFE must name the acknowledgement target | staffed rota |
 | one human reviews Forge T3 | T1/T2 carry v1; the review queue is ordered by `demand_count` | reviewer rota |
-| `taxila-worker` | min 1, leader election, lease recovery, piggyback drains; detectors live in scheduled jobs | max 2-3; split the slow lane into ACA jobs on CPU contention |
+| `taxila-worker` | min 1, leader election, lease recovery, piggyback drains, inline `step()` on web; detectors live in scheduled jobs; observers live elsewhere (X37) | max 2-3; split the slow lane into ACA jobs on CPU contention |
+| `taxila-observer` (M1) | a lost socket falls back to device usage bounded by wall time (§9.4), counted as `observer_gap_s`; deploy freeze 18:00-21:30 IST | — |
 | App Insights as the only alert path | the canary also writes `eval_run`; the nightly job runs a second absence check and emails | — |
 | one ACA environment (eastus2) | accepted for v1; logged with a reversal condition (paying users > N) | second region |
 | WhatsApp number quality | tier-aware scheduler, quality alarm, SMS/call ladder for S | a safety-only sender [M] |
@@ -1462,9 +1564,28 @@ scrubber enforce an attribute allow-list. There is no HMAC pepper (X25).
 
 Every model call goes through one wrapper with three modes: `live`, `replay` (cassette only; a miss throws
 `CassetteMiss`; a shadow ledger; never the governor or production rows) and `eval` (`budget.scope='eval'`, eval
-deployments). It has a `try/finally` that always writes the `model_call` row, settles or releases the reservation,
-ends the span, and increments the unsampled counter. Director calls draw on the **lesson-block reservation** and stage
-their rows into the Director's single turn commit, so the lesson never waits on observability. `CompileManifest`
+deployments). It has a `try/finally` that settles or releases the reservation, writes the `model_call` row, ends the
+span, and increments the unsampled counter. **Order inside the `finally` (X38; obs B27):**
+
+```js
+// server/obs/modelCall.js (the finally block only)
+} finally {
+  try { await governor.settle(res, usage ?? { released: true }); }     // 1. money first, in its own try
+  catch (e) { counter('obs.settle_failed').add(1); }                    //    a failed settle stays reserved (errs toward degrading, never
+                                                                        //    toward overspend); the nightly cost reconcile releases it
+  try { await ledger.insertModelCall(row); }                            // 2. best-effort on the agent path
+  catch (e) { counter('obs.ledger_write_failed').add(1); }              //    the writer census (§9.11) catches a silent gap
+  span.end(); counter('taxila.model_call').add(1, attrs);               // 3. never throws
+}                                                                        // the ORIGINAL error (if any) propagates unchanged
+```
+
+Director calls draw on the **lesson-block reservation** and stage their rows into the Director's single turn commit,
+so the lesson never waits on observability. That commit is **optimistic** (X39; obs B28): the turn reads
+`lesson_state.version`, holds no lock across the classify/compile model calls, and commits with
+`update … where version = $v`. On a conflict (a late turn, or a resume on another replica) it re-folds the newer turn,
+which is pure and cheap, instead of waiting. So no live lesson pins a pooled connection at the 19:00-21:00 peak.
+The KT ledger write inside that commit still takes the short workspace lock of §5.6, and only at commit time.
+`CompileManifest`
 (`compilerV, coreHash, kit@v, itemId, moveId, briefHash, expArms, budgetTok, assembledTok, sha256`; `vibeHash` dropped:
 obs V2.8) is logged on 100% of calls. Classifier JSON goes inline in `model_call.output`.
 
@@ -1479,13 +1600,19 @@ obs V2.8) is logged on 100% of calls. Classifier JSON goes inline in `model_call
 
 ### 9.4 Realtime metering (obs V2.5; M1)
 
-`/api/realtime/token` proxies the SDP negotiation, reads `call_id` from the `Location` header, and `taxila-worker`
-connects `wss://<resource>.openai.azure.com/openai/v1/realtime?call_id=<id>`, which "can record the WebRTC call and
-even control it by issuing session.update events" [V this session]. `response.done` usage becomes server-observed.
-`cost_ledger` gets `source_event_id` with `unique (lesson_id, source_event_id)`: observer rows win, and device rows
-for the same `response_id` are dropped. While the observer is down, device usage is booked, bounded by wall time ×
-max tokens/s, and `observer_gap_s` is counted (OM5′). Whether the Director's `session.update` moves server-side is
-decided after OM16, not before.
+`/api/realtime/token` proxies the SDP negotiation, reads `call_id` from the `Location` header, and **`taxila-observer`**
+(X37) connects `wss://<resource>.openai.azure.com/openai/v1/realtime?call_id=<id>`, which "can record the WebRTC call
+and even control it by issuing session.update events" [V this session]. `response.done` usage becomes
+server-observed. `cost_ledger` gets `source_event_id` with `unique (lesson_id, source_event_id)`: observer rows win,
+and device rows for the same `response_id` are dropped. While the observer is down, device usage is booked, bounded
+by wall time × max tokens/s, and `observer_gap_s` is counted (OM5′). Staleness is stamped with the server event's
+own time where the event carries one [U: field presence to check], not with the observer's local receive time,
+which a busy event loop delays (obs B29). Whether the Director's `session.update` moves server-side is decided
+after OM16, not before.
+
+**M0, before the observer exists** (X40; obs B30): the device logs, per turn, when it applied the Director's
+`session.update` and when the next `response.created` arrived. This is a client clock, so it is untrusted and
+reported only in aggregate, as a **provisional OM16**. The observer's timestamps replace it at M1.
 
 ### 9.5 Cost governor
 
@@ -1541,7 +1668,7 @@ hold. Nothing in this spec assumes a price.
 
 | SLI | SLO | note |
 |---|---|---|
-| **instruction staleness** (teacher response to turn n+1 created before the Director's instructions for turn n were applied) | ≤ 2% of turns over 28 d | the child-facing failure (obs V6.1); needs the observer (M1). A stale answer-sensitive turn makes the next compile carry a corrective move |
+| **instruction staleness** (teacher response to turn n+1 created before the Director's instructions for turn n were applied) | ≤ 2% of turns over 28 d | the child-facing failure (obs V6.1). Observer-measured from M1; provisional client-clock aggregate at M0 (X40). A stale answer-sensitive turn makes the next compile carry a corrective move |
 | ingest → decision | p95 < 2 s | CM1 |
 | unfired wakeup lag | p99 < 2 min | CM8 |
 | first screen paint from the cached plan | < 300 ms | orch R7.9 |
@@ -1577,7 +1704,7 @@ control:
 | G0 | `npx tsc -b && npx vite build && npm test` | — |
 | G1 prompt budget | every `compile()` lane at max inputs; turn-shape rule LAST | a 2× brief must fail |
 | G2 predicates | AI-honesty, 1098/14416 present, notification lexicon, unconstructible banned classes, telemetry allow-list, safeguarding exclusion | a planted violation per predicate |
-| G3 determinism + invariants | §9.9 registry; double-compile byte identity with a frozen clock; L2 replay of fixture days | `Date.now()` injected into `compile` must fail; a deleted cassette entry → `CassetteMiss` with 0 Azure calls |
+| G3 determinism + invariants | §9.9 registry; double-compile byte identity with a frozen clock; L2 replay of fixture days; the lock-order probe (`conductor-lock-order-rev2-probe.sh`) against a scratch PG 16 with the real migration's functions | `Date.now()` injected into `compile` must fail; a deleted cassette entry → `CassetteMiss` with 0 Azure calls; the revision-1 `child_seq`-first commit must deadlock; a replay given a write handle must trip I-R9 |
 | G4 day simulator | `evals/conductor-sim/`: 8 seeds × 6 personas × 4 simulated weeks, tables diffed vs `main` | a persona with a planted absence-nudge rule must trip |
 | G5 lesson battery | SimChild × Director (per-PR subset of 96 lessons ≈ $2-4; full nightly on the eval deployment on path-map trigger) | a "leaky" Director must fail the leak bar |
 | G6 Tutor Bench | deterministic axes per change; human panel on a cadence | the rejected brevity-by-instruction build must score below the bar |
@@ -1606,6 +1733,10 @@ Path map: Conductor changes → G3, G4. Prompt/compile → G1, G2, G3, G6. Direc
 | I-R6 | no re-plan changes a shown or started slot; no unexpired promise lapses silently | orch R7 |
 | I-R7 | no lesson changes lane/rung mid-lesson except `reason='outage'` | orch R7.7 |
 | I-R8 | no job input or model call names a model outside the `azure-only-compute` list | orch R3.6 |
+| I-R9 | replay mode performs **zero writes** (a write-counting DB shim reads 0) | orch B5, X31 |
+| I-R10 | no SQLSTATE `40P01` across 8 seeds of the simulator's concurrent-ingest + job-completion + ticker persona, with the substrate shim enforcing the X29 order | orch B1, X29 |
+| I-R11 | the idle hang-up never fires on a turn with a confident child transcript (a planted off-topic child utterance must not hang up) | orch B6, X32 |
+| I-R12 | after 14 days without `app.opened`, no `day_start`/`night` wakeup is re-armed; a parent-chosen wakeup is never dropped | orch B10, X36 |
 | I-V1..V14 | the plan validator rules (§4.5) | dc, orch |
 | I7-I11 | leak guard, no realtime homework, no correctness talk without a kit/code key, `homework_key` unreachable from `compile()`, isomorph collisions | ss AR-9 |
 | I13-I18 | replica loss loses nothing; a poison batch acks the rest; one KT writer; erase fencing; module egress blocked; no retraction | ws R9 |
@@ -1616,9 +1747,11 @@ Path map: Conductor changes → G3, G4. Prompt/compile → G1, G2, G3, G6. Direc
 
 - **conductor-sim** (`evals/conductor-sim/`, the analogue of echosim): a virtual clock and personas (steady learner;
   drop-off after day 3; a test announced mid-week; siblings on one phone; a parent who changes limits at 23:00; patchy
-  network replaying events; Azure 429 storms; an invalid LLM plan 20% of the time; concurrent ingests; a killed worker
-  between side effect and completion; ±2 h device clock skew). It prints tables: plan adherence, minutes by lane,
-  invariant violations, dead jobs, cost per child-week, letter on-time rate.
+  network replaying events; Azure 429 storms; an invalid LLM plan 20% of the time; concurrent ingests racing job
+  completions and the ticker (I-R10); a killed worker between side effect and completion; ±2 h device clock skew; a
+  chatty 6-year-old who goes off-topic every third turn (I-R11); an account dormant for 3 weeks, then back (I-R12)).
+  It prints tables: plan adherence, minutes by lane, invariant violations, dead jobs, deadlock retries, wakeups per
+  dormant child, cost per child-week, letter on-time rate.
 - **SimChild** (obs O7): a seeded code state machine whose misconceptions weaken only under the moves that resolve
   them. A model may only reword an answer the code chose. It gates invariants and policy, never efficacy.
 - **Experiments** (obs O9, O10): assignment is a pure hash `${expId}:${salt}:${unitRef}:${decisionRef}` with a frozen
@@ -1642,16 +1775,18 @@ group has two named humans.
 | id | measure | decides |
 |---|---|---|
 | CM1 | fold + decide latency p50/p95 (simulator, 1 year of events per child) | C3 reversal; SLO |
+| CM2 | Neon CU-hours per 1k children, **including the always-on compute** that the 1-5 s worker polls cause (no scale-to-zero: X35) | X35 poll cadence; cells |
 | CM3 | code vs LLM planner on delayed outcomes (shadow, then pre-registered micro-RCT) | whether the LLM planner is ever adopted |
 | CM4 | Forge library hit rate per lesson (T1/T2 definition) | the "built while she teaches" claim |
 | CM5 / CM11 | realtime admission wait p95 at 19:00-21:00 IST; drop-off during the warm-up vs a spinner | quota request size; R7.1 |
 | CM6 | actual cost per child-day by tier and lane from `cost_ledger` | D-PRICE, §9.5 |
 | CM8 | wakeup lag with the ticker down (piggyback only) | C5 degradation |
 | CM9 | home-grown queue vs pg-boss: claim latency, Neon CU-hours, at 1k and 10k simulated children | X6 reversal |
-| CM10 | share of realtime audio-out in turns with no kit-relevant child utterance | idle hang-up thresholds |
+| CM10 | split (X32): `non_child_audio_turns` (empty or low-confidence VAD commits: the only cost leak) vs `child_off_topic_turns` (rapport, never a hang-up), as shares of realtime audio-out | idle hang-up thresholds |
 | CM12 | resume rate after `network` endings, and duplicated warm-up minutes | R7.6 |
 | CM13 | India → eastus2 ingest → decision p95 on real devices, 3 cities | region decision |
-| OM16 | instruction staleness rate and p95 lag | the Director's `session.update` path |
+| OM16 | instruction staleness rate and p95 lag (provisional client-clock aggregate at M0, observer timestamps from M1: X40) | the Director's `session.update` path |
+| `conductor-substrate-pg16-2026-10-02` | done: functional cases (n = 1) and the lock-order probe (n = 5 per cell, §3.8) | X29, the substrate |
 | OM17/OM18 | deployment-metric tokens vs ledger tokens hourly; the subscription offer id (Cost Management exports may not work on Sponsorship offers [V]) | cost reconciliation method |
 | M-SS3 / M-SS7 / M-SS8 | leaks + false blocks on cascade; pick-first box latency and recall from India; cost per homework sitting | homework gates; X13 |
 | PLM12 / PLM13 / PLM14 | PTM $/min; WhatsApp block rate and tier; incident → delivered parent notice p95 and the unreachable rate | PTM cap; channel; S ladder |
@@ -1670,21 +1805,21 @@ what only pays at scale.
 | # | deliverable | files |
 |---|---|---|
 | 1 | `tx(fn)` on the pg Pool (`pool.connect()`, BEGIN/COMMIT/ROLLBACK). `DB_DRIVER=pg` required on ACA; a second **direct** URL secret for the worker | `server/db.js` |
-| 2 | migration `002_conductor.sql`: `child_seq`, `student_event`, `ingest_event()`, `conductor_state`, `decision_log`, `day_plan`, `conductor_usage`, `job`, `complete_job()`, `wakeup`, `fire_wakeups()`, `notification`, `notify_slot`, `budget`, `cost_ledger`, `price_book`, `rate_bucket`, `model_call`, `turn_trace` (+ `child_id` index), `child_routine` (routine facts only), `parent_setting`, `calendar`, a minimal `workspace` (state, legal_mode, academic_year, last_active_at: `complete_job` fences on it), `gen_ulid()`. `child_seq`, `conductor_state` and `workspace` rows are created in the same transaction as `child` | `db/migrations/002_conductor.sql` |
+| 2 | migration `002_conductor.sql`: `child_seq`, `student_event`, `ingest_event()`, `conductor_state`, `decision_log`, `brief_snapshot` (X34), `day_plan`, `conductor_usage`, `job`, `complete_job()`, `wakeup`, `fire_wakeups()`, `notification`, `notify_slot`, `budget`, `cost_ledger`, `price_book`, `rate_bucket`, `model_call`, `turn_trace` (+ `child_id` index), `child_routine` (routine facts only), `parent_setting`, `calendar`, a minimal `workspace` (state, legal_mode, academic_year, last_active_at: `complete_job` fences on it), `gen_ulid()`. `child_seq`, `conductor_state` and `workspace` rows are created in the same transaction as `child` | `db/migrations/002_conductor.sql` |
 | 3 | contracts: events, state, plan, lanes, notify, jobs (the unions in §2-§4) | `shared/conductor/*.ts`, `shared/contracts.ts` (`LessonBrief`) |
-| 4 | the Conductor: `decide` (pure), guards in authority order + fail-safe, `clock` (`clockPhase`, `learningDay`, jitter), code planner + validator V1-V14, `step`, `commit`, `upgradeState` | `server/conductor/` |
-| 5 | `taxila-worker` ACA app: leader ticker, fast/slow claim loops, shutdown contract; `deploy-azure.mjs` deploys both apps | `server/worker/main.mjs`, `scripts/deploy-azure.mjs` |
-| 6 | lesson integration: `/api/lesson/start` = usage reserve + rate-bucket admission (reconnect priority) + `brief.refresh`; the Director emits `lesson.started/ended` (with `voiceSec`, `outcomeDigest`), `teacher.promise`, and honours `wrapAt`/`hardStopAt`, idle hang-up, `session.renew`, resume within 15 min; `lesson.ended → memory.consolidate` via `complete_job` | `server/routes/lesson.js`, `server/director/` |
-| 7 | off-voice warm-up during admission (tap retrieval + cached narration clip) | `src/lesson/` |
-| 8 | `modelCall` with live/replay/eval modes; `turn_trace` + `model_call` rows staged in the Director's turn commit; lesson `traceparent` | `server/obs/` |
-| 9 | the device's cached plan for first paint, `slot.shown`, the rest and hold screens (the hold screen designed with the safeguarding protocol) | `src/` |
-| 10 | safety: S → human queue only (X23, M0 phase), page on entry, 2 h escalation, safeguarding exclusion predicate | `server/director/safety.js`, protocol |
-| 11 | `scripts/verify-release.mjs` with G0-G4 + G8, `evals/conductor-sim/`, the invariant registry I-C*, I-R*, I-V* | `scripts/`, `evals/`, `tests/conductor/` |
+| 4 | the Conductor: `decide` (pure), guards in authority order + fail-safe, `clock` (`clockPhase`, `learningDay`, jitter, the dormant-clock rule X36), code planner + validator V1-V14, `step` (with the 40001/40P01/CAS retry), `commit` in the **X29 lock order**, a write-free `replay` (X31), `upgradeState` | `server/conductor/` |
+| 5 | `taxila-worker` ACA app: leader ticker, the **dirty-set step loop** (no `conductor.step` job: X30), fast/slow claim loops with 1 s → 5 s poll backoff (X35), shutdown contract; `deploy-azure.mjs` deploys both apps, with the 18:00-21:30 IST freeze | `server/worker/main.mjs`, `scripts/deploy-azure.mjs` |
+| 6 | lesson integration: `/api/lesson/start` = usage reserve + rate-bucket admission (reconnect priority) + `brief.refresh`; the Director emits `lesson.started/ended` (with `voiceSec`, `outcomeDigest`), `teacher.promise`, and honours `wrapAt`/`hardStopAt`, the **non-child-audio** idle hang-up (X32), `session.renew`, resume within 15 min; its turn commit is optimistic (X39); `lesson.ended → memory.consolidate` via `complete_job` | `server/routes/lesson.js`, `server/director/` |
+| 7 | off-voice warm-up during admission (tap retrieval + cached narration clip). **Prerequisite** (orch B11): narration pre-rendered and cached for every warm-up-eligible kit item, in a voice a blind ear test matches to the teacher, or the warm-up is heard as a different teacher (R7.7) | `src/lesson/`, kit pipeline |
+| 8 | `modelCall` with live/replay/eval modes and the X38 `finally` order; `turn_trace` + `model_call` rows staged in the Director's turn commit; lesson `traceparent`; the provisional client-clock OM16 (X40) | `server/obs/`, `src/lesson/` |
+| 9 | the device's cached plan for first paint, `slot.shown`, the rest and hold screens (the hold screen designed with the safeguarding protocol, shown for every incident: X33) | `src/` |
+| 10 | safety: every incident → `safety_hold` (X33); S → human queue only (X23, M0 phase), page on entry, 2 h escalation, safeguarding exclusion predicate | `server/director/safety.js`, protocol |
+| 11 | `scripts/verify-release.mjs` with G0-G4 + G8 (G3 includes the lock-order probe), `evals/conductor-sim/`, the invariant registry I-C*, I-R1…I-R12, I-V* | `scripts/`, `evals/`, `tests/conductor/` |
 | 12 | App Insights distro (sampling 1.0, ban-list scrubber, anomaly counters); `canary` and `nightly` ACA scheduled jobs with Azure Monitor absence alerts | infra |
 
 **Exit criteria:** every gate green with its negative control; the I-R1 concurrent-ingest drill shows zero lost
-events; conductor-sim tables recorded as the baseline; CM1, CM5 and CM8 measured and logged; one week of real lessons
-with `cost_ledger` reconciled against Azure deployment metrics (OM17).
+events and I-R10 zero deadlocks; conductor-sim tables recorded as the baseline; CM1, CM2, CM5 and CM8 measured and
+logged; one week of real lessons with `cost_ledger` reconciled against Azure deployment metrics (OM17).
 
 ### 10.2 M1: before more than 30 families, or any public beta
 
@@ -1699,8 +1834,8 @@ with `cost_ledger` reconciled against Azure deployment metrics (OM17).
 4. **Workspace v1:** `WORKSPACE_MAP` + tests, device replica (Android SQLite, web IndexedDB), `/api/ws/sync` with the
    R3.2/R3.3 fixes, the KT workspace lock, server re-grade, `session.reassign`, hard-delete erasure with fencing, CSP on
    `lib/`.
-5. **Cost:** per-tier budgets from D-PRICE, 5-min lesson blocks, the realtime **observer** (metering + staleness),
-   `cost_ledger` unique key, D-COST and D-LIVE views.
+5. **Cost:** per-tier budgets from D-PRICE, 5-min lesson blocks, the realtime **observer** on its own
+   `taxila-observer` app (metering + staleness, X37), `cost_ledger` unique key, D-COST and D-LIVE views.
 6. Quota request filed (realtime RPM/TPM, `taxila-brain`), sized by CM5.
 
 ### 10.3 M2
@@ -1724,7 +1859,7 @@ compliance is re-prioritised.
 |---|---|---|
 | D-PRICE | tier prices and `voiceSecMonth` per lane (§9.5: at ₹299 about 16 realtime minutes a month fit) | M1 public beta |
 | D-QUOTA | file the realtime and `taxila-brain` quota requests (10 RPM ≈ 10 lesson starts/min; Tier-1 ≈ 15 concurrent lessons [V quotas, I tokens]) | any cohort > 30 |
-| D-SAFE | name the safeguarding human and the **second named adult**; engage an advisor for the settle window and the protocol table | M0 with real children |
+| D-SAFE | name the safeguarding human and the **second named adult**; engage an advisor for the settle window and the protocol table; **rule on the severity split** (whether a `high` incident may keep lessons running under monitoring, X33) and the human acknowledgement target. Until then, every incident → `safety_hold` | M0 with real children |
 | D-WA | ACS WhatsApp onboarding (Meta business verification, sender number, templates) | M1 letters |
 | D-DI | provision Document Intelligence (region, S0) | M1 homework photos (read-aloud and typed work without it) |
 | D-SUPPORT | a support rota and SLA (or the honest no-SLA shape) | M1 |
@@ -1735,7 +1870,8 @@ A VM or container per child (orch C9, ws W1). Live codegen (X9). A per-child nig
 Per-child DEK in the main database (X15). Rainbow reducer versions (X16). A stored 8-phase day machine (X3). Per-child
 image or video generation (orch R3.2: medium images alone are ≈ $3.2/child-month). Langfuse/Phoenix as a system of
 record, or Helicone-style proxies (obs O12). Any model outside the allowed list, including Claude on Foundry and
-`gpt-5.6-terra` (I-R8).
+`gpt-5.6-terra` (I-R8). A `conductor.step` job kind (X30). A replay path that can commit (X31). Any writer that locks
+`child_seq` before another existing row (X29). `NOTIFY` as a correctness path (X35).
 
 ---
 
@@ -1747,6 +1883,9 @@ Primary sources checked this session or by the cited sibling doc ([V]):
 - Azure Container Apps jobs (cron in UTC; at-least-once; retry limit) — https://learn.microsoft.com/en-us/azure/container-apps/jobs
 - Azure Container Apps Sandboxes — https://learn.microsoft.com/en-us/azure/container-apps/sandboxes-overview
 - Neon connection pooling (no LISTEN/NOTIFY or session advisory locks through the pooler) — https://neon.com/docs/connect/connection-pooling
+- Neon scale to zero (suspends after 5 minutes of inactivity), via orch R10 — https://neon.com/docs/introduction/scale-to-zero
+- PostgreSQL `NOTIFY` (delivered at commit; `pg_notify`), via orch R10 — https://www.postgresql.org/docs/current/sql-notify.html
+- PostgreSQL 16 explicit locking, §Deadlocks ("acquire locks on multiple objects in a consistent order"; one side is aborted, and which one "should not be relied upon"; retry aborted transactions), checked 2026-10-02 — https://www.postgresql.org/docs/16/explicit-locking.html
 - Neon history window (can be 0; Launch/Scale defaults) — https://neon.com/docs/introduction/history-window
 - Azure OpenAI Realtime via WebRTC (observer/controller WebSocket via `call_id` from the `Location` header; East US 2 and Sweden Central), re-checked 2026-10-02 — https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/realtime-audio-webrtc
 - Azure OpenAI Realtime audio (60-min sessions, 32k input tokens) — https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/realtime-audio
@@ -1772,5 +1911,8 @@ Internal [repo]: `docs/ARCHITECTURE.md`; `docs/research/learning-science.md` §6
 `learner/vibe-temperament.md` §4; `design/parent-experience.md` §0; `design/low-end-offline.md` §0 and
 `low-end-cascade-probe-2026-10-02.json`; `realtime-cost-model.py`; the six conductor docs and their cost scripts
 (`day-cycle-review-cost.py`, `student-workspace-cost.py`, `student-workspace-review-cost.py`,
-`school-sync-review-cost.py`, `parent-loop-review-cost.py`); `context/decisions.md`, `measurements.md`, `rejected.md`;
+`school-sync-review-cost.py`, `parent-loop-review-cost.py`); the lock-order probes
+(`orchestration-lock-order-probe.{sh,schema.sql,reset.sql}`, `conductor-lock-order-rev2-probe.{sh,extra.sql,reset.sql}`);
+the gap-fill fragments `content-orchestration.sql`, `adaptation.contracts.ts`, `adaptation-hysteresis-sim.py`;
+`context/decisions.md`, `measurements.md`, `rejected.md`;
 `server/db.js`, `server/routes/lesson.js`, `package.json` (the missing `scripts/verify-release.mjs`).

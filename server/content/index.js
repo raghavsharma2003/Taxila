@@ -5,7 +5,8 @@
 // see the exact kit it started on: kit files are rewritten by another workflow while lessons run, and a
 // file mid-write, a partial topic or a restarted process once swapped a lesson onto a freshly generated
 // mini-kit whose ids matched nothing. A lesson stores its kit's content hash; turns, tokens and the end
-// route read that exact kit back (memory, then the file if unchanged, then asset_cache) and never generate.
+// route read that exact kit back (memory, then the file if unchanged, then asset_cache) and never generate:
+// routes/lesson.js stores `state.kitHash` at start and resolves every later request through pinnedKit().
 import { one, q } from "../db.js";
 import { getTopic, topicIdByPrefix } from "./curriculum.js";
 import { kitFromFile, kitIdIndex } from "./kits.js";
@@ -19,6 +20,14 @@ const miniKits = new Map();
 const pinned = new Map();
 const PINNED_MAX = 500;
 const pinKey = (topicId, hash) => `kit:pin:${topicId}:${hash}`;
+
+/** The durable copy of pinned kits: asset_cache. Swappable so tests can run the pinning path without a database. */
+let store = {
+  get: async (key) => (await one("select body from asset_cache where key = $1", [key]))?.body ?? null,
+  put: (key, kit) => q("insert into asset_cache(key, kind, body) values ($1, 'kit', $2) on conflict (key) do nothing", [key, kit]),
+};
+/** @param {{ get: (key: string) => Promise<any>, put: (key: string, kit: any) => Promise<unknown> }} s */
+export const setPinStore = (s) => { store = s; };
 
 function remember(key, kit) {
   pinned.delete(key);
@@ -47,7 +56,7 @@ export async function getKit(topicId, { generate = true, trace } = {}) {
 export async function pinKit(kit) {
   const key = pinKey(kit.topicId, kit.hash);
   if (pinned.has(key)) return;
-  await q("insert into asset_cache(key, kind, body) values ($1, 'kit', $2) on conflict (key) do nothing", [key, kit]);
+  await store.put(key, kit);
   remember(key, kit);
 }
 
@@ -62,8 +71,8 @@ export async function pinnedKit(topicId, hash) {
   const topic = getTopic(topicId);
   const file = topic ? kitFromFile(topic) : null;
   if (file?.hash === hash) return remember(key, file);
-  const row = await one("select body from asset_cache where key = $1", [key]);
-  return row?.body ? remember(key, row.body) : null;
+  const body = await store.get(key);
+  return body ? remember(key, body) : null;
 }
 
 /** Which topic a skill or misconception id belongs to (kit files first, then the mini-kit id prefix). */

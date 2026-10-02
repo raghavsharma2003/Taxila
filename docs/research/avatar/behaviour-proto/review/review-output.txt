@@ -16,3 +16,21 @@ fixed-substep nod, request 3 deg @ 16.7 ms frames: peak 2.86 deg
 fixed-substep nod, request 3 deg @ 33.3 ms frames: peak 2.86 deg
 fixed-substep nod, request 3 deg @ 41.7 ms frames: peak 2.86 deg
 fixed-substep nod, request 3 deg @ 66 ms frames: peak 2.86 deg
+--- realaudio.mjs (10 marin/cedar realtime-voice clips, 24 kHz, session voice bench; gains 1 / 0.3 / 3)
+gain 1: mean accents/s 0.42 (refractory ceiling 2.86/s), strong/s 0.07, phrase pauses/min 13.33, voiced frac 0.33
+gain 0.3: mean accents/s 0.14 (refractory ceiling 2.86/s), strong/s 0.00, phrase pauses/min 16.49, voiced frac 0.24
+gain 3: mean accents/s 0.51 (refractory ceiling 2.86/s), strong/s 0.14, phrase pauses/min 12.36, voiced frac 0.37
+measured cps (code points / speech span): deva 17.6 16.0 | roman 15.1 16.2 | mixed 14.1 13.9 | english 14.9 12.6 | numerals 9.3 9.9
+--- snap.mjs
+warm@apex -> curious cue: largest 1-frame mouthSmileLeft change 0.191 at frame 45 (cue at 45)
+30 fps: 268 blinks, 0 (0%) never shown >=0.9 closed, min peak 1.00
+24 fps: 270 blinks, 0 (0%) never shown >=0.9 closed, min peak 1.00
+20 fps: 232 blinks, 0 (0%) never shown >=0.9 closed, min peak 1.00
+15 fps: 247 blinks, 0 (0%) never shown >=0.9 closed, min peak 0.94
+L1 face 400 px top, module below       [ 0, 39.9 ]
+L2 face tile 160 top-right, module below [ -25.1, 64.2 ]
+L3 face tile 160 bottom-left, module above [ 25.1, -63 ]
+--- sim-cps.mjs (sim.mjs with true cps drawn from the 10 measured rates, calibrated 13.5)
+mutual gaze held before a floor-passing end (true voice rate +-15% off calibration): p10 1.21 p50 3.29 p90 5.81 s; <1.0 s in 45/670
+P_LONG=0.1 turns=400: controller clock behind wall at turn end p50 862 ms p90 1284 ms max 1901 ms; mutual gaze before end (wall) p10 1.11 s, <1.0 s in 37/400; never yielded 2/400
+P_LONG=0.2 turns=400: controller clock behind wall at turn end p50 1393 ms p90 2042 ms max 2647 ms; mutual gaze before end (wall) p10 0.39 s, <1.0 s in 63/400; never yielded 47/400

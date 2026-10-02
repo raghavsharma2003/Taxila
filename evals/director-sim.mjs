@@ -12,7 +12,10 @@
 //   (b) every teacher reply is ≤ 40 words
 //   (c) at least one probe move other than plain practice ran
 //   (d) the misconception was flagged in the learner model (a misconception_state row for the child)
-// and exits non-zero if any check fails. Costs real Azure tokens (≈30 small calls).
+//   (e) no teacher turn states the key of a question before that question is posed (model-free: the
+//       teacher's words since the previous item, checked against each newly posed item's key)
+// and exits non-zero if any check fails. The throwaway child is deleted whether the run passes, fails or
+// aborts (unless --keep). Costs real Azure tokens (≈30 small calls).
 import http from "http";
 import { readFileSync } from "fs";
 
@@ -72,6 +75,25 @@ async function childSays(history) {
 const words = (t) => String(t || "").trim().split(/\s+/).filter(Boolean).length;
 const lower = (t) => String(t || "").toLowerCase();
 const VERDICT = /(bada|badi|bade|zyada|jyada|bigger|larger|greater|more|chhota|chhoti|smaller|sahi|correct|right|answer|jawab|uttar)/;
+/** Comparison words only (not "sahi"/"right", which affirm a reply), and not as a size ("chhoti galti"). */
+const COMPARES = /\b(bada|badi|bade|zyada|jyada|bigger|larger|greater|more|chhota|chhoti|chhote|smaller|less|kam|lamba|lambi)\b(?!\s+(galti|gadbad|si|sa|se|baat|mistake|baar))/;
+const escape = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/**
+ * A choice between fractions answered in other words: a non-question sentence with a verdict word and a
+ * denominator only one choice has ("2 tukdon wali bar ka har tukda ... bada hai" for 1/2 vs 1/3).
+ */
+function paraphrasesChoice(reply, item) {
+  const fracs = [...new Set([...`${item.prompt_en} ${(item.options || []).join(" ")}`.matchAll(/(\d+)\s*\/\s*(\d+)/g)].map((m) => m[2]))];
+  if (fracs.length < 2) return null;
+  for (const sentence of reply.split(/(?<=[.!?।])\s+/)) {
+    // Fractions written out are (a)'s business above; this looks for the bare number.
+    const s = lower(sentence).trim().replace(/\d+\s*\/\s*\d+/g, " ");
+    if (s.endsWith("?") || !COMPARES.test(s)) continue;
+    const hit = fracs.find((d) => new RegExp(`(^|[^\\d/])${escape(d)}([^\\d/]|$)`).test(s));
+    if (hit) return `a choice named by its ${hit}`;
+  }
+  return null;
+}
 /** (a): the reply states the key — anywhere if the question does not name it, else in a non-question verdict sentence. */
 function statesKey(reply, item, childText) {
   // A diagnostic's options are read aloud by design: take them out, and look for the correct option's head word.
@@ -90,17 +112,18 @@ function statesKey(reply, item, childText) {
       if (VERDICT.test(after)) return f;
     }
   }
-  return null;
+  return paraphrasesChoice(reply, item);
 }
 
 const failures = [];
 const fail = (msg) => { failures.push(msg); console.log(`   ✗ ${msg}`); };
 const fmtSkills = (skills = {}) => Object.entries(skills).map(([id, s]) => `${id.split("-").pop()} ${s.before}→${s.after} ${s.status}`).join(", ");
 
+let child;
 try {
   const stamp = Date.now();
   await api("POST", "/api/auth/signup", { email: `sim+${stamp}@taxila.test`, password: `sim-${stamp}-pw`, name: "Sim Guardian", isGuardianAdult: true });
-  const { child } = await api("POST", "/api/children", { firstName: "Riya", classLevel: 4, languagePref: "hinglish", interests: ["cricket", "drawing"] });
+  ({ child } = await api("POST", "/api/children", { firstName: "Riya", classLevel: 4, languagePref: "hinglish", interests: ["cricket", "drawing"] }));
   await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
   const t0 = Date.now();
   const start = await api("POST", "/api/lesson/start", { childId: child.id, topicId: TOPIC, mode: "text" });
@@ -110,6 +133,8 @@ try {
   const history = [{ who: "teacher", text: start.teacherOpening }];
   const moves = [start.debug.move];
   let flagged = false, probes = 0;
+  // (e): what the teacher said since the last posed item, and which item that was.
+  let since = [{ i: 0, text: start.teacherOpening }], lastItemId = start.debug.move.itemId;
   console.log(`[00] T (${start.debug.move.kind}): ${start.teacherOpening}`);
   if (words(start.teacherOpening) > 40) fail(`(b) opening is ${words(start.teacherOpening)} words`);
 
@@ -134,6 +159,15 @@ try {
       const leaked = statesKey(r.teacherReply, d.item, childText);
       if (leaked) fail(`(a) turn ${i} states the key "${leaked}" at rung ${m.hintLevel ?? 0}`);
     }
+    if (d.item && d.item.id !== lastItemId) {
+      for (const t of since) {
+        const early = statesKey(t.text, d.item, "");
+        if (early) fail(`(e) turn ${t.i} stated "${early}" before turn ${i} posed ${d.item.id}`);
+      }
+      since = [];
+      lastItemId = d.item.id;
+    }
+    since.push({ i, text: r.teacherReply });
     if (r.end) { console.log("     (lesson reached its wrap)"); break; }
   }
   if (!probes) fail("(c) no probe move other than plain practice ran");
@@ -145,11 +179,12 @@ try {
   console.log(`summary: ${endR.summary}\nparent note: ${endR.parentNote}\nmemories saved: ${endR.memoriesSaved} · sessions: ${endR.sessions}`);
   const kinds = moves.reduce((acc, mv) => ({ ...acc, [mv.kind]: (acc[mv.kind] ?? 0) + 1 }), {});
   console.log(`moves: ${JSON.stringify(kinds)} · probes other than practice: ${probes} · misconception flagged: ${flagged}`);
-  if (!KEEP) await api("DELETE", "/api/children", { childId: child.id });
 } catch (e) {
   fail(`run aborted: ${e.message}`);
 } finally {
+  if (child && !KEEP) await api("DELETE", "/api/children", { childId: child.id }).catch((e) => console.log(`could not delete the sim child: ${e.message}`));
   server?.close();
 }
-console.log(failures.length ? `\nFAIL (${failures.length}):\n- ${failures.join("\n- ")}` : "\nPASS: (a) no key before rung 4 · (b) all replies ≤ 40 words · (c) probe ran · (d) misconception flagged");
+console.log(failures.length ? `\nFAIL (${failures.length}):\n- ${failures.join("\n- ")}`
+  : "\nPASS: (a) no key before rung 4 · (b) all replies ≤ 40 words · (c) probe ran · (d) misconception flagged · (e) no key before its question");
 process.exit(failures.length ? 1 : 0);

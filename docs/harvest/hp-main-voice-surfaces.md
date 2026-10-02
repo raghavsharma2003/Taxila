@@ -583,3 +583,72 @@ These are the highest-value findings, grouped by subsystem. Source: `context/rej
 - Bodies of eval files (`evals/echosim/exp*.mjs` beyond headers, `evals/surface/*`, `evals/lifecycle`, `evals/callmem`, `evals/multimodal`), `scripts/check-contrast.mjs` (92 KB) and `site/styles.css`.
 - Other branches (`claude/ai-companion-app-rkt1lv`, `gurukul-*`, `vyakti-*`, `codex/*`, `voice-cloning`) are out of this segment's scope; see `companion-tech.md`. `liveCall.ts` is reported byte-identical across main/cmp/gk/mm there.
 - **Never measured in this repo and needed by Taxila:** Azure realtime maximum session duration and goAway-equivalent behaviour; gpt-realtime-2.1 (not mini) latency and verbosity; any child-voice barge-in or echo numbers; Hinglish child ASR WER; whether the Android OS silent switch mutes the sound layer; on-device validation of goAway rotation, native watch bridge ordering and background behaviour (all flagged "needs a device").
+
+
+## Verification
+
+Adversarial pass against html-portfolio origin/main (3a921798). All 82 cited paths exist; every asset is implemented code (no stubs). Cross-cutting findings: (1) the voice/echo/TTS/token stack is Gemini Live + Gemini TTS + OpenRouter, which Taxila's Azure-only directive forbids, so protocol-bound pieces are ideas, not copies; (2) api/ files assume Vercel (x-real-ip, in-memory limiter, _config.js) and Meera's agent scope; (3) all audio thresholds are adult/speakerphone tuned, with no child-voice measurement; (4) companion-retention features (IncomingCall, ack timers) need a child-safety review. Secrets: none read; "secret present at api/_config.js" (imported by live-token/speech).
+
+| id | claimed | corrected | quality | portable | secret | note |
+|---|---|---|---|---|---|---|
+| A01 | adapt | adapt | 4 | yes | no | Real, 3408-line liveCall.ts. Arbiter is client-side PCM logic so protocol-neutral, but every threshold was tuned on adult speech against Gemini Live and a speakerphone echo path; no child-voice numbers exist. Drags ./level and ../engine/diag only (clean). Re-measure with echosim on child audio. |
+| A02 | adapt | adapt | 4 | yes | no | Real (ECHO_KAPPA_SEED 0.3, MAX 0.76, ECHO_MARGIN 1.3 verified at liveCall.ts:558-638). r2 gate and lag range are in the file. Portable math; constants are Meera/adult tuned. |
+| A03 | copy | adapt | 3 | no | no | Constants verified (STALL_CEILING 400000, VIDEO_GATE 48000, SILENCE_CAP 8000, SILENCE_KEEP 3, FRAME_MAX_B64 120000) but they are tuned to Gemini 16 kHz PCM chunking and its server VAD. Azure realtime has different framing, so not a copy. Also "words never dropped" assumes client-side gating Taxila may not want. |
+| A04 | copy | adapt | 4 | yes | no | Real (STUCK_OPEN_MS 20_000, FORCE_SILENCE_MS = SILENCE_ENDPOINT_MS 700). Only meaningful if Taxila also gates the mic client-side; Azure server VAD/semantic VAD may make it moot. stucksim.mjs exists (119 lines). |
+| A05 | copy | adapt | 4 | no | no | Real (600 ms release watchdog, 450/130 ms fade, SOFT_CLAIM 2000). Keyed to Gemini interrupted/turnComplete events; must be rewritten for Azure speech_started/response.cancel/truncate. Idea plus mechanism, not copy. |
+| A06 | adapt | idea | 2 | no | no | api/live-token.js is Gemini-only: imports _config.js (GOOGLE_KEY), _gkeys, _lanes, _ratelimit, mints a Gemini auth token (uses:1, 30 min, 9 min newSessionExpireTime verified). Taxila is Azure-only (no Gemini). Keep the premint+staggered-double-attempt pattern (client TOKEN_FRESH_MS 7 min) only; rewrite against Azure realtime client_secrets. |
+| A07 | copy | adapt | 3 | yes | no | Timing fields verified (mintMs/micMs/wsOpenMs/setupMs) but the connect sequence is Gemini setup message specific. Pattern (parallel getUserMedia + socket, report breakdown) is generic. |
+| A08 | adapt | idea | 2 | no | no | goAway rotation is a Gemini Live server behaviour (MAX_ROTATES 6, ROTATE_GRACE_MS 1200 verified). Azure session limit/behaviour was never measured (noted in harvest as a gap). Do not build until Azure's equivalent is known. |
+| A09 | adapt | adapt | 3 | no | no | direct() uses Gemini clientContent with turnComplete flag. Azure analogue is conversation.item.create plus optional response.create; concept (silent vs cue) maps cleanly. Rewrite, not copy. |
+| A10 | copy | copy | 4 | yes | no | Genuinely copyable: level.ts is 51 lines, attack 0.35 / release 0.08 verified, no imports beyond Web Audio. Trivial. |
+| A11 | adapt | idea | 2 | no | no | Lives inside useCallEngine.ts (4421 lines) entangled with Meera ring/pickup, cascade lane and companion scene. Taxila has no ring or cascade race. Idea only. |
+| A13 | adapt | idea | 2 | no | no | liveLookup.ts imports diag and @capacitor/core and calls /api/search; Taxila facts must come from verified kits (blind-solved keys), not live search. Skip for factual teaching; idea only. |
+| A14 | adapt | adapt | 3 | yes | no | Real, small (farewell.ts 150 lines, hangup.ts 66), pure, no deps. Vocabulary is Meera/Hinglish adult; needs a child-teacher vocabulary and a gentler session-end flow. Low risk. |
+| A15 | adapt | idea | 2 | no | no | callHistory.ts is 1616 lines importing store, memory, activity, honesty, repeat. Budgets (700/900/300/500) verified but tuned to Gemini prompt budget. Reuse the salience-not-summarisation idea only. |
+| A16 | adapt | idea | 2 | no | yes | api/speech.js uses Gemini TTS + OpenRouter (OPENROUTER_KEY) and _gkeys pool: both banned by Taxila Azure-only directive. FLUSH_MIN 1000, PAID_ARM_MS 1500, X-Meera headers verified. Keep anti-splice/fuse ideas only. Secret present at api/_config.js (imported, not read). |
+| A17 | adapt | adapt | 4 | yes | no | spokenText.ts 285 lines, no imports, with spoken.mjs eval (258). Portable and testable. Must add Devanagari/Hindi cases and maths notation (fractions, exponents) which Meera never needed. |
+| A18 | copy | adapt | 3 | yes | no | shapeAck verified (ACK_RMS20 0.0676, ACK_EDGE_DB -55, u^1.6 fade in) but constants tuned to Gemini Aoede clips, and it sits inside liveCall.ts (not standalone). Extract and retune. |
+| A19 | adapt | idea | 2 | no | no | Depends on Gemini TTS clip prefetch and an IndexedDB cache. Taxila's realtime model emits its own backchannels; a timer-based ack on a teacher for children is unproven. Needs an owner/pedagogy call. |
+| A20 | adapt | idea | 2 | no | no | verify-voice.mjs is 1109 lines hardwired to Meera's six lanes and Java parity. Idea: one-voice gate pattern. Not portable. |
+| A21 | copy | adapt | 3 | no | yes | Docs and 199-line script exist; script calls the paid TTS lane (needs key from _config). Ear protocol is reusable; script needs an Azure TTS backend. Note: secret present at api/_config.js (not read). |
+| A22 | adapt | adapt | 3 | yes | no | f0 autocorrelation and drift alarm are real. Baseline log is Gemini Aoede (model google/gemini-3.1-flash-tts-preview): do not copy the data, only the method. |
+| A23 | adapt | idea | 2 | no | no | speech.ts is 2040 lines that imports liveCall (shapeAck), device/Gemini engine choices. Cascade is not Taxila's architecture. Idea only. |
+| A25 | adapt | idea | 3 | yes | no | scene.ts 781 lines pure (SIG_SIDE 32), Java twin SceneReader 668 lines. High quality but screen watching a child's device is a DPDP/child-safety question and not in the stated Taxila scope. Park. |
+| A26 | adapt | idea | 2 | no | no | Inside useCallEngine.ts (4421 lines), entangled. Idea only; same child-privacy caveat as A25. |
+| A27 | adapt | idea | 3 | yes | no | Prompt shape in persona.ts is Meera-specific; for children, screen observation consent differs. Idea only; Taxila prompt law (shapes not lines) already covers it. |
+| A30 | copy | idea | 3 | no | no | native-gate.mjs (439 lines) fails without javac as claimed, but its value requires a Java twin of TS code. Taxila has none. Keep the "fail, never skip" principle. |
+| A31 | copy | adapt | 4 | yes | no | Most solid Android asset: OtaUpdater 570 lines, OtaState 340 pure, sha256/https/min_native verified. Hardcodes DEFAULT_MANIFEST to meera-silk.vercel.app and package app.meera.companion; must be re-pointed to Azure Storage origin and renamed. Check Play policy on OTA. |
+| A32 | copy | adapt | 4 | yes | no | MicPermissionFastPath 122 lines extends BridgeWebChromeClient; needs package rename and MainActivity wiring to OtaUpdater. Small. |
+| A33 | adapt | idea | 2 | no | no | Verified API 33+ only, uses on-device SpeechRecognizer; Hindi/Hinglish child ASR quality unmeasured; Taxila uses server realtime ASR. Idea. |
+| A34 | adapt | adapt | 3 | yes | no | Config/manifest/CI real. build-apk.yml uses secrets.* and gradle may reference signing; not read. Meera-specific ids to replace. |
+| A35 | copy | copy | 4 | yes | no | Decision exists as context/decisions.md:2087 "no-capacitor-camera-plugin" with a reversal condition. Pure knowledge; valid if Taxila uses Capacitor BridgeWebChromeClient. |
+| A36 | adapt | idea | 2 | no | no | _surface.js 1340 lines importing _db, _agentscope, _room; Meera gatedReply semantics. Idea: fail-closed single reply gate, which Taxila already states as law. |
+| A37 | adapt | adapt | 3 | yes | no | whatsapp.js 320 lines: HMAC over raw body, hub.challenge, 24 h window verified. Imports _surface (heavy). Lift only the verify/handshake/window logic. Parent channel use only; do not message children. |
+| A39 | adapt | idea | 3 | no | no | activity.ts 183 lines, depends on honesty gate; Meera game semantics. Idea for module activity state. |
+| A40 | copy | idea | 4 | yes | no | SPEC-GAMES.md is a design doc; the principle (engine owns truth, LLM narrates) aligns with Taxila verified kits. Nothing to copy as code. |
+| A41 | adapt | idea | 2 | no | no | Chess think-time and move notes; domain-specific. Idea only. |
+| A42 | adapt | skip | 2 | no | no | Chess/ttt/wyr engines and activity shell are Meera companion games; not curriculum. Skip. |
+| A43 | copy | idea | 3 | no | no | Small reconciler idea inside App.tsx (1770 lines); activityClose.ts 190 lines coupled to Meera store. Idea. |
+| A44 | adapt | idea | 3 | no | no | Lifecycle matrix concept good, but contents are Meera events. Idea. |
+| A45 | copy | idea | 3 | no | no | Policy (no streaks, no variable reward) valid and aligned with child safety; milestones.ts 464 lines is Meera-specific. Copy the decision text, not code. |
+| A46 | adapt | adapt | 3 | yes | no | telemetry.js 256 lines needs _db and _ratelimit; adapt for Neon. Child-data minimisation to be added. |
+| A47 | copy | adapt | 4 | yes | no | _trace.js 419 lines imports _db and _agentscope (Meera agent scope); sanitise/retention constants verified (30/90 d, 64-char cap). Swap agent scope for child id; good fit. |
+| A48 | copy | adapt | 3 | yes | no | diag.ts imports telemetry; event taxonomy is Gemini-call specific. Adapt names. |
+| A49 | adapt | idea | 2 | no | no | Scripts coupled to Meera trace tables and Vercel log pull. Idea. |
+| A50 | adapt | idea | 2 | no | no | Gemini key pool and failure ladder; Azure has a single deployment key plus 429 handling. Keep classification idea only. |
+| A51 | copy | adapt | 3 | yes | no | Real, 51 lines, no imports. But in-memory per process (per Container Apps replica) and ipOf trusts Vercel headers; wrong under ACA ingress. Must back with Neon or per-replica caveat. |
+| A52 | copy | adapt | 3 | yes | no | write-config never prints values (verified), --stub exists. It writes api/_config.js; Taxila uses .env.local and Azure secret store. check-workflows is generic. |
+| A53 | copy | adapt | 2 | no | no | deploy-web.yml pins a Vercel prj_ id and uses vercel CLI; Taxila deploys to Azure Container Apps. Idea: live bundle must equal built bundle. |
+| A54 | adapt | skip | 1 | no | no | Vercel-specific build, hardcoded branch tarball fetch, Meera landing copy. Taxila is on Azure; skip. |
+| A55 | copy | adapt | 4 | yes | no | verify-release.mjs 219 lines, structure good (all failures reported, skipped gates printed). Gate list is Meera's; rewrite list. |
+| A56 | adapt | adapt | 3 | no | no | check-prompt-budget 620 lines coupled to api/chat.js slice cap. Pattern (assemble via real compiler, worst date) is the asset. |
+| A57 | adapt | adapt | 4 | yes | no | echosim real and sophisticated but transpiles liveCall.ts; only worth it if A01-A05 are adopted. |
+| A58 | copy | adapt | 3 | yes | no | spoken.mjs/device.mjs real; device.mjs (303) door census is hardwired to Meera TTS doors. Adapt with A17. |
+| A59 | copy | adapt | 3 | yes | no | check-motion (141) and check-copy (70) small and portable; check-contrast is 1844 lines Meera-specific. Copy first two, adapt third. |
+| A60 | adapt | adapt | 4 | yes | no | run.mjs re-bundles real source; invariants data is Meera's. Taxila child-safety floor (1098/14416, no companion register) must replace content. Keep structure. |
+| A61 | copy | copy | 3 | yes | no | Doc, 130 lines; generic design rules. Safe to copy as reference. |
+| A63 | copy | adapt | 3 | no | no | Sound vocabulary 5 cues is Meera's; imports haptics and callStatus. Principle (closed set, REFUSED table, none during call) transfers. |
+| A64 | copy | copy | 4 | yes | no | haptics.ts 92 lines, needs @capacitor/haptics only. Copy. |
+| A65 | copy | copy | 4 | yes | no | callStatus.ts 129 lines, react only. Copy. |
+| A66 | adapt | idea | 2 | no | no | CallVoice 500 lines presence UI is reusable idea; IncomingCall (she calls after a dropped call) is companion-retention behaviour that conflicts with Taxila's no-companion-register floor. Skip IncomingCall. |
+| A67 | adapt | adapt | 3 | yes | no | notify copy and _push (FCM JWT via createSign) real; agent-scoped by MEERA_AGENT_ID. For Taxila notify parents, not children; reason-contingent rule fits. |

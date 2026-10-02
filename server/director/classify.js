@@ -166,6 +166,26 @@ export function parseClassification(json, target) {
   return { ...mapped, confidence, modelFlags };
 }
 
+const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required: ["distress"], properties: { distress: { type: "boolean" } } };
+
+/**
+ * The model's distress read alone, for turns the full classifier does not see (a low-confidence transcript)
+ * or could not label (it failed): the predicate is the floor, this is its backup. One retry-free small call;
+ * if it fails too, the predicate's verdict stands.
+ */
+async function distressCheck(text, classLevel, trace) {
+  try {
+    const { json } = await chat(DEPLOY.fast, [
+      { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.` },
+      { role: "user", content: text },
+    ], { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace });
+    return !!json?.distress;
+  } catch (e) {
+    console.warn("[classify] distress check unavailable:", e.message);
+    return false;
+  }
+}
+
 /**
  * Classify one child turn.
  * `heard` is what the teacher last said: it lets the classifier refuse evidence for a question nobody asked.
@@ -195,7 +215,10 @@ export async function classify({ target, childText, heard, asrConfidence, typed,
   }
   if (!text) return done("no_evidence", "empty");
   if (safety.distress) return done("no_evidence", "predicate");
-  if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) return done("no_evidence", "asr");
+  if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) {
+    flags.distress = await distressCheck(text, classLevel, trace);
+    return done("no_evidence", "asr");
+  }
   if (target.mode === "item") {
     const t = norm(text);
     if ([target.key, ...(target.also || [])].some((k) => k && norm(k) === t)) return done("correct", "exact");
@@ -220,6 +243,7 @@ export async function classify({ target, childText, heard, asrConfidence, typed,
   } catch (e) {
     // A classifier outage costs one turn of evidence, never the lesson.
     console.warn("[classify] model unavailable:", e.message);
+    flags.distress = await distressCheck(text, classLevel, trace);
     return done("no_evidence", "error");
   }
 }

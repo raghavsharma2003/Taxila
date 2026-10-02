@@ -745,3 +745,202 @@ Fetched or queried 2026-10-02 unless marked. Abstract-level reads are tagged [S]
   - `shared/contracts.ts`; `server/director/modules.js`.
 - Earlier research cited through LS, not re-fetched here: Pashler 2008; Willingham 2015; Noetel 2022; Reinwein
   2012; Rey 2012; Walkington 2013; Patall 2008; Schmucker 2025; Rafferty 2019; Clément 2015.
+
+---
+
+## Principal review
+
+**Reviewer stance:** adversarial principal engineer, 2026-10-02. **The question:** will this layer get a 9-year-old a
+fun, correct, bug-free game (or other medium) within minutes, on Azure, at a price the tier can carry?
+
+**Short answer.** The *shape* is right and survives: a code planner, hard zeros as predicates, exact layered keys,
+library first, a marginal-zero floor in every plan. Four things are wrong as written, and each changes a number the
+design rests on:
+1. Its build-race economics use the **stale 8-minute G2** and assume **unlimited build concurrency**.
+2. The anticipation policy is keyed on **misconceptions the kits do not contain**.
+3. Its own cost target **already trips its own reversal line**.
+4. Its safety validators rely on a **classifier that is not trained on Hindi**.
+
+The doc also never says "fun" once. It quietly turns the owner's thesis ("a game built for this child while the
+teacher teaches") into "a shared core arrives next lesson". That may be the right call, but it has to be said to the
+owner as a decision, not left implied.
+
+**Evidence gathered for this review** (all 2026-10-02):
+- **Re-ran `modality-planner-sim.py`.** The output is byte-identical to `modality-planner-sim-2026-10-02.txt`, so the
+  sim reproduces.
+- **Re-ran S2** with `P_READY_INLESSON` at 0.25 and 0.05 (scratch copies; the committed file is untouched) **[sim]**.
+- **Counted `data/curriculum/c*-*.json` by script [V repo].** There are 830 nodes that carry a `misconceptions`
+  array:
+
+  | subject | nodes | nodes with zero misconceptions |
+  |---|---|---|
+  | english | 118 | 118 |
+  | hindi | 133 | 133 |
+  | sst | 65 | 56 |
+  | maths | 304 | 0 |
+  | science | 146 | 0 |
+  | evs | 64 | 0 |
+
+  **No node has more than 2 misconceptions.** In total, 601 misconceptions sit on 523 nodes.
+- **Azure AI Content Safety, Learn page "Region availability and service limits" (updated 2026-09-18) [V]:** "content
+  harms were trained and tested on the following languages: Chinese, English, French, German, Spanish, Italian,
+  Japanese, and Portuguese". Hindi is not one of them. Prompt Shields was tested on English only.
+- **Azure Container Apps dynamic sessions, Learn (2026-03-31) [V]:** there are code-interpreter and custom-container
+  pools, prewarmed allocation in milliseconds, and Hyper-V isolation. Custom containers are billed on pool resources.
+  Egress is a pool-level switch; `sandboxes-per-student.md` §2 records it as enabled or disabled only, with no
+  allowlist.
+- **Same-day sibling reviews adopted here rather than re-derived.**
+  - `llm-game-generation.md` Principal review: P4 (TPM is binding), P5 (G2 P50 ≈ 12-15 min, P90 > 20 min), P6 (the
+    catalogue is about 600 keys, ≈ $1.5k), P7 (grading in the kit), P13 (blob access) and P14 (Content Safety and
+    Hindi).
+  - `auto-validation-qa.md` Principal review: R24 (Q9 runs post-publish) and R25 (the live path is G1).
+  - `video-animation-gen.md` §1 **[V]**: `sora-2 2025-12-08` is Preview and **retires 2026-10-15 with no
+    replacement**. `gpt-4o-mini-tts 2025-03-20` retires the same day.
+  - `genui-reliability.md` [Me]: T2a 3.08 / 3.35 s p50/p90, with 6/8 lint-clean as run. T2b p90 is 24-41 s with a
+    repair.
+  - `context/decisions.md`: `infra-segment` puts Neon in Singapore while compute runs in eastus2. `taxila-opus` and
+    `taxila-sonnet` are deleted, and LG's probe got a 404 on `taxila-opus`.
+
+### A. Corrections that change the design
+
+| # | claim in the doc | what is wrong | correction |
+|---|---|---|---|
+| R1 | §6.3 and §7.4: G2 race P50 8 min, P95 15 min; sim `P_READY_INLESSON = .6` | Superseded the same day. G2 is P50 ≈ 12-15 min and P90 > 20 min, and **≈ 1 concurrent build per 500k-TPM codex deployment** (LG review P4/P5). After a minute-3 diagnosis, a race is almost never ready at minute 10, and at the evening peak it queues behind other misses. Re-running S2 with a realistic readiness [sim]: **300 children, build-on-miss: 89.3% → 78.4% (P=.25) / 72.4% (P=.05)**; night pre-build 96.0% → 92.3% / 90.4%; **3k children, build-on-miss: 98.4% → 96.8% / 95.9%**, right at MO6's 95% reversal line | Replace the §6.3 G2 row with LG review D. Make `pReadyByNeed` for `build_race` a function of the **admission queue** (queue depth × measured TPM per build), not a static P50. Re-state MO6: *anticipation is load-bearing at launch (≈ +18 points at 300 children), not a 7-point nicety*. At ≥ 3k children it still buys 2-3 points, so do not switch it off at scale. Add an in-flight dedupe test: the sim lets the first child's build serve every concurrent child instantly, which the real system cannot do |
+| R2 | §6.1: `build_race` admitted when "deadline ≥ P50 build time and the library fund reserves" | Dollars are not the scarce resource. **TPM is**, and image RPM (4 RPM company-wide [V decisions]). A $150/day fund buys about 60 G2 builds, but one deployment can run only about 4-5 builds an hour. §9.2's "≥ 30% of the fund held for in-lesson races" reserves the wrong unit | Add a capacity scope to the governor: `deployment:codex.tpm` and `deployment:image.rpm` as **token buckets with lanes** (lesson-start fills > in-lesson T2a > H3 races > night). Hold ≥ 30% of *codex TPM* (not dollars) for in-lesson work from 17:00-21:30 IST. A race whose queue-adjusted ETA exceeds the deadline is never started live; it goes to the night queue. Remove `image` from `build_race` during lesson hours. Images are library or night only, consistent with `asset-pipeline.md` AP1 |
+| R3 | MO6 and §7.1 H0: "top-3 misconceptions" nightly; a seeded catalogue of "top-2 misconceptions × 82 topics × 9 classes = 1,476 cores, ≈ $3.7k"; sim `MISC_TAIL = 5` | **The kits hold at most 2 misconceptions per topic, and 307 of 830 nodes hold none** (all of English and Hindi, 56/65 SST) [V repo]. "Top-3" cannot be built: there is no third, and §7.2 forbids pre-building LLM candidates until they are seen 5 times. The seeded catalogue is at most **601 keyed misconceptions** (× 1-2 mechanics), not 1,476. The sim's 5-long tail models misconceptions that would arrive *un-keyed*, so they could not be served by a core at all | (a) MO6 becomes "the night pre-builds every *listed* misconception of predicted topics (≤ 2), ranked by demand / cost". (b) The H0 catalogue is ≈ 600 keys at ≈ $1.6 × 1.5 attempts ≈ **$1.5k tokens plus about 100 reviewer-hours** (LG review P6). Budget the review, not the tokens. (c) Add a third S2 outcome, **"surfaced but un-keyed"**, routed to the T1 contrast engine. Expect it to dominate English, Hindi and SST. (d) Misconception authoring is the real bottleneck to anticipation (two per topic is thin for maths). Add a kit-growth path: observed ≥ 5 times → human-approved kit misconception → eligible for pre-build |
+| R4 | MO8: soft $0.05, hard $0.10 per child-day; reversal "if content spend per child-month > 25% of the tier"; §9.3: the expected spend is $0.85/child-month ≈ 27% | **The design's own expected number already crosses its own reversal line (27% > 25%).** The caps are worse: the soft cap is $1.50/month ≈ 48% of ₹299, and the hard cap $3.00/month ≈ 97%, before a rupee of realtime voice. A cap that permits spending the whole subscription on content is not a governor. The % is also stated against the gross tier, while voice (a gpt-realtime lesson) is the dominant line OA must carry first | Set caps from the tier, top-down: `child_content` = (tier × (1 − voice share − margin)) / 30, written as a formula in `budget` config, not as constants. As a placeholder, **soft $0.015, hard $0.03 per child-day** until OA's voice line is measured. Require the per-child fill cache (§9.3's "cheapest lever") **before launch**, not as M-MO4 follow-up. Fix the MO8 reversal so it does not fire on day 0, or accept that it has fired and cut generate-now to T2a diagrams and template story text only (the doc's own kill criterion) |
+| R5 | §6.1 and §6.3: diagram `generate_now` P50 3 s, P95 8 s [U]; animation `generate_now` 3-10 s [U]; precondition P(valid ≤ bridge + 5 s) ≥ .9 | Measured siblings exist and contradict this. Free scene composition (T2b) is **11.9 s p50, and 24-41 s p90 with a repair** [Me]. Only the template fill (T2a, 3.08 / 3.35 s) is live-viable, and it was **6/8 lint-clean as run** (8/8 only in-sample after autofixes designed on those same failures). Nobody has shown the .9 precondition. All timings are from the US build container; the India RTT is not included | `generate_now` for `diagram` = **T2a only**. Free composition and animation timelines are **near-line** (requested ≥ 45 s ahead, per `genui-reliability` decision `module-tiers-genui`). Replace the [U] rows with the [Me] numbers. Gate the .9 precondition on a fresh-brief re-run (n ≥ 30), not the in-sample 8/8. Add India RTT to every live row until M-MO5 lands |
+| R6 | §4 `InventoryView.lookup()` is synchronous, inside a "pure" `plan()`; §8.4 index in Neon | Neon is in **Singapore** and compute is in **eastus2** [V decisions `infra-segment`]: about 200+ ms RTT per query [I]. A plan that probes 11 modalities × several sources against Neon costs seconds and breaks "pure and replayable" | `plan()` reads an **in-process inventory snapshot**: a core-index replica refreshed by change feed, or a 30 s TTL pull of `artifact_core` for the child's next 3 topics at lesson start. The snapshot's version goes into the `modality.planned` trace so replays are exact. No I/O inside `plan()`. A CI test asserts this by running the planner with networking stubbed to throw |
+| R7 | §8.1: `ArtifactCoreKey` includes `kitVersion`, `gateVersion` and `generatorVersion`, and is looked up by exact hash. Rule 4: "stale cores still serve as fallbacks" | Contradictory. With versions inside the hash, **every gate or prompt bump turns the whole library into misses**. The lookup computes the new hash and never finds the stale core it says it will fall back to. The artefact bandit's "same key family" is undefined for the same reason | Split it. **Identity key** = (modality, objectiveId, misconceptionId, mechanic, band, deviceClass), which is hashed and looked up. **Provenance** = (kitVersion, gateVersion, generatorVersion, status) is stored on the row and used to *rank and filter* (prefer current-gate-pass, else stale-but-safe while a revalidation runs). The "key family" for Thompson sampling is the identity key. A `kitVersion` bump that changes answers (not cosmetics) moves the row to `quarantined`, not `stale`: a stale core with a wrong key answer is a correctness bug, not a fallback |
+| R8 | §8.4: "public-read behind **unguessable** hashes"; §8.1 hash = sha256(canonicalJSON(key)) | **The hash is computable by anyone.** Every key field is public or enumerable (objective ids, misconception ids, mechanic@ver, band, versions). "Unguessable" is false as written. `decisions.md#forge-infra-azure` also still says `forge/<childId?>/<artifactId>/`, which puts a child identifier in a public path | Either (a) accept that cores are public (they hold no PII, so that is defensible) and **delete the word "unguessable"**, or (b) name blobs by **HMAC-SHA256(serverSecret, identityKey)** or a random id mapped in `artifact_core`. Do (b), because it also hides the catalogue's shape. Container access level `blob`, never `container` (LG P13). Supersede the `forge-infra-azure` path: no child segment, ever. Serve through Azure Front Door so headers (CSP, `X-Content-Type-Options`, cache) can be set, which Blob cannot do (LG P1) |
+| R9 | §8.1 rule 2 and §6.2: "the host injects the child's name and memories at runtime through the `init` message" | For **agent-written G2 code, `init` delivers PII into untrusted code**. The CSP in LG P1 still allows `connect-src` to the artifact prefix, image beacons are possible under `img-src`, and WebRTC is outside CSP (LG P12). The design has no reason to hand the name to the iframe at all | **PII never crosses into the iframe.** Name, teacher callbacks and memories render in a **host DOM overlay** outside the sandbox (speech-bubble and banner slots that the kit reserves by layout). `init` carries only fill ids, numbers, item ids and string-table ids. Add a lint plus runtime assert: the `init` schema has no free-text field, and the bridge rejects one |
+| R10 | §3.1 validators for `text` and `story`: "Content Safety"; `story` fill generates per-child Hinglish text with luna | **Content Safety is not trained or tested on Hindi [V today]**, and romanised Hinglish is weaker still. A per-child, LLM-written Hinglish story for a 7-year-old, gated by a classifier that is blind in that language, is the single biggest **safety** hole in this doc | For B1-B2, `story` = **slot-filling of human-reviewed story shapes**: nouns and verbs from the closed skin vocabulary, numbers from the fill, no free generation. For B3-B4 free text: Content Safety **plus** a `taxila-brain` closed-rubric classifier for `hi` / `hi-Latn` **plus** a curated Hindi/Hinglish blocklist (Content Safety blocklists are available in eastus2 [V]). Fail closed to the kit story. Log `story.generated` with the classifier verdicts for audit |
+| R11 | §4 `interestTags: string[]` (child-editable, §2 Walkington), used by story fills and briefs | Free text from a child, or from a voice transcript, flowing into an LLM prompt is **prompt injection plus unsafe-content import**. The doc already closes `SkinKey.theme` to an enum, but leaves `interestTags` open | `interestTags: InterestId[]`, a closed vocabulary that maps to skins and noun lists. Raw transcript text never enters a designer, coder, image or story prompt (LG review B6). The child "edits" interests by choosing tiles, not by typing. Add an assertion in the brief builder |
+| R12 | MO9 and §7.1 H0: video hooks are a library item built by `taxila-sora`; Risk 5: "works today but has no successor" | **sora-2 2025-12-08 retires 2026-10-15** [V, sibling]. That is 13 days away, with no replacement. The offline TTS lane (`gpt-4o-mini-tts` 2025-03-20) retires the same day | Decide this week. Either (a) batch the reviewed hooks for the ≈ 30-60 `phenomenon` topics before 2026-10-13 and **archive the MP4s as owned library assets** (≈ $0.80 per 8 s + review), or (b) drop video and make the animation twin the primary. Recommend (a) for the top 20 phenomena only, under a hard $50 cap. **Pin TTS to `gpt-4o-mini-tts 2025-12-15` (GA, retires 2027-06-15)** and add a lifecycle check to `verify` that fails on any deployment within 30 days of retirement |
+| R13 | §6.2: "everything visual and every mechanic is a shared core" | It is economically right. **It silently departs from the owner's product intent** ("while the teacher teaches, the harness builds a game personalised to this child"). Measured G2 latency (R1) means the bespoke build lands after the lesson. If the owner is not told, the factory will be judged against a promise it was designed not to keep | Make it an explicit owner-facing decision (`forge-live-personalisation-is-g1`). Make the G1 refill *genuinely* the child's game, all in 3-25 s and all data, no code: (1) levels whose traps are **this child's own wrong answers** from the last 14 days (item ids plus `misc` from the learner model); (2) numbers at their KT target P; (3) their chosen interest skin; (4) the teacher's spoken hand-off naming what they will practise; (5) the teacher sees per-level telemetry live. Bespoke G2 builds run for *this child's* new (objective, misconception) pair and are offered **next lesson** as "I made you a new level". Tell the owner that this is the frontier that is actually reachable on Azure today |
+| R14 | Nowhere: fun | The utility is `fit · learn · (0.7 + 0.3·eng)`. Engagement moves U by at most about 21% (with `eng` clamped to [.3, 1], the factor runs .79-1.0), and there is **no term, gate or measurement for fun**. Combined with the phase mask (no game on first exposure) and the affect gates, the planner will favour diagrams and voice for a 9-year-old. The product risks feeling like a worksheet machine | (a) **A guaranteed play slot:** in P5 practice, when `game` is eligible and the affect gate allows it, the primary is a game unless U(game) < U_max − δ_play (start at .15). (b) A pre-ship fun proxy from the QA bot trace: time to first success ≤ 20 s, fail → retry loop ≤ 2 actions, a non-decreasing difficulty curve, feel-layer slots filled (LG review B9). (c) The artefact bandit's outcome adds **voluntary continuation past the required level**. (d) E-MO2 gets a second primary outcome, **voluntary return within 48 h**, because a planner that wins on retrieval while children stop opening the app has still lost |
+
+### B. Algorithm defects in §5.2
+
+1. **Double exploration.** `format.posteriorDraw` is already a Thompson draw (LS §8.4). On top of it, ε = .15
+   uniform within U_max − .2 means about one live choice in seven is a deliberately worse medium for a child. U lives
+   roughly in [0, 1], so a .2 window is wide.
+   - **Fix:** drop ε. Explore only through the Thompson draw and the choice surface (E-MO1).
+   - Log the propensity of every pick, so that E-MO2 can be analysed off-policy.
+2. **Scale coupling.** `learn = sigmoid(posteriorDraw) · quality` multiplies the positive term, but the penalties are
+   absolute. A low format posterior therefore shrinks every medium's benefit while leaving its costs unchanged, and
+   the planner drifts to "cheapest" whenever the *format* is uncertain. The ranking of media should not depend on the
+   upstream format's draw.
+   - **Fix:** drop the format term from U, since format is decided upstream.
+   - Normalise each penalty to [0, 1] with documented ranges.
+   - Unit-test that adding a constant to `posteriorDraw` leaves the ranking unchanged.
+3. **The cost term explodes and fails silently.** `λC · marginal / max(childDayLeft, 1)` is in micro-USD. With 50
+   µ$ left, a 3,000 µ$ fill gets a penalty of 12, which is fine as a gate. With exactly 1 µ$ left it is 600, so the
+   "reserve or demote" logic is never exercised.
+   - **Fix:** make budget a **hard eligibility predicate** (marginal ≤ left, or drop the option) and keep a small
+     smooth λC term only for the ordering among affordable options.
+4. **`switchCost` and `repeats` fight each other.** One penalises changing the medium and the other penalises
+   keeping it. With λS = .15 and λR = .1 × 1.5 for novices, they cancel, which wastes two tuning knobs.
+   - **Fix:** keep one variety term, conditioned on the moment (flow means keep the medium, boredom means switch).
+5. **`choiceRate(vibe)` is undefined.**
+   - **Fix:** define it, or remove it. A calm vibe should not get fewer choices without evidence.
+6. **The Beta posterior on a "composite" outcome (§8.3).** A Beta needs a Bernoulli outcome.
+   - **Fix:** pick one binary outcome for the bandit: post-artefact probe success, with delayed success counting
+     twice as a pseudo-observation. Keep quits and replays as **guardrails** (demote if the quit-before-L2 rate is
+     > 40% after 20 serves), not as bandit reward.
+   - Optimistic Beta(2,1) for 20 serves on a children's product means knowingly serving an untested core to 20
+     children. Pair it with **post-publish Q9 (QA R24) completing before serve 1**, and a human spot check before
+     serve 21.
+
+### C. Missing failure modes
+
+1. **A late artefact mid-play.** Never hot-swap a medium the child is using. The Director offers the late G2 or sim
+   as "next round". The planner needs a `mounted` lock, which §5 lacks.
+2. **Fallbacks that are not actually ready.**
+   - `fallbacks[last]` is "library | on_device with marginal 0", but nothing checks that it is *cached on the device*
+     under `net = poor`.
+   - **Fix:** at lesson start, prefetch the floor of each planned move into the Capacitor cache. An unfetched floor
+     counts as not ready.
+3. **Thundering herd on a miss.** At 18:00, 40 children in one class hit the same uncovered key. `inflight()` exists,
+   but §6.1 does not say that a second child **joins** the existing job, and S2 is silent on it.
+   - **Fix:** single-flight per identity key, with the fund charged once.
+4. **Gate failure on a race.** About 25-40% of G2 builds fail the gate (LG review P6). §7.4 and S2 count every build
+   as a library add.
+   - **Fix:** multiply race cost by 1/pass-rate.
+   - A failed key goes into a **cool-down** (no rebuild for 24 h, brief sent to night review). Without it, every child
+     who hits the key re-triggers the same failing build.
+5. **Kit answer change.** A corrected answer key in a kit invalidates every core and fill that baked the old answer.
+   - **Fix:** quarantine, not stale (R7). Add a `kit.answers` hash to provenance.
+6. **India latency on every "instant" row.** Library 0.1-0.3 s assumes a CDN edge in India.
+   - The blob account is in eastus2. Without Front Door or a CDN, a 340 KB kit fetch on Jio 4G is seconds.
+   - The retrieval warm-up rule ("anything with a > 3 s load is forbidden") then excludes everything on a cold
+     device.
+   - **Fix:** Front Door in front of `taxilaforge`, and prefetch at app open.
+7. **Realtime capacity.** The `deployment` scope lists realtime at 10 RPM [V]. If a "request" is a session create,
+   at most 10 lessons can *start* per minute, company-wide. This belongs in OA, but the governor's lane priority
+   ("lesson start > …") is meaningless while voice admission itself is the bottleneck.
+   - **Fix:** M-MO5 should include realtime session admission at a burst of 50.
+8. **Worksheet print path.** "PDF 50-200 KB, night" has no renderer named. On Azure-only compute it is headless
+   Chromium `page.pdf()` in the same runner image.
+   - Devanagari needs a bundled Noto Sans Devanagari, with shaping verified on a fixed test string, as in LG B4.
+9. **The model-policy conflict.** The task brief lists `taxila-opus` and `taxila-sonnet`. They are deleted, and they
+   returned 404 [V decisions; LG probe]. The repo `CLAUDE.md` is binding (Azure first-party only).
+   - The §13 flag is correct.
+   - **Fix:** make it a hard rule. No row in this doc may assume a Claude deployment until `claude-on-foundry-credits`
+     is reversed.
+
+### D. Smaller corrections
+- §6.3 voice "P50 0.8 s" contradicts its own basis ("bakeoff 0.9-1.7 s"). Use 0.9 s P50 and 1.7 s P95, and mark them
+  US-measured.
+- §3.1 `diagram` and `animation` latencies are tagged [U] where [Me] numbers exist (R5).
+- §9.2's knapsack is "greedy by value/cost". Value_k depends on Δ = .05 [U], which is identical for every key, so the
+  ranking is purely demand / cost. Say so, and do not imply that a learning-value model exists.
+- §8.2: "per-child generation costs about 23% of the tier *per day*" is correct arithmetic. State the tier conversion
+  explicitly (₹299 at about ₹96/$ ≈ $3.1) so that it can be updated.
+- §11 example 2: with R1, the ETA for an H3 race at minute 3 is about 12-15 min unqueued. "ETA 4 min" is not a
+  reachable state, so use "ETA 11 min, queue position 3".
+- §0 MO4: "image 23 s [M]" is n=1 at low quality. Medium measured 13-53 s in `asset-pipeline.md` [M]. Cite the
+  range.
+
+### E. What survives review unchanged
+- MO1 (the planner is code), MO2 (format ≠ medium; no learning styles), MO3 (content shape as a kit property), MO5's
+  *principle* (exact keys, skin and language outside the core, never serve on similarity), MO7 (data-first
+  misconception priors; no LLM simulators for prevalence), MO10 (choice within δ), the degrade ladder's "richness
+  may change, correctness may not", and every M-/E- measurement.
+- Add these measurements:
+  - **M-MO8:** codex TPM per build and admission-queue wait under a burst of 20 concurrent misses.
+  - **M-MO9:** share of surfaced misconceptions that are *un-keyed*, by subject.
+  - **M-MO10:** the R14 fun proxies against observed voluntary continuation, n ≥ 100 children, to see whether the bot
+    proxies predict play at all.
+
+### F. Proposed `context/` entries (via `context/inbox/`)
+- **decision `forge-live-personalisation-is-g1`** (R13). The live, in-lesson personalised game is a G1 data refill:
+  the child's own errors as traps, their numbers, their skin. The G2 bespoke build is next-lesson. Reverse if G2 P90
+  plus the gate is ≤ 6 min at ≥ 2 concurrent builds.
+- **decision `content-caps-from-tier`** (R4). Caps are a formula of tier minus voice. Placeholder: soft $0.015 /
+  hard $0.03 per child-day.
+- **decision `governor-capacity-lanes`** (R2). TPM and RPM token buckets with lesson-hour reservations; dollars are
+  secondary.
+- **rejection `versioned-fields-in-lookup-hash`** (R7). It makes every gate bump a full cache miss.
+- **rejection `pii-through-iframe-init`** (R9). The name and memories render in the host overlay only.
+- **rejection `content-safety-as-hindi-gate`** (R10). The classifier is not trained on Hindi [V 2026-09-18].
+- **measurement `modality-planner-sim-rerun-2026-10-02`**: S2 at P_READY .25 and .05, with the numbers in R1
+  [sim]. The kit misconception census (R3) [V repo].
+- **flag:** sora-2 and mini-tts 2025-03-20 retire on 2026-10-15 (R12). The owner must decide on the video batch
+  before 2026-10-13.
+
+### Sources checked in this review
+- Microsoft Learn, *Region availability and service limits — Azure AI Content Safety* (updated 2026-09-18),
+  language-availability section: https://learn.microsoft.com/en-us/azure/ai-services/content-safety/region-availability [V]
+- Microsoft Learn, *Dynamic sessions in Azure Container Apps* (2026-03-31):
+  https://learn.microsoft.com/en-us/azure/container-apps/sessions [V]
+- In-repo [V]:
+  - `modality-planner-sim.py` (re-run, reproduces; S2 sensitivity runs in the session scratchpad);
+  - `data/curriculum/c*-*.json` (misconception census by script);
+  - `context/decisions.md` (`infra-segment`, `forge-models`, `forge-infra-azure`, `azure-only-compute`);
+  - `context/rejected.md#claude-on-foundry-credits`;
+  - `llm-game-generation.md` Principal review;
+  - `auto-validation-qa.md` §12 and Principal review R23-R26;
+  - `video-animation-gen.md` §1;
+  - `asset-pipeline.md` AP1 and AP7 and the price rows;
+  - `content/genui-reliability.md` T1/T2a/T2b measurements.

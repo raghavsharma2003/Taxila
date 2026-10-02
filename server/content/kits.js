@@ -3,17 +3,27 @@
 // or carry partial topics: every read re-checks mtime, a parse failure keeps the last good copy, and
 // normalizeKit() drops what cannot be taught safely instead of trusting the shape.
 import { readFileSync, readdirSync, statSync } from "fs";
+import { resolve } from "path";
+import { pathToFileURL } from "url";
 import { createHash } from "crypto";
 import { checkFits, HINT_TOKEN_MAX } from "../compiler/compile.js";
 import { diagnosticItem, revealsAnswer } from "../director/items.js";
 import { estimateTokens } from "../learner/brief.js";
 
-const DIR = new URL("../../data/kits/", import.meta.url);
+const DEFAULT_DIR = new URL("../../data/kits/", import.meta.url);
+/** TAXILA_KITS_DIR points the loader at another directory (tests: a kit file appearing mid-lesson). Read per call. */
+const kitsDir = () => (process.env.TAXILA_KITS_DIR ? pathToFileURL(resolve(process.env.TAXILA_KITS_DIR) + "/") : DEFAULT_DIR);
 const ITEM_KINDS = new Set(["practice", "near_transfer", "far_transfer", "predict", "contrast", "why", "teachback", "retrieval", "error_spot", "translate_rep"]);
 const TOPIC_TYPES = new Set(["T1", "T2", "T3", "T4", "T5"]);
 const FORMATS = new Set(["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]);
 /** A kit with fewer non-teachback items than this cannot run a practice phase. */
 export const MIN_USABLE_ITEMS = 4;
+/**
+ * Accepted answer forms kept per item. Every form is pinned in the lesson section beside the key, which
+ * nothing may shed: an unbounded list could push it over its cap and throw mid-lesson.
+ */
+export const ACCEPTABLE_MAX = 8;
+const ACCEPTABLE_CHARS = 60;
 
 /** Rung shapes used when a kit item ships fewer than four hints, or a hint failed the lint. Shapes, never lines. */
 export const RUNG_DEFAULTS = [
@@ -80,7 +90,8 @@ export function normalizeKit(raw, { topicId, verified }) {
         id: str(it.id), skillId: str(it.skillId), kind: it.kind,
         difficulty: d >= 1 && d <= 5 ? Math.round(d) : 2,
         prompt_en: str(it.prompt_en) || str(it.prompt_hi), prompt_hi: str(it.prompt_hi) || str(it.prompt_en),
-        answer: str(it.answer), acceptable: strArr(it.acceptable), hints: strArr(it.hints).slice(0, 4),
+        answer: str(it.answer),
+        acceptable: [...new Set(strArr(it.acceptable))].filter((a) => a.length <= ACCEPTABLE_CHARS).slice(0, ACCEPTABLE_MAX), hints: strArr(it.hints).slice(0, 4),
         ...(misIds.has(str(it.targetsMisconception)) ? { targetsMisconception: str(it.targetsMisconception) } : {}),
         ...(it.verified ? { verified: it.verified } : {}),
       };
@@ -117,19 +128,24 @@ export function normalizeKit(raw, { topicId, verified }) {
   return { ...kit, hash: kitHash(kit), lint };
 }
 
-/** file name → { mtimeMs, topics: Map<topicId, raw> } — the last copy that parsed. */
+/**
+ * file URL → { mtimeMs, topics: Map<topicId, raw>, normalized: Map<topicId, TopicKit|null> } — the last copy
+ * that parsed, and its topics normalized on first use (normalizeKit runs checkFits over every lane,
+ * language and age band: ~3.4 ms a topic, measured, and several lookups a request).
+ */
 const files = new Map();
 
 function readKitFile(file) {
+  const url = new URL(file, kitsDir());
   let st;
-  try { st = statSync(new URL(file, DIR)); } catch { return null; }
-  const prev = files.get(file);
+  try { st = statSync(url); } catch { return null; }
+  const prev = files.get(url.href);
   if (prev && prev.mtimeMs === st.mtimeMs) return prev;
   try {
-    const d = JSON.parse(readFileSync(new URL(file, DIR), "utf8"));
+    const d = JSON.parse(readFileSync(url, "utf8"));
     const topics = new Map((Array.isArray(d.topics) ? d.topics : []).filter((t) => str(t?.topicId)).map((t) => [t.topicId, t]));
-    const entry = { mtimeMs: st.mtimeMs, topics };
-    files.set(file, entry);
+    const entry = { mtimeMs: st.mtimeMs, topics, normalized: new Map() };
+    files.set(url.href, entry);
     return entry;
   } catch {
     // Mid-write or malformed: keep serving the last good parse; try again when mtime moves.
@@ -142,7 +158,9 @@ function readKitFile(file) {
 export function kitFromFile(topic) {
   const entry = readKitFile(`c${topic.classLevel}-${topic.subject}.json`);
   const raw = entry?.topics.get(topic.id);
-  return raw ? normalizeKit(raw, { topicId: topic.id, verified: true }) : null;
+  if (!raw) return null;
+  if (!entry.normalized.has(topic.id)) entry.normalized.set(topic.id, normalizeKit(raw, { topicId: topic.id, verified: true }));
+  return entry.normalized.get(topic.id);
 }
 
 let idIndex = { signature: "", map: new Map() };
@@ -150,9 +168,9 @@ let idIndex = { signature: "", map: new Map() };
 /** skillId / misconceptionId → topicId across every kit file on disk; rebuilt only when a file changes. */
 export function kitIdIndex() {
   let names = [];
-  try { names = readdirSync(DIR).filter((f) => /^c\d+-[a-z]+\.json$/.test(f)).sort(); } catch { return idIndex.map; }
+  try { names = readdirSync(kitsDir()).filter((f) => /^c\d+-[a-z]+\.json$/.test(f)).sort(); } catch { return idIndex.map; }
   const entries = names.map((f) => [f, readKitFile(f)]);
-  const signature = entries.map(([f, e]) => `${f}@${e?.mtimeMs ?? 0}`).join("|");
+  const signature = `${kitsDir().href}:` + entries.map(([f, e]) => `${f}@${e?.mtimeMs ?? 0}`).join("|");
   if (signature === idIndex.signature) return idIndex.map;
   const map = new Map();
   for (const [, e] of entries) {

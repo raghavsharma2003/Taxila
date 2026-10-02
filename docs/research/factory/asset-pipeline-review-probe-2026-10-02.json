@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-02",
+  "tts": [
+    {
+      "voice": "marin",
+      "http": 200,
+      "ms": 982,
+      "bytes": 52992,
+      "err": null
+    },
+    {
+      "voice": "cedar",
+      "http": 200,
+      "ms": 942,
+      "bytes": 48000,
+      "err": null
+    },
+    {
+      "voice": "coral",
+      "http": 200,
+      "ms": 1742,
+      "bytes": 55296,
+      "err": null
+    }
+  ],
+  "image": [
+    {
+      "i": 1,
+      "http": 200,
+      "ms": 16850,
+      "images": 4,
+      "outTokens": 781,
+      "retryAfter": null,
+      "remainingReq": "3",
+      "err": null
+    },
+    {
+      "i": 2,
+      "http": 200,
+      "ms": 21259,
+      "images": 4,
+      "outTokens": 781,
+      "retryAfter": null,
+      "remainingReq": "2",
+      "err": null
+    },
+    {
+      "i": 3,
+      "http": 200,
+      "ms": 18093,
+      "images": 4,
+      "outTokens": 781,
+      "retryAfter": null,
+      "remainingReq": "1",
+      "err": null
+    }
+  ],
+  "stt": [
+    {
+      "i": 0,
+      "http": 200,
+      "ms": 587,
+      "remainingRequests": "9998",
+      "text": "शाबाश! अब अगला लेवल खोलते हैं।",
+      "input": "Shabaash! Ab agla level kholte hain."
+    },
+    {
+      "i": 1,
+      "http": 200,
+      "ms": 567,
+      "remainingRequests": "9999",
+      "text": "शाबाश! अब अगला लेवल खोलते हैं।",
+      "input": "Shabaash! Ab agla level kholte hain."
+    },
+    {
+      "i": 2,
+      "http": 200,
+      "ms": 649,
+      "remainingRequests": "9998",
+      "text": "शाबाश! अब अगला लेवल खोलते हैं।",
+      "input": "Shabaash! Ab agla level kholte hain."
+    },
+    {
+      "i": 3,
+      "http": 200,
+      "ms": 596,
+      "remainingRequests": "9998",
+      "text": "शाबाश! अब अगला लेवल खोलते हैं।",
+      "input": "Shabaash! Ab agla level kholte hain."
+    },
+    {
+      "i": 4,
+      "http": 200,
+      "ms": 585,
+      "remainingRequests": "9998",
+      "text": "शाबाश, अब अगला लेवल खोलते हैं।",
+      "input": "Shabaash! Ab agla level kholte hain."
+    }
+  ],
+  "arm": {
+    "note": "service principal sees 0 CognitiveServices accounts at subscription scope (RBAC); deployment capacity not readable",
+    "quotaTiers": {
+      "http": 200,
+      "body": "{\"value\":[]}"
+    }
+  },
+  "stt_first_run_note": "first run used /openai/v1/audio/transcriptions, which 404s DeploymentNotFound on this resource (known, see voice/probe-voices-hindi.mjs); re-run via /openai/deployments/<dep>/audio/transcriptions, results below",
+  "findings": [
+    "gpt-4o-mini-tts on Azure accepts voice marin and cedar (HTTP 200, ~0.95 s)",
+    "3 x n=4 low generations within 2 s all 200; x-ratelimit-remaining-requests 3->2->1: quota counts requests, not images (M-AP8)",
+    "5 parallel transcriptions all 200 in 567-649 ms; remaining-requests 9998: the doc-reference 3 RPM speech-to-text default does not bind taxila-transcribe",
+    "a Roman-script Hinglish TTS line transcribes back in Devanagari (5/5): a raw WER round trip against the Roman source string fails every line"
+  ]
+}

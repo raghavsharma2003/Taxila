@@ -216,6 +216,90 @@
    "title": "Design-token contrast and CVD: turn ring 3.01 -> 4.23:1 vs its fill; status pairs below dE 15 need glyphs; 0 failures",
    "at": "2026-10-02",
    "source": "inbox/design.json"
+  },
+  {
+   "id": "learner-legal-mode-ratchet",
+   "kind": "decision",
+   "title": "One legal_mode ratchet (M0-M3) gates every learner-layer write in code; M1 academic record at launch; M0 stateless fallback buildable in one transaction",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "learner-safety-gate-first",
+   "kind": "decision",
+   "title": "One safety gate runs first on every child/parent utterance and pre-empts KT, need, memory, detectors, vibe, solo rounds and MRT arms; its output is never learner state",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "learner-bktr-ledger",
+   "kind": "decision",
+   "title": "Knowledge = BKT-R per (child, skill) with review fixes: one transition per item-episode, per-session evidence budget, pL0=(P-g)/(1-g-s), retention=pL*R, idk outcome, mastered vs durable",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "learner-ge-scale-one-cat",
+   "kind": "decision",
+   "title": "One grade-equivalent scale (GE 0 = start of Class 1) and one success-first mixture-prior CAT for onboarding, need gap and KT priors; placement provisional until ~16 items per strand",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "learner-one-engagement-machine",
+   "kind": "decision",
+   "title": "One session-only engagement machine at launch (VT 5 states) fed by DA rule detectors via a verify-before-act arbiter; MI 11-moment filter deferred to v2 behind MM2",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "learner-brief-and-tail-order",
+   "kind": "decision",
+   "title": "Realtime teacher gets a <=600-token key=value CHILD brief plus rung-gated LESSON NOW and a fixed tail VIBE -> PEDAGOGY NOW -> SAFETY -> TURN SHAPE (last), each budgeted",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "sim-code-truth-two-families",
+   "kind": "decision",
+   "title": "Student simulator: code decides, skin words, verifier checks; every learning-inference metric reported under two truth families and three gain tables; never efficacy",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "dpdp-9-3-learner-gate",
+   "kind": "constraint",
+   "title": "DPDP s.9(3) bars tracking/behavioural monitoring of children; D2C 'educational institution' status unsettled, so every persisted behavioural layer waits for counsel",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "onboarding-cat-sim-2026-10-02",
+   "kind": "measurement",
+   "title": "Onboarding CAT simulation (computed, 1,500-3,000 sim children per row): SD<0.35 unreachable in 12 items; success-first cuts 3+-wrong runs 44%->8%; mixture prior 28%->7% placed >1 GE too high",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "cat-sd035-first-session",
+   "kind": "rejection",
+   "title": "First-session CAT stop at SD<0.35 (kt-algorithms D4): unreachable within 12 items, mean posterior SD 0.52-0.63 in simulation",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "affect-not-stored-as-legal-shield",
+   "kind": "rejection",
+   "title": "'Recompute affect on replay, never store it' as a DPDP 9(3) shield: processing is the act, and the non-deterministic labeller makes replay need stored labels (rejected by review)",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
+  },
+  {
+   "id": "open-learner-calibration-gate",
+   "kind": "open",
+   "title": "No parent-facing mastery words until K7: delayed accuracy of 'mastered' >= 0.9 at 1 and 4 weeks, ECE <= 0.05, n >= 200 children; until then 'answers observed'",
+   "at": "2026-10-02",
+   "source": "inbox/learner.json"
   }
  ],
  "edges": [
@@ -378,6 +462,76 @@
    "src": "ds-progress-no-meters",
    "rel": "constrains",
    "dst": "ds-status-carriers"
+  },
+  {
+   "src": "dpdp-9-3-learner-gate",
+   "rel": "constrains",
+   "dst": "learner-legal-mode-ratchet"
+  },
+  {
+   "src": "learner-legal-mode-ratchet",
+   "rel": "constrains",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-legal-mode-ratchet",
+   "rel": "constrains",
+   "dst": "learner-one-engagement-machine"
+  },
+  {
+   "src": "azure-only-compute",
+   "rel": "constrains",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-safety-gate-first",
+   "rel": "constrains",
+   "dst": "learner-one-engagement-machine"
+  },
+  {
+   "src": "learner-safety-gate-first",
+   "rel": "constrains",
+   "dst": "learner-brief-and-tail-order"
+  },
+  {
+   "src": "sim-code-truth-two-families",
+   "rel": "constrains",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-ge-scale-one-cat",
+   "rel": "supersedes",
+   "dst": "cat-sd035-first-session"
+  },
+  {
+   "src": "cat-sd035-first-session",
+   "rel": "measured_by",
+   "dst": "onboarding-cat-sim-2026-10-02"
+  },
+  {
+   "src": "learner-ge-scale-one-cat",
+   "rel": "measured_by",
+   "dst": "onboarding-cat-sim-2026-10-02"
+  },
+  {
+   "src": "affect-not-stored-as-legal-shield",
+   "rel": "caused_by",
+   "dst": "dpdp-9-3-learner-gate"
+  },
+  {
+   "src": "learner-legal-mode-ratchet",
+   "rel": "supersedes",
+   "dst": "affect-not-stored-as-legal-shield"
+  },
+  {
+   "src": "open-learner-calibration-gate",
+   "rel": "blocks",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "open-real-child-audio",
+   "rel": "blocks",
+   "dst": "learner-one-engagement-machine"
   }
  ]
 }

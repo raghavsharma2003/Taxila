@@ -641,3 +641,76 @@ Method: `git archive <ref> | tar -x` into the session scratchpad, then `node eva
 - `context/graph.json@B` adds 7 nodes with **no edges** (for example `replica-raw-memory-unscoped` is an `open` node with no supersedes or resolves edge), even though migration 018 now implements the fix. The graph is stale relative to the code.
 - I did not trace a "minor-safe prompt tier" for unverified accounts (§5.3 #50). The `ageGates` compiler input on main is covered by the `hp-main-engine` harvest.
 - The DPDP §9 child-consent reading in §7.1 is external domain knowledge, not repo content. Verify it with counsel before building on it.
+
+## Verification
+
+Adversarial pass over 63 claims. Method: `git cat-file`/`git show` at the cited refs (html-portfolio f4d3fe4 and a7bdcaa), line counts, import scans, grep for the specific numbers each claim quotes, and one executed check (attacks corpus loaded in node). No secrets found at either ref (no `_config.js`, `.env`, keystore blobs tracked). `api/_db.js` and `api/_auth.js` reference `_config.js` by import only.
+
+**Global findings**
+- All 63 cited paths exist at their refs. The claims are code, not stubs, except HC24, HC65 and HC71, which are docs or specs only.
+- Taxila's constraint is Azure-only hosting (Container Apps, `server/` route tables), so every `api/*.js` handler shaped for Vercel needs a thin port. Pure modules port as-is.
+- Brand and tenant coupling is real. Tables and headers are named `meera_*`, `vy_*`, `x-vyakti-*`. `_auth.js` is Supabase-backed, not Neon. Rename on copy.
+- Child-safety fit is weaker than claimed. The fence, floor block and leak guard target internals and vendor disclosure for an adult companion. They are not the child-safety severe classes (contact solicitation, PII asks) the targets name.
+- Verified numbers: attack corpus is 154 units / 208 turns (internals 144, game 40, loop 24 per family), as claimed. 028 migration CHECK `spent+reserved<=limit` confirmed. Chatterbox, T4 workload profile, minReplicas 0, Central India, cron `*/2`, replicaTimeout 900, parallelism 1, fast-transcription 2025-10-15 with en-IN/hi-IN all confirmed. Curriculum gate (>=18 rows, margin >=0.42) and entailment >=0.55 confirmed. Qualification thresholds 0.6/0.4/300 confirmed.
+- Not run: the Python runtime, the bicep deployment, the esbuild eval bundles and any paid probe.
+
+| id | exists | impl | portable | Q | use | note |
+|---|---|---|---|---|---|---|
+| HC01 | y | y | y | 4 | adapt | 476 lines, zero imports, pure. Lexicons are vendor, architecture and Meera specific, so copy the shape only. It detects internals leakage, not child-safety classes. Rebuild lexicons for Taxila. |
+| HC02 | y | y | partial | 3 | adapt | Logic is inline in a 2056-line `brain.ts` (redraft at about line 1997, `diag` action labels). Extract the pattern only. Taxila's voice path is realtime, so the unstreamed re-draft rarely applies. |
+| HC03 | y | y | y | 3 | adapt | `repeat.ts` has no imports. Loop fence is a cheap Jaccard check. Taxila repetition is pedagogic, so the thresholds need re-measuring. The raised-term part is companion-specific. |
+| HC04 | y | y | no | 3 | idea | Lives in a 4653-line `useCallEngine.ts` hook. The arm-next-turn idea is only useful where a non-streamed lane exists. The realtime transcript is already spoken by the time it is judged. |
+| HC05 | y | y | y | 4 | adapt | 154/208 verified by execution. Deterministic grader with controls and `--dry` is a good scaffold. The attack content (internals/costume/game/chess) is Meera specific. Reuse the harness and write new Taxila child-safety families. |
+| HC06 | y | y | partial | 3 | adapt | `MEMORY_COPY` single-source pattern is good. The copy itself is adult-companion and wrong for a parent-consent flow. Needs a DPDP child-consent rewrite and counsel review. |
+| HC07 | y | y | partial | 4 | adapt | `GATED_OPS` and 451 are inside a 1361-line `memory.ts` post() seam. Copy the pattern, not the file. Downgraded from copy. |
+| HC08 | y | y | y | 4 | adapt | Migration 016 is a real append-only ledger with no text column. Keyed by device_id. Taxila needs the child_id and parent_id model, because identity is an authenticated child id and not a device. |
+| HC09 | y | y | partial | 3 | idea | Record shape is trivial. It sits in the 879-line `store.ts`. Device-local, so wrong for parent-held child consent. |
+| HC10 | y | y | partial | 4 | adapt | Manifest-driven forget/export and `to_regclass` guard are sound. `memory.js` is 4464 lines, so extract only the manifest logic. The relcheck gate is reusable. |
+| HC11 | y | y | partial | 3 | idea | Types and sheets are about 100 lines each. The byte-exact fragment contract is coupled to Meera's compiler. Taxila already has its own prompt-compiler laws. |
+| HC12 | y | y | partial | 3 | idea | Small files but import `UserProfile`/`VoiceEngine` from `persona.ts`. The core/tail split and last-position rule are already inherited laws. |
+| HC13 | y | y | y | 4 | adapt | `_agentscope.js` has zero imports. The scalar-binding null-returns-zero-rows idea is strong. Retarget agent to teacher persona and person to child. Tables are vy_* named. |
+| HC14 | y | y | no | 2 | idea | `adapt.ts` is chess-specific (centipawns, plies, game types). Only the idea is portable: one-way in-session, EMA alpha 0.4 across sessions, never announced. Not measured on learners. |
+| HC17 | y | y | no | 3 | idea | A block inside the 703-line `persona.ts`. It is adult-companion jailbreak text. Taxila's floor is already specified in its own CLAUDE.md. Keep the structural lessons only. |
+| HC18 | y | y | no | 3 | idea | `buildWatchModeNote` lives in `persona.ts`. Concept is useful for homework screen share. Child-privacy wording must be rewritten. |
+| HC20 | y | y | y | 4 | adapt | 54 lines, imports `_db.js` (Neon HTTP). Writes to the `meera_diag` table, so it needs a table rename or migration. Never throws. Downgraded from copy because the table is not in Taxila. |
+| HC23 | y | y | y | 4 | copy | Verified: HAS_KEYSTORE flag, base64 decode, `bundleRelease assembleRelease`, signingConfig gated on keystore file. Capacitor-generic. Secrets referenced by name only. |
+| HC24 | y | n | partial | 2 | idea | Docs only. Companion-app answers (Maya, adult content rating). A children's app needs Families Policy and a Designed for Families path, so the answers will not carry over. |
+| HC25 | y | y | y | 1 | skip | 60-line static page. It is a mailto to a personal address (compliance@carbonsettle.com) and says "Maya". Not a deletion flow. Write a fresh page. |
+| HC27 | y | y | partial | 3 | idea | `leak.mjs` hardcodes `kabirAgent` and Maya fragments. Only the leak-ratchet pinned at 0 idea is useful. |
+| HC28 | y | y | partial | 3 | idea | Method lives in `measurements.md` (3005 lines) and a 567-line script that spends money. Use the preregistered paired differential idea. |
+| HC30 | y | y | y | 4 | adapt | `contracts.ts` has no imports and is a pure kernel. Scopes are replica/biometric (voice cloning). Re-derive scopes for child learning and parent consent. Lifecycle and readiness-blocker typing is the reusable part. |
+| HC31 | y | y | partial | 3 | adapt | Handlers are Vercel shaped and tied to the replica tables. Canonical-JSON receipt design is good. Tiered "ceremony" consent is voice-clone specific. |
+| HC32 | y | y | partial | 3 | idea | Replica-domain schema (biometrics, voices). Mostly irrelevant. Take the composite-FK tenancy idea and the idempotent-DDL runner convention. |
+| HC33 | y | y | partial | 4 | adapt | Real reserve/settle/reconcile with DB CHECK. It imports `_provenance/contracts.js`, which imports `_voice/contracts.js` and `_replica.js`, so the chain must be cut. Takes a `db` function and env rates. Downgraded from copy. |
+| HC34 | y | y | y | 4 | adapt | Adapter uses `2024-05-01-preview` chat/completions on `*.services.ai.azure.com`. Check that endpoint and API version still serve gpt-5.6 on Taxila's deployment. Validator is claim-specific. Rework the schema for learner observations. |
+| HC35 | y | y | y | 4 | adapt | `redactTranscript` and `containsDirectIdentifier` exist. Patterns are US/IN generic. Needs Indian child-PII cases (school, class, address) and an n measurement. It is inside `contracts.js`, which imports provenance, so lift the two functions out. |
+| HC36 | y | y | partial | 3 | idea | Voice-clone dialogue contract, tied to replica persona. The delivery enum idea is good for realtime delivery hints. The regex blocklist is thin. |
+| HC37 | y | y | partial | 3 | idea | Replica-person-specific (owner decisions). The append-only decision log to deterministic profile idea transfers. |
+| HC38 | y | y | partial | 3 | idea | Calibration scenarios are voice-persona specific. Registered-strategy-only compilation is the reusable rule. |
+| HC39 | y | y | y | 3 | idea | The Bradley-Terry code works standalone, but its 7 conditions and thresholds are tuned for voice style. Not validated for learning-profile discovery. Needs a re-measure before use. |
+| HC40 | y | y | partial | 3 | idea | Voice-delivery policy and holdout are DB-coupled. Take the preregistered holdout plus Wilson idea only. |
+| HC41 | y | y | y | 4 | adapt | `wilsonLower` and the gate logic are pure and sound. Thresholds (300 trials etc.) come from the replica context. Retune for Taxila, and the DB layer is separate. Downgraded from copy. |
+| HC42 | y | y | no | 2 | idea | Envelope-encrypted blind lab for voice assets with a studio UI. Overkill. Keep the committed AB/BA shuffle idea. |
+| HC43 | y | y | no | 2 | idea | Voice-replica feedback with a studio UI. Take the layered rating dimensions and nothing else. |
+| HC44 | y | y | y | 4 | adapt | AES-256-GCM DEK/KEK, 80 lines, `node:crypto` only. Env var names are `REPLICA_FEEDBACK_KEK_*`. Taxila needs Azure Key Vault KEK and no env-held KEK. Downgraded from copy. |
+| HC45 | y | y | partial | 3 | idea | Dataset compiler tied to replica feedback tables. Whole-session split rule transfers. |
+| HC46 | y | y | partial | 3 | idea | Voice-clone provider contract with a hardcoded "AI-generated voice replica" disclosure. Taxila uses first-party Azure voices only (no cloning), so the contract is mostly moot. |
+| HC48 | y | y | no | 2 | skip | Verified real (Chatterbox, HMAC broker, T4, min 0, Central India). Self-hosted voice cloning of a model that Taxila's Azure-first-party-only directive likely excludes. Headers are `x-vyakti-*`. Keep as reference for any self-hosted GPU on ACA. |
+| HC51 | y | y | no | 2 | idea | A voice-evidence DAG (diarize, separate, enhance). Textbook ingestion needs a different pipeline. Only the atomic lease/settle idea transfers. |
+| HC52 | y | y | y | 4 | adapt | `for update skip locked` with hashed lease tokens. It imports `./contracts.js` (stage names and sha256), so remove that coupling. Neon HTTP is single-statement, so verify that the CTE works over the HTTP runner. |
+| HC53 | y | y | y | 3 | adapt | Real Azure fast-transcription adapter, 363 lines. The `en-IN`/`hi-IN` locale list, Central India requirement and mandatory metering hook all confirmed. Child audio under DPDP needs a retention review. Downgraded from copy because its imports and hooks need checking. |
+| HC55 | y | y | partial | 3 | adapt | ClamAV worker, verified cron `*/2`, 900 s timeout, parallelism 1. Bicep is tied to the replica environment. Useful for homework uploads. Needs resize and tuning. |
+| HC56 | y | y | y | 4 | copy | `probeEnrollmentWav` has no imports, with clipping and bounds checks. Enrollment thresholds are cloning-tuned, so confirm them against child speech. |
+| HC57 | y | y | partial | 3 | idea | Supabase storage specific ("service-role key"). Server-chosen opaque path idea transfers to Azure Blob. |
+| HC58 | y | y | partial | 3 | idea | Erasure state machines are replica tables (voices, models). The disable-first reconciler and blinded receipt design are the part to reuse. |
+| HC59 | y | y | partial | 3 | adapt | `_auth-core.js` is 17 lines and config-free. `_auth.js` is Supabase-bound, so replace it. The bearer-only principle matches Taxila's directive. |
+| HC60 | y | y | partial | 3 | idea | Replica runtime capability (544 lines), tied to the replica schema. The freeze-versions-per-session idea is the takeaway. |
+| HC61 | y | y | partial | 3 | idea | `StudioApp.tsx` is 1312 lines and `studio.css` 2570, replica specific. A second Vite entry is a 15-line config idea. |
+| HC62 | y | y | y | 4 | copy | `wavCapture.ts` has no imports. Check browser and AudioContext support on Android WebView. Raw-mic (EC/NS/AGC off) is for enrollment and is wrong for live lessons. |
+| HC63 | y | y | y | 4 | copy | `sha256Core.ts` has no imports. Browsers have `crypto.subtle.digest` for small files. The incremental core is only worth it for huge uploads, so it is of marginal value. |
+| HC65 | y | n | n | 3 | idea | Doc only and Vyakti-specific plan. The $2,000 grant mapping is not Taxila's grant. Reuse the tagging with expiry_at and alert-tier idea. |
+| HC67 | y | y | partial | 3 | idea | Migrations are meera/vy table specific. The rolling-deploy default-before-backfill ordering lesson transfers. |
+| HC68 | y | y | partial | 3 | adapt | Regex checks against Meera tables (`meera_forget_agent_device_term_ix`). The negative-control approach is valuable. Reauthor against Taxila's child_id isolation. |
+| HC69 | y | y | partial | 3 | idea | `evals/run.mjs` is 577 lines of Meera suites. The commented "what this does not prove" convention is the part to take. |
+| HC70 | y | y | partial | 4 | adapt | `canonicalJson`/`sha256Hex` are small but the file imports `_voice/contracts.js` and `_replica.js`. Lift the two functions standalone. Downgraded from copy. |
+| HC71 | y | n | n | 3 | idea | A spec for voice replicas. R1-R10 apply loosely. Layers, evidence-vs-inference and "extraction proposes, owner disposes" map well onto the learner model. |

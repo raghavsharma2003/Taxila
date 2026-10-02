@@ -99,3 +99,11 @@ Method: `python3 docs/research/design/product-design-contrast.py`, reusing the W
 - Caption lit-word bar: jamun on cream 8.87, dark jamun on dark bg 8.85. White chalk underline on board 10.86 (dark board 9.82). ink-2 on new light surface-2 `#F1E8D9` 6.39. Status glyphs on cream 5.04-6.20.
 - Status pairs, CIEDE2000 normal/protan/deutan/tritan: done vs stop 59.7/14.1/13.0/58.6; listen vs think 15.9/19.7/19.2/14.4; listen vs jamun 21.5/14.8/10.4/34.8; turn vs parent your-turn fill 10.5/9.9/8.4/9.7; turn vs the removed chalk-mark `#F2CF6B` 11.6/7.9/6.7/9.0. Pairs below 15 under any simulation must carry a glyph.
 - Limits: pixel arithmetic, not legibility for children; no sunlight or cheap-LCD measurement; Machado digits unverified.
+
+
+<!-- merged from inbox/learner.json -->
+## onboarding-cat-sim-2026-10-02
+**Onboarding CAT simulation, Class 6 maths strand unless noted (computed, not children).** (2026-10-02)
+- Method: `docs/research/learner/onboarding-cat-sim.mjs`, seeded, about 45 s, byte-identical output across runs; 1,500-3,000 simulated children per row; item parameters misspecified (b +/- 0.4 GE, a x e^N(0, 0.25)); mixed oral/tap; ASR miss 15-25% and per-item times are model inputs [U].
+- Results: mean posterior SD after 12 items 0.52-0.63 (SD < 0.35 unreachable); success-first targeting cut runs of 3+ wrong answers from 44% to 8% at +0.13 GE RMSE; a single class-based prior placed 28% of far-behind children > 1 GE too high vs 7% with the 0.6/0.4 mixture (2% when the prior matches the population); within 1 GE of truth: 78% at 8 items, 91% at 16, 96% at 24.
+- Limits: the generating model shares the estimator's family and is unimodal, so every 'within 1 GE' rate is an upper bound; the ASER-ladder arm was scored with the grid posterior mean, not the bracket rung, so its '40% too high' figure measures prior shrinkage and is NOT evidence against ASER's rule (onboarding review R1). Re-run with a bracket-rung arm and 15-20% non-monotone responders before any further entry.

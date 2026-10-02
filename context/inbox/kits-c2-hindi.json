@@ -1,0 +1,26 @@
+{
+ "nodes": [
+  {
+   "id": "kits-c2-hindi-authored",
+   "kind": "measurement",
+   "title": "c2-hindi kit authored: 26/26 topics, 307 items (11-12/topic, >=7 kinds each), 64 misconceptions; normalizeKit lint 0 dropped / 0 hints replaced",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "norm-strips-devanagari-matras",
+   "kind": "measurement",
+   "title": "items.js norm() strips Devanagari combining marks (\\p{M}): दादी==दादा, पीला==पिला, मूली==मुली, बैंगन==बेंगन after norm — matra-contrast answers cannot be graded or leak-checked correctly",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "norm-strips-devanagari-matras",
+   "rel": "constrains",
+   "dst": "kits-c2-hindi-authored"
+  }
+ ],
+ "md": {
+  "measurements": "## kits-c2-hindi-authored\n**data/kits/c2-hindi.json: 26 of 26 curriculum topics (सारंगी, NCERT 2026-27), 307 items (min 11, max 12 per topic, min 7 distinct kinds), 4-5 skills and 2-3 misconceptions per topic.** (2026-10-02)\n- n: 26 topics / 307 items. Method: build script ran normalizeKit() (server/content/kits.js) on every topic and kitFromFile() on the written file; 0 items dropped, 0 diagnostics dropped, 0 hints replaced (15 leaking hints were rewritten before writing). All passages and poems are original (no NCERT text). Answer keys are NOT yet blind-solver verified (no verified field).\n- Kahani topics are T3/F4, kavita and khel-geet are T1/F5.\n\n## norm-strips-devanagari-matras\n**server/director/items.js norm() keeps only \\p{L}\\p{N}; Devanagari matras, anusvara, chandrabindu and nukta are \\p{M}, so they are replaced by spaces. Measured: norm(\"दादी\")===norm(\"दादा\"), norm(\"पीला\")===norm(\"पिला\"), norm(\"मूली\")===norm(\"मुली\"), norm(\"बैंगन\")===norm(\"बेंगन\") are all true.** (2026-10-02)\n- n: 5 pairs tried by hand, 4 collide (चाँद/चद did not, because the letter count differs). Method: node one-liner calling the exported norm().\n- Effect: on any Hindi-language item whose skill IS the matra (ि/ी, ु/ू, े/ै contrasts), a wrong answer that differs only by a matra would match the key, and revealsAnswer() splits Devanagari words at every matra. Fix direction: add \\p{M} to the kept classes in norm() (and wordsOf), then re-run the kit lint. Not fixed here; this workflow only authors kits."
+ }
+}

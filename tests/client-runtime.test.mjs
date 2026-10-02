@@ -228,16 +228,72 @@ test("protocol: barge-in during teacher audio marks the teacher turn interrupted
   assert.equal(events.find((e) => e.type === "response_done").status, "cancelled");
 });
 
-test("protocol: interrupt() cancels generation and flushes WebRTC playback", () => {
-  const { p, sent, events } = protocol();
+test("protocol: interrupt() cancels generation and flushes WebRTC playback; the reply waits for the cancel", () => {
+  const timers = fakeTimers();
+  const { p, sent, events } = protocol({ setTimer: timers.setTimeout, clearTimer: timers.clearTimeout });
   p.interrupt(); // nothing playing → nothing sent
   assert.equal(sent.length, 0);
   p.handle({ type: "response.created", response: { id: "r1" } });
   p.handle({ type: "output_audio_buffer.started" });
   p.sendUserText("mujhe nahi pata");
-  assert.deepEqual(sent.map((e) => e.type), ["response.cancel", "output_audio_buffer.clear", "conversation.item.create", "response.create"]);
+  assert.deepEqual(sent.map((e) => e.type), ["response.cancel", "output_audio_buffer.clear", "conversation.item.create"],
+    "no response.create while the cancelled response is still active (the server would refuse it)");
   assert.equal(sent[2].item.content[0].text, "mujhe nahi pata");
   assert.equal(events.filter((e) => e.type === "teacher_interrupted").length, 1);
+  p.handle({ type: "response.done", response: { id: "r1", status: "cancelled" } });
+  assert.deepEqual(sent.slice(3).map((e) => e.type), ["response.create"], "sent once the cancel completed");
+  timers.advance(5000);
+  assert.equal(sent.filter((e) => e.type === "response.create").length, 1, "the fallback timer was cleared");
+  // With no response active, a typed turn asks for its reply at once.
+  p.sendUserText("teen");
+  assert.equal(sent.at(-1).type, "response.create");
+});
+
+test("protocol: a response.create the server refuses (active response) is retried after the next response.done", () => {
+  const timers = fakeTimers();
+  const { p, sent, events } = protocol({ setTimer: timers.setTimeout, clearTimer: timers.clearTimeout });
+  p.requestResponse();
+  assert.equal(sent.length, 1);
+  // Server VAD had already started a response we had not heard about yet.
+  p.handle({ type: "error", error: { code: "conversation_already_has_active_response", message: "active" } });
+  assert.ok(!events.some((e) => e.type === "error"), "not surfaced: it is retried");
+  p.handle({ type: "response.created", response: { id: "r7" } });
+  assert.equal(sent.length, 1, "not before that response is done");
+  p.handle({ type: "response.done", response: { id: "r7", status: "completed" } });
+  assert.deepEqual(sent.map((e) => e.type), ["response.create", "response.create"]);
+  // A done that never comes: the timer resends it.
+  p.handle({ type: "error", error: { code: "conversation_already_has_active_response", message: "active" } });
+  timers.advance(1499);
+  assert.equal(sent.length, 2);
+  timers.advance(1);
+  assert.equal(sent.at(-1).type, "response.create");
+  // Retries are bounded (3 per request): past them the refusal is surfaced instead of looping.
+  p.handle({ type: "error", error: { code: "conversation_already_has_active_response", message: "active" } });
+  timers.advance(1500);
+  assert.equal(sent.length, 4, "third refusal: retried");
+  p.handle({ type: "error", error: { code: "conversation_already_has_active_response", message: "active" } });
+  timers.advance(1500);
+  assert.equal(sent.length, 4, "fourth: not retried");
+  assert.equal(events.filter((e) => e.type === "error").length, 1);
+});
+
+test("protocol: the safeguard path (interrupt, then prompt) ends in exactly one response.create after the cancel", () => {
+  for (const doneArrives of [true, false]) {
+    const timers = fakeTimers();
+    const { p, sent } = protocol({ setTimer: timers.setTimeout, clearTimer: timers.clearTimeout });
+    p.handle({ type: "response.created", response: { id: "r2" } });
+    p.handle({ type: "output_audio_buffer.started" });
+    p.interrupt(); // runtime applyTurn: speakNow "interrupt" → link.interrupt(); link.promptTeacher()
+    p.requestResponse();
+    const creates = () => sent.filter((e) => e.type === "response.create").length;
+    assert.equal(creates(), 0, "held while r2 is being cancelled");
+    if (doneArrives) p.handle({ type: "response.done", response: { id: "r2", status: "cancelled" } });
+    timers.advance(1500);
+    if (!doneArrives) p.handle({ type: "response.done", response: { id: "r2", status: "cancelled" } }); // late
+    timers.advance(5000);
+    assert.equal(creates(), 1, `exactly one hand-off response (response.done ${doneArrives ? "arrived" : "was late"})`);
+    assert.ok(sent.findIndex((e) => e.type === "response.cancel") < sent.findIndex((e) => e.type === "response.create"));
+  }
 });
 
 test("protocol: push-to-talk turns are dated from the press; failures and benign errors", () => {
@@ -647,6 +703,76 @@ test("runtime voice mode: a safeguarding move is voiced at once, cutting off a r
   assert.equal(link.interrupts, 1, "the reply from the old instructions is cut off");
   assert.deepEqual(link.prompts, [null, null], "and the hand-off is voiced now, not on the child's next turn");
   assert.match(rt.state.ui.whiteboard.value, /1098/, "the helplines are on screen too");
+});
+
+test("runtime text mode: a safeguarding reply to a module-only turn is never deferred behind the floor", async () => {
+  const { rt, link } = await startRuntime("text", {
+    turn: () => ({ move: { kind: "safeguard", shape: "s" }, moduleCommands: [], ui: {}, teacherReply: "Tum safe ho? Childline 1098.", teacherReplySeq: 30 }),
+  });
+  link.emit({ type: "response_start", responseId: "t1", at: 1 }); // the opening is still playing
+  link.emit({ type: "teacher_audio_start" });
+  assert.equal(rt.state.status, "speaking");
+  rt.moduleEvent({ moduleId: "m1", engine: "e", type: "stuck", name: "s", at: 2 });
+  await flush();
+  assert.equal(link.prompts.at(-1), "Tum safe ho? Childline 1098.", "voiced at once (cutting off the current reply)");
+  link.emit({ type: "child_final", text: "haan", startedAt: 3, typed: true });
+  assert.equal(link.prompts.filter((t) => t?.includes("1098")).length, 1, "and the child speaking next cannot drop it");
+});
+
+test("runtime: a new lesson starts with no modules, whichever way the last one was left", async () => {
+  const mount = { op: "mount", moduleId: "fb1", engine: "fraction-bars@1", params: { denominators: [4] } };
+  const { rt, link } = await startRuntime("text", {
+    turn: (req, n) => (n === 1
+      ? { move: { kind: "show_module", shape: "s" }, moduleCommands: [mount], ui: {}, teacherReply: "Dekho", teacherReplySeq: 5 }
+      : Promise.reject(new ApiError(401, "signed out", {}))),
+  });
+  link.speak("t1", "Namaste", 1);
+  rt.say("haan");
+  await flush();
+  assert.deepEqual(rt.modules.mounted(), ["fb1"]);
+  rt.say("aur?");
+  await flush();
+  await flush();
+  assert.equal(rt.state.phase, "error");
+  assert.deepEqual(rt.modules.mounted(), [], "an auth error drops the lesson's modules");
+  rt.modules.push([mount]); // e.g. left behind by a page-hide
+  await rt.start("child-1", "text");
+  assert.deepEqual(rt.modules.mounted(), [], "start() never replays the old lesson's modules");
+});
+
+test("runtime: a page-hide ends the lesson by beacon; a refused beacon leaves it open for a later way out", async () => {
+  const prevWindow = globalThis.window;
+  globalThis.window = new EventTarget();
+  try {
+    const api = fakeApi();
+    const beacons = [];
+    let refuse = true;
+    api.endBeacon = (id) => {
+      beacons.push(id);
+      return refuse ? Promise.reject(new Error("refused")) : Promise.resolve();
+    };
+    const rt = new LessonRuntime({ api, timers: fakeTimers(), createLink: (m, ctx) => new FakeLink(m, ctx.levels) });
+    await rt.start("child-1", "text");
+    rt.modules.push([{ op: "mount", moduleId: "fb1", engine: "fraction-bars@1", params: {} }]);
+    window.dispatchEvent(new Event("pagehide"));
+    await flush();
+    assert.deepEqual(beacons, ["L1"]);
+    assert.equal(rt.state.phase, "ended");
+    assert.deepEqual(rt.modules.mounted(), []);
+    // The same lesson id surfacing again (bfcache restore, another way out) may still close it.
+    await rt.start("child-1", "text");
+    refuse = false;
+    window.dispatchEvent(new Event("pagehide"));
+    await flush();
+    assert.deepEqual(beacons, ["L1", "L1"], "the refused end was not counted as sent");
+    await rt.start("child-1", "text");
+    window.dispatchEvent(new Event("pagehide"));
+    await flush();
+    assert.deepEqual(beacons, ["L1", "L1"], "an accepted end is sent once");
+    assert.deepEqual(api.calls.end, []);
+  } finally {
+    globalThis.window = prevWindow;
+  }
 });
 
 test("runtime voice mode: the Director's end is voiced as a goodbye once the floor is free, then the call ends", async () => {

@@ -1,0 +1,1230 @@
+{
+ "segment": "command-centre",
+ "doc_path": "/home/user/Taxila/docs/harvest/command-centre.md",
+ "summary": "command_centre is CarbonSettle's Next.js 16 + Supabase + Vercel CRM and cold-outbound engine: about 150 API routes, 47 cold-email modules, IMAP inbox with AI intent classification and translation, WhatsApp Business channel, signed personalised /p offer pages with React-PDF briefs, first-party cookieless analytics, team chat with zero-third-party Web Push, and a Capacitor Android/iOS shell that loads the live URL.\nThere is no RAG or knowledge-graph code; the owner's 'company brain' is a process artefact (AGENT-CONTEXT.md, SESSION-LOG.md, SESSION-LOG-PROTOCOL.md, a local auto-memory graph, CLAUDE.md/AGENTS.md mirrors).\nThe engineering is mature; the business is not: 916 cold importer emails produced 2 verified humans and 0 revenue, and the CRM had one lead in a commercial stage with no price ever quoted (STATE-2026-08-24).\nHighest-value finding for Taxila: most measured engagement was mail-security sandboxes (~3x inflation). lib/engagement-classifier.ts encodes a measured HUMAN rule (session>=45s, >=2 heartbeats, >8s/heartbeat, >10min after send) with reasons and demote-only extra rules.\nThat heartbeat-cadence method plus the proposal-analytics tracker (visible-only active time, per-section dwell, scroll, delegated clicks) ports directly to covert attention signals on Forge modules and to parent-report analytics.\nSecond: an agent-fleet method with measured outcomes: hard-law briefs, a known-domains skip list, central mechanical gating ('nothing an agent wrote was trusted'), seeded adversarial 10% audits escalating to a 100% census at >20% defects, and concurrency <=15.\nShard disagreement (6x), regex over-keep (33-56% junk vs <=10% hand-reviewed) and snippet-as-evidence are measured failure modes.\nReusable infra worth copying: generic Postgres audit trigger with app.actor GUC and rollback recipes; atomic conditional-UPDATE lease; rotation-safe signed links; constant-time compare; AES-256-GCM field encryption; env fingerprint checker; durable email write-ahead when the DB fails; heuristic-first, forced-tool, never-null classifier; VAPID Web Push with pruning.\nThe context-project-review branch (not merged to main) holds a security sweep at 136/136 tests: signing secret split from password, signed identity cookie, no query-string secrets.\nIt also found that every unsubscribe link ever sent was broken (token split on '.').\nRejections are plentiful and specific: tags and labels untrusted, licence-before-source, RLS FOR UPDATE silent 0-row writes, a classifier enum out of sync with the DB CHECK, 1000-row truncation, gates only at enroll time, verdict cache drift, duplicated constants, hand-typed prompt facts, the 'Hi Visit Website' name bug, success-on-failure UI, hover-only touch affordances, fabrication requests declined.\nNot portable as-is: OpenRouter/Anthropic providers (Azure-only directive), WhatsApp STOP-confirm friction (DPDP), remote-URL Capacitor shell for a store-published kids app, VAPID key in a DB table.",
+ "assets": [
+  {
+   "id": "cc-engagement-classifier",
+   "title": "HUMAN vs MACHINE session classifier",
+   "subsystem": "telemetry/tracing",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/engagement-classifier.ts"
+   ],
+   "what": "Groups proposal events into sessions, attaches session-less events by time window (counts only, never timings), labels HUMAN/MACHINE with typed reasons (session<45s, <2 heartbeats, <=8s/heartbeat, <=10min after send, click before page_view, ip shared by >=3 unrelated leads, no session). Extra rules may only demote toward MACHINE.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "telemetry + covert attention verdicts on Forge modules; parent-report link analytics",
+   "evidence": "docs/STATE-2026-08-24.md §2: ~3x inflation (205 views->~67 real)"
+  },
+  {
+   "id": "cc-proposal-tracker",
+   "title": "Behavioural journey tracker",
+   "subsystem": "generative-ui/modules",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "components/proposal/proposal-analytics.tsx"
+   ],
+   "what": "Client tracker: session_start/return_visit, page_view once per session, scroll milestones, per-[data-section] dwell via IntersectionObserver, visible-only activeMs, 15s heartbeat, delegated click classes, CustomEvent hooks (cs:calc), session_end summary; batched sendBeacon/keepalive; staff/dev exclusion flag.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "module engagement telemetry feeding learner model"
+  },
+  {
+   "id": "cc-site-collect",
+   "title": "First-party cookieless analytics collector",
+   "subsystem": "growth/seo",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "app/collect/route.ts",
+    "lib/site-analytics.ts"
+   ],
+   "what": "CORS beacon endpoint; cookieless daily-rotating visitor hash + 30-min session bucket; salted IP hash; GA-style source classification; drops bot UAs and datacenter/scanner AS orgs (IPinfo Lite, cached).",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "marketing-site analytics without consent banner; DPDP-friendly telemetry",
+   "notes": "BOT_ORG regex includes microsoft/azure - review before reuse on Azure-hosted product"
+  },
+  {
+   "id": "cc-reply-classifier",
+   "title": "Heuristic-first intent classifier with forced tool schema",
+   "subsystem": "emotional-lens/affect",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/cold-email/reply-classifier.ts",
+    "lib/cold-email/reply-classifier.test.ts"
+   ],
+   "what": "Tier 1 high-precision phrase heuristics; tier 2 LLM with forced tool_choice (enum intent, confidence 0-1, reasoning<=200); tier 3 never-null best-effort heuristic. Clamps enum/confidence, persists model+confidence, intent->action sets, cron batch over unclassified rows.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "child-utterance/parent-message classification; safety pre-filter tier",
+   "evidence": "growth-insights-2026-07-24: classifier unreliable (meeting requests in negative) - human glance still required"
+  },
+  {
+   "id": "cc-ai-client",
+   "title": "Task-routed LLM client with fallback chain + lenient JSON",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/ai.ts"
+   ],
+   "what": "Plain-fetch client; per-task model chain tried once each with AbortController timeout; any non-OK advances; lenient JSON parse (raw->unfenced->outermost braces); returns which model answered; null instead of throw.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "Azure OpenAI deployment/region fallback chain (providers must be swapped to Azure-only)"
+  },
+  {
+   "id": "cc-ai-draft-studio",
+   "title": "Grounded draft + conversational refine",
+   "subsystem": "relational-os",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/cold-email/ai-draft.ts"
+   ],
+   "what": "Context block (thread history, profile, engagement, notes) -> first draft at temp 0.35; refine turns carry currentDraft + instruction + priorInstructions to preserve; rules forbid inventing facts.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "parent message / weekly-note drafting with teacher-in-loop edits",
+   "notes": "System prompt is sentence-shaped; Taxila law says write shapes not lines"
+  },
+  {
+   "id": "cc-reply-translator",
+   "title": "Fail-open ingest translation with multilingual quote stripping",
+   "subsystem": "relational-os",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/cold-email/reply-translator.ts"
+   ],
+   "what": "HTML->text, strips Gmail/Outlook quote markers in EN/DE/FR/IT/ES/NL and signatures, detects language, stores translation_lang/translated_en/translated_at contract; never blocks ingest.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "Hindi/regional parent message translation"
+  },
+  {
+   "id": "cc-webpush",
+   "title": "Zero-third-party Web Push (VAPID)",
+   "subsystem": "android/capacitor",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/messaging/push.ts",
+    "public/sw.js",
+    "components/layout/push-toggle.tsx",
+    "app/api/push/subscribe/route.ts"
+   ],
+   "what": "Self-generated VAPID keypair, per-user subscriptions, prune 404/410, never-throw senders, service worker with tag/renotify and focus-or-navigate on click, gesture-gated opt-in.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "parent notifications (PWA + Android) without Firebase",
+   "notes": "VAPID private key was stored in a DB table and was anon-readable until 2026-07-14; use Key Vault/secret store"
+  },
+  {
+   "id": "cc-live-alerts",
+   "title": "In-app polling toast + vibration",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "components/layout/live-alerts.tsx"
+   ],
+   "what": "12s visible-only poll; first sync primes seen-map silently; skips own and new-channel backlog; toast + navigator.vibrate works in Android WebView.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "in-app parent/teacher alerts"
+  },
+  {
+   "id": "cc-notif-feed",
+   "title": "Multi-source notification feed with watermark",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "app/api/notifications/route.ts",
+    "components/layout/notification-bell.tsx"
+   ],
+   "what": "Per-source guarded queries produce {kind,title,detail,at,href}; client last-seen watermark drives badge.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "parent dashboard notifications"
+  },
+  {
+   "id": "cc-team-chat-schema",
+   "title": "Team chat schema + data layer",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "supabase/migrations/20260623_team_messaging.sql",
+    "lib/messaging/server.ts",
+    "lib/messaging/types.ts",
+    "docs/team-messaging.md"
+   ],
+   "what": "app_users, chat_channels (dm_key sorted unique, entity_kind/entity_id pin), members with last_read_at/muted, messages with attachment/reply_to/soft-delete, reactions, last_message_at trigger, missing-table setup state, entity-pinned channel get-or-create.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "parent<->teacher/school channels pinned to child/lesson/report"
+  },
+  {
+   "id": "cc-audit-trigger",
+   "title": "Generic row-audit trigger with actor GUC + rollback recipes",
+   "subsystem": "db-schema",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "supabase/migrations/20260715_critical_tables_audit_trigger.sql",
+    "supabase/migrations/20260715_leads_audit_trigger.sql",
+    "docs/audit-and-rollback.md",
+    "scripts/audit-rollback.mjs"
+   ],
+   "what": "SECURITY DEFINER, empty search_path; full old/new jsonb, changed_fields, db_user, app.actor; skips updated_at-only; RLS no-policy sink; SQL recipes for per-row history and rollback.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "learner-model, consent and Conductor audit trail on Neon Postgres",
+   "evidence": "built after 2026-07-15 pipeline stage-loss scare; forensics found no loss but no trail existed"
+  },
+  {
+   "id": "cc-atomic-lease",
+   "title": "Conditional-UPDATE lease claim",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/cold-email/sequence-engine.ts"
+   ],
+   "what": "UPDATE ... SET next_send_at=now+10m WHERE id AND status IN AND next_send_at<=now RETURNING id; 0 rows = claim lost; partial unique index backstop; slot release on bookkeeping failure.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "Conductor/Forge job queue double-run guard"
+  },
+  {
+   "id": "cc-cron-window",
+   "title": "Bearer-auth cron with time window, weekend block, rolling cap",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "app/api/cron/send-pending/route.ts",
+    "lib/cold-email/send-limits.ts",
+    "vercel.json"
+   ],
+   "what": "CRON_SECRET bearer (constant-time in review branch), IST window/weekend gating, rolling hourly cap re-checked inside loop, randomised batch sizes.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "Conductor quiet hours for child/parent notifications; AI cost caps"
+  },
+  {
+   "id": "cc-secure-compare",
+   "title": "timingSafeEqual helper",
+   "subsystem": "auth/accounts/consent",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "claude/context-project-review-0x0i6g@d288e75",
+   "paths": [
+    "lib/secure-compare.ts"
+   ],
+   "what": "Constant-time secret compare; false on empty or length mismatch.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "all token/webhook compares"
+  },
+  {
+   "id": "cc-app-gate",
+   "title": "Host-split proxy gate + Edge-safe HMAC cookie",
+   "subsystem": "auth/accounts/consent",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "proxy.ts",
+    "lib/app-auth.ts",
+    "app/api/auth/app-login/route.ts"
+   ],
+   "what": "Public-only hosts 404 everything except prospect surfaces; other hosts require HMAC exp.sig cookie (WebCrypto, constant-time); public-path allowlist; safe ?next redirect.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "separate parent-share host vs app; admin gate",
+   "notes": "review branch decouples signing secret from password and anchors isLocal"
+  },
+  {
+   "id": "cc-signed-session",
+   "title": "Signed identity cookie v1:user:sig",
+   "subsystem": "auth/accounts/consent",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "claude/context-project-review-0x0i6g@d288e75",
+   "paths": [
+    "lib/messaging/session.ts"
+   ],
+   "what": "HMAC-signed username cookie; split on last colon; tampered -> null (re-pick, no lockout).",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "staff/parent session identity"
+  },
+  {
+   "id": "cc-signed-links",
+   "title": "Rotation-safe signed public links",
+   "subsystem": "auth/accounts/consent",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "claude/context-project-review-0x0i6g@d288e75",
+   "paths": [
+    "lib/cold-email/proposal-link.ts",
+    "lib/cold-email/proposal-link.test.ts"
+   ],
+   "what": "base64url(id.type.sig24) HMAC; VALID_TYPES allowlist; new secret signs, verification tries new then legacy so sent links survive rotation.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "parent report / consent / magic links"
+  },
+  {
+   "id": "cc-unsub-token",
+   "title": "RFC-8058 one-click unsubscribe tokens",
+   "subsystem": "auth/accounts/consent",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "claude/context-project-review-0x0i6g@d288e75",
+   "paths": [
+    "lib/cold-email/unsubscribe-token.ts",
+    "lib/cold-email/unsubscribe-token.test.ts",
+    "app/api/unsubscribe/route.ts"
+   ],
+   "what": "GET no-op (prefetch-safe), POST + HMAC verify; fixed to split payload from the right.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "DPDP consent-withdrawal links with round-trip tests"
+  },
+  {
+   "id": "cc-encryption",
+   "title": "AES-256-GCM field encryption",
+   "subsystem": "db-schema",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/cold-email/encryption.ts"
+   ],
+   "what": "scrypt-derived key from env; [IV12][tag16][ct] base64; never logs plaintext.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "field-level encryption of child PII / tokens at rest"
+  },
+  {
+   "id": "cc-required-env",
+   "title": "Env spec checker with fingerprints",
+   "subsystem": "evals/gates/verification",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/required-env.ts",
+    "app/api/admin/env-check/route.ts",
+    "scripts/check-env.ts"
+   ],
+   "what": "Single spec list; present/length/sha256[:8] fingerprint/placeholder/minLen/expected-URL checks; deployed endpoint verifies secrets the dashboard never shows back.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "Azure Container Apps secret verification gate"
+  },
+  {
+   "id": "cc-http-helpers",
+   "title": "Friendly fetch error helpers",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/http.ts"
+   ],
+   "what": "Reads text first, parses JSON only if JSON, maps 413/502/504/401/429 to human messages.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "client fetch layer"
+  },
+  {
+   "id": "cc-durable-rescue",
+   "title": "Durable write-ahead via email on DB failure",
+   "subsystem": "safety-floor/honesty",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "app/api/website-lead/route.ts",
+    "docs/system-audit-and-resilience-2026-07-08.md"
+   ],
+   "what": "DB write with retry + hard success check; every failure path calls a once-guarded rescue that emails the full record (SMTP independent of DB); FK-violation retry without FK.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "safeguarding hand-off must survive DB outage"
+  },
+  {
+   "id": "cc-graceful-links",
+   "title": "Sent links degrade, never die",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "app/p/[token]/page.tsx",
+    "app/p/[token]/pdf/route.ts"
+   ],
+   "what": "Valid token whose record is gone renders a functional generic page; rule never hard-delete a record with a sent link.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "parent report links"
+  },
+  {
+   "id": "cc-react-pdf-variants",
+   "title": "Per-recipient React-PDF briefs with variants",
+   "subsystem": "generative-ui/modules",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/free-quarter/",
+    "lib/importer-brief/"
+   ],
+   "what": "Shared blocks/diagrams + 5 visual variants selected by ?v=; data module; WinAnsi glyph limits learned.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "monthly parent report PDF"
+  },
+  {
+   "id": "cc-html-to-pdf",
+   "title": "HTML artifact -> print PDF renderer",
+   "subsystem": "generative-ui/modules",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "scripts/render-proposal-pdf.py"
+   ],
+   "what": "Headless Chromium; pins light palette; print-color-adjust exact; keeps cards/tables whole across breaks; one source for HTML and PDF.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "parent reports"
+  },
+  {
+   "id": "cc-reply-digest",
+   "title": "Daily plain-text digest",
+   "subsystem": "relational-os",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/cold-email/reply-digest.ts",
+    "app/api/cron/reply-digest/route.ts"
+   ],
+   "what": "Last-24h summary of replies by intent, bounces, paused mailboxes to a human inbox.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "parent daily/weekly digest"
+  },
+  {
+   "id": "cc-wa-optout",
+   "title": "WhatsApp STOP/START with confirm friction",
+   "subsystem": "auth/accounts/consent",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/whatsapp/opt-out.ts"
+   ],
+   "what": "Whole-message keyword regex; first STOP pending + confirm prompt, second STOP confirms; START resubscribes; bulk check.",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "consent",
+   "notes": "Confirm-step friction conflicts with DPDP (withdrawal as easy as consent); keep only the keyword regex"
+  },
+  {
+   "id": "cc-wa-agent",
+   "title": "WhatsApp suggested-reply agent",
+   "subsystem": "relational-os",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/whatsapp/agent.ts"
+   ],
+   "what": "Reuses heuristic classifier on inbound WA; per-intent suggested reply for one-tap operator send.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "parent WhatsApp via Azure Communication Services"
+  },
+  {
+   "id": "cc-wa-executor",
+   "title": "WA campaign executor with lease, daily cap, scope gate",
+   "subsystem": "relational-os",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "claude/context-project-review-0x0i6g@d288e75",
+   "paths": [
+    "lib/whatsapp/executor.ts"
+   ],
+   "what": "queued->sending lease, IST daily cap, scope gate, junk-name guard.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "parent broadcast"
+  },
+  {
+   "id": "cc-junk-name-guard",
+   "title": "Untrusted-name personalisation guard",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/clean-company.ts",
+    "lib/cold-email/render.ts"
+   ],
+   "what": "isJunkCompanyName/cleanCompanyName fall back to neutral text so scraper artefacts never render ('Hi Visit Website').",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "child name/nickname rendering guard in every lane",
+   "evidence": "43 sends with broken subject; fix had to be repeated in template-engine and WA executor"
+  },
+  {
+   "id": "cc-mobile-shell",
+   "title": "Capacitor remote-URL shell",
+   "subsystem": "android/capacitor",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "mobile/capacitor.config.ts",
+    "mobile/android/",
+    "mobile/ios/",
+    "mobile/README.md"
+   ],
+   "what": "Capacitor 7 BridgeActivity loading production URL via server.url, allowNavigation allowlist, cleartext off; no rebuild per deploy; personal side-load only.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "android shell (bundle assets for a store-published kids app instead)"
+  },
+  {
+   "id": "cc-pwa-manifest",
+   "title": "PWA manifest",
+   "subsystem": "android/capacitor",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "app/manifest.ts"
+   ],
+   "what": "Standalone manifest; unlocks iOS 16.4+ Web Push.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "parent PWA"
+  },
+  {
+   "id": "cc-mobile-nav",
+   "title": "Bottom tab bar + More sheet",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "components/layout/mobile-nav.tsx"
+   ],
+   "what": "4 primary tabs, More sheet, prefix-collision-safe isItemActive.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "parent app navigation"
+  },
+  {
+   "id": "cc-session-log-protocol",
+   "title": "Session-log protocol + agent context system",
+   "subsystem": "company-brain/knowledge-ingestion",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "docs/SESSION-LOG-PROTOCOL.md",
+    "docs/AGENT-CONTEXT.md",
+    "docs/SESSION-LOG.md",
+    "CLAUDE.md",
+    "AGENTS.md"
+   ],
+   "what": "Start/during/end ritual; founder preferences captured immediately as typed feedback memories with WHY; AGENTS.md mirror for non-Claude tools; Did/Why/Commits/Prefs/State/Open template.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "Taxila context/ discipline (already richer graph)"
+  },
+  {
+   "id": "cc-startup-handoff",
+   "title": "Self-contained external-agent handoff brief",
+   "subsystem": "company-brain/knowledge-ingestion",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "docs/startup-context-handoff-2026-08-10.md"
+   ],
+   "what": "Compiled briefing for outside agents/collaborators; 'live system wins'.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "Taxila handoff docs"
+  },
+  {
+   "id": "cc-data-hunt-spec",
+   "title": "Cloud agent harvest spec",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "docs/data-hunt/SPEC.md",
+    "docs/data-hunt/known-domains.txt"
+   ],
+   "what": "Hard quality laws, lanes, fixed output schema, PR-only boundary (no DB writes/sends/spend), fan-out with QA sample and >20% junk batch quarantine, inherited learnings section.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "Forge / teaching-kit factory agent briefs"
+  },
+  {
+   "id": "cc-lane-gating",
+   "title": "Central gating + adversarial audit -> census escalation",
+   "subsystem": "evals/gates/verification",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "data-hunt/SE-2026-07-31@a23a00e",
+   "paths": [
+    "docs/data-hunt/out/N-2026-07-31-REPORT.md"
+   ],
+   "what": "~30 subagents, concurrency <=15, skip-list before fetch, assemble.py mechanical re-check (nothing an agent wrote trusted), seeded stratified 10% adversarial audit (assume fabricated), 23% defects -> 100% census; evidence must be in body text not head.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "verification of generated kits/modules"
+  },
+  {
+   "id": "cc-verdict-cache",
+   "title": "Classify-once verdict cache + deterministic pre-classifier",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "scripts/scope-clean-rules.mjs",
+    "supabase/schema.sql"
+   ],
+   "what": "domain_scope_verdicts per-domain cache; rules classifier before any LLM.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "Forge artefact/verdict cache",
+   "notes": "Cache drifted from source of truth (557 leads invisible) - write-back gate required"
+  },
+  {
+   "id": "cc-archive-ingest",
+   "title": "Resumable IMAP history ingest",
+   "subsystem": "company-brain/knowledge-ingestion",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "app/api/cold-email/archive-ingest/route.ts",
+    "supabase/migrations/20260714_imap_uidvalidity.sql"
+   ],
+   "what": "Per-(mailbox,folder) cursor max(uid), full backfill mode, automated/warmup filters, UIDVALIDITY tracking.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "ingesting school/teacher correspondence into a knowledge store"
+  },
+  {
+   "id": "cc-rls-lockdown",
+   "title": "Anon RLS lockdown migration",
+   "subsystem": "db-schema",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "supabase/migrations/20260714_lockdown_rls_anon.sql"
+   ],
+   "what": "RLS on with no policy, drop allow_all policies, security_invoker views, pinned search_path.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "Neon role/privilege discipline"
+  },
+  {
+   "id": "cc-ci",
+   "title": "CI test + build",
+   "subsystem": "evals/gates/verification",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    ".github/workflows/ci.yml"
+   ],
+   "what": "npm ci -> vitest run --coverage -> next build on every push (review branch adds npm audit).",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "Taxila gates already stronger"
+  },
+  {
+   "id": "cc-mcp-allowlist",
+   "title": "Committed MCP permission allowlist",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "claude/supabase-mcp-permissions-v1px7r@c90226c",
+   "paths": [
+    ".claude/settings.json",
+    ".mcp.json"
+   ],
+   "what": "Project-level allowlist for Supabase/Neon/Vercel MCP tools; personal overrides gitignored.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "Taxila agent tool permissions"
+  },
+  {
+   "id": "cc-send-via-prod",
+   "title": "Ops via production HTTPS, dry-run default",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "claude/email-replies-smtp-2wpifv@c3e7029",
+   "paths": [
+    "scripts/send-via-prod.mjs"
+   ],
+   "what": "Cloud sessions cannot raw-SMTP; script calls the app's own endpoint; dry-run unless --send; fixed approved payload list.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "ops scripts from cloud sessions"
+  },
+  {
+   "id": "cc-invoice-renderer",
+   "title": "GST tax/proforma invoice renderer",
+   "subsystem": "payments",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "claude/knl-deal-negotiation-tr6zdw@1990b4a",
+   "paths": [
+    "docs/invoice/README.md",
+    "docs/invoice/template.html",
+    "scripts/render-invoice.py"
+   ],
+   "what": "JSON-driven HTML->PDF invoice; CGST Rule 46 checklist, IGST vs CGST+SGST, TDS 194J, series numbering.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "India GST invoicing for subscriptions"
+  },
+  {
+   "id": "cc-investor-honest",
+   "title": "Verified-numbers demo dashboard",
+   "subsystem": "safety-floor/honesty",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "app/investor/page.tsx"
+   ],
+   "what": "Hardcoded snapshot of verified figures only; model badged illustrative; agent declined inflation request.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "parent report honesty contract"
+  },
+  {
+   "id": "cc-reports-pagination",
+   "title": "Paginate past PostgREST 1000-row cap",
+   "subsystem": "db-schema",
+   "repo": "raghavsharma2003/command_centre",
+   "ref": "origin/main@c8fd321",
+   "paths": [
+    "lib/server-crud.ts",
+    "app/api/reports/summary/route.ts"
+   ],
+   "what": "selectAllPages/loadLeadRows pattern after silent truncation broke ~8 dashboards.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "parent/admin stats correctness"
+  }
+ ],
+ "measurements": [
+  {
+   "claim": "Offer-page engagement ~3x inflated by mail-security sandboxes: 205 page views ~67 real; 149 brief reads ~26 real",
+   "source": "docs/STATE-2026-08-24.md §2 @ origin/main@c8fd321",
+   "method": "HUMAN rule applied to proposal_events",
+   "date": "2026-08-24",
+   "n": "exporter campaign events"
+  },
+  {
+   "claim": "Sandbox heartbeats ~1.8s apart vs 15000ms code interval; sessions 0-24s; clicks before page_view",
+   "source": "docs/STATE-2026-08-24.md §2; lib/engagement-classifier.ts @ origin/main@c8fd321",
+   "method": "session forensics",
+   "date": "2026-08"
+  },
+  {
+   "claim": "916 cold emails to EU importers -> 2 verified humans -> 0 conversations -> 0 revenue; DE wave 319 sends -> 0 human engagement",
+   "source": "docs/STATE-2026-08-24.md §1 @ origin/main@c8fd321",
+   "method": "live DB, HUMAN-filtered",
+   "date": "2026-08-24",
+   "n": "916"
+  },
+  {
+   "claim": "Funnel 5,899 emailed -> 208 viewers -> 149 brief readers -> 76 replies (~11 interested) -> 1 trial -> 0 won",
+   "source": "docs/growth-insights-2026-07-24.md @ claude/context-project-review-0x0i6g@d288e75",
+   "method": "4 read-only analysts, live DB",
+   "date": "2026-07-24",
+   "n": "5899"
+  },
+  {
+   "claim": "Loss-framed subject beat 'free' subject ~2.2x (6.1% vs 2.8% page-view rate)",
+   "source": "docs/growth-insights-2026-07-24.md @ claude/context-project-review-0x0i6g@d288e75",
+   "method": "CRM cohort comparison, timing confound noted",
+   "date": "2026-07-24"
+  },
+  {
+   "claim": "Send hour: 16:00 IST 6.5% view rate vs 09:00 1.2%; Friday worst",
+   "source": "docs/growth-insights-2026-07-24.md @ claude/context-project-review-0x0i6g@d288e75",
+   "method": "CRM cohorts",
+   "date": "2026-07-24"
+  },
+  {
+   "claim": "Named contact vs info@: no lift (3.59% vs 3.32% view)",
+   "source": "docs/growth-insights-2026-07-24.md @ claude/context-project-review-0x0i6g@d288e75",
+   "method": "CRM cohorts",
+   "date": "2026-07-24"
+  },
+  {
+   "claim": "LLM reply classifier mislabels meeting requests as negative; human glance required",
+   "source": "docs/growth-insights-2026-07-24.md @ claude/context-project-review-0x0i6g@d288e75",
+   "method": "analyst thread read",
+   "date": "2026-07-24"
+  },
+  {
+   "claim": "eu_strong tag only ~34% reliable (51% wrong-industry, 12% wrong-company)",
+   "source": "docs/SESSION-LOG.md 2026-07-18 @ origin/main@c8fd321",
+   "method": "7 independent Sonnet shards re-reading sites",
+   "date": "2026-07-18",
+   "n": "801"
+  },
+  {
+   "claim": "Interleaved agent shards disagreed 6x on exporter rate; re-verdict precision C3 63% / C1 58% / C4 36% / C2 33%; C2 cited no evidence on 45% of rows",
+   "source": "docs/SESSION-LOG.md 2026-07-17 @ origin/main@c8fd321",
+   "method": "RECON Opus lane against one written standard",
+   "date": "2026-07-17",
+   "n": "239 rows in C2"
+  },
+  {
+   "claim": "Hand-reviewed lanes <=10% junk vs auto/regex-kept lanes 33-56%",
+   "source": "docs/SESSION-LOG.md 2026-07-16/17 @ origin/main@c8fd321",
+   "method": "per-lane QA across ~44 agents + 2 adversarial passes",
+   "date": "2026-07-17"
+  },
+  {
+   "claim": "Names derived from email local-parts: 0/1,876 accented vs 49.6% in registry; only 106 contacts had both name and email",
+   "source": "docs/AGENT-CONTEXT.md §4-eu @ origin/main@c8fd321",
+   "method": "contacts QA census",
+   "date": "2026-07-17",
+   "n": "1876"
+  },
+  {
+   "claim": "Contact lane fail rates: registry 0%, web_research 93%, spoc_site 83%, spoc_linkedin 63%",
+   "source": "docs/SESSION-LOG.md 2026-07-17 @ origin/main@c8fd321",
+   "method": "independent QA audit",
+   "date": "2026-07-17"
+  },
+  {
+   "claim": "Wrong-domain junk 5.75% of 2,296 domains; 156 sends to 87 junk domains = 2.15% of 7,257 sends",
+   "source": "docs/SESSION-LOG.md 2026-07-17 @ origin/main@c8fd321",
+   "method": "full fetch audit, no sampling",
+   "date": "2026-07-17",
+   "n": "2296"
+  },
+  {
+   "claim": "Name-domain affinity heuristic over-condemns 4.75x and passes 48% of real junk",
+   "source": "docs/SESSION-LOG.md 2026-07-17 @ origin/main@c8fd321",
+   "method": "full audit",
+   "date": "2026-07-17",
+   "n": "328 affinity fails"
+  },
+  {
+   "claim": "Lane N 10% adversarial sample: 33 pass / 10 fail / 1 unverifiable (23%) -> census; evidence host matched own domain 443/443; 0 fabricated emails",
+   "source": "docs/data-hunt/out/N-2026-07-31-REPORT.md @ data-hunt/SE-2026-07-31@a23a00e",
+   "method": "seeded stratified sample, 4 auditors + 7 census auditors",
+   "date": "2026-08-02",
+   "n": "443"
+  },
+  {
+   "claim": "Shared egress 429/502 above ~15 concurrent agent lanes",
+   "source": "N-2026-07-31-REPORT.md @ data-hunt/SE-2026-07-31@a23a00e; SESSION-LOG 2026-07-17 @ origin/main@c8fd321",
+   "method": "repeated observation across lanes",
+   "date": "2026-07-31"
+  },
+  {
+   "claim": "21 of 30 'unreachable' hosts answered on a plain retry; recovery pass won back 24 of ~110 emails",
+   "source": "docs/data-hunt/SPEC.md @ origin/main@c8fd321",
+   "method": "Lane A recovery pass",
+   "date": "2026-07-31",
+   "n": "30 / 110"
+  },
+  {
+   "claim": "Unverified MX-only sends bounced ~6%; ELV-verified waves 0-0.3%",
+   "source": "docs/AGENT-CONTEXT.md §4 @ origin/main@c8fd321",
+   "method": "fleet bounce stats",
+   "date": "2026-07-14/22"
+  },
+  {
+   "claim": "Fleet of 18 mailboxes: 0 spam complaints ever; bounce ~1% Aug vs 5.6% July",
+   "source": "docs/STATE-2026-08-24.md §7 @ origin/main@c8fd321",
+   "method": "mailbox stats",
+   "date": "2026-08-24",
+   "n": "18 mailboxes"
+  },
+  {
+   "claim": "Capacity spillover lost local time: 29% of July sends landed 04:00-08:00 local",
+   "source": "docs/STATE-2026-08-24.md §6 @ origin/main@c8fd321",
+   "method": "send logs",
+   "date": "2026-08-24"
+  },
+  {
+   "claim": "WhatsApp error 131049 silently drops MARKETING templates to cold recipients; inbound-opened 24h window exempt",
+   "source": "docs/AGENT-CONTEXT.md §4-prev @ origin/main@c8fd321",
+   "method": "utility vs marketing template A/B",
+   "date": "2026-07-13"
+  },
+  {
+   "claim": "557 leads had in_scope verdicts never written back to leads.scope_status (invisible to audiences)",
+   "source": "docs/SESSION-LOG.md 2026-09-02/03 @ origin/main@c8fd321",
+   "method": "live DB",
+   "date": "2026-09-02",
+   "n": "557"
+  },
+  {
+   "claim": "Hourly cap declared twice (150 vs 120) -> planner under-booked 25%",
+   "source": "docs/SESSION-LOG.md 2026-09-02/03 @ origin/main@c8fd321",
+   "method": "code read",
+   "date": "2026-09-02"
+  },
+  {
+   "claim": "~40 tables anon-readable/writable incl. lead PII and VAPID private key; /api/leads returned 200 + 7.4MB unauthenticated",
+   "source": "supabase/migrations/20260714_lockdown_rls_anon.sql; docs/SESSION-LOG.md 2026-07-14 @ origin/main@c8fd321",
+   "method": "Supabase advisors + live probes",
+   "date": "2026-07-14"
+  },
+  {
+   "claim": "Tests 136/136 (16 files) after review fixes; CI had been red ~07-14 to 07-27 from a stale mock",
+   "source": "docs/project-review-2026-07-23.md @ claude/context-project-review-0x0i6g@d288e75",
+   "method": "vitest",
+   "date": "2026-07-23"
+  },
+  {
+   "claim": "Free/Nano Supabase outage with no backups; manual snapshot 53,862 rows",
+   "source": "docs/SESSION-LOG.md 2026-07-08 @ origin/main@c8fd321",
+   "method": "incident",
+   "date": "2026-07-08",
+   "n": "53862 rows"
+  },
+  {
+   "claim": "88 replies all-time: 21 positive, 3 meeting, 8 question, 1 referral; all warm threads India-side",
+   "source": "docs/STATE-2026-08-24.md §3 @ origin/main@c8fd321",
+   "method": "classified email_replies",
+   "date": "2026-08-24",
+   "n": "88"
+  }
+ ],
+ "rejections": [
+  {
+   "tried": "Counting link clicks/page events as human engagement (and designing push 'strike-while-hot' alerts on them)",
+   "what_broke": "Mail-security sandboxes detonate links; funnel ~3x inflated; six phantom leads celebrated for days",
+   "source": "docs/STATE-2026-08-24.md §2; docs/intelligent-features-proposal-2026-07-02.html @ origin/main@c8fd321",
+   "taxila_relevance": "Classify parent-link/report-open metrics; never nudge on unverified opens; never mention tracking to users"
+  },
+  {
+   "tried": "Trusting pre-labelled pools/tags (cbam_strong, eu_strong)",
+   "what_broke": "Only 4 of 56 genuine; ~30 mis-sends; eu_strong ~63% junk",
+   "source": "AGENT-CONTEXT §4-prev; SESSION-LOG 07-16/07-18 @ origin/main@c8fd321",
+   "taxila_relevance": "Never trust agent/source-assigned labels (grade, board, verified); classify against verified keys"
+  },
+  {
+   "tried": "Treating email-verifier 'deliverable' as 'right lead'",
+   "what_broke": "ELV proves deliverability, not identity or ICP",
+   "source": "docs/startup-context-handoff-2026-08-10.md §3 @ origin/main@c8fd321",
+   "taxila_relevance": "A check passing on one axis says nothing about others"
+  },
+  {
+   "tried": "Guess-resolving domains from company names",
+   "what_broke": "Wrong foreign sites mapped; verifier read wrong site; ~200 mis-sends incl. +claudebot@anthropic.com",
+   "source": "SESSION-LOG 2026-07-17 @ origin/main@c8fd321",
+   "taxila_relevance": "Identity never inferred from names"
+  },
+  {
+   "tried": "Name-domain affinity as junk filter",
+   "what_broke": "Over-condemns 4.75x; 48% of junk passes",
+   "source": "SESSION-LOG 2026-07-17 @ origin/main@c8fd321"
+  },
+  {
+   "tried": "Merging parallel agent shards without one written ruler",
+   "what_broke": "6x disagreement; the lane assumed under-reporting was the accurate one; 45% rows without evidence",
+   "source": "SESSION-LOG 2026-07-17 @ origin/main@c8fd321",
+   "taxila_relevance": "Forge/kit verification fleets need a single standard + reconciliation lane"
+  },
+  {
+   "tried": "Agents quoting search snippets as evidence",
+   "what_broke": "DDG snippet = meta description, so evidence came from <head>/nav chrome",
+   "source": "docs/data-hunt/out/N-2026-07-31-REPORT.md @ data-hunt/SE-2026-07-31@a23a00e",
+   "taxila_relevance": "Verify against rendered body text inside one block element"
+  },
+  {
+   "tried": "Scope-gating on product lists instead of company self-description",
+   "what_broke": "Producers filed as traders even with manufacturing verb in quoted evidence",
+   "source": "N-2026-07-31-REPORT.md @ data-hunt/SE-2026-07-31@a23a00e"
+  },
+  {
+   "tried": "Bulk registry harvesting by NACE code without domain resolver",
+   "what_broke": "nace_registry 53% of DB, 1.8% strong; registry shards 22-39% junk; NACE codes renumbered in every country checked",
+   "source": "AGENT-CONTEXT §4-eu @ origin/main@c8fd321; N report @ data-hunt/SE-2026-07-31@a23a00e"
+  },
+  {
+   "tried": "Recommending data sources before reading the licence",
+   "what_broke": "KBO Belgium and 9 associations licence-dead for marketing use",
+   "source": "SESSION-LOG 07-16/17; docs/data-hunt/SPEC.md @ origin/main@c8fd321",
+   "taxila_relevance": "Read licence of NCERT/board/third-party content before Forge ingest"
+  },
+  {
+   "tried": "Supplier logo walls as proof of EU import (exporter_backref)",
+   "what_broke": "56% fail; cannot distinguish deliveries to buyer's Indian subsidiary; class rejected",
+   "source": "SESSION-LOG 07-16/17 @ origin/main@c8fd321"
+  },
+  {
+   "tried": "Self-hosted SMTP email verification",
+   "what_broke": "IP Spamhaus-listed; 550 rejects produce false invalids",
+   "source": "AGENT-CONTEXT §4-prev @ origin/main@c8fd321"
+  },
+  {
+   "tried": "Apollo industry-search discovery with internal credit ledger",
+   "what_broke": "Vendor billed 2,500 vs 2K internal cap; ~758 wasted; contaminated data",
+   "source": "AGENT-CONTEXT §2, §4 @ origin/main@c8fd321",
+   "taxila_relevance": "Enforce AI spend caps against Azure billing, not app counters"
+  },
+  {
+   "tried": "Temporary RLS write policy FOR UPDATE only",
+   "what_broke": "Rows invisible -> 0-row update with no error -> success counter lied; first 801-row apply wrote nothing",
+   "source": "SESSION-LOG 2026-07-18 @ origin/main@c8fd321",
+   "taxila_relevance": "Always count returned rows on writes"
+  },
+  {
+   "tried": "Free-tier DB without backups",
+   "what_broke": "Outage in capacity incident; no PITR",
+   "source": "SESSION-LOG 2026-07-08 @ origin/main@c8fd321",
+   "taxila_relevance": "Confirm Neon PITR before real child data"
+  },
+  {
+   "tried": "MVP RLS allow_all/anon policies + relying on Vercel Standard protection",
+   "what_broke": "~40 tables exposed incl. VAPID private key; prod alias not covered; CRM returned 7.4MB unauthenticated",
+   "source": "20260714_lockdown_rls_anon.sql; SESSION-LOG 07-14 @ origin/main@c8fd321"
+  },
+  {
+   "tried": "App cookie HMAC keyed by the human password; unsigned identity cookie; startsWith('localhost') bypass",
+   "what_broke": "Offline brute-force from one cookie; teammate impersonation; localhost.evil.com bypass",
+   "source": "docs/project-review-2026-07-23.md P1 @ claude/context-project-review-0x0i6g@d288e75"
+  },
+  {
+   "tried": "Secrets in query strings (?secret=)",
+   "what_broke": "Leak into logs/history; one secret authorised all sending",
+   "source": "docs/project-review-2026-07-23.md P1.3 @ claude/context-project-review-0x0i6g@d288e75"
+  },
+  {
+   "tried": "Unsubscribe token verify split on '.'",
+   "what_broke": "Every dotted email failed; every unsubscribe link ever sent was broken until a new test suite found it",
+   "source": "commit acd06b8 @ claude/context-project-review-0x0i6g@d288e75",
+   "taxila_relevance": "Round-trip tests with realistic inputs for consent/withdrawal links"
+  },
+  {
+   "tried": "UI reporting success on failure (claim form setDone in catch; unsubscribe ignoring DB error)",
+   "what_broke": "Users told 'done' while nothing was written",
+   "source": "docs/deep-audit-2026-07-14.md H8/H9/H11 @ origin/main@c8fd321",
+   "taxila_relevance": "Consent and safeguarding must never false-succeed"
+  },
+  {
+   "tried": "Suppressing before classifying; ingesting own fleet mail",
+   "what_broke": "OOO permanently suppressed senders; own BCC'd mail classified as hot replies and fired pushes",
+   "source": "docs/deep-audit-2026-07-14.md H4/H5 @ origin/main@c8fd321",
+   "taxila_relevance": "Classify then act; filter self-generated events from learner model"
+  },
+  {
+   "tried": "DB CHECK enum out of sync with code enum",
+   "what_broke": "5 of 14 intents (incl. hottest 'meeting') violated CHECK, stayed NULL, retried forever",
+   "source": "docs/deep-audit-2026-07-14.md H3 @ origin/main@c8fd321",
+   "taxila_relevance": "Generate DB and TS enums from one source or gate on diff"
+  },
+  {
+   "tried": "IMAP cursor without UIDVALIDITY",
+   "what_broke": "Mailbox reset would silently blind poller while health stays green",
+   "source": "docs/deep-audit-2026-07-14.md H6 @ origin/main@c8fd321"
+  },
+  {
+   "tried": "Unpaginated PostgREST stats queries",
+   "what_broke": "Silent 1000-row truncation; ~8 dashboards wrong; old hot replies vanished",
+   "source": "docs/deep-audit-2026-07-14.md H12 @ origin/main@c8fd321",
+   "taxila_relevance": "Paginate parent/admin stats; assert counts"
+  },
+  {
+   "tried": "Leaving a legacy second send path as live code",
+   "what_broke": "No suppression/scope/window/cap; open tracking on; invokable",
+   "source": "docs/project-review-2026-07-23.md P0.3 @ claude/context-project-review-0x0i6g@d288e75",
+   "taxila_relevance": "One path per lane; delete old ones"
+  },
+  {
+   "tried": "Gating only at enroll time",
+   "what_broke": "Quarantined leads would re-send when re-armed; send worker never re-read scope",
+   "source": "docs/project-review-2026-07-23.md P0.2 @ claude/context-project-review-0x0i6g@d288e75",
+   "taxila_relevance": "Safety predicates at output time"
+  },
+  {
+   "tried": "Verdict cache without write-back to source of truth",
+   "what_broke": "557 in-scope leads invisible to every audience",
+   "source": "SESSION-LOG 2026-09-02/03 @ origin/main@c8fd321"
+  },
+  {
+   "tried": "Constants duplicated across files",
+   "what_broke": "Hourly cap 150 vs 120 drifted; planner under-booked 25%",
+   "source": "SESSION-LOG 2026-09-02/03 @ origin/main@c8fd321"
+  },
+  {
+   "tried": "Hand-typed facts in prompts and UI (offer deadline)",
+   "what_broke": "AI Reply Studio prompt kept a stale deadline a month off; page showed expired deadline",
+   "source": "docs/project-review-2026-07-23.md P0.7 @ claude/context-project-review-0x0i6g@d288e75; SESSION-LOG 09-02 @ origin/main@c8fd321",
+   "taxila_relevance": "Compile prompt facts from one canonical source"
+  },
+  {
+   "tried": "Untrusted names interpolated into templates",
+   "what_broke": "'Hi Visit Website'; 43 broken subjects; fix had to be repeated in 3 more paths",
+   "source": "docs/project-review-2026-07-23.md P0.6; growth-insights @ claude/context-project-review-0x0i6g@d288e75",
+   "taxila_relevance": "Child name guard in every lane"
+  },
+  {
+   "tried": "First-touch-only / no follow-ups",
+   "what_broke": "Warm demand dropped: ~190 engagers never re-touched, CFO email unanswered 13 days, 4/5 claimants never contacted",
+   "source": "docs/growth-insights-2026-07-24.md @ claude/context-project-review-0x0i6g@d288e75",
+   "taxila_relevance": "Conductor must close every loop"
+  },
+  {
+   "tried": "Owner requests to fabricate (inflated investor traction, client hero quotes, fake 'Dr.' persona)",
+   "what_broke": "Declined/removed; would be fraud and kill trust",
+   "source": "SESSION-LOG 2026-08-07, 07-15, 09-02/03 @ origin/main@c8fd321",
+   "taxila_relevance": "Parent reports never invent progress; tutor never claims fake human credentials"
+  },
+  {
+   "tried": "Website redesign shipped without rendering it",
+   "what_broke": "Founder rejected as invisible/cheap; rolled back to fa5395f",
+   "source": "AGENT-CONTEXT §2 @ origin/main@c8fd321",
+   "taxila_relevance": "Screenshot at 1440 and 390 before shipping UI"
+  },
+  {
+   "tried": "Hover-only affordances and overflow-y-auto main container on mobile",
+   "what_broke": "Reaction button invisible on touch; page-wide horizontal scroll stuck; dropdown off-screen",
+   "source": "commits e8c55fa, 9d9b7a5 @ claude/mobile-apps-ios-android-4r54ys / fix/team-chat-reaction-mobile",
+   "taxila_relevance": "Children/parents on budget Android: no hover affordances"
+  },
+  {
+   "tried": "Free OpenRouter models without validation (nemotron free)",
+   "what_broke": "Leaks chain-of-thought, fails JSON mode; free tiers 429 in bursts",
+   "source": "lib/ai.ts @ origin/main@c8fd321",
+   "taxila_relevance": "Validate JSON mode per Azure deployment; keep fallback chain"
+  },
+  {
+   "tried": "Background agents/processes for long jobs",
+   "what_broke": "Processes reaped, weekly agent limit hit, transcripts expired",
+   "source": "SESSION-LOG 07-16/17, 07-18 @ origin/main@c8fd321",
+   "taxila_relevance": "Durable cursors + state files; agents only for judgment"
+  },
+  {
+   "tried": "Raw SMTP from cloud sessions",
+   "what_broke": "Egress blocked",
+   "source": "scripts/send-via-prod.mjs @ claude/email-replies-smtp-2wpifv@c3e7029"
+  },
+  {
+   "tried": "WhatsApp marketing templates to cold numbers",
+   "what_broke": "Meta 131049 silent throttling; fresh numbers banned",
+   "source": "AGENT-CONTEXT §4 @ origin/main@c8fd321",
+   "taxila_relevance": "Parent WhatsApp opt-in and utility-category only"
+  },
+  {
+   "tried": "Cold email to EU importers at scale",
+   "what_broke": "DE decisive test 319 sends -> 0 humans; channel declared answered",
+   "source": "docs/STATE-2026-08-24.md §1, §8 @ origin/main@c8fd321",
+   "taxila_relevance": "Growth via relationships/associations (schools), not cold outreach"
+  },
+  {
+   "tried": "Mass-campaign unsubscribe footer on 1:1 relationship letters",
+   "what_broke": "Would have appended footer + postal address to ministry letters; caught by internal trial",
+   "source": "commit 292d74b @ claude/carbonsettle-precursor-emissions-5miavb@20f8ede",
+   "taxila_relevance": "Always trial-send internally first"
+  },
+  {
+   "tried": "next/font/google with cached builds",
+   "what_broke": "Google rotated font hashes -> 72 Turbopack errors; failed main build blocks all offer pages",
+   "source": "SESSION-LOG 2026-08-17 @ origin/main@c8fd321",
+   "taxila_relevance": "Self-host fonts incl. Devanagari"
+  },
+  {
+   "tried": "xlsx@0.18.5 parsing operator uploads",
+   "what_broke": "Known prototype-pollution and ReDoS CVEs",
+   "source": "commit 5a46b6e @ claude/context-project-review-0x0i6g@d288e75"
+  }
+ ],
+ "concepts": [
+  {
+   "name": "Verify, never assert",
+   "description": "Numbers come from the live DB/API in-session; 'verified' only when checked; agents correct their own overstated claims in the log.",
+   "taxila_relevance": "Parent-facing numbers read live at report time"
+  },
+  {
+   "name": "Feedback memory with the WHY",
+   "description": "Owner preferences captured immediately as typed memories (user/feedback/project/reference) with reason and how-to-apply, linked by wikilinks; feedback/project are the high-value types agents forget.",
+   "taxila_relevance": "Owner-directive log and parent-preference memory"
+  },
+  {
+   "name": "Durability over babysitting",
+   "description": "Long jobs write cursors/state/commits so dead sessions resume losslessly; fleets swapped between models from on-disk STATE.",
+   "taxila_relevance": "Forge and Conductor job design"
+  },
+  {
+   "name": "Cheap-first, agent-only-for-judgment",
+   "description": "Deterministic $0 prefilter condemns only confident junk and never auto-keeps; agents judge cached pages.",
+   "taxila_relevance": "Teaching-kit verification pipeline"
+  },
+  {
+   "name": "Hard-law brief + central gating",
+   "description": "Subagents get inviolable laws; an assembler re-checks everything mechanically; adversarial auditors assume fabrication; >20% defect sample escalates to census.",
+   "taxila_relevance": "Forge content factory QA"
+  },
+  {
+   "name": "Asymmetric rules",
+   "description": "Added rules may only move a verdict toward the safe side (MACHINE), never toward HUMAN.",
+   "taxila_relevance": "Safety predicates may only restrict"
+  },
+  {
+   "name": "Soft-delete, never hard-delete",
+   "description": "Quarantine flags are reversible; records with outbound links are never deleted.",
+   "taxila_relevance": "Child records, consent history, report links"
+  },
+  {
+   "name": "Public surface host split",
+   "description": "A dedicated public host serves only prospect surfaces; app routes 404 there; sent links public forever.",
+   "taxila_relevance": "Parent-share links on a separate host from the app"
+  },
+  {
+   "name": "Fail-open enrichment, fail-closed safety",
+   "description": "Translation/classification/push best-effort; auth/cron/webhooks fail closed.",
+   "taxila_relevance": "Affect signals fail open; safety and consent fail closed"
+  },
+  {
+   "name": "One canonical rule location",
+   "description": "Audience rule as one SQL function; limits as one constant; prompt facts from one source.",
+   "taxila_relevance": "compile() and contracts as single sources"
+  },
+  {
+   "name": "Contextual chat",
+   "description": "Channels pinned to the work record via entity_kind/entity_id.",
+   "taxila_relevance": "Parent-teacher threads pinned to lesson/misconception/report"
+  },
+  {
+   "name": "Trial-to-self before external send",
+   "description": "Full chain verified on an internal inbox before any send.",
+   "taxila_relevance": "Parent report and notification rollouts"
+  },
+  {
+   "name": "Screenshot before shipping",
+   "description": "Headless Chrome at 1440px and 390px; read the PNG; iterate.",
+   "taxila_relevance": "Kid/parent UI on budget Android"
+  },
+  {
+   "name": "Model tiering",
+   "description": "Mechanical lanes on cheaper models, judgment/QA on top models; orchestrator verifies/commits/deploys.",
+   "taxila_relevance": "Taxila policy is top model everywhere; tiering is the counter-pattern"
+  },
+  {
+   "name": "Company brain = context discipline, not RAG",
+   "description": "CC has no knowledge-graph or RAG code; the 'brain' is AGENT-CONTEXT + SESSION-LOG + auto-memory + CLAUDE/AGENTS mirrors; 'Ask the Command Centre' was canned Q&A.",
+   "taxila_relevance": "Taxila context/ graph already supersedes; build real retrieval separately"
+  }
+ ],
+ "unread": [
+  "scripts/* (103 files) read by name/session-log description only",
+  "lib/cold-email deliverability internals (throttle, ramp-scheduler, health-scorer, placement-tester, mailbox-picker, spintax, timezone-resolver) not read line-by-line",
+  "lib/free-quarter/*, lib/importer-brief/* React-PDF variants and components/proposal/* pages not read in full",
+  "lib/integrations*.ts webhook dispatcher, lib/activity-kpis.ts, components/reports/*, app/analytics funnel/heatmap code not read",
+  "app/team/page.tsx UI code not read (patterns taken from docs + lib layer)",
+  "docs/data-hunt/out/*.csv deliberately not read (business PII)",
+  "client-acquisition-channels, business-strategy, KNL negotiation docs skimmed via commit messages only",
+  "mobile/team-chat/codex branches have no merge base in the shallow clone; compared trees only",
+  "auto-memory store (~/.claude/projects/.../memory/), CS-website repo and saas_new_/cbam-reporter portal not available",
+  "No live DB or prod probes; all numbers as stated in repo docs",
+  "Secret flags: commit dc83eb3 message states a shared default team passcode; docs/world-class-roadmap.md notes leaked Supabase keys in git history (not hunted)"
+ ]
+}

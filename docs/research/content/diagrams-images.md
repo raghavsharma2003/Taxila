@@ -628,3 +628,147 @@ interface IllustrationJob {
 - [M] Ginns 2006 (*Learning and Instruction* 16:511); Schroeder & Cenkci 2018 (*Educ Psych Rev* 30:679); Richter, Scheiter & Eitel 2016 (*Educ Res Rev* 17:19); Butcher 2006 (*J Educ Psych* 98:182); Kaminski, Sloutsky & Heckler 2008 (*Science* 320:454); Menendez, Rosengren & Alibali 2020 (*Applied Cognitive Psychology*); Heiser & Tversky 2006 (*Cognitive Science* 30:581). Re-read these before any parent-facing claim.
 - Sibling documents: `tech-and-market.md` §3-4, `learning-science.md` §2.4, `content/genui-reliability.md` §5, `factory/multimodal-orchestration.md` MO4-MO5, `design/visual-identity.md` §3-6, `content/science-engines.md`, `content/maths-engines.md`, `content/language-sst-engines.md`.
 - Raw data: `diagrams-images-renderer-probe-2026-10-02.json`, `diagrams-images-svg-probe-2026-10-02.json` (plus SVGs and PNGs), `diagrams-images-image-probe-2026-10-02.json` (plus PNGs and anchor overlays).
+
+---
+
+## Engineering review
+
+Reviewer: senior frontend/game engineer, 2026-10-02. Scope: can each engine in §3-§5 be built in React/TS + SVG/canvas in 2 days or less, run at 60 fps on a 10k-rupee Android, be steered by an LLM through its params, be observed by the teacher through its events, and ship without a safety hole. I checked the doc against the shipped code: `shared/contracts.ts` (`ModuleToHost`, `HostToModule`), `src/modules/frame/protocol.ts`, `src/modules/host.tsx`, `vite.config.ts` (frame CSP) and `modules.html`. Verdict labels: **OK** (as written), **FIX** (build as written but change the spec), **BLOCKER** (will not work as specified).
+
+Cost scale: **S** = at most 1.5 engineer-days, **M** = 2-3, **L** = 4-6, **XL** = more than 6. Days include the zod schema, Devanagari checks, a golden-snapshot test, a TalkBack pass and one run on a low-end device. They do not include review hours.
+
+### E0. Findings that apply to every engine
+
+1. **BLOCKER: the event and command contract in §4.2 is not the shipped one.** The doc says "the names are the shipped `ModuleToHost` kinds". They are not.
+   - `ModuleToHost` has exactly six kinds: `ready`, `interaction{name,data}`, `answer{value,correct?}`, `goal_met{goal}`, `stuck{reason}`, `error{message}`.
+   - `fl.step`, `cm.place`, `ld.drop`, `fx.step` and `tap` can only travel as `interaction` names.
+   - `ready` carries no payload. `ready{overflow, fit_scale, min_label_px}` needs a contract change, and `toModuleEvent` currently drops `ready` and never forwards it. D8 would never fire.
+   - `parseModuleToHost` rebuilds `answer` from `value` and `correct` only, and strips every other key. `answer{node, value, correct, misc}` loses `misc` and `node`. Put the fields in `interaction` data, or extend the parser and the test at `tests/client-runtime.test.mjs:460`.
+   - `HostToModule` has `highlight{target:string}`, `reveal` with no index, and `reset`. There is no `cue{id}` and no `reveal{idx}`. Stepwise reveal needs `reveal{idx?}` (optional) or `set_param`.
+   - Cost: S (1 day) for a contract v2 (`ready.meta`, `interaction` schema registry, `reveal{idx}`, `cue`), with the parser tests. It must land before any engine. Everything below depends on it.
+2. **FIX: engines run in `sandbox="allow-scripts"` with no `allow-same-origin`, and the CSP is `default-src 'none'`, `img-src 'self' data: blob:`, `font-src 'self'`, `connect-src 'none'`.** Four consequences:
+   - **Raster bases:** the frame cannot fetch them. The host must fetch and pass `data:` URLs or an ArrayBuffer by `postMessage`. A `blob:` URL minted by the parent origin is probably not loadable from an opaque-origin frame [U: test on Android WebView]. A 100 KB WebP as base64 is about 135 KB per message, and structured clone copies it. For `label-diagram@1` the host should pass the image once, with the anchor manifest.
+   - **Fonts:** `font-src 'self'` means the opaque frame loads Mukta from the real origin as a cross-origin request. That needs `Access-Control-Allow-Origin` on the font files, including from the Capacitor `https://localhost` origin, or fonts inlined as `data:`. This is where a Devanagari fallback silently appears in the APK. Test it first (M-DI-7).
+   - **Font cost:** each frame loads and decodes Mukta on its own (about 2 weights, 100-150 KB). `document.fonts.load` per frame, plus a re-layout on every mount, adds 150-400 ms on a slow phone [I]. Either keep one warm frame per lesson, or lay out in the host and send the frame a finished SVG.
+   - **Better architecture [I]:** T1 engines are first-party code with no model-written script. They do not need the iframe at all. Render them as host React components, and keep the sandbox for the Forge-generated free-form modules. This removes the font, image and message-copy problems and halves mount time. I recommend it, but it is a decision for the owner, because `decisions.md:133` fixes the separate-origin iframe for generated code. A first-party exception needs an entry with its reversal condition.
+3. **FIX: the 60 fps story is unwritten.** A static SVG diagram is trivially 60 fps. The risk is in four places.
+   - **The highlight pulse:** animate only `transform` and `opacity`. No SVG `filter`, `drop-shadow`, `blur` or `mask`. Those repaint on the CPU on a Helio G36 / Unisoc class phone and drop to 15-25 fps [I, M]. Pulse with a ring element scaled by transform, not a glow.
+   - **Drag in `quiz_drag`:** move only the dragged chip with `translate3d`. Update at most one leader line per frame. Set `touch-action:none` on the chip, or the parent column's vertical scroll steals the gesture. Use pointer capture. This is the most common Android WebView bug in drag UIs.
+   - **Node budget:** cap at 300 SVG nodes per diagram (D9 already caps bytes at 40 KB; add a node count). Add `contain: layout paint` on the stage.
+   - **Reduced motion and flashing:** respect `prefers-reduced-motion`. A pulse must stay below 2 Hz (WCAG 2.3.1 limits flashing to 3 per second). The doc's "at most one pulse at a time" is fine and should state the rate.
+   - **Targets:** build against Chrome WebView 90 (low-end devices often lag on updates). `Intl.Segmenter`, `aspect-ratio` and `inset` need 87-88. Set Vite `build.target: "chrome87"` and verify.
+4. **FIX: Devanagari wrapping "at akshara boundaries" is not reliable.** `Intl.Segmenter` grapheme mode only keeps conjuncts (`consonant + virama + consonant`) together in ICU 74+ / Unicode 15.1. Older WebViews split after the virama and the word breaks mid-conjunct. Do not rely on it. Wrap on spaces only. If one word is wider than the column, return a slot error (D4) rather than splitting it. Prefer DOM measurement or CSS (`overflow-wrap`, `word-break: keep-all`) over canvas `measureText`: it uses the same shaper that paints, and it returns line boxes.
+   - **Clipping:** Devanagari needs `line-height` 1.5-1.6. Matras above and below the headline clip at the Latin-based 1.2 that SVG `<text>` uses. Node heights must come from font ascent and descent, not cap height. The §4.3 "16 sp Latin / 18 sp Devanagari" floor does not cover this, and it is the most likely cause of visible clipping.
+5. **FIX: D4 is declared a server gate ("ms, no model") but needs the painted font.** Overlap and floor checks at the real glyph widths need either the device (D8) or a server-side shaper (harfbuzzjs, about 200 KB wasm, with the same Mukta file). Split the table: D0-D3, D5-D7, D9 on the server; D4 and D8 on the device; D4 on the server only if harfbuzzjs is added (M, 2 days). Otherwise the server passes a spec that the device then rejects, and the fallback costs a visible stall.
+6. **FIX: free text in `TermRef` breaks the doc's own rule.** The pipeline says the LLM picks term ids and never types a technical term live. The `TermRef` type allows `{text: L10n}`, including `hi`, authored live by a model. LLM-written Hindi is the least reliable output we have. Make `text` available only for non-technical words in English; require `hi` to come from the kit; deny-list plus Content Safety on `text`; lint that `text` does not match a term-bank entry in another language. Also `say`, `title`, `detail` and `alt` should be kit strings or templated.
+7. **Child-typed text is an injection path.** `answer.value` for blanks may be free text that returns to the teacher's context. Restrict blanks to choices or numerals. If typed text stays, cap it at 40 characters, escape it, and mark it `child_input` so it reaches the prompt as data. This is a safety predicate, not an instruction.
+8. **FIX: the event set cannot support the teacher's questions "did she understand?", "is she stuck?", "which misconception?".** Shared additions for all engines:
+   - `ms` on every answer (time from stimulus to action), `attempt` (1, 2, 3), `hint_used` (bool).
+   - `idle{ms}` and the existing `stuck{reason}` kind, which the doc never uses. Emit it after 12 s without input on an active quiz.
+   - `give_up` when the child taps "show me" (the learner model must separate a reveal from a success).
+   - Wrong-answer attribution without a distractor tag: `{part, dropped_label_part}` (which part the dropped label really belongs to). The pair `(asked, chosen)` is the confusion matrix. The doc's `misc?` only exists when a distractor was authored.
+   - Coalesce `tap` events (at most 5 per second) so a bored child does not flood the Director.
+   - Per-engine gaps are listed below.
+9. **Safety: other items.**
+   - Replace `\htmlClass` in KaTeX with a pure id-to-class map. The trust function with a regex is one more thing to keep correct; no model-written class names are needed at all.
+   - The advisory ids and dates in §4.4 were not re-read here. Verify before quoting.
+   - `D0` bans `<` and `>` in all strings, which breaks `formula@1` for any comparison (class 2-5 "3 < 5") unless `tex` is exempt and uses `\lt` and `\gt`. Engines render text nodes, so `<` is harmless in plain labels. Ban markup patterns, not the characters.
+   - `D7` (Content Safety) passes the live label strings, but a live-written `say` or `reveal` string is read out loud by TTS. Run the same gate on spoken strings.
+   - **Truth of a formula is not checked.** D3 only checks that the TeX parses. A model can emit a well-formed, wrong lens formula. Named formulas must come from a kit bank by id (`F.*`). Free `tex` is allowed only for worked-example steps and must pass a numeric check (evaluate both sides with mathjs on random inputs). "A model never grades" applies to a model authoring the key too.
+10. **Cost model gap (§9):** `images/edits` with 2-3 reference images bills input image tokens as well. The doc prices only output. The amount is probably small next to the output [U], but measure it in M-DI-5 before quoting $110-250. The review tool (anchors, two keys, contact sheet) is also missing from every estimate and is the largest build item (below).
+
+### E1. Per-engine review
+
+| engine | verdict | 2-day build? | fps on a 10k phone | LLM params enough? | events enough? | safety | cost |
+|---|---|---|---|---|---|---|---|
+| shared foundation (measure, wrap, font load, tokens, events, gates harness, golden snapshots) | not in the doc | no, this precedes every engine | n/a | n/a | n/a | n/a | **L** (5 days) |
+| `flow@1` | FIX | chain + cycle: yes. Full spec: no | fine, static | mostly | no | OK after E0.6 | **M** (3 days) |
+| `concept-map@1` | FIX | tree only: yes | fine | mostly | no | OK after E0.6 | **M** (2.5 days; radial dropped) |
+| `label-diagram@1` | BLOCKER on phone layout | no | drag is the risk | mostly | no | anchors verified, OK | **L** (5 days) plus the review tool **L** (4-5 days) |
+| `formula@1` | FIX | yes | fine | needs a blank field | no | needs the formula bank | **S** (1.5-2 days) |
+| `contrast-pair@1` | FIX | only after `renderStatic()` exists | two live canvases are the risk | yes | thin | OK | **M** (2-3 days) |
+| `svg-figure@1` runtime | OK | yes | fine | yes | thin | DOMPurify at ingest OK | **S** (1 day) |
+| `svg-figure@1` Forge assertion harness | FIX | no | n/a | n/a | n/a | OK | **L** (5 days) |
+| `illustration@1` runtime | OK | yes | fine, one decoded bitmap | yes | thin | OK | **S** (1 day) |
+| Forge raster pipeline (I0-I5, quantise, anchors, review tool) | FIX | no | n/a | n/a | n/a | OK | **XL** (8-10 days) |
+| router + spec-fill + D-gates + library table + prefetch | OK | no | n/a | n/a | n/a | OK | **M** (3 days) |
+
+Total for engines and shared code: about 18 engineer-days. Total with the Forge tooling: about 35-40 days. Engines in the "≤2 days" frame are real only once the foundation and the contract v2 exist.
+
+#### `flow@1` (M, 3 days)
+- **Feasible:** dagre `chain`, `branch`, `merge` in 2-10 ms for at most 8 nodes. The `cycle` polar layout is about 60 lines. `@dagrejs/dagre` is the maintained fork; the old `dagre` package is unmaintained.
+- **Cycle limit:** on a 380 dp column a 5-node cycle fits at B1-B2. Eight nodes with two-line Devanagari labels of about 110 dp wide overlap on the left and right arcs at a radius of about 140 dp (chord about 107 dp). Cap `cycle` at 6 nodes on phones. For 7-8 nodes fall back to a vertical chain with a return arrow. Put this in D4, not in the prose.
+- **Stage height:** `direction:"down"` with 8 nodes at 64 dp targets plus gaps is about 700 dp, taller than the stage. Specify that the stage scrolls, or that nodes shrink the gap and not the label. The doc says scale 1 but gives no stage height.
+- **Params missing:** `start` node and `rotation` for cycles (the arrow direction is fixed clockwise otherwise); initial `highlight`; `mode: "show" | "order" | "fill"`. The probe "sequence/construct" needs the child to put shuffled nodes into order, and `blanks` only covers fill-in. Add `shuffle_seed` for reproducible order tasks.
+- **Events missing:** `fl.order {submitted: [ids], correct, first_wrong_idx}`, the E0.8 fields, `goal_met` when all blanks are right, `fl.replay` count (did she tap the cycle again?).
+- **A11y:** nodes as real buttons for TalkBack, with the order read as a list.
+
+#### `concept-map@1` (M, 2.5 days)
+- **Feasible:** Reingold-Tilford is about 3 KB if the tree is small. 15 nodes at 380 dp is `tree-down` only. `tree-right` needs the labels to wrap in a width that no longer exists, and `radial` with 15 nodes and Devanagari does not fit. **Drop `radial` and `tree-right` for v1** (S) and add them after M-DI-8 shows the room. The "≤ 15 nodes" cap at B3-B4 on a 380 dp column is optimistic: 3 levels with 5 siblings at 64 dp targets need about 340 dp for one level alone, so siblings must stack, which makes it a list.
+- **Sort probe:** `sortItems` is a drag task. It costs +1 day and shares the drag code with `label-diagram@1`. Build that once, as a shared `useDrag`.
+- **Events missing:** `cm.place` without the E0.8 fields; `goal_met`; `cm.expand`/`cm.collapse` if branches can collapse (they should, to fit).
+
+#### `label-diagram@1` (L, 5 days; plus the review tool L)
+- **BLOCKER: the side-column layout does not fit a phone.** With `side:"both"` and Devanagari labels about 110 dp wide, two columns take 220 dp of a 380 dp column and leave a 160 dp image. With one column the image is 250 dp wide. A 4:3 landscape base loses its parts at that size, and the `hit.min` of 64 dp (B1-B2) cannot hold for thin parts. Specify instead:
+  - one label column, at most 40% of the width;
+  - bases generated at 3:4 portrait or 1:1 (the prompt schema allows 4:3; forbid it for `label-diagram` bases);
+  - `side:"both"` only at 600 dp and wider;
+  - an alternative `mode:"numbered"`: number dots on the image and a list below, for 7-8 parts.
+- **Leader order:** sorting labels by anchor y gives no crossings only if all anchors lie on one side. For the general case use a non-crossing matching: start with y order and swap crossing pairs until none cross. A swap always shortens total length, so it terminates. About 40 lines (S). Leaders can still cross over other parts of the image, which is acceptable; label tags must not.
+- **Hit masks:** polygons of at most 24 points are checked with point-in-polygon at runtime (cheap). Do the flood-fill offline, not on the device. A mask must be generated from the published (quantised) WebP, not from the candidate. Store `sha256` of the served bytes in the anchor record and assert it equals the bytes served. The §5.2 order (quantise at I3, then anchors) is right but nothing enforces it.
+- **fps:** a single SVG overlay over a decoded bitmap. A 1024² bitmap decodes to 4 MB. Three prefetched bases are 12 MB, which is fine on 3 GB. Decode off-thread with `img.decode()`.
+- **Params missing:** `attempts_max`, `hint_policy` (when does the part pulse itself), `shuffle_seed` for the chip order, `reveal_on_wrong: bool`, and `distractors` should be allowed only when each has a misconception id (already stated; add it to D2).
+- **Events missing (this engine is the most observable one, so be generous):** `ld.drag_start {label}`, `ld.drop` plus `ms`, `attempt`, `dropped_label_part`, `ld.drop_miss` (dropped on nothing; abandonment is a signal), `ld.hint`, `goal_met`. **`quiz_voice` has no event at all.** The child's spoken answer arrives through ASR in the host and not from the frame. Define it: the host emits `answer{source:"voice", part, value, correct}` after the check, and the frame only sends `ld.voice_wait`. Otherwise the learner model records no evidence for voice quizzes.
+- **Review tool (L, 4-5 days):** the doc treats "one tap per part" as free. It needs an authenticated reviewer UI, the proposed dots over the image, drag to move, the composite-part convention shown, a minimum-separation check, polygon preview, an immutable record, and the two-key sign-off. Budget it explicitly. Without it the ban on baked labels has no operational replacement.
+
+#### `formula@1` (S, 1.5-2 days)
+- **Feasible:** KaTeX 0.19 with the Mukta rule and a font subset. Lazy-load it (`import()`) only when a formula engine mounts: 76 KB gz parse costs 40-80 ms on a low-end phone [I], once. KaTeX's first-render median of 0.4 ms was measured on a server CPU; allow 5-10× on the phone.
+- **Fonts:** subsetting to about 110 KB [U] is a drop of an unknown; the font files' `font-src 'self'` CORS issue in E0.2 applies.
+- **Allowlist gaps** that class 1-9 will hit in the first week:
+  - `\lt \gt` (see E0.9), `\%`, `\ldots`, `\quad`, `\;`, `\Rightarrow`, `\therefore`, `\because` (class 9 proofs), `\overrightarrow`, `\sqrt[3]{}`, `\boxed` and `\square` (the blank for "☐ + 3 = 7", class 1-3), `\underline`, `\mathrm`;
+  - `\begin{array}` for column addition, subtraction and long division (class 2-5). Without it the engine cannot show the most common vertical arithmetic. Allow `array` only, with a size cap.
+  - `\degree` is not guaranteed in KaTeX [U]. Use `^\circ`.
+  - ₹ in Mukta: confirm U+20B9 is present in the shipped subset [U].
+- **Params missing:** `steps[].blank?: { answer: string; choices?: string[] }`. The text says "fading = blank a step" but the type has no field for it. Add `fx.answer` to the events, with the same fields as E0.8. `size:"numeral"` is undefined; either define it (the font-size per band) or drop it.
+- **Events:** only `fx.step`. Add `fx.answer`, `fx.reveal_all`.
+- **Safety:** named formulas by id from the kit; numeric check for steps (E0.9).
+
+#### `contrast-pair@1` (M, 2-3 days)
+- **BLOCKER-ish dependency:** `PanelRef.snapshot {engine, params}` means mounting two live T1 engines in one 380 dp column. If those are canvas or WebGL engines, two live contexts on a phone drop below 30 fps and double the memory [I]. Require every T1 engine to export `renderStatic(params) → SVG|PNG`, and mount panels as static images, interactive only after the child picks. That is a cross-cutting requirement across the maths and science engine docs, and it is where the cost sits. Add it to those engines' definition of done.
+- **Layout:** two panels side by side are 180 dp each. Stack them vertically on phones.
+- **Events:** only `answer`. Add `ms`, `confidence` if asked, `reveal_viewed`.
+
+#### `svg-figure@1` and `illustration@1`
+- **Runtime (S each):** inline sanitised SVG with `highlight` and `tap` by selector, or an image with overlays. Both are small.
+- **Assertion harness (L, 5 days):** about 20 assert kinds as pure functions over `getScreenCTM` geometry, the `dist(#a,#b)` mini-expression parser, a Chromium job, a manifest schema, and failure reports the Forge coder can act on. Plan for the harness to be reused by `geo-construct`.
+- **Honest limit:** §1.1 is n = 3 on four trivial figures. Auto-promotion of free SVG with asserts is plausible, but "if the model cannot express a truth as an assert, `sme_required`" will send most real figures (ray diagrams, cross-sections) to a person. Budget for that: the 400 figures at 3 min is an optimistic review figure for a physics SME.
+- **Events:** `tap{part}` only. Add `ms`, `attempt`, and a `highlight_done` echo so the teacher knows the pulse finished before it continues.
+
+#### Forge raster pipeline (XL, 8-10 days)
+- **I3 palette quantisation:** `culori` gives ΔE2000. Snap-to-palette with a 0.5% area exception is S (1 day). The hue-cluster lint (more than 1% area, at most 6/8/10 hues) is M. It needs a clustering choice that the doc leaves open.
+- **I4 skin check is unbuilt and risky.** "Sampled face and arm regions" needs segmentation. With flat illustration art a VLM bounding box and a median colour are feasible, but the boxes are unreliable for arms [U]. Mark it `U: classifier to build` as the doc does for G-VI-1, and plan for the human key to catch it until measured.
+- **I2 no-text gate:** a VLM `NONE` is a presence check only (the doc says so). Add a cheap non-model second check: a connected-component and edge-density pass for glyph-like clusters in the safe zones. It costs S and removes a single point of failure.
+- **Throughput:** 4 RPM is a real constraint. 3,000 calls at 4 RPM is 12.5 hours of wall time, so jobs need a rate-limited queue with retry and a resume cursor (M). The doc has no queue.
+
+### E2. Corrections to make in the document (summary)
+
+1. Replace the "shipped `ModuleToHost` kinds" sentence in §4.2 with the contract v2 (E0.1) and move `fl.step` etc. to `interaction` names.
+2. Add the E0.8 fields to every engine's event table, define `quiz_voice`, and use the existing `stuck` kind.
+3. State the iframe, CSP, font and image-transport rules (E0.2) in §4.3, or take the first-party-engines decision.
+4. Rewrite the Devanagari wrapping rule: spaces only, DOM-measured, line-height 1.5-1.6 (E0.4).
+5. Split D4 into server and device halves (E0.5).
+6. Limit `TermRef.text` (E0.6); restrict free-text blanks (E0.7).
+7. Fix D0 for `<` `>` in `tex`, extend the KaTeX allowlist (E1 `formula@1`) and add a formula bank with a numeric check (E0.9).
+8. `label-diagram@1`: one label column on phones, portrait bases, a `numbered` mode, and a non-crossing matching (E1).
+9. `cycle` cap of 6 nodes on 380 dp; drop `radial` and `tree-right` in v1.
+10. Require `renderStatic()` from every T1 engine for `contrast-pair@1`.
+11. Add the review tool, the queue and the assertion harness to the §9 cost model, and measure edit-input token cost.
+12. Add the reduced-motion and flash-rate rule, the 300-node cap, and the transform-and-opacity-only animation rule (E0.3).
+
+### E3. Sources and evidence tags for this review
+
+- **[V]** read in this repo this session: `shared/contracts.ts:155-170`, `src/modules/frame/protocol.ts`, `vite.config.ts` (frame CSP, lines 8-32), `src/modules/host.tsx` (sandbox attribute), `context/decisions.md:133`, `tests/client-runtime.test.mjs:457-460`.
+- **[I]** inference from the code and the doc: all device timings, the 160 dp image width (380 dp minus two 110 dp columns), the 700 dp flow height, the frame-per-mount font cost.
+- **[M]** from memory, not re-read: WCAG 2.3.1 flash threshold; Chrome 87-88 feature levels for `Intl.Segmenter` and `aspect-ratio`; Unicode 15.1 conjunct grapheme rule in ICU 74; paint cost of SVG filters on low-end GPUs.
+- **[U]** not measured, and should be before a build decision: `blob:` image loading from an opaque-origin frame on Android WebView; font CORS from the Capacitor origin; KaTeX `\degree`; Mukta ₹ coverage; I4 skin-region reliability; edit-input token cost.
+- No device was available here, so none of the fps statements is measured. M-DI-7 and M-DI-8 should be run on a real 2-3 GB Android before the S/M/L numbers above are treated as commitments.

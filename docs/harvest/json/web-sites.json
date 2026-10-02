@@ -1,0 +1,1423 @@
+{
+  "segment": "web-sites",
+  "summary": "Two marketing-site repos. vyakti-website (Next.js 16 + Tailwind v4 + R3F/GSAP/Lenis) is the vyakti.ai relational-intelligence lab site: an editorial light token system, a scroll-driven WebGL story where the Noor face forms out of particles and speaks through a semantic jaw/viseme rig, a research section in which every number has to carry n/method/date/source and retracted claims are shown struck through, and a dated decision log full of rejections (procedural hair, topology morph, TripoSR 3D Meera, scrub on touch). Branch research-website@904b370 (same commit as codex/vyakti-rebuild) is the production lab site with the mobile scroll-performance fix. cloning-platform@4a7cbef pivots the copy to 'Vyakti Rooms' and adds a boundary model drawn as a figure.\ncs-website (Next.js 16, 12 branches) is carbonsettle.com, a heavily SEO-driven B2B site for Indian exporters. Its most valuable harvest is the hard-won content-automation safety stack: a daily LLM article generator that once destroyed ~65% of search impressions by re-dating slugs, now rebuilt around topic-only slugs, update-in-place, a slug manifest with a never-404 build guard, a 308 alias resolver, a corpus lint with banned phrases, link validation and injection, a duplicate-title guard, and IndexNow wired to postbuild. It also has a full first-party analytics tracker (beacon batching, 30-min sessions, section read-rate, rage/dead clicks, web vitals, stale-chunk self-heal, staff suppression), honest-proof guardrails (fabricated ratings were tried and removed), a 6-language hreflang cluster, llms.txt, security headers, and an Impeccable/taste/emil skill pass with mechanically checkable UI rules. A founder-rejected homepage redesign and five preview homepages are documented rejections.\nFor Taxila: copy the content guards (Forge output and SEO pages), the Measure/evidence-rail honesty components (parent reports), the reveal/smooth-scroll/navbar/motion tokens, the one-field +91 phone-or-email capture and dual-channel lead API, and the first-party tracker with child-surface stripping. Adapt the WebGL budget, context-loss fallback and semantic viseme rig for the 3D tutor. Skip PostHog session replay, GA4, OpenRouter and the Mitra provider path (Azure-only, child safety). Measured numbers are mostly SEO/conversion (GSC 90d 13,457 impressions, 0/310 sessions reaching contact, 80% proposal download rate, 40 replies with zero price objections) plus asset-size wins; there are no fps or lip-sync metrics.",
+  "assets": [
+    {
+      "id": "ws-01",
+      "title": "Editorial light-theme token set (Tailwind v4 @theme)",
+      "subsystem": "design-system/ux",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/app/globals.css"
+      ],
+      "what": "One @theme block mapping semantic names (void/ink/surface/raised/hairline/bone/ash/slate/ember/sage) to :root vars; fluid clamp() type scale eyebrow..h1 (h1 clamp(3.35rem,1.65rem+6.5vw,8.7rem), tight -0.068em tracking), easing tokens ease-out-quint cubic-bezier(0.23,1,0.32,1) / ease-out-expo, durations 140/260/320ms, .shell/.shell-narrow/.measure(62ch)/.eyebrow utilities, text-wrap balance/pretty, data-reveal component, touch + reduced-motion overrides.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "design-system/ux (marketing site + parent app)",
+      "evidence": "Shipped on vyakti.ai; verified at 390x844 and desktop per PROJECT_CONTEXT 2026-08-14.",
+      "notes": "Swap palette for Taxila brand (child-friendly but not toy-like); keep the semantic-name indirection, fluid scale and easing/duration tokens. No dark mode in source (light-only by decision); Taxila needs a dark token set too."
+    },
+    {
+      "id": "ws-02",
+      "title": "Reveal-once IntersectionObserver with index stagger",
+      "subsystem": "design-system/ux",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/components/reveal.tsx",
+        "src/app/globals.css"
+      ],
+      "what": "One observer for every [data-reveal]; reveals once and never re-animates on scroll-back (comment: 're-animating on scroll-back is the single most reliable tell of a template'); stagger = data-reveal index * 80ms; rootMargin -12% so motion belongs to the scroll; reduced motion reveals all; CSS disables reveal entirely on (hover:none),(pointer:coarse).",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux",
+      "evidence": "Decision log 2026-08-22: reduced generic reveal motion on desktop and disabled it on touch for a fast stable reading experience.",
+      "notes": ""
+    },
+    {
+      "id": "ws-03",
+      "title": "Lenis smooth scroll gated to fine pointers, shared GSAP ticker",
+      "subsystem": "design-system/ux",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/components/smooth-scroll.tsx",
+        "src/types/lenis-global.d.ts"
+      ],
+      "what": "Lenis only when (hover:hover) and (pointer:fine) and not reduced-motion; listens for live media-query changes and tears down; drives ScrollTrigger.update from Lenis scroll; exposes --scroll-progress CSS var and data-scrolled; gsap.ticker.lagSmoothing(0); window.__lenis for anchor nav.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux (marketing site only; never inside the lesson runtime)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-04",
+      "title": "Mobile scroll-story performance fix (native progress, direct style writes)",
+      "subsystem": "design-system/ux",
+      "repo": "vyakti-website",
+      "ref": "904b370 (Fix mobile story scroll performance)",
+      "paths": [
+        "src/components/home/relational-story.tsx",
+        "src/components/home/home.module.css",
+        "src/components/home/relational-story-canvas.tsx"
+      ],
+      "what": "Touch layouts drive the story from ScrollTrigger self.progress directly (no scrub tween); desktop keeps scrub:true via a progress proxy tween. ScrollTrigger.config({ignoreMobileResize:true}) ignores browser-chrome resizes mid-swipe. gsap.set replaced by direct element.style writes; chapters already hidden are skipped (chapterWasVisible cache). Sticky stage gets contain:paint; removed a permanent will-change.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux; generative-ui/modules (scroll-driven explainers)",
+      "evidence": "PROJECT_CONTEXT decision log 2026-08-24 (no numeric fps measurement recorded).",
+      "notes": ""
+    },
+    {
+      "id": "ws-05",
+      "title": "R3F canvas budget + geometry-stable WebGL fallback + dots-only first paint",
+      "subsystem": "avatar-visual",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/components/home/relational-story-canvas.tsx",
+        "src/components/home/relational-story.tsx"
+      ],
+      "what": "Canvas frameloop='demand' with invalidate() from scroll; dpr [1,1.25]; antialias off; particles 14,000 desktop / 4,800 compact; point DPR capped 1 on compact; webglcontextlost listener swaps only the visual layer without changing runway height or scroll position; dynamic(ssr:false) with an InitialSignalField loader so first paint is a lightweight dots field and never a solid poster; WebGL pauses offscreen (onToggle active flag).",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "avatar-visual (3D tutor canvas on budget Android), generative-ui/modules",
+      "evidence": "Particle/DPR numbers from commit 904b370; no frame-time measurement in repo.",
+      "notes": "Directly relevant to the selectable 3D tutor: on-demand rendering, DPR caps and context-loss fallback are the right defaults for budget Android WebView."
+    },
+    {
+      "id": "ws-06",
+      "title": "Deterministic viseme keyframes + semantic oral rig weights",
+      "subsystem": "avatar-visual",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/components/home/relational-story-canvas.tsx",
+        "scripts/build-noor-rig.py",
+        "scripts/extend-ink-lab-mouth.py",
+        "public/models/ink-lab/noor-rig.bin"
+      ],
+      "what": "VISEME_KEYS table [t, open, wide, round] sampled with smoothstep into a uViseme vec3 uniform; build-noor-rig.py bakes 4 UNORM8 channels (upper lip, lower lip, jaw, eyelids) in exact vertex order of the GNM skin mesh with ring-feathering over mesh adjacency, so skin, mouth socket and teeth move coherently from one jaw/viseme transform. Speech is time-based inside a scroll-gated chapter (1.42s phrase) so pausing scroll cannot freeze the mouth mid-viseme.",
+      "maturity": "prototype",
+      "taxila_use": "idea",
+      "taxila_target": "avatar-visual (3D tutor lip-sync)",
+      "evidence": "Visual review only (decision log 2026-08-22 removed a dark lip artifact); no lip-sync accuracy metric.",
+      "notes": "For Taxila the viseme stream must come from real TTS/realtime audio timing (Azure viseme events), not a fixed table; the semantic-rig idea (named-region weights baked offline, single shader transform) carries over."
+    },
+    {
+      "id": "ws-07",
+      "title": "Reproducible, hash-pinned 3D asset pipeline",
+      "subsystem": "avatar-visual",
+      "repo": "vyakti-website",
+      "ref": "8fc2ec3",
+      "paths": [
+        "scripts/build-head-model.mjs",
+        "public/models/CREDITS.md"
+      ],
+      "what": "prebuild script fetches the source model from a pinned three.js tag, verifies SHA-256, welds, simplifies to 35%, strips every attribute except POSITION, prunes; no-op when the committed file exists. Result 76 KB / 3,361 vertices. CREDITS.md ties CC BY 3.0 attribution to the footer that renders it.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "avatar-visual; infra (asset build)",
+      "evidence": "324 KB -> 75 KB with no visible difference at point-cloud scale (commit e91ab0b); 2.9 MB -> 324 KB by shipping only the loaded model (94cca19).",
+      "notes": ""
+    },
+    {
+      "id": "ws-08",
+      "title": "Measure component: a number cannot render without n/method/date/source",
+      "subsystem": "evals/gates/verification",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/components/research/measure.tsx"
+      ],
+      "what": "Typed props make n, method, date, source required and non-nullable; provenanceLine() renders 'n = .. · method · 18 Aug 2026 · source' inside the same block as the value; one accent number per page; stacked/split variants.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux (parent reports, public research/efficacy page)",
+      "evidence": "",
+      "notes": "Exactly the rule Taxila's context/measurements.md enforces, moved into UI. Use for any learning-outcome number shown to parents or schools."
+    },
+    {
+      "id": "ws-09",
+      "title": "Evidence rail with measured / in_preparation / struck / open states",
+      "subsystem": "design-system/ux",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/components/research/evidence-rail.tsx",
+        "src/components/research/status-chip.tsx",
+        "src/components/research/seam-note.tsx",
+        "src/lib/research.ts"
+      ],
+      "what": "Each claim carries its evidence block; a retracted claim renders struck-through with the control that killed it (SeamNote, ember left rule) rather than being deleted; an unmeasured track says so in the same typography. Paper status is an enum (in_preparation..published) so a venue claim can't sneak into a chip.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "design-system/ux (parent report 'what we know / what we are still checking'); growth (efficacy page)",
+      "evidence": "",
+      "notes": "Maps to Taxila covert-comprehension output: show confidence state honestly instead of a fake mastery percentage."
+    },
+    {
+      "id": "ws-10",
+      "title": "Research content module as single source of numbers",
+      "subsystem": "company-brain/knowledge-ingestion",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/lib/research.ts",
+        "src/lib/paper-body.ts",
+        "src/content/papers/*.md",
+        "src/app/research/papers/[slug]/page.tsx"
+      ],
+      "what": "Typed Paper/Result/Rail/Provenance records transcribed character-for-character from a generated content.json; limitations field required and non-empty (page does not build without it); sitemap and pages derive from the module so publishing is a data edit.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "growth/seo (Taxila research/efficacy pages), learning/pedagogy (kit metadata pattern)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-11",
+      "title": "Single-graph JSON-LD + metadata routes",
+      "subsystem": "growth/seo",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/components/structured-data.tsx",
+        "src/app/sitemap.ts",
+        "src/app/robots.ts",
+        "src/app/opengraph-image.tsx",
+        "src/app/icon.tsx"
+      ],
+      "what": "Organization (+alternateName in Devanagari) + WebSite + SoftwareApplication in one @graph with @id cross-references; sitemap derived from content arrays with a fixed honest lastModified; generated OG image and favicon from brand tokens.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "growth/seo",
+      "evidence": "",
+      "notes": "Next.js metadata routes; Taxila is Vite, so port as a build-time script emitting sitemap.xml/robots.txt/JSON-LD."
+    },
+    {
+      "id": "ws-12",
+      "title": "PROJECT_CONTEXT.md durable narrative + dated decision log",
+      "subsystem": "company-brain/knowledge-ingestion",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "PROJECT_CONTEXT.md",
+        "docs/PRODUCT_AND_RESEARCH_STANDING.md"
+      ],
+      "what": "Durable thesis, audiences, narrative order, visual/motion constraints, proof-and-copy guardrails and a dated decision log including rejections; standing doc defines a cross-repo source-of-truth boundary (site vs product repo) and requires fetching product context before changing claims.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "company-brain (Taxila marketing-site context)",
+      "evidence": "",
+      "notes": "Taxila already has context/; adopt the cross-repo 'fetch product context before making a public claim' rule for the marketing site."
+    },
+    {
+      "id": "ws-13",
+      "title": "Design/motion skill pack + DESIGN-PRINCIPLES synthesis",
+      "subsystem": "design-system/ux",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        ".claude/skills/DESIGN-PRINCIPLES.md",
+        ".claude/skills/emil-design-eng/SKILL.md",
+        ".claude/skills/taste-skill/SKILL.md",
+        ".claude/skills/gsap-framer-scroll-animation/",
+        ".claude/skills/review-animations/STANDARDS.md",
+        ".claude/skills/improve-animations/",
+        ".claude/skills/apple-design/SKILL.md",
+        ".claude/skills/animate/RECIPES.md"
+      ],
+      "what": "579-line synthesis across 12 skills: animate-or-not frequency gate, exact easing curves and decision order, ms duration budgets (UI < 300ms), spring configs, scroll rules (ease:none under scrub), review standards. Same pack (plus Impeccable) is installed in cs-website.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux (agent skills for Taxila UI builds)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-14",
+      "title": "Homepage narrative sequence + audience ordering",
+      "subsystem": "growth/seo",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "PROJECT_CONTEXT.md#website-narrative",
+        "src/app/page.tsx",
+        "src/lib/site.ts"
+      ],
+      "what": "Audiences ranked (users -> talent -> investors -> press); 8-beat story (tension -> open problem -> formation -> research -> independence -> product -> trust -> invitation); 'should not lead with market size, capability lists, fake metrics, investor language or an API diagram'. Shared copy module (SITE, NAV, FOOTER_GROUPS, PILLARS) so header/footer/pages cannot drift.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "growth/seo (Taxila landing story for parents first, then schools)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-15",
+      "title": "Rooms boundary model drawn as a figure (structure, not policy)",
+      "subsystem": "safety-floor/honesty",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-cloning-platform-aq05n4@4a7cbef",
+      "paths": [
+        "PROJECT_CONTEXT.md#current-product-direction",
+        "src/app/page.tsx",
+        "src/components/home/home.module.css"
+      ],
+      "what": "Boundary model: creator material flows down to every room; a follower's words stay in a private scope enforced at write time, never sideways to another follower; the creator sees themes only as counts, never names or verbatim; export/delete everything. Rendered as a static editorial figure, readiness described in words, never a mock number or invented screenshot.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "safety-floor/honesty; relational-os; auth/accounts/consent (parent vs child vs teacher visibility)",
+      "evidence": "",
+      "notes": "Taxila analogue: content flows down from kits to every child; siblings never see each other; a school/teacher sees aggregates; parents see the child's learning but the child's private disclosures route through the safeguarding hand-off, not a transcript dump. Draw it on the parent page."
+    },
+    {
+      "id": "ws-16",
+      "title": "Honest single CTA (prefilled mailto because there is no backend)",
+      "subsystem": "growth/seo",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-cloning-platform-aq05n4@4a7cbef",
+      "paths": [
+        "src/lib/site.ts",
+        "src/components/site-header.tsx",
+        "src/app/company/page.tsx"
+      ],
+      "what": "One label for one intent everywhere (header, hero, apply, company, /meera); application is three questions in a prefilled mail draft because 'a form that pretends otherwise would be the first dishonest thing on the site'.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "growth/seo (waitlist before backend exists)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-17",
+      "title": "Copy laws and vocabulary rules",
+      "subsystem": "safety-floor/honesty",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-cloning-platform-aq05n4@4a7cbef",
+      "paths": [
+        "PROJECT_CONTEXT.md#proof-and-copy-guardrails",
+        "src/lib/research.ts (header comment)"
+      ],
+      "what": "Distinguish shipped / active research / ambition; never invent user counts, scores, logos, quotes, funding; no em/en dashes in authored copy (scholarly verbatim excepted); 'Always AI'; vocabulary bans (clone/model/replica in user copy).",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "safety-floor/honesty; growth/seo copy",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-18",
+      "title": "Responsive portrait component with per-viewport compositions",
+      "subsystem": "design-system/ux",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/components/meera/index.tsx",
+        "src/components/meera/meera-portrait.module.css"
+      ],
+      "what": "Square editorial portrait contained without crop below the fixed header with dedicated portrait / tablet / short-landscape compositions; compositor transforms instead of repainted clip-path scrubs.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "avatar-visual (2D tutor portrait fallback), design-system/ux",
+      "evidence": "Checked at 390x844, 430x932, 768x1024, 844x390, 1280x720, 1440x900 (decision log 2026-08-22).",
+      "notes": ""
+    },
+    {
+      "id": "ws-19",
+      "title": "Face/ink-lab GNM identity studies (8 generated heads, shader studies)",
+      "subsystem": "avatar-visual",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "src/components/face-lab/",
+        "src/components/ink-lab/",
+        "src/components/noor-study/",
+        "public/models/ink-lab/*.glb",
+        "scripts/render-ink-lab-contact-sheet.py"
+      ],
+      "what": "Exploration routes (noindexed by policy): particle/ink shader treatments over 8 GNM identities, contact-sheet renderer, Noor study runtime (progress, velocity, pointer, invalidate).",
+      "maturity": "prototype",
+      "taxila_use": "idea",
+      "taxila_target": "avatar-visual",
+      "evidence": "",
+      "notes": "Adult identities; not usable as child-tutor faces, but the contact-sheet review loop is a good art-direction process."
+    },
+    {
+      "id": "ws-20",
+      "title": "Competitor teardown docs (Rumik/Ira, 15+ voice/avatar companies)",
+      "subsystem": "growth/seo",
+      "repo": "vyakti-website",
+      "ref": "claude/vyakti-research-website-a47qnq@904b370 (identical to codex/vyakti-rebuild@904b370)",
+      "paths": [
+        "docs/research/rumik-teardown.md",
+        "docs/research/competitive-landscape.md"
+      ],
+      "what": "Forensic teardown of rumik.ai (tokens, IA, verbatim copy, motion) and a landscape of Sesame, Hume, ElevenLabs, Cartesia, Character.AI, Inworld, Tavus, Synthesia, HeyGen etc. plus lab-site IA patterns and a human-likeness eval glossary.",
+      "maturity": "spec-only",
+      "taxila_use": "idea",
+      "taxila_target": "growth/seo (positioning research method)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-21",
+      "title": "Daily SEO article generator with stable slugs and update-in-place",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "scripts_automation/generate_blog.py",
+        ".automation_state.json",
+        "src/content/blog/slugs-manifest.json"
+      ],
+      "what": "Python generator: slug = slugify(topic) only (no date/timestamp); topic_already_published() checks legacy stems, manifest history and >80% title-token overlap (deliberately aggressive); when the pool is exhausted it refreshes the least-recently-touched priority post IN PLACE (same slug, original date, updated: stamped); create opens with mode 'x' so overwrite is impossible; --dry-run needs no key or deps; throttled to 1 post/day; restricted to CI.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "growth/seo (Taxila parent-question articles); generative-ui/modules (guard pattern for any LLM content writer)",
+      "evidence": "Sandboxed e2e run with faked client: create, same-day throttle, next-day new topic, exhausted-pool update-in-place, overwrite guard (docs/blog-automation-fix.md, 2026-07-03).",
+      "notes": "Provider must become Azure OpenAI (source uses OpenRouter google/gemini-2.5-flash or gpt-4o-mini)."
+    },
+    {
+      "id": "ws-22",
+      "title": "Generated-content post-processor (fences, placeholder, H1, link validation/injection)",
+      "subsystem": "evals/gates/verification",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "scripts_automation/generate_blog.py#normalise_generated_post",
+        "scripts/blog-links.mjs",
+        "scripts/blog-internal-links.json",
+        "scripts/repair-blog-posts.mjs"
+      ],
+      "what": "strip_code_fences, MULTILINE frontmatter split, refuse to write when description equals placeholder, drop duplicate H1, validate_internal_links rewrites known invented routes and unwraps any link not in the real route set, inject 3-5 contextual pillar links on eligible lines (protects code/links/math). repair-blog-posts.mjs applies the same to the existing corpus.",
+      "maturity": "shipped-measured",
+      "taxila_use": "copy",
+      "taxila_target": "evals/gates/verification (Forge output sanitiser); growth/seo",
+      "evidence": "Corpus repair 2026-09-04: 354 posts, 17 structural repairs, 150 superlative replacements, 7 invented routes fixed, 1,445 links injected, posts with >=2 internal links 50 -> 354 (commit 555e6f8a).",
+      "notes": ""
+    },
+    {
+      "id": "ws-23",
+      "title": "Corpus lint: verify-blog-posts.mjs with banned-phrase regexes",
+      "subsystem": "evals/gates/verification",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "scripts/verify-blog-posts.mjs"
+      ],
+      "what": "Per-post checks: frontmatter parses (gray-matter), title/date present, no body H1, description 100-170 chars, no leading fence, no duplicate frontmatter, every internal link resolves, BANNED regex list (superlatives, 'we verify', expired offer strings, retired routes), coverage stats; --strict exits 1.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "evals/gates/verification (lint every generated lesson/module/article against banned register and claims)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-24",
+      "title": "Slug-manifest build guard (a published URL may never 404)",
+      "subsystem": "evals/gates/verification",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "scripts/check-blog-slugs.mjs",
+        "src/content/blog/slugs-manifest.json",
+        "package.json (build script)"
+      ],
+      "what": "Mirrors resolveBlogSlugAlias() and fails `npm run build` if any manifest slug stops resolving (live post or 308 alias) or a live post is missing from the manifest; --seed; <1s, no network.",
+      "maturity": "shipped-measured",
+      "taxila_use": "copy",
+      "taxila_target": "evals/gates/verification; growth/seo",
+      "evidence": "443 manifest entries (302 live + 141 recovered from git history) all resolve (2026-07-03).",
+      "notes": ""
+    },
+    {
+      "id": "ws-25",
+      "title": "308 slug-alias resolver",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/lib/blog.ts#resolveBlogSlugAlias",
+        "src/app/blog/[slug]/page.tsx"
+      ],
+      "what": "Before 404: stem match (date prefix / unix suffix stripped), explicit recovered-N consolidation, title match for de-duplicated files -> permanentRedirect(308). Junk slugs still 404 (no soft-404).",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "growth/seo",
+      "evidence": "All 10 known dead URLs 308 to canonical on prod; reclaims ~65% of 90d impressions that were landing on 404 (5b485833, report 2026-07-03).",
+      "notes": ""
+    },
+    {
+      "id": "ws-26",
+      "title": "Build-time duplicate-title guard",
+      "subsystem": "evals/gates/verification",
+      "repo": "cs-website",
+      "ref": "f5d17222",
+      "paths": [
+        "src/lib/blog.ts#assertNoDuplicateTitles"
+      ],
+      "what": "getBlogPosts() normalises every title and throws on collision in production builds (warns in dev).",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "evals/gates/verification (duplicate module/kit titles)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-27",
+      "title": "GitHub Actions daily content cron with IndexNow ping",
+      "subsystem": "infra/azure/vercel/deploy",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        ".github/workflows/blog-automation.yml"
+      ],
+      "what": "cron 09:00 UTC, pull --rebase, run generator, commit only src/content/blog + state, rebase again, push, then sleep 180s and ping IndexNow non-fatally. Keys referenced only as repo secrets.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "infra/azure/vercel/deploy (Taxila: ACR builds from GitHub; content job can stay a GH Action calling Azure OpenAI or move to an Azure Container Apps job)",
+      "evidence": "Silent failure observed: OpenAI quota died and the daily post silently stopped after 2026-06-30 (workflow comment).",
+      "notes": ""
+    },
+    {
+      "id": "ws-28",
+      "title": "IndexNow submitter wired to postbuild, never throws",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "main@27d3ee00",
+      "paths": [
+        "scripts/indexnow-submit.mjs",
+        "public/<indexnow-key>.txt",
+        "package.json (postbuild)"
+      ],
+      "what": "--all (sitemap), --changed (git diff of src/content/blog AND src/app/<route>/page.tsx mapped to live URLs, dynamic/preview/dashboard skipped), --urls; never throws on shallow checkouts; postbuild guarded with `|| exit 0`. Key is a public domain-verification key by design.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "growth/seo (Bing feeds ChatGPT/Copilot answers)",
+      "evidence": "Full sitemap 177 URLs submitted HTTP 200 (b8b4e691, 2026-09-05).",
+      "notes": ""
+    },
+    {
+      "id": "ws-29",
+      "title": "Honest sitemap: lastmod from file mtime, capped blog set",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/app/sitemap.ts"
+      ],
+      "what": "lastModified from fs.statSync(renderingFile).mtime instead of new Date() (Google stops trusting lastmod that always equals crawl date); blog lastmod uses frontmatter updated||date; programmatic pages excluded; core commercial routes prioritised.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "growth/seo",
+      "evidence": "",
+      "notes": "Drift bug: the comment says 30 most recent posts but the code slices 100."
+    },
+    {
+      "id": "ws-30",
+      "title": "llms.txt / llms-full.txt answer-engine files",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "public/llms.txt",
+        "public/llms-full.txt"
+      ],
+      "what": "Curated entity description, current offer, dated key facts with sources/numbers, and annotated links to core, language and commercial pages for AI crawlers.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "growth/seo (AEO for parent questions like 'best AI tutor for class 5 CBSE Hindi')",
+      "evidence": "AI answer engines already referring visitors: gemini.google.com 6, chatgpt.com 6 sessions in 90d (website-domination-analysis 2026-07-03).",
+      "notes": ""
+    },
+    {
+      "id": "ws-31",
+      "title": "Six-language hreflang guide cluster with x-default",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/app/cbam-guide-hindi/page.tsx",
+        "src/app/cbam-guide-gujarati/page.tsx",
+        "src/app/cbam-guide-tamil/page.tsx",
+        "src/app/cbam-guide-telugu/page.tsx",
+        "src/app/cbam-guide-marathi/page.tsx"
+      ],
+      "what": "Native-script guides with metadata.alternates.languages (incl. x-default -> English), <div lang='hi'>, transliterated query targets ('cbam kya hai'); Hindi brought to parity with English (6a30986d); capture labels localisable.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "growth/seo; learning/pedagogy (Hindi/regional parent pages)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-32",
+      "title": "First-party analytics tracker (batched beacon, identity, engagement)",
+      "subsystem": "telemetry/tracing",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/components/analytics/tracker.ts",
+        "src/components/analytics/identity.ts",
+        "src/components/analytics/FirstPartyTracker.tsx"
+      ],
+      "what": "Visitor id (localStorage) + GA4-style 30-min inactivity session; queue flushed every 8s or at 30 events via navigator.sendBeacon with text/plain Blob (no CORS preflight); session_start context (viewport, dpr, lang, tz, connection, memory); scroll milestones; 15s engaged-time heartbeat counting only visible time; page_exit/session_end on pagehide; UTM + cs_ref attribution; every entry point try/catch so tracking never blocks render; internal/staff + localhost/LAN/*.vercel.app suppression via ?cs_staff=1 flag.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "telemetry/tracing (marketing site and parent app; NOT child lesson surfaces without DPDP consent design)",
+      "evidence": "Insert-side verified: site_events receiving pageview/section_view/web_vital/session events from real browsers; synthetic curl 204 but filtered at ingest (report 2026-07-03).",
+      "notes": "Collector backend (pdf.carbonsettle.com/collect) lives in another repo, not read."
+    },
+    {
+      "id": "ws-33",
+      "title": "Deep behavioural signals (section read-rate, dwell, rage/dead clicks, vitals, errors)",
+      "subsystem": "telemetry/tracing",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/components/analytics/signals.ts"
+      ],
+      "what": "web-vitals LCP/CLS/INP/FCP/TTFB; rage clicks (3 in 1s within 30px); dead clicks (non-interactive click with no DOM mutation/nav/scroll); auto section_view + section_dwell for every section/article/[id] block; accordion toggles; declarative [data-cs-event] + data-cs-* metadata; copy length only; JS errors truncated; ChunkLoadError one-shot self-heal reload (max 1 per 30s); first-interaction latency. Form-submit value harvesting of non-sensitive fields.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "telemetry/tracing; evals (UX dead-end detection in the lesson UI)",
+      "evidence": "Dead-click signal found 151 dead clicks on one post's FAQ paragraph (1af018d3); section read-rates showed 4/10 calculator viewers reached a detached form and pricing readers 75% read-to-100% (2011780a).",
+      "notes": "Strip harvestFormValues and any free-text capture for Taxila child surfaces; keep counts/timings only."
+    },
+    {
+      "id": "ws-34",
+      "title": "PostHog session replay + GA4",
+      "subsystem": "telemetry/tracing",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/components/analytics/PostHogInit.tsx",
+        "src/components/analytics/GoogleAnalytics.tsx"
+      ],
+      "what": "PostHog with session recording on and 'no opt-out', distinct id tied to first-party visitor id; GA4 tag.",
+      "maturity": "shipped",
+      "taxila_use": "skip",
+      "taxila_target": "telemetry/tracing",
+      "evidence": "",
+      "notes": "Third-party analytics and session replay of children violate the Azure-only directive and the child-safety floor; do not port."
+    },
+    {
+      "id": "ws-35",
+      "title": "Contact API: two durable channels with retry, fail only if both fail",
+      "subsystem": "auth/accounts/consent",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/app/api/contact/route.ts"
+      ],
+      "what": "Accepts email OR phone; withRetry(fn, label, 3) around CRM mirror (structured store) and lead email; user sees failure only when both durable channels failed - never silently drops a submission.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "auth/accounts/consent (parent sign-up / callback requests); infra",
+      "evidence": "Real complete submissions mirrored to website_leads since June (report 2026-07-03).",
+      "notes": ""
+    },
+    {
+      "id": "ws-36",
+      "title": "One-field phone-or-email capture with +91 normalisation and WhatsApp deep link",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/lib/contact-detect.ts",
+        "src/components/LeadCaptureInline.tsx",
+        "src/components/home/CalculatorLeadCapture.tsx"
+      ],
+      "what": "Detects email vs phone, normalises Indian 10-digit mobiles (6-9 leading) to +91, stable per-visitor capture key, CRM ingest beacon, wa.me link with prefilled text; shared by every capture surface.",
+      "maturity": "shipped-measured",
+      "taxila_use": "copy",
+      "taxila_target": "growth/seo; auth/accounts/consent (parent onboarding by phone/WhatsApp)",
+      "evidence": "Collapsing a 3-field calculator form to 1 field was the fix for a #1-engagement tool that 'captured nobody' (74a928b9); no post-change conversion number recorded.",
+      "notes": ""
+    },
+    {
+      "id": "ws-37",
+      "title": "Offer copy single source of truth",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/lib/offer.ts"
+      ],
+      "what": "All offer strings and deadlines in one module consumed by modal, calculator, CTA, OG image, JSON-LD and llms.txt; deadline variants later removed entirely ('first report free', no date).",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "growth/seo (pricing/trial copy)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-38",
+      "title": "Security headers + CSP middleware with next.config fallback",
+      "subsystem": "infra/azure/vercel/deploy",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/proxy.ts",
+        "next.config.ts#headers"
+      ],
+      "what": "www->apex 301; X-Frame-Options DENY, nosniff, strict-origin-when-cross-origin, HSTS preload, Permissions-Policy, explicit CSP allowlist; headers duplicated in next.config as fallback.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "infra/azure/vercel/deploy",
+      "evidence": "",
+      "notes": "Must change for Taxila: Permissions-Policy there sets microphone=() and camera=() which would break voice lessons; use microphone=(self), add Azure realtime/WebRTC hosts to connect-src, drop unsafe-eval."
+    },
+    {
+      "id": "ws-39",
+      "title": "Image pipeline config: AVIF first, 31-day edge cache, trimmed size ladder",
+      "subsystem": "infra/azure/vercel/deploy",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "next.config.ts#images"
+      ],
+      "what": "formats avif,webp; minimumCacheTTL 2678400; deviceSizes 360..1920; imageSizes 16..384; plus manual PNG->WebP recompression.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "infra (static asset pipeline on Azure Storage/CDN)",
+      "evidence": "port-v2.png 1.9 MB -> 158 KB WebP; ship section 3.0 MB -> 0.27 MB (271f6c5d); return traffic ~20% of real visitors (config comment).",
+      "notes": ""
+    },
+    {
+      "id": "ws-40",
+      "title": "RevealController: pre-fire rootMargin + safety timeout",
+      "subsystem": "design-system/ux",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/components/RevealController.tsx",
+        "src/components/MotionProvider.tsx"
+      ],
+      "what": "Layout-effect adds cs-reveal to every main section client-side only (SSR renders visible), rootMargin '0px 0px 220px 0px' threshold 0 so sections reveal before the eye arrives, immediate reveal for anything above vh+220, 1600ms safety timeout forces all visible; MotionProvider wraps the app in MotionConfig reducedMotion='user'.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux",
+      "evidence": "Commit ad4534fa: '0 stuck reveals' after fix (manual).",
+      "notes": ""
+    },
+    {
+      "id": "ws-41",
+      "title": "Jargon: CSS-only accessible glossary tooltip",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/components/Jargon.tsx",
+        "src/app/glossary/page.tsx"
+      ],
+      "what": "TERMS map; hover/focus on desktop, tap-to-focus (tabIndex) on touch, aria-describedby for screen readers, links to /glossary; no state, no library.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "learning/pedagogy/curriculum (child vocabulary pop-ups in lesson text and parent reports)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-42",
+      "title": "FAQ extraction -> accessible accordion + schema in sync",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/lib/blog.ts#extractFaq",
+        "src/components/blog/FaqAccordion.tsx"
+      ],
+      "what": "Parses '**Q:**/A:' and '### Question' formats (334/335 posts), removes the section from the body, renders <details>/<summary>, reuses the same pairs for FAQPage JSON-LD; conservative (<2 pairs leaves body untouched).",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "growth/seo",
+      "evidence": "Fix for 151 dead clicks on one post (1af018d3).",
+      "notes": ""
+    },
+    {
+      "id": "ws-43",
+      "title": "Pinned scroll scene on one deterministic timeline (framer useScroll)",
+      "subsystem": "design-system/ux",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/components/home/ShipScrollSection.tsx"
+      ],
+      "what": "300vh pinned section, single scrollYProgress drives backdrop, ship, wake, sun, birds and text beats via useTransform; no springs; single optimised text shadows instead of filter drop-shadow; radial gradients instead of filter:blur.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "generative-ui/modules (scroll-scrubbed science animations)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-44",
+      "title": "Navbar: rAF-throttled scroll + opacity crossfade background layers",
+      "subsystem": "design-system/ux",
+      "repo": "cs-website",
+      "ref": "f5d17222 + 271f6c5d",
+      "paths": [
+        "src/components/Navbar.tsx"
+      ],
+      "what": "Scroll listener bounded to one rAF per frame with cached [data-dark-nav] queries (MutationObserver re-query); theme switch via two stacked absolute backgrounds crossfading opacity over 300ms because class-swapped gradients cannot interpolate.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-45",
+      "title": "Impeccable skill + anti-pattern detector, PRODUCT.md/DESIGN.md context",
+      "subsystem": "design-system/ux",
+      "repo": "cs-website",
+      "ref": "claude/carbonsettle-importer-redesign-e3dpci@ba6be984",
+      "paths": [
+        ".claude/skills/impeccable/SKILL.md",
+        ".claude/skills/impeccable/reference/*.md",
+        ".claude/skills/impeccable/scripts/detect.mjs",
+        "PRODUCT.md",
+        "DESIGN.md"
+      ],
+      "what": "Impeccable v4.0.2 (craft floor, audit, typeset, layout, android/ios references) with a CLI detector (`npx impeccable detect <files>`); PRODUCT.md names users/ICPs, mode (Persuade/Read), voice, hard guardrails, anti-references; DESIGN.md records incumbent tokens and traps.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux (agent UI verification gate); android/capacitor (reference/android.md)",
+      "evidence": "",
+      "notes": "Branch unmerged into main; the skill itself is independent of the redesign outcome."
+    },
+    {
+      "id": "ws-46",
+      "title": "Binding skill-pass brief (taste pre-flight rules for agent workers)",
+      "subsystem": "design-system/ux",
+      "repo": "cs-website",
+      "ref": "claude/carbonsettle-importer-redesign-e3dpci@ba6be984",
+      "paths": [
+        "docs/homepage-skill-pass-2026-07-25.md"
+      ],
+      "what": "Mechanically checkable rules: zero em/en dashes, max 4 kickers for 13 sections, no scroll cues, no decorative dots, no middle-dot chains, hero <= 4 text elements, pressables active:scale-[0.97] property-scoped 150ms, never animate from scale(0), stagger 30-80ms, exits faster than enters, only transform+opacity; verification = tsc + eslint + impeccable detect + screenshots at 1440x900 and 390x844 with an edit->reshoot loop.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "design-system/ux; evals/gates/verification (UI review gate for Taxila build agents)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-47",
+      "title": "Mitra: grounded site-assistant knowledge contract + streaming proxy",
+      "subsystem": "prompt-compiler/persona-engineering",
+      "repo": "cs-website",
+      "ref": "claude/carbonsettle-importer-redesign-e3dpci@ba6be984",
+      "paths": [
+        "src/lib/assistant/knowledge.ts",
+        "src/app/api/assistant/route.ts",
+        "src/components/assistant/MitraChat.tsx"
+      ],
+      "what": "System prompt as a single verified-facts module with an 'Honest boundaries' section (not a verifier, no registry API, not legal advice, never invent clients); route streams OpenRouter SSE re-emitted as plain text deltas with an ordered model fallback list and max_tokens cap.",
+      "maturity": "prototype",
+      "taxila_use": "idea",
+      "taxila_target": "prompt-compiler/persona-engineering (parent-help assistant on the marketing site)",
+      "evidence": "",
+      "notes": "Provider skip (OpenRouter is not allowed under the Azure-only directive). The facts are also sentence-shaped prose that will be recited, which conflicts with the inherited 'write shapes, not lines' law."
+    },
+    {
+      "id": "ws-48",
+      "title": "Calculator / savings-check lead magnet fused to the result",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/app/cbam-tax-calculator/CalculatorTool.tsx",
+        "src/components/SavingsCheckTool.tsx",
+        "src/components/home/CalculatorLeadCapture.tsx",
+        "src/app/cbam-savings-check/page.tsx"
+      ],
+      "what": "Free tool as the top engagement asset; capture form visually fused to the result card so the ask is seen with the number; indexed + schema'd tool page; organic pages funnel into it.",
+      "maturity": "shipped-measured",
+      "taxila_use": "idea",
+      "taxila_target": "growth/seo (free 'how does my child learn best' check for parents)",
+      "evidence": "Only 4/10 calculator viewers scrolled to the detached form before the fusion (2011780a; n not recorded).",
+      "notes": ""
+    },
+    {
+      "id": "ws-49",
+      "title": "Gated downloadable pack built from HTML",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "scripts/build-reply-pack.mjs",
+        "src/content/downloads/cbam-buyer-reply-pack.html",
+        "src/app/eu-buyer-asked-for-cbam-data/ReplyPackCapture.tsx"
+      ],
+      "what": "HTML source rendered to a PDF lead magnet at build time and gated behind the one-field capture.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "growth/seo (printable worksheets / parent guides)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-50",
+      "title": "Inline data visuals in articles (gap chart, flow diagrams, timelines)",
+      "subsystem": "generative-ui/modules",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/components/EmissionGapChart.tsx",
+        "src/components/CBAMFlowDiagram.tsx",
+        "src/components/PlatformModesDiagram.tsx",
+        "src/components/GuideTimeline.tsx",
+        "src/components/blog/BlogInlineVisual.tsx"
+      ],
+      "what": "Topic-matched SVG/CSS visuals injected into long-form posts; CSS-only 3-step strips that stack at 390px; zero new JS libraries.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "generative-ui/modules (diagram library for Forge)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-51",
+      "title": "Programmatic city/sector/language landers with noindex policy",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "src/lib/pseo-data.ts",
+        "src/lib/city-pages-north.ts",
+        "src/lib/city-pages-west-south.ts",
+        "src/app/cbam-impact/[industry]/[location]/page.tsx",
+        "src/app/cbam-consultant-ludhiana/page.tsx"
+      ],
+      "what": "Hand-written city pages for real clusters are indexed; 5x20 template-generated pages are robots noindex,follow until each has substantive unique content.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "growth/seo (board x class x subject x city pages for Taxila, only with unique content)",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-52",
+      "title": "SEO diagnosis method (GSC + first-party + proposal funnel + SERP)",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "docs/website-domination-analysis.md",
+        "docs/website-domination-report.md",
+        "GOOGLE_SEARCH_CONSOLE_GUIDE.md",
+        "OFF_PAGE_SEO_BLUEPRINT.md",
+        "MANUAL_SEO_EXECUTION_GUIDE.md"
+      ],
+      "what": "90d GSC table by query/position, striking-distance list (pos 8-20), dead-URL audit, de-botted first-party KPIs, campaign funnel, competitor format analysis, prioritised plan, human TODOs; CTR surgery on titles of pages already earning impressions.",
+      "maturity": "shipped-measured",
+      "taxila_use": "idea",
+      "taxila_target": "growth/seo",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "ws-53",
+      "title": "Wikidata entity + Organization sameAs",
+      "subsystem": "growth/seo",
+      "repo": "cs-website",
+      "ref": "claude/seo-phase1-lead-pages@27781178",
+      "paths": [
+        "wikidata_carbonsettle_entity.csv",
+        "src/app/layout.tsx (JSON-LD)"
+      ],
+      "what": "Wikidata item created and linked via sameAs; founder Person entity; capability-framed About JSON-LD.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "growth/seo (entity for Taxila brand)",
+      "evidence": "",
+      "notes": ""
+    }
+  ],
+  "measurements": [
+    {
+      "claim": "GSC 90d totals: 126 clicks, 13,457 impressions, CTR 0.9%, avg position 46.7; 28d: 40 clicks, 3,666 impr, CTR 1.1%, pos 42.7",
+      "source": "cs-website@claude/seo-phase1-lead-pages:docs/website-domination-analysis.md",
+      "n": "13,457 impressions",
+      "method": "Google Search Console export",
+      "date": "2026-04-01..2026-06-29"
+    },
+    {
+      "claim": "~8.7k impressions/90d (65% of all) resolved to 404 because the generator re-dated slugs; the #1 asset had 6,959 impressions at position 7.2; 11 of top-50 indexed URLs were 404",
+      "source": "cs-website:docs/website-domination-analysis.md; docs/blog-automation-fix.md",
+      "n": "top-50 indexed URLs",
+      "method": "GSC + live URL checks",
+      "date": "2026-07-03"
+    },
+    {
+      "claim": "India is the click market: 1,666 impr / 57 clicks / 3.4% CTR / pos 23.1 vs US 7,157 impr / 4 clicks",
+      "source": "cs-website:docs/website-domination-analysis.md",
+      "n": "90d",
+      "method": "GSC by country",
+      "date": "2026-07-03"
+    },
+    {
+      "claim": "First-party 90d: 186 visitors, 310 sessions, 400 pageviews, 1.3 pages/session, bounce 14.8%, median session 45s, 78% desktop; 0 of 310 sessions reached /contact; zero leads ever from a blog post",
+      "source": "cs-website:docs/website-domination-analysis.md",
+      "n": "310 sessions",
+      "method": "first-party tracker, de-botted",
+      "date": "2026-07-03"
+    },
+    {
+      "claim": "AI answer engines referred traffic: gemini.google.com 6 and chatgpt.com 6 sessions",
+      "source": "cs-website:docs/website-domination-analysis.md",
+      "n": "310 sessions",
+      "method": "first-party referrer",
+      "date": "2026-07-03"
+    },
+    {
+      "claim": "Cold-email funnel: 3,509 sent -> 274 opened -> 179 viewed proposal -> 144 downloaded (80% of viewers) -> 30 replied",
+      "source": "cs-website:docs/website-domination-analysis.md",
+      "n": "3,509 emails",
+      "method": "proposal engagement tracking",
+      "date": "all-time to 2026-07-03"
+    },
+    {
+      "claim": "7,578 cold emails -> 40 replies with zero price objections and zero 'already have a consultant'; every objection was a legitimacy check",
+      "source": "cs-website@claude/carbonsettle-importer-redesign-e3dpci:docs/positioning-dual-icp-2026-07-24.md",
+      "n": "40 replies",
+      "method": "manual reply coding",
+      "date": "2026-07-24"
+    },
+    {
+      "claim": "Section read-rate: only 4/10 calculator viewers scrolled to the detached lead form; pricing readers 75% read to 100%; blog readers hit a drop-off wall around 50% (CTA moved to 38%)",
+      "source": "cs-website@2011780a commit message",
+      "n": "not recorded",
+      "method": "section_view/section_dwell analytics",
+      "date": "2026-06-19"
+    },
+    {
+      "claim": "151 dead clicks on a single blog post paragraph (inert FAQ text that looked clickable)",
+      "source": "cs-website@1af018d3 commit message",
+      "n": "1 post",
+      "method": "dead_click signal",
+      "date": "2026-06-30"
+    },
+    {
+      "claim": "Blog corpus repair: 354 posts; 17 structural repairs, 150 superlative replacements, 7 invented routes, 1,445 links injected; posts with >=2 internal links 50 -> 354; 13 posts had rendered a raw code fence + duplicate H1; max_tokens 4000 had truncated 7 posts",
+      "source": "cs-website@555e6f8a, eeaab41b; generate_blog.py comments",
+      "n": "354 posts",
+      "method": "repair-blog-posts.mjs + verify-blog-posts.mjs",
+      "date": "2026-09-04"
+    },
+    {
+      "claim": "Duplicate content: 139 posts in 38 duplicate-title groups (one title x11; 8 'archived v0..v7'); 402 -> 301 posts after dedupe; 100 pSEO pages noindexed",
+      "source": "cs-website@d869bd6c",
+      "n": "402 posts",
+      "method": "title normalisation",
+      "date": "2026-05-21"
+    },
+    {
+      "claim": "Crawl budget: 343 pages 'Discovered - not indexed' with 341 AI posts + 100 pSEO in sitemap; sitemap planned ~464 -> ~53 URLs; cadence 4/day -> 1/day",
+      "source": "cs-website@9f863fb2",
+      "n": "~464 URLs",
+      "method": "GSC coverage report",
+      "date": "2026-03-16"
+    },
+    {
+      "claim": "Slug manifest seeded with 443 slugs (302 live + 141 recovered from git history), all resolving",
+      "source": "cs-website:docs/blog-automation-fix.md",
+      "n": "443",
+      "method": "check-blog-slugs.mjs",
+      "date": "2026-07-03"
+    },
+    {
+      "claim": "IndexNow: full sitemap 177 URLs submitted, HTTP 200",
+      "source": "cs-website@b8b4e691",
+      "n": "177 URLs",
+      "method": "IndexNow API",
+      "date": "2026-09-05"
+    },
+    {
+      "claim": "Ship scroll section payload 3.0 MB -> 0.27 MB; port-v2.png 1.9 MB -> 158 KB WebP; ship-sunset.png 1.1 MB -> 102 KB",
+      "source": "cs-website@271f6c5d",
+      "n": "3 images",
+      "method": "file sizes",
+      "date": "2026-05-11"
+    },
+    {
+      "claim": "Return traffic ~20% of real visitors (used to justify 31-day image cache)",
+      "source": "cs-website:next.config.ts comment",
+      "n": "",
+      "method": "first-party analytics",
+      "date": "2026-06-19"
+    },
+    {
+      "claim": "Head model 324 KB -> 75 KB (3,361 vertices) by POSITION-only + 35% simplify, no visible difference; 3D assets 2.9 MB -> 324 KB by shipping only the loaded model",
+      "source": "vyakti-website@e91ab0b, 94cca19, 8fc2ec3",
+      "n": "1 model",
+      "method": "file size + visual comparison on /meera",
+      "date": "2026-08-12"
+    },
+    {
+      "claim": "Compact canvas particles 7,000 -> 4,800 (desktop 14,000); canvas DPR cap 1.5 -> 1.25; compact point DPR 1.25 -> 1",
+      "source": "vyakti-website@904b370",
+      "n": "",
+      "method": "config change (no fps metric recorded)",
+      "date": "2026-08-24"
+    },
+    {
+      "claim": "Story runway 640/820/860svh -> 540/700/720svh when chapters went 6 -> 5",
+      "source": "vyakti-website@4a7cbef PROJECT_CONTEXT 2026-09-03",
+      "n": "",
+      "method": "config",
+      "date": "2026-09-03"
+    },
+    {
+      "claim": "Layout verified at 390x844, 430x932, 768x1024, 844x390, 1280x720, 1440x900",
+      "source": "vyakti-website PROJECT_CONTEXT 2026-08-22",
+      "n": "6 viewports",
+      "method": "manual screenshot review",
+      "date": "2026-08-22"
+    },
+    {
+      "claim": "(Cited from html-portfolio via standing doc) authored deterministic taste retrieval raised self-consistency 27% -> 63% over 480 turns; byte-identical prompt swap produced 38-2 incumbent preference; best LLM judge reproduced 77.1% of its own verdicts (< 80% bar); structural disclosure filtering leaked zero",
+      "source": "vyakti-website:docs/PRODUCT_AND_RESEARCH_STANDING.md (source: html-portfolio context/)",
+      "n": "480 turns; 40 pairs",
+      "method": "see html-portfolio context/measurements.md",
+      "date": "2026-08-21"
+    }
+  ],
+  "rejections": [
+    {
+      "tried": "Blog generator naming files <run-date>-<topic[:50]>-<unix-ts>.mdx and deleting older copies during cleanup",
+      "what_broke": "Every re-publish minted a new URL; cleanups 404'd ranked URLs, ~65% of 90d impressions incl. the #1 asset (6,959 impr, pos 7.2) landed on 'Article Not Found'",
+      "source": "cs-website:docs/blog-automation-fix.md; 5b485833",
+      "taxila_relevance": "Any generated artifact with a public or shareable URL (kits, modules, parent report links) needs a stable id from content, a manifest and a never-404 build guard."
+    },
+    {
+      "tried": "Generator fallback 're-write a priority topic from a fresh perspective' when the topic pool ran out",
+      "what_broke": "Same exemption-thresholds article regenerated every day for a month (31 copies)",
+      "source": "cs-website:docs/blog-automation-fix.md; 06c4f270",
+      "taxila_relevance": "Forge must update-in-place or skip, never re-create, when its idea pool is exhausted."
+    },
+    {
+      "tried": "Duplicate check comparing raw title strings (model emitted malformed/double-quoted titles)",
+      "what_broke": "Missed duplicates; 139 posts in 38 duplicate groups triggered Google duplicate-content clustering for the whole domain (brand searches collapsed into 'similar pages')",
+      "source": "cs-website@d869bd6c, 527b2e06",
+      "taxila_relevance": "Normalise before comparing; aggressive dedupe where a false positive is cheap."
+    },
+    {
+      "tried": "Publishing 4 AI posts/day and putting all 341 AI posts + 100 template pSEO pages in the sitemap",
+      "what_broke": "343 pages 'Discovered - not indexed' - read as a content farm; crawl budget wasted",
+      "source": "cs-website@9f863fb2, d869bd6c",
+      "taxila_relevance": "Taxila SEO: quality over volume; noindex template pages until unique."
+    },
+    {
+      "tried": "Trusting the model to emit clean MDX (frontmatter regex anchored at char 0, no MULTILINE) with max_tokens 4000",
+      "what_broke": "Model wrapped output in ```mdx fences -> 13 live posts rendered raw fence, inner frontmatter and duplicate H1 with placeholder description; 7 posts truncated mid-article",
+      "source": "cs-website@555e6f8a; generate_blog.py comments",
+      "taxila_relevance": "Sanitise and validate every LLM artifact by predicate; refuse to write on placeholder/structural failure; budget output tokens and detect truncation."
+    },
+    {
+      "tried": "Brand rules in the generator system prompt only (and a prompt that itself said 'India's #1')",
+      "what_broke": "150 superlative instances, 7 invented internal routes, posts citing GDPR fines as CBAM, 10 near-identical stubs; prompt still links a retired route which only the post-validator catches",
+      "source": "cs-website@555e6f8a, eeaab41b; generate_blog.py system_prompt",
+      "taxila_relevance": "Confirms the inherited law 'safety by predicate, not instruction': banned-phrase lint + link validation must gate Forge output."
+    },
+    {
+      "tried": "Fabricated AggregateRating (4.9/5, 47 reviews) and Review schema with 3 client reviews; named PR persona; named WhatsApp persona with reply-time promise",
+      "what_broke": "Unverifiable proof; removed sitewide (ae2b3ef4, b5e6b41c, d554ce7e, b8c83541, 3b547933) and made an absolute guardrail",
+      "source": "cs-website@8c9ec969 then removals",
+      "taxila_relevance": "Never fabricate parent testimonials, outcome stats or teacher personas on Taxila's site."
+    },
+    {
+      "tried": "Homepage visual redesign (animated India->EU hero journey, gap chart + sector tiles, FAQ accordion)",
+      "what_broke": "Founder rejected it and promoted the previous deploy (fa5395f); CLAUDE.md now forbids redesign without explicit founder request; only the non-visual blog fix was kept",
+      "source": "cs-website@bb415fbd, 8a97aff5, 74ee48d8; CLAUDE.md",
+      "taxila_relevance": "Ship design changes as previews for owner review; keep functional fixes separable from visual changes."
+    },
+    {
+      "tried": "Five preview homepages V1-V5 (Corridor, Platform, Night Freight dark, Vishwas, Precision) for dual-ICP repositioning",
+      "what_broke": "Removed in favour of polishing the original homepage through the skill stack (d02fede3); dark variant also conflicts with 'no dark themes' guardrail",
+      "source": "cs-website@cd0676bc..f0851794, d02fede3",
+      "taxila_relevance": "Polish-in-place often beats parallel redesigns; but previews are the right review mechanism."
+    },
+    {
+      "tried": "A 'Fix mobile ship scroll story' change",
+      "what_broke": "Reverted the next day (090a5829) with no recorded reason",
+      "source": "cs-website@be3fe020, 090a5829",
+      "taxila_relevance": "Log reasons with reverts; an unexplained revert is a lost lesson."
+    },
+    {
+      "tried": "Splitting the pinned ship scene's motion across separate springs",
+      "what_broke": "Numbers drifted past their focus stage; replaced by one deterministic scroll timeline",
+      "source": "cs-website:src/components/home/ShipScrollSection.tsx comment",
+      "taxila_relevance": "Scroll-linked explainer modules: one timeline, no springs."
+    },
+    {
+      "tried": "filter:drop-shadow, triple text-shadows, filter:blur(22px) sun glow, backdrop-blur on navbar, redundant will-change, 1.9 MB PNGs",
+      "what_broke": "Per-frame GPU filter passes and re-rasterisation on opacity tweens; jank on mobile; 3.0 MB section payload",
+      "source": "cs-website@b19551b0, 271f6c5d",
+      "taxila_relevance": "Budget Android: no filters on animated layers; gradients and single shadows instead."
+    },
+    {
+      "tried": "Swapping navbar CSS classes between gradient and solid backgrounds",
+      "what_broke": "Browsers cannot interpolate between them; the transition snapped",
+      "source": "cs-website@f5d17222",
+      "taxila_relevance": "Crossfade two layers via opacity."
+    },
+    {
+      "tried": "Scroll reveals with a late IntersectionObserver trigger",
+      "what_broke": "Sections stuck at opacity 0 / 'scroll slowly to load' blanks on fast scroll",
+      "source": "cs-website@ad4534fa; RevealController.tsx",
+      "taxila_relevance": "Pre-fire margin + safety timeout + SSR-visible default."
+    },
+    {
+      "tried": "sitemap lastModified = new Date() on every deploy",
+      "what_broke": "Google stops trusting lastmod that always equals the crawl date, so real changes can't signal",
+      "source": "cs-website:src/app/sitemap.ts comment (b8c83541)",
+      "taxila_relevance": "Honest lastmod from content."
+    },
+    {
+      "tried": "IndexNow script written but not wired; --changed watched only src/content/blog",
+      "what_broke": "Never ran automatically; every non-blog page shipped after it was never submitted",
+      "source": "cs-website@b8b4e691",
+      "taxila_relevance": "Automation that is not wired to a hook does not exist."
+    },
+    {
+      "tried": "Root .gitignore patterns anchored to repo root",
+      "what_broke": "303 MB of nested carbonsettle-main/node_modules and .next logs tracked; still present on main (fix only on seo-phase0/1 branches)",
+      "source": "cs-website@2b49ea9c (unmerged)",
+      "taxila_relevance": "Check repo hygiene in CI."
+    },
+    {
+      "tried": "Daily automation dependent on one provider key",
+      "what_broke": "OpenAI quota died and the daily post silently stopped after 2026-06-30",
+      "source": "cs-website:.github/workflows/blog-automation.yml comment",
+      "taxila_relevance": "Content jobs need failure alerts, not silent no-ops."
+    },
+    {
+      "tried": "FAQ as inert bold Q:/A: text",
+      "what_broke": "151 dead clicks on one paragraph",
+      "source": "cs-website@1af018d3",
+      "taxila_relevance": "Anything that looks tappable to a child must be tappable."
+    },
+    {
+      "tried": "Three-field (phone+email+company) calculator capture",
+      "what_broke": "The #1 engagement tool captured nobody",
+      "source": "cs-website@74a928b9",
+      "taxila_relevance": "Parent onboarding: one field (phone or email)."
+    },
+    {
+      "tried": "Separate /cbam-service-india and /cbam-consultant-india pages",
+      "what_broke": "Cannibalised the same queries; consolidated with a 308",
+      "source": "cs-website@a784d7bb; next.config.ts",
+      "taxila_relevance": "One URL per intent."
+    },
+    {
+      "tried": "Offer copy with quarters and deadlines ('free this quarter', 15 Jul then 30 Sep 2026)",
+      "what_broke": "Deadline drift across 66 files; replaced by dateless 'first report free' and the old strings added to the banned-phrase lint",
+      "source": "cs-website@3b547933, 777ca3b8; verify-blog-posts.mjs",
+      "taxila_relevance": "Time-bound claims rot; lint retired strings."
+    },
+    {
+      "tried": "Factual CN-code directory listing 7312, 7323, 7325 as Annex I headings",
+      "what_broke": "Wrong; fixed to say they are not covered",
+      "source": "cs-website@a1228906",
+      "taxila_relevance": "Programmatic content needs a verified key (Taxila: blind-solved kits)."
+    },
+    {
+      "tried": "Procedural particle-hair Meera prototype",
+      "what_broke": "Read as a wig rather than authored curly hair",
+      "source": "vyakti-website PROJECT_CONTEXT 2026-08-14",
+      "taxila_relevance": "Avatar hair/details: author, don't proceduralise."
+    },
+    {
+      "tried": "Noor-to-Meera topology morph / identity dissolve",
+      "what_broke": "Rejected; identities became separate scenes with a clear-paper beat",
+      "source": "vyakti-website PROJECT_CONTEXT 2026-08-14/22",
+      "taxila_relevance": "Tutor selection: switch tutors with a clean cut, never morph one face into another."
+    },
+    {
+      "tried": "TripoSR + MediaPipe single-image 3D reconstruction of Meera",
+      "what_broke": "Looked uncanny on direct live review; replaced by the canonical 2D editorial portrait",
+      "source": "vyakti-website@3270669; PROJECT_CONTEXT 2026-08-14",
+      "taxila_relevance": "Single-image 3D is not good enough for a human tutor face; prefer art-directed rigs or 2D."
+    },
+    {
+      "tried": "GSAP numeric scrub (0.24) on touch layouts",
+      "what_broke": "Face trailed the finger and kept catching up after a swipe; replaced by native progress",
+      "source": "vyakti-website@904b370",
+      "taxila_relevance": "Never stack smoothing on native touch momentum."
+    },
+    {
+      "tried": "Hardcoded mouth-region ripple and artificial mouth-band shading",
+      "what_broke": "Dark lip artifact; replaced by semantic jaw/viseme rig moving skin, socket and teeth together",
+      "source": "vyakti-website PROJECT_CONTEXT 2026-08-22; a326142",
+      "taxila_relevance": "Lip-sync must move anatomy coherently."
+    },
+    {
+      "tried": "Speech driven purely by scroll progress",
+      "what_broke": "Pausing a swipe froze the mouth mid-viseme; speech became time-based inside a scroll-gated chapter",
+      "source": "vyakti-website PROJECT_CONTEXT 2026-08-22",
+      "taxila_relevance": "Avatar speech is clock-driven, never input-driven."
+    },
+    {
+      "tried": "Solid face poster on first paint",
+      "what_broke": "Flash before the particle system was ready; replaced by a dots-only field with first-valid-frame handoff",
+      "source": "vyakti-website PROJECT_CONTEXT 2026-08-22",
+      "taxila_relevance": ""
+    },
+    {
+      "tried": "Overlapping chapter crossfades",
+      "what_broke": "Replaced with reversible fade-through handoffs",
+      "source": "vyakti-website PROJECT_CONTEXT 2026-08-14",
+      "taxila_relevance": ""
+    },
+    {
+      "tried": "Re-animating reveals on scroll-back",
+      "what_broke": "'The single most reliable tell of a template'; reveals now fire once",
+      "source": "vyakti-website:src/components/reveal.tsx",
+      "taxila_relevance": ""
+    },
+    {
+      "tried": "Math.random() point sampling during render; ref read during render; setState in effect for WebGL detection",
+      "what_broke": "Non-deterministic between server and client; React Compiler correctness errors; fixed with seeded mulberry32, useMemo box, useSyncExternalStore",
+      "source": "vyakti-website@e2b5950",
+      "taxila_relevance": "Determinism in generated visuals (seeded RNG) for reproducible modules."
+    },
+    {
+      "tried": "Public claim 'any model, same personality'",
+      "what_broke": "Program's own swap test measured 38-2 incumbent preference with a byte-identical prompt; claim retracted from public copy",
+      "source": "vyakti-website:docs/PRODUCT_AND_RESEARCH_STANDING.md",
+      "taxila_relevance": "Do not promise the tutor stays identical across model upgrades; gate swaps."
+    },
+    {
+      "tried": "Research metadata implying submitted papers / benchmark release",
+      "what_broke": "False third-party claims; corrected to one preprint, one note in progress, artifact pending; status became an enum",
+      "source": "vyakti-website PROJECT_CONTEXT 2026-08-22",
+      "taxila_relevance": ""
+    },
+    {
+      "tried": "Deploying the research site from a local CLI build",
+      "what_broke": "Production source had no Git commit; recovered from Vercel's source archive",
+      "source": "vyakti-website@7e9861b; PROJECT_CONTEXT 2026-08-21",
+      "taxila_relevance": "Taxila rule 'git push first' exists for this reason."
+    },
+    {
+      "tried": "Shipping four candidate head models",
+      "what_broke": "Only one loaded; repo 2.9 MB of 3D assets",
+      "source": "vyakti-website@94cca19",
+      "taxila_relevance": ""
+    },
+    {
+      "tried": "Lab-thesis positioning ('Intelligence is becoming abundant. Continuity is not.', 'You do not configure Meera. You meet her.')",
+      "what_broke": "Retired 2026-09-03 for the Rooms product; kept in the log as superseded so it is not reintroduced",
+      "source": "vyakti-website@4a7cbef PROJECT_CONTEXT",
+      "taxila_relevance": ""
+    },
+    {
+      "tried": "A form with no backend",
+      "what_broke": "Would 'pretend to post somewhere'; replaced with a prefilled mailto",
+      "source": "vyakti-website@64345e8",
+      "taxila_relevance": ""
+    },
+    {
+      "tried": "Research agent's product-codebase audit",
+      "what_broke": "Audited the wrong repository (an Expo voice-notes app 'Echo'), flagged as CRITICAL MISMATCH in the doc itself",
+      "source": "vyakti-website:docs/research/product-codebase-audit.md",
+      "taxila_relevance": "Harvest agents must verify repo identity before analysis."
+    }
+  ],
+  "concepts": [
+    {
+      "name": "Provenance-carrying numbers",
+      "description": "A number can only render together with n, method, date and source (type-enforced).",
+      "taxila_relevance": "Parent reports and any efficacy claim on the marketing site."
+    },
+    {
+      "name": "Struck, not deleted",
+      "description": "Retracted claims stay visible, struck through, with the control that killed them.",
+      "taxila_relevance": "Public learning-science page; parent report corrections ('we thought X, the check showed Y')."
+    },
+    {
+      "name": "Safety and quality by predicate",
+      "description": "LLM content passes sanitisers, link validators, banned-phrase lints and build guards; the prompt is not trusted (the prompt even drifted and named a retired route).",
+      "taxila_relevance": "Forge output gate; teacher-utterance lint."
+    },
+    {
+      "name": "URL permanence invariant",
+      "description": "Every published slug is in a manifest; the build fails if any stops resolving; retire by 308, never delete.",
+      "taxila_relevance": "Shareable module/report links and SEO pages."
+    },
+    {
+      "name": "Update-in-place over re-create",
+      "description": "When a generator runs out of new topics it refreshes an existing artifact in place instead of minting a duplicate.",
+      "taxila_relevance": "Forge module versions per child."
+    },
+    {
+      "name": "Quality over volume for crawlers",
+      "description": "Too many thin AI pages makes the whole domain read as a content farm.",
+      "taxila_relevance": "Taxila SEO volume."
+    },
+    {
+      "name": "Answer-engine optimisation",
+      "description": "llms.txt + IndexNow (Bing feeds ChatGPT/Copilot) + self-contained FAQ answers and question-format headings.",
+      "taxila_relevance": "Parents increasingly ask assistants which tutor to use."
+    },
+    {
+      "name": "Legitimacy is the conversion job",
+      "description": "Prospects never objected on price; every objection was a legitimacy check, so the site's job is proof and trust.",
+      "taxila_relevance": "Indian parents choosing an AI tutor for a child: trust artefacts (who we are, safety floor, how data is used) above persuasion."
+    },
+    {
+      "name": "Section read-rate driven layout",
+      "description": "Auto section_view/dwell on every block reveals attention cliffs; move the differentiator above the cliff and put asks next to the number.",
+      "taxila_relevance": "Lesson UI and parent dashboard layout tuning."
+    },
+    {
+      "name": "Budget-Android, English-second-language reader",
+      "description": "PRODUCT.md ICP: warm, concrete, phone-visible, WhatsApp-first, real imagery, distrusts abstract SaaS minimalism and dark themes.",
+      "taxila_relevance": "Directly describes many Taxila parents."
+    },
+    {
+      "name": "Motion gate by frequency and purpose",
+      "description": "Animate only with a named purpose; UI < 300ms; reveal once; disable reveals on touch; one deterministic timeline for scroll scenes.",
+      "taxila_relevance": "Lesson runtime should be nearly motionless at the chrome level; delight budget goes to modules and celebrations."
+    },
+    {
+      "name": "Boundary model as structure",
+      "description": "Separation enforced at write time and drawn as a figure: down to everyone, never sideways, up only as counts.",
+      "taxila_relevance": "Parent/child/teacher/sibling data boundaries."
+    },
+    {
+      "name": "Honest CTA",
+      "description": "One label per intent; no fake forms or invented screenshots; readiness described in words.",
+      "taxila_relevance": "Pre-launch waitlist."
+    },
+    {
+      "name": "First-party identity with internal suppression",
+      "description": "Own visitor/session ids, staff flag and dev-host suppression keep analytics clean without third parties.",
+      "taxila_relevance": "Azure-only analytics."
+    },
+    {
+      "name": "Geometry-stable degradation",
+      "description": "If WebGL dies late, swap only the visual layer; never change layout or scroll position.",
+      "taxila_relevance": "3D tutor fallback to 2D portrait mid-lesson."
+    }
+  ],
+  "unread": [
+    "vyakti-website: full face-lab / ink-lab / noor-study shader code and runtime (only headers, viseme and canvas budget read)",
+    "vyakti-website: src/app/research/page.tsx body, papers markdown (identity-ceiling, judge-qualification), figures components in full",
+    "vyakti-website: docs/research/competitive-landscape.md and rumik-teardown.md bodies (headings only)",
+    "vyakti-website: taste-skill (1206 lines), emil-design-eng, gsap references in full; only DESIGN-PRINCIPLES synthesis head read",
+    "vyakti-website cloning-platform branch: new homepage page.tsx/home.module.css diff read only via commit messages and PROJECT_CONTEXT",
+    "cs-website: the 356-post blog corpus content, pseo-data.ts, city-pages data, CalculatorTool, CBAMDiagnostic, SavingsCheckTool internals",
+    "cs-website: Impeccable scripts/detector internals; IMAGE-PROMPTS.md; OFF_PAGE_SEO_BLUEPRINT.md; MANUAL_SEO_EXECUTION_GUIDE.md bodies",
+    "cs-website branches find-latest-repo-4ZKUh, whatsapp-icon-mobile-fix-mIEBo, eur-currency-symbol-y78PW, improve-cbam-seo-4AmwF, fix-deployment-mobile-layout-PtG96, cbam-seo-optimization-i5RSq: commit messages only",
+    "cs-website: analytics collector backend (pdf.carbonsettle.com/collect) and the CommandCentre repo docs/AGENT-CONTEXT.md - not in this segment",
+    ".env.example in cs-website not opened (example file; api/_config-style secrets not present in these repos)"
+  ],
+  "doc_path": "/home/user/Taxila/docs/harvest/web-sites.md"
+}

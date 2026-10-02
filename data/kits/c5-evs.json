@@ -191,7 +191,11 @@
             "Point to the ice tray and to wet clothes drying on a line",
             "Prompt: water can be a liquid, a solid like ___, or a gas called water ___",
             "Assert: liquid water, solid ice and invisible water vapour are all the same water"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Liquid (river), solid (ice, glacier), gas (water vapour in air)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i02",
@@ -214,7 +218,11 @@
             "Prompt: most of Earth's water is in the ___, and it is ___",
             "Assert: almost all of Earth's water is salty sea water in the oceans"
           ],
-          "targetsMisconception": "c5-evs-ch01-t01-m1"
+          "targetsMisconception": "c5-evs-ch01-t01-m1",
+          "verified": {
+            "solverAnswer": "Seas and oceans (~97%)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i03",
@@ -237,7 +245,11 @@
             "Prompt: the air around us has invisible water ___ that turns into drops on something ___",
             "Assert: the drops come from water vapour in the air condensing on the cold glass"
           ],
-          "targetsMisconception": "c5-evs-ch01-t01-m4"
+          "targetsMisconception": "c5-evs-ch01-t01-m4",
+          "verified": {
+            "solverAnswer": "Outside gets wet; water vapour from air condenses on the cold glass",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i04",
@@ -259,7 +271,11 @@
             "Prompt: in the sun the water ___ faster and goes into the ___",
             "Assert: the open hanky in the sun dries first; its water becomes vapour in the air"
           ],
-          "targetsMisconception": "c5-evs-ch01-t01-m3"
+          "targetsMisconception": "c5-evs-ch01-t01-m3",
+          "verified": {
+            "solverAnswer": "Open one in sun dries first; water evaporates into air as vapour",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i05",
@@ -281,7 +297,11 @@
             "Point to what was mixed in that cannot fly away into the air",
             "Prompt: the water goes into the air, but the ___ stays behind",
             "Assert: only the water evaporates; the salt is left, just like in salt pans"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "White salt crystals; water evaporates, salt stays",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i06",
@@ -303,7 +323,11 @@
             "Prompt: the water we can drink is only a ___ part, and ___ people share it",
             "Assert: usable fresh water is a tiny part of all water, so it can run short"
           ],
-          "targetsMisconception": "c5-evs-ch01-t01-m1"
+          "targetsMisconception": "c5-evs-ch01-t01-m1",
+          "verified": {
+            "solverAnswer": "Most water is salty or frozen; usable fresh water is tiny, uneven, demand high in summer",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i07",
@@ -325,7 +349,11 @@
             "Prompt: when sea water evaporates, the ___ stays in the sea",
             "Assert: only the water evaporates, so clouds and rain are not salty"
           ],
-          "targetsMisconception": "c5-evs-ch01-t01-m2"
+          "targetsMisconception": "c5-evs-ch01-t01-m2",
+          "verified": {
+            "solverAnswer": "Evaporation leaves salt behind; only pure vapour rises and condenses",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i08",
@@ -346,7 +374,11 @@
             "Point to taste: which one would be salty",
             "Prompt: glacier ice is ___ water and sea water is ___ water",
             "Assert: glacier ice is frozen fresh water; the sea is salty liquid water"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Glacier is frozen fresh water; Arabian Sea is salty liquid; glacier is fresh",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i09",
@@ -371,7 +403,11 @@
             "Point to the tank on the roof or the pump in the ground",
             "Prompt: the tank is filled from a ___ or from water under the ___",
             "Assert: tap water comes from rivers, lakes or ground water, which come from rain and snow"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Rain -> river/lake/groundwater -> reservoir/borewell -> pipe/pump -> tap",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i10",
@@ -393,7 +429,11 @@
             "Prompt: removing salt is possible but very ___ and uses a lot of ___",
             "Assert: desalting is costly and energy-hungry, so saving fresh water still matters"
           ],
-          "targetsMisconception": "c5-evs-ch01-t01-m1"
+          "targetsMisconception": "c5-evs-ch01-t01-m1",
+          "verified": {
+            "solverAnswer": "Desalination costs a lot of energy/money, needs coast, brine waste; saving water is cheaper",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i11",
@@ -413,7 +453,12 @@
             "Prompt: after 97 sea boxes and about 2 ice boxes, the water we can use is less than ___ box",
             "Assert: 97 salty, about 2 frozen, less than 1 usable fresh"
           ],
-          "targetsMisconception": "c5-evs-ch01-t01-m1"
+          "targetsMisconception": "c5-evs-ch01-t01-m1",
+          "verified": {
+            "solverAnswer": "About 97 salty, ~2 ice, ~1 usable fresh (<1)",
+            "agrees": true,
+            "note": "HINT LEAK: h2 'Point to the number 97' gives the headline figure."
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i12",
@@ -435,7 +480,11 @@
             "Prompt: the puddle water turns into water ___ and later becomes ___",
             "Assert: evaporating water goes into the air and returns as rain; it is never destroyed"
           ],
-          "targetsMisconception": "c5-evs-ch01-t01-m3"
+          "targetsMisconception": "c5-evs-ch01-t01-m3",
+          "verified": {
+            "solverAnswer": "Water not destroyed; evaporates into vapour in air, returns as rain",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i13",
@@ -452,7 +501,11 @@
             "Prompt: ice, water and vapour are the same ___; only the ___ changes",
             "Assert: they are one water in three forms, and usable fresh water is very little"
           ],
-          "targetsMisconception": "c5-evs-ch01-t01-m3"
+          "targetsMisconception": "c5-evs-ch01-t01-m3",
+          "verified": {
+            "solverAnswer": "Same water in three forms; fresh water scarce so save it",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t01-i14",
@@ -475,7 +528,11 @@
             "Prompt: it is more than 90, close to ___",
             "Assert: about 97 out of 100 parts are salty sea water"
           ],
-          "targetsMisconception": "c5-evs-ch01-t01-m1"
+          "targetsMisconception": "c5-evs-ch01-t01-m1",
+          "verified": {
+            "solverAnswer": "About 97",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -706,7 +763,11 @@
             "Prompt: water from the soil enters the plant through its ___",
             "Assert: plants take in water mostly through their roots"
           ],
-          "targetsMisconception": "c5-evs-ch01-t02-m1"
+          "targetsMisconception": "c5-evs-ch01-t02-m1",
+          "verified": {
+            "solverAnswer": "Roots",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i02",
@@ -731,7 +792,11 @@
             "Point to breathing on a cold mirror",
             "Prompt: we lose water through ___, through our ___ and when we go to the toilet",
             "Assert: sweat, breath and urine all take water out of our body"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Urine, sweat, breath, stool",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i03",
@@ -753,7 +818,11 @@
             "Prompt: the coloured water will travel ___ the stem to the ___",
             "Assert: water moves up from the bottom of the stem to the petals and leaves"
           ],
-          "targetsMisconception": "c5-evs-ch01-t02-m1"
+          "targetsMisconception": "c5-evs-ch01-t02-m1",
+          "verified": {
+            "solverAnswer": "Petals/leaves take colour of dye (coloured veins)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i04",
@@ -775,7 +844,11 @@
             "Prompt: leaves give out water ___ that turns into ___ on the bag",
             "Assert: leaves breathe out water vapour, which collects as drops inside the bag"
           ],
-          "targetsMisconception": "c5-evs-ch01-t02-m1"
+          "targetsMisconception": "c5-evs-ch01-t02-m1",
+          "verified": {
+            "solverAnswer": "Water droplets/mist on inside of bag (transpiration)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i05",
@@ -796,7 +869,11 @@
             "Prompt: water must reach the ___ to travel up to the leaves",
             "Assert: the soil-watered plant recovers first because roots take in the water"
           ],
-          "targetsMisconception": "c5-evs-ch01-t02-m1"
+          "targetsMisconception": "c5-evs-ch01-t02-m1",
+          "verified": {
+            "solverAnswer": "Soil-watered plant recovers first (roots absorb)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i06",
@@ -816,7 +893,11 @@
             "Point to water filling the plant like air fills the balloon",
             "Prompt: without water, the stem and leaves become ___ and ___",
             "Assert: water keeps the plant firm; without it, the plant goes soft and wilts"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Cells lose water, stems lose firmness; water not replaced",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i07",
@@ -837,7 +918,11 @@
             "Prompt: the leaf makes food from sunlight, ___ and ___",
             "Assert: plants make their food in leaves; soil gives water and minerals, not food"
           ],
-          "targetsMisconception": "c5-evs-ch01-t02-m2"
+          "targetsMisconception": "c5-evs-ch01-t02-m2",
+          "verified": {
+            "solverAnswer": "No; plant makes its own food in leaves from sunlight, water, CO2; soil gives water and minerals",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i08",
@@ -858,7 +943,11 @@
             "Prompt: the buffalo drinks ___, while the camel's body loses water very ___",
             "Assert: the buffalo depends on the pond; the camel saves water, and its hump is fat"
           ],
-          "targetsMisconception": "c5-evs-ch01-t02-m4"
+          "targetsMisconception": "c5-evs-ch01-t02-m4",
+          "verified": {
+            "solverAnswer": "Camel: saves water, loses little, drinks lots at once, fat in hump; buffalo drinks often, wallows",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i09",
@@ -879,7 +968,11 @@
             "Point to where that wetness came from",
             "Prompt: sweating takes ___ out of the body, so we must ___",
             "Assert: we lose water as sweat, so we must drink water and rest in shade"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Lose water by sweat; drink water/ORS, rest in shade",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i10",
@@ -901,7 +994,11 @@
             "Prompt: drip pipes put water right at the ___, so less is ___",
             "Assert: drip irrigation feeds the roots directly and wastes far less water"
           ],
-          "targetsMisconception": "c5-evs-ch01-t02-m1"
+          "targetsMisconception": "c5-evs-ch01-t02-m1",
+          "verified": {
+            "solverAnswer": "Drip gives water at roots, little evaporation/runoff, saves water",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i11",
@@ -920,7 +1017,11 @@
             "Point to the stem as the pipe in the middle",
             "Prompt: soil to ___ to ___ to leaves to the ___",
             "Assert: water goes soil, roots, stem, leaves, then out into the air as vapour"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Soil -> root -> stem -> leaf -> air (vapour)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i12",
@@ -941,7 +1042,11 @@
             "Prompt: the hump stores ___, not water",
             "Assert: the hump is fat; camels save water through their bodies and drink a lot at once"
           ],
-          "targetsMisconception": "c5-evs-ch01-t02-m3"
+          "targetsMisconception": "c5-evs-ch01-t02-m3",
+          "verified": {
+            "solverAnswer": "Hump stores fat, not water",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i13",
@@ -958,7 +1063,11 @@
             "Prompt: water goes in through the ___, and food is made in the ___",
             "Assert: roots drink, leaves cook; soil is not the plant's food"
           ],
-          "targetsMisconception": "c5-evs-ch01-t02-m2"
+          "targetsMisconception": "c5-evs-ch01-t02-m2",
+          "verified": {
+            "solverAnswer": "Roots absorb water; leaves make food using sunlight",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch01-t02-i14",
@@ -978,7 +1087,11 @@
             "Point to the part that joins the roots to the leaves",
             "Prompt: roots, then ___, then ___",
             "Assert: water moves roots to stem to leaves"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Root -> stem -> leaves",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -1178,7 +1291,11 @@
             "Point to snowy mountains and to springs in the hills",
             "Prompt: a river can start from a melting ___ or from a ___ in the hills",
             "Assert: rivers begin at glaciers, springs, lakes or rain on hills"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Mountains/glacier, spring, lake",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i02",
@@ -1198,7 +1315,11 @@
             "Point to a smaller line joining a bigger line on a river map",
             "Prompt: a river that joins a bigger river is called a ___",
             "Assert: a smaller river that joins a bigger one is a tributary"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Tributary",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i03",
@@ -1220,7 +1341,11 @@
             "Prompt: water always flows from ___ places to ___ places",
             "Assert: water runs downhill and carries soil, just like a river from mountain to sea"
           ],
-          "targetsMisconception": "c5-evs-ch02-t01-m1"
+          "targetsMisconception": "c5-evs-ch02-t01-m1",
+          "verified": {
+            "solverAnswer": "Downhill; carries soil/sand",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i04",
@@ -1241,7 +1366,11 @@
             "Point to what slow water does to the mud in it",
             "Prompt: on flat land the river becomes ___ and drops its ___",
             "Assert: in the plains the river slows and drops fertile silt"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Slower; mud deposited (silt)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i05",
@@ -1262,7 +1391,11 @@
             "Prompt: it ends in the ___ Sea, so it flows towards the ___",
             "Assert: the Narmada flows west, from high land to the Arabian Sea"
           ],
-          "targetsMisconception": "c5-evs-ch02-t01-m2"
+          "targetsMisconception": "c5-evs-ch02-t01-m2",
+          "verified": {
+            "solverAnswer": "West",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i06",
@@ -1284,7 +1417,11 @@
             "Prompt: the river keeps getting new water from ___ and melting ___",
             "Assert: rain and melting ice keep feeding the river; it is part of the water cycle"
           ],
-          "targetsMisconception": "c5-evs-ch02-t01-m3"
+          "targetsMisconception": "c5-evs-ch02-t01-m3",
+          "verified": {
+            "solverAnswer": "Rain, snowmelt and tributaries refill it; water cycle",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i07",
@@ -1305,7 +1442,11 @@
             "Point to the farms, boats and fish near a river",
             "Prompt: rivers give people ___, good soil for ___ and a way to travel",
             "Assert: towns grow by rivers for water, farming, fish and trade"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Water supply, farming fertile land, transport, trade",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i08",
@@ -1324,7 +1465,11 @@
             "Point to the slope of the land in each place",
             "Prompt: in the mountains it is ___ and narrow; near the sea it is ___ and wide",
             "Assert: steep land makes it fast and narrow; flat land makes it slow, wide and silt-dropping"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Mountain: fast, narrow, rocky; near sea: slow, wide, flat, deposits",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i09",
@@ -1343,7 +1488,11 @@
             "Point to which way the water moves when they see it",
             "Prompt: a river's start is always ___ than its end",
             "Assert: every river flows from a higher start to a lower end"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Open: depends; start higher than end",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i10",
@@ -1364,7 +1513,11 @@
             "Point to small streams of water joining together",
             "Prompt: the little streams joining are like ___, and the drain is like the ___",
             "Assert: road water acts like a mini river: downhill, joining, carrying mud, ending lower"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Water flows downhill, joins channels, ends in a bigger body, carries dirt",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i11",
@@ -1382,7 +1535,11 @@
             "Point to where the arrows must point",
             "Prompt: the source goes at the ___ and the mouth goes at the ___",
             "Assert: source high in the mountains, tributaries join, plains in the middle, mouth at the sea"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Drawing: source, tributary, plains, mouth",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i12",
@@ -1403,7 +1560,11 @@
             "Prompt: water flows ___, so rivers must start ___ up",
             "Assert: rivers start high and flow down to the sea, never up from it"
           ],
-          "targetsMisconception": "c5-evs-ch02-t01-m1"
+          "targetsMisconception": "c5-evs-ch02-t01-m1",
+          "verified": {
+            "solverAnswer": "Rivers start in highlands/rain, flow downhill into sea; not up",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i13",
@@ -1419,7 +1580,12 @@
             "Point to the Bay of Bengal on the east side",
             "Prompt: it starts near ___, flows ___ across India, and ends in the ___",
             "Assert: Nashik hills to the Bay of Bengal, flowing east and growing with tributaries"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Godavari starts Trimbak (Nashik, Maharashtra), flows east, ends Bay of Bengal",
+            "agrees": true,
+            "note": "HINT LEAK: h2 names the Bay of Bengal and east, which is the end point and direction asked."
+          }
         },
         {
           "id": "c5-evs-ch02-t01-i14",
@@ -1441,7 +1607,11 @@
             "Prompt: water always moves from ___ to ___",
             "Assert: rivers flow downhill, from high land to low land"
           ],
-          "targetsMisconception": "c5-evs-ch02-t01-m1"
+          "targetsMisconception": "c5-evs-ch02-t01-m1",
+          "verified": {
+            "solverAnswer": "High to low",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -1673,7 +1843,11 @@
             "Point to drains and to hills without trees",
             "Prompt: floods can come from very heavy ___ or from ___ drains",
             "Assert: heavy rain, overflowing rivers, blocked drains and cut forests can all cause floods"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Heavy rain, dam break/cloudburst, deforestation, snowmelt",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i02",
@@ -1698,7 +1872,11 @@
             "Point to what people throw from bridges",
             "Prompt: rivers get dirty from ___, factory ___ and plastic",
             "Assert: sewage, factory waste, garbage, plastic and soap all dirty rivers"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Sewage, plastic/garbage, factory waste, idols/chemicals",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i03",
@@ -1719,7 +1897,11 @@
             "Prompt: grass roots hold the ___ and let water ___ in",
             "Assert: bare soil sends fast, muddy runoff; grass slows it, just as forests do for rivers"
           ],
-          "targetsMisconception": "c5-evs-ch02-t02-m4"
+          "targetsMisconception": "c5-evs-ch02-t02-m4",
+          "verified": {
+            "solverAnswer": "Bare soil sends more muddy water faster",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i04",
@@ -1740,7 +1922,11 @@
             "Prompt: the peel will ___, but the plastic will stay ___",
             "Assert: the peel breaks down; plastic stays for a very long time, in soil and in rivers"
           ],
-          "targetsMisconception": "c5-evs-ch02-t02-m2"
+          "targetsMisconception": "c5-evs-ch02-t02-m2",
+          "verified": {
+            "solverAnswer": "Peel rotted; plastic unchanged",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i05",
@@ -1761,7 +1947,11 @@
             "Prompt: the clay goes back to ___, but plastic does not ___",
             "Assert: natural clay returns to mud; plastic stays and dirties the water"
           ],
-          "targetsMisconception": "c5-evs-ch02-t02-m2"
+          "targetsMisconception": "c5-evs-ch02-t02-m2",
+          "verified": {
+            "solverAnswer": "Clay softens; plastic stays",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i06",
@@ -1782,7 +1972,11 @@
             "Prompt: without trees, rain runs down ___ and carries the ___",
             "Assert: cut forests mean fast runoff and loose soil, so floods and landslides increase"
           ],
-          "targetsMisconception": "c5-evs-ch02-t02-m4"
+          "targetsMisconception": "c5-evs-ch02-t02-m4",
+          "verified": {
+            "solverAnswer": "No roots/trees hold soil and slow water; runoff fast, soil washes",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i07",
@@ -1803,7 +1997,11 @@
             "Point to how strongly even ankle-deep fast water pushes",
             "Prompt: never ___ into flowing flood water; wait somewhere ___",
             "Assert: stay out of flowing water, wait somewhere high and get an adult"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Do not cross; wait or take another route, tell adult",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i08",
@@ -1824,7 +2022,11 @@
             "Prompt: Family A's plastic stays in the ___; Family B's flowers become ___",
             "Assert: Family B protects the river; nothing thrown in simply disappears"
           ],
-          "targetsMisconception": "c5-evs-ch02-t02-m1"
+          "targetsMisconception": "c5-evs-ch02-t02-m1",
+          "verified": {
+            "solverAnswer": "A polluted; B stays cleaner",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i09",
@@ -1846,7 +2048,11 @@
             "Point to the clay-in-a-bucket observation",
             "Prompt: use idols made of natural ___ and immerse them in a ___",
             "Assert: natural clay idols in a tank or bucket keep the lake clean"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Eco-friendly clay idols, artificial tank/bucket immersion",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i10",
@@ -1868,7 +2074,11 @@
             "Prompt: build on ___ ground, away from the ___",
             "Assert: high ground, raised floors, clear drains and trees protect a school from floods"
           ],
-          "targetsMisconception": "c5-evs-ch02-t02-m4"
+          "targetsMisconception": "c5-evs-ch02-t02-m4",
+          "verified": {
+            "solverAnswer": "Build on higher ground, stilts, away from flood",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i11",
@@ -1884,7 +2094,11 @@
             "Point to pipes and drains that reach the river",
             "Prompt: for the town's dirty drain, a ___ plant can clean it",
             "Assert: each place has its own source of dirt and its own fix"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Drawing with fixes",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i12",
@@ -1905,7 +2119,11 @@
             "Prompt: water can look clear but still have ___ we cannot see",
             "Assert: clear does not mean safe; drink only water known to be safe"
           ],
-          "targetsMisconception": "c5-evs-ch02-t02-m3"
+          "targetsMisconception": "c5-evs-ch02-t02-m3",
+          "verified": {
+            "solverAnswer": "Clear water can have invisible germs; do not drink untreated",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i13",
@@ -1922,7 +2140,11 @@
             "Prompt: without trees, rain runs off ___ and the river ___",
             "Assert: trees slow and soak up rain; cutting them sends floods downhill"
           ],
-          "targetsMisconception": "c5-evs-ch02-t02-m4"
+          "targetsMisconception": "c5-evs-ch02-t02-m4",
+          "verified": {
+            "solverAnswer": "Roots hold soil; without trees rain runs off fast to rivers",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch02-t02-i14",
@@ -1945,7 +2167,11 @@
             "Prompt: we should keep ___ and garbage out of the water",
             "Assert: keep waste out, use clay idols and tanks, compost flowers"
           ],
-          "targetsMisconception": "c5-evs-ch02-t02-m1"
+          "targetsMisconception": "c5-evs-ch02-t02-m1",
+          "verified": {
+            "solverAnswer": "Do not throw garbage in river",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -2176,7 +2402,11 @@
             "Point to hands, air and soil as places they live",
             "Prompt: microbes are tiny ___ things found in air, water and ___",
             "Assert: microbes are tiny living things that are everywhere around us"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Tiny living things too small to see; everywhere: air, water, soil, food, our body",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i02",
@@ -2201,7 +2431,11 @@
             "Point to what they can see on the surface",
             "Prompt: spoiled food may ___ bad, look ___ or grow mould",
             "Assert: smell, slime, colour change and mould all show food has spoiled"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Bad smell, mould/fuzz, colour change, sliminess, bubbles/froth",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i03",
@@ -2222,7 +2456,11 @@
             "Prompt: mould grows faster where it is warm and ___",
             "Assert: the damp slice moulds first; moisture helps microbes grow"
           ],
-          "targetsMisconception": "c5-evs-ch03-t01-m1"
+          "targetsMisconception": "c5-evs-ch03-t01-m1",
+          "verified": {
+            "solverAnswer": "Damp slice gets mould first; microbes need water",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i04",
@@ -2244,7 +2482,12 @@
             "Prompt: curd microbes work ___ in warmth and ___ in cold",
             "Assert: curd sets faster in warm weather because its helpful bacteria work faster"
           ],
-          "targetsMisconception": "c5-evs-ch03-t01-m2"
+          "targetsMisconception": "c5-evs-ch03-t01-m2",
+          "verified": {
+            "solverAnswer": "Faster on hot May night (warmth helps microbes)",
+            "agrees": true,
+            "note": "HINT LEAK (mild): h1 mentions keeping curd in a warm place in winter, which gives the reasoning."
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i05",
@@ -2265,7 +2508,11 @@
             "Prompt: both are the same age, but warmth makes microbes grow ___",
             "Assert: summer dal spoils first because warmth speeds up microbes"
           ],
-          "targetsMisconception": "c5-evs-ch03-t01-m1"
+          "targetsMisconception": "c5-evs-ch03-t01-m1",
+          "verified": {
+            "solverAnswer": "Hot summer afternoon",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i06",
@@ -2286,7 +2533,11 @@
             "Prompt: the curd has helpful ___ that ___ in the warm milk",
             "Assert: helpful bacteria from the old curd multiply and turn milk into curd"
           ],
-          "targetsMisconception": "c5-evs-ch03-t01-m2"
+          "targetsMisconception": "c5-evs-ch03-t01-m2",
+          "verified": {
+            "solverAnswer": "Old curd has curd-making microbes (bacteria) that multiply in warm milk",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i07",
@@ -2306,7 +2557,11 @@
             "Point to flies and to unwashed hands",
             "Prompt: covering food and washing hands keep ___ away",
             "Assert: covers and clean hands keep microbes off food, so it stays safe longer"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Covering keeps flies/microbes off; washing hands removes germs",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i08",
@@ -2327,7 +2582,11 @@
             "Prompt: in idli batter the microbes are ___, in spoiled milk they are ___",
             "Assert: same kind of process, but some microbes help and others spoil"
           ],
-          "targetsMisconception": "c5-evs-ch03-t01-m2"
+          "targetsMisconception": "c5-evs-ch03-t01-m2",
+          "verified": {
+            "solverAnswer": "Idli: useful microbes (yeast/bacteria) make food better, harmless; milk spoilage: harmful microbes make it unfit",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i09",
@@ -2348,7 +2607,11 @@
             "Point to the hours passing in the warmth",
             "Prompt: warmth plus time lets ___ grow, so eat it ___",
             "Assert: warm hours spoil tiffin food; eat on time and keep it cool and clean"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Food spoils (warm, closed, 4-5 hrs); keep cool/insulated, pack fresh dry food",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i10",
@@ -2369,7 +2632,11 @@
             "Prompt: microbes ___ the peels into rich ___",
             "Assert: microbes turn waste into compost; they are helpers here"
           ],
-          "targetsMisconception": "c5-evs-ch03-t01-m2"
+          "targetsMisconception": "c5-evs-ch03-t01-m2",
+          "verified": {
+            "solverAnswer": "Microbes break down peels/leaves into compost/manure",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i11",
@@ -2386,7 +2653,11 @@
             "Prompt: on day 6 the spots are ___ and more ___",
             "Assert: mould grows and spreads over days because it is alive"
           ],
-          "targetsMisconception": "c5-evs-ch03-t01-m3"
+          "targetsMisconception": "c5-evs-ch03-t01-m3",
+          "verified": {
+            "solverAnswer": "Day1 plain, day3 small fuzzy spots, day6 big coloured mould",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i12",
@@ -2408,7 +2679,11 @@
             "Prompt: mould sends tiny ___ inside the bread that we cannot ___",
             "Assert: mould spreads unseen through soft bread, so the slice must be thrown away"
           ],
-          "targetsMisconception": "c5-evs-ch03-t01-m4"
+          "targetsMisconception": "c5-evs-ch03-t01-m4",
+          "verified": {
+            "solverAnswer": "Mould spreads invisible threads through whole bread; unsafe; throw away",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i13",
@@ -2425,7 +2700,11 @@
             "Prompt: some microbes ___ food, but others help make ___",
             "Assert: microbes are tiny living things; some spoil food, many help us"
           ],
-          "targetsMisconception": "c5-evs-ch03-t01-m2"
+          "targetsMisconception": "c5-evs-ch03-t01-m2",
+          "verified": {
+            "solverAnswer": "Tiny living things; spoil food by growing; some make curd, idli, medicine, compost",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t01-i14",
@@ -2448,7 +2727,11 @@
             "Point to summer versus winter dal",
             "Prompt: microbes love ___ and ___",
             "Assert: warmth and moisture help microbes grow fastest"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Warmth and moisture",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -2650,7 +2933,11 @@
             "Point to the achaar jar and the fridge",
             "Prompt: we can ___ food in the sun, add ___ or keep it cold",
             "Assert: drying, salting, sugar, oil, cold and boiling all preserve food"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Drying, salting, pickling in oil, refrigerating, sugar/jam",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i02",
@@ -2669,7 +2956,11 @@
             "Point to the word 'cold' in one reason",
             "Prompt: the fridge matches the reason about ___",
             "Assert: drying removes water, salting pulls water out, the fridge slows microbes"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Drying-b, salting-c, fridge-a",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i03",
@@ -2691,7 +2982,11 @@
             "Prompt: salt pulls ___ out of food",
             "Assert: salt draws water out, so microbes are left too dry to grow well"
           ],
-          "targetsMisconception": "c5-evs-ch03-t02-m3"
+          "targetsMisconception": "c5-evs-ch03-t02-m3",
+          "verified": {
+            "solverAnswer": "Water drops come out of the salted slice",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i04",
@@ -2712,7 +3007,11 @@
             "Prompt: the fridge makes microbes ___, not gone",
             "Assert: outside milk spoils first; fridge milk spoils too, only later"
           ],
-          "targetsMisconception": "c5-evs-ch03-t02-m1"
+          "targetsMisconception": "c5-evs-ch03-t02-m1",
+          "verified": {
+            "solverAnswer": "Left-out milk sours first; fridge milk slows but does not last forever",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i05",
@@ -2732,7 +3031,11 @@
             "Point to how juicy each one is",
             "Prompt: raisins have little ___, so microbes can't grow easily",
             "Assert: fresh grapes spoil first; drying took the water out of raisins"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Grapes spoil first; raisins are dry",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i06",
@@ -2754,7 +3057,11 @@
             "Prompt: the oil keeps ___ and moisture away from the achaar",
             "Assert: oil seals the achaar from air and moisture, so mould cannot grow"
           ],
-          "targetsMisconception": "c5-evs-ch03-t02-m3"
+          "targetsMisconception": "c5-evs-ch03-t02-m3",
+          "verified": {
+            "solverAnswer": "Oil covers pickle, keeps air/microbes away and acts as a seal",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i07",
@@ -2774,7 +3081,11 @@
             "Point to how wet the papad dough is at first",
             "Prompt: drying removes ___, which microbes need",
             "Assert: dry food lasts long because microbes cannot grow without water"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Drying removes water so microbes cannot grow",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i08",
@@ -2794,7 +3105,11 @@
             "Point to the seal on the juice packet",
             "Prompt: both methods stop ___ from growing",
             "Assert: old and new methods share one idea: stop microbes from growing"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Same idea: stop microbes (dry/salt/oil vs sealed/heat treated); keep microbes away or stop",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i09",
@@ -2814,7 +3129,11 @@
             "Point to the water on a wet spoon",
             "Prompt: a wet spoon adds ___ and ___ to the jar",
             "Assert: a wet spoon lets in water and microbes, so the achaar can spoil"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Wet spoon brings water and microbes, spoils pickle",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i10",
@@ -2837,7 +3156,11 @@
             "Point to two days of warm train air",
             "Prompt: pack foods that are ___ and avoid foods with milk or ___",
             "Assert: dry, low-water foods travel well; wet and milky foods spoil fast"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Dry foods: puri, parathas, namkeen, dry fruits, chivda; avoid curd, cut fruit, gravy",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i11",
@@ -2853,7 +3176,11 @@
             "Point to which microbe need each method takes away",
             "Prompt: for papad, the reason is that drying removes ___",
             "Assert: each method takes away water, air or warmth that microbes need, or kills them with heat"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "papad-dried-no water; achaar-salt/oil; milk-fridge-cold slows; peas-freezing",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i12",
@@ -2874,7 +3201,11 @@
             "Prompt: cold makes microbes ___, but they still ___",
             "Assert: fridge food spoils too, just slower; check it and throw it out if unsure"
           ],
-          "targetsMisconception": "c5-evs-ch03-t02-m1"
+          "targetsMisconception": "c5-evs-ch03-t02-m1",
+          "verified": {
+            "solverAnswer": "Fridge only slows microbes; food still spoils; discard",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i13",
@@ -2891,7 +3222,11 @@
             "Prompt: drying takes away ___, and the fridge takes away ___",
             "Assert: each method takes away something microbes need to grow"
           ],
-          "targetsMisconception": "c5-evs-ch03-t02-m2"
+          "targetsMisconception": "c5-evs-ch03-t02-m2",
+          "verified": {
+            "solverAnswer": "Dry removes water; salt draws water; cold slows microbes",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch03-t02-i14",
@@ -2911,7 +3246,11 @@
             "Point to the kitchen machine that keeps food cold",
             "Prompt: an old way is ___; a new way is the ___",
             "Assert: drying, salting and pickling are old ways; fridges, freezers and sealed packs are new"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Traditional: sun drying/pickling; modern: fridge/freezing/packing",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -3139,7 +3478,11 @@
             "Prompt: things that can ___ are wet waste; paper and plastic are ___ waste",
             "Assert: peels, rice and tea leaves are wet; packet, paper and bottle are dry"
           ],
-          "targetsMisconception": "c5-evs-ch04-t01-m2"
+          "targetsMisconception": "c5-evs-ch04-t01-m2",
+          "verified": {
+            "solverAnswer": "Wet: banana peel, leftover rice, tea leaves; dry: chips packet, paper, plastic bottle",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i02",
@@ -3161,7 +3504,11 @@
             "Prompt: we can put litter in the ___ and keep our own ___ tidy",
             "Assert: using bins, keeping desks tidy and sharing cleaning duty keep the class clean"
           ],
-          "targetsMisconception": "c5-evs-ch04-t01-m1"
+          "targetsMisconception": "c5-evs-ch04-t01-m1",
+          "verified": {
+            "solverAnswer": "Use dustbin, no littering, sweep/tidy, separate waste",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i03",
@@ -3181,7 +3528,11 @@
             "Prompt: peels and leaves turn into ___, but plastic does not ___",
             "Assert: wet waste becomes compost; plastic stays unchanged"
           ],
-          "targetsMisconception": "c5-evs-ch04-t01-m3"
+          "targetsMisconception": "c5-evs-ch04-t01-m3",
+          "verified": {
+            "solverAnswer": "Peels/leaves turned into dark soil; plastic spoon unchanged",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i04",
@@ -3203,7 +3554,12 @@
             "Prompt: ten minutes times 6 is one hour; times 24 hours is a ___",
             "Assert: small drips add up to litres a day and buckets a week"
           ],
-          "targetsMisconception": "c5-evs-ch04-t01-m4"
+          "targetsMisconception": "c5-evs-ch04-t01-m4",
+          "verified": {
+            "solverAnswer": "Few drops in 10 min but litres over a week; wasted water adds up",
+            "agrees": false,
+            "note": "Answer says usually 'a good part of the cup' in 10 min. At the 1 drop/sec used in diagnostic m4, 10 min is about 30 mL (well under a cup); amount depends on drip rate. Reword to 'some mL, adding to litres over a day and buckets over a week'."
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i05",
@@ -3223,7 +3579,11 @@
             "Point to the shade and the leaves above",
             "Prompt: trees give ___ and their leaves give out water ___ that cools the air",
             "Assert: it is cooler under the tree because of shade and water vapour from leaves"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Under neem tree; shade",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i06",
@@ -3243,7 +3603,11 @@
             "Prompt: wet waste becomes ___ and dry waste can be ___",
             "Assert: separating lets wet waste become compost and dry waste be recycled"
           ],
-          "targetsMisconception": "c5-evs-ch04-t01-m2"
+          "targetsMisconception": "c5-evs-ch04-t01-m2",
+          "verified": {
+            "solverAnswer": "Wet waste composts; dry recycled; mixing spoils both",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i07",
@@ -3265,7 +3629,11 @@
             "Prompt: if every student stops ___, the school stays clean",
             "Assert: a clean school is everyone's job, because everyone uses it"
           ],
-          "targetsMisconception": "c5-evs-ch04-t01-m1"
+          "targetsMisconception": "c5-evs-ch04-t01-m1",
+          "verified": {
+            "solverAnswer": "Shared responsibility; staff cannot do everything; habits",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i08",
@@ -3286,7 +3654,11 @@
             "Prompt: with two bins, wet waste becomes ___ and dry waste is ___",
             "Assert: sorting turns waste into compost and recycling; one drum sends it all to a dump"
           ],
-          "targetsMisconception": "c5-evs-ch04-t01-m2"
+          "targetsMisconception": "c5-evs-ch04-t01-m2",
+          "verified": {
+            "solverAnswer": "Mixed drum: smelly, nothing recycled; separated: compost and recycle",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i09",
@@ -3305,7 +3677,11 @@
             "Prompt: peels and dal go in the ___ bin; toy and paper go in the ___ bin",
             "Assert: food waste is wet; plastic and paper are dry"
           ],
-          "targetsMisconception": "c5-evs-ch04-t01-m2"
+          "targetsMisconception": "c5-evs-ch04-t01-m2",
+          "verified": {
+            "solverAnswer": "Potato peels wet, plastic toy dry, newspaper dry, dal wet",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i10",
@@ -3326,7 +3702,11 @@
             "Point to the pipes coming down from the roof",
             "Prompt: roof rain can be stored in a ___ or sent into the ___",
             "Assert: collect roof rain in covered tanks or recharge pits and use it in summer"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Rainwater harvesting: gutters from roof into tank/recharge pit",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i11",
@@ -3342,7 +3722,11 @@
             "Point to where most waste is made",
             "Prompt: bins go near where waste is ___, and the compost pit goes near the ___",
             "Assert: bins where waste is made, compost by the garden, leaks marked for repair"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Map with bins, compost pit away from classes, fix tap",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i12",
@@ -3363,7 +3747,12 @@
             "Prompt: only ___ waste becomes compost; plastic goes in the ___ bin",
             "Assert: compost is for wet waste only; plastic never becomes soil"
           ],
-          "targetsMisconception": "c5-evs-ch04-t01-m3"
+          "targetsMisconception": "c5-evs-ch04-t01-m3",
+          "verified": {
+            "solverAnswer": "Plastic should not go into compost; only peels and leaves",
+            "agrees": true,
+            "note": "HINT LEAK: h2 'Point to the plastic spoon' gives the fix."
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i13",
@@ -3380,7 +3769,11 @@
             "Prompt: keeping school clean is ___ job, and waste goes in the ___ bins",
             "Assert: everyone helps: sort waste, save water, care for plants, follow safety rules"
           ],
-          "targetsMisconception": "c5-evs-ch04-t01-m1"
+          "targetsMisconception": "c5-evs-ch04-t01-m1",
+          "verified": {
+            "solverAnswer": "Use bins, segregate, save water, plant, keep safe",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t01-i14",
@@ -3401,7 +3794,11 @@
             "Point to the compost pit",
             "Prompt: wet waste goes in the ___ bin and becomes ___",
             "Assert: green bin for wet waste, which becomes compost"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Green; compost into manure",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -3627,7 +4024,11 @@
             "Point to the colour in the middle",
             "Prompt: red means ___, yellow means get ___, green means ___",
             "Assert: red stop, yellow get ready, green go when clear"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Red stop, yellow get ready/wait, green go",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i02",
@@ -3647,7 +4048,11 @@
             "Point to how bright the stripes look from far away",
             "Prompt: it is the place where ___ cross, and stripes help drivers ___ it",
             "Assert: a zebra crossing marks where to cross, and drivers can see it clearly"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Place to cross; white stripes visible; drivers stop",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i03",
@@ -3668,7 +4073,12 @@
             "Prompt: a moving vehicle needs some ___ to stop, and more when it is ___",
             "Assert: no vehicle stops at once, so never step out suddenly in front of one"
           ],
-          "targetsMisconception": "c5-evs-ch04-t02-m2"
+          "targetsMisconception": "c5-evs-ch04-t02-m2",
+          "verified": {
+            "solverAnswer": "Moves forward a little; cars need more stopping distance",
+            "agrees": true,
+            "note": "SAFETY: the real-cycle braking test invites a child to ride fast in a school ground. Add: slow speed only, helmet, adult watching, clear of other children; or demo with a toy car or ball."
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i04",
@@ -3688,7 +4098,11 @@
             "Point to car headlights shining on the strips",
             "Prompt: in fog, ___ clothes and reflective strips are seen ___",
             "Assert: light and reflective clothes help drivers see you in fog and darkness"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Reflective jacket child",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i05",
@@ -3709,7 +4123,11 @@
             "Prompt: the bus blocks the view of both the ___ and the ___",
             "Assert: neither can see the other, so never cross from behind a parked bus"
           ],
-          "targetsMisconception": "c5-evs-ch04-t02-m1"
+          "targetsMisconception": "c5-evs-ch04-t02-m1",
+          "verified": {
+            "solverAnswer": "Neither can see each other; cross not behind bus",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i06",
@@ -3729,7 +4147,11 @@
             "Point to the lane closest to their feet",
             "Prompt: the nearest traffic comes from the ___, so we look there ___",
             "Assert: in India the nearest lane's traffic comes from the right, so look right first and again"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Traffic keeps left in India, so vehicles from the right arrive first",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i07",
@@ -3749,7 +4171,11 @@
             "Point to how close poles and trucks come",
             "Prompt: a passing truck or ___ could hit a hand outside the ___",
             "Assert: things outside can hit you, so hands and head stay inside"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Can hit things/fall; dangerous",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i08",
@@ -3769,7 +4195,12 @@
             "Prompt: people cross when the cars' light is ___ and the walking figure is ___",
             "Assert: Aman is right; cross only on the green walking figure"
           ],
-          "targetsMisconception": "c5-evs-ch04-t02-m4"
+          "targetsMisconception": "c5-evs-ch04-t02-m4",
+          "verified": {
+            "solverAnswer": "Aman is right; walking figure green with cars red; Bela wrong",
+            "agrees": true,
+            "note": "HINT LEAK: h2 'Point to the people's walking figure' gives the deciding cue."
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i09",
@@ -3789,7 +4220,11 @@
             "Point to vehicles driving on the left",
             "Prompt: walk on the ___ edge so you ___ the vehicles coming",
             "Assert: with no footpath, walk on the right edge facing the traffic"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Walk on the right side facing traffic",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i10",
@@ -3810,7 +4245,11 @@
             "Point to the crossing steps they already know",
             "Prompt: we will hold ___, cross only at ___, and fix a ___ point",
             "Assert: hold hands, cross safely with an adult, and agree a meeting point"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Hold hands, cross at crossing, look right-left-right, agree meeting point",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i11",
@@ -3828,7 +4267,11 @@
             "Point to where the nearest traffic comes from",
             "Prompt: arrow 1 points ___, arrow 2 points ___, arrow 3 points ___",
             "Assert: look right, left, right again, then cross straight on the green walking figure"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Drawing; look right, left, right",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i12",
@@ -3850,7 +4293,11 @@
             "Prompt: running can make you ___, and drivers cannot ___ in time",
             "Assert: walk briskly and straight at a crossing; running and zig-zagging are dangerous"
           ],
-          "targetsMisconception": "c5-evs-ch04-t02-m3"
+          "targetsMisconception": "c5-evs-ch04-t02-m3",
+          "verified": {
+            "solverAnswer": "Dangerous; walk, use crossing, wait",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i13",
@@ -3866,7 +4313,11 @@
             "Point to the looking order",
             "Prompt: stop, look ___, ___, ___ again, then walk ___",
             "Assert: crossing place, stop, look right-left-right, listen, walk straight, never from behind a parked vehicle"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Stop at kerb, look right left right, cross walking, signal/crossing",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch04-t02-i14",
@@ -3885,7 +4336,11 @@
             "Point to looking twice at one side",
             "Prompt: first ___, then ___, then ___ again",
             "Assert: look right, left, then right again"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Right, left, right",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -4085,7 +4540,11 @@
             "Point to the 'water' bubbles on the language map",
             "Prompt: in Tamil water is ___, in Bengali it is ___",
             "Assert: the same thing has different names across India's languages"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Open: pani/jal/neer/tanni/vellam etc.",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i02",
@@ -4103,7 +4562,12 @@
             "Point to the dance done in big clapping circles in western India",
             "Prompt: Bihu belongs to ___, and Garba belongs to ___",
             "Assert: Bharatanatyam is Tamil Nadu, Bhangra Punjab, Bihu Assam, Garba Gujarat"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Bharatanatyam-Tamil Nadu, Bhangra-Punjab, Bihu-Assam, Garba-Gujarat",
+            "agrees": true,
+            "note": "HINT LEAK: h1 and h2 (dhol at harvest; clapping circles in western India) essentially hand over Bhangra and Garba."
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i03",
@@ -4122,7 +4586,11 @@
             "Point to the north and south on the map",
             "Prompt: north India has ___ music; south India has ___ music",
             "Assert: Hindustani in the north, Carnatic in the south"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Hindustani (north), Carnatic (south)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i04",
@@ -4144,7 +4612,11 @@
             "Prompt: it is less than ___ of all people",
             "Assert: about 4 in 10 Indians have Hindi as their mother tongue; most have another language"
           ],
-          "targetsMisconception": "c5-evs-ch05-t01-m1"
+          "targetsMisconception": "c5-evs-ch05-t01-m1",
+          "verified": {
+            "solverAnswer": "About 4 in 10 (about 44%)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i05",
@@ -4166,7 +4638,11 @@
             "Prompt: the panel shows the amount in ___ languages",
             "Assert: our money speaks many languages: 15 in the panel, plus Hindi and English"
           ],
-          "targetsMisconception": "c5-evs-ch05-t01-m3"
+          "targetsMisconception": "c5-evs-ch05-t01-m3",
+          "verified": {
+            "solverAnswer": "Many languages (15 in panel plus Hindi/English on front)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i06",
@@ -4185,7 +4661,11 @@
             "Point to neighbours and shopkeepers from other states",
             "Prompt: people use one language at ___ and another at school or ___",
             "Assert: home, neighbourhood and school each add a language, so many Indians are multilingual"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Different regions, neighbours, school, work, travel; multilingual country",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i07",
@@ -4203,7 +4683,11 @@
             "Point to story-telling versus celebration",
             "Prompt: Kathakali tells ___ with make-up and gestures; Bhangra celebrates the ___",
             "Assert: different style and purpose, same love of rhythm and story"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Different state, costume, style; both folk/classical expression, story, rhythm, culture",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i08",
@@ -4219,7 +4703,11 @@
             "Point to grandparents who may speak another language",
             "Prompt: even in one class there may be ___ languages",
             "Assert: variety of languages is right around us"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Open-ended; count of languages",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i09",
@@ -4241,7 +4729,11 @@
             "Prompt: they could share ___, invite each other to ___, and learn a few ___",
             "Assert: food, festivals, words and dances are bridges between cultures"
           ],
-          "targetsMisconception": "c5-evs-ch05-t01-m2"
+          "targetsMisconception": "c5-evs-ch05-t01-m2",
+          "verified": {
+            "solverAnswer": "Share food, festivals, learn words, music/dance",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i10",
@@ -4257,7 +4749,12 @@
             "Point to Odisha's name inside 'Odissi'",
             "Prompt: Kathakali goes in ___, at the southern tip on the west side",
             "Assert: dances spread across every direction of India"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Bihu Assam, Garba Gujarat, Bharatanatyam TN, Bhangra Punjab, Kathakali Kerala, Odissi Odisha",
+            "agrees": true,
+            "note": "HINT LEAK: h2 'Odisha's name inside Odissi' gives the Odissi answer outright."
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i11",
@@ -4279,7 +4776,12 @@
             "Prompt: the Constitution lists ___ languages",
             "Assert: India has many languages; most people's home language is not Hindi"
           ],
-          "targetsMisconception": "c5-evs-ch05-t01-m1"
+          "targetsMisconception": "c5-evs-ch05-t01-m1",
+          "verified": {
+            "solverAnswer": "Many languages in India; Hindi is one of 22 scheduled; only ~4 in 10 speak it as mother tongue",
+            "agrees": true,
+            "note": "STALE HINT: h1 refers to 'the girl from Chennai', who is not in this prompt."
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i12",
@@ -4295,7 +4797,11 @@
             "Point to one dance and one music style from different regions",
             "Prompt: India has ___ languages, dances like ___ and music like ___",
             "Assert: many languages, dances, music and foods, all shared and respected"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Many languages, music, dance, example, unity in diversity",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t01-i13",
@@ -4313,7 +4819,12 @@
             "Point to the west of India on the map",
             "Prompt: Garba comes from ___",
             "Assert: Garba is from Gujarat"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Gujarat",
+            "agrees": true,
+            "note": "HINT LEAK: h1 (dandiya sticks) and h2 (west of India) give the answer. Also garba and dandiya raas are different dances."
+          }
         }
       ],
       "workedExample": {
@@ -4508,7 +5019,12 @@
             "Prompt: animal ___, bird ___, flower ___",
             "Assert: tiger, peacock and lotus"
           ],
-          "targetsMisconception": "c5-evs-ch05-t02-m1"
+          "targetsMisconception": "c5-evs-ch05-t02-m1",
+          "verified": {
+            "solverAnswer": "Tiger, peacock, lotus",
+            "agrees": true,
+            "note": "HINT LEAK (mild): h1 'striped big cat' and h2 'bird that fans its tail' name tiger and peacock for a pure-recall item."
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i02",
@@ -4528,7 +5044,11 @@
             "Point to the wheel in the white band",
             "Prompt: top ___, middle ___ with a blue ___, bottom ___",
             "Assert: saffron, white with the navy-blue chakra, green"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Saffron, white, green; Ashoka Chakra (navy blue)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i03",
@@ -4547,7 +5067,12 @@
             "Point to the anthem sung at assembly",
             "Prompt: the anthem is by ___; the song is by ___",
             "Assert: Tagore wrote the anthem; Bankim Chandra Chattopadhyay wrote the national song"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Rabindranath Tagore; Bankim Chandra Chatterjee",
+            "agrees": true,
+            "note": "HINT LEAK: h1 'Nobel Prize poet from Bengal' gives Tagore."
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i04",
@@ -4566,7 +5091,11 @@
             "Point to counting one quarter of the wheel and multiplying by four",
             "Prompt: one quarter has 6 spokes, so the whole wheel has ___",
             "Assert: the Ashoka Chakra has 24 spokes"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "24",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i05",
@@ -4586,7 +5115,11 @@
             "Point to how a statue looks from all sides",
             "Prompt: lions sitting back to back facing four directions means ___ lions",
             "Assert: the real capital has four lions; the flat emblem shows three"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Three visible; four carved in reality",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i06",
@@ -4605,7 +5138,11 @@
             "Point to green fields for the green band",
             "Prompt: saffron is ___, white is ___, green is ___",
             "Assert: courage and strength, peace and truth, growth and fertile land, and the wheel of law"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Saffron courage/sacrifice, white peace/truth, green faith/growth, chakra dharma/progress",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i07",
@@ -4625,7 +5162,11 @@
             "Prompt: 15 August is about ___; 26 January is about the ___",
             "Assert: 15 August 1947 freedom; 26 January 1950 Constitution and republic"
           ],
-          "targetsMisconception": "c5-evs-ch05-t02-m2"
+          "targetsMisconception": "c5-evs-ch05-t02-m2",
+          "verified": {
+            "solverAnswer": "15 Aug 1947 freedom from British rule; 26 Jan 1950 Constitution came into force",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i08",
@@ -4645,7 +5186,11 @@
             "Point to the small words below the lions",
             "Prompt: it says Satyameva ___, meaning truth alone ___",
             "Assert: Satyameva Jayate, Truth alone triumphs"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Satyameva Jayate - truth alone triumphs",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i09",
@@ -4666,7 +5211,11 @@
             "Prompt: in a republic, leaders are ___ by the people",
             "Assert: voting is how a republic chooses leaders, not family"
           ],
-          "targetsMisconception": "c5-evs-ch05-t02-m3"
+          "targetsMisconception": "c5-evs-ch05-t02-m3",
+          "verified": {
+            "solverAnswer": "Class vote; republic = people choose leaders",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i10",
@@ -4682,7 +5231,11 @@
             "Point to the chakra sitting in the white band",
             "Prompt: the chakra is navy ___ with ___ spokes",
             "Assert: equal saffron, white and green bands, a navy chakra of 24 spokes, each with its meaning"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Drawing: saffron top, white, green bottom, 24-spoke blue chakra",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i11",
@@ -4703,7 +5256,11 @@
             "Prompt: the emblem's lions come from Ashoka's ___; the national animal is the ___",
             "Assert: tiger is the national animal; the lions belong to the emblem"
           ],
-          "targetsMisconception": "c5-evs-ch05-t02-m1"
+          "targetsMisconception": "c5-evs-ch05-t02-m1",
+          "verified": {
+            "solverAnswer": "Tiger is national animal; lions on emblem are Ashoka's Lion Capital, not animal",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i12",
@@ -4719,7 +5276,11 @@
             "Point to the flag and the emblem",
             "Prompt: on Republic Day the ___ came into force, and people choose their ___",
             "Assert: Constitution day of the republic, plus symbols and their meanings"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Constitution came into force 1950; symbols: flag, tiger, emblem",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch05-t02-i13",
@@ -4739,7 +5300,12 @@
             "Point to an animal that lives in the Ganga",
             "Prompt: the tree is the ___, the water animal is the river ___",
             "Assert: banyan tree and Ganges river dolphin"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Banyan; Ganges river dolphin",
+            "agrees": true,
+            "note": "HINT LEAK: h1 'roots hanging from branches' gives banyan on a recall item."
+          }
         }
       ],
       "workedExample": {
@@ -4967,7 +5533,11 @@
             "Point to the Andaman Islands on a map",
             "Prompt: an island is ___ with water all ___ it",
             "Assert: an island is land with water on all sides"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Land surrounded by water on all sides",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i02",
@@ -4991,7 +5561,11 @@
             "Point to the line of hills beside the west coast on a map",
             "Prompt: the Ghats run along the ___ coast; one animal is the lion-tailed ___",
             "Assert: west-coast hills from Gujarat to Tamil Nadu, home to macaques, tahr, hornbills and more"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Along west coast of India; lion-tailed macaque, Nilgiri tahr",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i03",
@@ -5012,7 +5586,12 @@
             "Prompt: the stone rests on the ___, just as an island rests on the sea ___",
             "Assert: islands are land joined to the sea floor; they do not float"
           ],
-          "targetsMisconception": "c5-evs-ch06-t01-m2"
+          "targetsMisconception": "c5-evs-ch06-t01-m2",
+          "verified": {
+            "solverAnswer": "Will not float away; rests on bucket bottom/ground (islands attached to sea floor)",
+            "agrees": true,
+            "note": "SAFETY (low): 'a big stone' in a bucket of water invites lifting a heavy stone and dropping it. Use a smaller stone or brick and ask an adult to place it."
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i04",
@@ -5034,7 +5613,11 @@
             "Prompt: rising air cools and drops rain on the ___ side first",
             "Assert: the sea-facing side gets most of the rain; the far side much less"
           ],
-          "targetsMisconception": "c5-evs-ch06-t01-m4"
+          "targetsMisconception": "c5-evs-ch06-t01-m4",
+          "verified": {
+            "solverAnswer": "Sea-facing (windward) side",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i05",
@@ -5056,7 +5639,11 @@
             "Prompt: stressed corals lose their colour and turn ___",
             "Assert: too-warm water bleaches and can kill corals, harming the sea life that needs them"
           ],
-          "targetsMisconception": "c5-evs-ch06-t01-m3"
+          "targetsMisconception": "c5-evs-ch06-t01-m3",
+          "verified": {
+            "solverAnswer": "Coral bleaching/death",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i06",
@@ -5076,7 +5663,11 @@
             "Point to the heavy rain on the sea-facing side",
             "Prompt: warmth and lots of ___ make plants grow ___",
             "Assert: heavy rain and warmth grow thick forests that shelter many animals"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Heavy monsoon rain, warm, many habitats",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i07",
@@ -5097,7 +5688,11 @@
             "Prompt: both are home to a huge ___ of living things",
             "Assert: reefs, like rainforests, shelter an enormous variety of life"
           ],
-          "targetsMisconception": "c5-evs-ch06-t01-m3"
+          "targetsMisconception": "c5-evs-ch06-t01-m3",
+          "verified": {
+            "solverAnswer": "Coral reefs host huge number of species like rainforest",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i08",
@@ -5115,7 +5710,11 @@
             "Point to forests in one and sand dunes in the other",
             "Prompt: the Andamans are ___ and green; the Thar is ___ and sandy",
             "Assert: rain decides much of it: lush islands, dry desert, each with suited life"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Andaman wet, dense forest, many species; Thar dry, sparse plants, desert animals",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i09",
@@ -5134,7 +5733,11 @@
             "Prompt: the sea-facing city is ___, so it gets ___ rain",
             "Assert: Mumbai gets much more rain; Pune is in the drier side"
           ],
-          "targetsMisconception": "c5-evs-ch06-t01-m4"
+          "targetsMisconception": "c5-evs-ch06-t01-m4",
+          "verified": {
+            "solverAnswer": "Mumbai",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i10",
@@ -5154,7 +5757,11 @@
             "Prompt: the moist wind is forced ___, cools, and drops ___",
             "Assert: same mechanism: wet winds rising over hills pour rain on the facing side"
           ],
-          "targetsMisconception": "c5-evs-ch06-t01-m4"
+          "targetsMisconception": "c5-evs-ch06-t01-m4",
+          "verified": {
+            "solverAnswer": "Moist winds forced up by hills, cool, condense, heavy rain",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i11",
@@ -5171,7 +5778,11 @@
             "Prompt: heavy rain goes on the ___ slope, little rain on the ___ side",
             "Assert: wind from the sea, rain on the sea-facing slope, dry land behind"
           ],
-          "targetsMisconception": "c5-evs-ch06-t01-m4"
+          "targetsMisconception": "c5-evs-ch06-t01-m4",
+          "verified": {
+            "solverAnswer": "Drawing: wind from sea, rain on sea side, dry behind",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i12",
@@ -5191,7 +5802,11 @@
             "Prompt: the Andamans have ___, mangroves and coral ___",
             "Assert: islands can be packed with forests and animals"
           ],
-          "targetsMisconception": "c5-evs-ch06-t01-m1"
+          "targetsMisconception": "c5-evs-ch06-t01-m1",
+          "verified": {
+            "solverAnswer": "Islands have forests, coral, birds, animals, people",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i13",
@@ -5207,7 +5822,11 @@
             "Point to warmth and rain as the shared reason",
             "Prompt: both places are warm and ___, so ___ grows thickly",
             "Assert: islands with reefs and forests, Ghats with heavy rain: both rich because warm and wet"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Rich biodiversity, rainforest and coral reefs",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t01-i14",
@@ -5228,7 +5847,11 @@
             "Prompt: the ___ side gets the most rain",
             "Assert: the sea-facing west side gets most of the rain"
           ],
-          "targetsMisconception": "c5-evs-ch06-t01-m4"
+          "targetsMisconception": "c5-evs-ch06-t01-m4",
+          "verified": {
+            "solverAnswer": "Side facing sea",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -5428,7 +6051,11 @@
             "Point to the animals and plants that live there",
             "Prompt: tourists can leave ___, make loud ___, or feed ___",
             "Assert: litter, noise, feeding animals and plucking plants all harm a place"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Litter, noise, feeding animals, damaging plants, building",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i02",
@@ -5450,7 +6077,11 @@
             "Point to bottles and wrappers",
             "Prompt: carry a ___ bottle and a bag to bring your ___ back",
             "Assert: refillable bottle, cloth bag, less packaging, and carry all waste back"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Cloth bag, reusable bottle, bring trash back, avoid plastic",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i03",
@@ -5471,7 +6102,11 @@
             "Prompt: 1 bottle times 5,000 visitors is ___ bottles",
             "Assert: 5,000 bottles; many small acts make a big mess"
           ],
-          "targetsMisconception": "c5-evs-ch06-t02-m2"
+          "targetsMisconception": "c5-evs-ch06-t02-m2",
+          "verified": {
+            "solverAnswer": "5000 bottles; littered area",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i04",
@@ -5493,7 +6128,11 @@
             "Prompt: the monkeys will stop finding forest food and start ___ from people",
             "Assert: fed monkeys become dependent, bold and unhealthy"
           ],
-          "targetsMisconception": "c5-evs-ch06-t02-m3"
+          "targetsMisconception": "c5-evs-ch06-t02-m3",
+          "verified": {
+            "solverAnswer": "Monkeys depend on food, become bold/aggressive, snatch",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i05",
@@ -5512,7 +6151,11 @@
             "Point to the bare soil and the rain",
             "Prompt: trampled grass ___, and rain washes the ___ away",
             "Assert: shortcuts kill grass and let rain wash the slope away"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Bare, eroded path/gullies, soil washes away",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i06",
@@ -5532,7 +6175,11 @@
             "Point to plants beside the path",
             "Prompt: paths protect the ___, and quiet protects the ___",
             "Assert: paths save plants and soil, quiet saves animals, and both keep us safe"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Protect plants, avoid disturbing animals, avoid fire/trampling",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i07",
@@ -5552,7 +6199,11 @@
             "Prompt: Group A takes away animal ___ and leaves ___",
             "Assert: Group B protects the beach; Group A harms it even on a short visit"
           ],
-          "targetsMisconception": "c5-evs-ch06-t02-m1"
+          "targetsMisconception": "c5-evs-ch06-t02-m1",
+          "verified": {
+            "solverAnswer": "A leaves damaged beach, trash; B leaves clean beach",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i08",
@@ -5573,7 +6224,11 @@
             "Point to the lake, the plants and the birds",
             "Prompt: rule one is about ___, rule two about animals, rule three about ___",
             "Assert: carry waste back, don't feed wildlife, protect plants and water"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Do not litter, do not pick plants, stay on paths, no feeding animals",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i09",
@@ -5595,7 +6250,11 @@
             "Prompt: old walls cannot be ___, so the class can make ___ to warn visitors",
             "Assert: monuments are irreplaceable; spread the word and report damage"
           ],
-          "targetsMisconception": "c5-evs-ch06-t02-m1"
+          "targetsMisconception": "c5-evs-ch06-t02-m1",
+          "verified": {
+            "solverAnswer": "Damages heritage; class campaign, signs",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i10",
@@ -5611,7 +6270,11 @@
             "Point to turning each harm into a do-this picture",
             "Prompt: a picture of a bottle could say 'use a ___ bottle'",
             "Assert: four simple picture rules that turn harms into good habits"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Poster four pictures",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i11",
@@ -5632,7 +6295,11 @@
             "Prompt: one visitor is small, but ___ visitors together make big ___",
             "Assert: short visits by many people add up to real harm"
           ],
-          "targetsMisconception": "c5-evs-ch06-t02-m1"
+          "targetsMisconception": "c5-evs-ch06-t02-m1",
+          "verified": {
+            "solverAnswer": "Many tourists add up; small harms add up",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i12",
@@ -5648,7 +6315,11 @@
             "Point to how small acts multiply",
             "Prompt: we will carry our ___ back, stay on ___, and never ___ animals",
             "Assert: name the harms, explain how they add up, and commit to three protecting habits"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Harm: litter, noise, damage; protect: carry trash back, stay on path, no feeding",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch06-t02-i13",
@@ -5669,7 +6340,11 @@
             "Prompt: one wrapper times ___ visitors is a huge ___",
             "Assert: everyone's 'just one' adds up to a mountain of waste"
           ],
-          "targetsMisconception": "c5-evs-ch06-t02-m2"
+          "targetsMisconception": "c5-evs-ch06-t02-m2",
+          "verified": {
+            "solverAnswer": "One wrapper multiplied by many visitors; pollution lasts",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -5897,7 +6572,11 @@
             "Point to the plug and the petrol pump",
             "Prompt: kite ___, fan ___, you ___, car ___",
             "Assert: wind, electricity, food and fuel"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Kite: wind; fan: electricity; you: food; car: petrol/fuel",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i02",
@@ -5922,7 +6601,11 @@
             "Point to warmth from the sun",
             "Prompt: energy can make things ___, make ___ and give ___",
             "Assert: energy moves, heats, lights, makes sound and helps growth"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Make things move, give heat, light, sound, run machines",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i03",
@@ -5943,7 +6626,11 @@
             "Prompt: faster air has ___ energy, so the firki spins ___",
             "Assert: moving air has energy; more speed, more energy, faster spin"
           ],
-          "targetsMisconception": "c5-evs-ch07-t01-m2"
+          "targetsMisconception": "c5-evs-ch07-t01-m2",
+          "verified": {
+            "solverAnswer": "In a hard blow/strong wind; hard blow fastest",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i04",
@@ -5963,7 +6650,11 @@
             "Point to sunlight landing on both",
             "Prompt: the dark cloth takes in more of the Sun's ___, which becomes ___",
             "Assert: dark cloth absorbs more sunlight energy and gets warmer"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Dark cloth warmer",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i05",
@@ -5984,7 +6675,11 @@
             "Prompt: a ___ ball has more energy to knock things over",
             "Assert: faster ball, more energy, more bottles knocked down"
           ],
-          "targetsMisconception": "c5-evs-ch07-t01-m2"
+          "targetsMisconception": "c5-evs-ch07-t01-m2",
+          "verified": {
+            "solverAnswer": "Hard roll knocks down more; more energy",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i06",
@@ -6004,7 +6699,11 @@
             "Prompt: plants store the Sun's ___ in their food, and we ___ the plants",
             "Assert: sunlight to plant food to our food: our energy began with the Sun"
           ],
-          "targetsMisconception": "c5-evs-ch07-t01-m3"
+          "targetsMisconception": "c5-evs-ch07-t01-m3",
+          "verified": {
+            "solverAnswer": "Plants use sunlight to make food; we eat plants or animals that eat plants",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i07",
@@ -6024,7 +6723,11 @@
             "Point to all the running in the game",
             "Prompt: playing used up the energy from ___, so the body wants more ___",
             "Assert: running uses food energy, so we feel tired and hungry"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Used energy from food; body needs to refill",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i08",
@@ -6044,7 +6747,11 @@
             "Prompt: bullocks get energy from ___, the tractor from ___",
             "Assert: food for the bullocks, diesel for the tractor; both need energy to plough"
           ],
-          "targetsMisconception": "c5-evs-ch07-t01-m3"
+          "targetsMisconception": "c5-evs-ch07-t01-m3",
+          "verified": {
+            "solverAnswer": "Bullocks: food/fodder (from sun via plants); tractor: diesel fuel",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i09",
@@ -6067,7 +6774,11 @@
             "Point to power stations and what they burn or use",
             "Prompt: fan, then ___, then power station that uses ___ or water or wind",
             "Assert: fan to electricity to power station to coal, water, wind or sun"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Power station (coal/hydro/wind/solar) -> wires -> house -> fan",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i10",
@@ -6087,7 +6798,11 @@
             "Point to the wires leaving the wind farm",
             "Prompt: wind turns the ___, which makes ___ that travels through ___",
             "Assert: wind energy becomes electricity, which travels to homes and runs the TV"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Wind turns turbine, generates electricity sent via grid to cities",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i11",
@@ -6104,7 +6819,11 @@
             "Prompt: under the first arrow write 'the plant uses ___ to make food'",
             "Assert: each arrow passes energy along, from sunlight to your moving cycle"
           ],
-          "targetsMisconception": "c5-evs-ch07-t01-m3"
+          "targetsMisconception": "c5-evs-ch07-t01-m3",
+          "verified": {
+            "solverAnswer": "Sun light -> plant food -> flour roti -> body energy -> muscles move cycle",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i12",
@@ -6125,7 +6844,11 @@
             "Prompt: the current goes round a complete ___; the bulb changes energy into ___",
             "Assert: current circles back to the battery; the energy changes into light and heat"
           ],
-          "targetsMisconception": "c5-evs-ch07-t01-m4"
+          "targetsMisconception": "c5-evs-ch07-t01-m4",
+          "verified": {
+            "solverAnswer": "Current flows in a loop through battery, bulb, back; the battery's stored chemical energy is used up, not current",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i13",
@@ -6142,7 +6865,11 @@
             "Prompt: energy can't be ___, but we see it ___ things",
             "Assert: energy is invisible but shows itself by moving, heating, lighting and sounding"
           ],
-          "targetsMisconception": "c5-evs-ch07-t01-m1"
+          "targetsMisconception": "c5-evs-ch07-t01-m1",
+          "verified": {
+            "solverAnswer": "Energy lets things move, heat, light; examples fan, cooker, food",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t01-i14",
@@ -6163,7 +6890,11 @@
             "Point to the sky and the river",
             "Prompt: food, the ___, wind and ___ water",
             "Assert: food, sun, wind, flowing water, fuels and electricity are energy sources"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Sun, wind, water, fuels (coal/petrol), food, electricity",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -6393,7 +7124,11 @@
             "Point to the bulbs and the chargers",
             "Prompt: we can switch ___ things we are not using and use ___ bulbs",
             "Assert: switch off, use daylight and LEDs, unplug standby, keep the fridge shut"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Switch off lights/fans, LED bulbs, star-rated appliances, unplug chargers",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i02",
@@ -6412,7 +7147,11 @@
             "Prompt: fuels dug from the ground will ___; sun and wind ___",
             "Assert: coal, petrol and LPG run out; sunlight, wind and flowing water keep coming"
           ],
-          "targetsMisconception": "c5-evs-ch07-t02-m4"
+          "targetsMisconception": "c5-evs-ch07-t02-m4",
+          "verified": {
+            "solverAnswer": "Run out: coal, petrol, LPG; not: sunlight, wind, river water",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i03",
@@ -6433,7 +7172,11 @@
             "Prompt: 150 times 30 is ___ watt-hours, which is ___ units",
             "Assert: 4.5 units a month for one fan, 450 for a hundred homes"
           ],
-          "targetsMisconception": "c5-evs-ch07-t02-m1"
+          "targetsMisconception": "c5-evs-ch07-t02-m1",
+          "verified": {
+            "solverAnswer": "4.5 units",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i04",
@@ -6452,7 +7195,11 @@
             "Point to the heat around an old bulb",
             "Prompt: the old bulb turns most energy into ___ instead of light",
             "Assert: LEDs give the same light for about a sixth of the electricity and stay cooler"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Old bulb hotter; LED uses less",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i05",
@@ -6473,7 +7220,11 @@
             "Prompt: less electricity used means less ___ burnt and less ___",
             "Assert: saving electricity at home means burning less coal and less smoke"
           ],
-          "targetsMisconception": "c5-evs-ch07-t02-m3"
+          "targetsMisconception": "c5-evs-ch07-t02-m3",
+          "verified": {
+            "solverAnswer": "Less coal burnt, less pollution",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i06",
@@ -6494,7 +7245,11 @@
             "Prompt: power stations burn ___, which makes ___",
             "Assert: less electricity used means less coal burnt and cleaner air"
           ],
-          "targetsMisconception": "c5-evs-ch07-t02-m3"
+          "targetsMisconception": "c5-evs-ch07-t02-m3",
+          "verified": {
+            "solverAnswer": "Less coal/fuel burnt for power, so less smoke/CO2",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i07",
@@ -6514,7 +7269,11 @@
             "Point to the bill coming every month for years",
             "Prompt: more stars means ___ electricity, so the monthly ___ is smaller",
             "Assert: a 5-star fridge costs more once but saves on bills for years"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Uses less electricity, bill lower over years",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i08",
@@ -6534,7 +7293,11 @@
             "Point to the car's exhaust pipe",
             "Prompt: the car burns ___; cycling uses only ___ energy",
             "Assert: for short trips, walking or cycling saves fuel and keeps air clean"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Car uses fuel and pollutes; walk/cycle none",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i09",
@@ -6555,7 +7318,11 @@
             "Prompt: on standby they still use a ___ electricity all ___",
             "Assert: switch off at the wall; standby quietly uses electricity"
           ],
-          "targetsMisconception": "c5-evs-ch07-t02-m2"
+          "targetsMisconception": "c5-evs-ch07-t02-m2",
+          "verified": {
+            "solverAnswer": "Switch off at the wall; standby wastes electricity",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i10",
@@ -6577,7 +7344,11 @@
             "Prompt: solar uses ___ that won't run out; first check for ___",
             "Assert: free, clean, lasting energy; check shade, cost, dust and roof strength"
           ],
-          "targetsMisconception": "c5-evs-ch07-t02-m4"
+          "targetsMisconception": "c5-evs-ch07-t02-m4",
+          "verified": {
+            "solverAnswer": "Reasons: free sun, saves bills, clean; check roof strength/shade/cost",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i11",
@@ -6594,7 +7365,11 @@
             "Prompt: if the bars get ___ through the week, the family is saving more",
             "Assert: the graph turns waste into something you can see and shrink"
           ],
-          "targetsMisconception": "c5-evs-ch07-t02-m1"
+          "targetsMisconception": "c5-evs-ch07-t02-m1",
+          "verified": {
+            "solverAnswer": "Bar graph; open",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i12",
@@ -6615,7 +7390,11 @@
             "Prompt: paying the bill doesn't stop the ___ from the power station",
             "Assert: everyone shares the air and the coal, so waste hurts everyone"
           ],
-          "targetsMisconception": "c5-evs-ch07-t02-m1"
+          "targetsMisconception": "c5-evs-ch07-t02-m1",
+          "verified": {
+            "solverAnswer": "Wasted electricity means more coal burnt; everyone affected; resources limited",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i13",
@@ -6632,7 +7411,11 @@
             "Prompt: electricity often comes from burning ___, so saving it means less ___",
             "Assert: coal runs out and pollutes, so small daily savings matter"
           ],
-          "targetsMisconception": "c5-evs-ch07-t02-m3"
+          "targetsMisconception": "c5-evs-ch07-t02-m3",
+          "verified": {
+            "solverAnswer": "Switch off fan, LEDs; saves fuel",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch07-t02-i14",
@@ -6653,7 +7436,11 @@
             "Prompt: ___ will run out, but ___ keeps coming every day",
             "Assert: fossil fuels run out; sun and wind do not"
           ],
-          "targetsMisconception": "c5-evs-ch07-t02-m4"
+          "targetsMisconception": "c5-evs-ch07-t02-m4",
+          "verified": {
+            "solverAnswer": "Coal runs out; sun does not",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -6879,7 +7666,12 @@
             "Prompt: cotton and ___ come from plants; silk and ___ come from animals",
             "Assert: cotton and jute are plant fibres; silk and wool are animal fibres"
           ],
-          "targetsMisconception": "c5-evs-ch08-t01-m2"
+          "targetsMisconception": "c5-evs-ch08-t01-m2",
+          "verified": {
+            "solverAnswer": "Plants: cotton, jute; animals: silk, wool",
+            "agrees": true,
+            "note": "HINT LEAK: h2 'Point to the silkworm and the sheep' answers the animal-fibre half."
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i02",
@@ -6897,7 +7689,11 @@
             "Point to the seeds hidden in the fluff",
             "Prompt: pick, remove ___, ___ into thread, then ___",
             "Assert: pick, remove seeds, spin, weave"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Picking, removing seeds, spinning, weaving",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i03",
@@ -6918,7 +7714,11 @@
             "Prompt: twisting makes many short fibres hold ___",
             "Assert: twisted thread is far stronger; that is what spinning does"
           ],
-          "targetsMisconception": "c5-evs-ch08-t01-m3"
+          "targetsMisconception": "c5-evs-ch08-t01-m3",
+          "verified": {
+            "solverAnswer": "Loose fibres break easily; twisted thread stronger",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i04",
@@ -6939,7 +7739,11 @@
             "Prompt: the threads go ___ and ___ each other",
             "Assert: woven cloth has two sets of threads crossing over and under"
           ],
-          "targetsMisconception": "c5-evs-ch08-t01-m4"
+          "targetsMisconception": "c5-evs-ch08-t01-m4",
+          "verified": {
+            "solverAnswer": "Criss-cross grid, threads over and under",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i05",
@@ -6960,7 +7764,11 @@
             "Prompt: silk is costly and the weaver spends ___ on each one",
             "Assert: costly fibre plus many days of skilled handwork make the saree cost more"
           ],
-          "targetsMisconception": "c5-evs-ch08-t01-m1"
+          "targetsMisconception": "c5-evs-ch08-t01-m1",
+          "verified": {
+            "solverAnswer": "Handloom saree costs more; time, skill, silk",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i06",
@@ -6981,7 +7789,11 @@
             "Prompt: fibres are short and ___, so twisting makes them long and ___",
             "Assert: spinning turns short weak fibres into long strong thread"
           ],
-          "targetsMisconception": "c5-evs-ch08-t01-m3"
+          "targetsMisconception": "c5-evs-ch08-t01-m3",
+          "verified": {
+            "solverAnswer": "Twisting makes fibres hold together, long and strong thread",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i07",
@@ -7002,7 +7814,11 @@
             "Point to the charkha in every village",
             "Prompt: spinning at home meant India could make its ___ cloth",
             "Assert: khadi meant self-made cloth, village work and freedom from foreign factories"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Self-reliance, boycott of foreign cloth, jobs for villagers",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i08",
@@ -7021,7 +7837,11 @@
             "Prompt: cotton is spun from short ___; silk is unwound from a ___",
             "Assert: cotton is a plant fibre spun into thread; silk is a long thread unwound from a cocoon"
           ],
-          "targetsMisconception": "c5-evs-ch08-t01-m2"
+          "targetsMisconception": "c5-evs-ch08-t01-m2",
+          "verified": {
+            "solverAnswer": "Cotton from plant fruit (bolls); silk from silkworm cocoon, unwound",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i09",
@@ -7037,7 +7857,11 @@
             "Point to words like 'polyester' that don't name a plant or animal",
             "Prompt: cotton is from ___, wool is from ___, polyester is made in ___",
             "Assert: labels reveal plant, animal or factory-made fibres"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Open: cotton plant, silk/wool animal, polyester factory",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i10",
@@ -7058,7 +7882,11 @@
             "Point to jute being a plant fibre",
             "Prompt: jute is from a ___, so it can ___ away, but plastic stays",
             "Assert: jute is strong, reusable and breaks down naturally; plastic does not"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Jute natural, biodegradable, reusable, strong",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i11",
@@ -7075,7 +7903,11 @@
             "Prompt: one set goes ___, the other goes ___, over and under",
             "Assert: two sets crossing over and under: that is weaving"
           ],
-          "targetsMisconception": "c5-evs-ch08-t01-m4"
+          "targetsMisconception": "c5-evs-ch08-t01-m4",
+          "verified": {
+            "solverAnswer": "Woven mat; warp and weft",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i12",
@@ -7097,7 +7929,11 @@
             "Prompt: silk is from the ___, wool is from ___",
             "Assert: silk and wool come from animals; cotton and jute from plants"
           ],
-          "targetsMisconception": "c5-evs-ch08-t01-m2"
+          "targetsMisconception": "c5-evs-ch08-t01-m2",
+          "verified": {
+            "solverAnswer": "Silk from silkworm cocoons; wool from sheep; cotton from cotton plant",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i13",
@@ -7114,7 +7950,11 @@
             "Prompt: pick, remove seeds, ___ into thread, ___ into cloth, then stitch",
             "Assert: field, seeds out, spin, weave, dye, stitch"
           ],
-          "targetsMisconception": "c5-evs-ch08-t01-m3"
+          "targetsMisconception": "c5-evs-ch08-t01-m3",
+          "verified": {
+            "solverAnswer": "Pick, remove seeds, spin, weave, stitch",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t01-i14",
@@ -7133,7 +7973,11 @@
             "Point to the paper-strip mat",
             "Prompt: spinning ___ fibres; weaving ___ threads over and under",
             "Assert: spin to make thread, weave to make cloth"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Spinning twists fibre into thread; weaving crosses threads into cloth",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -7361,7 +8205,11 @@
             "Prompt: running stitch leaves ___; back stitch goes ___ to fill them",
             "Assert: running stitch is dashed; back stitch is continuous and stronger"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m2"
+          "targetsMisconception": "c5-evs-ch08-t02-m2",
+          "verified": {
+            "solverAnswer": "Running stitch has gaps, back stitch continuous and stronger",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i02",
@@ -7387,7 +8235,11 @@
             "Prompt: old clothes can become a ___, a bag or a ___",
             "Assert: quilts, bags, dusters, covers and more can come from old clothes"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m1"
+          "targetsMisconception": "c5-evs-ch08-t02-m1",
+          "verified": {
+            "solverAnswer": "Bag, rug, duster, quilt, cushion cover",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i03",
@@ -7408,7 +8260,11 @@
             "Prompt: the half in the sun will become ___",
             "Assert: sunlight fades colours; that is why coloured clothes dry in shade"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m3"
+          "targetsMisconception": "c5-evs-ch08-t02-m3",
+          "verified": {
+            "solverAnswer": "Exposed half faded, covered half dark",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i04",
@@ -7429,7 +8285,12 @@
             "Prompt: mould grows where it is damp and ___ air cannot dry it",
             "Assert: damp, closed cloth grows mould; clothes must be fully dry before storing"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m4"
+          "targetsMisconception": "c5-evs-ch08-t02-m4",
+          "verified": {
+            "solverAnswer": "Closed box one",
+            "agrees": true,
+            "note": "SAFETY: deliberately growing mould on a damp cloth and asking the child to smell it. Add: keep the box closed, adult opens it, do not sniff close or touch the spots (spores, asthma/allergy), wash hands, bin it sealed. Judge by looking, not sniffing."
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i05",
@@ -7448,7 +8309,11 @@
             "Prompt: the ___ stitch has gaps; the ___ stitch holds better",
             "Assert: back stitch leaves no gaps, so it holds more strongly"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m2"
+          "targetsMisconception": "c5-evs-ch08-t02-m2",
+          "verified": {
+            "solverAnswer": "Running stitch row has gaps; back stitch holds better",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i06",
@@ -7469,7 +8334,11 @@
             "Prompt: a small tear grows ___ each time the cloth is ___",
             "Assert: early mending is small work; late mending may be too late"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m1"
+          "targetsMisconception": "c5-evs-ch08-t02-m1",
+          "verified": {
+            "solverAnswer": "Tear gets bigger",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i07",
@@ -7489,7 +8358,11 @@
             "Point to clothes piling up in dumps",
             "Prompt: reusing saves ___ and energy and makes less ___",
             "Assert: reuse saves the resources of new cloth and keeps waste down"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Less waste, less water/energy for new cloth",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i08",
@@ -7510,7 +8383,11 @@
             "Prompt: A wastes the cloth; B turns it into a warm ___",
             "Assert: the quilt gives a second life, warmth and memories; the bin gives waste"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m1"
+          "targetsMisconception": "c5-evs-ch08-t02-m1",
+          "verified": {
+            "solverAnswer": "A wasted; B saves cloth, gives warm quilt, craft",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i09",
@@ -7531,7 +8408,11 @@
             "Point to who should handle the needle",
             "Prompt: keep the button, ask an ___, sew through the ___ several times",
             "Assert: save the button and sew it back with an adult, then knot it"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Ask adult; needle; thimble; sew",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i10",
@@ -7547,7 +8428,11 @@
             "Point to sorting by size and warmth",
             "Prompt: collect, ___, mend, wash and fold, then ___",
             "Assert: collect, sort, mend, clean, share and record"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Collect, wash/check clean, sort, donate",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i11",
@@ -7564,7 +8449,11 @@
             "Prompt: in running stitch the thread goes ___ the cloth at each gap",
             "Assert: running stitch alternates front and back; back stitch overlaps to close every gap"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m2"
+          "targetsMisconception": "c5-evs-ch08-t02-m2",
+          "verified": {
+            "solverAnswer": "Dashes with gaps vs overlapping",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i12",
@@ -7585,7 +8474,11 @@
             "Prompt: harsh sun can ___ colours, so coloured clothes dry in ___",
             "Assert: sun dries clothes, but too much fades and damages them"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m3"
+          "targetsMisconception": "c5-evs-ch08-t02-m3",
+          "verified": {
+            "solverAnswer": "Hot sun can fade/damage some cloths; dry in shade for delicate ones",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i13",
@@ -7602,7 +8495,11 @@
             "Prompt: dry in ___, store only when fully ___, mend tears ___",
             "Assert: gentle care and early mending, then a second life as something new"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m4"
+          "targetsMisconception": "c5-evs-ch08-t02-m4",
+          "verified": {
+            "solverAnswer": "Mend, wash gently, dry in shade; reuse as bag, duster",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch08-t02-i14",
@@ -7622,7 +8519,12 @@
             "Prompt: the ___ stitch leaves gaps",
             "Assert: the running stitch leaves gaps"
           ],
-          "targetsMisconception": "c5-evs-ch08-t02-m2"
+          "targetsMisconception": "c5-evs-ch08-t02-m2",
+          "verified": {
+            "solverAnswer": "Running stitch",
+            "agrees": true,
+            "note": "HINT LEAK: h1 'which lacing-card row looked dashed' gives the answer on a recall item."
+          }
         }
       ],
       "workedExample": {
@@ -7847,7 +8749,11 @@
             "Point to the clock going round twice",
             "Prompt: one spin takes about ___ hours",
             "Assert: one spin takes about 24 hours, one day and night"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "24 hours",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i02",
@@ -7867,7 +8773,11 @@
             "Point to where it is at evening play time",
             "Prompt: it rises in the ___ and sets in the ___",
             "Assert: the Sun rises in the east and sets in the west"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Rises east, sets west",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i03",
@@ -7888,7 +8798,11 @@
             "Prompt: India gets light when it ___ the torch and dark when it turns ___",
             "Assert: the turning ball makes day and night; the light source never hides"
           ],
-          "targetsMisconception": "c5-evs-ch09-t01-m1"
+          "targetsMisconception": "c5-evs-ch09-t01-m1",
+          "verified": {
+            "solverAnswer": "Lit when facing torch, dark when turned away; torch never goes behind",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i04",
@@ -7908,7 +8822,11 @@
             "Point to the half that stays lit",
             "Prompt: one side would stay ___ and the other side ___ for a very long time",
             "Assert: without spinning, days and nights would last for months"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "One side permanent day, other permanent night",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i05",
@@ -7928,7 +8846,11 @@
             "Prompt: the shadow points ___ from the Sun, so in the morning it points ___",
             "Assert: morning shadow points west, evening shadow points east"
           ],
-          "targetsMisconception": "c5-evs-ch09-t01-m2"
+          "targetsMisconception": "c5-evs-ch09-t01-m2",
+          "verified": {
+            "solverAnswer": "Morning west; evening east",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i06",
@@ -7948,7 +8870,11 @@
             "Prompt: the Earth turns from ___ to ___, so the Sun appears first in the ___",
             "Assert: Earth's west-to-east spin makes the Sun appear in the east and vanish in the west"
           ],
-          "targetsMisconception": "c5-evs-ch09-t01-m2"
+          "targetsMisconception": "c5-evs-ch09-t01-m2",
+          "verified": {
+            "solverAnswer": "Earth spins west to east so Sun appears to move east to west, rising in east",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i07",
@@ -7968,7 +8894,11 @@
             "Prompt: at night our side of Earth faces ___ from the Sun",
             "Assert: night is our half facing away from the Sun, not something covering it"
           ],
-          "targetsMisconception": "c5-evs-ch09-t01-m3"
+          "targetsMisconception": "c5-evs-ch09-t01-m3",
+          "verified": {
+            "solverAnswer": "Our side of Earth faces away from Sun; stars faint/far",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i08",
@@ -7988,7 +8918,11 @@
             "Prompt: the ___ moves, not the trees; the ___ turns, not the Sun",
             "Assert: in both cases we are the ones moving"
           ],
-          "targetsMisconception": "c5-evs-ch09-t01-m2"
+          "targetsMisconception": "c5-evs-ch09-t01-m2",
+          "verified": {
+            "solverAnswer": "Train moves, trees stay; Earth rotates, Sun stays",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i09",
@@ -8008,7 +8942,12 @@
             "Prompt: Dubai is ___ to India so it is also evening; the USA is on the ___ side",
             "Assert: Dubai has evening too; the USA has morning"
           ],
-          "targetsMisconception": "c5-evs-ch09-t01-m4"
+          "targetsMisconception": "c5-evs-ch09-t01-m4",
+          "verified": {
+            "solverAnswer": "Dubai ~6:30 pm: evening/dusk (day ending); USA: morning (day)",
+            "agrees": false,
+            "note": "Dubai at 8 pm IST is about 6:30 pm: before sunset in summer, after sunset in winter, so 'day or night' has no single answer. Answer says 'early evening', which is fine, but add 'depends on the season' or change the call time. USA part (morning) is correct."
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i10",
@@ -8027,7 +8966,11 @@
             "Point to the line between light and dark",
             "Prompt: one half is ___ and the other half is ___",
             "Assert: from space, half the Earth is in day and half in night at every moment"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Sun side bright (day), far side dark (night)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i11",
@@ -8043,7 +8986,11 @@
             "Point to how far the Earth turns in 12 hours: half a spin",
             "Prompt: after 12 hours India is on the ___ half; the Sun has ___",
             "Assert: half a spin moves India from day to night while the Sun stays put"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Drawing: day half lit, India night after 12 hours",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i12",
@@ -8064,7 +9011,11 @@
             "Prompt: the Sun keeps ___; our side of Earth turns ___",
             "Assert: night is the Earth turning away, not the Sun hiding"
           ],
-          "targetsMisconception": "c5-evs-ch09-t01-m1"
+          "targetsMisconception": "c5-evs-ch09-t01-m1",
+          "verified": {
+            "solverAnswer": "Sun doesn't move; Earth rotates, our side turns away",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i13",
@@ -8081,7 +9032,11 @@
             "Prompt: the side ___ the torch has day; the side ___ has night",
             "Assert: a spinning Earth under a steady Sun makes day and night"
           ],
-          "targetsMisconception": "c5-evs-ch09-t01-m2"
+          "targetsMisconception": "c5-evs-ch09-t01-m2",
+          "verified": {
+            "solverAnswer": "Torch=Sun, ball=Earth, rotate; lit side day, dark side night",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t01-i14",
@@ -8102,7 +9057,11 @@
             "Prompt: the Earth ___ on its axis",
             "Assert: Earth's spin brings each place into day and then night"
           ],
-          "targetsMisconception": "c5-evs-ch09-t01-m3"
+          "targetsMisconception": "c5-evs-ch09-t01-m3",
+          "verified": {
+            "solverAnswer": "Earth spinning on its axis",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -8319,7 +9278,11 @@
             "Point to the cold, foggy months",
             "Prompt: summer, then ___, then autumn, then ___, then spring",
             "Assert: summer, monsoon, autumn, winter and spring"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Summer, monsoon (rainy), autumn, winter, spring",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i02",
@@ -8340,7 +9303,11 @@
             "Prompt: the tree drops old leaves and grows ___ ones; it is ___",
             "Assert: leaf fall is a seasonal change, not death"
           ],
-          "targetsMisconception": "c5-evs-ch09-t02-m4"
+          "targetsMisconception": "c5-evs-ch09-t02-m4",
+          "verified": {
+            "solverAnswer": "Tree sheds leaves in dry season and grows new; deciduous; not dead",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i03",
@@ -8361,7 +9328,11 @@
             "Prompt: slanting light spreads over a ___ area, so each part gets ___ light",
             "Assert: direct light is concentrated and stronger; slanting light is spread and weaker"
           ],
-          "targetsMisconception": "c5-evs-ch09-t02-m3"
+          "targetsMisconception": "c5-evs-ch09-t02-m3",
+          "verified": {
+            "solverAnswer": "Straight-down patch smaller and brighter; slant bigger dimmer",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i04",
@@ -8381,7 +9352,11 @@
             "Prompt: the Earth is closest to the Sun in early ___",
             "Assert: closest in January, during our winter, so distance does not cause seasons"
           ],
-          "targetsMisconception": "c5-evs-ch09-t02-m1"
+          "targetsMisconception": "c5-evs-ch09-t02-m1",
+          "verified": {
+            "solverAnswer": "January (closer in January)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i05",
@@ -8401,7 +9376,11 @@
             "Prompt: a lower Sun makes a ___ shadow",
             "Assert: winter's low noon Sun casts longer shadows"
           ],
-          "targetsMisconception": "c5-evs-ch09-t02-m3"
+          "targetsMisconception": "c5-evs-ch09-t02-m3",
+          "verified": {
+            "solverAnswer": "December longer",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i06",
@@ -8422,7 +9401,11 @@
             "Prompt: when our half leans ___ the Sun, more of each spin is in ___",
             "Assert: the tilt gives us longer days in summer and shorter ones in winter"
           ],
-          "targetsMisconception": "c5-evs-ch09-t02-m1"
+          "targetsMisconception": "c5-evs-ch09-t02-m1",
+          "verified": {
+            "solverAnswer": "Earth's tilt: northern hemisphere tilted to Sun in summer; longer days",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i07",
@@ -8442,7 +9425,11 @@
             "Point to the open water at Bharatpur or Chilika",
             "Prompt: their northern homes ___ in winter, so they come for food and open ___",
             "Assert: they escape freezing homes for India's milder winter, then return to breed"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Escape freezing north, food, to warmer lakes",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i08",
@@ -8462,7 +9449,11 @@
             "Prompt: in December the ___ half leans towards the Sun",
             "Assert: opposite halves, opposite seasons"
           ],
-          "targetsMisconception": "c5-evs-ch09-t02-m2"
+          "targetsMisconception": "c5-evs-ch09-t02-m2",
+          "verified": {
+            "solverAnswer": "Delhi cold/cool winter; Sydney warm summer; opposite hemispheres tilt",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i09",
@@ -8478,7 +9469,11 @@
             "Point to flowers, fruit and leaves as things to watch",
             "Prompt: in spring a mango tree has ___, in summer it has ___",
             "Assert: one tree shows flowers, fruit, leaf fall and new leaves through the year"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Leaf fall, new leaves, flowers, fruits",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i10",
@@ -8498,7 +9493,11 @@
             "Point to the cool, dry winter fields",
             "Prompt: rice needs ___ and warmth; wheat likes ___ weather",
             "Assert: each crop is grown in the season that gives it the water and warmth it needs"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Wheat needs cool; rice needs heat and rain",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i11",
@@ -8514,7 +9513,11 @@
             "Point to one change they have seen each season",
             "Prompt: winter is the season of fog and ___ birds",
             "Assert: each season has its own weather and signs in nature"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Year wheel drawing",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i12",
@@ -8535,7 +9538,11 @@
             "Prompt: seasons come from the Earth's ___, not its ___",
             "Assert: tilt causes seasons; we are nearest the Sun in our winter"
           ],
-          "targetsMisconception": "c5-evs-ch09-t02-m1"
+          "targetsMisconception": "c5-evs-ch09-t02-m1",
+          "verified": {
+            "solverAnswer": "Distance not cause; tilt; Earth closest in Jan",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i13",
@@ -8552,7 +9559,11 @@
             "Prompt: in summer our half leans ___ the Sun, so light is more ___",
             "Assert: tilt changes how direct the light is and how long the day is; distance does not"
           ],
-          "targetsMisconception": "c5-evs-ch09-t02-m3"
+          "targetsMisconception": "c5-evs-ch09-t02-m3",
+          "verified": {
+            "solverAnswer": "Tilted ball, torch; tilted toward = summer",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch09-t02-i14",
@@ -8571,7 +9582,11 @@
             "Point to the foggy months",
             "Prompt: they arrive in ___",
             "Assert: migratory birds come to India in winter"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Winter",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -8768,7 +9783,11 @@
             "Point to the sky, the river and the ground",
             "Prompt: we all share ___, water, ___ and sunlight",
             "Assert: air, water, soil, sunlight and forests are shared by all life"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Air, water, sun, soil/land",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i02",
@@ -8792,7 +9811,11 @@
             "Prompt: the ___ flows through Tibet, India and Bangladesh",
             "Assert: rivers and migrating animals cross many borders"
           ],
-          "targetsMisconception": "c5-evs-ch10-t01-m3"
+          "targetsMisconception": "c5-evs-ch10-t01-m3",
+          "verified": {
+            "solverAnswer": "Amur falcon; Brahmaputra; Siberian crane",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i03",
@@ -8813,7 +9836,11 @@
             "Prompt: the colour ___ through the water, just like ___ does",
             "Assert: what goes into water in one spot spreads to other places"
           ],
-          "targetsMisconception": "c5-evs-ch10-t01-m1"
+          "targetsMisconception": "c5-evs-ch10-t01-m1",
+          "verified": {
+            "solverAnswer": "No; colour slowly spreads through water (diffusion)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i04",
@@ -8834,7 +9861,11 @@
             "Prompt: the river carries waste ___, towards Village ___",
             "Assert: downstream villages suffer from upstream pollution"
           ],
-          "targetsMisconception": "c5-evs-ch10-t01-m3"
+          "targetsMisconception": "c5-evs-ch10-t01-m3",
+          "verified": {
+            "solverAnswer": "Village B downstream",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i05",
@@ -8855,7 +9886,11 @@
             "Prompt: smells and smoke ___ through the air to far places",
             "Assert: air carries smells and smoke far from where they start"
           ],
-          "targetsMisconception": "c5-evs-ch10-t01-m1"
+          "targetsMisconception": "c5-evs-ch10-t01-m1",
+          "verified": {
+            "solverAnswer": "Yes, within minutes, smell spreads",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i06",
@@ -8875,7 +9910,11 @@
             "Point to one unsafe stop on the route",
             "Prompt: if the birds are harmed in ___ country on the route, the whole journey fails",
             "Assert: travelling animals need every country on their route to protect them"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Birds cross borders; threats in each country",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i07",
@@ -8896,7 +9935,12 @@
             "Prompt: the forest is the animals' ___, and it gives everyone clean ___",
             "Assert: forests are shared homes and shared air and water"
           ],
-          "targetsMisconception": "c5-evs-ch10-t01-m2"
+          "targetsMisconception": "c5-evs-ch10-t01-m2",
+          "verified": {
+            "solverAnswer": "Animals live there; lose homes",
+            "agrees": true,
+            "note": "STALE HINT: h2 'shared-river web' does not match this forest/animals prompt."
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i08",
@@ -8915,7 +9959,11 @@
             "Point to ocean currents moving like giant rivers",
             "Prompt: the pond bottle stays ___; the ocean bottle can travel to other ___",
             "Assert: in connected waters, our plastic reaches faraway places"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Pond: stays/near; ocean: drifts far across world",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i09",
@@ -8936,7 +9984,11 @@
             "Prompt: the smoke drifts into other ___, so ___ breathe it",
             "Assert: smoke from one fire harms everyone around"
           ],
-          "targetsMisconception": "c5-evs-ch10-t01-m1"
+          "targetsMisconception": "c5-evs-ch10-t01-m1",
+          "verified": {
+            "solverAnswer": "Neighbours, children breathe smoke, whole area air",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i10",
@@ -8957,7 +10009,11 @@
             "Point to the bright lights on the shore",
             "Prompt: the town can switch off bright ___ and clear the ___",
             "Assert: dim lights, clean beaches and guarded nests let people and turtles share the shore"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Switch off bright lights, keep beach clean, protect nests",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i11",
@@ -8974,7 +10030,11 @@
             "Prompt: the border line stops ___ of the arrows",
             "Assert: smoke, water and birds cross borders freely"
           ],
-          "targetsMisconception": "c5-evs-ch10-t01-m3"
+          "targetsMisconception": "c5-evs-ch10-t01-m3",
+          "verified": {
+            "solverAnswer": "Map arrows",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i12",
@@ -8995,7 +10055,11 @@
             "Prompt: the dirty water flows ___ to other towns and the ___",
             "Assert: a river spreads one town's pollution to many places"
           ],
-          "targetsMisconception": "c5-evs-ch10-t01-m1"
+          "targetsMisconception": "c5-evs-ch10-t01-m1",
+          "verified": {
+            "solverAnswer": "Rivers flow to other towns; pollution travels downstream",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i13",
@@ -9012,7 +10076,11 @@
             "Prompt: smoke travels in the ___, waste travels in the ___, and birds cross ___",
             "Assert: air, water and animals connect us all, so care must be shared"
           ],
-          "targetsMisconception": "c5-evs-ch10-t01-m2"
+          "targetsMisconception": "c5-evs-ch10-t01-m2",
+          "verified": {
+            "solverAnswer": "Shared air, water, animals; actions affect others",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t01-i14",
@@ -9035,7 +10103,11 @@
             "Prompt: ___ carries smoke and ___ carries dirty water",
             "Assert: wind, rivers and ocean currents carry pollution far away"
           ],
-          "targetsMisconception": "c5-evs-ch10-t01-m1"
+          "targetsMisconception": "c5-evs-ch10-t01-m1",
+          "verified": {
+            "solverAnswer": "Wind (air) or river",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {
@@ -9267,7 +10339,11 @@
             "Point to the tap, the switch and the shopping bag",
             "Prompt: I can carry a ___ bag and switch ___ the fan",
             "Assert: small swaps with bags, bottles, taps, switches and waste all help"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Cloth bag, save water, plant tree, switch off, segregate",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i02",
@@ -9286,7 +10362,11 @@
             "Prompt: first ___, then reuse, then ___",
             "Assert: refuse beats reuse, and reuse beats recycle"
           ],
-          "targetsMisconception": "c5-evs-ch10-t02-m2"
+          "targetsMisconception": "c5-evs-ch10-t02-m2",
+          "verified": {
+            "solverAnswer": "Refuse > reuse > recycle",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i03",
@@ -9307,7 +10387,11 @@
             "Prompt: 40 times 365 is ___",
             "Assert: 14,600 bags; one class's small habit saves thousands"
           ],
-          "targetsMisconception": "c5-evs-ch10-t02-m1"
+          "targetsMisconception": "c5-evs-ch10-t02-m1",
+          "verified": {
+            "solverAnswer": "About 14,000 (14,600)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i04",
@@ -9327,7 +10411,11 @@
             "Point to how fast water rushes from an open tap",
             "Prompt: an open tap for 2 minutes fills ___ mugs, but a closed tap needs only ___",
             "Assert: a running tap wastes litres; one mug is enough for brushing"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Many mugs (about 10+ litres)",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i05",
@@ -9347,7 +10435,11 @@
             "Prompt: a sapling needs ___ and protection until its roots grow ___",
             "Assert: planting is only the start; care decides whether a tree survives"
           ],
-          "targetsMisconception": "c5-evs-ch10-t02-m3"
+          "targetsMisconception": "c5-evs-ch10-t02-m3",
+          "verified": {
+            "solverAnswer": "First one with water and guard",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i06",
@@ -9368,7 +10460,11 @@
             "Prompt: refusing makes ___ waste, but recycling still uses ___",
             "Assert: the best waste is the waste never made"
           ],
-          "targetsMisconception": "c5-evs-ch10-t02-m2"
+          "targetsMisconception": "c5-evs-ch10-t02-m2",
+          "verified": {
+            "solverAnswer": "Prevents waste at source; recycling uses energy",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i07",
@@ -9389,7 +10485,11 @@
             "Prompt: burning plastic makes ___ smoke that harms our ___",
             "Assert: burning turns plastic into poisonous air; sort it for recycling instead"
           ],
-          "targetsMisconception": "c5-evs-ch10-t02-m4"
+          "targetsMisconception": "c5-evs-ch10-t02-m4",
+          "verified": {
+            "solverAnswer": "Toxic smoke, harmful to lungs and air",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i08",
@@ -9408,7 +10508,11 @@
             "Point to the chart and the 7 days",
             "Prompt: Plan B says exactly ___ to do and how to ___ it",
             "Assert: specific, time-bound, tracked plans work better than vague promises"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Plan B specific, measurable",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i09",
@@ -9430,7 +10534,11 @@
             "Point to plates, cups and decorations",
             "Prompt: use ___ plates instead of plastic and reuse ___",
             "Assert: reusable plates, reusable decorations and sorted waste make a low-waste party"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Cloth/steel plates, no balloons/plastic, return gifts",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i10",
@@ -9450,7 +10558,11 @@
             "Prompt: 200 times 10 is ___ litres a day; times 30 is ___",
             "Assert: 60,000 litres a month from one small habit across 200 homes"
           ],
-          "targetsMisconception": "c5-evs-ch10-t02-m1"
+          "targetsMisconception": "c5-evs-ch10-t02-m1",
+          "verified": {
+            "solverAnswer": "60,000 litres; for gardens, cleaning, needy",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i11",
@@ -9466,7 +10578,11 @@
             "Point to counting ticks per day for the bars",
             "Prompt: each bar shows how many ___ you did that day",
             "Assert: a chart and graph turn good intentions into something you can see and improve"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Chart and bar graph",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i12",
@@ -9487,7 +10603,11 @@
             "Prompt: one kid's straws in a year are ___, and others ___ what they see",
             "Assert: small actions add up and spread to others"
           ],
-          "targetsMisconception": "c5-evs-ch10-t02-m1"
+          "targetsMisconception": "c5-evs-ch10-t02-m1",
+          "verified": {
+            "solverAnswer": "Small acts add up, others follow",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i13",
@@ -9504,7 +10624,11 @@
             "Prompt: I will ___, because it makes less ___, and I'll check it with a ___",
             "Assert: specific actions, a reason, and a way to track progress"
           ],
-          "targetsMisconception": "c5-evs-ch10-t02-m2"
+          "targetsMisconception": "c5-evs-ch10-t02-m2",
+          "verified": {
+            "solverAnswer": "Plan: what, why, how check",
+            "agrees": true
+          }
         },
         {
           "id": "c5-evs-ch10-t02-i14",
@@ -9523,7 +10647,11 @@
             "Point to the waste ladder",
             "Prompt: Reduce, ___, ___",
             "Assert: Reduce, Reuse, Recycle"
-          ]
+          ],
+          "verified": {
+            "solverAnswer": "Reduce, reuse, recycle",
+            "agrees": true
+          }
         }
       ],
       "workedExample": {

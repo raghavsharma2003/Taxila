@@ -641,3 +641,250 @@ new ResizeObserver(() => C.setModuleDir(...moduleDir(faceEl.getBoundingClientRec
 - Lee, Badler & Badler (2002), "Eyes alive", SIGGRAPH, doi:10.1145/566570.566629
 - Cassell, Vilhjálmsson & Bickmore, "BEAT: the Behavior Expression Animation Toolkit" (SIGGRAPH 2001; book chapter doi:10.1007/978-3-662-08373-4_8)
 - Not resolved this session (the web-search budget was exhausted), cited from memory: Kopp et al. 2006 / Vilhjálmsson et al. 2007 (SAIBA/BML); Garau et al. 2003 (CHI, avatar realism × gaze); Al Moubayed et al. 2012 (Mona Lisa effect); Flecha-García 2010 (*Speech Communication*, eyebrow raises in dialogue); Krumhuber & Manstead 2009 (AU6 and smile genuineness); Mayer & DaPra 2012 (embodiment principle); Ouwehand, van Gog & Paas 2015 (gaze cues in video examples); Mehrabian / Andersen (nonverbal immediacy). **Verify these before they enter `context/` as anything stronger than [R].**
+
+---
+
+## Graphics review
+
+Reviewer stance: an adversarial real-time graphics engineer, 2026-10-02. I re-read the cited TalkingHead 1.7.0 source
+(`modules/talkinghead.mjs`, repo HEAD b3e277b, 2026-09-25), three.js r180's morph shader chunk, the Andrist 2014 PDF and
+Hömke 2018, and the sibling docs this one depends on. I also re-ran the prototype under harsher conditions than the sim
+uses. Scripts and raw output are in `behaviour-proto/review/` (`drift.mjs`, `nod.mjs`, `nodfix.mjs`, `merge.mjs`,
+`snap.mjs`, `realaudio.mjs`, `sim-cps.mjs`, `script.mjs`, `review-output.txt`). Tags are as in the header.
+
+**Verdict.** The behaviour design is sound. The invariant and mutation gate is the best idea in the file. But the
+prototype and the integration code have **five defects that would ship a visibly broken face**, and three claims that hold
+in the sim but not on the WebRTC path. None of them changes the architecture. All of them change code or numbers.
+
+### GR-1. Defects that would ship (fix before any device test)
+
+| # | defect | evidence | effect on screen | fix |
+|---|---|---|---|---|
+| 1 | **`head.mtRandomized = []` (§4.7) crashes TalkingHead's frame loop.** `animate()` does `i = this.mtRandomized[floor(random()*length)]; j = this.mtAvatar[i]; if (!j.needsUpdate)` (l. 2684–2686) on every frame outside `full` view and always in `avatarOnly` mode. | [V] source; [M] the same three lines throw `Cannot read properties of undefined (reading 'needsUpdate')` | Outside `avatarOnly`, rAF is re-armed before the throw, so the loop keeps running and **every frame aborts before `opt.update` and `updateMorphTargets`**: a frozen face plus 30 exceptions/s. In the perf doc's worker shim (`avatarOnly`), the throw goes to our caller. | Add a guard to the vendored-patch list (web-3d §5.5): `if (this.mtRandomized.length)` around the block. Never empty the array without the patch. |
+| 2 | **Nods are about 4× smaller than specified, and the size depends on frame rate.** `S.nod.v -= amp*9` on a k=120, ζ=0.6 spring gives a continuous-time peak of 0.0455 × v0, so 1.23° for a "3°" nod. Explicit integration at frame dt cuts that further. | [M] `nod.mjs`: a 3° request peaks at **0.75° at 30 fps, 0.63° at 24 fps, 0.24° at 15 fps** | Chin travel is **1.0 px** on the 160 px tile and 2.6 px on L1. §4.6 assumes 4 px and 10 px. So the "head carries the behaviour" claim (§0-1) is false *as implemented*, and the sim cannot see it because I2 counts nod events, not amplitude. | Fixed 4 ms substeps, with the impulse normalised so that the **peak** equals the requested degrees. `nodfix.mjs` gives 2.86° for a 3° request at 16.7–66 ms frames. Add an amplitude invariant (I8: observed peak within ±20% of the request at 15/24/30 fps). |
+| 3 | **A second emotion snaps the first one off.** `emote()` replaces `S.emo` and restarts the envelope from 0. Nothing cross-fades. | [M] `snap.mjs`: warm at apex, then a lexicon `curious` cue → `mouthSmileLeft` drops **0.19 in one frame** (B1) | "Smile snap" is exactly the §9 anti-pattern the doc claims to design out. It fires whenever a praise or curious lexicon hit lands during an armed emotion, which is the common case. | Keep the outgoing level as a separate decaying layer (release over its own `rel` ms) and sum it under the new onset. Add a test: no blendshape changes by more than 0.06 between frames outside blinks and visemes. |
+| 4 | **Gaze is never clamped.** `moduleDir()` returns **pitch +64°** for the L2 layout (160 px tile at the top, module below) and **−63°** for L3, on a 360×780 phone [M `snap.mjs`]. The controller passes this straight to the eyes (head takes only `0.2 × pitch`). | [M], [V] `controller.mjs` l. 220–243 | Eyes rolled ~50° past the human range: the iris hides under the lid and the face shows mostly sclera. For a child, that is the most frightening frame this system could draw. | Clamp eye-in-head to ±25° yaw, +20°/−25° pitch. Give the remainder to head pitch/yaw (cap ±20°), then to the bust. Compute the target in 3D (`camera.unproject` of the module centre onto a plane at the glass) instead of the `D = 1.2H` heuristic, because the right answer depends on the virtual camera's FOV, which §4.6 ignores. |
+| 5 | **The controller clock is not the playback clock.** `t += min(dt, 66 ms)`. TalkingHead also clamps the dt it hands to `opt.update` (`2 × animFrameDur`, l. 2679). The TurnClock then measures elapsed speech on a clock that loses time on every long frame. | [M] `drift.mjs`, 400 turns: with 5% / 10% / 20% of frames at 50–200 ms, the clock is **467 / 862 / 1393 ms behind** at turn end (p50). Mutual gaze before the end drops below 1.0 s in **12 / 37 / 63** of 400 turns, and the yield **never happens** in 0 / 2 / 47 | performance-android §3.4 measured 18–44 frames over 50 ms per ~270 under module load (7–16%), which is this regime. It also breaks the house rule that the face is slaved to the playback clock (companion-tech §13). | Read time from the stamped audio clock the worker already receives (performance-android §5.1), or `performance.now()`. Clamp only the **integrator** step (substeps), never the clock. Add a heavy-tailed dt arm to the sim (the current ±3 ms jitter is unrealistically clean). |
+
+### GR-2. Timing on the real WebRTC path (the sim assumes zero-latency events)
+
+1. **The state machine runs on server-side events that the sibling docs already demoted to hints.**
+   - §4.2 says `speaking` is entered on "`output_audio_buffer.started` (the first audio *played*)". It is not.
+     `audio-to-face-ml.md` G-2/§952 and `web-3d-talking-heads.md` R-6 established three things: it is a server-side send
+     time; it leads the audible sound by the jitter buffer plus the output path (about 60–200 ms on the speaker, 200–400 ms on
+     BT A2DP **[U]**); and the event family is undocumented, so it may disappear.
+   - Effect: the brow flash at move start, the armed smile and the re-gaze clock all run early. `stopped` fires before her last
+     syllable is audible, so the lean-in, the YOUR TURN gaze and the ring all arrive **over her final word**.
+   - Fix: drive `speaking`/`stopped` from the voice-tap RMS gate (voiced ≥ 2 frames; silent ≥ 250 ms after a `stopped`
+     hint). Keep the events as hints. Add the sibling's contract test that runs the controller **with the events suppressed**.
+2. **THINKING onset is mislabelled.**
+   - The sim measures "0.33 s after the child stops" from `speech_stopped`, which it fires the moment the child stops.
+   - On the wire, `speech_stopped` follows `silence_duration_ms` (500 ms by default [S, Azure realtime docs]; tech-and-market
+     §1 recommends **800–1000 ms** for children), plus one network leg.
+   - So the cognitive aversion really starts about **1.1–1.5 s after the child's last sound** [I]. Meanwhile she holds the
+     LISTENING stare with a 4° tilt.
+   - Fix: start the aversion from the **local** mic tap's end-of-speech (≥300 ms of silence). If `speech_stopped` has not
+     confirmed within `silence_duration_ms + 300`, revert to soft contact. Report the onset from the child's last voiced frame
+     in the sim.
+3. **"Barge gaze in 33 ms" is measured from the event, not from the child.**
+   - `speech_started` arrives after server VAD detection plus uplink and downlink. The real delay from the child's onset is
+     several hundred ms **[U]**.
+   - The child-mic tap the design already has can trigger the look in 1–2 frames. Gate it so echo of her own voice does not
+     trigger it: require child RMS > k × her RMS while she is speaking, with k tuned in E-B8 **[I]**.
+   - A gaze shift is cheap and reversible, which an audio cut is not, so false positives are tolerable here.
+   - Mouth closure must still follow the audio (sibling G-3.3).
+4. **The TurnClock's ±15% voice-rate assumption is too narrow.** [M] On the 10 marin/cedar realtime-voice clips from this
+   session's voice bench, the rate in **code points per second of speech** was:
+
+   | text | cp/s |
+   |---|---|
+   | Devanagari | 17.6, 16.0 |
+   | Roman Hinglish | 15.1, 16.2 |
+   | mixed | 14.1, 13.9 |
+   | English | 14.9, 12.6 |
+   | **numerals** | **9.3, 9.9** |
+
+   That is −31% to +30% around the 13.5 default. Digits expand into many spoken syllables (a maths tutor's normal content).
+   Devanagari packs more speech per code point than its Latin transliteration: Latin / Devanagari code points 1.14–1.16,
+   and against graphemes 1.65–2.15 [M `script.mjs`].
+   - Re-running `sim.mjs` with these rates: **<1.0 s of mutual gaze in 45/670 floor-passing ends (6.7%)**, which fails
+     E-B3's 95% bar, and p90 mutual gaze is 5.8 s (a long stare on numeral-heavy turns) [M `sim-cps.mjs`].
+   - Fixes:
+     - Count spoken units, not code points: expand numerals to words and count Devanagari by graphemes × a per-voice factor.
+     - Keep an online per-session rate estimate from completed turns (chars / RMS-voiced seconds).
+     - Investigate `response.done` usage (output audio tokens) as an exact duration source before playback ends **[U]: verify
+       that Azure WebRTC reports it and that tokens per second are constant**.
+5. **The remote-audio analyser depends on a Chromium quirk.** Chromium does not feed a remote WebRTC stream into
+   `createMediaStreamSource` unless a media element is consuming it (crbug 933677 [S]).
+   - The current design is safe because playback is an unmuted `<audio>` (web-3d §6.1).
+   - But anyone who "simplifies" playback into WebAudio, or mutes the element, gets a silent analyser and a dead face.
+   - Fix: put this in the contract test and in a code comment.
+6. **Placement conflicts with the perf doc.** §4.1 and §6 put the controller in TalkingHead's main-thread `opt.update`,
+   fed by main-thread `AnalyserNode`s. performance-android §5.1 moves rendering to an OffscreenCanvas worker, because
+   main-thread relays caused **136–303 ms lip freezes** under module load.
+   - The controller should live **in the render worker**.
+   - Her RMS and the child's RMS should arrive from AudioWorklets over transferred ports (`AnalyserNode` does not exist in
+     workers).
+   - Link and module events can be posted from the main thread. A 100–300 ms stall there is tolerable for behaviour, but not
+     for lips.
+7. **Output-route latency applies to behaviour too.** The sibling's signed, per-route `latencyComp` delay line (audio-to-face
+   G-2) must also delay prosody-locked behaviour: accent nods, phrase blinks and the brow flash. Otherwise, on BT earbuds the
+   head nods 100–250 ms before the stressed syllable is heard, which reads as anticipation, not emphasis.
+
+### GR-3. Performance claims
+
+- **The controller's µs numbers are real, but they are not the budget that matters.** The behaviour layer's cost lives in
+  three places:
+  - TalkingHead + three: about **4 ms p50 / 19 ms p95** of main-thread JS at 4× CPU throttle [M, performance-android §3.4];
+  - GPU morph evaluation;
+  - the compositor.
+
+  Rewrite §0-10 as "the controller is negligible; the behaviour layer's cost is the morphs it keeps active".
+- **Active morphs cost GPU time; zero morphs are free.** three r180 skips zero influences (`if (morphTargetInfluences[i] != 0.0)`
+  in `morphtarget_vertex.glsl.js`) [V].
+  - The behaviour layer keeps about 6–14 influences non-zero at all times:
+    - the rest smile on L/R;
+    - asymmetric pairs;
+    - brows while listening;
+    - **gaze, because TalkingHead drives the eyes with `eyeLook*` morphs, not bones** (`eyesRotateX/Y` map onto
+      `eyeLookIn/Out/Up/Down`, l. 2316–2325) [V].
+  - So budget against the active count, not the 52 shipped.
+- **"Dropping micro-saccades saves eye-bone updates" (§4.6) is wrong twice.** In TalkingHead, gaze is morphs. And a bone
+  rotation costs effectively nothing next to skinning, which runs every frame regardless. The real reason to drop them below
+  220 px is that tier B renders at **DPR 1 without MSAA** (performance-android §4). There, a sub-pixel iris move draws as edge
+  shimmer, not as motion. That reason is visual, not performance.
+- **The F0 cost leaves out resampling.** The bench runs at 16 kHz; the Android context runs at 44.1/48 kHz.
+  - Decimating first is cheap (a short FIR).
+  - Running the same autocorrelation at 48 kHz is about 9× the work.
+  - The estimator belongs in the worklet or the worker, not on the main thread.
+- **Allocations and log.** `update()` allocates about 10 small objects per frame (the `bs` object, the closure, the `drift`
+  array, the return value), and `S.log` grows without bound. Both are harmless in Node; on a phone they add GC pressure over a
+  40-minute lesson. Use a ring buffer for the log and reuse the output object.
+
+### GR-4. Rig and asset consistency
+
+1. **The B-lite morph list (performance-android §3.3, `bench/perf/pipeline.mjs` `LITE`) cannot render this behaviour layer.**
+   It keeps `cheekSquintLeft` but not **`cheekSquintRight`**, so every warm/proud/excited smile is lopsided by 0.12–0.35 ×
+   intensity on one cheek. It also drops all 8 `eyeLook*` shapes and `eyeWide*`. With TalkingHead's morph-driven gaze, that
+   means **no gaze at all**, and no lid-follow on look-down (the §2.9 "dead eyes" item) [M, list diff].
+   - Fix: add `cheekSquintRight` and the 4 `eyeLookDown/Up` shapes (lid-follow).
+   - Drive gaze through eye bones in B-lite.
+   - Drop `eyeWide` from `excited` when the shape is absent.
+2. **Who rotates the eyes is unresolved.**
+   - character-creation §3 specifies bones for rotation plus `eyeLook*` for lids.
+   - TalkingHead uses `eyeLook*` for rotation.
+   - §4.7 here says "eye + head bones".
+   - Pick one: bones rotate, and `eyeLook*` is driven at **lid-follow gain only**. Then add a per-character degrees → morph
+     calibration to the `behaviour` manifest. The controller outputs degrees; a 0.28 `mouthSmile` or a 10° look means
+     different things on different meshes.
+   - The same applies to the emotion table: add per-shape gains per character, not only `browGain`.
+3. **Head motion should go through TalkingHead's pseudo-morphs (`headRotateX/Y/Z`, `bodyRotate*`), not raw bone writes.**
+   `opt.update` runs after `mixer.update` and `updatePoseDelta`, but also after `dynamicbones.update` (l. 2737–2745) [V].
+   Bone writes there leave dynamic hair one frame behind the head.
+4. **The kept `pose` template is random motion.** It switches body pose (`side`/`hip`/`wide`/`straight`) every 5–30 s
+   (l. 424–430) [V], which contradicts design rule 1. In a bust view that shows as a shoulder shift mid-sentence. Pin
+   `straight`, or change pose only on `idle` or state changes.
+5. Minor: the random jitter runs in every view except `full` (`viewName !== 'full' || isAvatarOnly`, l. 2683), so also in
+   `mid`, not only `upper`/`head` as §4.7 says.
+
+### GR-5. Uncanny-valley risks for children that the doc under-weights
+
+1. **The floor-holding evidence came from big head turns on a robot with no eyes.**
+   - Andrist 2014 ran on a **NAO with no articulated eyes**. Aversions were **head** motions of about 20° (up), 28° (side) and
+     22° (down). Intimacy aversions were scaled ×0.4 [V, §3.2]. n = 10 per condition, between-subjects, adults [V].
+   - This controller averts mostly with the eyes: side 12°, with the head following only 30% (3.6°). On the 160 px tile that
+     is a **2.4 px** iris shift and about 5 px of nose travel. A 20° head turn moves the nose about 27 px [M, geometry].
+   - The 608 ms effect therefore cannot be assumed to transfer.
+   - Fix: on small tiles, carry floor and cognitive aversions **head-led (≥10–15°)**. Keep eye-led motion for intimacy
+     aversions only, which mirrors Andrist's own ×0.4.
+   - Note also: aversion never held the floor for the full 2–4 s pause; it delayed interruption by about 280 ms [V].
+2. **Eye-roll risk.** An upward cognitive aversion (45% of draws, eyes −10°), combined with the listening `browInnerUp`
+   +0.08, is close to TalkingHead's own 🙄 recipe (`eyesRotateX −0.8` + `browInnerUp`). For a B3–B4 child who has just answered,
+   a look that reads as contempt is the worst possible signal **[I]**.
+   - Use head-led, lid-following, slower (≥150 ms) upward aversions.
+   - Bias B3–B4 to side or down.
+   - Add "did she roll her eyes / was she annoyed?" to E-B1.
+3. **Smiling through bilabials ×0.4 (§3 rule 9) flickers the smile at syllable rate.** At 4–5 bilabials/s, a stepwise ×0.4
+   pulses the cheeks **[I]**. Close the lips with `mouthClose`/`mouthPress` layered over the smile, scale only
+   `mouthSmile*` (not cheek or eye squint), and smooth the factor with a ≥60 ms attack and ≥120 ms release.
+4. GR-1 items 3, 4 and GR-4 item 1 are uncanny defects, not just bugs: the smile snap, sclera-only eyes and a lopsided smile.
+   Each one needs an automated frame check (a per-frame delta cap, an eye-in-head clamp, an L/R symmetry bound), because a
+   blind child panel will not tell you *which* defect made her "weird".
+
+### GR-6. Licences
+
+- **TalkingHead: MIT** [V, `LICENSE`, v1.7.0]. Vendoring patches is fine. Keep the notice.
+- **Greta: GPL-3.0 on `master`** [V, `LICENSE` in the clone]. The `master-lgpl` branch was not re-checked here.
+  - Using the *rules as facts* (thresholds, the signal → backchannel shape) is fine.
+  - **Do not vendor `rulesfile.xml`, the Java, or the NVBG `.xsl`.** The `bin/NVBG` folder carries no licence file of its
+    own; NVBG is USC ICT's (Virtual Human Toolkit) [S]. Treat it as all-rights-reserved and take ideas only.
+- ARKit blendshape **names** are an interoperability vocabulary; no trap. No other third-party code is used by this doc.
+
+### GR-7. Evidence that is stated more strongly than its source
+
+- "2D agents (g = 0.38) beat 3D (g = 0.11)": Castro-Alonso et al. 2021 say 2D "**tended to** be more effective" over
+  **32 effect sizes, N = 2104** [S, abstract via ERIC/Springer]. That is a moderator trend, not an established win.
+- Andrist floor-holding: the text gives 608 vs 329 (static) vs 327 (bad timing); the figure prints 331 for static [V]. The values differ (329 vs 331); the arms are not swapped, so §0-2's "swap" wording is wrong.
+- Brink et al. 2019 used **videos of robots** (machine-like vs very human-like), n = 240, ages 3–18 [S, abstract]. The
+  transfer to a stylised on-screen tutor is inference **[I]**.
+- Hömke 2018 is verified as cited (208 vs 607 ms; β = −2.86, SE 1.42, p = .044; VR; nobody noticed) [V].
+
+### GR-8. Production effort (missing from the doc) **[I]**
+
+| work | effort |
+|---|---|
+| Fix GR-1 and GR-2; port the controller to the render worker; worklet RMS taps; event-suppressed contract test; heavy-tailed-dt and real-rate sim arms; amplitude / delta / clamp / symmetry invariants | ~2–3 engineer-weeks |
+| Per-character calibration: deg → morph, per-shape gains, a 5-emotion × 3-size visual QA, a B-lite variant | ~2–3 tech-artist days per character, so ~3 weeks for 6 characters |
+| E-B7/E-B8 on two ₹10k phones (trace + AEC A/B) | ~1 week |
+| E-B1, E-B2, E-B6 child and parent studies (consent, recruitment, ≥3 regions for E-B6) | 4–8 calendar weeks; the critical path |
+
+### GR-9. Checked and found sound
+
+- **Blinks survive low frame rates.** 0% of 232–270 blinks per run were never shown ≥0.9 closed at 15/20/24/30 fps (min
+  peak 0.94 at 15 fps) [M `snap.mjs`].
+- **The listening blink rate does not depend on per-state style overrides.** With `{}` and with `{speaking: 24}` it was
+  19.1 and 18.0/min against a target of 18 [M `merge.mjs`].
+  - `eyeBlinkLeft` alone takes `eyeSquintLeft × 0.3` (0.061 L−R at excited B1), so one eye is slightly more closed during
+    a smile. It is small; apply it to both lids.
+- **The accent detector is not refractory-bound on real voice.**
+  - 0.42 accents/s overall (≈0.6–0.8 per second of speech), 0.07 strong/s, 13 phrase pauses/min across the 10 clips
+    [M `realaudio.mjs`].
+  - It is **level-dependent**: at gain 0.3 the rate falls to 0.14/s. The absolute `voiced > 0.012` gate needs
+    normalising to the stream's running level (the remote level after Opus/AGC is unknown).
+- **The TalkingHead hooks are verified.**
+  - `opt.update(dt)` is called after the mixer and pose and before `updateMorphTargets` (l. 2740–2744), so writes land in
+    the same frame.
+  - The volume head bob is gated on `isEyeContact` (l. 2700).
+  - `mtRandomized` is the 20 morphs listed, with jitter of `(1 + vol/255)·rand/5`.
+- **The §4.6 geometry arithmetic is correct.** The problem is the nod amplitude actually produced (GR-1 #2).
+
+### GR-10. Corrections for the main loop
+
+1. §4.7 code: `head.mtRandomized = []` crashes TalkingHead's frame loop. Patch the jitter block with a length guard (vendored patch).
+2. Nod impulse: use fixed 4 ms substeps with a peak-normalised impulse. The current code yields 0.75° for "3°" at 30 fps (0.24° at 15 fps). Add an amplitude invariant.
+3. Emotion transitions must cross-fade (the current cue swap drops the smile 0.19 in one frame). Add a per-frame delta-cap invariant.
+4. Clamp gaze: eye-in-head ±25°/+20°/−25°, head ≤20°, target computed in 3D. The L2/L3 layouts currently produce ±64° eye pitch.
+5. The controller clock must be the stamped audio clock or `performance.now()`, never the sum of clamped dt. Clamping loses 0.47–1.39 s per turn under realistic long frames and drops yields.
+6. §4.2 "`output_audio_buffer.started` = first audio played" is wrong. Drive speaking/stopped from the voice-tap RMS gate; events are hints; add a contract test with the events suppressed.
+7. THINKING aversion onset is ~1.1–1.5 s after the child stops on the wire (`silence_duration_ms` 500–1000 + network), not 0.33 s. Use the local mic tap for onset, and report the sim metric from the child's last voiced frame.
+8. "Barge gaze 33 ms" is from the event. Use an echo-gated local mic tap for the look.
+9. TurnClock: measured voice rates are 9.3–17.6 cp/s (numerals ~9.5, Devanagari ~17), not ±15%. With those rates the sim fails E-B3 (45/670 <1.0 s). Count spoken units, estimate online, and check `response.done` audio usage [U].
+10. Move the controller into the render worker with worklet RMS ports, per performance-android §5.1. Apply the per-route `latencyComp` to prosody-locked nods, blinks and brows.
+11. §0-10 / §4.6: the controller's cost is negligible; the real cost is TalkingHead + three (≈4 ms p50 at 4×) and active morphs. TalkingHead gaze is `eyeLook*` morphs, not bones. Micro-saccades are dropped below 220 px for DPR-1 shimmer, not for performance. The F0 cost excludes resampling and must stay off the main thread.
+12. The B-lite `LITE` list lacks `cheekSquintRight`, `eyeLook*` and `eyeWide*`, which gives a lopsided smile and no gaze or lid-follow. Fix the list or drive gaze by bones.
+13. Decide eye rotation = bones, `eyeLook*` = lid-follow. Add per-character deg→morph and per-shape gains. Drive the head through `headRotate*` pseudo-morphs. Pin TalkingHead's `pose` template.
+14. Aversions on small tiles must be head-led (≥10–15°): Andrist's effect came from 20–28° head turns on an eyeless NAO, n = 10 per condition. Bias B3–B4 cognitive aversions away from "up" (eye-roll risk).
+15. Bilabial smile scaling: smooth it and scale only `mouthSmile*`, to avoid syllable-rate smile flicker.
+16. Licence: do not vendor Greta's GPL rule files or NVBG's XSL (no licence file; USC ICT). Take the ideas only.
+17. Soften "2D beats 3D" to "tended to" (k = 32, N = 2104). Fix the Andrist "swap" wording (text 329 vs figure 331).
+18. Add a production-effort line: ~2–3 engineer-weeks, plus ~3 tech-artist weeks for 6 characters, plus 4–8 weeks of child studies on the critical path.
+
+**Sources for this review:** TalkingHead source as above (https://github.com/met4citizen/TalkingHead); three.js r180
+`src/renderers/shaders/ShaderChunk/morphtarget_vertex.glsl.js`; Andrist et al. 2014 PDF (link in Sources) §3.2 and §5;
+Hömke et al. 2018 (link in Sources); Castro-Alonso, Wong, Adesope & Paas 2021, *Educ. Psychol. Rev.*,
+https://link.springer.com/article/10.1007/s10648-020-09587-1 (abstract); Brink, Gray & Wellman 2019,
+https://pubmed.ncbi.nlm.nih.gov/29236300/ (abstract); Azure realtime audio how-to (server VAD, `silence_duration_ms`),
+https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/realtime-audio [S]; OpenAI VAD guide,
+https://developers.openai.com/api/docs/guides/realtime-vad [V]; Chromium remote-stream-to-WebAudio issue crbug 933677,
+via https://dev.to/orca_forge/browser-voice-interaction-ai-pitfall-guide-2026-16-common-traps-with-aec-getusermedia-and-40hd
+[S]; Greta repo licence (https://github.com/isir/greta, `LICENSE` on master) [V].

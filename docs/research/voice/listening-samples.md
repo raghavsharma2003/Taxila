@@ -453,3 +453,145 @@ Internal (read for this task):
 - `docs/research/voice/voices-hindi.md` §3, §5, §6 (sibling catalogue, objective gates, shortlist, prescreen pack)
 - `docs/research/voice/probe-voices-hindi.mjs` (session shapes; legacy transcription route)
 - `context/measurements.md` (`realtime-teacher-bakeoff`, `realtime-audio-in`: brevity-last, language mirror)
+
+---
+
+## Review
+
+Skeptical review (voice-AI engineer + child-safety), 2026-10-02. Tags as above; **[R]** = reviewer check of arithmetic or an external source.
+Severity: **BLOCK** = fix before any panel or before the finding is relied on; **FIX** = correct in this doc; **NOTE** = limit to carry forward.
+
+### A. Recitation and prompt-leak risk
+
+1. **BLOCK. §2 is a ready-made phrase bank sitting in `docs/research/`.** The three passages are polished, teacher-shaped, code-switched
+   sentences, including an opener that references the child's earlier remark, a tag-check tic, a "name the term once" move and a
+   choice question. The doc's own law says such text is recited. The warning "never copy into a prompt" is a sentence, and
+   build agents that read `docs/` for context will not honour it. Mitigations that do not rely on obedience:
+   (a) move the stimuli to a path no agent prompt, kit builder or persona assembler reads (generator + KEY only), and reduce §2 to
+   the shape table, with the texts replaced by a pointer;
+   (b) add a **recitation lint** to the gates: fail if any run of >= 5 consecutive words from `PASSAGES` appears in persona, kit
+   or prompt source. This is "safety by predicate" and costs nothing;
+   (c) record that the `gen-listening-samples.mjs` narrator-mode rule (read the user text verbatim) must never be reachable from a live
+   session builder. In a live teacher that rule would read the child's own words back.
+2. **FIX. The panel will calibrate the team's ear on one set of tics** (the discourse markers and the tag-check). If those
+   passages win, the next persona edit will be tempted to reproduce them. Record in §10 that the ear test judges *voice*, and
+   that nothing about the passage wording is evidence for any wording in the live teacher.
+3. **FIX. Fabricated shared history.** P1 models a teacher who remembers a specific thing the child said last time. In
+   production a callback must come only from a verified memory record, never from invention. A child cannot tell the
+   difference, so a fake callback is a small deception, and it is exactly what the relational OS will be tempted to
+   generate. State the rule in the doc: stimulus shape only, with provenance required in production.
+4. **NOTE. The voice note is described as "a description, not a line she could say".** Its human biography details (age
+   band, region, first language, a child sitting beside her) are not recitable sentences, but they are claims of a human life.
+   They must not be allowed to become first-person content (see B).
+
+### B. Human-likeness turning into deception
+
+1. **BLOCK. The pack's headline axis rewards passing as human, with no disclosure in the consent path.** §2 and §8 correctly keep
+   disclosure out of the *audio* (a spoken disclosure unblinds). But "disclosure is a separate gate" names no gate, and §8
+   tells the runner not to say "which voices are AI". Blinding the *engine* is standard; blinding the *fact that the voices are synthetic*
+   from child and parent listeners is different. Fix: the consent text and the page's first screen must say that the clips are
+   computer-generated, possibly mixed with a recording of a person, without saying which. OpenAI's TTS terms require clear disclosure to end users that
+   the voice is AI-generated [S: https://developers.openai.com/api/docs/guides/text-to-speech [R]]. The same holds for any
+   Azure deployment of these models. This pack is a research use, but the panel's end users are children.
+2. **BLOCK. The human anchor (§9.1) needs its own consent.** A recorded teacher reading P1-P3 is a person's voice. It needs written
+   consent that names the use (comparison against synthetic voices), the storage, the retention and the right to withdraw. It must also
+   be explicit that the recording is never used to train or clone. Cloning a real teacher's timbre is a different product and a
+   different consent.
+3. **FIX. "Indistinguishable from human" (§7 ship gate, from Gurukul) must not be an optimisation target for the product.** The
+   child-safety floor says the teacher never denies being an AI. A voice built to be unfindable as synthetic makes the in-voice
+   disclosure the only defence, and it makes sincere questions ("are you a robot?") the highest-stakes test in the whole voice stack.
+   Re-word the target as natural, clear, Indian-sounding and warm, and add a live check that a sincere question about
+   being an AI gets a truthful answer *in the chosen voice*, since a voice cannot be certified from read-aloud clips.
+4. **FIX. The warmth axis has no ceiling and no counter-axis.** The relational OS bonds with a child "over months". Maximising rated warmth
+   with no axis for clinginess, over-familiarity or pressure to continue optimises attachment, with no check on dependence. Add a
+   rater item (or a pilot note field) for "too much" and for pushy or needy delivery, and carry NEVER MANIPULATE and the no-romance
+   register into the voice brief as constraints on prosody as well as on words.
+5. **NOTE. Imagined human attributes in speech.** The persona details in the voice note should shape *sound*. A realtime model given
+   a human-teacher biography tends to narrate it. Test, with the live instruction set (not the read-aloud one), that the
+   teacher does not claim a body, a school history or a home.
+
+### C. Child-safety gaps
+
+1. **BLOCK. Children's personal data in the rating export.** The export holds initials, age band, home language, device and optional place, and
+   the guidance says "any static host" and "Copy JSON". For under-18s, India's DPDP Rules 2025 require verifiable parental consent, and
+   the Act bars tracking and behavioural monitoring of children; the children's provisions phase in about 18 months after the
+   Rules, roughly May 2027 [S: https://www.medianama.com/2025/01/223-data-protection-rules-2025-children-data-india/ ;
+   https://www.dpdpindia.in/dpdp-children.html] (secondary sources; confirm against the Gazette text). Compliance is
+   deprioritised by the owner, but this panel collects child data now. Minimum: guardian consent recorded in the export, no
+   place field for under-18s, age band only, JSON held on Azure (the Azure-only directive), a deletion path, and a note that exports
+   are not emailed around.
+2. **FIX. Listening safety.** Clips are matched at -24.5 LUFS, which is quiet on phone speakers, so a child will raise the volume, and
+   the degraded controls (band-limited, crushed) and any loud outlier are then played at that raised level. Add volume guidance
+   and keep the degraded controls from being the loudest peak (true peak is -1 dBTP).
+3. **FIX. The stimuli are all cheerful teaching.** Nothing tests how the voice sounds when the child is upset, frustrated, bored or
+   in distress, the cases where mismatched warmth does harm and where the helpline hand-off (Childline 1098, Tele-MANAS 14416) must
+   sound steady, not chirpy. The voice choice is made on happy read-aloud only. Add a distress-register block as a gate, even if
+   unrated by children (adults and teachers rate it).
+4. **FIX. Ages.** The panel instructions allow classes 3-8 children with sliders; §8 itself says ages 6-9 need picture choice. Make
+   10+ a hard floor for this page, enforced in the profile step.
+5. **NOTE. A rater's "real Indian teacher" score from a child is a statement about the child's beliefs.** Do not debrief children by
+   revealing "which was the robot" as a game outcome. Debrief that all were generated or recorded, as in B1.
+
+### D. Claims without evidence, or not supported as worded
+
+1. **FIX. "Read all 12 scripts verbatim" (§0.1) is verified on text, not on audio.** Similarity 1.00 is against the model's *own
+   transcript*, a separate output stream. Realtime audio and its transcript are known to diverge (dropped tails, extra audio, language
+   switches) [S: https://community.openai.com/t/the-output-audio-does-not-fully-match-the-output-text-it-ends-early/975651 ;
+   https://learn.microsoft.com/en-us/answers/questions/5597139/ [R]]. For Roman passages (P1/P2) the ASR cannot check it (§4.3), so
+   audio-verbatim is **unverified for 8 of 12 realtime clips**. Re-word the claim, and report ASR-vs-script similarity for the two
+   Devanagari realtime clips with P3, plus duration against words per second as a truncation check.
+2. **FIX. §0.2 inconsistent basis.** Loudness spread uses `sage` -32.0 and `alloy` -18.1 (clip extremes), whereas the §5.1 table gives
+   per-voice means (-29.5, -18.4). The 14 LU claim holds for clips, but label it as extremes. Also, "louder clips are routinely heard as clearer
+   and better" is stated without a source. It is well supported in the loudness-perception literature, so cite one.
+3. **FIX. LRA is misused as a fade measure (§0.6, §5.1, §5.3).** EBU Tech 3342 advises against LRA for programmes shorter than 1 minute,
+   and warns of misleadingly high values with leading/trailing silence or isolated utterances [S:
+   https://tech.ebu.ch/docs/tech/tech3342.pdf [R]]. These clips are 13-37 s with deliberate pauses, so LRA of 6-9 LU reflects
+   pause structure as much as level. "`sage` fades ~10 LU over 25 s" is not derivable from LRA. Plot the 3 s short-term loudness trace
+   per clip before using the word *fade*, and drop the realtime-vs-mini LRA comparison as a quality signal.
+4. **FIX. The 5/10 vs 0/4 pronunciation split (§0.4).** Arithmetic is right (one-sided Fisher 252/2002 = 0.126 [R]), but: it
+   conflates engine with voice (4 realtime voices vs 10 TTS voices, n = 1 each); the unit is one ASR draw of an LLM-ASR from
+   the same model family as the voices, so ASR agreement may reflect shared text priors; it was not re-run to estimate ASR variance;
+   and it leans on an *excluded smoke take* as corroboration, which is selective use of a discarded sample. Keep it
+   as a listening prompt, remove the smoke take from the argument, and re-transcribe each clip several times to see the ASR's own spread.
+5. **FIX. §0.5 latency.** Median TTFA 909 ms is for a text-in script read with turn detection off. It excludes VAD, endpointing, the
+   child's audio input and network from India, so it must not be quoted against the live-loop budget. §9.5 says part of this; put it in the headline.
+6. **FIX. Cost (§5.5).** The realtime price is flagged unverified for 2.1, the TTS per-minute rate is an inference from a sibling doc, and
+   the arithmetic reproduces ($0.92 [R]) only under those assumptions. Present it as a rough order of magnitude.
+7. **NOTE. "No human has rated anything" is stated honestly, but §10's decisions "enabled" and the §11 measurement entry should not enter
+   `context/` as findings.** Log them as *instrument and generation facts*, not as voice results.
+
+### E. Things the realtime API cannot do, or that the pack does not test
+
+1. **BLOCK. The pack tests narration, not the live lane.** Realtime sessions were driven with a *read-verbatim* rule over user text.
+   In production the model composes the words and prosody for a child's turn. The doc concedes this in §9.3 but §10 still treats the
+   panel as choosing the live voice. Voice timbre may carry over; accent steering, pacing and warmth under generation are not
+   established. The **instruction-on/off control exists only for mini-tts**, so the claim that an accent note helps is untested for
+   the lane that matters. Run an off-note arm on realtime, and a generated-reply round, before the voice is chosen.
+2. **FIX. Pronunciation levers.** Neither engine takes SSML, a lexicon or phoneme input, so if a conjunct such as the §0.4 term is mispronounced
+   there is no direct fix on the realtime lane. The mixed-script lever only exists on a cascade (brain text, then TTS). The doc
+   should say what happens if realtime fails the Hindi axis: the options are a cascade for Hindi-mode or accepting a flaw, and that
+   decision belongs in §10 with a reversal condition.
+3. **FIX. The "same teacher" twin (§10 row 2).** It assumes the mini-tts and realtime voices of the same name share a timbre.
+   `human-likeness.md` §9 lists this as unverified, and the doc's own contrast is the only test. Until then, narration and
+   live should not be presented to children as one person.
+4. **FIX. The "Hindi pronunciation" axis rated by non-Hindi-home listeners is not a valid pronunciation measure.** The scorer has a
+   block C table but no stratum for fluent Hindi listeners. Score that axis only on fluent raters, and report children and parents separately.
+5. **NOTE. A fixed regional register.** A "North-Indian primary teacher" note will not necessarily suit RBSE or other regional
+   classrooms and may read as a different dialect to Hindi-belt rural families. The panel's strata should include that, or the claim "real
+   Indian teacher" should be scoped as "one regional register".
+6. **NOTE. Barge-in, overlap and noise.** The pack contains none of the live behaviours that decide whether a voice feels human to a child: interruption,
+   overlapping speech, backchannel timing. The harvested law bans synthetic backchannels, so this is a deliberate gap, but it means
+   "human-like" cannot be inferred from any result here.
+
+### F. Corrections list for the main loop
+
+- Reword §0.1 to "text-verbatim by the model's own transcript; audio unverified for P1/P2".
+- Label §0.2 extremes; cite loudness-preference literature.
+- Remove or re-derive the "fade" claim from short-term loudness traces; stop using LRA on clips under 1 minute.
+- Strip the smoke take from §0.4; add ASR re-draws; keep as a prompt for the ear only.
+- Move stimuli out of agent-readable docs; add a 5-gram recitation lint to the gates.
+- Add disclosure of synthetic audio to the panel consent and first screen; add human-anchor consent terms.
+- Add child-data handling (guardian consent field, no place for minors, Azure storage, deletion), volume guidance, 10+ floor.
+- Add a distress-register block and a "too much / needy" rater item; add a sincere "are you an AI" in-voice check.
+- Add realtime off-note arm and a generated-reply round before any live-voice decision; state the fallback if Hindi pronunciation fails.
+- Log §11 entries as instrument and generation facts, not as voice findings.

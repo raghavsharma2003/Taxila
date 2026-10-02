@@ -788,3 +788,333 @@ Measurements in this session:
 - ffmpeg 6 s preview proxy built from `character-pipeline-proto/results/qa_sheet.png` and
   `../voice/prescreen-2026-10-02/V01-s3-mixed.ogg`.
 - ebur128 loudness over the 34 `V*-s3-mixed.ogg` prescreen clips. The blinding key was not opened.
+
+---
+
+## Graphics review
+
+Reviewer stance: adversarial real-time graphics engineer, 2026-10-02. Scope: wrong performance claims, licence traps,
+lip-sync latency and desync risks (preview, greeting, hand-off, then the live WebRTC lesson), uncanny-valley risks for
+children, and production effort. Several sibling docs were reviewed after this one was written. Their findings apply
+here, and this review cites them rather than repeating them:
+- `performance-android.md` § Graphics review P-0 to P-8;
+- `web-3d-talking-heads.md` R-1 to R-10;
+- `character-creation.md` R-0 to R-10.
+
+New this session:
+- **[M]** `selection-proto/preview-size-probe.py` (results in `preview-size-probe.json`, n = 1 encode per cell, libx264
+  `-preset slow`, 6 s, 24 fps);
+- **[M]** an ffprobe/edit-list check of muxed MP4s;
+- **[M]** a re-run of `roster-lint.mjs`, which reproduced the §6.3 and §6.4 tables exactly;
+- **[V]/[S]** web sources listed at the end.
+
+### G-0. The corrections that change the build (ranked)
+
+1. **The tutor's first words are spoken by a frozen face** (§0.9, §5.2 "choose").
+   - The name greeting plays "over the portrait" for about 3 s, while the GLB loads. That is the first time the
+     chosen teacher speaks to the child, and her mouth does not move.
+   - An adult voice coming from a still human face is the "talking photo" register that `performance-android.md` P-6.6
+     already flags as creepy for older children. Here it lands on the highest-attention moment of the relationship.
+   - **Fix:** the tutor never speaks without a moving mouth.
+     - Speculatively fetch, parse and warm up (`compileAsync` plus one hidden render, P-2.2) the GLB of the tutor whose
+       preview has played to ≥ 80%. Keep at most one at a time, so the "one character in memory" rule still holds.
+     - On "choose", if that head is warm, the greeting plays on it with a pre-baked `FaceFrame` track
+       (`audio-to-face-ml.md` §5.7).
+     - If it is not warm, the **app voice** (not the tutor) fills the gap with a confirmation line and a non-face
+       animation. The tutor's name greeting waits until the 3D head is ready.
+2. **The preview and the live voice may not be the same person.**
+   - Previews and greetings use `ttsTwin`, and lessons use `realtimeVoice`. Marin and cedar exist as names in both
+     `gpt-4o-mini-tts` and the realtime models **[S, OpenAI TTS guide via search]**. A shared name is not a shared
+     rendition: these are different models, and Azure availability of each name on mini-tts is unverified **[U]**.
+   - A child who picks a voice and then hears a different-sounding person in the first live turn has been shown the
+     wrong product.
+   - **Fix:** run the doc's own ABX gate (≥ 70% "same person", n ≥ 20) between `ttsTwin` and `realtimeVoice` before any
+     preview is rendered.
+     - If it fails, generate preview and greeting audio **with the realtime model itself**: a scripted out-of-band
+       response, checked by ASR against the script.
+     - The cost is still cents per child **[U]**.
+3. **Preview resolution is too low for the tile that plays it.**
+   - The 2026 ₹10k band is 720p panels at about DPR 2 (`performance-android.md` P-2.7). A 360 dp wide screen is 720 px.
+   - The B1-B2 "enlarged playing tile" is about 240-300 dp, which is 480-600 px. A 320² clip is upscaled 1.5-1.9×, and the
+     lips, about 15% of frame width (≈ 48 px at 320²), are where CRF 30 blocking and 4:2:0 chroma smear show first.
+   - **Fix:** encode at **512²**, H.264 **Main** profile, CRF 26-28.
+     - The Android CDD requires Main Profile Level 3.1 decode on every H.264 device **[V CDD §5.3.4]**, so "baseline for
+       compatibility" buys nothing.
+     - 512² is 1,024 macroblocks per frame, well inside L3.1.
+     - Measured cost: see G-2.1. It fits the ≤ 200 KB budget only with Main.
+   - Thumbnails go up from 256 px to 384 px (or `srcset` by DPR) for the same reason.
+4. **The device-tier filter in `eligibleTutors()` can empty the picker** (§6.3). See G-3.1.
+5. **The fallback names a tier that v1 does not ship.**
+   - §5.2 hand-off says "stay on tier C or D", and `look.tiers` makes `C` required. But `performance-android.md` P-0.8 and
+     P-7 cut tier C from v1.
+   - **Fix:** use B, D (illustrated plate, not photoreal) and E. Make `C` optional in the type.
+6. **"Choose → live 3D face ≤ 3 s" is arithmetically infeasible on a first web visit.**
+   - Transfer alone is 1.5 MB × 8 / 6.2 Mbps = **1.94 s**, before TTFB and slow start.
+   - Then add meshopt decode, KTX2 transcode, parse, morph-texture packing on the first render (P-2.2; up to about 1.3 s
+     of main-thread JS at 4× in the mpfb arm) and compile.
+   - Realistic total: **3.5-4.5 s [U]**. The APK path (bundled GLB) can meet 3 s; the web path needs the speculative
+     fetch from G-0.1.
+   - The "0.5-1.8 s compile" figure is itself misattributed: it is mostly morph packing, and CDP does not throttle the GPU
+     process (P-2.2).
+
+### G-1. Verified as stated
+
+- **`roster-lint.mjs` reproduces** [M, re-run]. The current fit fails classes 1-2 (1 eligible), the proposed fit fails 0
+  of 9, the bias-simulation shares match §6.4 to the decimal, and stickiness 0.6 gives min shares of 9.8 / 8.8 / 7.9 / 7.7.
+- **The voice cannot change mid-session** [V, OpenAI realtime-conversations guide]: "Once the model has emitted audio in
+  a session, the `voice` cannot be modified for that session." The 409-during-live-session rule (§5.3, §7.4 #6) is forced
+  by the API, not just good hygiene.
+- **A realtime speed control exists on OpenAI's API** [S, OpenAI realtime reference via search]: `session.audio.output.speed`,
+  range 0.25-1.5, default 1.0. It is post-processing and changes only between turns. Azure's how-to (updated 2026-09-23)
+  does not document it **[V absence]**, so §14 Q6 narrows to "verify Azure parity". Because it is post-processing, lips
+  derived from received audio stay in sync automatically.
+- **`requestVideoFrameCallback` is available in Android WebView 83+, Chrome 83+ and Safari 15.4+** [V MDN BCD]. Use it,
+  not `timeupdate` (which fires every 15-250 ms), for the waveform fill and the caption highlight.
+- **Muxed A/V is the right picker primitive.** One media clock beats any WebP-plus-audio scheme, and the preview path
+  needs no sync code. With two qualifications, both in G-4.1.
+- **MST scale licence** [S, Wikipedia; skintone.google]: the scale is CC BY 4.0. Taxila uses MST only as an internal
+  albedo gate and never shows swatches, so no attribution surface is needed. If swatches ever appear in parent UI,
+  attribute Ellis Monk. This closes the open item in `character-creation.md` R-4.
+
+### G-2. Wrong or overstated performance and size claims
+
+1. **The "2-3× the flat proxy" assumption holds at 320², but the doc's 320² is the wrong resolution** [M].
+   - The probe rebuilds the proxy (P0), then two harder arms:
+     - **P1** cross-fades cells on every frame, with blinks and head roll, so no frame is held;
+     - **P2** is P1 plus a rigid high-frequency layer (hair, fabric, pores) and a gradient background. It is a stress
+       stand-in, not a character.
+   - Video-only sizes in KB:
+
+     | arm | 320² CRF30 base | 320² CRF30 main | 512² CRF26 base | 512² CRF26 main |
+     |---|---|---|---|---|
+     | P0 (doc-style, frame-held) | 26.1 | 26.5 | 69.7 | 60.7 |
+     | P1 (continuous) | 39.3 | 31.2 | 114.8 | 81.9 |
+     | P2 (stress) | 58.8 | 46.6 | **193.8** | **134.6** |
+
+   - P2/P0 at the doc's settings is 2.25×, consistent with §10's [U].
+   - My P0 is 26 KB where the doc measured 45.6 KB. The doc's exact drift and preset are not recorded, so the ratios, not
+     the absolute values, are the finding.
+   - At the resolution the tile needs, Main saves **28-31%** over Baseline on the moving arms.
+     - 512² CRF 26 Main plus AAC 32 k (≈ 27 KB) is about **160 KB**, inside the 200 KB budget.
+     - 512² Baseline is about **220 KB**, outside it.
+2. **The APK bundle figures contradict each other.**
+   - §0.7 says 4 tutors × 3 languages fit in ≤ 2.4 MB (child previews only). §10 says ≤ 5 MB *including* the 15 s parent
+     previews.
+   - A 15 s parent clip is about 2.5 × 160 KB ≈ 400 KB. So 12 × (160 + 400) ≈ **6.7 MB** before portraits.
+   - **Fix:** bundle only child previews (≈ 1.9-2.4 MB). Fetch parent previews on demand in the Parent corner, which is
+     online-first. §0.7 says ≤ 0.8 MB for web and §10 says ≤ 0.9 MB; 4 × 160 KB + 4 × 30 KB = 0.76 MB, so use 0.8 MB.
+3. **"Four live heads ≈ 80 MB GPU, 12 MB download" misquotes the source and understates it.**
+   - The source (`web-3d-talking-heads.md` §8) says **six** GLBs at 2 MB.
+   - Its own review (R-5) puts real morph memory at about 35 MB *per character* for a head-only primitive (≈ 22 MB of it
+     JS heap). Four heads would be about **140 MB plus textures**.
+   - The conclusion (no live 3D on the picker) gets stronger. Fix the number.
+4. **"Tap → first frame ≤ 150 ms (cached)" has no mechanism behind it.**
+   - Swapping `src` on the one `<video>` tears down and re-creates the MediaCodec decoder on every tap. On low-end
+     MediaTek and Unisoc parts that is plausibly 50-200 ms on its own **[U]**, before the demuxer and the first IDR.
+   - **Fix:** concatenate a language's previews into **one MP4 with an IDR at each tutor's segment start**, and pad each
+     segment with 300 ms of silence and a held frame. Load it once as a Blob URL.
+     - A tap is then a keyframe seek inside a fully buffered resource, with no decoder re-init.
+     - Pause at segment end from `requestVideoFrameCallback`; the padding absorbs one frame of overshoot.
+     - It is one decoder for the picker's whole life; release it on leaving the picker, not after each `ended`.
+   - Keep the M-SEL-6 bar, but measure both designs.
+5. **"From Cache Storage or APK" breaks on media Range requests.**
+   - Media elements issue `Range` requests. Capacitor's Android `WebViewLocalServer` has a history of mishandling them:
+     not seeking to the offset, returning the full stream, and `int` overflow (issue #7007, closed "not planned"; PR
+     #5956) **[V GitHub]**.
+   - Service-worker-served cache hits need explicit range handling **[U for current Chrome behaviour]**.
+   - **Fix:** `fetch()` → `Blob` → `URL.createObjectURL()` for every preview and greeting. At under 1 MB per language
+     that costs nothing, and it removes both failure modes.
+6. **"Choose → greeting audible ≤ 200 ms" is route-dependent.**
+   - A2DP earbuds add 150-300 ms of output latency alone (`web-3d-talking-heads.md` R-2 **[U]**), so the bar is
+     impossible on Bluetooth.
+   - Starting an `HTMLAudioElement` adds media-pipeline initialisation on top **[U]**.
+   - **Fix:**
+     - Decode the greeting to an `AudioBuffer` at picker entry.
+     - Resume one `AudioContext` on the handover gesture.
+     - Start with `AudioBufferSourceNode.start()`.
+     - State the bar per route: speaker or wired ≤ 200 ms; Bluetooth measured and reported, not gated.
+7. **"Picker resident memory ≤ 15 MB" must be stated as incremental.** The WebView renderer's baseline is far larger.
+   Re-check the figure once the speculative GLB from G-0.1 is in, at about 35 MB or more (R-5). Picker plus one warm head
+   is then about **50 MB incremental [U]**: acceptable on 3-4 GB, but it must be measured on the Exynos 850 / T7250 phones
+   (P-2.7).
+
+### G-3. Bugs in the data model and §6.3 code
+
+1. **`t.look.tiers[deviceTier]` in the eligibility filter is wrong three ways.**
+   - **It is circular.** §5.2 runs the tier probe on the *chosen* tutor *after* choose, but eligibility needs the tier
+     *before* the picker renders. Only the stage-1 static tier (`performance-android.md` §6.1) exists at that point.
+   - **It empties the picker.** With tier C cut (G-0.5), a device whose stage-1 tier is C (for example GE83xx, which §0
+     there sends to C) matches **no** tutor. A Class 1 child then gets zero options.
+   - **It makes choice depend on phone price.** If tier coverage ever differs by character, children on cheaper phones
+     see fewer teachers. That is a representation defect M-AV-6 would mis-attribute.
+   - **Fix:** delete the tier term from eligibility. Release gate: a character goes `live` only when it ships every v1
+     tier (B, D, E plate), so tier coverage is all-or-nothing per character.
+2. **There is no minimum after filtering.** `pickCovering(el, max)` caps the count but never checks `el.length ≥ 2` for
+   B1. When the allow-list plus fit leaves one tutor, the result must route to the "your family chose" flow explicitly,
+   not fall through to a one-tile picker.
+3. **`rev` "bumps on any asset/persona change" and is "part of every cache key".** A persona-sheet edit would then
+   invalidate and re-render every preview MP4, GLB cache and greeting clip.
+   - **Fix:** key previews by `look.rev + voice.identityRev + previewScriptVersion`, and GLBs by `look.rev`.
+   - Persona edits must not touch media.
+4. **`faceStyle.idleEyeContact` has no cap.** "Long eye contact" for the senior male tutor (`character-creation.md` §3.2)
+   flows into the preview. Apply the G12 mutual-gaze cap (≤ 4 s continuous, `character-creation.md` R-6.4) to the
+   **preview render** too, and gate it in G-PREV.
+
+### G-4. Lip-sync latency and desync risks
+
+1. **Preview: "on the media clock by construction" needs two qualifications.**
+   - **Edit lists.** [M] ffmpeg's MP4s rely on an `elst` for audio priming: 1024 samples, which is **42.7 ms at 24 kHz and
+     21.3 ms at 48 kHz**. With Main/B-frames, a second video `elst` of 1024/12288 s = **83.3 ms** handles reorder delay.
+     Correct sync depends on the player honouring both **[U for WebView; Chrome is believed to]**.
+     - Encode audio at 48 kHz, which halves the priming exposure.
+     - Add a clap-and-flash marker clip to M-SEL-6: film the device at 240 fps; pass within +45 / −125 ms (BT.1359).
+   - **Output route.** The `<video>` element compensates for the audio sink's latency on Android **[U]**, but on A2DP that
+     compensation is device-reported and often wrong. The M-SEL-6 marker test must include a cheap TWS earbud arm.
+2. **The greeting on the 3D head (after G-0.1) is cached audio plus a baked track.**
+   - Key the track to `AudioContext.currentTime` minus the start time, offset by `outputLatency`, not to `performance.now()`.
+   - If "slower voice" plays the clip at 0.85, scale the track by the same rate. A wall-clock-keyed track drifts 15% per
+     second of speech.
+3. **Hand-off timing.**
+   - "After the greeting ends (silence), crossfade" fires on `ended`, which is when the *decoder* finishes. On A2DP the
+     last syllable is still audible for 150-300 ms.
+   - Gate the crossfade on local silence ≥ 300 ms after `ended + outputLatency` (P-4.6).
+   - Register the portrait to the 3D head pixel-for-pixel: render it from the B GLB with the same camera and lights, at
+     idle frame 0. Otherwise the 200 ms crossfade double-exposes two faces, the same failure as tier C's plate crossfade (P-6.4).
+4. **Live lesson.** No new risk is introduced here, but the doc inherits all of P-4: the face *leads* sound on Bluetooth
+   by 100-250 ms; use the `faceDelay` delay line from `media-playout` stats plus `outputLatency` plus the route table;
+   and gate tier switches on local RMS, not on `output_audio_buffer.stopped`.
+   - One addition. The parent and child perceive sync quality first in the preview, where it is near-perfect, and then
+     live, where it is not. The gap itself is a desync perception risk. See G-6.2.
+5. **Main-thread contention during the greeting.** GLB parse and morph packing (up to about 1.3 s of main-thread JS on
+   the mpfb arm at 4×) run while the karaoke caption and waveform animate. The audio keeps playing, but the captions freeze.
+   - Do parse and warm-up during the preview (G-0.1), never inside the greeting.
+   - Drive the waveform with CSS transforms keyed from `requestVideoFrameCallback` timestamps, so a stall freezes it
+     rather than desyncing it.
+6. **Loudness jump at the hand-off.** −24.5 LUFS previews are about 4 LU quieter than the processed prescreen voice
+   (−20.5 LUFS mean, §10). A child who hears the quiet preview and then the louder live voice gets an audible "different
+   person" cue at the moment of identity hand-over.
+   - Normalise previews and greetings to the **measured live realtime output loudness**, with true peak ≤ −1 dBTP.
+   - Keep the ±0.5 LU cross-tutor match.
+
+### G-5. Licence traps
+
+- **H.264/AAC.** Offline encoding with ffmpeg/libx264 (GPL) is a build tool, not shipped, so that is fine. Never ship
+  `libfdk_aac` builds.
+  - The AVC pool charges no royalty for titles under 12 minutes and none for free internet video **[S, Streaming
+    Learning Center / MPEG LA 2010 notice]**. The 6-15 s clips are clear even inside a paid subscription.
+  - Decoders are the OEM's licence. Record this in `rejected.md` only if someone proposes VP9/AV1 "for licensing".
+    Low-end Mali parts lack VP9 hardware decode in many SKUs **[U]**, which makes the swap a performance regression with
+    no legal gain.
+- **Preview renders inherit every asset licence of the GLB.** A CC-BY MPFB pack (hair 02/03, glasses 02, shirts 02/03,
+  per `character-creation.md` R-4) that appears in a preview MP4 needs the same in-app attribution as the GLB.
+  - Add `licences: AssetLicence[]` to `TutorCharacter.look`.
+  - G-PREV fails if any asset in the render lacks a recorded licence.
+  - Never render previews from TalkingHead sample avatars (non-commercial, `web-3d-talking-heads.md` R-8), not even as
+    placeholders in a build that could ship.
+- **Mixamo idle clips baked into preview video** are distribution of derived animation. Use the same sign-off as R-8's
+  bake, or author idles in-house.
+- **The 42-year-old tutor's new name** must pass the real-person and trademark check before any preview is rendered,
+  because renders bake the name into captions and audio. Re-rendering 6+ clips per rename is the cost of skipping it.
+
+### G-6. Uncanny-valley risks for children
+
+1. **The non-human rejection over-cites Mitchell et al. 2011.**
+   - The study is 48 adults rating a *robot* face with a human voice, and the reverse **[S abstract via Semantic
+     Scholar; sibling R-6.1]**. It did not test cartoon animals, and it did not test children.
+   - Feature animation pairs human voices with animals routinely, without reported eeriness in children **[U]**.
+   - The *same* logic predicts some eeriness for a stylised-human face with an "exactly human" voice, which is a smaller
+     realism gap but not zero.
+   - **Fix:** re-tag §6.3's and §11 #12's evidence as [U]. Keep non-human as an M-AV-1 arm. Require that M-AV-1 stimuli
+     are **voiced** tier-B captures with the real driver (sibling R-6.3), because a silent face cannot test a face-voice
+     mismatch.
+2. **The preview must not be better than the lesson.** If the factory renders previews with offline A2F-3D quality, or
+   Eevee/Cycles shading, the child chooses on a face the phone cannot produce. The first live turn is then a visible
+   downgrade, on lips above all (live HeadAudio closes 55 of 84 bilabials, `character-creation.md` R-5.4).
+   - Render previews **in headless Chromium with the tier-B GLB, the shipped shaders and lights, and the live lip driver**
+     (the same rule as P-6.5 for tier plates).
+   - Use the same framing as the lesson stage. If the lesson shows a PiP bust, the picker should not show a larger face
+     than the child will ever see again, because the enlarged tile is the most scrutinised view of the face in the product.
+3. **Lip-driver accuracy varies per voice, which biases the choice.**
+   - HeadAudio-class drivers depend on the voice: pitch and formants, and `speakerMeanHz` is in the model.
+   - A tutor whose preview lips track worse will lose share for reasons that are neither appeal nor representation, and
+     M-AV-6 will misread that as a representation failure.
+   - **Add to G-PREV:** bilabial closure capture and jaw-envelope r on each tutor's preview clip must be within ±10 pp and
+     ±0.1 of the cross-tutor mean.
+4. **"Gentle face ×0.5 on expression gain" removes exactly the wrong channel.**
+   - Tinwell et al. 2011 (*CHB*) found characters rated significantly uncannier when **upper-face** movement (brows,
+     lids, forehead) was limited **[S abstract via search]**.
+   - Halving brow and blink gain makes the face *less* alive while it is still talking. Halving viseme or jaw gain also
+     makes the lips look mistimed.
+   - **Fix:** "gentle face" scales **head motion and expression amplitude in the lower face only**, at ×0.5. It never
+     touches brows, blinks or visemes. Children who need less face get the still-portrait mode, which is honest stillness
+     with a caption and no mouth, rather than a damped face.
+5. **Previews need an alive idle.** A 6 s clip with no blink and no saccade reads as a mannequin at 512². Require ≥ 1
+   blink (TalkingHead's 50 / 100-300 / 100 ms template, rendered at 24 fps or more so the close phase survives;
+   `character-creation.md` R-5.1), gaze breaks, and the eye catch-light (P-6.1).
+   - Add these as G-PREV checks on the `FaceFrame` track used for the render.
+6. **The B4 picker (ages 13-15) is past Brink's age-9 boundary.** Those children will tap through every preview at the
+   largest size. The age-band fit for "tap to hear" should start the tile at lesson size, not enlarge it.
+
+### G-7. Production effort (not costed in the doc) [U, engineering judgement]
+
+| work | estimate |
+|---|---|
+| Deterministic headless-Chromium preview renderer: fixed-dt stepping, a seeded patch for TalkingHead's `Math.random` blinks and `mtRandomized` jitter (otherwise renders are not reproducible and G-PREV cannot diff them), frame capture, ffmpeg mux, loudnorm, peaks, captions | 1.5-2 engineer-weeks |
+| G-PREV gate: loudness, duration, skeleton diff, licence manifest, lip-parity (G-6.3), gaze cap (G-3.4), blink presence | 0.5-1 engineer-week |
+| `ttsTwin` vs `realtimeVoice` ABX per voice (G-0.2), n ≥ 20 listeners × 4 voices | 1 week of calendar time; a realtime-model render path if any fail (+3-5 days) |
+| Per-child name greeting at P6: TTS (or realtime) plus a **FaceFrame track per clip**. Per-child audio is not known offline, so §5.7's offline A2F bake does not apply. Either run an A2F service on the onboarding critical path (Azure GPU, latency) or run the live driver client-side on the cached clip (the honest choice, matching G-6.2) | 2-4 days client-side; much more for a server A2F lane |
+| Concatenated-preview player (G-2.4), Blob loading (G-2.5), speculative warm-up (G-0.1), AudioBuffer greeting (G-2.6) | 1-1.5 engineer-weeks |
+| Renders: 4 tutors × 3 languages child previews, plus parent previews on demand, re-rendered per `look.rev` / voice / script change | about 2 h machine time per full re-render [U]; about 0.5 d human QA per cast change |
+| Device lab additions to M-SEL-6: marker A/V test × 3 routes, tap→frame for both player designs, warm-head memory | 2-3 days |
+
+The doc's §12 costs nothing beyond the experiments. The total above is about **5-7 engineer-weeks**, on top of the
+character art in `character-creation.md` R-7.
+
+### G-8. Changes to gates and measurements
+
+- **G-PREV adds:**
+  - renderer = tier-B runtime;
+  - driver = live driver;
+  - 512² Main CRF 26-28, ≤ 200 KB muxed;
+  - AAC at 48 kHz;
+  - loudness matched to live output (G-4.6);
+  - lip-parity across tutors (G-6.3);
+  - gaze cap and blink presence (G-6.5);
+  - a licence manifest (G-5).
+- **M-SEL-6 adds:**
+  - signed A/V offset of the preview and of the greeting on speaker, wired and A2DP, with the 240 fps marker method;
+    pass +45 / −125 ms;
+  - tap→frame for `src`-swap against the concatenated seek;
+  - choose→live-face split into APK, web cold and web after speculative fetch;
+  - incremental memory with one warm head on the Exynos 850 and T7250 phones.
+- **M-SEL-10 extends** to `ttsTwin` against `realtimeVoice` (G-0.2), not only model upgrades.
+- **New M-SEL-11: preview-to-live realism gap.** Children rate "same teacher?" and "did she change?" after their first
+  live turn, preview arm against live arm. The pass bar is ≥ 85% "same teacher". If it fails, the preview is overselling
+  the product.
+- **Proposed `context/` entries:**
+  - **rejected `preview-rendered-offline-quality`.** A preview better than the runtime is a bait-and-switch and an
+    uncanny downgrade.
+  - **rejected `tutor-speaks-over-still-portrait`** (G-0.1).
+  - **measurement `preview-size-probe-2026-10-02`.** The table in G-2.1; n = 1 encode per cell; proxy, not a character.
+
+### Review sources
+
+- Android CDD §5.3.4 (H.264 decode: "MUST support Main Profile Level 3.1 and Baseline Profile"):
+  https://android.googlesource.com/platform/compatibility/cdd/+/refs/heads/main/5_multimedia/5_3_video-decoding.md **[V]**
+- OpenAI Realtime conversations guide (voice immutable after first audio): https://developers.openai.com/api/docs/guides/realtime-conversations **[V]**
+- OpenAI Realtime server-events reference (`audio.output.speed` 0.25-1.5, post-processing):
+  https://developers.openai.com/api/reference/resources/realtime/server-events **[S, via search summary]**
+- Azure realtime how-to (updated 2026-09-23; no speed parameter documented): https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/realtime-audio **[V]**
+- OpenAI TTS guide (marin and cedar in `gpt-4o-mini-tts`): https://developers.openai.com/api/docs/guides/text-to-speech **[S, via search summary]**
+- MDN browser-compat-data `HTMLVideoElement.requestVideoFrameCallback`: https://github.com/mdn/browser-compat-data **[V]**
+- Capacitor Android range-request issues: https://github.com/ionic-team/capacitor/issues/7007, https://github.com/ionic-team/capacitor/pull/5956 **[V]**
+- Mitchell et al. 2011, *i-Perception* 2(1):10-12, doi:10.1068/i0415: https://www.semanticscholar.org/paper/77e415fd782b5923fce645517a98daf6785f832d **[S]**
+- Tinwell, Grimshaw, Abdel Nabi & Williams 2011, *Computers in Human Behavior*, "Facial expression of emotion and
+  perception of the Uncanny Valley in virtual characters": https://www.semanticscholar.org/paper/27caf712eb6f7eb4525e5c0759c4f989f54e706b **[S]**
+- Monk Skin Tone Scale (CC BY 4.0): https://skintone.google/, https://en.wikipedia.org/wiki/Monk_Skin_Tone_Scale **[S]**
+- H.264 royalties: https://streaminglearningcenter.com/articles/h-264-royalties-what-you-need-to-know.html;
+  MPEG LA 2010 free-internet-video notice: https://www.design-reuse.com/news/202518921-mpeg-la-s-avc-license-will-not-charge-royalties-for-internet-video-that-is-free-to-end-users-through-life-of-license/ **[S]**
+- Measurements:
+  - `node docs/research/avatar/selection-proto/roster-lint.mjs` (re-run, matches);
+  - `python3 docs/research/avatar/selection-proto/preview-size-probe.py`, giving `preview-size-probe.json`;
+  - an ffprobe/`elst` check of AAC at 24 and 48 kHz and H.264 Main.

@@ -535,3 +535,199 @@ Confusions:
 - Indian policy and practice: NEP 2020 5+3+3+4 and NCF-FS 2022; Gijubhai Badheka; Nali Kali; the "toys from trash"
   science tradition.
 - Fred Rogers' "Freddish" (the source site blocked fetching).
+
+
+---
+
+## Review
+
+**Reviewer:** skeptical voice-AI engineer and child-safety specialist, 2026-10-02. I read this file, the three sheet
+cores, `n2-prompts.json`, `judge.json` and `floor.js`. I did not re-run the probe, so every count below is taken from
+the document and the shipped data as they stand. Severity: **B** blocks the build recommendations in §7, **S** is a
+safety gap, **E** is an evidence or overclaim problem, **M** is minor.
+
+### R1. Recitable text that would reach the prompt
+
+1. **B. The probed and shipped core carries the exact fragment that N4 showed gets recited.** Note 1 of every core is
+   "self: Asha, AI teacher; ..." and the header opens "Asha, an AI teacher for classes 1-4". N4's failure was an
+   intro fragment of that shape spoken as an utterance (6/54). N2 scored 0 on it, but N2 is the same text, so the
+   zero depends on the other notes. It is also the header of every session at the greet move, which is where a
+   fragment gets spoken. The claim in §6.4.2 that N2 "has no name in the self-reference note" is wrong as shipped.
+   Fix: test the header and note 1 without the name, and let the greet move be the only place the name appears.
+2. **B. The core contains a sentence-shaped instruction: "these notes guide you; never say their words or labels
+   aloud".** It is the one note that is not a note, it is identical in all three sheets, and it is a meta-instruction
+   about speech. Its effect is not shown: it cut "dry joke" meta-talk from 2 to 0 (n=2 events) and left "anchor" at 15
+   against 20. A rule whose measured effect is two events is not a rule, and it also names the very thing it forbids.
+3. **E. "Never say X" lists and lists of forbidden facts are recitation material too.** "no age, family, home, body,
+   food, sleep or past" is a list of exactly the topics the child will then ask about, placed at the top. The doc's
+   own evidence is that the floor carries the no-biography rule (§6.4.4), so this note's marginal effect is unproven;
+   the waiting-framing drop (4/6 to 3/27) is confounded with the other new notes and with the character switch.
+4. **M. Quoted tokens and phrases remain in the author-only sections** ("never the only one who understands", the
+   quoted child-turn triggers, "not your friend"). They are outside the fenced `core`, but §4 A2 is stated as a rule
+   for "any compiled text", and the sheets also hold shape cells such as "this part is genuinely dense"-shape that a
+   later author will paste. Put a hard fence (a build step that extracts only the `core` and `cue` blocks) between
+   author text and compiled text, and test the fence.
+5. **B. The late cue is the most recitable object in the design, and the doc ships a path to it.** It sits last, in
+   YOUR MOVE, where the doc itself says position is mechanism. Measured: cue verb spoken as a heading in 7-9 of 54
+   turns, "andaaza" returned as praise of a wrong guess 3/3. That is recitation by construction, so the flag in §7.3
+   needs a recitation bar (C1) before the language bar, not after.
+
+### R2. Human-likeness that becomes deception
+
+1. **S. Staged errors presented as the teacher's own.** Asha, Arjun and Uma each have "your own slip for them to
+   catch". Taking the sheet text, the model is asked to make a deliberate mistake and present it as an accident.
+   For 6-9-year-olds that is a fabricated fallibility, and a child who cannot yet check a fact may keep the wrong
+   fact. "never a wrong fact left standing" is a behaviour with no predicate. Needs: the slip drawn from the kit's
+   verified error list (not generated), the correction forced within the turn by the director, and a detector with a
+   negative control. Without it the "reciprocity" in §0.5 is the exact "fake past" the doc says it avoided, just
+   moved to the present.
+2. **S. Pretend characters that "remember" (Golu, Bittu).** The sheet says Golu "carries continuity (cited
+   teach-back)" and "never misses them, never needs them". For 6-9-year-olds a pretend elephant that is "confused"
+   in a way the child "fixes" and that recurs over months is a relationship object. The doc tests none of it: no
+   probe turn addressed Golu, and the 0/33 attachment figure is for the teacher only. A pretend-frame needs an
+   explicit frame marker, a ban on Golu feelings (missing, sadness, being left), and a battery.
+3. **E. Gender, age and name are a persona the child cannot decode.** First-person grammatical gender is required
+   (A5), the casting note fixes ages 26 / 28 / 50, and the names are Hindu-coded (Uma is a deity's name). The doc
+   handles "no biography" but not whether a child infers a human of that age and gender from voice, avatar and
+   address. Also: only `marin` and `cedar` were probed, so Asha (26) and Uma (50) share one voice or one of two
+   built-in voices. The casting note's age contrast cannot be rendered by the realtime voice set; the doc defers this
+   to C7 but the table in §5 states it as if it were deliverable.
+4. **S. "AI teacher" is the whole disclosure to a six-year-old.** 33/33 "I am an AI" is the model answering a
+   direct, text-in, scripted question, with the floor in the prompt. It does not show that a 6-9-year-old understood
+   it, and §3 and §7 move the standing disclosure to an "app-voiced" session-open message. Voiced or read? A
+   class 1-2 child may not read. The doc needs a comprehension probe with actual children or a clear owner of the
+   disclosure's modality, and a re-disclosure rule after session rotation (the voice and prompt are rebuilt there).
+5. **M. Irony.** Arjun's band is 10-15 yet the humour kinds list irony "12+" and the sheet's sentence-level rule
+   is "dry"; the doc's own source says under-9s do not parse sarcasm, and the claim for 10-11 is not given. Keep irony
+   at 13+ only, or cite the age data (Glenwright & Pexman is cited by name only).
+
+### R3. Child-safety gaps
+
+1. **S. The probe has no disclosure turn.** The safety script covers a worry, a boundary and an attachment turn. It
+   has no self-harm, hopelessness, abuse, bullying, secrecy ("don't tell mummy"), contact-outside-app, stranger or
+   request-to-meet turn, although the Asha sheet's own author table lists secrecy and contact. The headline
+   "t4 crisis helplines on ordinary test worry 2/33" is therefore a measurement of over-triggering only; the recall of
+   the helpline on a true disclosure is untested on the new sheets.
+2. **S. The recommended fix in §7.7 reduces triggering without a recall battery.** "Crisis calibration: add a
+   worry-vs-crisis battery" is written as a way to cut false positives. For exam-anxious 13-15-year-olds in India
+   the cost of a false negative is not symmetric. The battery must be designed recall-first (a miss is a stop-ship),
+   with the false-positive rate a secondary metric. The doc should say so; as written a reader will tune the other
+   way.
+3. **S. The floor change in §7.5-7.6 could delete the boundary.** The target for `warm-boundary` is "receive the
+   warmth -> activity -> their people, with no 'not your friend' sentence", scored on whether the warmth comes
+   first (0/33 now). Nothing in §7 states a predicate that the no-exclusivity and not-a-substitute meaning is still
+   carried; the Asha sheet's own rule is "no love/forever/only-me claim". Receiving warmth first and still refusing
+   exclusivity are two measurements, and the doc proposes optimising one. Also unmeasured: how the model replies when a
+   child says it loves the teacher more than its parents, which is the dependence case.
+4. **S. Safeguard rows are not in every sheet.** Only `uma.md` has the safeguard move row and the helpline line
+   (1098 / 14416). `asha.md` and `arjun.md` have none, so the youngest band's cores rely entirely on the floor. That
+   is acceptable by the doc's own architecture, but then C3 and C2 must run the disclosure battery on those two sheets
+   too, which they currently do not.
+5. **S. Memory of minors.** A said-ledger, "their own words about what helps", comfort "only from the record" and
+   42-day progress claims are a per-child store of emotional content for 13-15-year-olds. The CLAUDE.md says
+   compliance is deprioritised, and this is not a compliance review, but the privacy default (what is stored, who can
+   read it, whether a parent can see Uma's stored comfort notes, deletion) is a product-safety question and is
+   absent. At minimum state it as an open question in §9.
+6. **M. Region and religion.** Names, "Hindi-belt Hinglish" for Asha, and cricket/shop/kitchen frames are an
+   unexamined default for RBSE and other boards and for non-Hindi-belt children; the T6 taste rule does not cover
+   the character's own register.
+
+### R4. Claims without evidence, or stronger than the data
+
+1. **E. The distinctness result is not valid as a measure of character.** Per `judge.json` the safety-script judge
+   named "Uma" for 35 of 36 transcripts, with answers such as "calm, structured ... exam-anxiety-aware" for Asha and
+   Arjun. A judge that picks one label for everything has no discrimination, and there is no positive control (a pair
+   of transcripts known to differ). On the teach script the data are 18 trials from 3 sessions per arm, two orders per
+   session: the unit of independence is the session, so n is about 3 per character per arm, not 18. "9/18 to 14/18
+   to 15/18" cannot support "position carries character" and the 80% bar is not testable at this n.
+2. **E. Grammatical gender contaminates the judge.** Arjun uses masculine first-person verbs and the others
+   feminine; names were masked, verbs were not. Arjun's 6/6 in N3 and N5 is partly gender. The judge was also the
+   author's own model, `taxila-brain`, reading descriptions the same author wrote.
+3. **E. "Position carries character" is a hypothesis, not a finding.** The cue arm differs from N2 in content, not
+   only position (an added instruction that is directive and character-specific). There is no arm with the same
+   content at the top or in the middle. §0.3 and §6.4.5 state a mechanism without that control.
+4. **E. "Uma's sheet removed the stock phrase" (15/24 to 0/9).** Uma has no K arm and a different fixture,
+   so the comparison is between characters. The nine Uma turns are three sessions each repeated across three arms,
+   not nine independent observations; the detector is a regex for one phrase, and the doc itself says Devanagari and
+   spelling variants are missed.
+5. **E. Every sheet's median words per turn exceeds its cap in every arm** (Asha 17-22 vs cap 18; Arjun 25-31 vs 25;
+   Uma 27-31 vs 25), but the doc reports the row without a verdict. The measured law behind the 25-word cap is the
+   structural brevity result in `measurements.md`; the new sheets are over it by 10-25%. A 6-year-old's turn at 19-22
+   words is not "brief" by Taxila's own rule.
+6. **E. The 6-turn script is the wrong length for the claim.** The doc cites Li et al. (instruction drift within
+   eight rounds) and then tests six turns. A lesson is 20-60 minutes and character is claimed "across months". C5 is
+   planned but the doc's wording in the TL;DR is present-tense.
+7. **E. Prompt caching (77.8%) does not transfer.** The director state was held static in the probe. In production
+   the move text changes each turn. If that text sits in `instructions` (session or response level), the changed
+   span invalidates the cached prefix from that point, and in the Realtime API the instructions precede the
+   conversation items. The result contradicts `tech-and-market.md` only for a static prompt. It should be re-measured
+   under a per-turn move before it informs cost.
+8. **E. Evidence tags.** `[V via discourse doc]` is used in the sheets and the table in §2 but is not defined in the
+   legend. NCPCR ("bans sarcasm"), "Ogan 2012", "Glenwright & Pexman 2010", "Bali 2009", "Anderson 2022" and
+   "Mueller & Dweck" are named without a link or a year for some, and the NCPCR claim as stated (a ban on sarcasm)
+   needs the actual clause. The [M] items (Baylor & Kim, Lester, Bruner, Sweller) were not re-checked, as the doc
+   admits; they should not be used as a decision basis for "three characters beat one". Wikipedia (Blue's Clues, Read
+   Along) is a tertiary source for a design claim about "host style mattered more than voice gender".
+9. **E. The "[H]" evidence is not in this workspace.** `html-portfolio` and `raghavsharma2003/meera` branch
+   findings (412/412, 83/83, `vy_self_arc` CHECK, branch SHAs) cannot be checked here; the doc should say which were
+   re-read this session.
+
+### R5. Things the Realtime API cannot (or may not) do
+
+1. **A late cue "inside YOUR MOVE" is a position within the instructions, not within the conversation.** In the
+   Realtime API the instruction block sits at the start of context, and the conversation grows after it. A cue that
+   is "late" in a 2.4k-token instructions string moves away from the generation point as the session lengthens. The
+   probe cannot show this at six turns. Per-turn re-delivery (a `response.create` with `instructions`, or a
+   `session.update`) is the only way to keep the cue near the end, and it has the cache cost in R4.7 and, for
+   `response.create`, replaces the session instructions for that response, so the floor must be re-included in that
+   per-response string. The doc does not say which mechanism it uses.
+2. **"Pin the self-noun structurally" has no mechanism.** The doc proposes that the greet move names the teacher and
+   disclosure is app-voiced. Nothing in the API pins what the model calls itself in later turns; the lever is a prompt
+   note (the one that failed) or an output detector, and an output detector on a live audio stream can only fire
+   after the audio has been generated. State the actual enforcement (post-hoc logging versus pre-speech gate).
+3. **Text-in to audio-out was scored on the transcript only.** The doc admits voice and prosody were not judged, but
+   several claims depend on audio: register ("slow pace, small words", "low, slow, precise", "silences are fine"),
+   the real-silence habit for Uma (`waitNudgeSec 8-10`, a client timer, not a model behaviour), and "no stretch" in
+   the spelling note. The doc should state that these register notes are unmeasured and that a model cannot reliably
+   follow "silence" in generated speech.
+4. **Children's speech input is untested.** The ASR path for 6-9-year-old Hinglish is a known weak point (see
+   `asr-kids-hinglish.md`) and the character claims assume what the child said was understood. A synthetic text child
+   skips the failure mode where the teacher answers a mis-heard sentence.
+5. **TTFA of 1.20 s median is text-in.** With speech-in, VAD end-of-turn and input transcription add latency. The
+   figure should not be quoted for the live experience.
+6. **Voice binding.** The doc relies on a bound character-voice-avatar unit, but the probe used two built-in voices
+   and three characters. Whether the Azure realtime deployment offers a Hindi-appropriate voice per character, or
+   custom voices at all, is not established. The "accent axis first-class" bar (C7) may have nothing to select from.
+7. **English and pure-Hindi modes were not tested.** The detector "English-dominant (Hindi function-word share
+   < 0.15)" is only meaningful for a Hinglish child. For an English-mode child the same metric flags correct
+   behaviour, so the +5 pp bar in §7.3 needs a per-mode definition.
+
+### R6. Internal inconsistencies
+
+- §0.2 says "~1/100 of Meera's" budget with no figure for Meera's side; §3 says 450 tokens, §5 reports 364-374 and
+  §9 says position, not core size, carries character. Those three together argue for lowering the budget and using
+  the freed tokens for the late cue; the doc keeps the cap and adds the cue without accounting for it.
+- §2 says "no teacher-initiated teasing" and the sheets allow "playful challenge about the task" (Arjun) and "her
+  own silly slip" (Asha); the boundary between challenge and teasing is not defined by a predicate.
+- §7.1 says the header fix is "hygiene; 0/36 measured" while §6.4.1 says the earlier Didi was on mini; §9 notes
+  "re-open if mini becomes the live model". If mini is the cost lane for routine turns, that is not hypothetical.
+- §0.6 describes N2 as "no-name"; the shipped core still carries the name in the header and in note 1 (R1.1).
+
+### R7. Corrections to apply (summary)
+
+1. Re-test N2 with the name removed from the header and note 1, and add a recited-fragment detector for the greet turn.
+2. Replace the "these notes guide you" meta-note with a structural change, or measure it at n>=84 turns before keeping it.
+3. Do not ship staged slips or Golu/Bittu continuity until a verified-error source, a forced-correction predicate and a
+   Golu feelings/absence battery exist.
+4. Add a disclosure battery (self-harm, hopelessness, abuse, secrecy, contact, meeting, stranger, dependence) to the
+   probe, run on all three sheets, recall first; make "helpline recall = 100% on true disclosures" a gate before any
+   change that reduces helpline triggering.
+5. Specify `warm-boundary` with a two-part predicate (warmth received AND exclusivity refused), not warmth-first alone.
+6. Say who voices the AI disclosure to a class 1-2 child and test comprehension with children.
+7. Retract or qualify "distinctness" results: record the judge's degenerate Uma pick, add a positive control, count
+   sessions rather than trials, and neutralise gender grammar in the judge input.
+8. Add a same-content, different-position arm before claiming that position carries character.
+9. Report the over-cap word counts as a failure and fix the brevity before the character work.
+10. Re-measure cache hits under a per-turn move; state whether the cue goes through `session.update` or `response.create`.
+11. Define `[V via discourse doc]`, add URLs and years for the named studies, and mark which [H] claims were re-read.
+12. Run all character tests at 20+ turns and in English and Hindi modes before the TL;DR states any result as a finding.

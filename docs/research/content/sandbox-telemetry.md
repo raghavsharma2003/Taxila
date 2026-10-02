@@ -608,3 +608,108 @@ export interface ValidatorReport {
 - zod 4.6.5 source, `v4/core/util.js:218-230` (`allowsEval` probe; jitless note on CSP violations) — `node_modules/zod` [V]
 - Repository code read this session: `shared/contracts.ts`, `src/modules/host.tsx`, `src/modules/frame/{bootstrap.tsx,protocol.ts,params.ts,registry.ts,engines/fractionBars.tsx}`, `src/lesson/{moduleChannel.ts,moduleEvents.ts}`, `server/serve.mjs`, `server/director/classify.js`, `server/routes/lesson.js`, `vite.config.ts`, `modules.html`, `tests/client-e2e.mjs` [V]
 - Probe: `docs/research/content/sandbox-probe.mjs` → `sandbox-probe-2026-10-02.json` (run: `node docs/research/content/sandbox-probe.mjs --axe <axe.min.js>`) [M]
+
+
+---
+
+## Engineering review
+
+**Reviewer stance:** senior frontend/game engineer. Scope: can each component and each engine this document names be built in React/TS + canvas/SVG in 2 days or less, does it hold 60 fps on a ₹10k Android (about 3 GB RAM, Helio G35 / Unisoc T606 class, Mali-G52 or PowerVR GE8320), are the params and events enough for the teacher, and is it safe. Evidence tags as above; **[R]** means checked in the repository during this review, **[U]** unverified. Nothing here was run on a device.
+
+### E.1 Verdict
+
+The security and protocol design is sound and mostly buildable. Five things need fixing before it is treated as a spec:
+
+1. **Part of the document is already stale against the tree [R].** `server/serve.mjs` already sends `access-control-allow-origin: *` on `/assets/*`, and `host.tsx` already counts iframe `load` events and kills on the 2nd. `host.tsx` already creates a `MessageChannel`. TL;DR #2 ("production does not boot the module frame") and §8 P0 items 1 and 3 describe a past tree. What is still open from them: the §3.1 headers on `modules.html` (today the header is only `sandbox allow-scripts; frame-ancestors 'self'`), `Permissions-Policy`, an e2e check through `serve.mjs`, and the message size and rate caps.
+2. **The CSP in §3.1 and the shipped meta CSP disagree.** `vite.config.ts` has `media-src 'self' blob:` and `worker-src 'none'`. §3.1 has `media-src 'none'` and `worker-src blob:`. Decide per tier. Use `worker-src 'none'` for T0/T1, which need no workers. Use `blob:` only for the T2 frame variant that runs heavy sims. Keep `media-src 'none'` only if no engine plays its own sound; the host-owns-audio decision supports that.
+3. **The residual "keep the frame data-poor" is contradicted by `InitCtx.displayName`.** The navigation channel (P6) is the one exfiltration path no CSP closes, and the request is sent before the kill. Do not pass `displayName` into T2/T3 frames. The host draws the name in an overlay, or the frame receives a token that only the host substitutes.
+4. **Line reference.** `classify.js:167` is now around line 213 (`moduleAnswer.correct` → `done(..., "module")`) **[R]**. The fix is still needed. T0/T1 are safe only after the host grades.
+5. **`restore{hash}` cannot work as written.** An FNV hash is one-way. Restore needs a serialisable state blob that the host holds. That blob can exceed the 8,192-byte message cap, so the cap needs a per-kind exception (see E.3).
+
+### E.2 Feasibility and cost per component (S ≤ 0.5 d, M = 1–2 d, L = 3–5 d, XL > 5 d)
+
+| component | in 2 days? | estimate | notes |
+|---|---|---|---|
+| Headers on `modules.html`, `Permissions-Policy`, serve-through e2e | yes | **S** | Mostly done (E.1). Only the full CSP header and one e2e boot through `serve.mjs` remain. |
+| `host.tsx` caps: size, token bucket, flood kill, denylist | yes | **S** | Load-kill already shipped **[R]**. Remaining logic is about 60 lines plus fake-timer tests. |
+| Frame bootstrap hardening: `RTC*` deletion, `securitypolicyviolation`, longtask, `freeze` scheduler | yes | **S** | The kit scheduler wrapping rAF and timers is the only non-trivial part. Engines must use it, so enforce it with lint (V14). |
+| Bridge v2: envelope, port, hello/ready/ack/seq, hand-written parsers shared by frame, host and Node, v1 compat, replay | borderline | **M** (2–3 d) | The parsers are small. The cost is the migration: four dialects to map (§4.5), the existing `fraction-bars@1` and `moduleEvents.ts` tests, plus the `state_diverged` path. Do not add a second protocol version beyond v2 while migrating. |
+| `observer@1`: ledger, coalescing, 8 detectors, fold/milestone router | yes | **M** (2 d) | Pure functions over an event window. Cheap to test with fake timers. |
+| Talk gate (§5.5) wired to the realtime session | no | **M–L** (2–3 d) | Depends on audio start/stop events **[S]**. They exist on the WebRTC transport. Check which transport the app really uses. On a WebSocket transport the client must track its own playback clock. Needs a spike first. |
+| Manifest additions `facts`/`caps`/`emits`/`budget` | yes | **S** per engine | Declarative. |
+| Manifest `solve(spec)` and `lint(spec)` per engine | **no, hidden cost** | **S–L per engine** | `solve` is a second implementation of each engine's goal logic. S for fractions, number-line and balance. L for geoboard, geo-construct, circuits, ecosystem and any exploratory sim with no unique solution. This is the biggest unbudgeted line in the document (about 42 engines across the maths and science maps). See E.5. |
+| Harness V1–V4, V6, V7, V8, V10–V12 (Playwright) | yes | **M** (3 d total) | P13 and P15 measurement code can be reused. |
+| V5 solver replay as real pointer input | depends on `solve` | **M** + per-engine | Drag replay on SVG is flaky without waiting on `ack`/state; script on facts, not on sleeps. |
+| V9 photosensitivity | no | **M–L** | `Page.startScreencast` frame rate is not guaranteed under CPU throttling, and 30 fps sampling is the floor for a 3-per-second flash test. Either drive time deterministically (virtual time / `HeadlessExperimental.beginFrame`) or record at a fixed rate and discard runs whose frame timestamps have gaps. IRIS integration is extra. |
+| V13 content safety incl. Hinglish blocklist data and image/vision critique | no | **L** | The API wiring is S. The labelled Hinglish set (S-M5) and the versioned Devanagari + romanised blocklist are the real work. |
+| V14 acorn AST bans and loop-guard transform | yes | **M** | Loop guards must not wrap code inside the kit itself. Counting iterations rather than time avoids false kills on a slow phone. |
+| V15 real-device lane (`_android`, adb) | no | **L** setup, then ongoing | Experimental API, device flakiness, debug-flavour APK. Budget a day per month of maintenance. |
+| Capacitor `onPermissionRequest` origin check | borderline | **M** | `BridgeWebChromeClient` is created inside the Capacitor bridge. A subclass is not a one-line change: it means a custom `Bridge` hook, a plugin, or a patch of the library **[U, verify against the pinned Capacitor version]**. |
+| Capacitor `shouldInterceptRequest` allowlist | borderline | **M** | Same constraint on `BridgeWebViewClient`. Whether it sees subframe navigation is S-M2. |
+
+### E.3 Protocol corrections (params and events)
+
+**Params (host to module)**
+
+- **Add `set_params{values: Record<string, Prim | Prim[]>, atomic: true}`.** The 100 ms coalescing rule collapses repeats of one name only. A teacher tool call that sets up a scenario (mass, medium, start state) as several `set_param` calls produces intermediate states the child can see, and engines whose params are interdependent (clamps that depend on another param) can reject the first call. Atomic apply plus one `ack` fixes both.
+- **`ack` needs the time the change became visible.** Add `applied_t` (frame clock after the next rAF) so teacher-visual sync (`teacher-visual.md`) can anchor speech to the actual paint, not the command send time. The ack already reports clamping.
+- **`init.replay` needs compaction.** Replaying a long command history at 6× CPU on a re-mount is slow and diverges when any command was clamped differently. Replace history by `restore{blob}` once the history passes a threshold (suggest 50 commands or 4 KB), where `blob` is an engine-defined state snapshot, canonical JSON.
+- **Message cap.** 8,192 bytes is fine for events. It is too small for `init` (a `scene@1` spec is routinely larger) and for state blobs. Keep 8 KB for module to host events and set a separate cap for `init`, `restore` and `state{blob}` (suggest 64 KB, still rate-limited and never forwarded to a model).
+- **State hash tolerance.** `state_diverged` compares FNV hashes across a re-mount, possibly after a WebView update. Quantise floats (for example 1e-4) before hashing, or sims will report false divergence and reset needlessly.
+- **Sufficiency of `set_param` for LLM control.** `Prim | Prim[]` with engine clamping is enough for T1, provided the manifest also exports each param's `min/max/step/enum` to the Director prompt as a compact shape (not sentences). The document defines clamping but not how the LLM learns the legal ranges. That belongs in the manifest `params` table, generated into the prompt.
+
+**Events (module to host)**
+
+- **`progress.distance` is not defined for exploratory engines.** The `circling` detector and the "hint opportunity" depend on a monotone distance to a goal. Optics, ecosystem, water-cycle and any open exploration have no goal distance. Make `progress` optional per goal and have the host skip `circling` when it is absent. Otherwise the detector is silently dead for roughly a third of the science engines.
+- **Missing: missed-target taps.** Add a derived fact `miss` (taps that hit no interactive element, per window). For B1–B2 this separates motor or UI trouble from a concept error, and costs about 5 lines in the kit's pointer layer.
+- **Missing: exposure.** The teacher may say "look at the left bar" while that region is off-screen or occluded. Add `visible{target, on}` from an IntersectionObserver-style check in the kit, folded, never a milestone. Without it the teacher can credit attention that did not happen.
+- **Missing: hesitation before commit.** `latency_ms` and `changes` exist. Add `first_touch_ms` (first interaction after the probe opened) so deliberation time and reading time separate.
+- **Facts budget.** 12 primitive keys of at most 24 characters are enough for the examples (`fractions`, `particles`, `optics`). Engines with vector state (geoboard polygons, circuits) must emit derived facts (`area`, `closed`, `loop_count`) and never positions. State this in the manifest guidelines, or authors will hit the cap and start packing JSON into strings (which the enum rule then correctly rejects).
+- **Latency of the reaction.** Milestone path is hold (1.2 s) + Director + response, so 2–3 s after a success. Young children expect an instant reaction. T0 engines must give their own immediate non-verbal feedback (sound request + animation) and the teacher's speech follows. Say so in the engine contract, otherwise the engine will wait for `verdict`.
+
+### E.4 Performance on a ₹10k Android
+
+- **P13 and P15 are desktop numbers under uncalibrated 6× throttling.** They prove the protocol is cheap. They do not prove 60 fps. A Cortex-A53 class core is closer to 8–12× a modern laptop for JS parse and layout, and the GPU is far weaker; treat V10's p50 ≤ 33 ms frame interval as the real gate and expect it to fail first on SVG-heavy engines.
+- **Do not render animated engines through React reconciliation.** Keep React for the frame shell and controls (tiles, buttons). Per-frame drawing for particles, optics rays, motion, water-cycle and ecosystem goes imperative into one `<canvas>` (2D) or a small fixed set of reused SVG nodes. Add this to the engine rules: no setState inside rAF.
+- **Rules to add to `budget`:** cap `devicePixelRatio` at 2 (1.5 on low-memory devices) and cap the canvas backing store (for example 1.3 megapixels); at most about 300 live SVG nodes (clamped in `resolveParams`); no filters, blur or shadow on moving elements; cap particle count by `deviceMemory` / a one-off 100 ms calibration loop; fixed dt (already in science §2.6) with an accumulator so a slow frame does not explode the sim.
+- **Per-frame JS cost of React.** Each frame loads the 68.6 kB gz React runtime (about 220 kB parsed). V8 code caching across same-URL frames helps but is not guaranteed in WebView. For simple T0 engines (fraction bars, balance, number line) a framework-free build of about 10 kB gz is cheaper in parse time on slow cores; the budget `gzipKB` in the manifest already allows it. Decide per engine, not globally.
+- **Memory.** The 1.0 MB per frame is JS heap only. Each extra iframe adds a document, layer tree and compositor memory that CDP `Performance.getMetrics` does not show. The "one animating frame, others frozen" rule is right; also unmount (not just hide) any pre-mounted frame that waits more than about 30 s.
+- **WebGL.** `solids@1` with three.js: the 120 kB P0 budget does not apply (P2, lazy). Mali-G52 handles simple solids at 60 fps, but a sandboxed `allow-scripts` frame still creates a WebGL context, and context loss on low-memory devices must be handled (render a static fallback image). Keep it P2.
+- **Heat and battery.** A 60 fps canvas loop for a 20-minute lesson throttles a cheap phone. Idle sims should drop to a render-on-change loop (rAF only while something moves), which also supports `freeze`.
+
+### E.5 Safety review
+
+- **Realm sharing between the kit and generated code (T2/T3).** The bootstrap, the port and the kit live in the same JavaScript realm as the generated code. Generated code can monkeypatch `MessagePort.prototype.postMessage`, `JSON.stringify` or `Object.prototype`, read bootstrap globals, or send forged `answer`/`goal_met`/`interaction` messages. Host re-grading (§4.6) protects evidence, but forged `interaction` facts and `goal_met` timings are still accepted. Mitigations: capture the port and primitives in a closure before any generated code runs; freeze the intrinsics (`Object.freeze` of prototypes) in bootstrap; give the generated code only a narrow `emit(name, facts)` handle; treat all T2/T3 facts as untrusted weights (the document already sets T3 weight to 0).
+- **Channels the leak battery did not cover.** Add to `sandbox-probe.mjs` before declaring "0 of 8" complete **[U, not tested here]**: `<link rel=dns-prefetch>` and `rel=preconnect` (DNS lookups of attacker-chosen subdomains carry a few hundred bytes and are not governed by `default-src`); a Blob Worker's own capabilities, since P5 only covered the window; `WebTransport`; `navigator.serviceWorker` registration (should be blocked by opaque origin, but measure). If dns-prefetch leaks under the strict policy, the V14 AST ban and a `<head>` mutation watcher are the remaining defences.
+- **Name in the frame.** See E.1 item 3.
+- **Hindi blocklist ownership.** The Content Safety limitation for Hindi (§7.3) means V13 is mostly the in-house blocklist for the first release. Treat it as a deliverable with an owner, a versioned file and a recall test, not a footnote.
+- **Capacitor fallbacks.** If the APK serves `modules.html` from local assets, response headers (CSP, `Permissions-Policy`, `sandbox`) cannot be set. The APK build must therefore rely on the meta CSP, the iframe `sandbox`/`allow` attributes and the native allowlist together. Add a V4 variant that runs against the APK-style static server with no headers.
+- **Photosensitivity** is correctly a hard gate, but T0 engines with confetti or particle bursts on success are the likely offenders. Cap burst animations by rule (for example no more than 2 full-frame luminance changes per second) in the kit, not only in review.
+
+### E.6 Build-cost estimate per engine named in this document
+
+| engine | estimate | 60 fps risk | params / events enough? | notes |
+|---|---|---|---|---|
+| `fraction-bars@1` | shipped; fix axe **S** | low | yes | Replace `role="img"` wrapper by `role="group"` with `aria-label`. Re-run V7. |
+| `particles@1` (science) | **M** (about 2 d) | medium (canvas 2D, ≤ 300 particles is fine; SVG is not) | params yes (`T_C`, phase, `medium`); needs a canonical `phase` fact enum and `plateau` derived in the engine | A simple Brownian + spring model is enough. Do not try physical accuracy. |
+| `optics@1` | **M** (about 2 d) | low (few rays, analytic geometry) | needs explicit `angle_i`, `angle_r` facts and a `law_met` bool so the teacher can see a prediction vs result | Keep to plane mirror, pinhole, shadow. Refraction in a medium doubles the cost. |
+| `money@1` | **M** | low | yes | Cost is art (notes and coins as inline SVG, 6 denominations) and drag/snap targets at 64 dp for B1–B2, not logic. |
+| `scene@1` (renderer + solver + lint) | **L** (4–6 d) | medium | `vars` answers are re-graded by the host evaluator, good; add a per-scene node cap and a step cap in the evaluator | The DSL and pure solver exist (`genui-scene-dsl.mjs`); the frame renderer, primitives, accessibility and V5 replay are the work. |
+| `solids@1` (three.js) | **L** | high on low-end | n/a | Keep lazy P2. |
+| Forge T2 games | **XL** (platform, not one engine) | variable | host-graded `expect` | Not buildable in 2 days; the verify pipeline (V1–V14) alone is the critical path. |
+
+Totals for the infrastructure in §8: P0 about 1.5–2 days; P1 (bridge v2, observer, manifest changes, harness V1–V12) about 8–10 days; P2 (native layer, V13–V15) about 8–12 days, with the Hinglish blocklist and device lab dominating.
+
+### E.7 Corrections to apply to the document
+
+1. Rewrite TL;DR #2 and §8 P0 items 1 and 3 to the current tree: ACAO on assets and load-kill are shipped. Keep the open items (full header set, `Permissions-Policy`, serve-through e2e, caps).
+2. Reconcile the §3.1 CSP with `vite.config.ts` (`media-src`, `worker-src`) per tier.
+3. Remove `displayName` from T2/T3 `InitCtx`, or state that it is host-substituted.
+4. Replace `restore{hash}` by `restore{blob}`; add a per-kind message cap; add replay compaction.
+5. Add `set_params` (atomic) and `ack.applied_t`.
+6. Make `progress` optional; add `miss`, `visible` and `first_touch_ms` facts.
+7. Add the realm-hardening rule for T2/T3 (closure capture, frozen intrinsics).
+8. Extend the P1 leak battery with `dns-prefetch`, `preconnect`, Worker, WebTransport and service worker, before the "0 of 8" claim is reused.
+9. Add canvas-for-animation and node/pixel budgets to `budget`; forbid React state in rAF.
+10. Budget `solve(spec)` per engine explicitly, and let V5 fall back to recorded golden scripts where no solver exists.
+11. Correct the `classify.js` line reference (now about line 213). Keep the desktop-Chromium numbers labelled as proxies until S-M3 and V15 have run.

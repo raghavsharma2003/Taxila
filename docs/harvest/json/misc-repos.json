@@ -1,0 +1,1174 @@
+{
+ "segment": "misc-repos",
+ "summary": "Swept 7 repos read-only. Two contain reusable engineering; the rest are irrelevant or empty.\n(1) hihi@claude/voice-notes-app-calendar-f0d541 'Echo' is an Expo SDK57/RN voice-notes app with SQLite local-first storage + Supabase (RLS, private storage, Deno edge functions). It is a carefully reasoned prototype: CI typechecks and bundles both platforms, but there are 0 tests and 0 device measurements.\nReusable patterns from Echo: single-mic-stream capture (transcript + WAV), Android silence auto-restart with segment offsets, finalise-on-both-signals plus a 4s watchdog, dirty-local-wins LWW sync, append-only user_version migrations, per-verb RLS with uid-prefixed private storage, reading media with the caller's JWT (never service role), OTP over magic links, a flat non-nullable structured-output schema, client re-validation of model JSON, and one-accent-one-meaning tokens.\nOther hihi branches: prime-sum/codex is maths research. Its SESSION-LOG gives verification rejections (except-ImportError masked gate, determinism mistaken for correctness, CI never ran, soundness-not-sharpness) and a misconception-first explainer format. pranawatt gives honest-fail calculator tests and a Reveal component. ncr gives provenance rules.\n(2) naukri_bi_copilot is a 14-step metadata-first BI copilot (Next 16, Neo4j, Athena, Astra/Llama/OpenRouter). The best asset is model-writes-template / code-computes-numbers / validator-traces-every-narrative-number, ideal for parent reports.\nOther naukri assets: allow-list context sanitiser, runId context cache, one-retry-with-validator-feedback loop, static SQL validator, and ESLint no-restricted-imports as a safety boundary (use it to enforce the Azure-only directive).\nnaukri rejections: silent mock fallbacks, in-process memory, 18-request client pipeline, auth removed.\n(3) routine_carbonsettle_intel: 29 one-file branches of daily CBAM briefings, each written to an unmerged branch, so 29/29 runs had no memory of prior runs. This is a key rejection for the Conductor/day cycle.\n(4) vyakti-product: main is a 2023 static portfolio. Its claude/ai-companion-app-rkt1lv branch is a shallow 60-commit Meera copy (2026-08-18..20) superseded by html-portfolio; its commit bodies yielded ~20 high-value rejections (missing age-tier safety rule on the realtime lane, invalid workflow for 9 days, dead writers, never-scheduled, shared prod/research key) and a TRANSFER.md move manifest useful for the Vercel->Azure move.\n(5) shivaji_sarthi (PDA-Saathi) is a mock-only dashboard (only the Hindi/English i18n + Devanagari font is reusable; ~350/399 files are committed .next output). vyakti-products has 0 commits; sales-enabler is .gitkeep-only on all 4 refs (confirmed).",
+ "assets": [
+  {
+   "id": "misc-A1",
+   "title": "Echo single-stream voice capture hook",
+   "subsystem": "realtime-voice",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "src/capture/useVoiceCapture.ts"
+   ],
+   "what": "One recogniser session yields live transcript + persisted WAV; transparent Android silence restart (cap 12) with session-offset segment timings; finalise only after both end and audioend; 4s stop watchdog; no-speech suppressed in continuous mode; describeError maps codes to human messages.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "realtime-voice / android-capacitor mic fallback, offline voice-note-to-teacher",
+   "evidence": "CI typecheck+bundle only; no device test",
+   "notes": "RN-specific; port patterns not code. Azure STT instead of platform recogniser if needed."
+  },
+  {
+   "id": "misc-A2",
+   "title": "sqrt volume normalisation for live waveform",
+   "subsystem": "design-system/ux",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "src/capture/useVoiceCapture.ts#normalizeVolume"
+   ],
+   "what": "Maps recogniser -2..10 level to 0..1 via sqrt(clamp(v,0,8)/8) because speech sits at 1-4; 100ms live, 250ms stored samples, 42-bar trail.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "child-facing 'teacher is listening' meter",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A3",
+   "title": "Long-silence recogniser settings for thinking pauses",
+   "subsystem": "realtime-voice",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "src/capture/useVoiceCapture.ts#start"
+   ],
+   "what": "Android EXTRA_SPEECH_INPUT_(POSSIBLY_)COMPLETE_SILENCE_LENGTH_MILLIS=4000; iOS playAndRecord+defaultToSpeaker+allowBluetooth, measurement mode.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "child pause tolerance in any STT/VAD fallback",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A4",
+   "title": "Recordings in document dir, adopt-or-keep-original",
+   "subsystem": "android/capacitor",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "src/capture/storage.ts"
+   ],
+   "what": "Document dir not cache (OS evicts cache); adoptRecording renames to note id and returns original URI on failure; totalRecordingBytes shown in Settings.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "offline lesson audio cache on Android",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A5",
+   "title": "Local SQLite with append-only user_version migrations",
+   "subsystem": "db-schema",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "src/db/client.ts"
+   ],
+   "what": "WAL + foreign_keys; MIGRATIONS[] append-only, one transaction each, PRAGMA user_version; getDb resets cached promise on failure; revision counter + listeners instead of polling.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "offline-first Android lesson/progress queue",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A6",
+   "title": "LWW sync where a dirty local edit always wins",
+   "subsystem": "db-schema",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "src/services/sync.ts"
+   ],
+   "what": "Push then pull; client-owned updated_at is the conflict key; unpushed dirty local beats server; tombstones hard-deleted only after reaching server; pull cursor; non-fatal audio upload retry; 1h signed URLs.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "sync offline module attempts / voice notes to Neon",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A7",
+   "title": "Background enrichment+sync orchestrator with backoff",
+   "subsystem": "generative-ui/modules",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "src/services/orchestrator.ts"
+   ],
+   "what": "30s loop + immediate on AppState active; re-entrancy guard; per-item exponential backoff capped 15 min; marks items 'skipped' when backend unconfigured so no eternal spinner; requestEnrichment nudge after save.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "client-side Forge job polling, parent-app sync loop",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A8",
+   "title": "coerceEnrichment: never trust model JSON at the consumer",
+   "subsystem": "prompt-compiler",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "src/services/orchestrator.ts#coerceEnrichment"
+   ],
+   "what": "Re-validates structured output client-side: enum allow-list, ''/0 sentinels back to null, caps (12 items, 6 tags, 120-char title).",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "every consumer of Azure structured outputs",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A9",
+   "title": "Flat non-nullable structured-output extraction function",
+   "subsystem": "prompt-compiler",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "supabase/functions/enrich-note/index.ts"
+   ],
+   "what": "JSON-schema output with ''/0 for unknown, rules in field descriptions ('Never guess a time that was not said'), recordedAt+timeZone for relative-time resolution, 24k-char clip not refusal, refusal stop_reason check, effort medium.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "Azure gpt-5.6 json_schema extraction of parent messages / homework / child utterances",
+   "evidence": "reliability claim asserted, not measured",
+   "notes": "Calls Anthropic: Azure-only directive means pattern only."
+  },
+  {
+   "id": "misc-A10",
+   "title": "RLS schema with four per-verb policies and uid-prefixed private storage",
+   "subsystem": "db-schema",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "supabase/migrations/20260729000000_init.sql"
+   ],
+   "what": "Client UUID PK for offline creation; touch_updated_at respects client updated_at; GIN FTS; 4 explicit RLS policies instead of 'for all'; private 'recordings' bucket 100MB + mime allow-list; storage policy (storage.foldername(name))[1]=auth.uid().",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "Neon RLS + Azure Blob paths <child_id>/<item> for child voice/media",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A11",
+   "title": "Read user media with caller JWT, never service role",
+   "subsystem": "auth/accounts/consent",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "supabase/functions/transcribe-audio/index.ts"
+   ],
+   "what": "Server-side fallback STT downloads recording through caller's token so storage RLS applies; BCP-47 -> ISO-639-1 mapping; 503 when key absent and note stays editable.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "server reading child media on behalf of an authenticated principal",
+   "evidence": "",
+   "notes": "Whisper/OpenAI-direct not allowed; use Azure transcription."
+  },
+  {
+   "id": "misc-A12",
+   "title": "requireAuthHeader on every model-spending function",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "supabase/functions/_shared/http.ts"
+   ],
+   "what": "Every edge function requires a Bearer JWT so a leaked anon key cannot spend model budget.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "all Azure model-spending routes",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A13",
+   "title": "Email 6-digit OTP instead of magic links",
+   "subsystem": "auth/accounts/consent",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "src/services/auth.ts"
+   ],
+   "what": "signInWithOtp + verifyOtp(type email); works cross-device, no deep-link plumbing.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "parent login when mail is read on a different device",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A14",
+   "title": "CI that bundles both native platforms",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    ".github/workflows/ci.yml"
+   ],
+   "what": "tsc --noEmit, eslint, expo export android+ios (catches modules that typecheck but don't resolve); concurrency cancel-in-progress; --legacy-peer-deps.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "add cap sync + gradle assembleDebug to Taxila CI",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A15",
+   "title": "One-accent-one-meaning design tokens",
+   "subsystem": "design-system/ux",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "src/theme/tokens.ts",
+    "README.md#design-notes"
+   ],
+   "what": "Ember = live voice only; sage = machine-authored only; gold = pinned; serif for authored text, sans for chrome; record button centre of tab bar.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "exclusive colour for 'teacher listening' and for AI-generated content",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A16",
+   "title": "Expo app.json permissions/background audio checklist",
+   "subsystem": "android/capacitor",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/voice-notes-app-calendar-f0d541@2033e98",
+   "paths": [
+    "app.json"
+   ],
+   "what": "Mic/speech usage strings, UIBackgroundModes audio, RECORD_AUDIO/MODIFY_AUDIO_SETTINGS, Google speech service package.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "Android manifest checklist",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A17",
+   "title": "Misconception-first single-file interactive explainers",
+   "subsystem": "generative-ui/modules",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/prime-sum-algo-optimization-lkry0q@a04fea2",
+   "paths": [
+    "algorithms/prime-sum/worked-by-hand.html",
+    "algorithms/prime-sum/weight-dial.html",
+    "algorithms/prime-sum/site/"
+   ],
+   "what": "Static explainers: tiny worked example -> mechanism -> 'The thing people get wrong' -> how computed -> proved vs open; one live dial.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "Forge explainer template; pedagogy structure",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A18",
+   "title": "Fail-closed independent verifier with mutation audit",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/prime-sum-algo-optimization-lkry0q@a04fea2",
+   "paths": [
+    "algorithms/prime-sum/SESSION-LOG.md"
+   ],
+   "what": "11/12 tests assert rejection of corrupted input; 15 auditor mutations, 13 rejected, 2 correctly accepted; certifies soundness not sharpness.",
+   "maturity": "shipped-measured",
+   "taxila_use": "idea",
+   "taxila_target": "kit answer-key gates with negative controls and mutation tests",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A19",
+   "title": "Honest-fail calculator with formula-rederiving tests",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/pranawatt-landing-build-l6h9ew@7485b6b",
+   "paths": [
+    "tests/calculator.test.ts",
+    "lib/calculator.ts",
+    "config/business.ts"
+   ],
+   "what": "Vitest re-derives each formula; viable:false below threshold (Rs10k diesel) and UI refuses a rosy number.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "'not enough evidence yet' state in parent reports with threshold unit tests",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A20",
+   "title": "Reveal scroll component (threshold 0 + rootMargin, capped stagger)",
+   "subsystem": "design-system/ux",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/pranawatt-landing-build-l6h9ew@7485b6b",
+   "paths": [
+    "components/Reveal.tsx"
+   ],
+   "what": "Fires once; threshold 0 with -10% bottom rootMargin; stagger capped 240ms; reduced-motion renders final state.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "landing / parent app motion",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A21",
+   "title": "Single-source brand/config + live /design-tokens route",
+   "subsystem": "design-system/ux",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/pranawatt-landing-build-l6h9ew@7485b6b",
+   "paths": [
+    "config/business.ts",
+    "app/design-tokens/page.tsx"
+   ],
+   "what": "Brand name and all constants in one file; design system rendered at a route.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "Taxila brand config, token preview page",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A22",
+   "title": "Provenance-required ingestion rules",
+   "subsystem": "company-brain/knowledge-ingestion",
+   "repo": "/home/user/raghavsharma2003/hihi",
+   "ref": "origin/claude/ncr-battery-leads-scraper-xyqrfv@6275e48",
+   "paths": [
+    "CLAUDE.md",
+    "ncr_leads/robots.py"
+   ],
+   "what": "robots.txt gates every fetch; never fabricate; every row needs real source_urls; unknown fields blank.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "NCERT/curriculum kit ingestion provenance",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A23",
+   "title": "Bilingual Hindi/English i18n provider with Devanagari font",
+   "subsystem": "design-system/ux",
+   "repo": "/home/user/raghavsharma2003/shivaji_sarthi",
+   "ref": "main@03c3601",
+   "paths": [
+    "lib/i18n.ts",
+    "lib/hooks/useLanguage.tsx",
+    "app/layout.tsx"
+   ],
+   "what": "Typed strings.{en,hi}; LanguageProvider + localStorage 'pda-lang' default hi; Noto_Sans_Devanagari via next/font.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "Taxila UI language toggle (fix hydration flash)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A24",
+   "title": "Dashboard card components (mock)",
+   "subsystem": "design-system/ux",
+   "repo": "/home/user/raghavsharma2003/shivaji_sarthi",
+   "ref": "main@03c3601",
+   "paths": [
+    "components/dashboard/",
+    "components/voter/PhoneFrame.tsx"
+   ],
+   "what": "MetricCard, SentimentBar, recharts BarChart, rotating AIInsights, PhoneFrame mock; all data hardcoded.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "parent dashboard layout reference only",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A25",
+   "title": "Template + code-computed fill + narrative-number validator",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "lib/analyst-loop/insight-validator.ts",
+    "lib/analyst-loop/template-filler.ts",
+    "lib/analyst-loop/insight-template-builder.ts"
+   ],
+   "what": "Model writes {{placeholder}} template; code computes values; validator recomputes (tolerance max(1%,0.5)) and flags every narrative number not traceable to a placeholder; sanitizeInsightNarrative drops unverified sentences.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "parent reports / progress dashboards: model never writes a number",
+   "evidence": "mock-runtime at audit",
+   "notes": ""
+  },
+  {
+   "id": "misc-A26",
+   "title": "Allow-list context projection before external LLM",
+   "subsystem": "safety-floor/honesty",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "lib/context-engine/safe-context.ts"
+   ],
+   "what": "sanitizeContextForExternalLLM rebuilds context field by field; raw result rows never leave.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "child-PII minimiser before every prompt / Forge job",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A27",
+   "title": "runId context cache referenced by downstream steps",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "lib/context-engine/run-cache.ts",
+    "app/api/query/*/route.ts"
+   ],
+   "what": "Assembled ContextPackage cached under runId (TTL 10 min); later steps pass runId instead of re-posting.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "Director assembles lesson context once; Forge jobs reference it (store in Postgres, not Map)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A28",
+   "title": "Bounded generate-validate-retry-once analyst loop",
+   "subsystem": "generative-ui/modules",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "lib/analyst-loop/orchestrator.ts",
+    "lib/analyst-loop/re-angler.ts"
+   ],
+   "what": "plan -> generate -> validate; one retry with validator errors appended, then throw; execute -> evaluate should_try_another -> re-angle; max 3 iterations; call counters returned.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "Forge module generation with static validation and cost telemetry",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A29",
+   "title": "Static SQL safety validator + cost guard",
+   "subsystem": "safety-floor/honesty",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "lib/validators/sql-validator.ts",
+    "lib/validators/cost-guard.ts"
+   ],
+   "what": "SELECT/WITH only, balanced parens, DDL/DML deny-list regex, SELECT * blocked, cost estimate can block.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "static validator for LLM-generated module JS/HTML before sandbox run",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A30",
+   "title": "ESLint no-restricted-imports as a safety boundary",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "eslint.config.mjs",
+    "lib/safety/s3-guard.ts"
+   ],
+   "what": "Lint blocks S3 write commands; '@safety NO_S3_WRITES' header on the read-only module.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "mechanically enforce Azure-only directive (ban @anthropic-ai/sdk, elevenlabs, non-Azure openai base URLs)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A31",
+   "title": "Rule-based follow-up detector + turn merger with tests",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "lib/conversation/followup-detector.ts",
+    "lib/conversation/turn-merger.ts",
+    "lib/conversation/__tests__/"
+   ],
+   "what": "Regex table with confidences, new-topic and scope-change resets, self-contained heuristic, merge only if confidence>0.7; jest tests.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "carry lesson scope across a child's 'same but for...' questions cheaply",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A32",
+   "title": "Staged context compaction ladder",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "lib/context-engine/context-compaction.ts"
+   ],
+   "what": "chars/4 token estimate; four-stage truncation/drop ladder; logs before/after.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "contrast only: Taxila budget gates throw and drop order is declared per block",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A33",
+   "title": "Audit doc format with Fallback and security-boundary tables",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "docs/final-deep-audit.md",
+    "docs/architecture-audit.md"
+   ],
+   "what": "14-step pipeline table (module/input/output/AI/fallback/config); boundary->enforced-in->prevents table; limitations with severity.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "Taxila context/architecture.md shape",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A34",
+   "title": "Native deploy assets + preflight",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "deploy/systemd/bi-copilot.service",
+    "deploy/nginx/bi-copilot.conf",
+    "ecosystem.config.cjs",
+    "scripts/native-preflight.ts"
+   ],
+   "what": "systemd/nginx/PM2 single-server deploy; preflight checks env/backends.",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "preflight idea only; Taxila is Azure Container Apps",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A35",
+   "title": "OpenRouter client + brace-scraping JSON extractor",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "/home/user/naukri_bi_copilot",
+   "ref": "main@2bbbe89",
+   "paths": [
+    "lib/adapters/openrouter-client.ts"
+   ],
+   "what": "fetch wrapper; strips fences then first '{' to last '}'.",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "n/a (Azure-only; use structured outputs)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A36",
+   "title": "Tagged daily dispatch format",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "/home/user/routine_carbonsettle_intel",
+   "ref": "origin/claude/eloquent-cerf-*",
+   "paths": [
+    "briefings/YYYY-MM-DD.md"
+   ],
+   "what": "[NEW]/[UPDATE]/[WATCH]/[DEADLINE] items each with Source URL + 'Why it matters', Regulation Watch, 60-day calendar.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "Conductor daily parent digest format (not its memory model)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A37",
+   "title": "Move manifest naming what git will not carry",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "/home/user/raghavsharma2003/vyakti-product",
+   "ref": "origin/claude/ai-companion-app-rkt1lv@9fddcd2",
+   "paths": [
+    "docs/TRANSFER.md"
+   ],
+   "what": "Written before the move; lists gitignored _config.js, Actions secrets, Vercel project link, schedule-from-default-branch; post-move verification commands.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "Taxila Vercel -> Azure Container Apps migration manifest",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "misc-A38",
+   "title": "Workflow YAML lint for illegal job-level if contexts",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/raghavsharma2003/vyakti-product",
+   "ref": "origin/claude/ai-companion-app-rkt1lv@9fddcd2",
+   "paths": [
+    "scripts/check-workflows.mjs"
+   ],
+   "what": "Line scanner rejecting secrets/env/steps/runner/job/matrix/strategy in jobs.<id>.if; wired into verify-release; negative-tested.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "Taxila GitHub-triggered ACR/deploy workflows",
+   "evidence": "15 consecutive zero-job runs before fix",
+   "notes": "Newer copy in html-portfolio."
+  },
+  {
+   "id": "misc-A39",
+   "title": "Voice-identity mirror check + spokenText seam",
+   "subsystem": "tts-voice-identity",
+   "repo": "/home/user/raghavsharma2003/vyakti-product",
+   "ref": "origin/claude/ai-companion-app-rkt1lv@9fddcd2",
+   "paths": [
+    "scripts/verify-voice.mjs",
+    "src/voice/spokenText.ts"
+   ],
+   "what": "Asserts every lane names the same voice and declares its model; single text->speech seam with mustSay assertions.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "Taxila tutor voice consistency across realtime/TTS lanes",
+   "evidence": "symbol words 5/12 -> 2/12 utterances",
+   "notes": "Use html-portfolio copy (newer)."
+  },
+  {
+   "id": "misc-A40",
+   "title": "Irrelevant / empty repos",
+   "subsystem": "growth/seo",
+   "repo": "multiple",
+   "ref": "various",
+   "paths": [
+    "vyakti-product@origin/main",
+    "vyakti-products (0 commits)",
+    "sales-enabler (.gitkeep on 4 refs)",
+    "shivaji_sarthi/.next/**"
+   ],
+   "what": "2023 static portfolio; empty repo; .gitkeep-only repo; committed build output.",
+   "maturity": "spec-only",
+   "taxila_use": "skip",
+   "taxila_target": "none",
+   "evidence": "",
+   "notes": ""
+  }
+ ],
+ "measurements": [
+  {
+   "claim": "28/29 CBAM briefings explicitly open 'First edition/no prior briefings' (29/29 effectively); 2026-06-29 generated 3 times",
+   "n": "29 branches",
+   "method": "git show branch:briefings/*.md | head -5, grep",
+   "date": "2026-10-02",
+   "source": "/home/user/routine_carbonsettle_intel@origin/claude/*"
+  },
+  {
+   "claim": "Briefing length 112-229 lines, median ~142",
+   "n": "29",
+   "method": "wc -l",
+   "date": "2026-10-02",
+   "source": "/home/user/routine_carbonsettle_intel@origin/claude/*"
+  },
+  {
+   "claim": "BI Copilot: 30 route handlers, 155 TS/TSX files, 28,982 lines, 5 test files / 15 tests, 4 commits",
+   "n": "1 repo snapshot",
+   "method": "static inventory + typecheck/lint + live API",
+   "date": "2026-03-22",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 docs/final-deep-audit.md"
+  },
+  {
+   "claim": "Runtime degraded: vector mock, query engine mock, embeddings mock-only, LLMs with fallback",
+   "n": "1",
+   "method": "/api/health + env",
+   "date": "2026-03-22",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 docs/final-deep-audit.md §Snapshot,§10.3"
+  },
+  {
+   "claim": "dimension_values curated for 21/279 active columns; 0 active business relationships; 471 nodes/115 links",
+   "n": "279 columns",
+   "method": "live graph inventory",
+   "date": "2026-03-22",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 docs/final-deep-audit.md §10.2"
+  },
+  {
+   "claim": "One 3-step analyst query = 18 HTTP requests with full context re-posted",
+   "n": "1 code path",
+   "method": "code-path count",
+   "date": "2026-03-22",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 docs/architecture-audit.md §1b"
+  },
+  {
+   "claim": "Insight number tolerance max(1% of expected, 0.5)",
+   "n": "code constant",
+   "method": "read",
+   "date": "2026-03-31",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 lib/analyst-loop/insight-validator.ts"
+  },
+  {
+   "claim": "Echo constants: 100ms level, 250ms stored sample, 42 bars, <=12 restarts, 4000ms stop watchdog, 4000ms silence, 30s poll, 15min backoff cap, 24k-char clip, 100MB bucket",
+   "n": "code constants (untuned)",
+   "method": "read",
+   "date": "2026-07-29",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98"
+  },
+  {
+   "claim": "verify_variance_identity.py fails in place; true worst 4.23e-6 vs printed 3.3e-6, masked by except ImportError",
+   "n": "1 script",
+   "method": "auditor re-run",
+   "date": "2026-08-18",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/prime-sum-algo-optimization-lkry0q@a04fea2 SESSION-LOG.md"
+  },
+  {
+   "claim": "independent_verifier: 11/12 tests assert rejection; 15 mutations -> 13 rejected, 2 correctly accepted; 1000x radius inflation still passes",
+   "n": "12 tests + 15 mutations",
+   "method": "mutation testing",
+   "date": "2026-08-18",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/prime-sum-algo-optimization-lkry0q@a04fea2 SESSION-LOG.md"
+  },
+  {
+   "claim": "Agent isolation 0 cross-agent rows; negative control catches 656",
+   "n": "320 scoped retrievals",
+   "method": "eval G-E1",
+   "date": "2026-08-18",
+   "source": "/home/user/raghavsharma2003/vyakti-product@072a2dd"
+  },
+  {
+   "claim": "OpenRouter key limit 25, usage 25.021, remaining -0.0211; prod /api/chat still 200 in 4.81s via free pool",
+   "n": "1 key, 1 probe",
+   "method": "key endpoint + live probe",
+   "date": "2026-08-20",
+   "source": "/home/user/raghavsharma2003/vyakti-product@e381bf2"
+  },
+  {
+   "claim": "Deploy workflow invalid: 15 consecutive runs total_jobs 0",
+   "n": "15 runs",
+   "method": "GitHub Actions API",
+   "date": "2026-08-20",
+   "source": "/home/user/raghavsharma2003/vyakti-product@112fc7d"
+  },
+  {
+   "claim": "16 context entries had prose but no graph.json row",
+   "n": "16",
+   "method": "scan",
+   "date": "2026-08-20",
+   "source": "/home/user/raghavsharma2003/vyakti-product@112fc7d"
+  },
+  {
+   "claim": "Prod: 2,358 log rows / 41 devices but 2 episodes, 8 facts, 0 rel_state; scheduled workflow runs all-time 0",
+   "n": "41 devices",
+   "method": "live DB + Actions API",
+   "date": "2026-08-18",
+   "source": "/home/user/raghavsharma2003/vyakti-product@a084edd"
+  },
+  {
+   "claim": "Symbol words spoken 5 across 4/12 utterances -> 2 across 2/12 after spokenText seam; persona.ts 307 em-dashes",
+   "n": "12 utterances",
+   "method": "espeak-ng 1.51 harness",
+   "date": "2026-08-20",
+   "source": "/home/user/raghavsharma2003/vyakti-product@2d5ad85"
+  },
+  {
+   "claim": "720ms of 1,370ms voice latency floor is untouchable prefill; shipped TTS f0 212-214Hz vs 266Hz anchor",
+   "n": "survey",
+   "method": "speech-stack survey",
+   "date": "2026-08-19",
+   "source": "/home/user/raghavsharma2003/vyakti-product@1c8ad5f"
+  },
+  {
+   "claim": "LoCoMo 6.4% key error, judge accepts 62.81% vague answers; best naturalistic SER macro-F1 0.4316/8 classes; visiongate 10-11% fabrication",
+   "n": "literature + prior eval",
+   "method": "survey",
+   "date": "2026-08-19",
+   "source": "/home/user/raghavsharma2003/vyakti-product@bde53ca, f05b2fb"
+  },
+  {
+   "claim": "Call-lane length 16.1 -> 12.9 words/turn, direction flipped at n=12: 'no regression detected'",
+   "n": "36/arm",
+   "method": "G-C7 eval",
+   "date": "2026-08-20",
+   "source": "/home/user/raghavsharma2003/vyakti-product@8d28ee5"
+  }
+ ],
+ "rejections": [
+  {
+   "tried": "Daily scheduled CBAM briefing agent meant to tag [UPDATE] items against prior briefings and de-duplicate",
+   "what_broke": "Each run wrote to its own unmerged claude/* branch; main held only .gitkeep, so every run found no prior briefing: 28/29 headers say 'First edition/no prior briefings', 29/29 effectively; 2026-06-29 produced 3 times. Memory feature dead for 4 weeks, unnoticed because each output looked fine.",
+   "source": "/home/user/routine_carbonsettle_intel@origin/claude/eloquent-cerf-* (29 branches)",
+   "taxila_relevance": "Conductor/day-cycle state must persist to Neon and a gate must prove run N+1 read run N (row count)."
+  },
+  {
+   "tried": "Mock-friendly fallbacks for every provider (Astra, Llama, Athena, Qdrant, embeddings) so the demo always completes",
+   "what_broke": "At audit vector/query/embeddings were all mock and both LLMs degraded, yet the loop 'completes end-to-end' -- a pass says nothing about the real system.",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 docs/final-deep-audit.md §Snapshot,§10.3; lib/adapters/internal-llm.ts",
+   "taxila_relevance": "Fallbacks must be loud; tag served lane per response and assert it in evals; no mock reachable in prod."
+  },
+  {
+   "tried": "In-process Map for conversation memory (TTL 30m, 20 turns) and run cache (TTL 10m)",
+   "what_broke": "Lost on restart, not multi-instance or cross-tab safe; rated high severity by own audit.",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 lib/conversation/memory.ts, lib/context-engine/run-cache.ts, docs/final-deep-audit.md §10.1",
+   "taxila_relevance": "Container Apps replicas: all session/lesson state in Postgres."
+  },
+  {
+   "tried": "Client-orchestrated pipeline posting the full context package to each step",
+   "what_broke": "18 requests per 3-step query with repeated large payloads; client timeline can drift from backend truth.",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 docs/architecture-audit.md §1b",
+   "taxila_relevance": "Director orchestrates server-side and streams state; client renders only."
+  },
+  {
+   "tried": "Auth layer built then removed; all routes left unauthenticated, no rate limiting, no tenant isolation",
+   "what_broke": "Own audit rates each high severity; empty app/api/auth and lib/auth dirs remain.",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 docs/final-deep-audit.md §1.3,§10.1",
+   "taxila_relevance": "Authenticated child id and rate limits from day one."
+  },
+  {
+   "tried": "serverError() returning raw errors",
+   "what_broke": "Sensitive error leakage; replaced with sanitized body + correlation id.",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 docs/architecture-audit.md, docs/final-deep-audit.md",
+   "taxila_relevance": "Same for Taxila API errors."
+  },
+  {
+   "tried": "next dev --turbopack for performance",
+   "what_broke": "Reverted one commit later with no recorded reason.",
+   "source": "/home/user/naukri_bi_copilot@5b3e5aa -> 81ac44c",
+   "taxila_relevance": "A revert without a reason is a rejection that will be retried; always log why."
+  },
+  {
+   "tried": "react-force-graph-2d for graph explorer",
+   "what_broke": "Removed as unused; explorer rebuilt as custom SVG/canvas.",
+   "source": "/home/user/naukri_bi_copilot@5b3e5aa, 0132394",
+   "taxila_relevance": "Low."
+  },
+  {
+   "tried": "Generic staged context compaction under a token budget",
+   "what_broke": "Design risk: silently drops relationships/columns/tables/previous SQL with only a log line (not measured failing here).",
+   "source": "/home/user/naukri_bi_copilot@main@2bbbe89 lib/context-engine/context-compaction.ts",
+   "taxila_relevance": "Meera measured silent truncation removing crisis helplines; Taxila budget gates throw, drop order declared per block."
+  },
+  {
+   "tried": "Recorder and recogniser as two microphone consumers",
+   "what_broke": "iOS audio sessions are exclusive; on Android the second opener gets silence (stated, not measured).",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98 README.md 'One microphone, two outputs'; src/capture/useVoiceCapture.ts header",
+   "taxila_relevance": "Realtime lane, VAD and recorder must share one stream."
+  },
+  {
+   "tried": "Relying on Android continuous recognition to run until stopped",
+   "what_broke": "Recogniser ends the session after long silence, truncating the note; restarting with persist:true would open a second writer and truncate the first file.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98 src/capture/useVoiceCapture.ts 'end' handler",
+   "taxila_relevance": "Children pause; restart with offset, single writer."
+  },
+  {
+   "tried": "Awaiting recogniser 'end' after stop()",
+   "what_broke": "Occasionally never emitted when stopped during a network round-trip, leaving user on a spinner with an unsaved note; fixed with 4s watchdog.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98 src/capture/useVoiceCapture.ts stop()",
+   "taxila_relevance": "Watchdogs on every native async completion."
+  },
+  {
+   "tried": "Finalising capture on one completion signal",
+   "what_broke": "Yields a truncated transcript or a zero-byte file; must wait for both end and audioend.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98 src/capture/useVoiceCapture.ts tryFinalize",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Nullable/anyOf structured-output schemas",
+   "what_broke": "Judged markedly less reliable than flat non-nullable with ''/0 sentinels (asserted, unmeasured).",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98 supabase/functions/enrich-note/index.ts OUTPUT_SCHEMA comment",
+   "taxila_relevance": "Measure on gpt-5.6 before adopting."
+  },
+  {
+   "tried": "Magic-link auth",
+   "what_broke": "Needs deep-link plumbing and fails when mail opened on another device; replaced by 6-digit OTP.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98 src/services/auth.ts",
+   "taxila_relevance": "Parent login."
+  },
+  {
+   "tried": "Storing recordings in the cache directory",
+   "what_broke": "OS may evict cache under storage pressure; losing audio the user believes is saved is unrecoverable.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98 src/capture/storage.ts",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Caching the DB-open promise unconditionally",
+   "what_broke": "A transient open failure would be cached forever and brick the session; reset on rejection.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98 src/db/client.ts getDb",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Trusting structured-output JSON at the client",
+   "what_broke": "'one bad response away from a crash'; coerceEnrichment re-validates.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98 src/services/orchestrator.ts",
+   "taxila_relevance": "Validate every model JSON at the consumer."
+  },
+  {
+   "tried": "expo-speech-recognition (SDK 56) on Expo SDK 57; Expo Go; strict peer install",
+   "what_broke": "Version skew pinned deliberately; recognition needs a dev build; segment timings only Android API 34+ on-device; CI needs --legacy-peer-deps.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/voice-notes-app-calendar-f0d541@2033e98 README.md 'Known constraints', .github/workflows/ci.yml",
+   "taxila_relevance": "Android mic stack caveats."
+  },
+  {
+   "tried": "Verification script section guarded by except ImportError",
+   "what_broke": "Silently skipped whenever import missing; paper printed 3.3e-6 while true worst is 4.23e-6 and script fails in place (exit 1).",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/prime-sum-algo-optimization-lkry0q@a04fea2 algorithms/prime-sum/SESSION-LOG.md",
+   "taxila_relevance": "Gates must fail, never skip, when a dependency is missing."
+  },
+  {
+   "tried": "'To the last digit' reproduction of a density table as a correctness check",
+   "what_broke": "Only proved seed determinism of a single Monte Carlo draw; replaced by deterministic computation implemented twice (agree 1e-6).",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/prime-sum-algo-optimization-lkry0q@a04fea2 algorithms/prime-sum/SESSION-LOG.md",
+   "taxila_relevance": "Re-run equality is not truth; answer keys need independent blind derivation."
+  },
+  {
+   "tried": "Citing Lean CI formalisation as evidence",
+   "what_broke": "CI jobs had never run (ci.yml triggered on main/PR; branch had no PR); only a self-authored release log existed.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/prime-sum-algo-optimization-lkry0q@a04fea2 algorithms/prime-sum/SESSION-LOG.md (Codex branch audit)",
+   "taxila_relevance": "Never cite a gate you have not seen run."
+  },
+  {
+   "tried": "Claim language 'certified', 'partial answer', 'entire function'",
+   "what_broke": "External review found overclaims and one false statement (poles exist); wording downgraded.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/prime-sum-algo-optimization-lkry0q@a04fea2 algorithms/prime-sum/SESSION-LOG.md",
+   "taxila_relevance": "Parent-report wording must state evidence, not verdicts."
+  },
+  {
+   "tried": "Independent verifier as complete guarantee",
+   "what_broke": "Certifies soundness, not sharpness: inflating every radius 1000x still passes.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/prime-sum-algo-optimization-lkry0q@a04fea2 algorithms/prime-sum/SESSION-LOG.md",
+   "taxila_relevance": "Gates must be tested in both directions."
+  },
+  {
+   "tried": "Percentage IntersectionObserver threshold for scroll reveals",
+   "what_broke": "Never resolves for elements taller than the viewport (phone full-height sections wait forever); stagger >240ms reads as loading.",
+   "source": "/home/user/raghavsharma2003/hihi@origin/claude/pranawatt-landing-build-l6h9ew@7485b6b components/Reveal.tsx",
+   "taxila_relevance": "Use threshold 0 + rootMargin."
+  },
+  {
+   "tried": "Committing .next build output; mock data presented as 'AI insights updated every 6 hours'",
+   "what_broke": "~350/399 tracked files are build artefacts; no backend or model at all.",
+   "source": "/home/user/raghavsharma2003/shivaji_sarthi@main@03c3601",
+   "taxila_relevance": "Do not treat PDA-Saathi as a working analytics product."
+  },
+  {
+   "tried": "Moving Meera repo to raghavsharma2003/Vyakti-products (TRANSFER.md manifest)",
+   "what_broke": "Reversed 2026-09-14 (html-portfolio@16fae19f); vyakti-products still has 0 commits. Manifest notes gitignored _config.js, Actions secrets and Vercel link do not move with a push and fail quietly.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@origin/claude/ai-companion-app-rkt1lv@9fddcd2 docs/TRANSFER.md; /home/user/raghavsharma2003/vyakti-products",
+   "taxila_relevance": "Write the same manifest for Vercel -> Azure Container Apps."
+  },
+  {
+   "tried": "Hand-assembled call-lane prompt outside compile()",
+   "what_broke": "Live prompt lacked AGE_TIER_SAFETY_OVERRIDE and FORGET_DECISION (minor's romance refusal never reached realtime); recall always '' due to same-tick read.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@8d28ee5, 72181f1",
+   "taxila_relevance": "One compile() for every lane plus an import-diff gate."
+  },
+  {
+   "tried": "Job-level if: ${{ secrets.X != '' }} in deploy workflow",
+   "what_broke": "Whole workflow file invalid; 15 consecutive zero-job runs over 9 days; the reporter job died too.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@112fc7d, d22a0e1",
+   "taxila_relevance": "check-workflows lint in Taxila gates."
+  },
+  {
+   "tried": "Context index check validating only prose->node direction",
+   "what_broke": "16 entries had prose but no graph.json row, invisible to the query CLI.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@112fc7d",
+   "taxila_relevance": "Taxila context.mjs --check must check both directions."
+  },
+  {
+   "tried": "Gates documented as living in the session scratchpad",
+   "what_broke": "Ephemeral dir; one verified a frozen persona bundle - lies in the safe direction.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@5d00719",
+   "taxila_relevance": "Gates live in repo and rebuild from source."
+  },
+  {
+   "tried": "Text sanitiser judged by 'is the markup gone'",
+   "what_broke": "Regex ate stressed words ('yeh * * mein hua') and phrase() cut at every full stop; an empty-string sanitiser would have scored full marks.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@2d5ad85",
+   "taxila_relevance": "mustSay assertions for any text->speech transform (Hindi-English tutor speech)."
+  },
+  {
+   "tried": "Parsing goAway.timeLeft as milliseconds",
+   "what_broke": "It is a protobuf Duration in seconds: 1000x error; goAway handled as cross-family lane change swapped the voice.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@9732c9c, 662ca27",
+   "taxila_relevance": "Realtime session rotation on same model+voice."
+  },
+  {
+   "tried": "One OpenRouter key shared by research runs and production",
+   "what_broke": "Research exhausted it (limit 25, usage 25.021); production silently degraded to free pool then device TTS, changing the voice mid-call.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@e381bf2",
+   "taxila_relevance": "Separate Azure deployments/quotas for evals vs prod, with quota alarms."
+  },
+  {
+   "tried": "--dry-run flag on consolidation",
+   "what_broke": "Still called the real extraction LLM; skipped only write/audit.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@05a57c8",
+   "taxila_relevance": "Dry-run must never call a model; make it default."
+  },
+  {
+   "tried": "Widening person-only PKs to (agent_id, person_id) with a column DEFAULT as mitigation",
+   "what_broke": "PK is the ON CONFLICT arbiter; 10 upserts (7 in .catch swallows) would silently stop writing; a default fills a value, an arbiter needs an index. Migration 010 later exposed 13 writers missing agent_id.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@9088011, 8f58ba6, 072a2dd",
+   "taxila_relevance": "Schema migrations need writer census + compat indexes."
+  },
+  {
+   "tried": "Committed cron workflows on a non-default branch",
+   "what_broke": "GitHub schedules only from default branch: scheduled runs all-time 0; derived memory layer empty in prod (2,358 log rows, 2 episodes).",
+   "source": "/home/user/raghavsharma2003/vyakti-product@a084edd",
+   "taxila_relevance": "A committed cron is not a scheduled cron; verify executions."
+  },
+  {
+   "tried": "Writers/enums/flags declared but never produced (voice_v0, selfBundle, sourceStatus 'wired')",
+   "what_broke": "Correct code with no caller indistinguishable from absent code; all three self-layer slots rendered 0 bytes.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@a084edd, eb4e9d1, b1aca68",
+   "taxila_relevance": "Assert by row count, never inference."
+  },
+  {
+   "tried": "Persona self-facts scoped per listener",
+   "what_broke": "Two users could hear contradictory versions of her life.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@a084edd, 60775aa",
+   "taxila_relevance": "Tutor backstory one canonical agent-scoped record."
+  },
+  {
+   "tried": "Self-layer spec drop priorities",
+   "what_broke": "Direction inverted: new low-value blocks would have been most protected and recall dropped.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@36ca669, ae53c70",
+   "taxila_relevance": "Assert drop-order semantics mechanically."
+  },
+  {
+   "tried": "git add -A while background workstreams mid-edit",
+   "what_broke": "Committed half-written source; CI red; tested tree != committed tree.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@27c92f7, 9d522e1",
+   "taxila_relevance": "Path-scoped add; compile the staged tree."
+  },
+  {
+   "tried": "Citing byte-identity as a persona-content guard",
+   "what_broke": "Both sides read the same persona file, so it cannot detect persona edits.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@b1aca68",
+   "taxila_relevance": "Only invariants guard prompt content."
+  },
+  {
+   "tried": "Storing vision-model content claims from shared photos as facts",
+   "what_broke": "visiongate 10-11% fabrication and no later pass can correct a photo claim; also item-scope forget left the JPEG in storage.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@f05b2fb",
+   "taxila_relevance": "Homework photos are per-turn evidence; forget must reach blobs."
+  },
+  {
+   "tried": "rupture_open closed only by the user's repair signal",
+   "what_broke": "Never closes; permanent grudge capping relationship stage; hidden by zero-row table.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@f05b2fb",
+   "taxila_relevance": "Emotional states must lapse; never put repair burden on a child."
+  },
+  {
+   "tried": "Lexical regex forget matching; LoCoMo as memory benchmark",
+   "what_broke": "Misses Hinglish restatements ('woh ladki'); LoCoMo 6.4% key error, judge accepts 62.81% vague answers.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@bde53ca",
+   "taxila_relevance": "Forget at mutation time; pick memory evals carefully."
+  },
+  {
+   "tried": "Transliteration front-end for code-mixed Hindi TTS (PhysicsWallah approach); Hz pitch anchor as voice filter",
+   "what_broke": "Not built: speech-to-speech has no text step, IndicXlit ~90%; pitch anchor 266Hz vs shipped 212-214Hz made it unusable.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@1c8ad5f",
+   "taxila_relevance": "Hindi-English tutor voice choices."
+  },
+  {
+   "tried": "Treating spoken em-dash as a style leak",
+   "what_broke": "Three persona rules required the dash on calls; no seam where text became speech.",
+   "source": "/home/user/raghavsharma2003/vyakti-product@71abb8b",
+   "taxila_relevance": "Build a spokenText seam in Taxila."
+  }
+ ],
+ "concepts": [
+  {
+   "name": "Local-first with layered optional backends",
+   "description": "Core loop works with nothing configured; sync, assistant, calendar each independent and optional (Echo).",
+   "taxila_relevance": "Degraded-network lesson mode; cached kits/modules; queued attempts."
+  },
+  {
+   "name": "One stream, two outputs",
+   "description": "Never let two components own the microphone; one session yields transcript and audio.",
+   "taxila_relevance": "Realtime voice + VAD + recording share one stream."
+  },
+  {
+   "name": "Finalise on all signals, with a watchdog",
+   "description": "An async capture is done only when every producer reports; time out the one that never does.",
+   "taxila_relevance": "Native mic, Forge job completion, lesson end."
+  },
+  {
+   "name": "Device-owned identity for offline rows",
+   "description": "Client UUIDs and client updated_at as conflict key; dirty local beats server.",
+   "taxila_relevance": "Offline Android progress sync."
+  },
+  {
+   "name": "One accent, one meaning",
+   "description": "Each colour reserved for exactly one state so state reads without labels.",
+   "taxila_relevance": "'Teacher listening' and 'AI-generated' indicators."
+  },
+  {
+   "name": "Model writes words, code writes numbers",
+   "description": "Template from model, values computed by code, validator traces every narrative number.",
+   "taxila_relevance": "Parent reports and dashboards; matches 'a model never grades'."
+  },
+  {
+   "name": "Allow-list projection before external calls",
+   "description": "Rebuild outgoing context field by field; raw rows never leave.",
+   "taxila_relevance": "Child-PII minimisation."
+  },
+  {
+   "name": "Lint as a safety boundary",
+   "description": "Forbidden capabilities fail at eslint via no-restricted-imports.",
+   "taxila_relevance": "Mechanical enforcement of Azure-only directive."
+  },
+  {
+   "name": "One retry with machine feedback, then fail closed",
+   "description": "Bound self-repair loops; validator errors fed back once.",
+   "taxila_relevance": "Forge generation."
+  },
+  {
+   "name": "Honest-fail UI",
+   "description": "Refuse a flattering number below an evidence threshold; unit-test the threshold.",
+   "taxila_relevance": "'Not enough evidence yet' in parent reports and comprehension claims."
+  },
+  {
+   "name": "Misconception-first explainers",
+   "description": "Explainers include 'the thing people get wrong' and 'what is still open'.",
+   "taxila_relevance": "Forge explainer and re-explain templates."
+  },
+  {
+   "name": "Fail-closed verification with negative controls and mutations",
+   "description": "A gate is trusted only after it has been seen to fail; test both directions.",
+   "taxila_relevance": "Kit answer-key and safety gates."
+  },
+  {
+   "name": "Memory must be read back",
+   "description": "Scheduled state is real only if the next run demonstrably consumed it.",
+   "taxila_relevance": "Conductor day cycle, consolidation, parent digests."
+  },
+  {
+   "name": "Manifest before migration",
+   "description": "Enumerate what the transport cannot carry (secrets, gitignored config, platform links) before moving.",
+   "taxila_relevance": "Vercel -> Azure Container Apps move."
+  }
+ ],
+ "unread": [
+  "hihi@echo UI screens (app/(tabs)/*, capture.tsx, note/[id].tsx), src/components/* (Waveform, AudioPlayer tap-to-seek), googleApi/googleAuth, db/notes.ts, db/hooks.ts",
+  "hihi@prime and @codex-races mathematics, LaTeX, Python/Arb scripts, Lean tree; explainer HTML bodies beyond headings",
+  "hihi@ncr scraper code and data beyond CLAUDE.md",
+  "hihi@prana HeroScene/GSAP narratives, lib/calculator.ts in full, app/api/lead/route.ts",
+  "naukri: assembler, relevance-ranker, dimension-resolver, graph-traverser, intent-parser, re-angler, result-evaluator, external-llm, post-validators, Neo4j store, seeds, admin/chat UI, remaining ~1,200 lines of final-deep-audit.md, 4 of 5 test files",
+  "routine_carbonsettle_intel: only 3 of 29 briefings read past header; routine prompt/config not in repo",
+  "vyakti-product companion branch: 769 files unread (superseded by html-portfolio) except TRANSFER.md head, check-workflows.mjs head, _gkeys.js header; did not verify every commit-body rejection has a graph.json row in html-portfolio beyond 10 spot-checked ids",
+  "Nothing in Echo (flat-schema reliability, Android restart, single-stream claim) was measured by this harvest or the source repo"
+ ],
+ "doc_path": "/home/user/Taxila/docs/harvest/misc-repos.md"
+}

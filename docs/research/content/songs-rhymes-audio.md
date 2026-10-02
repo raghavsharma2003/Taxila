@@ -676,3 +676,162 @@ kit source (text + tokens + phonKeys + rights)  ── human-authored or copied 
 - Internal: `learning-science.md` §2.4, rule 24; `language-sst-engines.md` X2; `animation-video.md` §0 (Sora status);
   `voice/voices-hindi.md` §3.2-3.3 (Azure voices, prices); `design/low-end-offline.md` (same-voice law, echo, data saver);
   `context/decisions.md` (`voice-realtime-model`, `voice-turn-config`, `azure-only-compute`).
+
+---
+
+## Engineering review
+
+**Reviewer:** senior frontend/game engineer pass, 2026-10-02. Read against this doc, `src/lesson/realtime.ts`,
+`src/lesson/voiceLink.ts` and `sandbox-telemetry.md`. Tags as above. Verdict: **the architecture is right (pre-rendered
+reviewed clips on a client audio clock, teacher frames and reacts). The spec is not buildable as one 2-day engine, and
+five items would fail on a real phone or in the real code.** Corrections first, then cost.
+
+### E1. Blocking corrections (would fail on device or against the real code)
+
+1. **The handover recipe collides with `realtime.ts`.** §7.2 step 2 says `session.update` with
+   `turn_detection.create_response=false`. `realtime.ts` documents that a partial `audio.input` update may *replace*
+   the object and silently drop transcription (`audioInputFrom`). The code already has the right primitive:
+   `setTurnDetection(null, audioInputFrom(session))` (the push-to-talk path), and `turnDetectionFrom()` to restore.
+   Use that. Also mute the uplink with `micTrack.enabled = false` instead of only `input_audio_buffer.clear`, and
+   restore both on stop. [V from code]
+2. **The mic constraints in §7.2 step 3 contradict the live call.** `voiceLink.ts` already holds one
+   `getUserMedia` stream (`echoCancellation`, `noiseSuppression`, `autoGainControl` all true) and one `AudioContext`
+   with a level analyser. A second `getUserMedia` with `noiseSuppression:false` can open a second capture source on
+   Android Chrome, change the audio mode, or fail. Tap the **existing** stream with `createMediaStreamSource` into an
+   AudioWorklet, and live with the call's processing. If a chant-specific mic setup is wanted, test
+   `track.applyConstraints` on a real device first [U]. Spec it as a shared-stream tap, not a new capture.
+3. **Phone speakers cannot play the kick.** §7.2 gives the kick as a 150 → 50 Hz sine. A ₹10k phone speaker rolls
+   off below roughly 300-400 Hz [I], so the beat would be almost inaudible and only the voice would be heard.
+   Re-specify every groove voice with its energy at 250 Hz-4 kHz: kick = 220 → 120 Hz sine plus a 3 ms noise click;
+   keep the clap and tick. Add a "does it sound like a beat on a phone speaker" listening check to M-SONG-1.
+4. **"fade" mode is not implementable with whole-line clips.** `fade` / `vanishing` "hidden = beat only" needs the
+   track voice silent over specific *tokens*, but `ClipRef` stores only `onsetMs/pCentreMs/speechMs`. Add
+   `words: {tokenIdx, startMs, endMs}[]` to `ClipRef` (the schema needs it too). Capture it at render from the
+   Azure Speech **SDK** `WordBoundary` event; the REST call the probe used does not return it [S, Azure docs cited in
+   Sources]. Hidden trailing token (product first) = truncate the clip at the boundary with a 30 ms fade. Hidden
+   mid-line token (multiplier word) = a gain gate with 15 ms ramps at the boundaries. The same field also feeds
+   `highlight: "word"`, which currently has no data source. `akshara` highlight has no data source either: render
+   per-akshara by the **even-split of the word's span**, flagged approximate, or cut it from v1.
+5. **`together` slots cannot be detected.** `voicedFrac` over a slot where the track voice is playing (even ducked
+   to 60%) measures the loudspeaker leak, not the child, whenever AEC does not fully cancel Web Audio output (M-SONG-3,
+   unmeasured). Only `echo`, `child-leads`, and the *hidden-token windows* of `fade` give a clean reading. Rule:
+   `chant.slot.kind:"together"` events carry `voicedFrac: null` unless `detectorTrust === "high"`.
+
+### E2. Other corrections
+
+| # | doc says | problem | correction |
+|---|---|---|---|
+| 6 | Look-ahead scheduler, 25 ms timer, 120 ms ahead | Low-end Android main thread stalls of 200 ms+ (React renders, GC, WebView) will exceed the 120 ms look-ahead and the timer is throttled when the page is not focused [I]. The clips are all known in advance. | Schedule **whole bars (or the whole pass) up front** on the audio clock, each group routed through its own `GainNode` so `pause/stop/setBpm` can cancel it. Look-ahead timer only for the *next* group, from a Worker interval. Jitter then cannot reach the audio |
+| 7 | Karaoke highlight | The highlight is driven from the audio clock but the speaker is `outputLatency` behind (100-300 ms on cheap Android, more on Bluetooth) | Drive rAF from `ctx.currentTime - (ctx.outputLatency ?? ctx.baseLatency ?? 0.12)`; update classes via refs, never React state per word (60 fps on a ₹10k device) |
+| 8 | `chant.tap` / `onsetOffsetMs` entrainment | Needs output + input latency + touch latency compensation that we cannot know on Android. The doc itself says "logged, never a misconception" | **Cut from v1.** Drop `chant.tap`, `onsetOffsetMs`. Saves a day and one event type |
+| 9 | `ChantTrackParams.kit: ChantKit` | The LLM Director would emit a whole kit (kB of tokens) and could pass an unreviewed one. This breaks "unreviewed clip = schema failure" | LLM-facing param is `kitId: string` (enum from the lesson plan's available kits). The **loader** fetches the kit and validates it against §7.5 server-side |
+| 10 | `bpm?: Bpm` plus `setBpm()` | §7.4 says the engine never time-stretches and the kit's clips fit one BPM per variant. An LLM-chosen 100 BPM on a kit fitted for 90 forces every line to 4 beats | Remove `bpm` and `setBpm` from the LLM surface. The only knob is `tempo: "slow"|"base"|"fast"`; BPM is derived from the kit |
+| 11 | `PahadaParams.arc: Array<{mode, passes, tempo}>` | A free-form array is a large degree-of-freedom surface for an LLM and untestable | Enum presets: `arc: "acquire" \| "consolidate" \| "recall"`, each expanding to a fixed arc in code. Keep the array only in the internal type |
+| 12 | `ChantLine.phonKeys: string[]` | The JSON Schema and `phonMatch()` use `string[][]` (accepted variants per token). The TS type will not compile against them | `phonKeys: string[][]`; also a loader check `phonKeys.length === tokens.length` (not expressible in JSON Schema) |
+| 13 | `review` in the TS `ClipRef` has all fields; the schema requires only `phonMatch`, `humanOk`. `phonMatch` is a boolean in `ClipRef.review` and a number in `ChantEvent` | Name collision, drifted contracts | Rename the clip flag `gateA`/`gateB`; make `reviewer` and `at` required in both. Mark `clip` `additionalProperties:false` |
+| 14 | `countInBars` uses spoken "1, 2, 3, 4" clips | No field in `ChantKit` for them | Add `countIn: ClipRef[]` (4 clips) per voice; share across kits |
+| 15 | Opus 20 kbps, review on the Azure WAV | Opus at 20 kbps smears sibilants and nasals, the exact ङ ञ ण cases. Also encoder pre-skip shifts `onsetMs` | Run gate A, gate B and the onset/p-centre measurement on the **decoded final asset**. Codec: Opus-in-Ogg/WebM is fine for Android WebView and Chrome; Safari support is [U], so keep an AAC fallback for web |
+| 16 | `pCentreMs` = first RMS peak ≥ 50% | For "दो एकम दो" the perceptual beat is not the first energy peak | With word boundaries (E1.4), define p-centre as the **onset of the first stressed content word** (not "दो"), set per kit by the reviewer in the review tool |
+| 17 | §7.4 BPM fit | Zero slack: a Swara line of 1.21 s tips a table from 2 to 4 beats. Table 11-20 lines are longer than the 1.03-1.20 s measured on 2-10 [U, not probed] | Compute BPM per kit, floor at 72, and allow a 4-beat slot for outliers rather than collapsing the whole kit's tempo. Probe the 11-20 lines before promising 90 BPM |
+| 18 | Live fallback render with `humanOk=false`, "loader exception" | It punches a hole in the predicate that is this doc's main safety mechanism, to serve out-of-curriculum asks (a 23 पहाड़ा) | **Remove from v1.** Out-of-library asks go to `teacher-led` (no rendered audio). Revisit after the library exists |
+| 19 | `chant-track` runs "in the app" | `sandbox-telemetry.md` §iframe sets `microphone 'none'`, `autoplay 'none'`, `connect-src 'none'` for generated modules | State it: `chant-track@1` and `pahada@1` are **first-party host-side code**, not sandboxed modules. They are not model-generated, so they do not need the iframe. Do not let a sandboxed module request the chant via postMessage with a kit payload, only `kitId` |
+| 20 | "about 6 kB of code" | Not credible: scheduler, 5 grooves, 7 modes, fade gate, ladder, worklet VAD, handover, summary | Plan for ≈1,500-2,500 LOC TS, ≈15-25 kB gzip [I]. Still small, but do not budget as 6 kB |
+| 21 | 4 h of human review | Excludes the re-render loop and the review tool itself. Varnamala/barahkhadi (≈450 isolated syllables) is where TTS fails: single-syllable SSML often reads as a letter name or adds a vowel | Budget 2-3 reviewer-days, mostly varnamala/barahkhadi. **Probe barahkhadi isolated syllables** (the doc only probed varnamala letters) before committing |
+| 22 | `phonMatch` ≥ 0.6 threshold for `weakLines` | The ASR's script chaos (7-9/15 off-script) and child speech mean this number is noisy; the threshold is untuned | Treat `phonMatch` as advisory until a child-speech calibration set exists. Weak-line decisions use `voicedFrac` in clean slots first |
+
+### E3. Are the params enough for LLM control? Are the events enough for the teacher?
+
+- **Params.** After E1/E2 the LLM-facing surface should be exactly: `kitId`, `mode`, `tempo`, `lines`, `passes`,
+  `fade.order` (`"last-first" | "product-first" | "random"`; today only `keepFirstToken` and `maxFrac` exist and the
+  hide order is implicit), `groove` (kit default; allow `"none"` for sensory-sensitive children), `mic`. Everything
+  else (BPM, ladder, duck level, count-in) is derived or a kit default. Missing today: `volume` cap (see S2),
+  `restBetweenPassesMs`, and `pauseOnTeacherInterrupt`.
+- **Events.** They show *participation* but not *recall*. The recall signal is the **hidden-token window** in `fade`:
+  did the child produce the product where the voice went silent. The events are per line slot, so a hidden mid-line
+  token is drowned by its visible neighbours. Add:
+  `chant.token {line, tokenIdx, hidden: true, voiced: boolean, latencyMs: number|null, phonMatch?: number}`, emitted
+  only for hidden tokens (clean of leak because the track voice is silent there; needs E1.4).
+- **Trust.** Add a **calibration bar**: count-in plus one beat-only bar, child asked not to speak, to measure leak
+  and noise floor; emit `chant.mic {leakDb, floorDb, detectorTrust: "high"|"low"|"none"}`. `ChantSummary` gains
+  `detectorTrust` and `hiddenTokenHits: {line, tokenIdx, hits, tries}[]`. With `low`/`none`, the summary says
+  "participation unknown" and no `weakLines` are produced. Without this the teacher would praise or correct a child
+  on a leak reading.
+- **Lifecycle events missing:** `chant.interrupted {cause: "call"|"focus-lost"|"route-change"|"background"}` (see E4).
+
+### E4. Device and performance notes (₹10k Android, WebView)
+
+- **60 fps: yes**, provided highlight is ref/CSS driven (E2.7) and nothing renders per beat. Audio runs on the audio
+  thread; a 10-line kit × 3 variants is ≈3-4 MB of decoded 24 kHz mono float (115 KB per 1.2 s clip). Decode only the
+  active tempo variant (≈1.2 MB). Do not decode barahkhadi as one kit; load per matra row. [I]
+- **Android audio mode.** With an open call mic, Android's WebRTC path can put playback on the voice-communication
+  stream, making Web Audio quieter and different in level from the teacher [U]. Add to M-SONG-3: beat and clip level
+  vs the teacher at max media volume on three phones, plus Bluetooth earbuds (extra 150-250 ms output latency; fine
+  for the audio-clock schedule, wrong for any child-onset timing).
+- **Interruptions.** Incoming calls, notifications and audio-focus loss suspend the `AudioContext`. Handle
+  `ctx.onstatechange`, `visibilitychange`, and the Capacitor app-pause event: pause, drop to `teacher-led`, emit
+  `chant.interrupted`. The spec has no such path.
+- **Autoplay.** The `AudioContext` must be resumed inside a user gesture; `voiceLink.ts` already resumes its own
+  context. Create the chant context lazily on the "start chant" tap, or reuse that context [V from code].
+- **Offline APK.** Bundle pahada 2-10, ginti, varnamala (`base` only) in the APK assets (≈0.6-1 MB) [I]; stream the
+  rest.
+
+### E5. Safety review
+
+- **S1. Blind safeguarding window (highest).** While the uplink is held, the teacher cannot hear a child who says
+  something that triggers the Childline 1098 / Tele-MANAS 14416 hand-off. Six passes of a 10-line kit run
+  ≈ 80-120 s. Mitigations, all by predicate: (a) hard cap **one pass segment ≤ 60 s** with a teacher listening turn
+  between segments; (b) in every *non-hidden* silent slot, any voiced content that is long and does not match the
+  expected `phonKey` is batched to ASR and run through the **same crisis predicate** as live turns, and a hit stops
+  the track and escalates; (c) the "रुको" button is always visible and large. Not optional: this is the child-safety
+  floor in `CLAUDE.md`, which stays.
+- **S2. Loudness and startle.** Synthesised clap and kick bursts through a phone speaker or earbuds at high media
+  volume. Cap the master gain at about -6 dBFS before the compressor, ramp in over the count-in, and never exceed
+  the loudness of the teacher's voice. [I]
+- **S3. Visual flash.** If a beat pulse is drawn, keep it to quarter-note rate (≤ 1.75 Hz at 105 BPM) and never a
+  full-screen flash (WCAG 2.3.1 flash limit is 3 per second). `tick-4` at eighth notes would reach 3.5 Hz if visualised.
+  Respect `reducedMotion` and offer a "no beat" groove for sensory-sensitive children.
+- **S4. Child voice data.** Per-pass batched ASR sends child audio to `taxila-transcribe`. "Held in memory, never
+  stored" describes our side only. Say so in the consent copy, and keep the audio out of any logs and the
+  Director's event stream (only `voicedFrac`/`phonMatch` numbers). Compliance is deprioritised by the owner, but
+  the data-handling line is cheap now and expensive later.
+- **S5. Rights predicate.** `ncert-pending` passing the schema and being blocked by a loader is two places that
+  must agree. Make it a schema failure (`rights` enum excludes it) and keep NCERT poems in a separate, unshipped
+  folder; add a CI check that no shipped kit is `ncert-pending`.
+- **S6. phonkey false accepts.** The collapse rules (aspirates, retroflex, nasalisation, vowel length) accept real
+  errors, for instance a dropped final -ह. The golden tests list only equivalences. Add a **negative suite**
+  (सत्ते vs सात, चौके vs चौक, चौदह vs चौदा-with-dropped-h) that must fail.
+
+### E6. Build-cost estimate per engine
+
+Sizes: **S** ≤ 1 day, **M** 1-3 days, **L** > 3 days, one engineer, including unit tests, excluding device-matrix
+time. "Fits ≤ 2 days" is the brief's bar.
+
+| component | size | est. | fits ≤ 2 d? | 60 fps / ₹10k | main risks |
+|---|---|---|---|---|---|
+| `shared/contracts` + `chant-kit.v1.json` + loader + CI predicates (E5.5, E2.12-14) | S | 1 d | yes | n/a | contract drift (E2.12-13) |
+| `chant-track` **core**: audio-clock scheduler, groove synth (3 presets: clap-4, keherwa-8, tick-4), clip placement, `listen`/`echo`/`together`, count-in, rAF highlight, interruptions | M | 3 d | **no**, 2 d only if cut to `listen`+`echo`, 2 presets, no highlight | yes (audio thread) | speaker-audible grooves (E1.3), output-latency highlight, WebView autoplay |
+| `chant-track` extra modes: `fade`, `child-leads`, `speed-ladder`, token gain gate | M | 2 d | yes, **blocked on word boundaries** | yes | word-boundary capture (E1.4), click-free gating |
+| mic slot detector: AudioWorklet VAD, shared-stream tap, calibration bar, `detectorTrust`, per-slot ring buffer | M-L | 3-4 d + device testing | **no** | yes | AEC on Android unknown (M-SONG-3); trust gating decides whether it ships |
+| realtime handover + `ChantSummary` + barge-out + crisis predicate on slots (E1.1, E5.1) | M | 2 d | yes, if lesson runtime hooks are stable [U, not read in depth] | n/a | interaction with PTT/turn-detection restore; teacher-turn timing |
+| `pahada@1` (presets, fade order, handoff to fact-fluency) | S | 1 d | yes | yes | depends on the separate fact-fluency engine existing |
+| `rhythm-poem@1` driver (map events, keep its visual modes) | S | 1 d | yes | yes | akshara highlight data (E1.4) |
+| `shared/phonkey.ts` + golden + negative tests | M | 2-3 d | borderline; **S (1 d)** if limited to Devanagari + Latin + Urdu and fail on others | n/a | five-script transliteration is the cost; Urdu has no short vowels, so the key must be a consonant skeleton |
+| Forge render + measure + gate A + SDK word boundaries + Opus encode + schema validate | M | 2 d | yes | n/a | SDK vs REST; encoded-asset measurement (E2.15) |
+| human review tool (queue, 1.5× playback, reject codes, p-centre picker) | S-M | 1-2 d | yes | n/a | not in the doc's plan at all |
+| human review labour (corpus) | labour | 2-3 reviewer-days | n/a | n/a | varnamala/barahkhadi nasals, isolated syllables (E2.21) |
+
+**Total engineering:** ≈ 17-21 engineer-days for the full v1 as specced, against the doc's implied ≈ 2. A
+defensible **v1a ≈ 8-9 days**: contracts+loader, core (listen/echo/together, 2 presets), word-boundary Forge
+pipeline + review tool, `pahada@1` with `mic:"off"` and the teacher listening after each ≤ 60 s segment, a
+Devanagari-only phonkey for gate A. **v1b** adds `fade`, the mic detector and calibration, slot ASR and the crisis
+predicate, once M-SONG-3 shows `detectorTrust` is attainable. Ship v1a first because it already carries the
+documented evidence (paced chunked repetition, Kilgour 2000 / Calvert 1993) and nothing in it is blind to the child.
+
+### E7. Items this review could not verify
+
+- No real-device run was possible here. Every device claim above ("speaker rolls off below ~300-400 Hz", Android
+  audio-mode behaviour, 100-300 ms output latency, decode times) is [I]/[U] and maps to M-SONG-3/4.
+- I read `realtime.ts` and `voiceLink.ts` only for the mic/turn-detection seams; I did not audit the rest of the
+  lesson runtime, so the E6 estimate for the handover carries [U].
+- `WordBoundary` availability for hi-IN Neural voices via the SDK is documented generally but **not probed for
+  Swara**; add it to M-SONG-2.

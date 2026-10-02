@@ -638,3 +638,228 @@ The read-along "book voice" may be a distinct storyteller voice, which is dieget
 **Secondary [S]:** [Doha (poetry)](https://en.wikipedia.org/wiki/Doha_(poetry)) (13+11 matra structure); the sibling docs as cited inline.
 
 **Memory [M], to verify:** NIPUN Bharat FLN components; ASER reading levels; Pratham barakhadi pedagogy; StoryWeaver licence; Hindi ergative (ने) agreement and the sandhi classes; laghu/guru scansion rules; Wineburg sourcing and Reisman 2012; TimelineJS licence; Indian copyright term (life + 60).
+
+---
+
+## Engineering review
+
+**Reviewer:** senior frontend/game engineer. **Date:** 2026-10-02. **Method:** read of this document, `tech-and-market.md` §3.4 (sandbox CSP) and `shared/contracts.ts`. Nothing was built or profiled, so every estimate and fps claim below is **[U]** and must be confirmed on a real ₹10k device (see R-M below).
+
+**Size key:** S = 1–2 engineer-days, M = 3–5 days, L = more than 5 days. All figures assume the kits already exist, and exclude content authoring, asset review and legal work.
+
+### R0. Verdict
+
+- The 13 engines are sound as designs. Most are 2-day configs only **after** the kits are stable. The kits are not 2-day work, and the 7 engineer-week estimate in §7 is low. My estimate is **9–11 weeks** for the four kits.
+- Four engines cannot meet "≤ 2 days" under any reading: `read-along`, `map-explorer`, `role-play` (Director side) and `rhythm-poem` (speech modes).
+- Three engines depend on host/Director work that is not in the module: `read-along`, `role-play` and speech modes of `rhythm-poem`. The doc counts them as module work.
+- Two blockers are not engineering: Survey of India (SoI) boundary data availability, and "no personal data inside the frame" vs personal timelines.
+- Total, revised: kits 9–11 weeks plus engines about 14–17 weeks, or **23–28 engineer-weeks** (the doc says ~30 including kits). The saving comes from dropping modes (below), not from faster building.
+
+### R1. Cross-cutting corrections
+
+1. **Real target device.** A ₹10k Android is typically 2–4 GB RAM, a Helio G35/Unisoc-class SoC, Android 10–13 (often Go edition), with a WebView that may be many versions behind Chrome. Rules for all engines:
+   - Transpile to ES2019. Do not rely on `Intl.Segmenter`, `structuredClone`, `:has()`, container queries or `aspect-ratio` without a fallback.
+   - Animate only `transform` and `opacity`. No layout reads inside pointer handlers.
+   - Drag by Pointer Events with `touch-action: none` on the drag surface, and move the element with `translate3d`. Never `setState` per pointer-move or per audio frame. React owns state; the hot path is imperative DOM or ref writes.
+   - One live iframe at a time. Destroy the previous module's iframe before mounting the next (each costs roughly 30–60 MB **[U]**).
+2. **Segmentation must not depend on `Intl.Segmenter` (§7 text-kit, M-L5).** Without GB9c, grapheme segmentation splits conjuncts anyway, so the merge step is the real implementation, not a fallback. Write a pure-JS Devanagari akshara segmenter over code points (consonant + virama + consonant chains, plus matras, nukta, anusvara, chandrabindu, visarga, ZWJ/ZWNJ) with a golden test set. It is S-M and removes a WebView version dependency.
+3. **Text must be DOM or SVG text, never canvas `fillText`,** for Devanagari. Old Android canvas text shaping is unreliable for conjuncts and matras. Per-akshara highlight is easy with DOM spans, as long as spans do not break shaping: wrap whole aksharas, never split inside a conjunct, and test with the target font.
+4. **Fonts.** The sandbox CSP has `font-src 'self'`, so the Devanagari font must ship on the sandbox origin. Bundle a subsetted Noto Sans Devanagari (about 100–200 KB, woff2 **[U]**) and do not rely on system fonts, because old devices lack complete conjunct support.
+5. **Lone matras need a placeholder.** Rendering ि or ्र on a tile alone shows a dotted circle, or breaks clipping. Compose tiles with U+25CC (◌) on purpose and strip it before comparison. `phonics` and `word-builder` need this in `tile-kit`.
+6. **Normalisation.** NFC alone is not enough for Hindi key matching. Nukta forms (क़ U+0958 vs क + ़) decompose under NFC, which is fine, but ZWJ/ZWNJ half-form variants and chandrabindu/anusvara spelling variants must be stripped or canonicalised in `text-kit.norm()`, or correct answers will miss the key.
+7. **Audio is not available in the frame (CSP has no `media-src`; `connect-src 'none'`).** Everything that plays sound goes through the host.
+   - `ph.tap` needs sound within about 100 ms or the tap feels dead. A postMessage round trip plus decode would not meet that. The host must pre-decode all unit recordings into a WebAudio sprite buffer at lesson start and play on message.
+   - Do not request a `media-src` hole just for this. Keep the host-owned model.
+   - `audio_pos` at 4 Hz (§3) is acceptable only if the frame interpolates from `{ms, hostTime}` pairs rather than raw `ms`. Send `performance.timeOrigin`-independent monotonic stamps, and handle pause, seek and buffering stalls. Add a per-device `latencyOffsetMs`, because WebView audio output latency on cheap phones is 100–300 ms (more on Bluetooth) and makes karaoke visibly early. Calibrate once with a tap test or read `AudioContext.outputLatency`.
+8. **Event contract.** `data` is "flat, ≤ 12 string/number/boolean keys". Several events in §4 carry arrays or objects (`ss.submit {order}`, `rd.seg_result {words}`, `rp.turn {slots}`, `ph.blend {units}`, `sq.submit {order}`). Rule: serialise arrays as a delimited string (`"a|b|c"`, max 120 chars) and objects as `slot_name=value` keys within the 12-key cap. Document this once in `types.ts` and add a validator that throws on non-flat data, in line with "budget gates throw". Per-word detail for `rd.seg_result` goes to the host store, not the Director line.
+9. **Salience budget.** Events like `mp.tap`, `sq.move`, `rh.clap`, `ph.tap` fire many times a second. Aggregate in the frame (flush at most every 500 ms for salience 0) or the postMessage channel and Director context will flood on slow devices.
+10. **Image memory and assets.** 6–8 gpt-image-2 PNGs at 1024 px decode to about 4 MB each. Downscale and re-encode to 512 px WebP at build (about 30–50 KB) and pass to the frame as blob URLs (`img-src` allows `blob:`). Do not bundle picture sets into the APK; stream and cache by lesson. 1.5k pictures at ~40 KB is about 60 MB total.
+11. **Safety (global).**
+    - The module contract says "no personal data inside the frame" and "no free text input" (`tech-and-market.md` line 540). Check each engine against that. The conflicts are in `timeline` (personal) and `role-play` (free speech goes to the Director, not the frame: fine).
+    - The Director must run the safeguarding predicate on every child utterance that arrives via `record_answer` or role-play, not only on tutoring turns.
+    - Speech audio to Azure Speech for scoring is a child's voice biometric. Set no-retention, use short-lived scoped tokens, and have a separate consent line item even though compliance is deprioritised (the child-safety floor is not).
+
+### R2. Per-engine review
+
+Verdict columns: **60 fps on ₹10k** (Y = yes with the rules in R1, R = at risk) · **Params for LLM** (OK / gaps) · **Events for teacher** (OK / gaps).
+
+#### L1 `phonics@1` — **M** (4 days) · 60 fps: Y · params: OK · events: OK
+- Feasible with `tile-kit`. The compose/blend/segment/swap/grid modes are all tile and tap. `conjunct` and `grid` (varga layout) are the cheaper parts.
+- Corrections:
+  - Tile row width. B1–B2 tiles are 64/96 dp (LR8). Six tiles at 64 dp plus gaps exceed a 360 dp screen. Wrap to two rows, or cap the tray at 4 at B1 (the `maxOptions` 2|3 already does that for choices, but `items[].units` can exceed it).
+  - `tracing: true` (finger-trace letters) is not a tile feature. It needs stroke-order data and a path-matching algorithm, and it is a separate **M** engine. Drop it from v1; the doc itself restricts it to B1 only.
+  - Audio latency (R1.7): sprite buffer in the host, or the engine fails its core loop.
+  - 60+44 unit recordings are a **recording** task (studio, one voice), not a build item. Isolated consonant sounds must be recorded with the schwa trimmed. TTS cannot do this (the doc says so).
+- Params: add `unitAudioIds` per unit so the validator can check every unit has a recording. `inventory` as `string[]` of units is fine; make `decodable()` a pure function exported from `text-kit` so the server validator and the frame share it.
+- Detectors: `MC.ENG.LETTER_NAME` relies on ASR of "bee-ay-tee", which ASR will normalise to a word. Treat it as **unobservable in v1**; drop it or derive it from the tap pattern only. `MC.HIN.*` detectors are pure tap logic: fine.
+- Safety: none specific. Picture items must be child-appropriate (see L5).
+
+#### L2 `word-builder@1` — **M** (3–4 days) · 60 fps: Y · params: gaps · events: OK
+- Spell/morph/compound/family modes are S. The sandhi modes inflate it.
+- Corrections:
+  - "Sandhi uses a deterministic rule table for the 5 vowel-sandhi classes" overstates what code can do. Joining is computable from a rule table. **Splitting is not**: विद्यालय has several candidate splits, and consonant (vyanjan) and visarga sandhi are not covered by the five. Make every `sandhi-split` and `sandhi-join` target a kit-authored, second-pass-verified pair, and use the rule table only to generate the correct *distractor* (the un-merged concatenation for `MC.HIN.SANDHI_CONCAT`).
+  - `allowOpen: true` plus a lexicon: Hindi lexicon coverage for C6–9 is a data task of unknown size; a miss tells a correct child "not a word". On a miss, route to the Director's closed-set check, never reject.
+  - Add `maxParts` (tile count) and cap tray at 8 (screen).
+- Params: add `distractors: {text, misc?}[]`; the doc has none, so `MC.ENG.SUFFIX_SPELLING` cannot be detected from tiles when parts are `happy`/`ness` and the child can only join them. Detect it via an `allowEdit` mode where the child can drop or change the final letter, or add the misspelling as a tile option.
+- Events: `wb.build` must include which `rule` applied so the teacher can name it.
+
+#### L3 `sentence-scramble@1` — **S** (1.5 days) · 60 fps: Y · params: gaps · events: OK
+- The easiest engine. Tile-kit slot-fill with order check.
+- Corrections:
+  - Tokens must have ids. Sentences with repeated words ("the ... the") break `string[]`-based comparison. Use `tokens: {id, text}[]`, with `acceptOrders: string[][]` over ids or over texts (texts are fine if equal-text tokens are interchangeable).
+  - **`key-closure` as specified is not feasible.** A closed-set permutation check by taxila-fast cannot enumerate 9! = 362,880 orders in 1–2 s, and an LLM cannot be trusted to find "all valid orders". Fix: (a) cap live specs at **6 chunks** (6! = 720, enumerable by code against a small English/Hindi order grammar or batch-judged offline); (b) use `chunking: "phrase"` so word counts stay low; (c) for longer sentences, accept the Director's closed-set grammatical/same-meaning check on `ss.unlisted` and queue for key review, as the doc already says. Do not claim closure for 9–14 tokens.
+  - `maxTokens: 14` at 360 dp: chips wrap; the slot row needs two lines and a scroll-free layout. Cap at 10 and use phrase chunks.
+- `MC.ENG.NO_INVERSION` should not be scored as an error in Indian English (doc already notes); keep it as a "school form" prompt. Fine.
+
+#### L4 `story-sequence@1` — **M** (3 days; 5 with `cause` links) · 60 fps: Y · params: OK · events: OK
+- `order`, `next`, `missing`, `retell`, `process` are one reorder surface: M. `cause` mode (child draws arrows) is a different interaction (SVG lines between cards, hit-testing, undo). Split it as a v1.1 add-on.
+- Corrections:
+  - Reordering 8 cards with 512 px images: use a flexbox/grid with FLIP animation via transforms; do not animate `left/top`. 60 fps holds.
+  - Reordering by drag has a tap twin (LR8): tap card, tap slot. Specify in `card-kit`.
+  - `verifiedSet` gating (LR3) is the real work: vision check plus human review per set. This is a content pipeline cost, not a UI cost.
+- Events: `sq.submit` order string, `tau` and `first_err` are enough. `sq.retell {cards_hit}` is computed by the Director and arrives from the host, not from the frame.
+- Safety: generated card art for stories with fear/abuse topics must not depict injury or inappropriate contact. Add `contentTags` to card sets and a vision-model child-safety pass.
+
+#### L5 `picture-word@1` — **S** (2 days) · 60 fps: Y · params: OK · events: OK
+- Choice grid and memory-pairs flip. Memory pairs: use CSS `transform: rotateY` with `backface-visibility: hidden`, and no more than 8 pairs (16 cards at 512 px WebP is about 1 MB).
+- Corrections:
+  - `imageabilityMin: 4` needs an imageability lexicon. For Hindi and Hinglish words there is no standard norm table; the validator would be a vision-model call, which is not a bundled gate. Change to a per-word `imageable: boolean` set in the library, not a runtime check.
+  - `pw.say` depends on `record_answer` with ASR of a single word by a young child: low reliability. Mark `pw.say` evidence as **weak** unless ASR confidence passes the gate (LR4).
+- Safety: "body parts" topics need a policy, not just a validator: neutral, clothed, non-anatomical-private illustrations only, reviewed by a human before `verified`. Also check pictures for alcohol, tobacco and weapons in "food/tools" sets.
+
+#### L6 `read-along@1` — **L** (module 6 days, plus host speech window 8–10 days) · 60 fps: R (karaoke) · params: OK · events: gaps
+- This is the engine with the largest gap between the doc and reality.
+- Corrections:
+  - **Real-time hesitation help is not feasible with PA single-shot.** `rd.hesitate` at 3 s needs word-position tracking while the child is speaking. PA single-shot returns its word-level result at the end of the utterance, and partial `recognizing` events do not carry reliable per-word timing or PA flags. Google Read Along does this with on-device streaming ASR. For v1: no live help. Offer a **tap-for-help** button and a long-idle prompt (`stuck` after 20 s). Live help is a separate research item with an unmeasured Hindi child-ASR quality risk.
+  - **Choral and echo reading cannot be scored while the book audio plays,** because the speaker output re-enters the mic and PA scores the model's voice. Drop scoring for `choral`. For `echo`, enforce half-duplex: play the line, then open the window after the audio ends. Mic echo cancellation in a WebView is not reliable enough to depend on.
+  - Forking the mic `MediaStream` to the Azure Speech JS SDK while the realtime WebRTC session is live: two audio pipelines, an SDK bundle of about 1 MB and a worklet running on a 2 GB phone, while the main thread renders karaoke. Expect glitches. Measure memory and dropped frames in M-L3 before committing, and prefer segment-by-segment: open the window, record up to 25 s, send audio to a server `/api/speech/score` that calls Azure PA, rather than a client SDK. This keeps the SDK off the device and leaves only a MediaRecorder or AudioWorklet capture (and moves auth and retention under server control). It adds a network hop per segment; that is acceptable because the doc already scores per segment, not live.
+  - The `create_response=false` window is a good mechanism, but the Director must also queue and drop teacher barge-ins and restore state on error. If the window never closes (SDK failure, tab backgrounded), the teacher goes mute. Add a 35 s watchdog.
+  - `hi-IN` PA: the locale table lists the locale, but miscue (omission/insertion) support is stated for the feature in general; **verify hi-IN miscue explicitly** with a 20-utterance test before M-L1.
+  - Karaoke at 60 fps: do not re-render React per word. Drive highlight by toggling a CSS class on pre-built spans, or by `background-clip: text` with a CSS variable updated in `requestAnimationFrame`. Avoid forced layout. A 200-word passage is 200 spans, which is fine. Paginate by line (LR8).
+  - Akshara-level highlight by proportional split of word timings is coarse for Hindi (schwa deletion makes timing non-proportional to aksharas). Acceptable for R0/R1; label it approximate and verify in M-L4.
+- Params: `scoring.helpAfterMs` should be removed from v1 (see above). Add `pauseOnTap` and `maxLineWidthTokens`.
+- Events: `rd.seg_result` must carry per-word results to the host store; the 12-key Director line carries only counts. `rd.tap` frequency spam: aggregate.
+- Safety: child voice data (R1.11). Also reading-level data per child is sensitive; keep it in the child record, not in the frame.
+
+#### L7 `grammar-transform@1` — **M** (4 days) · 60 fps: Y · params: OK · events: OK
+- The UI is the hard part, not the data. Tense, number and negation are single-slot swaps. `voice:passive`, `reported`, `question:*` and `combine` need insert, delete, reorder and connector drop, i.e. a sentence editor. Build it as tile-kit with typed slots (swap / insert / delete / reorder) rather than free tiles.
+- Corrections:
+  - Hindi ने agreement and oblique forms need a deterministic paradigm table (gender × number × case). That table is the real cost. It is data plus verification, so keep it kit-bound (the doc says closed paradigms are live; I agree only if the paradigm table is a shipped, tested module).
+  - `accept: string[][]` must be matched on normalised text (R1.6).
+  - `tray` distractors carry `misc`; ensure each wrong tray form maps to one detector (`did went` to `MC.ENG.DOUBLE_PAST`). If a child edits via insert/delete, there is no distractor; detectors then need diff logic against the `accept` set. Specify `diffMisc(source, answer)` per op or limit v1 to tray-only ops.
+- Safety: sentence content is LLM-generated live: run the `safety` validator on the source sentence and run a profanity/violence list on the tray. Reported-speech and passive-voice examples drift toward violence ("The thief was beaten"); constrain topics by chapter.
+
+#### S1 `map-explorer@1` — **L** (core 8 days, extras 5+ days, plus a data and legal blocker) · 60 fps: R · params: gaps · events: OK
+- The biggest cost, and it hides a dependency.
+- Blockers and corrections:
+  - **Data blocker.** The document's preferred source is "SoI published maps or digital boundary data". SoI digital boundary data is not generally available as a free, redistributable, simplified vector set for an app, and community datasets (e.g. Datameet) do not follow the official external boundary. Engineering cannot start map-kit's real content until the owner/counsel obtains a licensed, SoI-compliant India outline (including full J&K and Ladakh, Arunachal Pradesh, the claimed territories). Until then the engine ships with a placeholder; **this is a gate for any release**, since an incorrect India map is a legal and reputational risk. Treat as a procurement task with an owner and a date, not a build task.
+  - **Rendering.** About 36 state/UT paths plus rivers and a graticule is fine as SVG if you pan/zoom by transforming one `<g>` with CSS and keep path complexity down (target under 15k vertices total for India after simplification). Mouse-style per-path hover is not needed. For `density`, `rainfall` and `climate` overlays, use fill classes, not re-computed geometry. Canvas is not needed for v1 and costs hit-testing code.
+  - **Hit-testing.** Use SVG `pointer-events` on paths (free, exact), not point-in-polygon in JS. Small states (Goa, Sikkim, Tripura, Delhi, Puducherry, Lakshadweep): the lens (M-L7) is mandatory, not optional. Implement the lens as an enlarged "chip" list plus a magnifier overlay (S-M).
+  - **`tolKm` is wrong as a parameter.** A fixed km tolerance means different pixels at different zooms. Define tolerance in **CSS px** (min 44 dp) with a km display only for reporting.
+  - **`dist_km` for `retrieve` and `drop`.** Use distance from the dropped point to the *polygon* (0 when inside), not to the centroid (a pin in western Rajasthan is 400 km from the centroid but inside the state). Distance to polygon edge is cheap with a simplified geometry.
+  - **`trace` mode (finger-drawing a river) is L alone.** Matching a drawn polyline to a river needs a Fréchet-style distance and tuning, and children's finger paths on a 360 dp map are noisy. Replace v1 with **ordered checkpoint taps** (source, tributary, mouth). Drop finger-drawing until measured.
+  - **Cut from v1:** `time` (historical extents; the doc itself says reviewed T2 only), `schematic` basemap (it is a different, grid-icon engine: move to a separate S engine on card-kit), `routes`/`networks` layers, `overlay` mode.
+  - `projection: "lcc-india"` needs a projection implementation. Use d3-geo (inline, about 15–20 KB, no network needed) or precompute projected coordinates offline and ship only planar paths. Prefer offline precompute: smaller, faster, no library in the frame.
+  - Params the LLM needs but lacks: `viewBox`/`focus` (which region to zoom to), `hideTargets` (retrieve mode) and `revealOnWrong` policy.
+- Events: fine. `mp.tap` should include `zoom` so distance is interpretable.
+- 60 fps: pan and pinch-zoom of an SVG with filled paths can drop frames on weak GPUs. Use `will-change: transform` on the group, avoid `stroke-width` re-calc during zoom (use `vector-effect: non-scaling-stroke` sparingly, it is costly), and drop label rendering during gestures. Test Android 10 + 2 GB.
+- Safety/legal: every map screen shows "approximate, not to scale" text where the doc requires it. The LLM must never see or emit coordinates for borders. The Director must not discuss disputed borders beyond the textbook line ("aapki kitaab kehti hai"). Add a validator that a published map `targets` list contains only registered feature IDs.
+
+#### S2 `timeline@1` — **M** (4 days) · 60 fps: Y · params: OK · events: OK
+- Ordinal, linear and log axes are simple math. BCE/CE arithmetic with no year zero is about 30 lines plus tests.
+- Corrections:
+  - **Layout is the cost.** Drag-to-place on a 360 dp axis with 8 events collides labels. Needed: lane assignment, label collision avoidance, and axis pan/zoom, plus a tap twin ("tap event, tap axis position"). Cap `events` at 8 and use lanes for dynasties only in `order` mode.
+  - `snapYears` must scale with zoom; define it as a function of visible range or in px.
+  - **Safety/contract conflict.** `personal: {ephemeral: true}` conflicts with "no personal data inside the frame" and with free-text. Restrict personal timelines to a fixed template of generic events (wake, school, lunch, evening) with child-chosen **order only**, no names, no family events, no free text. A "family timeline" can surface bereavement, separation or abuse; if the child volunteers such content, the Director must route to the safeguarding hand-off (Childline 1098) rather than continue the exercise.
+  - Deep-time `log` scale labels need "years ago" as the unit, not `Year{BCE/CE}`; add `unit: "bce-ce" | "years-ago"`.
+- Events: add `tl.place.axis_px` only if debugging; the current set is enough.
+
+#### S3 `compare-venn@1` — **M** (3–4 days) · 60 fps: Y · params: gaps · events: OK
+- Two-set Venn plus sort and table is S. Three-set Venn is the cost: seven regions with 12 items on a 360 dp portrait screen is too cramped for a drag target.
+- Corrections:
+  - Region hit-testing: use SVG circles with precomputed region polygons or three-circle membership tests via `pointer-events` layering; for tap, region chips are enough. Cap `venn3` at 6 items, `venn2` at 8, and disallow venn3 for B1–B2. Use a "tap item, tap region" flow as the default and drag as an enhancement.
+  - **Law violation.** The doc allows live T1 to author `truth` arrays for compare-venn. That is an LLM writing the answer key for live use, against "a model never grades; classify against verified keys". Contested-item rejection does not fix this. Rule: live specs may only *select* items from kit items that carry a verified `truth`; items created live produce **no mastery evidence** and are marked `unverified: true`. `allowNew` (the child proposes an item by voice, classified against the sets) is likewise Director-closed-set only, never scored.
+  - Params gap: add `regionLabels` (so the LLM can name "only A", "both", "neither") and `maxPerRegion`.
+- Events: fine; `cv.reason` comes from the Director, not the frame.
+
+#### X1 `role-play@1` — **L** (module 3 days, Director plumbing 8 days) · 60 fps: Y · params: OK · events: gaps
+- The module is a display (scene card, speaker, checklist, choice chips): S-M. The engineering is in the Director and voice path, which the doc treats as "mechanics".
+- Corrections:
+  - The frame never hears the child. `rp.turn`, `rp.goal` and `rp.exit` must be emitted by the **host/Director**, not the module. Specify them as host→module updates (`scene_update {beat, goals_met}`) plus module→host `interaction` only for chip taps. Otherwise the contract is unimplementable.
+  - NPC voices. The realtime session has one voice. A second voice means injecting pre-rendered TTS audio into the host audio graph, with the teacher's voice muted for that line. Pre-rendered lines are rigid, so budget for scripted-NPC beats only (the doc's "scripted NPC lines" case). Free in-character improvisation by the realtime teacher is a prompt task, not an engine task.
+  - Intent classification on Hinglish ASR text (M-L9) is the quality bottleneck. Expect confusion on code-mixed input; choice chips must always be one tap away, as the doc says.
+  - `MC.LANG.REGISTER ← तू` depends on ASR preserving the pronoun form. ASR often normalises it; mark as low confidence.
+- Safety (the engine with the most risk):
+  - **Never deny being an AI** still applies in character. Add `exitCue`: if the child asks "are you real?", sounds distressed, or tries to continue a harmful scenario, the teacher breaks character at once, with no beat logic. Enforce by a predicate in the Director, not a prompt line.
+  - `noRealPersons`, `thirdPersonOnly` and `noStrangerContact` are `true` literals in the type; good. Also enforce them at **validation** time by scanning `persona`, `setting` and `beats` for real-person names and party names (a deny-list plus an LLM closed-set check), because T1 fills beats live.
+  - Civic scenes (gram sabha, polling booth, Question Hour) touch politics. Fix scene templates offline; the LLM may only fill from a whitelist of role names (sarpanch, villager, officer), never party names.
+  - No romance/companion register in any scene (project floor): add `register` check, banning intimacy-themed scene seeds.
+
+#### X2 `rhythm-poem@1` — **M** (5 days screen modes; speech modes depend on L6) · 60 fps: Y · params: gaps · events: OK
+- WebAudio beat is trivial; the timing and the number of modes are not.
+- Corrections:
+  - **Scheduling.** Schedule beats ahead using `AudioContext.currentTime` and a lookahead timer; never `setInterval` to produce clicks. Autoplay: start the context in a user tap inside the frame. Output latency again (R1.7).
+  - **`clap` offsets.** Touch event latency plus WebView audio latency on cheap phones is 100–250 ms. Report `offset_ms` relative to the child's own median (rhythm consistency), not absolute. Log only (the doc already says no misconception from offsets).
+  - `rhyme-spot` and `MC.POEM.RHYME_BY_SPELLING` need a pronunciation key per word. Add `rhymeKey` (offline, per word, from a pronouncing lexicon with Indian-English review) to `Token` or `poem.rhymes[]`; spelling-based or LLM-live rhyme judgement is wrong (bough/cough). Hindi rhyme (tukbandi) is by final-syllable match: add a deterministic scanner.
+  - **Matra scanner.** The laghu/guru rule needs these cases tested: chandrabindu does not make guru, anusvara and visarga do; a vowel before a conjunct becomes guru; final-position and halant treatment. Keep the doc's per-doha teacher-reviewed key as the source of truth and use the scanner only to propose. Never auto-correct from the scanner.
+  - **`perform` and `echo-line` modes are speech-window features** and inherit all L6 blockers. Ship `perform` after read-along's window is measured. Drop `perform` from v1.
+  - `actions[]` (gesture reproduction): the module cannot see the gesture. The only evidence is the child saying "kar diya" or a tap, so this is a prompt to the teacher, not an observed event. Remove any claim that gesture reproduction is measured.
+- Safety: poem text and sung audio need rights (LR2). Bhakti poets may carry sectarian content; fix a reviewed set and avoid live selection.
+
+#### S4 `source-card@1` — **S–M** (3 days) · 60 fps: Y · params: OK · events: OK
+- Image view with hotspots and a claim list. Pinch-zoom: CSS transform on one image; cap source images to about 1600 px (decode memory on 2 GB devices). Hotspots as absolutely positioned transparent buttons with percent boxes.
+- Corrections: the `claims.support` three-way choice is good. `sc.question {intent}` implies free-text; make it voice via the Director, not text input in the frame.
+- Safety: sources about conflict or religious artefacts need review. Per-file licence text (CC BY-SA attribution) must be shown on the card or the page, not only stored. The Director must frame as "the book says" for contested claims (the doc's own rule).
+
+### R3. Build-cost summary
+
+| item | size | days (kit assumed) | note |
+|---|---|---|---|
+| text-kit | L | 12–15 | segmenter + DOM tokenizer + karaoke clock + latency calibration + fonts + QA on old WebViews. Speech window client is separate (below) |
+| tile-kit | M | 5 | slots, tray, tap twin, lone-matra placeholders, Hindi normalisation |
+| card-kit | M–L | 8–10 | ordering, bins, Venn regions, lanes, tap twins, FLIP animation |
+| map-kit | L | 12–15 | SVG renderer, pan/zoom, lens, polygon distance; excludes licensed data |
+| host speech window | L | 8–10 | capture, token/proxy endpoint, PA call, watchdog, `create_response` handling |
+| L1 phonics | M | 4 | tracing dropped; audio sprite in host |
+| L2 word-builder | M | 3–4 | sandhi targets kit-authored |
+| L3 sentence-scramble | S | 1.5 | key-closure capped at 6 chunks |
+| L4 story-sequence | M | 3 (+2 for `cause`) | verified-set pipeline is content cost |
+| L5 picture-word | S | 2 | |
+| L6 read-along | L | 6 (module) | plus host window above; live hesitation help removed |
+| L7 grammar-transform | M | 4 | paradigm tables extra |
+| S1 map-explorer | L | 8 (core) + 5 (extras) | blocked on SoI-compliant data |
+| S2 timeline | M | 4 | layout and collision |
+| S3 compare-venn | M | 3–4 | venn3 capped |
+| X1 role-play | L | 3 (module) + 8 (Director/voice) | events move to host |
+| X2 rhythm-poem | M | 5 | speech modes deferred |
+| S4 source-card | S–M | 3 | |
+
+**Totals [U]:** kits 37–45 days plus host window 8–10 days (about 9–11 weeks); engines about 70–80 days (about 14–16 weeks); total about **23–28 engineer-weeks**, assuming a content team does authoring, asset review and legal in parallel.
+
+**Meets "≤ 2 days":** L3, L5 only (S). **Borderline (3–5 days):** L1, L2, L4, L7, S2, S3, S4, X2. **Does not:** L6, S1, X1.
+
+### R4. Suggested build order (changes to §7)
+
+1. `tile-kit` and `card-kit` first, and ship `sentence-scramble`, `picture-word` and `story-sequence` on them (the S/M wins; they validate the shared kits on a real device).
+2. `compare-venn`, `timeline`, `source-card` on `card-kit` next.
+3. `text-kit` with the pure-JS segmenter, karaoke clock and latency calibration, then `phonics` and `rhythm-poem` screen modes.
+4. Run **M-L3** (turn-taking and memory with the speech capture) **before** any `read-along` solo/echo work; run the hi-IN miscue check; decide client-SDK vs server-proxy scoring.
+5. `map-kit` only after the licensed SoI-compliant boundary data exists. Prototype with a 5-state placeholder to retire the rendering risk early.
+6. `role-play` after the Director's predicate set (exit cue, no-real-persons) is built and tested.
+
+### R-M. Measurements to add (device, not child, tests)
+
+| id | measurement | method | gates |
+|---|---|---|---|
+| M-E1 | frame time for drag, karaoke, map pan | Android 10, 2 GB, Helio G35-class device; Chrome DevTools remote trace, p95 frame ms over 60 s per engine | any claim of 60 fps |
+| M-E2 | memory peak per module | `performance.memory` plus `adb dumpsys meminfo`, with realtime WebRTC and the module live | one-iframe policy; asset budgets |
+| M-E3 | tap-to-sound latency | 240 fps camera or audio loopback; host sprite playback vs postMessage path | `phonics` and `rhythm-poem` |
+| M-E4 | audio output latency by device and output (speaker, wired, Bluetooth) | tap-and-click loopback; `AudioContext.outputLatency` where available | karaoke offset default |
+| M-E5 | WebView version spread in the target pool | Play Console device-by-WebView report or survey of test devices | ES target and polyfills |
+| M-E6 | Devanagari rendering QA | conjunct, matra and half-form test sheet on 5 devices with the bundled font | text-kit sign-off |
+
+### R-S. Review sources and limits
+
+- Nothing here was benchmarked; sizes and fps claims are engineering judgment **[U]**.
+- Facts used from this repo: the sandbox CSP and the no-personal-data rule (`docs/research/tech-and-market.md` lines 492–540) and the `interaction` event shape (`shared/contracts.ts` line 156).
+- Not verified this session and to be checked before they become `context/` entries: the availability and licence terms of SoI digital boundary data; Azure PA miscue behaviour specifically for hi-IN; whether PA continuous mode supports `EnableMiscue` for passages over 30 s.
