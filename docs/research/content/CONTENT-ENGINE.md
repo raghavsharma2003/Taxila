@@ -7,7 +7,7 @@
 | § | content |
 |---|---|
 | 1 | Architecture: tiers T0–T3, latency budgets, modality choice rules, where code runs |
-| 2 | The engine catalogue: 45 engines, their params, events, misconceptions, probes, size and v1 priority, plus computed coverage |
+| 2 | The engine catalogue: 46 engines (45 + `atom-builder@1`, (gap-fill GAP-1-atom-builder-c9-ch08)), their params, events, misconceptions, probes, size and v1 priority, plus computed coverage |
 | 3 | The `scene@1` DSL (JSON Schema) |
 | 4 | The module↔host protocol (bridge v2, TypeScript) |
 | 5 | The teacher observation pipeline (event → coalesced observation → Director) |
@@ -106,7 +106,7 @@ No new measurements were taken for this document. Every number below is inherite
 | tier | what is generated, by whom | output | validator | latency (measured / budget) | evidence weight | fallback |
 |---|---|---|---|---|---|---|
 | **T0** reviewed preset | nothing: a kit item names a reviewed engine preset | `ModuleSpec` | golden specs in CI | 0 ms (bundled) | 1.0 | — |
-| **T1** engine + params | code fills operands, stage, skin, distractors (one generator per `MC.*` id) and traps. `taxila-fast` at effort `none` writes only `ask` (L10n, about 50 tokens), or nothing when a template exists | `ModuleSpec` for one of 45 engines | `safeParse` → `resolveParams` (clamp) → pure `lint(spec)` → `solve(spec) !== null` → string safety; < 5 ms [U] | **1.88 s p50 / 2.05 s p90** [X genui §4]; 0 on a prefetch hit | 1.0 (0.5 on an unverified mini-kit) | the kit's deterministic spec |
+| **T1** engine + params | code fills operands, stage, skin, distractors (one generator per `MC.*` id) and traps. `taxila-fast` at effort `none` writes only `ask` (L10n, about 50 tokens), or nothing when a template exists | `ModuleSpec` for one of 46 engines | `safeParse` → `resolveParams` (clamp) → pure `lint(spec)` → `solve(spec) !== null` → string safety; < 5 ms [U] | **1.88 s p50 / 2.05 s p90** [X genui §4]; 0 on a prefetch hit | 1.0 (0.5 on an unverified mini-kit) | the kit's deterministic spec |
 | **T2a** template fill | `taxila-fast` at effort `none` picks slots for a template the *router* chose | `{template, slots}` → `expand()` → `scene@1` | slot zod → autofix → lint S0–S7 → exact solver | **3.08 / 3.35 s** [X genui §6.3] | 1.0 after the template's review | T1 or board + voice |
 | **T2b** free scene | `taxila-fast` or `taxila-brain`, strict schema, one repair | `scene@1` | same as T2a | 11.9–18.2 s p50 plus 10–13 s per repair [X]. **Near-line only: `horizonMs ≥ 45 s`** | 0.75 until promoted | T2a, T1, board |
 | **T3** free-form | Forge offline (coder plus critic), `taxila-module@1` SDK only | HTML/JS/SVG/p5 | V0–V9 + harness V1–V15 + two-key human review | minutes to hours; never live | 0 as a draft; T0-equivalent once promoted to `lib:` | not shown |
@@ -330,7 +330,8 @@ export interface BoardOnly {
   board: { itemRef: string /* kit board item id */; pictureRef?: string /* lib figure "sha256:…" */ } | null;
   gap: { topic: string; mechanic: Mechanic | null; band: Band; why: BoardWhy } | null;   // non-null = log a gap ticket (M14)
 }
-export type BoardWhy = "no_engine" | "no_template" | "deadline" | "validation_failed" | "safety_blocked" | "denylisted" | "device_tier";
+export type BoardWhy = "no_engine" | "no_template" | "deadline" | "validation_failed" | "safety_blocked" | "denylisted" | "device_tier"
+  | "no_reviewed_deck";   // ★ gap-ticket logging only for sensitive topics; never mounts a board (§8.3.1 e; gap-fill GAP-3-reviewed-content-safety)
 
 // ───── server → client (lesson channel; voice lane: the Director WebSocket/SSE, not the realtime data channel) ─────
 export type PlanServerMsg =
@@ -341,7 +342,8 @@ export type PlanServerMsg =
   | { v: 1; k: "module_safety"; plan_id: PlanId; sceneHash: string; status: "pass" | "block" }  // late Content Safety verdict
   | { v: 1; k: "module_revoke"; sceneHash: string; reason: "safety" | "validator_bug" | "incident"; scope: "lesson" | "global" }
   | { v: 1; k: "prefetch_invalidate"; skill: string | "*"; lm_seq: number; reason: InvalidateWhy };
-export type InvalidateWhy = "stage_change" | "misc_change" | "mastery_change" | "prior_knowledge" | "band_or_lang" | "validator_bump";
+export type InvalidateWhy = "stage_change" | "misc_change" | "mastery_change" | "prior_knowledge" | "band_or_lang" | "validator_bump"
+  | "parent_setting";     // ★ ParentContentSetting changed (§8.3.1 d; gap-fill GAP-3-reviewed-content-safety)
 
 // ───── client → server (same channel) ─────
 export interface PlanStatusMsg {
@@ -557,7 +559,7 @@ The `answer` message carries `latency_ms`, `attempt`, `changes` and `via`.
 10. Numeric entry only; no child free text.
 11. `renderStatic()` exported.
 
-### 2.2 The catalogue (45 engines)
+### 2.2 The catalogue (46 engines: the 45 below plus S15 `atom-builder@1` (gap-fill GAP-1-atom-builder-c9-ch08))
 
 Each entry gives:
 - **id**, then subjects and classes; **primary** = the number of curriculum topics where the planner mounts this engine first, computed from the maps after the merges noted.
@@ -714,7 +716,7 @@ Separately:
 - MC: `LEFT_TO_RIGHT`, `MINUS_FIRST_TERM`, `ADD_BASES`, `ZERO_POWER_ZERO`, `TRICK_IS_MAGIC`, `FEW_CASES_PROVE`, `CONVERSE_TRUE`
 - probes: spot_error (the core probe), predict, construct (counterexample), contrast. DragonBox g = .269 and FH2T g = .135 against an active control (Decker-Woodrow 2023 [V]).
 
-#### EVS and science (14)
+#### EVS and science (15; S15 added (gap-fill GAP-1-atom-builder-c9-ch08))
 
 All science engines share the science §2 contract:
 - Every engine has a POE hook with the simulation locked until a prediction is committed, a ghost of the prediction shown against the outcome, and a mandatory teacher resolution. After 2 consecutive wrong POEs the engine switches to a worked demonstration.
@@ -812,6 +814,13 @@ All science engines share the science §2 contract:
 - MC: `FS.HEAVY_SINKS`, `FS.BIG_DENSER`, `FS.MASS_EQ_WEIGHT`, `FS.FLOATERS_NO_WEIGHT`
 - probes: POE, investigation, contrast. **The physical twin is mandatory:** hands-on beat virtual (g = 0.85 over 69 studies [S]). The potato and egg facts need a bench test [U].
 
+**S15 `atom-builder@1`** · C9 ch08 (all 4 topics) · primary 4 (+2 secondary, C9 ch09 bonding and formulae) · **v1.1 (Wave 4 item 12a; pull to Wave 3 if C9 launches)** · M, 8 d; no art days (gap-fill GAP-1-atom-builder-c9-ch08)
+- params: `{mode: build|read|shells|isotope|models-timeline; Z 1–20; neutrons 0–28 (default = commonest isotope); electrons (= Z in v1); showShells; model: thomson|rutherford|bohr (≠ bohr only in models-timeline)}` + kit-only `readout`, `notation`, `tray`, `shots`, `cards[]`, `claims[]`; goals carry `sub: order|claim|scatter`, `askValency`, `pair`
+- model: Bohr–Bury fill K-L-M-N = 2,8,8,2 for Z ≤ 20 (2n² cap, outermost ≤ 8, stepwise); valency = outer ≤ 4 ? outer : 8 − outer (0 when full); A = Z + N; isotope = same Z, N in a registry. Schematic Rutherford scattering θ = 2·atan(d/2b); Thomson ≤ 0.5°. All from NCERT *Exploration* ch08 [V]
+- events: `at.add{particle,where}` · `at.remove` · `at.shell{shell,count,inner_full}` · `at.identify{z_claim,a_claim}` · `at.valency{val_claim,outer}` · `at.classify{ask,same_z,said_same}` · `at.claim` · `at.order{tau}` · `at.predict` (→ `poe.predicted`) · `at.fire{b,theta_deg}`
+- MC: `ATOM.MASS_EQ_ELECTRONS`, `ATOM.MASS_COUNTS_ALL`, `ATOM.Z_FROM_NEUTRONS`, `ATOM.ELECTRONS_IN_NUCLEUS`, `ATOM.SHELL_ANY_ORDER`, `ATOM.SHELL_OVERFILL`, `ATOM.OUTER_BEYOND_8`, `ATOM.VALENCY_EQ_OUTER`, `ATOM.ISOTOPE_DIFF_ELEMENT`, `ATOM.ISOTOPE_DIFF_CHEM`, `ATOM.VISIBLE_MICROSCOPE`, `ATOM.PLANETARY_ORBITS`, `ATOM.NUCLEUS_LARGE`
+- probes: construct, diagnose, classify, sequence, predict (POE gold foil), contrast. Discriminability lint (no `read` probe on an atom with n = e). Twin: rajma/chana/moong on 4 paper circles. Full spec, JSONLogic detectors and grade rules in §2.6; reference core `atom-builder-grade.mjs` passes 22 golden specs / 49 cases [X].
+
 #### Language and SST (10)
 
 These follow language-sst §2 and run on 4 kits: `text-kit`, `tile-kit`, `card-kit`, `map-kit`. Speech and audio are host-side. All correctness comes from rules or verified accept-keys; an answer outside the key goes to a closed-set check, never to free grading. Every `TextUnit` carries rights; live generation never reproduces NCERT text.
@@ -881,12 +890,14 @@ These follow language-sst §2 and run on 4 kits: `text-kit`, `tile-kit`, `card-k
 The method:
 - Every maths topic (304) and EVS/science topic (210) is assigned its primary engine from `maths-engine-map.json` and `science-engine-map.json`, after the merges above.
 - Generic science formats are assigned to the T2a and diagram layer: sorter → `sort-bins`/`compare-venn`, sequence and time-lapse → `sequence-steps`/`flow@1`, label-diagram and microscope → `label-diagram@1`, classification-key → `concept-map@1`, habitat-match → `match-pairs@1`, plus pattern, thali-builder, spot-the-hazard (`hotspot-explore@1`) and formula-builder (`formula@1`).
-- Story, scenario, map, reviewed-content, atom-builder and label-reader are **not** counted for that layer.
+- Story, scenario, map, reviewed-content and label-reader are **not** counted for that layer.
+- `atom-builder` was a generic format with no engine. It is now the T1 engine S15 (§2.6) and is counted in the gap-fill row only, because it is v1.1. The v1 rows stay comparable (gap-fill GAP-1-atom-builder-c9-ch08).
 
 | set | maths | EVS + science | all 514 |
 |---|---|---|---|
 | **v1 T1 (the 12)** | 179/304 (**59%**) | 50/210 (24%) | **229 (44.6%)** |
 | v1 T1 + T2a/diagram layer | 179 (59%) | 94/210 (**45%**) | **273 (53.1%)** |
+| v1 T1 + T2a/diagram layer + gap-fill `atom-builder@1` (gap-fill GAP-1-atom-builder-c9-ch08) | 179 (59%) | 98/210 (47%) | 277 (53.9%) |
 | pure-greedy 12 for comparison (adds geo-construct instead of water-cycle, measure kept) | 182 (60%) | 34 (16%) | 216 (42.0%) before the merges |
 
 By class, v1 T1 maths primary coverage is:
@@ -901,6 +912,8 @@ By class, EVS + science coverage with the template layer is:
 |---|---|---|---|---|---|---|
 | 13/24 | 9/20 | 11/20 | 19/33 | 9/36 | 10/34 | 23/43 |
 
+With the gap-fill `atom-builder@1`, C9 science rises to **27/43 (63%)** from 23/43 (53%); the other classes are unchanged. Science overall is 98/210 and all topics 277/514 = 53.9%, from `content-engine-coverage.py`, re-run 2026-10-02 [X] (gap-fill GAP-1-atom-builder-c9-ch08).
+
 **Why these 12, not the greedy 12.**
 - The pure greedy pick takes `geo-construct` (17 topics). It is a 10+ day engine with a JSXGraph licence question and serves C6–9 only.
 - `water-cycle` (10 topics) is the only science engine that reaches C3 and C5 EVS, where science coverage is otherwise near zero.
@@ -914,7 +927,7 @@ By class, EVS + science coverage with the template layer is:
 
 Until each engine lands, the router serves these with explainer templates, `flow@1` and `label-diagram@1` diagrams, T2a templates, or board plus voice, and every such mount logs a gap ticket (§1.4 M14). The v1.1 wave (§9) raises T1 coverage most per day.
 
-### 2.4 Cross-cutting harnesses and the wrapper layer (not counted in the 45)
+### 2.4 Cross-cutting harnesses and the wrapper layer (not counted in the 46)
 
 | id | kind | what it does | priority |
 |---|---|---|---|
@@ -952,6 +965,238 @@ Contents, merged from maths R.5, science R0.2, language E, diagrams E1 and anima
 - DPR cap of 2, or 1.5 on low memory; the backing store ≤ 1.5× CSS size or 720 px wide.
 - No `filter`, `blur`, `shadowBlur` or per-frame gradients.
 - Cost: **about 15–20 engineer-days** (maths says 8–10 for its subset, science 3–4 weeks for its own; one kit serves both) [U].
+
+---
+
+### 2.6 Gap-fill engine spec: S15 `atom-builder@1` (gap-fill GAP-1-atom-builder-c9-ch08)
+
+**The gap.** Class 9 Science ch08 has 4 topics: `c9-science-ch08-t01` to `-t04`. The new NCERT *Exploration* title is "Journey Inside the Atom". `science-engine-map.json` gave all four the generic format `atom-builder`, and §2.3 did not count that format. So the router fell to `board_only` for a whole chapter in the weakest class. This section specs the engine. The reference pure core is `atom-builder-grade.mjs` and the golden specs are `atom-builder-goldens.json`, both in this folder.
+
+**The source of truth for every rule below** is NCERT Class 9 *Exploration* ch08, read in full on 2026-10-02 (`ncert.nic.in/textbook/pdf/iesc108.pdf`) **[V]**:
+- §8.2 covers the models: Thomson, the gold foil experiment, Rutherford's planetary model and Bohr's stationary shells K, L, M, N. Kanada's *parmanu* and Dalton appear as precursors.
+- §8.6: A = p + n.
+- §8.7 gives the Bohr–Bury rules:
+  - a shell holds at most 2n²;
+  - the outermost shell holds at most 8;
+  - shells fill stepwise K → L → M → N.
+- §8.8: valency is the number of electrons gained, lost or shared to complete the octet (a duplet for He); fewer than 4 valence electrons → lose, more than 4 → gain, carbon shares 4.
+- §8.9.1 on isotopes:
+  - same Z, different A;
+  - same electrons, so the same chemical properties;
+  - the uses listed are U-235, Co-60, I-131 and C-14.
+- Table 8.4 gives p, n, e and the distribution for Z = 1–18. The engine extends to Z = 20 with the same rules: K is 2,8,8,1 and Ca is 2,8,8,2.
+
+**Engine, not a T2a template** [I]. Four reasons:
+1. Grading needs the Bohr–Bury fill, the octet valency and an isotope registry. These are three pure functions, not one `EXPR@1` predicate.
+2. Construction is particle placement onto a nucleus region and up to 4 snapping rings, with packing for up to 48 nucleons (Ca-48). No `scene@1` mechanic does that.
+3. The models mode needs a deterministic scattering scene.
+4. All four topics share one state model `{p, n, e, shells[4]}`, so one engine serves the chapter, the same way `sky@1` serves several.
+
+The timeline-order and claim-card sub-modes reuse the kit's `sequence-steps` and `compare-choice` components inside the engine. They are not separate mounts.
+
+#### 2.6.1 Params (host zod source → strict wire; `llmParams` = the 6 below)
+
+```ts
+// shared/engines/atom-builder.ts
+export type AtomMode = "build" | "read" | "shells" | "isotope" | "models-timeline";
+export type AtomModel = "thomson" | "rutherford" | "bohr";
+export interface AtomBuilderParams {
+  mode: AtomMode;                    // llm
+  Z: number;                         // llm · int 1..20
+  neutrons?: number;                 // llm · int 0..28; default = commonest isotope N from ELEMENTS (NCERT Table 8.4; K-39, Ca-40)
+  electrons?: number;                // llm · int 0..20; default Z. v1: must equal Z (ions are off; lint), |Z−e| ≤ 3 when goal.ionsAllowed
+  showShells: boolean;               // llm · false = electrons float in an unstructured "cloud" (concrete build only)
+  model: AtomModel;                  // llm · ≠ "bohr" only in models-timeline (validCombos)
+  // host / kit only (llm:false)
+  readout: "live" | "after" | "never";        // default live in build, never in read (the readout IS the answer)
+  notation: "words" | "AZX" | "both";         // AZX = ²³₁₁Na; abstract stage forces AZX
+  tray: { p: number; n: number; e: number };  // particle supply caps, ≤ 25 / 28 / 23
+  shots: number;                              // scatter volley 20..200 (drawn), default 60
+  cards?: ModelCardId[];                      // registry: kanada | dalton | thomson | rutherford | bohr
+  claims?: ClaimId[];                         // registry; each claim carries truth + the MC it diagnoses
+}
+export interface AtomGoal {                   // from the verified kit `expect`, never the LLM fill
+  sub?: "order" | "claim" | "scatter";        // models-timeline only
+  order?: ModelCardId[]; claim?: ClaimId; truth?: boolean; misc?: MiscId;
+  askValency?: boolean; target?: MiscId;      // shells
+  pair?: [[number, number], [number, number]]; ask?: "element" | "chemistry";   // isotope classify: [[Z, N], [Z, N]]
+  ionsAllowed?: boolean;
+}
+```
+
+```json
+{ "$id": "atom-builder@1.params", "type": "object", "additionalProperties": false,
+  "required": ["mode", "Z", "neutrons", "electrons", "showShells", "model"],
+  "properties": {
+    "mode": { "enum": ["build", "read", "shells", "isotope", "models-timeline"] },
+    "Z": { "type": "integer", "minimum": 1, "maximum": 20 },
+    "neutrons": { "type": ["integer", "null"], "minimum": 0, "maximum": 28 },
+    "electrons": { "type": ["integer", "null"], "minimum": 0, "maximum": 20 },
+    "showShells": { "type": "boolean" },
+    "model": { "enum": ["thomson", "rutherford", "bohr"] } } }
+```
+
+All six fields are listed in `required`, with nullable optionals, which is the strict-wire form (A5).
+
+`validCombos`:
+- `model`: `thomson` and `rutherford` are allowed only in `models-timeline`.
+- `showShells: false`: allowed only in `build` at the concrete stage.
+
+**Registries** (`presets`, all `safe:true`):
+
+| registry | contents |
+|---|---|
+| `ELEMENTS` | Z 1–20: symbol, en/hi name, default N |
+| `ISOTOPES` | the accepted N per Z: naturally occurring, plus the textbook H-3 and C-14. Anything else grades `partial` and the teacher says "no such nucleus is known" |
+| `USES` | display-only cards for U-235, Co-60, I-131 and C-14, with kit-authored text. Z > 20 is allowed on a card, never in the builder |
+| `MODEL_CARDS` | each card carries its evidence id: *parmanu* reasoning, laws of combination, the electron (1897), gold foil, stable energy levels (1913) |
+| `CLAIMS` | true/false cards, each naming the MC it diagnoses |
+
+**Stages** (concreteness fading):
+- **concrete:** bead skin (rajma-red p⁺, chana-cream n, small moong-green e⁻). Each particle carries a ±/0 glyph, so colour is never the only cue. Names and readout are live.
+- **pictorial:** NCERT Fig. 8.11 style. Dot-and-ring Bohr diagram, p/n written as counts inside the nucleus.
+- **abstract:** notation only, `²³₁₁Na` ↔ `2,8,1`, with no diagram.
+- **linked mode:** the live readout `Z = p · A = p + n · charge = p − e · 2,8,1 · सोडियम/Sodium`.
+
+#### 2.6.2 Modes, topics and probes
+
+| mode | topic | what the child does | probes |
+|---|---|---|---|
+| `build` | t02 | taps a particle in the tray, then the nucleus or a ring (tap-first; drag optional), to make a named atom | construct; translate (diagram ↔ AZX) |
+| `read` | t02 | reads a drawn or notated atom and enters Z and A on number pads (numeric entry only) | diagnose |
+| `shells` | t03 | distributes Z electrons onto K, L, M and N rings, then (optionally) enters a valency | construct; diagnose (valency); classify ("which of these will not react?" from 3 configs) |
+| `isotope` | t04 | changes only the nucleus of a given atom to make an isotope; or judges a pair "same element?" or "same chemistry?" | construct; classify; contrast (C-12 vs C-14 through `contrast-pair@1` via `renderStatic`) |
+| `models-timeline` · `order` | t01 | orders the 5 model cards | sequence |
+| `models-timeline` · `claim` | t01 | sorts claim cards into true or false | classify; explain (voice "why", host-side) |
+| `models-timeline` · `scatter` | t01 | POE: predicts the alpha volley against a Thomson or Rutherford atom (locked until committed), fires, then taps single impact points | predict; explain |
+
+The 4 topics are primary. Two C9 ch09 topics are secondary:
+- t02 bonding uses the valence-shell view;
+- t03 formulae: the `shells` valency output feeds `formula@1`.
+
+**Scatter model** (golden-tested invariants; `scatterAngle()` in the reference file):
+- Rutherford deflection is θ = 2·atan(d / 2b) on a nucleus drawn magnified, so θ is monotone decreasing in the impact parameter b.
+- The Thomson atom never deflects more than 0.5°.
+- The volley **counts** are a cited display constant, not a simulation output: "about 1 in 8000 bounced back" (Geiger and Marsden, 1909) [S, not re-read here]. A real foil's atom-layer statistics would need a Monte Carlo the child gains nothing from [I].
+- A permanent "not to scale" glyph is shown, with NCERT's own analogy: if the atom were a cricket ground, the nucleus would be a pepper grain [V].
+- No flashes; each trail is ≤ 1 s and `prefers-reduced-motion` shows end states only.
+
+#### 2.6.3 Events and facts
+
+| event (`NAME_RE`) | facts | salience |
+|---|---|---|
+| `at.add` | `particle: p\|n\|e`, `where: nucleus\|k\|l\|m\|n\|cloud`, `p`, `n`, `e` | 0 (1 if `e`→`nucleus`) |
+| `at.remove` | `particle`, `where` | 0 |
+| `at.shell` | `shell 1..4`, `count`, `inner_full: bool`, `cap` | 0 (1 on an overfill) |
+| `at.identify` | `z_claim`, `a_claim`, `p`, `n`, `e`, `ok` | 1 |
+| `at.valency` | `val_claim`, `outer`, `ok` | 1 |
+| `at.classify` | `ask: element\|chemistry`, `same_z`, `said_same`, `ok` | 1 |
+| `at.claim` | `claim`, `said: bool`, `truth: bool` | 1 |
+| `at.order` | `tau`, `first_err` | 1 |
+| `at.predict` (→ `poe.predicted`) | `model`, `pred: all_through\|most_through_few_back\|most_deflect\|most_back` | 2 |
+| `at.fire` | `model`, `b`, `theta_deg`; then a volley summary `{through, deflected, back}` | 1 |
+
+**State facts** fill all 12 keys, at the `LIMITS.factKeys` = 12 cap: `p, n, e, e_nuc, sh_k, sh_l, sh_m, sh_n, a_claim, z_claim, val_claim, order_viol`.
+
+The detector runtime evaluates each rule on the event's facts merged over the state facts. The `answer` message in `isotope` mode also carries `mode` and `z0` (the start Z).
+
+**Targets:** `nucleus` (region), `shell_k` … `shell_n` (regions; ring bands ≥ 48 dp at B4), `tray_p`, `tray_n`, `tray_e` (controls), `beam` (control) and `card:*`. Single nucleons are not targets: up to 48 discs cannot meet 48 dp. Removal is through the tray's − buttons.
+
+#### 2.6.4 Misconceptions and detectors (JSONLogic over facts)
+
+"cur" means the misconception is listed in `data/curriculum/c9-science.json` (repo) [V].
+
+| MC id | the idea | source | on | rule | strength · needs · verify |
+|---|---|---|---|---|---|
+| `MC.ATOM.MASS_EQ_ELECTRONS` | mass number counts electrons (cur) | curriculum seed [V] | `at.identify` | `{"and":[{"==":[{"var":"a_claim"},{"+":[{"var":"p"},{"var":"e"}]}]},{"!=":[{"var":"n"},{"var":"e"}]}]}` | strong · taps · diagnose |
+| `MC.ATOM.MASS_COUNTS_ALL` | A = p + n + e | [I] from the same confusion | `at.identify` | `{"and":[{"==":[{"var":"a_claim"},{"+":[{"var":"p"},{"var":"n"},{"var":"e"}]}]},{">":[{"var":"e"},0]}]}` | strong · taps · diagnose |
+| `MC.ATOM.Z_FROM_NEUTRONS` | atomic number read off the neutron count | [I] | `at.identify` | `{"and":[{"==":[{"var":"z_claim"},{"var":"n"}]},{"!=":[{"var":"n"},{"var":"p"}]}]}` | weak · taps · diagnose |
+| `MC.ATOM.ELECTRONS_IN_NUCLEUS` | electrons sit in the nucleus with the protons | Harrison & Treagust 1996; Taber 2003 [S, not re-read here] | `at.add` | `{"and":[{"==":[{"var":"particle"},"e"]},{"==":[{"var":"where"},"nucleus"]}]}` | strong · taps · construct |
+| `MC.ATOM.SHELL_ANY_ORDER` | electrons go into any shell; no stepwise fill | NCERT §8.7 rule 3 [V]; [I] | `at.shell` | `{"and":[{">":[{"var":"shell"},1]},{"==":[{"var":"inner_full"},false]}]}` | weak (strong after 2 in one mount) · taps · construct |
+| `MC.ATOM.SHELL_OVERFILL` | K holds more than 2, or L more than 8 | NCERT §8.7 rule 1 [V] | `at.shell` | `{"or":[{"and":[{"==":[{"var":"shell"},1]},{">":[{"var":"count"},2]}]},{"and":[{"==":[{"var":"shell"},2]},{">":[{"var":"count"},8]}]}]}` | strong · taps · construct |
+| `MC.ATOM.OUTER_BEYOND_8` | applies 2n² = 18 to M as the fill rule, giving K = 2,8,9 | NCERT gives both rules [V]; [I] | answer | `{"and":[{">=":[{"var":"p"},19]},{">":[{"var":"sh_m"},8]}]}` | strong · taps · construct |
+| `MC.ATOM.VALENCY_EQ_OUTER` | valency always equals the outer electron count (cur) | curriculum seed [V] | `at.valency` | `{"and":[{">":[{"var":"outer"},4]},{"==":[{"var":"val_claim"},{"var":"outer"}]}]}` (this also catches Ne → 8) | strong · taps · diagnose |
+| `MC.ATOM.ISOTOPE_DIFF_ELEMENT` | isotopes are different elements (cur) | curriculum seed [V] | `at.classify` / answer | `{"or":[{"and":[{"==":[{"var":"ask"},"element"]},{"var":"same_z"},{"!":{"var":"said_same"}}]},{"and":[{"==":[{"var":"mode"},"isotope"]},{"!=":[{"var":"p"},{"var":"z0"}]}]}]}` | strong · taps · classify, construct |
+| `MC.ATOM.ISOTOPE_DIFF_CHEM` | isotopes react differently | NCERT §8.9.1 [V]; [I] | `at.classify` | `{"and":[{"==":[{"var":"ask"},"chemistry"]},{"var":"same_z"},{"!":{"var":"said_same"}}]}` | weak · taps · classify |
+| `MC.ATOM.VISIBLE_MICROSCOPE` | atoms can be seen with an ordinary microscope (cur) | curriculum seed [V] | `at.claim` | `{"and":[{"==":[{"var":"claim"},"atoms_visible_school_microscope"]},{"var":"said"}]}` | weak · taps · explain |
+| `MC.ATOM.PLANETARY_ORBITS` | electrons orbit exactly like planets, at any distance (cur) | curriculum seed [V]; Harrison & Treagust 1996 [S] | `at.claim` | `{"and":[{"==":[{"var":"claim"},"bohr_electrons_any_orbit_like_planets"]},{"var":"said"}]}` | weak · taps · explain |
+| `MC.ATOM.NUCLEUS_LARGE` | the nucleus fills the atom, so most alphas deflect | [I] from §8.2.2 | `at.predict` | `{"and":[{"==":[{"var":"model"},"rutherford"]},{"in":[{"var":"pred"},["most_deflect","most_back"]]}]}` | strong · taps · predict |
+
+**Discriminability is a lint, not a hope** (`lint()` in the reference file). A diagnose probe whose wrong-path value equals the right value cannot fire, so the planner may not mount it:
+- `read` on C-12 is rejected because n = e = p = 6; use Na-23, Al-27, Cl-35 or K-39 instead.
+- A valency probe aimed at `VALENCY_EQ_OUTER` needs an outer shell of 5–7 (N, O, F, P, S, Cl).
+- Ions are off in v1.
+
+#### 2.6.5 `grade()`, `solve()`, `lint()`
+
+`grade(spec, value) → {outcome, misc?}` is host-side and pure, implemented in `atom-builder-grade.mjs`.
+
+**Rules:**
+- **Shells:** `config(e)` = `[min(e,2), min(max(e−2,0),8), min(max(e−10,0),8), max(e−18,0)]`.
+- **Valency:** `valency(Z)` = 0 if the outer shell is full (He 2, or 8), otherwise `outer ≤ 4 ? outer : 8 − outer`. Phosphorus also accepts 5 (the older NCERT table lists 3, 5) [S]. Every other accept-key is the octet rule.
+- **Mass number:** A = Z + N.
+- **Isotope:** same p, different N, with N in `ISOTOPES[Z]`.
+
+**Outcomes per mode:**
+
+| mode | correct | partial | misc |
+|---|---|---|---|
+| `build` | exact p, n and e | right p and e, a different N (another isotope) | an electron in the nucleus |
+| `read` | both claims right | one claim right | the first matching of `MASS_EQ_ELECTRONS`, `MASS_COUNTS_ALL`, `Z_FROM_NEUTRONS` |
+| `shells` | the exact config; with `askValency`, also a valency in the accept-keys | config right, valency wrong | config wrong with the right total: `shellMisc()` (order, overfill or beyond-8); valency claim = outer electrons > 4 |
+| `isotope` (construct) | same p, a new N listed in `ISOTOPES` | an unknown nucleus, or e ≠ p | p changed → `ISOTOPE_DIFF_ELEMENT` |
+| `isotope` (pair) | the right same/different choice | — | `ISOTOPE_DIFF_ELEMENT` or `ISOTOPE_DIFF_CHEM` |
+| `models-timeline` | exact order; claim truth; scatter key (`thomson` → `all_through`, `rutherford` → `most_through_few_back`) | — | the claim's own MC; `NUCLEUS_LARGE` |
+
+In `isotope` construct mode, unchanged N grades `incorrect`.
+
+`solve()` is the reachability script:
+- `build`/`isotope`: add p×Z, n×N, e×E.
+- `shells`: fill `config(E)` in order.
+- `models-timeline`: the kit order.
+
+It is null only when the tray caps are below the target, which `resolveParams` clamps first.
+
+`renderStatic(params)` returns the Bohr diagram SVG, which serves `contrast-pair@1` and posters.
+
+#### 2.6.6 Budget, twin, safety, goldens, size
+
+**Budget:** `{gzipKB: 38, maxNodes: 450, heapMB: 24, loop: "on_demand"}`. Rendering is SVG. The scatter volley alone runs a canvas2D burst at 30 fps for ≤ 6 s [U, to be measured on the reference phone under V15/M8].
+
+**Physical twin** `twin.atom-on-paper`:
+- B4, no adult needed.
+- Draw 4 concentric circles on paper. Use rajma for protons, chana for neutrons and moong for electrons.
+- Build Na, then K, then make C-14 from C-12 by adding 2 chana.
+
+**Safety:**
+- `USES` cards are factual and kit-authored. They contain no weapons content and no handling instructions.
+- Radiation is described as used by trained people in hospitals and power plants. It is never framed as a thrill or as a home activity.
+- There are no free-string params.
+
+**Goldens:** `atom-builder-goldens.json` holds 22 specs and 49 scripted answer cases.
+- 8 cover `build`/`read`, 7 cover `shells`/valency, 3 cover `isotope` and 4 cover `models-timeline`.
+- 2 of the specs are lint-must-reject specs (C-12 read; carbon valency aimed at `VALENCY_EQ_OUTER`).
+- Invariants also checked: Σconfig = Z with no `shellMisc` for Z = 1–20; the valency table for Z = 1–20 against NCERT §8.8; Rutherford θ monotone in b; Thomson θ ≤ 5° everywhere.
+- `node docs/research/content/atom-builder-grade.mjs` → `{"specs":22,"cases":49,"fail":0}` **[X, 2026-10-02]**.
+- This proves the grading logic, not the UI. The detector precision/recall harness (common rule 7) runs once the frame exists.
+
+**Size** (engineer-days with the kit built): **M, 8 d** [U]. The art is procedural, so there are no art days.
+
+| part | days |
+|---|---|
+| params, resolve, lint, grade, solve (port of the reference file) | 1.5 |
+| SVG nucleus packing, rings and tap-to-place | 2 |
+| `read` and `isotope` panes | 0.5 |
+| `order`/`claim` using kit components | 1 |
+| scatter scene | 1.5 |
+| detector harness and goldens in Playwright | 1.5 |
+
+**Priority: v1.1.** It is Wave 4 item 12a: 4 topics in 8 d is 0.5 topics/day, on par with `optics` and `particles`. **Pull it into Wave 3 if Class 9 is a launch class.** It is the cheapest way to lift the weakest science column: C9 goes from 23/43 to 27/43 with the template layer (§2.3).
+
+**Measurement gate M-AT-1:**
+- What: `readout: live` vs `after` in `build`, scored on delayed (day-7) unaided configuration writing for Z 11–20.
+- Bar: `after` becomes the default if it beats `live` by ≥ 0.1 SD; otherwise `live` stays the default.
+- Why: a live readout risks being the answer rather than feedback [I].
 
 ---
 
@@ -1631,6 +1876,243 @@ On WebView a module shares the host's main thread: a 1.5 s busy loop froze the h
 | stereotype and colourism | cast spec + I4 skin check + G-VI-7 audit + rotating names and roles across gender, region and religion | Forge review |
 | child data | ids + facts only in the ledger; no child audio stored (batched ASR held in memory for one pass); no `displayName` in T2/T3; DPDP identifier minimisation and retention fields in the event schema from day one | observer, bridge |
 | rights | `TextUnit.rights` required; `ncert-pending` never ships; licensed photos store their licence; C2PA kept | loaders |
+| generated content on a sensitive topic (adolescence, reproduction, mental health, disease, vaccines) (gap-fill GAP-3-reviewed-content-safety) | topic `sensitive` flag (schema + `validate.mjs` registry equality). `sensitiveGate()` admits only `kit_preset`/`lib` assets with two review keys and a matching `sensitiveClass`. It hard-blocks T1 fill strings, T2a, T2b, T3, explainer fills, `gpt-image-2` and Sora. CI test: zero generative candidates emitted for any flagged id across the request fuzz | router (§1.4 M0), `tests/sensitive-gate.test.mjs`, §8.3.1 a |
+| disclosure during a sensitive lesson (abuse, self-harm, bodily harm, eating, grooming) (gap-fill GAP-3-reviewed-content-safety) | `scanDisclosure()` runs on every child utterance and every module event `{disclosureSignal:true}` during a sensitive module window. It is a superset of `scanSafety()`. A hit → `priority:"safeguard"` teardown, the safeguard move, a fixed host card for Childline 1098 / Tele-MANAS 14416, and the human safeguarding lead. The recall set must reach 100% of positives; the measured baseline is `scanSafety` 8/26 on the sensitive-window probe | observer + `server/director/safety.js`, §8.3.1 b |
+| health misinformation (vaccines, antibiotics, disease spread) (gap-fill GAP-3-reviewed-content-safety) | the teacher speaks health claims only as `fact:` ids from the reviewed kit (`HealthFact` with source + reviewer). The claims guard blocks any outgoing teacher turn that asserts a health claim not backed by a cited fact id. A child's myth is answered with the reviewed `mythId → factId` pair and never debated live | Director output filter, §8.3.1 c |
+| teaching a sensitive chapter against the family's wishes (gap-fill GAP-3-reviewed-content-safety) | `ParentContentSetting` per sensitive class: `live` / `reviewed_only` / `skip`. The default is `reviewed_only`. Every planned sensitive lesson appears in the parent's weekly plan ahead of time. Disclosure hand-off never depends on this setting | parent route + Conductor, §8.3.1 d |
+
+### 8.3.1 Reviewed-content safety for sensitive topics (gap-fill GAP-3-reviewed-content-safety)
+
+**Scope.** Eight topics. Each has a kit, but none has an engine, and until now the only protection was the S07 sentence (§2.2). Each is assigned exactly one class; the class decides which of (b) and (c) apply.
+
+| topic id | title (curriculum seed) | `sensitive` | disclosure window (b) | claims guard (c) | kit engine hints that become reviewed deck steps (e) |
+|---|---|---|---|---|---|
+| `c7-science-ch06-t01` | Changes during adolescence | `reproductive` | yes | — | growth_chart_plot, timeline_builder, body_change_cards, myth_or_fact_sort |
+| `c7-science-ch06-t02` | Emotional changes and seeking help | `mental-health` | **yes, strongest** (help-seeking lesson) | — | circle_of_trust_builder, feelings_scenario_cards, question_box_sim, choice_story_path |
+| `c7-science-ch06-t03` | Nutrition, hygiene and activity (incl. menstrual hygiene) | `reproductive` | yes (+ the eating family) | yes (diet claims) | thali_builder, pulse_counter, daily_routine_planner, iron_absorption_sim |
+| `c8-science-ch03-t01` | What health means (physical, mental, social) | `mental-health` | yes | yes | day_planner_board, health_venn_sorter, habit_tracker_card |
+| `c8-science-ch03-t02` | Communicable and non-communicable diseases | `medical` | no (the base `scanSafety` still runs, §8.3 row 1) | **yes** | disease_spread_sim, communicable_sorter, mosquito_breeding_hunt |
+| `c8-science-ch03-t03` | Prevention, vaccines and treatment | `medical` | no (base) | **yes, strongest** | immune_training_sim, chain_of_infection_breaker, handwash_glow_demo |
+| `c9-science-ch11-t02` | Sexual reproduction in flowering plants | `reproductive` | yes | — | flower_dissection_sim, pollen_journey_animator, pollinator_garden_game |
+| `c9-science-ch11-t03` | Human reproduction and reproductive health | `reproductive` | yes | yes | myth_fact_sorter, body_changes_explorer, pregnancy_timeline_viewer |
+
+`c9-science-ch11-t02` (plants) is flagged so that no generator fill drifts from "fertilisation" into human anatomy. **Reversal condition:** downgrade it to unflagged only if 200 adversarial T1/T2a fills on the topic show 0 human-anatomy strings in two-key review. The keyword sweep over all 514 seed topics (run 2026-10-02) also hit `c8-science-ch13-t03` ("asexual and sexual reproduction"), `c9-science-ch11-t01` and `c6-science-ch03-t03` ("deficiency disease"). These go in `reviewedUnflagged` with a reason, pending a reviewer decision [U].
+
+#### (a) The flag, its validation and the router gate
+
+```ts
+// shared/contracts.ts
+export type SensitiveClass = "reproductive" | "mental-health" | "medical";
+export interface CurriculumTopic {
+  id: string; title: string; outcomes: string[]; prerequisites: string[]; misconceptions: string[]; hooks: string[];
+  sensitive?: SensitiveClass;            // absent = not sensitive. Set ONLY together with an entry in sensitive-topics.json
+}
+/** data/curriculum/sensitive-topics.json — the pinned registry. Two files must agree, so a flag cannot vanish in one edit. */
+export interface SensitiveRegistry {
+  v: 1;
+  topics: Record<string, { class: SensitiveClass; disclosureWindow: boolean; claimsGuard: boolean; reviewedBy: [string, string] }>;
+  reviewedUnflagged: Record<string, { reason: string; reviewedBy: [string, string] }>;   // keyword hits judged not sensitive
+  keywordGuard: string;                  // regex source, see below
+}
+/** Every lib/kit asset carries this; the gate reads it, nothing else. */
+export interface ReviewStamp {
+  keys: { reviewer: string; role: "subject" | "safeguarding" | "medical"; at: string; verdict: "approve" }[];  // ≥ 2 distinct reviewers
+  sensitiveClass: SensitiveClass | null; // must equal the topic's class
+  generatedBy: "human" | "forge-draft-then-human"; // Forge drafts are allowed only offline, and only after two keys (T3 path)
+  contentHash: string;                   // sha256 of the reviewed bytes; a byte change voids the stamp
+}
+```
+
+The `data/curriculum/validate.mjs` additions are **errors**, not warnings:
+1. `t.sensitive`, when present, must be in `{reproductive, mental-health, medical}`.
+2. The set `{t.id : t.sensitive}` must equal `registry.topics` exactly, in both directions and with the same class.
+3. Every registry id must resolve to a topic.
+4. A topic whose `title + outcomes` matches `keywordGuard` must be in `topics` or `reviewedUnflagged`. The `keywordGuard` is narrow on purpose: `/adolescen|pubert|menstrua|vaccin|pregnan|reproductive health|human reproduction|HIV|AIDS|STI|drug|addict|abuse|self-harm|suicid|seeking help|mental health|emotional change/i`. Broad words such as `period`, `mental` and `body` hit pendulums, mental maths and English poems in the 2026-10-02 sweep (21 false hits), so they are excluded.
+5. Every `reviewedBy` pair must name two distinct people.
+6. `index.json` gains `sensitiveTopics: 8`, cross-checked like `topics`.
+
+```js
+// server/director/sensitive.js — pure; imported by route() before any candidate is built
+import REG from "../../data/curriculum/sensitive-topics.json" with { type: "json" };
+const GENERATIVE = new Set(["live_fill"]);                         // PlanSource values that are model output at request time
+const BANNED_TIERS = new Set(["T1-fill", "T2a", "T2b", "T3"]);     // T1 with model-written ask/strings counts as "T1-fill"
+const BANNED_LAYERS = new Set(["explainer-live", "raster-gen", "video-gen"]);   // explainer@1 fills, gpt-image-2, sora-2
+export const sensitiveOf = (topicId) => REG.topics[topicId]?.class ?? null;
+/** @returns {{ok:true} | {ok:false, why:"generative"|"tier"|"layer"|"unreviewed"|"class_mismatch"|"consent_skip"}} */
+export function sensitiveGate(topicId, cand, consent) {
+  const cls = sensitiveOf(topicId);
+  if (!cls) return { ok: true };
+  if (consent === "skip") return { ok: false, why: "consent_skip" };
+  if (GENERATIVE.has(cand.source)) return { ok: false, why: "generative" };
+  if (BANNED_TIERS.has(cand.tierTag)) return { ok: false, why: "tier" };
+  if (BANNED_LAYERS.has(cand.layerTag)) return { ok: false, why: "layer" };
+  if (!(cand.source === "lib" || cand.source === "kit_preset")) return { ok: false, why: "generative" };
+  const r = cand.review;                                            // ReviewStamp | undefined
+  if (!r || new Set(r.keys.filter((k) => k.verdict === "approve").map((k) => k.reviewer)).size < 2) return { ok: false, why: "unreviewed" };
+  if (r.sensitiveClass !== cls) return { ok: false, why: "class_mismatch" };
+  if (r.contentHash !== cand.contentHash) return { ok: false, why: "unreviewed" };
+  return { ok: true };
+}
+```
+
+Wiring rules:
+- `route()` filters **every** candidate, the fallback hops included, through `sensitiveGate()`.
+- The Forge job queue refuses a request whose `topic` is flagged unless `job.mode = "offline-draft"`. Drafts land as `review.keys = []` and are unmountable until two keys exist.
+- The image and video clients (`gpt-image-2`, `sora-2`) take a `topicId` argument and throw `SensitiveTopicError` for a flagged id. They never return.
+- The realtime `show_module` `want` path cannot name an engine for a flagged topic: the server answers `module=reviewed` with the deck's step id.
+- Server cache keys for flagged topics are namespaced `sens:`. The plan signature covers `review.contentHash`, so the host can re-check it.
+
+**The CI test** is `tests/sensitive-gate.test.mjs`, run by `npm test`:
+- **G1 (fuzz).** For each of the 8 ids × 4 bands × 3 langs × 6 intents × 4 `want` shapes, with every source enabled and fake model clients that always succeed, `route()` emits plans that contain **zero** nodes with `source = live_fill`, tier T2a/T2b/T3, or an explainer/raster/video generation call. The fake clients record calls, and the assertion is **0 calls**.
+- **G2.** Every emitted chain ends in `HostPlan{runtime:"reviewed-lesson@1"}`. None ends in `board_only`.
+- **G3.** A lib asset with one key, a stale `contentHash` or the wrong class is rejected.
+- **G4.** `gptImage.generate({topicId:"c9-science-ch11-t03"})` and `sora.generate(...)` throw.
+- **G5.** Removing `sensitive` from one topic, or deleting a registry row, fails `validate.mjs`.
+- **G6.** A Forge request with `mode:"live"` for a flagged id is refused.
+- **G7.** With `consent:"skip"`, the Conductor plans none of the topic's skills.
+
+Parser additions to §1.6.6:
+
+| # | case | expect |
+|---|---|---|
+| P21 | `module_plan` for a flagged topic with any node `source:"live_fill"` | parse error `sensitive_generative` |
+| P22 | flagged topic, chain ends in `board_only` | parse error `fallback_chain` |
+| P23 | flagged topic, a FramePlan without `validatedBy ⊇ ["human_review"]` | parse error `sensitive_unreviewed` |
+| P24 | flagged topic, `safety:"pending"` | parse error (no pending safety on reviewed content) |
+| P25 | `reviewed-lesson@1` HostPlan whose `kitRef` is not in the bundle's reviewed-deck manifest | parse error `unknown_kit` |
+| P26 | unflagged topic with `reviewed-lesson@1` | accepted (decks may be reused for any topic) |
+
+#### (b) The disclosure predicate for the sensitive module window
+
+**Why the base predicate is not enough (measured).**
+- Probe: 26 hand-written disclosure utterances in the register these lessons invite (en, Hinglish, Devanagari) and 13 curricular hard negatives. Run against the shipped `scanSafety()` (`server/director/safety.js`), 2026-10-02, script in the scratchpad.
+- Result: **recall 8/26**, false positives 0/13.
+- Misses: secrecy requests ("told me not to tell"), body-part touching without the exact verb pattern ("galat jagah chhua"), online photo requests, "cut my arm", restriction eating, passive ideation ("nobody would care if I was gone", "sabko bojh hoon", "jeene ka mann nahi karta"), burning, confinement, forced marriage, pregnancy and denied medical care.
+- n is small and the set was written by the spec author, so it is a floor, not a recall estimate [U].
+
+**The predicate.** `scanDisclosure(text, ctx)` is the base `scanSafety()` plus the families below. It is active when `ctx.window = "sensitive"`, which means a flagged topic is mounted, or it is within 120 s after its teardown. Families are added to `server/director/safety.js` as patterns, not instructions. Each family has en, hi-Latn and Devanagari forms, and the actor lists are reused from `ACTOR_EN`/`ACTOR_HI`.
+
+| family | trigger shape (pattern family, not wording) | kind → hand-off |
+|---|---|---|
+| `abuse_touch` | actor + touch verb + a body/place word ("private", "galat jagah", "neeche", "गलत जगह"), with ≤ 3 words between | abuse |
+| `secrecy` | "don't tell / kisi ko mat batana / secret rakhna" + an actor or "he/she said" | abuse (grooming) |
+| `online_grooming` | photo/video request or send + "online / phone / insta / game" + a stranger or actor | abuse |
+| `harm_other` | actor + burn/lock/starve/belt/"jalaana/band kar dete" | abuse (bodily harm) |
+| `self_harm_ext` | cut/burn/hit + a body part + "myself/khud"; passive ideation shapes ("burden", "bojh", "gone/na rahun", "jeene ka mann nahi") | self_harm → Tele-MANAS 14416 + 1098 |
+| `eating` | not eating for days or on purpose / "to become thin" / vomiting after food | self_harm (lower urgency; a check-in first, then the hand-off if repeated) |
+| `forced_marriage_pregnancy` | "shaadi zabardasti", "I am pregnant", "periods band" + fear | abuse / medical-safeguarding |
+| `denied_care` | bleeding/pain + "nobody takes me to a doctor / ghar wale nahi le jaate" | safeguarding (non-emergency) |
+
+**Module-event signals.** A reviewed deck step may mark a choice as `disclosureSignal: true`: in `circle_of_trust_builder`, "I have nobody to talk to"; in `feelings_scenario_cards`, "this happens to me". These are closed choices set in review. A signalled event counts as a hit of kind `fear` (a gentle check-in, then the hand-off on a second signal or any spoken hit). Engines carry no free text, so this is the only module-side channel.
+
+**What a hit does.** The same path runs for every family; only the helpline wording differs by kind.
+1. The server emits `module_plan{priority:"safeguard"}` (§1.6.3 S7): an immediate teardown in every state, with `LockPanel` owning the screen.
+2. The Director switches to the `safeguard` move. Its shapes come from `server/director/shapes.js`: care first, no questions about details, "you did the right thing telling me", and a trusted adult.
+3. The host shows a **fixed, bundled helpline card**: Childline **1098** and Tele-MANAS **14416** (or 1-800-891-4416). It is never model-generated and is spoken from a reviewed TTS clip.
+4. An incident row `{childId, lessonId, kind, family, at}` is written with **no transcript text** beyond the matched family id. It is visible only to the human safeguarding lead, with an SLA for review [U: hours to be set by the owner].
+5. **The parent is not auto-notified when `kind = abuse`**, because the actor may be in the home. Notification is a human decision by the safeguarding lead. POCSO 2012 ss.19–21 may place a reporting duty on Taxila staff who learn of a likely offence, and this must be confirmed by counsel before launch [U; also open in `docs/research` dpdp-deep Q7].
+6. The sensitive topic does not resume in that session. The Conductor schedules nothing sensitive for that child until the lead clears the incident.
+7. A false alarm costs one check-in. The patterns lean inclusive, as `safety.js` already states.
+
+**The recall test set.** `tests/fixtures/disclosure-recall.jsonl` is run by `tests/safety.test.mjs`. Each row is `{text, lang: "en"|"hi-Latn"|"hi-Deva"|"mix", family, expect: "hit"|"miss", window: "sensitive"|"any", source: "author"|"counsellor"|"field-redacted"}`.
+- **Size.** ≥ 30 positives per family × 3 scripts (≥ 720 positives), plus ≥ 300 hard negatives drawn from the 8 kits' own vocabulary: "bleeding during periods is normal", "pollen touches the stigma", "the virus kills cells", "my brother hit the ball", "vaccine injection hurts a little", "talk to a trusted adult".
+- **Authorship.** At least a third of the positives must come from a child-protection counsellor, not the spec author, so the set is not self-graded.
+- **Gate.** 100% recall on positives (`npm test` fails on any miss) and ≤ 5% false positives on the hard negatives in `window:"sensitive"` [U threshold].
+- **Ratchet.** Every field false negative found in review is added as a row before the fix ships.
+
+#### (c) Health-claims guard for `medical` (and `claimsGuard: true`) topics
+
+```ts
+// data/kits/<file>.json, per topic: reviewed health facts and myth→fact pairs
+export interface HealthFact {
+  id: `hf_${string}`;                    // e.g. "hf_vaccine_trains_immunity"
+  claim_en: string; claim_hi: string;    // the reviewed wording; the teacher may paraphrase only through kit term ids
+  source: { org: "NCERT" | "MoHFW" | "WHO" | "ICMR" | "UNICEF"; ref: string; retrieved: string };
+  reviewedBy: [string, string];          // one must hold role "medical"
+  scope: { topics: string[]; band: Band[] };
+  doNotSay?: string[];                   // closed list of over-claims, e.g. dosage, "always", "100%"
+}
+export interface MythPair { mythId: `hm_${string}`; detector: string /* regex id in classify.js */; factIds: HealthFact["id"][] }
+```
+
+The rules are code:
+1. **The teacher's health claims are fact ids.** On a `claimsGuard` topic, the Director's teach and answer moves carry `facts: hf_*[]`, and the compiled turn may assert only those claims. The output filter, `server/director/claims-guard.js`, runs on the realtime transcript of each teacher turn in near-line mode, and on the pre-built line for scripted decks.
+   - It classifies sentences with health predicates (`cures`, `prevents`, `causes`, `safe`, `dangerous`, `dose`, `antibiotic`, `vaccine`, `side effect`, plus a Hindi list).
+   - A sentence with no matching `hf_*` in the turn's `facts` set is a **violation**. The response is cancelled where the realtime API allows, and the next turn is a fixed correction shape: "let me say that the careful way", then the fact.
+   - An incident is logged, and three violations in a lesson end live talk for that topic: the lesson falls back to `reviewed_only` narration.
+2. **No live-generated health content anywhere.** M0 already removes T1 strings, T2, explainers and images. The guard covers the one remaining channel, the teacher's voice.
+3. **Myths are answered from pairs, never debated.** When the child says "vaccines make you sick" or "antibiotics cure cold", `classify.js` maps the utterance to `hm_*`, and the teacher answers from the `factIds`. Arguing a myth live is how a model restates it (the restated myth is the recited sentence).
+4. **No individual medical advice.** A child's own symptom ("I have fever since 3 days") gets a fixed "tell a parent / go to a doctor" shape. Dosage, medicine names and diagnosis are always out of scope: the `doNotSay` list plus a predicate test.
+5. **Freshness.** Each `HealthFact.source.retrieved` is re-checked yearly. A fact past 18 months unrechecked fails `kit-pin.test.mjs`.
+
+Test: `tests/claims-guard.test.mjs` uses 60 teacher-turn fixtures (30 grounded paraphrases that must pass, 30 ungrounded or over-claimed that must be caught, including Hindi). The gate is 30/30 caught and ≤ 2/30 false blocks [U threshold].
+
+#### (d) The parent-visible setting
+
+```ts
+// shared/contracts.ts — stored per child in Neon (db/migrations/NNN_parent_content_settings.sql)
+export interface ParentContentSetting {
+  childId: string;
+  perClass: Record<SensitiveClass, "live" | "reviewed_only" | "skip">;   // default: reviewed_only for all three
+  setBy: string /* parent account id */; setAt: string; version: number;
+  acknowledgedSyllabusNote: boolean;    // the parent was shown that these chapters are in the NCERT/board syllabus and are examined
+}
+```
+
+- **`live`**: the reviewed deck is used with the teacher talking freely within (b) and (c).
+- **`reviewed_only`** (default): the deck is played with reviewed narration clips. The teacher answers child questions only through the deck's reviewed Q&A ids; anything else gets "great question, ask a parent or your teacher". The question is passed to the parent report as a topic id only, never as the child's words.
+- **`skip`**: the Conductor drops the topic and the parent report lists it as "not taught at your choice; examined by the board".
+- The setting UI sits in the parent app under the child's profile. Each class is shown with its chapter titles and a sample deck preview, so the parent sees exactly what would be shown.
+- The Conductor's weekly plan marks sensitive lessons 48 h ahead [U], so a parent can change the setting before the lesson.
+- **The setting never touches safeguarding.** Predicates (b) run in every lesson whatever the setting, and a parent cannot disable the helpline card. The base crisis predicate (§8.3 row 1) runs on all topics.
+- The `server/routes/parent.js` endpoint `PUT /parent/children/:id/content-settings` is idempotent and versioned. The audit row keeps `{old, new, by, at}`.
+- Changing a setting invalidates `sens:` prefetch keys for that child (§1.6.5 `InvalidateWhy` gains `"parent_setting"`).
+
+#### (e) What the teacher does with no engine: `reviewed-lesson@1` (the T0 format for these 8)
+
+A host runtime (§1.5 row 2), not an iframe. It plays a **reviewed deck**: an ordered list of steps, each step one of a closed set of reviewed formats. All content is authored offline, by humans or as Forge drafts, and is two-key reviewed with a `ReviewStamp`, a `contentHash` and `sensitiveClass`.
+
+```ts
+export interface ReviewedDeck {
+  id: `rd_${string}`; topicId: string; sensitiveClass: SensitiveClass; version: number; review: ReviewStamp;
+  bands: Band[]; langs: ("en" | "hi" | "hi-Latn+en")[];
+  steps: ReviewedStep[];                 // 6–12 steps, ≤ 12 min total; each ends at a your_turn or a check
+  qa: { qid: string; detectors: string[]; answerClip: Record<string, string /* sha256 audio */>; factIds?: string[] }[]; // reviewed Q&A
+}
+export type ReviewedStep =
+  | { k: "board"; itemRef: string; narrationClip: Record<string, string>; facts?: string[] }       // board@1 card + reviewed narration
+  | { k: "figure"; figureRef: string /* lib svg-figure@1, schematic, never raster */; labels: "show" | "quiz"; narrationClip: Record<string, string> }
+  | { k: "sort"; preset: string /* lib T0 preset of sort-bins (myth/fact, communicable/non) */ }
+  | { k: "sequence"; preset: string /* lib T0 preset of sequence-steps (growth timeline, chain of infection) */ }
+  | { k: "match"; preset: string /* lib T0 preset of match-pairs (trusted adult ↔ situation) */ }
+  | { k: "scenario"; cards: { id: string; textRef: string; choices: { id: string; textRef: string; disclosureSignal?: true; feedbackRef: string }[] }[] }
+  | { k: "question_box"; prompt: string /* reviewed text id */ }   // child taps "I have a question"; answered only from qa[], else "ask a parent/teacher"
+  | { k: "check"; itemRef: string /* kit item, host-graded */ };
+```
+
+- **Formats per topic.** The kit `engineHints` map onto these steps, all as **lib T0 presets** (fixed specs, never live fills):
+  - `myth_or_fact_sort`, `communicable_sorter` and `health_venn_sorter` → `sort`;
+  - `timeline_builder`, `chain_of_infection_breaker` and `pregnancy_timeline_viewer` → `sequence` with schematic figures;
+  - `circle_of_trust_builder`, `feelings_scenario_cards` and `choice_story_path` → `scenario` and `match`;
+  - `question_box_sim` → `question_box`;
+  - `flower_dissection_sim` → `figure` over a lib `label-diagram@1` base, quiz mode;
+  - `disease_spread_sim` and `immune_training_sim` → a reviewed, pre-rendered `explainer@1` **plan** (lib, not a live fill) or a `sequence` until one exists;
+  - `thali_builder` and `daily_routine_planner` → `sort` and `sequence` presets. `iron_absorption_sim` and `pulse_counter` wait for engines.
+  
+  Anatomy appears only as schematic, labelled `svg-figure@1` assets reviewed against NCERT figures. There are no rasters of bodies.
+- **The teacher's role.** She introduces each step, waits at `your_turn`, reacts to host-graded `check` and `sort` events (§4.5, observer facts), and answers questions only from `qa[]` or the `facts` in play. `live` mode allows free talk constrained by (c) and the persona floor; `reviewed_only` plays the narration clips.
+- **Evidence.** `check` and preset steps are host-graded at weight 1.0, as T0.
+- **When a deck is missing.** If a topic has no reviewed deck at a band, the Conductor does **not** schedule it live. The parent report says "this chapter will be taught when its reviewed lesson is ready", and a `gap{why:"no_reviewed_deck"}` ticket is raised (`BoardWhy` gains `"no_reviewed_deck"` for logging only; it never mounts a board). The topic never silently becomes `board_only`.
+- **The build cost** [U]:
+  - the runtime: 3–4 d (it reuses `board@1`, `sort-bins`/`sequence-steps`/`match-pairs` presets and the chant-track audio clock for clips);
+  - the scenario step: 1.5 d;
+  - authoring and two-key review: 8 decks × 2 bands × 2 langs, about 2–3 reviewer-days per deck plus a safeguarding and a medical reviewer.
+
+**Measurements that gate this section.**
+- S-G1: the recall set at 100% (b).
+- S-G2: the claims guard at 30/30 (c).
+- S-G3: G1–G7 green.
+- S-G4: in a pilot of ≥ 20 children per deck, reviewed-deck delayed success is not worse than the median T1 topic in the same class (two-week retention item, n and method logged in `context/measurements.md`). **Reversal condition:** if S-G4 fails for a deck, the fix is a better reviewed deck, never re-opening live generation on the topic.
 
 ---
 
@@ -1662,6 +2144,7 @@ Estimates are engineer-days for one engineer who knows the repo, excluding art a
 | `engine-kit` (§2.5: pointer, tween, scheduler, rationals, CAS-lite, EXPR@1, RNG, state/hash, fading, text and fonts, detector runtime, `renderStatic`) | 15–20 | maths R.5, science R0 |
 | harness V1–V12 in CI (Playwright, WebView-like, 6×) | 3 | §8.1 |
 | `scene@1` frame runtime core (SVG renderer, drag/zone controller, layout, timeline, compiled EXPR, telemetry, metrics) | 12–18 | genui E5 |
+| sensitive-topic safety (gap-fill GAP-3-reviewed-content-safety): `sensitive` flag + `sensitive-topics.json` registry + `validate.mjs` checks; `sensitiveGate()` + G1–G7; `scanDisclosure()` families + recall fixture; claims guard + `HealthFact`/`MythPair`; `ParentContentSetting` migration + route; `reviewed-lesson@1` runtime. Deck authoring and review are labour outside these days | 1 + 2 + 2.5 + 2.5 + 1.5 + 4–5.5 = 13.5–15 [U] | §8.3.1 |
 
 ### Wave 1: the first engines and the generative layer (≈ 35 d)
 
@@ -1711,6 +2194,7 @@ Estimates are engineer-days for one engineer who knows the repo, excluding art a
 10. `ecosystem@1` (12; +8);
 11. `indicator-lab@1` (12; +7);
 12. `mixtures-lab@1` (12; +9);
+12a. `atom-builder@1` (8; +4, the whole of C9 ch08; **pull into Wave 3 if Class 9 is a launch class**) (gap-fill GAP-1-atom-builder-c9-ch08);
 13. `optics@1` (15; +7);
 14. `integers@1` (4);
 15. `money@1` (4 + art + legal);
@@ -1751,6 +2235,7 @@ The estimate is 23–28 engineer-weeks (language review).
 | G-E1 | each wrapper vs the no-wrapper arm | better on delayed success, or equal and better on continuation | a wrapper ships widely |
 | M-L1 | Azure PA vs human raters on Indian children | agreement before evidence | read-along scoring weight |
 | M-DI-3 | labelled rasters, n ≥ 40 per language, 2 raters | ≥ 99% spelling and leaders, κ ≥ 0.8 | reversal of the no-baked-labels rule |
+| M-AT-1 | `atom-builder` `readout: live` vs `after`, day-7 unaided configuration writing, Z 11–20 | `after` beats `live` by ≥ 0.1 SD | default `readout` in build (gap-fill GAP-1-atom-builder-c9-ch08) |
 
 ---
 
@@ -1768,4 +2253,4 @@ All primary evidence sits in the sibling documents, cited by section above. Each
 - `songs-rhymes-audio.md` (chant probes; Wallace 1994; Kilgour 2000; Good 2015; Calvert & Tart 1993; the Web Audio scheduling guide);
 - `teacher-visual.md` (the sync probe; Porte 2026; Rive runtime docs; the Duolingo Lily case study).
 
-Level-above inputs: `tech-and-market.md` §3–4 and `learning-science.md` §2.4, §6 and §8.4. Coverage was computed here by `content-engine-coverage.py` from `maths-engine-map.json` and `science-engine-map.json` (2026-10-02).
+Level-above inputs: `tech-and-market.md` §3–4 and `learning-science.md` §2.4, §6 and §8.4. The atom-builder gap-fill rests on NCERT Class 9 *Exploration* ch08 "Journey Inside the Atom" (iesc108.pdf, read 2026-10-02) [V]. It also cites Harrison & Treagust 1996 (*Science Education* 80(5)), Taber 2003 (*Foundations of Chemistry* 5) and Geiger & Marsden 1909, which were not re-read this session [S]; its reference core is `atom-builder-grade.mjs` with `atom-builder-goldens.json` (gap-fill GAP-1-atom-builder-c9-ch08). Coverage was computed here by `content-engine-coverage.py` from `maths-engine-map.json` and `science-engine-map.json` (2026-10-02).

@@ -506,3 +506,36 @@ folder per STUDENT, a sandboxed iframe per PLAY.** Source: `docs/research/factor
 
 ## open-durability-operating-point
 **(open, owner decision)** The wellbeing invariant (no randomised check below predicted retention .6) and identifiability of per-child durability pull against each other: under the scheduler as specified, durability reliability is .43 at 40 checks and .49 at 80; the widest permitted window gives .52/.67; a durability line needs ~27 weeks per topic type at 4 sessions/week. Options: (a) keep the bound; (b) widest permitted window; (c) add exempt calibration probes (<= 5% of review slots, skills mastered >= 2 weeks, a failed probe triggers immediate review). Recommendation (b)+(c), LT6 to set the floor. Spec: `docs/research/psychology/RESEARCH-PROGRAM.md` §13 item 1.
+
+## launch-focus-classes-4-7
+**Owner (2026-10-02): launch focus = classes 4-7** (marketing, pilots, polish, QA depth), per MARKET-THESIS wedge.
+Content and product still cover classes 1-9 (`scope-classes-1-9` stands); 4-7 get first priority wherever work is
+sequenced. Reverse if pilots show a different band converting/retaining better.
+
+## voice-lane-cascade-default
+**Owner (2026-10-02): the default voice lane is the cascade — streaming STT (gpt-4o-transcribe / live-transcribe) →
+Director + teacher reply (taxila-fast) → streaming TTS (gpt-4o-mini-tts).** ≈ ₹28/hour vs ₹512/hour for
+gpt-realtime-2.1 (MARKET-THESIS §9). Realtime 2.1 becomes a premium, budgeted share of minutes per tier, enforced by
+the cost governor. Supersedes `voice-realtime-model` as the DEFAULT (realtime stays available). The same `compile()`
+feeds both lanes (one assembler). Bonus: the cascade puts the Director ON the reply path, so the one-turn lag of the
+realtime lane disappears in the default lane.
+- Reverse if: a blind ear test with children shows cascade latency/voice quality kills the "real teacher" feel and
+  the realtime share must rise (cost permitting).
+
+## voice-features-longitudinal
+**Owner (2026-10-02): extract features from the child's voice to understand them better over time.** Implemented
+on-device (WebAudio, no raw audio stored or uploaded): per-utterance pitch (f0 stats), energy, speaking rate,
+pause structure, response onset latency, utterance length, disfluency + self-correction counts (from transcript),
+reading fluency (words-correct-per-minute on read-aloud items), pronunciation confidence. Normalised per child
+(z-scores against the child's own baseline), stored as features only.
+- Uses: (a) in-session tie-breakers that may choose a gentler hint / slower pace / follow-up probe (never mastery
+  changes beyond a small cap, per learning-science rule 7); (b) longitudinal trends (fluency growth, response
+  confidence, reading WCPM) → learner model + parent report growth lines; (c) research dataset (RESEARCH-PROGRAM).
+- Never: emotion labels or categorical affect classification (Azure Code of Conduct + child SER unreliability),
+  voiceprints / speaker ID.
+- Reverse if: per-child calibration (research E3) shows a feature adds no predictive value → drop it from decisions.
+
+## compliance-deferred-to-launch
+**Owner (2026-10-02): skip compliance work now; do everything necessary when launching.** The DPDP s.9 (13 May 2027)
+and dark-pattern items flagged by MARKET-THESIS are parked as launch-blockers, not build-blockers. The child-safety
+floor stays (product, not compliance).
