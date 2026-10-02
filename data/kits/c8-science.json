@@ -49,17 +49,17 @@
       "prompt_hi": "Kabir ne ek baar torch cotton cloth se chamkaayi aur deewar pe bahut kam roshni dikhi. Woh bolta hai, 'Prove ho gaya: cotton sabse best mask cloth hai.' Sabse sahi jawaab kya hoga?",
       "options": [
        {
-        "text": "He is right; one clear result is proof",
-        "misconceptionId": "c8-science-ch01-t01-m1",
-        "correct": false
-       },
-       {
-        "text": "He should repeat the test several times and compare other cloths tested the same way before concluding",
+        "text": "Repeat it several times and test other cloths the same way first",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "He should now test each other cloth once and pick the darkest spot",
+        "text": "He is right; a result that clear does not need to be repeated",
+        "misconceptionId": "c8-science-ch01-t01-m1",
+        "correct": false
+       },
+       {
+        "text": "Test every other cloth just once, then pick the one with the darkest spot",
         "misconceptionId": "c8-science-ch01-t01-m1",
         "correct": false
        }
@@ -83,17 +83,17 @@
       "prompt_hi": "Cloth A torch se 10 cm door hai aur Cloth B 30 cm door. B se deewar pe kam roshni aati hai. Kya hum keh sakte hain ki B behtar roshni rokta hai?",
       "options": [
        {
-        "text": "Yes, less light came through B",
+        "text": "Yes; less light came through B, so B must be the better blocker",
         "misconceptionId": "c8-science-ch01-t01-m2",
         "correct": false
        },
        {
-        "text": "No, the distance was also changed, so we cannot tell which change caused it",
+        "text": "No; the distance changed too, so we cannot tell which caused it",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Yes, because B was tested more carefully from farther away",
+        "text": "Yes; testing B from farther away just made the test more careful",
         "misconceptionId": "c8-science-ch01-t01-m2",
         "correct": false
        }
@@ -117,19 +117,19 @@
       "prompt_hi": "Tara test karna chahti hai ki kya sookhe neem ke patte rakhe hue aate mein keede aane se rokte hain. Woh ek dabbe mein neem patte daalti hai. Usse aur kya chahiye?",
       "options": [
        {
-        "text": "Nothing; one jar is enough",
+        "text": "Nothing more; one jar with neem already shows whether neem works",
         "misconceptionId": "c8-science-ch01-t01-m3",
         "correct": false
        },
        {
-        "text": "A second identical jar of the same flour without neem leaves, kept in the same place for the same time",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "A jar of a different flour with more neem leaves",
+        "text": "A jar of a different flour with more neem leaves, kept somewhere else",
         "misconceptionId": "c8-science-ch01-t01-m2",
         "correct": false
+       },
+       {
+        "text": "An identical jar of the same flour, no neem, kept the same way",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -205,7 +205,7 @@
       "control is the one without salt"
      ],
      "hints": [
-      "Ask why people put salt on icy roads in cold countries",
+      "Ask what they think salt might do to the ice",
       "Point to which cube had nothing done to it",
       "Prompt: the salted cube melts ___; the plain cube is the ___",
       "Assert: salted melts faster; the plain cube is the control"
@@ -214,7 +214,7 @@
      "verified": {
       "solverAnswer": "Salted melts first (salt lowers melting point); the unsalted cube is the control",
       "agrees": true,
-      "note": "Matches key. Minor: hint 1 (road salt) nearly gives the answer on first rung; consider softer cue."
+      "note": "Resolved: hint 1 is now an open pump instead of the road-salt cue."
      }
     },
     {
@@ -578,17 +578,17 @@
       "prompt_hi": "Ek shehar mein May mein ice-cream ki bikri aur sunburn ke cases dono badhte hain. Sabse sahi conclusion kya hai?",
       "options": [
        {
-        "text": "Eating ice cream causes sunburn",
-        "misconceptionId": "c8-science-ch01-t02-m1",
-        "correct": false
-       },
-       {
-        "text": "Hot sunny weather increases both; ice cream does not cause sunburn",
+        "text": "Hot sunny weather raises both; neither one causes the other",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Sunburn makes people buy ice cream",
+        "text": "Eating ice cream must be what is causing the sunburns",
+        "misconceptionId": "c8-science-ch01-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "Getting sunburnt makes people go out and buy more ice cream",
         "misconceptionId": "c8-science-ch01-t02-m1",
         "correct": false
        }
@@ -612,17 +612,17 @@
       "prompt_hi": "Aman kehta hai, 'Mere chacha kabhi exercise nahi karte aur theek hain, toh exercise se health pe koi fark nahi padta.' Isme kya galat hai?",
       "options": [
        {
-        "text": "Nothing; his uncle is real proof",
+        "text": "Nothing is wrong; his uncle is a real person, so that is real proof",
         "misconceptionId": "c8-science-ch01-t02-m2",
         "correct": false
        },
        {
-        "text": "One person cannot show a general pattern; we need data from many people",
+        "text": "One person cannot show a pattern; we need data from many people",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "He should ask one more uncle",
+        "text": "He should ask one more uncle, and then he will know for sure",
         "misconceptionId": "c8-science-ch01-t02-m2",
         "correct": false
        }
@@ -646,19 +646,19 @@
       "prompt_hi": "Kaunsa data line graph se sabse achha dikhega?",
       "options": [
        {
-        "text": "The favourite cricket team of 30 students",
+        "text": "The favourite cricket team of each of the 30 students in a class",
         "misconceptionId": "c8-science-ch01-t02-m3",
         "correct": false
        },
        {
-        "text": "The temperature outside recorded every hour from 6 am to 6 pm",
+        "text": "How many students are in each section of Class 8: A, B, C and D",
+        "misconceptionId": "c8-science-ch01-t02-m3",
+        "correct": false
+       },
+       {
+        "text": "Temperature outside, recorded every hour from 6 am to 6 pm",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "The number of students in each section of Class 8",
-        "misconceptionId": "c8-science-ch01-t02-m3",
-        "correct": false
        }
       ]
      },
@@ -1081,18 +1081,18 @@
       "prompt_hi": "Tumhare shareer ki cells ke baare mein kaunsi baat sahi hai?",
       "options": [
        {
-        "text": "All your cells are round and look the same",
-        "misconceptionId": "c8-science-ch02-t01-m1",
-        "correct": false
-       },
-       {
-        "text": "Your cells have different shapes, like long nerve cells and disc-shaped red blood cells, suited to their jobs",
+        "text": "They come in many shapes, like long nerve cells and disc-like blood cells",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Only your brain is made of cells",
-        "misconceptionId": null,
+        "text": "They are all round blobs that look the same, wherever they are in the body",
+        "misconceptionId": "c8-science-ch02-t01-m1",
+        "correct": false
+       },
+       {
+        "text": "Bigger body parts, like your thigh, are built from bigger cells",
+        "misconceptionId": "c8-science-ch02-t01-m3",
         "correct": false
        }
       ]
@@ -1115,17 +1115,17 @@
       "prompt_hi": "Microscope mein pyaaz ki patli jhilli mein bahut saare chhote eent jaise khaane dikhte hain. Yeh kya hain?",
       "options": [
        {
-        "text": "Plant cells, each with a cell wall",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "Dust grains, because plants do not have cells",
+        "text": "Dust grains, because plants are not made of cells",
         "misconceptionId": "c8-science-ch02-t01-m2",
         "correct": false
        },
        {
-        "text": "Tiny animals living on the onion",
+        "text": "Plant cells, each surrounded by a cell wall",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Tiny animals living on the onion, since only animals have cells",
         "misconceptionId": "c8-science-ch02-t01-m2",
         "correct": false
        }
@@ -1149,19 +1149,19 @@
       "prompt_hi": "Haathi chuhe se bahut bada hota hai. Kyon?",
       "options": [
        {
-        "text": "Elephant cells are much bigger than mouse cells",
+        "text": "Each of its cells is many times bigger than a mouse's cells",
         "misconceptionId": "c8-science-ch02-t01-m3",
         "correct": false
        },
        {
-        "text": "An elephant has far more cells; most of its cells are about as small as a mouse's",
-        "misconceptionId": null,
-        "correct": true
+        "text": "Its cells kept growing bigger and bigger as the elephant grew up",
+        "misconceptionId": "c8-science-ch02-t01-m3",
+        "correct": false
        },
        {
-        "text": "An elephant has no cells, only organs",
+        "text": "It has far more cells; most are about the size of a mouse's",
         "misconceptionId": null,
-        "correct": false
+        "correct": true
        }
       ]
      },
@@ -1574,17 +1574,17 @@
       "prompt_hi": "Chhote se bade ki taraf sahi kram kaunsa hai?",
       "options": [
        {
-        "text": "organism → organ → tissue → cell",
-        "misconceptionId": "c8-science-ch02-t02-m1",
-        "correct": false
-       },
-       {
         "text": "cell → tissue → organ → organ system → organism",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "cell → organ → tissue → organism",
+        "text": "organism → organ system → organ → tissue → cell",
+        "misconceptionId": "c8-science-ch02-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "cell → organ → tissue → organ system → organism",
         "misconceptionId": "c8-science-ch02-t02-m1",
         "correct": false
        }
@@ -1608,17 +1608,17 @@
       "prompt_hi": "Kya akela dil (heart) hi poora circulatory system hai?",
       "options": [
        {
-        "text": "Yes, the heart is the whole system",
+        "text": "Yes; the heart by itself does all of it, so it is the whole system",
         "misconceptionId": "c8-science-ch02-t02-m2",
         "correct": false
        },
        {
-        "text": "No, the heart is one organ; the system also includes blood vessels and blood",
+        "text": "No; it is one organ, and the system also has vessels and blood",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "No, the heart is only a tissue",
+        "text": "No; the heart is only a tissue, smaller than an organ",
         "misconceptionId": "c8-science-ch02-t02-m1",
         "correct": false
        }
@@ -1642,12 +1642,7 @@
       "prompt_hi": "Inme se plant ka organ kaunsa hai?",
       "options": [
        {
-        "text": "A leaf",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "Nothing; plants do not have organs",
+        "text": "None; plants do not have organs",
         "misconceptionId": "c8-science-ch02-t02-m3",
         "correct": false
        },
@@ -1655,6 +1650,11 @@
         "text": "A whole mango tree",
         "misconceptionId": "c8-science-ch02-t02-m1",
         "correct": false
+       },
+       {
+        "text": "A mango leaf",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -2062,17 +2062,17 @@
       "prompt_hi": "Kaunsi baat sahi hai?",
       "options": [
        {
-        "text": "All microbes are harmful and should be destroyed",
-        "misconceptionId": "c8-science-ch02-t03-m1",
-        "correct": false
-       },
-       {
-        "text": "Most microbes are harmless or useful, like curd bacteria; only some cause disease",
+        "text": "Most microbes are harmless or useful; only some cause disease",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Microbes are found only in dirty places",
+        "text": "Every microbe is a germ that causes disease, so all should be destroyed",
+        "misconceptionId": "c8-science-ch02-t03-m1",
+        "correct": false
+       },
+       {
+        "text": "Microbes live only in dirty places, never in clean food",
         "misconceptionId": "c8-science-ch02-t03-m2",
         "correct": false
        }
@@ -2096,17 +2096,17 @@
       "prompt_hi": "Kya saaf katori mein rakhe taaze dahi mein koi microbe hota hai?",
       "options": [
        {
-        "text": "No, it is clean, so there are no microbes",
+        "text": "No; it is clean and fresh, so there are no microbes in it",
         "misconceptionId": "c8-science-ch02-t03-m2",
         "correct": false
        },
        {
-        "text": "Yes, curd is full of helpful bacteria that made it",
+        "text": "Yes; curd is full of the helpful bacteria that made it",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Only if a fly sat on it",
+        "text": "Only if a fly has sat on it or a dirty spoon touched it",
         "misconceptionId": "c8-science-ch02-t03-m2",
         "correct": false
        }
@@ -2130,19 +2130,19 @@
       "prompt_hi": "Raat bhar rakha idli ka ghol phool kar bubbly aur thoda khatta ho jaata hai. Kya hua?",
       "options": [
        {
-        "text": "It got spoilt and must be thrown away",
+        "text": "It went bad overnight; sour and bubbly means spoilt food",
         "misconceptionId": "c8-science-ch02-t03-m3",
         "correct": false
        },
        {
-        "text": "Yeast and bacteria fermented it, making gas that puffs it up; this is wanted",
-        "misconceptionId": null,
-        "correct": true
+        "text": "Disease germs got in overnight, which makes it unsafe to eat",
+        "misconceptionId": "c8-science-ch02-t03-m1",
+        "correct": false
        },
        {
-        "text": "Room air got trapped in it by itself",
+        "text": "Yeast and bacteria fermented it, making gas; this is wanted",
         "misconceptionId": null,
-        "correct": false
+        "correct": true
        }
       ]
      },
@@ -2166,14 +2166,14 @@
      ],
      "hints": [
       "Ask which one is used to make bread rise",
-      "Point to malaria being spread by mosquitoes but caused by a protozoan",
+      "Point to the five group names; match the easiest ones first",
       "Prompt: yeast is a ___; the cold is caused by a ___",
       "Assert: fungus, protozoan, bacterium, alga, virus"
      ],
      "verified": {
       "solverAnswer": "yeast fungus; Plasmodium protozoan; Lactobacillus bacteria; pond layer alga; cold virus",
       "agrees": true,
-      "note": "Matches key. Hint 2 gives away the Plasmodium=protozoan answer early."
+      "note": "Resolved: hint 2 no longer gives Plasmodium = protozoan."
      }
     },
     {
@@ -2556,17 +2556,17 @@
       "prompt_hi": "Rohan ko na bukhaar hai na zukaam, par woh raat ko 5 ghante sota hai, hamesha pareshaan rehta hai, aur dosto se milna band kar diya hai. Kya woh poori tarah swasth hai?",
       "options": [
        {
-        "text": "Yes, because he is not ill",
-        "misconceptionId": "c8-science-ch03-t01-m1",
-        "correct": false
-       },
-       {
-        "text": "Not fully; his sleep, his mind and his friendships also need care",
+        "text": "Not fully; his sleep, mind and friendships need care too",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Only a blood test can tell; feelings do not count",
+        "text": "Yes, he is healthy, because he has no illness at all right now",
+        "misconceptionId": "c8-science-ch03-t01-m1",
+        "correct": false
+       },
+       {
+        "text": "Only a blood test can tell; worries and friends do not count",
         "misconceptionId": "c8-science-ch03-t01-m2",
         "correct": false
        }
@@ -2590,7 +2590,7 @@
       "prompt_hi": "Inme se kya health ka hissa hai?",
       "options": [
        {
-        "text": "Only the body: muscles, bones and organs",
+        "text": "Only the body: muscles, bones and organs working well",
         "misconceptionId": "c8-science-ch03-t01-m2",
         "correct": false
        },
@@ -2600,7 +2600,7 @@
         "correct": true
        },
        {
-        "text": "Only not catching diseases",
+        "text": "Only not catching diseases like colds and fevers",
         "misconceptionId": "c8-science-ch03-t01-m1",
         "correct": false
        }
@@ -2624,19 +2624,19 @@
       "prompt_hi": "Kya kisi ka body size dekh kar hi bata sakte ho ki woh kitna swasth hai?",
       "options": [
        {
-        "text": "Yes, thin people are always healthy",
+        "text": "Yes; thin people are always the healthy ones, you can just see it",
         "misconceptionId": "c8-science-ch03-t01-m3",
         "correct": false
        },
        {
-        "text": "No, health depends on habits, fitness, sleep, food and how a person feels, not looks alone",
+        "text": "Yes; anyone with big muscles is healthy, whatever else is going on",
+        "misconceptionId": "c8-science-ch03-t01-m3",
+        "correct": false
+       },
+       {
+        "text": "No; habits, fitness, sleep, food and feelings matter, not looks",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "Yes, anyone with big muscles is healthy",
-        "misconceptionId": "c8-science-ch03-t01-m3",
-        "correct": false
        }
       ]
      },
@@ -3050,17 +3050,17 @@
       "prompt_hi": "Riya ko zukaam hai. Ek dost kehta hai, 'Antibiotic le lo, jaldi theek ho jaogi.' Sahi kya hai?",
       "options": [
        {
-        "text": "Yes, antibiotics kill every kind of germ",
-        "misconceptionId": "c8-science-ch03-t02-m1",
-        "correct": false
-       },
-       {
-        "text": "No; a cold is caused by a virus and antibiotics act on bacteria; rest, fluids, and see a doctor if it gets worse",
+        "text": "No; a cold is a virus, and antibiotics only work on bacteria",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Yes, but take only half the strip",
+        "text": "Yes; antibiotics kill every kind of germ, so it will clear the cold fast",
+        "misconceptionId": "c8-science-ch03-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "Yes, but take only half the strip so it is not too strong for her",
         "misconceptionId": "c8-science-ch03-t02-m1",
         "correct": false
        }
@@ -3084,17 +3084,17 @@
       "prompt_hi": "Kya diabetes wale kisi insaan ke saath ek plate mein khaane se diabetes ho sakti hai?",
       "options": [
        {
-        "text": "Yes, it spreads like a cold",
+        "text": "Yes; it spreads from person to person just like a cold",
         "misconceptionId": "c8-science-ch03-t02-m2",
         "correct": false
        },
        {
-        "text": "No; diabetes is non-communicable and is not caused by a microbe",
+        "text": "No; diabetes is non-communicable and no microbe causes it",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Only if you also eat sweets with them",
+        "text": "Only if you also eat lots of sweets from the same plate",
         "misconceptionId": "c8-science-ch03-t02-m2",
         "correct": false
        }
@@ -3118,19 +3118,19 @@
       "prompt_hi": "Dengue failaane wale Aedes machchhar ande kahan dena pasand karte hain?",
       "options": [
        {
-        "text": "Only in dirty drains and garbage",
+        "text": "Only in dirty drains, garbage heaps and sewage water",
         "misconceptionId": "c8-science-ch03-t02-m3",
         "correct": false
        },
        {
-        "text": "In clean water collected in coolers, flower pots, buckets and old tyres",
+        "text": "In fast-flowing river water, far away from people's homes",
+        "misconceptionId": "c8-science-ch03-t02-m3",
+        "correct": false
+       },
+       {
+        "text": "In clean water standing in coolers, pots, buckets and old tyres",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "In fast-flowing river water",
-        "misconceptionId": "c8-science-ch03-t02-m3",
-        "correct": false
        }
       ]
      },
@@ -3540,17 +3540,17 @@
       "prompt_hi": "Vaccine ke baad Aman ko ek din halka bukhaar aur baanh mein dard hai. Kya ho raha hai?",
       "options": [
        {
-        "text": "He caught the disease from the vaccine",
-        "misconceptionId": "c8-science-ch03-t03-m1",
-        "correct": false
-       },
-       {
-        "text": "His defence system is responding and learning; this is a normal, short reaction",
+        "text": "His body's defences are learning; a short, normal reaction",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "The vaccine has failed",
+        "text": "He has caught the actual disease from the vaccine injection",
+        "misconceptionId": "c8-science-ch03-t03-m1",
+        "correct": false
+       },
+       {
+        "text": "The vaccine has failed and the real illness is now starting",
         "misconceptionId": "c8-science-ch03-t03-m1",
         "correct": false
        }
@@ -3574,17 +3574,17 @@
       "prompt_hi": "Khaane se pehle haath saaf karne ka sabse achha tareeka kaunsa hai?",
       "options": [
        {
-        "text": "Rinse with water for 2 seconds if hands look clean",
+        "text": "If they look clean, a quick 2-second rinse with water is enough",
         "misconceptionId": "c8-science-ch03-t03-m2",
         "correct": false
        },
        {
-        "text": "Rub hands with soap and water for about 20 seconds, then rinse",
+        "text": "Rub with soap and water for about 20 seconds, then rinse",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Wipe them on your clothes",
+        "text": "Wipe them on your clothes, since they already look clean",
         "misconceptionId": "c8-science-ch03-t03-m2",
         "correct": false
        }
@@ -3608,19 +3608,19 @@
       "prompt_hi": "Doctor ne Riya ke bacterial gale ke infection ke liye 5 din ka antibiotic course diya. Teesre din woh theek mehsoos karti hai. Use kya karna chahiye?",
       "options": [
        {
-        "text": "Stop, because she is cured",
+        "text": "Stop taking it now, because feeling fine means she is fully cured",
         "misconceptionId": "c8-science-ch03-t03-m3",
         "correct": false
        },
        {
-        "text": "Take it exactly as the doctor said, finishing the course unless the doctor changes it",
+        "text": "Stop and keep the rest for the next time someone gets ill",
+        "misconceptionId": "c8-science-ch03-t03-m3",
+        "correct": false
+       },
+       {
+        "text": "Keep taking it as the doctor said, unless the doctor changes it",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "Keep the rest for the next time someone is ill",
-        "misconceptionId": "c8-science-ch03-t03-m3",
-        "correct": false
        }
       ]
      },
@@ -4031,17 +4031,17 @@
       "prompt_hi": "Lohe ki keel pe taambe ke taar ki coil lapeti hai par kisi cell se nahi judi. Kya yeh paper pins uthayegi?",
       "options": [
        {
-        "text": "Yes, the coil makes it a magnet",
-        "misconceptionId": "c8-science-ch04-t01-m1",
-        "correct": false
-       },
-       {
-        "text": "No, it becomes a magnet only when current flows through the coil",
+        "text": "No; it is a magnet only while current flows in the coil",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Yes, because copper is magnetic",
+        "text": "Yes; winding the coil round the nail already makes it a magnet",
+        "misconceptionId": "c8-science-ch04-t01-m1",
+        "correct": false
+       },
+       {
+        "text": "Yes; copper wire is magnetic, so the coil pulls the pins anyway",
         "misconceptionId": "c8-science-ch04-t01-m3",
         "correct": false
        }
@@ -4065,7 +4065,7 @@
       "prompt_hi": "Paper pins pakde hue electromagnet ka current band karte ho. Kya hota hai?",
       "options": [
        {
-        "text": "The pins stay stuck for ever",
+        "text": "The pins stay stuck for ever, since it is now a magnet",
         "misconceptionId": "c8-science-ch04-t01-m2",
         "correct": false
        },
@@ -4075,8 +4075,8 @@
         "correct": true
        },
        {
-        "text": "The nail melts",
-        "misconceptionId": null,
+        "text": "The pins stay on for weeks, then slowly drop one by one",
+        "misconceptionId": "c8-science-ch04-t01-m2",
         "correct": false
        }
       ]
@@ -4099,11 +4099,6 @@
       "prompt_hi": "Kaunsa core electromagnet ko kaafi zyada taakatwar banata hai?",
       "options": [
        {
-        "text": "An iron nail",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
         "text": "An aluminium rod, since it is a metal too",
         "misconceptionId": "c8-science-ch04-t01-m3",
         "correct": false
@@ -4112,6 +4107,11 @@
         "text": "A copper rod, since the wire is copper",
         "misconceptionId": "c8-science-ch04-t01-m3",
         "correct": false
+       },
+       {
+        "text": "A soft iron nail",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -4284,7 +4284,7 @@
      ],
      "hints": [
       "Ask which of the three a fridge magnet sticks to",
-      "Point to aluminium and copper being non-magnetic",
+      "Point to the fact that not every metal is magnetic",
       "Prompt: the crane lifts only ___",
       "Assert: iron pipes only"
      ],
@@ -4292,7 +4292,7 @@
      "verified": {
       "solverAnswer": "Only iron pipes (magnetic)",
       "agrees": true,
-      "note": "Matches key. Hint 2 ('aluminium and copper being non-magnetic') leaks the answer on an early rung."
+      "note": "Resolved: hint 2 no longer names aluminium and copper as non-magnetic."
      }
     },
     {
@@ -4524,18 +4524,18 @@
       "prompt_hi": "Ek hi material aur lambai ke do taar, dono mein barabar current. Ek mota, ek patla. Kaunsa zyada garam hoga?",
       "options": [
        {
-        "text": "The thick one, because it has more metal",
-        "misconceptionId": "c8-science-ch04-t02-m1",
-        "correct": false
-       },
-       {
         "text": "The thin one, because it opposes the current more",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Both get exactly equally hot",
-        "misconceptionId": null,
+        "text": "The thick one, because it has more metal to heat up",
+        "misconceptionId": "c8-science-ch04-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "Neither; ordinary wires never get hot, only heaters do",
+        "misconceptionId": "c8-science-ch04-t02-m3",
         "correct": false
        }
       ]
@@ -4558,17 +4558,17 @@
       "prompt_hi": "Ghar ka fuse baar-baar ud jaata hai. Padosi kehta hai iski jagah mota taambe ka taar laga do. Kya yeh achha idea hai?",
       "options": [
        {
-        "text": "Yes, a thick wire will never melt, so the problem is solved",
+        "text": "Yes; a thick copper wire will never melt, so the problem is solved for good",
         "misconceptionId": "c8-science-ch04-t02-m2",
         "correct": false
        },
        {
-        "text": "No; it removes the protection, so too much current could overheat the house wiring and start a fire; an electrician should find the cause",
+        "text": "No; then nothing stops too much current, and the wiring could catch fire",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Yes, if the wire is shiny",
+        "text": "Yes, as long as the wire is new and shiny, it is just as safe as a fuse",
         "misconceptionId": "c8-science-ch04-t02-m2",
         "correct": false
        }
@@ -4592,19 +4592,19 @@
       "prompt_hi": "Inme se kaun current bahne pe kuch der baad garam ho jaate hain?",
       "options": [
        {
-        "text": "Only heaters and irons",
+        "text": "Only heaters and irons; things not made for heating stay cold",
         "misconceptionId": "c8-science-ch04-t02-m3",
         "correct": false
        },
        {
-        "text": "Heaters and irons, and also bulbs, chargers, TVs and the wires themselves, a little",
+        "text": "Nothing at all, unless it has a fire or flame inside it",
+        "misconceptionId": "c8-science-ch04-t02-m3",
+        "correct": false
+       },
+       {
+        "text": "Heaters, irons, bulbs, chargers, and even the wires",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "Nothing gets warm unless it has a fire inside",
-        "misconceptionId": "c8-science-ch04-t02-m3",
-        "correct": false
        }
       ]
      },
@@ -5017,18 +5017,18 @@
       "prompt_hi": "Ek naye torch cell ke andar kya hota hai?",
       "options": [
        {
-        "text": "A tank full of stored current",
-        "misconceptionId": "c8-science-ch04-t03-m1",
-        "correct": false
-       },
-       {
-        "text": "Chemicals that react to push charges around a circuit when it is closed",
+        "text": "Chemicals that react to push charges round a closed circuit",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Tiny bits of lightning",
-        "misconceptionId": null,
+        "text": "A tank full of stored electric current, waiting to pour out",
+        "misconceptionId": "c8-science-ch04-t03-m1",
+        "correct": false
+       },
+       {
+        "text": "Electric current packed tightly, which the bulb slowly uses up",
+        "misconceptionId": "c8-science-ch04-t03-m2",
         "correct": false
        }
       ]
@@ -5051,17 +5051,17 @@
       "prompt_hi": "Ek cell aur ek bulb wale loop mein, bulb mein jaane wale taar ka current aur bulb se nikalne wale taar ka current kaise compare hota hai?",
       "options": [
        {
-        "text": "Less comes out, because the bulb uses some",
+        "text": "Less comes out, because the bulb uses up some of the current",
         "misconceptionId": "c8-science-ch04-t03-m2",
         "correct": false
        },
        {
-        "text": "The same; the bulb changes energy into light and heat, but the current is not used up",
+        "text": "The same; the bulb converts energy, but no current is used up",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "None comes out",
+        "text": "None comes out; the bulb uses up all of the current going in",
         "misconceptionId": "c8-science-ch04-t03-m2",
         "correct": false
        }
@@ -5085,7 +5085,12 @@
       "prompt_hi": "Nimbu mein kaunsi jodi lagaane se voltage milega?",
       "options": [
        {
-        "text": "Two copper coins",
+        "text": "Two copper coins, since the lemon holds the electricity",
+        "misconceptionId": "c8-science-ch04-t03-m3",
+        "correct": false
+       },
+       {
+        "text": "Two plastic straws; the lemon juice holds the charge itself",
         "misconceptionId": "c8-science-ch04-t03-m3",
         "correct": false
        },
@@ -5093,11 +5098,6 @@
         "text": "A copper coin and a zinc-coated (galvanised) nail",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "Two plastic straws",
-        "misconceptionId": null,
-        "correct": false
        }
       ]
      },
@@ -5171,7 +5171,7 @@
       "teen"
      ],
      "hints": [
-      "Ask what 2 × 0.9 gives",
+      "Ask what two lemons would give together, and whether that is enough",
       "Point to the 2 V target",
       "Prompt: 3 × 0.9 = ___ V",
       "Assert: about three lemons"
@@ -5179,7 +5179,7 @@
      "verified": {
       "solverAnswer": "3 lemons",
       "agrees": true,
-      "note": "Matches key (3 lemons). Hint 1 hands over the arithmetic early (mild leak)."
+      "note": "Resolved: hint 1 no longer hands over the 2 x 0.9 arithmetic."
      }
     },
     {
@@ -5509,17 +5509,17 @@
       "prompt_hi": "Ludhakti hui football dheere-dheere ruk kyon jaati hai?",
       "options": [
        {
-        "text": "The force of the kick runs out",
-        "misconceptionId": "c8-science-ch05-t01-m1",
-        "correct": false
-       },
-       {
-        "text": "Friction from the ground and air resistance act against its motion",
+        "text": "Friction from the ground and air resist its motion",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Balls naturally stop by themselves",
+        "text": "The force of the kick runs out, so it has to stop",
+        "misconceptionId": "c8-science-ch05-t01-m1",
+        "correct": false
+       },
+       {
+        "text": "Balls just stop by themselves once they have rolled a while",
         "misconceptionId": "c8-science-ch05-t01-m1",
         "correct": false
        }
@@ -5543,17 +5543,17 @@
       "prompt_hi": "School bag desk pe rakha hai. Us pe kaunse force lag rahe hain?",
       "options": [
        {
-        "text": "No forces, because it is not moving",
+        "text": "None at all; a thing that is not moving has no forces on it",
         "misconceptionId": "c8-science-ch05-t01-m2",
         "correct": false
        },
        {
-        "text": "Gravity pulls it down and the desk pushes it up; the two are balanced",
+        "text": "Gravity pulls it down and the desk pushes it up, balanced",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Only gravity; a desk cannot push",
+        "text": "Only gravity; a desk is not alive, so it cannot push",
         "misconceptionId": "c8-science-ch05-t01-m3",
         "correct": false
        }
@@ -5577,19 +5577,19 @@
       "prompt_hi": "Inme se kaun force laga sakta hai?",
       "options": [
        {
-        "text": "Only people and animals",
+        "text": "Only people and animals, because they are alive and can push",
         "misconceptionId": "c8-science-ch05-t01-m3",
         "correct": false
        },
        {
-        "text": "People and animals, and also non-living things like a magnet, the Earth or a stretched rubber band",
+        "text": "Only living things and machines that have engines in them",
+        "misconceptionId": "c8-science-ch05-t01-m3",
+        "correct": false
+       },
+       {
+        "text": "Living things, and also a magnet, the Earth, a stretched band",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "Only machines with engines",
-        "misconceptionId": "c8-science-ch05-t01-m3",
-        "correct": false
        }
       ]
      },
@@ -6000,17 +6000,17 @@
       "prompt_hi": "Friction ke baare mein kaunsi baat sahi hai?",
       "options": [
        {
-        "text": "Friction is always bad; we should get rid of it",
-        "misconceptionId": "c8-science-ch05-t02-m1",
-        "correct": false
-       },
-       {
-        "text": "Friction is useful for walking, writing and braking, but it also causes wear and heat",
+        "text": "It helps us walk, write and brake, but also causes wear and heat",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Friction only happens on rough roads",
+        "text": "It is always harmful, so we should get rid of it everywhere",
+        "misconceptionId": "c8-science-ch05-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "It only happens on rough roads, never on smooth floors",
         "misconceptionId": "c8-science-ch05-t02-m1",
         "correct": false
        }
@@ -6034,17 +6034,17 @@
       "prompt_hi": "Gend seedhi upar phenki. Sabse upar jab woh ek pal ke liye rukti hai, kya us pe gravity lag rahi hai?",
       "options": [
        {
-        "text": "No, gravity acts only when it falls",
+        "text": "No; gravity only acts on things while they are falling",
         "misconceptionId": "c8-science-ch05-t02-m2",
         "correct": false
        },
        {
-        "text": "Yes, gravity acts on it all the time; that is why it comes back down",
+        "text": "Yes; gravity acts all the time, which is why it comes back down",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "No, the throw cancels gravity at the top",
+        "text": "No; at the top the throw has cancelled gravity for a moment",
         "misconceptionId": "c8-science-ch05-t02-m2",
         "correct": false
        }
@@ -6068,19 +6068,19 @@
       "prompt_hi": "Chaand Dharti ke chaaron or kyon ghoomta rehta hai, door kyon nahi chala jaata?",
       "options": [
        {
-        "text": "There is no gravity in space, so it just drifts",
+        "text": "It just drifts along, because there is no gravity in space",
         "misconceptionId": "c8-science-ch05-t02-m3",
         "correct": false
        },
        {
-        "text": "Earth's gravity pulls on the Moon across empty space",
+        "text": "The air between Earth and the Moon holds it in place",
+        "misconceptionId": "c8-science-ch05-t02-m3",
+        "correct": false
+       },
+       {
+        "text": "Earth's gravity pulls on it, even across empty space",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "Air between the Earth and the Moon holds it",
-        "misconceptionId": "c8-science-ch05-t02-m3",
-        "correct": false
        }
       ]
      },
@@ -6513,17 +6513,17 @@
       "prompt_hi": "60 kg mass wala astronaut Chaand pe jaata hai. Kya hota hai?",
       "options": [
        {
-        "text": "Her mass becomes 10 kg",
-        "misconceptionId": "c8-science-ch05-t03-m1",
-        "correct": false
-       },
-       {
-        "text": "Her mass stays 60 kg, but her weight becomes about one-sixth of her Earth weight",
+        "text": "Mass stays 60 kg; her weight becomes about one-sixth",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Both her mass and her weight stay the same",
+        "text": "Her mass drops to 10 kg, because she weighs less there",
+        "misconceptionId": "c8-science-ch05-t03-m1",
+        "correct": false
+       },
+       {
+        "text": "Nothing changes; her mass and weight both stay the same",
         "misconceptionId": "c8-science-ch05-t03-m1",
         "correct": false
        }
@@ -6552,12 +6552,12 @@
         "correct": false
        },
        {
-        "text": "The log floats and the nail sinks; floating depends on more than weight",
+        "text": "The log floats and the nail sinks",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Both sink because they are solid",
+        "text": "Both sink, because both are solid things",
         "misconceptionId": "c8-science-ch05-t03-m2",
         "correct": false
        }
@@ -6581,19 +6581,19 @@
       "prompt_hi": "Bucket ke andar paani se bhara mug utthaate waqt halka kyon lagta hai?",
       "options": [
        {
-        "text": "The water reduces its mass",
+        "text": "The water takes away some of its mass",
         "misconceptionId": "c8-science-ch05-t03-m3",
         "correct": false
        },
        {
-        "text": "The water pushes up on it (upthrust), so you need less force",
+        "text": "Gravity is weaker under water",
+        "misconceptionId": "c8-science-ch05-t03-m3",
+        "correct": false
+       },
+       {
+        "text": "The water pushes up on it (upthrust)",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "Gravity does not work under water",
-        "misconceptionId": "c8-science-ch05-t03-m3",
-        "correct": false
        }
       ]
      },
@@ -6741,7 +6741,7 @@
      ],
      "hints": [
       "Ask what pushes back when you press a ball under water",
-      "Point to two forces: weight down, upthrust up",
+      "Point to two forces: one pulling down, and one from the water",
       "Prompt: the same weight, but ___ pushes up",
       "Assert: upthrust supports part of the weight"
      ],
@@ -6749,7 +6749,7 @@
      "verified": {
       "solverAnswer": "Upthrust of water acting upward reduces apparent weight",
       "agrees": true,
-      "note": "Matches key. Hint 2 names upthrust early (mild leak)."
+      "note": "Resolved: hint 2 no longer names upthrust."
      }
     },
     {
@@ -7028,18 +7028,18 @@
       "prompt_hi": "Barabar phoole do gubbaare ek dandi ke dono siron pe latke hain, dandi beech se balanced hai. Ek gubbaare ko khol kar hawa nikaal dete hain. Kya hoga?",
       "options": [
        {
-        "text": "Nothing, because air weighs nothing",
-        "misconceptionId": "c8-science-ch06-t01-m1",
-        "correct": false
-       },
-       {
-        "text": "The side with the full balloon dips, because the air inside it has weight",
+        "text": "The full balloon's side dips, because its air has weight",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "The empty side dips because it is broken",
-        "misconceptionId": null,
+        "text": "Nothing changes, because air does not weigh anything",
+        "misconceptionId": "c8-science-ch06-t01-m1",
+        "correct": false
+       },
+       {
+        "text": "The empty side dips, because air makes things lighter",
+        "misconceptionId": "c8-science-ch06-t01-m1",
         "correct": false
        }
       ]
@@ -7062,17 +7062,17 @@
       "prompt_hi": "Straw se juice peete waqt juice ko upar kaun dhakelta hai?",
       "options": [
        {
-        "text": "Your mouth pulls the juice up by suction",
+        "text": "Your mouth's suction pulls the juice up, with no help from the air",
         "misconceptionId": "c8-science-ch06-t01-m2",
         "correct": false
        },
        {
-        "text": "Air pressure on the juice outside the straw pushes it up, because you lowered the pressure inside the straw",
+        "text": "Outside air pressure, once you lower the pressure in the straw",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "The straw itself lifts the juice",
+        "text": "The straw itself sucks the juice up when you squeeze it",
         "misconceptionId": "c8-science-ch06-t01-m2",
         "correct": false
        }
@@ -7096,19 +7096,19 @@
       "prompt_hi": "Ek jaise zor se, tez chaaku bhothe chaaku se behtar kyon kaatta hai?",
       "options": [
        {
-        "text": "The sharp knife pushes with a bigger force",
+        "text": "The sharp knife pushes with a bigger force on its own",
         "misconceptionId": "c8-science-ch06-t01-m3",
         "correct": false
        },
        {
-        "text": "The same force acts on a much smaller area, so the pressure is greater",
+        "text": "A sharp knife is heavier, so it presses down harder",
+        "misconceptionId": "c8-science-ch06-t01-m3",
+        "correct": false
+       },
+       {
+        "text": "The same force acts on a smaller area, so more pressure",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "A blunt knife is heavier",
-        "misconceptionId": "c8-science-ch06-t01-m3",
-        "correct": false
        }
       ]
      },
@@ -7257,7 +7257,7 @@
      ],
      "hints": [
       "Ask what you are trying to do to the air inside the straw",
-      "Point to air sneaking in through the hole",
+      "Point to what the hole connects the inside of the straw to",
       "Prompt: the pressure inside stays ___, so no push",
       "Assert: no pressure difference, no drink"
      ],
@@ -7265,7 +7265,7 @@
      "verified": {
       "solverAnswer": "Air enters hole, no pressure difference, juice not pushed up",
       "agrees": true,
-      "note": "Matches key. Hint 2 ('air sneaking in through the hole') states the answer early."
+      "note": "Resolved: hint 2 no longer states that air leaks in."
      }
     },
     {
@@ -7546,17 +7546,17 @@
       "prompt_hi": "Jagah A pe high pressure hai aur jagah B pe low pressure. Hawa kis taraf bahegi?",
       "options": [
        {
-        "text": "From B (low) to A (high)",
-        "misconceptionId": "c8-science-ch06-t02-m1",
-        "correct": false
-       },
-       {
         "text": "From A (high) to B (low)",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "There is no wind; pressure does not matter",
+        "text": "From B (low) to A (high)",
+        "misconceptionId": "c8-science-ch06-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "No wind; wind comes from trees, not pressure",
         "misconceptionId": "c8-science-ch06-t02-m2",
         "correct": false
        }
@@ -7580,18 +7580,18 @@
       "prompt_hi": "Samundar kinaare garam dopahar mein hawa kis wajah se chalti hai?",
       "options": [
        {
-        "text": "Trees waving their branches push the air",
+        "text": "The trees along the coast wave their branches and push the air",
         "misconceptionId": "c8-science-ch06-t02-m2",
         "correct": false
        },
        {
-        "text": "Uneven heating of land and sea makes pressure differences, and air moves from high to low pressure",
+        "text": "Land heats faster than sea, so air moves from high to low pressure",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Clouds blowing on the land",
-        "misconceptionId": "c8-science-ch06-t02-m2",
+        "text": "Warm air from the land weighs nothing, so it just floats away",
+        "misconceptionId": "c8-science-ch06-t02-m3",
         "correct": false
        }
       ]
@@ -7614,19 +7614,19 @@
       "prompt_hi": "Garam hawa upar kyon uthti hai?",
       "options": [
        {
-        "text": "Warm air has no weight",
+        "text": "Warm air has no weight at all, so it floats up",
         "misconceptionId": "c8-science-ch06-t02-m3",
         "correct": false
        },
        {
-        "text": "Warm air expands and is less dense than the cooler air around it, so the cooler air pushes it up",
+        "text": "Heat removes all of the air's weight, so nothing holds it down",
+        "misconceptionId": "c8-science-ch06-t02-m3",
+        "correct": false
+       },
+       {
+        "text": "It expands and is less dense, so cooler air pushes it up",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "The Sun pulls it up",
-        "misconceptionId": "c8-science-ch06-t02-m3",
-        "correct": false
        }
       ]
      },
@@ -8061,17 +8061,17 @@
       "prompt_hi": "Tum park mein ho aur bijli kadakne lagti hai. Sabse surakshit jagah kaunsi hai?",
       "options": [
        {
-        "text": "Under the tallest tree",
-        "misconceptionId": "c8-science-ch06-t03-m1",
-        "correct": false
-       },
-       {
-        "text": "Inside a proper building or a closed car; if there is none, crouch low away from trees",
+        "text": "A proper building or a closed car, as fast as you can",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "An open hilltop, holding an umbrella",
+        "text": "Under the tallest tree, since its leaves keep the lightning off",
+        "misconceptionId": "c8-science-ch06-t03-m1",
+        "correct": false
+       },
+       {
+        "text": "The open hilltop, holding a metal umbrella up high",
         "misconceptionId": "c8-science-ch06-t03-m1",
         "correct": false
        }
@@ -8079,7 +8079,7 @@
      },
      "remediation": {
       "representation": "Side view of a field: lightning striking a lone tree, with current spreading through the ground around it",
-      "moveShape": "Ask why lightning tends to hit the tree; let the child see that standing near it puts them in the path"
+      "moveShape": "Ask why lightning tends to hit the tree; let the child see that standing near it puts them in the path; then name the real shelters (a building or a closed car), and say that keeping low in the open is only a last resort that lowers but does not remove the risk"
      }
     },
     {
@@ -8095,17 +8095,17 @@
       "prompt_hi": "Ek oonche mobile tower pe pichhle hafte bijli giri thi. Kya ab us pe bijli nahi giregi?",
       "options": [
        {
-        "text": "Yes, lightning never strikes the same place twice",
+        "text": "Yes; lightning never strikes the same place twice",
         "misconceptionId": "c8-science-ch06-t03-m2",
         "correct": false
        },
        {
-        "text": "No; tall, pointed structures can be struck many times, which is why they have lightning conductors",
+        "text": "No; tall towers can be struck again and again",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Yes, because it used up its electricity",
+        "text": "Yes; the strike used up the tower's electricity",
         "misconceptionId": "c8-science-ch06-t03-m2",
         "correct": false
        }
@@ -8129,19 +8129,19 @@
       "prompt_hi": "Cyclone ke dauraan achaanak hawa ruk jaati hai aur aasmaan thoda saaf hota hai. Shelter mein baitha parivaar kya kare?",
       "options": [
        {
-        "text": "Go out, because the storm is over",
+        "text": "Go home now, because the storm is over",
         "misconceptionId": "c8-science-ch06-t03-m3",
         "correct": false
        },
        {
-        "text": "Stay in the shelter; this may be the eye, and strong winds will return from the other direction",
+        "text": "Go to the beach to see the big waves, it is calm now",
+        "misconceptionId": "c8-science-ch06-t03-m3",
+        "correct": false
+       },
+       {
+        "text": "Stay inside; it may be the eye, and winds will return",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "Go to the beach to see the waves",
-        "misconceptionId": "c8-science-ch06-t03-m3",
-        "correct": false
        }
       ]
      },
@@ -8452,7 +8452,7 @@
      "difficulty": 4,
      "prompt_en": "Explain to your family what to do if a thunderstorm starts while you are outside, and what to do if a cyclone warning is issued, with a reason for each step.",
      "prompt_hi": "Apne parivaar ko samjhao ki bahar hote hue aandhi-toofaan shuru ho toh kya karein, aur cyclone ki chetaavni aaye toh kya karein, har kadam ka kaaran ke saath.",
-     "answer": "Key ideas: lightning is a giant spark from charged storm clouds; it tends to strike tall objects; go into a building or a closed car; avoid trees, poles, open fields and water; crouch low if caught in the open; wait 30 minutes after the last thunder; cyclones form over warm seas around a low-pressure eye; follow IMD warnings, go to shelters early, store water and food, and stay sheltered even when the eye brings calm.",
+     "answer": "Key ideas: lightning is a giant spark from charged storm clouds; it tends to strike tall objects; go into a proper building or a closed car straight away; never shelter under a tree, and keep away from poles, open fields, hilltops and water; only as a last resort, if no building or car can be reached, keep low on lower ground away from tall objects, knowing this lowers but does not remove the risk; wait 30 minutes after the last thunder; cyclones form over warm seas around a low-pressure eye; follow IMD warnings, go to shelters early, store water and food, and stay sheltered even when the eye brings calm.",
      "acceptable": [],
      "hints": [
       "Invite them to split the plan into lightning and cyclone",
@@ -8463,7 +8463,7 @@
      "verified": {
       "solverAnswer": "Lightning: shelter indoors/car, avoid trees/water/metal; cyclone: follow evacuation, store supplies, stay indoors away from windows",
       "agrees": true,
-      "note": "SAFETY (soft): key says 'crouch low if caught in the open'. NDMA lists it as a last resort but agencies say crouching is not protective; frame as last resort only after trying to reach a building/car, never under a tree. Rest matches key."
+      "note": "Resolved: crouching is no longer presented as protection; key now says reach a building or closed car first, never a tree, and low ground only as a last resort that does not remove the risk."
      }
     },
     {
@@ -8577,17 +8577,17 @@
       "prompt_hi": "Garmi ke din steel ki railway patriyaan thodi phail jaati hain. Steel ke particles ka kya hota hai?",
       "options": [
        {
-        "text": "Each particle grows bigger",
-        "misconceptionId": "c8-science-ch07-t01-m1",
-        "correct": false
-       },
-       {
-        "text": "The particles vibrate faster and move slightly farther apart",
+        "text": "They vibrate faster and move a little farther apart",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "The particles melt",
+        "text": "Each particle swells up and grows bigger",
+        "misconceptionId": "c8-science-ch07-t01-m1",
+        "correct": false
+       },
+       {
+        "text": "The particles themselves start to melt and soften",
         "misconceptionId": "c8-science-ch07-t01-m1",
         "correct": false
        }
@@ -8611,7 +8611,7 @@
       "prompt_hi": "Paani ke particles ke beech ki jagah mein kya hota hai?",
       "options": [
        {
-        "text": "Air",
+        "text": "Air, filling up the gaps",
         "misconceptionId": "c8-science-ch07-t01-m2",
         "correct": false
        },
@@ -8621,7 +8621,7 @@
         "correct": true
        },
        {
-        "text": "More water",
+        "text": "More water, because water is one continuous thing",
         "misconceptionId": "c8-science-ch07-t01-m3",
         "correct": false
        }
@@ -8645,19 +8645,19 @@
       "prompt_hi": "Cheeni ko paani mein itna ghola ki ab dikhti nahi. Woh kahan gayi?",
       "options": [
        {
-        "text": "It has disappeared completely",
+        "text": "It has disappeared and is gone completely",
         "misconceptionId": "c8-science-ch07-t01-m3",
         "correct": false
        },
        {
-        "text": "It has broken into tiny particles spread out among the water particles",
+        "text": "It has turned into water, so it is just water now",
+        "misconceptionId": "c8-science-ch07-t01-m3",
+        "correct": false
+       },
+       {
+        "text": "Broken into tiny particles spread among the water",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "It has turned into water",
-        "misconceptionId": "c8-science-ch07-t01-m3",
-        "correct": false
        }
       ]
      },
@@ -9095,18 +9095,18 @@
       "prompt_hi": "Kya steel ki chammach ke particles hilte hain?",
       "options": [
        {
-        "text": "No, a solid is completely still inside",
-        "misconceptionId": "c8-science-ch07-t02-m1",
-        "correct": false
-       },
-       {
         "text": "Yes, they vibrate about fixed positions",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Yes, they flow around freely as in water",
-        "misconceptionId": null,
+        "text": "No, a solid is completely still inside",
+        "misconceptionId": "c8-science-ch07-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "No; only liquids and gases have moving particles",
+        "misconceptionId": "c8-science-ch07-t02-m1",
         "correct": false
        }
       ]
@@ -9129,12 +9129,12 @@
       "prompt_hi": "Ek pichki football aur wahi football hawa se bhari, sensitive taraazu pe toli. Kaun bhaari hai?",
       "options": [
        {
-        "text": "They weigh the same; air has no mass",
+        "text": "They weigh the same, because air has no mass",
         "misconceptionId": "c8-science-ch07-t02-m2",
         "correct": false
        },
        {
-        "text": "The pumped ball, because the air inside has mass",
+        "text": "The pumped one, because the air inside has mass",
         "misconceptionId": null,
         "correct": true
        },
@@ -9163,19 +9163,19 @@
       "prompt_hi": "Garam din khule katore ka paani dheere-dheere gaayab ho jaata hai. Uska kya hua?",
       "options": [
        {
-        "text": "It turned into air",
+        "text": "It turned into air and is no longer water",
         "misconceptionId": "c8-science-ch07-t02-m3",
         "correct": false
        },
        {
-        "text": "Its particles escaped from the surface as water vapour into the air",
+        "text": "The heat destroyed the water particles",
+        "misconceptionId": "c8-science-ch07-t02-m3",
+        "correct": false
+       },
+       {
+        "text": "Its particles escaped into the air as water vapour",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "The heat destroyed it",
-        "misconceptionId": "c8-science-ch07-t02-m3",
-        "correct": false
        }
       ]
      },
@@ -9465,8 +9465,8 @@
       "bhaap, paani ke hi particles"
      ],
      "hints": [
-      "Ask what forms on a lid held over boiling water",
-      "Point to vapour turning back into drops",
+      "Ask what appears on the outside of a glass of ice-cold water",
+      "Point to vapour in the air turning back into drops",
       "Prompt: the particles are still ___, just far ___",
       "Assert: water vapour, not air"
      ],
@@ -9474,7 +9474,7 @@
      "verified": {
       "solverAnswer": "Becomes water vapour/steam, still water particles; not air",
       "agrees": true,
-      "note": "SAFETY: hint 2 suggests holding a lid over boiling water (steam scald risk for a child); must say adult-only/tongs or use a picture instead. Science matches key."
+      "note": "Resolved: hint 1 no longer suggests holding a lid over boiling water (scald risk); replaced with a cold-glass condensation cue that shows the same vapour-to-water idea safely."
      }
     },
     {
@@ -9512,7 +9512,7 @@
      ],
      "hints": [
       "Ask about the steel spoon",
-      "Point to the jiggling lattice",
+      "Point to how heat travels along the spoon from one end to the other",
       "Prompt: they ___ in place",
       "Assert: yes, they vibrate in fixed positions"
      ],
@@ -9520,7 +9520,7 @@
      "verified": {
       "solverAnswer": "Yes, they vibrate in place",
       "agrees": true,
-      "note": "Matches key. Hint 2 ('jiggling lattice') gives the answer away early."
+      "note": "Resolved: hint 2 no longer says the lattice jiggles; it points to conduction as evidence instead."
      }
     }
    ],
@@ -9608,17 +9608,17 @@
       "prompt_hi": "Hawa kya hai?",
       "options": [
        {
-        "text": "A single gas called air",
-        "misconceptionId": "c8-science-ch08-t01-m1",
-        "correct": false
-       },
-       {
-        "text": "A mixture of gases, mostly nitrogen and oxygen, with argon, carbon dioxide and water vapour",
+        "text": "A mixture of gases, mostly nitrogen and oxygen",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Pure oxygen",
+        "text": "A single gas, called air",
+        "misconceptionId": "c8-science-ch08-t01-m1",
+        "correct": false
+       },
+       {
+        "text": "Pure oxygen, which we breathe in",
         "misconceptionId": "c8-science-ch08-t01-m1",
         "correct": false
        }
@@ -9642,18 +9642,18 @@
       "prompt_hi": "Namak wala paani har jagah ek jaisa dikhta hai. Kya yeh pure substance hai?",
       "options": [
        {
-        "text": "Yes, because it looks the same throughout",
+        "text": "Yes, because it looks the same all the way through",
         "misconceptionId": "c8-science-ch08-t01-m2",
         "correct": false
        },
        {
-        "text": "No, it is a homogeneous mixture of salt and water",
+        "text": "No; it is a homogeneous mixture of salt and water",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "No, it is heterogeneous because it has salt in it",
-        "misconceptionId": "c8-science-ch08-t01-m3",
+        "text": "No, it is heterogeneous, because it has salt in it",
+        "misconceptionId": "c8-science-ch08-t01-m2",
         "correct": false
        }
       ]
@@ -9676,19 +9676,19 @@
       "prompt_hi": "Inme se kaun mixture hai jabki uske alag hisse dikhte nahi?",
       "options": [
        {
-        "text": "Clear sherbet with the sugar fully dissolved",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "Nothing; it is a mixture only if you can see the parts",
+        "text": "None; it is only a mixture if you can see its parts",
         "misconceptionId": "c8-science-ch08-t01-m3",
         "correct": false
        },
        {
-        "text": "Distilled water",
-        "misconceptionId": null,
+        "text": "A bowl of sprouts and onions, because you can see the parts",
+        "misconceptionId": "c8-science-ch08-t01-m3",
         "correct": false
+       },
+       {
+        "text": "Clear sherbet with the sugar fully dissolved",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -10095,17 +10095,17 @@
       "prompt_hi": "Hydrogen jalne wali gas hai, aur oxygen jalne mein madad karti hai. Paani hydrogen aur oxygen se bana hai. Paani aksar aag ke saath kya karta hai?",
       "options": [
        {
-        "text": "It makes the fire burn more, because it contains hydrogen and oxygen",
-        "misconceptionId": "c8-science-ch08-t02-m1",
-        "correct": false
-       },
-       {
-        "text": "It usually puts the fire out; a compound has new properties of its own",
+        "text": "It usually puts the fire out; compounds have new properties",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "It explodes",
+        "text": "It makes the fire burn more, since it has hydrogen and oxygen",
+        "misconceptionId": "c8-science-ch08-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "It explodes, because the hydrogen in it catches fire",
         "misconceptionId": "c8-science-ch08-t02-m1",
         "correct": false
        }
@@ -10134,12 +10134,12 @@
         "correct": false
        },
        {
-        "text": "The balloon is a mixture in any ratio; water is a compound with the elements chemically joined in a fixed ratio",
+        "text": "The balloon is a mixture; water is a compound in a fixed ratio",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Water is an element",
+        "text": "Water is an element, because it is a pure substance",
         "misconceptionId": "c8-science-ch08-t02-m3",
         "correct": false
        }
@@ -10163,19 +10163,19 @@
       "prompt_hi": "Ek dukaan '100% shuddh desi ghee' bechti hai. Science mein kya ghee ek pure substance hai?",
       "options": [
        {
-        "text": "Yes, because the label says pure",
+        "text": "Yes, because the label says it is 100% pure",
         "misconceptionId": "c8-science-ch08-t02-m3",
         "correct": false
        },
        {
-        "text": "No; ghee is a mixture of many fats and other substances; 'pure' on the label means not adulterated",
+        "text": "Yes, ghee is a pure element, just like gold",
+        "misconceptionId": "c8-science-ch08-t02-m3",
+        "correct": false
+       },
+       {
+        "text": "No; ghee is a mix of many fats; 'pure' means not adulterated",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "Yes, it is an element",
-        "misconceptionId": "c8-science-ch08-t02-m3",
-        "correct": false
        }
       ]
      },
@@ -10199,14 +10199,14 @@
      ],
      "hints": [
       "Ask which ones use their first letter",
-      "Point to Fe, Cu and Na coming from Latin names",
+      "Point to the ones whose symbols do not match their English names",
       "Prompt: iron is ___, copper is ___, sodium is ___",
       "Assert: H, O, C, Fe, Cu, Na"
      ],
      "verified": {
       "solverAnswer": "H, O, C, Fe, Cu, Na",
       "agrees": true,
-      "note": "Matches key. Hint 2 gives away that Fe/Cu/Na come from Latin names (early leak)."
+      "note": "Resolved: hint 2 no longer says Fe, Cu and Na come from Latin names."
      }
     },
     {
@@ -10588,17 +10588,17 @@
       "prompt_hi": "Ghar mein minerals se bani cheezein kahan-kahan milengi?",
       "options": [
        {
+        "text": "Salt, pencil 'lead', window glass, cement and aluminium pans",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
         "text": "Only in mineral tablets and medicine bottles",
         "misconceptionId": "c8-science-ch08-t03-m1",
         "correct": false
        },
        {
-        "text": "In many places: salt, pencil 'lead' (graphite), window glass (from quartz sand), cement walls, aluminium utensils (from bauxite)",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "Only in mineral water",
+        "text": "Only in bottles of mineral water from the shop",
         "misconceptionId": "c8-science-ch08-t03-m1",
         "correct": false
        }
@@ -10622,17 +10622,17 @@
       "prompt_hi": "Granite mein gulaabi, safed aur kaale daane hote hain. Yeh daane kya hain?",
       "options": [
        {
-        "text": "Paint added in a factory",
-        "misconceptionId": null,
+        "text": "Nothing; granite is one single mineral",
+        "misconceptionId": "c8-science-ch08-t03-m2",
         "correct": false
        },
        {
-        "text": "Different minerals (such as feldspar, quartz and mica) that make up the rock",
+        "text": "Different minerals, like feldspar, quartz and mica",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Nothing; granite is a single mineral",
+        "text": "Bits of one mineral, granite, in three colours",
         "misconceptionId": "c8-science-ch08-t03-m2",
         "correct": false
        }
@@ -10656,19 +10656,19 @@
       "prompt_hi": "Aluminium ke cans ko recycle kyon karna chahiye?",
       "options": [
        {
-        "text": "There is no need; bauxite never runs out",
+        "text": "No need really; bauxite will never run out",
         "misconceptionId": "c8-science-ch08-t03-m3",
         "correct": false
        },
        {
-        "text": "Bauxite is non-renewable and mining harms forests; recycling saves ore and a lot of energy",
-        "misconceptionId": null,
-        "correct": true
+        "text": "Only to keep streets tidy; the ore itself is endless",
+        "misconceptionId": "c8-science-ch08-t03-m3",
+        "correct": false
        },
        {
-        "text": "Because aluminium rusts away quickly",
+        "text": "Bauxite is non-renewable; recycling saves ore and energy",
         "misconceptionId": null,
-        "correct": false
+        "correct": true
        }
       ]
      },
@@ -11100,18 +11100,18 @@
       "prompt_hi": "Ek glass paani ka wazan 200 g hai. Usme 20 g cheeni poori ghol di. Ab cheeni ke ghol ka wazan kitna hoga?",
       "options": [
        {
-        "text": "200 g, because the sugar disappeared",
-        "misconceptionId": "c8-science-ch09-t01-m1",
-        "correct": false
-       },
-       {
-        "text": "220 g, because the sugar particles are still there",
+        "text": "220 g, because the sugar is still there",
         "misconceptionId": null,
         "correct": true
        },
        {
+        "text": "200 g, because the sugar has disappeared",
+        "misconceptionId": "c8-science-ch09-t01-m1",
+        "correct": false
+       },
+       {
         "text": "Less than 200 g, because sugar makes water lighter",
-        "misconceptionId": null,
+        "misconceptionId": "c8-science-ch09-t01-m1",
         "correct": false
        }
       ]
@@ -11134,18 +11134,18 @@
       "prompt_hi": "Ek cup paani mein namak daalte jao aur hilaate jao. Kuch der baad kitna bhi hilao, namak neeche hi pada rehta hai. Kyon?",
       "options": [
        {
-        "text": "The water cannot dissolve any more salt at that temperature: it is saturated",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "You have not stirred long enough",
+        "text": "You just have not stirred it long enough yet; keep going",
         "misconceptionId": "c8-science-ch09-t01-m2",
         "correct": false
        },
        {
-        "text": "The new salt is a different kind of salt",
+        "text": "The water is saturated and can hold no more salt",
         "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "The spoon is too small; a bigger stir would dissolve it",
+        "misconceptionId": "c8-science-ch09-t01-m2",
         "correct": false
        }
       ]
@@ -11173,14 +11173,14 @@
         "correct": false
        },
        {
-        "text": "Salt spreading through water in a glass",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
         "text": "Ghee turning liquid in a warm pan",
         "misconceptionId": "c8-science-ch09-t01-m3",
         "correct": false
+       },
+       {
+        "text": "Salt spreading through water in a glass",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -11595,12 +11595,12 @@
       "prompt_hi": "Machhliyaan paani ke andar saans lene ke liye oxygen kahan se laati hain?",
       "options": [
        {
-        "text": "They take oxygen that is dissolved in the water, using their gills",
+        "text": "They take in oxygen dissolved in the water, with gills",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "They split water into oxygen",
+        "text": "They split the water itself to get oxygen",
         "misconceptionId": "c8-science-ch09-t02-m1",
         "correct": false
        },
@@ -11629,18 +11629,18 @@
       "prompt_hi": "Soda ki ek bottle fridge mein aur ek garam car mein rakhi, dono ek saath kholi. Kaun jaldi flat hogi?",
       "options": [
        {
-        "text": "The cold one, because heat helps gases dissolve",
+        "text": "The cold one; heat helps gases stay dissolved",
         "misconceptionId": "c8-science-ch09-t02-m2",
         "correct": false
        },
        {
-        "text": "The warm one, because gases dissolve less in warm water",
+        "text": "The warm one; gases dissolve less in warm water",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Both the same",
-        "misconceptionId": null,
+        "text": "The cold one, since warming always dissolves more of anything",
+        "misconceptionId": "c8-science-ch09-t02-m2",
         "correct": false
        }
       ]
@@ -11662,19 +11662,19 @@
       "prompt_hi": "Paani garam karne par kiski ghulne ki maatra sabse zyada badhti hai?",
       "options": [
        {
-        "text": "How much sugar dissolves",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "How much common salt dissolves: it rises just as much",
+        "text": "How much salt dissolves: it rises just as much as sugar",
         "misconceptionId": "c8-science-ch09-t02-m3",
         "correct": false
        },
        {
-        "text": "Neither changes at all",
-        "misconceptionId": null,
+        "text": "Every solid rises equally, so neither changes most",
+        "misconceptionId": "c8-science-ch09-t02-m3",
         "correct": false
+       },
+       {
+        "text": "How much sugar dissolves",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -11740,7 +11740,7 @@
      "kind": "predict",
      "difficulty": 3,
      "prompt_en": "Predict: you fill a clean steel glass with cold tap water and leave it on the table for an hour as it warms to room temperature. What might you see on the inside wall of the glass?",
-     "prompt_hi": "Guess karo: ek saaf glass mein thanda nal ka paani bhar ke ek ghante table par chhod do jab tak woh kamre ke temperature par aa jaaye. Glass ki andar ki deewar par kya dikh sakta hai?",
+     "prompt_hi": "Guess karo: ek saaf steel ke glass mein thanda nal ka paani bhar ke ek ghante table par chhod do jab tak woh kamre ke temperature par aa jaaye. Glass ki andar ki deewar par kya dikh sakta hai?",
      "answer": "Tiny bubbles. Cold water had air dissolved in it; as it warms, it can hold less gas, so some air comes out as bubbles.",
      "acceptable": [
       "small bubbles",
@@ -11756,7 +11756,7 @@
      "verified": {
       "solverAnswer": "Tiny bubbles on inner wall (dissolved air coming out)",
       "agrees": true,
-      "note": "Matches key. prompt_hi says 'saaf glass' (clear glass) where prompt_en says 'clean steel glass'; Hindi drops 'steel'."
+      "note": "Resolved: prompt_hi now says 'steel ke glass', matching prompt_en."
      }
     },
     {
@@ -12089,18 +12089,18 @@
       "prompt_hi": "Ek bada lakdi ka lattha aur ek chhoti loha ki keel nadi mein daali gayi. Kya hoga?",
       "options": [
        {
-        "text": "The log sinks because it is heavier",
-        "misconceptionId": "c8-science-ch09-t03-m1",
-        "correct": false
-       },
-       {
-        "text": "The log floats and the nail sinks, because wood is less dense than water and iron is denser",
+        "text": "The log floats and the nail sinks; it is about density",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Both float because water is strong",
-        "misconceptionId": null,
+        "text": "The log sinks, because it is so much heavier",
+        "misconceptionId": "c8-science-ch09-t03-m1",
+        "correct": false
+       },
+       {
+        "text": "The log sinks and the light nail floats",
+        "misconceptionId": "c8-science-ch09-t03-m1",
         "correct": false
        }
       ]
@@ -12122,18 +12122,18 @@
       "prompt_hi": "Ek patthar paani mein doob jaata hai. Usme se ek chhota tukda todo. Kya tukda tairega?",
       "options": [
        {
-        "text": "Yes, because it is lighter now",
+        "text": "Yes, because a smaller piece is less dense",
         "misconceptionId": "c8-science-ch09-t03-m2",
         "correct": false
        },
        {
-        "text": "No, it is the same material so it has the same density and still sinks",
+        "text": "No; it is the same material, so same density, still sinks",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "It will float halfway",
-        "misconceptionId": null,
+        "text": "It will float halfway, being lighter now",
+        "misconceptionId": "c8-science-ch09-t03-m2",
         "correct": false
        }
       ]
@@ -12155,19 +12155,19 @@
       "prompt_hi": "Ek anda nal ke paani mein doob jaata hai. Usme bahut saara namak gholo. Ab kya ho sakta hai?",
       "options": [
        {
-        "text": "It still sinks, because the egg is the same",
+        "text": "It still sinks, because the egg itself has not changed",
         "misconceptionId": "c8-science-ch09-t03-m3",
         "correct": false
        },
        {
-        "text": "It can float, because the salty water is now denser than the egg",
-        "misconceptionId": null,
-        "correct": true
+        "text": "It still sinks; only the egg's weight decides",
+        "misconceptionId": "c8-science-ch09-t03-m3",
+        "correct": false
        },
        {
-        "text": "It dissolves",
+        "text": "It can float, as salty water is denser than the egg",
         "misconceptionId": null,
-        "correct": false
+        "correct": true
        }
       ]
      },
@@ -12576,14 +12576,14 @@
       "prompt_hi": "Ek kiran plane mirror se 30° ka kona banaate hue takraati hai, mirror ki sataha se. Angle of reflection kitna hai?",
       "options": [
        {
-        "text": "30°",
-        "misconceptionId": "c8-science-ch10-t01-m1",
-        "correct": false
-       },
-       {
         "text": "60°",
         "misconceptionId": null,
         "correct": true
+       },
+       {
+        "text": "30°",
+        "misconceptionId": "c8-science-ch10-t01-m1",
+        "correct": false
        },
        {
         "text": "90°",
@@ -12609,18 +12609,18 @@
       "prompt_hi": "Haath bhar door rakhe steel ke bade chammach ke andar wale gehre hisse mein apna chehra dekho. Kya dikhta hai?",
       "options": [
        {
+        "text": "An image exactly like a flat mirror's",
+        "misconceptionId": "c8-science-ch10-t01-m2",
+        "correct": false
+       },
+       {
         "text": "An upside-down image of your face",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "An image exactly like a normal mirror",
+        "text": "Your face upright and the same size",
         "misconceptionId": "c8-science-ch10-t01-m2",
-        "correct": false
-       },
-       {
-        "text": "No image at all",
-        "misconceptionId": null,
         "correct": false
        }
       ]
@@ -12642,19 +12642,19 @@
       "prompt_hi": "Gaadi ke side mirror par aksar likha hota hai 'Objects in mirror are closer than they appear'. Kyon?",
       "options": [
        {
-        "text": "Because the convex mirror makes images smaller, so vehicles look farther than they are",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "Because the mirror is dirty",
-        "misconceptionId": null,
-        "correct": false
-       },
-       {
-        "text": "Because the mirror shows things at their true size and distance",
+        "text": "The mirror shows things at their true size and distance",
         "misconceptionId": "c8-science-ch10-t01-m3",
         "correct": false
+       },
+       {
+        "text": "All mirrors show true size; the sticker is just a warning",
+        "misconceptionId": "c8-science-ch10-t01-m2",
+        "correct": false
+       },
+       {
+        "text": "Convex mirrors shrink images, so cars look farther away",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -12728,7 +12728,7 @@
      ],
      "hints": [
       "Ask what kind of mirror bulges out",
-      "Point to convex mirrors always shrinking",
+      "Point to how cars look in a scooter's or car's side mirror",
       "Prompt: convex gives ___ and ___ images",
       "Assert: upright and smaller"
      ],
@@ -12736,7 +12736,7 @@
      "verified": {
       "solverAnswer": "Upright and smaller",
       "agrees": true,
-      "note": "Matches key. Hint 2 ('convex mirrors always shrinking') gives the answer early."
+      "note": "Resolved: hint 2 no longer says convex mirrors always shrink."
      }
     },
     {
@@ -12753,7 +12753,7 @@
      ],
      "hints": [
       "Ask what a dentist's mirror does",
-      "Point to a concave mirror with a very near object",
+      "Point to watching the image while slowly moving the spoon in",
       "Prompt: very close gives an ___ and ___ image",
       "Assert: close-up gives upright enlarged image"
      ],
@@ -12761,7 +12761,7 @@
      "verified": {
       "solverAnswer": "Upright and magnified",
       "agrees": true,
-      "note": "Matches key. Hint 2 names the concave mirror and near-object case outright (early leak)."
+      "note": "Resolved: hint 2 no longer names the concave-mirror near-object case."
      }
     },
     {
@@ -13060,18 +13060,18 @@
       "prompt_hi": "Magnifying glass akshar bade kaise dikhaata hai?",
       "options": [
        {
-        "text": "Light from the letters bounces off the glass into your eye",
-        "misconceptionId": "c8-science-ch10-t02-m1",
-        "correct": false
-       },
-       {
-        "text": "Light from the letters passes through the glass and bends",
+        "text": "Light passes through the glass and bends",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "The glass stores light and releases it",
-        "misconceptionId": null,
+        "text": "Light bounces off the glass into your eye",
+        "misconceptionId": "c8-science-ch10-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "The glass just makes everything bigger, near or far",
+        "misconceptionId": "c8-science-ch10-t02-m2",
         "correct": false
        }
       ]
@@ -13103,8 +13103,8 @@
         "correct": true
        },
        {
-        "text": "Nothing",
-        "misconceptionId": null,
+        "text": "Your own face reflected in the glass",
+        "misconceptionId": "c8-science-ch10-t02-m1",
         "correct": false
        }
       ]
@@ -13126,19 +13126,19 @@
       "prompt_hi": "Kya concave lens door ki khidki ki image kaagaz par bana sakta hai?",
       "options": [
        {
-        "text": "Yes, just like a convex lens",
+        "text": "Yes, exactly like a convex lens, at the right distance",
         "misconceptionId": "c8-science-ch10-t02-m3",
         "correct": false
        },
        {
-        "text": "No, it spreads light out, so its image is only seen by looking through it",
-        "misconceptionId": null,
-        "correct": true
+        "text": "Yes, if you hold the paper close enough to the lens",
+        "misconceptionId": "c8-science-ch10-t02-m3",
+        "correct": false
        },
        {
-        "text": "Only at night",
+        "text": "No; it spreads light out, so no image forms on paper",
         "misconceptionId": null,
-        "correct": false
+        "correct": true
        }
       ]
      },
@@ -13227,8 +13227,8 @@
      "skillId": "c8-science-ch10-t02-s3",
      "kind": "predict",
      "difficulty": 3,
-     "prompt_en": "Predict: you hold a convex lens between a bright window and a white wall in a room and move it back and forth. What can appear on the wall?",
-     "prompt_hi": "Guess karo: kamre mein chamakdaar khidki aur safed deewar ke beech ek convex lens pakdo aur aage-peeche karo. Deewar par kya dikh sakta hai?",
+     "prompt_en": "Predict: you hold a convex lens between a bright window and a white wall in a room and move it back and forth. (Never point the lens at the Sun.) What can appear on the wall?",
+     "prompt_hi": "Guess karo: kamre mein ek roshan khidki aur safed deewar ke beech convex lens pakdo aur aage-peeche karo. (Lens ko kabhi Suraj ki taraf mat karna.) Deewar par kya dikh sakta hai?",
      "answer": "A small, sharp, upside-down picture of the window and the scene outside.",
      "acceptable": [
       "upside down image of the window",
@@ -13244,7 +13244,7 @@
      "verified": {
       "solverAnswer": "Inverted image of the window on the wall",
       "agrees": true,
-      "note": "Matches key. prompt_hi says 'chamakdaar khidki' (shiny window) vs 'bright window'. Keep it explicit that the lens is never pointed at the Sun."
+      "note": "Resolved: prompt_hi now says 'roshan khidki' (bright window), and both prompts say never to point the lens at the Sun."
      }
     },
     {
@@ -13543,18 +13543,18 @@
       "prompt_hi": "Patle chaand wali raat ko chaand ka andhera hissa kya hota hai?",
       "options": [
        {
+        "text": "The Moon's night side, facing away from the Sun",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
         "text": "The Earth's shadow falling on the Moon",
         "misconceptionId": "c8-science-ch11-t01-m1",
         "correct": false
        },
        {
-        "text": "Part of the Moon's own night side, which faces away from the Sun",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "A cloud in front of the Moon",
-        "misconceptionId": null,
+        "text": "A cloud covering part of the Moon",
+        "misconceptionId": "c8-science-ch11-t01-m3",
         "correct": false
        }
       ]
@@ -13581,13 +13581,13 @@
         "correct": false
        },
        {
-        "text": "It reflects light from the Sun",
+        "text": "It reflects sunlight",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "It reflects light from Earth's cities",
-        "misconceptionId": null,
+        "text": "It glows with its own light, like a lamp",
+        "misconceptionId": "c8-science-ch11-t01-m2",
         "correct": false
        }
       ]
@@ -13609,19 +13609,19 @@
       "prompt_hi": "Ek bilkul saaf raat ko aadha chaand dikhta hai. Ek hafte baad, phir saaf raat, poora chaand. Kya badla?",
       "options": [
        {
-        "text": "The Moon's position around Earth, so we see more of its lit half",
+        "text": "Clouds that were hiding half of it have now moved away",
+        "misconceptionId": "c8-science-ch11-t01-m3",
+        "correct": false
+       },
+       {
+        "text": "It moved much closer to Earth, so more of it shines",
+        "misconceptionId": "c8-science-ch11-t01-m3",
+        "correct": false
+       },
+       {
+        "text": "Where it is in its orbit, showing more of its lit half",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "Clouds that covered half of it moved away",
-        "misconceptionId": "c8-science-ch11-t01-m3",
-        "correct": false
-       },
-       {
-        "text": "The Moon came much closer to Earth",
-        "misconceptionId": "c8-science-ch11-t01-m3",
-        "correct": false
        }
       ]
      },
@@ -14028,14 +14028,14 @@
       "prompt_hi": "Ek poore chandra (lunar) calendar ke saal mein lagbhag kitne din hote hain?",
       "options": [
        {
-        "text": "365",
-        "misconceptionId": "c8-science-ch11-t02-m1",
-        "correct": false
-       },
-       {
         "text": "About 354",
         "misconceptionId": null,
         "correct": true
+       },
+       {
+        "text": "365",
+        "misconceptionId": "c8-science-ch11-t02-m1",
+        "correct": false
        },
        {
         "text": "360",
@@ -14061,18 +14061,18 @@
       "prompt_hi": "Diwali har saal angrezi calendar ki alag tareekh par kyon padti hai?",
       "options": [
        {
-        "text": "Because it is fixed by the Moon (amavasya of Kartik) in a luni-solar calendar, which does not match Gregorian dates exactly",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "Because a committee picks a new date each year",
+        "text": "A committee picks a new date for it each year",
         "misconceptionId": "c8-science-ch11-t02-m2",
         "correct": false
        },
        {
-        "text": "Because Earth spins faster some years",
+        "text": "It follows the Moon (Kartik amavasya), so Gregorian dates shift",
         "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Priests choose whatever date suits that year",
+        "misconceptionId": "c8-science-ch11-t02-m2",
         "correct": false
        }
       ]
@@ -14094,19 +14094,19 @@
       "prompt_hi": "Lagbhag har chaar saal mein 29 February kyon jodte hain?",
       "options": [
        {
-        "text": "Because Earth takes about 365¼ days to go around the Sun, and four quarter-days add up to one day",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "Because February is too short",
+        "text": "Because February is too short and needs topping up",
         "misconceptionId": "c8-science-ch11-t02-m3",
         "correct": false
        },
        {
-        "text": "Because the Moon slows down",
-        "misconceptionId": null,
+        "text": "No real reason; it is an old custom we keep",
+        "misconceptionId": "c8-science-ch11-t02-m3",
         "correct": false
+       },
+       {
+        "text": "Earth takes about 365¼ days to go round the Sun",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -14544,7 +14544,7 @@
       "prompt_hi": "Dhaan ke khet mein kisaan zyaadatar mendhak maar dete hain. Kya hone ki sambhavna hai?",
       "options": [
        {
-        "text": "Nothing else changes",
+        "text": "Nothing else changes, because each animal lives on its own",
         "misconceptionId": "c8-science-ch12-t01-m2",
         "correct": false
        },
@@ -14554,7 +14554,7 @@
         "correct": true
        },
        {
-        "text": "The rice grows faster because frogs are gone",
+        "text": "The rice grows better, since frogs no longer trample it",
         "misconceptionId": "c8-science-ch12-t01-m2",
         "correct": false
        }
@@ -14578,19 +14578,19 @@
       "prompt_hi": "Agar jungle mein koi decomposer na ho, toh zameen par kya hoga?",
       "options": [
        {
-        "text": "Dead leaves and bodies would pile up and nutrients would not return to the soil",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
-        "text": "Nothing, since plants get their food directly from the soil",
+        "text": "Nothing, since plants take their food straight from the soil",
         "misconceptionId": "c8-science-ch12-t01-m3",
         "correct": false
        },
        {
-        "text": "The trees would grow faster",
-        "misconceptionId": null,
+        "text": "Trees would grow faster, as decomposers just waste food",
+        "misconceptionId": "c8-science-ch12-t01-m3",
         "correct": false
+       },
+       {
+        "text": "Dead matter would pile up and nutrients would not return",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -14995,18 +14995,18 @@
       "prompt_hi": "Kya gehun ka khet ek ecosystem hai?",
       "options": [
        {
-        "text": "No, because humans planted it",
-        "misconceptionId": "c8-science-ch12-t02-m1",
-        "correct": false
-       },
-       {
-        "text": "Yes, because living things in it interact with each other and with soil, water and sunlight",
+        "text": "Yes; its living things interact with soil, water and sunlight",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Only when it is not harvested",
-        "misconceptionId": null,
+        "text": "No; people planted and look after it, so it cannot be one",
+        "misconceptionId": "c8-science-ch12-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "Only after harvest, when people leave the field alone",
+        "misconceptionId": "c8-science-ch12-t02-m1",
         "correct": false
        }
       ]
@@ -15039,8 +15039,8 @@
         "correct": true
        },
        {
-        "text": "The mustard flowers will grow bigger",
-        "misconceptionId": null,
+        "text": "Nothing; more pesticide always gives a bigger harvest",
+        "misconceptionId": "c8-science-ch12-t02-m3",
         "correct": false
        }
       ]
@@ -15062,19 +15062,19 @@
       "prompt_hi": "Ek kisaan salaah se teen guna zyada chemical khaad daalta hai. Sabse sambhavit nateeja kya hoga?",
       "options": [
        {
-        "text": "Three times the crop",
+        "text": "Three times the crop, from three times the fertiliser",
         "misconceptionId": "c8-science-ch12-t02-m3",
         "correct": false
        },
        {
-        "text": "Little or no extra crop, more damage to soil life and more pollution in nearby water",
+        "text": "The soil becomes richer and healthier for years",
+        "misconceptionId": "c8-science-ch12-t02-m3",
+        "correct": false
+       },
+       {
+        "text": "Little extra crop, harmed soil life and polluted nearby water",
         "misconceptionId": null,
         "correct": true
-       },
-       {
-        "text": "The soil becomes healthier",
-        "misconceptionId": "c8-science-ch12-t02-m3",
-        "correct": false
        }
       ]
      },
@@ -15478,17 +15478,17 @@
       "prompt_hi": "Kya Mangal (Mars) ki sataha par khule mein aam ka ped waise hi ug sakta hai jaise Maharashtra mein?",
       "options": [
        {
-        "text": "Yes, it is a planet just like Earth",
-        "misconceptionId": "c8-science-ch13-t01-m1",
-        "correct": false
-       },
-       {
-        "text": "No; Mars is extremely cold, has very thin air with little oxygen and no liquid water on the surface",
+        "text": "No; Mars is freezing, with very thin air and no liquid water",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Yes, but only in summer",
+        "text": "Yes; Mars is a planet just like Earth, so plants can grow",
+        "misconceptionId": "c8-science-ch13-t01-m1",
+        "correct": false
+       },
+       {
+        "text": "Yes, but only during the Martian summer months",
         "misconceptionId": "c8-science-ch13-t01-m1",
         "correct": false
        }
@@ -15516,13 +15516,13 @@
         "correct": false
        },
        {
-        "text": "Venus, because its thick carbon dioxide atmosphere traps heat",
+        "text": "Venus, because its thick atmosphere traps heat",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Mars, because it is red",
-        "misconceptionId": null,
+        "text": "Mercury, since nearer always means hotter",
+        "misconceptionId": "c8-science-ch13-t01-m2",
         "correct": false
        }
       ]
@@ -15544,19 +15544,19 @@
       "prompt_hi": "Prithvi January ke shuru mein Suraj ke sabse paas hoti hai. Tab Bharat mein kaunsa mausam hota hai?",
       "options": [
        {
-        "text": "Peak summer, because Earth is closest",
+        "text": "Peak summer, because Earth is closest to the Sun",
         "misconceptionId": "c8-science-ch13-t01-m3",
         "correct": false
        },
        {
-        "text": "Winter, which shows distance does not cause our seasons; the tilt of Earth's axis does",
-        "misconceptionId": null,
-        "correct": true
+        "text": "Summer, since a closer Sun always means hotter days",
+        "misconceptionId": "c8-science-ch13-t01-m3",
+        "correct": false
        },
        {
-        "text": "Monsoon",
+        "text": "Winter, so distance does not cause our seasons",
         "misconceptionId": null,
-        "correct": false
+        "correct": true
        }
       ]
      },
@@ -15863,14 +15863,14 @@
      ],
      "hints": [
       "Ask about the thick atmosphere planet",
-      "Point to the greenhouse effect",
+      "Point to the fact that the hottest planet is not the one closest to the Sun",
       "Prompt: V___",
       "Assert: Venus"
      ],
      "verified": {
       "solverAnswer": "Venus",
       "agrees": true,
-      "note": "Matches key. Hint 2 names the greenhouse effect early."
+      "note": "Resolved: hint 2 no longer names the greenhouse effect; it now targets the nearest-is-hottest misconception."
      }
     }
    ],
@@ -15957,18 +15957,18 @@
       "prompt_hi": "Ek shehar roz bina saaf kiya ganda paani ek chhoti nadi mein daalta hai. Samay ke saath kya hota hai?",
       "options": [
        {
-        "text": "The river cleans it all naturally, no matter how much",
-        "misconceptionId": "c8-science-ch13-t02-m1",
-        "correct": false
-       },
-       {
-        "text": "The river's natural cleaning is overwhelmed; oxygen falls, fish die and the water becomes unsafe",
+        "text": "The river is overwhelmed; oxygen falls and fish die",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "The water becomes cleaner",
-        "misconceptionId": null,
+        "text": "The river cleans it all naturally, however much",
+        "misconceptionId": "c8-science-ch13-t02-m1",
+        "correct": false
+       },
+       {
+        "text": "The water becomes cleaner as it keeps flowing",
+        "misconceptionId": "c8-science-ch13-t02-m1",
         "correct": false
        }
       ]
@@ -15990,18 +15990,18 @@
       "prompt_hi": "Ozone layer hamein mukhya roop se kisse bachaata hai?",
       "options": [
        {
-        "text": "Harmful ultraviolet rays from the Sun",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
         "text": "Heat, so the hole is why Earth is warming",
         "misconceptionId": "c8-science-ch13-t02-m2",
         "correct": false
        },
        {
-        "text": "Rain",
+        "text": "Harmful ultraviolet rays from the Sun",
         "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Heat from the Sun, keeping Earth cool",
+        "misconceptionId": "c8-science-ch13-t02-m2",
         "correct": false
        }
       ]
@@ -16028,14 +16028,14 @@
         "correct": false
        },
        {
-        "text": "Hundreds of years",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
         "text": "One monsoon season",
         "misconceptionId": "c8-science-ch13-t02-m3",
         "correct": false
+       },
+       {
+        "text": "Hundreds of years",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -16440,18 +16440,18 @@
       "prompt_hi": "Inme se kaunsa prajanan (reproduction) ka udaharan hai?",
       "options": [
        {
-        "text": "A money plant cutting growing roots and becoming a new plant",
+        "text": "A money plant cutting rooting into a new plant",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Only a cow giving birth to a calf counts; plants do not reproduce",
+        "text": "Only a cow having a calf; plants do not reproduce",
         "misconceptionId": "c8-science-ch13-t03-m1",
         "correct": false
        },
        {
-        "text": "A child growing taller",
-        "misconceptionId": null,
+        "text": "A plant growing taller, since plants only grow",
+        "misconceptionId": "c8-science-ch13-t03-m1",
         "correct": false
        }
       ]
@@ -16473,18 +16473,18 @@
       "prompt_hi": "Kisaan aam taur par aalu ke naye paudhe kaise ugaate hain?",
       "options": [
        {
-        "text": "Only from potato seeds",
+        "text": "Only from potato seeds, like every plant",
         "misconceptionId": "c8-science-ch13-t03-m2",
         "correct": false
        },
        {
-        "text": "By planting pieces of potato that have 'eyes' (buds)",
+        "text": "By planting potato pieces that have 'eyes' (buds)",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "From the potato leaves",
-        "misconceptionId": null,
+        "text": "From seeds hidden inside the potato",
+        "misconceptionId": "c8-science-ch13-t03-m2",
         "correct": false
        }
       ]
@@ -16506,19 +16506,19 @@
       "prompt_hi": "Ek laal gulaab ki jhaadi ki tehniyon se das naye paudhe ugaate ho. Unke phool kis rang ke honge?",
       "options": [
        {
-        "text": "All red, like the parent",
-        "misconceptionId": null,
-        "correct": true
-       },
-       {
         "text": "Mixed colours, like brothers and sisters",
         "misconceptionId": "c8-science-ch13-t03-m3",
         "correct": false
        },
        {
-        "text": "White, because cuttings lose their colour",
-        "misconceptionId": null,
+        "text": "Some red, some pink, since each new plant varies",
+        "misconceptionId": "c8-science-ch13-t03-m3",
         "correct": false
+       },
+       {
+        "text": "All red, like the parent",
+        "misconceptionId": null,
+        "correct": true
        }
       ]
      },
@@ -16828,7 +16828,7 @@
      ],
      "hints": [
       "Ask about plants in bottles of water at home",
-      "Point to the money plant",
+      "Point to garden plants grown by pushing a piece of stem into soil",
       "Prompt: m___ plant",
       "Assert: money plant"
      ],
@@ -16836,7 +16836,7 @@
      "verified": {
       "solverAnswer": "Money plant, rose, sugarcane",
       "agrees": true,
-      "note": "Matches key. Hint 2 ('Point to the money plant') hands over the answer."
+      "note": "Resolved: hint 2 no longer names the money plant."
      }
     }
    ],
