@@ -581,15 +581,31 @@ fallback path-scoped CSP is used instead, the kit sets `loader.imageLoadType = '
 type Json = null | boolean | number | string | Json[] | { [k: string]: Json };
 export type Prim = string | number | boolean;
 export type MathValue = import("@taxila/kitmath").MathValue;          // int | frac{n,d} | dec{s} | money{paise} | time{min}
-export type Action = { type: string; target: string };                 // produced ONLY by kit-bound TargetSpecs
-export interface TargetSpec {                                          // declarative; the kit builds the DOM hit layer from it
-  id: string; kind: "pad" | "tile" | "block" | "bin" | "cell" | "card" | "step" | "control";
-  rect: { x: number; y: number; w: number; h: number };               // world units; kit inflates to the band minimum
-  action: string;                                                      // action type this target emits
-  value?: MathValue | string;                                          // KIT-BOUND value (from generator/items), never agent-chosen
-  labelKey: string;                                                    // strings-table key (a11y + caption)
+// (gap-fill GAP-F1-observation-binding-enforcement) No agent-visible type carries a raw truth-bearing value any more.
+// Values reach a target, a numeral or an effect only as a kit-issued ref the kit resolves against the expanded
+// LevelSpec (§4.8). Types shared with the host (ValueRef, BoundRef, Observation, ShadowModel) live in shared/forge.ts (§13).
+export type ValueSlot = "key" | `distractor:${number}` | `unit:${string}`;
+export type ValueRef = import("../../shared/forge").ValueRef;          // {level, item, slot}: Json, so it can live in M
+export type BoundRef = import("../../shared/forge").BoundRef;          // ValueRef | {readout:"shadow"} | {scale:number}
+export interface RefTable {                                            // ctx.refs — the ONLY source of ValueRefs
+  activeItem(): string;                                                // kit item cursor (LevelSpec order + ramp inserts)
+  key(item?: string): ValueRef; distractors(item?: string): ValueRef[];  // item defaults to activeItem()
+  units(item?: string): ValueRef[];                                    // build archetypes only; [] otherwise
+  value(r: BoundRef): MathValue | string;                              // read-only resolve (layout maths, tower height)
 }
-export type Effect = { kind: string } & Record<string, Prim | MathValue>;   // e.g. {kind:"jump", to:{t:"frac",n:5,d:6}}
+export type Action = { type: string; target: string; ref?: ValueRef }; // produced ONLY by the kit hit layer; ref copied
+                                                                       // by the kit from the TargetSpec, never by agent code
+export type TargetSpec = BoundTarget | ControlTarget;                  // declarative; the kit builds the DOM hit layer from it
+interface TargetBase { id: string; rect: { x: number; y: number; w: number; h: number };   // world units; kit inflates
+  action: string; labelKey: string }                                   // strings-table key; the kit appends the spoken value
+export interface BoundTarget extends TargetBase {
+  kind: "pad" | "tile" | "block" | "bin" | "cell" | "card" | "step";
+  valueRef: ValueRef;                                                  // replaces `value?: MathValue | string` (tgk@1.0)
+  op: "choose" | "add" | "remove";                                     // choose ⇔ slot key|distractor; add/remove ⇔ slot unit:<k>
+}
+export interface ControlTarget extends TargetBase { kind: "control";   // carries no value; cannot be the source of one
+  control: "confirm" | "clear" | "hint" | "pause" | "next" }
+export type Effect = { kind: string } & Record<string, Prim | BoundRef>;    // e.g. {kind:"jump", to: refs.key()} — no raw MathValue
 export interface MechanicV11<P, M extends Json, V> {
   id: string; archetype: ArchetypeId; paramsSchema: import("zod").ZodType<P>;   // levels are validated at build AND load
   init(p: P, ctx: PureCtx): M;                                         // pure; kit deep-freezes the result
@@ -598,14 +614,17 @@ export interface MechanicV11<P, M extends Json, V> {
   targets(m: Readonly<M>): TargetSpec[];                               // what the child can do now
   mount(m: Readonly<M>, draw: DrawApi): V;                             // view objects (may hold Phaser objects)
   render(m: Readonly<M>, v: V, fx: Effect[], draw: DrawApi): void;     // animation only; never sees an Action, cannot reach M
-  facts(m: Readonly<M>): Record<string, Prim>;                         // ≤ 12 keys, for the teacher's eyes
+  facts(m: Readonly<M>): Record<string, Prim>;                         // ≤ 12 keys, for the teacher's eyes; build archetypes
+                                                                       // MUST include the shadow's requiredFacts (§13)
 }
-export interface PureCtx { math: KitMath; law: KitLaws; rng: SeededRng; params: unknown; band: Band }
+export interface PureCtx { math: KitMath; law: KitLaws; rng: SeededRng; params: unknown; band: Band; refs: RefTable }
 export interface DrawApi {                                             // the stable subset, identical on v3/v4
   image(key: AssetKey, x: number, y: number): Handle; sprite(key: AssetKey, x: number, y: number): Handle;
   rect(...a: number[]): Handle; circle(...a: number[]): Handle; graphics(): GraphicsHandle; container(): Handle;
-  numeral(v: MathValue, x: number, y: number): Handle;                // in-world numerals only; words go through text()
-  text(slot: string, key: string, vars?: Record<string, Prim>): void;  // DOM word layer; strings-table keys only
+  numeral(src: BoundRef, x: number, y: number): Handle;               // in-world numerals ONLY via a ref (no raw MathValue
+                                                                       // overload exists); words go through text()
+  unit(ref: ValueRef, x: number, y: number): Handle;                   // build archetypes: kit-sized brick (width ∝ resolved value)
+  text(slot: string, key: string, vars?: Record<string, BoundRef | string | boolean>): void;  // numeric vars only as refs
   tween(h: Handle, to: Record<string, number>, ms: number, ease?: EaseId): Promise<void>;
   after(ms: number, fn: () => void): void;                             // kit clock (fixed step), not setTimeout
   arcade: ArcadeSubset; camera: { pan(x: number, y: number, ms: number): void; zoom(z: number, ms: number): void };
@@ -613,11 +632,66 @@ export interface DrawApi {                                             // the st
 }
 ```
 
-**Observation binding (closes the last grading hole).** When `reduce` returns `commit: {item}`, the **kit** emits
-`Observation{item, value}` where `value` is the committing action's kit-bound `TargetSpec.value`, or — for build
-mechanics — the archetype's kit-owned `readout(M)` (e.g. place value of the tower). Agent code can neither name the
-value nor emit events. Keypoints and bots assert on `M`; `getState/setState` are kit serialisation of `M`; WebGL
-context loss restores by `mount(M)` again.
+**Observation binding (gap-fill GAP-F1-observation-binding-enforcement).** The tgk@1.0 text said that observation
+binding "closes the last grading hole". As typed, it did not, and the F3 exit target (`frac-equiv-build@1` on
+`build-to-spec`, §11.2) sat inside the hole. There were three holes:
+(a) `TargetSpec.value` sat on objects that agent-written `targets(M)` builds, so any MathValue could be put there.
+(b) A build mechanic's observed value was `readout(M)`, and only the agent-written `reduce` produces `M`. The host
+re-grade (§4.4, CONTENT-ENGINE §4.5) compares that value with the key, so a reducer that drifts still grades as
+self-consistent.
+(c) `numeral(v)` could draw any number, so a child could see "5/6" on a pad bound to 2/5.
+Every gate passed in all three cases, and the learner model got the wrong evidence. The fix has five parts.
+
+1. **Values are refs, resolved by the kit.** `BoundTarget.valueRef` is a `ValueRef {level, item, slot}`, with
+   `slot = key | distractor:<i> | unit:<k>`. Agent code gets refs only from `ctx.refs`; Q1 rejects ref-shaped object
+   literals, spreads and casts on `valueRef`. The **runtime** check is the boundary, not the lint. Every frame, the kit
+   resolves each target's ref against the expanded LevelSpec of the *current* level and refuses the whole `targets()`
+   result with a `ForgeContract` error if any of these hold: `ref_foreign_level`; `ref_unresolved` (unknown item, or a
+   slot index out of range); `ref_inactive_item` (`item ≠ refs.activeItem()`); `ref_wrong_slot` (`choose` with a unit
+   slot, `add/remove` with a key/distractor slot, or an op the archetype's binding does not allow);
+   `ref_misplaced` (position-encoded archetypes only, see below). On a refusal, the QA seam records a tier-A finding;
+   in production the bridge gets `error{protocol}`, and the T1 fallback runs (§5.6). Nothing is silently dropped.
+   `commit.item` must equal `activeItem()`, or the commit is refused the same way. **Position is a value channel too.**
+   In `numberline-jump` (and later `grid-path`), predict-mode pads can be unlabelled, so a pad's *location* is its
+   meaning. The kit therefore requires `|centre(rect) − template.layout.positionOf(resolve(ref))| ≤ ½ min tick
+   spacing`. The template, not the agent, owns `positionOf`.
+2. **Choice archetypes:** the observation is the ref. The kit tracks the last accepted `choose` ref for the active item.
+   On `commit`, the value is `resolve(that ref)`. That ref is the committing target's own ref for `tap`, or the
+   selection before `confirm` for `tap_then_confirm`. `ControlTarget`s carry no value, so a confirm button cannot
+   inject one.
+3. **Build archetypes:** a kit-owned `ShadowModel` (§13) is the only source of `readout`. Every accepted action on an
+   `add`/`remove` target, or on a `clear` control, is applied by the kit to a shadow state `S`. The kit takes the op and
+   the ref from the TargetSpec; nothing comes from `M`. For `build-to-spec`, `S` is the count per unit kind, and
+   `readout(S) = Σ_k sign · count_k · resolve(unit:k)`. The sum is exact KitMath; when every committed unit shares a
+   denominator, it is kept unreduced (4 × 1/6 reads `4/6`, not `2/3`), so `acceptable` forms and
+   `m-change-only-den` stay distinguishable. `readout(M)` is deleted. After **every** accepted action, the kit runs
+   `shadow.agrees(S, facts(M))`, comparing `total` and `n.<k>` per kind. The shadow rejecting an op that `reduce`
+   accepted (remove at count 0, or over the cap) is a disagreement. So is an accepted non-unit action that changes the
+   agent's `total`. Any disagreement raises the existing **CONTENT-ENGINE S5 `state_diverged` path**: `freeze`; no
+   evidence from this mount after the divergence point; one `restore` from the last host-confirmed snapshot; a second
+   divergence tears the mount down to the T1 fallback. The teacher speaks only from the host verdict. Committed bricks
+   are drawn with `draw.unit(ref)`, which the kit sizes from the resolved value, so a drifted `M` has no visible
+   tower to misreport.
+4. **Bound numerals and words.** `numeral()` accepts only a `BoundRef`; no raw-MathValue overload exists. `{scale:i}`
+   draws the template's generated tick labels, and `{readout:"shadow"}` draws the running total. Numeric `text()` vars
+   must be refs as well, so the build goal "make 2/3" is `vars:{goal: refs.key()}`. The kit composes each bound
+   target's aria-label from `labelKey` plus the kit's spoken form of the resolved value, so TalkBack cannot hear a
+   different number either. Every kit-drawn numeral entity in `snapshot()` carries `semantic {ref, value}`. **Q3/Q5
+   check `obs.label_bound`:** at every capture event, any numeral entity whose bbox centre lies inside a TargetSpec
+   rect, or which covers ≥ 25% of that rect, must have `semantic.value ≡ resolve(rect.valueRef)`. A `scale` numeral
+   inside a target rect fails as well. **Residual risk [U]:** digits hand-drawn with `graphics()` strokes, or text
+   baked into an asset, are not caught by structure. The asset registry is pre-reviewed (§8), and Q9 OCR on
+   target-rect crops is the only catch for strokes. Q9 is advisory until QA-M3, so mutant M19c measures this hole
+   instead of assuming it is closed.
+5. **The host re-derives; it does not just re-grade.** The `answer` claim carries `{item, ref}` (choice) or
+   `{item, unitSeqs}` (build), and every unit op is a seq-numbered `game.unit` event (§4.9). For choice, the host
+   resolves the ref against its own expansion of the PlayTicket fill (`levelsHash` must match the kit's
+   `ready.levelsHash`, §9). For build, it replays the unit events through the same pure `ShadowModel` package. It
+   grades **its** value. A frame value that differs from the host's value is `state_diverged`.
+
+Keypoints and bots assert on `M` **and** on the shadow. `getState/setState` serialise `M` together with `S`, the
+selection map and the item cursor. When the WebGL context is lost, the kit restores with `mount(M)` and then checks
+`agrees(S, facts(M))` before input resumes.
 
 ### 4.4 Grading and executable misconceptions
 
@@ -632,7 +706,10 @@ context loss restores by `mount(M)` again.
   value, money).
 - Every rule ships with a property test; misconception examples are rules, never planner prose (GK review P2 found a
   wrong worked example: ₹2.50 + ₹1.75 cannot exhibit place misalignment).
-- The host re-grades every `answer` against the key it holds and accepts the kit's claim only when it agrees; Forge
+- The host re-derives the value of every `answer` before grading it (gap-fill GAP-F1-observation-binding-enforcement):
+  for choice archetypes, from the ref resolved against its own LevelSpec; for build archetypes, from its own replay
+  of the shadow over `game.unit` events (§4.3 item 5). It then re-grades against the key it holds, and it accepts the
+  kit's claim only when the value and the outcome both agree. Forge
   evidence weight 0.75 until 50 sessions show agreement ≥ 0.98 (sandbox-telemetry §4.6). `server/director/classify.js`
   must stop trusting `moduleAnswer.correct` for Forge engines.
 
@@ -697,7 +774,10 @@ export interface LevelSpec {                               // kit-expanded; neve
   id: string; role: LevelRole; objectiveId: string; stage: "concrete" | "pictorial" | "abstract";
   difficulty: number;                                       // from generator knobs + abstract solver cost
   params: unknown;                                          // validated by mechanic.paramsSchema
-  items: { id: string; key: MathValue | string; distractors: { value: MathValue | string; misc: string }[] }[];
+  items: { id: string; key: MathValue | string; distractors: { value: MathValue | string; misc: string }[];
+           units?: { k: string; value: MathValue; cap: number }[] }[];   // build archetypes: the brick palette (≤ 6 kinds)
+  scale?: MathValue[];                                      // template tick labels, drawn only via numeral({scale:i})
+                                                            // ValueRefs resolve against THIS object (gap-fill GAP-F1-…)
   targetMisc?: string; hints: { rung: 1 | 2 | 3; kind: "glow" | "cue" | "demo"; demo?: Action[] }[];
   variants: { id: string; difficulty: number; params: unknown }[];   // ramp controller inserts
   timing: { mode: "untimed" | "gentle" | "paced" };          // B1–B2: untimed | gentle only
@@ -721,7 +801,8 @@ current `ModuleHost` until `shared/bridge.ts` v2.1 lands; in v1 the `correct` fl
 |---|---|---|---|
 | `level_start` | level, role, objective, stage, difficulty, attempt_no, inserted | `interaction{name:"game.level_start"}` | 1 |
 | `attempt` | level, item, n | `interaction` | 0 |
-| `answer` | level, item, value, outcome (kit), latency_ms (tie-break only), hints_used | **`answer{value, correct}`** + `interaction{name:"game.answer"}` with `misc` | 1; 2 on 2nd consecutive wrong |
+| `answer` | level, item, value, ref (choice) / unitSeqs (build), outcome (kit), latency_ms (tie-break only), hints_used | **`answer{value, correct}`** + `interaction{name:"game.answer"}` with `misc`, `ref`/`unitSeqs` | 1; 2 on 2nd consecutive wrong |
+| `unit` (gap-fill GAP-F1-…) | level, item, op (add/remove/clear), ref, seq | `interaction{name:"game.unit"}`; the host replays the shadow from these | 0 |
 | `mistake` | level, item, value, misc, count_session | `interaction` (→ bridge-v2 `misc_signal`) | 2 if misc and count ≥ 2 |
 | `hint` | level, item, rung, source | `interaction` | 1 |
 | `level_complete` | level, objective, first_try_correct, hints, ms, mastered (a *claim*) | `goal_met{goal:"level:<id>"}` | 2 |
@@ -733,7 +814,7 @@ current `ModuleHost` until `shared/bridge.ts` v2.1 lands; in v1 the `correct` fl
 | # | archetype | verb (hands) | concept | misconception trigger (in-world consequence) | bands | generator / solver | ship |
 |---|---|---|---|---|---|---|---|
 | 1 | **`numberline-jump`** | **predict**: tap the landing pad you think the jump reaches, commit, the true jump plays | magnitude and operations on a linear line (fractions, integers, decimals, elapsed time) | pads at MiscRule predictions (add-across 2/5 for 1/2 + 1/3; whole-number bias): the chosen pad sags, the character lands at 5/6 | B2–B4 | KitMath line generator (tick density ≤ band hit spacing); exact rational solver; Arcade only animates an analytic arc | **v1** |
-| 2 | `build-to-spec` | add/remove unit blocks to meet a numeric target | composition: place value, fraction bricks to make 1, area vs perimeter, factors | zero-placeholder (406 built as 4 hundreds + 6 tens: tower overshoots the target line) | B1–B4 | DP/BFS over unit counts; snap grid; `readout(M)` kit-owned | v1.1 |
+| 2 | `build-to-spec` | add/remove unit blocks to meet a numeric target | composition: place value, fraction bricks to make 1, area vs perimeter, factors | zero-placeholder (406 built as 4 hundreds + 6 tens: tower overshoots the target line) | B1–B4 | DP/BFS over unit counts; snap grid; `readout` from the kit `ShadowModel` (signed unit sum), never from `M` (gap-fill GAP-F1-…) | v1.1 |
 | 3 | `sort-build` | tap an item, tap a bin (drag optional B3+); build a chain/circuit | classification, food chains, conductors | near-miss distractors from MiscRules; the bin's rule visibly rejects | B1–B4 | constraint check per placement; all items placeable | v1.1 |
 | 4 | `match-reps` | pair cards across representations, face-up | translation between representations | unequal-parts card: the paired cards slide together and the unequal parts highlight | B1–B4 | trivial matching solver | v1.2 |
 | 5 | `shop-stall` (`dukaan` bridge) | pay totals and change with house play money | money, regrouping, unit rate, % (B3+) | change-making slips; customer counts change back, shortfall visible in the drawer | B2–B4 | integer paise; change solver | v1.2 |
@@ -769,9 +850,9 @@ G1/G2/G3 are Forge tiers. Wrappers are referred to by engine id (`dukaan@1`, `lo
 | **Q0** spec & contract | strict parse; ids ∈ registries; params inside the core's **promotion-tested domain**; every miscPath/demo action produced by a TargetSpec; coverage; locales; held-out split (G2) | ✓ (code) | ✓ | ✓ |
 | **Q1** static | tsc + esbuild (bundler alone exits 0 on type errors); **allowlist AST on esbuild output of agent modules** (§5.2); KEEP hashes; loop guard injected; `es-check`; sizes | — (no new code) | ✓ | ✓ |
 | **Q2** boot & hygiene | production-parity host harness (opaque-origin iframe, exact attrs, meta CSP, bridge init); 0 console errors; 0 CSP violations; 0 non-local requests (route + dead proxy + WebRTC policy + UDP listener + `routeWebSocket`); blank-frame; bridge schema; `setState(getState())` round trip; tamper probes | sampled 5% async | ✓ | ✓ |
-| **Q3** keypoints | visible 70% (G2 build loop) / held-out 30% (S6 only); generated keypoints: correct, wrong, misc, hint ladder, win fires once, pause; `act` vs pointer at bbox centre ⇒ same state hash | abstract-model keypoints | ✓ | ✓ |
+| **Q3** keypoints | visible 70% (G2 build loop) / held-out 30% (S6 only); generated keypoints: correct, wrong, misc, hint ladder, win fires once, pause; `act` vs pointer at bbox centre ⇒ same state hash; **binding (gap-fill GAP-F1-…, tier A, every capture event):** 0 `ForgeContract ref_*` refusals, 0 `state_diverged`, `obs.label_bound` (§4.3 item 4), committed-`unit` entity count per kind = shadow counts, observation value ≡ host re-derivation | abstract-model keypoints + ref resolution of every target | ✓ | ✓ |
 | **Q4** bots (in-page, headless) | replay; independent solver (`SOLVE.DISAGREE` blocks); misc per rule; **negative-path sweep** (every distractor + 50 random legal actions vs a params-only oracle); novice (20 seeds); **this-child** (learner-model p(correct), active misconceptions); fuzz (lock: progress 0; choice: ≤ chance × 1.5 and the gaming detector fires); speed; interrupt (synthetic); softlock search from 20 sampled states; determinism (2 runs, same seed, identical traces); difficulty curve; time on task; **fun floor** | solver + softlock on the abstract model (ms) | ✓ | ✓ |
-| **Q5** pedagogy & truth | P1 truth (§4.4); P2 grader table (every acceptable form, every distractor's misc id, 20 random wrong values); objective map; trap coverage (each strong misconception in ≥ 2 levels); integration lints (remove-the-game / remove-the-learning); telemetry → observation lines; language limits; P8 rubric **advisory** | ✓ | ✓ | ✓ |
+| **Q5** pedagogy & truth | P1 truth (§4.4); **P1b binding (gap-fill GAP-F1-…):** for every keypoint and bot trajectory, the host-side re-derivation (ref → LevelSpec; `game.unit` replay → shadow) equals the kit observation, and for each item the key ref, or a unit multiset whose shadow readout ≡ key, is reachable from `targets()`; P2 grader table (every acceptable form, every distractor's misc id, 20 random wrong values); objective map; trap coverage (each strong misconception in ≥ 2 levels); integration lints (remove-the-game / remove-the-learning); telemetry → observation lines; language limits; P8 rubric **advisory** | ✓ | ✓ | ✓ |
 | **Q6** geometry & a11y | on-screen, targets ≥ band, overlap, occlusion ≤ 10%, overflow, font px, **contrast from glyph pixels over ≥ 3 frames**, Devanagari tofu/conjuncts on the real texture (runner image has **no** system Devanagari fonts), CVD ΔE ≥ 15 or redundant code, flashes (EA IRIS, BSD-3), reduced motion, tap alternative, axe on the DOM layer | generator layout predicates (code) | ✓ | ✓ + TalkBack |
 | **Q7** performance | separate context **without** `page.clock`; CDP throttle sent to the **frame's** session, calibrated per boot against reference-phone scores, self-test busy loop; main-thread cost, long tasks, tap→feedback ≤ 150 ms, heap after forced GC, textures, ready-from-cache; ≤ +25% vs template | — | ✓ | ✓ + real-device fps (median ≥ 45, p5 ≥ 30) |
 | **Q8** safety | per-string Content Safety (block ≥ 2); local Hinglish-normalised blocklist (transliterate → fold → fuzzy); `taxila-brain` classifier for `hi`/`hi-Latn` (refusal ⇒ unsafe); PII scan with the requester's server-side PII list; per-topic curriculum allowance from the kit (e.g. history violence ≤ 2, never self-harm/sexual); images and audio per §8 | strings-table ids only (pre-cleared) | ✓ | ✓ |
@@ -797,6 +878,11 @@ RandomXY*/RND`, `Utils.Array.Shuffle/GetRandom/RemoveRandomElement`; `RTCPeerCon
 `Proxy`, `__proto__` on non-locals; string literals > 2 chars into text sinks; Phaser v3-isms (`setPipeline`,
 `preFX/postFX`, `BitmapMask`, `setTintFill`, `Geom.Point`, `Math.PI2`, `Math.TAU` whose meaning changed, `add.mesh`)
 with the v4 replacement in the message; `score|coins|points|streak` identifiers; particles/shake outside `feel()`.
+Binding rules (gap-fill GAP-F1-observation-binding-enforcement): an object literal with a `slot`, `level`+`item`, or
+`readout`/`scale` key that is not the direct result of a `ctx.refs.*` call; a spread, `as`/`any`/`unknown` cast or
+`JSON.parse` that produces a `valueRef`, a `numeral()` argument or an `Effect` field; numeric or fraction-shaped string
+literals (`/\d/`) passed as `text()` vars; `draw.graphics()` paths that intersect a target rect (warning only; Q9 OCR
+covers this). These are lint rules. The runtime ref refusals in §4.3 are the boundary.
 
 ### 5.3 The seam, the "won" rule, and the fun floor
 
@@ -838,6 +924,21 @@ export function decide(r: QaReport, p: QaPolicy): QaDecision {
   button, low-contrast label, Latin-only font, off-screen feedback, texture leak, 80 ms busy loop, obfuscated beacon,
   unsafe Hinglish string, `Math.random` in reduce, confetti during a probe) + clean goldens × 5 seeds. Hard gates need
   recall ≥ 0.95 on their target classes with 0 false alarms before any build ships without a second human look.
+- **Observation-binding mutants (gap-fill GAP-F1-observation-binding-enforcement).** Operators 19–21 run on the golden
+  `frac-predict-jump@1` (choice, position-encoded) and on a hand-written golden `build-to-spec` mechanic
+  (`frac-bricks-make@1`, F2 below), each × 5 seeds. Each operator has a *lint-evading* variant (refs built via
+  `params` or `Object.fromEntries`), because the runtime check, not Q1, must catch it. The binding checks are
+  deterministic, so the target is **recall 1.0 on the hard gates**. 0.95 is not enough here.
+
+  | # | mutant | variants | must be caught by (hard gates only) |
+  |---|---|---|---|
+  | **M19** label ≠ bound value | the pad bound to 2/5 shows "5/6" | (a) `numeral({scale:i})` over the pad, where the tick is 5/6; (b) `numeral(refs.key())` drawn inside a pad bound to a distractor; (c) "5/6" hand-stroked with `graphics()`; (d) a pad moved to 5/6's position while still bound to 2/5 | (a, b) Q3 `obs.label_bound`; (d) the runtime `ref_misplaced` refusal → Q3 tier A; (c) **not a hard-gate catch**. Q9 OCR is advisory, so the result is reported separately as the residual-risk number and does not count toward recall |
+  | **M20** readout drift after a remove | `reduce` on `remove` decrements the wrong kind, or does nothing, or removes 2, or accepts a remove at count 0; a `clear` that leaves `total` set | 5 variants (each named above), plus one where `facts()` lies to match the shadow while `M` drifts | the `agrees(S, facts(M))` check → `state_diverged` → Q3/Q4 tier A; the lying-facts variant → host replay ≠ the win state and a negative-path sweep wrong-outcome, or Q3 unit-entity count (the brick is kit-drawn from `S`) |
+  | **M21** forged TargetSpec value | `valueRef` set to: a raw MathValue cast to `ValueRef`; `{level:<other>,…}`; `distractor:9`; the key of a different item in the same level; a `unit:<k>` on a `choose` target | 5 variants | the runtime `ref_unresolved` / `ref_foreign_level` / `ref_inactive_item` / `ref_wrong_slot` refusal → Q2 (error event) + Q3 tier A; Q1 lint on the non-evading variant; tsc on the cast |
+
+  **Exit test:** M19a/b/d, every M20 variant and every M21 variant are caught by Q1–Q5 hard gates in 10/10 runs
+  (2 goldens × 5 seeds), with 0 false alarms on the clean goldens. This must hold **before M-F1** (it is part of
+  QA-M2 / M-F2, §12). The M19c rate is logged as a measurement, not as a pass.
 - **Tamper battery** (M15/M-K11): overwrite `__forge.snapshot`; fake a bridge "won"; detect `navigator.webdriver`;
   runner dist ≠ trusted rebuild; replayed `BOOT_TOKEN`; re-`hello` after `bye`; monkeypatch `postMessage` /
   `JSON.stringify` → all rejected, 0 published.
@@ -1058,6 +1159,8 @@ export interface PlayTicket {
   kitUrl: string; buildSha: string; // checked against the manifest before init
   nonce: string;                    // bridge nonce for this session
   init: { fill: ForgeFill; save?: Json; locale: "hi-Latn" | "en-IN" | "hi-IN" };   // no free text
+  levelsHash: string;               // sha of the server's kit expansion of `fill`; the frame's ready.levelsHash must
+                                    // match, or the host refuses the mount. Host resolves ValueRefs against it (GAP-F1)
   expiresAt: string;                // TTL 2 h; refused if buildSha is on the revocation list
 }
 ```
@@ -1128,7 +1231,7 @@ second. It is the first thing a child can play, and every later tier reuses its 
 |---|---|---|---|
 | **MP1 contracts + queue** | `shared/forge.ts` (§13); `db/migrations/003_forge.sql`; `server/routes/forge.js` (requests, tickets, events, revocations) | shared/, db/, server/routes/ | `npm test` route + schema tests; `tsc -b` green |
 | **MP2 KitMath + misconception rules (fractions)** | exact rationals, MathValue equivalence, `acceptable` parsing; MiscRules for `c4-…-t01-m-bigger-denominator-bigger`, `c5-…-t01-m-count-marks`, `c5-…-t01-m-whole-number-bias`, `c5-…-t02-m-tops-only`, `c5-…-t03-m-add-same`, `c6-…-t05-m-add-across`, `c6-…-t05-m-change-only-den`, `c6-…-t03-m-one-side` | `packages/kitmath/` (reuse `fractionBars.logic.ts` arithmetic) | property tests: every rule reproduces its kit diagnostic distractor; 0 disagreements with the kit `answer` on the fraction topics' items that are numeric |
-| **MP3 `tgk@1` core** | bootstrap hardening (§4.2) shared with the content `engine-kit`; bridge v2.1 from `shared/bridge.ts` (content-owned; v1 compatibility while it lands) plus the proposed `assets` transfer message; kit grade + observation binding, DOM word & hit layer, ramp controller, feel presets v0, voice cue routing, kit meta CSP, seeded RNG | `packages/game-kit/` | kit unit tests; a tamper test: a mechanic that patches `postMessage` cannot change the host stream |
+| **MP3 `tgk@1` core** | bootstrap hardening (§4.2) shared with the content `engine-kit`; bridge v2.1 from `shared/bridge.ts` (content-owned; v1 compatibility while it lands) plus the proposed `assets` transfer message; kit grade + observation binding (ValueRef resolution + refusals, choice selection tracking, `ShadowModel` for build archetypes, bound `numeral`/`unit`/`text` vars; gap-fill GAP-F1-…), DOM word & hit layer, ramp controller, feel presets v0, voice cue routing, kit meta CSP, seeded RNG | `packages/game-kit/` | kit unit tests; a tamper test: a mechanic that patches `postMessage` cannot change the host stream |
 | **MP4 `numberline-jump` + golden mechanic `frac-predict-jump@1`** | archetype template (line generator with band tick density, pad placement from MiscRules, abstract solver, layout predicates); the golden mechanic **written by hand** (≈ 200 lines) — it is the first library core and the builder's few-shot exemplar | `packages/game-kit/archetypes/numberline-jump/` | Q2–Q7 locally in the production-parity harness; reviewer approval (first core per archetype: two-key) |
 | **MP5 G1 filler + gate** | `fill()` (items for the objective, traps from the learner model's active misconceptions on the topic, this child's recent wrong items as `errorReplays`, numbers at KT target, InterestId skin, seed) + G1 gate (§5.1 column) | `server/forge/g1.js` | 200 random fills × 6 fraction topics: 100% gate-pass or a reasoned reject; p95 ≤ 300 ms in Node |
 | **MP6 publish + delivery** | publish the core bundle + kit to `taxilaforge` (`blob` access, CORS `*`, immutable); host fetches the build's assets and transfers them to the frame; PlayTicket; `ModuleCommand.mount{src,ticketId}` in `ModuleHost`; host re-grade path in `classify.js` | `src/modules/host.tsx`, `server/director/` | `tests/client-e2e.mjs` mounts the game from the Blob URL in an opaque-origin iframe (not Vite, so the CORS path is real) and plays L1 by pointer |
@@ -1141,7 +1244,7 @@ second. It is the first thing a child can play, and every later tier reuses its 
 |---|---|---|---|
 | **F0 guardrails (day 0–1)** | E1–E4 to the owner; pin TTS 2025-12-15 and a lifecycle check in `verify`; Sora decision by 10-13; create `taxila-forge-untrusted`, `taxilaforgesrc`, CORS, `blob` access level, ACR purge + scope-map tokens | — | infra probe script green; `context/` updated |
 | **F1 = MP1–MP7** | the minimal path | F0 | the row above |
-| **F2 QA ladder v1 + the ruler** | production-parity host harness; seam; Q0–Q8 for agent mechanics; mutant corpus on the golden mechanic(s); tamper battery; negative-path sweep | F1 | M-F2 / QA-M2: hard-gate recall ≥ 0.95, 0 false alarms; M15 6/6 rejected |
+| **F2 QA ladder v1 + the ruler** | production-parity host harness; seam; Q0–Q8 for agent mechanics; mutant corpus on the golden mechanic(s); tamper battery; negative-path sweep; **`build-to-spec` template + its `ShadowModel` + host replay + the hand-written golden `frac-bricks-make@1`** (needed because the F3 target is a build mechanic; gap-fill GAP-F1-…) | F1 | M-F2 / QA-M2: hard-gate recall ≥ 0.95, 0 false alarms; **binding mutants M19a/b/d–M21 caught 10/10 (§5.5)**; M15 6/6 rejected |
 | **F3 harness v1** | `forge-orchestrator` (Neon queue, resumable rounds, budgets, stuck detection, git checkpoints, ModelAdapter), `forge-runner` single-use protocol, 7 tools, patch transport smoke (C12), S0–S8, trusted rebuild + fresh lease, review UI | F2 | **the first agent-built fractions mechanic** (e.g. `frac-equiv-build@1` on `build-to-spec`, or a second `numberline-jump` variant for comparison) passes S6, is approved in review, and is served to a child through a G1 fill |
 | **F4 bake-off + calibration** | M-F1 on 40 briefs: codex medium vs codex high vs brain-as-builder (Claude arms only if E1 changes); M-F4 cache; M-F6 429 onset; QA-M1 throttle calibration on owned phones; M-K2b real-device boot | F3 | recipe chosen by ship rate, levels shipped/planned, $ per approved core, p50/p90, blind expert acceptance |
 | **F5 breadth** | archetypes 2–5; StylePack B2/B3 + India Everyday Kit seed; asset worker; explainer template lane (clip mode, teacher voice); `forge-render` | F3 | 4 archetypes live via G1; library ≥ 50 approved cores |
@@ -1155,7 +1258,7 @@ second. It is the first thing a child can play, and every later tier reuses its 
 | id | what | n / method | decides |
 |---|---|---|---|
 | day-1 smoke | patch transport (3 arms × 20 patches); cache hit with key + 24 h retention; 429 onset vs concurrency (M-F6 / M8); runner cold start to `hello` (M1); Chromium sandbox in the job (M2) | probes in `evals/forge/` | tool transport; admission constants |
-| **QA-M2 / M-F2** | mutant recall per gate | 18 operators × goldens + clean × 5 seeds | which gates may block; **must precede M-F1** |
+| **QA-M2 / M-F2** | mutant recall per gate | 18 operators × goldens + clean × 5 seeds; + binding operators 19–21 on `frac-predict-jump@1` and `frac-bricks-make@1` × 5 seeds, recall 1.0 required (gap-fill GAP-F1-…) | which gates may block; **must precede M-F1** |
 | M15 / M-K11 / M-K10 | tamper battery; negative-path grading sweep | 6–7 cheating builds; 24 seeded-bug mechanics | trust in the gate |
 | M-F1 | builder bake-off | 40 briefs, ≥ 3 arms | builder recipe (`forge-builder-provider-neutral` reversal) |
 | QA-M1 / M-K2b | calibrated throttle; real-device first frame and fps p10 (v3 vs v4); pre-warmed vs cold iframe | 2–3 owned ₹8–12k phones, ≥ 10 loads each | perf thresholds; Phaser flag |

@@ -1,0 +1,37 @@
+household-sim (gap-fill G3-household-siblings): persona three_siblings_one_phone = Riya B1 (6 y), Kabir B2 (8 y,
+tuition Tue+Thu to 18:00), Meera B4 (13 y, test window days 7-11); 1 phone; anchor 16:30 -> 17:00 from day 14,
+19:00 on Wednesdays, 11:00 on weekends; Kabir erased on day 25 at 17:10. 8 seeds x 28 days. [sim]
+seed | sittings | resumes | switches | reassigns | waits | squeezedOut | passes | deliveries | reports | plannedOverlap | deviceOverlap | capBreach | bedtimeBreach | maxLearnGW | maxWbGW | maxRemDay | maxRemWeek | maxDelivPerMemberPass | maxPassesPerTrigger | eraseDisturb | eraseEventsToSiblings | replayed | replayMismatch | unreplayableAfterErase | reassignOverCapMin
+11 | 64 | 0 | 2 | 2 | 10 | 0 | 143 | 71 | 199 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 5 | 1 | 1 | 0 | 0 | 142 | 0 | 135 | 0
+12 | 63 | 0 | 0 | 2 | 10 | 0 | 139 | 67 | 195 | 0 | 0 | 0 | 0 | 2 | 0 | 1 | 5 | 1 | 1 | 0 | 0 | 138 | 0 | 132 | 12.4
+13 | 67 | 0 | 0 | 2 | 12 | 0 | 147 | 75 | 205 | 0 | 0 | 0 | 0 | 2 | 0 | 1 | 5 | 1 | 1 | 0 | 0 | 146 | 0 | 136 | 0
+14 | 54 | 1 | 2 | 1 | 4 | 0 | 117 | 71 | 169 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 5 | 1 | 1 | 0 | 0 | 116 | 0 | 110 | 0
+15 | 64 | 0 | 1 | 1 | 12 | 2 | 138 | 70 | 195 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 5 | 1 | 1 | 0 | 0 | 137 | 0 | 130 | 0
+16 | 64 | 1 | 1 | 0 | 7 | 0 | 140 | 69 | 198 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 5 | 1 | 1 | 0 | 0 | 138 | 0 | 134 | 0
+17 | 65 | 0 | 1 | 2 | 12 | 0 | 145 | 66 | 199 | 0 | 0 | 0 | 0 | 2 | 0 | 1 | 5 | 1 | 1 | 0 | 0 | 143 | 0 | 136 | 0
+18 | 68 | 0 | 0 | 2 | 11 | 0 | 147 | 69 | 209 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 5 | 1 | 1 | 0 | 0 | 146 | 0 | 135 | 0
+total | 509 | 2 | 7 | 12 | 78 | 2 | 1116 | 558 | 1569 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 5 | 1 | 1 | 0 | 0 | 1106 | 0 | 1048 | 12.4
+
+GATES (8/8 seeds):
+PASS I-H1 planned household_slot overlap = 0 :: 0
+PASS I-H1 device: actual sittings overlap = 0 :: 0
+PASS I-C3 governor cap breach = 0 (each child, own cap) :: 0
+PASS DC7 sitting past bedtime - 30 = 0 :: 0
+PASS I-H2 learning pushes per guardian-week <= 2 :: 2
+PASS I-H2 wellbeing pointers per guardian-week <= 1 :: 1
+PASS I-H9 anchor reminders per device <= 1/day and <= 5/week :: 1/day, 5/week
+PASS I-H3 deliveries per member per pass <= 1 :: 1
+PASS I-H3 passes per trigger <= 1 :: 1
+PASS I-H6 erasure: sibling windows unchanged, 0 events to siblings :: 0 disturbed, 0 events
+PASS I-H4 nightly allocator replay byte-equal :: 0/1106
+facts: 12 reassigns moved minutes onto the real child; 12.4 min landed over that child's cap (screen time really used; admission was never past a cap). 1048 earlier passes became unreplayable after the erasure (expected: member inputs cascade).
+C3 fixture (anchor 19:20 -> 20:00, member 2 R2-latched): with the no-cascade rule {"passes":1,"deliveries":3,"replans":3}; without {"passes":2,"deliveries":5,"replans":5}
+
+NEGATIVE CONTROLS (each must trip):
+TRIPPED C1 notify_slot keyed per (guardian, child) :: max learning pushes per guardian-week = 6, wb = 2
+TRIPPED C2 per-child planning from own routine (no household windows) :: planned overlaps = 512
+TRIPPED C3 a household-caused re-plan re-reports its length :: passes 1 -> 2, deliveries 3 -> 5
+TRIPPED C4 erasure re-allocates the remaining members :: seeds disturbed = 7/8, events to siblings = 8
+TRIPPED C5 notify_slot.child_id ON DELETE CASCADE :: max learning pushes per guardian-week = 3
+TRIPPED C6 anchor reminder scheduled per child :: max reminders per device-day = 3, per week = 6
+TRIPPED C7 a clock read planted in allocate() :: replay byte-equal = false
