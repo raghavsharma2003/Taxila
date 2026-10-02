@@ -57,7 +57,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which of these is the theme of the passage about Nani and the bus numbers?",
-            "prompt_hi": "Theme matlab kahani ki seekh — jo baat har kisi ki zindagi par lagu ho. In teeno mein theme kaunsa hai?",
+            "prompt_hi": "Nani aur bus numbers wale passage ka theme inmein se kaunsa hai?",
             "options": [
               {
                 "text": "It is never too late to learn, and learning gives a person independence",
@@ -91,7 +91,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is better English for one finished event: 'Last Sunday Nani went to the market.' or 'Last Sunday Nani had gone to the market.'",
-            "prompt_hi": "Ek hi event hai, koi pehle-baad wali baat nahi. Kaunsa sahi lagta hai — 'went' ya 'had gone'?",
+            "prompt_hi": "Ek hi khatam hue event ke liye kaunsa behtar English hai: 'Last Sunday Nani went to the market.' ya 'Last Sunday Nani had gone to the market.'?",
             "options": [
               {
                 "text": "Last Sunday Nani went to the market.",
@@ -120,7 +120,7 @@
           ],
           "diagnostic": {
             "prompt_en": "What is the opposite of 'literate'?",
-            "prompt_hi": "'literate' ka ulta kya hoga? Dhyaan do — har baar 'un-' nahi lagta.",
+            "prompt_hi": "'literate' ka opposite kya hai?",
             "options": [
               {
                 "text": "illiterate",
@@ -217,11 +217,10 @@
             "She felt ___ because she read the number herself.",
             "She felt proud and young again, like a child who has just learnt something."
           ],
-          "targetsMisconception": "c9-english-ch01-t01-m-theme-is-summary",
           "verified": {
             "solverAnswer": "She felt joyful, proud and young again, because after a month of hard work she could finally read the bus number on her own before Arjun.",
             "agrees": true,
-            "note": "Key agrees. targetsMisconception theme-is-summary does not fit a feelings-inference item; consider removing."
+            "note": "Key agrees. targetsMisconception theme-is-summary does not fit a feelings-inference item; consider removing. RESOLVED: targetsMisconception theme-is-summary removed: it does not fit a feelings-inference item, and no ch01 misconception covers feelings."
           }
         },
         {
@@ -308,7 +307,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Join the two ideas using 'had': 'Nani shelled peas for sixty years. Then she learnt to read.' Begin with: 'Before she learnt to read, Nani ...'",
-          "prompt_hi": "Do sentences ko jodo. Jo kaam pehle hua, uske saath 'had' lagega.",
+          "prompt_hi": "In do baaton ko 'had' se jodo: 'Nani shelled peas for sixty years. Then she learnt to read.' Shuruaat aise karo: 'Before she learnt to read, Nani ...'",
           "answer": "Before she learnt to read, Nani had shelled peas for sixty years.",
           "acceptable": [
             "Before she learned to read, Nani had shelled peas for sixty years.",
@@ -324,7 +323,7 @@
           "verified": {
             "solverAnswer": "Before she learnt to read, Nani had shelled peas for sixty years.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -333,7 +332,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find and correct the mistake: 'When Arjun reached the bus stop, the bus already left, so they waited for the next one.'",
-          "prompt_hi": "Is sentence mein ek galti hai. Bus pehle gayi ya Arjun pehle pahuncha? Socho.",
+          "prompt_hi": "Galti dhoondho aur theek karo: 'When Arjun reached the bus stop, the bus already left, so they waited for the next one.'",
           "answer": "When Arjun reached the bus stop, the bus had already left, so they waited for the next one.",
           "acceptable": [
             "the bus had already left",
@@ -348,7 +347,7 @@
           "verified": {
             "solverAnswer": "'already left' -> 'had already left'.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -357,7 +356,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "One word in this sentence is not needed. Find it and say why: 'Last year my grandmother had joined an adult literacy class.'",
-          "prompt_hi": "Ek word extra hai. Yahaan koi doosra past event hai kya jiske pehle yeh hua?",
+          "prompt_hi": "Is sentence mein ek word ki zaroorat nahi hai. Woh word dhoondho aur batao kyun: 'Last year my grandmother had joined an adult literacy class.'",
           "answer": "Remove 'had': 'Last year my grandmother joined an adult literacy class.' There is only one past event, so past simple is enough",
           "acceptable": [
             "joined",
@@ -374,7 +373,7 @@
           "verified": {
             "solverAnswer": "'had' is not needed: 'Last year my grandmother joined an adult literacy class.' Past perfect needs an earlier past action; 'last year' with a single past event takes past simple.",
             "agrees": true,
-            "note": "Key agrees. prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -383,7 +382,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Say the opposite of each word with the correct prefix: literate, patient, possible, regular.",
-          "prompt_hi": "Har word ka ulta banao. Pehla letter dekho — il-, im-, ir- ya un-?",
+          "prompt_hi": "Har word ka opposite sahi prefix lagakar bolo: literate, patient, possible, regular.",
           "answer": "illiterate, impatient, impossible, irregular",
           "acceptable": [
             "illiterate impatient impossible irregular"
@@ -398,7 +397,7 @@
           "verified": {
             "solverAnswer": "illiterate, impatient, impossible, irregular.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -407,7 +406,7 @@
           "kind": "near_transfer",
           "difficulty": 3,
           "prompt_en": "Fill the blank with a word from the 'literate' family: 'The village started a ___ drive so that every adult could learn to read.'",
-          "prompt_hi": "'literate' parivaar ka kaunsa word yahaan fit hoga? Yeh noun chahiye.",
+          "prompt_hi": "Khaali jagah mein 'literate' parivaar ka ek word bharo: 'The village started a ___ drive so that every adult could learn to read.'",
           "answer": "literacy",
           "acceptable": [
             "literacy"
@@ -421,7 +420,7 @@
           "verified": {
             "solverAnswer": "literacy.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -561,7 +560,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Is 'Her rivers braid the plains with gold' a simile?",
-            "prompt_hi": "Simile mein 'like' ya 'as' hota hai. Is line mein hai kya? Toh yeh kya hai?",
+            "prompt_hi": "Kya 'Her rivers braid the plains with gold' ek simile hai?",
             "options": [
               {
                 "text": "No. There is no 'like' or 'as'; the rivers are shown doing something human, so it is personification (a kind of metaphor)",
@@ -590,7 +589,7 @@
           ],
           "diagnostic": {
             "prompt_en": "What is the tone of the poem?",
-            "prompt_hi": "Tone matlab poet ki awaaz ka bhaav — kaise bol raha hai, kya feel kar raha hai. Topic nahi.",
+            "prompt_hi": "Poem ka tone kya hai?",
             "options": [
               {
                 "text": "Proud and loving",
@@ -624,7 +623,7 @@
           ],
           "diagnostic": {
             "prompt_en": "In the poem, 'a hundred tongues' most likely means:",
-            "prompt_hi": "'tongues' ka matlab yahaan jeebh nahi hai. Ek aur matlab hota hai — 'mother tongue' socho.",
+            "prompt_hi": "Poem mein 'a hundred tongues' ka sabse sahi matlab kya hai?",
             "options": [
               {
                 "text": "a hundred languages",
@@ -656,7 +655,7 @@
           "kind": "retrieval",
           "difficulty": 1,
           "prompt_en": "Read this poem: 'From snow that crowns the northern hills / to waves that wash the southern sand, / a hundred tongues, one heartbeat fills / the mother-soil we call our land. // Her rivers braid the plains with gold, / her deserts keep the stars at night; / her stories, new and centuries old, / are woven threads of shade and light.' Which two places, at opposite ends of the land, does the first stanza mention?",
-          "prompt_hi": "Pehle stanza mein desh ke do kone kaunse hain? Ek north, ek south.",
+          "prompt_hi": "Pehle stanza mein desh ke do opposite kone wali kaunsi do jagahein hain?",
           "answer": "The snowy northern hills and the southern sand (seashore)",
           "acceptable": [
             "northern hills and southern sand",
@@ -672,7 +671,7 @@
           "verified": {
             "solverAnswer": "The northern hills (snow) and the southern sand (waves/shore).",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -706,7 +705,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Name the device: 'Her deserts keep the stars at night.'",
-          "prompt_hi": "Desert koi insaan hai kya? Phir bhi woh 'keep' kar raha hai. Yeh kaunsa device hai?",
+          "prompt_hi": "Is line mein kaunsa device hai, uska naam batao: 'Her deserts keep the stars at night.'",
           "answer": "Personification",
           "acceptable": [
             "personification",
@@ -721,7 +720,7 @@
           "verified": {
             "solverAnswer": "Personification.",
             "agrees": true,
-            "note": "Key agrees. prompt_hi ('Desert koi insaan hai kya? Phir bhi woh keep kar raha hai') points straight at personification; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi ('Desert koi insaan hai kya? Phir bhi woh keep kar raha hai') points straight at personification; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -730,7 +729,7 @@
           "kind": "contrast",
           "difficulty": 3,
           "prompt_en": "Compare: A: 'The river is like a golden ribbon.' B: 'Her rivers braid the plains with gold.' Which is a simile, which is personification, and which feels stronger to you?",
-          "prompt_hi": "Dono lines dhyaan se suno. Ek mein 'like' hai, ek mein nahi. Farak batao.",
+          "prompt_hi": "Dono lines suno. A: 'The river is like a golden ribbon.' B: 'Her rivers braid the plains with gold.' Inmein se kaunsi simile hai aur kaunsi personification? Aur tumhe kaunsi zyada strong lagti hai?",
           "answer": "A is a simile (it uses 'like'); B is personification (rivers braid like hands). B is more direct and vivid because the rivers are shown acting",
           "acceptable": [
             "A simile, B personification",
@@ -746,7 +745,7 @@
           "verified": {
             "solverAnswer": "A is a simile (uses 'like'); B is personification (rivers braid). B feels stronger because the rivers act like a living person (open opinion).",
             "agrees": true,
-            "note": "Key agrees. prompt_hi drops the two asks in prompt_en (label simile vs personification; which feels stronger) and adds the 'like' clue; not faithful."
+            "note": "Key agrees. prompt_hi drops the two asks in prompt_en (label simile vs personification; which feels stronger) and adds the 'like' clue; not faithful. RESOLVED: prompt_hi made faithful: it now asks both questions in prompt_en and no longer gives the 'like' clue."
           }
         },
         {
@@ -779,7 +778,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "A student wrote: 'In the line Her rivers braid the plains with gold, the poet uses a simile.' Find the mistake and correct it.",
-          "prompt_hi": "Is student ne galat device bataya. Sahi kya hai aur kyun?",
+          "prompt_hi": "Ek student ne likha: 'In the line Her rivers braid the plains with gold, the poet uses a simile.' Galti dhoondho aur use theek karo.",
           "answer": "It is not a simile because there is no 'like' or 'as'; it is personification (the rivers braid, a human action)",
           "acceptable": [
             "not a simile, personification",
@@ -796,7 +795,7 @@
           "verified": {
             "solverAnswer": "It is not a simile (no 'like' or 'as'); it is personification (rivers 'braid'), arguably metaphor.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -956,7 +955,7 @@
           "kind": "why",
           "difficulty": 4,
           "prompt_en": "Why might a poet writing about a whole country choose a regular rhyme and steady beat?",
-          "prompt_hi": "Desh ke baare mein poem mein regular rhyme aur beat kyun rakhte hain? Anthem socho.",
+          "prompt_hi": "Poore desh ke baare mein likhne wala poet regular rhyme aur steady beat kyun chun sakta hai?",
           "answer": "A steady rhythm sounds like a song or anthem, gives a feeling of harmony and togetherness, and is easy to remember and recite together",
           "acceptable": [
             "it sounds like a song",
@@ -973,7 +972,7 @@
           "verified": {
             "solverAnswer": "A regular rhyme and steady beat give a sense of order, unity and harmony, like an anthem; it is easy to remember and recite together, and it mirrors the idea of many parts joined into one.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         }
       ],
@@ -1062,7 +1061,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "Modal ke baad verb hamesha simple form mein aata hai — na -s, na 'to'. Kaunsa sahi hai?",
+            "prompt_hi": "Inmein se kaunsa sahi hai?",
             "options": [
               {
                 "text": "She can make pots.",
@@ -1096,7 +1095,7 @@
           ],
           "diagnostic": {
             "prompt_en": "What is the main conflict in the passage?",
-            "prompt_hi": "Conflict matlab ladai hi nahi hota. Kavya kya chahti hai, aur uske raaste mein kya aata hai?",
+            "prompt_hi": "Passage ka main conflict kya hai?",
             "options": [
               {
                 "text": "Kavya's wish to make pots versus the belief that clay work is not for girls",
@@ -1130,7 +1129,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Kavya made forty diyas. ___ put them on the shelf to dry.",
-            "prompt_hi": "Hindi mein 'woh' dono ke liye hai, par English mein ladki ke liye kya bolte hain?",
+            "prompt_hi": "Khaali jagah bharo: 'Kavya made forty diyas. ___ put them on the shelf to dry.'",
             "options": [
               {
                 "text": "She",
@@ -1258,13 +1257,15 @@
           "skillId": "c9-english-ch03-t01-s2",
           "kind": "contrast",
           "difficulty": 3,
-          "prompt_en": "Story A: two brothers fight over a cricket bat. Story B: Kavya quietly wants to work with clay but is told it is not for girls. Which story has a conflict?",
-          "prompt_hi": "Dono kahaniyon mein conflict hai kya? Ek mein ladai hai, ek mein nahi.",
+          "prompt_en": "Story A: two brothers fight over a cricket bat. Story B: Kavya quietly wants to work with clay but is told it is not for girls. Does each story have a conflict? If so, what kind?",
+          "prompt_hi": "Story A: do bhai cricket bat ke liye ladte hain. Story B: Kavya chupchaap mitti ka kaam karna chahti hai, par use kaha jaata hai ki yeh ladkiyon ke liye nahi hai. Kya har kahani mein conflict hai? Agar hai, toh kis tarah ka?",
           "answer": "Both have a conflict: A is a quarrel between people; B is a quieter conflict between a person's wish and a tradition",
           "acceptable": [
             "both",
             "both have conflict",
-            "B too, it is person against tradition"
+            "B too, it is person against tradition",
+            "yes, both: A is person against person, B is person against tradition",
+            "both; B is a quiet conflict with tradition or society"
           ],
           "hints": [
             "What does Kavya want?",
@@ -1276,7 +1277,7 @@
           "verified": {
             "solverAnswer": "Both have conflict, but Story B has a deeper conflict (wish vs. a rule/belief, person vs. society); Story A is a simple quarrel. Likely intended: B.",
             "agrees": true,
-            "note": "Key agrees (both). But prompt_en 'Which story has a conflict?' invites a single choice, so a child answering B (the intended insight) may be marked wrong; reword to 'Does each story have a conflict? What kind?'. prompt_hi asks a different question ('Dono mein conflict hai kya? Ek mein ladai hai, ek mein nahi') and is not faithful."
+            "note": "Key agrees (both). But prompt_en 'Which story has a conflict?' invites a single choice, so a child answering B (the intended insight) may be marked wrong; reword to 'Does each story have a conflict? What kind?'. prompt_hi asks a different question ('Dono mein conflict hai kya? Ek mein ladai hai, ek mein nahi') and is not faithful. RESOLVED: prompt_en reworded to 'Does each story have a conflict? What kind?' so a single-story answer is not invited; prompt_hi made faithful."
           }
         },
         {
@@ -1310,7 +1311,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Fill in the modal for past ability: 'Kavya ___ shape diyas even before anyone taught her.'",
-          "prompt_hi": "Pehle ki ability ke liye kaunsa modal? 'can' ka past.",
+          "prompt_hi": "Past ability wala modal bharo: 'Kavya ___ shape diyas even before anyone taught her.'",
           "answer": "could",
           "acceptable": [
             "could"
@@ -1324,7 +1325,7 @@
           "verified": {
             "solverAnswer": "could.",
             "agrees": true,
-            "note": "Key agrees. prompt_hi \"'can' ka past\" gives the answer (= hint 2); prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi \"'can' ka past\" gives the answer (= hint 2); prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -1333,7 +1334,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'My father says I must waits until I am older.'",
-          "prompt_hi": "Is sentence mein ek galti hai, 'must' ke baad dekho.",
+          "prompt_hi": "Galti dhoondho: 'My father says I must waits until I am older.'",
           "answer": "My father says I must wait until I am older.",
           "acceptable": [
             "must wait",
@@ -1349,7 +1350,7 @@
           "verified": {
             "solverAnswer": "'must waits' -> 'must wait' (modal + base verb).",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -1432,7 +1433,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Kavya swept the shed. Then he watched her father at the wheel.'",
-          "prompt_hi": "Ek pronoun galat hai. Kavya ladka hai ya ladki?",
+          "prompt_hi": "Galti dhoondho: 'Kavya swept the shed. Then he watched her father at the wheel.'",
           "answer": "Then she watched her father at the wheel.",
           "acceptable": [
             "she",
@@ -1448,7 +1449,7 @@
           "verified": {
             "solverAnswer": "'he' should be 'she' (Kavya is a girl): 'Then she watched her father at the wheel.'",
             "agrees": true,
-            "note": "Key agrees. prompt_hi ('Ek pronoun galat hai. Kavya ladka hai ya ladki?') locates and resolves the error; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi ('Ek pronoun galat hai. Kavya ladka hai ya ladki?') locates and resolves the error; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -1561,7 +1562,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "Insaan ke liye 'who', cheezon ke liye 'which'. Kaunsa sahi hai?",
+            "prompt_hi": "Inmein se kaunsa sahi hai?",
             "options": [
               {
                 "text": "The farmer who wakes early grows our food.",
@@ -1590,7 +1591,7 @@
           ],
           "diagnostic": {
             "prompt_en": "According to the poem, which job is 'small'?",
-            "prompt_hi": "Poem ke hisaab se kaunsa kaam chhota hai? Line 5 dhyaan se suno.",
+            "prompt_hi": "Poem ke hisaab se kaunsa kaam 'small' hai?",
             "options": [
               {
                 "text": "None. Every job is valued",
@@ -1624,7 +1625,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Why does the poet repeat 'the hands that' four times?",
-            "prompt_hi": "Poet ne 'the hands that' chaar baar kyun bola? Galti hai ya jaan-boojh kar?",
+            "prompt_hi": "Poet ne 'the hands that' chaar baar kyun repeat kiya?",
             "options": [
               {
                 "text": "To stress that all kinds of work matter equally, and to build a strong rhythm",
@@ -1754,7 +1755,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Join with 'whose': 'The weaver makes saris. Her fingers never rest.'",
-          "prompt_hi": "Do sentences ko 'whose' se jodo. 'Her' ki jagah 'whose' aayega.",
+          "prompt_hi": "In do sentences ko 'whose' se jodo: 'The weaver makes saris. Her fingers never rest.'",
           "answer": "The weaver whose fingers never rest makes saris.",
           "acceptable": [
             "The weaver, whose fingers never rest, makes saris."
@@ -1768,7 +1769,7 @@
           "verified": {
             "solverAnswer": "The weaver whose fingers never rest makes saris.",
             "agrees": true,
-            "note": "Key agrees. prompt_hi \"'Her' ki jagah 'whose' aayega\" is hint 2 verbatim; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi \"'Her' ki jagah 'whose' aayega\" is hint 2 verbatim; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -1777,7 +1778,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'The nurse which cared for my grandfather worked all night.'",
-          "prompt_hi": "Ek galti hai. Nurse insaan hai ya cheez?",
+          "prompt_hi": "Galti dhoondho: 'The nurse which cared for my grandfather worked all night.'",
           "answer": "The nurse who cared for my grandfather worked all night.",
           "acceptable": [
             "who",
@@ -1794,7 +1795,7 @@
           "verified": {
             "solverAnswer": "'which' -> 'who' (for people).",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -1905,8 +1906,8 @@
           "prompt_hi": "Apne mohalle ke kisi worker ke liye do lines likho, jismein kuch words repeat hon.",
           "answer": "Two lines where a phrase repeats with purpose, e.g. 'The hands that stitch, the hands that sew, / the hands that dress us row on row.'",
           "acceptable": [
-            "The feet that walk, the feet that climb, the postman's feet are never late in time.",
-            "The voice that calls, the voice that sells, the vendor's voice our morning tells."
+            "The feet that walk, the feet that climb, / the postman's feet are always on time.",
+            "The voice that calls, the voice that sells, / the vendor's voice our morning tells."
           ],
           "hints": [
             "Pick a worker and their action.",
@@ -1917,7 +1918,7 @@
           "verified": {
             "solverAnswer": "e.g. 'The hands that stitch, the hands that sew, / the tailor's hands help our town grow.'",
             "agrees": true,
-            "note": "Key agrees. Acceptable example 'never late in time' is awkward English; replace with a cleaner model line."
+            "note": "Key agrees. Acceptable example 'never late in time' is awkward English; replace with a cleaner model line. RESOLVED: awkward model line ('never late in time') replaced with a clean one."
           }
         },
         {
@@ -2055,7 +2056,7 @@
           ],
           "diagnostic": {
             "prompt_en": "In Bengal, fans ___ from palm leaves.",
-            "prompt_hi": "Passive mein is/are ke baad verb ki teesri form (V3) aati hai. 'weave' ki V3 kya hai?",
+            "prompt_hi": "Khaali jagah bharo: 'In Bengal, fans ___ from palm leaves.'",
             "options": [
               {
                 "text": "are woven",
@@ -2089,7 +2090,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Is this a fact or an opinion: 'Surely a fan that carries a village's skill is worth more than one that only moves air.'",
-            "prompt_hi": "Fact woh hai jo prove ho sakta hai. Yeh line prove ho sakti hai, ya yeh writer ki apni soch hai?",
+            "prompt_hi": "Yeh fact hai ya opinion: 'Surely a fan that carries a village's skill is worth more than one that only moves air.'?",
             "options": [
               {
                 "text": "An opinion: it is the writer's judgement and cannot be proved",
@@ -2118,7 +2119,7 @@
           ],
           "diagnostic": {
             "prompt_en": "What is the writer's main purpose?",
-            "prompt_hi": "Purpose matlab writer ne yeh kyun likha — jaankari dene, describe karne ya humein manane ke liye?",
+            "prompt_hi": "Writer ka main purpose kya hai?",
             "options": [
               {
                 "text": "To inform readers about regional hand fans and persuade them to value the craft",
@@ -2224,7 +2225,7 @@
           "kind": "contrast",
           "difficulty": 2,
           "prompt_en": "Which is a fact and which is an opinion? A: 'In Manipur, bamboo is split into thin strips.' B: 'A fan that carries a village's skill is worth more.'",
-          "prompt_hi": "A aur B mein kaunsa fact hai aur kaunsa opinion? 'Kya prove ho sakta hai?' socho.",
+          "prompt_hi": "Kaunsa fact hai aur kaunsa opinion? A: 'In Manipur, bamboo is split into thin strips.' B: 'A fan that carries a village's skill is worth more.'",
           "answer": "A is a fact; B is an opinion",
           "acceptable": [
             "A fact, B opinion"
@@ -2239,7 +2240,7 @@
           "verified": {
             "solverAnswer": "A is a fact; B is an opinion.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -2248,7 +2249,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "A student says: 'The word Surely shows a fact, because the writer is sure.' What is wrong with this?",
-          "prompt_hi": "Student kehta hai 'Surely' se fact pata chalta hai. Kya yeh sahi hai?",
+          "prompt_hi": "Ek student kehta hai: 'The word Surely shows a fact, because the writer is sure.' Is baat mein kya galat hai?",
           "answer": "'Surely' signals the writer's opinion and is used to persuade; being sure of something does not make it provable",
           "acceptable": [
             "surely shows opinion",
@@ -2265,7 +2266,7 @@
           "verified": {
             "solverAnswer": "'Surely' shows the writer's strong opinion/feeling, not proof; a fact can be checked; it signals an opinion.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -2299,7 +2300,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Change to the passive: 'Artisans weave fans from palm leaves.'",
-          "prompt_hi": "Isse passive mein badlo. Pankhe sentence ki shuruaat mein aayenge.",
+          "prompt_hi": "Ise passive mein badlo: 'Artisans weave fans from palm leaves.'",
           "answer": "Fans are woven from palm leaves (by artisans).",
           "acceptable": [
             "Fans are woven from palm leaves by artisans.",
@@ -2315,7 +2316,7 @@
           "verified": {
             "solverAnswer": "Fans are woven from palm leaves (by artisans).",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -2324,7 +2325,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'In Rajasthan, fans are stitch with mirrors.'",
-          "prompt_hi": "Passive mein verb ki kaunsi form aani chahiye? Galti dhoondho.",
+          "prompt_hi": "Galti dhoondho: 'In Rajasthan, fans are stitch with mirrors.'",
           "answer": "In Rajasthan, fans are stitched with mirrors.",
           "acceptable": [
             "are stitched",
@@ -2340,7 +2341,7 @@
           "verified": {
             "solverAnswer": "'stitch' -> 'stitched'.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -2554,7 +2555,7 @@
           ],
           "diagnostic": {
             "prompt_en": "'The soil is his canvas' means:",
-            "prompt_hi": "Kya Dadaji sach mein paint kar rahe hain? 'canvas' yahaan kis cheez ke liye hai?",
+            "prompt_hi": "'The soil is his canvas' ka matlab kya hai?",
             "options": [
               {
                 "text": "He treats the garden like a painting that he creates",
@@ -2583,7 +2584,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sense does 'the bees hum soft from flower to flower' appeal to?",
-            "prompt_hi": "Imagery paanchon senses ke liye ho sakti hai. 'hum' sunte hain ya dekhte hain?",
+            "prompt_hi": "'the bees hum soft from flower to flower' kaunse sense ko jagata hai?",
             "options": [
               {
                 "text": "Hearing",
@@ -2612,7 +2613,7 @@
           ],
           "diagnostic": {
             "prompt_en": "He waters the plants for ___ hour every morning.",
-            "prompt_hi": "Article first letter se nahi, first awaaz se decide hota hai. 'hour' ki pehli awaaz kya hai?",
+            "prompt_hi": "Khaali jagah bharo: 'He waters the plants for ___ hour every morning.'",
             "options": [
               {
                 "text": "an",
@@ -2865,7 +2866,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Say a or an: ___ hour, ___ umbrella, ___ uniform, ___ honest gardener.",
-          "prompt_hi": "Har word ko zor se bolo, pehli awaaz suno, phir a ya an chuno.",
+          "prompt_hi": "a ya an bolo: ___ hour, ___ umbrella, ___ uniform, ___ honest gardener.",
           "answer": "an hour, an umbrella, a uniform, an honest gardener",
           "acceptable": [
             "an, an, a, an"
@@ -2880,7 +2881,7 @@
           "verified": {
             "solverAnswer": "an hour, an umbrella, a uniform, an honest gardener.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -2889,7 +2890,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find two mistakes: 'He is gardener and he plants a onion every year.'",
-          "prompt_hi": "Is sentence mein do galtiyan hain — dono articles se judi.",
+          "prompt_hi": "Is sentence mein do galtiyan hain, dono dhoondho: 'He is gardener and he plants a onion every year.'",
           "answer": "He is a gardener and he plants an onion every year.",
           "acceptable": [
             "a gardener, an onion"
@@ -2904,7 +2905,7 @@
           "verified": {
             "solverAnswer": "'is gardener' -> 'is a gardener'; 'a onion' -> 'an onion'.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -3044,7 +3045,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Riya said, \"I am tired.\" Which is the correct reported speech?",
-            "prompt_hi": "Reported speech mein 'I' aur 'am' badalte hain. Riya ke liye kaunsa pronoun aur kaunsa tense?",
+            "prompt_hi": "Riya ne kaha, \"I am tired.\" Iski sahi reported speech kaunsi hai?",
             "options": [
               {
                 "text": "Riya said that she was tired.",
@@ -3073,7 +3074,7 @@
           ],
           "diagnostic": {
             "prompt_en": "This song ___ Dadaji of his school days.",
-            "prompt_hi": "'yaad aana' aur 'yaad dilana' alag hain. Gaana Dadaji ko yaad ___?",
+            "prompt_hi": "Khaali jagah bharo: 'This song ___ Dadaji of his school days.'",
             "options": [
               {
                 "text": "reminds",
@@ -3102,7 +3103,7 @@
           ],
           "diagnostic": {
             "prompt_en": "In the passage, what is 'Vitamin M'?",
-            "prompt_hi": "Doctor kyun hansa? 'M' kis cheez ke liye hai?",
+            "prompt_hi": "Passage mein 'Vitamin M' kya hai?",
             "options": [
               {
                 "text": "Memories shared with love, which help Dadaji",
@@ -3280,7 +3281,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Change to reported speech: Riya said, \"I am puzzled.\"",
-          "prompt_hi": "Isse reported speech mein badlo. 'I' aur 'am' kya banenge?",
+          "prompt_hi": "Ise reported speech mein badlo: Riya said, \"I am puzzled.\"",
           "answer": "Riya said that she was puzzled.",
           "acceptable": [
             "Riya said she was puzzled."
@@ -3295,7 +3296,7 @@
           "verified": {
             "solverAnswer": "Riya said that she was puzzled.",
             "agrees": true,
-            "note": "Key agrees. prompt_hi flags exactly which words change (I, am); mild leak."
+            "note": "Key agrees. prompt_hi flags exactly which words change (I, am); mild leak. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -3304,7 +3305,7 @@
           "kind": "practice",
           "difficulty": 3,
           "prompt_en": "Change to reported speech: The doctor said to Riya, \"Bring out the photographs.\"",
-          "prompt_hi": "Yeh order/advice hai. Reported speech mein 'told ... to' use hota hai.",
+          "prompt_hi": "Ise reported speech mein badlo: The doctor said to Riya, \"Bring out the photographs.\"",
           "answer": "The doctor told Riya to bring out the photographs.",
           "acceptable": [
             "The doctor asked Riya to bring out the photographs.",
@@ -3319,7 +3320,7 @@
           "verified": {
             "solverAnswer": "The doctor told Riya to bring out the photographs.",
             "agrees": true,
-            "note": "Key agrees. prompt_hi states the structure 'told ... to'; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi states the structure 'told ... to'; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -3328,22 +3329,24 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Dadaji said, \"I live on Gandhi Street.\" A student reported it as: 'Dadaji said that I live on Gandhi Street.' Find and correct the mistake.",
-          "prompt_hi": "Student ne 'I' aur 'live' wahi chhod diye. Sahi kya hoga?",
-          "answer": "Dadaji said that he lived on Gandhi Street.",
+          "prompt_hi": "Dadaji ne kaha, \"I live on Gandhi Street.\" Ek student ne ise aise report kiya: 'Dadaji said that I live on Gandhi Street.' Galti dhoondho aur use theek karo.",
+          "answer": "Dadaji said that he lived on Gandhi Street. ('he lives' is also correct, because it is still true)",
           "acceptable": [
-            "Dadaji said he lived on Gandhi Street."
+            "Dadaji said he lived on Gandhi Street.",
+            "Dadaji said that he lives on Gandhi Street.",
+            "Dadaji said he lives on Gandhi Street."
           ],
           "hints": [
             "Who does 'I' refer to?",
-            "Change the tense after 'said'.",
+            "Check the pronoun, then the tense after 'said'.",
             "Dadaji said that ___ ___ on Gandhi Street.",
-            "Correct: 'Dadaji said that he lived on Gandhi Street.'"
+            "Correct: 'Dadaji said that he lived on Gandhi Street.' ('he lives' is fine too, since it is still true.)"
           ],
           "targetsMisconception": "c9-english-ch07-t01-m-no-backshift",
           "verified": {
             "solverAnswer": "'I' should be 'he' and 'live' -> 'lived' (or 'lives' if still true): 'Dadaji said that he lived on Gandhi Street.'",
             "agrees": true,
-            "note": "Key agrees. Also accept 'Dadaji said that he lives on Gandhi Street.' (no backshift is correct for a still-true fact). prompt_hi names both errors ('I' aur 'live'); prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. Also accept 'Dadaji said that he lives on Gandhi Street.' (no backshift is correct for a still-true fact). prompt_hi names both errors ('I' aur 'live'); prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: acceptable widened: no backshift ('lives') is correct for a fact that is still true; prompt_hi made faithful (no longer names both errors)."
           }
         },
         {
@@ -3352,7 +3355,7 @@
           "kind": "contrast",
           "difficulty": 2,
           "prompt_en": "Fill with remember or remind: 'I ___ my first day at school.' 'This photo ___ me of my first day.'",
-          "prompt_hi": "Pehle mein yaad aana, doosre mein yaad dilana. Kaunsa word kahan?",
+          "prompt_hi": "Khaali jagah mein remember ya remind bharo: 'I ___ my first day at school.' 'This photo ___ me of my first day.'",
           "answer": "remember; reminds",
           "acceptable": [
             "remember, reminds"
@@ -3367,7 +3370,7 @@
           "verified": {
             "solverAnswer": "remember; reminds.",
             "agrees": true,
-            "note": "Key agrees. prompt_hi ('Pehle mein yaad aana, doosre mein yaad dilana') maps each blank to its meaning; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi ('Pehle mein yaad aana, doosre mein yaad dilana') maps each blank to its meaning; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -3376,7 +3379,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'This song remembers me of my grandmother.'",
-          "prompt_hi": "Gaana kisi ko 'yaad dilata' hai. Kaunsa verb sahi hai?",
+          "prompt_hi": "Galti dhoondho aur theek karo: 'This song remembers me of my grandmother.'",
           "answer": "This song reminds me of my grandmother.",
           "acceptable": [
             "reminds me of"
@@ -3391,7 +3394,7 @@
           "verified": {
             "solverAnswer": "'remembers' -> 'reminds': 'This song reminds me of my grandmother.'",
             "agrees": true,
-            "note": "Key agrees. prompt_hi (\"Gaana kisi ko 'yaad dilata' hai\") gives the meaning of the answer; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi (\"Gaana kisi ko 'yaad dilata' hai\") gives the meaning of the answer; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -3531,7 +3534,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Does the speaker feel nothing for her because he cannot remember her face?",
-            "prompt_hi": "'and yet' ke baad kya aata hai? Kya woh use mehsoos karta hai?",
+            "prompt_hi": "Kya speaker ko uske liye kuch mehsoos nahi hota, kyunki use uska chehra yaad nahi?",
             "options": [
               {
                 "text": "No. He feels her presence through scents and sounds; the love remains",
@@ -3560,7 +3563,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which word best describes the tone of the last line, 'but in these things she visits too'?",
-            "prompt_hi": "Last line ko dheere se padho. Ismein dukh hai, ya thodi tasalli bhi?",
+            "prompt_hi": "Last line 'but in these things she visits too' ka tone kaunsa word sabse achhe se batata hai?",
             "options": [
               {
                 "text": "Comforting and tender",
@@ -3594,7 +3597,7 @@
           ],
           "diagnostic": {
             "prompt_en": "As a child, I ___ play in that lane.",
-            "prompt_hi": "Bachpan ki aadat ke liye kya bolte hain? 'used to' ke baad verb ki simple form.",
+            "prompt_hi": "Khaali jagah bharo: 'As a child, I ___ play in that lane.'",
             "options": [
               {
                 "text": "used to",
@@ -3824,7 +3827,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'As a child, I use to play near the temple.'",
-          "prompt_hi": "'use to' mein kya kami hai?",
+          "prompt_hi": "Galti dhoondho: 'As a child, I use to play near the temple.'",
           "answer": "As a child, I used to play near the temple.",
           "acceptable": [
             "used to play",
@@ -3840,7 +3843,7 @@
           "verified": {
             "solverAnswer": "'use to' -> 'used to'.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -3922,11 +3925,15 @@
           "difficulty": 2,
           "prompt_en": "Say naturally in English: 'Mujhe uski bahut yaad aati hai.'",
           "prompt_hi": "Ise natural English mein bolo — word-by-word nahi.",
-          "answer": "I miss her a lot.",
+          "answer": "I miss her (or him) a lot.",
           "acceptable": [
             "I miss her very much.",
             "I miss her so much.",
-            "I really miss her."
+            "I really miss her.",
+            "I miss him a lot.",
+            "I miss him very much.",
+            "I miss them a lot.",
+            "I miss them so much."
           ],
           "hints": [
             "Don't say 'her memory comes to me'.",
@@ -3937,7 +3944,7 @@
           "verified": {
             "solverAnswer": "I miss him/her a lot.",
             "agrees": true,
-            "note": "Key agrees, but 'uski' is gender-neutral: acceptable should include 'I miss him a lot.' / 'I miss them a lot.'"
+            "note": "Key agrees, but 'uski' is gender-neutral: acceptable should include 'I miss him a lot.' / 'I miss them a lot.' RESOLVED: acceptable widened: 'uski' is gender-neutral, so him/them forms are correct."
           }
         }
       ],
@@ -4027,7 +4034,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sentence is correct?",
-            "prompt_hi": "Hindi mein 'halanki ... lekin' dono aate hain, par English mein ek hi lagta hai. Kaunsa sahi hai?",
+            "prompt_hi": "Inmein se kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "Although many stadiums have only stairs, things are changing.",
@@ -4056,7 +4063,7 @@
           ],
           "diagnostic": {
             "prompt_en": "___ her injury, Meghna trained every day.",
-            "prompt_hi": "'despite' ke baad 'of' nahi aata; 'in spite' ke baad aata hai. Kaunsa sahi?",
+            "prompt_hi": "Khaali jagah bharo: '___ her injury, Meghna trained every day.'",
             "options": [
               {
                 "text": "Despite",
@@ -4085,7 +4092,7 @@
           ],
           "diagnostic": {
             "prompt_en": "What does the writer want readers to do?",
-            "prompt_hi": "Writer kya chahta hai — humein dukh ho, ya kuch aur? 'do not ask for pity' wali line yaad karo.",
+            "prompt_hi": "Writer readers se kya karwana chahta hai?",
             "options": [
               {
                 "text": "Give para-athletes equal access and a fair chance",
@@ -4238,7 +4245,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "A headline says: 'Poor girl suffers but still runs.' What is wrong with the framing? Rewrite it.",
-          "prompt_hi": "Is headline mein kya galat hai? Ise respectful bana kar dobara likho.",
+          "prompt_hi": "Ek headline kehti hai: 'Poor girl suffers but still runs.' Is framing mein kya galat hai? Ise dobara likho.",
           "answer": "It uses pity words ('poor', 'suffers') instead of focusing on achievement. Better: 'Para-athlete Meghna sets a new state record'",
           "acceptable": [
             "it shows pity",
@@ -4255,7 +4262,7 @@
           "verified": {
             "solverAnswer": "It frames her with pity ('poor', 'suffers') and lowered expectation ('but still'); rewrite e.g. 'Para-athlete Meghna trains for state championship.'",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -4290,7 +4297,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Join with 'although': 'Many stadiums have only stairs. Things are changing.'",
-          "prompt_hi": "'Although' se jodo. Dhyaan rahe — 'but' nahi lagega.",
+          "prompt_hi": "'although' se jodo: 'Many stadiums have only stairs. Things are changing.'",
           "answer": "Although many stadiums have only stairs, things are changing.",
           "acceptable": [
             "Things are changing, although many stadiums have only stairs.",
@@ -4306,7 +4313,7 @@
           "verified": {
             "solverAnswer": "Although many stadiums have only stairs, things are changing.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -4315,7 +4322,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Despite of her injury, Meghna trained every day.'",
-          "prompt_hi": "Ek extra word hai. Dhoondho.",
+          "prompt_hi": "Galti dhoondho: 'Despite of her injury, Meghna trained every day.'",
           "answer": "Despite her injury, Meghna trained every day.",
           "acceptable": [
             "Despite her injury",
@@ -4331,7 +4338,7 @@
           "verified": {
             "solverAnswer": "'Despite of' -> 'Despite' (or 'In spite of').",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -4340,7 +4347,7 @@
           "kind": "near_transfer",
           "difficulty": 3,
           "prompt_en": "Rewrite with 'despite': 'It was raining, but the team practised.'",
-          "prompt_hi": "'despite' se dobara likho. 'despite' ke baad noun aata hai.",
+          "prompt_hi": "Is sentence ko 'despite' lagakar dobara likho: 'It was raining, but the team practised.'",
           "answer": "Despite the rain, the team practised.",
           "acceptable": [
             "Despite the rain, the team practised.",
@@ -4357,7 +4364,7 @@
           "verified": {
             "solverAnswer": "Despite the rain, the team practised.",
             "agrees": true,
-            "note": "Key agrees. prompt_hi \"'despite' ke baad noun aata hai\" is hint 2; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi \"'despite' ke baad noun aata hai\" is hint 2; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -4546,7 +4553,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Did the runners who turned back lose?",
-            "prompt_hi": "Kya peeche mudne wale runners haar gaye? Stadium kyun garja?",
+            "prompt_hi": "Jo runners peeche mude, kya woh haar gaye?",
             "options": [
               {
                 "text": "No. They showed a bigger kind of winning: kindness and sportsmanship",
@@ -4575,7 +4582,7 @@
           ],
           "diagnostic": {
             "prompt_en": "The runners ___ when the smallest one fell.",
-            "prompt_hi": "Past continuous = was/were + verb-ing. Lambi chalti action kaunsi thi?",
+            "prompt_hi": "Khaali jagah bharo: 'The runners ___ when the smallest one fell.'",
             "options": [
               {
                 "text": "were running",
@@ -4609,7 +4616,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Our team ___ the visiting team 3-1.",
-            "prompt_hi": "Match ya race 'win' karte hain, team ya player ko 'beat' karte hain. Yahaan kya aayega?",
+            "prompt_hi": "Khaali jagah bharo: 'Our team ___ the visiting team 3-1.'",
             "options": [
               {
                 "text": "beat",
@@ -4645,14 +4652,14 @@
           ],
           "hints": [
             "Look at the first line.",
-            "It is in the title too.",
+            "It is the very first word of the poem.",
             "___ runners crouched along the line.",
             "Nine."
           ],
           "verified": {
             "solverAnswer": "Nine.",
             "agrees": true,
-            "note": "Key agrees. Hint 2 'It is in the title too' refers to a title ('Nine Gold Medals') the child is never shown in this item."
+            "note": "Key agrees. Hint 2 'It is in the title too' refers to a title ('Nine Gold Medals') the child is never shown in this item. RESOLVED: hint 2 no longer points to a title the child is never shown."
           }
         },
         {
@@ -4686,11 +4693,14 @@
           "difficulty": 3,
           "prompt_en": "Read this poem: 'Nine runners crouched along the line, / the crowd a roar, the sun a flame; / the whistle blew, and all was fine / until the smallest stumbled, lame. // One turned. Then two. Then all the rest / ran back to help him stand once more; / they crossed the line together, pressed / in one long hug, and the stadium roared.' What is the turning point of the poem, and why?",
           "prompt_hi": "Poem ka turning point kaunsa hai? Kahani kab badalti hai?",
-          "answer": "When the first runner turns back ('One turned'), because the race changes from a competition into an act of kindness",
+          "answer": "When the smallest runner stumbles and the first runner turns back ('One turned'): the race changes from a competition into an act of kindness",
           "acceptable": [
             "when one runner turned back",
             "One turned",
-            "when they stopped to help"
+            "when they stopped to help",
+            "when the smallest runner stumbled",
+            "until the smallest stumbled",
+            "when the smallest fell and the others turned back"
           ],
           "hints": [
             "Where does the story change direction?",
@@ -4701,7 +4711,7 @@
           "verified": {
             "solverAnswer": "When the smallest runner stumbles and the others turn back ('One turned. Then two.'); the race changes from competition to kindness.",
             "agrees": true,
-            "note": "Key agrees in substance, but key/acceptable are too narrow: 'until the smallest stumbled' is a defensible turning point (the 'until' marks the shift). Add 'when the smallest runner stumbled' to acceptable."
+            "note": "Key agrees in substance, but key/acceptable are too narrow: 'until the smallest stumbled' is a defensible turning point (the 'until' marks the shift). Add 'when the smallest runner stumbled' to acceptable. RESOLVED: acceptable widened: the stumble ('until the smallest stumbled') is a defensible turning point."
           }
         },
         {
@@ -4709,23 +4719,25 @@
           "skillId": "c9-english-ch10-t01-s1",
           "kind": "predict",
           "difficulty": 2,
-          "prompt_en": "Before reading stanza two: 'the smallest stumbled, lame.' What do you think the other runners will do? Give a reason.",
-          "prompt_hi": "Doosra stanza padhne se pehle socho: baaki runners kya karenge, aur kyun?",
-          "answer": "Any reasoned prediction (run on to win, or stop to help); in the poem, they all turn back to help him",
+          "prompt_en": "Read this poem: 'Nine runners crouched along the line, / the crowd a roar, the sun a flame; / the whistle blew, and all was fine / until the smallest stumbled, lame. // One turned. Then two. Then all the rest / ran back to help him stand once more; / they crossed the line together, pressed / in one long hug, and the stadium roared.' Suppose the poet adds a third stanza about the medal ceremony. What do you think happens there? Give a reason from the poem.",
+          "prompt_hi": "Socho poet ek teesra stanza jodta hai, medal ceremony ke baare mein. Wahaan kya hoga, tumhe kya lagta hai? Poem se ek wajah bhi batao.",
+          "answer": "Any prediction that fits the poem's idea, with a reason from it: e.g. all nine get a medal or share the honour, because they crossed the line together and the stadium cheered them all",
           "acceptable": [
-            "they will stop and help him",
-            "they will keep running to win"
+            "they all get gold medals because they finished together",
+            "they share the medal because they crossed the line as one",
+            "everyone is cheered as a winner because they chose kindness",
+            "the smallest runner thanks the others because they came back for him"
           ],
           "hints": [
-            "What would most racers do?",
-            "What might kind racers do?",
-            "I think they will ___ because ___.",
-            "Any reason is fine; in the poem, all of them turn back to help."
+            "What did the runners do together at the end?",
+            "How did the crowd react to that?",
+            "I think ___ because in the poem they ___.",
+            "Any reason from the poem is fine, e.g. they all get medals because they crossed the line together."
           ],
           "verified": {
             "solverAnswer": "Open prediction, e.g. they will keep running to win, or help him; reason given.",
             "agrees": true,
-            "note": "Key agrees (open prediction). Sequencing risk: i01/i03/i05 in this topic print the whole poem, so this 'before reading stanza two' item only works if posed first; Director must order it before any full-poem item."
+            "note": "Key agrees (open prediction). Sequencing risk: i01/i03/i05 in this topic print the whole poem, so this 'before reading stanza two' item only works if posed first; Director must order it before any full-poem item. RESOLVED: sequencing risk removed: the predict item no longer depends on being posed before the full poem is shown; it now predicts an unwritten third stanza, and prints the poem like its siblings."
           }
         },
         {
@@ -4811,7 +4823,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Join with 'when': 'The runners were running. The smallest one fell.'",
-          "prompt_hi": "'when' se jodo. Lambi chalti action aur beech mein kya hua?",
+          "prompt_hi": "'when' se jodo: 'The runners were running. The smallest one fell.'",
           "answer": "The runners were running when the smallest one fell.",
           "acceptable": [
             "While the runners were running, the smallest one fell.",
@@ -4827,7 +4839,7 @@
           "verified": {
             "solverAnswer": "The smallest one fell when the runners were running. / When the runners were running, the smallest one fell.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -4836,7 +4848,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'The people were cheer when the whistle blew.'",
-          "prompt_hi": "'were' ke baad verb kaisa hona chahiye?",
+          "prompt_hi": "Galti dhoondho: 'The people were cheer when the whistle blew.'",
           "answer": "The people were cheering when the whistle blew.",
           "acceptable": [
             "were cheering"
@@ -4851,7 +4863,7 @@
           "verified": {
             "solverAnswer": "'were cheer' -> 'were cheering' (or 'cheered').",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -4885,7 +4897,7 @@
           "kind": "contrast",
           "difficulty": 2,
           "prompt_en": "Fill with won or beat: 'We ___ the match.' 'We ___ the other team.'",
-          "prompt_hi": "Match 'win' karte hain, team ko 'beat'. Kaunsa kahan?",
+          "prompt_hi": "Khaali jagah mein won ya beat bharo: 'We ___ the match.' 'We ___ the other team.'",
           "answer": "won; beat",
           "acceptable": [
             "won, beat"
@@ -4900,7 +4912,7 @@
           "verified": {
             "solverAnswer": "won; beat.",
             "agrees": true,
-            "note": "Key agrees. prompt_hi (\"Match 'win' karte hain, team ko 'beat'\") gives the answer; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi (\"Match 'win' karte hain, team ko 'beat'\") gives the answer; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -4909,7 +4921,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'India won Australia in the final.'",
-          "prompt_hi": "Kya kisi team ko 'won' karte hain? Galti dhoondho.",
+          "prompt_hi": "Galti dhoondho: 'India won Australia in the final.'",
           "answer": "India beat Australia in the final.",
           "acceptable": [
             "India beat Australia",
@@ -4926,7 +4938,7 @@
           "verified": {
             "solverAnswer": "'won' -> 'beat': 'India beat Australia in the final.'",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -5042,7 +5054,7 @@
           ],
           "diagnostic": {
             "prompt_en": "You took the solo again, ___?",
-            "prompt_hi": "Hindi mein 'hai na?' har jagah chalta hai, par English tag verb aur subject se banta hai. 'took' ke liye kya?",
+            "prompt_hi": "Sahi tag bharo: 'You took the solo again, ___?'",
             "options": [
               {
                 "text": "didn't you",
@@ -5071,7 +5083,7 @@
           ],
           "diagnostic": {
             "prompt_en": "In '(sets the case down hard)', what should the actor playing Tara do?",
-            "prompt_hi": "Bracket wali line bolni hai ya karni hai?",
+            "prompt_hi": "'(sets the case down hard)' mein Tara ka role karne wale actor ko kya karna chahiye?",
             "options": [
               {
                 "text": "Do the action, setting the case down hard, without saying those words",
@@ -5100,7 +5112,7 @@
           ],
           "diagnostic": {
             "prompt_en": "When Tara says 'You never ask. You just get,' what does she really feel?",
-            "prompt_hi": "Tara ke words ke peeche kya feeling hai? Sirf fact bata rahi hai kya?",
+            "prompt_hi": "Jab Tara kehti hai 'You never ask. You just get,' toh woh asal mein kya feel karti hai?",
             "options": [
               {
                 "text": "Jealous and hurt that she is overlooked",
@@ -5279,7 +5291,7 @@
           "difficulty": 4,
           "prompt_en": "Explain to a younger child how music helps the two friends in this scene.",
           "prompt_hi": "Ek chhote bachche ko samjhao ki music ne dono doston ki kaise madad ki.",
-          "answer": "Their words caused hurt, but when they played, they could 'talk' without arguing; answering each other's music turned rivalry into teamwork; the title 'Twin Melodies' means two tunes and two friends in harmony",
+          "answer": "Their words caused hurt, but when they played, they could 'talk' without arguing; answering each other's music turned rivalry into teamwork, so two tunes became two friends in harmony",
           "acceptable": [
             "music helped them make up",
             "they understood each other through music",
@@ -5294,7 +5306,7 @@
           "verified": {
             "solverAnswer": "The friends were upset with each other, but instead of fighting they played music together. When their sitar and violin talked to each other, they forgot their anger and became a team.",
             "agrees": true,
-            "note": "Key agrees. Key mentions the title 'Twin Melodies', which the child never sees in the item; drop it from the key idea or show the title."
+            "note": "Key agrees. Key mentions the title 'Twin Melodies', which the child never sees in the item; drop it from the key idea or show the title. RESOLVED: key idea no longer cites the title 'Twin Melodies', which the child is not shown."
           }
         },
         {
@@ -5303,7 +5315,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Add the question tag: 'Sir chose you, ___?'",
-          "prompt_hi": "Is sentence ka tag banao. 'chose' ka helper kya hoga?",
+          "prompt_hi": "Question tag lagao: 'Sir chose you, ___?'",
           "answer": "didn't he",
           "acceptable": [
             "didn't he?"
@@ -5318,7 +5330,7 @@
           "verified": {
             "solverAnswer": "didn't he?",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -5327,7 +5339,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'You will play with me, isn't it?'",
-          "prompt_hi": "'will' wale sentence ka tag kya hoga? 'isn't it' sahi hai kya?",
+          "prompt_hi": "Galti dhoondho: 'You will play with me, isn't it?'",
           "answer": "You will play with me, won't you?",
           "acceptable": [
             "won't you"
@@ -5342,7 +5354,7 @@
           "verified": {
             "solverAnswer": "'isn't it?' -> 'won't you?'",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -5351,7 +5363,7 @@
           "kind": "near_transfer",
           "difficulty": 3,
           "prompt_en": "Add tags: 'She is late, ___?' 'They can sing, ___?' 'He doesn't practise, ___?'",
-          "prompt_hi": "Teeno sentences ke tag banao. Positive ka negative tag, negative ka positive.",
+          "prompt_hi": "Teeno sentences mein question tag lagao: 'She is late, ___?' 'They can sing, ___?' 'He doesn't practise, ___?'",
           "answer": "isn't she; can't they; does he",
           "acceptable": [
             "isn't she, can't they, does he"
@@ -5366,7 +5378,7 @@
           "verified": {
             "solverAnswer": "isn't she? / can't they? / does he?",
             "agrees": true,
-            "note": "Key agrees. prompt_hi states the flip rule (= hint 2); prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi states the flip rule (= hint 2); prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -5527,7 +5539,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "Hindi mein 'gaana sunna', par English mein 'listen' ke baad ek chhota word lagta hai. Kaunsa?",
+            "prompt_hi": "Inmein se kaunsa sahi hai?",
             "options": [
               {
                 "text": "I listen to music every evening.",
@@ -5556,7 +5568,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Who is 'you' in the poem?",
-            "prompt_hi": "Line 3 dhyaan se suno: 'you come, a tune'. 'you' kaun hai?",
+            "prompt_hi": "Poem mein 'you' kaun hai?",
             "options": [
               {
                 "text": "Music (a tune), spoken to as if it were a friend",
@@ -5585,7 +5597,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which word means the pattern of beats in music?",
-            "prompt_hi": "Taali se jo pattern banta hai woh kya hai — rhythm ya melody?",
+            "prompt_hi": "Music mein beats ke pattern ko kaunsa word kehte hain?",
             "options": [
               {
                 "text": "rhythm",
@@ -5637,7 +5649,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Read this poem: 'When rooms grow quiet and the light / goes grey and leans against the door, / you come, a tune, and sit tonight / beside me as you have before. // You never ask me why I'm sad; / you only hum until I hum. / You lend the courage that I had / and lost, and stay until it comes.' Who is 'you' in the poem?",
-          "prompt_hi": "Poem mein 'you' kaun hai? Line 3 dekho.",
+          "prompt_hi": "Poem mein 'you' kaun hai?",
           "answer": "Music, a tune",
           "acceptable": [
             "music",
@@ -5655,7 +5667,7 @@
           "verified": {
             "solverAnswer": "Music / a tune.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -5812,7 +5824,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Every night I listen old songs with my father.'",
-          "prompt_hi": "Ek chhota word missing hai. Kahaan?",
+          "prompt_hi": "Galti dhoondho: 'Every night I listen old songs with my father.'",
           "answer": "Every night I listen to old songs with my father.",
           "acceptable": [
             "listen to old songs"
@@ -5827,7 +5839,7 @@
           "verified": {
             "solverAnswer": "'listen old songs' -> 'listen to old songs'.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -5934,7 +5946,7 @@
           "kind": "translate_rep",
           "difficulty": 2,
           "prompt_en": "Say in natural English: 'Mujhe gaane sunna pasand hai.'",
-          "prompt_hi": "Ise English mein bolo — 'listen' ke saath kya lagta hai, yaad rakhna.",
+          "prompt_hi": "Ise natural English mein bolo: 'Mujhe gaane sunna pasand hai.'",
           "answer": "I like listening to songs.",
           "acceptable": [
             "I like to listen to songs.",
@@ -5951,7 +5963,7 @@
           "verified": {
             "solverAnswer": "I like listening to songs / music.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         }
       ],
@@ -6040,7 +6052,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "'yesterday' jaisa khatam hua samay ho toh 'has' nahi lagta. Kaunsa sahi hai?",
+            "prompt_hi": "Inmein se kaunsa sahi hai?",
             "options": [
               {
                 "text": "He delivered the letter yesterday.",
@@ -6069,7 +6081,7 @@
           ],
           "diagnostic": {
             "prompt_en": "He has worked here ___ thirty years.",
-            "prompt_hi": "Hindi mein 'tees saal se' — par English mein length ke liye 'for', starting point ke liye 'since'.",
+            "prompt_hi": "Khaali jagah bharo: 'He has worked here ___ thirty years.'",
             "options": [
               {
                 "text": "for",
@@ -6098,7 +6110,7 @@
           ],
           "diagnostic": {
             "prompt_en": "What does Tsering mean by 'I also carry hope'?",
-            "prompt_hi": "Kya Tsering ke bag mein 'hope' naam ki koi cheez hai? Ya kuch aur matlab hai?",
+            "prompt_hi": "'I also carry hope' se Tsering ka kya matlab hai?",
             "options": [
               {
                 "text": "The letters bring news that gives isolated families hope and connection",
@@ -6274,7 +6286,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Fill with for or since: 'He has carried letters ___ 1995.' 'He has walked this road ___ thirty years.'",
-          "prompt_hi": "Starting point ke saath kya, aur length ke saath kya?",
+          "prompt_hi": "for ya since bharo: 'He has carried letters ___ 1995.' 'He has walked this road ___ thirty years.'",
           "answer": "since; for",
           "acceptable": [
             "since, for"
@@ -6289,7 +6301,7 @@
           "verified": {
             "solverAnswer": "since; for.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -6298,7 +6310,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Tsering has reached the village yesterday.'",
-          "prompt_hi": "'yesterday' ke saath 'has reached' chalega kya?",
+          "prompt_hi": "Galti dhoondho: 'Tsering has reached the village yesterday.'",
           "answer": "Tsering reached the village yesterday.",
           "acceptable": [
             "reached"
@@ -6313,7 +6325,7 @@
           "verified": {
             "solverAnswer": "'has reached' -> 'reached' (with 'yesterday', past simple).",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -6347,7 +6359,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Use the right form of 'post': 'The ___ service reaches every village. The ___ knocked at noon.'",
-          "prompt_hi": "'post' se adjective aur person wale words banao.",
+          "prompt_hi": "'post' ka sahi form lagao: 'The ___ service reaches every village. The ___ knocked at noon.'",
           "answer": "postal; postman",
           "acceptable": [
             "postal, postman",
@@ -6362,7 +6374,7 @@
           "verified": {
             "solverAnswer": "postal; postman.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -6371,7 +6383,7 @@
           "kind": "contrast",
           "difficulty": 2,
           "prompt_en": "Fill with sent or delivered: 'I ___ a letter to my aunt. The postman ___ it to her door.'",
-          "prompt_hi": "Bhejta kaun hai aur ghar tak pahunchaata kaun hai?",
+          "prompt_hi": "sent ya delivered bharo: 'I ___ a letter to my aunt. The postman ___ it to her door.'",
           "answer": "sent; delivered",
           "acceptable": [
             "sent, delivered"
@@ -6385,7 +6397,7 @@
           "verified": {
             "solverAnswer": "sent; delivered.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -6547,7 +6559,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Each word ___ power.",
-            "prompt_hi": "'Each' ek-ek ki baat karta hai, toh verb singular hoga. 'has' ya 'have'?",
+            "prompt_hi": "Khaali jagah bharo: 'Each word ___ power.'",
             "options": [
               {
                 "text": "has",
@@ -6576,7 +6588,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is kinder to say about a classmate who asks many questions: 'She is curious' or 'She is nosy'?",
-            "prompt_hi": "Dono ka matlab milta-julta hai, par ek mein taareef hai aur ek mein taana. Kaunsa kind hai?",
+            "prompt_hi": "Bahut sawaal poochne wali classmate ke liye kya kehna zyada kind hai: 'She is curious' ya 'She is nosy'?",
             "options": [
               {
                 "text": "She is curious",
@@ -6605,7 +6617,7 @@
           ],
           "diagnostic": {
             "prompt_en": "According to the poem, can words hurt?",
-            "prompt_hi": "Poem ke hisaab se kya words chot pahuncha sakte hain? 'bruise' wali line yaad karo.",
+            "prompt_hi": "Poem ke hisaab se, kya words chot pahuncha sakte hain?",
             "options": [
               {
                 "text": "Yes, they can leave a lasting hurt, like a bruise that will not heal",
@@ -6708,11 +6720,15 @@
           "difficulty": 2,
           "prompt_en": "Read this poem: 'A word can be a spark that lights / a lamp inside a frightened room; / a word can be a stone that bites / and leaves a bruise no balm can soothe. // So weigh each word before it flies; / once spoken, it will not return. / Say less, say true, and say it wise: / a word can heal, a word can burn.' 'So weigh each word before it flies.' What is a word being compared to, and why?",
           "prompt_hi": "'before it flies' — word ko kis cheez jaisa bataya hai, aur kyun?",
-          "answer": "Something that flies, like a bird or an arrow: once it leaves, it cannot be called back",
+          "answer": "Two comparisons: 'weigh' treats a word as something with weight that must be measured before use, and 'flies' treats it like a bird or an arrow: once it leaves, it cannot be called back",
           "acceptable": [
             "a bird",
             "an arrow",
-            "something that flies away and cannot be caught"
+            "something that flies away and cannot be caught",
+            "something heavy that you weigh",
+            "something with weight",
+            "a weight, because words matter and must be weighed",
+            "something you weigh, and a bird or arrow that flies"
           ],
           "hints": [
             "What things fly away?",
@@ -6723,7 +6739,7 @@
           "verified": {
             "solverAnswer": "A word is compared to something that is weighed (and to a bird/arrow that flies); we should think carefully about how heavy/important words are before speaking because once spoken they can't be taken back.",
             "agrees": true,
-            "note": "Key agrees partly. The line also compares a word to something with weight ('weigh each word'); acceptable should include 'something heavy that you weigh / measure' alongside bird/arrow."
+            "note": "Key agrees partly. The line also compares a word to something with weight ('weigh each word'); acceptable should include 'something heavy that you weigh / measure' alongside bird/arrow. RESOLVED: acceptable widened: 'weigh' also compares a word to something with weight."
           }
         },
         {
@@ -6833,7 +6849,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Choose: 'Each word (has / have) power.' 'Words (has / have) power.' 'One of the words (was / were) unkind.'",
-          "prompt_hi": "Har sentence mein sahi verb chuno. Subject ek hai ya kai?",
+          "prompt_hi": "Sahi verb chuno: 'Each word (has / have) power.' 'Words (has / have) power.' 'One of the words (was / were) unkind.'",
           "answer": "has; have; was",
           "acceptable": [
             "has, have, was"
@@ -6848,7 +6864,7 @@
           "verified": {
             "solverAnswer": "has; have; was.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -6857,7 +6873,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Every one of his words were kind.'",
-          "prompt_hi": "'Every one' ek hai ya kai? Verb dekho.",
+          "prompt_hi": "Galti dhoondho: 'Every one of his words were kind.'",
           "answer": "Every one of his words was kind.",
           "acceptable": [
             "was kind",
@@ -6873,7 +6889,7 @@
           "verified": {
             "solverAnswer": "'were' -> 'was'.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -7036,7 +7052,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "Hindi mein 'agar tum karoge' — par English mein 'if' wale hisse mein 'will' nahi aata. Kaunsa sahi hai?",
+            "prompt_hi": "Inmein se kaunsa sahi hai?",
             "options": [
               {
                 "text": "If you train every day, you will improve.",
@@ -7065,7 +7081,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Did Anjali show perseverance even though she sometimes wanted to quit?",
-            "prompt_hi": "Kya perseverance ka matlab hai kabhi haar na mehsoos karna? Anjali ne kya kiya?",
+            "prompt_hi": "Kya Anjali ne perseverance dikhaya, jabki kabhi-kabhi uska quit karne ka mann hua?",
             "options": [
               {
                 "text": "Yes. Perseverance means continuing despite failure and doubt",
@@ -7094,7 +7110,7 @@
           ],
           "diagnostic": {
             "prompt_en": "'She did not give up' means:",
-            "prompt_hi": "'give up' do words hain, par milkar ek naya matlab banta hai. Kya hai?",
+            "prompt_hi": "'She did not give up' ka matlab kya hai?",
             "options": [
               {
                 "text": "She did not stop trying",
@@ -7298,7 +7314,7 @@
           "kind": "practice",
           "difficulty": 2,
           "prompt_en": "Complete: 'If you ___ (practise) every day, you ___ (improve).'",
-          "prompt_hi": "'If' ke saath present simple, doosre hisse mein will.",
+          "prompt_hi": "Sentence poora karo: 'If you ___ (practise) every day, you ___ (improve).'",
           "answer": "If you practise every day, you will improve.",
           "acceptable": [
             "practise; will improve",
@@ -7314,7 +7330,7 @@
           "verified": {
             "solverAnswer": "practise; will improve.",
             "agrees": true,
-            "note": "Key agrees. prompt_hi (\"'If' ke saath present simple, doosre hisse mein will\") gives the full rule; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en."
+            "note": "Key agrees. prompt_hi (\"'If' ke saath present simple, doosre hisse mein will\") gives the full rule; prompt_hi adds scaffolding absent from prompt_en that gives away the rule/answer early (hint-2+ level); trim prompt_hi to a faithful rendering of prompt_en. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -7323,7 +7339,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'If I will wake up at five, I will reach the pool on time.'",
-          "prompt_hi": "Ek 'will' extra hai. Kahaan?",
+          "prompt_hi": "Galti dhoondho: 'If I will wake up at five, I will reach the pool on time.'",
           "answer": "If I wake up at five, I will reach the pool on time.",
           "acceptable": [
             "If I wake up at five"
@@ -7338,7 +7354,7 @@
           "verified": {
             "solverAnswer": "'If I will wake up' -> 'If I wake up'.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {
@@ -7549,7 +7565,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "Mana karne wala command English mein kaise banta hai? 'No' se, ya 'Don't' + verb se?",
+            "prompt_hi": "Inmein se kaunsa sahi hai?",
             "options": [
               {
                 "text": "Don't give up.",
@@ -7583,7 +7599,7 @@
           ],
           "diagnostic": {
             "prompt_en": "'Who said the sky must be denied / to one who rises, tries again?' The poet wants the reader to:",
-            "prompt_hi": "Kya poet sach mein kisi ka naam pooch raha hai? Ya kuch aur kehna chahta hai?",
+            "prompt_hi": "'Who said the sky must be denied / to one who rises, tries again?' Poet reader se kya chahta hai?",
             "options": [
               {
                 "text": "Feel that the answer is obvious: no one; nothing can stop someone who keeps trying",
@@ -7612,7 +7628,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which shows self-belief, not arrogance?",
-            "prompt_hi": "Khud par bharosa aur ghamand mein farak hai. Kaunsa line bharosa dikhati hai?",
+            "prompt_hi": "Inmein se kaunsa self-belief dikhata hai, arrogance nahi?",
             "options": [
               {
                 "text": "'I can learn this if I keep practising.'",
@@ -7838,7 +7854,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'No lose hope, my friend.'",
-          "prompt_hi": "Command mein 'No' sahi hai kya?",
+          "prompt_hi": "Galti dhoondho: 'No lose hope, my friend.'",
           "answer": "Don't lose hope, my friend.",
           "acceptable": [
             "Don't lose hope",
@@ -7854,7 +7870,7 @@
           "verified": {
             "solverAnswer": "'No lose hope' -> 'Don't lose hope'.",
             "agrees": true,
-            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
+            "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded. RESOLVED: prompt_hi rewritten as a faithful Hinglish rendering of prompt_en; scaffolding left to the hints (it had stated the rule/answer or pointed to the error before any hint)."
           }
         },
         {

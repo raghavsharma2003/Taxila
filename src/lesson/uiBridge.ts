@@ -72,7 +72,7 @@ export class UiBridge {
       this.clips = [];
       this.store.set({ buffered: 0, ended: null });
       const link =
-        mode === "text"
+        mode === "text" && !ctx.cascade
           ? new TextLink({ lessonId: ctx.lessonId, levels: ctx.levels, speech: this.cachingSpeech })
           : defaultLinkFactory(mode, ctx);
       this.link = link;

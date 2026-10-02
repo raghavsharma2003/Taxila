@@ -28,7 +28,8 @@ export const MASTERED_P = 0.8;
 /** Probes that count as generative / transfer evidence (rule 2b): teach-back, why, near/far transfer, inverse, translate. */
 export const GENERATIVE_PROBES = new Set(["P1", "P2", "P3", "P4", "P13", "P14"]);
 /** Delayed retrieval must cross into a later session with at least this gap (same-sitting recall is not delayed). */
-export const MIN_DELAY_MS = 6 * 3600_000;
+/** 20 h, the PRODUCT-DESIGN §6.4.1 delayed-check rule (was 6 h; a same-evening second session is not delayed). */
+export const MIN_DELAY_MS = 20 * 3600_000;
 /** Expanding review intervals in days. */
 export const REVIEW_DAYS = [1, 3, 7, 16, 35, 75];
 const DAY = 86_400_000;

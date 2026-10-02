@@ -4,8 +4,8 @@
 // from the SAME string (inherited rejection: two prompts for two lanes).
 import { randomUUID } from "crypto";
 import { q, one, tx, guardStmt, GUARD_FAILED } from "../db.js";
-import { need, bad, forbidden, notFound, send, HttpError } from "../http.js";
-import { requireChild, hasConsent } from "../auth.js";
+import { need, bad, forbidden, notFound, unauthorized, send, HttpError } from "../http.js";
+import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
 import { turnVoice } from "../voice/features.js";
 import { chat, mintRealtimeSecret, endpoint, DEPLOY } from "../azure.js";
 import { getTopic, getKit, pinKit, pinnedKit, topicOf, topicSequence } from "../content/index.js";
@@ -45,6 +45,30 @@ async function loadLessonFor(req, lessonId) {
   if (!lesson) throw notFound("lesson not found");
   const { guardian, child } = await requireChild(req, lesson.child_id);
   return { lesson, guardian, child };
+}
+
+/**
+ * loadLessonFor + the core_tutoring consent check as ONE query, for the turn route: it is on the cascade
+ * lane's reply path, where each sequential round trip to Neon is ~0.2-0.4 s (four of them were ~1 s of the
+ * measured Director time). Same answers in the same order: 400 bad id, 404 no lesson, 401 not signed in /
+ * expired, 403 not this guardian's child; `core` is the latest core_tutoring consent row (hasConsent's rule).
+ */
+async function loadTurnContext(req, lessonId) {
+  if (!/^[0-9a-f-]{36}$/i.test(String(lessonId))) throw bad("invalid lessonId");
+  const row = await one(
+    `select l.*, to_jsonb(c) as child_row, to_jsonb(g) as guardian_row,
+       (select granted from consent k where k.guardian_id = g.id and (k.child_id = c.id or k.child_id is null)
+          and k.purpose = 'core_tutoring' order by k.created_at desc limit 1) as core_ok
+     from lesson l join child c on c.id = l.child_id
+     left join auth_session s on s.token_hash = $2 and s.expires_at > now()
+     left join guardian g on g.id = s.guardian_id
+     where l.id = $1`, [lessonId, sessionTokenHash(req) ?? ""]);
+  if (!row) throw notFound("lesson not found");
+  const { child_row: child, guardian_row: g, core_ok: core, ...lesson } = row;
+  if (!sessionTokenHash(req)) throw unauthorized();
+  if (!g) throw unauthorized("session expired");
+  if (child.guardian_id !== g.id) throw forbidden("child not found for this account");
+  return { lesson, guardian: { id: g.id, email: g.email, name: g.name, locale: g.locale }, child, core: !!core };
 }
 
 /**
@@ -386,17 +410,13 @@ function activitySummary(events, dropped) {
 async function turn(req, res, body) {
   const t0 = performance.now();
   const trace = [];
-  const { lesson, guardian, child } = await loadLessonFor(req, need(body, "lessonId").lessonId);
+  const { lesson, guardian, child, core } = await loadTurnContext(req, need(body, "lessonId").lessonId);
   if (lesson.ended_at) throw new HttpError(409, "lesson has ended");
   const childText = String(body.childText || "").slice(0, 2000).trim();
   // Consent is checked per turn, like start and token: once core_tutoring is withdrawn the child's words are
   // not stored, classified or sent to a model. The safety predicate still reads them (on this server only),
   // and a disclosure still leaves an incident row — without the transcript.
-  // The pinned kit is read alongside the consent check (both are on the reply's critical path); it is only
-  // used once consent holds.
-  const kitP = kitFor(lesson.topic_id, lesson.state);
-  kitP.catch(() => {});
-  if (!(await hasConsent(guardian.id, child.id, "core_tutoring"))) {
+  if (!core) {
     const safety = scanSafety(childText);
     if (safety.distress) {
       await q("insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3) returning id",
@@ -412,7 +432,7 @@ async function turn(req, res, body) {
   const voiceP = body.voiceFeatures && !body.typed
     ? turnVoice({ lessonId: lesson.id, childId: child.id, itemId: prev.activeItemId, voiceFeatures: body.voiceFeatures })
     : Promise.resolve(null);
-  const kit = await kitP;
+  const kit = await kitFor(lesson.topic_id, state);
   // The lane is the lesson's mode. `typed` only says there was no ASR: a typed or tapped turn in a voice
   // lesson is still voice-lane (a text reply for it was never heard, yet was stored as a teacher turn).
   const { textLane, typed } = turnLane(state.mode, body);
@@ -480,7 +500,7 @@ async function turn(req, res, body) {
   if (textLane && !r.hold) {
     const key = replyKey(next, kit, r, instructions, said, historyOf(next));
     const hit = await pickSpeculation(specs, key);
-    speculation = specs.length ? { tried: specs.length, hit: !!hit } : undefined;
+    speculation = specs.length ? { tried: specs.length, hit: !!hit, ...(hit ? {} : { differs: await missReason(specs, key) }) } : undefined;
     if (hit) trace.push(...hit.trace.map((t) => ({ ...t, speculative: true })));
     ({ reply: teacherReply, guard } = hit
       ? hit.result
@@ -633,14 +653,18 @@ function replyKey(next, kit, r, instructions, said, history) {
 }
 
 /**
- * Outcomes worth a speculative reply while the classifier's model call runs, most likely first. The
- * fan-out (TAXILA_SPECULATE, default 2, 0 = off) is extra taxila-fast reply calls per model-classified
- * turn; a miss costs only those tokens, never the reply's quality — the real reply is then written as before.
+ * Outcomes worth a speculative reply while the classifier's model call runs, most likely first. On an item
+ * the model is asked only when the bytes did not decide (no exact key, no bare "pata nahi"), and then
+ * "no evidence" (an off-topic or unclear reply) is as common as a wrong one: measured in
+ * evals/cascade-latency.mjs, 3/3 item turns were no_evidence and a 2-way fan-out of correct/incorrect missed
+ * all three. The fan-out (TAXILA_SPECULATE, default 3, 0 = off) is extra taxila-fast reply calls per
+ * model-classified turn; a miss costs only those tokens, never the reply's quality — the real reply is then
+ * written exactly as before.
  */
-const SPEC_OUTCOMES = { item: ["correct", "incorrect", "partial"], why: ["correct", "incorrect", "partial"], teachback: ["partial", "correct"], none: ["no_evidence"] };
+const SPEC_OUTCOMES = { item: ["incorrect", "no_evidence", "correct", "partial"], why: ["correct", "incorrect", "partial"], teachback: ["partial", "correct"], none: ["no_evidence"] };
 const specFanout = () => {
-  const n = Number(process.env.TAXILA_SPECULATE ?? 2);
-  return Number.isFinite(n) ? Math.max(0, Math.min(3, Math.floor(n))) : 2;
+  const n = Number(process.env.TAXILA_SPECULATE ?? 3);
+  return Number.isFinite(n) ? Math.max(0, Math.min(4, Math.floor(n))) : 3;
 };
 
 function speculate(state, target, flags, planCtx, { said, historyOf }) {
@@ -654,7 +678,11 @@ function speculate(state, target, flags, planCtx, { said, historyOf }) {
       const history = historyOf(next);
       return {
         key: replyKey(next, planCtx.kit, plan.r, plan.instructions, said, history), trace,
-        result: textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history }),
+        result: (() => {
+          const r = textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history });
+          r.catch(() => {});
+          return r;
+        })(),
       };
     });
     p.catch(() => {}); // a failed speculation is a miss, never the turn's error
@@ -662,11 +690,17 @@ function speculate(state, target, flags, planCtx, { said, historyOf }) {
   });
 }
 
-/** The speculative reply whose plan matches `key` (awaited), or null. */
+/**
+ * The speculative reply whose plan matches `key` (awaited), or null. One that could not be written (the model
+ * failed and textReply fell back) is a miss: the real reply gets its own attempt, as it would have without
+ * speculation.
+ */
 async function pickSpeculation(specs, key) {
   for (const p of specs) {
     const s = await p.catch(() => null);
-    if (s?.key === key) return { trace: s.trace, result: await s.result };
+    if (s?.key !== key) continue;
+    const result = await s.result.catch(() => null);
+    return result && !result.guard.caught.includes("unavailable") ? { trace: s.trace, result } : null;
   }
   return null;
 }
@@ -818,6 +852,19 @@ export const routes = {
   "POST /api/lesson/turn": turn,
   "POST /api/lesson/end": end,
 };
+
+const KEY_PARTS = ["instructions", "said", "history", "lastMove", "hintLevel", "pendingWhy", "lang", "ageBand", "spoiled", "upcoming", "hold"];
+/** Debug only: which reply input differed for each speculative plan ("unavailable": its reply failed). */
+async function missReason(specs, key) {
+  const real = JSON.parse(key);
+  return Promise.all(specs.map(async (p) => {
+    const s = await p.catch(() => null);
+    if (!s) return "failed";
+    if (s.key === key) return "unavailable";
+    const k = JSON.parse(s.key);
+    return KEY_PARTS.filter((_, i) => JSON.stringify(k[i]) !== JSON.stringify(real[i])).join("+");
+  }));
+}
 
 /** Internals for tests (the turn's planning and speculation, which need no database or model). */
 export const __test = { planTurn, replyKey, speculate, specFanout };

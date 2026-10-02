@@ -6,9 +6,9 @@
 // reply there (one compile() for every lane), and the client speaks it through tts-stream by seq.
 // Like /api/tts, nothing here speaks free text: only lines the Director stored for that lesson.
 import { one } from "../db.js";
-import { requireChild, requireGuardian, hasConsent } from "../auth.js";
+import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
 import { AzureError, endpoint, mintRealtimeSecret } from "../azure.js";
-import { bad, need, notFound, forbidden, HttpError } from "../http.js";
+import { bad, need, notFound, forbidden, unauthorized, HttpError } from "../http.js";
 import { teacherFor } from "../compiler/characters/index.js";
 import { allowSpeech, MAX_TTS_CHARS, DEFAULT_VOICE } from "./tts.js";
 import { ageBandOf, sttPrompt, sttSession } from "../voice/stt.js";
@@ -142,19 +142,25 @@ async function ttsStream(req, res, body) {
   const { lessonId, seq } = need(body, "lessonId", "seq");
   if (!Number.isInteger(seq) || seq < 1) throw bad("invalid seq");
   if (!/^[0-9a-f-]{36}$/i.test(String(lessonId))) throw bad("invalid lessonId");
-  // This route is on the latency path (child stops → first audio), so it is two queries in parallel, not
-  // requireChild's chain: the turn joined to its lesson's child, and the session's guardian; the ownership
-  // check is the same one requireChild makes (the child is this guardian's). An ended lesson's goodbye is
-  // still spoken (it is stored before the client hears it).
-  const [row, guardian] = await Promise.all([
-    one(`select t.text as turn_text, c.* from turn t join lesson l on l.id = t.lesson_id join child c on c.id = l.child_id
-          where l.id = $1 and t.seq = $2 and t.speaker = 'teacher'`, [lessonId, seq]),
-    requireGuardian(req),
-  ]);
-  if (!row) throw notFound("no teacher turn to speak");
-  if (row.guardian_id !== guardian.id) throw forbidden("child not found for this account");
+  // This route is on the latency path (child stops → first audio), so it is ONE query, not requireChild's
+  // chain (each round trip to Neon over HTTP is ~0.2-0.4 s): the turn joined to its lesson's child and to the
+  // caller's session. The ownership check is the one requireChild makes (the child is this guardian's). An
+  // ended lesson's goodbye is still spoken (it is stored before the client hears it).
+  const tokenHash = sessionTokenHash(req);
+  if (!tokenHash) throw unauthorized();
+  // Driven from the session, so an expired session is a 401 before anything about the turn is revealed.
+  const row = await one(`select s.guardian_id as session_guardian, t.text as turn_text, t.seq as turn_seq, c.*
+      from (select $3::text as h) k
+      left join auth_session s on s.token_hash = k.h and s.expires_at > now()
+      left join lesson l on l.id = $1
+      left join turn t on t.lesson_id = l.id and t.seq = $2 and t.speaker = 'teacher'
+      left join child c on c.id = l.child_id`, [lessonId, seq, tokenHash]);
+  if (!row?.session_guardian) throw unauthorized("session expired");
+  if (row.turn_seq == null) throw notFound("no teacher turn to speak");
+  if (row.guardian_id !== row.session_guardian) throw forbidden("child not found for this account");
+  const guardian = { id: row.session_guardian };
   if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
-  const { turn_text: turnText, ...child } = row;
+  const { turn_text: turnText, session_guardian: _sg, turn_seq: _seq, ...child } = row;
   const text = String(turnText ?? "").trim();
   if (!text) throw notFound("no teacher turn to speak");
   if (text.length > MAX_TTS_CHARS) throw bad(`teacher turn is longer than ${MAX_TTS_CHARS} characters`);

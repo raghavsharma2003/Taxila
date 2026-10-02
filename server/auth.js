@@ -45,6 +45,11 @@ export async function requireGuardian(req) {
   if (!g) throw unauthorized("session expired");
   return g;
 }
+/** The signed-in session's token hash (what auth_session stores), or null: for routes that join it into one query. */
+export function sessionTokenHash(req) {
+  const t = parseCookies(req)[COOKIE];
+  return t ? sha(t) : null;
+}
 /** → { guardian, child } or throws 403 if the child is not this guardian's. */
 export async function requireChild(req, childId) {
   const guardian = await requireGuardian(req);

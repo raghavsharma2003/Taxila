@@ -21,16 +21,16 @@ const MODE_RULE = {
   hi: "Hindi mode, Hindi-medium school (NCERT Hindi books). Expected: Hindi number words and NCERT Hindi-medium terms (तीन बटा चार or तीन-चौथाई; दशमलव; की घात / का वर्ग / का घन; वर्गमूल; ऋण; वर्ग सेंटीमीटर; डिग्री सेल्सियस; प्रतिशत; लाख/करोड़). English number words or English maths terms where a Hindi-medium term exists (three, point, square root, by, minus, percent) are FOREIGN; unit names like सेंटीमीटर, किलोग्राम, डिग्री सेल्सियस are expected loanwords, not foreign.",
 };
 
-const SYS = `You classify how a teacher voice spoke one maths/science item. You get: the item's intended value, the language-mode convention, the text the engine was given, the engine's own transcript (if any), and HEARD = an automatic transcript of the audio (it can have its own errors).
+const SYS = `You classify how a teacher voice spoke one maths/science item. You get: the item's intended value, the language-mode convention, the text the engine was given, the engine's own transcript (if any), and two automatic transcripts of the audio: HEARD-A (language forced) and HEARD-B (language auto-detected). Both can have their own errors; HEARD-A was seen translating English number words into Hindi ones, and either may write digits instead of words (digits say nothing about HOW a number was read: rely on the other transcript for the reading). A flag about the VOICE needs support from both transcripts, or from one transcript plus the engine transcript; a flag supported by only one transcript sets asr_suspect=true.
 Return JSON only:
-{"heard":"<=15 words: how the notation was actually voiced, from HEARD",
+{"heard":"<=15 words: how the notation was actually voiced",
  "render_error":bool,   // notation voiced wrongly or unnaturally: a symbol read literally (slash, caret, hat, superscript, comma, 'C' for celsius when it should be degrees Celsius), a sign/unit/power/root/decimal point dropped, a mixed number voiced as a single number, garbled or nonsense rendering, or the item not posed at all
  "number_misread":bool, // any numeric VALUE in HEARD differs from the intended value (wrong digit, wrong place value, 7.05 heard as 7.5, 2 1/3 as 21/3, 1,250 as 125, lakh as thousand, wrong power). A different but equivalent wording is NOT a misread.
  "mixed_convention":bool, // within this one item, more than one convention for the same kind of notation (e.g. 'one by two' and 'one-fourth' together; Hindi and English number words mixed; lakh and million mixed for one number), OR a convention FOREIGN to the mode (see MODE).
  "digit_exact":bool|null, // ONLY for helpline items: true if the number was voiced digit by digit with every digit right; else false. null for other items.
  "asr_suspect":bool,    // true if a flagged error looks like an artefact of the automatic transcript rather than the voice (compare with the engine transcript / given text)
  "note":"<=20 words"}
-Judge only the notation and numbers, not the teacher's lead-in wording. Common Indian-English forms are acceptable, not errors: 'three fourth', 'two cube', 'centimetre square', 'into' for times, 'is to' for a ratio. Be strict and literal otherwise.`;
+Judge only the notation and numbers, not the teacher's lead-in wording. Chemical formulae voiced with Latin letter names and English digits (एच टू ओ) are acceptable in every mode. 'Million' is not foreign when the item itself is about the international system. Common Indian-English forms are acceptable, not errors: 'three fourth', 'two cube', 'centimetre square', 'into' for times, 'is to' for a ratio. Be strict and literal otherwise.`;
 
 async function judge(r) {
   const it = byId[r.id];
@@ -39,7 +39,8 @@ MODE: ${MODE_RULE[r.mode]}
 ENGINE: ${r.engine === "rt" ? "realtime voice model (posed the item to a child)" : "text-to-speech (read the given text)"}
 GIVEN TEXT: ${r.input}
 ENGINE TRANSCRIPT: ${r.model_text ?? "(none: TTS)"}
-HEARD: ${r.asr}`;
+HEARD-A: ${r.asr}
+HEARD-B: ${r.asr2}`;
   for (let a = 1; a <= 4; a++) {
     let res;
     try { res = await fetch(`${OAI}/chat/completions`, { method: "POST", headers: { "api-key": KEY, "Content-Type": "application/json" }, signal: AbortSignal.timeout(120_000),
@@ -68,11 +69,11 @@ const pct = (a, n) => (n ? `${a}/${n} (${Math.round((100 * a) / n)}%)` : "-");
 const ok = rows.filter((r) => r.score && !r.score.err);
 const line = (lab, set) => {
   const n = set.length, re = set.filter((r) => r.score.render_error).length, mc = set.filter((r) => r.score.mixed_convention).length,
-    nm = set.filter((r) => r.score.number_misread).length, nmClean = set.filter((r) => r.score.number_misread && !r.score.asr_suspect).length,
+    nm = set.filter((r) => r.score.number_misread).length, mcClean = set.filter((r) => r.score.mixed_convention && !r.score.asr_suspect).length, nmClean = set.filter((r) => r.score.number_misread && !r.score.asr_suspect).length,
     reClean = set.filter((r) => r.score.render_error && !r.score.asr_suspect).length;
-  return `| ${lab} | ${n} | ${pct(re, n)} | ${pct(reClean, n)} | ${pct(mc, n)} | ${pct(nm, n)} | ${pct(nmClean, n)} |`;
+  return `| ${lab} | ${n} | ${pct(re, n)} | ${pct(reClean, n)} | ${pct(mc, n)} | ${pct(mcClean, n)} | ${pct(nm, n)} | ${pct(nmClean, n)} |`;
 };
-const out = ["| cell | n | rendering error | rendering error (excl. ASR-suspect) | mixed convention | number misread | number misread (excl. ASR-suspect) |", "|---|---|---|---|---|---|---|"];
+const out = ["| cell | n | rendering error | rendering error (excl. ASR-suspect) | mixed convention | mixed (excl. ASR-suspect) | number misread | number misread (excl. ASR-suspect) |", "|---|---|---|---|---|---|---|---|"];
 for (const e of ["rt", "tts"]) for (const a of ["W", "P"]) out.push(line(`${e} ${a} all`, ok.filter((r) => r.engine === e && r.arm === a)));
 for (const e of ["rt", "tts"]) for (const a of ["W", "P"]) for (const m of ["en", "hl", "hi"]) out.push(line(`${e} ${a} ${m}`, ok.filter((r) => r.engine === e && r.arm === a && r.mode === m)));
 out.push("", "| class | rt W err/mix/mis | rt P err/mix/mis | tts W err/mix/mis | tts P err/mix/mis |", "|---|---|---|---|---|");
@@ -83,7 +84,7 @@ for (const c of classes) {
   out.push(`| ${c} | ${cell("rt", "W")} | ${cell("rt", "P")} | ${cell("tts", "W")} | ${cell("tts", "P")} |`);
 }
 const hl = ok.filter((r) => r.cls === "helpline");
-out.push("", "helpline digit-exact:", ...hl.map((r) => `- ${r.engine} ${r.arm} ${r.mode} ${r.id}: ${r.score.digit_exact} :: ${r.asr}`));
+out.push("", "helpline digit-exact:", ...hl.map((r) => `- ${r.engine} ${r.arm} ${r.mode} ${r.id}: ${r.score.digit_exact} :: A=${r.asr} :: B=${r.asr2}`));
 fs.writeFileSync(new URL("./tables.md", DIR), out.join("\n"));
 console.log(out.join("\n"));
 console.log(`judge errors: ${rows.filter((r) => r.score?.err).length}`);

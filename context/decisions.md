@@ -688,3 +688,17 @@ Marketplace partner models (Anthropic/Claude) stay excluded (`claude-on-foundry-
 - Model choice per task is decided by `evals/model-bakeoff.mjs` (diagrams / teacher reply / classification) and recorded
   in `server/models/router` as a routing table with fallbacks — measured, not assumed.
 - Reverse if: a model is moved to Marketplace billing, or output quality/safety for children fails on a model.
+
+## language-english-first-bilingual
+**Owner (2026-10-02): the core audience is English-medium; English responses, voice and resources must be superior,
+and Hindi/Hinglish equally high.** Every quality gate (voice choice, model router, kits, reports) measures BOTH
+English and Hindi/Hinglish; the teacher mirrors the child's language. Reverse if pilots show a Hindi-medium majority.
+
+## comprehension-engine-program
+**Owner (2026-10-02): "crack" covert understanding detection at research level** — no quiz/MCQ-style checking as the
+main signal; evidence comes from conversation (why-after-correct, teach-back, explain-to-a-friend), game behaviour
+(Forge telemetry: strategies, error patterns, transfer levels), delayed probes 2-3 topics later and in later sessions,
+transfer to new contexts, and voice/vibe features as tie-breakers; fused into an interpretable per-concept belief;
+when not understood, re-teach using the representation that this child's own history shows works. Also: the whole
+tutor persona (pace, humour, formality, examples, challenge framing) adapts to the child's vibe profile.
+Built as `server/comprehension/**` with a simulator-based evaluation before any claim.

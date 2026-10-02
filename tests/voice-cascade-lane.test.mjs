@@ -85,16 +85,16 @@ test("speculation: a speculative plan for the outcome the classifier returns has
   assert.equal(JSON.stringify(s), before);
 });
 
-test("speculation fan-out: TAXILA_SPECULATE bounds it (0 = off), default 2", () => {
+test("speculation fan-out: TAXILA_SPECULATE bounds it (0 = off), default 3", () => {
   const { specFanout } = __test;
   const prev = process.env.TAXILA_SPECULATE;
   try {
     delete process.env.TAXILA_SPECULATE;
-    assert.equal(specFanout(), 2);
+    assert.equal(specFanout(), 3);
     process.env.TAXILA_SPECULATE = "0";
     assert.equal(specFanout(), 0);
     process.env.TAXILA_SPECULATE = "9";
-    assert.equal(specFanout(), 3);
+    assert.equal(specFanout(), 4);
   } finally {
     if (prev === undefined) delete process.env.TAXILA_SPECULATE;
     else process.env.TAXILA_SPECULATE = prev;

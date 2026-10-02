@@ -9,12 +9,18 @@
 //      transcription session config POST /api/voice/stt-token mints (server VAD 0.6 / 900 ms, near_field,
 //      logprobs). The browser carries it over WebRTC; this eval uses the WebSocket transport to the same
 //      Azure session type, so network-to-Azure is the eval host's, not a child's phone in India;
-//   2. the final transcript → POST /api/lesson/turn (the Director + teacher reply, as the runtime sends it);
+//   2. the final transcript → POST /api/lesson/turn (the Director + teacher reply, as the runtime sends it) in a
+//      lesson started as mode "cascade" — spoken turns, ASR-gated, exactly the shipped lane's server path;
 //   3. the reply's stored seq → POST /api/voice/tts-stream, timed to the first PCM byte.
 // Stages (ms): endpoint = true speech end → server VAD speech_stopped; stt = → transcript completed;
-// director = → /turn response; tts = → first audio byte; total = speech end → first audio byte.
+// director = → /turn response; tts = → first audio byte; total = speech end → first audio byte;
+// sound = total + the player's START_LEAD_S (60 ms) + a NOMINAL 50 ms device output latency (not measured:
+// CascadeLink.timings from a device run is the real number).
 // Speech end is the last sample above -40 dBFS in the clip, placed on the wall clock by the real-time pacing.
-// SYNTHETIC speech: measures the pipeline, not real children.
+// After the run the child turn rows are read back: every spoken turn must carry asr_conf and meta.typed=false.
+// SYNTHETIC speech: measures the pipeline, not real children. Caveats: WebSocket (not WebRTC) transcription
+// transport; the API runs in-process on the eval host (Neon over HTTP from the sandbox, not the Azure region);
+// loopback to tts-stream (no mobile link). TAXILA_SPECULATE=0 measures without speculative replies.
 import http from "http";
 import fs from "fs";
 import os from "os";
@@ -34,6 +40,8 @@ const OUT = arg("--out");
 const E = process.env.AZURE_OPENAI_ENDPOINT.replace(/\/+$/, "");
 const KEY = process.env.AZURE_OPENAI_API_KEY;
 const SR = 24000, BPS = SR * 2, CHUNK_MS = 40;
+/** src/lesson/ttsStream.ts START_LEAD_S, plus a nominal device output latency (assumed, not measured). */
+const START_LEAD_MS = 60, OUTPUT_LATENCY_MS = 50;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const WD = fs.mkdtempSync(path.join(os.tmpdir(), "cascade-lat-"));
 
@@ -168,14 +176,15 @@ async function firstByte(lessonId, seq) {
 }
 
 const rows = [];
-let child;
+let child, lessonId;
+const stored = [];
 try {
   const st = Date.now();
   await api("POST", "/api/auth/signup", { email: `lat+${st}@taxila.test`, password: `lat-pw-${st}`, name: "Latency", isGuardianAdult: true });
   ({ child } = await api("POST", "/api/children", { firstName: "Aarav", classLevel: CLASS, languagePref: "hinglish", interests: ["cricket"] }));
   await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
-  // The cascade's server lane today is the text lane (the Director writes and stores every reply).
-  const s = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text" });
+  const s = await api("POST", "/api/lesson/start", { childId: child.id, mode: "cascade" });
+  lessonId = s.lessonId;
   console.log(`lesson ${s.lessonId} topic=${s.topic.id} teacher=${s.teacher.id}/${s.teacher.voice} db=${process.env.DB_DRIVER || "neon-http"}`);
   const opening = await firstByte(s.lessonId, s.teacherOpeningSeq);
   console.log(`opening: first byte ${Math.round(opening.firstAt - opening.t0)} ms (server ${opening.serverFirstMs}), ${opening.sentences} sentences, ${opening.audioMs} ms audio`);
@@ -198,15 +207,21 @@ try {
       reply: r.teacherReply,
       endpoint: Math.round(heard.vadAt - heard.speechEndAt), stt: Math.round(heard.finalAt - heard.vadAt),
       director: Math.round(replyAt - tTurn), tts: Math.round(tts.firstAt - replyAt), total: Math.round(tts.firstAt - heard.speechEndAt),
+      sound: Math.round(tts.firstAt - heard.speechEndAt) + START_LEAD_MS + OUTPUT_LATENCY_MS,
+      speculation: r.debug?.speculation ? (r.debug.speculation.hit ? "hit" : "miss") : "none", specDiffers: r.debug?.speculation?.differs,
+      flags: r.debug?.classification?.flags ? Object.entries(r.debug.classification.flags).filter(([, v]) => v === true).map(([k]) => k).join(",") : "", cls: r.debug?.classification ? `${r.debug.classification.outcome}/${r.debug.classification.source}` : null,
       ttsServerFirst: tts.serverFirstMs, ttsServerSetup: tts.serverSetupMs, segments: heard.segments, sentences: tts.sentences, cache: tts.cache, replyAudioMs: tts.audioMs,
       directorServer: r.debug?.ms, directorTimings: r.debug?.timings?.map((t) => `${t.kind}:${t.ms}`).join(" "),
     };
     rows.push(row);
     console.log(`  turn ${i + 1}: endpoint ${row.endpoint} · stt ${row.stt} · director ${row.director} · tts ${row.tts} = ${row.total} ms  [${row.move}] "${row.heard}" (conf ${row.conf}) → "${row.reply}"`);
-    console.log(`           director calls: ${row.directorTimings ?? "?"} · tts server: setup ${row.ttsServerSetup} first ${row.ttsServerFirst} (${row.sentences} sentences, cache ${row.cache}) · vad segments ${row.segments}`);
+    console.log(`           cls ${row.cls} · flags [${row.flags}] · speculation ${row.speculation}${row.specDiffers ? ` (${row.specDiffers.join(" | ")})` : ""} · director calls: ${row.directorTimings ?? "?"} · tts server: setup ${row.ttsServerSetup} first ${row.ttsServerFirst} (${row.sentences} sentences, cache ${row.cache}) · vad segments ${row.segments}`);
     if (r.end) break;
   }
   stt.ws.close();
+  // The lane fix, checked on the real rows: spoken cascade turns are stored as spoken.
+  const { q } = await import("../server/db.js");
+  stored.push(...await q("select seq, asr_conf, meta from turn where lesson_id = $1 and speaker = 'child' order by seq", [lessonId]));
 } finally {
   if (child) await api("DELETE", "/api/children", { childId: child.id }).catch((e) => console.log(`could not delete the test child: ${e.message}`));
   server.close();
@@ -219,10 +234,15 @@ const stat = (k) => {
   const q = (p) => v[Math.min(v.length - 1, Math.floor(p * (v.length - 1) + 0.5))];
   return { n: v.length, median: q(0.5), p90: q(0.9), min: v[0], max: v.at(-1) };
 };
-const summary = Object.fromEntries(["endpoint", "stt", "director", "tts", "total"].map((k) => [k, stat(k)]));
+const summary = Object.fromEntries(["endpoint", "stt", "director", "tts", "total", "sound"].map((k) => [k, stat(k)]));
 console.log("\nstage      n  median   p90   min   max  (ms)");
 for (const [k, s] of Object.entries(summary)) if (s) console.log(`${k.padEnd(9)} ${String(s.n).padStart(2)} ${String(s.median).padStart(7)} ${String(s.p90).padStart(5)} ${String(s.min).padStart(5)} ${String(s.max).padStart(5)}`);
 const within = rows.filter((r) => r.total <= 2000).length;
-console.log(`budget ≤ 2000 ms: ${within}/${rows.length} turns`);
-if (OUT) fs.writeFileSync(OUT, JSON.stringify({ method: { date: new Date().toISOString().slice(0, 10), turns: rows.length, classLevel: CLASS, from: os.hostname(), note: "synthetic child speech; WebSocket transcription transport; in-process API" }, summary, rows }, null, 1));
-process.exit(rows.length ? 0 : 1);
+console.log(`budget ≤ 2000 ms (first byte): ${within}/${rows.length} turns`);
+const spec = rows.filter((r) => r.speculation !== "none");
+console.log(`speculative replies: ${spec.filter((r) => r.speculation === "hit").length}/${spec.length} hit (TAXILA_SPECULATE=${process.env.TAXILA_SPECULATE ?? "3 (default)"})`);
+const spoken = stored.filter((t) => t.meta?.typed === false && typeof t.asr_conf === "number");
+console.log(`stored child turns spoken (asr_conf set, typed:false): ${spoken.length}/${stored.length}`);
+summary.storedSpoken = { spoken: spoken.length, of: stored.length };
+if (OUT) fs.writeFileSync(OUT, JSON.stringify({ method: { date: new Date().toISOString().slice(0, 10), turns: rows.length, classLevel: CLASS, from: os.hostname(), note: `synthetic child speech; WebSocket transcription transport; in-process API (Neon HTTP from the eval host); lesson mode cascade; sound = first byte + ${START_LEAD_MS} ms lead + ${OUTPUT_LATENCY_MS} ms nominal output latency; TAXILA_SPECULATE=${process.env.TAXILA_SPECULATE ?? "3"}` }, summary, rows }, null, 1));
+process.exit(rows.length && spoken.length === stored.length ? 0 : 1);
