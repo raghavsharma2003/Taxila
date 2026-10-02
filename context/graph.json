@@ -133,6 +133,19 @@
    "kind": "constraint",
    "title": "Owner: serve classes 1-9, all core subjects, foundational stage first-class",
    "at": "2026-10-02"
+  },
+  {
+   "id": "forge-sandbox-lanes",
+   "kind": "decision",
+   "title": "VM per build, folder per student, sandboxed iframe per play",
+   "at": "2026-10-02",
+   "status": "phase0 to build"
+  },
+  {
+   "id": "vm-per-student",
+   "kind": "rejection",
+   "title": "Persistent VM per student: $0.5-20/student-month for no capability (cost arithmetic, not trial)",
+   "at": "2026-10-02"
   }
  ],
  "edges": [
@@ -235,6 +248,21 @@
    "src": "open-db-region",
    "rel": "measured_by",
    "dst": "db-driver-latency-2026-10-02"
+  },
+  {
+   "src": "forge-sandbox-lanes",
+   "rel": "caused_by",
+   "dst": "vm-per-student"
+  },
+  {
+   "src": "forge-sandbox-lanes",
+   "rel": "part_of",
+   "dst": "forge-infra-azure"
+  },
+  {
+   "src": "forge-sandbox-lanes",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
   }
  ]
 }

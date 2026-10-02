@@ -1,12 +1,13 @@
 # Taxila curriculum seed: sources and copyright
 
-Checked on **2026-10-02** for the **2026-27** session. Scope: Classes 1–9. Maths for 1–9, EVS for 3–5, Science for 6–9, English for 1–9, Social Science for 6–9 and Hindi for 6–9. Maths, Science and EVS go down to topic level. English, SST and Hindi have chapter titles only.
+Checked on **2026-10-02** for the **2026-27** session. Scope: Classes 1–9. Maths for 1–9, EVS for 3–5, Science for 6–9, English for 1–9, Social Science for 6–9 and Hindi for 1–9. Classes 1–2 have no EVS book: see `FOUNDATIONAL-EVS.md`. Maths, Science and EVS go down to topic level. English, SST and Hindi have chapter titles only.
 
 ## Files
 
 | file | holds |
 |---|---|
 | `c{class}-{subject}.json` | one textbook (both parts where a book comes in two). Subjects: `maths`, `evs` (3–5), `science` (6–9), `english`, `sst`, `hindi` |
+| `FOUNDATIONAL-EVS.md` | why there is no `c1-evs` / `c2-evs`: under NCF-SE 2023, EVS-type content in Classes 1–2 sits inside the language and maths books (sources inside) |
 | `index.json` | every file with class, subject, book, chapter and topic counts, and the `verified` flag |
 | `boards.json` | which boards use these NCERT books, and in which classes |
 | `validate.mjs` | `node data/curriculum/validate.mjs`. It fails on bad JSON, missing schema fields, malformed or duplicate ids, and an index that disagrees with the files. It only warns on prerequisite problems and depth gaps |
@@ -20,23 +21,29 @@ Ids follow `c{class}-{subject}-ch{NN}` and `…-t{NN}`. Chapter `number` runs st
 1. **Which book is current.** The class, subject and book dropdown on <https://ncert.nic.in/textbook.php> is built by inline JavaScript. We parsed it to get the live book code for every class and subject. Old books (Math-Magic, Marigold, Looking Around, Honeydew, the old Class 8 and 9 books) still appear in that dropdown under duplicate subject entries. They were ignored in favour of the NCF-SE 2023 titles.
 2. **Chapter titles.** For every book we downloaded the prelims PDF (`/textbook/pdf/{code}ps.pdf`) and read the Contents page. All chapter titles in the JSON come from those Contents pages.
 3. **Topic structure (Maths, Science, EVS).** We downloaded each chapter PDF (`/textbook/pdf/{code}{NN}.pdf`, 202 PDFs) and extracted the numbered section headings (Classes 6–9) or the main activities (Classes 1–5). Topics were then grouped and **written in our own words**. Topic titles are our own labels, not the book's headings.
-4. **English genre tags** (`poem`, `story`, `play` …) come from each lesson's opening ("Let us recite" vs "Let us read", verse vs prose layout). Theme notes are our own one-line descriptions.
+4. **Hindi lesson types** (`kavita`, `kahani`, `samvad`, `patra`, `ekanki` …) were read from each lesson's opening page in the chapter PDF. In Classes 1–2 the activity label printed on the lesson (सुनें कहानी / आनंदमयी कविता / मिलकर पढ़िए) is kept as `bookLabel`. Units (इकाई) are kept as `unit` where the book has them (Sarangi 1–2, Veena 3). Contents entries marked * ("for reading only"), and the unnumbered pieces in Veena 4–5, are **not chapters**. They are listed under `extraReadings` on the chapter whose PDF contains them, so chapter numbers match the printed book. Hindi 1–5 outcomes are our own words ("Learner can …").
+5. **English genre tags** (`poem`, `story`, `play` …) come from each lesson's opening ("Let us recite" vs "Let us read", verse vs prose layout). Theme notes are our own one-line descriptions.
 
 | class | subject | book | edition · printing | chapters | NCERT source | verified |
 |---|---|---|---|---|---|---|
 | 1 | maths | Joyful Mathematics | 2023-24 · Reprint 2026-27 | 13 | [aejm1](https://ncert.nic.in/textbook.php?aejm1=0-13) · [prelims](https://ncert.nic.in/textbook/pdf/aejm1ps.pdf) | yes |
 | 1 | english | Mridang | 2023-24 · Reprint 2026-27 | 9 | [aemr1](https://ncert.nic.in/textbook.php?aemr1=0-9) · [prelims](https://ncert.nic.in/textbook/pdf/aemr1ps.pdf) | yes |
+| 1 | hindi | सारंगी (Sarangi) | 2023-24 · Reprint 2026-27 | 19 | [ahsr1](https://ncert.nic.in/textbook.php?ahsr1=0-19) · [prelims](https://ncert.nic.in/textbook/pdf/ahsr1ps.pdf) | yes |
 | 2 | maths | Joyful Mathematics | 2023-24 · Reprint 2026-27 | 11 | [bejm1](https://ncert.nic.in/textbook.php?bejm1=0-11) · [prelims](https://ncert.nic.in/textbook/pdf/bejm1ps.pdf) | yes |
 | 2 | english | Mridang | 2023-24 · Reprint 2026-27 | 13 | [bemr1](https://ncert.nic.in/textbook.php?bemr1=0-13) · [prelims](https://ncert.nic.in/textbook/pdf/bemr1ps.pdf) | yes |
+| 2 | hindi | सारंगी (Sarangi) | 2023-24 · Reprint 2026-27 | 26 | [bhsr1](https://ncert.nic.in/textbook.php?bhsr1=0-26) · [prelims](https://ncert.nic.in/textbook/pdf/bhsr1ps.pdf) | yes |
 | 3 | maths | Maths Mela | 2024-25 · Reprint 2026-27 | 14 | [cemm1](https://ncert.nic.in/textbook.php?cemm1=0-14) · [prelims](https://ncert.nic.in/textbook/pdf/cemm1ps.pdf) | yes |
 | 3 | evs | Our Wondrous World | 2024-25 · Reprint 2026-27 | 12 | [ceev1](https://ncert.nic.in/textbook.php?ceev1=0-12) · [prelims](https://ncert.nic.in/textbook/pdf/ceev1ps.pdf) | yes |
 | 3 | english | Santoor | 2024-25 · Reprint 2026-27 | 12 | [cesa1](https://ncert.nic.in/textbook.php?cesa1=0-12) · [prelims](https://ncert.nic.in/textbook/pdf/cesa1ps.pdf) | yes |
+| 3 | hindi | वीणा (Veena) | 2024-25 · Reprint 2026-27 | 18 | [chve1](https://ncert.nic.in/textbook.php?chve1=0-18) · [prelims](https://ncert.nic.in/textbook/pdf/chve1ps.pdf) | yes |
 | 4 | maths | Maths Mela | 2025-26 · Reprint 2026-27 | 14 | [demm1](https://ncert.nic.in/textbook.php?demm1=0-14) · [prelims](https://ncert.nic.in/textbook/pdf/demm1ps.pdf) | yes |
 | 4 | evs | Our Wondrous World | 2025-26 · Reprint 2026-27 | 10 | [deev1](https://ncert.nic.in/textbook.php?deev1=0-10) · [prelims](https://ncert.nic.in/textbook/pdf/deev1ps.pdf) | yes |
 | 4 | english | Santoor | 2025-26 · Reprint 2026-27 | 12 | [desa1](https://ncert.nic.in/textbook.php?desa1=0-12) · [prelims](https://ncert.nic.in/textbook/pdf/desa1ps.pdf) | yes |
+| 4 | hindi | वीणा (Veena) | 2025-26 · Reprint 2026-27 | 13 | [dhve1](https://ncert.nic.in/textbook.php?dhve1=0-13) · [prelims](https://ncert.nic.in/textbook/pdf/dhve1ps.pdf) | yes |
 | 5 | maths | Maths Mela | 2025-26 · Reprint 2026-27 | 15 | [eemm1](https://ncert.nic.in/textbook.php?eemm1=0-15) · [prelims](https://ncert.nic.in/textbook/pdf/eemm1ps.pdf) | yes |
 | 5 | evs | Our Wondrous World | 2025-26 · Reprint 2026-27 | 10 | [eeev1](https://ncert.nic.in/textbook.php?eeev1=0-10) · [prelims](https://ncert.nic.in/textbook/pdf/eeev1ps.pdf) | yes |
 | 5 | english | Santoor | 2025-26 · Reprint 2026-27 | 10 | [eesa1](https://ncert.nic.in/textbook.php?eesa1=0-10) · [prelims](https://ncert.nic.in/textbook/pdf/eesa1ps.pdf) | yes |
+| 5 | hindi | वीणा (Veena) | 2025-26 · Reprint 2026-27 | 12 | [ehve1](https://ncert.nic.in/textbook.php?ehve1=0-12) · [prelims](https://ncert.nic.in/textbook/pdf/ehve1ps.pdf) | yes |
 | 6 | maths | Ganita Prakash | 2024-25 · Reprint 2026-27 | 10 | [fegp1](https://ncert.nic.in/textbook.php?fegp1=0-10) · [prelims](https://ncert.nic.in/textbook/pdf/fegp1ps.pdf) | yes |
 | 6 | science | Curiosity | 2024-25 · Reprint 2026-27 | 12 | [fecu1](https://ncert.nic.in/textbook.php?fecu1=0-12) · [prelims](https://ncert.nic.in/textbook/pdf/fecu1ps.pdf) | yes |
 | 6 | english | Poorvi | 2024-25 · Reprint 2026-27 | 16 | [fepr1](https://ncert.nic.in/textbook.php?fepr1=0-16) · [prelims](https://ncert.nic.in/textbook/pdf/fepr1ps.pdf) | yes |
@@ -61,7 +68,7 @@ Ids follow `c{class}-{subject}-ch{NN}` and `…-t{NN}`. Chapter `number` runs st
 ## What is NOT verified, or only partly verified
 
 - **Class 9 Social Science Part II** (`c9-sst.json`, chapters 10–16, each marked `"verified": false`). As of 2026-10-02 NCERT lists only *Understanding Society: India and Beyond Part-I*. Chapters 10–16 use the **Part 2 theme names from the CBSE 2026-27 Class IX Social Science syllabus** ([PDF](https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/SocialScience_SecP1IX_2026-27.pdf)). Replace them when NCERT publishes the book. This is the only file with `"verified": false`.
-- **Hindi Devanagari spellings.** The prelims PDFs' text layer garbles matras (for example "मातृभमू ि"). Titles and authors were normalised by hand. The Class 7 Malhar text layer was the worst, so check `c7-hindi.json` against the printed book first. Hindi for Classes 1–5 (Sarangi, Veena) was **not** built.
+- **Hindi Devanagari spellings.** The prelims PDFs' text layer garbles matras (for example "मातृभमू ि"). Titles and authors were normalised by hand. The Class 7 Malhar text layer was the worst, so check `c7-hindi.json` against the printed book first. Hindi 1–5 (Sarangi, Veena): the Contents pages of Sarangi 1 and Veena 3 and 5 garble several conjuncts (मित्र को पत्र, न्याय की कुर्सी). Those titles were checked against the chapter PDFs. Sarangi's unit names are in a legacy (Kruti Dev-style) font in the prelims and were read from the chapter PDFs. Contents re-checked against the prelims PDFs on 2026-10-02: chapter counts 19/26/18/13/12 match.
 - **English theme notes** (`theme` and the "(theme: …)" in outcomes) are our own one-line summaries, written from each lesson's opening pages. They are not authoritative descriptions.
 - **Primary maths topics (Classes 1–5).** Maths Mela chapter titles are story names ("Raksha Bandhan", "The Surajkund Fair"). The mathematical focus of each chapter was inferred from scanning the chapter PDF, not from a published syllabus.
 - **Prerequisites** are best-effort links that we wrote. All of them resolve (see `validate.mjs`), but they are a teaching judgement, not an NCERT mapping.

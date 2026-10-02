@@ -888,3 +888,70 @@ Other ethical points:
 - McHenry, M. S., Mukherjee, D., Bhavnani, S., et al. (2023). The current landscape and future of tablet-based cognitive assessments for children in low-resourced settings. *PLOS Digit Health*. doi:10.1371/journal.pdig.0000196 [V, EPMC]
 - De Boeck, P., & Wilson, M. (2004). *Explanatory Item Response Models*. Springer. [U]
 - Pearson, B. Z., Fernández, S. C., & Oller, D. K. (1993). Lexical development in bilingual infants and toddlers: comparison to monolingual norms. *Lang Learn* 43:93-120. [U]
+
+### R8. Second pass, same day, with web access: [U] items resolved, and new findings
+
+The first pass ran without web search. This pass re-checked its [U] items against primary sources and extended the EZ simulation. The script is now committed beside this file: `cognitive-development-reviewsim.py` (vectorised Euler diffusion, s = 0.1, dt = 1 ms, seed 7). It replaces the uncommitted `scratchpad/ezsim.py`.
+
+**Verified this pass (upgrade from [U]):**
+
+| item | source checked | result |
+|---|---|---|
+| EZ equations in §2.4 | Wagenmakers, van der Maas & Grasman 2007, PBR 14:3-22: eqs 5-9 and the appendix R code, read from the PDF | **The equations are transcribed correctly [V].** Two omissions in the doc matter. (a) MRT and VRT are computed from **correct responses only** (their note 7). The doc says "mean RT" without that qualifier. (b) The paper's edge correction is **Pc = 1 → 1 − 1/(2n)**, and EZ assumes **no contaminant RTs** (their note 1). Pc < .5 gives a negative v, so the block must be excluded rather than fitted. |
+| Rouder, Kumar & Haaf 2023 "~8x" | Europe PMC abstract | Verified [V]: "trial noise in 24 extant tasks is about 8 times greater than individual variability". **Caveat:** those are adult datasets. Using γ = 1/8 for children is an extrapolation. Child trial noise is larger, and so is child between-person spread, so the direction of the bias is unknown. Keep γ = .125 as [S, adult], not [V, child]. |
+| Lee, Bull & Ho 2013 | Europe PMC abstract | Verified [V]: N = 688, ages 6-15, cohort-sequential, annual testing. Two factors at 5-13; a well-separated three-factor structure at 15; "substantial task-based variation in developmental patterns". |
+| ICMR assent age (R4) | ICMR 2017 *National Ethical Guidelines for Biomedical Research Involving Children* (via THSTI/ICMR copies and secondary summaries) [S] | **Oral assent is mandatory from 7 to 12 years** (from 84 months), given in the parent's presence. **Written assent is required from 13 to 18.** Failure to object is not assent. So §9's "assent at 10+" falls short of the Indian national standard, not just of best practice. Fix: spoken assent from 7, written or recorded explicit assent from 13. For 6-year-olds, a child-language "do you want to play this?" with dissent honoured. |
+| Number-line ceilings (R3.3) | Siegler & Booth 2004, *Child Dev* [V]; Opfer & Siegler 2007, *Cogn Psychol* 55:169 [V] | **0-100 is mostly linear by 2nd grade (~8 y), and 0-1,000 by 4th grade**, in US samples. The scale-progression rule stands. I found no Indian timetable [U], so ASER-style data must set the Indian cut points. |
+| Conceptual vocabulary (R1) | Pearson, Fernández & Oller 1993, *Lang Learn* [V] | The source is correct, but **the sample is 25 bilingual infants and toddlers aged 8-30 months**, measured by parent CDI. It is a *methodological* precedent for counting known concepts without double-counting translation pairs. It is not evidence about 6-15-year-olds. Cite it as method only. |
+| Adolescent phase delay (R3.5) | Carskadon et al. (puberty and delayed phase preference); Crowley et al. 2018 review [S] | Confirmed in direction: later melatonin onset with later Tanner stage, clearest in girls. It is tied to **pubertal stage, not age**, so a fixed "12-13" cut is wrong. The variation in pubertal timing within Class 6-9 is itself a confound for any time-of-day statement. |
+| Spatial skills (R3.6) | Uttal et al. 2013, *Psych Bull* 139:352, 217 studies [V] | Training g = .47, durable, with transfer to untrained spatial tasks. **Correction to R3.6:** "spatial skill predicts STEM outcomes" is *not* Uttal's finding. Uttal only argues the implication. The prediction evidence is the longitudinal Wai, Lubinski & Benbow 2009 line [S, not re-pulled]. |
+| Processing speed to ~15 (R3.7) | Kail 1991, *Psych Bull* (72 studies, 1,826 RT pairs) [V, abstract] | Age differences shrink exponentially, rapidly in childhood and slowly through adolescence. That supports "task-dependent, still improving in adolescence" over "adult-like ~15". |
+| Following instructions (R3.2) | Gathercole et al. 2008 [S, secondary] | Children with low WM do poorly on multi-action spoken instructions ("touch the green pencil and put it in the blue folder"). That supports making instruction length an S3 *experimental* knob. It gives **no** norm like "one step at 6". Delete the §3.1 sentence. |
+
+**New findings from the extended EZ simulation** (child-like parameters v = .20, a = .14, Ter = .45, accuracy .947; 20,000 trials):
+
+| condition | v | a | Ter |
+|---|---|---|---|
+| clean | .200 | .144 | .452 |
+| 1% slow lapses (2-5 s), raw | .160 (−20%) | .180 | .296 |
+| 3% slow lapses, raw | .131 (−35%) | .219 | .110 |
+| 5% slow lapses, raw | .118 (−41%) | .243 | −.007 (impossible) |
+| 3% slow lapses, trimmed to 0.2-2.5 s | .192 (−4%) | .150 | .429 |
+| 5% slow lapses, trimmed | .186 (−7%) | .155 | .413 |
+| **5% mid lapses (1-2.5 s), trimmed** | **.170 (−15%)** | **.169** | **.374** |
+
+| block size | blocks hitting the Pc = 1 edge correction | mean v (true .200) | CV of v |
+|---|---|---|---|
+| 30 trials | **20%** | .211 (+5%) | .18 |
+| 60 trials | 3% | .208 | .14 |
+
+Parallel-forms r of v between two 30-trial blocks, with an **assumed** between-child SD of v [U: no child data]: **.36 when SD = .03, .59 when SD = .05.** Reaching ρ = .70 needs about **2-4 blocks** (Spearman-Brown).
+
+Consequences:
+- **N1.** Fixed trimming repairs only *extreme* lapses. A distracted child's 1-2.5 s responses survive a 2.5 s cut and still bias v by about −15%. Distraction at home is common and differs by household, so that bias is a household confound. The contaminant-mixture hierarchical DDM (P5) is **required, not optional**, for any reported v. Mid-range lapses are invisible to a fixed trim.
+- **N2.** At child-like accuracy, **one 30-trial block hits the edge correction one time in five**, and the correction itself biases v upward. Minimum unit for an EZ estimate: ≥ 60 trials pooled across blocks of the same game and difficulty. Better, fit hierarchically with no edge correction.
+- **N3.** The doc's "processing speed is the *most* estimable cognitive quantity" (§3.4) applies to raw choice RT (Skill Lab r_cv .60). It does **not** automatically apply to drift rate. Single-block v reliability is plausibly .35-.6. v therefore needs its own in-deployment reliability card before it replaces RT anywhere, including as a lesson knob.
+- **N4.** Ter can go *negative* under lapse contamination (5% row). Add a sanity predicate: reject any fit with Ter < 0.15 s or Ter > MRT.
+
+**Corrections added by this pass (continue R6 numbering):**
+
+19. §2.4: state that MRT and VRT are correct-trial statistics. Use the paper's edge correction 1 − 1/(2n). Exclude blocks with Pc ≤ .5. Add a Ter sanity predicate.
+20. §2.4 / §3.4: EZ v needs a mid-lapse-aware model (contaminant mixture), ≥ 60 trials per estimate, and its own reliability card. Do not assume Skill Lab's raw-RT reliability carries over to v.
+21. §2.3: tag the γ = 1/8 illustration [S, adult data, Rouder 2023]. Do not tag it [V] for children (this amends R1).
+22. §9: assent follows ICMR 2017. Oral assent from 7 (in the parent's presence), written from 13, dissent always honoured, plus a simple spoken check-in at age 6.
+23. §3.1: delete "a 6-year-old reliably holds about one instruction step"; cite Gathercole 2008 only as motivation for the S3 instruction-length experiment.
+24. §4: cite Pearson 1993 as the counting method only (infant sample). The disjunctive concept × label model (P8) is Taxila's own and needs S-series validation.
+25. R3.5 / §3.5: time-of-day caveats are keyed to pubertal stage, which Taxila does not know and must not infer. That is one more reason time-of-day parent statements stay research-only.
+26. R3.6: attribute "spatial predicts STEM" to Wai et al. 2009, not Uttal 2013.
+
+**References added by this pass:**
+- Wagenmakers, E.-J., van der Maas, H. L. J., & Grasman, R. P. P. P. (2007). An EZ-diffusion model for response time and accuracy. *Psychon Bull Rev* 14(1):3-22. [V, PDF read]
+- Siegler, R. S., & Booth, J. L. (2004). Development of numerical estimation in young children. *Child Dev* 75(2):428-444. doi:10.1111/j.1467-8624.2004.00684.x [V]
+- Opfer, J. E., & Siegler, R. S. (2007). Representational change and children's numerical estimation. *Cogn Psychol* 55:169-195. [V]
+- Uttal, D. H., Meadow, N. G., Tipton, E., Hand, L. L., Alden, A. R., Warren, C., & Newcombe, N. S. (2013). The malleability of spatial skills: a meta-analysis of training studies. *Psychol Bull* 139(2):352-402. doi:10.1037/a0028446 [V]
+- Kail, R. (1991). Developmental change in speed of processing during childhood and adolescence. *Psychol Bull* 109(3):490-501. [V, abstract]
+- Gathercole, S. E., Durling, E., Evans, M., Jeffcock, S., & Stone, S. (2008). Working memory abilities and children's performance in laboratory analogues of classroom activities. *Appl Cogn Psychol* 22:1019-1037. [S]
+- Carskadon, M. A., Vieira, C., & Acebo, C. (1993). Association between puberty and delayed phase preference. *Sleep* 16:258-262. [S]; Crowley, S. J., et al. (2018). An update on adolescent sleep: new evidence informing the perfect storm model. *J Adolesc* 67:55-65. [S]
+- Wai, J., Lubinski, D., & Benbow, C. P. (2009). Spatial ability for STEM domains. *J Educ Psychol* 101(4):817-835. [S, not re-pulled]
+- Indian Council of Medical Research (2017). *National Ethical Guidelines for Biomedical Research Involving Children*. New Delhi: ICMR. [S]
+- Pearson 1993 (R7): upgrade [U] → [V]. Sample: 25 bilingual and 35 monolingual children aged 8-30 months.

@@ -119,3 +119,22 @@ through those kits, verified by the curriculum-fill workflow).
   10-20 min sessions, a care-receiving protégé for teach-back.
 - Reverse if: owner narrows scope; or measured learning/engagement for classes 1-2 is far below other bands and
   needs a dedicated product track.
+
+## forge-sandbox-lanes
+**Per-student execution environment (owner asked for "a VM per student"; decided 2026-10-02): a VM per BUILD, a
+folder per STUDENT, a sandboxed iframe per PLAY.** Source: `docs/research/factory/sandboxes-per-student.md`.
+- Compile/validate: untrusted Forge builds (LLM-written code) run in an ephemeral per-build sandbox — Phase 0 an
+  ACA Job `forge-runner` (2 vCPU/4 GiB, Playwright image, no ingress, reverse-connects to the orchestrator, holds no
+  model key); trusted engine-param validation on a warm `forge-validator` Chromium pool. Phase 1: Azure Container
+  Apps Sandboxes (`Microsoft.App/sandboxGroups`, hardware-isolated microVMs from pre-warmed snapshots, default-deny
+  egress, $0 when stopped; available eastus2 + centralindia) behind the same `SandboxProvider` interface.
+- Store: per-child workspace = Postgres rows + private Blob prefix. Shared builds are content-addressed
+  (`forge/b/<sha>/`), never contain child data; per-child params arrive at runtime via the bridge `init`.
+- Run: generated code executes ONLY in the child's browser — separate-origin iframe, `sandbox="allow-scripts"`,
+  CSP `connect-src 'none'`; Python (classes 8-9) via Pyodide in a Worker inside that iframe.
+- Cost: ~$0.04 compute per build vs $1.5-3.5 LLM; storage+ops < $0.02/student-month.
+- Supersedes ACA dynamic sessions with custom containers (billed as Dedicated E16 ≈ $1.65/h ≈ $1,200/month per warm node).
+- Reverse if: Sandbox snapshot start P90 > 10 s (stay on Jobs); >~7 concurrent builds 24/7 (re-price dedicated);
+  a real need for per-child process continuity appears (per-child Sandbox in disk mode, 7-day auto-delete).
+- Owner actions for Phase 1: raise `SandboxCores` quota (currently 1) and grant the service principal the
+  Sandboxes data-plane role.

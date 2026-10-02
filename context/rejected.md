@@ -21,3 +21,9 @@ Foundry resource as the Forge game-building model (2026-10-02). The deployment A
 support". Claude on Foundry is a Marketplace (third-party) purchase; this subscription's credits/payment profile
 cannot buy it. First-party OpenAI models on the same resource deploy fine. Unblock path is owner-side (Microsoft
 support / a payment method that allows Marketplace) — until then the Forge runs on gpt-5.3-codex.
+
+## vm-per-student
+A persistent VM/container per student. Rejected by cost arithmetic, NOT by trial: ~$0.50/student-month
+(snapshot storage) to ~$20/student-month (always-on), with no capability the Postgres+Blob workspace lacks — nothing a
+child owns needs a live process between lessons. If ever tried, measure snapshot size and resume time first.
+(`docs/research/factory/sandboxes-per-student.md` §9.4)

@@ -1,0 +1,2304 @@
+{
+  "segment": "ai2bharat-core",
+  "summary": "AI2Bharat (Next.js + Neon + Azure Foundry, AGPL platform / CC BY-SA content) is a production bilingual EN/HI community that teaches adults AI human-feedback work. origin/main@a11c521 (Round 21, 2026-09-14) is a re-rooted history; the four in-scope branches (community df2866c, opportunity-ingestion 22ce046, rlhf-learning-onboarding fe6ac72, neon-member-platform 2e72358) are file-tree subsets of main and add value only as commit-history (rejections, measurements from 08-27..09-01).\nCatalog: 21 pathways, 164 lessons, 46 quests across a 5-level content ladder (L0 Shuruaat..L4 Ustaad); nothing is locked; levels describe content, never people.\nLesson loop: recall (scene prompt, near-miss distractors) -> worked example (weak/strong + reviewer note) -> calibration practice -> changed-situation transfer -> work sample (parcha) -> 3 rubric self-checks; completion recomputed server-side; first-try correctness columns stored once, never shown.\nSaathi, the in-lesson AI guide, is the most engineered part: byte-stable CORE/TAIL prompt compiler with 2 appended-last MUST slots, server-side stage gate (answer never shown to the model), 13 fatal output gates + 4 rewrites with negative-control batteries, Phase A authored offline fallback, glossary-first, hint ladder, honorific arc aap->tum at 40 turns, celebration licence, bubble pacing, pull-only context windows, six-kind no-affect member-visible memory with hard delete, push-to-talk Hinglish ASR never auto-sent, homework photo with canvas EXIF strip, paid-lane data-terms assertion, DB daily spend cap that fails closed.\nMeasured: grok-4-1-fast question share 67.8% -> 41.5% (bounding slot 2) -> 23-26% (scoped trim gate), n~320 per run; $0.000371/turn; p50 1.0 s; gpt-4.1-mini and DeepSeek rejected on measurement.\nPlatform: Neon member schema with RLS + security-definer writers, append-only consent ledger, learning sync with optimistic versions, Sahyog Trail (points only from finished work, level floor), spaced review 2/7/21/60 with kept/faded only, outbound shape gate (no re-engagement/streak/loss), privacy-safe analytics k>=5, responsive-audit instrument (2,912 cells), DESIGN.md tokens and 13-script self-hosted fonts.\nThree deliberate refusals collide with Taxila: no stored affect (D-057), no realtime voice (D-061, reversal = byte-identical CORE via lane-identity digest), not-a-person (no avatar/cloned voice). The RLHF onboarding branch onboards learners INTO human-feedback work; it does not learn the learner — Taxila must build profile discovery itself (only a 3-value explanation-style kind exists). Population was tiny (15 members), so learning-outcome efficacy is unmeasured. DPDP: children <18 need verifiable parental consent and behavioural monitoring of children is prohibited (s.9(3)) — affects covert comprehension and emotional OS design.",
+  "assets": [
+    {
+      "id": "AIC01",
+      "title": "CORE/TAIL compiler",
+      "subsystem": "prompt-compiler/persona-engineering",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/prompt.ts",
+        "lib/saathi/contract.ts",
+        "SAATHI_PROMPT_BUDGET"
+      ],
+      "what": "CORE/TAIL compiler. CORE (8,000 B cap) is byte-stable and learner-independent, with the two must-fire rules re-appended *after* any trim. TAIL (6,000 B) holds stop rows, authored lesson rows filtered for live answers, `[REMEMBERED]`, `[PHOTO]`, `[WINDOW]` (dropped from the oldest end first) and `[NOW]` (the learner's turn always last). Truncation is reported on the trace.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "prompt-compiler/persona-engineering",
+      "evidence": "`lib/saathi/prompt.ts@main`, `lib/saathi/contract.ts@main` (`SAATHI_PROMPT_BUDGET`)"
+    },
+    {
+      "id": "AIC02",
+      "title": "The tutor sheet as telegraphic `key",
+      "subsystem": "prompt-compiler/persona-engineering",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/pedagogy.ts"
+      ],
+      "what": "The tutor sheet as telegraphic `key: value` / `a -> b` rows in sections WHO, REGISTER, HOW-TO-TEACH, ON-A-MOMENT, NOT-BUILT, USING-MEMORY and FLOOR, plus ALWAYS: exactly 2 must-fire-last rules. It includes `firstMoveOnDoubt: ask-what-was-tried -> restate-back -> then content`, `explanationOrder … -> hand-back-the-next-move`, the hint ladder, `onWrongAttempt`, `afterAFeeling`, the closed 8-glyph emoji set and the banned affection set. Every row carries an inline note on what was measured.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "prompt-compiler + learning/pedagogy",
+      "evidence": "`lib/saathi/pedagogy.ts@main`"
+    },
+    {
+      "id": "AIC03",
+      "title": "A lint that every sheet row and every memory row must pass",
+      "subsystem": "prompt-compiler/persona-engineering",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/shapelint.ts"
+      ],
+      "what": "A lint that every sheet row and every memory row must pass. It rejects first-person rows, sentence-shaped rows (`^[A-Z][^.?!]*[.?!]$`), and any segment over 14 words.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "prompt-compiler",
+      "evidence": "`lib/saathi/shapelint.ts@main`"
+    },
+    {
+      "id": "AIC04",
+      "title": "The academic-integrity spine",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/stage-gate.ts"
+      ],
+      "what": "The academic-integrity spine. `checkedStepsForStage` (understand→conceptCheck; practice→practice+transferCheck; apply→rubricChecks) feeds `classifyIntent`, which re-derives intent server-side from regex shapes in English and Hinglish, which feeds the `refusalFor` table. `judge-my-work` and `judge-my-readiness` are always blocked.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "learning/pedagogy + safety-floor",
+      "evidence": "`lib/saathi/stage-gate.ts@main`"
+    },
+    {
+      "id": "AIC05",
+      "title": "Fatal gates",
+      "subsystem": "safety-floor/honesty",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/output-gate.ts"
+      ],
+      "what": "Fatal gates: empty-200, leaked-answer (literal + normalized), verdict-shaped (EN/HI regexes, with the option-letter fix), ability-praise, unlicensed-celebration, register (Devanagari the learner did not open), emoji-banned / off-vocabulary, cut-off (`endsUnfinished`), and Round-13 question-trim for two intents. Rewrites are limited to stripping non-allowlisted URLs, em/en/double dashes (the ASCII hyphen is preserved) and a second use of the learner's name.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "safety-floor/honesty + evals",
+      "evidence": "`lib/saathi/output-gate.ts@main`"
+    },
+    {
+      "id": "AIC06",
+      "title": "Doubt escalation ladder",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/ladder.ts"
+      ],
+      "what": "Doubt escalation ladder: rung 1 *orient* (re-read named section) → rung 2 *authored constraint* → rung 3 *how options were built* (near-miss explanation) → stop + \"a wrong answer costs nothing\". The rung is derived server-side from history, rungs are leak-filtered, and the full answer is never a rung.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "learning/pedagogy",
+      "evidence": "`lib/saathi/ladder.ts@main`"
+    },
+    {
+      "id": "AIC07",
+      "title": "Phase A",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/phase-a.ts",
+        "lib/saathi/local-engine.ts"
+      ],
+      "what": "Phase A: answers from the authored lesson with no model and no network. Retrieval is deterministic: a question shape picks a candidate list, and the first non-leaking authored candidate wins. It is the fallback for every gate trip, missing credential or ledger failure.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "learning/pedagogy (offline/fallback floor for realtime-voice)",
+      "evidence": "`lib/saathi/phase-a.ts@main`, `lib/saathi/local-engine.ts@main`"
+    },
+    {
+      "id": "AIC08",
+      "title": "A word question gets the authored glossary entry verbatim, ahead of the hint ladder",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/glossary-first.ts",
+        "lib/saathi/glossary.ts"
+      ],
+      "what": "A word question gets the authored glossary entry verbatim, ahead of the hint ladder. Its provenance is labelled `glossary` or `glossary-other` (\"Words from another lesson\").",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "curriculum (CBSE term glossary)",
+      "evidence": "`lib/saathi/glossary-first.ts@main`, `lib/saathi/glossary.ts@main`"
+    },
+    {
+      "id": "AIC09",
+      "title": "Distress regexes in English, Hinglish and Devanagari, each with negative controls",
+      "subsystem": "emotional-lens/affect",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/distress.ts",
+        "prompt.ts",
+        "reasoningEffortFor"
+      ],
+      "what": "Distress regexes in English, Hinglish and Devanagari, each with negative controls. One list has three callers: the prompt (reasoning OFF on distress), never-store (refuse to write) and the panel (renders the helpline from `copy.ts`, keyed on the learner's words). The FLOOR row names Tele-MANAS 14416 and KIRAN 1800-599-0019.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "emotional-lens/affect + safety-floor",
+      "evidence": "`lib/saathi/distress.ts@main` (+ `prompt.ts` `reasoningEffortFor`)"
+    },
+    {
+      "id": "AIC10",
+      "title": "An authored, month-keyed table (board-exam-season, semester-end, results-and-admissions, Diwali, Eid, hiring-s",
+      "subsystem": "relational-os",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/context-windows.ts"
+      ],
+      "what": "An authored, month-keyed table (board-exam-season, semester-end, results-and-admissions, Diwali, Eid, hiring-season). It is matched only against the learner's live turn, emits one telegraphic TAIL row, and can never produce a countdown. Results season forces reasoning off as a *policy* (\"self-harm risk … peaks\").",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "relational-os (kid calendar: exams, results, holidays)",
+      "evidence": "`lib/saathi/context-windows.ts@main`"
+    },
+    {
+      "id": "AIC11",
+      "title": "Honorific as state",
+      "subsystem": "relational-os",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/register.ts"
+      ],
+      "what": "Honorific as state: `honorificFor(lifetimeGuideTurns)` returns aap, or tum once turns ≥ 40. The type has two members, so `tu` is unreachable. The row lives in TAIL so it never splits the CORE cache.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "relational-os",
+      "evidence": "`lib/saathi/register.ts@main`"
+    },
+    {
+      "id": "AIC12",
+      "title": "First name derived server-side from the profile, re-guarded for injection",
+      "subsystem": "relational-os",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/learner-name.ts"
+      ],
+      "what": "First name derived server-side from the profile, re-guarded for injection. TAIL row only. The gate removes a second use and any use inside a correction or refusal; the correction predicate leans inclusive.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "relational-os",
+      "evidence": "`lib/saathi/learner-name.ts@main`"
+    },
+    {
+      "id": "AIC13",
+      "title": "Celebration licence",
+      "subsystem": "gamification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/contract.ts",
+        "SAATHI_MOMENTS",
+        "lib/saathi/moments.ts"
+      ],
+      "what": "Celebration licence. There are four client-recorded events: first-attempt-after-stuck, work-sample-saved, stage-advanced, returned-after-a-gap. With no `moment:` row, celebration shapes are discarded. Saathi celebrates events, never quality, praises method, never ability, and never forecasts.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "gamification + emotional-lens",
+      "evidence": "`lib/saathi/contract.ts@main` (`SAATHI_MOMENTS`), `lib/saathi/moments.ts@main`"
+    },
+    {
+      "id": "AIC14",
+      "title": "Deterministic bubble split *after* the gate",
+      "subsystem": "design-system/ux",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/bubbles.ts",
+        "components/saathi/bubble-pacing.ts",
+        "SAATHI_PACING"
+      ],
+      "what": "Deterministic bubble split *after* the gate: max 3 bubbles, split only above 140 chars, protected spans for URLs, code and quotes. Pacing: 66 ms/char, 400–900 ms, jitter 0.8–1.3, first bubble immediate, total capped at 1.8 s. The model is never told bubbles exist.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux (text chat lane)",
+      "evidence": "`lib/saathi/bubbles.ts@main`, `components/saathi/bubble-pacing.ts@main`, `SAATHI_PACING`"
+    },
+    {
+      "id": "AIC15",
+      "title": "A 12-pair table of catalog words → their ASR mishearings (`rubric←lubric`, `calibration←celebration`)",
+      "subsystem": "realtime-voice",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/sound-alikes.ts"
+      ],
+      "what": "A 12-pair table of catalog words → their ASR mishearings (`rubric←lubric`, `calibration←celebration`). Pulled only on voice turns whose transcript contains the wrong half, and emitted as one `heard-by-voice:` TAIL row.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "realtime-voice (CBSE term mishearing table)",
+      "evidence": "`lib/saathi/sound-alikes.ts@main`"
+    },
+    {
+      "id": "AIC16",
+      "title": "A `promptDigest(core, tail)` that is length-prefixed SHA-256 over the bytes extracted back out of the serializ",
+      "subsystem": "prompt-compiler/persona-engineering",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/lane-identity.ts"
+      ],
+      "what": "A `promptDigest(core, tail)` that is length-prefixed SHA-256 over the bytes extracted back out of the serialized wire body. The handler discards a turn on mismatch (`prompt-fork`). This is the mechanism the realtime-lane reversal condition needs.",
+      "maturity": "shipped-measured",
+      "taxila_use": "copy",
+      "taxila_target": "prompt-compiler + realtime-voice",
+      "evidence": "`lib/saathi/lane-identity.ts@main`",
+      "notes": "maturity note: (0 forks / 320 × many runs)"
+    },
+    {
+      "id": "AIC17",
+      "title": "One shared predicate file (`endsInQuestion`, emoji, Devanagari, em-dash, shortform, word count) used by the pu",
+      "subsystem": "evals/gates/verification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/register-predicates.ts",
+        "evals/indic-benchmark/lib/properties.mjs"
+      ],
+      "what": "One shared predicate file (`endsInQuestion`, emoji, Devanagari, em-dash, shortform, word count) used by the public benchmark, the register battery and the output gate, so the gate and the eval cannot disagree.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "evals/gates",
+      "evidence": "`lib/saathi/register-predicates.ts@main` → `evals/indic-benchmark/lib/properties.mjs@main`"
+    },
+    {
+      "id": "AIC18",
+      "title": "The help assistant (Sahayata)",
+      "subsystem": "company-brain/knowledge-ingestion",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/support/claims.ts",
+        "lib/support/*"
+      ],
+      "what": "The help assistant (Sahayata). It answers from a written handbook, and a claims gate runs over model output, canned copy and the *grounding fact set*. Negation-aware.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "company-brain/knowledge-ingestion (parent help)",
+      "evidence": "`lib/support/claims.ts@main`, `lib/support/*`"
+    },
+    {
+      "id": "AIC19",
+      "title": "Six closed kinds, each with its own rules",
+      "subsystem": "memory-graph/consolidation",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/memory/kinds.ts"
+      ],
+      "what": "Six closed kinds, each with its own rules: weak-topic (event, 12, decays), misconception (statement, 20, ≤14 words), explanation-style (statement, 1 row, enum example-first/rule-first/smallest-case-first), goal (3), context-given (6, keys calls-me/language/role/studying/works-on/state), term-asked (event, 20). The total cap is 62 = the sum of the per-kind caps. `source` is a closed union, `explicit-learner-statement` or `recorded-learning-event`, and there is no `model-inference`.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "memory-graph/consolidation",
+      "evidence": "`lib/saathi/memory/kinds.ts@main`"
+    },
+    {
+      "id": "AIC20",
+      "title": "The no-affect boundary in two layers",
+      "subsystem": "memory-graph/consolidation",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/memory/never-store.ts",
+        "202608310022_saathi_memory.sql"
+      ],
+      "what": "The no-affect boundary in two layers. The app filter reuses the `distressShapes` list. A DB CHECK applies a word-boundary affect vocabulary (EN + romanized + Devanagari) to `note`, and to `subject` for learner-text kinds, plus a verdict vocabulary (score/grade/smart/employable…). Field scoping is deliberate: `trainer-pairwise-rank` contains \"rank\".",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "memory-graph + safety-floor",
+      "evidence": "`lib/saathi/memory/never-store.ts@main` + migration `202608310022_saathi_memory.sql@main`",
+      "notes": "use note: (Taxila must decide what affect it stores)"
+    },
+    {
+      "id": "AIC21",
+      "title": "Deterministic extraction with no second model call",
+      "subsystem": "memory-graph/consolidation",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/memory/extract.ts"
+      ],
+      "what": "Deterministic extraction with no second model call. Filter order: authored shape → word cap (fail, never trim) → never-store → forget terms → dedupe → cap. At most 2 rows per turn. Includes authored Hinglish shapes for style, goal, context and misconception (\"X ka matlab Y hai\").",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "memory-graph",
+      "evidence": "`lib/saathi/memory/extract.ts@main`"
+    },
+    {
+      "id": "AIC22",
+      "title": "RANK = salience × RECENCY (decaying kinds fall to a 0.25 floor over 90 days) × (1 + 0.35·ln(1+mentions)) × SPA",
+      "subsystem": "memory-graph/consolidation",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/memory/rank.ts",
+        "SAATHI_RECALL_SQL",
+        "recall.ts"
+      ],
+      "what": "RANK = salience × RECENCY (decaying kinds fall to a 0.25 floor over 90 days) × (1 + 0.35·ln(1+mentions)) × SPACED (0.6 if recalled <20 h ago, 1.25 if untouched >21 d). The \"matched\" column is a word-boundary regex against the live turn only. One reserved seat goes to the oldest row with salience ≥ 2.0 and is dropped first. A test greps the SQL for any due-branch outside the ORDER BY.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "memory-graph",
+      "evidence": "`lib/saathi/memory/rank.ts@main` (`SAATHI_RECALL_SQL`), `recall.ts@main`"
+    },
+    {
+      "id": "AIC23",
+      "title": "Forgetting has one concept and three doors (one row, everything, stop remembering)",
+      "subsystem": "memory-graph/consolidation",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/memory/forget-intent.ts",
+        "reset.ts",
+        "route-handler.ts",
+        "…022",
+        "member_saathi_forget",
+        "saathi_memory_delete*"
+      ],
+      "what": "Forgetting has one concept and three doors (one row, everything, stop remembering). Each is a hard delete plus a forget term in one transaction, and no table has `deleted_at`. \"ye bhool jao\" is classified by narrow authored shapes and acted on before the reply. The receipt is three-branch: worked / nothing there / failed.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "memory-graph + auth/accounts/consent",
+      "evidence": "`lib/saathi/memory/forget-intent.ts@main`, `reset.ts@main`, `route-handler.ts@main`, migration `…022` (`member_saathi_forget`, `saathi_memory_delete*`)"
+    },
+    {
+      "id": "AIC24",
+      "title": "Append-only consent ledger with no content column",
+      "subsystem": "auth/accounts/consent",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "…022",
+        "member_saathi_consent"
+      ],
+      "what": "Append-only consent ledger with no content column. UPDATE is blocked; DELETE is allowed so an erasure can cascade.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "auth/accounts/consent (parental consent ledger)",
+      "evidence": "migration `…022` (`member_saathi_consent` + append-only trigger)"
+    },
+    {
+      "id": "AIC25",
+      "title": "Member-visible memory",
+      "subsystem": "relational-os",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "components/saathi/saathi-memory-panel.tsx",
+        "saathi-memory-copy.ts",
+        "saathi-memory-line.tsx"
+      ],
+      "what": "Member-visible memory: \"every row shown in the words it is stored in\", the never-store list printed beside it, and both consent choices at equal weight. The memory line on the home screen shows the top recall row verbatim, before the lesson.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "relational-os + parent visibility",
+      "evidence": "`components/saathi/saathi-memory-panel.tsx@main`, `saathi-memory-copy.ts@main`, `saathi-memory-line.tsx@main`"
+    },
+    {
+      "id": "AIC26",
+      "title": "Memory is an injected, optional slot",
+      "subsystem": "memory-graph/consolidation",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/handler.ts",
+        "SaathiMemoryDeps",
+        "noRecallSlot",
+        "EMPTY_RECALL_ROWS"
+      ],
+      "what": "Memory is an injected, optional slot. With memory off, the TAIL is byte-identical to a build without memory, and the prompt-budget test asserts it per module, stage and locale (\"declining costs nothing\").",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "memory-graph + consent",
+      "evidence": "`lib/saathi/handler.ts@main` (`SaathiMemoryDeps`, `noRecallSlot`, `EMPTY_RECALL_ROWS`)"
+    },
+    {
+      "id": "AIC27",
+      "title": "A push-to-talk state machine with no send event",
+      "subsystem": "realtime-voice",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "components/saathi/voice-input.ts",
+        "asr-client.ts"
+      ],
+      "what": "A push-to-talk state machine with no send event: idle/arming/recording/transcribing/transcript/error. There is a 45 s self-enforced cap and cancel discards the clip. The sheet probes `/api/saathi/asr` first, so there is never a dead microphone.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "realtime-voice",
+      "evidence": "`components/saathi/voice-input.ts@main`, `asr-client.ts@main`",
+      "notes": "use note: (idea for realtime barge-in UX)"
+    },
+    {
+      "id": "AIC28",
+      "title": "A Sarvam ASR seam (`saarika:v3`)",
+      "subsystem": "realtime-voice",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/asr.ts",
+        "asr-handler.ts",
+        "lib/credential-pool.ts"
+      ],
+      "what": "A Sarvam ASR seam (`saarika:v3`). The pool rotates only on 402/429 or a credit message, not on transport failures, and tries each key at most once. Failures are named (no-key, pool-exhausted, unsupported-audio, size, network, deadline, http_status, empty). No audio is ever persisted.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "realtime-voice (STT fallback lane)",
+      "evidence": "`lib/saathi/asr.ts@main`, `asr-handler.ts@main`, `lib/credential-pool.ts@main`"
+    },
+    {
+      "id": "AIC29",
+      "title": "Photo of homework",
+      "subsystem": "multimodal-vision",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "components/saathi/photo-attach.ts",
+        "lib/saathi/photo.ts"
+      ],
+      "what": "Photo of homework. EXIF is stripped by canvas re-encode (pixels only). `createImageBitmap` applies orientation. JPEG/WebP only; HEIC is refused. The same caps are validated on client and route. Nothing is stored.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "multimodal-vision (homework photos of minors)",
+      "evidence": "`components/saathi/photo-attach.ts@main`, `lib/saathi/photo.ts@main`"
+    },
+    {
+      "id": "AIC30",
+      "title": "Photo predicates",
+      "subsystem": "multimodal-vision",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/vision-gate.ts"
+      ],
+      "what": "Photo predicates. An illegibility claim beside an ungrounded assertion discards the whole turn. Identifiers not found in typed words or the lesson are stripped. Handwriting commentary and transcription are refused. The stage gate withholds the image on checked steps.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "multimodal-vision",
+      "evidence": "`lib/saathi/vision-gate.ts@main`"
+    },
+    {
+      "id": "AIC31",
+      "title": "A paid-lane assertion",
+      "subsystem": "infra/azure/vercel/deploy",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/lane.ts",
+        "lib/model-data-terms.ts",
+        "context/model-data-terms.json"
+      ],
+      "what": "A paid-lane assertion. No provider is built unless `MODEL_LANE_DATA_TERMS=paid` and a data-terms record exists (terms URL, date read, `paidTierTrainingUse=false`). An interim unpaid acknowledgement expires after 60 days and marks every trace. Data-terms record R-027: Foundry's default abuse monitoring allows human review, so apply for modified abuse monitoring before sending minors' photos.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "infra/azure + safety-floor",
+      "evidence": "`lib/saathi/lane.ts@main`, `lib/model-data-terms.ts@main`, `context/model-data-terms.json@main`"
+    },
+    {
+      "id": "AIC32",
+      "title": "Foundry `v1` chat lane with a 12 s fuse",
+      "subsystem": "infra/azure/vercel/deploy",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/provider-foundry.ts",
+        "lib/foundry-pool.ts",
+        "lib/gemini-pool.ts"
+      ],
+      "what": "Foundry `v1` chat lane with a 12 s fuse. It reads `finish_reason` (length → fail) and reports cached tokens and estimated USD on every turn. Paid pools rotate on a daily spend estimate, not on status codes.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "infra/azure",
+      "evidence": "`lib/saathi/provider-foundry.ts@main`, `lib/foundry-pool.ts@main`, `lib/gemini-pool.ts@main`"
+    },
+    {
+      "id": "AIC33",
+      "title": "One table maps feature → deployment via `AI2_MODEL_<FEATURE>`, and no model name appears in code",
+      "subsystem": "infra/azure/vercel/deploy",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/ai/router.ts"
+      ],
+      "what": "One table maps feature → deployment via `AI2_MODEL_<FEATURE>`, and no model name appears in code. It refuses Saathi by name (Saathi has its own compliance lane), never retries except one 404 fallback, and keeps keys out of traces.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "infra/azure/vercel/deploy",
+      "evidence": "`lib/ai/router.ts@main`"
+    },
+    {
+      "id": "AIC34",
+      "title": "Daily USD cap per feature from a DB ledger",
+      "subsystem": "infra/azure/vercel/deploy",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/ai/budget.ts",
+        "lib/ai/spend-store.ts",
+        "202609130032_model_spend_daily.sql"
+      ],
+      "what": "Daily USD cap per feature from a DB ledger: grain (day, feature), no member column, additive security-definer writer, 60 s hot cache. It fails closed to authored content when the ledger is unreadable and never spends on an unpriced deployment. Shares: saathi 0.5, feedback 0.2, translate 0.15, embed/classify/transcribe 0.05 each.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "infra + telemetry",
+      "evidence": "`lib/ai/budget.ts@main`, `lib/ai/spend-store.ts@main`, migration `202609130032_model_spend_daily.sql@main`"
+    },
+    {
+      "id": "AIC35",
+      "title": "Price table, `estimateTurnCostUsd` (upper bound, no cache discount) and env price overrides.",
+      "subsystem": "telemetry/tracing",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/model-spend.ts"
+      ],
+      "what": "Price table, `estimateTurnCostUsd` (upper bound, no cache discount) and env price overrides.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "telemetry/tracing",
+      "evidence": "`lib/model-spend.ts@main`"
+    },
+    {
+      "id": "AIC36",
+      "title": "A per-turn trace attached to the response",
+      "subsystem": "telemetry/tracing",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/saathi/contract.ts",
+        "SaathiTrace"
+      ],
+      "what": "A per-turn trace attached to the response: served-by, gate, degraded reason, digest, cached tokens, usd, elapsed, trimmed flags. It carries no text, and only text-free fields reach analytics.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "telemetry/tracing",
+      "evidence": "`lib/saathi/contract.ts@main` `SaathiTrace`"
+    },
+    {
+      "id": "AIC37",
+      "title": "The lesson + module + quest + pathway schema described in §1.2, with EN/HI `LocalizedLearningText`, plus the p",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/learning-journey.ts",
+        "lib/learning-catalog/types.ts"
+      ],
+      "what": "The lesson + module + quest + pathway schema described in §1.2, with EN/HI `LocalizedLearningText`, plus the per-module record (`conceptSelectedOption`, `*Aligned`, `*Attempts`, `artifactDraft`, `rubricChecks`, stage, status).",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "learning/pedagogy/curriculum",
+      "evidence": "`lib/learning-journey.ts@main` (types), `lib/learning-catalog/types.ts@main`"
+    },
+    {
+      "id": "AIC38",
+      "title": "The studio's 4-stage loop (understand/example/practice/apply), with the recall rules hidden in a disclosure un",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "components/learning-studio.tsx",
+        "components/learning/public-stop-loop.tsx"
+      ],
+      "what": "The studio's 4-stage loop (understand/example/practice/apply), with the recall rules hidden in a disclosure until the recall is answered (Round 15), plus a public no-account first lesson ending on a shareable parcha.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "learning/pedagogy + design-system/ux",
+      "evidence": "`components/learning-studio.tsx@main`, `components/learning/public-stop-loop.tsx@main`"
+    },
+    {
+      "id": "AIC39",
+      "title": "The near-miss check rule",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "docs/learning/checks.md",
+        "tests/learning-near-miss-checks.test.ts"
+      ],
+      "what": "The near-miss check rule. A scene prompt of 8–25 words from daily Indian life must not contain the answer's distinctive words. The 2 distractors are near-misses of the same rule (right rule/wrong step; wrong source; half applied). Each distractor shares <60% of the answer's content words, and none equals any concept bullet in the corpus. The rationale names each near-miss by position. A test enforces all of it, with EN/HI parity.",
+      "maturity": "shipped-measured",
+      "taxila_use": "copy",
+      "taxila_target": "learning/pedagogy (covert comprehension detection)",
+      "evidence": "`docs/learning/checks.md@main`, `tests/learning-near-miss-checks.test.ts@main`",
+      "notes": "use note: (method)"
+    },
+    {
+      "id": "AIC40",
+      "title": "A server-true record",
+      "subsystem": "db-schema",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "202609010021_learning_record_truth.sql",
+        "lib/learning-sync.ts"
+      ],
+      "what": "A server-true record: aligned flags are recomputed from the stored option against `correctIndex`. `concept_first_try`, `practice_first_try` and `transfer_first_try` are decided once, never revised, never returned by GET, and never shown. Unearned completions are repaired back to `practising` with a NOTICE.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "db-schema + comprehension signal",
+      "evidence": "migration `202609010021_learning_record_truth.sql@main`, `lib/learning-sync.ts@main`"
+    },
+    {
+      "id": "AIC41",
+      "title": "Device ↔ account sync with optimistic `snapshot_version`, idempotency receipts (sha256 request hash) and an ex",
+      "subsystem": "db-schema",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/learning-sync.ts",
+        "app/api/learning/route.ts",
+        "202608290004_learning_journey.sql",
+        "lib/learning/device-journey.ts",
+        "lib/learning/member-journey.ts"
+      ],
+      "what": "Device ↔ account sync with optimistic `snapshot_version`, idempotency receipts (sha256 request hash) and an explicit \"use account / keep device\" conflict choice. The read merge is monotone, so finished work never disappears.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "db-schema + android (offline)",
+      "evidence": "`lib/learning-sync.ts@main`, `app/api/learning/route.ts@main`, migration `202608290004_learning_journey.sql@main`, `lib/learning/device-journey.ts@main`, `lib/learning/member-journey.ts@main`"
+    },
+    {
+      "id": "AIC42",
+      "title": "Level, quest and band arithmetic (`levelLessonCount` vs `levelQuestBandLessonCount`, with a reconciliation ide",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/learning/ladder.ts",
+        "lib/learning/safar.ts",
+        "docs/learning/ladder.md",
+        "components/safar/*"
+      ],
+      "what": "Level, quest and band arithmetic (`levelLessonCount` vs `levelQuestBandLessonCount`, with a reconciliation identity), the Safar map and quest/level milestone ids.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "curriculum (class bands 1–9) + gamification",
+      "evidence": "`lib/learning/ladder.ts@main`, `lib/learning/safar.ts@main`, `docs/learning/ladder.md@main`, `components/safar/*`"
+    },
+    {
+      "id": "AIC43",
+      "title": "A deterministic, explainable route plan",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/learning-journey.ts",
+        "planPathwayOrderFrom",
+        "learningRouteReasons"
+      ],
+      "what": "A deterministic, explainable route plan. It reads only aim + experience + catalog. Every position carries one of 6 bilingual reasons (you-chose-this, builds-the-basics, continues-from, same-family, fits-your-time, open-to-everyone). Nothing is hidden or scored.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "learning profile / curriculum sequencing",
+      "evidence": "`lib/learning-journey.ts@main` `planPathwayOrderFrom`, `learningRouteReasons`"
+    },
+    {
+      "id": "AIC44",
+      "title": "A level check",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "components/safar/level-check.tsx",
+        "lib/learning/safar.ts",
+        "memberLevelCheck"
+      ],
+      "what": "A level check: 5 authored questions plus one written answer. It blocks nothing, scores nothing and writes nothing, and it marks questions from unopened lessons as such.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "covert comprehension (diagnostic probe)",
+      "evidence": "`components/safar/level-check.tsx@main`, `lib/learning/safar.ts@main` (`memberLevelCheck`)"
+    },
+    {
+      "id": "AIC45",
+      "title": "Spaced retrieval over finished modules on 2/7/21/60-day intervals",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/learning/spacing.ts",
+        "components/learning/spaced-review-card.tsx",
+        "202609010030_member_learning_review.sql"
+      ],
+      "what": "Spaced retrieval over finished modules on 2/7/21/60-day intervals. Outcomes are `kept`/`faded` only, with no skipped, streak or dueSince field. Overdue items are rescheduled forward to today. The item type carries no date. Questions are the authored checks, verbatim.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "learning/pedagogy (retention)",
+      "evidence": "`lib/learning/spacing.ts@main`, `components/learning/spaced-review-card.tsx@main`, migration `202609010030_member_learning_review.sql@main`"
+    },
+    {
+      "id": "AIC46",
+      "title": "Criterion-named AI feedback on a draft",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/learning/feedback-contract.ts",
+        "feedback-gates.ts",
+        "feedback.ts",
+        "app/api/learning/feedback/route.ts"
+      ],
+      "what": "Criterion-named AI feedback on a draft: 2–4 items of {criterion copied from the lesson, observation, nextStep}. There is no score field. Gates: parse, authored criterion (the authored string is served), verdict/score-number vocab EN+HI, ≤40 words, no >15-word run foreign to the draft and lesson, quote cap, no \"write in language X\", register, no URL. Discard the whole turn and fall back to authored. Never stored.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "learning/pedagogy + safety-floor",
+      "evidence": "`lib/learning/feedback-contract.ts@main`, `feedback-gates.ts@main`, `feedback.ts@main`, `app/api/learning/feedback/route.ts@main`"
+    },
+    {
+      "id": "AIC47",
+      "title": "Rubrics of exactly 3 criteria with 0–5 anchors in EN/HI, version pins (`id vN`) as composite FKs, and publishe",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/evidence/rubric.ts",
+        "rubric-catalog.ts",
+        "quest-rubrics.ts",
+        "/learn/rubrics"
+      ],
+      "what": "Rubrics of exactly 3 criteria with 0–5 anchors in EN/HI, version pins (`id vN`) as composite FKs, and published pages. Each criterion is verbatim a line the quest's lessons teach.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "learning/pedagogy + evals (parent/teacher view)",
+      "evidence": "`lib/evidence/rubric.ts@main`, `rubric-catalog.ts@main`, `quest-rubrics.ts@main`, `/learn/rubrics`"
+    },
+    {
+      "id": "AIC48",
+      "title": "Worked exemplars beside the rubric",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/evidence/quest-exemplars/*",
+        "docs/evidence/exemplars.md"
+      ],
+      "what": "Worked exemplars beside the rubric: a strong and a weaker artefact for the same brief, with margin notes keyed to criteria (met/partly/not-met chips, no numbers), a fingerprint pinned to `authoredOn`, and the boundary sentence \"This is a reference, not an answer…\".",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "learning/pedagogy",
+      "evidence": "`lib/evidence/quest-exemplars/*@main`, `docs/evidence/exemplars.md@main`"
+    },
+    {
+      "id": "AIC49",
+      "title": "Cohen's κ + percent agreement + Wilson interval",
+      "subsystem": "evals/gates/verification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/evidence/calibration.ts",
+        "scripts/evidence-calibration.mjs",
+        "docs/evidence/calibration.md"
+      ],
+      "what": "Cohen's κ + percent agreement + Wilson interval. It prints `SYNTHETIC` on self-test and refuses to repair bad input.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "evals/gates/verification",
+      "evidence": "`lib/evidence/calibration.ts@main`, `scripts/evidence-calibration.mjs@main`, `docs/evidence/calibration.md@main`",
+      "notes": "maturity note: (self-test 5/5)"
+    },
+    {
+      "id": "AIC50",
+      "title": "An evidence state machine (exposed→…→published, withdraw terminal), three human gates read from code, founding",
+      "subsystem": "evals/gates/verification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/evidence/states.ts",
+        "gates.ts",
+        "triage.ts",
+        "reviewers.ts",
+        "…020",
+        "…025"
+      ],
+      "what": "An evidence state machine (exposed→…→published, withdraw terminal), three human gates read from code, founding-reviewer credentials (named admin, ≤183 days, ≤3 per field), and model triage whose routing type is number-free.",
+      "maturity": "prototype",
+      "taxila_use": "idea",
+      "taxila_target": "evals + parent/teacher review loop",
+      "evidence": "`lib/evidence/states.ts@main`, `gates.ts@main`, `triage.ts@main`, `reviewers.ts@main`, migrations `…020`, `…025`",
+      "notes": "maturity note: (flag off)"
+    },
+    {
+      "id": "AIC51",
+      "title": "Build-time machine translation into 19–21 locales",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/learning/lesson-translations.ts",
+        "translation-validate.ts",
+        "scripts/translate-lessons.mjs",
+        "content/lesson-translations/*.json"
+      ],
+      "what": "Build-time machine translation into 19–21 locales. Units are keyed by field path against a per-module source hash, and a changed source drops the unit and records it as a `source-changed` gap. There are script-ratio and Latin-leakage checks. Output is labelled \"machine-translated beta\".",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "curriculum (multilingual CBSE/RBSE)",
+      "evidence": "`lib/learning/lesson-translations.ts@main`, `translation-validate.ts@main`, `scripts/translate-lessons.mjs@main`, `content/lesson-translations/*.json@main`"
+    },
+    {
+      "id": "AIC52",
+      "title": "Two-judge translation quality scoring (adequacy/fluency 1–5), stratified sampling, and κ.",
+      "subsystem": "evals/gates/verification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "scripts/probe-translation-quality.mjs",
+        "docs/evals/translation-quality.md"
+      ],
+      "what": "Two-judge translation quality scoring (adequacy/fluency 1–5), stratified sampling, and κ.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "evals",
+      "evidence": "`scripts/probe-translation-quality.mjs@main`, `docs/evals/translation-quality.md@main`"
+    },
+    {
+      "id": "AIC53",
+      "title": "A Hindi register glossary (287 strings reviewed) and a \"no Latin inside a Hindi string\" gate with an allowlist",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "docs/learning/hindi-terms.md",
+        "tests/bharat-languages.test.ts"
+      ],
+      "what": "A Hindi register glossary (287 strings reviewed) and a \"no Latin inside a Hindi string\" gate with an allowlist.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "curriculum (Hindi-medium terms)",
+      "evidence": "`docs/learning/hindi-terms.md@main`, `tests/bharat-languages.test.ts@main`"
+    },
+    {
+      "id": "AIC54",
+      "title": "Readability gate",
+      "subsystem": "evals/gates/verification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "tests/plain-english.test.ts",
+        "tests/plain-english-sentences.ts"
+      ],
+      "what": "Readability gate: no sentence over 20 words, applied across the lesson corpus and UI copy.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "evals/gates",
+      "evidence": "`tests/plain-english.test.ts@main`, `tests/plain-english-sentences.ts@main`",
+      "notes": "use note: (kid reading levels per class)"
+    },
+    {
+      "id": "AIC55",
+      "title": "\"One word per thing\" lock",
+      "subsystem": "design-system/ux",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/vocabulary-lock.ts",
+        "lib/evidence/vocabulary.ts"
+      ],
+      "what": "\"One word per thing\" lock: banned phrase patterns matched against rendered literals (comments stripped), plus the \"certificate\" lock.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux (copy discipline)",
+      "evidence": "`lib/vocabulary-lock.ts@main`, `lib/evidence/vocabulary.ts@main`"
+    },
+    {
+      "id": "AIC56",
+      "title": "Sahyog Trail",
+      "subsystem": "gamification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/community-progress.ts",
+        "lib/trail/*",
+        "components/trail/*",
+        "202609010023_member_trail_ledger.sql"
+      ],
+      "what": "Sahyog Trail. Points come only from finished work (practice module, project brief, collaboration card); no points for visits, time, streaks or money. The permanent `levelFloor` means no demotion, `CATALOG_V1_MODULE_COUNT` is frozen at 18, and the ledger is append-only with a server trigger. Level names: beej→sthapak.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "gamification",
+      "evidence": "`lib/community-progress.ts@main`, `lib/trail/*@main`, `components/trail/*@main`, migration `202609010023_member_trail_ledger.sql@main`"
+    },
+    {
+      "id": "AIC57",
+      "title": "Opt-in weekly suggestions that structurally cannot see a previous week",
+      "subsystem": "gamification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/trail/weekly-practice.ts",
+        "components/trail/weekly-quest-card.tsx"
+      ],
+      "what": "Opt-in weekly suggestions that structurally cannot see a previous week. Load-bearing copy: \"Pick one if it is useful. Nothing happens if you skip it.\"",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "gamification",
+      "evidence": "`lib/trail/weekly-practice.ts@main`, `components/trail/weekly-quest-card.tsx@main`"
+    },
+    {
+      "id": "AIC58",
+      "title": "Circles",
+      "subsystem": "group-ai/multi-agent",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/circles/*",
+        "202608310019_learning_circles.sql"
+      ],
+      "what": "Circles: presence, never performance. Opt-in, one tap to leave, a server-enforced 5-member floor, real counts only, no DM.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "group-ai/multi-agent (cohort presence for kids, only if safe)",
+      "evidence": "`lib/circles/*@main`, migration `202608310019_learning_circles.sql@main`"
+    },
+    {
+      "id": "AIC59",
+      "title": "The NEVER MANIPULATE four-question audit",
+      "subsystem": "gamification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/community-progress.ts",
+        "lib/learning/spacing.ts",
+        "lib/trail/weekly-practice.ts",
+        "docs/strategy/03-retention.md"
+      ],
+      "what": "The NEVER MANIPULATE four-question audit: (1) is anything taken away on absence? (2) any nag or shame if ignored? (3) any rank vs others? (4) is the reward inspectable work, not attention? A mechanic passes only if removing fear and obligation leaves it intact.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "gamification + safety-floor",
+      "evidence": "headers of `lib/community-progress.ts@main`, `lib/learning/spacing.ts@main`, `lib/trail/weekly-practice.ts@main`, `docs/strategy/03-retention.md@main` §9"
+    },
+    {
+      "id": "AIC60",
+      "title": "Outbound channel (email, with a WhatsApp adapter slot)",
+      "subsystem": "auth/accounts/consent",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/outbound/shape-gate.ts",
+        "contract.ts",
+        "compose.ts",
+        "adapters/resend.ts|smtp.ts",
+        "202609010028_member_outbound.sql"
+      ],
+      "what": "Outbound channel (email, with a WhatsApp adapter slot). Four event kinds only. A composer with no free-text parameter. A shape gate refusing re-engagement, elapsed-time, streak and loss language in EN+HI, mirrored as DB checks. No `scheduled_for` and no digest.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "parent notifications (auth/consent + growth)",
+      "evidence": "`lib/outbound/shape-gate.ts@main`, `contract.ts@main`, `compose.ts@main`, `adapters/resend.ts|smtp.ts@main`, migration `202609010028_member_outbound.sql@main`"
+    },
+    {
+      "id": "AIC61",
+      "title": "Privacy-safe analytics",
+      "subsystem": "telemetry/tracing",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/analytics-*.ts",
+        "components/analytics/privacy-choice*.ts(x)",
+        "202608300009",
+        "013",
+        "026"
+      ],
+      "what": "Privacy-safe analytics: opt-in, GPC/DNT → essential-only, allowlisted semantic events, no typed content, coordinates or UA. 28-day raw retention, 13-month aggregates, k<5 suppression, withdrawal tombstone, a rollback-only verifier.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "telemetry/tracing (DPDP)",
+      "evidence": "`lib/analytics-*.ts@main`, `components/analytics/privacy-choice*.ts(x)@main`, migrations `202608300009`…`013`, `026`"
+    },
+    {
+      "id": "AIC62",
+      "title": "A weekly cohort aggregate of counts only, sealed at day 30, answering day-7 and day-30 retention without per-m",
+      "subsystem": "telemetry/tracing",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "202609010022_member_activity_cohorts.sql"
+      ],
+      "what": "A weekly cohort aggregate of counts only, sealed at day 30, answering day-7 and day-30 retention without per-member rows.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "telemetry",
+      "evidence": "migration `202609010022_member_activity_cohorts.sql@main`"
+    },
+    {
+      "id": "AIC63",
+      "title": "Guided tour",
+      "subsystem": "design-system/ux",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/tour/*",
+        "components/tour/spotlight.tsx"
+      ],
+      "what": "Guided tour: 7 \"moments\" of ≤8 words each, fired only from real product state (a test forbids timers), once per device and once per member, replayable.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "design-system/ux (child onboarding)",
+      "evidence": "`lib/tour/*@main`, `components/tour/spotlight.tsx@main`"
+    },
+    {
+      "id": "AIC64",
+      "title": "\"Kaam ka parcha\"",
+      "subsystem": "growth/seo",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "components/share/*",
+        "lib/parcha/*",
+        "…027",
+        "…036",
+        "…037"
+      ],
+      "what": "\"Kaam ka parcha\": a finished piece of work gets an opt-in public page and a WhatsApp-sized canvas card. Attributable, with no count or rank.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "growth (parent share of a child's work, consented)",
+      "evidence": "`components/share/*@main`, `lib/parcha/*@main`, migrations `…027`, `…036`, `…037`"
+    },
+    {
+      "id": "AIC65",
+      "title": "Profiles (private default, handle regex, terms version/time pair), journeys with ordered intents, handle histo",
+      "subsystem": "db-schema",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "202608280001_member_platform.sql",
+        "…002",
+        "…003",
+        "…006"
+      ],
+      "what": "Profiles (private default, handle regex, terms version/time pair), journeys with ordered intents, handle history, rooms/messages with fail-closed attachments (scan_state), avatar genome, RLS + revoke + security-definer writers.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "db-schema + auth",
+      "evidence": "migrations `202608280001_member_platform.sql@main`, `…002`, `…003`, `…006`"
+    },
+    {
+      "id": "AIC66",
+      "title": "Neon Auth that fails closed in production when the URL or cookie secret is incomplete (a per-process random pl",
+      "subsystem": "auth/accounts/consent",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/auth/config.ts",
+        "lib/auth/session.ts",
+        "app/auth/complete/page.tsx",
+        "lib/auth-redirect.ts"
+      ],
+      "what": "Neon Auth that fails closed in production when the URL or cookie secret is incomplete (a per-process random placeholder secret). A deterministic `/auth/complete` router exchanges the verifier and routes to onboarding or home. Safe `next=` destinations refuse 21 shapes. A failed session lookup is distinguished from signed-out.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "auth/accounts/consent",
+      "evidence": "`lib/auth/config.ts@main`, `lib/auth/session.ts@main`, `app/auth/complete/page.tsx@main`, `lib/auth-redirect.ts@main`"
+    },
+    {
+      "id": "AIC67",
+      "title": "Detects in-app browsers (`; wv)`, FBAN, Instagram, WhatsApp, iOS without a Safari token) and hides Google OAut",
+      "subsystem": "android/capacitor",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/auth/embedded-browser.ts",
+        "components/signin-experience.tsx"
+      ],
+      "what": "Detects in-app browsers (`; wv)`, FBAN, Instagram, WhatsApp, iOS without a Safari token) and hides Google OAuth there, because Google returns 403 `disallowed_useragent`. Email OTP is offered instead.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "android/capacitor (WebView sign-in)",
+      "evidence": "`lib/auth/embedded-browser.ts@main`, `components/signin-experience.tsx@main`"
+    },
+    {
+      "id": "AIC68",
+      "title": "An 18+ declaration gate",
+      "subsystem": "auth/accounts/consent",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "202609010024_member_age_declaration.sql",
+        "app/api/member/route.ts"
+      ],
+      "what": "An 18+ declaration gate: `age_declared_at` only, no DOB collected, never backfilled.",
+      "maturity": "shipped",
+      "taxila_use": "skip",
+      "taxila_target": "auth/accounts/consent",
+      "evidence": "migration `202609010024_member_age_declaration.sql@main`, `app/api/member/route.ts@main`",
+      "notes": "use note: (Taxila needs verifiable parental consent instead) / idea"
+    },
+    {
+      "id": "AIC69",
+      "title": "Same-origin mutation check, bounded streamed JSON with strict media type, UUID validation before DB casts, per",
+      "subsystem": "infra/azure/vercel/deploy",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/request-security.ts",
+        "proxy.ts",
+        "next.config.ts"
+      ],
+      "what": "Same-origin mutation check, bounded streamed JSON with strict media type, UUID validation before DB casts, per-member rate limits, plus CSP/HSTS/COOP/CORP headers.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "infra/azure/vercel/deploy",
+      "evidence": "`lib/request-security.ts@main`, `proxy.ts@main`, `next.config.ts@main` (headers)"
+    },
+    {
+      "id": "AIC70",
+      "title": "Rollback-only verifiers that prove each migration's claims against real Postgres (privileges, triggers, CHECKs",
+      "subsystem": "db-schema",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "scripts/verify-*-migration.mjs",
+        "scripts/apply-neon-migration.mjs",
+        "scripts/check-neon-migration.mjs"
+      ],
+      "what": "Rollback-only verifiers that prove each migration's claims against real Postgres (privileges, triggers, CHECKs). Migrations are applied as a whole file through the Neon WebSocket client, with a branch guard.",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "db-schema + evals",
+      "evidence": "`scripts/verify-*-migration.mjs@main`, `scripts/apply-neon-migration.mjs@main`, `scripts/check-neon-migration.mjs@main`"
+    },
+    {
+      "id": "AIC71",
+      "title": "A durable context memory",
+      "subsystem": "evals/gates/verification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "context/graph.json|registry.json|timeline.md|measurements.md",
+        "scripts/context.mjs"
+      ],
+      "what": "A durable context memory: nodes/edges, decisions D-###, questions Q-###, risks R-###, a dated timeline, and measurements with n/method/date. The logger rejects credential-shaped values.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "evals/process (matches Taxila `context/`)",
+      "evidence": "`context/graph.json|registry.json|timeline.md|measurements.md@main`, `scripts/context.mjs@main`"
+    },
+    {
+      "id": "AIC72",
+      "title": "Tokens",
+      "subsystem": "design-system/ux",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "DESIGN.md",
+        ".impeccable/design.json",
+        "app/redesign.css",
+        "app/commons/commons.css",
+        "app/globals.css"
+      ],
+      "what": "Tokens: page `#f4f6f1`, forest `#16342b`, action vermilion `#b8341d`, a semantic dark remap, radii (12 control / 14 card / 20 sheet), the 44 px target floor, 16 px inputs, a one-viewport shell, and the matra-safe rule for Hindi.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "design-system/ux (Taxila is kid-facing; use the discipline, not the palette)",
+      "evidence": "`DESIGN.md@main`, `.impeccable/design.json@main`, `app/redesign.css@main`, `app/commons/commons.css@main`, `app/globals.css@main`"
+    },
+    {
+      "id": "AIC73",
+      "title": "Self-hosted fonts for 13 Indic scripts (Devanagari, Bengali/Assamese, Gujarati, Gurmukhi, Kannada, Malayalam, ",
+      "subsystem": "design-system/ux",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "public/fonts/*",
+        "lib/bharat-languages.ts",
+        "app/layout.tsx"
+      ],
+      "what": "Self-hosted fonts for 13 Indic scripts (Devanagari, Bengali/Assamese, Gujarati, Gurmukhi, Kannada, Malayalam, Meetei Mayek, Ol Chiki, Odia, Tamil, Telugu, Nastaliq). A 23-language catalog with BCP-47 tags, native names and direction (ur/ks/sd RTL).",
+      "maturity": "shipped",
+      "taxila_use": "copy",
+      "taxila_target": "design-system/ux (i18n)",
+      "evidence": "`public/fonts/*@main`, `lib/bharat-languages.ts@main`, `app/layout.tsx@main`"
+    },
+    {
+      "id": "AIC74",
+      "title": "A Playwright instrument covering surfaces × 18 viewports × en/hi/ur × light/dark, 10 checks (overflow, clipped",
+      "subsystem": "evals/gates/verification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "tools/responsive-audit/*"
+      ],
+      "what": "A Playwright instrument covering surfaces × 18 viewports × en/hi/ur × light/dark, 10 checks (overflow, clipped text, 44 px targets, text floors, empty bands, occlusion, short-viewport reachability, contrast ≥4.5:1, RTL). It writes a ranked defect index and a contact sheet, and has its own test fixtures.",
+      "maturity": "shipped-measured",
+      "taxila_use": "copy",
+      "taxila_target": "evals/gates + design-system",
+      "evidence": "`tools/responsive-audit/*@main`"
+    },
+    {
+      "id": "AIC75",
+      "title": "The Bharat Jeev avatar genome",
+      "subsystem": "avatar-visual",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/avatar.ts",
+        "components/bharat-avatar.tsx",
+        "components/bharat-jeev-traits.tsx"
+      ],
+      "what": "The Bharat Jeev avatar genome: 4,096 deterministic SVG combinations (8 Indian animals × 8 earth palettes × 4 markings × 4 backdrops × 4 moods). Repo-native, with no photo or biometric service, and respects reduced motion.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "avatar-visual (child profile avatar, no child photos)",
+      "evidence": "`lib/avatar.ts@main`, `components/bharat-avatar.tsx@main`, `components/bharat-jeev-traits.tsx@main`"
+    },
+    {
+      "id": "AIC76",
+      "title": "Hybrid lexical + 256-dim embedding search with EN/HI/Hinglish synonyms (chhatravritti, sarkari)",
+      "subsystem": "company-brain/knowledge-ingestion",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/funding-catalog/search.ts",
+        "synonyms.ts",
+        "embeddings.ts",
+        "embedding-index.json"
+      ],
+      "what": "Hybrid lexical + 256-dim embedding search with EN/HI/Hinglish synonyms (chhatravritti, sarkari). The normaliser keeps `\\p{M}`. Precomputed vectors are committed.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "company-brain/knowledge-ingestion (lesson search)",
+      "evidence": "`lib/funding-catalog/search.ts@main`, `synonyms.ts@main`, `embeddings.ts@main`, `embedding-index.json@main`"
+    },
+    {
+      "id": "AIC77",
+      "title": "Public lesson SEO/AEO",
+      "subsystem": "growth/seo",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "app/sitemap.ts",
+        "app/robots.ts",
+        "app/llms.txt/route.ts",
+        "lib/seo.ts"
+      ],
+      "what": "Public lesson SEO/AEO: EN/HI URLs per lesson, reciprocal alternates, `LearningResource` JSON-LD describing only visible text, GPTBot disallowed separately from search bots.",
+      "maturity": "shipped",
+      "taxila_use": "adapt",
+      "taxila_target": "growth/seo",
+      "evidence": "`app/sitemap.ts@main`, `app/robots.ts@main`, `app/llms.txt/route.ts@main`, `lib/seo.ts@main`"
+    },
+    {
+      "id": "AIC78",
+      "title": "Sourced research",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "docs/strategy/03-retention.md",
+        "05-technology.md",
+        "01-product-audit.md"
+      ],
+      "what": "Sourced research: retention baselines, learning-science technique table, DPDP, Indic stack, voice cost, auto-grading bias.",
+      "maturity": "spec-only",
+      "taxila_use": "idea",
+      "taxila_target": "learning/pedagogy + infra",
+      "evidence": "`docs/strategy/03-retention.md@main`, `05-technology.md@main`, `01-product-audit.md@main`"
+    },
+    {
+      "id": "AIC79",
+      "title": "A \"first ninety seconds\" study as a Tier-2 first-timer, with 12 ranked frictions, a words-in-fold counter and ",
+      "subsystem": "design-system/ux",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "docs/ux/journey-study.md"
+      ],
+      "what": "A \"first ninety seconds\" study as a Tier-2 first-timer, with 12 ranked frictions, a words-in-fold counter and before/after numbers.",
+      "maturity": "spec-only",
+      "taxila_use": "adapt",
+      "taxila_target": "design-system/ux",
+      "evidence": "`docs/ux/journey-study.md@main`",
+      "notes": "maturity note: (method)"
+    },
+    {
+      "id": "AIC80",
+      "title": "Exports the CC BY-SA curriculum as a standalone publishable folder.",
+      "subsystem": "learning/pedagogy/curriculum",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "scripts/export-curriculum.mjs",
+        "docs/curriculum-export.md"
+      ],
+      "what": "Exports the CC BY-SA curriculum as a standalone publishable folder.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "curriculum",
+      "evidence": "`scripts/export-curriculum.mjs@main`, `docs/curriculum-export.md@main`"
+    },
+    {
+      "id": "AIC81",
+      "title": "Feature flags with a written reason per flag; evidenceLadder is held false on human gates.",
+      "subsystem": "infra/azure/vercel/deploy",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "lib/learning-features.ts"
+      ],
+      "what": "Feature flags with a written reason per flag; evidenceLadder is held false on human gates.",
+      "maturity": "shipped",
+      "taxila_use": "idea",
+      "taxila_target": "infra",
+      "evidence": "`lib/learning-features.ts@main`"
+    },
+    {
+      "id": "AIC82",
+      "title": "Three batteries in cost order",
+      "subsystem": "evals/gates/verification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "evals/saathi/register.mjs",
+        "gates.mjs",
+        "shapes.mjs",
+        "run.mjs"
+      ],
+      "what": "Three batteries in cost order: shapes → gates (every predicate paired with a must-not-trip real string) → register (per-intent word bands, question share per band, emoji, Devanagari, em-dash, shortform, lane health, prompt forks, cost meter). The model arm reports NOT RUN when no paid lane exists.",
+      "maturity": "shipped-measured",
+      "taxila_use": "adapt",
+      "taxila_target": "evals/gates/verification",
+      "evidence": "`evals/saathi/register.mjs@main`, `gates.mjs@main`, `shapes.mjs@main`, `run.mjs@main`"
+    },
+    {
+      "id": "AIC83",
+      "title": "`bol` benchmark",
+      "subsystem": "evals/gates/verification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "evals/indic-benchmark/*",
+        "docs/evals/bol/*"
+      ],
+      "what": "`bol` benchmark: 8 dimensions (register, code-switch, script fidelity, honest uncertainty, refusal quality, question-vs-statement pedagogy, plain language, cultural grounding), 4 task formats, a canary, contamination checks, judge prompt, eval card. The seed has 132 items.",
+      "maturity": "prototype",
+      "taxila_use": "adapt",
+      "taxila_target": "evals (Hinglish tutor behaviour eval for kids)",
+      "evidence": "`evals/indic-benchmark/*@main`, `docs/evals/bol/*@main`"
+    },
+    {
+      "id": "AIC84",
+      "title": "Matched-pair EN vs romanised-Hindi pass-rate parity eval and a cost probe.",
+      "subsystem": "evals/gates/verification",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "evals/ai/feedback-cost.mjs",
+        "feedback-script-parity.mjs"
+      ],
+      "what": "Matched-pair EN vs romanised-Hindi pass-rate parity eval and a cost probe.",
+      "maturity": "shipped-measured",
+      "taxila_use": "copy",
+      "taxila_target": "evals",
+      "evidence": "`evals/ai/feedback-cost.mjs@main`, `feedback-script-parity.mjs@main`"
+    },
+    {
+      "id": "AIC85",
+      "title": "The adult community and work-marketplace layer",
+      "subsystem": "group-ai/multi-agent",
+      "repo": "/home/user/ai2bharat",
+      "ref": "origin/main@a11c521",
+      "paths": [
+        "supabase/migrations/*",
+        "app/api/discussions|projects|people|rooms|atlas|funding|opportunities/*",
+        "lib/opportunit*",
+        "research/opportunities/*"
+      ],
+      "what": "The adult community and work-marketplace layer: discussion, projects, people, rooms, events, funding, opportunity ingestion with an editorial publication door, and historical Supabase.",
+      "maturity": "shipped",
+      "taxila_use": "skip",
+      "taxila_target": "—",
+      "evidence": "`supabase/migrations/*@main`, `app/api/discussions|projects|people|rooms|atlas|funding|opportunities/*@main`, `lib/opportunit*@main`, `research/opportunities/*@main`",
+      "notes": "use note: (out of scope for children; the governance patterns are an idea only)"
+    }
+  ],
+  "measurements": [
+    {
+      "claim": "M01: grok-4-1-fast-non-reasoning, first register run: 5/5 bands in; question share 67.8% (ceiling 35%); off-vocab and affection emoji 2.2% each; 0 prompt forks; latency 0.7–1.9 s; $0.000371/turn ≈ ₹0.035",
+      "n": "314 served / 320",
+      "method": "`evals/saathi/register.mjs` model arm, Azure Foundry v1, real CORE (5,712 B) + TAIL, conc 6",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M02: DeepSeek-V4-Flash: 133/320 served (58% lane failures); 5/5 bands out (doubt-support 46.9 words vs 32)",
+      "n": "320 planned",
+      "method": "same",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M03: Prompt cache on the Foundry grok lane: cached 157 → 1,666 on a 1,512-token prompt (the reported count is not a subset); latency 1.90 s cold → 1.10–1.32 s",
+      "n": "4 calls",
+      "method": "identical system prompt, different user turns",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M04: Vision probe: DeepSeek-V4-Flash fabricated \"A man in a suit stands in a library\" for a gradient image at prompt_tokens 16; grok described it correctly",
+      "n": "1 synthetic image × 3 deployments",
+      "method": "data-URI image_url",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M05: After the emoji gate: off-vocab/banned emoji 2.2% → 0.0%, *by construction*; emoji gate-trip rate 8/320 = 2.50%; 0 lane failures",
+      "n": "309/320",
+      "method": "same battery",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M06: gpt-4.1-mini: question share 86.9%; 0 gate trips; 0 emoji; shortform 26.9% vs grok 77.3%; $0.000803/turn (2.16× grok); cached tokens a true subset at 79.6%",
+      "n": "320/320",
+      "method": "same",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M07: Bounding slot 2 (\"close on a statement…\"): grok question share 68.0% → 41.5% (rerun 44.7%; read as ~43% ±5.5); gate trips 3.44% → 0.94%; gpt-4.1-mini 86.9% → 75.0%",
+      "n": "320 per run",
+      "method": "same",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M08: Per-band question share after the fix (grok): define-a-word 58%, give-a-hint 45%, ask-me-a-question 41%, doubt-support 40%, explain-simpler 23%",
+      "n": "316",
+      "method": "same",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M09: Round 12 baseline grok 42.7%. Adding a clause naming two bands in slot 2 → 48.3% (worse); ask-me-a-question 35% → 64% and doubt-support 28% → 45% regressed",
+      "n": "319/320",
+      "method": "same",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M10: Direct provider latency at the 12 s fuse: grok p50 1,026 / p90 1,411 / p95 1,437 ms; gpt-4.1-mini p50 1,305 / p95 1,764 ms; 0/40 fuse hits each",
+      "n": "40 per model",
+      "method": "`createSaathiLane().provider.generate`, conc 6",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M11: Round 13 question-trim gate: grok question share 23.2% / 25.8% (two runs), 5/5 bands, latency mean 967 / median 923 / p90 1,287 ms; trim rates define-a-word 65.6% (avg 4.8 words dropped), give-a-hint 47.6%; 0 discards. gpt-4.1-mini still 50.3%. Foundry became the default.",
+      "n": "314 and 318 / 320",
+      "method": "same + trim gate",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M12: Production Gemini lane, off-lesson word question: 3/5 replies were mid-word fragments before the cut-off gate. With a thinking budget of 640 outside the answer budget: 11/19 served whole, 0 cut off, 8/19 at the 12 s fuse; served p50 ≈ 5.3 s",
+      "n": "5 + 5; 19",
+      "method": "POST /api/saathi, demo member",
+      "date": "2026-09-02",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M13: Production after the lane flip: 4/6 model-path turns served at 0.7–1.6 s; 1 verdict-gate trip → authored",
+      "n": "6",
+      "method": "production probe",
+      "date": "2026-09-14",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M14: `endsUnfinished` cost: 50/51 uncut model replies already ended on a terminator",
+      "n": "51",
+      "method": "DeepSeek via Foundry, all published stops",
+      "date": "2026-09-02",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M15: Feedback route: local p50 1,555 ms, p95 1,962 ms, $0.000439/call, model-served 16/20; production p50 model time 4.4 s",
+      "n": "20 local, 3 production",
+      "method": "gpt-4.1-mini",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M16: Feedback gate pass rate: EN 71.9% → 89.1%, romanised Hindi 71.9% → 87.5% after the option-letter fix; the \"verdict\" gate had been matching the article \"a\"",
+      "n": "64 per arm each way",
+      "method": "`evals/ai/feedback-script-parity.mjs`, 16 matched pairs",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M17: Transfer-check answers that were verbatim concept bullets: 49/58 (all `concepts[1]`, both languages)",
+      "n": "58 modules",
+      "method": "string compare",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M18: The old checks: 139/139 recall prompts used one of two stems, and 139/139 answers shared ≥50% of their content words with the rules printed above them; 69/139 EN and 54/139 HI answers overlapped the description by ≥50%",
+      "n": "139 lessons",
+      "method": "journey audit counters",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M19: Near-miss batch 1: retired stems 18/21 → 0/21; distractor restating another lesson 20/21 → 0/21; answer-on-screen 21/21 → 10/21 EN",
+      "n": "21",
+      "method": "content-word overlap script",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M20: Near-miss batch 6 (legacy 18): scene prompt 0/18 → 18/18; `correctIndex` preserved 36/36",
+      "n": "18",
+      "method": "same",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M21: First-timer journey at 390×844: taps to first interactive element 4 → 1; scroll 1,574 → 0 px; Work list first paint 1,484,284 → 25,461 B; Saathi-open words 100 → 21; Today words 123 → 54",
+      "n": "1 load per cell",
+      "method": "Playwright, corrected DOM counter",
+      "date": "2026-09-02",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M22: Today paint: LCP 2,756 → 408 ms (390×844), FCP 1,192 → 408 ms after a Suspense boundary",
+      "n": "5 warm",
+      "method": "production, demo member",
+      "date": "2026-09-14",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M23: Responsive audit: distinct defect classes 1,170 → 689 → 570 → 510 → 439 across five production runs",
+      "n": "2,912 cells per run",
+      "method": "`tools/responsive-audit`",
+      "date": "2026-09-13/14",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M24: Mobile composer: microphone and send overlapped by 42 px at 360 px (hidden at 390 px)",
+      "n": "1 layout fact",
+      "method": "Playwright at 360/390",
+      "date": "2026-08-31",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M25: Contrast of the Work primary action: 1.82:1 light, 2.06:1 dark; it survived several reviews",
+      "n": "—",
+      "method": "per-node contrast sweep (R-022)",
+      "date": "2026-08-31",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M26: First register battery: the guide's *authored* voice carried em-dashes at 34.6%; ask-me-a-question ran 35.2 words vs a 32 cap",
+      "n": "authored arm, n>300",
+      "method": "`register.mjs`",
+      "date": "2026-08-31 (commit `e1eda0e`@community)",
+      "source": "2026-08-31 (commit `e1eda0e`@community)"
+    },
+    {
+      "claim": "M27: Lesson translation run 1: 59 lessons × 21 locales ≈ $3.50, ~3.7M tokens; drop rates Manipuri 99.55%, Santali 100%, other 19 locales 0.36%. Run 2: 80 lessons × 19 locales $7.17, Bodo 15.74%, Kashmiri 5.45%",
+      "n": "~30k and ~67k units",
+      "method": "gpt-4.1-mini, structural checks",
+      "date": "2026-09-13/14",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M28: Translation quality: mean adequacy 4.61 / 4.52, fluency 4.57 / 4.55; κ ≤ 0 for 13/19 locales (mean 0.053) despite a median raw agreement of 92.5%; weakest Bodo and Kashmiri; $0.09",
+      "n": "760 units × 2 judges",
+      "method": "`probe-translation-quality.mjs`",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M29: Funding search: 38/38 expected programmes in the top 3 on the seed (36 at rank 1); query embedding 120–360 ms; index of 140 vectors, 344 KB, built in 3.3 s",
+      "n": "38 queries (18 EN, 8 HI, 12 Hinglish)",
+      "method": "production build",
+      "date": "2026-09-10",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M30: First real day-7 retention: 2 of 6 (week of 24 Aug)",
+      "n": "6",
+      "method": "`member_activity_cohorts`",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M31: Population: 15 onboarded members, 11 learning rows, 0 practice-complete",
+      "n": "census",
+      "method": "production DB",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M32: Cohen's κ self-test 5/5 (κ = 0.400 on Cohen's example; 82.0% agreement with κ = 0)",
+      "n": "175 synthetic pairs",
+      "method": "`evidence-calibration.mjs --self-test`",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M33: Google sign-in outage of 10 days (31 Aug–10 Sep): the proxy dropped the OAuth query, and analytics logged `signin_google` success at redirect start, so the impact is unmeasurable",
+      "n": "—",
+      "method": "production probes",
+      "date": "2026-09-10",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M34: Model-spend total per round: Round 12 ≈ $0.58; Round 13 $0.5274; daily cap $12, of which Saathi gets $6",
+      "n": "—",
+      "method": "run meters",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M35: Icon sprite: shell HTML 112,932 → 107,772 B; render median 45 → 20 ms; an all-35-icon sprite was *larger* (117,557 B)",
+      "n": "5 warm",
+      "method": "local",
+      "date": "2026-09-14",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M36: bol seed corpus: 95 → 132 items; an always-A model scores 100% → 50% on the pairwise half",
+      "n": "132 items",
+      "method": "rebalance",
+      "date": "2026-09-14",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M37: DeepSeek accidental run: 154/320 served, question share 47.4%, median latency 138 ms (TLS resets) — not reportable",
+      "n": "154",
+      "method": "register battery",
+      "date": "2026-09-14",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M38: Cost model (computed from list prices, not billed): gemini-3.6-flash ₹0.21/turn, doubling from 2027-01-01; speech-to-speech ≈ ₹1.16/learner-minute ≈ 9× text",
+      "n": "arithmetic",
+      "method": "`docs/strategy/05-technology.md`",
+      "date": "2026-09-01",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M39: (imported) A prompt instruction to withhold leaked in 57.1% of ordinary turns and 98.1% of adversarial ones; as a code predicate it leaked 0 / 31,122",
+      "n": "31,122 trials",
+      "method": "Meera measurement, cited in `output-gate.ts`",
+      "date": "pre-2026-08-31",
+      "source": "Meera measurement cited in ai2bharat source (see method); context/measurements.md not the origin"
+    },
+    {
+      "claim": "M40: (imported) A rule mid-brief fired 0/8; appended last it fired 8/8. Example quotes were recited 4/5; structured tags did not recite at n=84",
+      "n": "8; 5; 84",
+      "method": "Meera, cited in `pedagogy.ts`, `kinds.ts`",
+      "date": "—",
+      "source": "Meera measurement cited in ai2bharat source (see method); context/measurements.md not the origin"
+    },
+    {
+      "claim": "M41: (imported) A reasoning mode helped light turns by ~55% and hurt emotional ones by ~81%; mirror-echo 0–2% → 10–29%; crisis over-triggering 16.7% vs 0",
+      "n": "—",
+      "method": "Meera, cited in `prompt.ts`",
+      "date": "—",
+      "source": "Meera measurement cited in ai2bharat source (see method); context/measurements.md not the origin"
+    },
+    {
+      "claim": "M42: (imported) Authored structured state raised self-consistency from 27% to 63%; the companion's measured conversational turn is 20.5 words; the losing profile in a blind 38-2 run ran 36.1 words, 1.74 questions/turn, 63% ending in a question",
+      "n": "—",
+      "method": "Meera, cited in `kinds.ts`, `contract.ts`",
+      "date": "—",
+      "source": "Meera measurement cited in ai2bharat source (see method); context/measurements.md not the origin"
+    },
+    {
+      "claim": "M43: (imported) Vision: 12 screens, 160 calls, 5 models; 2 models declared sections illegible and then invented content; the same input spread 13.6 pp across arms",
+      "n": "160",
+      "method": "Meera, cited in `vision-gate.ts`, Q-026",
+      "date": "—",
+      "source": "Meera measurement cited in ai2bharat source (see method); context/measurements.md not the origin"
+    },
+    {
+      "claim": "M44: (stated, no n in repo) Generic multilingual ASR shows 32–52% CER on code-switched Hinglish; the cascade floor is ~1.4–1.5 s and STT-bound",
+      "n": "—",
+      "method": "cited in `asr.ts`, D-059, D-061",
+      "date": "—",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    },
+    {
+      "claim": "M45: Lesson authoring cost: 335–412 English words per lesson; near-miss checks take about 20 min per lesson for both checks in both languages",
+      "n": "80 lessons / 5 agents",
+      "method": "Round 12 and `checks.md`",
+      "date": "2026-09-13",
+      "source": "context/measurements.md@origin/main (a11c521)"
+    }
+  ],
+  "rejections": [
+    {
+      "tried": "Asking the model to withhold the answer",
+      "what_broke": "(imported). It leaked in 57.1% of ordinary turns and 98.1% under pressure. The fix: never put the answer in TAIL (`withheld-because-it-is-a-live-answer`) and back it with code predicates. `prompt.ts`, `output-gate.ts`.",
+      "source": "prompt.ts, output-gate.ts",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "A persona written as prose, with example quotes",
+      "what_broke": "(imported). It was recited in 4 of 5 turns, and polished taste lines were read out verbatim twice, eight turns apart. The fix: telegraphic rows plus `shapelint.ts`.",
+      "source": "shapelint.ts",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "Rules placed mid-brief",
+      "what_broke": "(imported). They fired 0 of 8 times. The fix: exactly two appended-last slots. A third slot is refused because \"it weakens the two that matter\".",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "An unbounded `MUST: ask before telling. The learner attempts first…` in slot 2",
+      "what_broke": "Question share came out at 66.9% / 68.0% / 86.9% on three vendors. The diagnosis: \"three vendors failing one property identically is not model selection, it is the prompt\". The fix: bound it inside the rule (\"close on a statement; the last character is never a question mark\"). `measurements.md` 2026-09-01; `git diff @rlhf @main -- lib/saathi/pedagogy.ts`.",
+      "source": "MUST: ask before telling. The learner attempts first…, measurements.md, git diff @rlhf @main -- lib/saathi/pedagogy.ts",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "Five slot-2 variants, measured",
+      "what_broke": "- \"1 question max…\" scored 65.4% (n=80). - \"ask opens a turn, never closes it. Last line is a statement\" scored 74.7%. - Adding a banned comprehension tag scored 77.2%. - \"close on the next move they make\" scored 64.2% at n=320. Losing the abstract clause cost 23 points, even with the mechanical clause kept. - \"every turn closes on a statement\" scored 41.8%, but pushed doubt-support to 33.5 words against a 32 cap.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "Mid-CORE rows `askWhatWasTried: opening move only…` plus rewording `afterLadder`",
+      "what_broke": "They scored 47.0% vs 44.7%, which is inside the interval, and were reverted. \"Bytes that buy nothing are still bytes.\"",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "Round 12: a clause naming define-a-word / give-a-hint inside slot 2",
+      "what_broke": "The aggregate went from 42.7% to 48.3%, and the untargeted bands regressed (35% → 64%, 28% → 45%). It was reverted. \"A fourth clause inside an already-maximal slot redistributes attention\". The replacement was a structural question-trim gate scoped to the two bands (Round 13). It reached 23–26%.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "A gate that discards every reply ending in a question",
+      "what_broke": "It would have discarded about two turns in three and \"reported a register no learner was served\". It was never built; only the scoped trim shipped.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "`explanationOrder … -> check-back`",
+      "what_broke": "The model read it as \"end with *samajh aaya?*\". It was replaced by `hand-back-the-next-move`, and the comprehension tag became a banned shape.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "The emoji vocabulary as a prompt row only",
+      "what_broke": "2.2% off-vocabulary and affection glyphs reached learners. It became two fatal gates (R-028). Read the zeroes together with the gate-trip row.",
+      "source": "R-028",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "A greedy em-dash strip",
+      "what_broke": "(imported). It deleted the hyphens in the crisis helpline `1800-599-0019`, and nothing failed. The fix: only replace em, en and double hyphens, and pair every gate with a negative control.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "Model-emitted bubble separators (`---`)",
+      "what_broke": "(imported). A lazy quantifier truncated an emoji to half a surrogate pair, and a voice-note payload was cut at its first `]`, which put \"a clip of pure laughter into a crisis conversation\". Four of four replies were malformed on one model, and two of five on the shipped one. The fix: a deterministic split after the gate (`bubbles.ts`).",
+      "source": "bubbles.ts",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "Deliberate typos for liveness",
+      "what_broke": "(the companion used about 1 in 15 messages). A typo in \"rubric\" is a teaching error. Shortforms and rhythm replaced them.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "An improvised self/life for the guide",
+      "what_broke": "(the companion's chai, deadlines and mother). It \"diverges per listener and cannot be made coherent\" when learners compare notes. It was replaced by pull-only windows drawn from the learner's own calendar.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "A `tu` register reachable at depth",
+      "what_broke": "(the companion allowed it). That is peer register, \"a friend impersonating a teacher\". The type now has two members only.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "The authored refusals carried em-dashes in 34.6% of turns",
+      "what_broke": "The predicate had only ever run on model output. The authored copy was fixed (commit `e1eda0e`@community).",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "A distress tier with no helpline in product copy",
+      "what_broke": "This was a strategy-audit finding on 2026-09-01. The helplines were added to the FLOOR row, and the panel now renders them from `copy.ts`, keyed on the learner's words, so a discarded turn cannot drop them.",
+      "source": "copy.ts",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "Storing affect",
+      "what_broke": "(the companion's `feel` column). Rejected (D-057): it is an unreviewed judgement, it cannot honestly be shown, and the pedagogy never uses it.",
+      "source": "D-057",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "Model inference as a memory source",
+      "what_broke": "Rejected, because \"a guide that records what it concluded about someone has become a reviewer\".",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "Soft delete with `deleted_at`",
+      "what_broke": "Rejected. Deleting the row alone \"buys exactly one turn of forgetting\", because the extractor re-reads the turns still on screen. The fix is a hard delete plus a forget term.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "Forgetting after the reply",
+      "what_broke": "\"On serverless a promise made after a response is one that will sometimes silently not be kept.\" Forgetting now happens before rendering.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "A second model call to extract memory",
+      "what_broke": "It doubles cost and adds a fabrication surface. Extraction is now deterministic, from authored shapes.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "Trimming an over-length candidate",
+      "what_broke": "\"A truncated sentence is still a sentence and recites just as well.\" Such candidates now fail.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "Substring recall (`ilike '%rate%'`)",
+      "what_broke": "It matched \"corporate\". Word-boundary `\\m…\\M` replaced it.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "A weight to keep old rows visible",
+      "what_broke": "\"A weight big enough to lift a March row past five fresh ones would lift it past everything.\" A reserved seat replaced it.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "The `explanation-style` history",
+      "what_broke": "It would become \"a record of how they have changed\", so only 1 row is kept.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "Auto-sending the ASR transcript",
+      "what_broke": "At 32–52% CER on Hinglish it \"asks the guide a different question, which it then answers correctly and confidently\". The state machine now has no send event (D-059).",
+      "source": "D-059",
+      "taxila_relevance": "realtime-voice / tts-voice-identity: Taxila is gpt-realtime-first; must meet the byte-identical CORE reversal condition and re-run batteries on the realtime lane"
+    },
+    {
+      "tried": "A `webkitSpeechRecognition` fallback",
+      "what_broke": "Its Hinglish quality is the documented failure, and a silent fallback means sometimes good and sometimes bad output with nothing saying which. It is not wired in, and a test asserts its absence (D-060).",
+      "source": "D-060",
+      "taxila_relevance": "realtime-voice / tts-voice-identity: Taxila is gpt-realtime-first; must meet the byte-identical CORE reversal condition and re-run batteries on the realtime lane"
+    },
+    {
+      "tried": "Live voice calls / a realtime lane",
+      "what_broke": "It dropped rules the text lane keeps twice (a safety rule, then recall), and the cascade floor is 1.4–1.5 s. Declined (D-061). The reversal condition is a byte-identical CORE.",
+      "source": "D-061",
+      "taxila_relevance": "realtime-voice / tts-voice-identity: Taxila is gpt-realtime-first; must meet the byte-identical CORE reversal condition and re-run batteries on the realtime lane"
+    },
+    {
+      "tried": "A cloned voice",
+      "what_broke": "Called \"a claim of personhood\"; refused at every step.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "realtime-voice / tts-voice-identity: Taxila is gpt-realtime-first; must meet the byte-identical CORE reversal condition and re-run batteries on the realtime lane"
+    },
+    {
+      "tried": "Speech-to-speech for cost",
+      "what_broke": "About ₹1.16/learner-minute, roughly 9× text, which would be about ₹35 crore at 10 lakh members × 30 min (`05-technology.md`).",
+      "source": "05-technology.md",
+      "taxila_relevance": "realtime-voice / tts-voice-identity: Taxila is gpt-realtime-first; must meet the byte-identical CORE reversal condition and re-run batteries on the realtime lane"
+    },
+    {
+      "tried": "Parsing EXIF to strip it",
+      "what_broke": "Being wrong once ships GPS. A canvas re-encode replaced it.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "Pooled free-tier Gemini keys",
+      "what_broke": "The terms allow training use and human review, and the lane carried photos of minors' notebooks. Fixed with the paid-lane assertion (D-068).",
+      "source": "D-068",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "The comment \"9× cheaper, ~90% hit rate\" for the cache",
+      "what_broke": "It was never measured, and Gemini's 4,096-token implicit-cache floor means it almost certainly never hit. The comment was deleted and the cache is now measured per turn.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "Inflating CORE to reach the cache floor",
+      "what_broke": "It would dilute the two slots. Rejected.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "prompt-compiler / safety-floor: same laws apply to the Taxila teacher prompt and output gates"
+    },
+    {
+      "tried": "A thinking budget inside the 320-token answer envelope",
+      "what_broke": "3/5 replies were MAX_TOKENS fragments, served as success. The budget moved outside the envelope and the cut-off gate was added. The Gemini lane still hit the 12 s fuse on 8/19 turns, so the lane changed.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "DeepSeek-V4-Flash",
+      "what_broke": "58–71% lane failures, all bands out, and a fabricated image description. Disqualified.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "gpt-4.1-mini for Saathi",
+      "what_broke": "Question share 86.9%, then 75%, then 50.3% even with the trim gate; less Hinglish; 2.2× the cost. Not the default.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "An in-process spend ledger",
+      "what_broke": "That is a cap per lambda instance, which resets on cold start. A DB table with a 60 s cache that fails closed replaced it.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "Retry ladders on a billed key",
+      "what_broke": "\"How a budget becomes a bill.\" One call, plus a single 404 fallback.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "An unpaid acknowledgement that never expires",
+      "what_broke": "\"The same as no assertion.\" It now expires after 60 days and marks every trace.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "On-device Saathi (Gemma 4 E2B/E4B)",
+      "what_broke": "A 1–3 GB download levied on the poorest users, 4 GB+ RAM, and a new fabrication surface. Don't build (`05-technology.md`).",
+      "source": "05-technology.md",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "A model score on a learner record (auto-grading)",
+      "what_broke": "Non-native phrasing costs −1.35 / −0.90 points on essays (arXiv 2603.18765), with κ≈0.58 human agreement. Triage only; never a number.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "Video or liveness identity verification",
+      "what_broke": "Defeated by real-time face-swap. Identity is bound to work provenance instead.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "Krutrim",
+      "what_broke": "It halted model work in May 2026. Do not build on it.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "infra/azure / multimodal-vision / evals: lane selection, cost caps and compliance assertions"
+    },
+    {
+      "tried": "Checks generated from catalog array offsets",
+      "what_broke": "Reordering silently changed every stored answer index. Checks are now authored and frozen (commit `34b1ee2`@rlhf).",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "Distractors that were merely false",
+      "what_broke": "\"A learner who rejects a false statement learns nothing about the skill\". Distractors were then taken from other lessons' rules. That was also rejected: learners eliminated options by register, because 139/139 distractors carried vocabulary from another field. The near-miss rule replaced both.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "A recall stem (\"Which working rule belongs to this lesson?\") with the three rules printed above it",
+      "what_broke": "139/139 had the answer on screen. The fix: scene prompts, plus the rules hidden in a disclosure until the recall is answered.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "A transfer answer equal to the concept bullet",
+      "what_broke": "That tests reading, not the skill. 49/58 were grandfathered on a shrink-only allowlist, and new lessons must state the rule in new words.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "An option-letter regex `[abc]\\b` under `/i`",
+      "what_broke": "It matched the article \"a\", so feedback containing \"not a…\" was discarded: 27% of replies, 14 of 17 gate trips. On the input side, \"is it a scam?\" was classified as answer-seeking.",
+      "source": "/i",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "Client-asserted `*_aligned` booleans",
+      "what_broke": "The record was a client claim. The server now recomputes alignment from `correctIndex`, and unearned completions were repaired.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "Glossary answers only for words this lesson uses",
+      "what_broke": "An off-lesson word fell through to a model that could not finish. The fix: serve the entry with a \"Words from another lesson\" label.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "Treating \"samajh nahi\" as a hint request",
+      "what_broke": "A learner asking about a *word* was told to re-read a section. Glossary-first now runs ahead of the ladder.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "A milestone derived from the live catalog",
+      "what_broke": "It would have revoked \"catalog-v1-complete\" when the catalog grew. The count is frozen at 18 and a level floor was added (D-053).",
+      "source": "D-053",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "Hardcoded counts (6 pathways / 18 modules)",
+      "what_broke": "They became false claims on `/learn` and in the help handbook. Every count now derives from `publishedCatalogTotals` (R-023).",
+      "source": "/learn, R-023",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "Two diagrams of the four-step track",
+      "what_broke": "A reviewer read them as two products. There is now one definition in `lib/learning-track.ts` (D-050).",
+      "source": "lib/learning-track.ts, D-050",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "Translating Meetei Mayek and Ol Chiki",
+      "what_broke": "Drop rates were 99.55% and 100%. Both are excluded from the pipeline.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "Following \"cut text, fewer boxes\" literally",
+      "what_broke": "It deleted every animation, and the founder rejected three surfaces in a row (\"basic shit it is. lazy work\"). \"A short flat page is the failure, not the goal\" (commit `69f4a31`@community).",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "memory-graph / emotional-lens: design Taxila child memory with closed kinds, hard delete, deterministic extraction"
+    },
+    {
+      "tried": "A boolean `data-extras` column template",
+      "what_broke": "At 360 px the microphone sat 42 px under Send. The template now keys on *which* flags are set (D-062).",
+      "source": "D-062",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "A root-layout `html {scroll-snap-type: y mandatory}`",
+      "what_broke": "It applied snapping on every route. It is now scoped to `html:has(.a2-site)` (R-025).",
+      "source": "html:has(.a2-site), R-025",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "A disabled sticky CTA at 62% opacity",
+      "what_broke": "It was \"a window: legible through and untappable under\". It now uses a solid muted fill inside an opaque bar.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "A proximity snap on a 6-item tab rail",
+      "what_broke": "It cancelled programmatic scroll.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "A spinning 112 px ring",
+      "what_broke": "Its bounding box grew by √2 and caused horizontal page scroll.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "Judging contrast by eye, in one theme",
+      "what_broke": "The 1.82:1 primary action survived. A per-node contrast sweep is now in every theme (R-022).",
+      "source": "R-022",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "A tap-target sweep that trusted rects",
+      "what_broke": "A closed `<details>` keeps a layout box (false 43 px readings). It now uses `checkVisibility`.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "Google OAuth inside in-app browsers",
+      "what_broke": "It fails with 403 `disallowed_useragent`, unseen and unloggable. The fix: detect the in-app browser and offer email OTP.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "Logging `signin_google` success at redirect start",
+      "what_broke": "It made a 10-day outage unmeasurable.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "Reading a failed session lookup as \"signed out\"",
+      "what_broke": "(`dd16dc2`@community).",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "Parallel agents choosing the same migration number",
+      "what_broke": "Migrations had to be renumbered before applying. A hand-written SQL splitter also failed on dollar-quoted bodies, so whole files are now run through the Neon WebSocket client.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "Removing a worktree directory while its bind mount was live",
+      "what_broke": "It emptied `node_modules` twice. The procedure is now: unmount, verify, then remove.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "An analytics CHECK that never allowed the guide's events",
+      "what_broke": "Every batch containing one was rejected, so Saathi usage was never stored.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "learning/pedagogy/curriculum: covert comprehension check authoring and server-true records"
+    },
+    {
+      "tried": "A sprite of all 35 icons",
+      "what_broke": "It was larger than inline. A 16-icon sprite shipped instead.",
+      "source": "context/measurements.md, context/timeline.md, context/registry.json @origin/main",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "Supabase as the member identity",
+      "what_broke": "Superseded by Neon. Two identity systems are forbidden (D-031).",
+      "source": "D-031",
+      "taxila_relevance": "design-system/ux / infra / process"
+    },
+    {
+      "tried": "Rejected as process (D-063): the founder waived the 60-photo fabrication pilot for `saathiPhoto`",
+      "what_broke": "Live gate-trip monitoring replaced it. Q-026 still owes the measured rate.",
+      "source": "D-063, Q-026",
+      "taxila_relevance": "design-system/ux / infra / process"
+    }
+  ],
+  "concepts": [
+    {
+      "name": "Structural gates beat prompt rules",
+      "description": "\"A rule a model is asked to follow is a preference. A rule checked in code is an invariant.\" Every must-hold property (answer withholding, verdicts, emoji, register, celebration, photo honesty) is a predicate over output or a filter over input."
+    },
+    {
+      "name": "Discard, never edit, and build the authored floor first",
+      "description": "\"Half a leaked answer is still an answer.\" Phase A (authored, offline) exists so that every gate trip has an honest fallback."
+    },
+    {
+      "name": "Position is mechanism",
+      "description": "Exactly two appended-last slots. The learner's turn always goes last in TAIL. In Round 12, internal clause order inside a slot also proved to matter."
+    },
+    {
+      "name": "Anything sentence-shaped in a prompt gets recited",
+      "description": "Rows are shapes (`a -> b`, `key: value`, `never: x`), enforced by a lint. Sentences the learner may read live in `copy.ts`, which the model never sees."
+    },
+    {
+      "name": "Byte-stable CORE, volatile TAIL, loud truncation",
+      "description": "The cache key is a byte property. A per-learner byte belongs in TAIL."
+    },
+    {
+      "name": "Absent means absent",
+      "description": "A feature that is off, a declined consent, or an unmatched context window leaves TAIL byte-identical. Declining \"costs nothing\", and a test asserts it."
+    },
+    {
+      "name": "Never show the model what it must not say",
+      "description": "Never show the model what it must not say."
+    },
+    {
+      "name": "The six inversions from companion to tutor:",
+      "description": "honorific as state, not mood; a closed work emoji set with affection banned; no self, backstory or day; no deliberate typos; no opener, notification or re-engagement; no reaction on learner work (\"a tick is a verdict with no words\")."
+    },
+    {
+      "name": "Celebrate events, never quality; praise method, never ability",
+      "description": "Ability praise \"is the one praise category measured to change what a learner attempts next\"."
+    },
+    {
+      "name": "Pull-only context",
+      "description": "Windows, memory, sound-alikes and context rows enter only when the learner's live words match them. \"Due-ness\" is a rank modifier, never a trigger."
+    },
+    {
+      "name": "If a row cannot be shown, it must not be stored",
+      "description": "This is the test for memory, and it is why affect is excluded."
+    },
+    {
+      "name": "Two layers, and the schema is the floor",
+      "description": "App filters are mirrored by DB CHECKs (affect vocabulary, outbound language, closed kinds, closed features, the publication boundary)."
+    },
+    {
+      "name": "Levels of content, never of people",
+      "description": "Nothing is locked. Every level check blocks nothing."
+    },
+    {
+      "name": "Growth may never take something back",
+      "description": "Append-only ledgers, a permanent level floor and frozen historical counts."
+    },
+    {
+      "name": "NEVER MANIPULATE",
+      "description": "as a four-question audit that lives in the file header of every mechanic."
+    },
+    {
+      "name": "Covert comprehension signals that are not scores:",
+      "description": "- near-miss distractor choice (which misconception); - first-try vs eventual correctness; - a changed-situation transfer; - self-explanation (\"explain in your own words\"); - hint-ladder re-entry (weak-topic); - glossary re-lookups (term-asked); - spaced kept/faded."
+    },
+    {
+      "name": "The per-model law",
+      "description": "Any change of model or lane re-runs the register battery at n≥300 before the flag flips. \"A byte-identical prompt lost 38-2 on a different model.\""
+    },
+    {
+      "name": "The negative control is the battery",
+      "description": "Every gate case is paired with a real string that must not trip it."
+    },
+    {
+      "name": "Read zeroes with the gate-trip row",
+      "description": "A zero produced by a gate says nothing about the model."
+    },
+    {
+      "name": "Fail closed on money and compliance",
+      "description": "An unreadable ledger or unpriced deployment means no spend. An unpaid lane means no learner content sent. \"There is never a dead microphone\": an unconfigured state is a complete, honest product state."
+    },
+    {
+      "name": "One list, many callers",
+      "description": "Distress shapes, emoji sets and question predicates each have exactly one definition, shared by prompt, gate, eval, memory filter and UI."
+    },
+    {
+      "name": "Measurement discipline",
+      "description": "Every number carries n, method and date. \"Not measured\" is written as such. A dated lesson in `timeline.md` saved a later pass from re-litigating a false positive."
+    },
+    {
+      "name": "Evidence is gated on people, not code",
+      "description": "Rubrics, a calibration set (κ) and a named accountable owner; until all three exist, the database itself refuses a submission."
+    },
+    {
+      "name": "An exemplar beside the rubric",
+      "description": "never an answer key and never a number."
+    },
+    {
+      "name": "The vocabulary lock: one word per thing",
+      "description": "The vocabulary lock: one word per thing."
+    },
+    {
+      "name": "DPDP posture",
+      "description": "Minimisation and purpose limitation are enforced by DB constraints. The repo argues that the six-kind memory list plus the never-store list *are* a DPDP notice."
+    }
+  ],
+  "unread": [
+    "`origin/r21/*` branches. Another segment covers them; they are merged into `@main`.",
+    "Not read line by line: `lib/learning-journey.ts` (547 KB; I read the types plus the first 3 lessons); `lib/learning-lessons/wave-*.ts`; `lib/learning-catalog/*.ts` content; `components/saathi/saathi-panel.tsx` (49 KB); `components/learning-studio.tsx`; `lib/saathi/handler.ts` past its header; `lib/saathi/provider*.ts`; `lib/saathi/lane.ts` body; `lib/evidence/*` bodies; most of the 200+ test files.",
+    "Not read: migrations 020 (evidence review, 915 lines), 025, 036–041; `docs/evals/bol/first-100-items.md` and `harness-spec.md`; `docs/strategy/02,04,06`; the `market/` reports; `FOUNDER_PRODUCT_GUIDE.md` beyond its first section; `docs/learning/review-round19/*`; `docs/ux/journey-round18*`.",
+    "Not opened: `tools/demo-video/*` (25 files), `deliverables/*.pptx` and `public/fonts`.",
+    "Not verified: the measured sources for the imported Meera numbers (M39–M43); see the Meera and hp harvests; 32–52% Hinglish CER (M44), which has no n in this repo; whether the KIRAN helpline still operates; the DPDP rule citations, which are second-hand from `05-technology.md`.",
+    "Not run: no tests, evals or builds were executed. Every number above is quoted from the repo's own logs.",
+    "A count inconsistency inside the repo. `LEARNING.md` says \"35 rubrics and 4 listed exceptions\" for 46 quests, while `measurements.md` (14 Sep) says \"46 quests, 42 with a published rubric\". I did not resolve it."
+  ],
+  "doc_path": "/home/user/Taxila/docs/harvest/ai2bharat-core.md"
+}
