@@ -7,7 +7,8 @@ points to its source doc and evidence tag. Where a reviewer's objection changed 
 
 Sources (all in `docs/research/voice/`): `indian-teacher-discourse.md` (DISC), `human-likeness.md` (HL),
 `voices-hindi.md` (VH), `listening-samples.md` (LS), `character-authoring.md` (CA) + `characters/*.md`,
-`relational-os-teacher.md` (RO), `asr-kids-hinglish.md` (ASR), `emotion-attunement.md` (EA). Inherited laws
+`relational-os-teacher.md` (RO), `asr-kids-hinglish.md` (ASR), `emotion-attunement.md` (EA), `spoken-notation.md`
+(SN, gap-fill G1-spoken-notation). Inherited laws
 are from `docs/harvest/companion-tech.md` and `docs/harvest/gurukul.md` [H]. Taxila measurements are from
 `context/measurements.md` [T].
 
@@ -48,7 +49,11 @@ include       [item.input_audio_transcription.logprobs]
 audio.input.format          pcm16 24 kHz
 audio.input.transcription   { model: taxila-live-transcribe, prompt: SCRIPT_ONLY_PROMPT(band, mode),
                               keywords: lessonKeywords(kit) }      ← §9; CONDITIONAL on O1 (verify that the realtime
-                                                                     session accepts keywords for this deployment)
+                                                                     session accepts keywords for this deployment).
+                                                                     Built from the item's `terms` in the child's
+                                                                     school medium + `answerSpoken` value words,
+                                                                     never from written notation (gap-fill
+                                                                     G1-spoken-notation, §2.1)
 audio.input.noise_reduction { type: near_field }                   ← [U] unmeasured on child audio; A/B in E1
 audio.input.turn_detection  { type: server_vad, threshold 0.6, prefix_padding_ms 300, silence_duration_ms 900,
                               create_response: <by floor state, §1.3>, interrupt_response: true }
@@ -112,7 +117,7 @@ character → floor → brief → lesson → move → language → last).
 | 2 | **RELATIONSHIP + ATTUNE NOTES** | 260 (new) | yes (per stage S0-S3) | the stage paragraph; warmth received, never returned as love/permanence/only-me; outward pointing; no biography; no naming the child's feeling; frustration → smaller step; boredom → a choice of two; off-topic → one specific follow-up then bridge; laugh only with the child. Written **quote-free** and bilingual-aware (RO-12 side effects) | never; throws |
 | 3 | **SAFETY FLOOR** (end of CORE) | 520 | yes | `floor.js`, **rewritten quote-free** (its quoted 'best friend' / 'only me' were recited 22/33 [M CA]); plus: no unverifiable safety assurances, no secrecy promise, AI identity truthful, crisis branch with trusted-adult-or-Childline | never; throws |
 | 4 | **CHILD brief** | 600 (incl. rel snapshot ≤120) | no | `briefRows()` + `renderRelSnapshot()` rows: band words, child-conferred address, pronoun, stance kind if teacher-owned, allowed callback ids. No numbers, no gap length, no emotion labels | callbacks 1 → wins 2 → interests 3 → vibe 4 → relationship 5 → misconceptions 6 |
-| 5 | **LESSON NOW** | 800 | no | topic, phase, item (pose verbatim — kit content is the one verbatim class), key for checking only, hint rung, branches | content lines 8, choices 9 |
+| 5 | **LESSON NOW** | 800 | no | topic, phase, item (pose verbatim — kit content is the one verbatim class) **as its resolved `spoken` form, never the written notation** (§2.1), key for checking only, hint rung, branches | content lines 8, choices 9 |
 | 6 | **MOVE** | 200 | no | move kind + one shape note + affect tag (`low/slow`, `lift`, `brisk`, `still`). **No speakable labels**: the move-shape text gets a label-echo lint (CA: "whiteboard anchor", "Picture:" were spoken in 10-20 of 54 turns) | never |
 | 7 | **LANGUAGE** | 140 | no | mode + matrix language + per-move split note (§3.2) + the school-medium term rule. Re-asserted **after** any cue | never |
 | 8 | **ONE MORE CHECK** | (last 360, shared with 9) | no | safety escape clause first, then stop, then branch, then key rule, then floor fix if any | never; throws |
@@ -132,6 +137,33 @@ character → floor → brief → lesson → move → language → last).
   `lint-sheets.mjs` passes [CA].
 - **Never in any prompt:** sample phrases, banned-phrase lists, token caps, the casting note, `samples/KEY.json`
   `voice_note` (it gives the voice a human life: test-only [VH review R1.4]), absence/gap length, emotion labels.
+
+### 2.1 Spoken notation (gap-fill G1-spoken-notation)
+
+Full spec, NCERT sources and the probe are in `spoken-notation.md` (SN). Lane A has no `custom_lexicon_url`, so the
+only control over how `3/4`, `0.274`, `2³`, `−3 °C`, `25 cm²`, `₹12.50`, `3,45,67,890` or `1098` is spoken is
+**what text the model is given**.
+
+- **Every kit item, key and safety string carries a `spoken` field** (`SpokenSet`, SN §2.1): data, resolved per
+  language mode × `schoolMedium` × band (`mode.medium.band` → `mode.medium` → `mode` → `speakNotation()` at
+  kit-load). It is never filled by a model at runtime. `speakNotation()` is a deterministic, version-pinned rule
+  table with negative controls (`In`, `He`, `As`, `AI`, `IIT` stay words [H Gurukul F5]). `checkSpoken` (in
+  `normalizeKit`) round-trips every form through `parseSpoken()`, rejects any form that mixes two conventions of
+  one class, and drops a failing item from the voice lanes (it stays on screen).
+- **LESSON NOW carries the resolved `spoken` form instead of the written item**; the written item and the NCERT
+  term in the child's medium go to the screen (DL2). This is still the verbatim class, so it does not breach
+  "shapes, not lines": the string is the item itself, not a convention note. **No reading conventions, examples or
+  "say X as Y" prose in any prompt section** (recitation law; SN §2.1).
+- The same table feeds `lessonKeywords()` (terms + value words, §1.1), the lane L/G grading normaliser
+  (`parseSpoken()` against `answerSpoken.variants`, so "teen bata chaar", "three by four" and "three-fourth"
+  all grade as 3/4; §9.1), the narration twin and lane E (they read the same `spoken` string), and the
+  recitation/label-echo detectors (the `spoken` form is whitelisted as kit content).
+- Conventions follow the NCERT editions [S, SN §1]: fractions "upon"/quarters (EN) and बटा/चौथाई (HI); decimals
+  "point"/दशमलव with digits read singly after the point; Indian system (lakh/crore) by default in both media;
+  "n squared / raised to the power" and का वर्ग / की घात; अंश, हर, ऋणात्मक, पूर्णांक, प्रकाश संश्लेषण. One
+  convention per notation class per item. Band 6-9 uses unit words for halves and quarters and the chant register
+  for tables.
+- Measured (SN §4, VT-10): SPOKEN_HEADLINE
 
 ---
 
@@ -267,8 +299,20 @@ from lanes B/C.
   "which teacher would you rather learn from". This is the only round that tests generated replies, not
   read-verbatim (LS review BLOCK). Children 10+ use sliders, one block per sitting; 6-9 do pairwise choice only;
   guardian consent; volume guidance.
+- **Term-pronunciation and notation item set (gap-fill G1-spoken-notation).** Each in-loop arm speaks the
+  same fixed set, built from `notation-probe-2026-10-02/items.mjs` and never shown to the model as an example.
+  The set is: (i) 12 NCERT terms in both media (photosynthesis/प्रकाश संश्लेषण, ratio/अनुपात,
+  denominator/हर, numerator/अंश, integer/पूर्णांक, evaporation/वाष्पीकरण, perimeter/परिमाप, square
+  root/वर्गमूल, decimal/दशमलव, fraction/भिन्न, exponent/घात, mixed fraction/मिश्रित भिन्न); (ii) 16 notation
+  items, one per class in SN §2.3; (iii) the two helplines. Each is given in the arm's mode × medium as
+  pre-rendered `spoken` text, since that is the shipped path; lane A also gets the written form as a contrast.
+  Listeners (fluent Hindi, and teachers from both media) mark each clip *right / understandable but wrong for my
+  medium / wrong or unclear*. The axis reports per-class error rates, not a pooled score. **Gate:** 0 wrong on the
+  helpline items, and ≤5% wrong on terms in the child's own medium [I]. The axis is stratified by school medium,
+  because a Hindi-medium teacher and an English-medium teacher disagree on what "right" means for the same clip.
 - **Axes, never folded into one score:** natural · sounds Indian (from here) · warmth · not-too-much ·
-  clarity for a 7-year-old · code-switch smoothness · term pronunciation (fluent Hindi listeners only). Children and
+  clarity for a 7-year-old · code-switch smoothness · term pronunciation (fluent Hindi listeners only; item set
+  above). Children and
   parents are reported separately; Hindi-belt and other regions are stratified.
 - **Decision rule:** a lane wins only if the 95% lower bound of paired preference is >50% on natural and Indian
   against every other in-loop arm (bootstrap over listeners and prompt groups). Otherwise the result is
@@ -421,6 +465,10 @@ disclosure decided (EA review: the bounded affect record must be documented or d
   turn is ungraded → REPAIR move (never blames the line or the child; never fabricates a cause).
 - **Number items** use exact or phoneme-aware matching, not the skeleton normaliser (ten/teen, Hindi teen = 3,
   saat/saath collide [ASR review]). Measure key-vs-distractor collision rates before E1.
+- **The normaliser reads `answerSpoken`** (gap-fill G1-spoken-notation, SN §2.2). `parseSpoken(text, mode)` maps
+  every accepted spoken reading in both media and scripts to the key's value (बटा / upon / by / quarters /
+  चौथाई / पौन; दशमलव / point; lakh / लाख; ऋण / minus / माइनस). Grading compares values, never notation strings.
+  The variant list is data in the kit and is never put in an ASR prompt.
 - **Refused field → strip and retry; completion watchdog** (2 refusals in ~130 sessions, 3/135 timeouts [M]).
   Never fabricate a missing transcript; if `context_degraded`, Lane L is untrusted for grading.
 - The answer is the last value after a self-correction. Use verbatim modes only.

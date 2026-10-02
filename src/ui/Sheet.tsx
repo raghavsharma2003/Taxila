@@ -1,0 +1,27 @@
+// Bottom sheet on phones, centred dialog from 720 px. Native <dialog>.showModal(): focus moves in, Tab is
+// trapped, Esc closes, the page behind is inert, and focus returns to the opener on close (A8: never hidden).
+import { useEffect, useId, useRef, type ReactNode } from "react";
+import { Icon } from "./Icon.tsx";
+
+export function Sheet({ open, onClose, title, children, closeLabel = "Close" }:
+  { open: boolean; onClose: () => void; title: ReactNode; children: ReactNode; closeLabel?: string }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  useEffect(() => {
+    const d = ref.current;
+    if (!d) return;
+    if (open && !d.open) {
+      try { d.showModal(); } catch { d.setAttribute("open", ""); }
+    } else if (!open && d.open) d.close();
+  }, [open]);
+  return (
+    <dialog ref={ref} className="sheet" aria-labelledby={titleId} onClose={onClose}
+      onClick={(e) => { if (e.target === ref.current) onClose(); }}>
+      <div className="sheet-head">
+        <h2 id={titleId}>{title}</h2>
+        <button type="button" className="iconbtn" onClick={onClose} aria-label={closeLabel}><Icon name="close" /></button>
+      </div>
+      <div className="sheet-body">{open && children}</div>
+    </dialog>
+  );
+}

@@ -25,13 +25,17 @@ multi-seed rerun of the hysteresis sim (§9.12). `BriefReader` is replaced by `V
 throughout. The new pieces are the `AdaptEvent` types (§2.2), `ConductorState.adapt` (§3.1), validator rules V15-V27
 (§4.5), invariants I-A1…I-A11 (§9.9), and the `latch_walker` sim persona (§9.10). Every revision-3 edit is marked
 "(gap-fill G1-adaptation-policy)".
-**Gap-fill fragment still on disk without its design doc** (not ruled on here): `content-orchestration.sql` (Forge ↔
-Conductor: `forge_request`, `forge_waiter`, `module_ready`, review queue, `allowed_model`). Its `.md` doc
-(`content-orchestration.md`) does not exist yet. The adaptation fragment (`adaptation.contracts.ts` +
-`adaptation-hysteresis-sim.py`) is ruled on in revision 3. Two compatibility notes until the Forge doc exists. (a) The header of
-`content-orchestration.sql` says its lock order is "child_seq → conductor_state → forge_request". The leading
-`child_seq` is wrong under X29. Its functions never lock `child_seq`, so they are unaffected; the corrected order is
-in §3.4. (b) Its "(X31)" tag on the `lib/` prefix check means the §5.8 prefix rule, not the X31 row below.
+**Revision 4 (gap-fill G2-content-orchestration-media, 2026-10-02).** `content-orchestration.md` is now written and ruled in as X49-X58 (§0.2):
+the `forge.demand` horizons and who emits each (§3.5), the waiter fan-out state machine, delivery of ready modules to
+`LessonBrief.preparedModules` and to a live lesson against the 3 s inline budget (§4.6), the review queue's SLA and
+ordering, and the media the brief demands: songs (chant + code-composed jingle, Azure first-party), video after
+sora-2 (re-verified: retires 2026-10-15, no replacement), and lesson images (CM4, `prefetch` ranking). The
+`content-orchestration.sql` header now states the X29 order (`forge_request` → `forge_waiter`/`module_ready`, never
+`child_seq`), and its scratch-PG16 probe (30/30) found and fixed four revision-G1 defects: retirement was unreachable,
+two lock cycles (publish/supersede, two reviewers), and a child-carrying `two_weeks` demand that aborted the commit.
+New pieces: `forge.*` job kinds (§8.2), degrade rows (§9.5), invariants I-F1…I-F16 (§9.9), CM4 defined (§9.12),
+owner decisions D-VIDEO, D-ASR, D-SPEECH, D-SONG, D-REVIEW (§10.5). Every revision-4 edit is marked "(gap-fill G2-content-orchestration-media)".
+The note on the "(X31)" tag in `content-orchestration.sql` is resolved: the `lib/` prefix check now cites §5.8.
 **Tags:** **[V]** checked against the primary source (this session or by the cited sibling doc). **[S]** secondary.
 **[U]** unmeasured design default or estimate. **[I]** inference. **[repo]** a fact in this repository.
 Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `dc AR-4`, `ws SW3`, `ss AR-2`,
@@ -41,6 +45,10 @@ Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `
 - Azure-only compute and AI. Models are restricted to the `azure-only-compute` list: `taxila-realtime`
   (gpt-realtime-2.1), gpt-realtime-2.1-mini, `taxila-brain` (gpt-5.6-sol), `taxila-fast` (gpt-5.6-luna),
   `taxila-codex`, `taxila-image`, `taxila-sora`, gpt-4o-mini-tts, `taxila-transcribe`, text-embedding-3-small.
+  (gap-fill G2-content-orchestration-media) Retirement dates, re-checked today against the Foundry schedule [V], live in `allowed_model`: `taxila-sora`
+  (sora-2 2025-12-08, Preview) **and `taxila-transcribe` (gpt-4o-transcribe 2025-03-20) both retire 2026-10-15**
+  with no listed replacement (X58). Azure AI Speech neural TTS (chant clips, explainer narration) is an Azure
+  service, not a Foundry model, and is not yet named on the list (D-SPEECH).
   The task brief lists Claude Opus/Sonnet 5.5 on Foundry. Those are **excluded**: `claude-on-foundry-credits`
   rejected them, and `gpt-5.6-terra` is not on the list either.
 - Hosting: ACA `taxila-web` (eastus2, min 1 / max 5, HTTP-scaled). The task brief says Vercel functions in sin1.
@@ -146,6 +154,16 @@ Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `
 | X46 | late sittings (G1) | fragment: one-shot test over all sittings, gap ≥ .30 | **nightly over a 16-close ring, ≥ 4 late and ≥ 4 early, on at gap ≥ .40, off < .20** | evaluated nightly, the old thresholds give 23.5% false latch; the new ones 15.9%, with a 91.3% hit |
 | X47 | pace (G1) | §4.4 "KT η, θ may change pace" | **R6**: eligible at ≥ 30 opps over ≥ 3 skills; → 2 after 2 refits at η ≥ +.5; → 0 after 3 at η ≤ −.5; back to 1 after 2 inside ±.25; B1 ≤ 1; held when the refit is stale | hysteresis cuts oscillation about 3× against a bare ±.5 threshold; down is costlier if wrong, so it needs more evidence |
 | X48 | `vibeClose` retention (G1) | §2.2: a re-plan input, retention unspecified | **≤ 16 closes and ≤ 14 days in `adapt.closes`; never a parent surface or the routine card (V27); erased with the child**. R1/R2 are gated on CM-A0 (label κ ≥ .6) | vibe's default `session_adaptive` mode keeps nothing behavioural across sessions; this is the one bounded exception, already implied by §2.2 |
+| X49 | `forge.demand` horizons (gap-fill G2-content-orchestration-media) | §3.5 "proposed"; G1 SQL let any horizon carry a child | **`in_lesson`/`next_lesson` carry a child and a `forge_waiter`; `two_weeks`/`term` are child-less aggregate demand, even when the Conductor emits them** (content-orchestration §2) | a child-carrying `two_weeks` demand hit the waiter's horizon check and aborted the whole commit [M F7c] |
+| X50 | the live 3 s path (gap-fill G2-content-orchestration-media) | §8.2: `forge.spec`/`forge.scene` inline on web, ≤ 3 s | **T1 params and T2a template fills in a lesson are the Director's own `generate_now`** (ARCHITECTURE §1.2), charged to `child_content`; Forge gets them afterwards through `forge.demand{in_lesson}` with `need:'promote'` | a Conductor step plus a job and a publish cannot fit inside a 1.9-3.4 s model call [Me genui]; a live fill is not a Forge result, so rule 2 holds |
+| X51 | mid-lesson delivery (gap-fill G2-content-orchestration-media) | §4.6: "through `brief.refresh`/`module.ready` on its existing poll" | **the Director's turn-boundary read `forge_ready_for(child, lastPoll)`; no mid-lesson `brief.refresh` for modules.** `brief.refresh` builds `preparedModules` at start and on resume. A mounted module is never replaced (I-F9) | one publish × N children of `brief.refresh` is the thundering herd §3.8 forbids; the Director's turn is already off the critical path |
+| X52 | never live (gap-fill G2-content-orchestration-media) | MO §6.1 `build_race` live | **no T3/G2, image, video, audio or chant build starts with horizon `in_lesson`**: downgraded to `next_lesson` (I-F10) | G2 P50 12-15 min, about 1 build per codex deployment; images at 4 RPM company-wide (MO R1, R2) |
+| X53 | Forge lock order (gap-fill G2-content-orchestration-media) | G1 SQL header: `child_seq → conductor_state → forge_request` | **`forge_request` rows in ascending `library_key`, then child-owned forge rows; never `child_seq`.** The commit sorts its `forge.demand` batch; `forge_publish` locks {new, superseded} in one ordered statement; `review_decide` locks `forge_request` first | controls 5/5 deadlocks in each of three cells, G2 0/5 in each, commit ‖ publish 0/10 with no lost waiter (content-orchestration §4.4) |
+| X54 | review capacity (gap-fill G2-content-orchestration-media) | §8.5: "review queue ordered by `demand_count`" | **review seconds are admitted by `forge.admit` against named reviewers' capacity before the SLA; queue order = due-within-2 h, then ln(1 + demand) × horizon weight, then due date** (`review_sla`, `review_next`) | ≈ 30 G2 misses/day at 300 children × 600-900 s = 5-7.5 h/day against one reviewer (MO §7.4) [I] |
+| X55 | video (gap-fill G2-content-orchestration-media) | §8.2 `forge.video`: sora-2 "[not re-checked]" | **re-checked [V]: sora-2 2025-12-08 retires 2026-10-15, replacement "—", the only Foundry video model; retired = `410 Gone`, not extendable. M3 video is code:** `explainer@1` (performed, clip, seek-rendered MP4), Manim in ACA dynamic sessions for Class 8-9 maths, stills-with-motion for phenomena | code-rendered media is exact on text and numbers; sora drew 3+3 under "3+4=7" [Me AV] |
+| X56 | songs (gap-fill G2-content-orchestration-media) | CONDUCTOR: none | **v1 = `chant-track@1` (Azure Speech Swara clips on a client beat) + v1.5 `jingle@1` (a reviewed, codex-composed tune template under the chant). Sung render rejected. Eligibility is the predicate `verbatim_sequence` (LS rule 24); every kit passes the recitation lint L1-L5 and a native-ear lang key** | no first-party model sings (n = 18, SR §4) [Me]; lint 11/11 golden cases [M] |
+| X57 | lesson images and CM4 (gap-fill G2-content-orchestration-media) | X10 "topic-level prefetch of the next two weeks of syllabus"; CM4 undefined | **`prefetch` ranked by cohort demand Σ P(child on topic, day d)·γ^d within the nightly image quota; CM4/CM4b/CM4-img computed from `module_run.source` (Director-only writer)** | calendar-only prefetch plateaus at 86%; demand ranking 99% at 300 images/night [sim, `image-prefetch-sim.py`] |
+| X58 | model retirement dates (gap-fill G2-content-orchestration-media) | `allowed_model.allowed_until` null for most rows | **every row carries the Foundry date; `verify` fails at < 30 days (I-F13); `taxila-transcribe` must be re-pinned before 2026-10-15 (D-ASR)** | gpt-4o-transcribe 2025-03-20 retires 2026-10-15 [V] and gates the TTS WER and chant ASR checks |
 
 ---
 
@@ -198,7 +216,7 @@ Five rules make it safe (orch §2, R5, R10):
 | Director (`server/director/`, existing) | `lesson`, `turn`, `turn_trace`, homework session state | `taxila-web` per turn | luna classify; realtime voice | `LessonBrief` in, `lesson.*` events out §4.6 |
 | KT (`server/learner/`, existing) | `kt_*` / today `evidence`, `skill_state` | `taxila-web` turn path; `kt.refold` on worker | none (labels from the classifier) | KT writes take the workspace row lock §5.6 |
 | Memory consolidator | `memory`, `rel_state` | worker | luna | `memory.consolidate:{lessonId}` |
-| Forge | `forge_artifact`, `forge_request`, library Blob | inline (T1/T2); worker + ACA Sandboxes (T3, M3) | luna, codex, image, sora | library key (objective, engine, specHash, modelV) |
+| Forge | `forge_request`, `forge_transition`, `forge_artifact`, review queue, library Blob (+ consumes `forge_waiter`, writes `module_ready`) | worker (`forge.*` §8.2) + ACA jobs (seek render) + ACA dynamic sessions (T3, Manim; M3). Live T1/T2a fills are the Director's, not Forge's (X50) | luna, sol, codex, image, Azure Speech; sora only until 2026-10-15 (X55) | `library_key` (build) + `identity_key` (serving family) (gap-fill G2-content-orchestration-media) |
 | Letter writer / parent agent | `weekly_letter`, `parent_conversation/turn`, worries, commitments | worker (letter, inbound); web (PTM turns) | luna; TTS; realtime (1 PTM/month) | WeekStory, ParentBrief, claim-checker §7 |
 | Homework pipeline | `capture*`, `homework_*` | web (child waiting, job-row backed), worker (cleanup) | DI Read, luna | pick-first §6 |
 | Notifier | `notification`, `notify_slot` | worker | none (templates) | `mayNotify()` §4.10 |
@@ -250,7 +268,8 @@ export type StudentEvent =
       skillsTouched: string[]; outcomeDigest: LessonOutcomeDigest }
   | { type: 'skill.milestone'; skillId: string; to: 'learned_today' | 'mastered' | 'due' | 'wheel_spin'; evidenceSeq: number }
   | { type: 'teacher.promise'; promiseId: string; what: { kind: 'game' | 'topic' | 'revisit'; ref: string }; by: string }
-  | { type: 'module.requested'; lessonId: string; objectiveId: string; engine: string; specHash: string }  // library miss → forge_request
+  | { type: 'module.requested'; lessonId: string; slotId?: string; topicId: string; key: IdentityKeyFields & { engine: string; specHash: string };
+      need: 'promote' | 'near_line' | 'next_lesson'; needBySec?: number }   // (gap-fill G2-content-orchestration-media): content-orchestration §3
   | { type: 'homework.item_picked'; hwSessionId: string; itemId: string; via: 'tap' | 'voice' | 'typed' }
   | { type: 'homework.utterance_blocked'; hwSessionId: string; itemId: string; attempt: 1 | 2; fellBackToShape: boolean }
   | { type: 'homework.session_ended'; hwSessionId: string; itemsAttempted: number; stuckItems: number; minutes: number }
@@ -637,8 +656,8 @@ export const commit = (childId, token, expected, state, cursor, commands, decisi
       where child_id=$1 and version=$2 and lease_token=$3 returning version`,
     [childId, expected, token, state, STATE_V, cursor, state.mode, state.learningDay, state.plan?.day, state.plan?.version]);
   if (!r) throw new CasFailed();                                // loser re-runs from the fresh snapshot; nothing written
-  await forgeDemand(t, childId, commands);                      // 'forge.demand' → forge_file_demand() (gap-fill
-                                                                //  content-orchestration.sql; its doc is pending)
+  await forgeDemand(t, childId, commands);                      // 'forge.demand' → forge_file_demand(), batch SORTED by
+                                                                //  libraryKey; child id passed only for in_lesson/next_lesson (X49, X53) (gap-fill G2-content-orchestration-media)
   await insertJobs(t, childId, commands);                       // multi-row VALUES, on conflict per §3.8
   await cancelJobs(t, childId, commands);                       // match (child_id, kind, idem_key)
   await upsertWakeups(t, childId, commands);
@@ -670,7 +689,7 @@ lock-order probe as a fixture:
 | `fire_wakeups` | `wakeup` (SKIP LOCKED, a batch of ≤ 500, possibly many children) → each child's `child_seq` |
 | `create_commitment` | `child_seq` as the mutex, first, then **only inserts of new rows**. It locks no other existing row, which is the one allowed exception |
 | sync `applyBatch`, Director turn, `kt.refold` | `workspace` (`FOR UPDATE`, the KT lock: §5.6) → ledger inserts → `child_seq` (through `ingest_event`) |
-| Forge functions (`content-orchestration.sql`) | `forge_request` → `forge_waiter`/`module_ready`/`review_item`. Never `child_seq` |
+| Forge functions (`content-orchestration.sql`) | `forge_request` (several: ascending `library_key`; publish locks {new, superseded} in one statement) → `forge_waiter`/`module_ready`/`review_item`. `review_decide`: `forge_request` → the artefact's items in id order. `review_next`, `review_escalate`, `forge_sweep`: single statements with `SKIP LOCKED`. Never `child_seq` (gap-fill G2-content-orchestration-media): X53, probe D1-D4 |
 | erasure | (1) `→ erasing` as a single-statement transaction; (2) take the lease; (3) the cascade delete, which is unordered by nature. It runs only after the fence, and retries on `40P01` |
 
 ### 3.5 Commands
@@ -683,8 +702,10 @@ export type Command =
   | { kind: 'wakeup'; at: string; reason: WakeReason; dedupe: string }          // `at` already jittered (§3.9)
   | { kind: 'notify'; intent: NotifyIntent; dedupe: string; capScope?: CapScope }
   | { kind: 'brief.refresh'; lessonId?: string; resumeOf?: string }
-  | { kind: 'forge.demand'; libraryKey: string; horizon: 'in_lesson' | 'next_lesson' | 'two_weeks' | 'term';
-      lessonId?: string; slotId?: string; wantedBy: string }        // proposed by the content-orchestration gap-fill
+  | { kind: 'forge.demand'; libraryKey: string; identityKey: string; key: LibraryKeyFields;
+      meta: { tier: ForgeTier; buildClass: string; modality: Modality };
+      horizon: 'in_lesson' | 'next_lesson' | 'two_weeks' | 'term'; childScoped: boolean;   // false for two_weeks/term/promote (X49)
+      lessonId?: string; slotId?: string; wantedBy: string; predicted?: number }  // (gap-fill G2-content-orchestration-media): content-orchestration §2-§3
   | { kind: 'audit'; code: string };
 ```
 
@@ -1044,7 +1065,9 @@ export interface LessonBrief {
   homeLoopMention?: { activityId: string };
   careEffect?: 'gentle_mode';
   homeAdultName?: string;                             // "show <name>", never assumed "Mumma" (dc AR-10.6)
-  preparedModules: Array<{ artifactId?: string; engine: string; params: Record<string, unknown> }>;
+  preparedModules: PreparedModule[];                  // (gap-fill G2-content-orchestration-media) superset of the old element: + source, libraryKey,
+                                                      // contentHash (blocklist check), tier, reviewGrade, forSegment, fallbacks[] ending
+                                                      // in a device-cached marginal-zero floor (content-orchestration §3, §5.1)
   childBrief: ChildBrief;                             // ≤ 600 tok (existing); the Director's packet, never read by decide()
   // (gap-fill G1-adaptation-policy) LessonBriefAdd
   opener: OpenerKind; successFirst: boolean; soloRounds: number; newSkillBudget: 0 | 1 | 2;
@@ -1103,7 +1126,7 @@ export interface LessonBrief {
 | safety | only safety ends a lesson immediately. The corrective instruction plus a graceful wrap in the same voice (cached narration) end it kindly; the teacher never goes silent mid-sentence (obs V6.2) |
 | holds and kill switches | model-version holds, experiment reverts and cohort holds take effect at lesson boundaries only; voice-lane holds need a human |
 | Director down (Neon down) | the client keeps the last instructions and queues turns in the outbox. Lesson start fails *before* the call connects, with a friendly retry card (ws R2) |
-| a ready Forge module | reaches the device through `brief.refresh`/`module.ready` on its existing poll, only if it is T1/T2 or a reviewed library artefact (I-R5) |
+| a ready Forge module (gap-fill G2-content-orchestration-media) | **lesson start / resume:** `brief.refresh` fills `preparedModules` from `forge_ready_for(child)` (published, not blocklisted, not yet served) ∪ inventory hits ∪ kit floors; the device caches every floor. **Mid-lesson:** the Director reads `forge_ready_for(child, lastPoll)` at each turn boundary (X51) and offers a new module at the next natural stop, only if nothing is mounted for that segment (I-F9). **Live fills** (T1 params, T2a template) are the Director's own, with a **3 s hard timeout** from the move decision: T1 fits (2.05 s p90); T2a (3.35 s p90) only with one turn of lookahead; T2b only via `forge.demand{in_lesson}` with need-by ≥ 45 s (next segment, or the minute-3 diagnostic for practice). **On a miss** at need-by: mount `fallbacks[0]` silently (no "loading"), log `module_run.missed_primary`, promote the late live fill, carry a late T2b to next lesson unless ≥ 90 s of the segment remain; after 3 misses in a lesson, stop requesting T2 (content-orchestration §5) |
 
 ### 4.7 Week and term (v1)
 
@@ -1644,8 +1667,9 @@ SQL header comment is reworded to "child and parent audio is never stored; gener
 | **`taxila-worker`** (new ACA app, same image, entrypoint `node server/worker/main.mjs`; min 1 / max 2; no ingress; **direct** Neon URL) | leader-elected ticker (`pg_try_advisory_lock(hashtext('taxila:ticker'))` held on a dedicated session); the **dirty-set step loop** (§3.9, X30); fast + slow claim loops, polling 1 s while busy and 5 s when idle (X35). `pg_notify('job_ready')` may be sent from this direct connection inside a committing transaction as a hint only, and correctness never depends on it [V Neon: no LISTEN/NOTIFY through the pooler]. Also: letter fan-out; voice-note TTS; WhatsApp inbound processing; `memory.*`, `kt.refold`, compaction, erase/export; safety settle and escalation timers | realtime observer sockets (X37) |
 | **`taxila-observer`** (new ACA app at **M1**, same image, entrypoint `node server/observer/main.mjs`; no ingress; scaled on live-lesson count; no leader) | one observer WebSocket per live lesson (§9.4): metering and the staleness SLI, read-only | anything else, so a worker revision roll never drops every observer at once (obs B29) |
 | **ACA scheduled jobs** (cron in **UTC** [V]) | `canary` `*/30 * * * *` (text modality 47/48 runs, audio once a day); `nightly` `30 21 * * *` (03:00 IST: rollups, DRS, writer census, cost reconcile; `replicaRetryLimit ≥ 1`, idempotent per day) | they exist so the detectors don't die with the worker they watch (obs V1, V4) |
+| **ACA jobs** (Forge render, (gap-fill G2-content-orchestration-media)) | `forge.explainer`/`forge.animation{renderer:'seek'}`: headless Chromium + ffmpeg on our own player and JSON (trusted code), ≈ $0.005 per video-minute | LLM-written code (that is the sandbox's) |
 | **ACA manual jobs** | G4-G6 batteries started by CI with an image tag (≤ 3 h); `--content` operator reads (Entra-authenticated start) | — |
-| **ACA Sandboxes / dynamic sessions** (M3) | Forge T3 builds: egress denied, headless validation, human review before library | anything per child |
+| **ACA Sandboxes / dynamic sessions** (M3) | Forge T3 builds and codex-written Manim renders: egress denied, Hyper-V isolation, headless validation, human review before library. Custom-container pool kept at **0 ready sessions outside 23:00-05:00 IST** (≈ $5.2/day per warm 2 vCPU session [I]) (gap-fill G2-content-orchestration-media) | anything per child |
 | **Vercel** | **nothing.** `api/[...route].js` stays a shim and hosts none of this | ticker, sideband, fan-out (300/800 s caps; `waitUntil` shares the function timeout [V]) |
 
 Worker shutdown contract: on SIGTERM, stop claiming, release the ticker lock, let in-flight jobs heartbeat for
@@ -1661,11 +1685,19 @@ resume (orch R1). Tracing is suppressed around the idle claim query (obs V2.3).
 | `kt.refold` | fast / worker | 1 | `kt.refold:{child}:{fromTs}` | code | `not_before_lesson_end` |
 | `homework.extract` | inline on web, job-row backed | 0 | `hw.extract:{captureId}:{extractV}` | DI Read → "padh ke sunao" | 6 s to boxes |
 | `capture.raw_delete` | slow / worker | 2 | `rawdel:{captureId}` | — | ≤ 24 h TTL |
-| `forge.spec` (T1), `forge.scene` (T2) | inline on web | 0 | `forge.spec:{objective}:{engine}:{specHash}:{modelV}` | luna → kit default params / kit worked example | ≤ 3 s [U] |
-| `forge.prefetch` (library, topic-level) | slow / worker | 3 | `forge.prefetch:{libraryKey}:{modelV}` | luna/image within `budget(global, forge, day)` | demand-ranked, next 2 weeks of syllabus |
-| `forge.image` | slow / worker | 3 | `forge.image:{libraryKey}:{style}:{modelV}` | gpt-image-2 medium → low → SVG / none | `azure:image ≤ 3` bucket (4 RPM quota) |
-| `forge.build` (T3) | sandbox (M3) | 3 | `forge.build:{objective}:{engine}:{specHash}:{modelV}` | codex → existing engine | **offline only**, from `forge_request` demand, → human review |
-| `forge.video` | slow (M3) | 3 | library key | sora-2 → none | library only, never per child, human review. The gap-fill `allowed_model` table records sora-2 as a preview that **retires 2026-10-15 with no replacement** [not re-checked here], so M3 video may have no model at all |
+| `forge.admit` (gap-fill G2-content-orchestration-media) | slow / worker | 2 | `forge.admit:{window}` | code (knapsack: content-orchestration §6) | every 15 min, night every 5; review-seconds admitted (X54) |
+| `forge.horizon` (gap-fill G2-content-orchestration-media) | slow / worker | 3 | `forge.horizon:{day}` / `:{isoWeek}` | code | nightly 22:30 IST (`two_weeks`, demand-ranked prefetch X57); Sunday (`term`, H0 catalogue) |
+| `forge.spec` (promote) (gap-fill G2-content-orchestration-media) | fast / worker | 2 | `forge.spec:{libraryKey}` | luna re-fill + validate → reject | publishes a served live fill (X50) |
+| `forge.scene` (near-line T2b / free-form explainer) (gap-fill G2-content-orchestration-media) | fast / worker | 0 | `forge.scene:{libraryKey}` | brain → luna → T2a | only with need-by ≥ 45 s; single-flight per key |
+| `forge.prefetch` (library, topic-level) | slow / worker | 3 | `forge.prefetch:{libraryKey}:{modelV}` | luna/image within `budget(global, forge, day)` | **ranked by cohort demand, not the calendar** (X57) (gap-fill G2-content-orchestration-media) |
+| `forge.image` | slow / worker | 3 | `forge.image:{libraryKey}:{style}:{modelV}` | gpt-image-2 medium → low → SVG / none | `azure:image ≤ 3` bucket (4 RPM quota); night only (X52) |
+| `forge.build` (T3) | sandbox (M3) | 3 | `forge.build:{libraryKey}` | codex → existing engine | **offline only**, from `forge_request` demand, review-admitted, → human review; 24 h cool-down after 2 gate fails (gap-fill G2-content-orchestration-media) |
+| `forge.explainer` (gap-fill G2-content-orchestration-media) | ACA job / worker | 3 | `forge.explainer:{libraryKey}:{lang}` | sol plan + Azure Speech narration → template-only core | library; narration is a per-lang layer beside the core |
+| `forge.animation` (gap-fill G2-content-orchestration-media) | ACA job (seek) / sessions (Manim, M3) | 3 | `forge.animation:{libraryKey}:{renderer}:{lang}` | Manim → explainer seek MP4 → none | **M3 video** (X55): ≈ $0.10 per Manim segment, ≈ $0.005 per MP4 minute; two-key for chapter video |
+| `forge.chant` (gap-fill G2-content-orchestration-media) | slow / worker | 3 | `forge.chant:{kitId}:{v}:{voice}:{tempo}` | Azure Speech → human-clip queue (ङ ञ ण, conjuncts) | ASR phonMatch 1.0 + native-ear lang key (X56) |
+| `forge.jingle` (gap-fill G2-content-orchestration-media) | slow / worker | 3 | `forge.jingle:{kitId}:{tuneId}` | code fit → chant only | L1-L5 recitation lint; lang + kid_ux keys |
+| `forge.video` | — | — | — | **sora-2 retires 2026-10-15 [V re-checked (gap-fill G2-content-orchestration-media)]**; `allowed_model` refuses publish from that day | replaced by `forge.animation` + stills-with-motion; optional pre-retirement batch D-VIDEO |
+| `forge.sweep` (gap-fill G2-content-orchestration-media) | slow / worker | 3 | `forge.sweep:{day}` | SQL (`SKIP LOCKED`) | nightly; expires waiters and `module_ready` rows |
 | `parent.letter` | fast / worker | 2 | `parent.letter:{child}:{isoWeek}` | luna slot fill → template from facts | cutoff send − 30 h |
 | `parent.voice_note` | fast / worker | 1 | `voice:{letterId}:{renderV}` | gpt-4o-mini-tts → text only | on tap |
 | `parent.inbound` | fast / worker | 1 | `wa:{messageId}` | — | ack < 1 s on web |
@@ -1714,7 +1746,7 @@ poll every 2 s during the off-voice warm-up.
 | one Neon compute (ingest, Director, queue, governor) | device keeps the last brief + an outbox; the Director degrades to "no evidence this turn"; lesson start fails before the call connects; a read replica for dashboards and ops at > 5k DAC | cells (ws W9) |
 | one realtime deployment (eastus2, 10 RPM) | lower lanes and tap; the quota request filed before any cohort > 30 (§10.5) | a second deployment in **Sweden Central** (the other supported region [V this session]) behind the admission bucket; quota is pooled per subscription, so this buys availability, not quota |
 | one human clears `safety_hold` and reviews S notices | page on entry; 2 h escalation to a **second named adult**. Every incident holds the app until D-SAFE rules on a severity split (X33), so this human's latency is the child's wait: the hold screen must stay warm and useful (1098/14416, a calm activity), and D-SAFE must name the acknowledgement target | staffed rota |
-| one human reviews Forge T3 | T1/T2 carry v1; the review queue is ordered by `demand_count` | reviewer rota |
+| one human reviews Forge T3 | T1/T2 carry v1; review seconds are admitted against capacity and the queue is ordered by SLA, then demand × horizon weight (X54) (gap-fill G2-content-orchestration-media) | reviewer rota incl. a native Hindi ear (D-REVIEW) |
 | `taxila-worker` | min 1, leader election, lease recovery, piggyback drains, inline `step()` on web; detectors live in scheduled jobs; observers live elsewhere (X37) | max 2-3; split the slow lane into ACA jobs on CPU contention |
 | `taxila-observer` (M1) | a lost socket falls back to device usage bounded by wall time (§9.4), counted as `observer_gap_s`; deploy freeze 18:00-21:30 IST | — |
 | App Insights as the only alert path | the canary also writes `eval_run`; the nightly job runs a second absence check and emails | — |
@@ -1821,7 +1853,11 @@ create table price_book (deployment text, unit text, micro_usd_per_unit numeric 
 | module | library hit | T1 params (luna) | kit default engine | static worked example |
 | illustration | library | gpt-image-2 medium (prefetch only) | low | SVG / none |
 | letter | luna slot fill | — | — | template from facts |
-| video | library | — | — | none |
+| video (gap-fill G2-content-orchestration-media) | library MP4 / chapter video | explainer clip (DSL + narration) | stills with motion | voice description |
+| animation (gap-fill G2-content-orchestration-media) | library explainer core (performed) | T2a explainer template (live, with lookahead) | static diagram sequence | voice + anchor |
+| near-line scene (T2b) (gap-fill G2-content-orchestration-media) | `module_ready` | T2a template | T1 engine | kit worked example |
+| song / chant (gap-fill G2-content-orchestration-media) | `jingle@1` | `chant-track@1` | teacher-led call-and-response | text list |
+| T3 game (gap-fill G2-content-orchestration-media) | library core + G1 fill | G1 kit default levels | T1 engine practice | tap items from the kit |
 
 - **Unit economics** [I/U; to be replaced by CM6 from `cost_ledger`]:
 
@@ -1927,6 +1963,22 @@ Path map: Conductor changes → G3, G4. Prompt/compile → G1, G2, G3, G6. Direc
 | I13-I18 | replica loss loses nothing; a poison batch acks the rest; one KT writer; erase fencing; module egress blocked; no retraction | ws R9 |
 | PLI1-PLI19 | claim-checker coverage, no pressure wording, home activity needs no maths, ≤ 1 activity/week, commitment cap under concurrency, no S notice while implicated, parent text unreachable from ChildBrief, voice note = script, letters re-gated at send, canDo-only activities, no SLA without a rota row | pl §12, PA-22 |
 | W-map | every `child_id` table mapped, cascading, indexed; no free text in event schemas | ws W2, §5.2 |
+| I-F1 | (gap-fill G2-content-orchestration-media) no publish without `reviewed_by`; a human tier needs every key-required item approved and no `auto:` reviewer. **Control:** probe F15 | content-orchestration §11.3 |
+| I-F2 | no child field in `forge_request.key`, `forge_transition.evidence`, `forge_artifact.manifest`; no lesson or child id in a library row. **Control:** F8 (a `childId` key is refused) | MO R8, X49 |
+| I-F3 | `forge_waiter` is inserted only by the Conductor commit and only for `in_lesson`/`next_lesson`. **Control:** F7/F7c + writer census | X49 |
+| I-F4 | ≤ `per_child_daily_demand` (3) waiters per child-day, ≤ `per_child_daily_races` (2) on non-T1/T2 tiers. **Control:** F4, F5 | MO §9.1 |
+| I-F5 | after a publish no waiter remains for the request and every in-window waiter has a `module_ready` row, under any commit ‖ publish interleaving. **Control:** D4 (10/10), F9 | X53 |
+| I-F6 | Forge lock order (X53); no `40P01` in the G3 probe cells. **Control:** the G1 bodies deadlock 5/5 (D1-D3) | X53 |
+| I-F7 | no mount of an artefact that is not the published one or whose hash is on `lib-blocklist`. **Control:** F18 | §5.8 |
+| I-F8 | T3 and Manim artefacts attest egress deny, runner identity none, AST ban list; T3 the current CSP. **Control:** F17 | ws I17 |
+| I-F9 | a late artefact never replaces a mounted module. **Control:** a planted late `module_ready` mid-play must be deferred (conductor-sim) | X51, MO C1 |
+| I-F10 | no T3, image, video, audio or chant build starts with horizon `in_lesson`. **Control:** a planted in-lesson T3 demand must come out `next_lesson` | X52 |
+| I-F11 | quarantine is one transaction: `module_ready` rows gone and the hash on the blocklist. **Control:** F18 | — |
+| I-F12 | no lyric, narration or artefact string enters a `compile()` lane (ids and shapes only). **Control:** lint L4 golden case | inherited law |
+| I-F13 | no publish with a model off `allowed_model` or on or after `allowed_until`; `verify` fails when a deployment in use is within 30 days of it. **Control:** F12, F13; today's run must flag `taxila-sora` and `taxila-transcribe` | X55, X58 |
+| I-F14 | song/chant only for `verbatim_sequence` objectives; every chant line phonMatch = 1.0; lang key present; `rights ≠ ncert-pending`; L1-L5 clean. **Control:** lint golden cases (11/11) | X56, LS rule 24 |
+| I-F15 | no library build is charged to a child (`cost_ledger.child_id` null for `forge.*`); live fills are charged to `child_content`. **Control:** ledger fixture | MO8 |
+| I-F16 | no name, transcript or memory crosses into a module iframe; `init` carries ids and numbers only. **Control:** a planted free-text `init` field is rejected | MO R9 |
 
 ### 9.10 Simulators and experiments
 
@@ -1962,7 +2014,10 @@ group has two named humans.
 | CM1 | fold + decide latency p50/p95 (simulator, 1 year of events per child) | C3 reversal; SLO |
 | CM2 | Neon CU-hours per 1k children, **including the always-on compute** that the 1-5 s worker polls cause (no scale-to-zero: X35) | X35 poll cadence; cells |
 | CM3 | code vs LLM planner on delayed outcomes (shadow, then pre-registered micro-RCT) | whether the LLM planner is ever adopted |
-| CM4 | Forge library hit rate per lesson (T1/T2 definition) | the "built while she teaches" claim |
+| CM4 (gap-fill G2-content-orchestration-media) | from `module_run.source` (Director-only writer): **CM4** = library-class mounts ÷ library-class wants per lesson; **CM4b** = `module_ready` mounts from an `in_lesson` waiter ÷ all mounts (the owner's "built while she teaches", measured); **CM4-img** = planned image slots served from the library ÷ planned, per topic over 30 d. Prior [sim]: CM4-img 99% with demand-ranked prefetch at 300 images/night, 86% calendar-only | the "built while she teaches" claim; X57 |
+| `content-orchestration-pg16-2026-10-02` (gap-fill G2-content-orchestration-media) | done: F1-F21 (n = 1) + race cells D1-D4 (n = 5 each), 30/30 as expected; 4 G1 defects found and fixed (`content-orchestration-pg16-probe.py`) | X49, X53 |
+| `image-prefetch-sim-2026-10-02` (gap-fill G2-content-orchestration-media) | done [sim]: 4 seeds × 18 cells (`image-prefetch-sim.py`) | X57 |
+| M-CO1…M-CO5, M-SONG-5/6/7, M-VID1 (gap-fill G2-content-orchestration-media) | near-line ready vs need-by; CM4 family; review throughput and SLA hit; `forge_ready_for` DB share; the probe on Neon; chant/melody A/B; lite-device MP4 (content-orchestration §12) | X50-X57 |
 | CM5 / CM11 | realtime admission wait p95 at 19:00-21:00 IST; drop-off during the warm-up vs a spinner | quota request size; R7.1 |
 | CM6 | actual cost per child-day by tier and lane from `cost_ledger` | D-PRICE, §9.5 |
 | CM8 | wakeup lag with the ticker down (piggyback only) | C5 degradation |
@@ -2029,12 +2084,12 @@ logged; one week of real lessons with `cost_ledger` reconciled against Azure dep
 
 LLM day planner in **shadow** (night, active-in-7-days, jittered) plus the CM3 comparison; 1 voice PTM/month via
 relayed routes; test windows v1 and the pointer chip; topic-level Forge T1/T2 library prefetch within the global
-Forge budget; L2 replay on release and then the nightly production sample; the `struggleSooner` push (if PLM data
+Forge budget, demand-ranked (X57), with `forge.admit`, `forge.horizon`, near-line `forge.scene` and the review queue's SLA ordering (gap-fill G2-content-orchestration-media); `chant-track@1` library (X56); L2 replay on release and then the nightly production sample; the `struggleSooner` push (if PLM data
 supports it); Content Safety 5% sample once OM11 runs.
 
 ### 10.4 M3
 
-Forge T3 offline (ACA Sandboxes, egress denied, headless validation, demand-ranked review queue); library video;
+Forge T3 offline (ACA Sandboxes, egress denied, headless validation, review-admitted queue); library video **as code** (gap-fill G2-content-orchestration-media): `explainer@1` clips and seek-rendered MP4, Manim (Class 8-9 maths) in dynamic sessions, stills-with-motion for phenomena (X55); `jingle@1` after M-SONG-5;
 within-child micro-randomised move trials; a second realtime region (Sweden Central); v2 school sync (test papers,
 transcription-as-evidence after M-SS1, alias pipeline); WhatsApp daily note as a parent-requested class; the evening
 reflection on cascade (opt-in, B3-B4); cells when WS-M10 demands them; DEK crypto-shred in a separate key project if
@@ -2050,6 +2105,11 @@ compliance is re-prioritised.
 | D-WA | ACS WhatsApp onboarding (Meta business verification, sender number, templates) | M1 letters |
 | D-DI | provision Document Intelligence (region, S0) | M1 homework photos (read-aloud and typed work without it) |
 | D-SUPPORT | a support rota and SLA (or the honest no-SLA shape) | M1 |
+| D-ASR (gap-fill G2-content-orchestration-media) | re-pin `taxila-transcribe` before **2026-10-15** (gpt-4o-mini-transcribe 2025-12-15 → 2027-06-15, or gpt-4o-transcribe-diarize 2025-10-15 → 2027-04-15) and re-run the phonkey probe set | TTS round-trip WER, chant gate A |
+| D-VIDEO (gap-fill G2-content-orchestration-media) | optional ≤ 20 sora-2 phenomenon hooks under a hard $50 cap, reviewed and **published before 2026-10-15** (I-F13 checks at publish); default: none | nothing (M3 video is code) |
+| D-SPEECH (gap-fill G2-content-orchestration-media) | name Azure AI Speech neural TTS in `azure-only-compute` (already used for chant and narration) | chant library, explainer narration |
+| D-SONG (gap-fill G2-content-orchestration-media) | accept chant + jingle for v1; whether an open-weight singer (ACE-Step, MIT) on an Azure GPU may be probed for v2 (allowed as open-source on Azure compute, not first-party) | songs v2 |
+| D-REVIEW (gap-fill G2-content-orchestration-media) | a reviewer rota with hours per day, including a native Hindi ear for lang keys | T3 library growth; every chant kit |
 
 ### 10.6 Not to build (and why)
 
@@ -2059,12 +2119,19 @@ image or video generation (orch R3.2: medium images alone are ≈ $3.2/child-mon
 record, or Helicone-style proxies (obs O12). Any model outside the allowed list, including Claude on Foundry and
 `gpt-5.6-terra` (I-R8). A `conductor.step` job kind (X30). A replay path that can commit (X31). Any writer that locks
 `child_seq` before another existing row (X29). `NOTIFY` as a correctness path (X35).
+(gap-fill G2-content-orchestration-media) Anything new on sora-2 after 2026-10-13, or any pixel video that carries a fact (X55). A sung render from TTS
+instructions (X56). LLM-authored lyrics for verbatim content: luna arranges kit tokens, never writes them (L1). A
+mid-lesson `brief.refresh` per published module (X51). Calendar-only image prefetch (X57).
 
 ---
 
 ## Sources
 
 Primary sources checked this session or by the cited sibling doc ([V]):
+- (gap-fill G2-content-orchestration-media) Microsoft Learn, *Model retirement schedule — Microsoft Foundry* (updated 2026-09-23) — https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/model-retirement-schedule
+- (gap-fill G2-content-orchestration-media) Microsoft Learn, *Foundry Models lifecycle and support policy* (retired = `410 Gone`; preview 30-day notice; not extendable) — https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/model-retirements
+- (gap-fill G2-content-orchestration-media) Microsoft Learn, *Sora 2 video generation overview (preview)* (jobs kept 24 h) — https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/video-generation
+- (gap-fill G2-content-orchestration-media) Microsoft Learn, *Dynamic sessions in Azure Container Apps* (custom-container pools billed on pool resources) — https://learn.microsoft.com/en-us/azure/container-apps/sessions
 - Oskar Dudycz, *Postgres sequences and messaging guarantees* — https://event-driven.io/en/ordering_in_postgres_outbox/
 - Azure Container Apps lifecycle (SIGTERM → 30 s → SIGKILL) — https://learn.microsoft.com/en-us/azure/container-apps/application-lifecycle-management
 - Azure Container Apps jobs (cron in UTC; at-least-once; retry limit) — https://learn.microsoft.com/en-us/azure/container-apps/jobs
@@ -2110,6 +2177,6 @@ Internal [repo]: `docs/ARCHITECTURE.md`; `docs/research/learning-science.md` §6
 (`day-cycle-review-cost.py`, `student-workspace-cost.py`, `student-workspace-review-cost.py`,
 `school-sync-review-cost.py`, `parent-loop-review-cost.py`); the lock-order probes
 (`orchestration-lock-order-probe.{sh,schema.sql,reset.sql}`, `conductor-lock-order-rev2-probe.{sh,extra.sql,reset.sql}`);
-the gap-fill fragments `content-orchestration.sql`, `adaptation.contracts.ts`, `adaptation-hysteresis-sim.py`; and (revision 3) `adaptation-policy.md`, `adaptation-state-size.py`, `adaptation-worked-example.mjs`;
+the gap-fill fragments `content-orchestration.sql`, `adaptation.contracts.ts`, `adaptation-hysteresis-sim.py`; (gap-fill G2-content-orchestration-media) `content-orchestration.md`, `content-orchestration-pg16-probe.py` (+ `.g1-frozen.sql`, output `-2026-10-02.txt`), `image-prefetch-sim.py`, `media-recitation-lint.mjs`, and the content docs it rests on (`factory/multimodal-orchestration.md`, `factory/video-animation-gen.md`, `factory/asset-pipeline.md`, `content/animation-video.md`, `content/songs-rhymes-audio.md`, `content/genui-reliability.md`); and (revision 3) `adaptation-policy.md`, `adaptation-state-size.py`, `adaptation-worked-example.mjs`;
 `context/decisions.md`, `measurements.md`, `rejected.md`;
 `server/db.js`, `server/routes/lesson.js`, `package.json` (the missing `scripts/verify-release.mjs`).

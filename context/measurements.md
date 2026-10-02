@@ -213,3 +213,16 @@ Results:
 - **Date.** Report 2025; read 2026-10-02.
 - **Source.** https://www.edtechbase.centralsquarefoundation.org/BaSE%20Report%202025.pdf via gtm-distribution.md §1.
 - **Caveat.** The sample is low-resource households, so it may understate app discovery among mid-fee urban families.
+
+
+<!-- merged from inbox/psychology.json -->
+## psych-identifiability-sims-2026-10-02
+**Simulations of what Taxila's logs can identify about one child, and of the parent-claim gates (2026-10-02). Every generative assumption is [U]; the arithmetic is reproducible. Scripts are in `docs/research/psychology/`.**
+- `learning-over-time-relsim.py` (numpy, seed 7, 300-400 simulated children/cell) + methodologist re-simulation (seed 11, 300/cell): iAFM intercept reliability .64-.68 at 35 obs, .80-.81 at 70; slope .01-.04 below 210 obs, .23 at 100 skills x 10, .53-.61 at 30 x 30 (Monte Carlo +/-.05-.08). Durability (HLR-C) .31/.43/.49 at 20/40/80 checks under the scheduler as specified; .36/.52/.67 in the widest window the R >= .6 bound allows; the original U(1,30) lag design (.40/.70/.82) is not a design Taxila may run.
+- `metacognition-srl-calibsim.py` (seed 11, 2,000 children/band) + `metacognition-srl-reviewsim.py` (seed 7, 4,000/condition): offset test-retest .73-.75 at 30 bets, .92 at 120; resolution .36-.57 at 30, .72-.85 at 120; raw bias x ability r -.53 to -.74 with independent truth; r(dConf, d') = .85; help coupling lambda .21/.51/.66/.79 at 50/200/400/800 opportunities; raw-count change route gave 99% of children >= 1 false row/yr.
+- `motivation-habits-habitsim.py` (400 children/span): D28 test-retest .83-.88; anchor share .58-.69; per-child habit t95 r .26-.42; median Lally fit R^2 .03-.21 over 12-36 weeks.
+- `temperament-vibe-calc.py`: contingency reliability .70 needs 37/66/149/597 trials at tau 1/.75/.5/.25 (p .5); at r = .27 a 'top third' label is right 44% of the time.
+- `cognitive-development-reviewsim.py` (20,000 diffusion trials, seed 7): 3% slow lapses bias EZ drift -35% (trimmed -4%); 5% mid lapses -15% after trim; 20% of 30-trial blocks hit the Pc = 1 edge correction.
+- `learning-analytics-methods-sim.py` (fixed seeds): MRT power .83 for 3 pp at N = 400, T = 30 (upper bound); type-I .060 (MC SE .0069); Thompson no floor naive type-I .111; per-child format rho .70 needs 78/217/487 comparisons per arm at tau .5/.3/.2.
+- `parent-reports-methodsim.py`: n-of-1 two-sided rule fires in 19% of null families; parent RCT needs 17,442/6,279/1,570 families per arm at d = .03/.05/.10.
+- `research-program-synthsim.py` (seed 20261002, 3,000 children/cell, ~30 s): report gate under screening — independent priors 4.89 false claims per null report (budget believed 0.21); normal-normal EB 2.22 false vs 0.17 believed (K = 30, n = 120/arm, 10% real effects of +/-1 logit); two-groups EB 0.10 false vs 0.12 believed (30% real), yield 0-16% at 12-40 per arm. False change rows/child-year under the null: raw-count route 5.63 (100% of children), corrected term rule 0.107 (6 rows, P >= .95), 0.071 (4 rows), 0.050 (P >= .975). Reliability CI +/-.05 at r = .7 needs 403 children/band. GRR (sigma_eps .3, sigma_S .5) .35/.78/.92 at 6/12/18 months. TOST +/-0.10 SD: 2,569 children total.

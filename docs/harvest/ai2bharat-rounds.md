@@ -553,3 +553,53 @@ This is the highest-value section. Ids are local to this file.
 - **The leak measurement:** "57.1% / 98.1% / 0 in 31,122" has no date or method recorded in this repo. It appears to come from an earlier companion-product study. I treat it as cited, not reproduced.
 - **D-061 ("realtime lane twice dropped rules")** has no attached n or date in this repo.
 - **Not confirmed:** whether translations for the @M4-changed `why` strings (0790d1a, "Sources … translated") translated text that never reached main. The pipeline keys translations by a per-module source hash, so they would be stale or absent rather than wrong.
+
+---
+
+## Verification
+
+Adversarial pass, 2026-10-02, read-only against `/home/user/ai2bharat` (`git show <ref>:<path>`). Every cited path was probed at its ref. `origin/main` is a11c521. No secret values seen; `translate-lessons.mjs` reads `AZURE_OPENAI_API_KEY` by name only, and `model-data-terms.json` holds URLs and quotes only. Quality is 1-5 for fit as a Taxila asset, not for the source product.
+
+Ref findings that change recommendations:
+- `tests/evidence-quest-exemplars.test.ts` and `tests/plain-english-sentences.ts` do NOT exist at 2c82d28 (r21 base). They exist at origin/r21/e0 and on main (17 tests confirmed). The `contract.ts` file is byte-identical (6526 B) at every ref; the 11 exemplars arrived via e0.
+- The feed-snapshot `--fetch` mode (A11) exists only on origin/r21/m4. 2e240d8 is NOT an ancestor of main, and main's `scripts/print-ladder.mjs` (11,214 B) has no `fetch`. Do not cite it as shipped.
+- A06's header says four self-test fixtures, not five.
+- A29's 2,912-cell figure was not found in the README. 35 x 18 x 3 x 2 = 3,780, so it is a post-exclusion count I did not verify.
+- A22's terms record was read 2026-09-01 and covers a Gemini lane and a Foundry lane. Taxila is Azure-only, so only the Foundry record is relevant, and it must be re-read.
+- A28's judges include a non-Azure model (`--judge deepseek`), which is barred by the Taxila Azure-only directive.
+
+| id | exists | implemented | portable | Q | corrected use | entanglement and notes |
+|---|---|---|---|---|---|---|
+| A01 | yes | yes | partly | 4 | adapt | One import: `LocalizedLearningText` {en,hi}. Rules 3 and 5 (60-word weaker body, 20-word sentences) are tuned for adult work samples; the 11 authored exemplars are about AI-evaluation work and are not reusable. Take the type and the boundary sentence. |
+| A02 | yes (e0, main only) | yes, 17 tests | no | 4 | idea | Imports the live catalog, rubrics, vocabulary and splitter, and uses `node:test`. Reuse the 10-rule structure and the FROZEN pin map, not the file. |
+| A04 | yes | yes | no | 3 | idea | Next.js app-router pages and server components. Taxila is Vite/React. Only the layout idea (notes under paragraphs on phones, beside from 760px) and the mark chips carry over. |
+| A05 | yes | yes | no | 4 | idea | Throws at module load unless each criterion is read from a lesson line; drags the quest catalog and `rubric-catalog`. The "criteria only from what was taught" rule and the kappa < 0.6 reversal are the value. |
+| A06 | yes | yes | partly | 4 | adapt | Not standalone: imports `reviewers.ts` and `rubric.ts`. The math (`cohensKappa`, `wilsonInterval`, FCE CI, floors 0.90 / 0.6 / 20 items) is liftable in about 150 lines. Re-verify against a reference implementation before relying on it. |
+| A07 | yes | yes (doc, with measured before/after) | yes | 4 | adapt | The 8-25 word scene bound and the three near-miss shapes are tuned for adult learners. Retune for ages 6-15. |
+| A08 | yes | yes | partly | 4 | adapt | Imports ai2bharat's `learning-journey`, pathways and the 9 near-miss batch arrays of module ids. `contentWords`, `distinctiveWords`, `answerOverlap` and `nearMissFailures` are lifted; the EN/HI stop lists need checking. |
+| A09 | yes | yes (types) | no | 3 | idea | `learning-journey.ts` is 547 KB of data; only `learning-catalog/types.ts` (11 KB) is the schema. The shape is adult-professional (opportunity role families, `prepares`). Taxila's `shared/contracts.ts` should own its model. Keep "store option index, never answer text". |
+| A10 | yes | yes | no | 3 | idea | Depends on opportunity role families. Keep only "levels are of content, never people" and the reconciliation identity. |
+| A11 | partly | yes (generated blocks on main; `--fetch` on m4 only) | partly | 3 | idea | See ref finding above. The "a test fails if prose types a count" pattern is cheap to reproduce. |
+| A13 | yes (e0, main) | yes | yes | 3 | adapt | 1.4 KB, zero imports. `wordCount` counts only `[A-Za-z0-9₹]` tokens, so Devanagari words count as 0, and `sentencesIn` does not split on the danda. It cannot gate Hindi as it stands; fix both before use. |
+| A14 | yes | yes | partly | 3 | idea | 28 KB test with an embedded allow-list tied to ai2bharat copy. Register rules are for adult screen-terms; Taxila should align with NCERT Hindi-medium terms. |
+| A15 | yes | yes | partly | 3 | adapt | `vocabulary.ts` has no imports (7 KB). The banned lists are ai2bharat promise words (certificate etc.) with ladder-specific tiers; Taxila needs its own lists (test-like words, promise words). |
+| A16 | yes | yes (a pattern, about 30 lines) | yes | 4 | copy | The pattern lives in the test's `FROZEN_EXEMPLARS` map and in `quest-rubrics.ts`; there is no file to copy. The failure message prints the exact pin line. |
+| A17 | yes | yes | pattern only | 4 | idea | The file is 49 ai2bharat module ids; the three rules in its header are the asset. |
+| A18 | yes | yes | partly | 4 | adapt | `pedagogy.ts` is standalone (no imports). `prompt.ts` is not: it pulls in `contract`, `copy`, `lesson-index`, `stage-gate`, `shapelint`, `distress`, `sound-alikes`, `context-windows` and `register`. Caps are 8,000 B CORE and 6,000 B TAIL. The "ask before telling; the last character is never a question mark" MUST suits an adult hint ladder. It is likely wrong for a 6-year-old teacher, so it needs an owner decision. |
+| A19 | yes | yes | partly | 4 | adapt | `output-gate.ts` (37 KB) imports the contract, `lesson-index`, `learner-name`, `pedagogy` and `vision-gate`. `register-predicates.ts` re-exports from `evals/`, which inverts the layering. The gate is text-only; a realtime audio turn cannot be discarded before the child hears it, so it must become a post-hoc check there. |
+| A20 | yes | yes | partly | 4 | adapt | The model arm is NOT RUN without a paid lane. The 320-turn model arm and the register bands (doubt 20/32, define 30/55, explain 55/95, refusal 26/45) are confirmed; the "ask" and "hint" bands and the 290+30 split I did not check. Bands are for adult text; re-measure for each class band. |
+| A21 | yes | yes (migration 25 KB) | partly | 4 | adapt | Six kinds confirmed (weak-topic, misconception, explanation-style, goal, context-given, term-asked), with a closed CHECK and no `deleted_at`. Plain Postgres, so Neon-compatible. The no-affect rule conflicts with Taxila's emotional OS; owner decision. |
+| A22 | yes | yes | partly | 3 | idea | `lane.ts` is tied to `model-spend` and a Gemini provider; the JSON covers gemini and foundry lanes, read 2026-09-01. Keep the two-gate pattern (flag plus a dated terms record) and the byte-identical prompt digest. Re-read Azure terms for minors; do not copy the Gemini record. |
+| A23 | yes | yes | partly | 4 | adapt | Six features, env names `AI2_MODEL_*`, default $12/day with per-feature shares, UTC-day ledger in schema `private` (Neon OK). Imports `credential-pool` and `model-spend`, which were not cited. Fail-closed to authored content fits Taxila. |
+| A24 | yes | yes | partly | 4 | adapt | The 40-word cap and the 15-word no-source run check are confirmed. Imports `bharat-languages`, `saathi/lesson-index` and `output-gate`. |
+| A25 | yes | yes | partly | 4 | adapt | Intervals 2/7/21/60 days confirmed, and there is no skipped/streak/seenAt/dueSince field. Imports `learningPathways`. A 60-day top interval is untested for children. |
+| A26 | yes | yes | no | 3 | idea | `community-progress.ts` is localStorage-based adult gamification pulling in people, projects and safar. Keep the four-question audit and `levelFloor`. The test file is only 2.6 KB. |
+| A27 | yes | yes | partly | 3 | adapt | Runs under `node --experimental-strip-types`, imports `translation-validate.ts` (not cited) and calls Azure OpenAI by env var. The structural checks are the value. |
+| A28 | yes | yes (a cache and a $3 budget) | partly | 3 | adapt | Judges must be re-chosen: `deepseek` violates Azure-only, and two judges from one first-party family are less independent. |
+| A29 | yes (12 files) | yes | partly | 4 | adapt | Needs `playwright`, deliberately not in the app's dependencies. Surfaces and config are ai2bharat-specific. The "unmeasured, never pass" contract is the asset. |
+| A31 | yes (m3 and main) | yes (as lesson content) | partly | 3 | idea | The four buckets are confirmed verbatim; the mangalsutra case is in `multimodal-physical-ai.ts`. It is a lesson for human raters, not a tool. Rewrite it as a QA rubric for gpt-image-2 and for generated modules. |
+| A33 | yes | yes (docs) | no | 3 | idea | The protocol is ai2bharat-specific. The sources the doc cites (MQM, Carpentries, Google rater guidelines) were confirmed present in `review.md`. |
+| A35 | yes | yes | partly | 4 | adapt | Imports the contract and learning-journey types. Photos are withheld on checked steps and the stage gate runs before the image path. The invariant is strong; port the pattern. |
+| A37 | yes | yes | partly | 3 | adapt | `register.ts` is standalone: `HONORIFIC_TUM_AT_TURNS = 40` lifetime turns, aap to tum. For children the arc is the inverse (tum or "beta" from turn 1), so it needs an owner decision. Name rules are in `learner-name.ts` (11 KB, standalone). |
+
+Net (31 claims): 1 copy (A16), 18 adapt, 12 idea, 0 skip. Nothing here runs unmodified in Taxila; the largest wins are A06 math, A13 splitter (after the Devanagari fix), A16/A17 patterns, A21/A23 schemas, and A18/A35 gate invariants.

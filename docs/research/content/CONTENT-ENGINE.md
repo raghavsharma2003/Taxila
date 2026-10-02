@@ -132,13 +132,13 @@ Director move ─► ModuleRequest{topic, skill, item, want{mechanic, probe, rep
          → diagram / explainer / chant layer when the move is "show", "explain" or "recite"
    └─► source ladder: device cache → server cache (exact key, never embedding similarity) → kit preset → live fill
    └─► validate (tier gates; first failure → precise slot error → ≤ 1 repair for T2, 0 for T1) → Content Safety (parallel with the preamble)
-   └─► ModulePlan{tier, engine, spec, source, validatedBy, fallback (always present)}
+   └─► ModulePlan{tier, engine, spec, source, validatedBy, fallback (always present)}   (typed in §1.6, gap-fill GAP-2-module-plan-protocol)
    └─► client: mount frozen ─► ready ─► unfreeze at your_turn ─► events ─► observer@1 ─► lanes ─► Director
 ```
 
 **Prefetch.** At the start of each teacher turn the Director plans modules for the two most likely next moves in parallel and caches them. At lesson start the planner sends the next 3–5 objectives' specs (≤ 5 KB each) and assets (≤ 120 KB WebP each) (genui §3.2, diagrams §4.7).
 
-The cache key is `(engine@ver, topic, item, band, lang, skin, misc-set, intent, emphasis, validatorVersion)`. The `intent` and `emphasis` fields are added for explainers (animation E.7). Language and skin stay out of raster keys: labels are an overlay (MO5).
+The cache key is `(engine@ver, topic, item, band, lang, skin, misc-set, intent, emphasis, validatorVersion)`, plus `stage` (★ §1.6.1; gap-fill GAP-2-module-plan-protocol). The `intent` and `emphasis` fields are added for explainers (animation E.7). Language and skin stay out of raster keys: labels are an overlay (MO5).
 
 ### 1.3 Latency budgets
 
@@ -209,8 +209,279 @@ interface ModalityInput {
 | T0/T1 engines, `scene@1` runtime, diagram engines, `explainer@1` player, T3 `lib:` modules | sandboxed iframe: `sandbox="allow-scripts"`, opaque origin, strict CSP, bridge v2 over a `MessagePort` | one protocol, one budget, freeze and teardown; generated code must be here, so first-party code shares the path (A2) |
 | `chant-track@1`, `pahada@1` audio, read-along audio clock and speech window, `board@1`, `pointer-overlay@1`, `LockPanel`, `word-chain@1` voice turns, captions, face | host (React shell; imperative refs for per-frame work) | they own audio, the mic or the stage; the frame has `microphone 'none'`, `media-src 'none'`, `connect-src 'none'` |
 | router, spec fill, validators, solver, Content Safety, grader for persistence | server (`server/director/*`) | the model never sees the solver; the server signs `{sceneHash, validatorVersion}` |
-| grader for live verdicts | host (imports each engine's pure `grade()`) | evidence is host-graded (§4.6) |
+| grader for live verdicts | host (imports each engine's pure `grade()`) | evidence is host-graded (§4.5; was mis-cited as §4.6, gap-fill GAP-2-module-plan-protocol) |
 | Forge (T3, rasters, figures, explainer pre-render, chant render) | ACA jobs in the egress-denied sandbox lane (`decisions.md#forge-sandbox-lanes`) | offline; reviewed |
+
+### 1.6 The module path, typed: `ModuleRequest` → `ModulePlan` → `module_plan` → mount (gap-fill GAP-2-module-plan-protocol)
+
+§1.2 gave the flow as prose and §4.2 types only the frame↔host link. This section types the other link (Director → server → client), the two realtime tools the voice model sees, the failure state machine and prefetch invalidation. It lives in `shared/bridge.ts` beside §4.2, with hand-written parsers in `src/modules/frame/plan-protocol.ts` (no zod in the hot path: the same reason as §4). Design rules, each taken from a measured law above:
+
+- **The voice model never authors a spec.** It picks a plan the Director already built (`plan_id`) or names a closed-enum *want*; the server routes, fills, validates and signs. The tech-and-market §1.7 sketch `show_module(engine, params, goal_id)` is superseded: free `params` from the realtime model would bypass T1 `lint`/`solve` and the verified key (§4.5).
+- **Everything the teacher is told is a closed-enum fact**, never prose (§5.3: sentence-shaped text gets recited).
+- **Every plan carries a fallback that ends in `board_only`** (M1, M14), and the fallback is validated before the plan is sent, never after the primary fails.
+- **The realtime tool schema is not strictly decoded.** Realtime function tools are declared as `{type:"function", name, description, parameters}` in `session.tools` [S: OpenAI Realtime reference, which Azure follows except for deployment names]; there is no evidence here that Azure honours strict decoding on them [U]. So the tool arguments are treated as untrusted text and the hand-written parser below is the gate.
+
+#### 1.6.1 Types (`shared/bridge.ts`, plan section)
+
+```ts
+export const PLAN_V = 1 as const;
+export const PLAN_LIMITS = {
+  readyTimeoutMs: 8000,           // = LIMITS.readyTimeoutMs (§4.2): from `init` posted to `ready` received
+  specInlineBytes: 5120,          // §1.2 prefetch cap; larger specs travel as specRef (content-addressed)
+  planMsgBytes: 16384,            // whole module_plan message, incl. fallback chain
+  fallbackDepth: 2,               // primary → ≤ 2 hops; the last hop is always board_only
+  liveDeadlineMs: 3000,           // default ModuleRequest.deadlineMs for a show move (Wave 3 gate: interactive ≤ 3 s)
+  planTtlMs: 120000,              // default expires_at − issued_at for a live plan
+  prefetchTtlMs: 600000,          // lesson-start prefetch (next 3–5 objectives)
+  supersedeGraceMs: 5000,         // max wait for a natural break before swapping a live module
+  childActiveMs: 3000,            // "mid-interaction": a child act this recent, or an open probe
+  maxSwapsPerMin: 2,              // the screen does not change more often than this (non-safeguard)
+  denylistAfter: 2,               // ready timeouts / fatal errors for one engine@ver in one session
+} as const;
+
+export type ReqId  = `rq_${string}`;   // /^rq_[a-z0-9]{6,16}$/, server-minted per Director move
+export type PlanId = `p_${string}`;    // /^p_[a-z0-9]{4,12}$/,  server-minted per plan (fallback hops get their own)
+export type EngineId = `${string}@${number}`;
+export type Mechanic = "manipulate" | "compare" | "build" | "sort" | "match" | "sequence" | "label" | "measure" | "predict_observe" | "explore";
+export type Representation = "concrete" | "area" | "set" | "linear" | "symbolic" | "diagram" | "animation" | "text";
+export type Intent = "show" | "explain" | "practice" | "probe" | "recite" | "hook";   // = the Director move family (§1.4 `move`)
+
+/** Director → router. Pure data; built from the Move + learner model, never from model prose. */
+export interface ModuleRequest {
+  v: 1; req_id: ReqId; lesson_id: string; turn: number;
+  intent: Intent;
+  topic: string; skill: string; item?: string;                 // kit ids (data/kits); item absent = router picks from the kit
+  want: { mechanic?: Mechanic; probe?: ProbeKind; representation?: Representation; engine?: EngineId; emphasis?: string /* explainer emphasis id */ };
+  band: Band; lang: "en" | "hi" | "hi-Latn+en";
+  child: { interests: string[] /* closed tags, ≤ 4 */; activeMisconceptions: MiscId[] /* ≤ 3, sorted */; stage: Stage;
+           mastery: "new" | "learning" | "practising" | "learned_today" | "secure"; priorKnowledge: "low" | "high" };
+  device: { tier: "A" | "B" | "C" | "D" | "E"; reducedMotion: boolean; dataSaver: boolean };
+  deadlineMs: number;                                          // child-visible budget (the preamble); default PLAN_LIMITS.liveDeadlineMs
+  horizonMs: number;                                           // when it will be needed; ≥ 45 000 unlocks T2b (§1.1)
+  prefetch: boolean;                                           // true = speculative (next-move or lesson-start); not shown until chosen
+  lm_seq: number;                                              // learner-model version the request was built from (§1.6.5)
+}
+
+/** Exact cache key (§1.2). Never embedding similarity. `stage` is ★ added: the spec differs by stage, and the
+ *  §1.2 key omitted it, so a concrete spec could have been served to a child the learner model had promoted. */
+export interface CacheKey {
+  engine: EngineId; topic: string; item: string; band: Band; lang: "en" | "hi" | "hi-Latn+en";
+  skin: string; miscSet: MiscId[] /* sorted, deduped */; intent: Intent; emphasis: string | null;
+  stage: Stage;                                                // ★
+  validatorVersion: string;                                    // bump = every key misses (a validator fix re-validates the cache)
+}
+// key string = `${engine}|${topic}|${item}|${band}|${lang}|${skin}|${miscSet.join(",")}|${intent}|${emphasis ?? "-"}|${stage}|${validatorVersion}`
+// Raster/figure assets are keyed by content hash only (labels are an overlay, MO5) and are NOT invalidated by §1.6.5.
+
+/** §1.5: the server signs what it validated, so the frame can skip the full validator (§3.2). */
+export interface PlanSig {
+  sceneHash: string;              // "sha256:<64 hex>" over canonical JSON {engine, tier, spec, assets:{name: sha256}} (keys sorted, floats 1e-4)
+  validatorVersion: string;       // e.g. "val@2026.10.1"; must equal CacheKey.validatorVersion
+  kid: string;                    // signing-key id; public keys ship in the APK/web bundle, rotated by release
+  alg: "Ed25519";
+  sig: string;                    // base64url Ed25519 over `taxila-plan/1|${sceneHash}|${validatorVersion}|${expires_at}`
+}
+
+export type ValidatorId = "zod" | "resolveParams" | "lint" | "solve" | "S0-S7" | "exact_solver" | "D0-D9" | "content_safety"
+  | "blocklist" | "golden" | "human_review";
+export type PlanSource = "device_cache" | "server_cache" | "kit_preset" | "lib" | "live_fill";
+
+export type ModulePlan = FramePlan | HostPlan | BoardOnly;
+
+/** Anything mounted in the sandboxed iframe (§1.5 row 1): engines, scene@1, diagrams, explainer, promoted T3 lib modules. */
+export interface FramePlan {
+  kind: "frame";
+  plan_id: PlanId;
+  tier: "T0" | "T1" | "T2a" | "T2b" | "T3lib";
+  layer: "engine" | "scene" | "diagram" | "explainer" | "lib";
+  engine: EngineId;
+  spec: unknown | null;           // ≤ specInlineBytes as canonical JSON; else null and specRef is set
+  specRef: string | null;         // "sha256:…" → GET /api/content/spec/<hash> (immutable, cacheable forever)
+  assets: Record<string, string>; // name → "sha256:…" content refs (never data: URLs on the wire; the host inlines them into init)
+  key: CacheKey;
+  source: PlanSource;
+  validatedBy: ValidatorId[];     // non-empty; must include "content_safety" for any plan with child-visible strings
+  safety: "pass" | "pending";     // "pending" only for a live fill whose Content Safety call has not returned (§1.2 runs it in parallel)
+  evidenceWeight: number;         // §1.1 column; the host still grades (§4.5)
+  basis: { skill: string; stage: Stage; miscSet: MiscId[]; mastery: ModuleRequest["child"]["mastery"]; lm_seq: number };
+  sig: PlanSig;
+  fallback: ModulePlan;           // FramePlan | HostPlan | BoardOnly; depth ≤ PLAN_LIMITS.fallbackDepth; never a T2b
+}
+
+/** Host-side runtimes (§1.5 row 2): chant-track@1, pahada@1, read-along. Not in the iframe; no sceneHash over code, only over the kit. */
+export interface HostPlan {
+  kind: "host";
+  plan_id: PlanId;
+  runtime: "chant-track@1" | "pahada@1" | "read-along@1" | "word-chain@1";
+  kitRef: string;                 // reviewed kit id, e.g. "pahada-hi-7"; host plans are always lib/T0
+  key: CacheKey; source: PlanSource; validatedBy: ValidatorId[]; safety: "pass";
+  basis: FramePlan["basis"]; sig: PlanSig;
+  fallback: ModulePlan;
+}
+
+/** M14 terminal: board + voice + a kit picture. Always mountable, never fails, never needs a signature. */
+export interface BoardOnly {
+  kind: "board_only";
+  plan_id: PlanId;
+  board: { itemRef: string /* kit board item id */; pictureRef?: string /* lib figure "sha256:…" */ } | null;
+  gap: { topic: string; mechanic: Mechanic | null; band: Band; why: BoardWhy } | null;   // non-null = log a gap ticket (M14)
+}
+export type BoardWhy = "no_engine" | "no_template" | "deadline" | "validation_failed" | "safety_blocked" | "denylisted" | "device_tier";
+
+// ───── server → client (lesson channel; voice lane: the Director WebSocket/SSE, not the realtime data channel) ─────
+export type PlanServerMsg =
+  | { v: 1; k: "module_plan"; req_id: ReqId; plan: ModulePlan; supersedes: PlanId | null;
+      priority: "normal" | "safeguard";            // safeguard = tear down whatever is mounted now (§1.6.3 S7)
+      show: boolean;                               // false = prefetch: cache only, do not mount
+      issued_at: number; expires_at: number }      // server epoch ms; the host compares with its offset-corrected clock
+  | { v: 1; k: "module_safety"; plan_id: PlanId; sceneHash: string; status: "pass" | "block" }  // late Content Safety verdict
+  | { v: 1; k: "module_revoke"; sceneHash: string; reason: "safety" | "validator_bug" | "incident"; scope: "lesson" | "global" }
+  | { v: 1; k: "prefetch_invalidate"; skill: string | "*"; lm_seq: number; reason: InvalidateWhy };
+export type InvalidateWhy = "stage_change" | "misc_change" | "mastery_change" | "prior_knowledge" | "band_or_lang" | "validator_bump";
+
+// ───── client → server (same channel) ─────
+export interface PlanStatusMsg {
+  v: 1; k: "module_status"; req_id: ReqId; plan_id: PlanId; mid: string | null;
+  state: HostModuleState; fact: ModuleFact; reason: ModuleReason | null; at: number; hops: number;
+}
+```
+
+#### 1.6.2 The realtime tools the voice model sees
+
+Two tools, ≤ 600 characters of description each (`describe` in §2.1 is appended to `show_module` as the catalogue line for the *offered* plans only, never the full catalogue). Descriptions are shapes, not lines.
+
+```jsonc
+{ "type": "function", "name": "show_module",
+  "description": "Put an activity on the child's screen. Prefer plan = one of the ids in [plans]. Use want only when no offered plan fits. Result is a fact: module=loading|shown|fallback|board_only|... Speak only about what the result says is on screen.",
+  "parameters": {
+    "type": "object", "additionalProperties": false,
+    "required": ["plan", "want"],
+    "properties": {
+      "plan": { "type": ["string", "null"], "pattern": "^p_[a-z0-9]{4,12}$" },
+      "want": { "type": ["object", "null"], "additionalProperties": false,
+        "required": ["intent", "mechanic", "probe"],
+        "properties": {
+          "intent":   { "type": "string", "enum": ["show", "explain", "practice", "probe", "recite", "hook"] },
+          "mechanic": { "type": ["string", "null"], "enum": ["manipulate","compare","build","sort","match","sequence","label","measure","predict_observe","explore", null] },
+          "probe":    { "type": ["string", "null"], "enum": ["predict","contrast","translate","diagnose","spot_error","construct","estimate","classify","sequence","explain", null] } } } } } }
+
+{ "type": "function", "name": "set_module_param",
+  "description": "Move one control on the activity yourself (a demonstration). name must be one of the module's listed params. The result says what was applied; narrate only the applied value.",
+  "parameters": {
+    "type": "object", "additionalProperties": false,
+    "required": ["mid", "name", "value"],
+    "properties": {
+      "mid":   { "type": "string", "pattern": "^m_[a-z0-9]{1,12}$" },
+      "name":  { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,23}$" },
+      "value": { "type": ["number", "string", "boolean"], "maxLength": 16 } } } }
+```
+
+The **offered plans** enter the instructions as a fact line, last in the prompt (position is mechanism), e.g. `[plans] p_7k2q=fractions@1 stage=pictorial probe=contrast | p_9xa1=number-line@1 stage=pictorial`. A mounted module adds `[mod m_12 fractions@1] params=denominator,numerator,parts` from the manifest's `llmParams`, so `set_module_param.name` has a closed list in context even though the schema cannot enumerate it per engine.
+
+**Tool results** (`function_call_output.output`, then `response.create` so the preamble continues) are one JSON object with closed enums only:
+
+```ts
+export type ModuleFact = "loading" | "shown" | "fallback" | "board_only" | "replaced" | "withdrawn" | "paused" | "lost"
+  | "expired" | "applied" | "clamped" | "unsupported" | "rejected";
+export type ModuleReason = "ready_timeout" | "fatal_error" | "state_diverged" | "safety" | "superseded" | "expired"
+  | "sig_invalid" | "no_pong" | "deadline" | "denylisted" | "bad_args" | "unknown_plan" | "unknown_param" | "not_mounted" | "rate";
+export interface ToolResult {
+  ok: boolean; module: ModuleFact; reason: ModuleReason | null;
+  mid: string | null; engine: EngineId | "board" | null;
+  applied: Prim | null;                 // set_module_param only: the value the engine acked (clamped or exact)
+}
+// show_module, plan cached        → {ok:true,  module:"shown",   reason:null, mid:"m_12", engine:"fractions@1", applied:null}  (after `ready`, ≤ 300 ms)
+// show_module, needs a fill       → {ok:true,  module:"loading", reason:null, mid:null,   engine:null,          applied:null}  (immediately; the outcome arrives later as a fold line)
+// set_module_param clamped         → {ok:true,  module:"clamped", reason:null, mid:"m_12", engine:"fractions@1", applied:12}
+// set_module_param on a lacking cap→ {ok:false, module:"unsupported", reason:"unknown_param", …}   (§4.3: she never narrates a change that did not happen)
+```
+
+Later outcomes reach the teacher through the observer fold lane (§5.1) as one line, `[mod m_12 fractions@1] module=fallback reason=ready_timeout now=number-line@1`, or a milestone when the outcome needs her to change what she is saying (`withdrawn`, `lost`, `board_only` after she announced a module).
+
+The tool call is turned into a request by the server, never by the client: the client forwards `{call_id, name, arguments}` raw to `POST /api/lesson/:id/tool` and replies to the realtime session with what the server returns. `want` becomes a `ModuleRequest` with `deadlineMs = liveDeadlineMs`, `prefetch:false`, and the child fields from the learner model (the model cannot set them).
+
+#### 1.6.3 Host state machine (`src/modules/plan-runner.ts`, a pure reducer `step(state, event) → {state, effects[]}`)
+
+```ts
+export type HostModuleState =
+  | "idle" | "fetching" /* specRef or assets */ | "verifying" /* sig */ | "mounting" /* init posted, waiting ready */
+  | "veiled"   /* ready, safety:"pending": frozen and covered by the host veil */
+  | "frozen"   /* ready, visible, frozen until your_turn */
+  | "live" | "swapping" /* superseded, waiting for a break */ | "falling_back" | "board" | "torn_down";
+```
+
+| # | trigger (state) | host does | teacher is told (fact) | evidence / server |
+|---|---|---|---|---|
+| S0 | `module_plan{show:true}` arrives (idle) | parse (§1.6.6); `expires_at ≤ now` → drop. Fetch `specRef`/assets from device cache, else server | nothing yet (the tool result already said `loading` or `shown`) | — |
+| S1 | sig check fails, or `sha256(canonical) ≠ sceneHash`, or `validatorVersion` not in the bundle's accepted set (verifying) | never mount; go to `fallback` (each hop is verified the same way) | `fallback reason=sig_invalid` | incident `plan_sig_invalid`, severity high |
+| S2 | **`ready` not received within 8000 ms** of `init` (mounting) | kill the iframe (`teardown`, then remove after 500 ms regardless of `bye`); count against `engine@ver`; at `denylistAfter` (2) the engine is denied for the session and the router is told; mount `plan.fallback` **only if** `now + fallback's expected mount time ≤ request deadline + 8 s`, else `board_only` | `fallback reason=ready_timeout now=<engine>` or `board_only reason=ready_timeout` | `module_status{fact, reason}`; harness ticket (V1/V15 regressions show here first) |
+| S3 | `error{fatal:true}` **before** `ready` (mounting), or `no_pong` | as S2 | `fallback reason=fatal_error` (or `no_pong`) | as S2 |
+| S4 | `error{fatal:true}` or `no_pong` **after** `ready` (frozen/live) | teardown. Answers already host-graded stay evidence; nothing from the module after the last good `state` counts. **No automatic swap to another module mid-task** if the child has acted on this mount: show `board_only` with the same item (the child's work context is kept on the board), and the Director chooses the next move | milestone: `lost reason=fatal_error evidence_kept=<n>` | denylist rule as S2 |
+| S5 | **`state_diverged`** (host `grade()` disagrees with the module's `claim`, or a `restore` hash mismatch) (frozen/live) | `freeze{on:true}`; evidence from this mount after the divergence point = none (§4.5); request `snapshot`, then one `restore` from the last host-confirmed snapshot. A second divergence on the same mount → teardown → `board_only` | first: fold `paused reason=state_diverged`; second: milestone `board_only reason=state_diverged`. The teacher never states right/wrong from a module claim; she uses the host verdict only | incident with `sceneHash`; three mounts of one `sceneHash` diverging in 24 h → server `module_revoke{reason:"validator_bug", scope:"global"}` [U threshold] |
+| S6 | **Content Safety `block`** arrives after mount: `module_safety{status:"block"}` or `module_revoke{reason:"safety"}` for the mounted `sceneHash` (veiled/frozen/live) | within one frame: veil up (opaque host overlay, the frame keeps no visible pixels), `freeze`, then teardown. Purge the device-cache entry and every entry with that `sceneHash`. Mount `fallback` only if its `sceneHash` differs and its `safety` is `pass`; else `board_only` | milestone: `withdrawn reason=safety` (the shape note says: do not refer to the withdrawn content; carry on with the item) | server: revoke cache entries globally, incident for review, `gap{why:"safety_blocked"}` |
+| S6a | `safety:"pending"` plan reaches `ready` (mounting → veiled) | stay veiled and frozen; `module_safety{pass}` → `frozen` (visible). No verdict by `ready + 2 s` → treat as `block` | `loading` until then | — |
+| S7 | **superseded**: a new `module_plan` with `supersedes = current plan_id` | not yet mounted (fetching/verifying/mounting) → cancel silently, mount the new one. Frozen/veiled → teardown, mount the new one. **Live and the child is mid-interaction** (a child act < 3 s ago, or an open probe) → `swapping`: wait for the next `answer`, `goal_met`, idle or 5 s, then swap. `priority:"safeguard"` → immediate teardown in every state, no new mount (`LockPanel` owns the screen). More than 2 swaps in a minute → the extra one is deferred to the next break | only if the teacher had already announced the old module: fold `replaced reason=superseded now=<engine>` | late messages from the old `mid` are dropped by the §4.3 `mid` check |
+| S8 | a `module_plan` whose `expires_at` passes before `ready` | abandon; do not fall back (the Director has moved on) | `expired reason=expired` if a tool call is waiting on it | `module_status` |
+| S9 | `fallback` exhausted or `board_only` reached | render `board.itemRef` (+ `pictureRef`) through `board@1`; log the `gap` ticket if present | `board_only reason=<last reason>` | gap ticket `{topic, mechanic, band, why}` |
+
+Invariants (tested): (a) every path terminates in `live`, `board` or `torn_down` within `deadlineMs + 2 × readyTimeoutMs`; (b) at most one iframe per stage slot exists at any time; (c) a fact goes to the teacher at most once per `(plan_id, fact)`; (d) nothing from a module whose plan failed S1 is ever posted to a frame; (e) no transition emits prose.
+
+#### 1.6.4 Fallback construction (server)
+
+The router builds the chain at plan time: the primary, then the next cheaper candidate from the §1.2 ordered list **that is already validated and cached** (a kit preset or lib asset; never a live fill and never T2b), then `board_only`. The fallback must cover the same `skill` and `item`, and must not reuse the primary's `sceneHash` or `engine@ver` (a timeout is usually the engine). If no validated fallback exists, the chain is `primary → board_only`. A plan whose chain fails `fallbackDepth` or does not end in `board_only` is a server bug and fails the parser.
+
+#### 1.6.5 Prefetch-cache invalidation when the learner model moves
+
+The plan is a *decision* bound to a learner state; the spec and assets are *content*. Invalidation drops decisions, never content: blobs stay in the content-addressed store under their hash and are re-bound when a new plan names them.
+
+| learner-model change (for the plan's `basis.skill`) | invalidates | does not invalidate |
+|---|---|---|
+| `stage` promote/demote (fading machine, M6) | every cached plan whose `basis.stage ≠ new stage` | the mounted module: the Director may send `set_stage` if the engine has the cap, else the change applies to the next mount |
+| `activeMisconceptions` gains or loses an id | plans whose `basis.miscSet ≠ new miscSet` (distractors and the probe were seeded from it, M9) | plans with no probe (`want.probe` absent) whose key `miscSet` is empty |
+| mastery crosses `learned_today` (enables `spot_error`, wrappers, M7–M8) | plans with `intent ∈ {practice, probe}` | `show` / `explain` plans |
+| `priorKnowledge` flips (M5) | all plans for the skill (worked-first vs attempt-first) | — |
+| band or lang change; `validatorVersion` bump | all plans (`skill:"*"`) | content blobs |
+
+Mechanics: the learner model increments `lm_seq` on every change above and the server sends `prefetch_invalidate{skill, lm_seq, reason}` **before** the next `module_plan` it builds from the new state. The device cache drops matching plans whose `basis.lm_seq < lm_seq`; the server cache (keyed by `CacheKey`, which now carries `stage` and `miscSet`) misses naturally. A `module_plan` arriving with `basis.lm_seq` older than the newest `prefetch_invalidate` seen for that skill is cached as stale and **never shown** (it raced the invalidation). A tool call naming an invalidated `plan_id` gets `{ok:false, module:"rejected", reason:"unknown_plan"}`, and the next `[plans]` line no longer offers it.
+
+#### 1.6.6 Parser and reducer test cases (`src/modules/plan-protocol.test.ts`, run by `npm test`)
+
+| # | input | expected |
+|---|---|---|
+| P1 | `show_module` args `{"plan":"p_7k2q","want":null}`, plan offered and fresh | `{kind:"plan", plan_id:"p_7k2q"}` |
+| P2 | `{"plan":null,"want":{"intent":"probe","mechanic":null,"probe":"contrast"}}` | `{kind:"want"}` → `ModuleRequest{intent:"probe", want.probe:"contrast", deadlineMs:3000, prefetch:false}` |
+| P3 | both `plan` and `want` non-null | reject `bad_args` (exactly one) |
+| P4 | both null, or `{}` (missing required keys) | reject `bad_args` |
+| P5 | `{"plan":"P_7K2Q","want":null}` (case), `"p_7k"` (too short), `"p_7k2q;drop"` | reject `bad_args` |
+| P6 | `want.mechanic:"dance"`, or an extra key `"engine":"x@1"` | reject `bad_args` (closed enum; `additionalProperties:false` enforced by the parser, not trusted to decoding) |
+| P7 | arguments are not JSON (`"{plan: p_1}"`), > 1 KB, or a JSON string of an object | reject `bad_args`; no retry by the client |
+| P8 | `{"plan":"p_aaaa1111","want":null}` not in the current `[plans]` or invalidated | `{ok:false, module:"rejected", reason:"unknown_plan"}` |
+| P9 | `set_module_param {"mid":"m_12","name":"denominator","value":24}`, engine clamps to 12 | `{ok:true, module:"clamped", applied:12}` |
+| P10 | `set_module_param` `name` not in `llmParams`, or `value` an array/object/`NaN`/string > 16 | `{ok:false, module:"unsupported", reason:"unknown_param"}` / `bad_args` |
+| P11 | `set_module_param` on a `mid` not mounted or `swapping` | `{ok:false, module:"rejected", reason:"not_mounted"}` |
+| P12 | `module_plan` with `fallback` depth 3, or a chain not ending in `board_only` | parse error `fallback_chain` |
+| P13 | `module_plan` with a T2b plan as a fallback hop | parse error `fallback_tier` |
+| P14 | `FramePlan` with both `spec` and `specRef` null, or both set, or inline `spec` > 5120 B | parse error `spec_ref` |
+| P15 | `sig.validatorVersion ≠ key.validatorVersion`, `sceneHash` not `sha256:` + 64 hex, `alg ≠ "Ed25519"` | parse error `sig_shape` (the S1 cryptographic check runs after parse) |
+| P16 | `validatedBy` lacks `content_safety` while `safety:"pass"` | parse error `safety_claim` |
+| P17 | `expires_at ≤ issued_at`, or `expires_at − issued_at > prefetchTtlMs` | parse error `ttl` |
+| P18 | `supersedes` equals its own `plan.plan_id` | parse error `self_supersede` |
+| P19 | `key.miscSet` unsorted or duplicated | parse error `key_canonical` (cache keys must be canonical or exact-match caching splits) |
+| P20 | unknown `k`, `v ≠ 1`, message > 16 KB | drop, counted as `protocol` |
+| R1 | reducer: `mounting` + 8000 ms tick, fallback cached | → `mounting` (fallback hop), effects `[teardown(old), mount(fallback), fact(fallback, ready_timeout)]` |
+| R2 | `mounting` + 8000 ms tick, fallback is `board_only` | → `board`, effects `[teardown, board(itemRef), fact(board_only, ready_timeout), gap?]` |
+| R3 | `live` (child act 1 s ago) + `module_plan{supersedes}` | → `swapping`; after `answer` → `mounting` (new); no fact unless announced |
+| R4 | `live` + `module_plan{priority:"safeguard"}` | → `torn_down` immediately, no new mount |
+| R5 | `veiled` + `module_safety{block}` | → fallback or `board`; effects start with `veil` then `freeze`; fact `withdrawn reason=safety` |
+| R6 | `live` + `error{state_diverged}` twice | first → `live` after `restore` (fact `paused`); second → `board` (fact `board_only reason=state_diverged`) |
+| R7 | `live`, child acted, + `error{engine_crash, fatal:true}` | → `board` (no automatic module swap), fact `lost evidence_kept=n` |
+| R8 | second ready timeout for one `engine@ver` in a session | effect `denylist(engine@ver)`; a later plan for it → straight to its fallback, reason `denylisted` |
+| R9 | `prefetch_invalidate{skill:"frac.add", lm_seq:41, reason:"stage_change"}`, then a `module_plan` with `basis.lm_seq:40` for that skill | cached as stale, never shown |
+| R10 | the same fact for the same `plan_id` emitted twice | second suppressed (invariant c) |
+
+Build placement: these types and parsers are part of the Wave 0 `shared/bridge.ts` item (§9; +1.5 d [U]); the realtime tool registration and `/api/lesson/:id/tool` route land with "talk gate wired to the realtime session". The `module_status` stream is what the Wave 3 gate "live POE `show_module` → interactive ≤ 3 s" is measured from (`at` of the `shown` status minus the tool call's arrival).
+
+Sources for this section: OpenAI Realtime API reference, function tools in `session.tools` and the `function_call_output` + `response.create` flow (https://developers.openai.com/api/reference/resources/realtime; tech-and-market §1.7); Azure Realtime API reference, "follows the OpenAI Realtime API specification" with deployment-name deviations (https://learn.microsoft.com/en-us/azure/foundry/openai/realtime-audio-reference, updated 2026-06-05); internal §1.1–1.5, §3.2, §4.2–4.5, §5.3, genui-reliability (strict decoding measured on chat completions only).
 
 ---
 
@@ -1380,6 +1651,7 @@ Estimates are engineer-days for one engineer who knows the repo, excluding art a
 |---|---|---|
 | P0 isolation fixes (CSP header, Permissions-Policy, RTC deletion, caps, serve-through e2e, `classify.js` host-grading, `fraction-bars` axe) | 2 | sandbox §8 |
 | `shared/bridge.ts` v2.1 + hand-written parsers + v1 compatibility + `module-gate@1` | 3 | §4 |
+| plan protocol: `ModuleRequest`/`ModulePlan`/`module_plan` types + parsers, `plan-runner` reducer, `show_module`/`set_module_param` tools, P1–P20/R1–R10 tests (gap-fill GAP-2-module-plan-protocol) | 1.5 [U] | §1.6 |
 | `shared/engine-manifest.ts` + manifest generator (paramsJsonSchema from zod) + `grade/lint/solve/resolveParams` interfaces | 2 | §2.1 |
 | `observer@1` (ledger, coalescing, detectors, lanes) + `grader@1` | 3 | §5 |
 | talk gate wired to the realtime session | 3 | §5.4 |

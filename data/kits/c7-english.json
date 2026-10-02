@@ -5139,6 +5139,1292 @@
         "training for a school sports day race",
         "a mountaineering club poster"
       ]
+    },
+    {
+      "topicId": "c7-english-ch13-t01",
+      "topicType": "T2",
+      "skills": [
+        {
+          "id": "c7-english-ch13-t01-s1",
+          "title": "Follow a conversation and present its key information in their own words",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch13-t01-s2",
+          "title": "Report statements and questions in indirect speech (pronoun shift, tense backshift, 'asked if/why')",
+          "prereqSkillIds": [
+            "c7-english-ch13-t01-s1"
+          ]
+        },
+        {
+          "id": "c7-english-ch13-t01-s3",
+          "title": "Understand and use words of service and remembrance in context (homage, sacrifice, memorial, valour, comrade, martyr)",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch13-t01-s4",
+          "title": "Ask respectful interview questions of an elder or a veteran",
+          "prereqSkillIds": []
+        }
+      ],
+      "expectations": [
+        "Says that people stand silent at a war memorial to honour soldiers who gave their lives",
+        "Retells Grandpa's information in their own words (he served in the mountains for twenty years and is proud of his comrades)",
+        "Explains 'homage' and 'sacrifice' in simple words",
+        "Changes a direct statement into indirect speech with the right pronoun and tense",
+        "Asks a polite, open question they would put to a soldier"
+      ],
+      "misconceptions": [
+        {
+          "id": "c7-english-ch13-t01-m-pronoun-no-shift",
+          "belief": "In reported speech, the speaker's words are copied exactly, so 'I' stays 'I'",
+          "signs": [
+            "Says 'Grandpa said that I am proud of my comrades'",
+            "Keeps 'my' and 'we' from the original words",
+            "Cannot tell who 'I' refers to after reporting"
+          ],
+          "diagnostic": {
+            "prompt_en": "Grandpa said, 'I am proud of my comrades.' Which report is correct: 'Grandpa said that he was proud of his comrades' or 'Grandpa said that I am proud of my comrades'?",
+            "prompt_hi": "Grandpa ne kaha 'I am proud...'. Report karte waqt 'I' kaun ban jaata hai?",
+            "options": [
+              {
+                "text": "Grandpa said that he was proud of his comrades.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "Grandpa said that I am proud of my comrades.",
+                "misconceptionId": "c7-english-ch13-t01-m-pronoun-no-shift",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "Two speech bubbles: the original bubble belongs to Grandpa; the reporting bubble belongs to the child, so Grandpa's 'I' becomes 'he' and 'my' becomes 'his' when it moves across",
+            "moveShape": "Child points to who is speaking in each bubble, then moves each pronoun card across and changes it; teacher asks 'who is I now?'"
+          }
+        },
+        {
+          "id": "c7-english-ch13-t01-m-reported-question-order",
+          "belief": "A reported question keeps the question word order ('She asked why do we stand silent')",
+          "signs": [
+            "Says 'Priya asked was he a soldier'",
+            "Says 'She asked why do we stand'",
+            "Keeps the question mark in a reported question"
+          ],
+          "diagnostic": {
+            "prompt_en": "Which is correct: 'Priya asked Grandpa if he had been a soldier' or 'Priya asked Grandpa was he a soldier'?",
+            "prompt_hi": "Sawaal ko report karte waqt word order kaisa hoga? Kaunsa sahi?",
+            "options": [
+              {
+                "text": "Priya asked Grandpa if he had been a soldier.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "Priya asked Grandpa was he a soldier.",
+                "misconceptionId": "c7-english-ch13-t01-m-reported-question-order",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A question card that 'flattens' when reported: the helper verb slides back after the subject, 'if' or the wh-word stays in front, and the question mark becomes a full stop",
+            "moveShape": "Child physically slides the helper card behind the subject, adds 'if' for yes/no questions, and reads the new statement-order sentence"
+          }
+        },
+        {
+          "id": "c7-english-ch13-t01-m-war-is-glory",
+          "belief": "Remembering soldiers is about the excitement of fighting and weapons, not about service and sacrifice",
+          "signs": [
+            "Says the memorial is 'to show our guns'",
+            "Talks only about battles and winning",
+            "Does not mention the people who died or their families"
+          ],
+          "diagnostic": {
+            "prompt_en": "Why do people stand silent at a war memorial?",
+            "prompt_hi": "War memorial par log chup-chaap kyun khade hote hain?",
+            "options": [
+              {
+                "text": "To honour soldiers who gave their lives to protect others",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "To celebrate fighting and weapons",
+                "misconceptionId": "c7-english-ch13-t01-m-war-is-glory",
+                "correct": false
+              },
+              {
+                "text": "Because talking is not allowed in parks",
+                "misconceptionId": "c7-english-ch13-t01-m-war-is-glory",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A memorial picture with names carved on a wall and families placing flowers, beside a picture of a soldier helping in a flood rescue",
+            "moveShape": "Child describes who the names belong to and who might miss them; teacher asks what 'service' means beyond fighting"
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "c7-english-ch13-t01-i01",
+          "skillId": "c7-english-ch13-t01-s1",
+          "kind": "retrieval",
+          "difficulty": 1,
+          "prompt_en": "Read: 'PRIYA: Grandpa, why do we stand silent at the war memorial? GRANDPA: To pay homage to the soldiers who gave their lives for us. PRIYA: Were you a soldier too? GRANDPA: Yes. I served in the mountains for twenty years. I am proud of my comrades.' Why do people stand silent at the war memorial, according to Grandpa?",
+          "prompt_hi": "Dialogue suno. Grandpa ke hisaab se log memorial par chup kyun khade hote hain?",
+          "answer": "To pay homage to the soldiers who gave their lives for us",
+          "acceptable": [
+            "to pay homage to soldiers",
+            "to honour soldiers who died for us",
+            "to respect the soldiers who gave their lives"
+          ],
+          "hints": [
+            "Listen to Grandpa's first answer.",
+            "It begins 'To pay...'.",
+            "To pay ___ to the soldiers.",
+            "To pay homage to the soldiers who gave their lives for us."
+          ],
+          "targetsMisconception": "c7-english-ch13-t01-m-war-is-glory"
+        },
+        {
+          "id": "c7-english-ch13-t01-i02",
+          "skillId": "c7-english-ch13-t01-s1",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Read: 'PRIYA: Grandpa, why do we stand silent at the war memorial? GRANDPA: To pay homage to the soldiers who gave their lives for us. PRIYA: Were you a soldier too? GRANDPA: Yes. I served in the mountains for twenty years. I am proud of my comrades.' Tell what you learnt about Grandpa in your own words, in one sentence.",
+          "prompt_hi": "Grandpa ke baare mein jo pata chala, apne shabdon mein ek sentence mein batao.",
+          "answer": "Grandpa served as a soldier in the mountains for twenty years and is proud of his comrades",
+          "acceptable": [
+            "he was a soldier for twenty years",
+            "he served in the mountains for twenty years"
+          ],
+          "hints": [
+            "What was Grandpa's job?",
+            "Where, and for how long?",
+            "Grandpa served in the ___ for ___ years.",
+            "He served in the mountains for twenty years; he is proud of his comrades."
+          ]
+        },
+        {
+          "id": "c7-english-ch13-t01-i03",
+          "skillId": "c7-english-ch13-t01-s3",
+          "kind": "retrieval",
+          "difficulty": 2,
+          "prompt_en": "What does 'homage' mean in 'to pay homage to the soldiers'?",
+          "prompt_hi": "'homage' ka matlab kya hai?",
+          "answer": "Special respect or honour shown to someone",
+          "acceptable": [
+            "respect",
+            "honour",
+            "showing great respect",
+            "paying respect"
+          ],
+          "hints": [
+            "Why do people stand silent?",
+            "Think of 'shraddhanjali'.",
+            "Homage means showing great ___.",
+            "Homage means special respect or honour."
+          ]
+        },
+        {
+          "id": "c7-english-ch13-t01-i04",
+          "skillId": "c7-english-ch13-t01-s2",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Change into reported speech: Grandpa said, 'I am proud of my comrades.'",
+          "prompt_hi": "Indirect speech mein badlo: Grandpa said, 'I am proud of my comrades.'",
+          "answer": "Grandpa said that he was proud of his comrades.",
+          "acceptable": [
+            "Grandpa said that he was proud of his comrades.",
+            "Grandpa said he was proud of his comrades.",
+            "Grandpa said that he is proud of his comrades."
+          ],
+          "hints": [
+            "Who is 'I' in Grandpa's words?",
+            "'I' and 'my' change; 'am' steps back.",
+            "Grandpa said that ___ was proud of ___ comrades.",
+            "Grandpa said that he was proud of his comrades."
+          ],
+          "targetsMisconception": "c7-english-ch13-t01-m-pronoun-no-shift"
+        },
+        {
+          "id": "c7-english-ch13-t01-i05",
+          "skillId": "c7-english-ch13-t01-s2",
+          "kind": "error_spot",
+          "difficulty": 2,
+          "prompt_en": "Find the mistake: 'Grandpa said that I served in the mountains.'",
+          "prompt_hi": "Galti dhoondho: 'Grandpa said that I served in the mountains.'",
+          "answer": "Grandpa said that he had served in the mountains.",
+          "acceptable": [
+            "Grandpa said that he had served in the mountains.",
+            "Grandpa said that he served in the mountains.",
+            "I should be he"
+          ],
+          "hints": [
+            "Who served in the mountains?",
+            "Does 'I' still mean Grandpa when you report it?",
+            "Grandpa said that ___ had served...",
+            "'I' should be 'he': Grandpa said that he had served in the mountains."
+          ],
+          "targetsMisconception": "c7-english-ch13-t01-m-pronoun-no-shift"
+        },
+        {
+          "id": "c7-english-ch13-t01-i06",
+          "skillId": "c7-english-ch13-t01-s2",
+          "kind": "contrast",
+          "difficulty": 3,
+          "prompt_en": "Which is correct: 'Priya asked Grandpa if he had been a soldier' or 'Priya asked Grandpa was he a soldier'?",
+          "prompt_hi": "Report kiya hua sawaal — kaunsa sahi hai?",
+          "answer": "Priya asked Grandpa if he had been a soldier.",
+          "acceptable": [
+            "the first one",
+            "Priya asked Grandpa if he had been a soldier.",
+            "Priya asked Grandpa whether he had been a soldier."
+          ],
+          "hints": [
+            "Is a reported question still a question?",
+            "For yes/no questions we add a joining word.",
+            "Priya asked Grandpa ___ he had been a soldier.",
+            "The first: use 'if' and statement order."
+          ],
+          "targetsMisconception": "c7-english-ch13-t01-m-reported-question-order"
+        },
+        {
+          "id": "c7-english-ch13-t01-i07",
+          "skillId": "c7-english-ch13-t01-s2",
+          "kind": "near_transfer",
+          "difficulty": 4,
+          "prompt_en": "Report Priya's question: Priya asked, 'Why do we stand silent at the memorial?'",
+          "prompt_hi": "Priya ka sawaal report karo: 'Why do we stand silent at the memorial?'",
+          "answer": "Priya asked why they stood silent at the memorial.",
+          "acceptable": [
+            "Priya asked why they stood silent at the memorial.",
+            "Priya asked why we stood silent at the memorial.",
+            "Priya asked why people stood silent at the memorial."
+          ],
+          "hints": [
+            "Keep 'why', but is it still a question?",
+            "Drop 'do'; put the subject before the verb, in the past.",
+            "Priya asked why they ___ silent.",
+            "Priya asked why they stood silent at the memorial."
+          ],
+          "targetsMisconception": "c7-english-ch13-t01-m-reported-question-order"
+        },
+        {
+          "id": "c7-english-ch13-t01-i08",
+          "skillId": "c7-english-ch13-t01-s1",
+          "kind": "why",
+          "difficulty": 3,
+          "prompt_en": "Read: 'PRIYA: Grandpa, why do we stand silent at the war memorial? GRANDPA: To pay homage to the soldiers who gave their lives for us. PRIYA: Were you a soldier too? GRANDPA: Yes. I served in the mountains for twenty years. I am proud of my comrades.' Why do you think Grandpa says he is proud of his comrades, rather than proud of himself?",
+          "prompt_hi": "Grandpa apne baare mein nahi, apne saathiyon par garv kyun karte hain?",
+          "answer": "Soldiers depend on each other as a team, and he is humble; he honours those who served and gave their lives with him",
+          "acceptable": [
+            "soldiers work as a team",
+            "he is humble",
+            "he respects the soldiers who died",
+            "he values his friends' sacrifice"
+          ],
+          "hints": [
+            "Who did Grandpa serve with?",
+            "Do soldiers work alone?",
+            "Soldiers depend on each other as a ___.",
+            "Soldiers are a team, and he humbly honours his comrades."
+          ],
+          "targetsMisconception": "c7-english-ch13-t01-m-war-is-glory"
+        },
+        {
+          "id": "c7-english-ch13-t01-i09",
+          "skillId": "c7-english-ch13-t01-s3",
+          "kind": "translate_rep",
+          "difficulty": 2,
+          "prompt_en": "Give the English words for 'balidaan' and 'veerta'.",
+          "prompt_hi": "'balidaan' aur 'veerta' ko English mein kya kehte hain?",
+          "answer": "sacrifice and bravery (valour)",
+          "acceptable": [
+            "sacrifice, bravery",
+            "sacrifice and valour",
+            "sacrifice, courage",
+            "sacrifice and courage"
+          ],
+          "hints": [
+            "'Balidaan' is giving up something precious.",
+            "'Veerta' is being brave.",
+            "s___ and b___",
+            "Sacrifice and bravery (or valour)."
+          ]
+        },
+        {
+          "id": "c7-english-ch13-t01-i10",
+          "skillId": "c7-english-ch13-t01-s3",
+          "kind": "near_transfer",
+          "difficulty": 3,
+          "prompt_en": "Use the word 'sacrifice' in a sentence of your own.",
+          "prompt_hi": "'sacrifice' word use karke apna ek sentence banao.",
+          "answer": "Any correct sentence, for example: 'Soldiers sacrifice their comfort to keep us safe.'",
+          "acceptable": [
+            "Soldiers sacrifice a lot for us.",
+            "My mother made a sacrifice for my studies.",
+            "We remember the sacrifice of our soldiers.",
+            "Soldiers sacrifice time with their families."
+          ],
+          "hints": [
+            "What do soldiers give up?",
+            "'Sacrifice' can be a noun or a verb.",
+            "Soldiers sacrifice their ___ to keep us safe.",
+            "For example: Soldiers sacrifice their comfort to keep us safe."
+          ]
+        },
+        {
+          "id": "c7-english-ch13-t01-i11",
+          "skillId": "c7-english-ch13-t01-s4",
+          "kind": "predict",
+          "difficulty": 2,
+          "prompt_en": "Read: 'PRIYA: Grandpa, why do we stand silent at the war memorial? GRANDPA: To pay homage to the soldiers who gave their lives for us. PRIYA: Were you a soldier too? GRANDPA: Yes. I served in the mountains for twenty years. I am proud of my comrades.' What might Priya ask Grandpa next?",
+          "prompt_hi": "Priya Grandpa se aage kya poochh sakti hai?",
+          "answer": "A question about his life as a soldier, such as what life was like in the mountains or whether he was ever afraid",
+          "acceptable": [
+            "what was life like in the mountains",
+            "were you ever afraid",
+            "what did you miss most",
+            "tell me about your comrades"
+          ],
+          "hints": [
+            "What has she just found out?",
+            "What would you want to know?",
+            "She might ask what ___ was like in the mountains.",
+            "She might ask what life was like in the mountains."
+          ]
+        },
+        {
+          "id": "c7-english-ch13-t01-i12",
+          "skillId": "c7-english-ch13-t01-s4",
+          "kind": "practice",
+          "difficulty": 3,
+          "prompt_en": "Make this a polite interview question for a retired soldier: 'Tell me about the mountains.'",
+          "prompt_hi": "Isko ek retired soldier ke liye polite sawaal banao: 'Tell me about the mountains.'",
+          "answer": "Could you please tell me about your life in the mountains?",
+          "acceptable": [
+            "Could you please tell me about the mountains?",
+            "Could you tell me about your time in the mountains?",
+            "Would you please tell me about the mountains?",
+            "May I ask what the mountains were like?"
+          ],
+          "hints": [
+            "Is it a command or a question?",
+            "Start with 'Could you please...'",
+            "Could you please ___ me about the mountains?",
+            "Could you please tell me about your life in the mountains?"
+          ]
+        },
+        {
+          "id": "c7-english-ch13-t01-i13",
+          "skillId": "c7-english-ch13-t01-s1",
+          "kind": "teachback",
+          "difficulty": 4,
+          "prompt_en": "Explain to your younger sibling why we honour soldiers at a war memorial.",
+          "prompt_hi": "Chhote bhai-behen ko samjhao — hum war memorial par sainikon ko samman kyun dete hain?",
+          "answer": "Soldiers serve far from home and some give their lives to keep us safe; we stand silent to remember their sacrifice and show our thanks",
+          "acceptable": [
+            "to remember their sacrifice",
+            "they protect us",
+            "to thank soldiers who died for us",
+            "to show respect for their service"
+          ],
+          "hints": [
+            "What do soldiers do for the country?",
+            "What did some of them give?",
+            "We stand silent to ___ their sacrifice.",
+            "They protect us, some give their lives; we honour and remember them."
+          ],
+          "targetsMisconception": "c7-english-ch13-t01-m-war-is-glory"
+        }
+      ],
+      "workedExample": {
+        "problem": "Report: Priya said, 'I want to visit the memorial.'",
+        "steps": [
+          "Use a reporting verb: 'Priya said that...'.",
+          "Change the pronoun: 'I' (Priya) becomes 'she'.",
+          "Step the tense back: 'want' becomes 'wanted'.",
+          "Answer: Priya said that she wanted to visit the memorial."
+        ],
+        "fadedVersion": [
+          "Use a reporting verb: 'Priya ___ that...'.",
+          "Change the pronoun: 'I' becomes '___'.",
+          "Step the tense back: 'want' becomes '___'.",
+          "Answer: Priya said that ___ ___ to visit the memorial."
+        ]
+      },
+      "formats": {
+        "primary": "F4",
+        "secondary": [
+          "F1",
+          "F2",
+          "F7"
+        ],
+        "engineHints": [
+          "role-play",
+          "sentence-scramble",
+          "read-along",
+          "story-sequencing"
+        ]
+      },
+      "interestContexts": [
+        "Republic Day parade on TV",
+        "the National War Memorial in Delhi",
+        "a retired fauji neighbour",
+        "an army band at a school function",
+        "a cousin joining NCC",
+        "a flood rescue by soldiers in the news"
+      ]
+    },
+    {
+      "topicId": "c7-english-ch14-t01",
+      "topicType": "T3",
+      "skills": [
+        {
+          "id": "c7-english-ch14-t01-s1",
+          "title": "Explain the central idea of a poem of gratitude to soldiers",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch14-t01-s2",
+          "title": "Identify contrast and imagery (warm beds / cold snow) and what feeling they create",
+          "prereqSkillIds": [
+            "c7-english-ch14-t01-s1"
+          ]
+        },
+        {
+          "id": "c7-english-ch14-t01-s3",
+          "title": "Use the possessive apostrophe correctly (soldier's for one, soldiers' for many) and not for plain plurals",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch14-t01-s4",
+          "title": "Express gratitude in English (Thank you for + -ing; grateful to someone for something)",
+          "prereqSkillIds": []
+        }
+      ],
+      "expectations": [
+        "States the central idea: we live safely and celebrate because soldiers guard us, so we are grateful",
+        "Points out the contrast between 'we' (warm, celebrating) and 'you' (cold, guarding)",
+        "Says the poem speaks directly to the soldiers ('you'), like a thank-you letter",
+        "Uses 'grateful to... for...' or 'Thank you for ...-ing' correctly",
+        "Uses one possessive apostrophe correctly"
+      ],
+      "misconceptions": [
+        {
+          "id": "c7-english-ch14-t01-m-apostrophe-plural",
+          "belief": "Any word ending in -s needs an apostrophe ('The soldier's marched')",
+          "signs": [
+            "Writes 'soldier's' for plain plural soldiers",
+            "Writes 'soldiers's'",
+            "Cannot say what an apostrophe shows"
+          ],
+          "diagnostic": {
+            "prompt_en": "Which is correct: 'The soldiers marched in the parade' or 'The soldier's marched in the parade'?",
+            "prompt_hi": "Bahut saare sainik march kar rahe hain, kuch 'ka/ki' nahi hai. To apostrophe lagega kya?",
+            "options": [
+              {
+                "text": "The soldiers marched in the parade.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "The soldier's marched in the parade.",
+                "misconceptionId": "c7-english-ch14-t01-m-apostrophe-plural",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "An 'owner' test: an apostrophe appears only when something belongs to someone (the soldier's boots = the boots of the soldier); one owner 's, many owners s'",
+            "moveShape": "Child asks 'of whom?' for each -s word; if there is no owner, the apostrophe is removed; then places the apostrophe before or after s by counting owners"
+          }
+        },
+        {
+          "id": "c7-english-ch14-t01-m-grateful-prep",
+          "belief": "'Grateful' and 'thankful' take any preposition, as Hindi 'ke liye' covers both ('grateful for you for', 'thankful to your help')",
+          "signs": [
+            "Says 'We are grateful for the soldiers for their courage'",
+            "Says 'thankful to your help'",
+            "Says 'Thank you for guard us'"
+          ],
+          "diagnostic": {
+            "prompt_en": "Which is correct: 'We are grateful to our soldiers for their courage' or 'We are grateful for our soldiers to their courage'?",
+            "prompt_hi": "'grateful' ke saath — kisko 'to', kis cheez ke liye 'for'. Kaunsa sahi?",
+            "options": [
+              {
+                "text": "We are grateful to our soldiers for their courage.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "We are grateful for our soldiers to their courage.",
+                "misconceptionId": "c7-english-ch14-t01-m-grateful-prep",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A sentence frame with two slots: grateful TO [person] FOR [thing], with a person icon by 'to' and a gift icon by 'for'",
+            "moveShape": "Child drops the person card into the 'to' slot and the thing card into the 'for' slot, then says two thank-you sentences of their own"
+          }
+        },
+        {
+          "id": "c7-english-ch14-t01-m-description-only",
+          "belief": "The poem only describes what soldiers do; it carries no feeling or message",
+          "signs": [
+            "Lists 'snow, moonlight, guard' when asked for the idea",
+            "Misses the 'we' and 'you' contrast",
+            "Cannot say whom the poem speaks to"
+          ],
+          "diagnostic": {
+            "prompt_en": "In 'While we lie warm in our beds at night, / You stand on snow in the cold moonlight', what is the poet mainly expressing?",
+            "prompt_hi": "Kavi asal mein kya keh rahe hain — sirf barf ka varnan, ya kuch aur?",
+            "options": [
+              {
+                "text": "Gratitude to soldiers who face hardship so we can be safe",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "A description of snowy weather",
+                "misconceptionId": "c7-english-ch14-t01-m-description-only",
+                "correct": false
+              },
+              {
+                "text": "That soldiers like the cold",
+                "misconceptionId": "c7-english-ch14-t01-m-description-only",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A split picture: a warm home with a sleeping child on one side, a soldier in snow on the other, joined by the word 'because'",
+            "moveShape": "Child describes each half, then says the sentence that joins them with 'because'; teacher asks what feeling that 'because' should give us"
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "c7-english-ch14-t01-i01",
+          "skillId": "c7-english-ch14-t01-s1",
+          "kind": "retrieval",
+          "difficulty": 1,
+          "prompt_en": "Read: 'While we lie warm in our beds at night, / You stand on snow in the cold moonlight; / Our festivals glow, our kites fly free, / Because you guard our land and sea.' Where does the soldier stand while we sleep?",
+          "prompt_hi": "Kavita suno. Jab hum sote hain, sainik kahaan khade hote hain?",
+          "answer": "On snow in the cold moonlight",
+          "acceptable": [
+            "on snow",
+            "in the snow",
+            "on snow in the cold moonlight",
+            "in the cold moonlight"
+          ],
+          "hints": [
+            "Listen to line two.",
+            "It is cold and white.",
+            "You stand on ___ in the cold moonlight.",
+            "On snow in the cold moonlight."
+          ]
+        },
+        {
+          "id": "c7-english-ch14-t01-i02",
+          "skillId": "c7-english-ch14-t01-s2",
+          "kind": "why",
+          "difficulty": 3,
+          "prompt_en": "Read: 'While we lie warm in our beds at night, / You stand on snow in the cold moonlight; / Our festivals glow, our kites fly free, / Because you guard our land and sea.' Why does the poet place 'we lie warm' right next to 'you stand on snow'?",
+          "prompt_hi": "Kavi ne 'we lie warm' ke saath hi 'you stand on snow' kyun likha?",
+          "answer": "The contrast shows the hardship soldiers bear so that we can be comfortable and safe, which makes us feel grateful",
+          "acceptable": [
+            "to show the contrast",
+            "to show soldiers suffer so we are comfortable",
+            "to make us feel grateful",
+            "to compare our comfort with their hardship"
+          ],
+          "hints": [
+            "How are the two lines different?",
+            "Who is comfortable and who is not?",
+            "The two lines show a ___.",
+            "The contrast shows they bear hardship for our comfort, so we feel grateful."
+          ],
+          "targetsMisconception": "c7-english-ch14-t01-m-description-only"
+        },
+        {
+          "id": "c7-english-ch14-t01-i03",
+          "skillId": "c7-english-ch14-t01-s1",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Read: 'While we lie warm in our beds at night, / You stand on snow in the cold moonlight; / Our festivals glow, our kites fly free, / Because you guard our land and sea.' What is the central idea of this stanza?",
+          "prompt_hi": "Is stanza ka central idea kya hai?",
+          "answer": "We are safe and can celebrate because soldiers guard our country, so we owe them our gratitude",
+          "acceptable": [
+            "we are safe because soldiers guard us",
+            "gratitude to soldiers",
+            "soldiers protect us so we can celebrate"
+          ],
+          "hints": [
+            "Look at the word 'because' in the last line.",
+            "What do we get, and who gives it to us?",
+            "We are safe ___ soldiers guard us.",
+            "We are safe and free because soldiers guard us, so we are grateful."
+          ],
+          "targetsMisconception": "c7-english-ch14-t01-m-description-only"
+        },
+        {
+          "id": "c7-english-ch14-t01-i04",
+          "skillId": "c7-english-ch14-t01-s2",
+          "kind": "retrieval",
+          "difficulty": 1,
+          "prompt_en": "Which word in the stanza rhymes with 'night'?",
+          "prompt_hi": "'night' ke saath kaunsa word rhyme karta hai?",
+          "answer": "moonlight",
+          "acceptable": [
+            "moonlight"
+          ],
+          "hints": [
+            "Look at the end of line two.",
+            "Listen for -ight.",
+            "moon-___",
+            "'Moonlight' rhymes with 'night'."
+          ]
+        },
+        {
+          "id": "c7-english-ch14-t01-i05",
+          "skillId": "c7-english-ch14-t01-s3",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Add an apostrophe where needed: 'The soldiers boots were covered in snow.' (There is one soldier.)",
+          "prompt_hi": "Ek hi sainik hai. Apostrophe kahaan lagega: 'The soldiers boots...'?",
+          "answer": "The soldier's boots were covered in snow.",
+          "acceptable": [
+            "The soldier's boots were covered in snow.",
+            "soldier's"
+          ],
+          "hints": [
+            "Whose boots are they?",
+            "One owner: apostrophe before the s.",
+            "The soldier___ boots.",
+            "The soldier's boots: one soldier owns them."
+          ],
+          "targetsMisconception": "c7-english-ch14-t01-m-apostrophe-plural"
+        },
+        {
+          "id": "c7-english-ch14-t01-i06",
+          "skillId": "c7-english-ch14-t01-s3",
+          "kind": "contrast",
+          "difficulty": 3,
+          "prompt_en": "What is the difference between 'the soldier's tents' and 'the soldiers' tents'?",
+          "prompt_hi": "'soldier's tents' aur 'soldiers' tents' mein kya farak hai?",
+          "answer": "'The soldier's tents' belong to one soldier; 'the soldiers' tents' belong to many soldiers",
+          "acceptable": [
+            "one soldier and many soldiers",
+            "first is one soldier, second is many soldiers"
+          ],
+          "hints": [
+            "Where is the apostrophe in each?",
+            "Before s means one owner.",
+            "soldier's = ___ soldier, soldiers' = ___ soldiers.",
+            "The first is one soldier's tents; the second belongs to many soldiers."
+          ],
+          "targetsMisconception": "c7-english-ch14-t01-m-apostrophe-plural"
+        },
+        {
+          "id": "c7-english-ch14-t01-i07",
+          "skillId": "c7-english-ch14-t01-s3",
+          "kind": "error_spot",
+          "difficulty": 2,
+          "prompt_en": "Find the mistake: 'The soldier's marched proudly in the parade.'",
+          "prompt_hi": "Galti dhoondho: 'The soldier's marched...'",
+          "answer": "The soldiers marched proudly in the parade.",
+          "acceptable": [
+            "The soldiers marched proudly in the parade.",
+            "no apostrophe in soldiers",
+            "remove the apostrophe"
+          ],
+          "hints": [
+            "Does anything belong to the soldiers here?",
+            "No owner means no apostrophe.",
+            "The ___ marched proudly.",
+            "Remove the apostrophe: The soldiers marched proudly."
+          ],
+          "targetsMisconception": "c7-english-ch14-t01-m-apostrophe-plural"
+        },
+        {
+          "id": "c7-english-ch14-t01-i08",
+          "skillId": "c7-english-ch14-t01-s4",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Fill in the blanks: 'We are grateful ___ our soldiers ___ their courage.'",
+          "prompt_hi": "Khaali jagah: 'grateful ___ our soldiers ___ their courage.'",
+          "answer": "to, for",
+          "acceptable": [
+            "to, for",
+            "We are grateful to our soldiers for their courage."
+          ],
+          "hints": [
+            "Which blank is before a person?",
+            "Person takes one word, the reason takes another.",
+            "grateful ___ (person) ___ (reason).",
+            "Grateful to our soldiers for their courage."
+          ],
+          "targetsMisconception": "c7-english-ch14-t01-m-grateful-prep"
+        },
+        {
+          "id": "c7-english-ch14-t01-i09",
+          "skillId": "c7-english-ch14-t01-s4",
+          "kind": "error_spot",
+          "difficulty": 2,
+          "prompt_en": "Find the mistake: 'Thank you for guard our country.'",
+          "prompt_hi": "Galti dhoondho: 'Thank you for guard our country.'",
+          "answer": "Thank you for guarding our country.",
+          "acceptable": [
+            "Thank you for guarding our country.",
+            "guard should be guarding"
+          ],
+          "hints": [
+            "Look at the verb after 'for'.",
+            "After 'for', a verb takes -ing.",
+            "Thank you for guard___ our country.",
+            "'Guard' should be 'guarding'."
+          ],
+          "targetsMisconception": "c7-english-ch14-t01-m-grateful-prep"
+        },
+        {
+          "id": "c7-english-ch14-t01-i10",
+          "skillId": "c7-english-ch14-t01-s4",
+          "kind": "translate_rep",
+          "difficulty": 2,
+          "prompt_en": "Say in English: 'Hum aapke aabhaari hain.'",
+          "prompt_hi": "English mein bolo: 'Hum aapke aabhaari hain.'",
+          "answer": "We are grateful to you.",
+          "acceptable": [
+            "We are grateful to you.",
+            "We are thankful to you.",
+            "We are very grateful to you."
+          ],
+          "hints": [
+            "'Aabhaari' means thankful.",
+            "Remember the word before 'you'.",
+            "We are grateful ___ you.",
+            "We are grateful to you."
+          ],
+          "targetsMisconception": "c7-english-ch14-t01-m-grateful-prep"
+        },
+        {
+          "id": "c7-english-ch14-t01-i11",
+          "skillId": "c7-english-ch14-t01-s4",
+          "kind": "near_transfer",
+          "difficulty": 3,
+          "prompt_en": "Write a one-line thank-you message to a soldier, using 'Thank you for' and an -ing verb.",
+          "prompt_hi": "Ek sainik ke liye ek line ka thank-you message banao — 'Thank you for' ke saath -ing verb.",
+          "answer": "Any correct line, for example: 'Thank you for keeping us safe while we sleep.'",
+          "acceptable": [
+            "Thank you for keeping us safe.",
+            "Thank you for protecting our country.",
+            "Thank you for guarding our borders.",
+            "Thank you for standing in the cold for us."
+          ],
+          "hints": [
+            "What do soldiers do for us?",
+            "Use 'for' and a verb ending in -ing.",
+            "Thank you for ___ing us safe.",
+            "For example: Thank you for keeping us safe while we sleep."
+          ]
+        },
+        {
+          "id": "c7-english-ch14-t01-i12",
+          "skillId": "c7-english-ch14-t01-s1",
+          "kind": "predict",
+          "difficulty": 2,
+          "prompt_en": "If the poet wrote one more line to the soldiers, would it most likely sound angry, grateful or funny? Why?",
+          "prompt_hi": "Agar kavi ek line aur likhein, to woh gusse wali, shukriya wali ya mazaak wali hogi? Kyun?",
+          "answer": "Grateful, because the whole stanza thanks the soldiers for guarding us",
+          "acceptable": [
+            "grateful",
+            "it would be grateful",
+            "thankful"
+          ],
+          "hints": [
+            "What feeling runs through the stanza?",
+            "What does 'because you guard' tell us?",
+            "It would sound ___.",
+            "Grateful, because the stanza thanks soldiers for guarding us."
+          ]
+        },
+        {
+          "id": "c7-english-ch14-t01-i13",
+          "skillId": "c7-english-ch14-t01-s1",
+          "kind": "teachback",
+          "difficulty": 4,
+          "prompt_en": "Explain the poem 'My Dear Soldiers' to your younger sibling: who is the poem talking to, and what is it saying?",
+          "prompt_hi": "Chhote bhai-behen ko samjhao — 'My Dear Soldiers' kavita kisse baat kar rahi hai aur kya keh rahi hai?",
+          "answer": "It speaks directly to soldiers, thanking them: while we sleep and celebrate safely, they guard the country in hard conditions",
+          "acceptable": [
+            "it talks to soldiers and thanks them",
+            "we are safe because they guard us",
+            "it is a thank-you to soldiers"
+          ],
+          "hints": [
+            "Who is 'you' in the poem?",
+            "What do we do, and what do they do?",
+            "The poem is a ___ to soldiers.",
+            "It speaks to soldiers and thanks them for guarding us while we live safely."
+          ],
+          "targetsMisconception": "c7-english-ch14-t01-m-description-only"
+        }
+      ],
+      "workedExample": {
+        "problem": "Write a thank-you sentence: thank our nurses, for the reason 'they care for the sick'.",
+        "steps": [
+          "Choose the frame: 'We are grateful to [person] for [reason]'.",
+          "Person goes after 'to': 'to our nurses'.",
+          "Reason after 'for' becomes an -ing verb: 'for caring for the sick'.",
+          "Answer: We are grateful to our nurses for caring for the sick."
+        ],
+        "fadedVersion": [
+          "Choose the frame: 'We are grateful ___ [person] for [reason]'.",
+          "Person goes after 'to': 'to our ___'.",
+          "Reason after 'for' becomes an ___ verb.",
+          "Answer: We are grateful ___ our nurses ___ caring for the sick."
+        ]
+      },
+      "formats": {
+        "primary": "F1",
+        "secondary": [
+          "F5",
+          "F4",
+          "F7"
+        ],
+        "engineHints": [
+          "poem-beat",
+          "read-along",
+          "word-builder",
+          "sentence-scramble"
+        ]
+      },
+      "interestContexts": [
+        "Raksha Bandhan rakhis sent to soldiers",
+        "Independence Day at school",
+        "a letter to a soldier at Siachen",
+        "a Kargil Vijay Diwas assembly",
+        "an uncle in the Navy",
+        "a festival celebrated safely at home"
+      ]
+    },
+    {
+      "topicId": "c7-english-ch15-t01",
+      "topicType": "T3",
+      "skills": [
+        {
+          "id": "c7-english-ch15-t01-s1",
+          "title": "Describe a historical person's achievements and the events of her life in order",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch15-t01-s2",
+          "title": "Identify the values that guided her (courage, love of freedom, leadership, unity) with evidence",
+          "prereqSkillIds": [
+            "c7-english-ch15-t01-s1"
+          ]
+        },
+        {
+          "id": "c7-english-ch15-t01-s3",
+          "title": "Use relative pronouns who / which / that to add information (a queen who..., a port which...)",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch15-t01-s4",
+          "title": "Use the passive voice to describe historical events (The fort was defended by the queen)",
+          "prereqSkillIds": []
+        }
+      ],
+      "expectations": [
+        "Says Rani Abbakka ruled Ullal, a port town on the Karnataka coast, in the 1500s",
+        "Says she refused to pay tax to the Portuguese and fought them for many years",
+        "Names values (courage, love of freedom, leadership, unity) and backs one with an event",
+        "Refers to the queen correctly as 'she' throughout",
+        "Uses 'who' for a person and 'which' for a thing in a sentence about her"
+      ],
+      "misconceptions": [
+        {
+          "id": "c7-english-ch15-t01-m-which-for-people",
+          "belief": "'Which' can be used for people as well as things ('the queen which ruled Ullal')",
+          "signs": [
+            "Says 'the queen which fought'",
+            "Says 'soldiers which helped her'",
+            "Uses 'who' for a town or ship"
+          ],
+          "diagnostic": {
+            "prompt_en": "Which is correct: 'Rani Abbakka was a queen who fought the Portuguese' or 'Rani Abbakka was a queen which fought the Portuguese'?",
+            "prompt_hi": "Insaan ke liye 'who' ya 'which'? Kaunsa sahi hai?",
+            "options": [
+              {
+                "text": "Rani Abbakka was a queen who fought the Portuguese.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "Rani Abbakka was a queen which fought the Portuguese.",
+                "misconceptionId": "c7-english-ch15-t01-m-which-for-people",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "Two hooks: a person-shaped 'who' hook and a box-shaped 'which' hook; each noun card is hung on the hook that fits it ('that' fits both)",
+            "moveShape": "Child hangs queen, port, soldiers, ships on the right hooks, then joins two short sentences using the hook word"
+          }
+        },
+        {
+          "id": "c7-english-ch15-t01-m-he-she-mix",
+          "belief": "'He' can be used for any important person or ruler, as Hindi 'unhone' and 'woh' do not show gender",
+          "signs": [
+            "Says 'Rani Abbakka was brave. He refused to pay.'",
+            "Switches between he and she for the queen",
+            "Uses 'his' for the queen's army"
+          ],
+          "diagnostic": {
+            "prompt_en": "Which is correct: 'Rani Abbakka refused to pay tax. She fought bravely.' or 'Rani Abbakka refused to pay tax. He fought bravely.'?",
+            "prompt_hi": "Hindi mein 'unhone' sabke liye, par English mein Rani ke liye 'he' ya 'she'?",
+            "options": [
+              {
+                "text": "Rani Abbakka refused to pay tax. She fought bravely.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "Rani Abbakka refused to pay tax. He fought bravely.",
+                "misconceptionId": "c7-english-ch15-t01-m-he-she-mix",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A pronoun chain: the queen's picture at the start, and every later she/her/hers linked back to it with a coloured thread",
+            "moveShape": "Child retells three events and taps the thread back to the queen's picture every time they say a pronoun, correcting any 'he'"
+          }
+        },
+        {
+          "id": "c7-english-ch15-t01-m-passive-base",
+          "belief": "The passive is 'was' plus the plain verb ('The fort was defend by the queen')",
+          "signs": [
+            "Says 'The town was protect by her army'",
+            "Says 'The tax was refuse'",
+            "Drops the -ed or past participle"
+          ],
+          "diagnostic": {
+            "prompt_en": "Which is correct: 'The fort was defended by the queen' or 'The fort was defend by the queen'?",
+            "prompt_hi": "Passive mein 'was' ke baad verb kaisa — 'defended' ya 'defend'?",
+            "options": [
+              {
+                "text": "The fort was defended by the queen.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "The fort was defend by the queen.",
+                "misconceptionId": "c7-english-ch15-t01-m-passive-base",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A flip card: the doer and the receiver swap sides, 'was' slides in, and the verb changes into its third form (defend - defended, fight - fought)",
+            "moveShape": "Child flips an active sentence card, adds 'was', changes the verb to its third form and adds 'by' with the doer"
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "c7-english-ch15-t01-i01",
+          "skillId": "c7-english-ch15-t01-s1",
+          "kind": "retrieval",
+          "difficulty": 1,
+          "prompt_en": "Read: 'In the 1500s, Rani Abbakka ruled Ullal, a small port town on the coast of Karnataka. The Portuguese demanded that she pay them tax. She refused, joined hands with nearby rulers, and fought them bravely for many years.' Where did Rani Abbakka rule?",
+          "prompt_hi": "Passage suno. Rani Abbakka kahaan raaj karti thin?",
+          "answer": "Ullal, a small port town on the coast of Karnataka",
+          "acceptable": [
+            "Ullal",
+            "Ullal in Karnataka",
+            "a port town on the Karnataka coast"
+          ],
+          "hints": [
+            "Listen to the first sentence.",
+            "It is a port town by the sea.",
+            "She ruled U___.",
+            "She ruled Ullal, a port town on the coast of Karnataka."
+          ]
+        },
+        {
+          "id": "c7-english-ch15-t01-i02",
+          "skillId": "c7-english-ch15-t01-s2",
+          "kind": "why",
+          "difficulty": 3,
+          "prompt_en": "Read: 'In the 1500s, Rani Abbakka ruled Ullal, a small port town on the coast of Karnataka. The Portuguese demanded that she pay them tax. She refused, joined hands with nearby rulers, and fought them bravely for many years.' Why do you think Rani Abbakka refused to pay tax to the Portuguese?",
+          "prompt_hi": "Rani Abbakka ne Portuguese ko tax dene se inkaar kyun kiya?",
+          "answer": "She wanted her people and her land to stay free and trade freely, not be ruled by foreigners",
+          "acceptable": [
+            "she wanted freedom",
+            "she did not want foreign rule",
+            "she wanted her people to be free",
+            "paying would mean accepting their control"
+          ],
+          "hints": [
+            "What would paying tax to them mean?",
+            "Who would control her town then?",
+            "She wanted her land to stay ___.",
+            "She wanted her land and people to stay free, not under foreign control."
+          ]
+        },
+        {
+          "id": "c7-english-ch15-t01-i03",
+          "skillId": "c7-english-ch15-t01-s2",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Read: 'In the 1500s, Rani Abbakka ruled Ullal, a small port town on the coast of Karnataka. The Portuguese demanded that she pay them tax. She refused, joined hands with nearby rulers, and fought them bravely for many years.' Name two values Rani Abbakka showed and give one event as proof.",
+          "prompt_hi": "Rani Abbakka ki do qualities batao aur ek event se saboot do.",
+          "answer": "Courage and love of freedom (also leadership and unity); she refused to pay tax and fought for many years, joining with nearby rulers",
+          "acceptable": [
+            "courage",
+            "love of freedom",
+            "leadership",
+            "unity",
+            "bravery",
+            "determination"
+          ],
+          "hints": [
+            "What did she do when the tax was demanded?",
+            "Did she fight alone?",
+            "She showed c___ and love of f___.",
+            "Courage and love of freedom: she refused the tax and fought for years."
+          ]
+        },
+        {
+          "id": "c7-english-ch15-t01-i04",
+          "skillId": "c7-english-ch15-t01-s3",
+          "kind": "practice",
+          "difficulty": 1,
+          "prompt_en": "Fill in 'who' or 'which': 'Rani Abbakka was a queen ___ fought the Portuguese.'",
+          "prompt_hi": "'who' ya 'which'? Queen ek insaan hai.",
+          "answer": "who",
+          "acceptable": [
+            "who",
+            "that"
+          ],
+          "hints": [
+            "Is a queen a person or a thing?",
+            "People take one word, things another.",
+            "a queen ___ fought",
+            "'Who', because a queen is a person."
+          ],
+          "targetsMisconception": "c7-english-ch15-t01-m-which-for-people"
+        },
+        {
+          "id": "c7-english-ch15-t01-i05",
+          "skillId": "c7-english-ch15-t01-s3",
+          "kind": "error_spot",
+          "difficulty": 2,
+          "prompt_en": "Find the mistake: 'Ullal was a busy port who traded in spices.'",
+          "prompt_hi": "Galti dhoondho: 'a busy port who traded...'",
+          "answer": "Ullal was a busy port which traded in spices.",
+          "acceptable": [
+            "Ullal was a busy port which traded in spices.",
+            "Ullal was a busy port that traded in spices.",
+            "who should be which"
+          ],
+          "hints": [
+            "Is a port a person?",
+            "Things take a different word from people.",
+            "a busy port ___ traded",
+            "'Who' should be 'which' (or 'that') for a port."
+          ],
+          "targetsMisconception": "c7-english-ch15-t01-m-which-for-people"
+        },
+        {
+          "id": "c7-english-ch15-t01-i06",
+          "skillId": "c7-english-ch15-t01-s3",
+          "kind": "near_transfer",
+          "difficulty": 3,
+          "prompt_en": "Join with 'who': 'Rani Abbakka ruled Ullal. She fought the Portuguese for many years.'",
+          "prompt_hi": "'who' se dono ko jodo.",
+          "answer": "Rani Abbakka, who ruled Ullal, fought the Portuguese for many years.",
+          "acceptable": [
+            "who ruled Ullal, fought the Portuguese",
+            "Rani Abbakka, who fought the Portuguese, ruled Ullal."
+          ],
+          "hints": [
+            "Which word will replace 'She'?",
+            "Put the extra fact right after her name.",
+            "Rani Abbakka, who ___ Ullal, fought...",
+            "Rani Abbakka, who ruled Ullal, fought the Portuguese for many years."
+          ],
+          "targetsMisconception": "c7-english-ch15-t01-m-which-for-people"
+        },
+        {
+          "id": "c7-english-ch15-t01-i07",
+          "skillId": "c7-english-ch15-t01-s1",
+          "kind": "error_spot",
+          "difficulty": 2,
+          "prompt_en": "Find the mistake: 'Rani Abbakka was a brave ruler. He refused to pay the tax.'",
+          "prompt_hi": "Galti dhoondho: '...He refused to pay the tax.'",
+          "answer": "Rani Abbakka was a brave ruler. She refused to pay the tax.",
+          "acceptable": [
+            "She refused to pay the tax.",
+            "He should be She"
+          ],
+          "hints": [
+            "Is Rani Abbakka a man or a woman?",
+            "Check the pronoun in the second sentence.",
+            "___ refused to pay the tax.",
+            "'He' should be 'She'."
+          ],
+          "targetsMisconception": "c7-english-ch15-t01-m-he-she-mix"
+        },
+        {
+          "id": "c7-english-ch15-t01-i08",
+          "skillId": "c7-english-ch15-t01-s4",
+          "kind": "practice",
+          "difficulty": 3,
+          "prompt_en": "Change to the passive: 'The queen defended the fort.'",
+          "prompt_hi": "Passive voice mein badlo: 'The queen defended the fort.'",
+          "answer": "The fort was defended by the queen.",
+          "acceptable": [
+            "The fort was defended by the queen."
+          ],
+          "hints": [
+            "Which thing received the action?",
+            "Start with the fort, add 'was', keep 'defended'.",
+            "The fort was ___ by the queen.",
+            "The fort was defended by the queen."
+          ],
+          "targetsMisconception": "c7-english-ch15-t01-m-passive-base"
+        },
+        {
+          "id": "c7-english-ch15-t01-i09",
+          "skillId": "c7-english-ch15-t01-s4",
+          "kind": "error_spot",
+          "difficulty": 3,
+          "prompt_en": "Find the mistake: 'The town was protect by her soldiers.'",
+          "prompt_hi": "Galti dhoondho: 'The town was protect by her soldiers.'",
+          "answer": "The town was protected by her soldiers.",
+          "acceptable": [
+            "The town was protected by her soldiers.",
+            "protect should be protected"
+          ],
+          "hints": [
+            "Look at the verb after 'was'.",
+            "The passive needs the third form of the verb.",
+            "The town was protect___ by her soldiers.",
+            "'Protect' should be 'protected'."
+          ],
+          "targetsMisconception": "c7-english-ch15-t01-m-passive-base"
+        },
+        {
+          "id": "c7-english-ch15-t01-i10",
+          "skillId": "c7-english-ch15-t01-s2",
+          "kind": "translate_rep",
+          "difficulty": 3,
+          "prompt_en": "Say in English: 'Rani ne videshi shasan ke aage jhukne se inkaar kar diya.'",
+          "prompt_hi": "English mein bolo: 'Rani ne videshi shasan ke aage jhukne se inkaar kar diya.'",
+          "answer": "The queen refused to bow before foreign rule.",
+          "acceptable": [
+            "The queen refused to bow before foreign rule.",
+            "The queen refused to bow to foreign rule.",
+            "The queen refused to accept foreign rule.",
+            "The queen refused to give in to foreign rulers."
+          ],
+          "hints": [
+            "'Inkaar kar diya' is 'refused'.",
+            "After 'refused', use 'to' + verb.",
+            "The queen refused to ___ before foreign rule.",
+            "The queen refused to bow before foreign rule."
+          ],
+          "targetsMisconception": "c7-english-ch15-t01-m-he-she-mix"
+        },
+        {
+          "id": "c7-english-ch15-t01-i11",
+          "skillId": "c7-english-ch15-t01-s1",
+          "kind": "predict",
+          "difficulty": 3,
+          "prompt_en": "The Portuguese return with more ships and demand tax again. Knowing Rani Abbakka's character, what will she most likely do?",
+          "prompt_hi": "Portuguese aur bade jahaazon ke saath phir aaye. Rani Abbakka kya karegi?",
+          "answer": "She will refuse again, gather allies and defend Ullal",
+          "acceptable": [
+            "refuse again",
+            "fight back",
+            "defend her town",
+            "join with other rulers and fight"
+          ],
+          "hints": [
+            "What did she do the first time?",
+            "Did she give up after one fight?",
+            "She will refuse and ___ again.",
+            "She will refuse again, gather allies and defend Ullal."
+          ]
+        },
+        {
+          "id": "c7-english-ch15-t01-i12",
+          "skillId": "c7-english-ch15-t01-s2",
+          "kind": "teachback",
+          "difficulty": 4,
+          "prompt_en": "Explain to your younger cousin why Rani Abbakka is remembered as a brave queen.",
+          "prompt_hi": "Chhote cousin ko samjhao — Rani Abbakka ko bahadur rani ke roop mein kyun yaad kiya jaata hai?",
+          "answer": "In the 1500s she ruled Ullal and refused to pay tax to the powerful Portuguese; she united with other rulers and fought them for many years to keep her land free",
+          "acceptable": [
+            "she fought the Portuguese for years",
+            "she refused to pay tax to foreigners",
+            "she protected her land's freedom",
+            "she was one of the first to resist foreign rule"
+          ],
+          "hints": [
+            "Who did she stand up to?",
+            "What did she refuse, and what did she do next?",
+            "She refused the tax and ___ for years.",
+            "She refused the Portuguese tax and fought for years to keep Ullal free."
+          ]
+        }
+      ],
+      "workedExample": {
+        "problem": "Join with 'who' or 'which': 'Rani Abbakka had a navy. The navy attacked Portuguese ships.'",
+        "steps": [
+          "Find the repeated noun: 'navy'.",
+          "A navy is a thing (a group), not one person, so use 'which'.",
+          "Replace the second 'The navy' with 'which' and join.",
+          "Answer: Rani Abbakka had a navy which attacked Portuguese ships."
+        ],
+        "fadedVersion": [
+          "Find the repeated noun: '___'.",
+          "A navy is a thing, not one person, so use '___'.",
+          "Replace the second 'The navy' with '___' and join.",
+          "Answer: Rani Abbakka had a navy ___ attacked Portuguese ships."
+        ]
+      },
+      "formats": {
+        "primary": "F4",
+        "secondary": [
+          "F1",
+          "F2",
+          "F7"
+        ],
+        "engineHints": [
+          "story-sequencing",
+          "role-play",
+          "sentence-scramble",
+          "word-builder"
+        ]
+      },
+      "interestContexts": [
+        "a coastal fishing town",
+        "Yakshagana performance about a queen",
+        "a school play about freedom fighters",
+        "a visit to a fort",
+        "Rani Lakshmibai's story at home",
+        "a class debate on standing up for what is right"
+      ]
     }
   ]
 }

@@ -49,17 +49,17 @@
             "prompt_hi": "Socho, Earth ka saara paani 100 baaltiyon mein bhar diya. Inmein se lagbhag kitni baaltiyon ka paani hum aaraam se pee sakte hain?",
             "options": [
               {
-                "text": "About 90 buckets, because most water is clean",
-                "misconceptionId": "c5-evs-ch01-t01-m1",
-                "correct": false
-              },
-              {
-                "text": "Less than one bucket, because most water is salty sea water or frozen ice",
+                "text": "Less than one bucket; the rest is salty or frozen",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "All 100 buckets, if we just boil the water first",
+                "text": "About 90 buckets, since most water on Earth is clean",
+                "misconceptionId": "c5-evs-ch01-t01-m1",
+                "correct": false
+              },
+              {
+                "text": "All 100 buckets, as long as we boil it first",
                 "misconceptionId": "c5-evs-ch01-t01-m2",
                 "correct": false
               }
@@ -82,17 +82,17 @@
             "prompt_hi": "Jahaaz ka cook samudra ke paani ko der tak ubaalta hai. Kya ab bartan ka paani peene laayak ho gaya?",
             "options": [
               {
-                "text": "Yes, boiling removes the salt",
+                "text": "Yes; long boiling takes the salt out of the water",
                 "misconceptionId": "c5-evs-ch01-t01-m2",
                 "correct": false
               },
               {
-                "text": "No, boiling can kill germs but the salt stays in the water",
+                "text": "No; boiling kills germs, but the salt stays in",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Yes, there is very little salt in sea water anyway",
+                "text": "Yes; sea water has hardly any salt in it anyway",
                 "misconceptionId": "c5-evs-ch01-t01-m1",
                 "correct": false
               }
@@ -116,7 +116,12 @@
             "prompt_hi": "Rassi pe tange geele kapde shaam tak sookh gaye. Unka paani kahaan gaya?",
             "options": [
               {
-                "text": "The sun destroyed it and it is gone forever",
+                "text": "The sun's heat destroyed it, so it is gone forever",
+                "misconceptionId": "c5-evs-ch01-t01-m3",
+                "correct": false
+              },
+              {
+                "text": "It is still hiding deep inside the threads",
                 "misconceptionId": "c5-evs-ch01-t01-m3",
                 "correct": false
               },
@@ -124,11 +129,6 @@
                 "text": "It went into the air as invisible water vapour",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "It is hiding inside the threads of the clothes",
-                "misconceptionId": "c5-evs-ch01-t01-m3",
-                "correct": false
               }
             ]
           },
@@ -149,17 +149,17 @@
             "prompt_hi": "Barf jaise thande paani se bhare steel ke glass ke bahar boondein aa gayi. Ye boondein kahaan se aayi?",
             "options": [
               {
-                "text": "The water inside leaked out through the glass",
-                "misconceptionId": "c5-evs-ch01-t01-m4",
-                "correct": false
-              },
-              {
-                "text": "Water vapour in the air turned into drops on the cold glass",
+                "text": "Water vapour from the air turned into drops on it",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "The cold glass made its own water",
+                "text": "The cold glass itself made new water on its surface",
+                "misconceptionId": "c5-evs-ch01-t01-m4",
+                "correct": false
+              },
+              {
+                "text": "The cold water inside leaked out through the glass",
                 "misconceptionId": "c5-evs-ch01-t01-m4",
                 "correct": false
               }
@@ -449,7 +449,7 @@
           ],
           "hints": [
             "Invite them to colour their guess first",
-            "Point to the number 97 for the sea",
+            "Point to the sea: ask whether it takes a few boxes or nearly all of them",
             "Prompt: after 97 sea boxes and about 2 ice boxes, the water we can use is less than ___ box",
             "Assert: 97 salty, about 2 frozen, less than 1 usable fresh"
           ],
@@ -457,7 +457,7 @@
           "verified": {
             "solverAnswer": "About 97 salty, ~2 ice, ~1 usable fresh (<1)",
             "agrees": true,
-            "note": "HINT LEAK: h2 'Point to the number 97' gives the headline figure."
+            "note": "RESOLVED: h2 no longer states 97."
           }
         },
         {
@@ -620,8 +620,8 @@
             "prompt_hi": "Garmi ke din gamle ka tulsi ka paudha murjha raha hai. Uski madad karne ka sabse achha tareeka kya hai?",
             "options": [
               {
-                "text": "Spray water only on its leaves",
-                "misconceptionId": "c5-evs-ch01-t02-m1",
+                "text": "Mix sugar into the soil so it gets some food",
+                "misconceptionId": "c5-evs-ch01-t02-m2",
                 "correct": false
               },
               {
@@ -630,8 +630,8 @@
                 "correct": true
               },
               {
-                "text": "Mix sugar into the soil so it gets food",
-                "misconceptionId": "c5-evs-ch01-t02-m2",
+                "text": "Spray water only on its leaves, where it drinks",
+                "misconceptionId": "c5-evs-ch01-t02-m1",
                 "correct": false
               }
             ]
@@ -654,19 +654,19 @@
             "prompt_hi": "Aam ka ped apna khaana kahaan se laata hai?",
             "options": [
               {
-                "text": "It eats the soil through its roots",
+                "text": "It soaks up ready-made food from rain through its leaves",
+                "misconceptionId": "c5-evs-ch01-t02-m1",
+                "correct": false
+              },
+              {
+                "text": "It takes ready-made food out of the soil with its roots",
                 "misconceptionId": "c5-evs-ch01-t02-m2",
                 "correct": false
               },
               {
-                "text": "It makes its own food in its leaves using sunlight, water and air",
+                "text": "It makes it in its leaves with sunlight, water and air",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "It drinks ready-made food from the rain through its leaves",
-                "misconceptionId": "c5-evs-ch01-t02-m1",
-                "correct": false
               }
             ]
           },
@@ -687,17 +687,17 @@
             "prompt_hi": "Oont ke kubad mein kya bhara hota hai?",
             "options": [
               {
-                "text": "Extra water to drink later, like a bottle",
-                "misconceptionId": "c5-evs-ch01-t02-m3",
-                "correct": false
-              },
-              {
                 "text": "Fat, which its body can use when food is scarce",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Nothing, because camels never need water",
+                "text": "Extra water to drink later, like a water bottle",
+                "misconceptionId": "c5-evs-ch01-t02-m3",
+                "correct": false
+              },
+              {
+                "text": "Nothing at all, because camels never need water",
                 "misconceptionId": "c5-evs-ch01-t02-m4",
                 "correct": false
               }
@@ -720,12 +720,12 @@
             "prompt_hi": "Oont Thar ke registan mein kai din bina paani piye chalta hai. Kya use paani ki zaroorat hoti hai?",
             "options": [
               {
-                "text": "No, camels never need water",
+                "text": "No; camels are desert animals and never need water",
                 "misconceptionId": "c5-evs-ch01-t02-m4",
                 "correct": false
               },
               {
-                "text": "Yes; it drinks a lot at once when it finds water, and its body loses water very slowly",
+                "text": "Yes; it drinks a lot at once and loses water slowly",
                 "misconceptionId": null,
                 "correct": true
               },
@@ -1179,19 +1179,19 @@
             "prompt_hi": "Godavari nadi apna safar kahaan se shuru karti hai?",
             "options": [
               {
-                "text": "In the Bay of Bengal, and then it flows inland",
+                "text": "In the Bay of Bengal, then it flows inland to the hills",
                 "misconceptionId": "c5-evs-ch02-t01-m1",
                 "correct": false
               },
               {
-                "text": "In the hills near Nashik, and then it flows down to the Bay of Bengal",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
-                "text": "At the top of the map, and then it flows down the map",
+                "text": "At the top of the map, then it flows down the map",
                 "misconceptionId": "c5-evs-ch02-t01-m2",
                 "correct": false
+              },
+              {
+                "text": "In the hills near Nashik, then it flows down to the sea",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -1212,18 +1212,18 @@
             "prompt_hi": "Narmada nadi India ke west coast pe Arabian Sea mein milti hai. Woh zyaadatar kis disha mein behti hai?",
             "options": [
               {
-                "text": "From north to south, like all rivers",
-                "misconceptionId": "c5-evs-ch02-t01-m2",
-                "correct": false
-              },
-              {
-                "text": "From east to west, from higher land down to the sea",
+                "text": "From east to west, from higher land to the sea",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "From the sea towards the land",
+                "text": "From the Arabian Sea inland, towards the east",
                 "misconceptionId": "c5-evs-ch02-t01-m1",
+                "correct": false
+              },
+              {
+                "text": "From north to south, as all rivers flow down the map",
+                "misconceptionId": "c5-evs-ch02-t01-m2",
                 "correct": false
               }
             ]
@@ -1245,18 +1245,18 @@
             "prompt_hi": "Ganga roz samudra mein paani daalti hai. Phir bhi woh sookhti kyon nahi?",
             "options": [
               {
-                "text": "It will run dry soon, because it has only a fixed amount of water",
-                "misconceptionId": "c5-evs-ch02-t01-m3",
+                "text": "The sea pushes the water back up the river each day",
+                "misconceptionId": "c5-evs-ch02-t01-m1",
                 "correct": false
               },
               {
-                "text": "Rain and melting snow and ice keep adding water to it",
+                "text": "Rain and melting snow keep adding water to it",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "The sea pushes the water back up the river",
-                "misconceptionId": "c5-evs-ch02-t01-m1",
+                "text": "It will run dry soon; it has only a fixed amount",
+                "misconceptionId": "c5-evs-ch02-t01-m3",
                 "correct": false
               }
             ]
@@ -1576,15 +1576,15 @@
           "answer": "It starts in the hills near Trimbakeshwar in Nashik, Maharashtra; flows east across Maharashtra, Telangana and Andhra Pradesh, joined by tributaries; slows down in the plains; and ends in the Bay of Bengal.",
           "acceptable": [],
           "hints": [
-            "Invite them to begin at the hills near Nashik",
-            "Point to the Bay of Bengal on the east side",
+            "Ask where rivers usually begin: up in the hills or at the sea",
+            "Point to the seas on both sides of India and ask which one this river reaches",
             "Prompt: it starts near ___, flows ___ across India, and ends in the ___",
             "Assert: Nashik hills to the Bay of Bengal, flowing east and growing with tributaries"
           ],
           "verified": {
             "solverAnswer": "Godavari starts Trimbak (Nashik, Maharashtra), flows east, ends Bay of Bengal",
             "agrees": true,
-            "note": "HINT LEAK: h2 names the Bay of Bengal and east, which is the end point and direction asked."
+            "note": "RESOLVED: h1/h2 no longer give Nashik, the Bay of Bengal or east."
           }
         },
         {
@@ -1699,19 +1699,19 @@
             "prompt_hi": "Ek picnic group nadi mein plastic ki bottlein phenk deta hai. Un bottlon ka kya hota hai?",
             "options": [
               {
+                "text": "They slowly melt in the water, just like sugar does",
+                "misconceptionId": "c5-evs-ch02-t02-m2",
+                "correct": false
+              },
+              {
                 "text": "The flowing river washes them away and they are gone",
                 "misconceptionId": "c5-evs-ch02-t02-m1",
                 "correct": false
               },
               {
-                "text": "They float downstream, harm fish and animals, and can end up in the sea, where plastic stays for hundreds of years",
+                "text": "They float on, harm animals and stay for hundreds of years",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "They melt in the water like sugar",
-                "misconceptionId": "c5-evs-ch02-t02-m2",
-                "correct": false
               }
             ]
           },
@@ -1765,17 +1765,17 @@
             "prompt_hi": "Ek dhaara ka paani bilkul saaf dikh raha hai. Kya use seedha pee sakte hain?",
             "options": [
               {
-                "text": "Yes, clear water is always clean",
+                "text": "Yes; clear water is always clean and safe",
                 "misconceptionId": "c5-evs-ch02-t02-m3",
                 "correct": false
               },
               {
-                "text": "Not necessarily; it can have germs and dissolved dirt that we cannot see",
+                "text": "Not always; it can hold germs we cannot see",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Yes, as long as it is cold",
+                "text": "Yes, as long as it is cold and flowing fast",
                 "misconceptionId": "c5-evs-ch02-t02-m3",
                 "correct": false
               }
@@ -1803,14 +1803,14 @@
                 "correct": false
               },
               {
-                "text": "Blocked drains with plastic, cut trees and built houses on low land beside the river",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
-                "text": "Floods just happen because of bad luck",
+                "text": "Nothing; floods just happen because of bad luck",
                 "misconceptionId": "c5-evs-ch02-t02-m4",
                 "correct": false
+              },
+              {
+                "text": "Blocked drains with plastic and built on low land",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -2259,18 +2259,18 @@
             "prompt_hi": "Do rotiyaan ek hi samay bani. Ek sukhe band dibbe mein rakhi, doosri geeli karke garam kone mein. Teen din baad sirf geeli roti pe roodaar dhabbe aa gaye. Kyon?",
             "options": [
               {
-                "text": "The damp one got older faster",
-                "misconceptionId": "c5-evs-ch03-t01-m1",
-                "correct": false
-              },
-              {
-                "text": "Tiny living things called microbes grew faster on the warm, damp roti",
+                "text": "Microbes grew faster on the warm, damp roti",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "The fuzzy spots came out of the roti flour itself",
+                "text": "The fuzzy spots grew out of the roti flour itself",
                 "misconceptionId": "c5-evs-ch03-t01-m3",
+                "correct": false
+              },
+              {
+                "text": "The damp one just got older faster than the dry one",
+                "misconceptionId": "c5-evs-ch03-t01-m1",
                 "correct": false
               }
             ]
@@ -2293,17 +2293,17 @@
             "prompt_hi": "Inmein se kya microbes ki madad se banta hai?",
             "options": [
               {
-                "text": "Curd from milk",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
-                "text": "Nothing good; microbes only cause sickness",
+                "text": "Only rotten food that nobody wants to eat",
                 "misconceptionId": "c5-evs-ch03-t01-m2",
                 "correct": false
               },
               {
-                "text": "Only rotten food, never anything we like to eat",
+                "text": "Curd, which is set from milk overnight",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "Nothing good; microbes only make us sick",
                 "misconceptionId": "c5-evs-ch03-t01-m2",
                 "correct": false
               }
@@ -2327,19 +2327,19 @@
             "prompt_hi": "Purani bread pe jo fungus (phaphoond) lagti hai, woh kahaan se aati hai?",
             "options": [
               {
-                "text": "The bread itself changes into mould",
+                "text": "It is just dust that settled on the bread",
                 "misconceptionId": "c5-evs-ch03-t01-m3",
                 "correct": false
               },
               {
-                "text": "Tiny mould spores from the air land on the bread and grow there",
+                "text": "The bread itself slowly changes into mould",
+                "misconceptionId": "c5-evs-ch03-t01-m3",
+                "correct": false
+              },
+              {
+                "text": "Tiny spores from the air land on it and grow",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "It is just dust that collected on the bread",
-                "misconceptionId": "c5-evs-ch03-t01-m3",
-                "correct": false
               }
             ]
           },
@@ -2360,14 +2360,14 @@
             "prompt_hi": "Bread ki ek slice ke kone pe chhota hara phaphoond ka dhabba hai. Kya karna chahiye?",
             "options": [
               {
-                "text": "Pull off the spot and eat the rest",
-                "misconceptionId": "c5-evs-ch03-t01-m4",
-                "correct": false
-              },
-              {
-                "text": "Throw the slice away, because mould spreads threads inside that we cannot see",
+                "text": "Throw the slice away; mould spreads unseen threads",
                 "misconceptionId": null,
                 "correct": true
+              },
+              {
+                "text": "Pull off the green spot and eat the rest of it",
+                "misconceptionId": "c5-evs-ch03-t01-m4",
+                "correct": false
               },
               {
                 "text": "Toast it so the mould goes away, then eat it",
@@ -2477,7 +2477,7 @@
             "hot night"
           ],
           "hints": [
-            "Ask what elders do in winter to help curd set, like keeping it in a warm place",
+            "Ask whether curd at home takes the same time to set all year round",
             "Point to warmth helping microbes",
             "Prompt: curd microbes work ___ in warmth and ___ in cold",
             "Assert: curd sets faster in warm weather because its helpful bacteria work faster"
@@ -2486,7 +2486,7 @@
           "verified": {
             "solverAnswer": "Faster on hot May night (warmth helps microbes)",
             "agrees": true,
-            "note": "HINT LEAK (mild): h1 mentions keeping curd in a warm place in winter, which gives the reasoning."
+            "note": "RESOLVED: h1 no longer gives the warmth reasoning."
           }
         },
         {
@@ -2821,17 +2821,17 @@
             "prompt_hi": "Daal fridge mein rakhi hai. Kya woh hamesha ke liye taazi rahegi?",
             "options": [
               {
-                "text": "Yes, food in the fridge never goes bad",
+                "text": "Yes; food kept inside a fridge never goes bad at all",
                 "misconceptionId": "c5-evs-ch03-t02-m1",
                 "correct": false
               },
               {
-                "text": "No; the fridge only slows microbes, so the dal will spoil after a few days",
+                "text": "No; the cold only slows microbes, so it will spoil",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Yes, because the cold kills every germ",
+                "text": "Yes, because the cold kills every germ in it",
                 "misconceptionId": "c5-evs-ch03-t02-m2",
                 "correct": false
               }
@@ -2854,7 +2854,12 @@
             "prompt_hi": "Fridge khaane ke microbes ke saath kya karta hai?",
             "options": [
               {
-                "text": "Kills all of them",
+                "text": "Kills all of them, so the food is germ-free",
+                "misconceptionId": "c5-evs-ch03-t02-m2",
+                "correct": false
+              },
+              {
+                "text": "Makes the food free of microbes forever",
                 "misconceptionId": "c5-evs-ch03-t02-m2",
                 "correct": false
               },
@@ -2862,11 +2867,6 @@
                 "text": "Slows them down so they grow very slowly",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "Makes food free of microbes forever",
-                "misconceptionId": "c5-evs-ch03-t02-m2",
-                "correct": false
               }
             ]
           },
@@ -2887,17 +2887,17 @@
             "prompt_hi": "Nani aam ke achaar mein itna namak aur tel kyon daalti hain?",
             "options": [
               {
-                "text": "Only to make it tasty",
-                "misconceptionId": "c5-evs-ch03-t02-m3",
-                "correct": false
-              },
-              {
-                "text": "Salt pulls water out and oil keeps air out, so microbes can't grow and it lasts for months",
+                "text": "Salt and oil stop microbes, so it lasts for months",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Only to give it a nice colour",
+                "text": "Only to give it a nice colour and a shiny look",
+                "misconceptionId": "c5-evs-ch03-t02-m3",
+                "correct": false
+              },
+              {
+                "text": "Only to make it taste good; it has no other use",
                 "misconceptionId": "c5-evs-ch03-t02-m3",
                 "correct": false
               }
@@ -3339,17 +3339,17 @@
             "prompt_hi": "Lunch ke baad class ke farsh pe wrapper hi wrapper pade hain. Inhe theek karna kiska kaam hai?",
             "options": [
               {
-                "text": "Only the sweeper's; that is their work",
+                "text": "Only the class monitor's, who is in charge",
                 "misconceptionId": "c5-evs-ch04-t01-m1",
                 "correct": false
               },
               {
-                "text": "Everyone's: we should not drop them, and we should pick up our own litter",
+                "text": "Everyone's; we should pick up our own litter",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Only the class monitor's",
+                "text": "Only the sweeper's, because that is their work",
                 "misconceptionId": "c5-evs-ch04-t01-m1",
                 "correct": false
               }
@@ -3372,19 +3372,19 @@
             "prompt_hi": "Kele ka chhilka kahaan jaana chahiye?",
             "options": [
               {
-                "text": "Into any bin; waste is waste",
+                "text": "Into the blue bin, together with the plastic",
                 "misconceptionId": "c5-evs-ch04-t01-m2",
                 "correct": false
               },
               {
-                "text": "Into the green bin for wet waste, so it can become compost",
+                "text": "Into any bin at all, because waste is just waste",
+                "misconceptionId": "c5-evs-ch04-t01-m2",
+                "correct": false
+              },
+              {
+                "text": "Into the green wet-waste bin, to become compost",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "Into the blue bin with the plastic",
-                "misconceptionId": "c5-evs-ch04-t01-m2",
-                "correct": false
               }
             ]
           },
@@ -3415,7 +3415,7 @@
                 "correct": false
               },
               {
-                "text": "Everything, because the pit turns all waste into soil",
+                "text": "Everything; the pit rots all of it",
                 "misconceptionId": "c5-evs-ch04-t01-m3",
                 "correct": false
               }
@@ -3448,7 +3448,7 @@
                 "correct": true
               },
               {
-                "text": "None, because the drops dry up",
+                "text": "None, because the drops dry up on their own",
                 "misconceptionId": "c5-evs-ch04-t01-m4",
                 "correct": false
               }
@@ -3539,14 +3539,16 @@
           "skillId": "c5-evs-ch04-t01-s3",
           "kind": "predict",
           "difficulty": 3,
-          "prompt_en": "Put a small cup under a dripping school tap for ten minutes. Before you start, predict: will it collect only a few drops, or fill a good part of the cup? Then think: what about a whole day and a whole week?",
-          "prompt_hi": "School ke tapakte nal ke neeche das minute ke liye ek chhota cup rakho. Shuru karne se pehle guess karo: sirf kuch boondein jama hongi, ya cup ka achha-khaasa hissa bhar jayega? Phir socho: poore din aur poore hafte mein kitna?",
-          "answer": "Usually a good part of the cup in ten minutes. Over a day that adds up to several litres, and over a week to buckets of water, so leaks must be reported and fixed.",
+          "prompt_en": "Put a small cup under a dripping school tap for ten minutes. Before you start, predict: will it collect just a few drops, a few spoonfuls, or a full cup? Then think: how much in a whole day, and in a whole week?",
+          "prompt_hi": "School ke tapakte nal ke neeche das minute ke liye ek chhota cup rakho. Shuru karne se pehle guess karo: sirf kuch boondein jama hongi, kuch chammach bhar paani, ya poora cup? Phir socho: poore din mein kitna, aur poore hafte mein kitna?",
+          "answer": "It depends on how fast the tap drips. At about one drop a second, ten minutes gives roughly 30 mL, a few spoonfuls, which is more than a few drops but less than a cup. Over a day that adds up to about 4 litres, and over a week to around 30 litres, a few buckets, so leaks must be reported and fixed.",
           "acceptable": [
+            "a few spoonfuls",
             "more than a few drops",
-            "kaafi paani",
-            "several litres a day",
-            "buckets in a week"
+            "kuch chammach",
+            "litres in a day",
+            "a few buckets in a week",
+            "depends on how fast it drips"
           ],
           "hints": [
             "Ask for a guess before placing the cup",
@@ -3557,8 +3559,8 @@
           "targetsMisconception": "c5-evs-ch04-t01-m4",
           "verified": {
             "solverAnswer": "Few drops in 10 min but litres over a week; wasted water adds up",
-            "agrees": false,
-            "note": "Answer says usually 'a good part of the cup' in 10 min. At the 1 drop/sec used in diagnostic m4, 10 min is about 30 mL (well under a cup); amount depends on drip rate. Reword to 'some mL, adding to litres over a day and buckets over a week'."
+            "agrees": true,
+            "note": "RESOLVED: answer reworded to ~30 mL (a few spoonfuls) at 1 drop/s, rate-dependent, ~4 L/day, ~30 L/week; prompt options changed to drops / spoonfuls / full cup."
           }
         },
         {
@@ -3743,7 +3745,7 @@
           ],
           "hints": [
             "Ask what was found in the pit after two months",
-            "Point to the plastic spoon",
+            "Point to each thing on the poster in turn and ask whether it rots",
             "Prompt: only ___ waste becomes compost; plastic goes in the ___ bin",
             "Assert: compost is for wet waste only; plastic never becomes soil"
           ],
@@ -3751,7 +3753,7 @@
           "verified": {
             "solverAnswer": "Plastic should not go into compost; only peels and leaves",
             "agrees": true,
-            "note": "HINT LEAK: h2 'Point to the plastic spoon' gives the fix."
+            "note": "RESOLVED: h2 no longer names the plastic spoon."
           }
         },
         {
@@ -3885,19 +3887,19 @@
             "prompt_hi": "Tum school bus se utre ho aur sadak paar karni hai. Sabse surakshit tareeka kya hai?",
             "options": [
               {
-                "text": "Quickly cross right behind the bus",
+                "text": "Quickly cross right behind the parked bus",
                 "misconceptionId": "c5-evs-ch04-t02-m1",
                 "correct": false
               },
               {
-                "text": "Wait for the bus to leave, then cross at the zebra crossing after looking right, left and right again",
+                "text": "Cross in front of the bus as it starts moving",
+                "misconceptionId": "c5-evs-ch04-t02-m1",
+                "correct": false
+              },
+              {
+                "text": "Let the bus go, then look both ways and cross",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "Cross in front of the bus just as it starts moving",
-                "misconceptionId": "c5-evs-ch04-t02-m1",
-                "correct": false
               }
             ]
           },
@@ -3918,17 +3920,17 @@
             "prompt_hi": "Ek car tezi se aa rahi hai aur koi achaanak uske saamne sadak pe aa jaata hai. Kya hota hai?",
             "options": [
               {
-                "text": "The car stops at once",
-                "misconceptionId": "c5-evs-ch04-t02-m2",
-                "correct": false
-              },
-              {
-                "text": "The car needs some distance to stop, so it may not stop in time",
+                "text": "It needs some distance to stop, so it may not stop",
                 "misconceptionId": null,
                 "correct": true
               },
               {
                 "text": "The driver always sees anyone who can see the car",
+                "misconceptionId": "c5-evs-ch04-t02-m2",
+                "correct": false
+              },
+              {
+                "text": "It stops at once, the moment the driver brakes",
                 "misconceptionId": "c5-evs-ch04-t02-m2",
                 "correct": false
               }
@@ -3951,17 +3953,17 @@
             "prompt_hi": "Sadak paar karna shuru karne ke baad sabse surakshit tareeka kya hai?",
             "options": [
               {
-                "text": "Run as fast as you can",
+                "text": "Zig-zag between the vehicles to dodge them",
                 "misconceptionId": "c5-evs-ch04-t02-m3",
                 "correct": false
               },
               {
-                "text": "Walk briskly in a straight line and keep looking both ways",
+                "text": "Walk briskly in a straight line, looking both ways",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Zig-zag between the vehicles",
+                "text": "Run as fast as you can to get across quickly",
                 "misconceptionId": "c5-evs-ch04-t02-m3",
                 "correct": false
               }
@@ -3984,19 +3986,19 @@
             "prompt_hi": "Chauraahe pe gaadiyon wali batti abhi hari hui hai. Kya tumhe abhi sadak paar karni chahiye?",
             "options": [
               {
-                "text": "Yes, green means go",
+                "text": "Yes, as long as you run across really fast",
+                "misconceptionId": "c5-evs-ch04-t02-m3",
+                "correct": false
+              },
+              {
+                "text": "Yes; green means go for everyone at the crossing",
                 "misconceptionId": "c5-evs-ch04-t02-m4",
                 "correct": false
               },
               {
-                "text": "No; green for cars means the cars will move. Wait for the green walking figure for people",
+                "text": "No; wait for the green walking figure for people",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "Yes, if you run fast",
-                "misconceptionId": "c5-evs-ch04-t02-m3",
-                "correct": false
               }
             ]
           },
@@ -4059,8 +4061,8 @@
           "skillId": "c5-evs-ch04-t02-s3",
           "kind": "predict",
           "difficulty": 3,
-          "prompt_en": "Your friend is riding a cycle fast in the school ground and presses the brakes. Predict: does the cycle stop on the spot, or move forward a little first? What does this mean for a car on a road?",
-          "prompt_hi": "Tumhara dost school ke maidaan mein tez cycle chala raha hai aur brake dabata hai. Guess karo: cycle wahin ruk jaati hai, ya pehle thoda aage jaati hai? Iska sadak pe chalti car ke liye kya matlab hai?",
+          "prompt_en": "With an adult watching, in an empty open ground (never on a road), your friend wears a helmet, rides a cycle at an easy, steady speed and presses the brakes. Predict first: does the cycle stop on the spot, or roll forward a little before it stops? What does this mean for a car on a road? (No cycle? Roll a ball across the floor and try to stop it with a gentle tap of your hand.)",
+          "prompt_hi": "Kisi bade ki nigraani mein, khaali khule maidaan mein (sadak pe kabhi nahi), tumhara dost helmet pehenke aaram se dheere cycle chalata hai aur brake dabata hai. Pehle guess karo: cycle wahin ruk jaati hai, ya rukne se pehle thoda aage jaati hai? Iska sadak pe chalti car ke liye kya matlab hai? (Cycle nahi hai? Farsh pe ball ludhkao aur haath se halke se rok ke dekho.)",
           "answer": "It moves forward some distance before stopping. A faster, heavier vehicle needs even more distance, so a car cannot stop at once if someone steps out suddenly.",
           "acceptable": [
             "it moves forward first",
@@ -4069,7 +4071,7 @@
           ],
           "hints": [
             "Ask for a guess before watching",
-            "Point to the mark where the brakes were pressed and where the cycle stopped",
+            "Point to the mark where the brakes were pressed and where the cycle (or ball) stopped",
             "Prompt: a moving vehicle needs some ___ to stop, and more when it is ___",
             "Assert: no vehicle stops at once, so never step out suddenly in front of one"
           ],
@@ -4077,7 +4079,7 @@
           "verified": {
             "solverAnswer": "Moves forward a little; cars need more stopping distance",
             "agrees": true,
-            "note": "SAFETY: the real-cycle braking test invites a child to ride fast in a school ground. Add: slow speed only, helmet, adult watching, clear of other children; or demo with a toy car or ball."
+            "note": "RESOLVED: rewritten for safety: slow speed, helmet, adult supervision, empty ground, never a road; rolling-ball alternative. Answer unchanged."
           }
         },
         {
@@ -4191,7 +4193,7 @@
           ],
           "hints": [
             "Ask what cars do when their light is green",
-            "Point to the people's walking figure",
+            "Point to the two sets of lights at a signal: one for cars, one for people",
             "Prompt: people cross when the cars' light is ___ and the walking figure is ___",
             "Assert: Aman is right; cross only on the green walking figure"
           ],
@@ -4199,7 +4201,7 @@
           "verified": {
             "solverAnswer": "Aman is right; walking figure green with cars red; Bela wrong",
             "agrees": true,
-            "note": "HINT LEAK: h2 'Point to the people's walking figure' gives the deciding cue."
+            "note": "RESOLVED: h2 no longer points at the deciding cue directly."
           }
         },
         {
@@ -4431,17 +4433,17 @@
             "prompt_hi": "Chennai ki ek ladki aur Kolkata ka ek ladka science fair mein milte hain. Dono ghar pe kaunsi bhaasha bolte honge?",
             "options": [
               {
-                "text": "Both speak Hindi, since everyone in India does",
-                "misconceptionId": "c5-evs-ch05-t01-m1",
-                "correct": false
-              },
-              {
-                "text": "She may speak Tamil and he may speak Bengali; they might talk to each other in English or Hindi",
+                "text": "She may speak Tamil and he may speak Bengali",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Both speak a foreign language, because it is not Hindi",
+                "text": "Both speak Hindi, because everyone in India does",
+                "misconceptionId": "c5-evs-ch05-t01-m1",
+                "correct": false
+              },
+              {
+                "text": "A foreign language each, since it is not Hindi",
                 "misconceptionId": "c5-evs-ch05-t01-m3",
                 "correct": false
               }
@@ -4464,17 +4466,17 @@
             "prompt_hi": "India ke khaane ke baare mein inmein se kya sach hai?",
             "options": [
               {
-                "text": "Everyone in India eats roti and dal every day",
+                "text": "Everyone in India eats roti and dal every single day",
                 "misconceptionId": "c5-evs-ch05-t01-m2",
                 "correct": false
               },
               {
-                "text": "Food changes from region to region: rice and fish in Bengal, dosa in the south, makki ki roti in Punjab, dhokla in Gujarat",
+                "text": "It changes by region: fish in Bengal, dosa in the south",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Only food from my state is real Indian food",
+                "text": "Only food from my own state is real Indian food",
                 "misconceptionId": "c5-evs-ch05-t01-m2",
                 "correct": false
               }
@@ -4497,7 +4499,12 @@
             "prompt_hi": "Tumhari nayi classmate ghar pe Malayalam bolti hai. Woh kahaan se hai?",
             "options": [
               {
-                "text": "From another country, since she doesn't speak my language",
+                "text": "From abroad, since it is not my language",
+                "misconceptionId": "c5-evs-ch05-t01-m3",
+                "correct": false
+              },
+              {
+                "text": "Nowhere; Malayalam is not a real language",
                 "misconceptionId": "c5-evs-ch05-t01-m3",
                 "correct": false
               },
@@ -4505,11 +4512,6 @@
                 "text": "From India; Malayalam is spoken in Kerala",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "Nowhere special; Malayalam is not a real language",
-                "misconceptionId": "c5-evs-ch05-t01-m3",
-                "correct": false
               }
             ]
           },
@@ -4558,15 +4560,15 @@
             "Bharatanatyam Tamil Nadu, Bhangra Punjab, Bihu Assam, Garba Gujarat"
           ],
           "hints": [
-            "Ask which dance they have seen with a dhol at harvest time",
-            "Point to the dance done in big clapping circles in western India",
+            "Ask which of these dances they have seen, on TV or at a function",
+            "Point to the one pair they are surest of, and work outward from it on the map",
             "Prompt: Bihu belongs to ___, and Garba belongs to ___",
             "Assert: Bharatanatyam is Tamil Nadu, Bhangra Punjab, Bihu Assam, Garba Gujarat"
           ],
           "verified": {
             "solverAnswer": "Bharatanatyam-Tamil Nadu, Bhangra-Punjab, Bihu-Assam, Garba-Gujarat",
             "agrees": true,
-            "note": "HINT LEAK: h1 and h2 (dhol at harvest; clapping circles in western India) essentially hand over Bhangra and Garba."
+            "note": "RESOLVED: h1/h2 no longer describe Bhangra or Garba."
           }
         },
         {
@@ -4746,14 +4748,14 @@
           "acceptable": [],
           "hints": [
             "Invite them to place the ones they are surest of first",
-            "Point to Odisha's name inside 'Odissi'",
+            "Point to the states on the map one by one and ask which dance they have heard of from each",
             "Prompt: Kathakali goes in ___, at the southern tip on the west side",
             "Assert: dances spread across every direction of India"
           ],
           "verified": {
             "solverAnswer": "Bihu Assam, Garba Gujarat, Bharatanatyam TN, Bhangra Punjab, Kathakali Kerala, Odissi Odisha",
             "agrees": true,
-            "note": "HINT LEAK: h2 'Odisha's name inside Odissi' gives the Odissi answer outright."
+            "note": "RESOLVED: h2 no longer gives Odissi via the state name."
           }
         },
         {
@@ -4771,7 +4773,7 @@
             "most have another mother tongue"
           ],
           "hints": [
-            "Ask what the girl from Chennai speaks at home",
+            "Ask what language a friend, neighbour or relative from another state speaks at home",
             "Point to the 15 languages on the rupee note",
             "Prompt: the Constitution lists ___ languages",
             "Assert: India has many languages; most people's home language is not Hindi"
@@ -4780,7 +4782,7 @@
           "verified": {
             "solverAnswer": "Many languages in India; Hindi is one of 22 scheduled; only ~4 in 10 speak it as mother tongue",
             "agrees": true,
-            "note": "STALE HINT: h1 refers to 'the girl from Chennai', who is not in this prompt."
+            "note": "RESOLVED: stale Chennai reference replaced."
           }
         },
         {
@@ -4815,15 +4817,15 @@
             "Gujarat"
           ],
           "hints": [
-            "Ask which dance is done in circles with dandiya sticks nearby",
-            "Point to the west of India on the map",
+            "Ask them to recall the dance map from last time",
+            "Offer three choices: Punjab, Gujarat or Assam",
             "Prompt: Garba comes from ___",
             "Assert: Garba is from Gujarat"
           ],
           "verified": {
             "solverAnswer": "Gujarat",
             "agrees": true,
-            "note": "HINT LEAK: h1 (dandiya sticks) and h2 (west of India) give the answer. Also garba and dandiya raas are different dances."
+            "note": "RESOLVED: removed dandiya cue (and the garba/dandiya raas conflation) and the west-of-India cue; h2 is now a three-way choice."
           }
         }
       ],
@@ -4911,17 +4913,17 @@
             "prompt_hi": "India ka rashtriya pashu kaunsa hai?",
             "options": [
               {
-                "text": "The lion, because lions are on the emblem",
-                "misconceptionId": "c5-evs-ch05-t02-m1",
-                "correct": false
-              },
-              {
-                "text": "The tiger",
+                "text": "The tiger, found in forests across India",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "The lion, because it is the king of the jungle",
+                "text": "The lion, because it is king of the jungle",
+                "misconceptionId": "c5-evs-ch05-t02-m1",
+                "correct": false
+              },
+              {
+                "text": "The lion, because lions are on the emblem",
                 "misconceptionId": "c5-evs-ch05-t02-m1",
                 "correct": false
               }
@@ -4944,18 +4946,18 @@
             "prompt_hi": "26 January 1950 ko kya hua tha?",
             "options": [
               {
-                "text": "India became free from British rule",
-                "misconceptionId": "c5-evs-ch05-t02-m2",
+                "text": "A king was crowned that day to rule all of India",
+                "misconceptionId": "c5-evs-ch05-t02-m3",
                 "correct": false
               },
               {
-                "text": "India's Constitution came into force and India became a republic",
+                "text": "Our Constitution began and India became a republic",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "A king was crowned to rule India",
-                "misconceptionId": "c5-evs-ch05-t02-m3",
+                "text": "India became free from British rule that day",
+                "misconceptionId": "c5-evs-ch05-t02-m2",
                 "correct": false
               }
             ]
@@ -4977,7 +4979,12 @@
             "prompt_hi": "India ek ganrajya (republic) hai. Desh chalane waalon ko kaun chunta hai?",
             "options": [
               {
-                "text": "A king who was born into the royal family",
+                "text": "The British government, from London",
+                "misconceptionId": "c5-evs-ch05-t02-m2",
+                "correct": false
+              },
+              {
+                "text": "A king born into the royal family",
                 "misconceptionId": "c5-evs-ch05-t02-m3",
                 "correct": false
               },
@@ -4985,11 +4992,6 @@
                 "text": "The people, by voting in elections",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "The British government",
-                "misconceptionId": "c5-evs-ch05-t02-m2",
-                "correct": false
               }
             ]
           },
@@ -5014,8 +5016,8 @@
             "sher nahi, baagh"
           ],
           "hints": [
-            "Ask which striped big cat lives in Indian forests",
-            "Point to the bird that spreads its tail feathers like a fan",
+            "Ask them to picture the symbols on stamps, coins or a national-symbols chart",
+            "Point to the three parts one at a time: an animal, a bird, a flower",
             "Prompt: animal ___, bird ___, flower ___",
             "Assert: tiger, peacock and lotus"
           ],
@@ -5023,7 +5025,7 @@
           "verified": {
             "solverAnswer": "Tiger, peacock, lotus",
             "agrees": true,
-            "note": "HINT LEAK (mild): h1 'striped big cat' and h2 'bird that fans its tail' name tiger and peacock for a pure-recall item."
+            "note": "RESOLVED: h1/h2 no longer describe the tiger and peacock."
           }
         },
         {
@@ -5063,15 +5065,15 @@
             "Rabindranath Tagore, Bankim Chandra Chattopadhyay"
           ],
           "hints": [
-            "Ask which famous poet from Bengal won a Nobel Prize",
-            "Point to the anthem sung at assembly",
+            "Ask what they remember being told about the anthem at school",
+            "Point to the two songs separately: the one sung at assembly, and the national song",
             "Prompt: the anthem is by ___; the song is by ___",
             "Assert: Tagore wrote the anthem; Bankim Chandra Chattopadhyay wrote the national song"
           ],
           "verified": {
             "solverAnswer": "Rabindranath Tagore; Bankim Chandra Chatterjee",
             "agrees": true,
-            "note": "HINT LEAK: h1 'Nobel Prize poet from Bengal' gives Tagore."
+            "note": "RESOLVED: removed Nobel/Bengal cue for Tagore."
           }
         },
         {
@@ -5296,15 +5298,15 @@
             "bargad aur susu"
           ],
           "hints": [
-            "Ask which tree has roots hanging down from its branches",
-            "Point to an animal that lives in the Ganga",
+            "Ask them to recall the national-symbols chart from last time",
+            "Point to the two parts one at a time: first the tree, then the water animal",
             "Prompt: the tree is the ___, the water animal is the river ___",
             "Assert: banyan tree and Ganges river dolphin"
           ],
           "verified": {
             "solverAnswer": "Banyan; Ganges river dolphin",
             "agrees": true,
-            "note": "HINT LEAK: h1 'roots hanging from branches' gives banyan on a recall item."
+            "note": "RESOLVED: removed hanging-roots cue for banyan and Ganga cue."
           }
         }
       ],
@@ -5393,17 +5395,17 @@
             "prompt_hi": "Andaman dweepon pe tumhe kya-kya milega?",
             "options": [
               {
-                "text": "Only sand and sea, with no forests or animals",
-                "misconceptionId": "c5-evs-ch06-t01-m1",
-                "correct": false
-              },
-              {
-                "text": "Thick rainforests, mangroves, coral reefs, and animals like sea turtles, dugongs and many birds",
+                "text": "Rainforests, mangroves, coral reefs, turtles and birds",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Only coconut trees and nothing else",
+                "text": "Only sand and sea, with no forests or any animals",
+                "misconceptionId": "c5-evs-ch06-t01-m1",
+                "correct": false
+              },
+              {
+                "text": "Only coconut trees on sand, and nothing else at all",
                 "misconceptionId": "c5-evs-ch06-t01-m1",
                 "correct": false
               }
@@ -5426,17 +5428,17 @@
             "prompt_hi": "Dweep ko kaun sambhaal ke rakhta hai?",
             "options": [
               {
-                "text": "It floats on the sea like a boat",
+                "text": "It floats on top of the sea, just like a boat",
                 "misconceptionId": "c5-evs-ch06-t01-m2",
                 "correct": false
               },
               {
-                "text": "It is the top of land rising from the sea floor; it is joined to the Earth under the water",
+                "text": "It is land rising from the sea floor, joined below",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Strong waves push it up",
+                "text": "Strong waves keep pushing it up from underneath",
                 "misconceptionId": "c5-evs-ch06-t01-m2",
                 "correct": false
               }
@@ -5459,17 +5461,17 @@
             "prompt_hi": "Coral (moonga) kya hota hai?",
             "options": [
               {
-                "text": "A colourful stone",
+                "text": "A colourful stone that forms under the sea",
                 "misconceptionId": "c5-evs-ch06-t01-m3",
                 "correct": false
               },
               {
-                "text": "A plant growing in the sea",
+                "text": "A kind of plant that grows on the sea floor",
                 "misconceptionId": "c5-evs-ch06-t01-m3",
                 "correct": false
               },
               {
-                "text": "Made by tiny animals called coral polyps that build hard skeletons",
+                "text": "Hard skeletons built by tiny animals called polyps",
                 "misconceptionId": null,
                 "correct": true
               }
@@ -5492,17 +5494,17 @@
             "prompt_hi": "Monsoon ki hawa Arabian Sea se Western Ghats ki taraf aati hai. Sabse zyada baarish kahaan girti hai?",
             "options": [
               {
-                "text": "Equally on both sides",
-                "misconceptionId": "c5-evs-ch06-t01-m4",
-                "correct": false
-              },
-              {
-                "text": "On the side facing the sea, the west; the far side gets much less",
+                "text": "On the west side, facing the sea",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Only on the far, eastern side",
+                "text": "Mostly on the far, eastern side",
+                "misconceptionId": "c5-evs-ch06-t01-m4",
+                "correct": false
+              },
+              {
+                "text": "Equally on both sides of the hills",
                 "misconceptionId": "c5-evs-ch06-t01-m4",
                 "correct": false
               }
@@ -5572,8 +5574,8 @@
           "skillId": "c5-evs-ch06-t01-s1",
           "kind": "predict",
           "difficulty": 2,
-          "prompt_en": "Put a big stone in a bucket of water so its top sticks out above the water: a model island. Predict: if you push the top gently, will it float away like a boat? What is holding it up?",
-          "prompt_hi": "Paani ki baalti mein ek bada patthar aise rakho ki uska upar wala hissa paani ke bahar dikhe: ye hua model dweep. Guess karo: upar se halka dhakka doge toh kya ye naav ki tarah tair ke chala jayega? Ise kaun sambhaal raha hai?",
+          "prompt_en": "Ask an adult to put a brick, or a stone about the size of your fist, into a bucket with a little water so its top sticks out above the water: a model island. Predict: if you push the top gently, will it float away like a boat? What is holding it up?",
+          "prompt_hi": "Kisi bade se kaho ki ek eent, ya mutthi jitna patthar, thode paani wali baalti mein aise rakhein ki uska upar wala hissa paani ke bahar dikhe: ye hua model dweep. Guess karo: upar se halka dhakka doge toh kya ye naav ki tarah tair ke chala jayega? Ise kaun sambhaal raha hai?",
           "answer": "No, it stays where it is, because it rests on the bottom of the bucket. Real islands are the tops of land or mountains rising from the sea floor; they do not float.",
           "acceptable": [
             "no, it rests on the bottom",
@@ -5582,7 +5584,7 @@
           ],
           "hints": [
             "Ask for a guess before pushing",
-            "Point to where the stone touches the bucket",
+            "Point to where the stone or brick touches the bucket",
             "Prompt: the stone rests on the ___, just as an island rests on the sea ___",
             "Assert: islands are land joined to the sea floor; they do not float"
           ],
@@ -5590,7 +5592,7 @@
           "verified": {
             "solverAnswer": "Will not float away; rests on bucket bottom/ground (islands attached to sea floor)",
             "agrees": true,
-            "note": "SAFETY (low): 'a big stone' in a bucket of water invites lifting a heavy stone and dropping it. Use a smaller stone or brick and ask an adult to place it."
+            "note": "RESOLVED: rewritten for safety: brick or fist-sized stone, placed by an adult, shallow water. Answer unchanged."
           }
         },
         {
@@ -5940,17 +5942,17 @@
             "prompt_hi": "Har saal hazaaron tourist low tide pe coral reef ke upar chalte hain. Kya hota hai?",
             "options": [
               {
-                "text": "Nothing; walking on coral doesn't hurt it",
+                "text": "The coral grows faster because it gets touched",
                 "misconceptionId": "c5-evs-ch06-t02-m1",
                 "correct": false
               },
               {
-                "text": "The living coral breaks and dies, and fish lose their home",
+                "text": "The living coral breaks and dies; fish lose homes",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "The coral grows faster when it is touched",
+                "text": "Nothing; walking on coral does not hurt it at all",
                 "misconceptionId": "c5-evs-ch06-t02-m1",
                 "correct": false
               }
@@ -5973,19 +5975,19 @@
             "prompt_hi": "Ek mashhoor trek raaste pe ek season mein 10,000 trekker 'bas ek' wrapper giraate hain. Season ke aakhir mein raasta kaisa dikhega?",
             "options": [
               {
-                "text": "Clean; one wrapper is nothing",
+                "text": "Clean; the wind will blow all of them away",
                 "misconceptionId": "c5-evs-ch06-t02-m2",
                 "correct": false
               },
               {
-                "text": "Thousands of wrappers pile up, spoil the place and harm animals",
+                "text": "Still clean, because one wrapper each is nothing",
+                "misconceptionId": "c5-evs-ch06-t02-m2",
+                "correct": false
+              },
+              {
+                "text": "Thousands of wrappers pile up and harm animals",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "The wind will blow it all away",
-                "misconceptionId": "c5-evs-ch06-t02-m2",
-                "correct": false
               }
             ]
           },
@@ -6006,17 +6008,17 @@
             "prompt_hi": "Pahadi sadak pe bandar bhookhe lag rahe hain. Sabse samajhdaari aur dayaa wala kaam kya hai?",
             "options": [
               {
-                "text": "Feed them chips and biscuits",
-                "misconceptionId": "c5-evs-ch06-t02-m3",
-                "correct": false
-              },
-              {
-                "text": "Don't feed them; human food makes them sick and they start snatching food from people",
+                "text": "Don't feed them; human food makes them sick",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Feed them only bread",
+                "text": "Feed them chips and biscuits, since they're hungry",
+                "misconceptionId": "c5-evs-ch06-t02-m3",
+                "correct": false
+              },
+              {
+                "text": "Feed them only bread, because bread is healthy",
                 "misconceptionId": "c5-evs-ch06-t02-m3",
                 "correct": false
               }
@@ -6433,17 +6435,17 @@
             "prompt_hi": "Energy ko samjhaane ka sabse sahi tareeka inmein se kaunsa hai?",
             "options": [
               {
-                "text": "A kind of liquid or powder you can see inside batteries",
+                "text": "A liquid or powder you can see inside batteries",
                 "misconceptionId": "c5-evs-ch07-t01-m1",
                 "correct": false
               },
               {
-                "text": "Something we cannot see that makes things move, light up, heat up or make sound",
+                "text": "Something unseen that makes things move, glow or heat",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Only something that comes out of a plug",
+                "text": "Only something that comes out of a wall plug",
                 "misconceptionId": "c5-evs-ch07-t01-m2",
                 "correct": false
               }
@@ -6466,19 +6468,19 @@
             "prompt_hi": "Jo hawa tumhari patang udaati hai, kya usmein energy hai?",
             "options": [
               {
-                "text": "No, only things plugged into electricity have energy",
+                "text": "No; only things plugged into electricity have it",
                 "misconceptionId": "c5-evs-ch07-t01-m2",
                 "correct": false
               },
               {
-                "text": "Yes, moving air has energy that can lift a kite and turn windmills",
+                "text": "No; only living things like us have energy",
+                "misconceptionId": "c5-evs-ch07-t01-m2",
+                "correct": false
+              },
+              {
+                "text": "Yes; moving air has energy that can lift a kite",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "No, only living things have energy",
-                "misconceptionId": "c5-evs-ch07-t01-m2",
-                "correct": false
               }
             ]
           },
@@ -6499,17 +6501,17 @@
             "prompt_hi": "Tumhari roti ki energy sabse pehle kahaan se aayi?",
             "options": [
               {
-                "text": "From the roti itself; it has nothing to do with the Sun",
-                "misconceptionId": "c5-evs-ch07-t01-m3",
-                "correct": false
-              },
-              {
-                "text": "From sunlight, which the wheat plant used to make its food",
+                "text": "From sunlight that the wheat plant used for food",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "From the gas stove that cooked it",
+                "text": "From the gas stove flame that cooked it",
+                "misconceptionId": "c5-evs-ch07-t01-m3",
+                "correct": false
+              },
+              {
+                "text": "From the wheat flour itself, not from the Sun",
                 "misconceptionId": "c5-evs-ch07-t01-m3",
                 "correct": false
               }
@@ -6532,17 +6534,17 @@
             "prompt_hi": "Torch mein bijli ka current battery se bulb tak jaata hai. Phir current ka kya hota hai?",
             "options": [
               {
-                "text": "It is used up in the bulb and stops there",
+                "text": "It leaks out of the hot bulb into the air",
                 "misconceptionId": "c5-evs-ch07-t01-m4",
                 "correct": false
               },
               {
-                "text": "It flows all the way round the loop back to the battery; the battery's energy turns into light and heat in the bulb",
+                "text": "It flows round the loop and back to the battery",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "It leaks out of the bulb into the air",
+                "text": "It gets used up in the bulb and stops there",
                 "misconceptionId": "c5-evs-ch07-t01-m4",
                 "correct": false
               }
@@ -6982,19 +6984,19 @@
             "prompt_hi": "Tumhare kamre ka pankha roz 2 ghante faltu chalta hai jab koi nahi hota. Kya use band karna farak daalta hai?",
             "options": [
               {
-                "text": "No, one fan uses almost nothing",
+                "text": "Only if the fan is broken or making a noise",
                 "misconceptionId": "c5-evs-ch07-t02-m1",
                 "correct": false
               },
               {
-                "text": "Yes; over a month those hours add up to a lot of electricity, and many homes doing it saves even more",
+                "text": "No; one fan uses almost nothing, so it is fine",
+                "misconceptionId": "c5-evs-ch07-t02-m1",
+                "correct": false
+              },
+              {
+                "text": "Yes; those hours add up to a lot of electricity",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "Only if the fan is broken",
-                "misconceptionId": "c5-evs-ch07-t02-m1",
-                "correct": false
               }
             ]
           },
@@ -7015,17 +7017,17 @@
             "prompt_hi": "TV ko remote se band kiya hai aur ek chhoti laal batti jal rahi hai. Kya woh bijli le raha hai?",
             "options": [
               {
-                "text": "No, it is off",
-                "misconceptionId": "c5-evs-ch07-t02-m2",
-                "correct": false
-              },
-              {
                 "text": "Yes, a little; switching off at the wall stops it",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Only during the daytime",
+                "text": "No; it was switched off, so it uses nothing",
+                "misconceptionId": "c5-evs-ch07-t02-m2",
+                "correct": false
+              },
+              {
+                "text": "Only during the daytime, when the sun is out",
                 "misconceptionId": "c5-evs-ch07-t02-m2",
                 "correct": false
               }
@@ -7048,12 +7050,12 @@
             "prompt_hi": "Tumhare ghar ki bijli kahaan se aati hai?",
             "options": [
               {
-                "text": "From the wall socket; it is made inside the walls and never runs out",
+                "text": "From the socket, which makes it and never runs out",
                 "misconceptionId": "c5-evs-ch07-t02-m3",
                 "correct": false
               },
               {
-                "text": "From power stations far away, many of which burn coal; it reaches us through wires",
+                "text": "From far-off power stations, many burning coal",
                 "misconceptionId": null,
                 "correct": true
               },
@@ -7081,7 +7083,12 @@
             "prompt_hi": "Inmein se kya kabhi khatam NAHI hoga?",
             "options": [
               {
-                "text": "Coal",
+                "text": "Coal from mines",
+                "misconceptionId": "c5-evs-ch07-t02-m4",
+                "correct": false
+              },
+              {
+                "text": "Petrol from oil",
                 "misconceptionId": "c5-evs-ch07-t02-m4",
                 "correct": false
               },
@@ -7089,11 +7096,6 @@
                 "text": "Sunlight",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "Petrol",
-                "misconceptionId": "c5-evs-ch07-t02-m4",
-                "correct": false
               }
             ]
           },
@@ -7527,18 +7529,18 @@
             "prompt_hi": "Kanchipuram silk ki saree aam taur pe kaise banti hai?",
             "options": [
               {
-                "text": "Only by big machines in factories",
-                "misconceptionId": "c5-evs-ch08-t01-m1",
-                "correct": false
-              },
-              {
-                "text": "By skilled weavers on handlooms, often in their homes in Kanchipuram",
+                "text": "By skilled weavers on handlooms, often at home",
                 "misconceptionId": null,
                 "correct": true
               },
               {
                 "text": "It grows as cloth on the silk cotton tree",
                 "misconceptionId": "c5-evs-ch08-t01-m2",
+                "correct": false
+              },
+              {
+                "text": "Only by big machines in large factories",
+                "misconceptionId": "c5-evs-ch08-t01-m1",
                 "correct": false
               }
             ]
@@ -7560,7 +7562,7 @@
             "prompt_hi": "Resham (silk) kahaan se aata hai?",
             "options": [
               {
-                "text": "From the silk cotton (semal) tree",
+                "text": "From the soft hair of a sheep",
                 "misconceptionId": "c5-evs-ch08-t01-m2",
                 "correct": false
               },
@@ -7570,7 +7572,7 @@
                 "correct": true
               },
               {
-                "text": "From a sheep's hair",
+                "text": "From the silk cotton (semal) tree",
                 "misconceptionId": "c5-evs-ch08-t01-m2",
                 "correct": false
               }
@@ -7593,19 +7595,19 @@
             "prompt_hi": "Kapaas ke rui ko mazboot dhaage mein kaise badla jaata hai?",
             "options": [
               {
-                "text": "By pulling one long hair out of the cotton ball",
+                "text": "By gluing the short fibres together in a line",
                 "misconceptionId": "c5-evs-ch08-t01-m3",
                 "correct": false
               },
               {
-                "text": "By twisting many short fibres together, which is called spinning",
+                "text": "By pulling one long hair out of the ball",
+                "misconceptionId": "c5-evs-ch08-t01-m3",
+                "correct": false
+              },
+              {
+                "text": "By twisting many short fibres together",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "By gluing the fibres in a line",
-                "misconceptionId": "c5-evs-ch08-t01-m3",
-                "correct": false
               }
             ]
           },
@@ -7626,17 +7628,17 @@
             "prompt_hi": "Sweater aur cotton ki chaadar dono kapde hain. Dono kaise bante hain?",
             "options": [
               {
-                "text": "Both are woven in the same way",
-                "misconceptionId": "c5-evs-ch08-t01-m4",
-                "correct": false
-              },
-              {
-                "text": "The bedsheet is woven with two sets of threads crossing; the sweater is knitted by looping one long yarn",
+                "text": "The sheet is woven; the sweater is knitted in loops",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Both are knitted",
+                "text": "Both are woven on a loom in exactly the same way",
+                "misconceptionId": "c5-evs-ch08-t01-m4",
+                "correct": false
+              },
+              {
+                "text": "Both are knitted from one long yarn in loops",
                 "misconceptionId": "c5-evs-ch08-t01-m4",
                 "correct": false
               }
@@ -7662,7 +7664,7 @@
           ],
           "hints": [
             "Ask which one grows in a field in fluffy white balls",
-            "Point to the silkworm and the sheep",
+            "Point to each fibre in turn and ask: did it grow in a field, or come from an animal?",
             "Prompt: cotton and ___ come from plants; silk and ___ come from animals",
             "Assert: cotton and jute are plant fibres; silk and wool are animal fibres"
           ],
@@ -7670,7 +7672,7 @@
           "verified": {
             "solverAnswer": "Plants: cotton, jute; animals: silk, wool",
             "agrees": true,
-            "note": "HINT LEAK: h2 'Point to the silkworm and the sheep' answers the animal-fibre half."
+            "note": "RESOLVED: h2 no longer names the silkworm and sheep."
           }
         },
         {
@@ -8065,17 +8067,17 @@
             "prompt_hi": "Tumhare pasandeeda kurte ki side silaai thodi si khul gayi hai. Sabse achha kya hai?",
             "options": [
               {
-                "text": "Throw it away; torn clothes are useless",
+                "text": "Throw it away; torn clothes are of no use",
                 "misconceptionId": "c5-evs-ch08-t02-m1",
                 "correct": false
               },
               {
-                "text": "Stitch the seam back with an adult's help and keep wearing it",
+                "text": "Stitch the seam back with an adult's help",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Hide it in the cupboard and never use it again",
+                "text": "Hide it in the cupboard and never wear it again",
                 "misconceptionId": "c5-evs-ch08-t02-m1",
                 "correct": false
               }
@@ -8098,19 +8100,19 @@
             "prompt_hi": "Jo silaai bahut kheenchi jaayegi, jaise bag ki patti, uske liye kaunsi silaai behtar hai?",
             "options": [
               {
-                "text": "Running stitch; any stitch works the same",
+                "text": "Running stitch; any stitch holds just the same",
                 "misconceptionId": "c5-evs-ch08-t02-m2",
                 "correct": false
               },
               {
-                "text": "Back stitch, because each stitch overlaps and leaves no gaps",
+                "text": "No stitch at all, just one big knot at the end",
+                "misconceptionId": "c5-evs-ch08-t02-m2",
+                "correct": false
+              },
+              {
+                "text": "Back stitch, as each stitch overlaps with no gaps",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "No stitch at all, just a knot",
-                "misconceptionId": "c5-evs-ch08-t02-m2",
-                "correct": false
               }
             ]
           },
@@ -8131,18 +8133,18 @@
             "prompt_hi": "Gehre neele rang ka school sweater dhula hai. Use kaise sukhaana chahiye?",
             "options": [
               {
-                "text": "In the hottest sun for the whole day",
-                "misconceptionId": "c5-evs-ch08-t02-m3",
-                "correct": false
-              },
-              {
-                "text": "Flat, in the shade or inside out, so the colour doesn't fade",
+                "text": "In the shade, inside out, so the colour stays",
                 "misconceptionId": null,
                 "correct": true
               },
               {
                 "text": "Fold it while wet and put it in the cupboard",
                 "misconceptionId": "c5-evs-ch08-t02-m4",
+                "correct": false
+              },
+              {
+                "text": "In the hottest sun for the whole day, to dry fast",
+                "misconceptionId": "c5-evs-ch08-t02-m3",
                 "correct": false
               }
             ]
@@ -8164,17 +8166,17 @@
             "prompt_hi": "Baarish ke din kapde lagbhag sookh gaye hain par thode geele hain. Kya unhe tah karke almari mein rakh dena chahiye?",
             "options": [
               {
-                "text": "Yes, they will dry inside",
+                "text": "Yes, if you spray some perfume on them first",
                 "misconceptionId": "c5-evs-ch08-t02-m4",
                 "correct": false
               },
               {
-                "text": "No; damp clothes in a closed cupboard grow mould and smell, so dry them fully first",
+                "text": "No; dry them fully first, or they grow mould",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Yes, if you spray some perfume",
+                "text": "Yes; they will finish drying inside the cupboard",
                 "misconceptionId": "c5-evs-ch08-t02-m4",
                 "correct": false
               }
@@ -8271,8 +8273,8 @@
           "skillId": "c5-evs-ch08-t02-s2",
           "kind": "predict",
           "difficulty": 3,
-          "prompt_en": "Wet two old handkerchiefs. Fold one and keep it inside a closed box; hang the other open in a breezy place. Predict: after two days, which one will smell musty or show spots?",
-          "prompt_hi": "Do purane rumaal geele karo. Ek ko tah karke band dibbe mein rakho; doosre ko hawa wali jagah khula taang do. Guess karo: do din baad kaunsa badboo dega ya us pe dhabbe dikhenge?",
+          "prompt_en": "With an adult, wet two old handkerchiefs. Fold one and keep it inside a closed box; hang the other open in a breezy place. Predict: after two days, which one will show spots or a musty smell? To check, the adult opens the box while you look from a little distance: do not sniff close or touch any spots. Then the adult seals that cloth in a bag for the bin, and everyone washes hands.",
+          "prompt_hi": "Kisi bade ke saath do purane rumaal geele karo. Ek ko tah karke band dibbe mein rakho; doosre ko hawa wali jagah khula taang do. Guess karo: do din baad kaunse pe dhabbe dikhenge ya seelan ki smell aayegi? Check karte waqt dibba bada khole aur tum thodi door se dekho: paas se soongho mat, dhabbe chhoona mat. Phir bada us rumaal ko band thaili mein karke kachre mein daale, aur sab haath dho lein.",
           "answer": "The one in the closed box: it stays damp and warm with no air, so mould (microbes) grows on it; the hanging one dries and stays fresh.",
           "acceptable": [
             "the one in the box",
@@ -8289,7 +8291,7 @@
           "verified": {
             "solverAnswer": "Closed box one",
             "agrees": true,
-            "note": "SAFETY: deliberately growing mould on a damp cloth and asking the child to smell it. Add: keep the box closed, adult opens it, do not sniff close or touch the spots (spores, asthma/allergy), wash hands, bin it sealed. Judge by looking, not sniffing."
+            "note": "RESOLVED: rewritten for safety: adult opens the box, look from a distance, no close sniffing or touching (spores, asthma, allergy), sealed disposal, hand-washing. Answer unchanged."
           }
         },
         {
@@ -8514,8 +8516,8 @@
             "kachchi silaai"
           ],
           "hints": [
-            "Ask which lacing-card row looked dashed",
-            "Point to the stitch that goes in and out",
+            "Ask them to recall the lacing cards from last time",
+            "Offer two names to choose from: running stitch or back stitch",
             "Prompt: the ___ stitch leaves gaps",
             "Assert: the running stitch leaves gaps"
           ],
@@ -8523,7 +8525,7 @@
           "verified": {
             "solverAnswer": "Running stitch",
             "agrees": true,
-            "note": "HINT LEAK: h1 'which lacing-card row looked dashed' gives the answer on a recall item."
+            "note": "RESOLVED: h1 no longer describes the dashed row; h2 is a two-way choice instead of a description."
           }
         }
       ],
@@ -8613,19 +8615,19 @@
             "prompt_hi": "Aadhi raat ko Suraj kahaan hota hai?",
             "options": [
               {
-                "text": "Hiding behind the mountains or under the ground",
+                "text": "Switched off until it is morning again",
                 "misconceptionId": "c5-evs-ch09-t01-m1",
                 "correct": false
               },
               {
-                "text": "Still shining, on the other side of the Earth, which is having day",
+                "text": "Hiding behind the mountains for the night",
+                "misconceptionId": "c5-evs-ch09-t01-m1",
+                "correct": false
+              },
+              {
+                "text": "Shining on the other side of the Earth",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "Switched off until morning",
-                "misconceptionId": "c5-evs-ch09-t01-m1",
-                "correct": false
               }
             ]
           },
@@ -8646,17 +8648,17 @@
             "prompt_hi": "Subah se shaam tak Suraj aasmaan mein chalta hua kyon lagta hai?",
             "options": [
               {
-                "text": "The Sun travels around the Earth every day",
-                "misconceptionId": "c5-evs-ch09-t01-m2",
-                "correct": false
-              },
-              {
-                "text": "The Earth spins, so our place turns towards the Sun and then away from it",
+                "text": "The Earth spins, turning us towards and away from it",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "The Moon pushes the Sun along",
+                "text": "The Sun travels all the way around the Earth daily",
+                "misconceptionId": "c5-evs-ch09-t01-m2",
+                "correct": false
+              },
+              {
+                "text": "The Moon pushes the Sun along the sky each day",
                 "misconceptionId": "c5-evs-ch09-t01-m3",
                 "correct": false
               }
@@ -8679,7 +8681,7 @@
             "prompt_hi": "Raat kis wajah se hoti hai?",
             "options": [
               {
-                "text": "The Moon comes in front of the Sun",
+                "text": "The Moon comes in front of the Sun each evening",
                 "misconceptionId": "c5-evs-ch09-t01-m3",
                 "correct": false
               },
@@ -8689,7 +8691,7 @@
                 "correct": true
               },
               {
-                "text": "Thick clouds block the Sun",
+                "text": "Thick clouds cover the Sun and block its light",
                 "misconceptionId": "c5-evs-ch09-t01-m3",
                 "correct": false
               }
@@ -8712,12 +8714,17 @@
             "prompt_hi": "India mein raat ke 9 baje hain. New York, USA mein din ka kaunsa samay hoga?",
             "options": [
               {
-                "text": "Also night, 9 pm, everywhere",
+                "text": "Also 9 pm at night, the same time as everywhere",
                 "misconceptionId": "c5-evs-ch09-t01-m4",
                 "correct": false
               },
               {
-                "text": "Daytime, around late morning, because the USA is on the other side of the Earth",
+                "text": "Night too, since the Sun has gone under the ground",
+                "misconceptionId": "c5-evs-ch09-t01-m1",
+                "correct": false
+              },
+              {
+                "text": "Late morning, as the USA is on Earth's far side",
                 "misconceptionId": null,
                 "correct": true
               }
@@ -8929,24 +8936,25 @@
           "skillId": "c5-evs-ch09-t01-s3",
           "kind": "near_transfer",
           "difficulty": 2,
-          "prompt_en": "Your cousin in Dubai video-calls you at 8 pm in India. Will it be day or night there? What about your uncle in the USA?",
-          "prompt_hi": "Dubai mein rehne wala tumhara cousin India ke raat 8 baje video call karta hai. Wahaan din hoga ya raat? Aur USA wale chacha ke yahaan?",
-          "answer": "Dubai is a little to the west of India and about one and a half hours behind, so it is early evening there too (about 6:30 pm). The USA is on the far side of the Earth, so it is morning there.",
+          "prompt_en": "Your cousin in Dubai video-calls you at 8 pm in India. About what time is it there, and is it day or evening? What about your uncle in the USA: morning or night?",
+          "prompt_hi": "Dubai mein rehne wala tumhara cousin India ke raat 8 baje video call karta hai. Wahaan lagbhag kitne baje honge, din hai ya shaam? Aur USA wale chacha ke yahaan: subah hai ya raat?",
+          "answer": "Dubai is a little to the west of India and about one and a half hours behind, so it is about 6:30 pm there: early evening. Whether the Sun has already set depends on the season: still light in summer, already dark in winter. The USA is on the far side of the Earth, so it is morning there.",
           "acceptable": [
-            "evening in Dubai, morning in the USA",
-            "Dubai mein shaam, USA mein subah"
+            "about 6:30 pm, evening in Dubai; morning in the USA",
+            "Dubai mein shaam, USA mein subah",
+            "evening in Dubai, light or dark depends on the season"
           ],
           "hints": [
             "Ask which place is near India and which is far on the globe",
             "Point to the lit and dark halves",
-            "Prompt: Dubai is ___ to India so it is also evening; the USA is on the ___ side",
-            "Assert: Dubai has evening too; the USA has morning"
+            "Prompt: Dubai is ___ to India so it is early evening there too; the USA is on the ___ side",
+            "Assert: Dubai is early evening (light or dark depends on the season); the USA has morning"
           ],
           "targetsMisconception": "c5-evs-ch09-t01-m4",
           "verified": {
             "solverAnswer": "Dubai ~6:30 pm: evening/dusk (day ending); USA: morning (day)",
-            "agrees": false,
-            "note": "Dubai at 8 pm IST is about 6:30 pm: before sunset in summer, after sunset in winter, so 'day or night' has no single answer. Answer says 'early evening', which is fine, but add 'depends on the season' or change the call time. USA part (morning) is correct."
+            "agrees": true,
+            "note": "RESOLVED: answer now says ~6:30 pm early evening, light or dark depends on season; prompt asks time of day rather than a binary day/night for Dubai."
           }
         },
         {
@@ -9148,18 +9156,18 @@
             "prompt_hi": "Uttar Bharat mein May aur June mein itni garmi kyon hoti hai?",
             "options": [
               {
-                "text": "The Earth comes closest to the Sun then",
-                "misconceptionId": "c5-evs-ch09-t02-m1",
-                "correct": false
-              },
-              {
-                "text": "Our half of the Earth leans towards the Sun, so sunlight falls more directly and the days are longer",
+                "text": "Our half of the Earth leans towards the Sun then",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "The Sun burns hotter in summer",
+                "text": "The Sun itself burns hotter in the summer months",
                 "misconceptionId": "c5-evs-ch09-t02-m3",
+                "correct": false
+              },
+              {
+                "text": "The Earth comes closest to the Sun in those months",
+                "misconceptionId": "c5-evs-ch09-t02-m1",
                 "correct": false
               }
             ]
@@ -9181,14 +9189,19 @@
             "prompt_hi": "December mein India mein sardi hoti hai. Australia ke bachchon ke yahaan kaunsa mausam hota hai?",
             "options": [
               {
-                "text": "Winter too, because it is the same everywhere",
-                "misconceptionId": "c5-evs-ch09-t02-m2",
+                "text": "Winter, because Australia is farther from the Sun",
+                "misconceptionId": "c5-evs-ch09-t02-m1",
                 "correct": false
               },
               {
-                "text": "Summer, because the southern half of the Earth then leans towards the Sun",
+                "text": "Summer, as Earth's southern half leans to the Sun",
                 "misconceptionId": null,
                 "correct": true
+              },
+              {
+                "text": "Winter too, since seasons are the same everywhere",
+                "misconceptionId": "c5-evs-ch09-t02-m2",
+                "correct": false
               }
             ]
           },
@@ -9209,19 +9222,19 @@
             "prompt_hi": "Kya Suraj khud garmi aur sardi mein apni garmi badalta hai?",
             "options": [
               {
-                "text": "Yes, it burns stronger in summer",
+                "text": "Yes; the Sun itself cools down in the winter",
                 "misconceptionId": "c5-evs-ch09-t02-m3",
                 "correct": false
               },
               {
-                "text": "No, the Sun stays about the same; what changes is how directly its light falls on us and how long the day is",
+                "text": "Yes; it burns much stronger in the summer months",
+                "misconceptionId": "c5-evs-ch09-t02-m3",
+                "correct": false
+              },
+              {
+                "text": "No; what changes is how directly its light falls",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "Yes, it cools down in winter",
-                "misconceptionId": "c5-evs-ch09-t02-m3",
-                "correct": false
               }
             ]
           },
@@ -9242,14 +9255,19 @@
             "prompt_hi": "March mein school ke paas ke palash ke ped pe ek bhi patta nahi hai par chamakdaar naarangi phool hain. Kya ped mar gaya hai?",
             "options": [
               {
-                "text": "Yes, trees with no leaves are dead",
+                "text": "No; it drops leaves in the dry season and is alive",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "Yes; a tree with no leaves at all must be dead",
                 "misconceptionId": "c5-evs-ch09-t02-m4",
                 "correct": false
               },
               {
-                "text": "No; it sheds its leaves in the dry season and grows new ones later. It is alive and flowering",
-                "misconceptionId": null,
-                "correct": true
+                "text": "Yes; the flowers are the last thing before it dies",
+                "misconceptionId": "c5-evs-ch09-t02-m4",
+                "correct": false
               }
             ]
           },
@@ -9675,17 +9693,17 @@
             "prompt_hi": "Delhi se door kheton mein kisaan fasal ki parali jalaate hain. Kya iska asar Delhi pe pad sakta hai?",
             "options": [
               {
-                "text": "No, the smoke stays over those fields",
+                "text": "No; the smoke stays over the fields where it is made",
                 "misconceptionId": "c5-evs-ch10-t01-m1",
                 "correct": false
               },
               {
-                "text": "Yes, winds carry the smoke to Delhi and other cities, making the air harmful to breathe",
+                "text": "Yes; winds carry the smoke to Delhi and other cities",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Only if the farmers live in Delhi",
+                "text": "Only if the farmers themselves live in Delhi",
                 "misconceptionId": "c5-evs-ch10-t01-m1",
                 "correct": false
               }
@@ -9708,19 +9726,19 @@
             "prompt_hi": "Jungle ki nadi ka paani kiska hai?",
             "options": [
               {
-                "text": "Only the people who live nearby",
+                "text": "Only to the people who live close to the river",
                 "misconceptionId": "c5-evs-ch10-t01-m2",
                 "correct": false
               },
               {
-                "text": "All the living things that depend on it: people, animals, fish and plants",
+                "text": "To whoever is first to build a dam across it",
+                "misconceptionId": "c5-evs-ch10-t01-m2",
+                "correct": false
+              },
+              {
+                "text": "Every living thing that needs it, not just people",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "Whoever builds a dam on it first",
-                "misconceptionId": "c5-evs-ch10-t01-m2",
-                "correct": false
               }
             ]
           },
@@ -9741,17 +9759,17 @@
             "prompt_hi": "Brahmaputra Tibet se shuru hoti hai, India se guzarti hai aur phir Bangladesh mein jaati hai. Agar India ka koi shehar isme kachra daale, toh asar kis pe padega?",
             "options": [
               {
-                "text": "Only India, because the river is in India",
-                "misconceptionId": "c5-evs-ch10-t01-m3",
-                "correct": false
-              },
-              {
-                "text": "People and animals downstream, including in Bangladesh",
+                "text": "Everyone downstream, including in Bangladesh",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Only Tibet, where the river starts",
+                "text": "Only Tibet, because that is where it starts",
+                "misconceptionId": "c5-evs-ch10-t01-m3",
+                "correct": false
+              },
+              {
+                "text": "Only India, because the dumping is in India",
                 "misconceptionId": "c5-evs-ch10-t01-m3",
                 "correct": false
               }
@@ -9931,7 +9949,7 @@
           ],
           "hints": [
             "Ask where a hornbill or a deer would go",
-            "Point to the shared-river web",
+            "Point to the food, water and shelter links between the forest and its animals",
             "Prompt: the forest is the animals' ___, and it gives everyone clean ___",
             "Assert: forests are shared homes and shared air and water"
           ],
@@ -9939,7 +9957,7 @@
           "verified": {
             "solverAnswer": "Animals live there; lose homes",
             "agrees": true,
-            "note": "STALE HINT: h2 'shared-river web' does not match this forest/animals prompt."
+            "note": "RESOLVED: stale shared-river hint replaced with forest links."
           }
         },
         {
@@ -10196,17 +10214,17 @@
             "prompt_hi": "Riya roz ek plastic thaili ki jagah kapde ka thaila use karti hai. Kya isse farak padta hai?",
             "options": [
               {
-                "text": "No, one person can't change anything",
+                "text": "Only if the government tells her to do it",
                 "misconceptionId": "c5-evs-ch10-t02-m1",
                 "correct": false
               },
               {
-                "text": "Yes; that is 365 bags a year, and if her whole class does it, thousands are saved",
+                "text": "Yes; that is 365 fewer plastic bags each year",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Only if the government tells her to",
+                "text": "No; one person on her own can't change anything",
                 "misconceptionId": "c5-evs-ch10-t02-m1",
                 "correct": false
               }
@@ -10229,19 +10247,19 @@
             "prompt_hi": "Dharti ke liye sabse achha kya hai?",
             "options": [
               {
-                "text": "Use a new plastic bottle every day and put it in the recycling bin",
-                "misconceptionId": "c5-evs-ch10-t02-m2",
-                "correct": false
-              },
-              {
-                "text": "Carry a steel bottle and refill it, so no new bottle is needed",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "Throw the bottle anywhere; someone will recycle it",
                 "misconceptionId": "c5-evs-ch10-t02-m2",
                 "correct": false
+              },
+              {
+                "text": "Use a new plastic bottle daily and recycle it",
+                "misconceptionId": "c5-evs-ch10-t02-m2",
+                "correct": false
+              },
+              {
+                "text": "Carry a steel bottle and keep refilling it",
+                "misconceptionId": null,
+                "correct": true
               }
             ]
           },
@@ -10262,17 +10280,17 @@
             "prompt_hi": "Tumhari class ne July mein 20 paudhe lagaaye. Ab aage kya hona chahiye?",
             "options": [
               {
-                "text": "Nothing; once planted, the job is done",
-                "misconceptionId": "c5-evs-ch10-t02-m3",
-                "correct": false
-              },
-              {
-                "text": "Water them, protect them with tree guards and check on them until they grow strong",
+                "text": "Water them and guard them until they grow strong",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Plant 20 more every week and forget about them",
+                "text": "Nothing more; once planted, the job is done",
+                "misconceptionId": "c5-evs-ch10-t02-m3",
+                "correct": false
+              },
+              {
+                "text": "Plant 20 more each week and forget about them",
                 "misconceptionId": "c5-evs-ch10-t02-m3",
                 "correct": false
               }
@@ -10295,12 +10313,12 @@
             "prompt_hi": "Gali mein plastic ke kachre ka dher pada hai. Kya karna chahiye?",
             "options": [
               {
-                "text": "Burn it so it disappears",
+                "text": "Burn it so that it disappears from the lane",
                 "misconceptionId": "c5-evs-ch10-t02-m4",
                 "correct": false
               },
               {
-                "text": "Sort it and give it to the waste collector or kabadiwala for recycling; never burn it",
+                "text": "Sort it and give it to the kabadiwala to recycle",
                 "misconceptionId": null,
                 "correct": true
               },

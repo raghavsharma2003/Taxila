@@ -164,7 +164,16 @@ async function respond(instructions) {
     curResp.t0 = performance.now();
     send({ type: "response.create", response: { instructions } });
   }
-  const done = await waitFor((e) => e.type === "response.done", 90_000);
+  let done = await waitFor((e) => e.type === "response.done", 90_000);
+  // A failed response (status_details logged) is retried as a real client would, up to 3 times; each failure is recorded.
+  for (let a = 0; done.response.status === "failed" && a < 3; a++) {
+    rec({ kind: "failed", turn, attempt: a, details: done.response.status_details });
+    say("failed", JSON.stringify(done.response.status_details).slice(0, 300));
+    await new Promise((r) => setTimeout(r, 2000 * (a + 1)));
+    curResp = { t0: performance.now(), ttfa: null, audioBytes: 0, itemId: null };
+    send({ type: "response.create", response: ARM === "D" ? {} : { instructions } });
+    done = await waitFor((e) => e.type === "response.done", 90_000);
+  }
   response = done.response;
   const r = curResp; curResp = null;
   if (ARM === "D" && sysItemId) { send({ type: "conversation.item.delete", item_id: sysItemId }); await waitFor((e) => e.type === "conversation.item.deleted" && e.item_id === sysItemId).catch(() => {}); sysItemId = null; }

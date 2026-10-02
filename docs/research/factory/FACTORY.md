@@ -9,7 +9,8 @@ below are the contract).
 `llm-game-generation.md` (LG, review P1–P17, B1–B9), `game-kit-frameworks.md` (GK, review K1–K17),
 `sandboxes-per-student.md` (SB, reviews R1–R15 and S1–S9), `auto-validation-qa.md` (QA, review R1–R26),
 `video-animation-gen.md` (VA, review R1–R14), `multimodal-orchestration.md` (MO, review R1–R14, B, C),
-`asset-pipeline.md` (AP, review PR1–PR29); plus `tech-and-market.md` §3, `content/genui-reliability.md`,
+`asset-pipeline.md` (AP, review PR1–PR29); plus `content/CONTENT-ENGINE.md` (the content build spec: tiers, frame
+SDK, bridge v2.1 — Forge conforms to it), `tech-and-market.md` §3, `content/genui-reliability.md`,
 `content/sandbox-telemetry.md`, `content/game-mechanics.md`, `content/songs-rhymes-audio.md`, `data/kits/`,
 `shared/contracts.ts`, `src/modules/host.tsx`, `context/*`.
 
@@ -81,6 +82,12 @@ source today · **[S]** secondary · **[U]** our estimate; must be measured befo
 | **G2** core build | a new *mechanic* (`mechanic.ts`, `view.ts`, `params.ts`) inside an existing archetype template | **`taxila-codex`** in the harness | P50 12–15 min, P90 > 20 min [U] | after Q0–Q10 **and** human review → then via G1 fills | LG review P5; OpenGame/Play2Code 65–69% [S] |
 | **G3** new archetype | template, generator, solver, feel presets | humans + agent, offline | days | two-key review + child playtest n ≥ 5 per band | GK §5, CAH P3.4 |
 | media | `explainer@1` docs, MP4 exports, Manim segments, worksheets, voice lines, images | template fills (live), offline jobs | live ≤ 5 s (templates only); offline minutes | per §7 | VA, AP |
+
+**Mapping to the content tiers (CONTENT-ENGINE §1):** a G2 core in review is a **T3 draft** (evidence weight 0); an
+approved core is a **`lib:` module** whose answers the host grades as a "T2 Forge game" (MathValue equivalence against
+the kit key, weight 0.75 until 50 sessions show ≥ 0.98 agreement); a G1 fill is that `lib:` module plus params,
+exactly as a T1 fill is an engine plus params. Forge's Q0–Q10 ladder is the game-artifact form of the content doc's
+T3 gates (V0–V9 + harness V1–V15); one harness runs both.
 
 **Personalisation lives in G1; novelty lives in G2/G3.** The G2 catalogue is keyed by *identity* (archetype × mechanic
 × objective class × band × device class) with no child data in it, so one reviewed core serves thousands of fills
@@ -240,10 +247,27 @@ create table forge_step (job_id uuid, stage text, round int, step int, call_id t
 | `WSS /forge/runner` | runners only (on the orchestrator) | §3.11 |
 
 **ModuleHost change (small):** `ModuleCommand.mount` gains optional `src` and `ticketId`. When present, the slot's
-iframe uses `src` (the play origin URL) instead of `/modules.html`; everything else (window `ready` → `init` +
-`MessagePort`, second-`load` kill, queued commands) stays as implemented in `src/modules/host.tsx`. The tgk bridge
-speaks the existing `ready`/`init`/port handshake (`src/modules/frame/protocol.ts` parsers) so v1 hosts work, and adds
-bridge-v2 fields (`seq`, `salience`, `src`) inside `interaction.data`.
+iframe uses `src` (the play origin URL) instead of `/modules.html`; everything else (window handshake → `init` +
+`MessagePort`, second-`load` kill, queued commands) stays as implemented in `src/modules/host.tsx`.
+
+**One protocol with the content engines.** `tgk@1` is the *game profile* of the frame SDK specified in
+`content/CONTENT-ENGINE.md` (§2.5 `engine-kit`, §4 bridge v2.1, inbox `bridge-v2-host-grades`,
+`engines-in-sandbox-frame-v1`): it reuses that bootstrap (RTC deletion, frozen intrinsics, port captured in a closure,
+load-count kill), the bridge v2.1 lifecycle (`hello{mid, boot, build}` → `init` + transferred port → `ready{caps,
+emits, targets, state}` → events; host `verdict` after re-grading; ping/pong; v1 accepted while `v` is absent) and the
+shared rationals, and adds Phaser 4 and the game layers on top. T0/T1 engines stay vanilla TS without Phaser.
+
+**Host-fed assets (keeps the game frame network-free).** CONTENT-ENGINE §8.2 applies its strict policy
+(`connect-src 'none'`, `media-src 'none'`) to Blob-hosted Forge games; Phaser's default loader would break under it
+(LG P1). Resolution: the agent scene has no Loader anyway (§4.2), so the **host** fetches the build's atlas, audio and
+JSON (same CORS-from-app-origin path as any app fetch, or from APK assets) and transfers them as `ArrayBuffer`s in one
+`assets{…}` port message after `init`; the kit boot scene turns them into `blob:` URLs and textures, and decodes audio
+from the buffers. The frame's CSP is then `default-src 'none'; script-src <kitPrefix> <buildPrefix>; img-src blob:
+data:; media-src blob:; connect-src blob:; font-src <kitPrefix>; style-src <kitPrefix>; worker-src 'none'` (path
+prefixes, never the whole storage origin; JS style changes go through the CSSOM, which `style-src` does not block).
+**Proposed bridge v2.1 amendment for the content owner:** an `assets` message exempt from the 64 KiB init cap,
+transferables only, ≤ 2 MB per build [U, measure transfer cost on the reference phone in M-K2b]. If transfer cost is
+unacceptable, the fallback is the path-scoped `connect-src`/`img-src` variant with Blob CORS `*` (LG P1, SB R1).
 
 **Prefetch-before-offer:** the Director never offers a game whose kit and core bytes are not already on the device
 (QA R14). Kit (`forge/kit/<kitHash>/`, ≤ 340 kB gz) and the day's likely cores are prefetched at app open; the APK
@@ -546,8 +570,9 @@ iframe (opaque origin) ── index.html: kit <meta CSP> FIRST in <head> (byte-i
 
 The agent's Phaser scene is created with `plugins: ['Clock','TweenManager']`, so `scene.input` and `scene.load` do
 not exist (Phaser installs Input/Loader only when `plugins` is omitted **[V, DefaultPlugins.js:91, Settings.js:79]**).
-Textures are loaded by a kit boot scene into the shared texture manager, `loader.imageLoadType = 'HTMLImageElement'`
-(the v4 default is XHR **[V, Config.js:579]**).
+Textures are created by a kit boot scene from the host-fed `assets` buffers (§2.6) as `blob:` images added to the
+shared texture manager; no Phaser Loader runs at all, so its XHR default (**[V, Config.js:579]**) never matters. If the
+fallback path-scoped CSP is used instead, the kit sets `loader.imageLoadType = 'HTMLImageElement'`.
 
 ### 4.3 The agent's surface (everything `mechanic.ts` / `view.ts` may touch)
 
@@ -687,6 +712,10 @@ only in the target feature; kit ramp controller: 2 consecutive wrong → insert 
 3 first-try correct with no hints → skip remaining practice.
 
 ### 4.9 Telemetry (kit-emitted; mapped onto today's bridge)
+
+Events travel as bridge v2.1 messages (`interaction{facts}`, `answer{claim}` answered by a host `verdict`, `goal_met`,
+`stuck`, `perf`, `error`; CONTENT-ENGINE §4.4 mapping). The column "v1 carrier" is how the same event reaches the
+current `ModuleHost` until `shared/bridge.ts` v2.1 lands; in v1 the `correct` flag is a claim the host re-grades.
 
 | `game.*` | payload (flat, ≤ 12 keys) | v1 `ModuleToHost` carrier | salience |
 |---|---|---|---|
@@ -974,9 +1003,11 @@ asset.request(key) ─► identity lookup (key, styleVersion, castVersion, band,
    ─► approve ⇒ copy to the public account forge/a/<assetId> ; alt text from the registry, never from a model
 ```
 
-Delivery: Blob CORS `*` (opaque-origin games fetch with `Origin: null`; Phaser loads by XHR) and the kit CSP includes
-exactly one library prefix (`…/forge/a/`) besides the game's own paths (AP PR20, PR21). Ogg Opus for the APK; AAC
-fallback for iOS Safari < 18.4 on web (AP PR24).
+Delivery: the **host** fetches a build's library assets (`forge/a/<assetId>`) and hands them to the frame as
+transferable buffers (§2.6), so the game frame makes no asset requests; Blob CORS `*` (GET/HEAD, no credentials) is
+still set because module scripts and fonts load cross-origin from an opaque origin, and because the path-scoped CSP
+fallback (one library prefix besides the game's own paths, AP PR20/PR21) needs it. Ogg Opus for the APK; AAC fallback
+for iOS Safari < 18.4 on web (AP PR24).
 
 ### 8.3 Sound
 
@@ -1097,10 +1128,10 @@ second. It is the first thing a child can play, and every later tier reuses its 
 |---|---|---|---|
 | **MP1 contracts + queue** | `shared/forge.ts` (§13); `db/migrations/003_forge.sql`; `server/routes/forge.js` (requests, tickets, events, revocations) | shared/, db/, server/routes/ | `npm test` route + schema tests; `tsc -b` green |
 | **MP2 KitMath + misconception rules (fractions)** | exact rationals, MathValue equivalence, `acceptable` parsing; MiscRules for `c4-…-t01-m-bigger-denominator-bigger`, `c5-…-t01-m-count-marks`, `c5-…-t01-m-whole-number-bias`, `c5-…-t02-m-tops-only`, `c5-…-t03-m-add-same`, `c6-…-t05-m-add-across`, `c6-…-t05-m-change-only-den`, `c6-…-t03-m-one-side` | `packages/kitmath/` (reuse `fractionBars.logic.ts` arithmetic) | property tests: every rule reproduces its kit diagnostic distractor; 0 disagreements with the kit `answer` on the fraction topics' items that are numeric |
-| **MP3 `tgk@1` core** | bootstrap hardening (§4.2), bridge over the existing `ready`/`init`/port protocol, kit grade + observation binding, DOM word & hit layer, ramp controller, feel presets v0, voice cue routing, kit meta CSP, seeded RNG | `packages/game-kit/` | kit unit tests; a tamper test: a mechanic that patches `postMessage` cannot change the host stream |
+| **MP3 `tgk@1` core** | bootstrap hardening (§4.2) shared with the content `engine-kit`; bridge v2.1 from `shared/bridge.ts` (content-owned; v1 compatibility while it lands) plus the proposed `assets` transfer message; kit grade + observation binding, DOM word & hit layer, ramp controller, feel presets v0, voice cue routing, kit meta CSP, seeded RNG | `packages/game-kit/` | kit unit tests; a tamper test: a mechanic that patches `postMessage` cannot change the host stream |
 | **MP4 `numberline-jump` + golden mechanic `frac-predict-jump@1`** | archetype template (line generator with band tick density, pad placement from MiscRules, abstract solver, layout predicates); the golden mechanic **written by hand** (≈ 200 lines) — it is the first library core and the builder's few-shot exemplar | `packages/game-kit/archetypes/numberline-jump/` | Q2–Q7 locally in the production-parity harness; reviewer approval (first core per archetype: two-key) |
 | **MP5 G1 filler + gate** | `fill()` (items for the objective, traps from the learner model's active misconceptions on the topic, this child's recent wrong items as `errorReplays`, numbers at KT target, InterestId skin, seed) + G1 gate (§5.1 column) | `server/forge/g1.js` | 200 random fills × 6 fraction topics: 100% gate-pass or a reasoned reject; p95 ≤ 300 ms in Node |
-| **MP6 publish + delivery** | publish the core bundle + kit to `taxilaforge` (`blob` access, CORS `*`, immutable); PlayTicket; `ModuleCommand.mount{src,ticketId}` in `ModuleHost`; host re-grade path in `classify.js` | `src/modules/host.tsx`, `server/director/` | `tests/client-e2e.mjs` mounts the game from the Blob URL in an opaque-origin iframe (not Vite, so the CORS path is real) and plays L1 by pointer |
+| **MP6 publish + delivery** | publish the core bundle + kit to `taxilaforge` (`blob` access, CORS `*`, immutable); host fetches the build's assets and transfers them to the frame; PlayTicket; `ModuleCommand.mount{src,ticketId}` in `ModuleHost`; host re-grade path in `classify.js` | `src/modules/host.tsx`, `server/director/` | `tests/client-e2e.mjs` mounts the game from the Blob URL in an opaque-origin iframe (not Vite, so the CORS path is real) and plays L1 by pointer |
 | **MP7 lesson wiring** | `planModule` practice move → planner → G1 fill for fraction topics; teacher hand-off shape; telemetry → Director observation lines | `server/director/modules.js`, `src/lesson/` | `evals/director-sim.mjs`: a scripted c6-maths-ch07-t05 lesson where the child adds across; the trigger level targets add-across; the Director's next move references the observed misc |
 | **= first generated fractions game playable in the app** | | | a real device (Capacitor) plays the fill in a lesson; logged to `context/measurements.md` (G1 latency, tap → first frame, child action → Director) |
 
@@ -1221,7 +1252,8 @@ export interface ToolResult<T> { ok: boolean; out: T; ms: number; truncated: boo
 | Storage Queue + KEDA + queue SAS / pool token in the runner (SB §12.1, R7) | §2.4 Neon queue; §3.11 single-use boot tokens (SB S4) |
 | per-lesson runner pre-start; warm runner pool (SB §5.4, R7) | none needed: G2 is not latency-critical |
 | `__forge` compiled into validation builds only (QA §3, GK §4.9) | §5.3 external frozen seam; one bundle; sha equality |
-| CSP `connect-src 'none'` (SB §7.1, GK §4.1, LG §11) | path-scoped kit meta CSP + CORS `*` + `imageLoadType: HTMLImageElement` (LG P1, SB R1, AP PR21) |
+| CSP `connect-src 'none'` with Phaser's XHR loader (SB §7.1, GK §4.1, LG §11); the opposite fix, `connect-src` to the play origin (LG P1, SB R1) | §2.6: host-fed asset buffers, no Loader in the agent scene, frame CSP `connect-src blob:` with path-scoped `script-src`; the path-scoped network variant is the fallback (aligns with CONTENT-ENGINE §8.2) |
+| `window.__forge`/bridge "v2" dialects in the factory docs | bridge v2.1 as specified in CONTENT-ENGINE §4 (`hello` handshake, host `verdict`), plus a proposed `assets` message |
 | `forge/<childId?>/<artifactId>/` public layout; one storage account (`forge-infra-azure`, AP §9.2) | §2.2, §6.3, §9: two accounts, content-addressed public paths, no child segment |
 | agent-written `judge()`, `getState/setState`, `checkWinCondition` (GK §4.2, LG §3) | §4.3 MechanicV11 + kit observation binding + kit grade + host re-grade |
 | planner writes solutions, keys, misc paths, keypoint values (CAH §5.4) | §4.8: planner writes intent; kit generator/solver write truth |

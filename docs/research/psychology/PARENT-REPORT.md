@@ -25,7 +25,7 @@
 | RR-D1 | **The report is an intervention on the parent and is evaluated like one** (= PR-D1). Its success measures are: calibrated parent beliefs, autonomy-supportive parent behaviour, and the child's delayed learning and wellbeing. Parent satisfaction is not a success measure. | Feedback is large on average and highly heterogeneous (Wisniewski 2019, d = .48 [V]). Detailed information corrected parents' beliefs and raised achievement (Bergman 2015 [V]). Barnum text is liked whatever its truth (Forer 1949 [S]). | Never for the principle. |
 | RR-D2 | **Fact-first by design.** Most of every report is L0 counts and L1 ledger facts. L2 patterns and L3 change are rare, and the layout expects them to be rare. | *Computed* (synthsim §A): with a calibrated two-groups prior, realistic data (12-40 comparisons per arm) admit 0-1.5 within-child pattern claims a month and find only 0-16% of real effects. Time to first claim (§F): calibration tables ~8 weeks, durability ~27 weeks, at 4 sessions a week. | PRM5 shows that higher-yield gates stay calibrated on held-out delayed checks. |
 | RR-D3 | **Describe learning and actions in situations, never the learner.** Compare the child only with herself and the syllabus (= PR-D2, PR-D3). | Person praise and identity framing predict entity beliefs and lower persistence (Pomerantz & Kempner 2013 [V]; Rhodes 2019 [V], for *girls'* persistence, C7). Peer comparison caused quitting in adults (Rogers & Feller 2016 [V], adult MOOC, C5). | Never. |
-| RR-D4 | **Every pattern or change claim passes a code gate and a report-level false-claim budget.** Posteriors come from a **two-groups (spike-and-slab) hierarchical model per menu item**. Each section has a fixed, pre-registered menu of at most 6 candidate claims a month, and the number screened is logged. The budget Σ(1 − Pᵢ) ≤ ε is validated on simulated nulls and sparse mixtures before launch. | PR review R1. *Computed* §A: independent weak priors put 4.9 false claims in a null report while the budget believed 0.2. Normal-normal pooling believed 0.17 where there were 2.22. Two-groups pooling believed 0.12 where there were 0.10. | PRM5 calibration on real held-out delayed checks. |
+| RR-D4 | **Every pattern or change claim passes a code gate and a report-level false-claim budget.** Posteriors come from a **two-groups (spike-and-slab) hierarchical model per menu item**. Each section has a fixed, pre-registered menu of at most 6 [U] candidate claims a month, and the number screened is logged. The budget Σ(1 − Pᵢ) ≤ ε is validated on simulated nulls and sparse mixtures before launch. | PR review R1. *Computed* §A: independent weak priors put 4.9 false claims in a null report while the budget believed 0.2. Normal-normal pooling believed 0.17 where there were 2.22. Two-groups pooling believed 0.12 where there were 0.10. | PRM5 calibration on real held-out delayed checks. |
 | RR-D5 | **Counts plus five fixed frequency words.** Never percentages, adjectives or scores. *Pakka* is reserved for the mastery state. "About half the time" needs n ≥ 20, and the most specific word wins a tie. | Verbal probability terms are read inconsistently (Wintle 2019 [V]). Numbers cost little trust (van der Bles 2020 [V]). PR review R10 on minimum n and overlaps. | PRM6 shows parents misread the count format more than words. |
 | RR-D6 | **No per-child "how she learns best" claim in v1.** The section shows the population-best formats Taxila uses for each topic type, what the child *chose* (labelled as preference), and an active "Trying" comparison when one is running. | LAM-D7: ρ = .70 needs 78-487 delayed comparisons per arm. Format allocations from a bandit or the child's choice are biased (PR R5). Style matching fails the crossover test (LS §2). | LAM3 shows τ ≥ .5 logit for some format × topic-type pair, *and* the child accumulates enough randomised comparisons. |
 | RR-D7 | **No causal word without a manipulation.** "What helped", "because" and "works better for her" appear only for moves allocated by micro-randomisation with logged propensities. Otherwise the line is a count with no comparison. | PR review R4 (policy confounding by indication). | None. |
@@ -211,8 +211,8 @@ The priority order in G-h is fixed **before** the posterior check. Ordering by "
 | skill row *Aa gaya / Seekh rahi / Abhi nahi* | KT state | KT | — | S3 |
 | curricular level line | KT skill coverage | none (a fact) | outcome language from NCERT learning outcomes. **No grade equivalent, no "behind", no single level number** | S3 |
 | trajectory (term) | ≥ 3 occasion-specific θ estimates | ribbon = 80% interval | unlabelled scale; no slope number; no growth-rate words < 12 months | S3 term |
-| fluency change (CD-flu) | ≥ 20 correct responses on the same item family in each window | practice-adjusted RCI > 1.96 on matched item sets | same accuracy band; ≥ 2 months apart | S3 |
-| number-line, fraction, akshara, ORF change | calibrated item set per window | RCI on the calibrated scale; difficulty held fixed | ORF on equated passages, human-audited; one-pair claims banned | S3 |
+| fluency change (CD-flu) | ≥ 20 [U] correct responses on the same item family in each window | practice-adjusted RCI > 1.96 on matched item sets | an L3 row: evaluated under RP-D6 (term), same accuracy band, ≥ 2 months apart | S3 (term), S14 |
+| number-line, fraction, akshara, ORF change | calibrated item set per window | RCI on the calibrated scale; difficulty held fixed | an L3 row under RP-D6 (term); ORF on equated passages, human-audited; one-pair claims banned | S3 (term), S14 |
 | durability L0 | any | — | counts of delayed checks after ≥ 7 days | S4 |
 | durability L2 | ≥ the LT6 floor (expected ≥ 80 randomised-lag checks per topic type) | P(u_c,tt > .3 \| data) ≥ .9 (or < −.3), card ρ ≥ .80 | LT3: σ_u,tt ≥ .25 on real data; same sign under exponential-plus-floor, power and horizontal forms; school-exposure adjusted; system explanations ruled out | S4 |
 | retry counts | e ≥ 10 errors on items with pSuccess ≥ .4 | none | unprompted re-attempts only | S6 |
@@ -224,7 +224,7 @@ The priority order in G-h is fixed **before** the posterior check. Ordering by "
 | own-question count | any (with window) | none | — | S7 |
 | "mostly about {topic}" | ≥ 6 sessions in each domain compared | within-child cross-domain contrast P ≥ .9 | child-started exposure only | S7 |
 | calibration table | ≥ 30 bets **and** ≥ 10 wrong-answer bets in the domain | none (descriptive) | **B2+**; cells with n < 5 suppressed; difficulty mix shown; reading slot describes one bet level only; no resolution sentence; no change line in v1 | S8 |
-| D28 and who started | ≥ 28 days; n ≥ 8 sessions for the `startedBy` split | none | a "was {n′}" comparison only if \|n − n′\| ≥ 2·SEM_diff (~7 days; MH R7). Silent at extremes in B1 | S9 |
+| D28 and who started | ≥ 28 days; n ≥ 8 sessions for the `startedBy` split | none | a "was {n′}" juxtaposition only if \|n − n′\| ≥ 2·SEM_diff (~7 days; MH R7). It is the only monthly juxtaposition allowed outside a term boundary, and it is not a then → now row. Silent at extremes in B1 | S9 |
 | session-design note | population | — | written as "Taxila offers a break after {t} minutes for children in Class {c}" | S9 |
 | time-of-day result | completed alternation of ≥ 8 one-week blocks | directional P(δ > δ_min) ≥ .9 **and** posterior SD < δ_min | parent opted in; the null shape is planned | S9 |
 | style line (ISP) | effective sessions such that ρ ≥ .80 | card ρ ≥ .80; distinctiveness ≥ .90; non-overlapping window agreement r ≥ .50 | stratified by the knob state in force and naming it; status changes from the child's own data only; no first-week comparison; changepoint false alarms < 5% a month | S10 |
@@ -269,7 +269,8 @@ Shapes are slot patterns in ⟨⟩. Braces are typed slots filled from claim obj
   - ⟨{outcome} · {state word} · checked again {d} days later⟩
   - ⟨chapter {x}: {pakka} of {total} skills *pakka*⟩
   - ⟨now working on: {outcome} (from the Class {y} syllabus); next: {outcome}⟩
-  - learning-metric change rows, when the §4.3 rule passes: ⟨{skill family}: answers in about {x} s, was {y} s in {month}, same accuracy⟩; ⟨places numbers up to {scale} within about {e} of the right spot, was {e′}⟩
+  - learning-metric facts (monthly): ⟨{skill family}: answers in about {x} s, with {k} of {n} right⟩; ⟨places numbers up to {scale} within about {e} of the right spot⟩
+  - learning-metric change rows are L3 and appear only at term (or a term boundary), under RP-D6 and the §4.3 rule: ⟨{skill family}: about {x} s now, {y} s in {month}, same accuracy⟩
   - term only: ⟨{subject} progress⟩ + trajectory ribbon (an unlabelled scale; a caption shape says "Taxila's own measure, not a mark").
 - Rules: no grade equivalents; no "behind"; no single level number; never "lost" or "forgot" (a drop is a review, S11).
 - Fallback: the week's counted actions.
@@ -303,6 +304,7 @@ Shapes are slot patterns in ⟨⟩. Braces are typed slots filled from claim obj
   - ⟨fixed {pronoun} own mistake before being told {k} of {n} times⟩
   - ⟨when stuck after two tries, asked for help {p} of {q} times; Taxila gives hints before answers⟩
   - ⟨given a harder option, chose it {h} of {o} times⟩
+  - B3+, after rubric agreement: ⟨before a long problem, said how {pronoun}'d start {p} of {n} times⟩
   - ⟨when answers got very quick and mostly wrong, Taxila switched to {action} {n} times⟩
   - randomised contingency only: ⟨after a mistake on a new kind of problem, retried {k₁}/{n₁} when Taxila asked about the step, {k₂}/{n₂} when it explained the step; Taxila now uses the question way⟩
 - Banned: gives up easily, low resilience, grit, frustrated child, careless, lazy, impulsive, "doesn't ask for help", "too dependent", "what helped" without randomisation, any persistence score.
@@ -547,7 +549,7 @@ If over budget, drop from the end in this order: school line, second can-do, tri
 ──────────────────────────────────────────────────────────────────────────────────────
 1 STRENGTHS          ★ {strength 1}   ★ {strength 2}                          [Kaise pata?]
 2 CAN NOW DO         {subject}: {pakka}/{total} skills pakka · now working on: {outcome}
-                     {skill family}: answers in about {x}s (was {y}s), same accuracy   [only if RCI passes]
+                     {skill family}: answers in about {x}s, {k} of {n} right   (change rows only at term)
 3 HOLDING UP         {N} checks after a week or more: {M} right
                      STILL LEARNING how {topic type} holds up · {n} checks so far
 4 HOW TAXILA TEACHES for {topic type}: starts with {format, plain words} (works best for most children)

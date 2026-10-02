@@ -481,6 +481,90 @@
    "title": "PhysicsWallah Socratic AI Tutor (beta, ~$0.20/h) expected to reach K-8 in 6-12 months (inference); re-plan on PW Q2 FY27 letter (~Nov 2026)",
    "at": "2026-10-02",
    "source": "inbox/market.json"
+  },
+  {
+   "id": "psych-claim-tiers",
+   "kind": "decision",
+   "title": "Psychology claims in three tiers (science / knob / parent L0-L3); learning rate, metacognitive efficiency, habit time, per-child format effect, personality and <12-month growth rate are never per-child claims",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "decision-records-with-propensities",
+   "kind": "decision",
+   "title": "Every randomisable Director/Conductor/scheduler decision writes a DecisionRecord (candidates, propensity, availability, draw, policy version); no causal analysis without it",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "psych-parent-claim-gate",
+   "kind": "decision",
+   "title": "Parent pattern claims pass a code gate: in-deployment rho >= .80, distinctiveness, window replication, two-groups pooled posterior per pre-registered menu item, report budget validated on simulated nulls",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "psych-change-rule-term",
+   "kind": "decision",
+   "title": "Then->now change rows: pre-declared direction, once per term, matched information, magnitude floor, P >= .95 (.975 above 4 rows); release bar < 0.1 false rows per child-year",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "psych-no-clock-time-features",
+   "kind": "decision",
+   "title": "No clock time-of-day feature in any product model or DecisionRecord context; bedtime is a boolean safety predicate; time-of-day science only in a P4 research extract or opt-in n-of-1",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "psych-umbrella-ald-study",
+   "kind": "decision",
+   "title": "Umbrella study: 18-month accelerated longitudinal design, N~4,000 P4 + 600 delayed-start; gates G0-G5 first; logit scale (no grade equivalents); 8 confirmatory hypotheses PH1-PH8",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "psych-consent-assent-two-tier",
+   "kind": "decision",
+   "title": "Two-tier consent (P1 service without research-only randomisation; P4 research) and ICMR-standard assent by a neutral narrator: willingness check at 6, oral recorded 7-11, written 12+, dissent always honoured",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "psych-identifiability-sims-2026-10-02",
+   "kind": "measurement",
+   "title": "Psychology identifiability simulations (8 scripts): per-child reliabilities, claim-gate calibration, false change rows, power; all generative assumptions [U]",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "independent-prior-claim-budget",
+   "kind": "rejection",
+   "title": "Per-claim independent weak priors + report budget sum(1-P): a null report carried 4.9 false pattern claims while the budget believed 0.2",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "raw-count-growth-route",
+   "kind": "rejection",
+   "title": "'Raw counts change consistently over >= 3 windows' as a change rule: 5.6 false then->now rows per child-year under the null; every child gets one",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "grade-equivalent-parent-band",
+   "kind": "rejection",
+   "title": "Grade-equivalent 'working at Class x level' band for parents: not equal-interval, no Indian norming or vertical scale, norm-referenced, misread by parents",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
+  },
+  {
+   "id": "open-durability-operating-point",
+   "kind": "open",
+   "title": "Owner decision: wellbeing bound (predicted retention >= .6) vs identifiability of per-child durability (.43 at 40 checks as scheduled; ~27 weeks per topic type before any line)",
+   "at": "2026-10-02",
+   "source": "inbox/psychology.json"
   }
  ],
  "edges": [
@@ -868,6 +952,81 @@
    "src": "mk-no-sales-no-emi-monthly",
    "rel": "part_of",
    "dst": "mk-school-seeded-parent-paid"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "part_of",
+   "dst": "psych-claim-tiers"
+  },
+  {
+   "src": "psych-change-rule-term",
+   "rel": "part_of",
+   "dst": "psych-claim-tiers"
+  },
+  {
+   "src": "psych-claim-tiers",
+   "rel": "measured_by",
+   "dst": "psych-identifiability-sims-2026-10-02"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "measured_by",
+   "dst": "psych-identifiability-sims-2026-10-02"
+  },
+  {
+   "src": "psych-change-rule-term",
+   "rel": "measured_by",
+   "dst": "psych-identifiability-sims-2026-10-02"
+  },
+  {
+   "src": "decision-records-with-propensities",
+   "rel": "measured_by",
+   "dst": "psych-identifiability-sims-2026-10-02"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "supersedes",
+   "dst": "independent-prior-claim-budget"
+  },
+  {
+   "src": "psych-change-rule-term",
+   "rel": "supersedes",
+   "dst": "raw-count-growth-route"
+  },
+  {
+   "src": "psych-claim-tiers",
+   "rel": "supersedes",
+   "dst": "grade-equivalent-parent-band"
+  },
+  {
+   "src": "psych-umbrella-ald-study",
+   "rel": "blocks",
+   "dst": "decision-records-with-propensities"
+  },
+  {
+   "src": "psych-umbrella-ald-study",
+   "rel": "constrains",
+   "dst": "psych-consent-assent-two-tier"
+  },
+  {
+   "src": "psych-umbrella-ald-study",
+   "rel": "constrains",
+   "dst": "psych-no-clock-time-features"
+  },
+  {
+   "src": "psych-umbrella-ald-study",
+   "rel": "constrains",
+   "dst": "scope-classes-1-9"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "blocks",
+   "dst": "open-durability-operating-point"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
   }
  ]
 }

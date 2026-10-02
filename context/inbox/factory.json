@@ -1,0 +1,180 @@
+{
+ "nodes": [
+  {
+   "id": "forge-live-is-g1-fill",
+   "kind": "decision",
+   "title": "In-lesson personalised game = G1 data fill of a human-reviewed core (this child's errors as traps, their numbers, their skin) in <=10 s; agent-built G2 mechanics are catalogue-only and reach children after review",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "forge-builder-provider-neutral",
+   "kind": "decision",
+   "title": "Forge builder = taxila-codex behind a provider-neutral ModelAdapter; designer/critic/safety = taxila-brain; planning/fills = taxila-fast; Claude adapter compiled but disabled by policy",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "forge-kit-grades-reducer",
+   "kind": "decision",
+   "title": "tgk@1: Phaser 4.2.1 facade; mechanics are pure reduce + view (MechanicV11); the kit binds observation values, grades against kit keys + executable misconception rules; host re-grades; DOM hit layer is the only discrete-input path",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "forge-qa-ladder",
+   "kind": "decision",
+   "title": "One QA ladder Q0-Q10 with an external frozen seam; code oracles block, model judges advisory until calibrated; in-page headless bots incl. this-child + fun floor; Hindi safety layer; mutant corpus measured before any bake-off",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "forge-untrusted-lane-single-use",
+   "kind": "decision",
+   "title": "Untrusted builds: single-use ACA Job runners in a separate environment holding no credentials, started by the orchestrator with a burn-once boot token; Neon job queue; resumable orchestrator; trusted rebuild + fresh-lease final gate; one bundle",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "forge-play-delivery-csp",
+   "kind": "decision",
+   "title": "Play delivery: public account holds only approved content-addressed child-free bytes (blob-level, CORS *), private second account for runs/candidates/learner data; host-fed asset buffers so the frame CSP is network-free; bootstrap hardening; PII only in a host overlay",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "forge-capacity-governor",
+   "kind": "decision",
+   "title": "Forge admission by capacity token buckets (codex TPM, fast/brain TPM, image RPM = 0 in the 17:00-21:30 IST peak) before dollars; content caps derived from the tier; library fund + daily breaker; single-flight + 24 h cool-down",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "forge-media-lanes",
+   "kind": "decision",
+   "title": "No pixel video; explainer@1 IR with three deterministic renderers (frame runtime, master-timeline seek export, Manim from IR via our codegen); template fills only on the live path; no LLM-written code executes for media in Phase 0",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "claude-deployments-404-2026-10-02",
+   "kind": "measurement",
+   "title": "taxila-opus and taxila-sonnet return 404 DeploymentNotFound on the Foundry Anthropic endpoint (n=1 each, 17:51Z); taxila-codex control 200 with 500k TPM / 5000 RPM",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "kit-census-2026-10-02",
+   "kind": "measurement",
+   "title": "data/kits census: 565 topics, 1,691 misconceptions (3/topic), 7,385 items, 1,653 (22%) blind-verified; all c4-c7 fraction topics unverified",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "forge-azure-capacity-2026-10-02",
+   "kind": "measurement",
+   "title": "Forge-relevant Azure capacity facts from same-day probes: codex 500k TPM limiter counts cached tokens, cache key 5/5 vs 1/3 hits, codex turns 3.3-10.9 s; image quota counts requests (n=4 = 16 images/min at 4 RPM); fills/templates 1.9-3.5 s",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "sora-for-curriculum",
+   "kind": "rejection",
+   "title": "sora-2 as a curriculum video lane: wrong number-line digits, misspelled Devanagari, object loss, 49-118 s per 4-8 s clip; retires 2026-10-15 with no replacement",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "content-safety-sole-gate",
+   "kind": "rejection",
+   "title": "Azure AI Content Safety as the only safety gate: severity 0 on a facsimile banknote and on text-baked scenes (13/13), and its harm models are not trained on Hindi",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "open-forge-owner-decisions",
+   "kind": "open",
+   "title": "Owner decisions pending: (E1) brief names taxila-opus but Claude is 404 and barred by the Azure-only directive; (E2) live 'built for this child' means G1 fill, G2 next-day after review; (E3) archive <=20 sora hooks by 2026-10-13 or drop video, pin TTS 2025-12-15; (E4) SandboxCores quota, SandboxGroup Data Owner role, Microsoft.Cdn, image/codex quota",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "forge-builder-provider-neutral",
+   "rel": "supersedes",
+   "dst": "forge-models"
+  },
+  {
+   "src": "forge-builder-provider-neutral",
+   "rel": "measured_by",
+   "dst": "claude-deployments-404-2026-10-02"
+  },
+  {
+   "src": "azure-only-compute",
+   "rel": "constrains",
+   "dst": "forge-builder-provider-neutral"
+  },
+  {
+   "src": "claude-on-foundry-credits",
+   "rel": "measured_by",
+   "dst": "claude-deployments-404-2026-10-02"
+  },
+  {
+   "src": "forge-live-is-g1-fill",
+   "rel": "measured_by",
+   "dst": "forge-azure-capacity-2026-10-02"
+  },
+  {
+   "src": "forge-live-is-g1-fill",
+   "rel": "caused_by",
+   "dst": "forge-live-codegen-race"
+  },
+  {
+   "src": "forge-kit-grades-reducer",
+   "rel": "measured_by",
+   "dst": "kit-census-2026-10-02"
+  },
+  {
+   "src": "forge-qa-ladder",
+   "rel": "caused_by",
+   "dst": "content-safety-sole-gate"
+  },
+  {
+   "src": "forge-untrusted-lane-single-use",
+   "rel": "part_of",
+   "dst": "forge-sandbox-lanes"
+  },
+  {
+   "src": "forge-untrusted-lane-single-use",
+   "rel": "blocks",
+   "dst": "open-forge-owner-decisions"
+  },
+  {
+   "src": "forge-play-delivery-csp",
+   "rel": "supersedes",
+   "dst": "forge-infra-azure"
+  },
+  {
+   "src": "forge-capacity-governor",
+   "rel": "measured_by",
+   "dst": "forge-azure-capacity-2026-10-02"
+  },
+  {
+   "src": "forge-media-lanes",
+   "rel": "caused_by",
+   "dst": "sora-for-curriculum"
+  },
+  {
+   "src": "forge-media-lanes",
+   "rel": "supersedes",
+   "dst": "forge-models"
+  },
+  {
+   "src": "bridge-v2-host-grades",
+   "rel": "constrains",
+   "dst": "forge-kit-grades-reducer"
+  },
+  {
+   "src": "engines-in-sandbox-frame-v1",
+   "rel": "constrains",
+   "dst": "forge-play-delivery-csp"
+  },
+  {
+   "src": "content-live-tiers",
+   "rel": "constrains",
+   "dst": "forge-live-is-g1-fill"
+  }
+ ],
+ "md": {
+  "decisions": "## forge-live-is-g1-fill\n**The game a child plays inside a lesson is a G1 fill: a human-reviewed game core filled, in code, with this child's recent wrong answers as trap levels, numbers at their KT target, their interest skin, pacing and language, gated by trusted kit code in <= 300 ms and requested at lesson start (<= 10 s p95 end to end). Agent-built mechanics (G2) grow the shared library in the background and reach children only after Q0-Q10 plus human review, typically the next day.** (2026-10-02)\n- Rationale: measured codex turns (3.3-10.9 s on an 11k prefix) put an agentic build at P50 ~12-15 min, P90 > 20 min, with a 50-70% ship-rate prior and ~3 concurrent builds per 500k-TPM deployment (`forge-azure-capacity-2026-10-02`); the project law requires human review before generated code reaches a child (tech-and-market section 3.6; conductor `forge-live-codegen-race`). Personalisation as data is cacheable, validated and cheap (MO sim: core + skin + fill reuse 91.7% at 1k children).\n- The owner's intent is stated honestly to the owner (`open-forge-owner-decisions` E2): the teacher never claims a game was built just for the child unless it was.\n- Reverse if: QA-M2 hard-gate recall >= 0.95 with 0 false alarms, the tamper battery rejects 6/6, held-out gap <= 15 pp over 50 builds, 200 reviewed G2 cores show <= 1% post-review defects, G2 P90 including the final gate <= 6 min at >= 3 concurrent builds, AND the owner relaxes the review law.\n- Source: `docs/research/factory/FACTORY.md` sections 0.1, 1.1, 2.3, 11.\n\n## forge-builder-provider-neutral\n**Forge's builder is `taxila-codex` (gpt-5.3-codex, Responses API, own apply_patch tool, `parallel_tool_calls:false`, `prompt_cache_key` + 24 h retention); the G2 designer, vision critic, Hindi safety classifier and blind solver A are `taxila-brain`; G1 flavour picks and T1/T2a/explainer template fills are `taxila-fast`; blind solver B is codex. All calls go through one `ModelAdapter`; an Anthropic Messages adapter is compiled but throws PolicyDenied unless the owner lifts the Azure-only directive.** (2026-10-02)\n- Supersedes `forge-models` (which named Claude Opus the first choice and `taxila-sora` the video lane).\n- Rationale: the workflow brief listed `taxila-opus`/`taxila-sonnet` as available; both return 404 DeploymentNotFound today (`claude-deployments-404-2026-10-02`) and CLAUDE.md bars Anthropic-on-Foundry. Codex passed the Phaser 4 familiarity probe 8/8 (GK M-K0, n=8). The bake-off arms are codex medium, codex high and brain-as-builder.\n- Reverse if: the owner lifts the directive, the Claude deployment answers, and it beats codex on M-F1 ship rate per dollar on the same 40 briefs.\n- Source: `docs/research/factory/FACTORY.md` sections 0.1 E1, 3.7.\n\n## forge-kit-grades-reducer\n**Forge games target `tgk@1` = Phaser 4.2.1 (pinned; 3.90 compiled behind one flag) behind `@taxila/game-kit`. Agent code writes only `MechanicV11` (pure `init/reduce/targets/facts` over a frozen JSON model + view-only `mount/render` through a `DrawApi` subset; the agent scene has no InputPlugin or Loader). The kit emits every observation with a value bound to the committing target (or the archetype's `readout`), grades it against kit keys and executable misconception rules, emits all telemetry, and the host re-grades before evidence reaches the learner model. The DOM hit layer is the only discrete-input path. Judged physics is kinematic choreography from a law evaluator.** (2026-10-02)\n- Rationale: \"a model never grades\" applied to agent-written game code (GK K1-K5, LG P7, sandbox-telemetry 4.6); the probe's own failures were silent win-logic bugs (GK M-K0). Only 22% of kit items are blind-verified (`kit-census-2026-10-02`), so v1 archetypes start where KitMath can recompute truth (fractions, integers, place value, money).\n- Reverse never for kit-owned grading (it is the law). Reverse the runtime (flip to 3.90) if real-device fps p10 (M-K2b) is >= 15% below v3; the DOM hit layer if it costs > 4 ms/frame on the reference phone.\n- Source: `docs/research/factory/FACTORY.md` section 4.\n\n## forge-qa-ladder\n**One ladder Q0-Q10 supersedes G0-G7 and V0-V7. Programmatic oracles (state-injection keypoints, independent solver, negative-path grading sweep, KitMath truth, geometry, calibrated perf counters) block; model judges (taxila-brain vision on deduped event frames) are advisory until a criterion reaches precision >= 0.90 / recall >= 0.60 at n >= 30 on the mutant corpus. Bots run in-page via headlessStep (replay, solver, misc, novice, this-child, fuzz split lock/chance, speed, interrupt) plus a programmatic fun floor. Text safety = per-string Content Safety at severity >= 2 + a local Hinglish-normalised blocklist + a taxila-brain classifier for hi/hi-Latn (refusal = unsafe) + curriculum allowances. The seam is an external frozen file injected at test time; 30% of keypoints and all fuzz seeds are held out and never feed repair. The mutant corpus (QA-M2) and tamper battery run before the M-F1 bake-off.** (2026-10-02)\n- Rationale: GameGen-Verifier 92.2% vs 58.8% for agent-as-verifier [S]; AgentRewardBench judges <= 70% precision [S]; compile/static pass rates do not predict quality (GameASG-Bench 97.7-99.6% static vs 14.9-55.3% strict) [S]; `content-safety-sole-gate`.\n- Reverse if: QA-M2 shows a simpler subset (Q0-Q4 + Q8) reaches the same recall on all mutant classes; Q9 becomes permanently advisory if QA-M3 finds no criterion at precision 0.9.\n- Source: `docs/research/factory/FACTORY.md` section 5.\n\n## forge-untrusted-lane-single-use\n**LLM-written code executes only in Chromium renderers inside single-use `forge-runner` ACA Job executions in a separate managed environment (`taxila-forge-untrusted`): no identity, no secrets, no queue or storage credential, a dead `--proxy-server`, WebRTC UDP disabled, resolver rules, IMDS blocked, `chromiumSandbox:true` attempted and recorded. The orchestrator (own Container App, min 2, 600 s grace) is the only scheduler: it starts each execution with a burn-once BOOT_TOKEN template override, holds all file state (patches.jsonl) and resumable loop state in Neon, and talks to the runner over an outbound WSS protocol with idempotent call ids and resume. The job queue is a Neon table (SKIP LOCKED leases, single-flight on identity key), not a Storage Queue. Publishing requires the trusted rebuild sha (pinned esbuild in the orchestrator) to equal the runner's and a fresh-lease final gate; the shipped bundle is the gated bundle.** (2026-10-02)\n- Part of `forge-sandbox-lanes` (VM per build, folder per student, iframe per play stays). Replaces its KEDA-queue trigger, per-lesson pre-start and shared pool token (SB R2-R4, R7, R8, S1-S5).\n- Phase 1 (ACA Sandboxes, egress Deny, trafficInspection Full) is blocked on owner actions (`open-forge-owner-decisions` E4).\n- Reverse if: Microsoft documents per-replica VM isolation on Consumption (then the separate env is hygiene, not a wall); keep the fresh lease for held-out tests even after Phase 1.\n- Source: `docs/research/factory/FACTORY.md` sections 2.2, 2.4, 2.8, 3.11.\n\n## forge-play-delivery-csp\n**Games are served from the public account `taxilaforge` (`forge` container at `blob` access level, never `container`; CORS `*` GET/HEAD; immutable 1-year caching) holding only approved, content-addressed, child-free bytes at `forge/kit/<kitHash>/`, `forge/b/<sha256(dist)>/`, `forge/a/<assetId>`; a new private account `taxilaforgesrc` (`allowBlobPublicAccess=false`) holds runs, candidates, quarantine and learner data. The host fetches each build's assets and transfers them to the frame as buffers over the bridge port (proposed bridge v2.1 `assets` message), so the frame CSP (a meta tag, first in `<head>`) can be network-free: `script-src`/`font-src` path-scoped to the kit and build prefixes, `connect-src blob:`, `img-src blob: data:`, `media-src blob:`; the agent scene has no Phaser Loader. Fallback if transfer is too slow: path-scoped `connect-src`/`img-src` with `imageLoadType: HTMLImageElement`. The kit bootstrap deletes RTC constructors, captures the outbound path, seeds randomness, freezes intrinsics, refuses to boot unframed, and the host kills a frame on its second load. `init` carries no free text; names and memories render in a host overlay. Quarantine is a signed denylist fetched every session.** (2026-10-02)\n- Supersedes `forge-infra-azure`'s artifact layout (`forge/<childId?>/<artifactId>/`, one account, CSP `connect-src 'none'` with Phaser's XHR loader, which breaks at boot [V Phaser Config.js]). Workers still run on Azure Container Apps. Constrained by the content decisions `bridge-v2-host-grades` and `engines-in-sandbox-frame-v1` (one protocol and one frame path for every module; tgk@1 is their game profile).\n- Reverse if: Front Door + a play-origin Container App ships header CSP and `frame-ancestors` (then move policy to headers, keep the meta tag as defence in depth).\n- Source: `docs/research/factory/FACTORY.md` sections 2.2, 4.2, 6.3, 8.2, 9.\n\n## forge-capacity-governor\n**Forge admission is decided by token buckets per deployment before dollars: codex TPM (catalogue only; reserve prompt + 8k output per step; plan 3 concurrent builds per 500k-TPM deployment until M-F6), taxila-fast TPM (>= 70% reserved for live fills 16:30-21:30 IST), taxila-brain TPM (judges, designs, live safety share), taxila-image RPM (0 during 17:00-21:30 IST; counts requests). Dollar lines: `child_content` derived from the tier as (tier x (1 - voice share - margin)) / 30 with placeholders soft $0.015 / hard $0.03 per child-day; a library fund (~$150/day at launch) for catalogue builds, greedy by demand/cost with failed builds costed at 1/pass-rate; a daily breaker that never touches live lanes. Single-flight per identity key; 24 h cool-down after a failed build; no in-lesson build race.** (2026-10-02)\n- Rationale: `forge-azure-capacity-2026-10-02` (500k TPM limiter appears to count cached tokens; image quota counts requests); MO review R2/R4 (the design's own spend crossed its own 25%-of-tier line).\n- Reverse if: codex quota >= 2M TPM or measured tokens per build <= 0.5M (relax admission); image quota >= 30 RPM and VLM-human agreement >= 0.9 on people-free objects (allow an off-peak race lane for objects only).\n- Source: `docs/research/factory/FACTORY.md` section 6.5.\n\n## forge-media-lanes\n**No pixel-video lane. Time-based media is `explainer@1` (scene@1 timelines + narration segments + beats) with three deterministic renderers: the in-app frame runtime (GSAP core + DrawSVG, bundled), a seek exporter that adds segments to one paused master timeline and only calls `master.seek(t, false)`, and Manim CE fed by a `manim_seg@1` JSON IR compiled by our own generator (no LLM-written Python runs in Phase 0). Live = template fills only (<= 5 s; p50 3.47 s measured); free-form explainers are near-line (>= 45 s ahead). Default in-lesson explainers to cached clip mode in the teacher's voice; performed mode receives goals and must-say terms, never lines. Images are library assets, never live in the peak, never carrying text or numerals. Pin gpt-4o-mini-tts to 2025-12-15 and fail `verify` on any deployment within 30 days of retirement.** (2026-10-02)\n- Supersedes the `taxila-sora` lane in `forge-models`; caused by `sora-for-curriculum`.\n- Rationale: VA section 0 and review R1/R2/R5/R6/R8 (GSAP seek ignores a child timeline's timeScale and skips callbacks; `from manim import *` exposes `os`; free-form p90 24-41 s).\n- Reverse if: a GA first-party Azure video model with a >= 12-month lifecycle passes a 20-clip check (labels/numbers >= 95%, Devanagari correct, object permanence) AND children prefer it (V-7).\n- Source: `docs/research/factory/FACTORY.md` section 7.\n",
+  "measurements": "## claude-deployments-404-2026-10-02\n**Do the Claude deployments named in the Forge workflow brief exist? No.** (2026-10-02, 17:51Z)\n- Method: `docs/research/factory/factory-synth-model-probe.mjs` from the US build container: one POST per deployment to `https://<account>.services.ai.azure.com/anthropic/v1/messages` (`x-api-key` = the resource key, `max_tokens` 8), plus a control POST to `<AZURE_OPENAI_ENDPOINT>/responses` for `taxila-codex`. Output: `factory-synth-model-probe-2026-10-02.json`. n = 1 per deployment.\n- Results: `taxila-opus` 404 DeploymentNotFound (571 ms); `taxila-sonnet` 404 DeploymentNotFound (606 ms); `taxila-codex` 200 (2.4 s) with `x-ratelimit-limit-tokens: 500000`, `x-ratelimit-limit-requests: 5000`. Same key and account, so the 404 means no deployment, not bad credentials. Replicates the 15:33Z LG review probe (taxila-opus 404).\n\n## kit-census-2026-10-02\n**What the teaching kits actually contain for Forge.** (2026-10-02)\n- Method: Python over all 23 `data/kits/c*.json` files: count topics, `misconceptions[]`, `items[]`, and items whose `verified.agrees === true`.\n- Results: 565 topics; 1,691 misconceptions (3 per topic, including English and Hindi kits); 7,385 items; 1,653 verified-agree (22%) in c1-maths, c3/c4/c5-evs and c6-science; 3 disagreements; 5,729 items have no `verified` field, including every fraction topic in c4-c7 maths.\n- Consequences: Forge answer truth for fractions comes from KitMath recompute, not the blind solver; \"top-3 misconceptions per topic\" is buildable from kits (this corrects multimodal-orchestration review R3, which counted `data/curriculum/`, where nodes carry <= 2).\n\n## forge-azure-capacity-2026-10-02\n**Azure capacity facts that bind Forge, consolidated from same-day probes.** (2026-10-02)\n- codex (taxila-codex, gpt-5.3-codex): 500k TPM / 5000 RPM per 60 s (headers; n = 7 calls across two probes). Turn latency on a 10.9k-token prefix writing one ~40-line file: low 3.3 s, medium 4.3-6.5 s, high 10.9 s (n = 1 per cell; `llm-game-generation-review-probe-2026-10-02.json`). Prompt caching: 1 of 3 warm calls hit without `prompt_cache_key`, 5 of 5 with it (10,624 of 10,804 tokens cached); `remaining-tokens` dropped by the full prompt on cached calls, so the limiter appears to count cached tokens (inference, n = 6).\n- taxila-image (gpt-image-2): three n=4 low generations 1 s apart, all 200 in 16.9-21.3 s, `x-ratelimit-remaining-requests` 3 -> 2 -> 1: the 4 RPM quota counts requests, so 16 images/min (`asset-pipeline-review-probe-2026-10-02.json`, n = 3 requests, 12 images).\n- Live fill latency anchors (from content/genui-reliability and video-animation-gen review): T1 spec on taxila-fast 1.88 s p50 / 2.05 s p90 (n = 10, 10/10 valid); scene@1 template 3.08 / 3.35 s (n = 8); explainer@1 template 3.47 s p50, max 3.73 s (n = 6; 2/6 broke segment limits).\n- All from the US build container; India RTT not included.\n",
+  "rejected": "## sora-for-curriculum\nTried (2026-10-02): `taxila-sora` (sora-2 2025-12-08) for curriculum clips, 7 clips across two probes (`factory/video-probe.mjs`, `content/animation-video-sora-probe.mjs`), frames rated by one rater. What broke: a number line labelled -2 -3 -4 -1 -5 5 -9 -19; गुरुत्वाकर्षण misspelled; an object vanished between frames; \"3 + 4 = 7\" written over 3 + 3 apples; leaves opening underground; an unrequested soundtrack on every clip; 49-79 s per 4 s clip and 87-118 s per 8 s clip at $0.10/s with 2 concurrent jobs. Pixels cannot be checked against an answer key. The deployment retires 2026-10-15 with no replacement (OpenAI removed the Videos API 2026-09-24). Replaced by `forge-media-lanes`.\n\n## content-safety-sole-gate\nTried (2026-10-02, `factory/asset-probe.mjs`): Azure AI Content Safety image analysis on 13 gpt-image-2 outputs. What broke: all 13 scored severity 0, including a near-facsimile ₹50 note (RBI wording, Gandhi portrait, State Emblem, serial number) and two scenes with baked Hindi/English wall text; it scores harm, not IP, emblems, text in pixels or stereotype. For text, Microsoft Learn (updated 2026-09-18) states the harm models were trained and tested on 8 languages that do not include Hindi; romanised Hinglish is weaker still. Replaced by the layered gate in `forge-qa-ladder` (per-string Content Safety + local Hinglish blocklist + taxila-brain classifier, fail closed; images: OCR any digit/operator + Content Safety + VLM checklist with a code verdict + human review).\n"
+ }
+}

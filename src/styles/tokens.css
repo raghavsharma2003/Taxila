@@ -1,0 +1,70 @@
+/* Taxila design tokens. Single source (PRODUCT-DESIGN §4.1, PD-G13): raw hex lives ONLY in this file.
+   Mirrored to Android resources by a build step (not built yet). Band tokens are written by the app as
+   data-band on <html> (src/app/band.ts); the parent surface sets data-surface="parent". */
+:root {
+  color-scheme: light;
+  /* neutrals (kids-ux 4.3) + a light surface-2 (new, 6.39:1 for ink-2 [X]) */
+  --bg:#FFF8EE; --surface:#FFFFFF; --surface-2:#F1E8D9; --ink:#1F1A14; --ink-2:#5A5148;
+  --tile-border:#8C8478; --dusk:#E9E1D2;
+  /* status: the only colours that carry meaning, always with a glyph (3.9) */
+  --turn:#FFB21E; --turn-ring:#7A4800;            /* ring darkened from #9A5B00: 4.23 vs fill, 7.23 vs bg [X] */
+  --listen:#2563C9; --think:#5B6470; --done:#1F7A4D; --stop:#B3261E;   /* stop = system errors only */
+  /* brand + material (chalk-mark removed, R17) */
+  --jamun:#5B2E91; --jamun-soft:#EFE6FA; --board:#1F3B30; --board-frame:#8C6B4A; --chalk:#F5F2E8; --chalk-2:#BFD3C6;
+  /* diagram: ModuleHost only; every category also has a label, shape or pattern */
+  --d1-neel:#2A72C6; --d2-matka:#C2410C; --d3-neem:#0B5E50; --d4-baingan:#3F2272; --d5-haldi:#946B0E; --d6-kajal:#3A3631;
+  --int-pos:var(--d3-neem); --int-neg:var(--d2-matka);          /* always with the + / - glyph */
+  /* skin ramp: illustration only, never themed, never filtered */
+  --skin-1:#F3D2B3; --skin-2:#E2B48C; --skin-3:#C99366; --skin-4:#A9744A; --skin-5:#8A5634; --skin-6:#5F3A22;
+  /* progress worlds (motivation 12): shape carries state, colour second */
+  --grow-plot:#8C8478; --grow-leaf:#2F7A3E; --grow-flower:#A8326E; --grow-fruit:#5B2E91; --grow-ring:#1F7A4D; --grow-visitor:#2563C9;
+  --sky-panel:#0F1A33; --sky-star-0:#7383A6; --sky-star-1:#8FA6D6; --sky-star-2:#C9D8FF; --sky-star-3:#FFFFFF;
+  --sky-edge:#6276A3; --sky-label:#F6F1E8;
+  /* focus: two-tone ring, best tone >= 3:1 on every ground tested [X] */
+  --focus-inner:#1F1A14; --focus-outer:#FFFFFF; --focus-w:2px; --focus-offset:2px;
+  /* pointer deixis */
+  --pointer-w:5px; --pointer-halo:2px; --pointer-draw:240ms; --pointer-fade:300ms; --gaze-lead:200ms;
+  /* families (4.3) */
+  --font-display:"Baloo 2","Mukta","Mukta-fb",sans-serif;  /* Young */
+  --font-text:"Mukta","Mukta-fb",sans-serif;
+  --font-reader:"Andika","Mukta",sans-serif;
+  /* space: 4 dp base */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:32px; --space-7:48px; --space-8:64px;
+  /* radii */
+  --radius-xs:6px; --radius-sm:10px; --radius-md:16px; --radius-lg:24px; --radius-pill:999px;
+  /* elevation: blur-free */
+  --ledge-surface:#E6DCCB; --elev-press:0 4px 0 var(--ledge-surface);      /* Young tiles only; decorative */
+  --elev-card:0 1px 2px rgba(31,26,20,.10), 0 2px 8px rgba(31,26,20,.08); /* tier A-B only; C-D use a 1px border */
+  /* motion */
+  --dur-press:100ms; --dur-fast:150ms; --dur-base:240ms; --dur-layout:300ms; --turn-pulse:1.6s; --milestone-max:1500ms;
+  --ease-standard:cubic-bezier(.2,0,0,1); --ease-enter:cubic-bezier(0,0,0,1); --ease-exit:cubic-bezier(.3,0,1,1);
+  /* net + ptt (low-end 12) */
+  --net-chip-bg:var(--surface-2); --net-chip-fg:var(--ink-2);
+}
+/* band tokens: written by the app as data-band on <html>; values in 4.2 */
+:root[data-band="b1"] { --hit-min:64px; --tile-min:112px; --gap:16px; --mic:96px; --radius-tile:24px; --dur-base:240ms; }
+:root[data-band="b2"] { --hit-min:64px; --tile-min:96px;  --gap:16px; --mic:88px; --radius-tile:20px; --dur-base:240ms; }
+:root[data-band="b3"] { --hit-min:48px; --tile-min:64px;  --gap:8px;  --mic:64px; --radius-tile:16px; --dur-base:160ms;
+                        --font-display:"Mukta","Mukta-fb",sans-serif; --elev-press:none; }
+:root[data-band="b4"] { --hit-min:48px; --tile-min:64px;  --gap:8px;  --mic:56px; --radius-tile:10px; --dur-base:160ms;
+                        --font-display:"Mukta","Mukta-fb",sans-serif; --elev-press:none; }
+/* dark: Older bands only, chrome only; default light; the in-app toggle writes data-theme (old WebViews ignore the media query) */
+@media (prefers-color-scheme: dark) { :root:is([data-band="b3"],[data-band="b4"]):not([data-theme="light"]) {
+  color-scheme: dark; --bg:#16140F; --surface:#221F19; --surface-2:#2C2821; --ink:#F6F1E8; --ink-2:#BDB4A6;
+  --done:#4CC38A; --listen:#7FB0FF; --think:#9AA3AF; --stop:#FF8A80; --jamun:#C3A6F5; --board:#22423A; --board-frame:#A07E5A;
+  --elev-card:none; --elev-press:none; /* --dusk, diagram, skin, sky unchanged: modules and art stay on --dusk */ } }
+:root:is([data-band="b3"],[data-band="b4"])[data-theme="dark"] { /* same values as the block above */
+  color-scheme: dark; --bg:#16140F; --surface:#221F19; --surface-2:#2C2821; --ink:#F6F1E8; --ink-2:#BDB4A6;
+  --done:#4CC38A; --listen:#7FB0FF; --think:#9AA3AF; --stop:#FF8A80; --jamun:#C3A6F5; --board:#22423A; --board-frame:#A07E5A;
+  --elev-card:none; --elev-press:none; }
+@media (prefers-reduced-motion: reduce) { :root { --dur-press:1ms; --dur-fast:1ms; --dur-base:1ms; --dur-layout:1ms;
+  --pointer-draw:1ms; /* the turn ring becomes a static 5px ring, no glow: the cue survives */ } }
+/* in-app "kam halchal" switch (4.4): same effect as the media query, written as data-motion on <html> */
+:root[data-motion="reduce"] { --dur-press:1ms; --dur-fast:1ms; --dur-base:1ms; --dur-layout:1ms; --pointer-draw:1ms; }
+@media (prefers-contrast: more) { :root { --tile-border:var(--ink); --surface:var(--bg); } }
+@media (forced-colors: active) { /* rings and ledges are outline/border, never box-shadow, so they survive */ }
+/* parent surface (parent-experience 13, ratios computed there); font switched to Mukta (R18) */
+[data-surface="parent"] { --p-bg:#FFFBF5; --p-ink:#1F1B16; --p-ink-2:#5A5148; --p-ink-3:#6B6158; --p-pakka:#1E6B47;
+  --p-learning:#2F5DA8; --p-yourturn-text:#8A4B00; --p-yourturn-fill:#FFD27A; --p-alert:#B3261E; --font-text:"Mukta",sans-serif; }
+/* No band set (landing, onboarding, parent corner): adult sizes (A6: 48 dp targets, 8 dp spacing). */
+:root:not([data-band]) { --hit-min:48px; --tile-min:64px; --gap:8px; --mic:64px; --radius-tile:16px; --dur-base:160ms; }

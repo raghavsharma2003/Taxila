@@ -716,3 +716,92 @@ Unless marked otherwise, every row is from `context/measurements.md@main`. Rows 
   - the DPDP rule citations, which are second-hand from `05-technology.md`.
 - **Not run:** no tests, evals or builds were executed. Every number above is quoted from the repo's own logs.
 - **A count inconsistency inside the repo.** `LEARNING.md` says "35 rubrics and 4 listed exceptions" for 46 quests, while `measurements.md` (14 Sep) says "46 quests, 42 with a published rubric". I did not resolve it.
+
+## Verification
+
+Adversarial check of ai2bharat@origin/main (a11c521) claims, 2026-10-02. Method: git ls-tree/show against the cited ref; existence, size, import list, spot-checks of cited constants (prompt caps, 62 memory cap, 2/7/21/60, 4096 avatars, 12 sound-alikes, honorific 40). Secret scan over all cited files: no hits (only .env.example exists in the tree; no api/_config). Nothing was executed (no tests/builds). All 75 verified claims exist at the ref and are implemented, not stubs.
+
+Cross-cutting findings:
+- Everything is written for ai2bharat's ADULT AI-skills learner on Next.js (app router, proxy.ts, @/ alias, next/headers, Neon Auth). Taxila is Vite/React + plain-JS server for children 6-15. Almost nothing is a literal copy.
+- Child safety gaps: distress.ts has no self-harm/abuse patterns; helpline copy is Tele-MANAS 14416 + KIRAN only, no Childline 1098.
+- Policy conflict: AIC20 never-store forbids storing affect; Taxila's emotional OS needs a deliberate decision first.
+- Many files import lib/learning-journey.ts (3,485 L), human-feedback-learning.ts, lesson-index.ts, credential-pool.ts, neon-db.ts, which were not claimed; extract by function, not by file.
+- AIC32/31 are the most directly applicable to Azure (Foundry lane, modified abuse monitoring for minors).
+
+| id | quality | corrected use | note |
+|---|---|---|---|
+| AIC01 | 4 | adapt | Real (391+747 lines); CORE 8,000 B / TAIL 6,000 B caps exist in SAATHI_PROMPT_BUDGET; loud truncation flag on trace. Imports 11 saathi siblings + learning-journey (3,485 L adult AI-skills catalog) via contract.ts. Take the compile/budget mechanism, not the files. |
+| AIC02 | 3 | adapt | Real, 316 L, no imports. Content is Saathi (adult AI-literacy guide) pedagogy; the key:value/a->b shape and 2 MUST-last slots transfer, the rows must be re-authored for child teacher. |
+| AIC03 | 4 | copy | Real, 71 L, zero imports, pure function. Only caveat: >14-word limit tuned for English rows; verify against Hinglish/Devanagari rows. |
+| AIC04 | 3 | adapt | Real, 200 L. Depends on LearningStage (understand/example/practice/apply) and checked-step types from learning-journey/contract. Header cites "leaked 0 in 31,122 trials" as inherited, not measured here. Taxila needs its own stage vocabulary. |
+| AIC05 | 3 | adapt | Real, 658 L, imports 6 siblings incl vision-gate, lesson-index, pedagogy. Gates keyed to Saathi answer keys; port predicates, rewire to Taxila kits. |
+| AIC06 | 3 | adapt | Real, 132 L; imports human-feedback-learning, copy, lesson-index (authored-lesson shapes). Ladder logic is portable, content is not. |
+| AIC07 | 3 | adapt | Real, 182+241 L. local-engine pulls bubbles, ladder, glossary-first, request, stage-gate: a bundle, not a unit. Concept (authored no-model fallback) is the value. |
+| AIC08 | 3 | adapt | Real, 164+161 L; glossary.ts imports human-feedback-learning. Needs Taxila glossary source (NCERT terms). |
+| AIC09 | 2 | adapt | Real, 37 L, zero imports, with negative controls. But shapes are adult-learner distress only: NO self-harm/abuse/bullying patterns, and helpline copy is Tele-MANAS 14416 + KIRAN only: NO Childline 1098 (Taxila floor requires it). Must be rewritten for children, not copied. |
+| AIC10 | 2 | adapt | Real, 149 L, zero imports. Month table is for adult exam/results/festival windows; Taxila needs board-exam/school-calendar rows. Mechanism only. |
+| AIC11 | 2 | adapt | Real, 47 L; HONORIFIC_TUM_AT_TURNS=40 confirmed. aap->tum, tu unreachable is an adult-teacher stance; for a 6-15 child tutor the register policy differs (likely tum/tu with warmth). Idea reusable, constants not. |
+| AIC12 | 3 | adapt | Real, 224 L, zero imports. Rule (max once, never in correction) transferable; check against Taxila relational-OS naming. |
+| AIC13 | 3 | adapt | Real, 97 L; imports contract + human-feedback-learning; one import string is actually prose in a comment. Four events are Saathi-specific. |
+| AIC14 | 4 | adapt | Real; bubbles.ts 166 L imports contract (maxBubbles 3). Source comment says upstream ships 3 hard cap 4. Small, but needs the contract type stubbed; downgrade copy to adapt. Irrelevant to voice lane. |
+| AIC15 | 2 | adapt | Real, 80 L, 12 pairs confirmed, but pairs are AI-literacy vocabulary (rubric/pairwise/rationale). Not reusable data; idea (pull-only ASR fix table) is valid for NCERT terms. 32-52% CER cited from elsewhere. |
+| AIC16 | 4 | copy | Real, 124 L; node:crypto sha256 length-prefixed core/tail, only a type import from model-data-terms. Portable to Vercel/Azure node. Wire extractors must match Taxila request shapes. |
+| AIC17 | 3 | adapt | Real, but dependency is inverted: lib/saathi/register-predicates.ts imports from evals/indic-benchmark/lib/properties.mjs (238 L). Fine as concept; restructure so product code does not import evals. |
+| AIC18 | 3 | adapt | Real, claims.ts 391 L no imports, handbook.ts 745 L Saathi/Sahayata-specific content. Take claims gate; handbook is content. |
+| AIC19 | 3 | adapt | Real, 194 L, zero imports; sum 12+20+1+3+6+20=62 confirmed. Kinds are adult-learner; Taxila needs child learner-model kinds (and affect decision, see AIC20). |
+| AIC20 | 2 | adapt | Real. App filter imports prompt.ts distressShapes; SQL CHECK has module_id enum hard-coded to ai2bharat modules. CONFLICT: this design deliberately forbids storing affect, but Taxila owner wants an emotional OS/affect lens. Decide policy before copying; keep the DB-CHECK-as-floor idea. |
+| AIC21 | 3 | adapt | Real, 270 L, imports contract/glossary/kinds/never-store. Deterministic, no second model call; shapes authored for Saathi. |
+| AIC22 | 3 | adapt | Real, 149+128 L; rank formula in TS plus SQL. Imports contract/kinds. Good reference for pull-only recall; Neon-compatible. |
+| AIC23 | 3 | adapt | Real, 101+54+163 L; route-handler imports request-security, store.ts (not claimed) and Next route style. Reset imports human-feedback-learning. Hard-delete semantic is the value. |
+| AIC24 | 3 | adapt | Real in memory migration (append-only trigger, delete allowed). Not a standalone file: shares a 509 L migration, FKs to member platform tables (AIC65). Extract the ledger table only; not copy as is. |
+| AIC25 | 2 | adapt | Real, 242+245 L React. memory-line imports interface-messages, bharat-languages, saathi-memory-copy, phosphor. Adult-facing; Taxila needs parent-facing view of child memory. |
+| AIC26 | 2 | idea | Real but handler.ts is 914 L importing ~20 siblings; unportable. The test/principle (memory off => TAIL byte-identical) is the only reusable part. |
+| AIC27 | 2 | adapt | Real, 229+110 L. Push-to-talk text transcript never auto-sent is a typed-chat ASR aid; Taxila's lane is realtime voice. asr-client imports lib/saathi/asr-handler (not claimed). Low relevance. |
+| AIC29 | 4 | adapt | Real, 136+120 L; canvas re-encode EXIF strip is browser-standard and portable. Imports contract for caps; inline the caps. Check minors-photo policy for children. |
+| AIC30 | 3 | adapt | Real, 304 L, zero imports. Gate rules (ungrounded identifiers) are generic; tuned to homework photos of adult course work. |
+| AIC31 | 3 | adapt | Real. lane.ts 306 L imports provider-foundry/provider/model-spend; unpaid 60-day ack is Gemini-lane specific. JSON includes Azure modified-abuse-monitoring text, which is directly relevant for minors on Azure. Taxila is Azure-only so drop the Gemini branch. |
+| AIC32 | 4 | adapt | Real, 257+354 L, imports credential-pool, model-spend. 12 s fuse and finish_reason handling present. Needs v1 endpoint verified against current Azure OpenAI deployments; credential pool is Saathi infra. |
+| AIC33 | 3 | adapt | Real, 508 L (not small), imports credential-pool and model-spend. Closed feature->env table concept is good. Not a drop-in copy. |
+| AIC34 | 4 | adapt | Real, 422+88 L plus 117 L migration under private schema; imports router and neon-db. Fail-closed cap is a strong fit for Azure grant. Needs porting off router/neon-db helpers. |
+| AIC35 | 2 | adapt | Real, 329 L, zero imports. Price table is stale by definition; Azure prices differ. Keep structure, re-price. |
+| AIC36 | 3 | adapt | Real as part of 747 L contract.ts, not a standalone file. Extract trace type only. |
+| AIC37 | 3 | adapt | Real: learning-journey.ts 3,485 L includes content and imports 15+ lesson waves; types.ts 234 L imports opportunities.ts. Lift the type shapes only. |
+| AIC38 | 2 | idea | Real but 1,438 + 739 L components with 15+ app-specific imports (analytics, commons-handoff, tour bus, css modules). Not portable; loop concept only. |
+| AIC39 | 3 | adapt | Docs rule real (272 L). Enforcing test is 888 L and imports the whole lesson catalog and allowlist. Copy the rule text, rewrite the test against Taxila kits. |
+| AIC40 | 3 | adapt | Real: 370 L migration + sync lib that imports learning-journey. Schema idea (server recomputes aligned, first_try columns) is portable; table names/modules are Saathi. |
+| AIC41 | 3 | adapt | Real. API route is Next app router with @/lib aliases, Neon Auth, request-security. Idempotency/optimistic-version pattern is portable; code is not. |
+| AIC42 | 3 | adapt | Real. ladder.ts imports learning-catalog and opportunities; safar is ai2bharat's adult map. Arithmetic identity idea reusable. |
+| AIC43 | 3 | adapt | Real, inside the 3,485 L file; requires catalog. Pattern only. |
+| AIC44 | 3 | adapt | Real, 284 L TSX imports safar-copy, learning-journey. Fits a placement-check idea; content is adult. |
+| AIC45 | 4 | adapt | Real, 370+243+155 L. SPACED_REVIEW_INTERVAL_DAYS=[2,7,21,60] confirmed. Imports learning-journey/catalog types; pure logic could be rewired quickly. Downgrade copy to adapt; children's intervals need Taxila measurement. |
+| AIC46 | 3 | adapt | Real, 173+615+68 L. Gates import saathi/output-gate and lesson-index; route is Next. Keep contract and gate predicates. |
+| AIC47 | 3 | adapt | Real; rubric-catalog 414 L, quest-rubrics 534 L are ai2bharat quest content. Pattern/anchor structure only. |
+| AIC48 | 2 | idea | Real index of 12 exemplar modules; content is ai2bharat quests. Idea only. |
+| AIC49 | 5 | copy | Real, 595 L, zero imports, SYNTHETIC label confirmed in script; script imports ai2bharat rubrics so rewrite its inputs. Library file is a clean copy for kappa/Wilson. |
+| AIC51 | 3 | adapt | Real, script 438 L zero imports; validator 191 L imports bharat-languages. Depends on field-path unit layout of lessons and a model provider env. |
+| AIC52 | 3 | adapt | Real, 612 L imports bharat-languages, calibration, learning-journey, lesson-fields. Needs judge-model on Azure only. |
+| AIC54 | 3 | adapt | Real, 269 L test; imports learning-journey and a sentences file. 20-word cap is English; define for Hindi. |
+| AIC55 | 3 | adapt | Real, 101+189 L; evidence/vocabulary imports verification.ts. Cheap to retarget. |
+| AIC56 | 2 | adapt | Real, community-progress 486 L imports people/projects/safar (adult community). Ledger migration is a good pattern; mechanic is adult-community, risky for children. Rethink for gamification. |
+| AIC57 | 3 | adapt | Real, 246 L imports learning-journey. Opt-in suggestion concept only. |
+| AIC59 | 4 | copy | Real doc (163 L) and in headers. Four-question audit is text; copy as a checklist. Strategy doc is Saathi-specific. |
+| AIC60 | 3 | adapt | Real, 189+155 L plus migration; shape-gate has zero imports (the "come back" import is a comment). Taxila notifications go to parents; re-author events and bans. |
+| AIC61 | 3 | adapt | Real, 222 L client + 65 L + 318 L migration. Imports analytics-path, @/lib alias. DPDP for children: Taxila needs stricter (parent consent); opt-in design transfers. |
+| AIC62 | 3 | adapt | Real, 148 L migration, counts-only. Depends on member tables. |
+| AIC63 | 2 | idea | Real, 122 L + 298 L; 9 id entries found vs claimed 7 moments (count unverified). Spotlight is react-dom portal UI. Low value for a voice-first child product. |
+| AIC64 | 2 | idea | Real; share-sheet imports canvas-card, avatar, analytics. A public work page for children is a privacy risk; idea only. |
+| AIC65 | 3 | adapt | Real, 183+28 L SQL, RLS + security-definer writers. Members/handles/intents model is adult community; take RLS pattern, not tables. |
+| AIC66 | 3 | adapt | Real: config 27 L, session 115 L imports @neondatabase/auth/server and next/headers (Next-only); auth-redirect 205 L. Test counts 3 literal-shaped rows in auth-redirect test; 21 shapes not confirmed. Taxila uses child id identity; port only redirect sanitiser. |
+| AIC67 | 4 | adapt | Real, embedded-browser 72 L zero imports; TSX imports next/link, next/navigation. Detector is directly useful for Capacitor/WhatsApp. Parent sign-in only. |
+| AIC69 | 3 | adapt | Real: request-security 100 L zero imports (clean copy); proxy.ts and next.config.ts are Next 16 specific. Copy only request-security, adapt headers to Container Apps/Express-style router. |
+| AIC70 | 3 | adapt | Real, 385 L + 22 L, uses pg. Verifier is specific to Saathi memory migration; pattern (rollback transaction proofs) portable. Taxila has its own migrate.mjs. |
+| AIC71 | 2 | skip | Real but Taxila already has scripts/context.mjs and graph.json from the same lineage (see Taxila CLAUDE.md); nothing to add. Registry content is ai2bharat history. |
+| AIC73 | 4 | copy | Real: public/fonts has 12 woff2 (+OFL.txt), not 13 scripts; Latin likely separate. 33 language-code matches in 11 kB bharat-languages.ts. Font licence OFL. Verify subset coverage for Hindi-first UI. |
+| AIC74 | 3 | adapt | Real, 257 L + 940 L page-checks. run.mjs imports surfaces/config/report specific to ai2bharat routes; page-checks self-contained. Needs Playwright dependency. |
+| AIC75 | 3 | adapt | Real, 99 L zero imports, AVATAR_COUNT=4096 confirmed; component uses @/ alias. Child-appropriate (no photos) but brand-specific animals; fits as selectable avatar idea. |
+| AIC76 | 2 | idea | Real, but embeddings.ts imports credential-pool and a 344 KB funding-specific embedding-index.json; search is tied to funding catalog. Synonym/normaliser idea only. Embedding model likely not Azure. |
+| AIC77 | 3 | adapt | Real; sitemap imports 5 app libs, Next metadata routes. Taxila is Vite SPA: needs SSR/prerender decision first. |
+| AIC79 | 2 | idea | Real doc 238 L; insights are for an adult landing page. Method (words-in-fold) reusable. |
+| AIC82 | 3 | adapt | Real, shapes 73 L, gates 609 L, register 492 L; gates import copy/lesson-index/output-gate/pedagogy. Runs only with those; register battery needs a live lane (NOT RUN when none). Not run by me. |
+| AIC83 | 3 | adapt | Real, run.mjs 200 L imports its own lib; design doc 562 L. 132-item seed unverified by me. Benchmark is for Indic LLM behaviour generally, re-seed for tutoring. |
+| AIC84 | 3 | adapt | Real, 285+199 L; imports lib/ai/router and learning/feedback.ts (not claimed), so not standalone. Copy downgraded to adapt. |

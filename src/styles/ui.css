@@ -1,0 +1,133 @@
+/* Shared components (src/ui/). Every target >= var(--hit-min) (A6); press feedback on pointer-down, commit on
+   pointer-up (A5: native click); states are never colour alone (A2). */
+
+/* ── Button ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: var(--hit-min); min-width: var(--hit-min); padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-md); border: 2px solid transparent; font-weight: 600; font-size: 1rem; line-height: 1.25;
+  text-decoration: none; text-align: center; user-select: none; -webkit-tap-highlight-color: transparent;
+  transition: transform var(--dur-press) var(--ease-standard), opacity var(--dur-fast) var(--ease-standard);
+}
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--jamun); color: var(--surface); }
+.btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--tile-border); }
+.btn-quiet { background: transparent; color: var(--ink); border-color: transparent; text-decoration: underline; text-underline-offset: 3px; }
+.btn-danger { background: var(--surface); color: var(--ink); border-color: var(--ink); } /* exits use ink, never red (§2.9) */
+.btn-block { width: 100%; }
+.btn-sm { min-height: 48px; padding: var(--space-2) var(--space-4); font-size: 0.9375rem; }
+/* The one YOUR TURN element (§0.4): marigold fill + darkened ring drawn as outline (forced-colours safe). */
+.btn-turn { background: var(--turn); color: var(--ink); outline: 3px solid var(--turn-ring); outline-offset: 0; }
+[data-surface="parent"] .btn-turn { background: var(--p-yourturn-fill); outline-color: var(--p-yourturn-text); }
+[data-surface="parent"] .btn-primary { background: var(--jamun); }
+
+/* ── Card ── */
+.card { background: var(--surface); border-radius: var(--radius-md); padding: var(--space-4); border: 1px solid var(--surface-2); box-shadow: var(--elev-card); }
+.card-flat { box-shadow: none; border-color: var(--tile-border); }
+.card-title { font-family: var(--font-text); font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+[data-surface="parent"] .card-title { color: var(--p-ink-2); }
+/* Parent "your turn" block: the only marigold block on a parent screen (PX3). Shape: a left bar + label. */
+.card-turn { border-left: 6px solid var(--p-yourturn-text); background: var(--surface); }
+
+/* ── Tile (choice) ── */
+.tile {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1);
+  min-height: var(--tile-min); min-width: var(--hit-min); padding: var(--space-3); text-align: center;
+  background: var(--surface); color: var(--ink); border: 2px solid var(--tile-border); border-radius: var(--radius-tile);
+  font-weight: 600; font-size: 1.0625rem; line-height: 1.3; -webkit-tap-highlight-color: transparent;
+  transition: transform var(--dur-press) var(--ease-standard);
+}
+.tile:active { transform: scale(0.97); }
+.tile[aria-pressed="true"], .tile[aria-checked="true"] { border-color: var(--jamun); background: var(--jamun-soft); }
+.tile .tile-tick { display: none; }
+.tile[aria-pressed="true"] .tile-tick, .tile[aria-checked="true"] .tile-tick { display: block; }
+.tile-sub { font-weight: 400; font-size: 0.875rem; color: var(--ink-2); }
+.tiles { display: grid; gap: var(--space-2); }
+.tiles-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tiles-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tiles-auto { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+
+/* ── Chip ── */
+.chip { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 32px; padding: 2px var(--space-3);
+  border-radius: var(--radius-pill); border: 2px solid var(--tile-border); background: var(--surface); font-size: 0.9375rem; font-weight: 600; white-space: nowrap; }
+button.chip { min-height: var(--hit-min); }
+button.chip[aria-pressed="true"] { border-color: var(--jamun); background: var(--jamun-soft); }
+/* Ledger state chips (§6.4): shape carries state and survives greyscale; colour second; never red (PX2). */
+.state { --c: var(--p-ink-3); display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 2px 12px 2px 8px;
+  border-radius: var(--radius-pill); font-weight: 600; font-size: 0.9375rem; line-height: 1.3; border: 2px solid var(--c); color: var(--p-ink); background: var(--surface); white-space: nowrap; }
+.state-0 { --c: var(--p-ink-3); border-style: dashed; }
+.state-1 { --c: var(--p-learning); background: linear-gradient(90deg, color-mix(in srgb, var(--p-learning) 16%, var(--surface)) 50%, var(--surface) 50%); }
+.state-2 { --c: var(--p-learning); }
+.state-3 { --c: var(--p-pakka); background: var(--p-pakka); color: var(--surface); }
+.state-mark { width: 14px; height: 14px; flex: none; }
+.state-tag { font-weight: 400; color: var(--p-ink-2); font-size: 0.875rem; }
+.state-3 .state-tag { color: var(--surface); }
+
+/* ── Field ── */
+.field { display: flex; flex-direction: column; gap: var(--space-1); }
+.field label, .field .label { font-weight: 600; }
+.field .hint { font-size: 0.875rem; color: var(--ink-2); }
+.input { min-height: var(--hit-min); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); border: 2px solid var(--tile-border);
+  background: var(--surface); font-size: 1.0625rem; width: 100%; }
+.input:focus-visible { border-color: var(--ink); }
+.field-error { color: var(--stop); font-weight: 600; font-size: 0.9375rem; display: flex; gap: 6px; align-items: flex-start; }
+.alert { display: flex; gap: var(--space-2); align-items: flex-start; padding: var(--space-3); border-radius: var(--radius-sm);
+  border: 2px solid var(--stop); background: var(--surface); color: var(--ink); }
+.note { padding: var(--space-3); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--ink); }
+
+/* ── Sheet (native <dialog>: focus trap, Esc, inert background) ── */
+.sheet { padding: 0; border: 0; background: var(--surface); color: var(--ink); width: 100%; max-width: 640px; max-height: 88dvh;
+  margin: auto auto 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: auto; overscroll-behavior: contain; }
+.sheet::backdrop { background: color-mix(in srgb, var(--ink) 45%, transparent); }
+.sheet[open] { animation: tx-sheet var(--dur-base) var(--ease-enter) both; }
+@keyframes tx-sheet { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+.sheet-head { position: sticky; top: 0; display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4);
+  background: var(--surface); border-bottom: 1px solid var(--surface-2); z-index: 1; }
+.sheet-head h2 { font-family: var(--font-text); font-size: 1.25rem; flex: 1; }
+.sheet-body { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-4); }
+@media (min-width: 720px) { .sheet { margin: auto; border-radius: var(--radius-lg); } }
+
+/* ── PinPad ── */
+.pin { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+.pin-dots { display: flex; gap: var(--space-3); min-height: 24px; }
+.pin-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--ink); background: transparent; }
+.pin-dot[data-on="true"] { background: var(--ink); }
+.pin-keys { display: grid; grid-template-columns: repeat(3, 72px); gap: var(--space-3); }
+.pin-key { min-height: 64px; border-radius: var(--radius-md); border: 2px solid var(--tile-border); background: var(--surface);
+  font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; transition: transform var(--dur-press) var(--ease-standard); }
+.pin-key:active { transform: scale(0.95); }
+.pin-key-quiet { border-color: transparent; font-size: 1rem; }
+
+/* ── HoldButton (press and hold; single pointer, no drag: 2.5.7) ── */
+.hold { position: relative; overflow: hidden; isolation: isolate; }
+.hold-fill { position: absolute; inset: 0; background: var(--jamun-soft); transform-origin: left center; transform: scaleX(0); z-index: -1; }
+.btn-primary .hold-fill { background: var(--d4-baingan); }
+.hold[data-holding="true"] .hold-fill { transform: scaleX(1); transition: transform var(--hold-ms, 1200ms) linear; }
+
+/* ── Status glyph (§3.9) ── */
+.status { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; }
+.status svg { width: 24px; height: 24px; }
+.status[data-state="your_turn"] svg { color: var(--turn-ring); }
+.status[data-state="listening"] svg { color: var(--listen); }
+.status[data-state="thinking"] svg { color: var(--think); }
+.status[data-state="speaking"] svg { color: var(--jamun); }
+
+/* ── Speaker ── */
+.speaker { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-width: 48px; min-height: 48px;
+  border-radius: var(--radius-pill); border: 2px solid var(--tile-border); background: var(--surface); padding: 0 var(--space-3); font-weight: 600; }
+.speaker[aria-pressed="true"] { border-color: var(--jamun); }
+
+/* ── Top bar (adult surfaces) ── */
+.topbar { display: flex; align-items: center; gap: var(--space-2); min-height: 56px; padding: var(--space-2) var(--space-4);
+  padding-top: max(var(--space-2), env(safe-area-inset-top)); }
+.brand { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-text); font-weight: 700; font-size: 1.25rem;
+  color: var(--jamun); text-decoration: none; min-height: 48px; }
+.brand svg { width: 32px; height: 32px; }
+.iconbtn { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; min-height: 48px; border-radius: var(--radius-pill);
+  border: 0; background: transparent; color: var(--ink-2); text-decoration: none; }
+.iconbtn svg { width: 24px; height: 24px; }
+
+.spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--surface-2); border-top-color: var(--jamun); animation: tx-spin 0.9s linear infinite; }
+@keyframes tx-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } }

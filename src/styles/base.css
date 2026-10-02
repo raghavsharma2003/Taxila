@@ -1,0 +1,59 @@
+/* Base layer: reset, type scale, focus, layout primitives. Only var(--token) colours here (PD-G13).
+   Sizes are rem so browser zoom and Android font scale up to 200% reflow text (A13); padding is px. */
+
+/* Metric fallback for Mukta while the web font loads (§4.3: headings must not reflow when it arrives).
+   size-adjust is a starting value [I: re-measure with visual-identity-fonts.py]; old WebViews may ignore it. */
+@font-face { font-family: "Mukta-fb"; src: local("Noto Sans Devanagari"), local("NotoSansDevanagari-Regular"), local("Roboto"), local("Arial");
+  size-adjust: 104%; ascent-override: 102%; descent-override: 48%; line-gap-override: 0%; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100dvh; background: var(--bg); color: var(--ink);
+  font-family: var(--font-text); font-size: 1rem; line-height: 1.5; font-weight: 400;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+[data-surface="parent"] body, body[data-surface="parent"] { background: var(--p-bg); color: var(--p-ink); }
+img, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--jamun); text-underline-offset: 3px; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.2; margin: 0; font-weight: 700; text-wrap: balance; }
+p { margin: 0; }
+
+/* Devanagari (PD-G14): taller leading, no letter-spacing, never clipped. Use <Hi> (src/ui/Hi.tsx). */
+.deva { font-size: 1.125em; line-height: 1.6; letter-spacing: normal; }
+:lang(hi) { letter-spacing: normal; }
+
+/* Two-tone focus (A8): 2px ink against the element, 2px white outside it. Outline survives forced colours. */
+:focus { outline: none; }
+:focus-visible { outline: var(--focus-w) solid var(--focus-outer); outline-offset: var(--focus-offset);
+  box-shadow: 0 0 0 var(--focus-offset) var(--focus-inner); border-radius: var(--radius-xs); }
+@media (forced-colors: active) { :focus-visible { outline: 3px solid CanvasText; } }
+
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.skip { position: absolute; left: var(--space-2); top: -60px; background: var(--surface); color: var(--ink); padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm); z-index: 50; }
+.skip:focus-visible { top: var(--space-2); }
+
+/* type scale (parent / adult surfaces; child bands override in their own CSS) */
+.t-display { font-size: clamp(1.75rem, 1.2rem + 2.6vw, 2.75rem); line-height: 1.15; }
+.t-title { font-size: 1.5rem; line-height: 1.25; }
+.t-h3 { font-size: 1.25rem; line-height: 1.3; }
+.t-body { font-size: 1rem; }
+.t-lead { font-size: 1.125rem; line-height: 1.55; }
+.t-meta { font-size: 0.8125rem; color: var(--ink-2); }
+[data-surface="parent"] .t-meta { color: var(--p-ink-2); }
+.muted { color: var(--ink-2); }
+
+/* layout */
+.page { width: 100%; max-width: 960px; margin: 0 auto; padding: 0 var(--space-4); }
+.col { width: 100%; max-width: 480px; margin: 0 auto; padding: 0 var(--space-4); }
+.stack { display: flex; flex-direction: column; gap: var(--space-4); }
+.stack-sm { display: flex; flex-direction: column; gap: var(--space-2); }
+.row { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+.spacer { flex: 1; }
+
+/* Motion budget (PD-G15): transform and opacity only. */
+@keyframes tx-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.enter { animation: tx-enter var(--dur-base) var(--ease-enter) both; }

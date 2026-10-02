@@ -1,0 +1,158 @@
+{
+ "nodes": [
+  {
+   "id": "psych-claim-tiers",
+   "kind": "decision",
+   "title": "Psychology claims in three tiers (science / knob / parent L0-L3); learning rate, metacognitive efficiency, habit time, per-child format effect, personality and <12-month growth rate are never per-child claims",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "decision-records-with-propensities",
+   "kind": "decision",
+   "title": "Every randomisable Director/Conductor/scheduler decision writes a DecisionRecord (candidates, propensity, availability, draw, policy version); no causal analysis without it",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "psych-parent-claim-gate",
+   "kind": "decision",
+   "title": "Parent pattern claims pass a code gate: in-deployment rho >= .80, distinctiveness, window replication, two-groups pooled posterior per pre-registered menu item, report budget validated on simulated nulls",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "psych-change-rule-term",
+   "kind": "decision",
+   "title": "Then->now change rows: pre-declared direction, once per term, matched information, magnitude floor, P >= .95 (.975 above 4 rows); release bar < 0.1 false rows per child-year",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "psych-no-clock-time-features",
+   "kind": "decision",
+   "title": "No clock time-of-day feature in any product model or DecisionRecord context; bedtime is a boolean safety predicate; time-of-day science only in a P4 research extract or opt-in n-of-1",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "psych-umbrella-ald-study",
+   "kind": "decision",
+   "title": "Umbrella study: 18-month accelerated longitudinal design, N~4,000 P4 + 600 delayed-start; gates G0-G5 first; logit scale (no grade equivalents); 8 confirmatory hypotheses PH1-PH8",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "psych-consent-assent-two-tier",
+   "kind": "decision",
+   "title": "Two-tier consent (P1 service without research-only randomisation; P4 research) and ICMR-standard assent by a neutral narrator: willingness check at 6, oral recorded 7-11, written 12+, dissent always honoured",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "psych-identifiability-sims-2026-10-02",
+   "kind": "measurement",
+   "title": "Psychology identifiability simulations (8 scripts): per-child reliabilities, claim-gate calibration, false change rows, power; all generative assumptions [U]",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "independent-prior-claim-budget",
+   "kind": "rejection",
+   "title": "Per-claim independent weak priors + report budget sum(1-P): a null report carried 4.9 false pattern claims while the budget believed 0.2",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "raw-count-growth-route",
+   "kind": "rejection",
+   "title": "'Raw counts change consistently over >= 3 windows' as a change rule: 5.6 false then->now rows per child-year under the null; every child gets one",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "grade-equivalent-parent-band",
+   "kind": "rejection",
+   "title": "Grade-equivalent 'working at Class x level' band for parents: not equal-interval, no Indian norming or vertical scale, norm-referenced, misread by parents",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "open-durability-operating-point",
+   "kind": "open",
+   "title": "Owner decision: wellbeing bound (predicted retention >= .6) vs identifiability of per-child durability (.43 at 40 checks as scheduled; ~27 weeks per topic type before any line)",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "part_of",
+   "dst": "psych-claim-tiers"
+  },
+  {
+   "src": "psych-change-rule-term",
+   "rel": "part_of",
+   "dst": "psych-claim-tiers"
+  },
+  {
+   "src": "psych-claim-tiers",
+   "rel": "measured_by",
+   "dst": "psych-identifiability-sims-2026-10-02"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "measured_by",
+   "dst": "psych-identifiability-sims-2026-10-02"
+  },
+  {
+   "src": "psych-change-rule-term",
+   "rel": "measured_by",
+   "dst": "psych-identifiability-sims-2026-10-02"
+  },
+  {
+   "src": "decision-records-with-propensities",
+   "rel": "measured_by",
+   "dst": "psych-identifiability-sims-2026-10-02"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "supersedes",
+   "dst": "independent-prior-claim-budget"
+  },
+  {
+   "src": "psych-change-rule-term",
+   "rel": "supersedes",
+   "dst": "raw-count-growth-route"
+  },
+  {
+   "src": "psych-claim-tiers",
+   "rel": "supersedes",
+   "dst": "grade-equivalent-parent-band"
+  },
+  {
+   "src": "psych-umbrella-ald-study",
+   "rel": "blocks",
+   "dst": "decision-records-with-propensities"
+  },
+  {
+   "src": "psych-umbrella-ald-study",
+   "rel": "constrains",
+   "dst": "psych-consent-assent-two-tier"
+  },
+  {
+   "src": "psych-umbrella-ald-study",
+   "rel": "constrains",
+   "dst": "psych-no-clock-time-features"
+  },
+  {
+   "src": "psych-umbrella-ald-study",
+   "rel": "constrains",
+   "dst": "scope-classes-1-9"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "blocks",
+   "dst": "open-durability-operating-point"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  }
+ ],
+ "md": {
+  "decisions": "## psych-claim-tiers\n**Every psychological construct Taxila estimates is assigned, per age band, to one or more tiers: S (population science, published), K (internal teaching knob within bounded ranges, periodically re-randomised) and P (parent: L0 counts, L1 ledger states, L2 gated patterns, L3 term change rows). The never-per-child list is: learning rate, metacognitive efficiency (meta-d'/d'), habit-formation time, a format or teaching-move effect \"for your child\", personality/temperament, a growth rate over < 12 months, trajectory classes, and cognitive-process change over < 12 months. Parents also never see grade equivalents, trait/type/diagnosis/emotion words, ranks or predictions.** (2026-10-02)\n- Rationale: per-child reliability from Taxila-shaped simulations: learning-rate slope .01-.04 below 210 observations (.23 at 100 skills x 10); durability .43 at 40 randomised-lag checks under the scheduler as specified; calibration offset .73-.75 at 30 bets but resolution mostly knowledge (r(dConf, d') = .85); help-need coupling .51 at 200 opportunities; habit-time r .26-.42; per-child format effect needs 78/217/487 delayed comparisons per arm at tau .5/.3/.2; GRR .35 at 6 months monthly. Literature: Fisher 2018 (group-to-individual), Hedge 2018 / Rouder 2023 (reliability paradox), Rahnev 2025 (M-Ratio ICC .42 at 400 trials). Spec: `docs/research/psychology/RESEARCH-PROGRAM.md` §0 RP-D1/RP-D4, §3 catalogue; `docs/research/psychology/PARENT-REPORT.md` §3.\n- Reverse if: a construct's own reversal measurement passes (LT1 slope SD with test-retest r >= .6; MS3 reliability at fewer bets; MH3 habit-time split-half >= .7; LAM3 tau >= .5 logit; S-TV1 trait-like signatures), or Paper 1 (`docs/research/psychology/PAPER-OUTLINE.md`) MP-H2/H3/H5 are falsified in deployment.\n\n## decision-records-with-propensities\n**Every decision the Director, Conductor, scheduler or a bandit makes that could be randomised writes a `decision_record`: decision id, point type, availability (+ reason), candidate set, propensity of each candidate, the random draw and seed ref, chosen action, policy version, hard constraints applied and a context vector without clock time. It is distinct from the Conductor's 90-day replay `decision_log` and is retained for the study + publication window under research consent. Replay audit must reproduce 100% of chosen actions (LAM1).** (2026-10-02)\n- Rationale: Taxila's logs are policy outputs; without propensities neither MRT excursion effects (WCLS), IPW/MSM nor off-policy evaluation is possible (Klasnja 2015; Boruvka 2018; Qian 2022; Hadad 2021). Computed: Thompson sampling with no floor inflated naive type-I error to .111; a .10 floor restores it (.048). Spec: `docs/research/psychology/RESEARCH-PROGRAM.md` §4.3 `DecisionRecord`, §4.7 migration list (`decision_record`, `schedule_record`, `format_trial.propensity`); `docs/research/psychology/learning-analytics-methods.md` LAM-D1.\n- Reverse if: never; it is the precondition for every causal claim. Fields may change only if the replay audit still passes.\n\n## psych-parent-claim-gate\n**A parent-facing pattern (L2) is rendered only if code finds: an in-deployment reliability card with rho >= .80 at the claim's interval (level claims); distinctiveness P(|child - band default| > delta) >= .90; >= 70% re-appearance of the claim type in a non-overlapping window; for contrasts, a two-groups (spike-and-slab) empirical-Bayes posterior P(claim correct) >= .90 computed per pre-registered menu item (<= 6 candidates per section per month, screened count logged), and randomised allocations with logged propensities for anything with a causal reading. Admitted L2/L3 claims obey a report budget sum(1 - P) <= .2 weekly / .3 monthly, validated on simulated nulls and sparse mixtures before launch. L2/L3 lines are rendered from reviewed templates (Lane A); an Azure first-party model may only order/join segments and write <= 25-word cited episode clauses (Lane B), and every string passes lexicon, semantic, structure, child-read and pronoun predicates.** (2026-10-02)\n- Rationale: PR methodologist review R1-R2; computed (`docs/research/psychology/research-program-synthsim.py` §A, 3,000 children/cell): independent Beta(1,1) priors admitted 4.89 claims per null report, all false, while the budget believed 0.21; normal-normal pooling believed 0.17 where 2.22 were false (10% real effects, n = 120/arm); two-groups pooling admitted 7.24 with 0.10 false vs 0.12 believed (30% real). At realistic 12-40 comparisons per arm the two-groups gate finds 0-16% of real effects, so the report is designed fact-first. Spec: `docs/research/psychology/PARENT-REPORT.md` §4, §10.\n- Reverse if: PRM5 shows on real held-out delayed checks that a simpler gate is calibrated (stated P matches confirmation rate), or Paper 1 MP-H8 is falsified for the two-groups gate.\n\n## psych-change-rule-term\n**A \"then -> now\" change row needs: a pre-declared direction per row, evaluation once per term, windows matched for information (or an unpooled contrast), a magnitude floor (default .10 on proportions; >= 2*SEM_diff ~ 7 days for D28), posterior >= .95 (>= .975 when more than 4 rows are candidates), a transfer check for SRL rows, and band drift shown as context. Monthly reports show at most 2 change rows and only at a term boundary; term reports at most 4. Cognitive-process change (span, drift) is suppressed under 12 months. Release metric: < 0.1 false rows per child-year on simulated nulls.** (2026-10-02)\n- Rationale: MS review P2 (the raw-count route gave 99% of children a false row a year); MH review R7-R8 (D28 block-to-block SD 3.1 days; multiplicity); CD review P1-P2 (change-score reliability .25 at rho .70, r12 .60; shrinkage manufactures 0.5 SD fake change). Computed (`docs/research/psychology/research-program-synthsim.py` §B, 4,000 children): corrected rule 0.107 false rows/yr with 6 rows at P >= .95, 0.071 with 4 rows, 0.050 at P >= .975. Spec: `docs/research/psychology/RESEARCH-PROGRAM.md` RP-D6; `docs/research/psychology/PARENT-REPORT.md` §4.3, S14.\n- Reverse if: the false-row audit (PRM12) on real data with shuffled windows exceeds 0.1 per child-year (tighten), or shows < 0.02 with materially higher yield under a looser rule (loosen).\n\n## psych-no-clock-time-features\n**No feature derived from clock time of day enters any product model, knob estimator or `DecisionRecord.context`; `IspContext.daypart` is removed. Overnight = local date change AND >= 8 h elapsed. Exceptions: (a) the after-bedtime safety predicate, stored as a boolean against the parent-declared bedtime; (b) a coarse daypart band in a restricted research-consent (P4) extract, used only for population balancing (LOT H5, CD S6); (c) parent-opted n-of-1 alternations analysed as a population study, with any individual line needing a directional rule plus posterior SD < delta_min.** (2026-10-02)\n- Rationale: shared phones confound clock time with who holds the phone and why (LOT invariant 4, MHI3); phase delay is keyed to pubertal stage, which Taxila must not infer (CD review R8); the PR n-of-1 two-sided rule fired in 19% of null families (PR review R7). Resolves the CD S6 / TV daypart vs LOT/MH conflict. Spec: `docs/research/psychology/RESEARCH-PROGRAM.md` RP-D8, §12 row 2.\n- Reverse if: never for product models; the research extract's daypart band is dropped if the IEC objects.\n\n## psych-umbrella-ald-study\n**The flagship study (\"How Indian children learn with an AI tutor\") is an 18-month accelerated longitudinal design: classes 1-9 enrol at once (N ~ 4,000 research-consented, stratified by class x medium x region, Hindi-medium and government-school oversampled) plus a 600-child delayed-start efficacy sub-cohort in partner schools/waitlists. Measurement gates G0 instrumentation, G1 invariance, G1b dimensionality, G2 reliability, G3 external validity (r >= .60), G4 ASR, G5 simulation calibration pass before the hypotheses they protect. Ability is on a vertically linked logit scale with continuation-ratio scoring of hint outcomes (never grade equivalents); schooling is identified only by a fuzzy RD at the school-entry cutoff with calendar-period terms; exposure is descriptive. Confirmatory family PH1-PH8 (Holm): efficacy, learning-rate heterogeneity, forgetting by age equated by design, probe delivery (MRT), expertise reversal (MRT), per-child format personalisation equivalence (TOST +/-0.10 SD, ~2,570 children), competence -> self-initiated sessions (ages 10-15), context-consistent repetition. Sealed 70% holdout declared partial; Registered Reports for paper 1, PH1, PH4, PH6.** (2026-10-02)\n- Rationale: LAM-D4/D5 and LAM review R1-R4 (GE metric, post-treatment covariates, APC constraint, MRT missing outcomes, H1 three-way reading, H6 n, H7 construct); computed power: MRT 3 pp at N=400 x 30 points = .83 (upper bound), band differences .54; MDES .162 SD for the efficacy sub-cohort; reliability CI +/-.05 at r=.7 needs 403/band. Spec: `docs/research/psychology/RESEARCH-PROGRAM.md` §8; first paper `docs/research/psychology/PAPER-OUTLINE.md`.\n- Reverse if: cohort x age non-convergence beyond the pre-set bound (report per-cohort curves only); attrition below 30% active at 12 months (re-plan E-PROFILE); an IEC requires a different design.\n\n## psych-consent-assent-two-tier\n**Consent is two-tier: P1 (service) covers production adaptation and never research-only randomisation; P4 (research) covers research arms, extracts and publication. Non-P4 children are excluded from extracts and research-only arms; declining research never changes the service. Assent follows ICMR 2017 Box 6.6: a willingness check at 6; oral, recorded, parent present at 7-11; written and co-signed from 12; re-asked at enrolment, age birthdays and annually; failure to object is not assent. A neutral narrator (never the tutor persona or voice) presents it. Research dissent triggers an assent re-check; task refusal is honoured pedagogically and is not withdrawal. B4 psychological report sections reach parents only on the adolescent's opt-in.** (2026-10-02)\n- Rationale: ICMR 2017 (full text read by LAM): routine research on children is a minor increase over minimal risk (full-committee review) and the instructional-comparison exemption needs no linked identifiers; Ondrusek 1998: under-9s' understanding of research is poor; LAM review R7.2 resolved the LAM-D10 inconsistency; the tutor bond is a source of undue influence. Without IEC approval and assent nothing is publishable, so this holds despite compliance being deprioritised. Spec: `docs/research/psychology/RESEARCH-PROGRAM.md` RP-D11, §9.\n- Reverse if: the IEC rules otherwise after reviewing the scripts, or LAM8 shows < 80% of children understand they can stop and that data are used for research (redesign the scripts).\n\n## open-durability-operating-point\n**(open, owner decision)** The wellbeing invariant (no randomised check below predicted retention .6) and identifiability of per-child durability pull against each other: under the scheduler as specified, durability reliability is .43 at 40 checks and .49 at 80; the widest permitted window gives .52/.67; a durability line needs ~27 weeks per topic type at 4 sessions/week. Options: (a) keep the bound; (b) widest permitted window; (c) add exempt calibration probes (<= 5% of review slots, skills mastered >= 2 weeks, a failed probe triggers immediate review). Recommendation (b)+(c), LT6 to set the floor. Spec: `docs/research/psychology/RESEARCH-PROGRAM.md` §13 item 1.\n",
+  "measurements": "## psych-identifiability-sims-2026-10-02\n**Simulations of what Taxila's logs can identify about one child, and of the parent-claim gates (2026-10-02). Every generative assumption is [U]; the arithmetic is reproducible. Scripts are in `docs/research/psychology/`.**\n- `learning-over-time-relsim.py` (numpy, seed 7, 300-400 simulated children/cell) + methodologist re-simulation (seed 11, 300/cell): iAFM intercept reliability .64-.68 at 35 obs, .80-.81 at 70; slope .01-.04 below 210 obs, .23 at 100 skills x 10, .53-.61 at 30 x 30 (Monte Carlo +/-.05-.08). Durability (HLR-C) .31/.43/.49 at 20/40/80 checks under the scheduler as specified; .36/.52/.67 in the widest window the R >= .6 bound allows; the original U(1,30) lag design (.40/.70/.82) is not a design Taxila may run.\n- `metacognition-srl-calibsim.py` (seed 11, 2,000 children/band) + `metacognition-srl-reviewsim.py` (seed 7, 4,000/condition): offset test-retest .73-.75 at 30 bets, .92 at 120; resolution .36-.57 at 30, .72-.85 at 120; raw bias x ability r -.53 to -.74 with independent truth; r(dConf, d') = .85; help coupling lambda .21/.51/.66/.79 at 50/200/400/800 opportunities; raw-count change route gave 99% of children >= 1 false row/yr.\n- `motivation-habits-habitsim.py` (400 children/span): D28 test-retest .83-.88; anchor share .58-.69; per-child habit t95 r .26-.42; median Lally fit R^2 .03-.21 over 12-36 weeks.\n- `temperament-vibe-calc.py`: contingency reliability .70 needs 37/66/149/597 trials at tau 1/.75/.5/.25 (p .5); at r = .27 a 'top third' label is right 44% of the time.\n- `cognitive-development-reviewsim.py` (20,000 diffusion trials, seed 7): 3% slow lapses bias EZ drift -35% (trimmed -4%); 5% mid lapses -15% after trim; 20% of 30-trial blocks hit the Pc = 1 edge correction.\n- `learning-analytics-methods-sim.py` (fixed seeds): MRT power .83 for 3 pp at N = 400, T = 30 (upper bound); type-I .060 (MC SE .0069); Thompson no floor naive type-I .111; per-child format rho .70 needs 78/217/487 comparisons per arm at tau .5/.3/.2.\n- `parent-reports-methodsim.py`: n-of-1 two-sided rule fires in 19% of null families; parent RCT needs 17,442/6,279/1,570 families per arm at d = .03/.05/.10.\n- `research-program-synthsim.py` (seed 20261002, 3,000 children/cell, ~30 s): report gate under screening — independent priors 4.89 false claims per null report (budget believed 0.21); normal-normal EB 2.22 false vs 0.17 believed (K = 30, n = 120/arm, 10% real effects of +/-1 logit); two-groups EB 0.10 false vs 0.12 believed (30% real), yield 0-16% at 12-40 per arm. False change rows/child-year under the null: raw-count route 5.63 (100% of children), corrected term rule 0.107 (6 rows, P >= .95), 0.071 (4 rows), 0.050 (P >= .975). Reliability CI +/-.05 at r = .7 needs 403 children/band. GRR (sigma_eps .3, sigma_S .5) .35/.78/.92 at 6/12/18 months. TOST +/-0.10 SD: 2,569 children total.\n",
+  "rejected": "## independent-prior-claim-budget\nProposed (`docs/research/psychology/parent-reports.md` PR-D5 and §4.2, 2026-10-02; rejected in methodologist review and by simulation before any build): each parent pattern claim gets an independent beta-binomial posterior with a weak band prior (a0 + b0 <= 4), is eligible at P >= .9, and a report admits eligible claims while sum(1 - P) <= epsilon, presented as a Bayesian expected-false-discovery bound. What breaks: the bound holds only if posteriors stay calibrated after screening, and independent weak priors are not. In `research-program-synthsim.py` §A (3,000 children, 30 screened contrasts, 12 per arm) a report with no true effects admitted 4.89 claims, all false, while the budget believed 0.21; the reviewer's simpler sim found 2.5 vs 0.11. A normal-normal pooled prior fixes the full null but not sparse real effects (2.22 false vs 0.17 believed). Replacement: two-groups (spike-and-slab) pooled posteriors per pre-registered menu item, a logged screened count, and simulated-null + sparse-mixture validation (`psych-parent-claim-gate`).\n\n## raw-count-growth-route\nProposed (`docs/research/psychology/metacognition-srl.md` §6.3 rule 2; similar \"≥ 3 windows\" rules in `motivation-habits.md` §6 and `parent-reports.md` §4.2, 2026-10-02; rejected in review): a then -> now change statement is allowed when raw counts move consistently in one direction over >= 3 consecutive 28-day windows, as an alternative to a posterior rule. What breaks: with no true change, noise alone produces runs. MS review P2: 99% of children got at least one false row a year (mean 2.9). `research-program-synthsim.py` §B (4,000 children, 6 rows, n = 30 per window): 5.63 false rows per child-year and 100% of children affected. Replacement: `psych-change-rule-term`.\n\n## grade-equivalent-parent-band\nProposed (`docs/research/psychology/learning-over-time.md` §3.7, §7 principle 7, [Progress] block; `parent-reports.md` level ribbon, 2026-10-02; rejected in review): show parents a grade-equivalent band for subject ability (\"working at early Class 5 level\"), framed as level, never rank. What breaks (LOT review R6): grade equivalents are not equal-interval, depend on a norming sample Taxila does not have, extrapolate beyond tested grades, and Taxila has no vertical scale yet; the statement is norm-referenced, contradicting the no-comparison rule, and for a Class 6 child it is a high-stakes below-grade label; parents misread GEs (Smith 1999: 76.7% of 30 parents misinterpreted them, as confident as those who were right [S]). Replacement: criterion-referenced rows against NCERT learning outcomes, and a theta trajectory with its uncertainty ribbon on an unlabelled scale at term (`psych-claim-tiers`). Could be revisited only after vertical scaling, a representative norming study and a parent-comprehension test; the default is never.\n"
+ }
+}
