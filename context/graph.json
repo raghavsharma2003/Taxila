@@ -33,7 +33,7 @@
   {
    "id": "realtime-teacher-bakeoff-2026-10-02",
    "kind": "measurement",
-   "title": "Realtime 2.1 vs mini with teacher prompt: 64\u219225 words/turn when brevity is structural",
+   "title": "Realtime 2.1 vs mini with teacher prompt: 64→25 words/turn when brevity is structural",
    "at": "2026-10-02"
   },
   {
@@ -125,7 +125,7 @@
   {
    "id": "db-driver-latency-2026-10-02",
    "kind": "measurement",
-   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 \u2192 Neon us-east-1",
+   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 → Neon us-east-1",
    "at": "2026-10-02"
   },
   {
@@ -575,7 +575,7 @@
   {
    "id": "voice-lane-cascade-default",
    "kind": "decision",
-   "title": "Default voice = STT\u2192Director\u2192TTS cascade (~\u20b928/h); realtime 2.1 premium share",
+   "title": "Default voice = STT→Director→TTS cascade (~₹28/h); realtime 2.1 premium share",
    "at": "2026-10-02"
   },
   {
@@ -859,7 +859,7 @@
   {
    "id": "azure-billed-open-models",
    "kind": "decision",
-   "title": "Open models (DeepSeek, Kimi, gpt-oss, Grok, FLUX\u2026) allowed if Direct-from-Azure billed; per-task routing by bake-off",
+   "title": "Open models (DeepSeek, Kimi, gpt-oss, Grok, FLUX…) allowed if Direct-from-Azure billed; per-task routing by bake-off",
    "at": "2026-10-02"
   },
   {
@@ -889,8 +889,330 @@
   {
    "id": "language-core-hinglish-english-hindi",
    "kind": "constraint",
-   "title": "Core = English + Hindi + Hinglish; regional languages later \u2014 keep language a parameter",
+   "title": "Core = English + Hindi + Hinglish; regional languages later — keep language a parameter",
    "at": "2026-10-02"
+  },
+  {
+   "id": "cascade-speculative-reply",
+   "kind": "decision",
+   "title": "Text lanes start the teacher reply speculatively for the classifier's likely outcomes while its model call runs; a speculative reply is used only when its full reply input (instructions, history, said, guard state) is byte-identical to the real plan's; default fan-out 3 (TAXILA_SPECULATE)",
+   "at": "2026-10-02",
+   "source": "inbox/cascade-fix.json"
+  },
+  {
+   "id": "cascade-lane-spoken-turns",
+   "kind": "decision",
+   "title": "Lesson mode 'cascade' is a text lane on the server (Director writes and stores every reply, no instructions to the client) whose child turns are SPOKEN: asr_conf stored, classify's low-ASR gate applies, typed only when body.typed",
+   "at": "2026-10-02",
+   "source": "inbox/cascade-fix.json"
+  },
+  {
+   "id": "cascade-barge-pause-decide",
+   "kind": "decision",
+   "title": "Cascade barge-in is pause-then-decide: local onset ducks (~90 ms), sustained local voice (~120 ms) or server speech_started pauses with the reply kept; the transcript decides: a real turn stops her (teacher_interrupted even while loading), nothing / lone backchannel with ≥1 s left / her own echo resumes from the last word gap",
+   "at": "2026-10-02",
+   "source": "inbox/cascade-fix.json"
+  },
+  {
+   "id": "cascade-2s-budget-unreachable-at-900ms",
+   "kind": "measurement",
+   "title": "The 2.0 s speech-end→first-audio budget is not reachable with 900 ms server-VAD silence: endpoint alone measures 1046-1146 ms (n=24), STT +250-500, TTS first byte +160-480, leaving < 0.3 s for the Director (best measured 1.9 s)",
+   "at": "2026-10-02",
+   "source": "inbox/cascade-fix.json"
+  },
+  {
+   "id": "cascade-typed-lane-grading",
+   "kind": "rejection",
+   "title": "Rejected: starting cascade lessons as mode 'text' — every spoken turn was stored asr_conf=null and graded as typed; a conf 0.401 transcript went to the model and was graded (baseline eval turn 3); the repair turn was graded as an empty typed answer",
+   "at": "2026-10-02",
+   "source": "inbox/cascade-fix.json"
+  },
+  {
+   "id": "cascade-barge-all-or-nothing",
+   "kind": "rejection",
+   "title": "Rejected: barge-in that discards the reply on any server speech_started — a cough, TV, 'hmm' or her own echo killed her question, the empty transcript then emitted child_silent and both sides waited; a reply cut while loading was never marked interrupted",
+   "at": "2026-10-02",
+   "source": "inbox/cascade-fix.json"
+  },
+  {
+   "id": "cascade-local-bargein-2026-10-02",
+   "kind": "measurement",
+   "title": "Cascade local barge-in in Node with fake audio (20 ms MicVad polling): duck 83 ms, pause 104 ms after voice onset (budget 150 ms); not measured on a device",
+   "at": "2026-10-02",
+   "source": "inbox/cascade-fix.json"
+  },
+  {
+   "id": "cascade-pcm-throttle-sim-2026-10-02",
+   "kind": "measurement",
+   "title": "PCM player throttle SIMULATION (1 Mbit/s, 150 ms RTT): no gaps unless a stall hits in the first ~0.1 s; then gaps 158/119/79 ms as the adaptive start lead grows 60→100→140 ms; no real-link measurement",
+   "at": "2026-10-02",
+   "source": "inbox/cascade-fix.json"
+  },
+  {
+   "id": "game-evidence-into-kt-not-bayesnets",
+   "kind": "decision",
+   "title": "Game telemetry feeds BKT-R through existing evidence classes (via:'game', LR^0.5, first committed act only, coincident items no positive update, no game-only mastery); process indicators only nominate probes",
+   "at": "2026-10-02",
+   "source": "inbox/game-stealth.json"
+  },
+  {
+   "id": "forge-dumb-policy-gate",
+   "kind": "decision",
+   "title": "Every Forge level pack must pass a dumb-policy bot battery (random, position, value-rank, solution-order, MiscRule-as-policy): no non-understanding policy above chance+10pp first-try / chance+5pp on the mastery gate",
+   "at": "2026-10-02",
+   "source": "inbox/game-stealth.json"
+  },
+  {
+   "id": "game-stealth-sim-2026-10-02",
+   "kind": "measurement",
+   "title": "numberline-jump 4-pad pack, 20k simulated players x 4 levels: second-smallest-pad policy wins 100% with naive filler even with shuffled positions; 44.5%/23.6% with rank-balanced filler (chance 25%/5%); 8 game predictions at w=0.5 move pL 0.39->0.568",
+   "at": "2026-10-02",
+   "source": "inbox/game-stealth.json"
+  },
+  {
+   "id": "in-game-success-as-mastery",
+   "kind": "rejection",
+   "title": "Literature: in-game success does not imply understanding (DragonBox no transfer to paper; fraction number-line game RCT n=188 no transfer beyond trained 0-1 line)",
+   "at": "2026-10-02",
+   "source": "inbox/game-stealth.json"
+  },
+  {
+   "id": "adaptive-sequencing-as-the-lever",
+   "kind": "rejection",
+   "title": "Literature: Physics Playground 4-arm RCT (n=263) found no learning effect of adaptive vs linear vs free-choice level delivery; supports shown mattered more",
+   "at": "2026-10-02",
+   "source": "inbox/game-stealth.json"
+  },
+  {
+   "id": "kits-c2-hindi-authored",
+   "kind": "measurement",
+   "title": "c2-hindi kit authored: 26/26 topics, 307 items (11-12/topic, >=7 kinds each), 64 misconceptions; normalizeKit lint 0 dropped / 0 hints replaced",
+   "at": "2026-10-02",
+   "source": "inbox/kits-c2-hindi.json"
+  },
+  {
+   "id": "norm-strips-devanagari-matras",
+   "kind": "measurement",
+   "title": "items.js norm() strips Devanagari combining marks (\\p{M}): दादी==दादा, पीला==पिला, मूली==मुली, बैंगन==बेंगन after norm — matra-contrast answers cannot be graded or leak-checked correctly",
+   "at": "2026-10-02",
+   "source": "inbox/kits-c2-hindi.json"
+  },
+  {
+   "id": "kits-c3-hindi-authored",
+   "kind": "measurement",
+   "title": "c3-hindi kit authored: 18/18 topics, 216 items (12/topic, >=7 kinds each), 54 misconceptions; normalizeKit lint 0 dropped / 0 hints replaced",
+   "at": "2026-10-02",
+   "source": "inbox/kits-c3-hindi.json"
+  },
+  {
+   "id": "kits-c5-hindi-authored",
+   "kind": "measurement",
+   "title": "c5-hindi kit authored: 12/12 topics, 158 items (13-14/topic, 10 kinds each), 36 misconceptions; normalizeKit lint 0 dropped / 0 hints replaced",
+   "at": "2026-10-02",
+   "source": "inbox/kits-c5-hindi.json"
+  },
+  {
+   "id": "kit-invented-companion-texts",
+   "kind": "rejection",
+   "title": "Language kits built on invented 'original' companion texts: story/poem items unanswerable from the textbook",
+   "at": "2026-10-02",
+   "source": "inbox/kits-c6-english-reauthor.json"
+  },
+  {
+   "id": "kits-c6-english-reauthored",
+   "kind": "measurement",
+   "title": "c6-english re-authored against NCERT Poorvi unit PDFs: 16/16 topics, 248 items, 64 misconceptions; 0 dropped / 0 hints replaced; kit-budget 3/3 on the file alone",
+   "at": "2026-10-02",
+   "source": "inbox/kits-c6-english-reauthor.json"
+  },
+  {
+   "id": "kits-c6-hindi-authored",
+   "kind": "measurement",
+   "title": "c6-hindi kit authored: 13/13 topics, 172 items (13-15/topic, 9-10 kinds each), 39 misconceptions; normalizeKit lint 0 dropped / 0 hints replaced",
+   "at": "2026-10-02",
+   "source": "inbox/kits-c6-hindi.json"
+  },
+  {
+   "id": "kits-c8-hindi-authored",
+   "kind": "measurement",
+   "title": "c8-hindi kit authored: 10/10 topics, 131 items (12-14/topic, 9-10 kinds each), 30 misconceptions; normalizeKit lint 0 dropped / 0 hints replaced; kit-budget test 3/3 on this file alone",
+   "at": "2026-10-02",
+   "source": "inbox/kits-c8-hindi.json"
+  },
+  {
+   "id": "ds-parent-gate-lock-on-exit",
+   "kind": "decision",
+   "title": "Parent corner locks on every exit (unmount, pagehide, tab hidden, P8 handover, picker/child-shell mount); the onboarding P7 PIN set never opens it",
+   "at": "2026-10-02",
+   "source": "inbox/ui-a-shell-parent-fix.json"
+  },
+  {
+   "id": "ds-parent-gate-consent-grade",
+   "kind": "decision",
+   "title": "Consent, add-a-child, profile edit (name/class/board/medium/language/teacher) and erasure need an unlocked corner once a PIN exists (requireParentIfPinSet); avatar/interests stay child-writable",
+   "at": "2026-10-02",
+   "source": "inbox/ui-a-shell-parent-fix.json"
+  },
+  {
+   "id": "ds-pin-reset-interim-delay",
+   "kind": "decision",
+   "title": "INTERIM forgotten-PIN reset: account password (5 tries / 24 h, insert-then-count) + a 24 h delay shown on the gate, cancelled by an unlock with the current PIN; no off-device factor yet",
+   "at": "2026-10-02",
+   "source": "inbox/ui-a-shell-parent-fix.json"
+  },
+  {
+   "id": "parent-gate-e2e-2026-10-02",
+   "kind": "measurement",
+   "title": "tests/parent-gate-e2e.mjs 35/35 PASS (Neon, n=1 run): onboarding PIN leaves corner locked; burst of 8 wrong PINs → 4 'wrong' + lockout; burst of 7 wrong passwords → 0 checked; Playwright walk 12/12",
+   "at": "2026-10-02",
+   "source": "inbox/ui-a-shell-parent-fix.json"
+  },
+  {
+   "id": "ui-a-gaps-2026-10-02",
+   "kind": "rejection",
+   "title": "NOT built in ui-a (recorded so coverage is not implied): /who speaks the name on tap; P6 NameSayer + optional first subject; P7 first-day cap ≥ child path; P8 MB estimate on cellular; WhatsApp/email notice of a PIN reset or lockout; Class 1-4 spoken summary as the DEFAULT lesson view (a speaker is offered, not autoplayed)",
+   "at": "2026-10-02",
+   "source": "inbox/ui-a-shell-parent-fix.json"
+  },
+  {
+   "id": "ui-child-home-from-server",
+   "kind": "decision",
+   "title": "Child home state comes from the server plan (GET /api/child/plan, requireChild) with a per-child plan-day marker as interim; never from router navigation state; another lesson only via POST /api/lesson/request",
+   "at": "2026-10-02",
+   "source": "inbox/ui-b-child-lesson-fix.json"
+  },
+  {
+   "id": "ui-child-voice-on-cascade",
+   "kind": "decision",
+   "title": "Child voice lessons start on the cascade lane; UiBridge keeps the CascadeLink (wrapping its PCM stream into the phir-se buffer) and owns its push-to-talk state; open mic gated on headset detection + EchoGuard (2 flags demote)",
+   "at": "2026-10-02",
+   "source": "inbox/ui-b-child-lesson-fix.json"
+  },
+  {
+   "id": "voice-features-wired-2026-10-02",
+   "kind": "measurement",
+   "title": "Voice features wired into live lessons: runtime → TurnRequest.voiceFeatures → turnVoice() in /api/lesson/turn (114 ms Neon write, parallel to classify); browser smoke: 1 PTT turn → 1 turn POST with numbers-only features",
+   "at": "2026-10-02",
+   "source": "inbox/voice-features-fix.json"
+  },
+  {
+   "id": "voice-features-onset-one-clock",
+   "kind": "measurement",
+   "title": "Onset measured in one clock (receipt-relative chunk stamps, + outputLatency on teacher end): Chromium, n=5, known 700 ms gap → 630-647 ms (outputLatency 32 ms; residual −21..−38 ms = 40 ms window-centre bias)",
+   "at": "2026-10-02",
+   "source": "inbox/voice-features-fix.json"
+  },
+  {
+   "id": "voice-signals-null-fire-rate",
+   "kind": "measurement",
+   "title": "signalsFrom null fire rates (MC n=40k, correlated pairs ρ=0.8): max/min of pairs 5.71/0.56/1.13 % (probe/gentler/slower) → mean of pairs 3.54/0.25/0.37 %",
+   "at": "2026-10-02",
+   "source": "inbox/voice-features-fix.json"
+  },
+  {
+   "id": "voice-rms-is-agc-output",
+   "kind": "measurement",
+   "title": "RMS voice features measure the browser's AGC/noise-suppression output (both links capture with them on): not baselined; rmsMeanDb removed from BASELINED",
+   "at": "2026-10-02",
+   "source": "inbox/voice-features-fix.json"
+  },
+  {
+   "id": "voice-features-latest-signals-race",
+   "kind": "rejection",
+   "title": "Rejected: separate fire-and-forget POST /api/voice/features + latestSignals(lesson, withinMs) as the Director's read — the turn POST races it and reads the PREVIOUS utterance's signals (different item)",
+   "at": "2026-10-02",
+   "source": "inbox/voice-features-fix.json"
+  },
+  {
+   "id": "voice-teacher-spec",
+   "kind": "decision",
+   "title": "VOICE-TEACHER.md is the live-teacher build spec: assembly order CORE(character, relational+attune notes, floor) -> brief -> lesson -> move -> language -> check -> turn shape last; budget 3000 tokens",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "voice-floor-states-hybrid",
+   "kind": "decision",
+   "title": "Hybrid turn-taking: server_vad 0.6/900 always; auto-response only in CHAT; ANSWER_EXPECTED/THINKING/SAFETY use create_response:false + director think-time window + full-instruction response.create",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "voice-lane-a-v1-panel-decides",
+   "kind": "decision",
+   "title": "v1 voice = gpt-realtime-2.1 native (marin/cedar); Voice Live lanes B/C compete in a blind adult-then-child panel; no Preview voice for minors; lane C must pass the bakeoff",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "asr-two-lane-evidence",
+   "kind": "decision",
+   "title": "ASR = evidence lanes: gpt-live-transcribe+keywords (live) and Azure Fast hi-IN+en-IN (grading); grade only on agreement; safety on the union; replace gpt-4o-transcribe",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "teacher-relstate-alliance",
+   "kind": "decision",
+   "title": "TeacherRelState: working alliance, inverted stages (autonomy not intimacy), child-conferred address never self-applied, director-verified OWN-SLIP, offline dependency overlay",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "attune-from-words-not-tone",
+   "kind": "decision",
+   "title": "Attunement policy is driven by the child's words, task evidence and telemetry; never by the S2S model hearing tone; feelings never named or stored as mood",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "voice-research-probes-2026-10-02",
+   "kind": "measurement",
+   "title": "Voice research probes on gpt-realtime-2.1 (hl 28 resp, char 360, relational 108, attune 84) + voices-hindi 221 clips + ASR E0 1515 calls: directions only",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "asr-vocab-in-prompt",
+   "kind": "rejection",
+   "title": "Vocabulary lists in a free-text ASR prompt, and gpt-4o(-mini)-transcribe as a live/grading lane: fabricated lesson answers from near-silence",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "own-mistake-note-false-confession",
+   "kind": "rejection",
+   "title": "Prompt note telling the teacher to own its mistakes: false confessions to errors it never made",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "voice-prompt-labels-and-brackets",
+   "kind": "rejection",
+   "title": "Square-bracket directions, speakable labels and quoted floor phrases in voice prompts: voiced or recited",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "indicf5-live-loop",
+   "kind": "rejection",
+   "title": "IndicF5 as the live teacher voice: no streaming, needs a reference clip, RTF 2.87 on T4",
+   "at": "2026-10-02",
+   "source": "inbox/voice.json"
+  },
+  {
+   "id": "voice-instructions-client-visible",
+   "kind": "decision",
+   "title": "Text lane and the realtime token no longer send compiled instructions to the browser; the voice lane still does (accepted risk until a sideband owns session.update)",
+   "at": "2026-10-02",
+   "source": "inbox/ws1-client.json"
+  },
+  {
+   "id": "realtime-create-after-cancel",
+   "kind": "decision",
+   "title": "response.create after response.cancel waits for the cancelled response's response.done (1.5 s fallback); 'conversation_already_has_active_response' is retried, at most 3 times",
+   "at": "2026-10-02",
+   "source": "inbox/ws1-client.json"
   }
  ],
  "edges": [
@@ -1663,6 +1985,236 @@
    "src": "language-core-hinglish-english-hindi",
    "rel": "supersedes",
    "dst": "language-english-first-bilingual"
+  },
+  {
+   "src": "cascade-latency-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "cascade-2s-budget-unreachable-at-900ms",
+   "rel": "constrains",
+   "dst": "voice-turn-config"
+  },
+  {
+   "src": "cascade-speculative-reply",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "cascade-lane-spoken-turns",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "cascade-barge-pause-decide",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "cascade-lane-spoken-turns",
+   "rel": "supersedes",
+   "dst": "cascade-typed-lane-grading"
+  },
+  {
+   "src": "cascade-barge-pause-decide",
+   "rel": "supersedes",
+   "dst": "cascade-barge-all-or-nothing"
+  },
+  {
+   "src": "cascade-latency-2026-10-02",
+   "rel": "measured_by",
+   "dst": "cascade-speculative-reply"
+  },
+  {
+   "src": "cascade-local-bargein-2026-10-02",
+   "rel": "measured_by",
+   "dst": "cascade-barge-pause-decide"
+  },
+  {
+   "src": "cascade-pcm-throttle-sim-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "game-evidence-into-kt-not-bayesnets",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "forge-dumb-policy-gate",
+   "rel": "measured_by",
+   "dst": "game-stealth-sim-2026-10-02"
+  },
+  {
+   "src": "game-evidence-into-kt-not-bayesnets",
+   "rel": "caused_by",
+   "dst": "in-game-success-as-mastery"
+  },
+  {
+   "src": "norm-strips-devanagari-matras",
+   "rel": "constrains",
+   "dst": "kits-c2-hindi-authored"
+  },
+  {
+   "src": "norm-strips-devanagari-matras",
+   "rel": "constrains",
+   "dst": "kits-c3-hindi-authored"
+  },
+  {
+   "src": "norm-strips-devanagari-matras",
+   "rel": "constrains",
+   "dst": "kits-c5-hindi-authored"
+  },
+  {
+   "src": "kits-c6-english-reauthored",
+   "rel": "supersedes",
+   "dst": "kit-invented-companion-texts"
+  },
+  {
+   "src": "kit-invented-companion-texts",
+   "rel": "measured_by",
+   "dst": "kits-c6-english-reauthored"
+  },
+  {
+   "src": "norm-strips-devanagari-matras",
+   "rel": "constrains",
+   "dst": "kits-c6-hindi-authored"
+  },
+  {
+   "src": "norm-strips-devanagari-matras",
+   "rel": "constrains",
+   "dst": "kits-c8-hindi-authored"
+  },
+  {
+   "src": "ds-parent-gate-lock-on-exit",
+   "rel": "part_of",
+   "dst": "ds-parent-gate-pin-default"
+  },
+  {
+   "src": "ds-parent-gate-consent-grade",
+   "rel": "part_of",
+   "dst": "ds-parent-gate-pin-default"
+  },
+  {
+   "src": "ds-pin-reset-interim-delay",
+   "rel": "part_of",
+   "dst": "ds-parent-gate-pin-default"
+  },
+  {
+   "src": "ds-parent-gate-lock-on-exit",
+   "rel": "measured_by",
+   "dst": "parent-gate-e2e-2026-10-02"
+  },
+  {
+   "src": "voice-features-wired-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "voice-features-onset-one-clock",
+   "rel": "measured_by",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "voice-signals-null-fire-rate",
+   "rel": "measured_by",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "voice-rms-is-agc-output",
+   "rel": "constrains",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "voice-features-wired-2026-10-02",
+   "rel": "supersedes",
+   "dst": "voice-features-latest-signals-race"
+  },
+  {
+   "src": "voice-teacher-spec",
+   "rel": "inherits",
+   "dst": "brevity-by-instruction"
+  },
+  {
+   "src": "voice-teacher-spec",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "voice-floor-states-hybrid",
+   "rel": "supersedes",
+   "dst": "voice-turn-config"
+  },
+  {
+   "src": "voice-floor-states-hybrid",
+   "rel": "measured_by",
+   "dst": "realtime-audio-in-2026-10-02"
+  },
+  {
+   "src": "voice-floor-states-hybrid",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "voice-lane-a-v1-panel-decides",
+   "rel": "part_of",
+   "dst": "voice-realtime-model"
+  },
+  {
+   "src": "azure-only-compute",
+   "rel": "constrains",
+   "dst": "voice-lane-a-v1-panel-decides"
+  },
+  {
+   "src": "voice-lane-a-v1-panel-decides",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "asr-two-lane-evidence",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "open-real-child-audio",
+   "rel": "blocks",
+   "dst": "asr-two-lane-evidence"
+  },
+  {
+   "src": "asr-two-lane-evidence",
+   "rel": "caused_by",
+   "dst": "asr-vocab-in-prompt"
+  },
+  {
+   "src": "teacher-relstate-alliance",
+   "rel": "caused_by",
+   "dst": "own-mistake-note-false-confession"
+  },
+  {
+   "src": "teacher-relstate-alliance",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "attune-from-words-not-tone",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "voice-teacher-spec",
+   "rel": "caused_by",
+   "dst": "voice-prompt-labels-and-brackets"
+  },
+  {
+   "src": "voice-lane-a-v1-panel-decides",
+   "rel": "caused_by",
+   "dst": "indicf5-live-loop"
+  },
+  {
+   "src": "voice-instructions-client-visible",
+   "rel": "constrains",
+   "dst": "voice-realtime-model"
   }
  ]
 }

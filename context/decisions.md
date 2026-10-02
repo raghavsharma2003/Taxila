@@ -709,3 +709,95 @@ audience speaks English, Hindi and Hinglish (code-mixed) — all three must be f
 reports; the teacher mirrors the child's mix. Regional languages (Marathi, Bengali, Tamil, …) come later: keep
 language a parameter end-to-end (no hard-coded en/hi pairs in schemas, prompts or TTS/STT config) so they can be
 added without rework. Reverse/extend when the first regional language is scheduled.
+
+
+<!-- merged from inbox/cascade-fix.json -->
+## cascade-lane-spoken-turns
+**Lesson mode "cascade" (2026-10-02): a text lane on the server whose child turns are spoken.** The Director writes and stores every reply and the client never gets instructions (answer key stays server-side); child rows keep asr_conf, `typed` only from body.typed, classify's low-ASR gate applies; compiled instructions are the text lane's. LessonRuntime.start(childId, "cascade") builds a text-lane link (CascadeLink via ctx.cascade).
+- Reverse if: a server sideband owns session.update for the realtime lane and the lanes are unified on one mode flag.
+
+## cascade-speculative-reply
+**While the classifier's model call runs, the turn route starts the reply for its likely outcomes (item: incorrect, no_evidence, correct; none: no_evidence; fan-out TAXILA_SPECULATE, default 3) through the same planTurn() code, and uses one only if its whole reply input key is identical to the real plan's** (instructions, said, history, lastMove, hint level, pendingWhy, lang, age band, spoiled, upcoming item, hold). A speculative reply that fell back (model failed) is a miss. Quality is unchanged by construction (same prompt, same guards); cost is up to 3 extra taxila-fast reply calls per model-classified turn. Measured: Director median 4244 → 2405 ms, 6/7 and 7/8 hits (cascade-latency-2026-10-02).
+- Reverse if: real-lesson hit rate < 50% for a week (then the extra calls buy little), or a single structured classify+reply call matches the classifier's labels on the classify eval at ≤ 1.5 s.
+
+## cascade-barge-pause-decide
+**Cascade barge-in pauses and lets the transcript decide (2026-10-02).** Local onset (~90 ms voiced) ducks to 0.2; sustained local voice (~120 ms, hands-free only) or server speech_started pauses with the reply kept (stream keeps buffering). Transcript: a real turn stops her (teacher_interrupted whenever she was cut, even while loading); empty, ASR-failed with ≥1 s left, a lone backchannel ("hmm", "haan", one word < 0.5 conf) with ≥1 s left, or her own echo (≥4 words, ≥70% matching her reply by consonant skeleton across Roman/Devanagari) resumes her from the last gap between words. Unconfirmed local pauses resume after 700 ms; 3 of them switch local pausing off for the lesson (echo self-calibration). Push-to-talk press or typing stops her outright.
+- Reverse if: the device test (bargeStats on Android Chrome/WebView, phone speaker) shows echo still interrupts her (then default output "element" and/or require local corroboration), or children's real answers are swallowed as echo/backchannel in > 2% of turns.
+
+
+<!-- merged from inbox/game-stealth.json -->
+## game-evidence-into-kt-not-bayesnets
+Games feed the existing BKT-R accumulator (LEARNER-MODEL 6.1) via existing classes (probe.predict, item.open, item.mcqK, probe.transfer.*, probe.errorspot, probe.why) with EvidenceEvent.via='game', LR^w_game (w=0.5 launch), first committed act per item only, coincident items no positive update, and display=mastered requiring one non-game or cross-archetype callback event. Process indicators (systematic, inconsistent-with-evidence, under-par, insight) are ComprehensionSignal nominations, not KT evidence. Why: stealth-assessment convergent r ~0.3-0.5 (PP r=.36/.40 n=263; PvZ2 r=.40/.41 n=47), game indicator discrimination set to 0.3 in PvZ2, game-experience bias. Reverse if: G-M2 shows game LRs equal dialogue LRs on delayed probes (raise w), or a per-level Bayes net beats this by >=0.03 AUC; an indicator graduates to evidence when G-M3 shows >=0.65 within-skill AUC. Source: docs/research/comprehension/game-stealth.md
+
+## forge-dumb-policy-gate
+Q5-DB: every pack runs non-understanding policies; fail above chance+10pp first-try or chance+5pp on the mastery gate. Why: Save Patch 19% of errors were an 'everything in order' exploit; our sim shows value-rank leaks the key even with shuffled positions. Reverse: thresholds only, if G-M7 shows children never use rank/position strategies.
+
+
+<!-- merged from inbox/ui-a-shell-parent-fix.json -->
+## ds-parent-gate-lock-on-exit
+**The Parent corner locks on every exit, and onboarding never leaves it open.** The unlock is per guardian session and the child shares the cookie, so an unlock that outlives the grown-up's visit is an open door (review blocker: P7 setPin stamped a 10-minute unlock and P8 'Abhi' handed the phone straight to the child). Now: P7's PIN set (no password, fresh session) does not stamp an unlock; the Gate locks (keepalive POST /api/parent/lock) on unmount unless the next path is another gated screen, on pagehide and when the tab goes hidden; P8, /who and every child route lock on mount. Reverse if: the Android app gets a device-credential gate (BiometricPrompt) that re-asks per entry, at which point the server unlock can be shortened to per-request. (2026-10-02)
+
+## ds-parent-gate-consent-grade
+**Consent-grade account actions need the PIN once one exists.** POST /api/consent, POST /api/children (when the guardian already has a child), PATCH /api/children for name/class/board/medium/language/teacher, DELETE /api/children → requireParentIfPinSet (open before any PIN = first run). The child's own picks (avatar, interests) stay child-writable because the child shell PATCHes them. Client: /start/consent, /start/child, /start/controls sit under GateIfPin. A first PIN set outside the fresh (< 60 min) onboarding session needs the account password, so a child reaching the gate first cannot claim the corner; controls with no PIN follow the same rule. Reverse if: OTP/device-credential auth lands and replaces the PIN as the grown-up proof. (2026-10-02)
+
+## ds-pin-reset-interim-delay
+**Forgotten-PIN reset is an INTERIM stand-in for §6.2 until OTP ships.** Password tries (reset, first set outside onboarding, PIN change) are counted insert-then-count in audit (PW_MAX_TRIES=5 per 24 h; of any concurrent burst at most 5 see a count within the limit), checked with async scrypt, plus an 8/min in-process burst limit per session/IP. A correct password records a pending reset (audit `pin_reset_pending`, hash server-only) that takes effect after RESET_DELAY_H=24 h; the gate shows it; an unlock with the current PIN cancels it; a reset never opens the corner. No WhatsApp/email notice yet (audit is the record). Kept in audit, not a new column, so no migration is needed at deploy. Reverse if: OTP to the guardian's phone ships (then: OTP → immediate reset, drop the delay). (2026-10-02)
+
+
+<!-- merged from inbox/ui-b-child-lesson-fix.json -->
+## ui-child-home-from-server
+**Decision.** `homeState` on /c/:cid is read from the server on every home render (`src/child/day.ts`: `GET /api/child/plan?childId=` → `{ homeState, plan:{openLesson,window}, capRemaining, packReady }`). Until that endpoint exists, the finish tile writes a per-child marker keyed by the IST plan day carrying the `/api/lesson/end` answer; react-router `location.state` is no longer read. A child request for another lesson calls `POST /api/lesson/request { cid }` and navigates only on `granted` with a `lid`; a refusal (or the endpoint missing: 404) shows the resting shape once and the request is not offered again that day. Both endpoints must be `requireChild(req, childId)`-scoped. Why: review found the done home lived only in navigation state, so Bagiya then the house re-ringed the lesson tile (PD-G-RET1 negative control), and the client granted lessons past the cap. **Reverse** when the plan read lands: drop the marker and read only the server; if the marker is ever seen to disagree with the server on the same day, the server wins.
+
+## ui-child-voice-on-cascade
+**Decision.** `LessonScreen` starts voice as `runtime.start(cid, "cascade")`; mic logic keys on a spoken lane, not LessonMode (cascade reports `text`). `UiBridge.createLink` builds a CascadeLink for `ctx.cascade` (never a TextLink), copies its PCM stream into a WAV clip for phir se, mirrors its push-to-talk state (tap by default, set before connect), holds speech during pause, and offers a quiet stop that does not report a child barge-in. Open mic needs an Older child + headset label from enumerateDevices (EchoProbe not built) and is demoted after 2 EchoGuard flags. **Reverse** if on-device runs show headset labels misdetect (open mic on a loudspeaker) — then require the EchoProbe — or if the WAV copy measurably delays first audio.
+
+
+<!-- merged from inbox/voice.json -->
+## voice-teacher-spec
+**docs/research/voice/VOICE-TEACHER.md is the build spec for the live voice teacher.** (2026-10-02)
+- Assembly order: CHARACTER (450) -> RELATIONSHIP+ATTUNE notes (260, new, quote-free) -> SAFETY FLOOR (520, end of CORE, rewritten quote-free) -> CHILD brief (600 incl. rel snapshot <=120) -> LESSON (800) -> MOVE (200, no speakable labels) -> LANGUAGE (140) -> ONE MORE CHECK + TURN SHAPE last (360). TOKEN_BUDGET 2600 -> 3000; throw, never slice.
+- Rationale: position is mechanism (64 -> 25 words [T]); relational notes mid-brief cut violations 20/36 -> 1/36 (short-prompt probe); only two late slots exist and both are spent.
+- New compile-time asserts: no brackets, no unresolved slot syntax, no quotes in CORE, no 5-gram overlap with ear-test stimuli, no kinship word in CORE.
+- Reverse if: VT-1 (full production prompt, audio-in, 140+ turns) shows mid-CORE relational notes fail (>1/100 turns), or the 3000-token budget adds measurable TTFA over 2600.
+
+## voice-floor-states-hybrid
+**Turn-taking by director floor state: CHAT uses server auto-response; ANSWER_EXPECTED, THINKING and SAFETY use create_response:false, the director's think-time window (6 s for 6-9, 8 s for 10-15 [I]) and a client response.create carrying the full compiled instructions.** (2026-10-02)
+- Rationale: under auto-response the teacher filled the child's thinking-aloud pause with a hint 2-3/3 (attune probe); children's think time needs a client timer (discourse, ASR, attunement docs); a session.update move is one turn late. Keeps server_vad 0.6/900 ms (600 ms and semantic_vad split pauses [T]).
+- Supersedes the auto-response-everywhere part of voice-turn-config; VAD values are unchanged.
+- Unverified on Azure: whether the create_response toggle applies before the next commit; whether response-level instructions replace session instructions (the design assumes replace, so the floor is always re-sent).
+- Reverse if: VT-2 shows answer-state child-last-word -> first sound > 3 s from India, or real children report waiting too long, or the toggle does not apply (then all states go client-created).
+
+## voice-lane-a-v1-panel-decides
+**v1 ships lane A (gpt-realtime-2.1 native: marin for Asha, cedar for Arjun; Uma has no probed voice); Voice Live lanes B (Azure Indian TTS voice) and C (azure-realtime meera/diya) compete in the blind panel.** (2026-10-02)
+- Rationale: all pedagogy evidence is on 2.1; Voice Live works on the existing key; Azure TTS lost by ear before [H], so voices are chosen only by a blind panel (95% LB of paired preference > 50% on natural + Indian, inconclusive otherwise).
+- Constraints: no Preview (MAI) voice may win for minors; lane C must pass evals/realtime-bakeoff.mjs; the winning lane must pass the never-deny-AI battery; adults first, children in Round 2 with neutral voice labels and guardian consent.
+- Reverse if: the panel picks a B/C arm, or an off-Azure reference arm beats every Azure arm (then escalate to the owner, never add a vendor quietly).
+
+## asr-two-lane-evidence
+**Lane L = gpt-live-transcribe + per-lesson keywords + script-only prompt (every turn); lane G = Azure Fast hi-IN+en-IN (answer turns). Grade only on agreement; disagreement -> repair move; safety runs on the union. Replace taxila-transcribe (gpt-4o-transcribe) in realtimeSession().** (2026-10-02)
+- Rationale: ASR E0 (synthetic): live-transcribe child arm skeleton CER 0.043, answers 14/15, 0 decoys; gpt-4o-transcribe returned text on 5/5 near-silent clips.
+- Number items use exact or phoneme-aware matching (the skeleton collides ten/teen/teen=3).
+- Reverse if: E1 (80 real children) shows lane L false-correct above 1% overall, or lane G adds latency that breaks the answer-state budget, or the realtime session cannot carry keywords (O1).
+
+## teacher-relstate-alliance
+**TeacherRelState per (agent, child): working alliance with stages S0-S3 that unlock autonomy, never intimacy; safety = safe-to-be-wrong from child acts; child-conferred address never self-applied or corrected; rupture ownership decided by the director (verified -> OWN-SLIP, unverified contest -> re-check against the key aloud); offline dependency overlay calibrated per age band.** (2026-10-02)
+- Rationale: dependency predicts worse outcomes; the own-it note produced false confessions; RO probe 20/36 -> 1/36 with shape notes.
+- Stage gates and the 7 d / 3 warm-session lapse are [I].
+- Reverse if: VT-1 shows the relational notes do not hold in the production-length CORE, or the overlay fires for >5% of children after per-band calibration.
+
+## attune-from-words-not-tone
+**No safety or teaching decision depends on the S2S model hearing the child's tone; attunement moves (STEP-DOWN, CHOICE, PAUSE-LESSON, SHARE-UPTAKE, WAIT) are driven by words, task evidence and telemetry. The teacher never names the child's feeling; affect is not stored as mood.** (2026-10-02)
+- Rationale: attune probe audio-in: 0/18 check-ins on near-tears vs bright deliveries of the same words (synthetic, 3 stimuli, inconclusive); text-in shape notes fixed 6/8 states (n=3, non-blind, possibly lexical).
+- Reverse if: consented real-child recordings (n>=10 per cell, blind coders) show the model tells deliveries apart in >=70% of pairs.
+
+
+<!-- merged from inbox/ws1-client.json -->
+## voice-instructions-client-visible
+**The compiled instructions carry the answer key (`- key, for checking only: …`, and on the voice lane `key ideas to listen for` and the branch conditions). They now reach the browser only where the browser must apply them: `TurnResponse.instructions` and `LessonStartResponse.instructions` are voice-lane only (optional in `shared/contracts.ts`), and `/api/realtime/token` returns the minted session WITHOUT `instructions` (the ephemeral secret was minted with them, so the model already holds them). Text mode never needed them (the server writes the reply), so it now receives none. On the voice lane a class 6-9 child can still read the key in the network tab before rung 4, and the ephemeral token lets the client send its own `session.update`, so the floor holds there only while the client cooperates.** (2026-10-02)
+- Rationale: the voice model answers the child before the Director runs, from the instructions it holds; without the key and the branch conditions its immediate reply to an answer cannot be right, which trades the product's quality (owner directive: never). Moving `session.update` server-side was not landed now because it does not close the leak by itself: every event on the call, including `session.updated` (which echoes the full instructions), is also delivered to the browser's data channel unless the call is opened with `webrtcfilter=on`, and that filter also withholds `response.created`/`response.done`, which `src/lesson/realtime.ts` depends on for turn attribution, interruption and context pruning (docs/research/tech-and-market.md §1.3). A sideband also needs the SDP exchange proxied by the server (for the `Location` call id) and a socket held for the whole call, which belongs to the planned `taxila-worker`, not an HTTP replica (docs/research/conductor/parent-loop.md PA3). Whether closing a sideband socket ends the call is unverified [U].
+- Reverse when: `taxila-worker` exists and a probe shows (a) a server sideband `session.update` is applied to a WebRTC call, (b) with `webrtcfilter=on` the client can still attribute turns and prune context (or the server relays the needed events), and (c) the filtered data channel never carries `session.updated`. Then the server owns `session.update` and `instructions` leaves every client-facing response.
+
+## realtime-create-after-cancel
+**In `RealtimeProtocol`, a `response.create` sent while a response we cancelled is still active is held until that response's `response.done` (or 1.5 s, if it never comes), and a create the server refuses with `conversation_already_has_active_response` is re-sent after the next `response.done` (same fallback), at most 3 times per request, then surfaced.** (2026-10-02)
+- Rationale: cancel-then-create back to back raced the server; the refusal was a non-fatal store error with no retry. On `speakNow: "interrupt"` that create IS the safeguarding hand-off (Childline 1098 / Tele-MANAS 14416), so the predicate fired and the hand-off could go unspoken; typed and chip turns could lose the teacher's reply the same way.
+- Covered by unit tests against a fake protocol only (tests/client-runtime.test.mjs); not yet measured against Azure. Reverse if: a live probe shows Azure accepts create immediately after cancel (then the hold only costs latency on the barge-in path), or the 1.5 s fallback is shown to fire before a real cancelled `response.done` on slow links (then lengthen it).

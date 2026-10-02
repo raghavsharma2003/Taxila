@@ -317,3 +317,116 @@ per run, synthetic child speech (gpt-4o-mini-tts), WebSocket STT, API in the US 
 guard rewrite); swapping to faster open models does NOT fix it (each call ~1.0-1.6 s, still serial). Structural fix
 needed (single combined call / streamed guarded reply / parallel classify+reply). Endpointing (900 ms silence) is
 the second-largest cost and is a deliberate child-pause choice (`voice-turn-config`).
+
+
+<!-- merged from inbox/cascade-fix.json -->
+## cascade-latency-2026-10-02
+**Cascade lane, child's speech end → first TTS byte (`evals/cascade-latency.mjs`, 2026-10-02, n=8 turns per arm, one lesson per arm, class 4, topic c4-maths-ch01-t01).**
+Method: synthetic child speech (gpt-4o-mini-tts "shy 9-year-old" + ×1.2 pitch shift) streamed in real time into the same transcription session the browser gets (server VAD 0.6 / 900 ms / prefix 300, near_field, logprobs) over the **WebSocket** transport (the browser uses WebRTC); API in-process on the sandbox with Neon over HTTP (~0.3-0.4 s per query from the sandbox, far worse than an in-region pg pool); tts-stream over loopback (no mobile link). `sound` adds the player's 60 ms START_LEAD and a NOMINAL 50 ms output latency (not measured).
+
+| arm | endpoint | stt | director | tts | total (first byte) | sound | ≤2.0 s |
+|---|---|---|---|---|---|---|---|
+| baseline: mode text, sequential classify → reply | 1095 | 318 | 4417 (p90 6556) | 384 | 6365 (p90 8710) | — | 0/8 |
+| mode cascade, TAXILA_SPECULATE=0 | 1078 | 306 | 4244 (p90 5532) | 391 | 6066 (p90 7625) | 6176 | 0/8 |
+| cascade, speculation ×2 (correct/incorrect) | 1080 | 330 | 3584 (p90 4342) | 350 | 4945 (p90 6085) | 5055 | 0/8 — 5/8 hit |
+| cascade, speculation ×3 + one-query turn auth | 1076 | 292 | 2886 (p90 3809) | 629 | 4957 (p90 5596) | 5067 | 0/8 — 7/8 hit |
+| final: + one-query tts-stream auth | 1086 | 320 | **2405** (p90 3229) | 350 | **4230** (p90 5018) | 4340 | 0/8 — 6/7 hit |
+
+All medians ms. Stored child rows in every cascade arm: 8/8 with asr_conf set and meta.typed=false (read back from Neon); in the final arm a conf 0.464 turn was gated (`no_evidence/asr`) instead of graded. Speculation misses: the classifier's model added `offTopic` or a hint-level change the speculated outcome did not have (debug.speculation.differs). Director remainder after speculation = the reply call (1.2-2.0 s, effort none) + an occasional guard rewrite (+1.3-1.8 s) + ~0.5 s of Neon round trips from the sandbox. Caveats: synthetic speech, one topic, n=8, sandbox network; not a child's phone in India.
+
+## cascade-2s-budget-unreachable-at-900ms
+**2.0 s from speech end to her first sound is not reachable at 900 ms silence.** Endpoint (true speech end → server VAD speech_stopped) measured 1032-1146 ms in 32/32 turns across the four arms; STT completion +225-504 ms; first TTS byte +56-765 ms (cache hits low). That leaves ≤ 0.3 s for the Director, whose best measured turn is 1.9 s (one reply call alone is 1.2-2.0 s). Either re-baseline the budget (≈ 3.5-4.5 s measured; children answer ~1.5x slower and a beat reads as patience — learning-science §1.10) or measure a shorter silence on real children (voice-turn-config's reversal condition) — not decided here. Not tried yet: streaming the reply's first sentence into tts-stream before the guards see the whole reply (the leak/drift/hand-back guards read the full turn, so this needs a per-sentence guard design), and a speculative Director start at speech_stopped from live-transcribe partials.
+
+## cascade-local-bargein-2026-10-02
+Local barge-in timing, `tests/voice-cascade.test.mjs` (Node, fake AudioContext, MicVad polling a fake analyser every 20 ms, -20 dBFS step onset over a silent room; n=1 per run, timer-jitter bound): duck 83 ms, pause 104 ms after voice onset (budget 150 ms). EnergyVad frame math with defaults: onset ≤ 100 ms, sustain ≤ 140 ms; a 100 ms cough ducks but never pauses. NOT measured on a device: real AGC/AEC input, Android WebView, phone speaker echo — `bargeStats` on /dev/lesson (serverStartsWhilePlaying, localUnconfirmed, resumedEcho) is the counter to read on that device run, with and without the "cascade via <audio>" option.
+
+## cascade-pcm-throttle-sim-2026-10-02
+Simulation only (PcmStreamPlayer + fake clock, 4 s replies, 1 Mbit/s, 150 ms RTT + 300 ms server first byte, n=3 replies per profile): steady link and stalls after ≥0.4 s → 0 gaps (the stream arrives 2.6× faster than playback, buffer builds); a 250 ms stall 80 ms into the reply → gaps 158 / 119 / 79 ms as the adaptive start lead grows 60 → 100 → 140 ms. Not measured on a real 3G/4G link.
+
+
+<!-- merged from inbox/game-stealth.json -->
+## game-stealth-sim-2026-10-02
+numberline-jump pack, 4 pads (key, add-across, whole-number-ish, filler), 4 levels, n=20,000 simulated players, seed 7, docs/research/comprehension/game-stealth-sim.mjs. Naive filler: second-smallest-pad policy 1.00 first-try / 1.00 pass-3-of-4 in both authored and shuffled layouts; first-slot policy 1.00 authored, 0.249 shuffled. Rank-balanced filler + shuffle: second-smallest 0.445 / 0.236 (chance 0.25 / 0.05). Posterior under LEARNER-MODEL rules from pL0=0.39: 8 probe.predict-right at w=0.5 -> 0.568 (w=1 -> 0.73); 4 predictions + 1 far transfer at w=0.5 -> 0.76; 4 predictions + 1 full teacher why -> 0.893. Model only; no children.
+
+
+<!-- merged from inbox/kits-c2-hindi.json -->
+## kits-c2-hindi-authored
+**data/kits/c2-hindi.json: 26 of 26 curriculum topics (सारंगी, NCERT 2026-27), 307 items (min 11, max 12 per topic, min 7 distinct kinds), 4-5 skills and 2-3 misconceptions per topic.** (2026-10-02)
+- n: 26 topics / 307 items. Method: build script ran normalizeKit() (server/content/kits.js) on every topic and kitFromFile() on the written file; 0 items dropped, 0 diagnostics dropped, 0 hints replaced (15 leaking hints were rewritten before writing). All passages and poems are original (no NCERT text). Answer keys are NOT yet blind-solver verified (no verified field).
+- Kahani topics are T3/F4, kavita and khel-geet are T1/F5.
+
+## norm-strips-devanagari-matras
+**server/director/items.js norm() keeps only \p{L}\p{N}; Devanagari matras, anusvara, chandrabindu and nukta are \p{M}, so they are replaced by spaces. Measured: norm("दादी")===norm("दादा"), norm("पीला")===norm("पिला"), norm("मूली")===norm("मुली"), norm("बैंगन")===norm("बेंगन") are all true.** (2026-10-02)
+- n: 5 pairs tried by hand, 4 collide (चाँद/चद did not, because the letter count differs). Method: node one-liner calling the exported norm().
+- Effect: on any Hindi-language item whose skill IS the matra (ि/ी, ु/ू, े/ै contrasts), a wrong answer that differs only by a matra would match the key, and revealsAnswer() splits Devanagari words at every matra. Fix direction: add \p{M} to the kept classes in norm() (and wordsOf), then re-run the kit lint. Not fixed here; this workflow only authors kits.
+
+
+<!-- merged from inbox/kits-c3-hindi.json -->
+## kits-c3-hindi-authored
+**data/kits/c3-hindi.json: 18 of 18 curriculum topics (वीणा, NCERT 2026-27), 216 items (12 per topic, 7-10 distinct kinds), 4-5 skills and 3 misconceptions per topic.** (2026-10-02)
+- n: 18 topics / 216 items. Method: build script ran normalizeKit() (server/content/kits.js) on every topic and kitFromFile() on the written file. 0 items dropped, 0 diagnostics dropped, 0 hints replaced. 24 hints leaked before writing and were rewritten; most leaked because they quoted a Roman or English acceptable form (swing, gift, hawa). All passages, poems, letters and plays are original; folk-tale plots (Birbal, the clever jackal, the talking den, the farmer and the bear) are retold in new words. Answer keys are NOT yet blind-solver verified (no verified field).
+- Kavita and khel-geet are T1/F5. Kahani, samvad, ekanki and jeevani are T3/F4. The patra topic (ch07) is T4/F2.
+- Matra-contrast items (ि/ी, ु/ू, ै/े, ँ, ड/ड़) are still affected by norm-strips-devanagari-matras.
+
+
+<!-- merged from inbox/kits-c5-hindi.json -->
+## kits-c5-hindi-authored
+**data/kits/c5-hindi.json: 12 of 12 curriculum topics (वीणा, NCERT 2026-27), 158 items (13-14 per topic, 10 distinct kinds), 5 skills and 3 misconceptions per topic.** (2026-10-02)
+- n: 12 topics / 158 items. Method: build script ran normalizeKit() (server/content/kits.js) on every topic, revealsAnswer() on hint rungs 1-3, and kitFromFile() on the written file; tests/kit-budget.test.mjs passed. First pass: 9 items dropped by checkFits because their prompt carried the whole passage (370-544 Devanagari chars; about 340 is the ceiling measured by bisection on one item), and 6 hints leaked. Fix: each passage was split into excerpts quoted in the item that needs them. Final: 0 dropped, 0 diagnostics dropped, 0 hints replaced. All passages, poems and the play scene are original. The three-fish fable and the animal-walks-home test are folk motifs retold in new words. Facts in the yatra and atmakatha topics (Kaziranga, Ajanta/Ellora/Konark, the course of the Ganga, Sangken) were written from general knowledge and have not been checked against the chapter text. Answer keys are NOT yet blind-solver verified (no verified field).
+- Kavita topics are T1/F5. Kahani and ekanki topics are T3/F4. Sansmaran, yatra and atmakatha topics are T2: ch07 uses F4, and ch08, ch11 and ch12 use F3 (map or picture first).
+- The content of ch05 (सुंदरिया) and ch09 (न्याय) was written on the theme only, because the chapter plots were not available. The kit must not be presented as a retelling of either chapter.
+
+
+<!-- merged from inbox/kits-c6-english-reauthor.json -->
+## kits-c6-english-reauthored
+**data/kits/c6-english.json re-authored against the NCERT Poorvi 6 unit PDFs fepr101-105 (Reprint 2026-27): 16/16 topics, 248 items (14-16 per topic, 8-10 kinds), 5 skills and 4 misconceptions per topic (64 in all).** (2026-10-02)
+- n: 16 topics / 248 items / 64 diagnostics. Method: text extracted with pdftotext; the 'Rama to the Rescue' comic pages (pp. 21-25) were rendered to PNG and read, because their text is image-only. Every chapter-dependent key was checked by the fixer against that text, and each item's verified.note says what it was checked against. These are fixer checks, NOT fresh blind solves, so a second independent solver pass is still owed. normalizeKit plus revealsAnswer were run per topic. tests/kit-budget.test.mjs was pointed at a directory holding only this file: 3/3 pass, 7,104 lesson states compiled, 0 items dropped, 0 diagnostics dropped, 0 hints replaced. In the full `npm test` the only failure (1 of 314) is c7-english-ch03-t01-i07 (361 > 360 tokens), which is another kit.
+- Also fixed: all 50 previous diagnostics were rebuilt so that each has exactly one correct option; diagnostic prompt_hi no longer adds cues the English prompt lacks; skill titles now match the real poems (ch08 ABCB, ch11 free verse, ch05 AABB couplets, ch14 'like coloured birds', ch16 eternal flame); ch03's theme is presence of mind. Still open: data/curriculum/c6-english.json gives ch03's theme as 'helping someone in trouble', which does not match the book.
+
+
+<!-- merged from inbox/kits-c6-hindi.json -->
+## kits-c6-hindi-authored
+**data/kits/c6-hindi.json: 13 of 13 curriculum topics (मल्हार, NCERT 2026-27), 172 items (13-15 per topic, 9-10 distinct kinds), 4-5 skills and 3 misconceptions per topic.** (2026-10-02)
+- n: 13 topics / 172 items. Method: a generator script built the file. normalizeKit() and revealsAnswer() were then run on every topic, and tests/kit-budget.test.mjs passed (3/3). First pass: 21 hint rungs leaked an acceptable form, mostly a short Roman variant or a Devanagari stem. They were rewritten. Final: 0 items dropped, 0 diagnostics dropped, 0 hints replaced.
+- No NCERT text is reproduced. Every quoted line, stanza, doha-line and passage is original. Facts about the chapters (the plots of हार की जीत and परीक्षा, the Dhyanchand head-injury incident, Sattriya/Sankardev/Bohag Bihu, Mauritius and the girmitiya, Chetak/Haldighati, Surdas pad excuses) were written from general knowledge and have NOT been checked against the chapter text. The Rahim items paraphrase his best-known dohe (प्रेम का धागा, तरुवर फल, सुई-तलवार), which may not all be in Malhar. The मेरी माँ topic stays at the genre and values level, because the excerpt details were unavailable.
+- Kavita, doha and pad topics are T1 with primary F5. Kahani, sansmaran, atmakatha, nibandh and yatra topics are T3 with primary F4 or F1; F5 is never used on them. Answer keys are NOT yet blind-solver verified (no verified field).
+
+
+<!-- merged from inbox/kits-c8-hindi.json -->
+## kits-c8-hindi-authored
+**data/kits/c8-hindi.json: 10 of 10 curriculum topics (मल्हार, NCERT 2026-27), 131 items (12-14 per topic, 9-10 distinct kinds), 5 skills and 3 misconceptions per topic.** (2026-10-02)
+- n: 10 topics / 131 items. Method: a generator script built the file. normalizeKit() and revealsAnswer() were run on every topic, and tests/kit-budget.test.mjs passed 3/3 with only this file in the kits dir (3624 lesson states compiled, 0 BudgetError). First pass: 5 hint rungs leaked an acceptable form (English glosses such as feminine, tradition, clean environment, plus a nukta form that the matra-stripping norm reduced to ज). One acceptable form was over 60 chars. All were rewritten. Final: 0 items dropped, 0 diagnostics dropped, 0 hints replaced. The full-repo run of kit-budget still fails, but on other files (107/10600 items dropped repo-wide, and c9-english-ch08-t01-i04 is over the voice cap). c8-hindi contributes 0 to either failure.
+- No NCERT text is reproduced. Every stanza, scene and passage is original. The exceptions are Kabir dohas, which are public domain and widely known; they may not all be in Malhar. Chapter facts were written from general knowledge and have NOT been checked against the chapter text. These are: the स्वदेश stone-heart image, the father-and-sparrows arc in दो गौरैया, the blessing images in एक आशीर्वाद, the widow-and-basket plot in एक टोकरी भर मिट्टी, the room-to-universe chain in आदमी का अनुपात, and Bose addressing the youth. मत बाँधो and नए मेहमान stay at the genre, title and theme level, plus original stanzas and scenes, because the chapter details were unavailable. Kavita and doha topics are T1 with primary F5. Kahani, patra, ekanki and udbodhan topics are T3 with primary F4. Answer keys are NOT yet blind-solver verified (no verified field).
+
+
+<!-- merged from inbox/ui-a-shell-parent-fix.json -->
+## parent-gate-e2e-2026-10-02
+`NODE_USE_ENV_PROXY=1 node tests/parent-gate-e2e.mjs` against Neon, one run, 35/35 PASS: onboarding PIN set → overview 403 {gate:'locked'}; consent/add/edit-class/delete/controls 403 once a PIN exists, avatar PATCH 200; parallel burst of 8 wrong PINs → 4 'wrong PIN', 1 lockout, rest wait/429 (pre-fix all 8 would read the same `failed`); burst of 7 wrong passwords → 0 checked (all saw count > 5); reset pending → new PIN refused until delay, cancelled by current PIN, applied after (delay forced via SQL). Playwright (Chromium, dev server, 360x640) walk 12/12: consent rows each have a speaker, handover locked, child at /parent meets PIN pad, browser Back out of corner → 403, /who 'Add a child' and post-setup /start/consent gated, P6 comfort saved via P7. Read-aloud: GET /api/parent/speak consent row → 200 audio/mpeg 172 KB (Azure gpt-4o-mini-tts), cached repeat 53 ms. (2026-10-02)
+
+
+<!-- merged from inbox/voice-features-fix.json -->
+## voice-features-wired-2026-10-02
+**Voice features now reach the server from real lessons.** Before: `voice_feature` held 0 rows; nothing outside src/voice/ constructed VoiceFeatures. Now LessonRuntime attaches VoiceFeatures to the link's own mic (`TeacherLink.micTap()`: CascadeLink teacherEnd=local, VoiceLink teacherEnd=remote), feeds it every link event first, and a spoken child_final's features ride on that turn's POST /api/lesson/turn (`TurnRequest.voiceFeatures`); the handler runs `turnVoice()` in parallel with classify, under the server's activeItemId. (2026-10-02)
+- n: 1 live Neon round trip (114 ms, row stored with item_id, then deleted); browser smoke (tests/voice-features-browser.test.mjs, VOICE_BROWSER=1): real runtime + CascadeLink in PTT-recording fallback, fake mic tone → 1 turn request, features numbers only, f0 240.02 Hz. Signals are returned in turn debug only: the Director does not consume them yet (server/director/** not this workstream's).
+
+## voice-features-onset-one-clock
+**Onset latency is computed in one clock.** Chunks stamped `now − (ctx.currentTime − chunkTime) − track input latency`; teacher end = receipt + ctx.outputLatency (read live, so speaker↔Bluetooth switches are followed); realtime lane holds the server's output_audio_buffer.stopped until the local teacher meter has been quiet 150 ms. (2026-10-02)
+- n=5 trials, Chromium headless, oscillator gated 700 ms after a teacher_audio_end: 630, 647, 647, 646, 645 ms vs expected 668 (700 − outputLatency 32). Residual −21..−38 ms is the 40 ms analysis window's centre (a frame reads as speech when half-filled). Not measured: real Android/Bluetooth devices; input latency from getSettings().latency is 0 in headless Chromium.
+
+## voice-signals-null-fire-rate
+**Averaging correlated cue pairs cuts null false fires.** Monte Carlo n=40,000 under N(0,1) z with (pauseFrac,longestPauseMs) and (speechRate,articulation) correlated ρ=0.8: max/min-of-pair 5.71% followUpProbe / 0.56% gentlerHint / 1.13% slowerPace → mean-of-pair 3.54% / 0.25% / 0.37%. (2026-10-02, tests/voice-features-server.test.mjs)
+
+## voice-rms-is-agc-output
+**rms* features are AGC-normalised.** Both links capture with echoCancellation+noiseSuppression+autoGainControl; rmsMeanDb/rmsStdDb/rmsP90Db therefore describe the AGC output. rmsMeanDb removed from BASELINED (no z, no baseline); still stored. Soft fillers may be eaten by noise suppression (weakens flatVoicedRuns) — unmeasured. Reversal: a second, unprocessed analysis track measured to not disturb the AEC'd capture on Android. (2026-10-02)
+
+
+<!-- merged from inbox/voice.json -->
+## voice-research-probes-2026-10-02
+**gpt-realtime-2.1 (taxila-realtime) behaviour and voice/ASR instrument probes, 2026-10-02, US container -> eastus2, text-in unless noted. Directions only; single coders; small n.**
+- human-likeness probe (28 responses, 15 sessions, audio out re-transcribed): bracketed laugh direction in 4/4 transcripts, voiced per ASR in >=2/4 (ear pending); AI-identity truthful 12/12 (= n=6 sessions on a leading stimulus); 1/12 attachment promise (arm with the identity rule); 0 fillers in 28 turns; 6/8 praise/agreement openers incl. after a misconception (stub prompt); median TTFA 834 ms.
+- character probe (360 responses, 6 arms x 2 scripts x 3 sessions, real compile()): kinship self-reference 0/36; a name in the self-note gave speaker labels 12/54 vs 0/54 without; director labels spoken in 10-20/54; floor phrase recited 22/33 at the attachment turn; 0/33 warmth-first boundaries; late cue: distinctness 9/18 -> 14-15/18 but English-dominant turns 11% -> 46-70%; cache 77.8% (static director state).
+- relational probe (108 sessions, 12 moments x 3 arms x 3 samples, single coder, ~350-word prompt): violations A 20/36, B (mid-brief shape notes) 1/36, C (+ oracle move via response.create) 1/36; own-it note: false confessions 2/3 in B (C instructed 3/3); side effects masculine verbs 9/72, English-only 8/72, spoken planning 3/72, >25-word turns 3/66 -> 8-10/66.
+- attunement probe (84 calls): audio-in same words bright vs near-tears 0/18 check-ins, 31/36 praise openers (synthetic, inconclusive); text-in notes 3/3 vs 0/3 on boredom, frustration and excitement; thinking-aloud filled with a hint 3/3 (no notes) and 2/3 (notes); unverifiable safety assurance 2/3 without notes; median TTFA 1083 ms.
+- voices-hindi (221 clips, 44 arms, n=5/arm): first audio azure-realtime 476 ms, gpt-realtime-2.1 native 776 ms, Voice Live + Azure voice 858 ms, gpt-4o-mini-tts streamed 283 ms; every arm key-term recall >= 0.92 (ASR cannot rank voices); unhinted ASR wrote non-Devanagari script for 6/40 native-OpenAI Hindi clips vs 0/84 Azure Indian (single pass, observation only); raw loudness spread 16 LU.
+- ASR E0 (1515 calls, synthetic child TTS pitch-shifted, clean/child/10 dB TV/silence): gpt-live-transcribe + keywords + script-only prompt skeleton CER 0.043, answers 14/15, 0/3 output on near-silence (upper bound wide); gpt-4o-transcribe text on near-silence 5/5 in every config; Azure Fast phraseList no effect for hi-IN (126 clips); 10 dB TV CER >= 0.56 on every engine.
+- Method and raw data: docs/research/voice/{hl-probe-2026-10-02,characters/probe-2026-10-02,relational-probe-2026-10-02*.json,attune-probe-2026-10-02*,probe-2026-10-02-results.json,asr-e0}.

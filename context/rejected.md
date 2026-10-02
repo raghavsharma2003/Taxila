@@ -208,3 +208,50 @@ Proposed (day-cycle §9 and DC10, 2026-10-02; rejected in review): a 22:30 IST g
 
 ## conductor-commit-child-seq-first
 Proposed (CONDUCTOR.md revision 1 §3.4, 2026-10-02, written by the synthesis itself; caught by the second architect pass before any build): the Conductor commit takes the per-child `child_seq` row lock FIRST ("lock order everywhere: child_seq BEFORE conductor_state"). The idea was that taking the shared per-child mutex first is safest, and that `has_more` should be computed before anything else. What breaks: the other writers already reach `child_seq` from the far end. `complete_job` locks the `job` row and then `child_seq` (through `ingest_event`), and `fire_wakeups` locks `wakeup` rows and then `child_seq`. The commit holds `child_seq` and then wants the same `job` row (cancel) and `wakeup` row (upsert), so there are two lock cycles. Measured: 5/5 deadlocks against each (scratch PG 16.14, `conductor-substrate-pg16-2026-10-02`). In production the window is narrower, but PG aborts one side after `deadlock_timeout`, and for `fire_wakeups` that rolls back a whole batch of up to 500 wakeups. Replacement: one global order with `child_seq` LAST for every multi-table writer, plus a 40P01 retry as a backstop. It gave 0/40 across 8 race cells. The only writer allowed to take `child_seq` first is one that afterwards only inserts new rows (`create_commitment`). The general lesson: "take the global mutex first" is wrong once other writers reach that mutex last. The order has to be global, and a writer table (CONDUCTOR.md §3.4) is the review artefact.
+
+
+<!-- merged from inbox/cascade-fix.json -->
+## cascade-typed-lane-grading
+**Rejected: starting cascade lessons as mode "text".** What broke: the server forces typed=true for the text lane, so every spoken cascade turn was stored with asr_conf=null and classify got typed:true — the low-ASR "no evidence" gate never fired (baseline eval turn 3: conf 0.401 transcript sent to the model and graded), and the ASR-failed repair turn ("" + confidence 0) was graded as an empty typed answer. The client sent the confidence; the server threw it away. Fixed by lesson mode "cascade" (text lane for replies, spoken for grading) — `cascade-lane-spoken-turns`.
+
+## cascade-barge-all-or-nothing
+**Rejected: stopping and discarding the teacher's reply on any server speech_started.** What broke: a cough, the TV, a "hmm" backchannel or her own echo (the 9/9 browser check ran over push-to-talk, so hands-free echo was never exercised) killed the whole reply, including one still loading; the empty transcript then became child_silent, which the runtime does not answer, so her question was lost and both sides waited. A reply cut while loading was never marked interrupted, so the server believed it was heard. Replaced by pause-then-decide (`cascade-barge-pause-decide`).
+
+
+<!-- merged from inbox/game-stealth.json -->
+## in-game-success-as-mastery
+Tried (literature): treating game-level success as concept mastery. Broke: DragonBox grades 7-8, 3.5 h, no gain on paper equations (Long & Aleven 2014); Nuraydin, Stricker & Schneider 2022 RCT n=188 grades 5-8: fraction number-line game improved the trained 0-1 task only, not 0-5 lines, comparison or arithmetic.
+
+## adaptive-sequencing-as-the-lever
+Tried (literature): adaptive level sequencing from stealth estimates as the learning lever. Broke: Physics Playground RCT n=263, adaptive vs linear vs free choice, no significant delivery effect; physics animations were the most effective support.
+
+
+<!-- merged from inbox/kits-c6-english-reauthor.json -->
+## kit-invented-companion-texts
+Tried (2026-10-02, the English kit workflow's copyright rule "write ORIGINAL short passages/poems on the chapter's theme; refer to the chapter only by title/theme"): c6-english was authored on invented stories and poems that kept only the NCERT title. Examples: Rama Natha and the sage became Arun and an old woman; Mr Raven's morsel became a female raven's cheese; the thief-and-kotwal comic became Kabir helping Tara; Gajaraj and Buntee became a tortoise and a goat; free verse ('The Winner') became a rhyming race poem. What broke: the invented texts were stored nowhere (no passage field, nothing in the repo), so every recall, inference and rhyme item could be answered only by someone who had read a text the child never sees. A child who had read the book was marked wrong (cheese vs morsel, her vs his, 'say/day' rhymes that are not in the poem). Skill titles named devices the real poems do not have (ABAB on an ABCB poem, a rhyme scheme on free verse, similes that do not exist). The blind checker disputed 48 items and 10 diagnostics. Replacement: author against the real chapter. Facts, plot and names are paraphrased; quotes are limited to single rhyme words and 2-3 word phrases needed for figurative-language work; grammar and vocabulary items stay self-contained. Never keep an invented text unless it is stored and shown in the lesson. The same rule likely affects every other language kit written under the same instruction (c1-c9 english, and the hindi kits note facts 'NOT checked against the chapter text').
+
+
+<!-- merged from inbox/ui-a-shell-parent-fix.json -->
+## ui-a-gaps-2026-10-02
+**Not built in ui-a — listed so coverage is not implied.** /who does not speak the child's name on tap; P6 has no NameSayer and no optional first subject; P7 does not enforce 'first-day cap ≥ child path'; P8 has no MB estimate on cellular; no WhatsApp/email notice of a PIN reset or lockout (audit only); the Class 1-4 lesson card OFFERS a spoken summary (speaker) but it is not the default view; the read-aloud voice is the default TTS voice in English sentences (not measured by ear, not Hindi-first). (2026-10-02)
+
+
+<!-- merged from inbox/voice-features-fix.json -->
+## voice-features-latest-signals-race
+**Tried:** client fires POST /api/voice/features (fire-and-forget, ~108 ms write) at child_final while the runtime POSTs /api/lesson/turn at the same moment; the Director would read `latestSignals(lesson, {withinMs:15000})`.
+**Broke:** the turn usually reads the PREVIOUS utterance's row — another item, possibly another question — so a tie-breaker from one answer is applied to a different one. The query matched neither item nor turn.
+**Instead:** features ride on the turn (TurnRequest.voiceFeatures → turnVoice()); latestSignals now requires an itemId match and returns {} without one. (2026-10-02)
+
+
+<!-- merged from inbox/voice.json -->
+## asr-vocab-in-prompt
+**Tried:** a lesson-term vocabulary list in the free-text prompt of gpt-4o-transcribe / gpt-4o-mini-transcribe (ASR E0, 2026-10-02). **Broke:** gpt-4o-transcribe produced fluent lesson content from near-silence (3/5 with terms; text on silence 5/5 in every config); mini recited the whole list or wrote paragraphs on 5/5 near-silent clips. The recitation law reproduced in an ASR. Vocabulary goes only in a structured keywords field; neither model is used as a live or grading lane.
+
+## own-mistake-note-false-confession
+**Tried:** a relational note telling the teacher to own its mistake if it was its own (relational probe, 2026-10-02). **Broke:** the model confessed to errors it never made (2/3 in arm B; 3/3 in C where the move also said so). A false confession teaches a child that pushing back changes the answer. Ownership is now a director fact (verified error -> OWN-SLIP; unverified contest -> re-check against the key aloud).
+
+## voice-prompt-labels-and-brackets
+**Tried:** a square-bracket laugh direction (hl probe), director move labels such as a named board anchor and "Picture:" (char probe), and the floor's quoted relationship phrases (char probe), all in voice instructions on gpt-realtime-2.1. **Broke:** the bracket appeared in 4/4 transcripts and was voiced per ASR in >=2/4; labels were spoken in 10-20/54 turns; the floor phrase was recited in 22/33 attachment replies. Inherits Meera's ack-bracket-direction. Lint for brackets, slot syntax and quotes in CORE.
+
+## indicf5-live-loop
+**Tried (Gurukul) / considered:** AI4Bharat IndicF5 as the live teacher voice. **Broke:** no streaming, a reference clip + transcript per call, RTF 2.87 on a T4, mixed-script WER 0.45, chemical symbols 6/8 wrong. Kept only as a possible offline narration option.
