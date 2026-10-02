@@ -771,6 +771,90 @@
    "title": "Owner decisions pending: (E1) brief names taxila-opus but Claude is 404 and barred by the Azure-only directive; (E2) live 'built for this child' means G1 fill, G2 next-day after review; (E3) archive <=20 sora hooks by 2026-10-13 or drop video, pin TTS 2025-12-15; (E4) SandboxCores quota, SandboxGroup Data Owner role, Microsoft.Cdn, image/codex quota",
    "at": "2026-10-02",
    "source": "inbox/factory.json"
+  },
+  {
+   "id": "conductor-code-reducer",
+   "kind": "decision",
+   "title": "Conductor = one code virtual actor per child (pure reducer); LLMs only propose typed objects that code validates",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "conductor-substrate-neon",
+   "kind": "decision",
+   "title": "Conductor substrate on Neon: commit-ordered per-child event seq, one-transaction outbox, fenced home-grown job queue, child_seq locked LAST by every writer, no conductor.step job (pending_since dirty set), replay never commits",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "conductor-hosting-lanes",
+   "kind": "decision",
+   "title": "taxila-web inline <=10 s; taxila-worker (min 1, direct Neon) runs ticker, dirty-set step loop, polled job lanes; taxila-observer (M1) holds realtime observers; ACA scheduled jobs run detectors; nothing on Vercel; no Azure Batch in v1",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "voice-lane-budget",
+   "kind": "decision",
+   "title": "Every plan slot carries a voice lane; realtime only for teach/teach-back/transfer/wrap within the tier budget; homework on cascade; one call per sitting; idle hang-up only on non-child audio",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "no-vm-per-student",
+   "kind": "decision",
+   "title": "The 'little VM per student' is a logical workspace (rows + private Blob prefix + device replica + actor); isolated compute only per Forge job",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "safety-parent-notice-settle",
+   "kind": "decision",
+   "title": "Every safety incident -> safety_hold until the safeguarding owner rules on a severity split; S-class parent notices settle before sending; any possible family implication goes to a human; at M0 every S notice goes to a human",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "forge-live-codegen-race",
+   "kind": "rejection",
+   "title": "Live game codegen racing the lesson cannot deliver: human review law blocks it, so every library miss is pure spend",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "dek-in-pitr-database",
+   "kind": "rejection",
+   "title": "Per-child DEK stored in the same PITR'd Neon project: a restore resurrects it, so the crypto-shred does not shred",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "per-child-night-pipeline",
+   "kind": "rejection",
+   "title": "Per-child overnight prep (plans, engine params, images): wasted on non-openers, thundering herd, per-child images alone exceed revenue",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "conductor-commit-child-seq-first",
+   "kind": "rejection",
+   "title": "Conductor commit taking the per-child child_seq lock FIRST: deadlocks 5/5 against complete_job and fire_wakeups, which reach child_seq last",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "conductor-substrate-pg16-2026-10-02",
+   "kind": "measurement",
+   "title": "Conductor SQL substrate on scratch Postgres 16.14: functional cases hold (n=1, caught a NOT NULL bug); lock-order probe (n=5/cell): child_seq-first commit deadlocks 5/5 vs complete_job and fire_wakeups, child_seq-last 0/40 over 8 cells",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
+  },
+  {
+   "id": "open-voice-price-and-quota",
+   "kind": "open",
+   "title": "Realtime teacher minutes unbudgeted: Rs 299 covers ~16 rt-2.1 min/month at a 60% cost ceiling, and 10 RPM caps lesson starts at ~10/min",
+   "at": "2026-10-02",
+   "source": "inbox/conductor.json"
   }
  ],
  "edges": [
@@ -1423,6 +1507,106 @@
    "src": "content-live-tiers",
    "rel": "constrains",
    "dst": "forge-live-is-g1-fill"
+  },
+  {
+   "src": "conductor-substrate-neon",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "conductor-substrate-neon",
+   "rel": "measured_by",
+   "dst": "conductor-substrate-pg16-2026-10-02"
+  },
+  {
+   "src": "conductor-substrate-neon",
+   "rel": "measured_by",
+   "dst": "db-driver-latency-2026-10-02"
+  },
+  {
+   "src": "conductor-hosting-lanes",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "conductor-hosting-lanes",
+   "rel": "constrains",
+   "dst": "hosting-azure-container-apps"
+  },
+  {
+   "src": "conductor-hosting-lanes",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "conductor-code-reducer",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "conductor-code-reducer",
+   "rel": "constrains",
+   "dst": "scope-classes-1-9"
+  },
+  {
+   "src": "voice-lane-budget",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "voice-lane-budget",
+   "rel": "caused_by",
+   "dst": "voice-realtime-model"
+  },
+  {
+   "src": "voice-lane-budget",
+   "rel": "blocks",
+   "dst": "open-voice-price-and-quota"
+  },
+  {
+   "src": "open-voice-price-and-quota",
+   "rel": "caused_by",
+   "dst": "infra-segment"
+  },
+  {
+   "src": "no-vm-per-student",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "safety-parent-notice-settle",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "forge-live-codegen-race",
+   "rel": "part_of",
+   "dst": "forge-infra-azure"
+  },
+  {
+   "src": "dek-in-pitr-database",
+   "rel": "part_of",
+   "dst": "no-vm-per-student"
+  },
+  {
+   "src": "per-child-night-pipeline",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "conductor-commit-child-seq-first",
+   "rel": "part_of",
+   "dst": "conductor-substrate-neon"
+  },
+  {
+   "src": "conductor-commit-child-seq-first",
+   "rel": "measured_by",
+   "dst": "conductor-substrate-pg16-2026-10-02"
+  },
+  {
+   "src": "no-vm-per-student",
+   "rel": "caused_by",
+   "dst": "vm-per-student"
   }
  ]
 }

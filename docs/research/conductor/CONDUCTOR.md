@@ -102,8 +102,10 @@ Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `
 7. **Day and clock.** `clockPhase` is computed from the routine and the calendar and never stored. `mode` is
    stored (`free | in_lesson | paused | safety_hold`). `learningDay = localDate(now − 4 h)` is used everywhere.
 8. **No nagging by construction.** No class exists for absence, streak, come-back or offer messages. A capped
-   class is capped by an insert into a slot table (the insert is the cap). Anchor reminders are on-device local
-   notifications.
+   class is capped by an insert into a slot table (the insert is the cap), keyed by the recipient guardian so the cap
+   does not grow with the number of children (X61). Anchor reminders are on-device local notifications, one per device
+   (X63). Siblings on one phone are ordered by a household allocator whose answer reaches each child as an event in
+   her own log (X59).
 9. **The "little VM per student" is logical:** Postgres rows keyed by `child_id`, a private Blob prefix, a
    device replica, and the actor. Isolated compute exists per Forge job, never per child (orch C9, ws W1).
 10. **Homework is pick-first.** DI Read on the page, the child picks one item, keys come only from the kit or a
@@ -2018,7 +2020,7 @@ control:
 | G1 prompt budget | every `compile()` lane at max inputs; turn-shape rule LAST | a 2× brief must fail |
 | G2 predicates | AI-honesty, 1098/14416 present, notification lexicon, unconstructible banned classes, telemetry allow-list, safeguarding exclusion | a planted violation per predicate |
 | G3 determinism + invariants | §9.9 registry; double-compile byte identity with a frozen clock; L2 replay of fixture days; the lock-order probe (`conductor-lock-order-rev2-probe.sh`) against a scratch PG 16 with the real migration's functions | `Date.now()` injected into `compile` must fail; a deleted cassette entry → `CassetteMiss` with 0 Azure calls; the revision-1 `child_seq`-first commit must deadlock; a replay given a write handle must trip I-R9 |
-| G4 day simulator | `evals/conductor-sim/`: 8 seeds × 6 personas × 4 simulated weeks, tables diffed vs `main`; plus (gap-fill G1-adaptation-policy) the adaptation personas of adaptation-policy §8.4 over 8 weeks, including `latch_walker`, and the `planDay` determinism property (I-A4) | a persona with a planted absence-nudge rule must trip; each adaptation persona's planted rule must trip its named V/I-A gate; the 1/1, r=1 strain latch must trip I-A3 |
+| G4 day simulator | `evals/conductor-sim/`: 8 seeds × 6 personas × 4 simulated weeks, tables diffed vs `main`; plus (gap-fill G1-adaptation-policy) the adaptation personas of adaptation-policy §8.4 over 8 weeks, including `latch_walker`, and the `planDay` determinism property (I-A4); and (gap-fill G3-household-siblings) `three_siblings_one_phone` (household.md §8) | a persona with a planted absence-nudge rule must trip; each adaptation persona's planted rule must trip its named V/I-A gate; the 1/1, r=1 strain latch must trip I-A3; and the household controls C1-C7 (per-child caps, per-child planning, re-reporting re-plans, re-allocating erasure, cascading slot FK, per-child reminders, a clock in `allocate`) must each trip |
 | G5 lesson battery | SimChild × Director (per-PR subset of 96 lessons ≈ $2-4; full nightly on the eval deployment on path-map trigger) | a "leaky" Director must fail the leak bar |
 | G6 Tutor Bench | deterministic axes per change; human panel on a cadence | the rejected brevity-by-instruction build must score below the bar |
 | G7 voice floor | `evals/realtime-audio-in.mjs` + WebRTC harness | a 300 ms silence config must produce cut-offs |
@@ -2050,7 +2052,7 @@ Path map: Conductor changes → G3, G4. Prompt/compile → G1, G2, G3, G6. Direc
 | I-R10 | no SQLSTATE `40P01` across 8 seeds of the simulator's concurrent-ingest + job-completion + ticker persona, with the substrate shim enforcing the X29 order | orch B1, X29 |
 | I-R11 | the idle hang-up never fires on a turn with a confident child transcript (a planted off-topic child utterance must not hang up) | orch B6, X32 |
 | I-R12 | after 14 days without `app.opened`, no `day_start`/`night` wakeup is re-armed; a parent-chosen wakeup is never dropped | orch B10, X36 |
-| I-V1..V27 | the plan validator rules (§4.5; V15-V27 from gap-fill G1-adaptation-policy) | dc, orch, adaptation-policy |
+| I-V1..V30 | the plan validator rules (§4.5; V15-V27 from gap-fill G1-adaptation-policy; V28-V30 from gap-fill G3-household-siblings) | dc, orch, adaptation-policy, household |
 | I-A1 | (gap-fill G1-adaptation-policy) no knob takes a value from a layer outside `MAY_PROPOSE`. **Control:** a vibe rule proposing `reviewShare` .15 is blocked `layer_not_permitted` (`adaptation-worked-example.mjs`) | X44 |
 | I-A2 | every constraint passes `registerConstraint`, and there are 0 `empties_domain` drops among constraint layers in G4. **Control:** an empty budget domain, and a budget bound on minutes, are refused | X44 |
 | I-A3 | per latch, under steady personas: oscillation mean ≤ 0.6 and p90 ≤ 2 flips per 8 weeks (measured R1 0.49 / 2.0; R2 0.32; R6 0.19). **Control:** the 1/1, r=1 latch (9.9 flips) | X45-X47 |
@@ -2082,6 +2084,18 @@ Path map: Conductor changes → G3, G4. Prompt/compile → G1, G2, G3, G6. Direc
 | I-F14 | song/chant only for `verbatim_sequence` objectives; every chant line phonMatch = 1.0; lang key present; `rights ≠ ncert-pending`; L1-L5 clean. **Control:** lint golden cases (11/11) | X56, LS rule 24 |
 | I-F15 | no library build is charged to a child (`cost_ledger.child_id` null for `forge.*`); live fills are charged to `child_content`. **Control:** ledger fixture | MO8 |
 | I-F16 | no name, transcript or memory crosses into a module iframe; `init` carries ids and numbers only. **Control:** a planted free-text `init` field is rejected | MO R9 |
+| I-H1 | (gap-fill G3-household-siblings) no two `household_slot` rows overlap in (household, day, lane): the `EXCLUDE … DEFERRABLE` constraint, checked at COMMIT. No two sittings overlap on one device. **Control:** an overlapping insert raises 23P01; the same re-timing pass with the constraint `IMMEDIATE` fails mid-pass; per-child planning without household windows overlaps 512× in the sim | X59 |
+| I-H2 | per recipient guardian and ISO week: ≤ 2 learning pushes (slot 1 the family letter, slot 2 one other) and ≤ 1 wellbeing pointer, **independent of the number of children**. Erasure never frees a taken slot. **Control:** `notify_slot` keyed per (guardian, child) → 6 in a week; `child_id ON DELETE CASCADE` → 3 after an erasure | X61 |
+| I-H3 | a `household`-caused re-plan emits no `plan_reported` (V29); ≤ 1 courier per member per allocator pass; ≤ 1 pass per trigger. **Control:** a re-plan that re-reports its length (fixture: 1 → 2 passes, 3 → 5 deliveries) | X60 |
+| I-H4 | `decide` never reads a household table (the replay reader has no household handle). Replayed `state.household.hhVersion` = `decision_log.household_v` on every row. `allocate(recorded input)` is byte-equal to `household_decision.output`, except passes marked `member_erased`. **Control:** a `decide` that reads `household_slot` throws in the shim; a clock read planted in `allocate` breaks byte equality | X59, I-C6 |
+| I-H5 | the allocator never locks `child_seq`, `conductor_state` or `notify_slot`; `fire_wakeups` is the only writer that locks > 1 `child_seq`; learning slots are taken 1 before 2; 0 `40P01` in the household probe cells (F7-F8). **Control:** a reassign that ingests into both children vs a reverse courier batch (5/5); slot 2-then-1 (5/5); an allocator using `SELECT … FOR UPDATE` blocks every inbox insert | X29, X59, X64 |
+| I-H6 | erasing a sibling changes no other member's slot, window, plan or log that day, and leaves 0 rows carrying the erased id. **Control:** erasure that re-allocates (7/8 seeds disturbed); erasure without the (2b) fence (deadlock 5/5) | X65 |
+| I-H7 | no child's event, plan, brief or device doc carries a sibling's id, name, band, length or count; window causes are kinds (V30). **Control:** a schema with `siblingId`, or a cause naming the reason (`sibling_safety`), fails the W-map lint | X66 |
+| I-H8 | ≤ 1 pending admission per device; a profile switch closes the old session and drops its token before the new child's token is minted; every reservation is against the profile in use. **Control:** two taps by two profiles leaving two rows; a token minted before teardown | X63 |
+| I-H9 | anchor reminders per device ≤ 1/day and ≤ 5/week whatever the number of children; *ignored* is device-level. **Control:** reminders scheduled per child (3/day) | X63 |
+| I-H10 | `session.reassign` moves minutes in full and money only within the target's headroom (I-C7 holds); the source's sitting is voided; lane occupancy is unchanged. **Control:** moving money past the headroom trips I-C7 | X64 |
+| I-H11 | no family-letter string carries a number or a comparative about more than one child (PP4). **Control:** "Riya 5 din, Kabir 2 din" must fail the lint | X62 |
+| I-H12 | every household member's routine tz equals `household.tz` (one learning day per household). **Control:** a member in another tz is refused at join | X59 |
 
 ### 9.10 Simulators and experiments
 
@@ -2092,6 +2106,17 @@ Path map: Conductor changes → G3, G4. Prompt/compile → G1, G2, G3, G6. Direc
   chatty 6-year-old who goes off-topic every third turn (I-R11); an account dormant for 3 weeks, then back (I-R12); and (gap-fill G1-adaptation-policy) the adaptation personas of adaptation-policy §8.4. These are `fast_learner`, `wheel_spinner`, `over_reliant`, `tired_every_evening`, `interest_switcher`, `goal_setter_teen`, `exam_vs_thread`, `low_budget_b1_test`, `stale_refit` and `routine_vs_vibe`, plus **`latch_walker`**: a scripted 8-week B2 child that must turn every latch (R1, R2, R3, R6, R7, R14) on and then off inside stated windows. Week 1 is steady (no latch may fire); week 2 strained (R1); a 9-day gap (R8 re-anchor, R3 backlog); η = +.9 from week 3 (R6 → 2); late tired sittings in weeks 4-6 (R2); a dependency flag in weeks 5-6 (R7); 3 of 5 sittings cut by bedtime in week 7 (R14); η back to 0 in week 8 (R6 → 1)).
   It prints tables: plan adherence, minutes by lane, invariant violations, dead jobs, deadlock retries, wakeups per
   dormant child, cost per child-week, letter on-time rate.
+  (gap-fill G3-household-siblings) The "siblings on one phone" persona is now specified as **`three_siblings_one_phone`** (household.md §8;
+  reference run `household-sim.mjs`, which also holds the reference `allocate()`). It has Riya B1, Kabir B2 (tuition
+  Tue/Thu) and Meera B4 (a test window) on one phone. The anchor is 16:30, moved to 17:00 on day 14, with 19:00
+  Wednesdays and 11:00 weekends. It adds queue-jumping, overruns, profile switches (15-min resume), wrong-profile
+  sessions with reassign, and Kabir's erasure on day 25 at 17:10. Its tables **must show** (8/8 seeds): planned
+  `household_slot` overlaps 0 and device overlaps 0; governor cap breaches 0; sittings past bedtime − 30 0; learning
+  pushes per guardian-week ≤ 2 and wellbeing pointers ≤ 1; anchor reminders per device ≤ 1/day and ≤ 5/week; ≤ 1
+  delivery per member per pass and ≤ 1 pass per trigger; 0 sibling windows disturbed and 0 events to siblings at the
+  erasure; nightly allocator replay byte-equal. Reference run (2026-10-02): 509 sittings, 1,116 passes, every gate as
+  stated. Controls C1-C7 all trip: 6 pushes/week, 512 overlaps, 1 → 2 passes, 7/8 disturbed, 3 pushes/week,
+  3 reminders/day, replay broken.
 - **SimChild** (obs O7): a seeded code state machine whose misconceptions weaken only under the moves that resolve
   them. A model may only reword an answer the code chose. It gates invariants and policy, never efficacy.
 - **Experiments** (obs O9, O10): assignment is a pure hash `${expId}:${salt}:${unitRef}:${decisionRef}` with a frozen
@@ -2136,6 +2161,8 @@ group has two named humans.
 | WS-M10 | peak statements/s per Neon compute including sync | when cells are needed |
 | DC-M1 / DC-M3 / DC-M4 | anchor vs no anchor on session days in weeks 5-8; where attention drops by minute and band; real after-school windows | DC1, DC4, §4.1 |
 | `adaptation-hysteresis-sim-2026-10-02` | (gap-fill G1-adaptation-policy) done [sim]: seeds 11-18 (n = 8), 2,000 children × 40 sittings per seed. **R1 3/4, r=3:** oscillation 0.486 flips/child/8 wk [0.468-0.515], p90 2; false latch (steady child ever on) **23.6%** [22.3-24.6]; 2.5% of sittings on; hit 100%. The one-close rule (1/1, r=1): 9.9 flips, 99.9% false latch. **R2** (nightly, 16-ring, ≥ 4 each, .40/.20): 0.32 flips, **15.9%** false latch, 91.3% hit; at .30/.30 it was 23.5% false. **R6** (I = .05): hysteresis 0.19 flips, 12.2% steady moved, 84% correct for η ±.8, vs naive 0.56 / 17.1% / 76%. The original seed-11 tables reproduce unchanged. Also `adaptation-state-size.py` (packed `adapt` 1,016 B) and `adaptation-worked-example.mjs` (17/17) | X45-X47, I-A3, I-A9 |
+| `household-sim-2026-10-02` / `household-pg16-probe-2026-10-02` | (gap-fill G3-household-siblings) done. [sim] 8 seeds × 28 days, persona `three_siblings_one_phone`: every I-H gate holds; 7/7 controls trip (numbers in §9.10). [probe] scratch PG 16.14, n = 1 per functional case, n = 5 per race cell, **25/25**: deferred exclusion (F1); per-guardian slots, tombstones (F2-F3); erasure isolation md5-identical (F4); courier key precedence (F5); KEY SHARE vs NO KEY UPDATE 0.05 s vs 1.74 s `FOR UPDATE` (F6); slot races 0/5 and reversed 5/5 (F7); allocator vs commit 0/10, vs fire batch 0/10, fenced erasure 0/5 vs unfenced 5/5, reassign by courier 0/15 vs direct 5/5 (F8); one admission per device (F10). Not covered: the real cascade under load, two phones in the sim, the M1 parent API | X59-X66, I-H1…I-H12 |
+| HH-M1…HH-M6 | (G3) share of households with ≥ 2 active profiles and phones per household; real hand-over gaps and order compliance by band; windows delivered per child-day and shown-slot moves; wrong-profile sessions per 100 sittings; family-letter open rate vs single-child letters; profile-switch resume rate | `phones` default, the 5-min hand-over, 10-min hysteresis, 60 s debounce, a picture-PIN default, the envelope (X62), the 15-min resume (household.md §9) |
 | CM-A0…CM-A9 | (G1) `vibeClose` label κ vs human raters (≥ 100 closes, bar κ ≥ .6: it gates R1/R2); R1 base rate/autocorrelation + MRT (92 child-months for +8 pp at ρ .05); R2 real sitting hours; η refit stability and per-opp information; R3-R5 unsticking MRT; R9 share vs school tests; R7 solo-round MRT; choice/opener logs; `adapt` size p99; guard narrowings (must be 0) and plan churn | every [U] threshold in adaptation-policy §4 |
 
 ---
@@ -2152,15 +2179,16 @@ what only pays at scale.
 | 1 | `tx(fn)` on the pg Pool (`pool.connect()`, BEGIN/COMMIT/ROLLBACK). `DB_DRIVER=pg` required on ACA; a second **direct** URL secret for the worker | `server/db.js` |
 | 2 | migration `002_conductor.sql`: `child_seq`, `student_event`, `ingest_event()`, `conductor_state`, `decision_log`, `brief_snapshot` (X34), `day_plan`, `conductor_usage`, `job`, `complete_job()`, `wakeup`, `fire_wakeups()`, `notification`, `notify_slot`, `budget`, `cost_ledger`, `price_book`, `rate_bucket`, `model_call`, `turn_trace` (+ `child_id` index), `child_routine` (routine facts only), `parent_setting`, `calendar`, a minimal `workspace` (state, legal_mode, academic_year, last_active_at: `complete_job` fences on it), `gen_ulid()`. `child_seq`, `conductor_state` and `workspace` rows are created in the same transaction as `child` | `db/migrations/002_conductor.sql` |
 | 3 | contracts: events, state, plan, lanes, notify, jobs (the unions in §2-§4), and (gap-fill G1-adaptation-policy) `adapt.ts` from `adaptation.contracts.ts` (`ConductorChildView`, `ViewReader`, `AdaptMemory` + packed codec, `PlannerInputs`, `resolveKnob`, `registerConstraint`, `RULES`, `T`) | `shared/conductor/*.ts`, `shared/contracts.ts` (`LessonBrief`) |
-| 4 | the Conductor: `decide` (pure), guards in authority order + fail-safe, `clock` (`clockPhase`, `learningDay`, jitter, the dormant-clock rule X36), code planner (`planKeys` + pure `planDay` + JCS `inputsHash`, rules R0-R14, `foldNight`: gap-fill G1-adaptation-policy) + validator V1-V27, the recording `ViewReader`, `step` (with the 40001/40P01/CAS retry), `commit` in the **X29 lock order**, a write-free `replay` (X31), `upgradeState` | `server/conductor/` |
+| 4 | the Conductor: `decide` (pure), guards in authority order + fail-safe, `clock` (`clockPhase`, `learningDay`, jitter, the dormant-clock rule X36), code planner (`planKeys` + pure `planDay` + JCS `inputsHash`, rules R0-R14, `foldNight`: gap-fill G1-adaptation-policy) + validator V1-V30 (V28-V30: gap-fill G3-household-siblings), the recording `ViewReader`, `step` (with the 40001/40P01/CAS retry), `commit` in the **X29 lock order**, a write-free `replay` (X31), `upgradeState` | `server/conductor/` |
 | 5 | `taxila-worker` ACA app: leader ticker, the **dirty-set step loop** (no `conductor.step` job: X30), fast/slow claim loops with 1 s → 5 s poll backoff (X35), shutdown contract; `deploy-azure.mjs` deploys both apps, with the 18:00-21:30 IST freeze | `server/worker/main.mjs`, `scripts/deploy-azure.mjs` |
 | 6 | lesson integration: `/api/lesson/start` = usage reserve + rate-bucket admission (reconnect priority) + `brief.refresh`; the Director emits `lesson.started/ended` (with `voiceSec`, `outcomeDigest`), `teacher.promise`, and honours `wrapAt`/`hardStopAt`, the **non-child-audio** idle hang-up (X32), `session.renew`, resume within 15 min; its turn commit is optimistic (X39); `lesson.ended → memory.consolidate` via `complete_job` | `server/routes/lesson.js`, `server/director/` |
 | 7 | off-voice warm-up during admission (tap retrieval + cached narration clip). **Prerequisite** (orch B11): narration pre-rendered and cached for every warm-up-eligible kit item, in a voice a blind ear test matches to the teacher, or the warm-up is heard as a different teacher (R7.7) | `src/lesson/`, kit pipeline |
 | 8 | `modelCall` with live/replay/eval modes and the X38 `finally` order; `turn_trace` + `model_call` rows staged in the Director's turn commit; lesson `traceparent`; the provisional client-clock OM16 (X40) | `server/obs/`, `src/lesson/` |
 | 9 | the device's cached plan for first paint, `slot.shown`, the rest and hold screens (the hold screen designed with the safeguarding protocol, shown for every incident: X33) | `src/` |
 | 10 | safety: every incident → `safety_hold` (X33); S → human queue only (X23, M0 phase), page on entry, 2 h escalation, safeguarding exclusion predicate | `server/director/safety.js`, protocol |
-| 11 | `scripts/verify-release.mjs` with G0-G4 + G8 (G3 includes the lock-order probe and the `planDay` determinism property), `evals/conductor-sim/` (with the adaptation personas and `latch_walker`), the invariant registry I-C*, I-R1…I-R12, I-V*, I-A1…I-A11 | `scripts/`, `evals/`, `tests/conductor/` |
+| 11 | `scripts/verify-release.mjs` with G0-G4 + G8 (G3 includes the lock-order probe and the `planDay` determinism property), `evals/conductor-sim/` (with the adaptation personas and `latch_walker`), the invariant registry I-C*, I-R1…I-R12, I-V*, I-A1…I-A11, and (gap-fill G3-household-siblings) I-H1…I-H12 with the `three_siblings_one_phone` persona | `scripts/`, `evals/`, `tests/conductor/` |
 | 12 | App Insights distro (sampling 1.0, ban-list scrubber, anomaly counters); `canary` and `nightly` ACA scheduled jobs with Azure Monitor absence alerts | infra |
+| 13 | (gap-fill G3-household-siblings) migration `005_household.sql` from `household.sql`: `household`, `household_member`, `household_device`, `household_slot` (EXCLUDE, deferred), `household_inbox`, `household_decision`(`_member`), the courier columns on `wakeup` + the new `fire_wakeups`, `decision_log.household_v`, the per-guardian `notify_slot` + `notify_take`, `device_admission`, `session_reassign`. Also the contracts from `household.contracts.ts`, the allocator (lifted from `household-sim.mjs`) on the worker's dirty-set loop, the `household.report` command, the fold and V28-V30, the `three_siblings_one_phone` persona in G4, and `household-pg16-probe.py` in G3. Single-child families run the same path with one member, so it ships at M0 | `db/migrations/`, `shared/conductor/household.ts`, `server/household/`, `evals/conductor-sim/` |
 
 **Exit criteria:** every gate green with its negative control; the I-R1 concurrent-ingest drill shows zero lost
 events and I-R10 zero deadlocks; conductor-sim tables recorded as the baseline; CM1, CM2, CM5 and CM8 measured and
@@ -2178,7 +2206,8 @@ logged; one week of real lessons with `cost_ledger` reconciled against Azure dep
    corrected leak guard, invariants I7-I11. Document Intelligence provisioned and logged.
 4. **Workspace v1:** `WORKSPACE_MAP` + tests, device replica (Android SQLite, web IndexedDB), `/api/ws/sync` with the
    R3.2/R3.3 fixes, the KT workspace lock, server re-grade, `session.reassign`, hard-delete erasure with fencing, CSP on
-   `lib/`.
+   `lib/`. (gap-fill G3-household-siblings) `session.reassign` in its courier shape (X64), the erasure household fence (2b, X65), the
+   `household` device doc and the per-device anchor reminder (X63), and the family letter envelope (X62).
 5. **Cost:** per-tier budgets from D-PRICE, 5-min lesson blocks, the realtime **observer** on its own
    `taxila-observer` app (metering + staleness, X37), `cost_ledger` unique key, D-COST and D-LIVE views.
 6. Quota request filed (realtime RPM/TPM, `taxila-brain`), sized by CM5.
@@ -2222,6 +2251,10 @@ image or video generation (orch R3.2: medium images alone are ≈ $3.2/child-mon
 record, or Helicone-style proxies (obs O12). Any model outside the allowed list, including Claude on Foundry and
 `gpt-5.6-terra` (I-R8). A `conductor.step` job kind (X30). A replay path that can commit (X31). Any writer that locks
 `child_seq` before another existing row (X29). `NOTIFY` as a correctness path (X35).
+(gap-fill G3-household-siblings) A `decide()` that reads a sibling's state or any household table (X59). A second
+writer that locks more than one `child_seq` besides `fire_wakeups` (X64). A per-child notification cap or a per-child
+anchor reminder on a shared device (X61, X63). Pooled realtime budgets across siblings. A re-allocation triggered by an
+erasure (X65). A side-by-side sibling view in any parent surface (PP4).
 (gap-fill G2-content-orchestration-media) Anything new on sora-2 after 2026-10-13, or any pixel video that carries a fact (X55). A sung render from TTS
 instructions (X56). LLM-authored lyrics for verbatim content: luna arranges kit tokens, never writes them (L1). A
 mid-lesson `brief.refresh` per published module (X51). Calendar-only image prefetch (X57).
@@ -2269,6 +2302,13 @@ Primary sources checked this session or by the cited sibling doc ([V]):
   van der Heijden et al. 2010 (TRAILS, time of day, ages 10-12) — https://pubmed.ncbi.nlm.nih.gov/20969529/ ; Mace et al. 1988
   (high-probability sequence) — https://onlinelibrary.wiley.com/doi/10.1901/jaba.1988.21-123 ; Duckworth et al. 2011 (MCII,
   adolescents) — https://eric.ed.gov/?id=EJ911106 ; Liao et al. 2016 (MRT sample size) — https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.6847
+- (gap-fill G3-household-siblings) Central Square Foundation, BaSE 2025 findings (90% of households own ≥ 1 smartphone; 72% of children use the
+  household phone; access mostly shared, more often the mother's; 15,000 respondents, 10 states), fetched 2026-10-02 —
+  https://www.centralsquarefoundation.org/articles/beyond-access-the-next-phase-of-edtech-and-ai-in-bharat ,
+  https://www.edtechbase.centralsquarefoundation.org/base-2025 [V]; ASER 2024 smartphone access vs ownership at 14-16 —
+  https://www.drishtiias.com/daily-updates/daily-news-analysis/aser-2024-and-elementary-education [S]; PostgreSQL 16
+  row-lock conflict table and deferrable exclusion constraints — https://www.postgresql.org/docs/16/explicit-locking.html ,
+  https://www.postgresql.org/docs/16/sql-createtable.html [M, each behaviour measured in the household probe]
 - Learning and family evidence as cited in the sibling docs: Lally 2010, Keller 2021, Wood & Rünger 2016, Gollwitzer &
   Sheeran 2006, Wilhelm 2008/2013, Mazza 2016, Hale & Guan 2015, Bastani 2025, Aleven 2016, Hill & Tyson 2009, Barger
   2019, Maloney 2015, Rogers & Feller 2018, Stattin & Kerr 2000 (see `day-cycle.md` §14, `school-sync-homework.md` §13,
@@ -2281,5 +2321,7 @@ Internal [repo]: `docs/ARCHITECTURE.md`; `docs/research/learning-science.md` §6
 `school-sync-review-cost.py`, `parent-loop-review-cost.py`); the lock-order probes
 (`orchestration-lock-order-probe.{sh,schema.sql,reset.sql}`, `conductor-lock-order-rev2-probe.{sh,extra.sql,reset.sql}`);
 the gap-fill fragments `content-orchestration.sql`, `adaptation.contracts.ts`, `adaptation-hysteresis-sim.py`; (gap-fill G2-content-orchestration-media) `content-orchestration.md`, `content-orchestration-pg16-probe.py` (+ `.g1-frozen.sql`, output `-2026-10-02.txt`), `image-prefetch-sim.py`, `media-recitation-lint.mjs`, and the content docs it rests on (`factory/multimodal-orchestration.md`, `factory/video-animation-gen.md`, `factory/asset-pipeline.md`, `content/animation-video.md`, `content/songs-rhymes-audio.md`, `content/genui-reliability.md`); and (revision 3) `adaptation-policy.md`, `adaptation-state-size.py`, `adaptation-worked-example.mjs`;
+(gap-fill G3-household-siblings) `household.md`, `household.sql`, `household.contracts.ts`, `household-sim.mjs` (output
+`household-sim-2026-10-02.txt`), `household-pg16-probe.py` (output `household-pg16-probe-2026-10-02.txt`);
 `context/decisions.md`, `measurements.md`, `rejected.md`;
 `server/db.js`, `server/routes/lesson.js`, `package.json` (the missing `scripts/verify-release.mjs`).
