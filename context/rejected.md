@@ -186,3 +186,11 @@ Proposed (`docs/research/psychology/learning-over-time.md` §3.7, §7 principle 
 - The best live estimator (L) has 372 ms median / 863 ms p90 error and puts only 35% of words within +/-250 ms, while a spoken word lasts ~300-450 ms: it would light the wrong word about two times in three.
 - Acoustic re-anchoring was worse, not better: envelope-pause re-anchoring (Q) 885 ms median (her pauses do not map one-to-one to punctuation); syllable-nucleus tracking (Y) 340 ms even tuned in-sample, not beating text-proportional S.
 - Kept: phrase-level captions and clause-level board/pointer cues with 400 ms pre-roll (`teacher-stage-cue-scheduler`). Supersedes the PRODUCT-DESIGN R5 "lead >= 150 ms" gate as the wrong test (lead is plentiful; placement is the problem).
+
+
+<!-- merged from inbox/factory.json -->
+## sora-for-curriculum
+Tried (2026-10-02): `taxila-sora` (sora-2 2025-12-08) for curriculum clips, 7 clips across two probes (`factory/video-probe.mjs`, `content/animation-video-sora-probe.mjs`), frames rated by one rater. What broke: a number line labelled -2 -3 -4 -1 -5 5 -9 -19; गुरुत्वाकर्षण misspelled; an object vanished between frames; "3 + 4 = 7" written over 3 + 3 apples; leaves opening underground; an unrequested soundtrack on every clip; 49-79 s per 4 s clip and 87-118 s per 8 s clip at $0.10/s with 2 concurrent jobs. Pixels cannot be checked against an answer key. The deployment retires 2026-10-15 with no replacement (OpenAI removed the Videos API 2026-09-24). Replaced by `forge-media-lanes`.
+
+## content-safety-sole-gate
+Tried (2026-10-02, `factory/asset-probe.mjs`): Azure AI Content Safety image analysis on 13 gpt-image-2 outputs. What broke: all 13 scored severity 0, including a near-facsimile ₹50 note (RBI wording, Gandhi portrait, State Emblem, serial number) and two scenes with baked Hindi/English wall text; it scores harm, not IP, emblems, text in pixels or stereotype. For text, Microsoft Learn (updated 2026-09-18) states the harm models were trained and tested on 8 languages that do not include Hindi; romanised Hinglish is weaker still. Replaced by the layered gate in `forge-qa-ladder` (per-string Content Safety + local Hinglish blocklist + taxila-brain classifier, fail closed; images: OCR any digit/operator + Content Safety + VLM checklist with a code verdict + human review).

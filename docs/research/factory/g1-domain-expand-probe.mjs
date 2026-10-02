@@ -216,7 +216,7 @@ function fill(topicId, seed, { adversarial = false, domain = null } = {}) {
   const nLevels = 3 + Math.floor(rng() * 4); const roles = nLevels === 6 ? SIX : nLevels === 5 ? ["intro", "practice", "trigger", "repair", "transfer"] : nLevels === 4 ? ["practice", "trigger", "repair", "challenge"] : ["practice", "trigger", "repair"].map((r, i) => i === 2 ? "transfer" : r);
   const fixRoles = roles.length === 3 ? ["practice", "practice", "transfer"] : roles;
   const misc = kitTopics[topicId].misconceptions[0].id;
-  let replays = Array.from({ length: Math.floor(rng() * 4) }, () => pool[Math.floor(rng() * pool.length)]);
+  const allPool = lineable(topicId); let replays = Array.from({ length: Math.floor(rng() * 4) }, () => allPool[Math.floor(rng() * allPool.length)]);
   if (adversarial) {   // real kit ids a child could have got wrong that sit outside the core's domain or op set
     const hostile = ["c6-maths-ch07-t03-i13" /* 24/36 */, "c6-maths-ch07-t03-i02" /* 12/18 */, "c6-maths-ch07-t05-i13" /* 2/5+1/3 */, "c6-maths-ch07-t05-i07" /* 2/3-1/4 */,
       "c5-maths-ch02-t01-i10" /* 3/2 km */, "c7-maths-ch03-t01-i03" /* 36/100 */, "c6-maths-ch07-t02-i11" /* 0..3 thirds */, "c6-maths-ch07-t05-i10" /* mixed */, "c9-nope-i99"];

@@ -242,3 +242,23 @@ Results:
 - Teacher speech timing (`teacher-visual-sync-*.mjs`, 16 realtime turns, 60 digit anchors, Azure fast-transcription ground truth): transcript lead median 6.46 s, p10 0.94 s; audio_tokens = 20.00 per second in 15/16 turns; estimator L median 372 ms / p90 863 ms error, 35% within +/-250 ms; 400 ms pre-roll -> mark visible at word onset 86.7%, max 2.0 s early.
 - Sandbox (`sandbox-probe.mjs`, headless Chromium 141): fraction-bars@1 first engine DOM 46/119/148 ms at 1x/4x/6x CPU (n=10); ~1.0 MB heap per frame; round trip p90 <= 11.2 ms; WebView-like (no site isolation) 1,500 ms frame busy loop froze host 1,501-1,503 ms (n=9).
 - Caveat: small n everywhere; desktop/US-container numbers are proxies until the reference-phone device lab (V15) and India-latency runs.
+
+
+<!-- merged from inbox/factory.json -->
+## claude-deployments-404-2026-10-02
+**Do the Claude deployments named in the Forge workflow brief exist? No.** (2026-10-02, 17:51Z)
+- Method: `docs/research/factory/factory-synth-model-probe.mjs` from the US build container: one POST per deployment to `https://<account>.services.ai.azure.com/anthropic/v1/messages` (`x-api-key` = the resource key, `max_tokens` 8), plus a control POST to `<AZURE_OPENAI_ENDPOINT>/responses` for `taxila-codex`. Output: `factory-synth-model-probe-2026-10-02.json`. n = 1 per deployment.
+- Results: `taxila-opus` 404 DeploymentNotFound (571 ms); `taxila-sonnet` 404 DeploymentNotFound (606 ms); `taxila-codex` 200 (2.4 s) with `x-ratelimit-limit-tokens: 500000`, `x-ratelimit-limit-requests: 5000`. Same key and account, so the 404 means no deployment, not bad credentials. Replicates the 15:33Z LG review probe (taxila-opus 404).
+
+## kit-census-2026-10-02
+**What the teaching kits actually contain for Forge.** (2026-10-02)
+- Method: Python over all 23 `data/kits/c*.json` files: count topics, `misconceptions[]`, `items[]`, and items whose `verified.agrees === true`.
+- Results: 565 topics; 1,691 misconceptions (3 per topic, including English and Hindi kits); 7,385 items; 1,653 verified-agree (22%) in c1-maths, c3/c4/c5-evs and c6-science; 3 disagreements; 5,729 items have no `verified` field, including every fraction topic in c4-c7 maths.
+- Consequences: Forge answer truth for fractions comes from KitMath recompute, not the blind solver; "top-3 misconceptions per topic" is buildable from kits (this corrects multimodal-orchestration review R3, which counted `data/curriculum/`, where nodes carry <= 2).
+
+## forge-azure-capacity-2026-10-02
+**Azure capacity facts that bind Forge, consolidated from same-day probes.** (2026-10-02)
+- codex (taxila-codex, gpt-5.3-codex): 500k TPM / 5000 RPM per 60 s (headers; n = 7 calls across two probes). Turn latency on a 10.9k-token prefix writing one ~40-line file: low 3.3 s, medium 4.3-6.5 s, high 10.9 s (n = 1 per cell; `llm-game-generation-review-probe-2026-10-02.json`). Prompt caching: 1 of 3 warm calls hit without `prompt_cache_key`, 5 of 5 with it (10,624 of 10,804 tokens cached); `remaining-tokens` dropped by the full prompt on cached calls, so the limiter appears to count cached tokens (inference, n = 6).
+- taxila-image (gpt-image-2): three n=4 low generations 1 s apart, all 200 in 16.9-21.3 s, `x-ratelimit-remaining-requests` 3 -> 2 -> 1: the 4 RPM quota counts requests, so 16 images/min (`asset-pipeline-review-probe-2026-10-02.json`, n = 3 requests, 12 images).
+- Live fill latency anchors (from content/genui-reliability and video-animation-gen review): T1 spec on taxila-fast 1.88 s p50 / 2.05 s p90 (n = 10, 10/10 valid); scene@1 template 3.08 / 3.35 s (n = 8); explainer@1 template 3.47 s p50, max 3.73 s (n = 6; 2/6 broke segment limits).
+- All from the US build container; India RTT not included.

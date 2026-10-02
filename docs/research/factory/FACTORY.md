@@ -164,11 +164,16 @@ t=0     lesson start: Director knows today's objective (e.g. c6-maths-ch07-t05, 
         POST /api/forge/requests {kind:"game", objectiveId, move:"practice", needByMs}
 t+50ms  fill(): items = kit items for the objective, traps = prior P(m|child) (misc rules), numbers at KT target,
         skin = child's InterestId, seed → ForgeFill
-t+0.3s  G1 gate (trusted kit code only, §5.1): schema, KitMath truth, generator layout predicates, misc-rule firing,
-        abstract solver, ramp rule → artifact_instance row → PlayTicket (core bundle already precached on device)
+t+0.3s  G1 gate (trusted kit code only, §5.1): expand(fill, seed) ONCE → every LevelSpec + all its variants +
+        GradeTable + hash (§4.8a); inDomain(core.testedDomain) per spec/item (out-of-domain errorReplay → dropped,
+        `out_of_tested_domain`, widening request filed); schema, KitMath truth, generator layout predicates, misc-rule
+        firing, abstract solver, ramp rule, init ≤ 56 KiB → artifact_instance row (fill, specs, grade_table,
+        grade_hash) → PlayTicket{init.specs, gradeTableHash} (core bundle already precached on device)
+        (gap-fill GAP-F2-g1-domain-and-expansion)
 t≈3min  diagnostic probe surfaces c6-maths-ch07-t05-m-add-across → re-fill (≤ 1 s) so the trigger level targets it
 t≈10min teacher hands over ("ab tum khelo…" as a shape, never a line) → ModuleHost mounts src=PlayTicket.buildUrl
-        → kit boots from cache → ready → init{fill params} → child plays → kit events → host re-grades →
+        → kit boots from cache → ready → init{expanded specs; the frame never re-expands} → child plays → kit
+        events → host re-grades from the GradeTable whose hash is in the ticket →
         lesson channel (1 s batches) → Director (≤ 2 s P95) → teacher reacts to what the child actually did
 miss    no core fits → planner fallback (T1 engine e.g. fraction-bars@1 / T2a scene) + a catalogue request
         forge_request(objective gap, demand+1) — never awaited by this lesson
@@ -191,7 +196,7 @@ idempotency and lease model the Conductor uses (orchestration-architecture §7).
 -- db/migrations/003_forge.sql (sketch)
 create table forge_job (
   id            uuid primary key default gen_random_uuid(),
-  kind          text not null,          -- g1.fill | g2.build | g3.promote | media.explainer_mp4 | media.manim | asset.gen | qa.corpus
+  kind          text not null,          -- g1.fill | g1.domain_widen | g2.build | g3.promote | media.explainer_mp4 | media.manim | asset.gen | qa.corpus
   idem_key      text not null,          -- e.g. g2.build:<identityKeyHash>:<recipeId>
   identity_key  text,                   -- CoreIdentity hash: single-flight for builds
   lane          text not null,          -- live | near | catalogue | night
@@ -248,7 +253,10 @@ create table forge_step (job_id uuid, stage text, round int, step int, call_id t
 
 **ModuleHost change (small):** `ModuleCommand.mount` gains optional `src` and `ticketId`. When present, the slot's
 iframe uses `src` (the play origin URL) instead of `/modules.html`; everything else (window handshake → `init` +
-`MessagePort`, second-`load` kill, queued commands) stays as implemented in `src/modules/host.tsx`.
+`MessagePort`, second-`load` kill, queued commands) stays as implemented in `src/modules/host.tsx`. On Android L2 (§2.10, gap-fill
+GAP-F3-android-play-process-bridge) the slot does not create an iframe at all. It drives `PlayBridge.open()`, the
+handshake/port/`assets` steps run in the play-host page in `:play`, and the slot consumes relay frames. The slot state
+machine, the `mid`/`cseq` checks and the main-process re-grade are unchanged.
 
 **One protocol with the content engines.** `tgk@1` is the *game profile* of the frame SDK specified in
 `content/CONTENT-ENGINE.md` (§2.5 `engine-kit`, §4 bridge v2.1, inbox `bridge-v2-host-grades`,
@@ -276,8 +284,8 @@ relied on to control an opaque-origin frame).
 
 ### 2.7 What the teacher sees (≤ 2 s from a tap to the Director)
 
-Kit emits `game.*` events from its act → grade pipeline (§4.9) → host validates (`event.source`, schema, item ∈ fill,
-≤ 5 answers/s) and **re-grades** → batches every 1 s over the lesson channel → Director's per-lesson event bus
+Kit emits `game.*` events from its act → grade pipeline (§4.9) → host validates (`event.source`, schema, item ∈ the
+instance's `GradeTable` — which covers every pre-expanded variant, §4.8a — ≤ 5 answers/s) and **re-grades** → batches every 1 s over the lesson channel → Director's per-lesson event bus
 (in memory; Postgres write async) → observation lines are facts (`[game frac-predict-jump L3 trigger] item=i2
 value=2/5 misc=c6-maths-ch07-t05-m-add-across count=2 hints=1`), never prose, so module text never reaches the voice
 model (sandbox-telemetry §5.4). Lanes: log / fold (≤ every 2.5 s) / milestone (Director call; ≤ 1 per 4 s, ≤ 3/min)
@@ -292,7 +300,7 @@ model (sandbox-telemetry §5.4). Lanes: log / fold (≤ every 2.5 s) / milestone
 | `forge-runner` (Phase 0) | **LLM-written** + ours | container in a **separate environment**; Chromium sandbox attempted (`chromiumSandbox: true`, fallback recorded); dead `--proxy-server`, `--force-webrtc-ip-handling-policy=disable_non_proxied_udp`, resolver rules, route abort, IMDS blocked | a single-use boot token, then a job token |
 | `forge-runner` (Phase 1) | same | ACA Sandbox microVM, egress `Deny`, `trafficInspection: "Full"`, one allowed host + path `/forge/runner`, `skipEgressProxy` asserted false, auto-suspend off | same |
 | child's iframe | reviewed LLM-written + kit | opaque origin (`sandbox="allow-scripts"`, no `allow=`), kit meta CSP, frozen intrinsics, RTC deleted, navigation kill, loop guard | fill params only (no names, no free text) |
-| Android | same | separate WebView in `android:process=":play"` (to be proven in M14) so a game OOM cannot kill the voice lesson | — |
+| Android | same | separate WebView in `android:process=":play"` (to be proven in M14) so a game OOM cannot kill the voice lesson. **The contract is §2.10 (gap-fill GAP-F3-android-play-process-bridge):** a trusted APK-bundled play-host page owns the frame, the port, the re-grade for feedback, the PII overlay and the clips. A native relay (bound Service + Messenger) carries typed frames to the main process, where the Director stays the only consumer. | play-host: this mount's ticket, GradeTable and overlay strings; no token, no childId, no network |
 
 ### 2.9 Infra phases
 
@@ -310,6 +318,272 @@ model (sandbox-telemetry §5.4). Lanes: log / fold (≤ every 2.5 s) / milestone
 - **Phase 2 (scale/latency):** Front Door Standard in front of the public account (headers: CSP for SVG, `nosniff`;
   India edge), `centralindia` play-origin replica, VNet egress deny if jobs remain a main lane.
 
+### 2.10 Android play surface: the `:play` process bridge (gap-fill GAP-F3-android-play-process-bridge)
+
+**Why this section exists.** §2.8 moves Android play into a second process, but §2.6 (the ModuleHost MessagePort
+handshake, host-fed `assets`), §4.4 (host re-grade), §9 (PII host overlay) and §4.7 (clips play "in the host frame")
+all assume that the iframe's parent document is the lesson host. Once the frame lives in another process's WebView,
+that assumption fails. This section defines the replacement as a contract: three layouts, one relay, one failure
+path and a pre-registered M14 that picks the layout.
+
+**Platform facts this rests on.**
+- One WebView renderer per app process: in multiprocess mode the renderer "may be shared with other WebViews in the
+  application, but is not shared with other application processes" **[V, androidx `WebViewCompat.getWebViewRenderProcess`
+  javadoc]**. Android WebView does not support Site Isolation **[V, performance-android §1]**. A second renderer
+  therefore needs a second app process.
+- A second process that uses WebView must call `WebView.setDataDirectorySuffix()` before any `android.webkit` call. The
+  two processes cannot share cookies or storage **[V, AOSP `WebView.java`]**. This suits us: play-host needs neither.
+- Renderer priority defaults to `RENDERER_PRIORITY_IMPORTANT` "regardless of visibility". The renderer is computed as
+  "the maximum of any attached WebViews" **[V, AOSP]**. The renderer cannot outrank its own app process, so the
+  main process must be kept important while `:play` is in front (relay binding below).
+- `bindService` flags **[V, AOSP `Context.java`]**: `BIND_IMPORTANT` brings the service's process "to the foreground
+  process level when the client is" (otherwise a client can raise it only to the visible level). `BIND_ABOVE_CLIENT`
+  means "the platform will try to have the out of memory killer kill the app before it kills the service it is bound
+  to". With both flags, the system kills the game process before the lesson process.
+- `addJavascriptInterface` "is exposed to all the frames … no way to tell the calling frame's origin". The androidx
+  `addWebMessageListener` injects only "in any frame whose origin matches `allowedOriginRules`" **[V, AOSP/androidx
+  javadoc]**. An opaque-origin game iframe cannot match an `https://` rule [I; tested in M14-T].
+- Capacitor never calls `WebView.onPause()`/`pauseTimers()` unless `KeepRunning=false` (its Cordova shim does both,
+  and `pauseTimers` "affects all webviews within the app"). The default is `true`. Its `onRenderProcessGone` returns
+  the listeners' OR, default `false` = app crash **[V, ionic-team/capacitor `Bridge.java`, `MockCordovaWebViewImpl.java`,
+  `BridgeWebViewClient.java` @main]**.
+- In a hidden page, Chrome's timers are aligned to once per second. A page is exempt from *intensive* (1/min)
+  throttling while it has an `RTCPeerConnection` with an open data channel or a live track, or while it made sound
+  in the last 30 s **[V, developer.chrome.com "timer throttling in Chrome 88"]**. Whether WebView applies the same
+  scheduler to a WebView in a stopped Activity is [U] and is measured as M14-a3.
+- On low-memory 32-bit API 26–29 devices WebView still uses an **in-process renderer** **[V, performance-android
+  item 14]**. There, a game OOM in the single-WebView layout kills the whole app. `:play` is the only layout in which
+  the lesson can survive on those devices.
+
+**Layouts M14 decides between.**
+
+| id | layout | main Activity while the game is in front | what is at risk |
+|---|---|---|---|
+| **L1** | single WebView: the game iframe sits inside the Capacitor WebView (today's ModuleHost) | resumed | a game OOM kills the shared renderer, and with it the voice lesson (SB S8) |
+| **L2t** | `:play` Activity with a **translucent** window theme (`windowIsTranslucent=true`, opaque content drawn by play-host) | **paused but visible** (an Activity under a translucent one is only paused) [I from the Activity lifecycle; M14 asserts `onStop` never fires] | composition of two windows (GPU/battery); Android 8.0 rejects a fixed `screenOrientation` on a translucent Activity [S], so the theme inherits orientation |
+| **L2o** | `:play` Activity, opaque | **stopped**: the main WebView is hidden, its timers drop to 1 Hz, `visibilitychange` fires | audio and data-channel continuity in a stopped Activity (the open question in the gap) |
+
+Preference if several layouts pass: **L2t > L2o > L1**. L2t keeps the realtime WebView visible, so neither throttling
+nor rule 8 is touched. L2o is the same contract with one more risk.
+
+**Components (Android, `android/app/…/play/`).**
+
+```
+main process (Capacitor; com.taxila.app)                    :play process (com.taxila.app:play)
+┌──────────────────────────────────────────────┐            ┌──────────────────────────────────────────────────┐
+│ Capacitor WebView (https://localhost)         │            │ PlayActivity (exported=false, excludeFromRecents, │
+│  lesson app: realtime voice, Director link,   │            │   theme L2t|L2o; Application.onCreate in :play:   │
+│  ModuleHost (PlayBridge driver), GradeTable,  │            │   setDataDirectorySuffix("play") FIRST)           │
+│  ledger of host-graded answers (authoritative)│            │  WebView (plain, no Capacitor, no JS interface)   │
+│ PlayBridge Capacitor plugin                   │  Messenger │   play-host page  https://play.appassets…/host/   │
+│  open/send/close; events: frame, gone         │◄──binder──►│    (WebViewAssetLoader: APK assets/play-host/;    │
+│ RelayService (exported=false, main process)   │            │     packages from app-private files, sha-checked) │
+│  linkToDeath(replyTo) → error{play_process_   │            │    └ <iframe sandbox="allow-scripts"> game frame  │
+│  gone}; holds last ResumePoint in memory      │            │       bridge v2.1 MessagePort owned by play-host  │
+└──────────────────────────────────────────────┘            │  PlayRelay (native): addWebMessageListener        │
+                                                             │   "taxilaPlay", rules {https://play.appassets…}   │
+                                                             │  bindService(RelayService, AUTO_CREATE |          │
+                                                             │   IMPORTANT | ABOVE_CLIENT)                       │
+                                                             └──────────────────────────────────────────────────┘
+```
+
+**Trust model (four principals).**
+
+| principal | trusted? | holds | may | may not |
+|---|---|---|---|---|
+| main process + Capacitor WebView | yes | session, realtime token, GradeTable, ledger, ResumePoints | everything it does today; is the **only** consumer of `game.*` evidence and the only path to the Director | — |
+| `:play` app process (Kotlin `PlayRelay`) | yes (our signed code, separate process) | one mount's frames in transit | validate frame schema/size/rate, add `mountId`, forward, kill its own WebView | persist anything; talk to the network |
+| play-host page (APK-bundled, served from `assets/`) | **trusted code in a contaminated renderer**: it shares the renderer with LLM-written game code, so a renderer exploit owns it | this mount's PlayTicket, GradeTable, overlay strings, cue clips | own the frame and port, grade for *immediate feedback*, render overlay and pointer marks, play clips, batch events | hold a bearer token, childId or network access; be believed without a main-process re-grade |
+| game iframe (opaque origin) | no | fill params only (§9) | bridge v2.1 messages to play-host | see `taxilaPlay` (origin rule), overlay text, or the network |
+
+Rules that follow:
+- **The `:play` WebView has no network.** `shouldInterceptRequest` serves `https://play.appassets.androidplatform.net/{host,forge/kit,forge/b}/…`
+  from APK assets and from the app-private package store. A package file is served only when its sha-256 matches the
+  signed manifest the main process downloaded (§2.6 prefetch). Every other URL returns 403. No cookies, no service
+  worker (`ServiceWorkerController` client blocks all). The frame CSP from §2.6 is unchanged, with prefixes on the
+  appassets origin.
+- **Host-fed `assets` stay in process.** Play-host fetches the build's atlas/audio/JSON from the loader and transfers
+  the `ArrayBuffer`s to the frame exactly as §2.6 describes. Asset bytes never cross the binder (a Binder transaction
+  buffer is ≈ 1 MB per process [S]). The relay carries only small frames.
+- **Double grading, one authority.** Play-host re-grades every `answer` against the GradeTable (§4.4: ValueRef or
+  shadow re-derivation, MathValue equivalence, MiscRules) so the child gets `verdict` within one frame. It echoes each
+  verdict over the relay. **The main process re-grades again from its own GradeTable copy.** Only main-process verdicts
+  become evidence or Director observation lines. A mismatch between the echo and main's re-grade is CONTENT-ENGINE S5
+  `state_diverged`, attributed to the mount (`cause:"play_host_echo"`). Play-host is not a grading oracle.
+- **Mount authentication.** The PlayBridge mints `mountId` (uuid) and `relayKey` (128-bit) per mount. It passes them to
+  `PlayActivity` in the explicit in-app Intent (the Activity is not exported) and to RelayService in memory. `RelayService` is `exported=false`
+  (same-UID callers only). Every frame carries `mountId`. `hello` must present `relayKey`. Frames whose `mountId` is
+  stale or unknown are dropped and counted. After `bye`, any frame for that `mountId` is a protocol incident (SB M15 "re-hello after bye").
+- **PII.** Overlay strings (child's display name, teacher callback, memory snippets) cross the binder to play-host and
+  render with `textContent` in kit-reserved slots outside the iframe. They never enter `init` (§9). Their exposure equals
+  the L1 host overlay (same renderer as the game in both layouts), and L2 is strictly better on everything else: the
+  realtime token, session and voice pipeline are no longer in the game's renderer.
+- **Child-safety floor in `:play`.** Play-host chrome always shows the "computer teacher" badge and the safeguarding
+  control (the floor; never covered by the game). A safeguarding tap goes `play→main` as `safeguard{}` (≤ 1 frame,
+  unbatched). A main-side `priority:"safeguard"` sends `bye{reason:"safeguard"}`, after which PlayActivity `finish()`es
+  within 300 ms and main's LockPanel owns the screen. If no `bye` ack arrives within 500 ms, main reorders its own
+  Activity to the front and calls `Process.killProcess(playPid)` (same UID, permitted).
+
+**Relay frames (`shared/forge.ts` §13 adds `PlayRelayFrame`; a Kotlin mirror is generated from it).** These are JSON
+strings over `Messenger` (`Message.obj` = Bundle `{f: string}`). Each frame is ≤ 64 KB, and `save` is ≤ 16 KB of
+state plus its header. Payloads are the flat `game.*` facts of §4.9 and the bridge v2.1 messages of CONTENT-ENGINE §4,
+unchanged. The relay adds an envelope, and nothing else.
+
+```ts
+interface RBase { rv: 1; mountId: string; seq: number /* per direction, strictly increasing */; t: number /* sender epoch ms */ }
+export type MainToPlay =
+  | (RBase & { k: "mount"; ticket: PlayTicket; grade: GradeTableLite /* keys + MiscRules for THIS fill only */;
+               ctx: InitCtx; mode: "live" | "solo"; overlay: Record<string /* slot id */, string /* ≤ 80 chars */>;
+               resume?: ResumePoint; clips?: { cueKey: string; path: string }[] /* solo only */ })
+  | (RBase & { k: "cmd"; msg: HostMsg })            // teacher/Director commands: set_param(s), highlight, locate, freeze,
+                                                    // open_probe, record_answer, demo, reveal, teardown (never verdict)
+  | (RBase & { k: "duck"; on: boolean })            // realtime output_audio_buffer.started/stopped → kit SFX ducking
+  | (RBase & { k: "pause"; reason: "teacher_hold" | "phone_call" | "app_hidden" | "lesson_paused" })
+  | (RBase & { k: "resume" })
+  | (RBase & { k: "ack"; upTo: number; saveSeq?: number })   // every 1 s, piggybacked; saveSeq = last ResumePoint held by main
+  | (RBase & { k: "bye"; reason: "done" | "superseded" | "safeguard" | "lesson_end" | "revoked" });
+export type PlayToMain =
+  | (RBase & { k: "hello"; relayKey: string; webview: string /* UA major */; renderer: "multi" | "in_process"; lowRam: boolean })
+  | (RBase & { k: "ready"; buildSha: string; levelsHash: string; state: StateSnap; caps: Cap[]; emits: string[] })
+  | (RBase & { k: "events"; batch: ModuleMsg[] /* bridge v2.1, as received from the frame */; verdicts: VerdictEcho[] })
+  | (RBase & { k: "save"; point: ResumePoint })     // on every item commit / level boundary, ≥ 2 s apart
+  | (RBase & { k: "reply"; msg: ModuleMsg })        // ack / rects / state answering a cmd (cseq preserved)
+  | (RBase & { k: "safeguard" })                    // child tapped the safeguarding control in play-host chrome
+  | (RBase & { k: "lifecycle"; state: "resumed" | "paused" | "stopped" })   // drives rule 8 instead of main's own visibility
+  | (RBase & { k: "error"; code: "play_process_gone" | "relay_protocol" | "load_failed" | "budget"; cause?: GoneCause;
+               didCrash?: boolean; lastSaveSeq?: number; detail?: string })   // play_process_gone may be SYNTHESISED by main
+  | (RBase & { k: "bye"; reason: "done" | "child_exit" | "teardown_ack" | "error" });
+export type GoneCause = "renderer_crash" | "renderer_killed" /* didCrash=false: system OOM kill */ | "renderer_unresponsive"
+  | "process_died" /* binderDied in main */;
+export interface VerdictEcho { answer_seq: number; item: string; value: AnswerValue; outcome: Outcome; misc?: MiscId }
+export interface ResumePoint { instanceId: string; buildSha: string; levelsHash: string; seq: number; at: number;
+  level: string; itemCursor: string; blob: string /* kit state{blob}, canonical JSON ≤ 16 KB */; snapHash: string }
+```
+
+- **Batching.** Play-host batches `events` every **1 s** (§2.7). It flushes at once (≤ 50 ms) for `answer`,
+  `goal_met`, `stuck`, salience-2 `mistake`, `error` and `safeguard`, so the 2 s path never waits for a tick. **Main
+  forwards each frame on arrival**, inside the plugin event handler, and never through a `setTimeout`, because a
+  hidden main page in L2o runs timers at ≤ 1 Hz.
+- **Rule 8 ("background means pause", low-end-offline) is driven by `:play` lifecycle while a mount is live.**
+  Main's own `visibilitychange`/Capacitor `pause` are ignored while PlayBridge is `foreground_play`. `lifecycle{stopped}`
+  from `:play` (child pressed Home) applies rule 8: the mic closes, the response is cancelled, `pause{app_hidden}`
+  goes to the frame.
+- **Main renderer posture while `:play` is in front:** `setRendererPriorityPolicy(RENDERER_PRIORITY_IMPORTANT, false)`
+  is asserted (this overrides performance-android's "waive when backgrounded" suggestion during a mount). The avatar
+  is suspended (§4.1) and its WebGL context released with `WEBGL_lose_context`. There is no `WebView.onPause()` or
+  `pauseTimers()` (`KeepRunning` stays `true`, as asserted in CI).
+- **Audio.** Live mode: cues become teacher fact lines (§4.7), and `:play` plays only kit SFX through Web Audio, never
+  an `<audio>`/`<video>` element, so that no audio-focus request can make main's `AudioRoute` see `AUDIOFOCUS_LOSS`
+  and pause the lesson [I; M14-a4 asserts zero focus changes]. Solo mode: play-host plays the pre-rendered clips
+  itself as a top-level document (`setMediaPlaybackRequiresUserGesture(false)` on the play WebView, as Capacitor sets
+  for its own WebView, low-end-offline W7) and sends `voice_start/end` to the kit. "In the host frame" (§4.7) means
+  play-host on Android L2.
+- **Clock.** `mount.t` and one `hello`/`ack` round trip give play-host the main-process epoch offset. Every
+  `events` entry carries the child-act time in main epoch ms, so M14-b can measure tap → Director end to end.
+
+**Lifecycle.**
+
+```
+main: ModuleHost.mount{src,ticketId} on Android L2 → PlayBridge.open() → startActivity(PlayActivity, mountId, relayKey)
+:play: Application.onCreate (setDataDirectorySuffix) → bindService(RelayService, AUTO_CREATE|IMPORTANT|ABOVE_CLIENT)
+       → hello{relayKey} (replyTo = :play Messenger; main linkToDeath(replyTo))  ◄── mount{ticket, grade, overlay, resume?}
+play-host: create iframe → window hello{mid,boot,build} → init + port (+ restore = resume.blob if present) → assets{…}
+       → ready{levelsHash ≡ ticket.levelsHash, else refuse}  ──► ready
+child plays → frame events → play-host re-grade → verdict to frame + VerdictEcho ──► events (1 s / flush) → main re-grade
+       → lesson channel → Director;  save{ResumePoint} ──► main holds it in memory and writes save_state (async, §9)
+end:   bye{done|child_exit} ──► main ack → PlayActivity.finish() → main Activity resumes → ModuleHost slot torn_down
+```
+
+- **Zombie guard.** Android recreates a top Activity in a fresh process after process death. `PlayActivity.onCreate`
+  with a non-null `savedInstanceState`, or a `mountId` that RelayService does not hold as live, calls `finish()`
+  before creating a WebView.
+- **Main dies first** (rare: lesson process killed). `:play` gets `onServiceDisconnected`/`onBindingDied` and
+  `finish()`es at once. A game never outlives the process that grades it and owns safeguarding.
+
+**Failure path (play process gone → T1 fallback in the main WebView).**
+
+| detection (where) | `GoneCause` | `:play` action | main action |
+|---|---|---|---|
+| `WebViewClient.onRenderProcessGone`, `didCrash()==true` (`:play` native) | `renderer_crash` | return `true`; destroy the WebView; send `error{play_process_gone}`; `finish()` | below |
+| same, `didCrash()==false` (system killed the renderer for memory) | `renderer_killed` | same | below |
+| `WebViewRenderProcessClient.onRenderProcessUnresponsive` > 5 s (`:play` native) | `renderer_unresponsive` | `WebViewRenderProcess.terminate()` → gone path | below |
+| `IBinder.DeathRecipient.binderDied` on the `:play` replyTo (main RelayService); covers LMK kills and in-process-renderer devices | `process_died` | — (dead) | **synthesises** `error{play_process_gone, cause, lastSaveSeq}` |
+| no relay frame for 4 s while mounted (heartbeat is the 1 s `events`/`ack` cadence) | `renderer_unresponsive` | killed by main (`Process.killProcess`) | as above |
+
+Main, on `error{play_process_gone}` (new CONTENT-ENGINE row **S4p**, an amendment for the content owner):
+1. Answers that main already re-graded stay evidence, and nothing after `lastSaveSeq` that main did not itself
+   re-grade counts (S4 rule). Main's ledger is authoritative for which items are done. The ResumePoint gives the
+   *cursor*, and the ledger gives the *facts*.
+2. Bring the main Activity to the front (L2o), keep the realtime session untouched (no reconnect), and **mount the plan's T1 fallback in the
+   main WebView** (L1 single-WebView mount, avatar still suspended). Feed it the remaining items from the fill at
+   `ResumePoint.itemCursor`: same kit item ids, same objective, same trap targets. Target ≤ 3 s from detection to the
+   fallback's `ready` (T1 mount ≈ 1.9 s p50 **[M, genui]** + activity switch [U]).
+   If the T1 engine cannot render the current item (e.g. a `build-to-spec` brick set with no T1 twin), show
+   `board_only` with the same item, as in S4.
+3. Director fact (milestone): `lost reason=play_process_gone cause=<GoneCause> resumed=<engine> at=<level>/<item>
+   evidence_kept=<n>`. The teacher bridges with a shape and never says "crash", "loading" or blames the child.
+4. The game's `ResumePoint.blob` stays in `save_state` (≤ 16 KB, last-write-wins) for homework or a replay of the
+   *same* build. **The same build is not re-mounted in `:play` in this lesson** for `renderer_crash`,
+   `renderer_killed` or `renderer_unresponsive`. After `process_died` with no OOM evidence, one re-offer is allowed
+   at the next break.
+5. Incident `play_incident{buildSha, deviceClass, cause, didCrash, heapMB_last, texMB_last, msSinceMount, layout}` is
+   written. Three incidents for one `buildSha × deviceClass` in 24 h → that pair is served `deviceClass:"lite"` or T1
+   only, and a Q7 review ticket is opened. This is a performance demotion, not a safety quarantine (§5.10 is unchanged).
+
+On L1 (single WebView) the same S4p handler runs on Capacitor's `onRenderProcessGone`: a `RendererRecovery` listener
+returns `true` and the WebView is rebuilt (low-end-offline W1). On L1, though, the voice session dies with the
+renderer. The handler must reconnect realtime, and audio continuity fails by construction. That is the gap M14 prices.
+
+**Latency budget, tap → Director (P95 ≤ 2 s, §2.7) [U until M14-b].**
+
+| segment | L1 | L2 | note |
+|---|---|---|---|
+| tap → kit act → play-host/host verdict | ≤ 50 ms | ≤ 50 ms | same frame code |
+| batch wait | 0 (flush) – 1 s | 0 (flush) – 1 s | answers flush |
+| play-host → `:play` native (`postMessage` web message) | — | ≤ 10 ms | [U] |
+| Messenger binder hop | — | ≤ 5 ms | [U] |
+| plugin → main JS (`notifyListeners`) in a visible (L2t) / stopped (L2o) WebView | — | ≤ 30 ms / ≤ 100 ms | event dispatch is not a timer [I]; measured |
+| main re-grade + lesson channel → server (India RTT) | ≤ 400 ms | ≤ 400 ms | |
+| Director observation fold/milestone | ≤ 500 ms | ≤ 500 ms | SB S7 |
+| **added by L2** | — | **≤ 150 ms P95** | pass bar in M14-b |
+
+**Device floor.** L2 requires API ≥ 28 (`setDataDirectorySuffix`) and `WebViewFeature.WEB_MESSAGE_LISTENER`. Below
+that floor, L1 applies with the kit memory budget (§4.11) and **no Forge WebGL game on in-process-renderer devices**
+(T1/T2a DOM engines only), because there a game OOM is an app crash. `hello.renderer` and `hello.lowRam` are logged on
+every mount so the floor is measured, not guessed. Web/PWA keeps L1, because a browser tab is a single page.
+
+**M14 as extended (pre-registered; §12).** Device: one 3 GB-RAM Android 12–14 phone in the ₹8–12k class, 64-bit
+multiprocess WebView, with 5 background apps resident (performance-android E-P3 condition). Optional second record: a 2 GB
+Android Go device (in-process renderer). Builds: release APK with all three layouts behind a debug flag. Lesson: a
+scripted 6-min live lesson through the real realtime path, in which the teacher voice is a looped continuous TTS
+reference stream (no silences > 150 ms) and the game is in front for ≥ 4 min. A test-only signed kit package
+`oom-bomb@0` (allocates 32 MB/s of textures + `ArrayBuffer`s until death) is used only in the test APK.
+
+| test | method | n per layout | pass bar |
+|---|---|---|---|
+| **M14-a1 teacher audio continuity** while the game is in front (L2t: main paused; L2o: main **stopped**) | headphone-jack/USB capture of device output, aligned by cross-correlation to the server's sent-audio timeline; plus main-page `getStats()` inbound-rtp `concealedSamples`/`concealmentEvents` totals | 10 lessons | **no output gap > 300 ms** outside reference silences, in 10/10; concealed samples ≤ 1% |
+| M14-a2 child mic upstream | scripted child utterances from a speaker at 30 s intervals | 10 lessons × 8 | `speech_started` ≤ 1 s and a transcript for ≥ 95% (same as the L1 baseline ± 5 pp) |
+| M14-a3 main-page scheduler | `setTimeout(…,100)` drift and data-channel event lag logged in main while hidden | 10 lessons | report only; decides whether main may keep any timer in the mount path |
+| M14-a4 audio focus | `AudioRoute` focus-change log | 10 lessons | 0 focus losses caused by `:play` |
+| **M14-b tap → Director** | UIAutomator taps on hit-layer buttons at 1 Hz; child-act time (main epoch) → Director receipt (server log) | ≥ 200 taps | **P95 ≤ 2 s**; L2 relay segment (play-host send → main JS receive) **P95 ≤ 150 ms** |
+| **M14-c forced game OOM** | `oom-bomb@0` mounted mid-lesson; plus `WebViewRenderProcess.terminate()` and `kill -9 <:play pid>` variants | 10 per cause | the voice lesson survives **10/10** (no realtime reconnect, no gap > 300 ms other than one ≤ 1 s gap at the instant of the kill), T1 fallback `ready` ≤ 3 s, resumed at the last acked `itemCursor` in 10/10, 0 app crashes, 0 zombie PlayActivities |
+| M14-d memory | `dumpsys meminfo` PSS per process every 10 s | all runs | `:play` overhead (process + renderer, game excluded) ≤ 120 MB PSS [U bar]; main renderer never LMK-killed during a mount |
+| M14-T origin wall | inside the game frame: `typeof taxilaPlay`, `window.parent.taxilaPlay`, `top` navigation, `fetch` to any URL | 1 scripted tamper build | `taxilaPlay` absent in the frame; every request 403; navigation killed |
+
+**Decision rule (recorded as a measured decision in `context/`, node `android-play-layout`, when M14 runs).**
+- A layout **passes** only if it passes a1, b, c and T. Choose the first passing layout in the order L2t, L2o.
+- L1 is expected to fail c (S8). It is the fallback, not a candidate.
+- **If neither L2 layout passes a1 (teacher audio does not survive with the main Activity paused or stopped):** record
+  `android-play-layout = L1 (single WebView), kit memory budget (heap ≤ 150 MB, textures ≤ 64 MB, §4.11/Q7) as the
+  only guard`, with the M14 numbers. Add the device floor above, so no WebGL game runs on in-process-renderer devices,
+  and file `rejected.md#play-process-android` with the a1 gap distribution as the reason. Reversal: a WebView or
+  Android release under which a1 passes on a re-run, or a native (non-WebView) realtime audio path that removes the
+  dependence on the main WebView's lifecycle.
+- If L2 passes a1 but fails c (lesson dies anyway, e.g. the LMK takes main despite `BIND_ABOVE_CLIENT`), L2 buys
+  nothing. Record L1 with the same guard and the incident distribution.
+- If L2 passes everything but d's overhead pushes the main renderer into LMK kills on the 3 GB phone, L2 ships only
+  on `deviceClass:"full"` (RAM ≥ 4 GB), and L1 + guard applies below that.
+
 ---
 
 ## 3. The Forge agent harness
@@ -326,7 +600,7 @@ model (sandbox-telemetry §5.4). Lanes: log / fold (≤ every 2.5 s) / milestone
 | **S5 POLISH** | builder ← Q6–Q8 (+ advisory Q9) | evidence pack → patches | no blockers; majors only if score ≥ 0.75 | ≤ 2 rounds × ≤ 3 steps |
 | **S6 FINAL** | code + a **fresh runner lease** | orchestrator-held source → trusted rebuild (pinned esbuild) → final gate: held-out keypoints, held-out fuzz seeds, negative-path sweep, pointer-only smoke on the production bytes, egress + tamper battery | runner dist sha == trusted rebuild sha; all hard gates green | ≤ 4 min |
 | **S7 REVIEW** | human (review UI) | frames, trajectories, checklist, fun-floor metrics | approve / reject with reason; first core per archetype and every G3: two-key + child playtest n ≥ 5 per band | SLA ≤ 24 h [U] |
-| **S8 PROMOTE** | code | `artifact_core.status = approved`; property tests: 200 random fills from the generator domain through Q2/Q6 in a runner; record the tested param domain | 0 failures | ≤ 10 min |
+| **S8 PROMOTE** | code | `artifact_core.status = approved`; property tests: 200 random fills (synthetic children, errorReplays drawn from the objective class's kit items) sampled **inside the mechanic-declared knob support** (`MechanicDesign.levelPlan` bounds), expanded by the kit, then `paramsSchema` + reducer + Q2/Q6 in a runner on every spec **and variant**; write `testedDomain: TestedDomain` = the generator-knob ranges/enums **actually sampled** (incl. derived coupling knobs), never agent params (§4.8a) (gap-fill GAP-F2-g1-domain-and-expansion) | 0 failures | ≤ 10 min |
 
 Job caps (sum-consistent; CAH C15): **builder steps ≤ 30** (12 + 16 + 6 can never all max out; the job cap binds),
 **wall ≤ 30 min**, **≤ $3.50 per attempt**, **≤ 1.5M input / 100k output tokens**, `max_output_tokens` 8k per step,
@@ -607,7 +881,9 @@ export interface ControlTarget extends TargetBase { kind: "control";   // carrie
   control: "confirm" | "clear" | "hint" | "pause" | "next" }
 export type Effect = { kind: string } & Record<string, Prim | BoundRef>;    // e.g. {kind:"jump", to: refs.key()} — no raw MathValue
 export interface MechanicV11<P, M extends Json, V> {
-  id: string; archetype: ArchetypeId; paramsSchema: import("zod").ZodType<P>;   // levels are validated at build AND load
+  id: string; archetype: ArchetypeId; paramsSchema: import("zod").ZodType<P>;   // validated at build (runner, S3–S8) AND
+                                                                       // load (in frame, over server-expanded specs);
+                                                                       // NEVER in taxila-web: G1 uses inDomain() (§4.8a)
   init(p: P, ctx: PureCtx): M;                                         // pure; kit deep-freezes the result
   reduce(m: Readonly<M>, a: Action, ctx: PureCtx):                     // pure; THE only state transition
     { model: M; commit?: { item: string }; effects?: Effect[] } | { reject: "locked" | "invalid" | "no_effect" };
@@ -746,7 +1022,9 @@ in her own words (planner prose is never sent). **Solo play:** a pre-rendered cl
 reachable (cue × slot tuple) from levels + variants and render whole lines (no splicing; Hindi number names are
 irregular 1–99) cached by `sha(text NFC, lang, voice, instructionsVersion, model)`; runtime-only slots are caption-only
 (GK K15). Clips play **in the host frame** (user activation does not propagate into a cross-origin child; GK K10),
-which sends `voice_start/end` to the kit for SFX ducking. `blocking` cues time out at max(clip, 6 s).
+which sends `voice_start/end` to the kit for SFX ducking. `blocking` cues time out at max(clip, 6 s). On Android L2
+the "host frame" is the play-host page in `:play`. It plays solo clips as a top-level document, and live-mode teacher
+speech reaches the kit as relay `duck{on}` frames (§2.10, gap-fill GAP-F3-android-play-process-bridge).
 
 ### 4.8 Level schema: what the planner writes, what the kit expands
 
@@ -773,13 +1051,16 @@ export interface MechanicDesign {                          // G2 S1 — taxila-b
 export interface LevelSpec {                               // kit-expanded; never authored by a model
   id: string; role: LevelRole; objectiveId: string; stage: "concrete" | "pictorial" | "abstract";
   difficulty: number;                                       // from generator knobs + abstract solver cost
-  params: unknown;                                          // validated by mechanic.paramsSchema
+  knobs: KnobVector;                                        // level-scope generator knobs (§4.8a; gap-fill GAP-F2-g1-…)
+  params: unknown;                                          // kit generator output; paramsSchema checks it in frame only
   items: { id: string; key: MathValue | string; distractors: { value: MathValue | string; misc: string }[];
+           knobs: KnobVector;                               // item-scope knobs incl. derived ones (§4.8a)
            units?: { k: string; value: MathValue; cap: number }[] }[];   // build archetypes: the brick palette (≤ 6 kinds)
   scale?: MathValue[];                                      // template tick labels, drawn only via numeral({scale:i})
                                                             // ValueRefs resolve against THIS object (gap-fill GAP-F1-…)
   targetMisc?: string; hints: { rung: 1 | 2 | 3; kind: "glow" | "cue" | "demo"; demo?: Action[] }[];
-  variants: { id: string; difficulty: number; params: unknown }[];   // ramp controller inserts
+  variants: LevelVariant[];                                 // ramp controller inserts; PRE-EXPANDED server-side with
+                                                            // items + keys (§4.8a); the frame never generates one
   timing: { mode: "untimed" | "gentle" | "paced" };          // B1–B2: untimed | gentle only
   solution: Action[]; miscPaths: { misc: string; actions: Action[] }[];   // from the abstract solver + MiscRules
   successRule: { itemsCorrect: number; ofItems: number; maxHintsForMastery: 0 | 1 } }
@@ -789,7 +1070,154 @@ Rules (Q0): exactly one objective per level; difficulty non-decreasing except on
 starts at intro/practice, ends at transfer/challenge; at least one item at stage `abstract`; every `trigger` has a
 `targetMisc` and shows its consequence in the world without penalty, followed by a `repair` contrast item that differs
 only in the target feature; kit ramp controller: 2 consecutive wrong → insert the next easier variant (≤ 2 inserts),
-3 first-try correct with no hints → skip remaining practice.
+3 first-try correct with no hints → skip remaining practice. The ramp controller only *selects* among
+`LevelSpec.variants` by `rank`; it never generates, so every item a child can see is in the GradeTable (§4.8a).
+
+### 4.8a Tested domain, server-side expansion and the GradeTable (gap-fill GAP-F2-g1-domain-and-expansion)
+
+**The gap.** The live G1 path relied on "params inside the core's promotion-tested domain" (§5.1 Q0), but
+`CoreProvenance.testedDomain` was typed `unknown`. Nothing said where `LevelIntent → LevelSpec` expansion runs.
+§5.1 forbids agent code in `taxila-web`, so the G1 gate cannot call the agent-written `mechanic.paramsSchema` that
+§4.3 says validates params "at build AND load". It was also unspecified how the host gets keys for the variants the
+ramp controller inserts at runtime, which the host must re-grade too.
+
+**Rule 1: the domain is over kit knobs, never over agent params.** A `TestedDomain` is a serialisable box (integer
+ranges) plus enumerations over the **archetype generator's knobs**. The generator is kit-owned and its knobs are JSON:
+the same coordinates `MechanicDesign.levelPlan[].knobs` names. Agent `params` (whatever `paramsSchema` describes) never
+appear in it, so trusted code can evaluate it without loading agent code. The domain must include **derived coupling
+knobs**, not only primary ones. A box is a product of independent ranges, and agent limits often bind on a product.
+For example, `frac-predict-jump@1`'s view needs ≥ 12 dp per tick, so `lineMax × tickDen ≤ 30`. If only `lineMax ∈
+[1,2]` and `tickDen ∈ [2,24]` are recorded, the box admits unsampled interior points (lineMax 2, tickDen 24 = 48
+ticks). The archetype template therefore declares its derived knobs (`tickCount` here), and S8 records them like any
+other knob. Measured below: 678 in-frame rejections with primary knobs only vs 0 with `tickCount` in the box.
+
+```ts
+// packages/game-kit/domain.ts — pure, kit-owned, no agent imports (also bundled into server/forge/g1.js)
+export type KnobId = string;                                  // registry per archetype generator, e.g. nlj-frac-gen@1:
+                                                              // level {op, itemsPerLevel}; item {den, tickDen, lineMax,
+                                                              // tickCount (derived = lineMax×tickDen), padCount}
+export type KnobValue = number | string;
+export type KnobVector = Record<KnobId, KnobValue>;
+export type KnobRange =
+  | { scope: "level" | "item"; kind: "int"; min: number; max: number }
+  | { scope: "level" | "item"; kind: "enum"; values: KnobValue[] };   // sorted, unique
+export interface TestedDomain {
+  v: 1; generator: `${string}@${number}`;                     // the kit generator whose knobs these are
+  mechanic: `${string}@${number}`; buildSha: string; kitVersion: string;
+  knobs: Record<KnobId, KnobRange>;                           // a knob absent here ⇒ not constrained by this core
+  sampled: { fills: number; specs: number; variants: number; seed: number; at: string };  // S8 provenance
+  hash: string;                                               // sha256(JCS(this without hash)); pinned in the ticket
+}
+export type DomainVerdict = { ok: true } | { ok: false; knob: KnobId; value: KnobValue; itemId?: string };
+export function inDomain(domain: TestedDomain, spec: Pick<LevelSpec, "knobs" | "items">): DomainVerdict;
+// level-scope knobs of spec.knobs, then item-scope knobs of every spec.items[i].knobs; first violation wins.
+// Applied to each LevelSpec AND each LevelVariant. Pure, O(knobs × items), no allocation beyond the verdict.
+```
+
+**S8 writes it.** S8 samples 200 fills inside the mechanic-declared support. ErrorReplays are drawn from the
+objective class's kit items, and the kit generator's own layout predicates refuse anything outside that support. The
+kit expands each fill. In the runner, `paramsSchema`, `init/reduce` over solution + misc paths, and Q2/Q6 run on every
+spec and every variant, and S8 needs 0 failures. Then, for each knob, S8 writes the min/max (int) or the value set
+(enum) **actually observed** among the specs that passed. The domain is therefore ⊆ the declared support and can be
+narrower. In the probe below, `lineMax` 3 was declared but never sampled, so the domain says `[1,2]`. **No
+extrapolation:** a knob value that S8 did not observe is out of domain, even if the declared support allows it.
+
+**Rule 2: `expand(fill, seed)` runs once, server-side, in trusted kit code inside the G1 gate.**
+
+```ts
+// packages/game-kit/expand.ts — pure; same module in the S8 runner and in taxila-web (one expander, two callers)
+export interface LevelVariant extends Omit<LevelSpec, "variants" | "role" | "objectiveId"> {
+  rank: 1 | 2;                                                // 1 = next easier; the ramp controller inserts rank 1 then 2
+  of: string }                                                // parent LevelSpec.id
+export interface GradeEntry { key: MathValue | string; acceptable: (MathValue | string)[];
+  distractors: { value: MathValue | string; misc: string /* kit misc id | "other" */ }[] }
+export interface GradeTable { v: 1; instanceId: string; buildSha: string; domainHash: string;
+  entries: Record<string /* itemId, unique across levels + variants */, GradeEntry> }
+export type DropReason = "out_of_tested_domain" | "kt_target_clamped" | "unknown_item" | "not_renderable"
+  | "level_underfilled" | "objective_mismatch";
+export interface Expansion { ok: boolean; specs: LevelSpec[];        // every level with all its variants
+  grade: GradeTable; gradeHash: string;                       // sha256(JCS(grade)); JCS = RFC 8785 canonical JSON
+  drops: { reason: DropReason; itemId?: string; level?: string; knob?: KnobId; value?: KnobValue; replay?: boolean }[];
+  fallback?: { engine: string; itemIds: string[] } }          // set iff ok === false (Rule 3)
+export function expand(fill: ForgeFill, seed: number, core: { domain: TestedDomain; generator: Generator;
+  misc: MiscRule[]; kit: KitIndex }): Expansion;
+```
+
+- **Where:** `server/forge/g1.js` calls `expand` inside the G1 gate. It is the only expander on the live path. Its
+  inputs are `ForgeFill` (intent), the core's `TestedDomain`, kit items, MiscRules and KitMath. All of these are
+  trusted data and code. Every generated item, whether a level item or a variant item, is drawn **inside** the domain:
+  the generator re-draws until `inDomain` passes, up to 64 tries, and then the level is underfilled. A kit item named
+  by `itemIds` is pre-filtered by `fill()`, which chooses those, so they are always in domain. Only `errorReplays` are
+  the child's history and can fall outside (Rule 3).
+- **What it emits:** every `LevelSpec`, each with its `rank 1` and `rank 2` variants already expanded, including
+  items, keys, distractors with misc ids, solution and miscPaths, all from KitMath + MiscRules. It also emits the
+  `GradeTable`, a projection of those same specs (`acceptable[]` = MathValue-equivalent forms the kit allows for the
+  item), and its hash. Item ids are namespaced `<level>.<kitItemId>` or `<level>.v<rank>.g<i>`, so an id is unique
+  across the instance.
+- **Persistence:** `artifact_instance` gains `specs jsonb, grade_table jsonb, grade_hash text, domain_hash text`. A
+  re-fill after a diagnostic (§2.3a t≈3 min) re-runs `expand` and writes a new instance row and ticket. The old ticket
+  is not mutated.
+- **The frame never re-expands.** `PlayTicket.init.specs` carries the expanded specs (§9). The kit validates each spec
+  and variant with `paramsSchema` at load. This is the "load" check: it is a backstop and is counted in telemetry
+  (`error{reason:"params_rejected", level}` → T1 fallback, §5.6). The kit selects variants by `rank`. Generation code
+  is not even bundled into the play frame, so there is no runtime path that could create an item without a key.
+- **The host grades from the GradeTable whose hash is in the ticket.** `ForgeResponse.grade` and
+  `GET /api/forge/tickets/:id` return the table. Before mount, the app host checks `sha256(JCS(grade)) ===
+  ticket.gradeTableHash` and that every `init.specs` item (variants included) has an entry with an identical key. On a
+  mismatch it refuses the mount and falls back to T1. `server/director/classify.js` re-grades from the server-side
+  `artifact_instance.grade_table` by `instanceId`. It never uses a table that arrives from the client. An `answer` for
+  an item id that is not in the table is `invalid`, never `incorrect`.
+- **Size (measured, probe below):** the cap is `LIMITS.bulkBytes` = 65,536 B (CONTENT-ENGINE §4.2). Six-level fills
+  with 2 pre-expanded variants per level came to p50 41.7 KB and max 49.9 KB (n = 618). Over all fills the p95 was
+  48.5 KB. A 6 × 5-item worst case (66 items incl. variants) was 46.5 KB, or 3.7 KB gzipped. The GradeTable stays
+  host-side: ≤ 13.6 KB, outside `init`. Expansion p95 was 1.2–1.5 ms in Node (max 7 ms). **Consequences:** (i) a
+  gate check `bytes(JSON(init)) ≤ 56 KiB` leaves 8 KiB of headroom for locale and strings. Above that, the gate drops
+  `rank 2` variants first, then trims practice levels by §5.4's order-preserving rule. (ii) `save` (≤ 16 KB) moves
+  **out of `init`** into the bridge's separate `restore` message, because 49.9 KB + 16 KB > 64 KiB.
+
+**Rule 3: the failure path when a child's item or KT target falls outside the domain.**
+
+| case | action | reason code | fill outcome |
+|---|---|---|---|
+| an `errorReplays` item has a knob outside the domain (e.g. 24/36: `tickDen` 36 > 24; 2/5 + 1/3 with add-across pad 3/8: `tickDen` 120; a 0-to-3 line: `lineMax` 3 never sampled) | **drop that item**. The generator back-fills the level from the domain at the same op, difficulty and `targetMisc`, so the level keeps its trap. Replays are never clamped or rewritten: a child's actual wrong item is replayed exactly or not at all | `out_of_tested_domain` (+ knob, value) | **keep the fill** if, after all drops, ≥ 3 levels remain **and** the Q0 shape rules still hold |
+| KT-target difficulty maps to generator numbers beyond the domain (e.g. d = 6 → den 16 > 12) | **clamp** to the domain's edge. The numbers are generator choices, not a child's item, so clamping loses nothing specific. The level's `difficulty` records the clamped value | `kt_target_clamped` | keep |
+| a level's own knob is outside the domain (e.g. `op: "sub"` on a core whose S8 never sampled `sub`), or < 2 items survive | drop the level | `out_of_tested_domain` / `level_underfilled` | keep if ≥ 3 levels **and** the shape holds; else ↓ |
+| < 3 levels remain, or the shape breaks (no abstract level, a `trigger` without its `repair`, wrong first/last role) | **fall back to the T1 engine** for the objective (e.g. `fraction-bars@1`) and carry the dropped `errorReplays` as its items. T1 engines are vanilla TS with kit-owned params, so no tested domain is involved | `g1_fallback_t1` | T1 (spec fill 1.88 s p50 **[M]**) |
+
+**Choice and why:** drop-and-keep is the default and T1 is the exception. Because the generator back-fills, a dropped
+replay costs one replayed item, not a level. In the probe it never cost a fill: 1,194/1,194 fills with a dropped
+replay were kept. T1 fires only when whole levels fail. In the probe, a core whose domain lacks `sub` sent 400/400
+c6-t05 fills to T1. That is the right outcome: a G1 game with holes in its arc is worse than an honest T1 engine.
+**Every** `out_of_tested_domain` drop files a widening request on the catalogue lane. The lesson never awaits it:
+
+```ts
+// forge_job kind "g1.domain_widen", lane "catalogue", idem_key = `widen:${coreHash}:${knob}:${bucket(value)}`
+interface DomainWidenRequest { coreHash: string; knob: KnobId; value: KnobValue; itemIds: string[]; demand: number }
+```
+
+Single-flight on `idem_key`, and demand is counted per distinct child. At demand ≥ 3, or in the H1 night pass,
+S8 re-runs alone in a runner (≤ 10 min, no builder spend). It samples 200 fills with that knob's range stretched to
+include `value`, and must again pass with 0 failures. Pass → a new `TestedDomain` (new `hash`; old tickets keep
+their pinned hash until their TTL ends). Fail → the mechanic cannot take that value. The request becomes a G2 demand
+signal for a variant mechanic (§6.4), and the value is recorded in `artifact_core.provenance.domainRefusals`, so it
+is not retried for 30 days.
+
+**Measured (prototype) — `g1-domain-expand-probe.mjs` → `g1-domain-expand-probe-2026-10-02.json` [M, n below, Node 22,
+real kit items from the 6 MP2 fraction topics, simplified MiscRules, a hand-written stand-in for the agent
+`paramsSchema` that is invoked only "in frame"]:** 200 fills × 6 topics × {plain, adversarial} = 2,400 fills, 32,652
+specs + variants checked in frame. Adversarial fills add 1–4 real kit ids outside the domain or the op set (24/36,
+12/18, 2/5 + 1/3, 36/100, 3/2 km, a mixed-number item, a 0-to-3 line, an unknown id) and KT targets d = 6–7.
+
+| arm | in-frame `paramsSchema` rejections | errorReplays dropped `out_of_tested_domain` | fills → T1 |
+|---|---|---|---|
+| domain box over **primary knobs only** | **678 / 32,652** (all "ticks > 30") | 2,059 / 6,540 | 0 |
+| box **with derived `tickCount`** | **0 / 32,652** | 2,059 / 6,540 (354 in *non*-adversarial fills: real same-topic items) | 0 / 2,400 |
+| no `inDomain` at G1 (frame check only) | **3,887 / 32,652** (`tickDen` 2,008, `line.max` 1,879) | 0 | 0 |
+| core whose domain lacks `sub` (c6-t05 only) | 0 | 227 / 1,090 | **400 / 400** |
+
+The prototype shows mechanism, not rates. Real rates depend on each core's agent `paramsSchema`, so MP5 re-measures
+on `frac-predict-jump@1`. An agent schema *looser* than its view is the worse failure: it would accept untested
+params silently, so no rejection would ever be counted. That is why the gate trusts `inDomain`, not `paramsSchema`.
 
 ### 4.9 Telemetry (kit-emitted; mapped onto today's bridge)
 
@@ -847,7 +1275,7 @@ G1/G2/G3 are Forge tiers. Wrappers are referred to by engine id (`dukaan@1`, `lo
 
 | gate | checks (blocking unless marked) | G1 fill | G2 core | G3 / promotion |
 |---|---|---|---|---|
-| **Q0** spec & contract | strict parse; ids ∈ registries; params inside the core's **promotion-tested domain**; every miscPath/demo action produced by a TargetSpec; coverage; locales; held-out split (G2) | ✓ (code) | ✓ | ✓ |
+| **Q0** spec & contract | strict parse; ids ∈ registries; every LevelSpec **and variant** `inDomain(core.testedDomain)` — a box/enumeration over kit generator knobs, never agent params; out-of-domain errorReplay → drop + widening request (§4.8a; gap-fill GAP-F2-g1-domain-and-expansion); `bytes(init) ≤ 56 KiB`; every miscPath/demo action produced by a TargetSpec; coverage; locales; held-out split (G2) | ✓ (code) | ✓ | ✓ |
 | **Q1** static | tsc + esbuild (bundler alone exits 0 on type errors); **allowlist AST on esbuild output of agent modules** (§5.2); KEEP hashes; loop guard injected; `es-check`; sizes | — (no new code) | ✓ | ✓ |
 | **Q2** boot & hygiene | production-parity host harness (opaque-origin iframe, exact attrs, meta CSP, bridge init); 0 console errors; 0 CSP violations; 0 non-local requests (route + dead proxy + WebRTC policy + UDP listener + `routeWebSocket`); blank-frame; bridge schema; `setState(getState())` round trip; tamper probes | sampled 5% async | ✓ | ✓ |
 | **Q3** keypoints | visible 70% (G2 build loop) / held-out 30% (S6 only); generated keypoints: correct, wrong, misc, hint ladder, win fires once, pause; `act` vs pointer at bbox centre ⇒ same state hash; **binding (gap-fill GAP-F1-…, tier A, every capture event):** 0 `ForgeContract ref_*` refusals, 0 `state_diverged`, `obs.label_bound` (§4.3 item 4), committed-`unit` entity count per kind = shadow counts, observation value ≡ host re-derivation | abstract-model keypoints + ref resolution of every target | ✓ | ✓ |
@@ -859,8 +1287,10 @@ G1/G2/G3 are Forge tiers. Wrappers are referred to by engine id (`dukaan@1`, `lo
 | **Q9** judged quality | `taxila-brain` vision on deduped event frames (15–20); grounded cross-check; two-call ensemble for blockers; **advisory until QA-M3 calibrates a criterion** (precision ≥ 0.90, recall ≥ 0.60, n ≥ 30); 45 s timeout ⇒ skip | — | async, before review | ✓ |
 | **Q10** final & publish | trusted rebuild sha == runner sha; fresh-lease final gate; pointer-only smoke on production bytes; manifest carries `QaReport` hash, recipe, models, ledger | instance row + ticket | ✓ → review | ✓ |
 
-**G1 latency:** the whole G1 column is trusted kit code over data (no agent code executes in `taxila-web`; the core's
-agent reducer was property-tested over the generator domain at S8, and Q0 confines the fill to that domain): **≤ 300 ms
+**G1 latency:** the whole G1 column is trusted kit code over data (no agent code executes in `taxila-web`, so the gate
+never calls `paramsSchema`; the core's agent schema + reducer were property-tested at S8 over the knob ranges S8 wrote
+as `TestedDomain`, and Q0's `inDomain` confines every server-expanded spec and variant to that box — §4.8a; expansion
+itself measured p95 1.2–1.5 ms in the prototype): **≤ 300 ms
 [U]**. The sampled async Q2 replay of 5% of fills in a runner catches drift.
 
 ### 5.2 Static rules for agent modules (Q1; a lint, not the security boundary)
@@ -1134,7 +1564,8 @@ A logical object — rows plus a private Blob prefix — never a VM (`vm-per-stu
 
 ```
 Neon: artifact_core(identity_hash pk, identity jsonb, provenance jsonb, status, quality_a, quality_b, tested_domain jsonb)
-      artifact_instance(id uuid pk, child_id, core_hash, fill jsonb, created_at, source_lesson_id)   -- the G1 fill
+      artifact_instance(id uuid pk, child_id, core_hash, fill jsonb, specs jsonb, grade_table jsonb, grade_hash text,
+                        domain_hash text, drops jsonb, created_at, source_lesson_id)   -- the G1 fill + its expansion (§4.8a)
       play_session(id, instance_id, child_id, started_at, ended_at, outcome, max_level, events_n)
       save_state(instance_id pk, child_id, state jsonb ≤ 16 KB, updated_at)                         -- last-write-wins
       artifact_serve(child_id, core_hash, fill_id, outcome jsonb, at)                                -- bandit + canary
@@ -1144,7 +1575,9 @@ Blob taxilaforgesrc: learner/<childId>/{uploads,exports}/ (SAS ≤ 600 s) · for
 
 - **PII never crosses into the iframe.** `init` carries fill ids, numbers, item ids, string-table ids and a save
   blob — **no free-text field** (schema-asserted on both sides). The child's name, teacher callbacks and memories render
-  in a **host DOM overlay** in kit-reserved layout slots (MO R9).
+  in a **host DOM overlay** in kit-reserved layout slots (MO R9). On Android L2 the overlay is rendered by play-host
+  from `mount.overlay` (`textContent` only, ≤ 80 chars per slot). It never enters the iframe, and its renderer exposure
+  equals L1's (§2.10, gap-fill GAP-F3-android-play-process-bridge).
 - **Briefs are de-identified by construction:** closed `InterestId`s; personal tokens are `{{slots}}` filled by the
   host; Q8 scans dist for the requesting child's real name/pet/school/city (held server-side) plus a generic name list
   (SB R13). Child utterances never enter a designer, builder, image or story prompt (CAH C9, LG B6).
@@ -1158,7 +1591,13 @@ export interface PlayTicket {
   buildUrl: string;                 // https://<play-origin>/forge/b/<sha>/index.html
   kitUrl: string; buildSha: string; // checked against the manifest before init
   nonce: string;                    // bridge nonce for this session
-  init: { fill: ForgeFill; save?: Json; locale: "hi-Latn" | "en-IN" | "hi-IN" };   // no free text
+  init: { specs: LevelSpec[];       // server-expanded, variants included; the frame never re-expands (§4.8a)
+          skin: InterestId; pacing: ForgeFill["pacing"]; lang: ForgeFill["lang"]; numerals: ForgeFill["numerals"];
+          seed: number; locale: "hi-Latn" | "en-IN" | "hi-IN" };   // no free text; ≤ 56 KiB (gate-checked; cap 64 KiB)
+  gradeTableHash: string;           // sha256(JCS(GradeTable)); host re-grades only from a table with this hash
+  domainHash: string;               // TestedDomain.hash the specs were checked against
+  // save (≤ 16 KB) travels in the bridge `restore` message after init, never inside init: 49.9 KB + 16 KB > 64 KiB
+  // (gap-fill GAP-F2-g1-domain-and-expansion)
   levelsHash: string;               // sha of the server's kit expansion of `fill`; the frame's ready.levelsHash must
                                     // match, or the host refuses the mount. Host resolves ValueRefs against it (GAP-F1)
   expiresAt: string;                // TTL 2 h; refused if buildSha is on the revocation list
@@ -1233,8 +1672,9 @@ second. It is the first thing a child can play, and every later tier reuses its 
 | **MP2 KitMath + misconception rules (fractions)** | exact rationals, MathValue equivalence, `acceptable` parsing; MiscRules for `c4-…-t01-m-bigger-denominator-bigger`, `c5-…-t01-m-count-marks`, `c5-…-t01-m-whole-number-bias`, `c5-…-t02-m-tops-only`, `c5-…-t03-m-add-same`, `c6-…-t05-m-add-across`, `c6-…-t05-m-change-only-den`, `c6-…-t03-m-one-side` | `packages/kitmath/` (reuse `fractionBars.logic.ts` arithmetic) | property tests: every rule reproduces its kit diagnostic distractor; 0 disagreements with the kit `answer` on the fraction topics' items that are numeric |
 | **MP3 `tgk@1` core** | bootstrap hardening (§4.2) shared with the content `engine-kit`; bridge v2.1 from `shared/bridge.ts` (content-owned; v1 compatibility while it lands) plus the proposed `assets` transfer message; kit grade + observation binding (ValueRef resolution + refusals, choice selection tracking, `ShadowModel` for build archetypes, bound `numeral`/`unit`/`text` vars; gap-fill GAP-F1-…), DOM word & hit layer, ramp controller, feel presets v0, voice cue routing, kit meta CSP, seeded RNG | `packages/game-kit/` | kit unit tests; a tamper test: a mechanic that patches `postMessage` cannot change the host stream |
 | **MP4 `numberline-jump` + golden mechanic `frac-predict-jump@1`** | archetype template (line generator with band tick density, pad placement from MiscRules, abstract solver, layout predicates); the golden mechanic **written by hand** (≈ 200 lines) — it is the first library core and the builder's few-shot exemplar | `packages/game-kit/archetypes/numberline-jump/` | Q2–Q7 locally in the production-parity harness; reviewer approval (first core per archetype: two-key) |
-| **MP5 G1 filler + gate** | `fill()` (items for the objective, traps from the learner model's active misconceptions on the topic, this child's recent wrong items as `errorReplays`, numbers at KT target, InterestId skin, seed) + G1 gate (§5.1 column) | `server/forge/g1.js` | 200 random fills × 6 fraction topics: 100% gate-pass or a reasoned reject; p95 ≤ 300 ms in Node |
+| **MP5 G1 filler + gate** | `fill()` (items for the objective, traps from the learner model's active misconceptions on the topic, this child's recent wrong items as `errorReplays`, numbers at KT target, InterestId skin, seed) + G1 gate (§5.1 column) | `server/forge/g1.js`, `packages/game-kit/{domain,expand}.ts` | 200 random fills × 6 fraction topics: 100% gate-pass or a reasoned reject; p95 ≤ 300 ms in Node. **Plus (gap-fill GAP-F2-g1-domain-and-expansion):** the same 200 × 6 fills, half with adversarial `errorReplays` (real kit ids outside the domain: 24/36, 12/18, 2/5 + 1/3, a 0-to-3 line, other-topic and unknown ids) and KT targets beyond the domain, expanded server-side against `frac-predict-jump@1`'s S8 `TestedDomain`, then every spec **and variant** loaded in the production-parity frame → **0 in-frame `paramsSchema` rejections**; every out-of-domain replay carries `out_of_tested_domain` and a `g1.domain_widen` request; every kept fill has `init` ≤ 56 KiB; host re-grade finds every answered item id in the GradeTable whose hash is in the ticket (0 `invalid`) |
 | **MP6 publish + delivery** | publish the core bundle + kit to `taxilaforge` (`blob` access, CORS `*`, immutable); host fetches the build's assets and transfers them to the frame; PlayTicket; `ModuleCommand.mount{src,ticketId}` in `ModuleHost`; host re-grade path in `classify.js` | `src/modules/host.tsx`, `server/director/` | `tests/client-e2e.mjs` mounts the game from the Blob URL in an opaque-origin iframe (not Vite, so the CORS path is real) and plays L1 by pointer |
+| **MP6a Android play surface (gap-fill GAP-F3-android-play-process-bridge)** | `PlayActivity` (`:play`, `setDataDirectorySuffix("play")`, L2t/L2o theme flag), `PlayRelay` (addWebMessageListener `taxilaPlay`, sha-checked WebViewAssetLoader, no network), `RelayService` (main, `exported=false`, `linkToDeath`), `PlayBridge` Capacitor plugin, APK-bundled `play-host/` page (frame + port + re-grade + overlay + clips + safeguarding chrome), `PlayRelayFrame` parsers shared with Node tests, S4p fallback in ModuleHost | `android/app/…/play/`, `src/modules/playHost/`, `shared/forge.ts` | relay frame round-trip unit tests; M14 (§2.10) on the 3 GB phone decides the layout before any Forge WebGL game reaches an Android child |
 | **MP7 lesson wiring** | `planModule` practice move → planner → G1 fill for fraction topics; teacher hand-off shape; telemetry → Director observation lines | `server/director/modules.js`, `src/lesson/` | `evals/director-sim.mjs`: a scripted c6-maths-ch07-t05 lesson where the child adds across; the trigger level targets add-across; the Director's next move references the observed misc |
 | **= first generated fractions game playable in the app** | | | a real device (Capacitor) plays the fill in a lesson; logged to `context/measurements.md` (G1 latency, tap → first frame, child action → Director) |
 
@@ -1262,10 +1702,11 @@ second. It is the first thing a child can play, and every later tier reuses its 
 | M15 / M-K11 / M-K10 | tamper battery; negative-path grading sweep | 6–7 cheating builds; 24 seeded-bug mechanics | trust in the gate |
 | M-F1 | builder bake-off | 40 briefs, ≥ 3 arms | builder recipe (`forge-builder-provider-neutral` reversal) |
 | QA-M1 / M-K2b | calibrated throttle; real-device first frame and fps p10 (v3 vs v4); pre-warmed vs cold iframe | 2–3 owned ₹8–12k phones, ≥ 10 loads each | perf thresholds; Phaser flag |
-| M14 | Android WebView process model: game OOM while teacher audio streams; `:play` process layout | 3 GB device | play surface layout |
+| M14 | Android WebView process model, extended (gap-fill GAP-F3-android-play-process-bridge, §2.10): a1 teacher audio continuity with main paused (L2t) / stopped (L2o), no gap > 300 ms; a2 mic upstream; a4 audio focus; b tap → Director P95 ≤ 2 s and relay ≤ 150 ms; c forced game OOM (3 causes × 10) survives 10/10 with the T1 fallback resumed at the last acked cursor ≤ 3 s; d PSS overhead; T origin wall | one 3 GB phone (+ optional 2 GB Go), 10 lessons per layout, ≥ 200 taps | play surface layout (L2t > L2o > L1); result → `context/` decision `android-play-layout` |
 | QA-M3 | judge calibration per criterion, fabrication rate, image tokens per frame | mutant + clean corpus | which Q9 criteria may block |
 | QA-M4 / M-AP11 | Hindi/Hinglish safety recall; CER gate calibration | 300 strings (2 native labellers); ≥ 50 good + 20 bad lines | safety layer mix |
 | M-K12 | intent → kit expansion first-try rate and wall clock | ≥ 200 intents | G1/G2 planner schema |
+| M-G1D (gap-fill GAP-F2-g1-…) | per core: in-frame `paramsSchema` rejections of server-expanded specs; share of `errorReplays` dropped `out_of_tested_domain`; G1 → T1 fallback rate; `init` bytes p95/max; widening requests and S8-rerun pass rate | MP5 battery (1,200 fills/core) then live telemetry, first 500 fills per core | whether the knob box needs more derived knobs (any rejection ⇒ yes); demand for widening |
 | M-MO2 / M-MO9 | cohort syllabus spread; share of surfaced misconceptions that are unkeyed | 2 weeks school-sync | night cap; kit growth |
 | M5 / M-K8 / QA-M12 | fun on children: L1 completion, voluntary "play again", quit-before-L2, rage taps; fun-floor validity | n ≥ 30 per band (M5); first 200 plays per core | archetype bandit guardrails; fun floor thresholds |
 | M6 / M-K7 | learning: next-day delayed probe on the target misconception, game vs T1 engine practice | 4 objectives | whether G2 buys anything over G1/T1 |
@@ -1281,6 +1722,10 @@ second. It is the first thing a child can play, and every later tier reuses its 
 - Flip `tgk@1` to Phaser 3.90 if M-K2b real-device fps p10 is ≥ 15% below v3; switch to LittleJS if cold first frame
   > 2 s after code cache.
 - Drop Q9 to advisory forever if no criterion reaches precision 0.9 in QA-M3.
+- Android play layout (gap-fill GAP-F3-android-play-process-bridge): ship `:play` (L2t, else L2o) only if M14 a1, b, c
+  and T pass. If teacher audio does not survive a paused/stopped main Activity (a1 fails in both L2 layouts), record
+  **L1 + the kit memory budget as the only guard + no WebGL games on in-process-renderer devices** as a measured
+  decision in `context/`. Revisit on a WebView/Android release where a1 passes, or on a native realtime audio path.
 - Re-admit a pixel-video lane only for a GA first-party Azure video model with ≥ 12-month lifecycle passing a 20-clip
   check (labels/numbers ≥ 95%, Devanagari correct, object permanence).
 
@@ -1303,13 +1748,16 @@ export interface CoreIdentity { modality: "game"; archetype: ArchetypeId; mechan
 export interface CoreProvenance { kitVersion: string; kitAnswersHash: string; gateVersion: string; recipeId: string;
   models: { designer: string; builder: string; critic: string }; buildSha: string;
   status: "candidate" | "in_review" | "approved" | "stale" | "quarantined" | "demoted";
-  testedDomain: unknown /* param domain covered by S8 property tests */ }
+  testedDomain: TestedDomain /* kit generator-knob box/enums actually sampled by S8's 200 fills; never agent params
+                                 (§4.8a; gap-fill GAP-F2-g1-domain-and-expansion) */
+  domainRefusals?: { knob: string; value: number | string; at: string }[] }   // widening attempts that failed S8
 
 export interface ForgeRequest { requestId: string; kind: "game" | "explainer" | "image" | "worksheet";
   lessonId?: string; objectiveId: string; move: "practice" | "retrieval" | "remediate" | "homework";
   needByMs: number; allowCatalogueRequest: boolean }        // childRef comes from the session, never the body
 export interface ForgeResponse { requestId: string; plan: { primary: string; fallbacks: string[]; reasons: string[] };
-  ticket?: PlayTicket; jobId?: string; fallback?: ModuleCommand }
+  ticket?: PlayTicket; grade?: GradeTable /* host copy; hash === ticket.gradeTableHash */; jobId?: string;
+  fallback?: ModuleCommand }
 
 export type ForgeStage = "queued" | "resolve" | "fill" | "design" | "scaffold" | "build" | "repair" | "polish"
   | "final" | "review" | "promote" | "ready" | "fell_back" | "gap" | "cancelled";
@@ -1367,8 +1815,14 @@ export interface Observation { level: string; item: string; seq: number; basis: 
 // MathValueLite / LevelSpecLite / LevelItemLite are the Json shapes of @taxila/kitmath MathValue and §4.8 LevelSpec.
 
 // Kit-side types (MechanicV11, TargetSpec, DrawApi, LevelIntent, ForgeFill, MechanicDesign, LevelSpec) are in §4.3 / §4.8;
+// TestedDomain, KnobRange, KnobVector, DomainVerdict, LevelVariant, GradeTable, GradeEntry, Expansion, DomainWidenRequest
+// are in §4.8a; TestedDomain and GradeTable are re-exported here because the host and classify.js read them
+// (gap-fill GAP-F2-g1-domain-and-expansion);
 // QA types (QaReport, QaFinding, QaPolicy, QaDecision) follow auto-validation-qa §10 with decide() from §5.4 here;
 // PlayTicket is in §9; ModelAdapter in §3.7; the runner wire protocol in §3.11.
+// Android play relay (gap-fill GAP-F3-android-play-process-bridge): MainToPlay, PlayToMain, GoneCause, VerdictEcho,
+// ResumePoint are in §2.10 and live in this file (hand-written parsers, Kotlin mirror generated). GradeTableLite =
+// the keys + MiscRules of ONE fill (no other child's or fill's keys ever cross the binder).
 ```
 
 ---
@@ -1378,6 +1832,7 @@ export interface Observation { level: string; item: string; seq: number; basis: 
 | stale claim (where) | final (here) |
 |---|---|
 | `taxila-opus` for design + code (brief); Claude bake-off arms (CAH §6) | §0.1 E1, §3.7 |
+| `testedDomain: unknown`; G1 Q0 "params inside the promotion-tested domain" checked by the agent `paramsSchema`; variants as `{id, difficulty, params}` generated at runtime (§4.3, §4.8, §5.1, §13 before 2026-10-02) | §4.8a: a kit-knob `TestedDomain` + pure `inDomain`; `expand()` once in the G1 gate emits specs + variants + GradeTable; `paramsSchema` only in runner and frame (gap-fill GAP-F2-g1-domain-and-expansion) |
 | "fresh build lands while the teacher teaches", P50 6–10 / 8 min (CAH §0.10, LG §8, MO §6.3) | §1.1, §10.1: G1 live; G2 P50 12–15 min, catalogue + review |
 | ACA dynamic sessions custom container as the sandbox (CAH §5.1); "runner may only be a dynamic session" (QA R6) | §2.2, §2.9: ACA Job in a separate env (Phase 0), ACA Sandboxes (Phase 1); E16 billing ≈ $1,200/mo per warm node and an RBAC role the SP cannot grant (SB §0.4) |
 | Storage Queue + KEDA + queue SAS / pool token in the runner (SB §12.1, R7) | §2.4 Neon queue; §3.11 single-use boot tokens (SB S4) |
@@ -1389,6 +1844,7 @@ export interface Observation { level: string; item: string; seq: number; basis: 
 | agent-written `judge()`, `getState/setState`, `checkWinCondition` (GK §4.2, LG §3) | §4.3 MechanicV11 + kit observation binding + kit grade + host re-grade |
 | planner writes solutions, keys, misc paths, keypoint values (CAH §5.4) | §4.8: planner writes intent; kit generator/solver write truth |
 | `TargetSpec.value?: MathValue \| string`, `readout(M)`, `numeral(v: MathValue)`, `Effect` fields that carry a raw MathValue, and "observation binding closes the last grading hole" (tgk@1.0 text of §4.3, GK §5, LG §4) | §4.3 items 1–5 and §13 (gap-fill GAP-F1-observation-binding-enforcement): `valueRef: ValueRef` resolved and refused by the kit; `ShadowModel` readout plus `agrees(S, facts(M))` → S5 `state_diverged`; numerals, numeric words and effects only through a `BoundRef`; the host re-derives values; mutants M19–M21 in §5.5 |
+| Android `:play` as a bare "separate WebView in another process" with `onRenderProcessGone` → G1 fallback (SB S8); clips/overlay/re-grade "in the host frame" on Android (§2.8, §4.7, §9 as first written) | §2.10 (gap-fill GAP-F3-android-play-process-bridge): APK-bundled play-host page, Messenger relay with typed frames, main-process re-grade as the only authority, S4p → **T1** fallback in the main WebView from the last acked `ResumePoint`; layout decided by the extended M14 |
 | Matter settles to the law, snap > 4 px (GK §2.6) | §4.1 kinematic choreography for judged physics |
 | raw headless FPS gate (CAH V2, LG G2) | §5.1 Q7 calibrated, frame-targeted, unclocked context; fps on real devices only |
 | GUI play agent in the gate (LG G4) | judge recorded trajectories; free GUI agent is G3 research only (LG P17) |
@@ -1419,6 +1875,14 @@ cited in those documents; the ones this spec leans on directly:
   quotas (subscription-level pools since 2026-05-07; quota tiers), image generation (16 reference images; PNG/JPEG
   only), Image Analysis migration (Read retires 2028-09-25), Foundry model retirement schedule (sora-2 and
   gpt-4o-mini-tts 2025-03-20 retire 2026-10-15).
+- Android play bridge (gap-fill GAP-F3-android-play-process-bridge, read 2026-10-02): AOSP
+  `frameworks/base/core/java/android/webkit/WebView.java` (`setRendererPriorityPolicy`, `setDataDirectorySuffix`,
+  `pauseTimers` global, `addJavascriptInterface` "exposed to all the frames") and `core/java/android/content/Context.java`
+  (`BIND_IMPORTANT`, `BIND_ABOVE_CLIENT`) via github.com/aosp-mirror/platform_frameworks_base@main; androidx
+  `webkit/WebViewCompat.java` (`addWebMessageListener` origin rules; renderer "not shared with other application
+  processes"); ionic-team/capacitor@main `Bridge.java` (`KeepRunning` default true), `cordova/MockCordovaWebViewImpl.java`
+  (`setPaused` → `onPause` + `pauseTimers`), `BridgeWebViewClient.java` (`onRenderProcessGone` default false);
+  developer.chrome.com/blog/timer-throttling-in-chrome-88 (hidden-page 1 s alignment; WebRTC/audio exemptions).
 - Source code: openai/codex (`apply_patch.lark`, `seek_sequence.rs`, unified exec caps), SWE-agent/mini-swe-agent,
   SWE-agent (lint gate, review-on-submit), Aider (`editblock_coder.py`), smolagents (`final_answer_checks`),
   leigest519/OpenGame (template families, hooks, debug protocol), phaserjs/phaser v3.90 and 4.2.1 (`Config.js`,
