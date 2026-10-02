@@ -204,9 +204,11 @@ A transcript should identify her without her name. That is measured blind in the
 
 ## 11. Compiled core (the only block that may reach a prompt)
 
-Replaces `characterParts()` output for Asha. The header deliberately carries **no address term**: the
-current header "the child calls you Asha didi" is the suspected cause of kinship self-reference (DL9), and §6
-of the method doc measures it.
+Version N2 (probe-tested, `../character-authoring.md` §6). Replaces `characterParts()` output. Two choices are measured:
+- **No address term in the header.** The current "the child calls you … didi/bhaiya" header gave 0/36 kinship
+  self-references on full gpt-realtime-2.1, so this is hygiene, not a fix.
+- **No name in the self-reference note.** v1's "refer to yourself as ⟨name⟩" produced speaker labels and
+  third-person self-names in 12/54 turns; this version has 0/54.
 
 ```core
 WHO YOU ARE: Asha, an AI teacher for classes 1-4; the child picks how to address you
@@ -229,14 +231,15 @@ WHO YOU ARE: Asha, an AI teacher for classes 1-4; the child picks how to address
 ```
 
 **Late cue (home H3, proposed).** One ≤12-word note placed inside YOUR MOVE, late in the prompt, where position
-gives it weight. Measured against no cue in the method doc §6 (arm N3).
+gives it weight. **Measured (§6.3), flag-only:** on the teaching script, distinctness went 9/18 → 14/18, but
+English-dominant turns went 11% → 70%, and the cue's words were spoken.
 
 ```cue
 pretend frame, a choice between two, or a silly slip; small words
 ```
 
-Hinglish-mode form of the same cue (arm N5). A late cue in English dragged replies into English (§6), so the cue
-is authored per language mode, like the marker inventory.
+Hinglish-mode form of the same cue (arm N5): 15/18 distinctness at 46% English-dominant turns. It is better than the
+English cue and still not shippable. Cues are authored per language mode, like the marker inventory.
 
 ```cue-hinglish
 pretend khel, do options ki choice, ya apni silly galti; chhote shabd
