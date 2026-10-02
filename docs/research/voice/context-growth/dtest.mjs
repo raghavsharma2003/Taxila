@@ -1,0 +1,16 @@
+const R = "/home/user/Taxila/server/";
+const { getKit, getTopic, topicSequence } = await import(R + "content/index.js");
+const { initLessonState, step, LIMITS } = await import(R + "director/state.js");
+const { instructionsFor } = await import(R + "compiler/instructions.js");
+const { CHARACTERS } = await import(R + "compiler/characters/index.js");
+console.log(Object.keys(CHARACTERS), LIMITS);
+const seq = topicSequence(4, "maths"); console.log(seq.join(" "));
+const kit = await getKit("c4-maths-ch05-t01", { generate: false });
+console.log(kit?.topicId, kit?.items?.length, kit?.skills?.length, kit?.verified);
+const t = CHARACTERS.asha;
+const brief = { firstName: "Riya", classLevel: 4, ageBand: "6-9", languagePref: "hinglish", relationshipStage: "first_meeting", vibe: { pace: "steady", verbosity: "short", humour: "some" }, activeMisconceptions: [], interests: ["cats", "drawing"], recentWins: [], memoryCallbacks: [] };
+const s0 = initLessonState({ topicId: kit.topicId, kit, seed: 7, now: 0, ctx: { firstName: "Riya", teacherName: t.name, teacherId: "asha", protege: t.protege, ageBand: "6-9", lang: "hinglish", interests: brief.interests, firstMeeting: true, hasCallback: false, topicTitle: getTopic(kit.topicId).title } });
+const r = step(s0, { event: "start", kit, now: 0 });
+const st = { ...r.state, brief, mode: "voice" };
+const ins = instructionsFor(st, kit, "voice");
+console.log(r.move, ins.length); console.log(ins);

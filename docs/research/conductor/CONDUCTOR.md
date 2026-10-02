@@ -15,11 +15,20 @@ X29-X40 (§0.2). The largest fix is the lock order in §3.4: revision 1 locked `
 5/5 against `complete_job` and `fire_wakeups`. Revision 2 locks it last, and was re-probed in eight race cells with
 0/40 deadlocks (`conductor-lock-order-rev2-probe.sh`). Short refs for the second passes: `orch B4` = orch R10 B4,
 and `obs B27` = obs V9 B27. They do not collide with the first-pass obs B1-B26, which keep their numbers.
-**Gap-fill fragments on disk without their design docs** (not ruled on here): `content-orchestration.sql` (Forge ↔
-Conductor: `forge_request`, `forge_waiter`, `module_ready`, review queue, `allowed_model`) and `adaptation.contracts.ts`
-+ `adaptation-hysteresis-sim.py` (cross-day adaptation: the typed `ConductorChildView` with `Fresh<T>` that replaces
-`BriefReader`, the rule latches and `resolveKnob`). Their `.md` docs (`content-orchestration.md`,
-`adaptation-policy.md`) do not exist yet. Two compatibility notes until they do. (a) The header of
+**Revision 3 (gap-fill G1-adaptation-policy, 2026-10-02).** Rules on cross-day adaptation, the owner's "everything
+adapts to the student, the vibe, the course and learning ability", which revisions 1-2 specified only as one-liners
+(§3.3, §4.4). `adaptation-policy.md` is now written and ruled in as X41-X48 (§0.2). It specifies a pure
+`planDay(inputs: PlannerInputs)` with an exact `inputsHash` composition (§3.7); rules R0-R14 with triggers, the
+`Fresh<T>` keys each reads, knob, layer, hysteresis, stale fallback and source (§4.4); how `resolveKnob` composes with
+`GUARDS`, with a worked example that runs the real function (§3.4); what the `night` fold closes (§3.3); and a
+multi-seed rerun of the hysteresis sim (§9.12). `BriefReader` is replaced by `ViewReader`/`ConductorChildView`
+throughout. The new pieces are the `AdaptEvent` types (§2.2), `ConductorState.adapt` (§3.1), validator rules V15-V27
+(§4.5), invariants I-A1…I-A11 (§9.9), and the `latch_walker` sim persona (§9.10). Every revision-3 edit is marked
+"(gap-fill G1-adaptation-policy)".
+**Gap-fill fragment still on disk without its design doc** (not ruled on here): `content-orchestration.sql` (Forge ↔
+Conductor: `forge_request`, `forge_waiter`, `module_ready`, review queue, `allowed_model`). Its `.md` doc
+(`content-orchestration.md`) does not exist yet. The adaptation fragment (`adaptation.contracts.ts` +
+`adaptation-hysteresis-sim.py`) is ruled on in revision 3. Two compatibility notes until the Forge doc exists. (a) The header of
 `content-orchestration.sql` says its lock order is "child_seq → conductor_state → forge_request". The leading
 `child_seq` is wrong under X29. Its functions never lock `child_seq`, so they are unaffected; the corrected order is
 in §3.4. (b) Its "(X31)" tag on the `lib/` prefix check means the §5.8 prefix rule, not the X31 row below.
@@ -129,6 +138,14 @@ Short refs: `orch R2.1` = orchestration-architecture.md Architect review R2.1; `
 | X38 | `modelCall` cleanup order | obs V2.1 `finally` | **settle the reservation first, in its own `try`**. The ledger insert is best-effort with an `obs.ledger_write_failed` counter, and the original error is re-thrown | a throwing insert leaked the reservation and hid the real error (obs B27) |
 | X39 | Director turn commit | obs V2.8: `lesson_state … for update` | **optimistic**: read `lesson_state.version`, hold no lock across model calls, commit `where version = $v`, and re-fold the newer turn on conflict | otherwise every live lesson pins a pooled Neon connection through its classify/compile calls at the 19:00-21:00 peak (obs B28) |
 | X40 | M0 instruction-lag signal | none until the observer (M1) | **a provisional client-clock OM16 at M0**: `session.update` apply time vs the next `response.created`. Aggregate only, untrusted, replaced at M1 | M0 would otherwise have no child-facing staleness signal (obs B30) |
+| X41 | the Conductor's learner surface (gap-fill G1-adaptation-policy) | revisions 1-2: an untyped `BriefReader`/`ChildBrief` | **`ConductorChildView` read through a recording `ViewReader`**: every field `Fresh<T>`, one writer per key, `MAX_AGE_H` per writer, declared fallbacks that never fire a rule. `ChildBrief` stays the Director's prompt packet; the Conductor never reads it | untyped reads cannot be staleness-checked or replay-recorded per key (adaptation-policy §2) |
+| X42 | where adaptation runs (G1) | §3.3/§4.4 one-liners | **three moments only**: `planDay` (pure over `PlannerInputs`), `foldNight` (once per learning day, with catch-up), and the `learner.params_refit` / `wheel_spin` events. Never a model call, never inside a lesson | determinism (I-C6); the Director owns in-lesson adaptation (policy AD1) |
+| X43 | `inputsHash` (G1) | §3.7 "deterministic in `inputsHash`", composition unspecified | **`'pi1:' + sha256(RFC 8785 JCS(quantised PlannerInputs))`**. Raw `now` and `asOf` are excluded; the anchor is floored to 15 min, voice to 30 s, pL to .01, η to .05 (policy §3.3) | otherwise "deterministic" cannot be tested, and a raw clock mints a plan version per minute |
+| X44 | arbitration (G1) | vibe R6 item 54: no rule between vibe, KT, interest and the plan | **`resolveKnob`, with precedence safety > limits > budget > KT > SRL > vibe > interest**. The constraint layers come from the **same pure predicates the `GUARDS` run**, so the guards are a no-op on planner output (I-A10). Budget may constrain only `laneMix`, and every lane domain keeps `tap` (`registerConstraint`, I-A2) | `resolveKnob` drops a constraint that empties the domain. Unregistered, an empty budget domain lets realtime through (shown in `adaptation-worked-example.mjs`) |
+| X45 | one bad close (G1) | §3.3 revision 2: a strained/tired close → success-first **and shorter segments** tomorrow | **one bad close → success-first only**. Segments shorten only while the R1 latch is on (≥ 3 of the last 4 closes bad; off after 3 fine) | the one-close rule latches 99.9% of steady children and flips 9.9×/8 weeks; 3/4, r=3 flips 0.49× (n = 8 seeds × 2,000) |
+| X46 | late sittings (G1) | fragment: one-shot test over all sittings, gap ≥ .30 | **nightly over a 16-close ring, ≥ 4 late and ≥ 4 early, on at gap ≥ .40, off < .20** | evaluated nightly, the old thresholds give 23.5% false latch; the new ones 15.9%, with a 91.3% hit |
+| X47 | pace (G1) | §4.4 "KT η, θ may change pace" | **R6**: eligible at ≥ 30 opps over ≥ 3 skills; → 2 after 2 refits at η ≥ +.5; → 0 after 3 at η ≤ −.5; back to 1 after 2 inside ±.25; B1 ≤ 1; held when the refit is stale | hysteresis cuts oscillation about 3× against a bare ±.5 threshold; down is costlier if wrong, so it needs more evidence |
+| X48 | `vibeClose` retention (G1) | §2.2: a re-plan input, retention unspecified | **≤ 16 closes and ≤ 14 days in `adapt.closes`; never a parent surface or the routine card (V27); erased with the child**. R1/R2 are gated on CM-A0 (label κ ≥ .6) | vibe's default `session_adaptive` mode keeps nothing behavioural across sessions; this is the one bounded exception, already implied by §2.2 |
 
 ---
 
@@ -267,7 +284,22 @@ export type StudentEvent =
   | { type: 'child.wellbeing_statement'; statementId: string; cls: WellbeingClass; askedToShare: 'yes' | 'no' | 'not_asked' }
   // system
   | { type: 'budget.threshold'; scope: 'child_day' | 'child_month' | 'global'; pct: 80 | 100 }
-  | { type: 'workspace.state_changed'; from: WorkspaceState; to: WorkspaceState };
+  | { type: 'workspace.state_changed'; from: WorkspaceState; to: WorkspaceState }
+  // child agency + learner-model writers (gap-fill G1-adaptation-policy; full types + IDEM keys in
+  // adaptation.contracts.ts §3; fold targets and reducer responses in adaptation-policy.md §6.1)
+  | AdaptEvent;
+export type AdaptEvent =
+  | { type: 'child.choice_made'; offerId: string; context: ChoiceContext; options: string[]; picked: string;
+      via: 'tap' | 'voice'; lessonId?: string; forDay?: string }                       // idem choice:{offerId}
+  | { type: 'child.plan_stated'; lessonId: string; cue: CueId; action: { kind: 'topic' | 'game' | 'review'; ref: string } }
+  | { type: 'child.goal_set'; goalId: string; isoWeek: string; skillIds: string[]; offered: string[];
+      byWeekday?: number; mcii?: { obstacle: ObstacleId; cue: CueId; action: ActionId } }   // ≤ 1 active (V23)
+  | { type: 'child.goal_closed'; goalId: string; status: 'met' | 'not_met' | 'dropped' | 'expired'; by: 'child' | 'system'; evidenceSeq?: number }
+  | { type: 'child.thread_opened' | 'child.thread_closed'; threadId: string; skillId?: string; how?: 'answered' | 'skipped' | 'expired' }
+  | { type: 'child.optin_changed'; feature: 'mcii' | 'standard' | 'own_reminders'; on: boolean; version: number }
+  | { type: 'learner.dependency_flag'; lane: 'lesson' | 'homework'; on: boolean; cause: 'cri' | 'toh';
+      windowEnd: string; refVersion: string; nEligible: number; nHelp: number; jobId: string }   // transitions only
+  | { type: 'learner.params_refit'; kind: 'eta_theta' | 'format'; paramsVersion: string; jobId: string };  // R6 trigger
 
 export type WakeReason = 'day_start' | 'night' | 'replan' | 'debounce_flush' | 'job_deadline' | 'weekly_letter'
   | 'commitment_due' | 'care_note_expiry' | 'safety_settle' | 'safety_escalate' | 'resume_window_end'
@@ -277,6 +309,11 @@ export interface LessonOutcomeDigest {              // computed by the Director'
   misconceptionsOpened: string[]; misconceptionsResolved: string[];
   vibeClose: 'fine' | 'strained' | 'tired';         // Conductor re-plan input ONLY; never reaches a parent line (pl PA-6)
   teachBackDone: boolean;
+  // (gap-fill G1-adaptation-policy) OutcomeDigestAdd: solo counts feed R7; the rest audit brief delivery
+  soloPlanned: number; soloDone: number; soloOk: number; soloDeclined: number;
+  prereqChecks: Array<{ skillId: string; result: 'pass' | 'fail' }>;
+  representationUsed?: { skillId: string; family: FormatFamily };
+  openerDelivered: OpenerKind | 'none';
 }
 ```
 
@@ -348,7 +385,8 @@ export interface ConductorState {
   band: Band; tier: TierId;
   mode: Mode; modeSince: string; hold?: { incidentId: string; level: 'high' | 'critical' };
   pauseUntil?: string;
-  plan?: { day: string; version: number; source: 'code' | 'llm'; shownSlotIds: string[]; startedSlotIds: string[] };
+  plan?: { day: string; version: number; source: 'code' | 'llm'; inputsHash: string;   // inputsHash: skip a no-change day_start (G1)
+           shownSlotIds: string[]; startedSlotIds: string[] };
   resumable?: { lessonId: string; until: string };   // network endings: 15 min (orch R7.6)
   limits: ParentLimits;                          // folded from parent.setting_changed (parent_setting is the source)
   routine: RoutineFacts;                         // anchor, backup window, bedtime, school hours, home-adult name
@@ -357,13 +395,36 @@ export interface ConductorState {
   pending: { replanAfter?: string; jobs: Record<string, { kind: JobKind; idem: string }> };
   consent: Record<Purpose, boolean>;
   counters: { lastActiveDay?: string; activeDays7: number };
+  adapt: AdaptMemory;                            // (gap-fill G1-adaptation-policy) cross-day adaptation memory, below
 }
+// (gap-fill G1-adaptation-policy) adaptation.contracts.ts §2; written only by decide (writer 'conductor.fold')
+export interface AdaptMemory {
+  foldedDay?: string;                            // last learningDay foldNight closed: idempotence + catch-up (I-A6)
+  closes: CloseLite[];                           // appended on lesson.ended; last 16, ≤ 14 days
+  shortSeg: RuleLatch; lateSitting: RuleLatch;   // R1, R2 (vibe)
+  reviewBacklog: RuleLatch; soloUp: RuleLatch;   // R3 (kt), R7 (srl)
+  paceBudget: { value: 0 | 1 | 2; since?: string; agreeDays: number; backRun: number };   // R6, moved on params_refit
+  repSwitch: Record<string, { day: string; from: FormatFamily; to: FormatFamily }>;      // R4, 30 d, ≤ 8 LRU
+  prereqChecked: Record<string, { day: string; result: 'pass' | 'fail' }>;               // R5, 14 d, ≤ 8 LRU
+  choice?: ChoiceLite; goal?: ChildGoal;         // R11 (latest unconsumed), R13 (≤ 1 active)
+  optIns: Partial<Record<'mcii' | 'standard' | 'own_reminders', { on: boolean; version: number }>>;
+  depFlag: { lesson: boolean; homework: boolean; tohHigh: boolean; since?: string };      // mirror of learner.dependency_flag
+  lastHomePick?: { isoWeek: string; activityId: string; kind: HomeActivityKind };         // R12
+  routineCardDay?: string;                       // R14 cooldown
+}
+export interface CloseLite { day: string; localHour: number; vibeClose: 'fine' | 'strained' | 'tired'; endedBy: EndedBy;
+  minutes: number; plannedMin: number; soloPlanned: number; soloDone: number; soloDeclined: number }
+export interface RuleLatch { on: boolean; since?: string; fineRun: number }
 ```
 
-Not in state, by design: mastery (read through `ChildBrief` at decision points; KT owns it), minutes used
+Not in state, by design: mastery (read through the `ConductorChildView` at decision points; KT owns it; gap-fill
+G1-adaptation-policy replaced `ChildBrief` here), minutes used
 (`conductor_usage`, written by admission), notification counts (the outbox slots are the cap), vibe session
-state (never persisted, vibe §4.1). Target size < 8 KB. Fast-changing scalars are columns, so jsonb rewrites
-don't inflate WAL (ws SW9).
+state (never persisted, vibe §4.1; only the 3-valued `CloseLite.vibeClose` crosses sessions, bounded by X48).
+Target size < 8 KB. **`adapt` < 1.5 KB at maximum fill, packed** (gap-fill G1-adaptation-policy): measured at
+1,016 B with the tuple codec vs 4,343 B as plain objects (`adaptation-state-size.py`, ring 16). So `adaptCodec.ts`
+packs it on commit and unpacks it in `upgradeState`, and I-A9 gates the size. Fast-changing scalars are columns, so
+jsonb rewrites don't inflate WAL (ws SW9).
 
 ```sql
 -- db/migrations/002_conductor.sql (part 2: actor, decisions, plans, usage)
@@ -379,13 +440,14 @@ create table decision_log (                          -- the Conductor's turn_tra
   child_id uuid not null references child(id) on delete cascade, version bigint not null,
   at timestamptz not null default now(), now_used timestamptz not null,
   state_v int not null, build_sha text not null, from_seq bigint not null, to_seq bigint not null,
-  brief_digest text,                                 -- → brief_snapshot (X34); no value copy per row
+  brief_digest text,                                 -- → brief_snapshot (X34): the recorded ViewReader map; no value copy per row
   arms text[] not null default '{}',
   decisions jsonb not null,                          -- [{seq, rules[], blocked:[{cmd, guard, reason}]}]
   commands jsonb not null, correlation_id text not null,
   primary key (child_id, version));
 
-create table brief_snapshot (                        -- content-addressed (X34): only the ChildBrief fields fired rules read
+create table brief_snapshot (                        -- content-addressed (X34): only the ConductorChildView keys the step read,
+                                                     -- as { "key[.sub]": {value, asOf, src, stale} } (G1: X41; was ChildBrief)
   child_id uuid not null references child(id) on delete cascade,   -- per child, so erasure and the W-map test cover it
   digest text not null, value jsonb not null, created_at timestamptz not null default now(),
   primary key (child_id, digest));                   -- insert … on conflict do nothing (a new row, never a lock wait)
@@ -460,8 +522,11 @@ bounded by bedtime − 30, and the stricter of parent and band wins.
 | `app.opened` | if no plan for `learningDay`: build the **code plan now** and commit it as `day_plan` v1 (`first_open`). The device has already painted from its cached plan in < 300 ms (orch R7.9). If `resumable` is live: emit `brief.refresh{resumeOf}`. Drain due wakeups (piggyback). If the child was dormant (no open for ≥ 14 days), re-arm the recurring wakeups (X36) |
 | `slot.shown` / `slot.started` | add the slot to `shownSlotIds` / `startedSlotIds`: it is frozen for the day (V10) |
 | `lesson.started` | mode → `in_lesson` |
-| `lesson.ended` | mode → `free`. `network` → `resumable` until +15 min. Enqueue `memory.consolidate:{lessonId}`. Debounce a re-plan by 5 min over **unshown** slots. Run detectors (§7.6). A `strained`/`tired` close makes tomorrow's opener success-first with shorter segments (never a parent line) |
-| `skill.milestone` | `wheel_spin` → re-plan with a different representation or a prerequisite check (LS-10); `mastered` on a parent-asked skill → a milestone candidate (§4.10) |
+| `lesson.ended` | mode → `free`. `network` → `resumable` until +15 min. Enqueue `memory.consolidate:{lessonId}`. Debounce a re-plan by 5 min over **unshown** slots. Run detectors (§7.6). Append one `CloseLite` to `adapt.closes` (gap-fill G1-adaptation-policy). A `strained`/`tired` close makes the next opener success-first **only**; segments shorten only while the R1 latch is on (X45). Never a parent line |
+| `skill.milestone` | `wheel_spin` → re-plan unshown slots: R5 (a prerequisite with pL < .4 at depth ≤ 3, not checked in 3 days) first, else R4 (a different representation family, not switched in 3 days) (LS-10; gap-fill G1-adaptation-policy); `mastered` on a parent-asked skill → a milestone candidate (§4.10) |
+| `learner.params_refit` (G1) | `eta_theta` → evaluate R6 against `kt.eta` (recorded read) and move `adapt.paceBudget` by its hysteresis; `format` → nothing (read at plan time) |
+| `learner.dependency_flag` (G1) | mirror into `adapt.depFlag`; R7/R12 act at the next night fold / weekly intent |
+| `child.choice_made` / `goal_set` / `goal_closed` / `optin_changed` (G1) | fold into `adapt.choice` (only with a `forDay`) / `adapt.goal` / `adapt.optIns`; an in-lesson choice with no `forDay` is the Director's and is only counted |
 | `teacher.promise` | append to `promises`; the validator must honour it (V11) |
 | `parent.setting_changed` | apply limits at once. A lowered cap or an earlier bedtime emits `brief.refresh`, which the Director applies at the next segment boundary (dc AR-5 R8) |
 | `parent.consent_changed{granted:false}` | cancel queued jobs of that purpose and set `cancel_requested` on running ones (orch R2.6) |
@@ -469,7 +534,7 @@ bounded by bedtime − 30, and the stricter of parent and band wins.
 | `parent.focus_requested` / `schedule_proposed` | validate. Adopt into **unshown** slots or the next day, and answer the proposal inline (§7.7) |
 | `school.pointer_vote` / `test_announced` / `day_override` | fold into `school`; re-plan unshown slots; open a test window (§4.8) |
 | `capture.committed` | if a sitting is open, the Director's homework mode picks it up; otherwise add a `homework_help` slot at the head of the next sitting |
-| `clock.wakeup` | `day_start`: refresh the code plan if inputs changed. `night`: close the learning day, and re-arm tomorrow's `day_start`/`night` only if `counters.lastActiveDay` is within 14 days (X36). `weekly_letter`: enqueue `parent.letter`. `commitment_due`, `safety_settle`, `safety_escalate`, `resume_window_end`, `pause_end`, `care_note_expiry`: as named |
+| `clock.wakeup` | `day_start`: refresh the code plan only if `inputsHash` changed (X43). `night`: close the learning day with `foldNight` (gap-fill G1-adaptation-policy, adaptation-policy §7.2). It runs once per `learningDay` (`adapt.foldedDay`) and does five things: (1) trims the CloseLite ring to 16 closes and 14 days; (2) evaluates the R1, R2, R3, R7 and R14 latches in `RULES` order, counting **closes, not days**, and resetting R1/R2/R14 on an empty ring; (3) expires TTLs: `repSwitch` 30 d, `prereqChecked` 14 d, a choice past its `forDay`, a goal past its ISO week; (4) recounts `lastActiveDay`/`activeDays7`; (5) re-arms tomorrow's `day_start`/`night` only if `counters.lastActiveDay` is within 14 days (X36). It never builds tomorrow's plan (X10). A missed `night` is caught up by the first event of a later learning day, once. `weekly_letter`: enqueue `parent.letter`. `commitment_due`, `safety_settle`, `safety_escalate`, `resume_window_end`, `pause_end`, `care_note_expiry`: as named |
 | `job.done` / `job.failed{final}` | clear `pending.jobs`; on a final failure take that kind's fallback (§8.2) |
 | `safety.incident` | **pre-empts everything**: mode → `safety_hold` (every severity until D-SAFE rules: X33); cancel child-facing queued jobs; hand to the protocol. The Conductor never decides safety content |
 | `safety.incident_updated` | re-evaluate `safetyParentNotice()` (§7.6) |
@@ -479,14 +544,49 @@ bounded by bedtime − 30, and the stricter of parent and band wins.
 
 ```ts
 // server/conductor/decide.js — pure. Inputs only: (state, event, ctx). No Date.now, Math.random, env, I/O.
-export interface DecideCtx { now: Date; cfg: ConductorConfig; brief: BriefReader; arms: Assignments; cal: DayKindLookup }
+// (gap-fill G1-adaptation-policy, X41) `view` replaces the untyped `brief: BriefReader`. ViewReader, ConductorChildView,
+// Fresh<T>, MAX_AGE_H and FALLBACK are in adaptation.contracts.ts §1; stale keys return the fallback, which fires no rule.
+export interface DecideCtx { now: Date; cfg: ConductorConfig; view: ViewReader; arms: Assignments; cal: DayKindLookup }
 export interface DecideOut { state: ConductorState; commands: Command[]; rulesFired: string[];
-  blocked: Array<{ cmd: Command; guard: string; reason: string }>; briefRead: Record<string, unknown> }
+  blocked: Array<{ cmd: Command; guard: string; reason: string }>;
+  viewRead: Record<string, { value: unknown; asOf: string; src: string; stale: boolean }> }   // → brief_snapshot
 export function decide(state, event, ctx): DecideOut { /* handlers → candidate commands → GUARDS (authority order) */ }
 
 export const GUARDS = [safetyGuard, consentGuard, parentControlGuard, policyCapGuard, governorGuard];  // ordered
 // A guard may drop or narrow a command, never add or widen one. Every drop is logged in decision_log.blocked.
+// (G1, X44) Guard ↔ layer: safetyGuard = safety; consent/parentControl/policyCap = limits; governorGuard = budget. Each
+// guard's predicate lives in shared/conductor/policy.ts, and planDay builds its resolveKnob constraints from the SAME
+// predicates (through registerConstraint, I-A2). So GUARDS are a no-op on planner output (I-A10); a narrowing is
+// adopted (guards win) and audited as 'guard_narrowed_plan'.
 ```
+
+**Knob arbitration inside the planner** (gap-fill G1-adaptation-policy, X44; `resolveKnob` in
+`adaptation.contracts.ts` §5, rules in §4.4 below). For each knob of each slot:
+1. Constraints from safety, then limits, then budget are intersected. They come from the guards' own predicates and
+   pass `registerConstraint`: only those three layers may constrain; budget only `laneMix`; every lane domain keeps
+   `tap`; no domain is empty.
+2. The highest-layer *permitted* preference (`MAY_PROPOSE`) sets the value, projected into the domain. Layer order:
+   KT > SRL > vibe > interest.
+3. A lower layer moves it only inside the owner's declared slack.
+
+Every drop is logged as a `RuleFiring.blockedBy` reason: `layer_not_permitted`, `projected_into_domain` or
+`outside_owner_slack`. Preferences are pushed in `RULES` order, which breaks ties.
+
+*Worked example* (adaptation-policy §5.4; `adaptation-worked-example.mjs` runs it through the real `resolveKnob`, 17/17
+expectations, 2026-10-02). Aarav, B1, age 6. Day 3 of a 5-day Maths test window. R1 is latched (strained, strained,
+fine, tired). Realtime left: 600 s over 8 expected active days = 75 s today. He picked "shapes" yesterday. Results:
+- `segmentMinutes`: KT 20 with slack [12, 20], vibe R1 14 → **14**.
+- voice rung: limits {realtime, cascade, tap} ∩ budget {cascade, tap} → realtime is *projected* to **cascade** for
+  the whole lesson (I-R7).
+- `topic`: KT test chapter 4 beats interest ch. 6 (`outside_owner_slack`) → `choiceAck{honoured:false}`.
+- `pace`: **1** (B1 cap; R6 ineligible at 12 opps).
+- `successFirst`: **on** (vibe).
+- `foundationShare`: **.175** ((.2 + .15) × .5).
+- `soloRounds`: **2**.
+- opener: `standard_retrieval`.
+
+Segments: retrieve 3 tap · teach 4 cascade · play 3 tap · teach-back 3 cascade · wrap 1 cascade. All five guards then
+pass the `plan.adopt` unchanged (I-A10).
 
 ```js
 // server/conductor/step.js
@@ -503,18 +603,18 @@ export async function step(childId, { maxEvents = 50 } = {}) {
     const now = clock.now();                                    // one recorded `now` per batch (decision_log.now_used)
     const events = await q(`select * from student_event where child_id=$1 and seq>$2 order by seq limit $3`,
                            [childId, cursor, maxEvents]);
-    const brief = recordingBriefReader(childId);                // records every field read → brief_snapshot (X34)
+    const view = recordingViewReader(childId, now);             // records every key read → brief_snapshot (X34, X41)
     const commands = [], decisions = [];
     for (const ev of events) {
-      const out = authorityClass(ev.type) ? decideOrFailSafe(state, ev, ctx(now, brief))   // §3.6
-                                          : decide(state, ev, ctx(now, brief));
+      const out = authorityClass(ev.type) ? decideOrFailSafe(state, ev, ctx(now, view))    // §3.6
+                                          : decide(state, ev, ctx(now, view));
       state = out.state; cursor = ev.seq;
       commands.push(...out.commands);
       decisions.push({ seq: ev.seq, rules: out.rulesFired, blocked: out.blocked });
     }
     // CasFailed, 40001 and 40P01 (the deadlock backstop: X29) abort the whole batch with nothing written. The caller
     // re-runs step() from a fresh lease read, at most 3 times; after that pending_since stays set for the dirty-set loop.
-    ({ version, hasMore } = await commit(childId, token, version, state, cursor, commands, decisions, brief, now));
+    ({ version, hasMore } = await commit(childId, token, version, state, cursor, commands, decisions, view, now));
   }
 }
 // Replay (§3.11) is a different function with a different handle: replay(childId, fromSeq, reader) folds and returns
@@ -530,7 +630,7 @@ export async function step(childId, { maxEvents = 50 } = {}) {
 // Correctness rests on the child_seq row lock plus has_more, not on conductor_state (orch B2). A competing step()
 // holds no other lock: its single-statement lease UPDATE either finds the lease held and returns `skipped`, or waits
 // briefly on this transaction's conductor_state row and then finds it held. So it can never join a cycle.
-export const commit = (childId, token, expected, state, cursor, commands, decisions, brief, now) => tx(async (t) => {
+export const commit = (childId, token, expected, state, cursor, commands, decisions, view, now) => tx(async (t) => {
   // 1. CAS on version AND this invocation's lease token. The conductor_state row stays locked until COMMIT.
   const r = await t.one(`update conductor_state set state=$4, state_v=$5, cursor_seq=$6, mode=$7, learning_day=$8,
         plan_day=$9, plan_version=$10, version=version+1, updated_at=now()
@@ -544,7 +644,7 @@ export const commit = (childId, token, expected, state, cursor, commands, decisi
   await upsertWakeups(t, childId, commands);
   await insertNotifications(t, childId, commands);              // slot insert = cap (§4.10.3)
   await insertPlans(t, childId, commands);                      // 'plan.adopt' → day_plan row (new row)
-  const digest = await insertBriefSnapshot(t, childId, brief);  // on conflict (child_id, digest) do nothing (X34)
+  const digest = await insertBriefSnapshot(t, childId, view.recorded());  // the ViewReader map (X41); on conflict do nothing (X34)
   await t.q(`insert into decision_log (child_id, version, now_used, state_v, build_sha, from_seq, to_seq,
                brief_digest, arms, decisions, commands, correlation_id) values (...)`, [/* … digest … */]);
   // 2. LAST lock: child_seq. An ingest in flight holds it, so this UPDATE waits and re-reads `last`. An ingest that
@@ -602,12 +702,33 @@ export type Command =
 
 | point | when | proposer | adopted if |
 |---|---|---|---|
-| day plan | `app.opened` with no plan; `day_start` if inputs changed | **code planner** (always computed, deterministic in `inputsHash`) | always valid by construction; checked by the validator anyway |
+| day plan | `app.opened` with no plan; `day_start` if `inputsHash` changed | **code planner** `planDay(inputs: PlannerInputs)`: pure, deterministic in `inputsHash` (X43, I-A4) | always valid by construction; checked by the validator anyway |
 | re-plan | 5 min debounce after `lesson.ended`, `test_announced`, `pointer_vote`, a limit change or wheel-spin | code planner over **unshown** slots | validator |
 | LLM day plan (M2) | night, only for children active in the last 7 days, jittered over 22:30-04:30 IST | luna, `plan.day.llm` job, **shadow** | never adopted until CM3 (pre-registered micro-RCT on delayed outcomes, LS-37) clears it; then only if it passes the validator |
 | weekly intent | Sunday cutoff | code (the home-activity pick, focus weights) | validator |
 
 The plan validator rules are listed in §4.5. A rejected proposal logs `plan.rejected{rule}`, which feeds the planner eval.
+
+**The planner seam** (gap-fill G1-adaptation-policy; adaptation-policy §3, types in `adaptation.contracts.ts` §8):
+
+```ts
+const base  = buildBase(state, event, ctx);                 // pure: state, cfg, cal, recorded now, arms
+const keys  = planKeys(base);                               // pure: which view keys this plan may read (≤ 40 skills)
+const view  = readAll(ctx.view, keys);                      // recorded ViewReader reads; `asOf` dropped, `stale` kept
+const inputs: PlannerInputs = { ...base, view };
+const inputsHash = 'pi1:' + sha256hex(jcs(quantise(inputs)));            // RFC 8785 bytes (X43)
+if (state.plan?.day === base.day.learningDay && state.plan.inputsHash === inputsHash) return;   // nothing changed
+const { plan, firings } = planDay(inputs);                  // PURE over `inputs`: no reader, clock, I/O or randomness
+```
+
+`PlannerInputs` = `{ v, build{plannerSha, cfgDigest, thresholdsV}, child{band, vibeBand, ageYears, tier},
+day{learningDay, dayKind, reason, anchor{kind, localHHMM floored to 15 min}}, window, limits{capMin, hwSubCapMin,
+restDay, careEffect}, mode, school{testWindows (sorted), pointers}, homework (sorted), promises (sorted),
+frozen{planVersion, slots[{slotId, digest}]}, usage (whole minutes), voice{leftSec (30 s), activeDaysLeftEst},
+adapt (packed), view{key: {value (quantised: pL .01, η .05, ratios .1), src, stale}}, arms }`. Excluded from the hash:
+the raw `now`, every `asOf`, `homeAdultName`, all parent text and `ChildBrief`. G3 checks that two processes give
+byte-equal plans for equal inputs, that excluded-field mutations leave the hash unchanged, and that included-field
+mutations change it. A planted `Date.now()` and an unsorted array are the negative controls.
 
 ### 3.8 Jobs
 
@@ -760,8 +881,12 @@ $$;
 
 ### 3.11 Replay contract
 
-`decide` is pure relative to `(event, state, recorded now, recorded brief fields, cfg@build_sha, arms)`. All of
+`decide` is pure relative to `(event, state, recorded now, recorded view keys, cfg@build_sha, arms)`. All of
 these are in `decision_log` and `brief_snapshot`. Invariant I-R3: a replay that reads anything else fails.
+(gap-fill G1-adaptation-policy) The replay reader is a `ViewReader` that serves only the recorded
+`{key: {value, asOf, src, stale}}` map. Staleness is replayed as recorded and is never recomputed against the replay
+clock. A key missing from the map throws `ReplayMiss`, the view analogue of `CassetteMiss`. `planDay` gets no reader
+at all: it is pure over `PlannerInputs`, whose `view` was filled from this same map (§3.7).
 Assignment is a pure hash passed into `decide` (obs O10). L2 replay on release starts at M1; the nightly production
 sample starts at M2 (§9.8).
 
@@ -854,6 +979,29 @@ Adaptation rules (dc §3.4, AR-10):
   second child's plan shifts by the first child's planned length.
 - **Learning ability** (KT η, θ) may change pace and difficulty. It never changes the cap or the praise dose.
 
+**Cross-day adaptation rules R0-R14** (gap-fill G1-adaptation-policy). The full table is adaptation-policy §4: the
+`Fresh<T>` keys each rule reads, its stale fallback and its threshold source. `RULES` and `T` in
+`adaptation.contracts.ts` hold the same table as data. Latches are evaluated by `foldNight` (§3.3) unless the row
+says otherwise. A latch counts closes, not days, and **a stale key never fires a rule** (V25).
+
+| id | knob (layer) | on → off (hysteresis) | evidence for the threshold |
+|---|---|---|---|
+| R0 | every knob's base value: band template + this priority stack (kt) | always | §4.3, §4.4 |
+| R1 | session minutes × .7, never below the band minimum set; success-first (vibe) | last close bad → success-first only. **On:** ≥ 3 of the last 4 closes `strained`/`tired`. **Off:** 3 fine closes, or none in 14 d | k-of-m run rules (Western Electric) + Schmitt hysteresis; sim: 0.49 flips/8 wk, 23.6% child false latch, 100% hit |
+| R2 | minimum segment set for sittings ≥ 20:00 (vibe) | **On:** ≥ 4 late + ≥ 4 early closes in the 16-ring, gap ≥ .40. **Off:** gap < .20 or an arm < 4 | per-child contrast (no 20:00+ evidence; TRAILS covers 08:30-13:00); sim: 15.9% false latch, 91.3% hit |
+| R3 | review share .15 → .25 of lesson minutes + 1 burst offer (kt) | **On:** ≥ 6 items with overdue ratio ≥ 1. **Off:** ≤ 2 | FSRS R .9 target; the §4.4 25% cap; counts [U] |
+| R4 | representation family for a wheel-spinning skill (kt) | on `wheel_spin`; not again for that skill within 3 d | Beck & Gong 2013: ≥ 10 opps without 3 in a row |
+| R5 | prerequisite check, a `prereq_first` slot (kt) | on `wheel_spin`, before R4: a prerequisite with pL < .4 at depth ≤ 3; not re-checked within 3 d | need §4.7, LS-10 |
+| R6 | new-skill budget 0/1/2, B1 ≤ 1 (kt) | on `learner.params_refit`, when ≥ 30 opps over ≥ 3 skills. **Up:** η ≥ +.5 on 2 refits. **Down:** η ≤ −.5 on 3. **Back:** inside ±.25 on 2. Stale refit → hold | kt §2.5 prior N(0, .5²); Yudelson 2013; sim: oscillation 0.19 vs 0.56 naive |
+| R7 | solo rounds base → base + 1 (srl) | **On:** ok ≥ .8 of ≥ 8 attempts, or the dependency flag. **Off:** declines ≥ .4, or flag off with ok < .7 | srl §3.5, §5.5 |
+| R8 | opener kind + success-first (kt > srl > interest) | gap ≥ 7 d → `reanchor_light`; then `goal_review`; then `thread_return`; then `callback`; else `standard_retrieval`. Always ≥ 2 due items (V5) | MI §2.6; high-p sequence (Mace 1988) as the analogue |
+| R9 | foundation share `min(.6, .2 + .15·gap)`, × .5 in a test window; ≥ .5 for a rank-1 catch-up goal (kt) | weekly | need §4.7 ∩ the 60/40 and 30/70 of item 5 |
+| R10 | voice rung (budget constraint) | allowance = `floor(realtimeLeft / activeDaysLeft)`; if short → `{cascade, tap}` | §9.5 ladder |
+| R11 | topic or skin from a child's choice (interest) | consumed once, inside the KT domain only; else `choiceAck` | Patall 2008 |
+| R12 | the weekly home-activity kind (srl > interest) | weekly; never the same kind 2 weeks running | pl §7.4 |
+| R13 | the goal card, child-set (srl) | ≤ 1 active goal; MCII only at ≥ 12 with the opt-in | Duckworth 2011 (n = 66) |
+| R14 | one in-app parent routine card (kt, facts tier) | ≥ 3 of the last 5 closes cut short or late; 14 d cooldown; reads `endedBy` and hours, **never** `vibeClose` | dc §7.4; V27 |
+
 ### 4.5 Contracts: DayPlan, PlannedSlot, LessonBrief
 
 ```ts
@@ -868,7 +1016,11 @@ export interface PlannedSlot {
   segments?: Array<{ kind: SegmentKind; minutes: number; laneWanted: Lane }>;
   voiceSecWanted: Partial<Record<Lane, number>>;
   format?: { engineHints: string[] };                 // content-format fit, never a learner label (LS-22)
-  why: Array<{ code: WhyCode; ref: string }>;         // backs "Kaise pata?" (PX3) and the ops timeline
+  why: Array<{ code: WhyCode | WhyCodeAdd; ref: string }>;   // backs "Kaise pata?" (PX3) and the ops timeline
+  // (gap-fill G1-adaptation-policy) PlannedSlotAdd: the adaptive knobs, each backed by a RuleFiring (V16)
+  pace?: { newSkillBudget: 0 | 1 | 2 }; soloRounds?: number; opener?: OpenerKind; successFirst?: boolean;
+  representation?: { skillId: string; preferFamily: FormatFamily; avoidEngines: string[] };
+  prereqCheck?: { skillId: string; forTopicId: string }; foundationShare?: number;
 }
 export interface DayPlan {
   childId: string; day: string; version: number; band: Band;
@@ -877,7 +1029,8 @@ export interface DayPlan {
   slots: PlannedSlot[];
   voiceBudgetSec: Partial<Record<Lane, number>>;      // remaining this month from the tier (§9.5)
   prefetch: Array<{ libraryKey: string }>;            // library keys only; no child fields (V15)
-  inputsHash: string; builtBy: 'code' | 'llm';
+  inputsHash: string; builtBy: 'code' | 'llm';        // inputsHash composition: §3.7, X43
+  adapt: { rules: RuleFiring[]; viewSrc: Record<string, string> };   // (G1) every firing, its evidence and blockedBy
 }
 // shared/contracts.ts — Conductor → Director (merged orch §5.2 + dc contracts)
 export interface LessonBrief {
@@ -892,8 +1045,16 @@ export interface LessonBrief {
   careEffect?: 'gentle_mode';
   homeAdultName?: string;                             // "show <name>", never assumed "Mumma" (dc AR-10.6)
   preparedModules: Array<{ artifactId?: string; engine: string; params: Record<string, unknown> }>;
-  childBrief: ChildBrief;                             // ≤ 600 tok (existing)
+  childBrief: ChildBrief;                             // ≤ 600 tok (existing); the Director's packet, never read by decide()
+  // (gap-fill G1-adaptation-policy) LessonBriefAdd
+  opener: OpenerKind; successFirst: boolean; soloRounds: number; newSkillBudget: 0 | 1 | 2;
+  representation?: PlannedSlot['representation']; prereqCheck?: PlannedSlot['prereqCheck'];
+  goalReview?: { goalId: string; skillIds: string[] };
+  choiceAck?: { offerId: string; honoured: boolean }; // a blocked child choice still gets an acknowledgement shape
+  adaptTrace: RuleId[];                               // ops only; never compiled into a prompt
 }
+// OpenerKind = 'standard_retrieval' | 'reanchor_light' | 'goal_review' | 'thread_return' | 'callback'
+// WhyCodeAdd = 'child_goal' | 'thread_return' | 'representation_switch' | 'prereq_check' | 'independence'
 ```
 
 **Plan validator** (`server/conductor/validate.js`). Each rule has a negative-control fixture:
@@ -914,6 +1075,19 @@ export interface LessonBrief {
 | V12 | sets `plannedMin` above the normal-day plan after a skipped day | DC2 |
 | V13 | has more than one parent-originated probe in a lesson, or one before the opener | pl PA-21 C4 |
 | V14 | has a `prefetch` key that carries any ChildBrief field outside the Forge projection | orch R3.1, ws W8 |
+| V15 | puts an adaptive knob outside its bounds: session ≥ the band minimum set and ≤ the template; `soloRounds` ∈ [base, base + 1]; `newSkillBudget` ∈ {0, 1, 2}, ≤ 1 for B1; `foundationShare` ≤ .6; `reviewShare` ≤ .25 (gap-fill G1-adaptation-policy) | adaptation-policy §4 |
+| V16 | has a knob that differs from R0 without a `RuleFiring`, or a firing that changed nothing | §4 trace |
+| V17 | switches a skill's representation within 3 d of the last switch, back to its `from` family, or to an engine in `avoidEngines` | R4 |
+| V18 | prereq-checks a skill checked within 3 d, deeper than 3, or more than once per lesson | R5 |
+| V19 | uses an opener kind whose source is absent (`goal_review`/`thread_return`/`callback` without a goal/thread/`tm.opener`) | R8, V5 |
+| V20 | has `newSkillBudget` > 0 in the last 2 days of a test window, more new skills than the budget, or > 1 for B1 | R6, DC11 |
+| V21 | carries a firing whose (layer, knob) is not in `MAY_PROPOSE`, or a constraint `registerConstraint` refuses | I-A1, I-A2 |
+| V22 | adopts a child choice outside the higher layers' domain, drops a blocked choice without `choiceAck{honoured:false}`, or offers core vs fluff | R11, LS-26 |
+| V23 | has > 1 active goal, a goal of > 1 skill or task, MCII under 12 or without the opt-in, or a goal card while a goal is active | R13, need §4.6 |
+| V24 | has a firing whose evidence key is not in the step's recorded view (`brief_snapshot`) | X34, X41 |
+| V25 | has a firing whose evidence includes a stale key | X41 |
+| V26 | raises `plannedMin` or the cap through any rule, changes the praise dose, or puts η, θ or a gap number on any child- or parent-facing field | §4.4, kt R18 |
+| V27 | has a routine card whose evidence includes a vibe key, more than one in 14 d, or one sent as a push | R14, pl PA-6 |
 
 ### 4.6 In-lesson boundary contract (Director ↔ Conductor ↔ governor)
 
@@ -1705,7 +1879,7 @@ control:
 | G1 prompt budget | every `compile()` lane at max inputs; turn-shape rule LAST | a 2× brief must fail |
 | G2 predicates | AI-honesty, 1098/14416 present, notification lexicon, unconstructible banned classes, telemetry allow-list, safeguarding exclusion | a planted violation per predicate |
 | G3 determinism + invariants | §9.9 registry; double-compile byte identity with a frozen clock; L2 replay of fixture days; the lock-order probe (`conductor-lock-order-rev2-probe.sh`) against a scratch PG 16 with the real migration's functions | `Date.now()` injected into `compile` must fail; a deleted cassette entry → `CassetteMiss` with 0 Azure calls; the revision-1 `child_seq`-first commit must deadlock; a replay given a write handle must trip I-R9 |
-| G4 day simulator | `evals/conductor-sim/`: 8 seeds × 6 personas × 4 simulated weeks, tables diffed vs `main` | a persona with a planted absence-nudge rule must trip |
+| G4 day simulator | `evals/conductor-sim/`: 8 seeds × 6 personas × 4 simulated weeks, tables diffed vs `main`; plus (gap-fill G1-adaptation-policy) the adaptation personas of adaptation-policy §8.4 over 8 weeks, including `latch_walker`, and the `planDay` determinism property (I-A4) | a persona with a planted absence-nudge rule must trip; each adaptation persona's planted rule must trip its named V/I-A gate; the 1/1, r=1 strain latch must trip I-A3 |
 | G5 lesson battery | SimChild × Director (per-PR subset of 96 lessons ≈ $2-4; full nightly on the eval deployment on path-map trigger) | a "leaky" Director must fail the leak bar |
 | G6 Tutor Bench | deterministic axes per change; human panel on a cadence | the rejected brevity-by-instruction build must score below the bar |
 | G7 voice floor | `evals/realtime-audio-in.mjs` + WebRTC harness | a 300 ms silence config must produce cut-offs |
@@ -1737,7 +1911,18 @@ Path map: Conductor changes → G3, G4. Prompt/compile → G1, G2, G3, G6. Direc
 | I-R10 | no SQLSTATE `40P01` across 8 seeds of the simulator's concurrent-ingest + job-completion + ticker persona, with the substrate shim enforcing the X29 order | orch B1, X29 |
 | I-R11 | the idle hang-up never fires on a turn with a confident child transcript (a planted off-topic child utterance must not hang up) | orch B6, X32 |
 | I-R12 | after 14 days without `app.opened`, no `day_start`/`night` wakeup is re-armed; a parent-chosen wakeup is never dropped | orch B10, X36 |
-| I-V1..V14 | the plan validator rules (§4.5) | dc, orch |
+| I-V1..V27 | the plan validator rules (§4.5; V15-V27 from gap-fill G1-adaptation-policy) | dc, orch, adaptation-policy |
+| I-A1 | (gap-fill G1-adaptation-policy) no knob takes a value from a layer outside `MAY_PROPOSE`. **Control:** a vibe rule proposing `reviewShare` .15 is blocked `layer_not_permitted` (`adaptation-worked-example.mjs`) | X44 |
+| I-A2 | every constraint passes `registerConstraint`, and there are 0 `empties_domain` drops among constraint layers in G4. **Control:** an empty budget domain, and a budget bound on minutes, are refused | X44 |
+| I-A3 | per latch, under steady personas: oscillation mean ≤ 0.6 and p90 ≤ 2 flips per 8 weeks (measured R1 0.49 / 2.0; R2 0.32; R6 0.19). **Control:** the 1/1, r=1 latch (9.9 flips) | X45-X47 |
+| I-A4 | `planDay` is byte-deterministic in `inputs`; equal `inputsHash` ⇒ equal plan bytes; preference insertion order is irrelevant. **Control:** `Date.now()` in `planDay`; an unsorted array before hashing | X43 |
+| I-A5 | no firing reads a stale key (V25). **Control:** `stale_refit` (a 40 h old `kt.eta` = +.9) must not move pace | X41 |
+| I-A6 | `foldNight` is idempotent and runs once per learning day, with catch-up. **Control:** a fold counting nights instead of closes | §3.3 |
+| I-A7 | no adaptation raises `plannedMin`, the cap or the praise dose (V26). **Control:** +5 min when η > .5 | §4.4 |
+| I-A8 | `vibeClose` never reaches a parent surface or the routine card (V27). **Control:** R14 reading `vibeClose` | X48 |
+| I-A9 | packed `adapt` ≤ 1,536 B at maximum fill (measured 1,016 B). **Control:** the unpacked codec (4,343 B) or ring 32 | §3.1 |
+| I-A10 | `GUARDS` narrow no `plan.adopt` in G4 (count 0). **Control:** a planner skipping R10's constraint | X44 |
+| I-A11 | `latch_walker` turns each latch on and off inside its windows on 8/8 seeds (adaptation-policy §8.4). **Control:** any latch with its window missed | §9.10 |
 | I7-I11 | leak guard, no realtime homework, no correctness talk without a kit/code key, `homework_key` unreachable from `compile()`, isomorph collisions | ss AR-9 |
 | I13-I18 | replica loss loses nothing; a poison batch acks the rest; one KT writer; erase fencing; module egress blocked; no retraction | ws R9 |
 | PLI1-PLI19 | claim-checker coverage, no pressure wording, home activity needs no maths, ≤ 1 activity/week, commitment cap under concurrency, no S notice while implicated, parent text unreachable from ChildBrief, voice note = script, letters re-gated at send, canDo-only activities, no SLA without a rota row | pl §12, PA-22 |
@@ -1749,7 +1934,7 @@ Path map: Conductor changes → G3, G4. Prompt/compile → G1, G2, G3, G6. Direc
   drop-off after day 3; a test announced mid-week; siblings on one phone; a parent who changes limits at 23:00; patchy
   network replaying events; Azure 429 storms; an invalid LLM plan 20% of the time; concurrent ingests racing job
   completions and the ticker (I-R10); a killed worker between side effect and completion; ±2 h device clock skew; a
-  chatty 6-year-old who goes off-topic every third turn (I-R11); an account dormant for 3 weeks, then back (I-R12)).
+  chatty 6-year-old who goes off-topic every third turn (I-R11); an account dormant for 3 weeks, then back (I-R12); and (gap-fill G1-adaptation-policy) the adaptation personas of adaptation-policy §8.4. These are `fast_learner`, `wheel_spinner`, `over_reliant`, `tired_every_evening`, `interest_switcher`, `goal_setter_teen`, `exam_vs_thread`, `low_budget_b1_test`, `stale_refit` and `routine_vs_vibe`, plus **`latch_walker`**: a scripted 8-week B2 child that must turn every latch (R1, R2, R3, R6, R7, R14) on and then off inside stated windows. Week 1 is steady (no latch may fire); week 2 strained (R1); a 9-day gap (R8 re-anchor, R3 backlog); η = +.9 from week 3 (R6 → 2); late tired sittings in weeks 4-6 (R2); a dependency flag in weeks 5-6 (R7); 3 of 5 sittings cut by bedtime in week 7 (R14); η back to 0 in week 8 (R6 → 1)).
   It prints tables: plan adherence, minutes by lane, invariant violations, dead jobs, deadlock retries, wakeups per
   dormant child, cost per child-week, letter on-time rate.
 - **SimChild** (obs O7): a seeded code state machine whose misconceptions weaken only under the moves that resolve
@@ -1792,6 +1977,8 @@ group has two named humans.
 | PLM12 / PLM13 / PLM14 | PTM $/min; WhatsApp block rate and tier; incident → delivered parent notice p95 and the unreachable rate | PTM cap; channel; S ladder |
 | WS-M10 | peak statements/s per Neon compute including sync | when cells are needed |
 | DC-M1 / DC-M3 / DC-M4 | anchor vs no anchor on session days in weeks 5-8; where attention drops by minute and band; real after-school windows | DC1, DC4, §4.1 |
+| `adaptation-hysteresis-sim-2026-10-02` | (gap-fill G1-adaptation-policy) done [sim]: seeds 11-18 (n = 8), 2,000 children × 40 sittings per seed. **R1 3/4, r=3:** oscillation 0.486 flips/child/8 wk [0.468-0.515], p90 2; false latch (steady child ever on) **23.6%** [22.3-24.6]; 2.5% of sittings on; hit 100%. The one-close rule (1/1, r=1): 9.9 flips, 99.9% false latch. **R2** (nightly, 16-ring, ≥ 4 each, .40/.20): 0.32 flips, **15.9%** false latch, 91.3% hit; at .30/.30 it was 23.5% false. **R6** (I = .05): hysteresis 0.19 flips, 12.2% steady moved, 84% correct for η ±.8, vs naive 0.56 / 17.1% / 76%. The original seed-11 tables reproduce unchanged. Also `adaptation-state-size.py` (packed `adapt` 1,016 B) and `adaptation-worked-example.mjs` (17/17) | X45-X47, I-A3, I-A9 |
+| CM-A0…CM-A9 | (G1) `vibeClose` label κ vs human raters (≥ 100 closes, bar κ ≥ .6: it gates R1/R2); R1 base rate/autocorrelation + MRT (92 child-months for +8 pp at ρ .05); R2 real sitting hours; η refit stability and per-opp information; R3-R5 unsticking MRT; R9 share vs school tests; R7 solo-round MRT; choice/opener logs; `adapt` size p99; guard narrowings (must be 0) and plan churn | every [U] threshold in adaptation-policy §4 |
 
 ---
 
@@ -1806,15 +1993,15 @@ what only pays at scale.
 |---|---|---|
 | 1 | `tx(fn)` on the pg Pool (`pool.connect()`, BEGIN/COMMIT/ROLLBACK). `DB_DRIVER=pg` required on ACA; a second **direct** URL secret for the worker | `server/db.js` |
 | 2 | migration `002_conductor.sql`: `child_seq`, `student_event`, `ingest_event()`, `conductor_state`, `decision_log`, `brief_snapshot` (X34), `day_plan`, `conductor_usage`, `job`, `complete_job()`, `wakeup`, `fire_wakeups()`, `notification`, `notify_slot`, `budget`, `cost_ledger`, `price_book`, `rate_bucket`, `model_call`, `turn_trace` (+ `child_id` index), `child_routine` (routine facts only), `parent_setting`, `calendar`, a minimal `workspace` (state, legal_mode, academic_year, last_active_at: `complete_job` fences on it), `gen_ulid()`. `child_seq`, `conductor_state` and `workspace` rows are created in the same transaction as `child` | `db/migrations/002_conductor.sql` |
-| 3 | contracts: events, state, plan, lanes, notify, jobs (the unions in §2-§4) | `shared/conductor/*.ts`, `shared/contracts.ts` (`LessonBrief`) |
-| 4 | the Conductor: `decide` (pure), guards in authority order + fail-safe, `clock` (`clockPhase`, `learningDay`, jitter, the dormant-clock rule X36), code planner + validator V1-V14, `step` (with the 40001/40P01/CAS retry), `commit` in the **X29 lock order**, a write-free `replay` (X31), `upgradeState` | `server/conductor/` |
+| 3 | contracts: events, state, plan, lanes, notify, jobs (the unions in §2-§4), and (gap-fill G1-adaptation-policy) `adapt.ts` from `adaptation.contracts.ts` (`ConductorChildView`, `ViewReader`, `AdaptMemory` + packed codec, `PlannerInputs`, `resolveKnob`, `registerConstraint`, `RULES`, `T`) | `shared/conductor/*.ts`, `shared/contracts.ts` (`LessonBrief`) |
+| 4 | the Conductor: `decide` (pure), guards in authority order + fail-safe, `clock` (`clockPhase`, `learningDay`, jitter, the dormant-clock rule X36), code planner (`planKeys` + pure `planDay` + JCS `inputsHash`, rules R0-R14, `foldNight`: gap-fill G1-adaptation-policy) + validator V1-V27, the recording `ViewReader`, `step` (with the 40001/40P01/CAS retry), `commit` in the **X29 lock order**, a write-free `replay` (X31), `upgradeState` | `server/conductor/` |
 | 5 | `taxila-worker` ACA app: leader ticker, the **dirty-set step loop** (no `conductor.step` job: X30), fast/slow claim loops with 1 s → 5 s poll backoff (X35), shutdown contract; `deploy-azure.mjs` deploys both apps, with the 18:00-21:30 IST freeze | `server/worker/main.mjs`, `scripts/deploy-azure.mjs` |
 | 6 | lesson integration: `/api/lesson/start` = usage reserve + rate-bucket admission (reconnect priority) + `brief.refresh`; the Director emits `lesson.started/ended` (with `voiceSec`, `outcomeDigest`), `teacher.promise`, and honours `wrapAt`/`hardStopAt`, the **non-child-audio** idle hang-up (X32), `session.renew`, resume within 15 min; its turn commit is optimistic (X39); `lesson.ended → memory.consolidate` via `complete_job` | `server/routes/lesson.js`, `server/director/` |
 | 7 | off-voice warm-up during admission (tap retrieval + cached narration clip). **Prerequisite** (orch B11): narration pre-rendered and cached for every warm-up-eligible kit item, in a voice a blind ear test matches to the teacher, or the warm-up is heard as a different teacher (R7.7) | `src/lesson/`, kit pipeline |
 | 8 | `modelCall` with live/replay/eval modes and the X38 `finally` order; `turn_trace` + `model_call` rows staged in the Director's turn commit; lesson `traceparent`; the provisional client-clock OM16 (X40) | `server/obs/`, `src/lesson/` |
 | 9 | the device's cached plan for first paint, `slot.shown`, the rest and hold screens (the hold screen designed with the safeguarding protocol, shown for every incident: X33) | `src/` |
 | 10 | safety: every incident → `safety_hold` (X33); S → human queue only (X23, M0 phase), page on entry, 2 h escalation, safeguarding exclusion predicate | `server/director/safety.js`, protocol |
-| 11 | `scripts/verify-release.mjs` with G0-G4 + G8 (G3 includes the lock-order probe), `evals/conductor-sim/`, the invariant registry I-C*, I-R1…I-R12, I-V* | `scripts/`, `evals/`, `tests/conductor/` |
+| 11 | `scripts/verify-release.mjs` with G0-G4 + G8 (G3 includes the lock-order probe and the `planDay` determinism property), `evals/conductor-sim/` (with the adaptation personas and `latch_walker`), the invariant registry I-C*, I-R1…I-R12, I-V*, I-A1…I-A11 | `scripts/`, `evals/`, `tests/conductor/` |
 | 12 | App Insights distro (sampling 1.0, ban-list scrubber, anomaly counters); `canary` and `nightly` ACA scheduled jobs with Azure Monitor absence alerts | infra |
 
 **Exit criteria:** every gate green with its negative control; the I-R1 concurrent-ingest drill shows zero lost
@@ -1902,6 +2089,16 @@ Primary sources checked this session or by the cited sibling doc ([V]):
 - Firebase Android message priority — https://firebase.google.com/docs/cloud-messaging/android/message-priority
 - Google SRE workbook, *Alerting on SLOs* — https://sre.google/workbook/alerting-on-slos/
 - Kim et al. 2025, *Correlated Errors in Large Language Models* — https://arxiv.org/abs/2506.07962
+- (gap-fill G1-adaptation-policy; checked 2026-10-02) RFC 8785, JSON Canonicalization Scheme — https://www.rfc-editor.org/info/rfc8785/ ;
+  Western Electric run rules (per-point false alarms, ≈ 1/53 combined) — https://en.wikipedia.org/wiki/Western_Electric_rules ,
+  supplementary runs rules lower the in-control ARL from 370.4 to 94.75 — https://arxiv.org/pdf/1007.3225 ; Schmitt-trigger
+  hysteresis — https://www.wevolver.com/article/schmitt-trigger-robust-comparator-design-with-hysteresis ; quickest change
+  detection (delay vs false-alarm ARL; CUSUM) — https://arxiv.org/pdf/2104.04186 ; Beck & Gong 2013 wheel-spinning —
+  https://www.semanticscholar.org/paper/Wheel-Spinning:-Students-Who-Fail-to-Master-a-Skill-Beck-Gong/0890bd77b4615cbe9aa6be27b4c9aa6772f3d74f ;
+  Yudelson, Koedinger & Gordon 2013 — https://www.semanticscholar.org/paper/Individualized-Bayesian-Knowledge-Tracing-Models-Yudelson-Koedinger/55a51b86f6739f1d04556ffe0b69ae2d77a347b3 ;
+  van der Heijden et al. 2010 (TRAILS, time of day, ages 10-12) — https://pubmed.ncbi.nlm.nih.gov/20969529/ ; Mace et al. 1988
+  (high-probability sequence) — https://onlinelibrary.wiley.com/doi/10.1901/jaba.1988.21-123 ; Duckworth et al. 2011 (MCII,
+  adolescents) — https://eric.ed.gov/?id=EJ911106 ; Liao et al. 2016 (MRT sample size) — https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.6847
 - Learning and family evidence as cited in the sibling docs: Lally 2010, Keller 2021, Wood & Rünger 2016, Gollwitzer &
   Sheeran 2006, Wilhelm 2008/2013, Mazza 2016, Hale & Guan 2015, Bastani 2025, Aleven 2016, Hill & Tyson 2009, Barger
   2019, Maloney 2015, Rogers & Feller 2018, Stattin & Kerr 2000 (see `day-cycle.md` §14, `school-sync-homework.md` §13,
@@ -1913,6 +2110,6 @@ Internal [repo]: `docs/ARCHITECTURE.md`; `docs/research/learning-science.md` §6
 (`day-cycle-review-cost.py`, `student-workspace-cost.py`, `student-workspace-review-cost.py`,
 `school-sync-review-cost.py`, `parent-loop-review-cost.py`); the lock-order probes
 (`orchestration-lock-order-probe.{sh,schema.sql,reset.sql}`, `conductor-lock-order-rev2-probe.{sh,extra.sql,reset.sql}`);
-the gap-fill fragments `content-orchestration.sql`, `adaptation.contracts.ts`, `adaptation-hysteresis-sim.py`;
+the gap-fill fragments `content-orchestration.sql`, `adaptation.contracts.ts`, `adaptation-hysteresis-sim.py`; and (revision 3) `adaptation-policy.md`, `adaptation-state-size.py`, `adaptation-worked-example.mjs`;
 `context/decisions.md`, `measurements.md`, `rejected.md`;
 `server/db.js`, `server/routes/lesson.js`, `package.json` (the missing `scripts/verify-release.mjs`).

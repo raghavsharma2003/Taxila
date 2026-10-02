@@ -1,0 +1,12 @@
+PASS verbatim pahada passes :: clean
+PASS closed-lexicon fillers pass :: clean
+PASS a wrong fact token fails (चौदा for चौदह) :: L1.foreign_token,L1.missing_tokens
+PASS an authored content word fails :: L1.foreign_token
+PASS a dropped line fails :: L1.line_count
+PASS blocked 6-gram fails :: L2.ngram
+PASS PD template tune passes :: clean
+PASS a tune quoting a blocked incipit fails :: L3.contour
+PASS lyric text inside a compile() lane fails :: L4.lyric_in_prompt
+PASS a lane carrying only kitId + mode passes :: clean
+PASS nursery fillers in a B4 kit fail :: L1.foreign_token,L5.nursery_register
+11/11 golden cases as expected

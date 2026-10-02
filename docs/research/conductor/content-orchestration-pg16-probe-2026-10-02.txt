@@ -1,0 +1,33 @@
+server_version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
+PASS F1 first in_lesson demand files a request + waiter :: filed
+PASS F2 same child, same key again :: already
+PASS F3 second child joins the same request (single-flight), demand_count = 2 :: waiting
+PASS F4 per-child daily cap: 3 waiters, the 4th demand returns cap :: ['filed', 'filed', 'cap']
+PASS F5 expensive-tier cap: child B (1 T1 waiter) files 2 T3 waiters, the 3rd T3 returns cap (races = 2) :: ['filed', 'filed']
+PASS F6 term demand without a child files, no waiter :: filed
+PASS F7 two_weeks demand WITH a child: no waiter, no error (G1 aborted the commit here) :: filed
+PASS F7c control: the waiter row G1 inserted for that demand violates the horizon check (the commit aborted) :: ERROR:  new row for relation "forge_waiter" violates check constraint "forge_waiter_horizo
+PASS F8 I-F2: a key carrying childId is refused by the table check :: ERROR:  new row for relation "forge_request" violates check constraint "forge_request_key_
+PASS F9 auto-tier publish fans out to both waiters, consumes them, IST expiry :: fanout=2 expiryIST=t
+PASS F10 in_lesson module_ready carries the asking lesson (the Director turn poll filters on it) :: 00000000-0000-0000-0000-0000000000e1
+PASS F11 demand after publish is a hit (no build, no waiter) :: hit
+PASS F12 I-F13: a model outside allowed_model cannot publish :: ERROR:  model(s) not allowed: taxila-opus
+PASS F13 I-F13: a deployment on its retirement day cannot publish (sora on 2026-10-15) :: ERROR:  model(s) not allowed: taxila-sora
+PASS F14 review_enqueue: subject + lang(hi) + lang(en) items, next_lesson SLA capped at 15:00 IST of wanted_by :: items=3 slaOK=t
+PASS F15 I-F1: a human tier cannot publish before its keys :: ERROR:  reviewed_by missing
+PASS F16 three approvals publish on the last key; one reviewer = one_key :: ['approved_key', 'approved_key', 'published'] one_key
+PASS F17 I-F8: a T3 build with no egress/CSP attestation cannot publish even when approved :: ERROR:  egress/CSP attestation failed
+PASS F18 forge_ready_for: served rows drop out; quarantine removes module_ready and blocklists the hash at once :: ready 2->1->0, blocklisted=1
+PASS F19 request_changes reworks once (human_review → spec, rework_count 1) :: rework spec:1
+PASS F20 sweep drops past-wanted_by waiters; escalation moves overdue items to the backup reviewer :: swept=4 escalated=1 to=r2
+PASS F21 supersede re-points both children's prepared module to the new version, then retires the old (G1: retire was unreachable) :: k_t1a2=2 old=retired:superseded
+PASS D1 control D1 control: commits file k_x/k_y in opposite orders :: deadlocks 5/5
+PASS D1 G2 D1 G2: both commits sorted by library_key :: deadlocks 0/5
+PASS D2 control D2 control: G1 publish locks the new request before the superseded one :: deadlocks 5/5
+PASS D2 G2 D2 G2: publish locks both in library_key order :: deadlocks 0/5
+PASS D3 control D3 control: G1 review_decide locks the item before forge_request :: deadlocks 5/5; final states ['human_review']
+PASS D3 G2 D3 G2: review_decide locks forge_request first :: deadlocks 0/5; final states ['rejected']
+PASS D4 D4 commit first, then publish :: deadlocks 0/5; module_ready rows ['1', '1', '1', '1', '1']
+PASS D4 D4 publish first, then commit :: deadlocks 0/5; module_ready rows ['1', '1', '1', '1', '1']
+
+30/30 checks as expected

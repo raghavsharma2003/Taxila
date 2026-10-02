@@ -92,12 +92,14 @@ def functional():
     outs = [one(db, demand(A, n)) for n in ('k_t1b', 'k_t1c', 'k_t1d')]
     check('F4', 'per-child daily cap: 3 waiters, the 4th demand returns cap', outs == ['filed', 'filed', 'cap'], outs)
     outs = [one(db, demand(B, n, 'next_lesson', 'T3', 'kit_extended', "ist_today()+1")) for n in ('k_t3a', 'k_t3b')]
-    check('F5', 'expensive-tier races cap: child B (1 waiter already) gets 1 T3 waiter, then cap at 2 races? (races=2)',
+    check('F5', 'expensive-tier cap: child B (1 T1 waiter) files 2 T3 waiters, the 3rd T3 returns cap (races = 2)',
           outs == ['filed', 'filed'] and one(db, demand(B, 'k_t3c', 'next_lesson', 'T3', 'kit_extended', "ist_today()+1")) == 'cap', outs)
     r = one(db, demand(None, 'k_term', 'term'))
     check('F6', 'term demand without a child files, no waiter', r == 'filed' and one(db, "select count(*) from forge_waiter w join forge_request q on q.id=w.request_id where q.library_key='k_term'") == '0', r)
     r = one(db, demand(A, 'k_2w', 'two_weeks'))
     check('F7', 'two_weeks demand WITH a child: no waiter, no error (G1 aborted the commit here)', r == 'filed' and one(db, "select count(*) from forge_waiter w join forge_request q on q.id=w.request_id where q.library_key='k_2w'") == '0', r)
+    _, err, rc = psql(db, f"insert into forge_waiter values ('{A}', ist_today(), 3, (select id from forge_request where library_key='k_2w'), null, null, 'two_weeks', ist_today())", check=False)
+    check('F7c', 'control: the waiter row G1 inserted for that demand violates the horizon check (the commit aborted)', rc != 0 and 'check constraint' in err, err.split('\n')[0][:90])
     k, m = keyj('k_bad', extra={"childId": A})
     _, err, rc = psql(db, f"select forge_file_demand(null, ist_today(), null, null, 'term', ist_today(), 'k_bad', '{k}'::jsonb, '{m}'::jsonb)", check=False)
     check('F8', 'I-F2: a key carrying childId is refused by the table check', rc != 0 and 'check constraint' in err, err.split('\n')[0][:90])
@@ -168,6 +170,15 @@ def functional():
     to = one(db, "select string_agg(distinct coalesce(assigned_to,'-'), ',') from review_item where status='escalated'")
     check('F20', 'sweep drops past-wanted_by waiters; escalation moves overdue items to the backup reviewer',
           int(sw) >= 1 and one(db, "select count(*) from forge_waiter") == '0' and int(esc) >= 1, f"swept={sw} escalated={esc} to={to}")
+    # supersede keeps prepared modules: k_t1a2 supersedes k_t1a (both children hold a k_t1a module_ready row)
+    one(db, demand(None, 'k_t1a2', 'term'))
+    psql(db, "update forge_request set supersedes_request_id=(select id from forge_request where library_key='k_t1a') where library_key='k_t1a2'")
+    rid7, art7, seq7 = build(db, 'k_t1a2')
+    one(db, f"select forge_publish({rid7}, '{art7}', {seq7}, 'job:7')")
+    got = one(db, "select string_agg(library_key||'='||n, ',' order by library_key) from (select library_key, count(*) n from module_ready where library_key like 'k_t1a%' group by 1) x")
+    old = one(db, "select state||':'||retire_reason from forge_request where library_key='k_t1a'")
+    check('F21', 'supersede re-points both children\'s prepared module to the new version, then retires the old (G1: retire was unreachable)',
+          got == 'k_t1a2=2' and old == 'retired:superseded', f"{got} old={old}")
     psql('postgres', f'drop database {db}')
 
 # ───────────────────────────── race cells ─────────────────────────────

@@ -7,8 +7,8 @@ for name,kw in {'B':['ncert solutions','chatgpt','gemini'],'C':['कक्षा
   p.build_payload(kw,geo='IN',timeframe='2024-01-01 2026-09-30')
   t=p.interest_over_time().drop(columns=['isPartial'],errors='ignore')
   q=t.resample('QE').mean().round(1); q.index=q.index.astype(str); out[name+'_quarterly']=q.to_dict(orient='index')
-  time.sleep(20)
-  r=p.interest_by_region(resolution='REGION',inc_low_vol=True); out[name+'_region']=r.to_dict(orient='index'); time.sleep(20)
+  time.sleep(90)
+  r=p.interest_by_region(resolution='REGION',inc_low_vol=True); out[name+'_region']=r.to_dict(orient='index'); time.sleep(90)
 json.dump(out,open('gap3-trends-b-2026-10-02.json','w'),indent=1)
 for k,v in out.items():
   if 'quarterly' in k:
