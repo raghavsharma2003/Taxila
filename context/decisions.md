@@ -46,3 +46,14 @@ interrupt on, director refreshes `instructions` via `session.update` between tur
   reads as patience, not lag. Not yet measured from India or on real children.
 - Reverse if: real-child sessions show semantic_vad does NOT split pauses (it reacted ~500 ms sooner); or
   measured latency from India exceeds ~3 s; or children report "she cuts me off".
+
+## deploy-vercel-single-function
+**Taxila deploys as Vercel project `taxila` (team raghav-carbonsettle's projects), Git-linked to
+raghavsharma2003/Taxila, one catch-all function `api/[...route].js` in sin1, Vite static build.** (2026-10-02)
+- First deploy `dpl_D5MD3qYvMPKGg4fjwfHVyzk9HDb7` READY; `/api/health` 200 served from sin1.
+- One function, one in-process router (`server/router.js`): Hobby plans cap functions per deployment and a single
+  warm function avoids N cold starts. Server code is plain JS ESM (html-portfolio's proven Vercel shape); the client
+  is TS; `shared/contracts.ts` holds the seams.
+- Vercel Authentication (SSO) is ON for all non-custom domains — the app is private to the team until launch.
+- Reverse if: a route needs a different runtime/timeout (e.g. long consolidation → split it out), or Vercel Pro
+  makes multiple functions free of cold-start cost.
