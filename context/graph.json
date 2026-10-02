@@ -861,6 +861,12 @@
    "kind": "decision",
    "title": "Open models (DeepSeek, Kimi, gpt-oss, Grok, FLUX\u2026) allowed if Direct-from-Azure billed; per-task routing by bake-off",
    "at": "2026-10-02"
+  },
+  {
+   "id": "model-bakeoff-BC-2026-10-02",
+   "kind": "measurement",
+   "title": "Bake-off B/C: DeepSeek-V4.1-Flash fastest well-shaped reply (1.2 s); DeepSeek-V4-Pro 12/12 classification",
+   "at": "2026-10-02"
   }
  ],
  "edges": [
@@ -1618,6 +1624,11 @@
    "src": "azure-billed-open-models",
    "rel": "supersedes",
    "dst": "azure-only-compute"
+  },
+  {
+   "src": "azure-billed-open-models",
+   "rel": "measured_by",
+   "dst": "model-bakeoff-BC-2026-10-02"
   }
  ]
 }

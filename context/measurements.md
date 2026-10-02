@@ -276,3 +276,29 @@ Method: `001_core.sql` + the CONDUCTOR.md DDL and functions applied to a scratch
 - Defect found and fixed: orchestration review R2.3's `complete_job` set `run_after = case when retry then … end`, which writes NULL into a NOT NULL column on every non-retry outcome (it errored on the first successful completion). Fixed with `else run_after`.
 - Lock order, part 1 (orchestration R10.1; `docs/research/conductor/orchestration-lock-order-probe.{sh,schema.sql,reset.sql}`; n = 5 per cell; `pg_sleep` widens the race window so each cell is deterministic). A commit that locks `child_seq` FIRST (CONDUCTOR.md revision 1) deadlocked 5/5 against `complete_job` (job -> child_seq) and 5/5 against `fire_wakeups` (wakeup -> child_seq). With `child_seq` LAST: 0/5 and 0/5. A `complete_job` that took `child_seq` first gave 0/5. With `child_seq` last, an ingest in flight during the commit made it wait and return has_more = true (n = 1).
 - Lock order, part 2 (synthesis revision-2 pass, 2026-10-02; `docs/research/conductor/conductor-lock-order-rev2-probe.{sh,extra.sql,reset.sql}` on top of the part-1 schema; fresh scratch PG 16.14 cluster, n = 5 per cell, about 55 s). Controls: `child_seq` first vs `complete_job` and vs `fire_wakeups`, 10/10 deadlocks. The revision-2 commit (CAS conductor_state -> job -> wakeup -> child_seq -> lease decision on the held state row) gave 0/5 in each of 8 cells, 0/40 in total. The cells: vs `complete_job` and vs `fire_wakeups` with each side first; vs a `create_commitment` holding `child_seq` as its mutex; vs an in-flight ingest; and one ticker batch over 2 children racing 2 concurrent commits. `has_more` was true in 20/20 runs where an ingest committed or was in flight before the commit's `child_seq` update. Fired wakeups equalled `clock.wakeup` events in every run. A first attempt at part 2 was invalid: the probe's `has_more` statement had a SQL syntax error, so the commit aborted before locking `child_seq`. It was caught by reading the output and re-run. Not covered: the parent API under load, and the real cascade delete.
+
+## model-bakeoff-BC-2026-10-02
+**Teacher-reply (B) and answer-classification (C) bake-off across 11 Azure-billed Foundry models, 2026-10-02.**
+Method: `evals/model-bakeoff.mjs B` / `C` from the US build sandbox. B: system prompt = Asha teacher brief with
+turn-shape rule last; 6 scripted Hinglish child turns (n=6 per model). C: classify 12 hand-labelled child answers
+vs a verified key (1/4 vs 1/2 item; includes 3 misconception cases) with JSON output (n=12 per model).
+B scores are SHAPE only (latency, words, ends-with-question, crude Hinglish ratio, answer leak) — not teaching
+quality; quality judging is in the voice-and-model-routing workflow.
+
+| model | B p50 | B words | B q-end | C acc | C p50 |
+|---|---|---|---|---|---|
+| taxila-fast (gpt-5.6-luna) | 1990 ms | 20 | 5/6 | 11/12 | 1632 ms |
+| taxila-brain (gpt-5.6-sol) | 2094 | 17 | 5/6 | 11/12 | 1394 |
+| taxila-codex (gpt-5.3-codex) | 1796 | 25 | 6/6 | 11/12 | 1778 |
+| DeepSeek-V4-Flash | 1386 | 39 | 4/6 | 11/12 | 667 |
+| **taxila-ds41 (DeepSeek-V4.1-Flash)** | **1156** | 23 | **6/6** | 11/12 | 814 |
+| **DeepSeek-V4-Pro** | 1439 | 28 | 5/6 | **12/12** | 822 |
+| taxila-kimi-code (Kimi-K2.7-Code) | 5592 | 15 | 2/6 | 11/12 | 2296 |
+| taxila-oss120 (gpt-oss-120b) | 945 | 17 | 5/6 | 0/12 (JSON output unparsed — harness/format issue, not judged) | 1394 |
+| taxila-grok46 (grok-4.6) | 51040 | 17 | 5/6 | 12/12 | 14664 |
+| grok-4-1-fast-non-reasoning | 986 | 26 | 1/6 | 11/12 | 533 |
+| Mistral-Large-3 | 5043 | 40 | 1/6 | 12/12 | 907 |
+
+No model leaked the answer in B. Reading: DeepSeek-V4.1-Flash is the strongest live-reply candidate on shape+speed
+(1.2 s vs 2.0 s for the current taxila-fast); DeepSeek-V4-Pro / Mistral-Large-3 top classification. n is small
+(6/12); treat as direction, confirm with quality judging before switching the router.

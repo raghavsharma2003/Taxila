@@ -811,3 +811,6 @@ export const routes = {
   "POST /api/lesson/turn": turn,
   "POST /api/lesson/end": end,
 };
+
+/** Internals for tests (the turn's planning and speculation, which need no database or model). */
+export const __test = { planTurn, replyKey, speculate, specFanout };

@@ -49,7 +49,7 @@
           ],
           "diagnostic": {
             "prompt_en": "The king said, \"You have filled my hall with light.\" Which is the correct reported speech?",
-            "prompt_hi": "King ki baat ko report karna hai. Kaunsa sahi hai — dhyaan do 'you' aur 'my' ka kya hota hai.",
+            "prompt_hi": "King ki baat ko reported speech mein badalna hai. Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "The king said that Rama had filled his hall with light.",
@@ -83,7 +83,7 @@
           ],
           "diagnostic": {
             "prompt_en": "'With one small lamp, Rama won the king's heart.' What does 'won the king's heart' mean here?",
-            "prompt_hi": "'Won the king's heart' — iska matlab kya hai? Shabd-shabd nahi, poora matlab socho.",
+            "prompt_hi": "'With one small lamp, Rama won the king's heart.' Yahan 'won the king's heart' ka matlab kya hai?",
             "options": [
               {
                 "text": "Rama made the king like and admire him very much",
@@ -117,7 +117,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sentence gives the MESSAGE of the coin-and-lamp story, not just what happened?",
-            "prompt_hi": "Kahani ka message kya hai — jo baaki logon ke liye bhi kaam aaye, sirf kya hua woh nahi.",
+            "prompt_hi": "Kaunsa sentence is kahani ka MESSAGE batata hai, sirf yeh nahi ki kya hua?",
             "options": [
               {
                 "text": "A clever idea can do what money and big efforts cannot",
@@ -226,27 +226,29 @@
           "skillId": "c8-english-ch01-t01-s2",
           "kind": "predict",
           "difficulty": 2,
-          "prompt_en": "Read: 'At sunset, Tenali Rama walked in with something small in his hand. The courtiers whispered, \"What can fill the hall that is so small?\"' Before you hear the ending, predict: what could fill a whole hall but cost very little?",
-          "prompt_hi": "Ending sunne se pehle socho — kaunsi cheez chhoti ho, sasti ho, par poora hall bhar de?",
-          "answer": "Light (from a lamp)",
+          "prompt_en": "The story ends with the lamp. Next week the king sets a new test: 'Fill this hall again, but this time with something that costs nothing at all.' Using the same kind of thinking that worked with the lamp, predict what Rama might do, and say why it would work.",
+          "prompt_hi": "Raja ne naya test diya: hall ko phir se bharo, par is baar aisi cheez se jiska koi daam na ho. Rama ab kya karega? Kyun kaam karega?",
+          "answer": "Something free that spreads by itself to every corner, e.g. sing a song or play music so the sound fills the hall, or open the windows to let sunlight or a flower's fragrance in",
           "acceptable": [
-            "light",
-            "the light of a lamp",
-            "a lamp's glow",
-            "fragrance",
+            "sing a song",
             "music",
-            "sound"
+            "sound fills the hall",
+            "open the windows and let sunlight in",
+            "sunlight",
+            "fragrance of flowers",
+            "laughter",
+            "something that spreads by itself"
           ],
           "hints": [
-            "Think of something that spreads by itself.",
-            "It does not need space like straw does.",
-            "It comes out of a small clay ___.",
-            "Light from one small lamp can fill the whole hall."
+            "Why did the lamp work when the straw did not?",
+            "What else spreads into every corner without taking up space?",
+            "Rama could fill the hall with ___, because it ___ by itself.",
+            "He could sing, so sound fills the hall; like light, it spreads to every corner without costing anything."
           ],
           "verified": {
-            "solverAnswer": "Light (from a lamp)",
+            "solverAnswer": "Sing or play music (or let in sunlight/fragrance): free, and it spreads to every corner like the light",
             "agrees": true,
-            "note": "Key correct. Ordering: i01-i03 already show the full passage with the lamp, so this predict item is spoiled unless served before them."
+            "note": "Fixed spoiler: i01-i03 show the lamp ending, so the predict now asks what happens past the ending (a new free-of-cost test), reusing the wit pattern (s2). Open item: key is the idea 'free + spreads by itself'."
           }
         },
         {
@@ -356,7 +358,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'The minister told that he had bought straw.'",
-          "prompt_hi": "Is sentence mein ek galti hai. 'Told' ke saath kya missing hai?",
+          "prompt_hi": "Is sentence mein ek galti hai. Dhoondho aur sahi sentence bolo.",
           "answer": "'Told' needs a person after it: 'The minister said that he had bought straw' (or 'told the king that...')",
           "acceptable": [
             "said that he had bought straw",
@@ -373,7 +375,7 @@
           "verified": {
             "solverAnswer": "'told' needs an object: 'said that' or 'told the king that'",
             "agrees": true,
-            "note": "Key correct. prompt_hi points to 'told' (adds a hint absent from EN)."
+            "note": "Key correct. prompt_hi points to 'told' (adds a hint absent from EN). prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -382,7 +384,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Rama lit a lamp and its glow filled hall.'",
-          "prompt_hi": "Ek chhota sa shabd missing hai. Kaunsa hall? Woh khaas hall jiski baat ho rahi hai.",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "Article missing: 'filled the hall'",
           "acceptable": [
             "filled the hall",
@@ -399,7 +401,7 @@
           "verified": {
             "solverAnswer": "Missing article: 'filled the hall'",
             "agrees": true,
-            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot."
+            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -568,7 +570,7 @@
           ],
           "diagnostic": {
             "prompt_en": "The neighbour 'waters it each evening, though there's nothing left to see.' What is the poet really doing here?",
-            "prompt_hi": "Poet sach mein tareef kar raha hai, ya mazaak uda raha hai? Concrete ko paani dena — socho.",
+            "prompt_hi": "Padosi har shaam paani deta hai, jabki dekhne ko kuch bacha hi nahi. Yahan poet asal mein kya kar raha hai?",
             "options": [
               {
                 "text": "Gently making fun of the neighbour, because watering concrete is pointless",
@@ -602,7 +604,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct: 'His garden is more neater than mine.' or 'His garden is neater than mine.'?",
-            "prompt_hi": "Ek hi kaam ke liye do cheezein mat lagao. Kaunsa sahi hai — 'more neater' ya 'neater'?",
+            "prompt_hi": "Kaunsa sahi hai: 'His garden is more neater than mine.' ya 'His garden is neater than mine.'?",
             "options": [
               {
                 "text": "His garden is neater than mine.",
@@ -631,7 +633,7 @@
           ],
           "diagnostic": {
             "prompt_en": "In 'Give me a concrete example of kindness,' what does 'concrete' mean?",
-            "prompt_hi": "Yahan 'concrete' ka matlab cement nahi hai. Toh kya hai? Sentence se socho.",
+            "prompt_hi": "'Give me a concrete example of kindness' — is sentence mein 'concrete' ka matlab kya hai?",
             "options": [
               {
                 "text": "Real and specific, something you can point to",
@@ -873,7 +875,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'A garden with flowers is more better than a slab of concrete.'",
-          "prompt_hi": "Galti dhoondho. 'Better' ke saath 'more' chahiye kya?",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
           "answer": "'More better' is wrong; say 'better than'",
           "acceptable": [
             "better than",
@@ -890,7 +892,7 @@
           "verified": {
             "solverAnswer": "'more better' -> 'better'",
             "agrees": true,
-            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot."
+            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -956,8 +958,7 @@
           "acceptable": [
             "Give me some concrete proof.",
             "Give me concrete proof.",
-            "Show me concrete evidence.",
-            "Give me a concrete proof."
+            "Show me concrete evidence."
           ],
           "hints": [
             "Which meaning of 'concrete' fits 'pakka'?",
@@ -968,8 +969,8 @@
           "targetsMisconception": "c8-english-ch02-t01-m-one-meaning",
           "verified": {
             "solverAnswer": "Give me concrete proof.",
-            "agrees": false,
-            "note": "Key answer correct, but acceptable includes 'Give me a concrete proof.' — 'proof' (evidence sense) is uncountable; accepting it rewards a common Indian-English slip in an ESL item. Remove that entry, then flip agrees."
+            "agrees": true,
+            "note": "Key correct. Fixed: removed 'Give me a concrete proof.' from acceptable ('proof' in the evidence sense is uncountable)."
           }
         },
         {
@@ -1085,7 +1086,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct: 'You must pay him rent.' or 'You must to pay him rent.'?",
-            "prompt_hi": "'Must' ke baad 'to' aata hai kya? Dono suno aur sahi chuno.",
+            "prompt_hi": "Kaunsa sahi hai: 'You must pay him rent.' ya 'You must to pay him rent.'?",
             "options": [
               {
                 "text": "You must pay him rent.",
@@ -1114,7 +1115,7 @@
           ],
           "diagnostic": {
             "prompt_en": "In 'SETH (folding his arms): I sold you the well,' what should the actor playing Seth do with '(folding his arms)'?",
-            "prompt_hi": "Bracket wale words bolne hain ya karne hain? Socho, actor kya karega.",
+            "prompt_hi": "'SETH (folding his arms): I sold you the well' — Seth ka role karne wala actor '(folding his arms)' ka kya karega?",
             "options": [
               {
                 "text": "Fold his arms while saying the line, without speaking those words",
@@ -1148,7 +1149,7 @@
           ],
           "diagnostic": {
             "prompt_en": "The judge gives an order Seth cannot refuse. Which sentence is stronger: 'You should pay rent.' or 'You must pay rent.'?",
-            "prompt_hi": "Judge ka hukum hai — 'should' zyada strong hai ya 'must'?",
+            "prompt_hi": "Judge aisa hukum de rahi hai jo Seth mana nahi kar sakta. Kaunsa sentence zyada strong hai: 'You should pay rent.' ya 'You must pay rent.'?",
             "options": [
               {
                 "text": "You must pay rent.",
@@ -1179,7 +1180,7 @@
           "skillId": "c8-english-ch03-t01-s1",
           "kind": "retrieval",
           "difficulty": 1,
-          "prompt_en": "Read this scene: 'GOPAL (holding a bucket): Seth-ji, I paid you fifty coins for this well. Why do you stop me from drawing water? / SETH (folding his arms): I sold you the well, Gopal, not the water inside it. / JUDGE (stroking her chin, then smiling): Then, Seth-ji, your water is sitting in Gopal's well. You must pay him rent, or take all your water out by sunset. / SETH (lowering his head): Let Gopal keep the water too.' How much did Gopal pay for the well?",
+          "prompt_en": "Read this scene: 'GOPAL (holding a bucket): Seth-ji, I paid you fifty coins for this well. Why do you stop me from drawing water? / SETH (folding his arms): I sold you the well, Gopal, not the water inside it.' How much did Gopal pay for the well?",
           "prompt_hi": "Scene suno. Gopal ne kuan kitne mein khareeda tha?",
           "answer": "Fifty coins",
           "acceptable": [
@@ -1196,7 +1197,7 @@
           "verified": {
             "solverAnswer": "Fifty coins",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Scene cut before the judge speaks so i10 (predict) is not spoiled; answer unchanged."
           }
         },
         {
@@ -1204,7 +1205,7 @@
           "skillId": "c8-english-ch03-t01-s1",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Read this scene: 'GOPAL (holding a bucket): Seth-ji, I paid you fifty coins for this well. Why do you stop me from drawing water? / SETH (folding his arms): I sold you the well, Gopal, not the water inside it. / JUDGE (stroking her chin, then smiling): Then, Seth-ji, your water is sitting in Gopal's well. You must pay him rent, or take all your water out by sunset. / SETH (lowering his head): Let Gopal keep the water too.' What is the conflict (the problem) in this scene?",
+          "prompt_en": "Read this scene: 'GOPAL (holding a bucket): Seth-ji, I paid you fifty coins for this well. Why do you stop me from drawing water? / SETH (folding his arms): I sold you the well, Gopal, not the water inside it.' What is the conflict (the problem) in this scene?",
           "prompt_hi": "Is scene mein jhagda kis baat ka hai?",
           "answer": "Seth sold Gopal the well but says the water still belongs to him, so he stops Gopal from drawing water",
           "acceptable": [
@@ -1222,7 +1223,7 @@
           "verified": {
             "solverAnswer": "Seth sold the well but claims the water, stopping Gopal from drawing it",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Scene cut before the judge speaks so i10 (predict) is not spoiled; answer unchanged."
           }
         },
         {
@@ -1335,7 +1336,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Gopal should to keep the water.'",
-          "prompt_hi": "Galti dhoondho. 'Should' ke baad kya extra hai?",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "Remove 'to': 'Gopal should keep the water.'",
           "acceptable": [
             "Gopal should keep the water.",
@@ -1352,7 +1353,7 @@
           "verified": {
             "solverAnswer": "Remove 'to': 'Gopal should keep the water.'",
             "agrees": true,
-            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot."
+            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -1388,7 +1389,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "A student reads aloud: 'Seth, folding his arms, I sold you the well, Gopal.' What did the student do wrong?",
-          "prompt_hi": "Is bachche ne padhte waqt kya galti ki? Bracket wale words ka kya karna tha?",
+          "prompt_hi": "Is bachche ne padhte waqt kya galti ki? Socho aur batao.",
           "answer": "He read the stage direction aloud; '(folding his arms)' should be acted, not spoken",
           "acceptable": [
             "he spoke the stage direction",
@@ -1406,7 +1407,7 @@
           "verified": {
             "solverAnswer": "Read the stage direction aloud; it should be acted, not spoken",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -1414,7 +1415,7 @@
           "skillId": "c8-english-ch03-t01-s1",
           "kind": "predict",
           "difficulty": 3,
-          "prompt_en": "Before the judge speaks, Seth says, 'I sold the well, not the water.' Predict: what could a wise judge say to beat him WITHOUT calling him a liar?",
+          "prompt_en": "Seth says, 'I sold you the well, Gopal, not the water inside it.' Now the judge must decide. Predict: what could a wise judge say to beat Seth WITHOUT calling him a liar?",
           "prompt_hi": "Judge bolne se pehle socho — bina jhagde ke, Seth ko uski hi baat se kaise haraaya ja sakta hai?",
           "answer": "Agree that the water is Seth's, and say that then his water is occupying Gopal's well, so he must pay rent or remove it",
           "acceptable": [
@@ -1432,7 +1433,7 @@
           "verified": {
             "solverAnswer": "Agree the water is Seth's; then it sits in Gopal's well, so Seth must pay rent or remove it",
             "agrees": true,
-            "note": "Key correct. Ordering: i01-i03 already reveal the judge's answer, so this predict item is spoiled unless served first."
+            "note": "Key correct. Fixed spoiler: i01-i02 now use a scene cut before the judge, and this item (s1, difficulty 3, predict) sorts before i03 (s1, difficulty 3, why), the first item that shows the ruling."
           }
         },
         {
@@ -1598,7 +1599,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sentence is correct about a hero's birth?",
-            "prompt_hi": "Janm ki baat English mein kaise kehte hain? Sahi sentence chuno.",
+            "prompt_hi": "Ek hero ke janm ke baare mein kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "He was born in 1923.",
@@ -1632,7 +1633,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sentence uses 'had' correctly?",
-            "prompt_hi": "'Had + verb' tab use hota hai jab do past events hon, aur ek pehle hua ho. Kaunsa sahi hai?",
+            "prompt_hi": "Kis sentence mein 'had' sahi tarah use hua hai?",
             "options": [
               {
                 "text": "His arm had been injured before the battle began.",
@@ -1640,7 +1641,7 @@
                 "correct": true
               },
               {
-                "text": "He had born in 1923.",
+                "text": "Last year he had visited Badgam with his family.",
                 "misconceptionId": "c8-english-ch04-t01-m-past-perfect-everywhere",
                 "correct": false
               },
@@ -1666,7 +1667,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct: 'He showed great bravery.' or 'He showed great brave.'?",
-            "prompt_hi": "'Showed' ke baad ek naam-wala word (noun) chahiye. Kaunsa sahi hai?",
+            "prompt_hi": "Kaunsa sahi hai: 'He showed great bravery.' ya 'He showed great brave.'?",
             "options": [
               {
                 "text": "He showed great bravery.",
@@ -1692,7 +1693,7 @@
           "skillId": "c8-english-ch04-t01-s1",
           "kind": "retrieval",
           "difficulty": 1,
-          "prompt_en": "Read: 'In November 1947, raiders were moving towards Srinagar's airfield. Major Somnath Sharma's company was sent to Badgam to guard the area. His arm was in plaster after an injury, and he had been told he could stay behind, but he insisted on leading his men. When a much larger enemy force attacked, he ran between his soldiers, passing them ammunition and cheering them on. He held his position until help arrived, but he lost his life in the battle. He was the first person to be awarded the Param Vir Chakra, India's highest award for bravery in war.' Which award was Major Somnath Sharma the first to receive?",
+          "prompt_en": "Read: 'In November 1947, raiders were moving towards Srinagar's airfield. Major Somnath Sharma's company was sent to Badgam to guard the area. His arm was in plaster after an injury, and he had been told he could stay behind, but he insisted on leading his men. When a much larger enemy force attacked, he ran between his soldiers, passing them ammunition and cheering them on. His company held its position until help arrived, though he was killed in the battle. He was the first person to be awarded the Param Vir Chakra, India's highest award for bravery in war.' Which award was Major Somnath Sharma the first to receive?",
           "prompt_hi": "Biography suno. Major Somnath Sharma kaunsa award paane wale pehle insaan the?",
           "answer": "The Param Vir Chakra",
           "acceptable": [
@@ -1709,7 +1710,7 @@
           "verified": {
             "solverAnswer": "The Param Vir Chakra",
             "agrees": true,
-            "note": "Key correct. Fact nuance in passage: 'He held his position until help arrived, but he lost his life' implies he lived until relief came; historically he was killed by a mortar shell and his company held on until reinforcements arrived. Suggest 'His company held its position until help arrived, though he was killed in the battle.'"
+            "note": "Key correct. Fixed passage fact: his company held its position until help arrived; he was killed in the battle (a mortar shell), not after relief came."
           }
         },
         {
@@ -1717,7 +1718,7 @@
           "skillId": "c8-english-ch04-t01-s1",
           "kind": "why",
           "difficulty": 2,
-          "prompt_en": "Read: 'In November 1947, raiders were moving towards Srinagar's airfield. Major Somnath Sharma's company was sent to Badgam to guard the area. His arm was in plaster after an injury, and he had been told he could stay behind, but he insisted on leading his men. When a much larger enemy force attacked, he ran between his soldiers, passing them ammunition and cheering them on. He held his position until help arrived, but he lost his life in the battle. He was the first person to be awarded the Param Vir Chakra, India's highest award for bravery in war.' Why is going to Badgam with his arm in plaster a sign of his sense of duty?",
+          "prompt_en": "Read: 'In November 1947, raiders were moving towards Srinagar's airfield. Major Somnath Sharma's company was sent to Badgam to guard the area. His arm was in plaster after an injury, and he had been told he could stay behind, but he insisted on leading his men. When a much larger enemy force attacked, he ran between his soldiers, passing them ammunition and cheering them on. His company held its position until help arrived, though he was killed in the battle. He was the first person to be awarded the Param Vir Chakra, India's highest award for bravery in war.' Why is going to Badgam with his arm in plaster a sign of his sense of duty?",
           "prompt_hi": "Haath plaster mein tha, phir bhi gaye. Isse unke baare mein kya pata chalta hai?",
           "answer": "He could have stayed behind, but he felt it was his duty to lead his men, so he went despite the injury",
           "acceptable": [
@@ -1735,7 +1736,7 @@
           "verified": {
             "solverAnswer": "He was allowed to stay behind but insisted on leading his men",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Fixed passage fact: his company held its position until help arrived; he was killed in the battle (a mortar shell), not after relief came."
           }
         },
         {
@@ -1743,13 +1744,13 @@
           "skillId": "c8-english-ch04-t01-s1",
           "kind": "practice",
           "difficulty": 3,
-          "prompt_en": "Read: 'In November 1947, raiders were moving towards Srinagar's airfield. Major Somnath Sharma's company was sent to Badgam to guard the area. His arm was in plaster after an injury, and he had been told he could stay behind, but he insisted on leading his men. When a much larger enemy force attacked, he ran between his soldiers, passing them ammunition and cheering them on. He held his position until help arrived, but he lost his life in the battle. He was the first person to be awarded the Param Vir Chakra, India's highest award for bravery in war.' Name one thing he did DURING the attack and the value it shows.",
+          "prompt_en": "Read: 'In November 1947, raiders were moving towards Srinagar's airfield. Major Somnath Sharma's company was sent to Badgam to guard the area. His arm was in plaster after an injury, and he had been told he could stay behind, but he insisted on leading his men. When a much larger enemy force attacked, he ran between his soldiers, passing them ammunition and cheering them on. His company held its position until help arrived, though he was killed in the battle. He was the first person to be awarded the Param Vir Chakra, India's highest award for bravery in war.' Name one thing he did DURING the attack and the value it shows.",
           "prompt_hi": "Hamle ke dauraan unhone kya kiya? Aur woh kaunsi value dikhata hai?",
           "answer": "He ran between his soldiers, passing ammunition and cheering them on, which shows leadership and courage",
           "acceptable": [
             "passed ammunition: courage",
             "cheered his men: leadership",
-            "held his position: determination",
+            "kept his company fighting: determination",
             "ran between soldiers: bravery"
           ],
           "hints": [
@@ -1761,7 +1762,7 @@
           "verified": {
             "solverAnswer": "Passed ammunition and cheered his men: courage/leadership",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Fixed passage fact: his company held its position until help arrived; he was killed in the battle (a mortar shell), not after relief came."
           }
         },
         {
@@ -1847,7 +1848,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Major Somnath Sharma born in 1923 in Himachal Pradesh.'",
-          "prompt_hi": "Is sentence mein ek chhota sa word missing hai. 'Born' se pehle kya aata hai?",
+          "prompt_hi": "Is sentence mein ek galti hai. Dhoondho aur sahi sentence bolo.",
           "answer": "Add 'was': 'Major Somnath Sharma was born in 1923.'",
           "acceptable": [
             "was born",
@@ -1864,7 +1865,7 @@
           "verified": {
             "solverAnswer": "'born' -> 'was born'",
             "agrees": true,
-            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot."
+            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -1872,25 +1873,26 @@
           "skillId": "c8-english-ch04-t01-s3",
           "kind": "error_spot",
           "difficulty": 3,
-          "prompt_en": "Find the mistake: 'He had born in a soldier's family and had joined the army.'",
-          "prompt_hi": "Do galtiyan dhoondho — 'had born' sahi hai kya?",
+          "prompt_en": "Find the mistake: 'He had born in a soldier's family and joined the army.'",
+          "prompt_hi": "Is sentence mein ek galti hai. Dhoondho aur sahi sentence bolo.",
           "answer": "'Had born' is wrong; say 'He was born in a soldier's family and joined the army.'",
           "acceptable": [
             "He was born in a soldier's family and joined the army.",
-            "was born, joined",
-            "was born instead of had born"
+            "He was born into a soldier's family and joined the army.",
+            "was born",
+            "had born should be was born"
           ],
           "hints": [
-            "Is 'had born' ever used?",
-            "Birth is always 'was born'.",
-            "He ___ born ... and ___ the army.",
-            "He was born in a soldier's family and joined the army."
+            "Read the first verb again.",
+            "How do we usually talk about someone's birth in English?",
+            "He ___ born in a soldier's family.",
+            "'Had born' is wrong; it should be 'was born'."
           ],
           "targetsMisconception": "c8-english-ch04-t01-m-born-no-was",
           "verified": {
-            "solverAnswer": "'had born' -> 'was born'",
+            "solverAnswer": "He was born in a soldier's family and joined the army.",
             "agrees": true,
-            "note": "Key correct. EN says 'Find the mistake' (singular) but prompt_hi says 'Do galtiyan' (two) and asks 'had born sahi hai kya?' (leaks the error). Key also rewrites 'had joined' -> 'joined', which is stylistic, not an error; make EN/HI consistent."
+            "note": "Fixed: sentence now has exactly one error ('had born'); prompt_hi no longer says 'do galtiyan' or names the error; key no longer changes 'had joined' (a style edit)."
           }
         },
         {
@@ -1924,7 +1926,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'His courageous inspired every soldier.'",
-          "prompt_hi": "Galti dhoondho. Kya 'courageous' kisi ko inspire kar sakta hai, ya uska noun?",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
           "answer": "Use the noun: 'His courage inspired every soldier.'",
           "acceptable": [
             "His courage inspired every soldier.",
@@ -1941,7 +1943,7 @@
           "verified": {
             "solverAnswer": "'courageous' -> 'courage'",
             "agrees": true,
-            "note": "Key correct. prompt_hi ('ya uska noun?') states the fix."
+            "note": "Key correct. prompt_hi ('ya uska noun?') states the fix. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -2100,20 +2102,20 @@
           "belief": "A relative clause needs the pronoun again inside it, as in Hindi 'jo ladka... woh' ('the boy who he helped her')",
           "signs": [
             "Says 'The woman who she was waiting was old'",
-            "Says 'The boy who he stopped was kind'",
+            "Says 'The boy who he helped the old woman was kind'",
             "Repeats 'it' after 'which' ('the bus which it roared')"
           ],
           "diagnostic": {
-            "prompt_en": "Which is correct: 'The boy who stopped was kind.' or 'The boy who he stopped was kind.'?",
-            "prompt_hi": "Hindi mein 'jo... woh' bolte hain, par English mein 'who' ke baad 'he' dobara nahi aata. Sahi chuno.",
+            "prompt_en": "Which is correct: 'The boy who helped the old woman was kind.' or 'The boy who he helped the old woman was kind.'?",
+            "prompt_hi": "Kaunsa sahi hai: 'The boy who helped the old woman was kind.' ya 'The boy who he helped the old woman was kind.'?",
             "options": [
               {
-                "text": "The boy who stopped was kind.",
+                "text": "The boy who helped the old woman was kind.",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "The boy who he stopped was kind.",
+                "text": "The boy who he helped the old woman was kind.",
                 "misconceptionId": "c8-english-ch05-t01-m-resumptive-pronoun",
                 "correct": false
               }
@@ -2134,7 +2136,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Choose: 'The old woman ___ was waiting in the rain looked tired.'",
-            "prompt_hi": "Insaan ke liye 'who' ya 'which'? Sahi word chuno.",
+            "prompt_hi": "Khaali jagah bharo: 'The old woman ___ was waiting in the rain looked tired.'",
             "options": [
               {
                 "text": "who",
@@ -2163,7 +2165,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sense does 'The buses roared' mostly appeal to?",
-            "prompt_hi": "'The buses roared' — isse aankh se dikhta hai, kaan se sunai deta hai, ya chhoo kar lagta hai?",
+            "prompt_hi": "'The buses roared' — yeh line sabse zyada kis sense tak pahunchti hai?",
             "options": [
               {
                 "text": "Hearing",
@@ -2375,7 +2377,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'The woman who she was waiting in the rain was cold.'",
-          "prompt_hi": "Galti dhoondho. 'Who' ke baad kaunsa word extra hai?",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "Remove 'she': 'The woman who was waiting in the rain was cold.'",
           "acceptable": [
             "The woman who was waiting in the rain was cold.",
@@ -2391,7 +2393,7 @@
           "verified": {
             "solverAnswer": "Remove 'she'",
             "agrees": true,
-            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot."
+            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -2400,7 +2402,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'The schoolboy which helped her was only twelve.'",
-          "prompt_hi": "Galti dhoondho. Insaan ke liye kaunsa word aata hai?",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
           "answer": "Use 'who' for a person: 'The schoolboy who helped her was only twelve.'",
           "acceptable": [
             "The schoolboy who helped her was only twelve.",
@@ -2416,7 +2418,7 @@
           "verified": {
             "solverAnswer": "'which' -> 'who'",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -2609,7 +2611,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is the correct way to introduce yourself in a letter?",
-            "prompt_hi": "Apna parichay letter mein kaise denge? 'Myself...' sahi hai kya?",
+            "prompt_hi": "Letter mein apna parichay dene ka sahi tareeka kaunsa hai?",
             "options": [
               {
                 "text": "I am Kabir, a student of class 8.",
@@ -2643,7 +2645,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Meena writes to the manager of the milk society asking for a school visit. Which closing fits best?",
-            "prompt_hi": "Society ke manager ko formal letter — kaunsa closing sahi rahega?",
+            "prompt_hi": "Meena milk society ke manager ko school visit ke liye letter likh rahi hai. Kaunsa closing sabse theek rahega?",
             "options": [
               {
                 "text": "Yours faithfully, Meena",
@@ -2677,7 +2679,7 @@
           ],
           "diagnostic": {
             "prompt_en": "What is the TONE of Meena's letter?",
-            "prompt_hi": "Tone matlab likhne wale ki feeling aur awaaz. Meena ka tone kya hai?",
+            "prompt_hi": "Meena ke letter ka TONE kya hai?",
             "options": [
               {
                 "text": "Excited and proud",
@@ -2914,7 +2916,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake in this closing of a letter to a cousin: 'Your's lovingly, Kabir'",
-          "prompt_hi": "Is closing mein ek chhoti galti hai. Apostrophe dekho.",
+          "prompt_hi": "Letter ke is closing mein ek galti hai. Dhoondho aur sahi karke bolo.",
           "answer": "'Your's' should be 'Yours' (no apostrophe)",
           "acceptable": [
             "Yours lovingly",
@@ -2930,7 +2932,7 @@
           "verified": {
             "solverAnswer": "'Your's' -> 'Yours'",
             "agrees": true,
-            "note": "Key correct. prompt_hi says 'Apostrophe dekho', giving away the error."
+            "note": "Key correct. prompt_hi says 'Apostrophe dekho', giving away the error. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -2939,7 +2941,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistakes: 'Myself Kabir. I am writing to tell that I will come in May.'",
-          "prompt_hi": "Do galtiyan hain — introduction aur 'tell' ke saath kya missing hai?",
+          "prompt_hi": "Is mein galtiyan hain. Dhoondho aur sahi karke bolo.",
           "answer": "Say 'This is Kabir' (or just begin with the news) instead of 'Myself Kabir', and 'to tell you that'",
           "acceptable": [
             "I am Kabir. I am writing to tell you that I will come in May.",
@@ -2957,7 +2959,7 @@
           "verified": {
             "solverAnswer": "'Myself Kabir' -> 'I am Kabir'; 'to tell that' -> 'to tell you that'",
             "agrees": true,
-            "note": "Key correct; 'This is Kabir' in the answer is phone register — 'I am Kabir' (in acceptable) is better for a letter."
+            "note": "Key correct; 'This is Kabir' in the answer is phone register — 'I am Kabir' (in acceptable) is better for a letter. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -3120,7 +3122,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Rohan said, 'I never touched the blue bag.' Nobody had told him the kit was in a blue bag. What can we work out?",
-            "prompt_hi": "Rohan ko kaise pata tha ki bag blue hai? Isse hum kya samajh sakte hain?",
+            "prompt_hi": "Rohan ne kaha, 'I never touched the blue bag.' Kisi ne use bataya nahi tha ki kit blue bag mein thi. Isse hum kya samajh sakte hain?",
             "options": [
               {
                 "text": "Rohan probably took the kit, because he knew something only the thief would know",
@@ -3154,7 +3156,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "'Know' jaise verbs ke saath -ing lagta hai kya? Sahi sentence chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "I knew where the bag was kept.",
@@ -3183,7 +3185,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "'Evidence' ko gin sakte hain kya? Sahi sentence chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "Kavya found two pieces of evidence.",
@@ -3260,8 +3262,8 @@
           "skillId": "c8-english-ch07-t01-s2",
           "kind": "why",
           "difficulty": 3,
-          "prompt_en": "The story is about 'the fifth word'. In Rohan's sentence 'I never touched the blue bag', which is the fifth word, and why is it important?",
-          "prompt_hi": "Rohan ke sentence ka paanchwa word kaunsa hai? Woh itna khaas kyun?",
+          "prompt_en": "The story is called 'The Case of the Fifth Word'. In Rohan's sentence 'I never touched the blue bag', which is the fifth word, and why is it important?",
+          "prompt_hi": "Kahani ka naam hai 'The Case of the Fifth Word'. Rohan ke sentence ka paanchwa word kaunsa hai? Woh itna khaas kyun hai?",
           "answer": "'Blue'; it shows Rohan knew the colour of the bag, which gives him away",
           "acceptable": [
             "blue",
@@ -3278,7 +3280,7 @@
           "verified": {
             "solverAnswer": "'blue'; it reveals knowledge only the thief would have",
             "agrees": true,
-            "note": "Key correct. Wording 'The story is about the fifth word' is awkward; say 'The story is called The Case of the Fifth Word'."
+            "note": "Key correct. Fixed wording: 'The story is called The Case of the Fifth Word'."
           }
         },
         {
@@ -3388,7 +3390,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'Rohan said he was knowing nothing about the kit.'",
-          "prompt_hi": "Galti dhoondho. 'Know' ke saath -ing?",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "'Was knowing' should be 'knew': 'Rohan said he knew nothing about the kit.'",
           "acceptable": [
             "Rohan said he knew nothing about the kit.",
@@ -3405,7 +3407,7 @@
           "verified": {
             "solverAnswer": "'was knowing' -> 'knew'",
             "agrees": true,
-            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot."
+            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -3414,7 +3416,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'The detective collected many evidences.'",
-          "prompt_hi": "Galti dhoondho. 'Evidence' ka plural hota hai kya?",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
           "answer": "'Evidences' is wrong; say 'a lot of evidence' or 'many pieces of evidence'",
           "acceptable": [
             "a lot of evidence",
@@ -3431,7 +3433,7 @@
           "verified": {
             "solverAnswer": "'many evidences' -> 'a lot of evidence' / 'many pieces of evidence'",
             "agrees": true,
-            "note": "Key correct. prompt_hi ('Evidence ka plural hota hai kya?') states the rule."
+            "note": "Key correct. prompt_hi ('Evidence ka plural hota hai kya?') states the rule. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -3618,7 +3620,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which line is a METAPHOR?",
-            "prompt_hi": "Simile mein 'like' ya 'as' hota hai; metaphor mein nahi. Kaunsa metaphor hai?",
+            "prompt_hi": "Inmein se kaunsi line METAPHOR hai?",
             "options": [
               {
                 "text": "They lifted off the paper sea.",
@@ -3652,7 +3654,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sentence correctly shows an imagined, not real, situation?",
-            "prompt_hi": "Magic brush sach mein nahi hai — kalpana hai. Kaunsa sentence sahi hai?",
+            "prompt_hi": "Kaunsa sentence ek sochi hui situation ko, jo sach nahi hai, sahi tarah dikhata hai?",
             "options": [
               {
                 "text": "If I had a magic brush, I would paint a flying horse.",
@@ -3686,7 +3688,7 @@
           ],
           "diagnostic": {
             "prompt_en": "'I dipped my brush in morning light.' What does the poet mean?",
-            "prompt_hi": "Kya sach mein roshni mein brush dubaaya? Poet kya kehna chahta hai?",
+            "prompt_hi": "'I dipped my brush in morning light.' Poet kya kehna chahta hai?",
             "options": [
               {
                 "text": "The speaker painted bright, happy pictures full of morning colours",
@@ -3926,7 +3928,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'If I had wings, I will fly over the mountains.'",
-          "prompt_hi": "Galti dhoondho. 'Had' ke saath 'will' chalega?",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "'Will' should be 'would': 'If I had wings, I would fly over the mountains.'",
           "acceptable": [
             "If I had wings, I would fly over the mountains.",
@@ -3943,7 +3945,7 @@
           "verified": {
             "solverAnswer": "'will' -> 'would'",
             "agrees": true,
-            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot."
+            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -4131,7 +4133,7 @@
           ],
           "diagnostic": {
             "prompt_en": "What is the MAIN idea of the passage?",
-            "prompt_hi": "Poore paragraph ka main idea kya hai — jo saare examples ko jodta hai?",
+            "prompt_hi": "Is passage ka MAIN idea kya hai?",
             "options": [
               {
                 "text": "India has many amazing natural wonders.",
@@ -4165,7 +4167,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which passive sentence is correct?",
-            "prompt_hi": "Passive mein 'is/was/are' zaroori hai. Sahi sentence chuno.",
+            "prompt_hi": "Kaunsa passive sentence sahi hai?",
             "options": [
               {
                 "text": "The crater was formed by a meteorite.",
@@ -4199,7 +4201,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "Hindi mein 'jaankaariyan' bolte hain, par English mein 'information' ka plural nahi hota. Sahi chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "I found a lot of information about the root bridges.",
@@ -4374,24 +4376,27 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'The living bridges grown by the Khasi and Jaintia people.'",
-          "prompt_hi": "Galti dhoondho. Passive mein kya missing hai?",
-          "answer": "Add 'are': 'The living bridges are grown by the Khasi and Jaintia people.'",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
+          "answer": "Add 'are' (or 'were'): 'The living bridges are grown by the Khasi and Jaintia people.'",
           "acceptable": [
             "The living bridges are grown by the Khasi and Jaintia people.",
             "are grown",
-            "add are"
+            "add are",
+            "The living bridges were grown by the Khasi and Jaintia people.",
+            "were grown",
+            "add were"
           ],
           "hints": [
-            "Count the parts of a passive: thing, be, past participle.",
-            "Which slot is empty?",
+            "Read it aloud. Does it sound like a complete sentence?",
+            "A passive needs the thing, a form of 'be', and the past participle. Which is missing?",
             "The living bridges ___ grown by...",
-            "It should be 'are grown'."
+            "It should be 'are grown' (or 'were grown')."
           ],
           "targetsMisconception": "c8-english-ch09-t01-m-passive-no-be",
           "verified": {
             "solverAnswer": "Add 'are' (or 'were'): 'The living bridges are grown by...'",
             "agrees": true,
-            "note": "Key correct; acceptable should also take 'were grown'."
+            "note": "Key correct. Fixed: acceptable now also takes 'were grown'; prompt_hi neutral; hint 1 no longer names the missing slot."
           }
         },
         {
@@ -4404,8 +4409,7 @@
           "answer": "The Taj Mahal was built by Shah Jahan.",
           "acceptable": [
             "The Taj Mahal was built by Shah Jahan.",
-            "The Taj Mahal was built on Shah Jahan's orders.",
-            "The Taj Mahal was built for Shah Jahan."
+            "The Taj Mahal was built on Shah Jahan's orders."
           ],
           "hints": [
             "What comes first, the Taj Mahal or Shah Jahan?",
@@ -4416,8 +4420,8 @@
           "targetsMisconception": "c8-english-ch09-t01-m-passive-no-be",
           "verified": {
             "solverAnswer": "The Taj Mahal was built by Shah Jahan.",
-            "agrees": false,
-            "note": "Key answer correct, but acceptable includes 'The Taj Mahal was built for Shah Jahan.' — factually wrong (built by Shah Jahan for Mumtaz Mahal) and changes the agent. Remove that entry, then flip agrees."
+            "agrees": true,
+            "note": "Key correct. Fixed: removed 'The Taj Mahal was built for Shah Jahan.' (factually wrong: he had it built for Mumtaz Mahal)."
           }
         },
         {
@@ -4449,7 +4453,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'I collected many informations about Loktak Lake.'",
-          "prompt_hi": "Galti dhoondho. 'Information' ka plural hota hai kya?",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "'Informations' is wrong; say 'a lot of information' or 'much information'",
           "acceptable": [
             "I collected a lot of information about Loktak Lake.",
@@ -4466,7 +4470,7 @@
           "verified": {
             "solverAnswer": "'many informations' -> 'a lot of information'",
             "agrees": true,
-            "note": "Key correct. prompt_hi ('Information ka plural hota hai kya?') states the rule."
+            "note": "Key correct. prompt_hi ('Information ka plural hota hai kya?') states the rule. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -4474,24 +4478,25 @@
           "skillId": "c8-english-ch09-t01-s3",
           "kind": "translate_rep",
           "difficulty": 3,
-          "prompt_en": "Say in English using 'naturally': 'Ye pul insaanon ne nahi banaya, ye prakritik roop se ugta hai.'",
+          "prompt_en": "Say in English using 'naturally': 'Ye pul lakdi ya pathar se nahi bana; ye prakritik roop se ugta hai.'",
           "prompt_hi": "Ise English mein bolo, 'naturally' ya 'natural' use karke.",
-          "answer": "This bridge is not built by people; it grows naturally.",
+          "answer": "This bridge is not made of wood or stone; it grows naturally.",
           "acceptable": [
-            "This bridge is not built by people; it grows naturally.",
-            "People did not build this bridge; it grows naturally.",
-            "This bridge was not made by humans; it grows naturally."
+            "This bridge isn't made of wood or stone; it grows naturally.",
+            "It isn't made of wood or stone; it grows naturally.",
+            "It is not made of wood or stone; it grows naturally.",
+            "It is not built from wood or stone; it grows naturally."
           ],
           "hints": [
             "'Prakritik roop se' is an adverb.",
             "nature → natural → naturally",
-            "This bridge is not ___ by people; it grows ___.",
-            "This bridge is not built by people; it grows naturally."
+            "This bridge is not made of ___ or ___; it grows ___.",
+            "This bridge is not made of wood or stone; it grows naturally."
           ],
           "verified": {
-            "solverAnswer": "This bridge was not made by people; it grows naturally.",
+            "solverAnswer": "This bridge is not made of wood or stone; it grows naturally.",
             "agrees": true,
-            "note": "Key translation correct, but the Hindi sentence contradicts the passage (Khasi/Jaintia people guide the roots) and i07's key ('grown by the Khasi and Jaintia people'). Reword, e.g. 'Ye pul lakdi se nahi bana, ye prakritik roop se ugta hai.'"
+            "note": "Fixed: Hindi source reworded from 'insaanon ne nahi banaya' (contradicted the passage and i07: the Khasi and Jaintia people guide the roots) to 'lakdi ya pathar se nahi bana'; key re-keyed to match."
           }
         },
         {
@@ -4628,7 +4633,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "Hindi mein 'chaar saal se' — par English mein 'since' ya 'for'? Sahi chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "She has waited for four years.",
@@ -4657,7 +4662,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "'Yesterday' ke saath 'has bloomed' chalega? Sahi chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "The tree bloomed yesterday.",
@@ -4686,7 +4691,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Why did the cherry tree finally bloom?",
-            "prompt_hi": "Ped aakhir mein phool kyun laaya — kismat se, ya kisi aur wajah se?",
+            "prompt_hi": "Cherry ke ped mein aakhir phool kyun aaye?",
             "options": [
               {
                 "text": "Because Tara waited patiently and cared for it after the storm",
@@ -4717,7 +4722,7 @@
           "skillId": "c8-english-ch10-t01-s1",
           "kind": "retrieval",
           "difficulty": 1,
-          "prompt_en": "Read: 'When Tara was eight, she pushed a cherry stone into the soil beside her grandmother's kitchen door in Shimla. For a whole year nothing happened. Then a thin green shoot appeared. That winter a hailstorm snapped it in half, and Tara cried. \"Roots are stubborn,\" said Nani. \"Wait.\" In spring the stump put out two new leaves. Tara tied it to a bamboo stick and watered it every evening. Now Tara is twelve, and this morning the tree has opened its first pink blossoms. She has waited four years for this day.' Where did Tara plant the cherry stone?",
+          "prompt_en": "Read: 'When Tara was eight, she pushed a cherry stone into the soil beside her grandmother's kitchen door in Shimla. For a whole year nothing happened. Then a thin green shoot appeared. That winter a hailstorm snapped it in half, and Tara cried. \"Roots are stubborn,\" said Nani. \"Wait.\"' Where did Tara plant the cherry stone?",
           "prompt_hi": "Kahani suno. Tara ne cherry ki guthli kahan boyi?",
           "answer": "Beside her grandmother's kitchen door in Shimla",
           "acceptable": [
@@ -4735,7 +4740,7 @@
           "verified": {
             "solverAnswer": "Beside her grandmother's kitchen door in Shimla",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Passage cut at Nani's 'Wait.' so i06 (predict) is not spoiled; the ending is given in i04; answer unchanged."
           }
         },
         {
@@ -4743,7 +4748,7 @@
           "skillId": "c8-english-ch10-t01-s1",
           "kind": "why",
           "difficulty": 2,
-          "prompt_en": "Read: 'When Tara was eight, she pushed a cherry stone into the soil beside her grandmother's kitchen door in Shimla. For a whole year nothing happened. Then a thin green shoot appeared. That winter a hailstorm snapped it in half, and Tara cried. \"Roots are stubborn,\" said Nani. \"Wait.\" In spring the stump put out two new leaves. Tara tied it to a bamboo stick and watered it every evening. Now Tara is twelve, and this morning the tree has opened its first pink blossoms. She has waited four years for this day.' How did Tara feel when the hailstorm snapped the shoot, and how do you know?",
+          "prompt_en": "Read: 'When Tara was eight, she pushed a cherry stone into the soil beside her grandmother's kitchen door in Shimla. For a whole year nothing happened. Then a thin green shoot appeared. That winter a hailstorm snapped it in half, and Tara cried. \"Roots are stubborn,\" said Nani. \"Wait.\"' How did Tara feel when the hailstorm snapped the shoot, and how do you know?",
           "prompt_hi": "Jab ole ne paudha tod diya, Tara ko kaisa laga? Kaise pata chala?",
           "answer": "Heartbroken and sad; she cried",
           "acceptable": [
@@ -4760,7 +4765,7 @@
           "verified": {
             "solverAnswer": "Sad/heartbroken; she cried",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Passage cut at Nani's 'Wait.' so i06 (predict) is not spoiled; the ending is given in i04; answer unchanged."
           }
         },
         {
@@ -4768,7 +4773,7 @@
           "skillId": "c8-english-ch10-t01-s1",
           "kind": "why",
           "difficulty": 3,
-          "prompt_en": "Read: 'When Tara was eight, she pushed a cherry stone into the soil beside her grandmother's kitchen door in Shimla. For a whole year nothing happened. Then a thin green shoot appeared. That winter a hailstorm snapped it in half, and Tara cried. \"Roots are stubborn,\" said Nani. \"Wait.\" In spring the stump put out two new leaves. Tara tied it to a bamboo stick and watered it every evening. Now Tara is twelve, and this morning the tree has opened its first pink blossoms. She has waited four years for this day.' What does Nani mean by 'Roots are stubborn. Wait.'?",
+          "prompt_en": "Read: 'When Tara was eight, she pushed a cherry stone into the soil beside her grandmother's kitchen door in Shimla. For a whole year nothing happened. Then a thin green shoot appeared. That winter a hailstorm snapped it in half, and Tara cried. \"Roots are stubborn,\" said Nani. \"Wait.\"' What does Nani mean by 'Roots are stubborn. Wait.'?",
           "prompt_hi": "Nani ne kaha 'Roots are stubborn. Wait.' Iska matlab kya hai?",
           "answer": "Even if the top is broken, the roots are still alive and strong, so the plant can grow again if Tara is patient",
           "acceptable": [
@@ -4785,7 +4790,7 @@
           "verified": {
             "solverAnswer": "The roots are still alive, so be patient and it will grow again",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Passage cut at Nani's 'Wait.' so i06 (predict) is not spoiled; the ending is given in i04; answer unchanged."
           }
         },
         {
@@ -4793,8 +4798,8 @@
           "skillId": "c8-english-ch10-t01-s2",
           "kind": "why",
           "difficulty": 3,
-          "prompt_en": "What is the main theme of the story?",
-          "prompt_hi": "Kahani ki asli seekh kya hai?",
+          "prompt_en": "Here is how the story ends: 'In spring the stump put out two new leaves. Tara tied it to a bamboo stick and watered it every evening. Now Tara is twelve, and this morning the tree has opened its first pink blossoms. She has waited four years for this day.' What is the main theme of the story?",
+          "prompt_hi": "Kahani ka ant suno. Ab batao, kahani ki asli seekh kya hai?",
           "answer": "Growing something needs patience and steady care, and a setback is not the end",
           "acceptable": [
             "patience and care",
@@ -4812,7 +4817,7 @@
           "verified": {
             "solverAnswer": "Patience and steady care bring growth; setbacks are not the end",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Now carries the story's ending (moved out of i01-i03); sorts after i06 within s2 (difficulty 3 > 2)."
           }
         },
         {
@@ -4845,7 +4850,7 @@
           "skillId": "c8-english-ch10-t01-s2",
           "kind": "predict",
           "difficulty": 2,
-          "prompt_en": "Before the ending: after the storm, the stump puts out two new leaves. Predict what Tara will do now.",
+          "prompt_en": "Before the ending: after the storm, the broken stump puts out two new leaves. Predict what Tara will do now.",
           "prompt_hi": "Ending se pehle: toote paudhe par do naye patte aaye. Ab Tara kya karegi?",
           "answer": "She will protect it and care for it, for example by tying it to a stick and watering it",
           "acceptable": [
@@ -4863,7 +4868,7 @@
           "verified": {
             "solverAnswer": "She will care for it — support it and water it",
             "agrees": true,
-            "note": "Key correct. Ordering: i01 passage already shows she tied it to a stick and watered it, so this predict item is spoiled unless served first."
+            "note": "Key correct. Fixed spoiler: i01-i03 now stop at Nani's 'Wait.'; the watering and stick are first shown in i04, which is served after this item (s2, difficulty 2 before 3)."
           }
         },
         {
@@ -4871,7 +4876,7 @@
           "skillId": "c8-english-ch10-t01-s3",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Fill in 'for' or 'since': (a) 'Tara has looked after the tree ___ four years.' (b) 'She has watered it every evening ___ she was eight.'",
+          "prompt_en": "Fill in 'for' or 'since': (a) 'Tara has looked after the tree ___ four years.' (b) 'She has watered it every evening ___ that spring.'",
           "prompt_hi": "'For' ya 'since'? Lambaai (kitna samay) ya shuruaat (kab se)?",
           "answer": "(a) for; (b) since",
           "acceptable": [
@@ -4880,15 +4885,15 @@
           ],
           "hints": [
             "Is 'four years' a length or a starting point?",
-            "Is 'she was eight' a length or a starting point?",
-            "(a) ___ four years; (b) ___ she was eight",
-            "(a) for four years; (b) since she was eight."
+            "Is 'that spring' a length or a starting point?",
+            "(a) ___ four years; (b) ___ that spring",
+            "(a) for four years; (b) since that spring."
           ],
           "targetsMisconception": "c8-english-ch10-t01-m-since-for",
           "verified": {
             "solverAnswer": "(a) for; (b) since",
             "agrees": true,
-            "note": "Key correct grammatically, but (b) 'watered it every evening since she was eight' contradicts the story (watering began after the stump revived, when she was about nine or ten). Use e.g. 'since that spring'."
+            "note": "Key correct. Fixed: (b) changed from 'since she was eight' (contradicted the story: daily watering began after the stump revived) to 'since that spring'."
           }
         },
         {
@@ -4897,7 +4902,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Tara has waited since four years for the blossoms.'",
-          "prompt_hi": "Galti dhoondho. 'Four years' ke saath 'since'?",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
           "answer": "Use 'for': 'Tara has waited for four years for the blossoms.'",
           "acceptable": [
             "Tara has waited for four years for the blossoms.",
@@ -4913,7 +4918,7 @@
           "verified": {
             "solverAnswer": "'since four years' -> 'for four years'",
             "agrees": true,
-            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot."
+            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -4922,7 +4927,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'The tree has opened its first blossoms yesterday.'",
-          "prompt_hi": "Galti dhoondho. 'Yesterday' ke saath 'has opened'?",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "With 'yesterday' use simple past: 'The tree opened its first blossoms yesterday.'",
           "acceptable": [
             "The tree opened its first blossoms yesterday.",
@@ -4938,7 +4943,7 @@
           "verified": {
             "solverAnswer": "'has opened ... yesterday' -> 'opened ... yesterday'",
             "agrees": true,
-            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot."
+            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -5126,7 +5131,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "Insaan ke saath 'to', cheez ke saath 'for'. Sahi sentence chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "We are grateful to the farmers for the rice.",
@@ -5160,7 +5165,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "'For' ke baad verb ka -ing form aata hai. Sahi chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "Thank you for giving us rain.",
@@ -5194,7 +5199,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Why does the poet repeat 'We thank' at the start of three lines?",
-            "prompt_hi": "Poet ne 'We thank' baar baar kyun likha? Galti hai ya koi wajah hai?",
+            "prompt_hi": "Poet teen lines ki shuruaat mein 'We thank' kyun dohraata hai?",
             "options": [
               {
                 "text": "To build a strong, prayer-like rhythm of thanks, like a group singing together",
@@ -5405,7 +5410,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Thank you for give us golden grain.'",
-          "prompt_hi": "Galti dhoondho. 'For' ke baad verb ka form?",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
           "answer": "'Give' should be 'giving': 'Thank you for giving us golden grain.'",
           "acceptable": [
             "Thank you for giving us golden grain.",
@@ -5421,7 +5426,7 @@
           "verified": {
             "solverAnswer": "'give' -> 'giving'",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -5634,7 +5639,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is the natural English way to say 'tez baarish ho rahi hai'?",
-            "prompt_hi": "'Tez baarish' ko English mein kaise bolte hain? Shabd-shabd translate mat karo.",
+            "prompt_hi": "'Tez baarish ho rahi hai' ko natural English mein kaise kahenge?",
             "options": [
               {
                 "text": "It is raining heavily.",
@@ -5668,7 +5673,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "'Going to' se pehle kya chahiye? Sahi sentence chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "It is going to rain.",
@@ -5702,7 +5707,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "'Each' ek-ek ko ginta hai, isliye verb singular. Sahi chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "Each farmer waits for the rain.",
@@ -5733,7 +5738,7 @@
           "skillId": "c8-english-ch12-t01-s1",
           "kind": "retrieval",
           "difficulty": 1,
-          "prompt_en": "Read: 'Every morning in June, Ramdas climbed onto the roof of his hut and searched the sky. His fields lay cracked and brown, and the seeds sat in sacks, waiting. \"The radio says the monsoon is late again,\" sighed his wife. Ramdas said nothing, but he checked his old well twice a day. On the tenth day, a cool wind blew from the west and the sky turned dark grey. His daughter ran outside. \"Baba, look at those clouds! It is going to rain!\" Heavy drops fell on the dust, and the smell of wet earth filled the air. Ramdas laughed for the first time that month.' Where did Ramdas go every morning to look at the sky?",
+          "prompt_en": "Read: 'Every morning in June, Ramdas climbed onto the roof of his hut and searched the sky. His fields lay cracked and brown, and the seeds sat in sacks, waiting. \"The radio says the monsoon is late again,\" sighed his wife. Ramdas said nothing, but he checked his old well twice a day.' Where did Ramdas go every morning to look at the sky?",
           "prompt_hi": "Kahani suno. Ramdas har subah aasmaan dekhne kahan jaata tha?",
           "answer": "Onto the roof of his hut",
           "acceptable": [
@@ -5751,7 +5756,7 @@
           "verified": {
             "solverAnswer": "The roof of his hut",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Passage cut before the tenth day so i06 (predict) is not spoiled; answer unchanged."
           }
         },
         {
@@ -5759,7 +5764,7 @@
           "skillId": "c8-english-ch12-t01-s1",
           "kind": "why",
           "difficulty": 3,
-          "prompt_en": "Read: 'Every morning in June, Ramdas climbed onto the roof of his hut and searched the sky. His fields lay cracked and brown, and the seeds sat in sacks, waiting. \"The radio says the monsoon is late again,\" sighed his wife. Ramdas said nothing, but he checked his old well twice a day. On the tenth day, a cool wind blew from the west and the sky turned dark grey. His daughter ran outside. \"Baba, look at those clouds! It is going to rain!\" Heavy drops fell on the dust, and the smell of wet earth filled the air. Ramdas laughed for the first time that month.' Ramdas 'said nothing' but checked his well twice a day. What does this tell you about his feelings?",
+          "prompt_en": "Read: 'Every morning in June, Ramdas climbed onto the roof of his hut and searched the sky. His fields lay cracked and brown, and the seeds sat in sacks, waiting. \"The radio says the monsoon is late again,\" sighed his wife. Ramdas said nothing, but he checked his old well twice a day.' Ramdas 'said nothing' but checked his well twice a day. What does this tell you about his feelings?",
           "prompt_hi": "Ramdas chup raha par kuan din mein do baar dekhta tha. Usse uske mann ka kya pata chalta hai?",
           "answer": "He was very worried about the rain and water, even though he did not say it",
           "acceptable": [
@@ -5776,7 +5781,7 @@
           "verified": {
             "solverAnswer": "He was deeply worried but kept it to himself",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Passage cut before the tenth day so i06 (predict) is not spoiled; answer unchanged."
           }
         },
         {
@@ -5784,25 +5789,25 @@
           "skillId": "c8-english-ch12-t01-s1",
           "kind": "why",
           "difficulty": 2,
-          "prompt_en": "Read: 'Every morning in June, Ramdas climbed onto the roof of his hut and searched the sky. His fields lay cracked and brown, and the seeds sat in sacks, waiting. \"The radio says the monsoon is late again,\" sighed his wife. Ramdas said nothing, but he checked his old well twice a day. On the tenth day, a cool wind blew from the west and the sky turned dark grey. His daughter ran outside. \"Baba, look at those clouds! It is going to rain!\" Heavy drops fell on the dust, and the smell of wet earth filled the air. Ramdas laughed for the first time that month.' Why did Ramdas laugh at the end?",
-          "prompt_hi": "End mein Ramdas kyun hansa?",
-          "answer": "Because the rain finally came, so he felt relieved and happy that he could sow his seeds",
+          "prompt_en": "Read: 'Every morning in June, Ramdas climbed onto the roof of his hut and searched the sky. His fields lay cracked and brown, and the seeds sat in sacks, waiting. \"The radio says the monsoon is late again,\" sighed his wife. Ramdas said nothing, but he checked his old well twice a day.' Ramdas's wife 'sighed' when she spoke about the radio news. What does 'sighed' tell you about how she felt, and why?",
+          "prompt_hi": "Ramdas ki patni ne radio ki khabar batate hue 'sighed' kiya. Isse uske mann ka kya pata chalta hai, aur kyun?",
+          "answer": "She felt worried and disappointed (tired of waiting), because the monsoon was late again and the dry fields needed rain",
           "acceptable": [
-            "the rain came",
-            "he was relieved the monsoon arrived",
-            "he could finally sow his seeds",
-            "he was happy it rained"
+            "she was worried",
+            "she was disappointed",
+            "she was sad and tired of waiting",
+            "worried because the monsoon was late"
           ],
           "hints": [
-            "What finally happened on the tenth day?",
-            "What could he now do with the seeds?",
-            "He laughed because the ___ came and he felt ___.",
-            "The rain finally came, and he felt relieved and happy."
+            "What news did the radio give?",
+            "When do people let out a long, tired breath?",
+            "She felt ___ because the monsoon was ___ again.",
+            "She was worried and disappointed, because the monsoon was late again."
           ],
           "verified": {
-            "solverAnswer": "The rain came at last; relief and joy",
+            "solverAnswer": "Worried/disappointed, because the monsoon was late again",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Rewritten: the old 'Why did Ramdas laugh at the end?' showed the rain before i06 (predict). Now a pre-reveal feeling inference (s1); the laugh moved to i05, served after i06."
           }
         },
         {
@@ -5810,13 +5815,13 @@
           "skillId": "c8-english-ch12-t01-s2",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Read: 'Every morning in June, Ramdas climbed onto the roof of his hut and searched the sky. His fields lay cracked and brown, and the seeds sat in sacks, waiting. \"The radio says the monsoon is late again,\" sighed his wife. Ramdas said nothing, but he checked his old well twice a day. On the tenth day, a cool wind blew from the west and the sky turned dark grey. His daughter ran outside. \"Baba, look at those clouds! It is going to rain!\" Heavy drops fell on the dust, and the smell of wet earth filled the air. Ramdas laughed for the first time that month.' Find two words or phrases that show how dry the land was before the rain.",
+          "prompt_en": "Read: 'Every morning in June, Ramdas climbed onto the roof of his hut and searched the sky. His fields lay cracked and brown, and the seeds sat in sacks, waiting. \"The radio says the monsoon is late again,\" sighed his wife. Ramdas said nothing, but he checked his old well twice a day.' Find two words or phrases that show how dry the land was before the rain.",
           "prompt_hi": "Do words dhoondho jo dikhaate hain ki zameen kitni sookhi thi.",
-          "answer": "'cracked' and 'brown' (also 'dust')",
+          "answer": "'cracked' and 'brown'",
           "acceptable": [
             "cracked, brown",
             "cracked and brown",
-            "dust"
+            "the fields lay cracked and brown"
           ],
           "hints": [
             "Listen to how the fields are described.",
@@ -5825,9 +5830,9 @@
             "'Cracked' and 'brown' show the dryness."
           ],
           "verified": {
-            "solverAnswer": "'cracked', 'brown' (also 'dust')",
+            "solverAnswer": "'cracked' and 'brown'",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Passage cut before the tenth day so i06 (predict) is not spoiled; 'dust' dropped from the key because it is now in the ending (i05)."
           }
         },
         {
@@ -5835,25 +5840,25 @@
           "skillId": "c8-english-ch12-t01-s2",
           "kind": "contrast",
           "difficulty": 3,
-          "prompt_en": "Compare the mood at the start (cracked fields, seeds waiting, silence) with the end (cool wind, smell of wet earth, laughter). How does it change?",
-          "prompt_hi": "Shuru aur end ka mood compare karo. Kaise badla?",
-          "answer": "It changes from worried and tense to relieved and joyful",
+          "prompt_en": "The story ends: 'On the tenth day, a cool wind blew from the west and the sky turned dark grey. Heavy drops fell on the dust, the smell of wet earth filled the air, and Ramdas laughed for the first time that month.' How does the mood change from the start, and why does Ramdas laugh?",
+          "prompt_hi": "Kahani ka ant suno. Shuru aur ant ka mood compare karo — kaise badla, aur Ramdas kyun hansa?",
+          "answer": "It changes from worried and tense to relieved and joyful; Ramdas laughs because the rain has finally come and he can sow his seeds",
           "acceptable": [
-            "from worry to joy",
-            "tense to happy",
-            "anxious to relieved",
-            "sad and worried to happy"
+            "from worry to joy, because the rain came",
+            "tense to happy; the monsoon arrived",
+            "anxious to relieved, he can sow his seeds",
+            "sad and worried to happy because it rained"
           ],
           "hints": [
             "How does Ramdas behave at the start?",
-            "What does he do at the end?",
-            "The mood changes from ___ to ___.",
-            "From worried and tense to relieved and joyful."
+            "What does he do at the end, and what has arrived?",
+            "The mood changes from ___ to ___, because the ___ came.",
+            "From worried and tense to relieved and joyful: the rain came, so he can sow his seeds."
           ],
           "verified": {
-            "solverAnswer": "From tense/worried to relieved/joyful",
+            "solverAnswer": "Worried/tense to relieved/joyful; he laughs because the rain came",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Now carries the ending (moved out of i01-i04) and the 'why did he laugh' part of old i03; sorts after i06 within s2 (difficulty 3 > 2)."
           }
         },
         {
@@ -5879,7 +5884,7 @@
           "verified": {
             "solverAnswer": "It rains — the monsoon arrives",
             "agrees": true,
-            "note": "Key correct. Ordering: i01 passage already reveals the rain, so this predict item is spoiled unless served first."
+            "note": "Key correct. Fixed spoiler: i01-i04 now stop before the tenth day; the rain is first shown in i05, which is served after this item (s2, difficulty 2 before 3)."
           }
         },
         {
@@ -5914,7 +5919,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'The farmers going to sow the seeds tomorrow.'",
-          "prompt_hi": "Galti dhoondho. 'Going to' se pehle kya missing hai?",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "Add 'are': 'The farmers are going to sow the seeds tomorrow.'",
           "acceptable": [
             "The farmers are going to sow the seeds tomorrow.",
@@ -5930,7 +5935,7 @@
           "verified": {
             "solverAnswer": "Add 'are': 'The farmers are going to sow...'",
             "agrees": true,
-            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot."
+            "note": "Key correct. prompt_hi names the error location/fix, which the EN prompt does not; Hindi lane gets a pre-solved error_spot. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -5939,7 +5944,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'Every farmer in the village wait for the monsoon.'",
-          "prompt_hi": "Galti dhoondho. 'Every farmer' ke saath verb kaisa hoga?",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
           "answer": "'Wait' should be 'waits': 'Every farmer in the village waits for the monsoon.'",
           "acceptable": [
             "Every farmer in the village waits for the monsoon.",
@@ -5955,7 +5960,7 @@
           "verified": {
             "solverAnswer": "'wait' -> 'waits'",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -6016,7 +6021,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Yesterday there was a big rain and the streets flooded.'",
-          "prompt_hi": "Galti dhoondho — 'big rain' English mein natural hai?",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "'Big rain' should be 'heavy rain': 'Yesterday there was heavy rain and the streets flooded.'",
           "acceptable": [
             "heavy rain",
@@ -6033,7 +6038,7 @@
           "verified": {
             "solverAnswer": "'big rain' -> 'heavy rain'",
             "agrees": true,
-            "note": "Key correct. prompt_hi quotes 'big rain' as the suspect phrase, giving away the error."
+            "note": "Key correct. prompt_hi quotes 'big rain' as the suspect phrase, giving away the error. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -6145,7 +6150,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sentence is correct?",
-            "prompt_hi": "Hindi mein 'a' ya 'the' nahi hota, par English mein zaroori hai. Sahi chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "Meera tied a paper ribbon to the air vent.",
@@ -6174,7 +6179,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "'A' aur 'an' letter se nahi, awaaz (sound) se tay hote hain. Sahi chuno.",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "Within an hour, the crew felt better.",
@@ -6203,7 +6208,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Why was the still ribbon important?",
-            "prompt_hi": "Ribbon ka hilna band ho gaya — isse kya pata chala?",
+            "prompt_hi": "Ruka hua ribbon itna important kyun tha?",
             "options": [
               {
                 "text": "It showed that air had stopped flowing through the vent",
@@ -6234,7 +6239,7 @@
           "skillId": "c8-english-ch13-t01-s1",
           "kind": "retrieval",
           "difficulty": 1,
-          "prompt_en": "Read: 'On the space station, everything floats unless it is tied down. Astronaut Meera tied a thin paper ribbon to an air vent so that she could see the air moving. One morning the ribbon hung still. By lunch, the crew felt sleepy, and two of them had headaches. Meera looked at the ribbon again and pulled open the vent. Inside, the fan was jammed with biscuit crumbs that had floated into it. Once the fan was cleaned, fresh air flowed again, and within an hour the crew felt better.' What did Meera tie to the air vent?",
+          "prompt_en": "Read: 'On the space station, everything floats unless it is tied down. Astronaut Meera tied a thin paper ribbon to an air vent so that she could see the air moving. One morning the ribbon hung still. By lunch, the crew felt sleepy, and two of them had headaches. Meera looked at the ribbon again and pulled open the vent.' What did Meera tie to the air vent?",
           "prompt_hi": "Kahani suno. Meera ne air vent par kya baandha?",
           "answer": "A thin paper ribbon",
           "acceptable": [
@@ -6252,7 +6257,7 @@
           "verified": {
             "solverAnswer": "A thin paper ribbon",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. Passage cut at 'pulled open the vent' so i04 (predict) is not spoiled; i02 gives the full story."
           }
         },
         {
@@ -6330,7 +6335,7 @@
           "verified": {
             "solverAnswer": "The fan blocked (by floating crumbs)",
             "agrees": true,
-            "note": "Key correct. Ordering: i01 passage already reveals the crumbs, so this predict item is spoiled unless served first."
+            "note": "Key correct. Fixed spoiler: i01 now stops at 'pulled open the vent'; the crumbs are first shown in i02 (s1, difficulty 3), served after this item (s1, difficulty 2)."
           }
         },
         {
@@ -6389,22 +6394,24 @@
           "difficulty": 2,
           "prompt_en": "Fill in a, an or the: 'Meera is ___ astronaut. She tied ___ ribbon to ___ vent above her bunk.'",
           "prompt_hi": "Har khaali jagah par 'a', 'an' ya 'the' — awaaz suno.",
-          "answer": "an, a, the",
+          "answer": "an, a, the (or an, a, a)",
           "acceptable": [
             "an, a, the",
-            "an astronaut, a ribbon, the vent"
+            "an, a, a",
+            "an astronaut, a ribbon, the vent",
+            "an astronaut, a ribbon, a vent"
           ],
           "hints": [
             "Does 'astronaut' start with a vowel sound?",
             "Is this the first time we hear of the ribbon?",
             "___ astronaut, ___ ribbon, ___ vent above her bunk",
-            "an astronaut, a ribbon, the vent."
+            "an astronaut, a ribbon, and the (or a) vent above her bunk."
           ],
           "targetsMisconception": "c8-english-ch13-t01-m-a-an-by-letter",
           "verified": {
-            "solverAnswer": "an, a, the",
+            "solverAnswer": "an, a, the (blank 3: a or the)",
             "agrees": true,
-            "note": "Key correct, but 'a vent above her bunk' is equally correct (first mention in this sentence) and acceptable rejects it; on an item tagged a-an-by-letter that would log a false misconception. Accept 'a' or 'the' in blank 3 (hint 2's 'first time we hear of it' logic applies to the vent too)."
+            "note": "Key correct. Fixed: blank 3 now accepts 'a' or 'the' ('a vent above her bunk' is first mention and equally correct), so a right answer is not logged as m-a-an-by-letter."
           }
         },
         {
@@ -6413,7 +6420,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Fan was jammed with crumbs, so crew felt sick.'",
-          "prompt_hi": "Galti dhoondho. Do jagah ek chhota word missing hai.",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
           "answer": "Add 'the': 'The fan was jammed with crumbs, so the crew felt sick.'",
           "acceptable": [
             "The fan was jammed with crumbs, so the crew felt sick.",
@@ -6429,7 +6436,7 @@
           "verified": {
             "solverAnswer": "'The fan ..., so the crew felt sick.'",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -6437,16 +6444,16 @@
           "skillId": "c8-english-ch13-t01-s3",
           "kind": "error_spot",
           "difficulty": 3,
-          "prompt_en": "Find the mistake: 'The ribbon was an useful tool, and the air came back in a hour.'",
-          "prompt_hi": "Do galtiyan hain. 'Useful' aur 'hour' ki pehli awaaz suno.",
+          "prompt_en": "Find the two mistakes: 'The ribbon was an useful tool, and the air came back in a hour.'",
+          "prompt_hi": "Is sentence mein do galtiyan hain. Dhoondho aur sahi karke bolo.",
           "answer": "'An useful' should be 'a useful'; 'a hour' should be 'an hour'",
           "acceptable": [
             "a useful tool, an hour",
             "The ribbon was a useful tool, and the air came back in an hour."
           ],
           "hints": [
-            "Say 'useful' aloud. Does it start with a 'yoo' sound?",
-            "Say 'hour'. Is the h heard?",
+            "Read the sentence aloud and listen to the small words before 'useful' and 'hour'.",
+            "Say 'useful' and 'hour'. Listen to the first sound of each, not the first letter.",
             "___ useful tool ... ___ hour",
             "A useful tool, and an hour."
           ],
@@ -6454,7 +6461,7 @@
           "verified": {
             "solverAnswer": "'an useful' -> 'a useful'; 'a hour' -> 'an hour'",
             "agrees": true,
-            "note": "Key correct. Hint 1 ('Does it start with a yoo sound?') nearly gives the answer at the pump step; prompt_hi also names both words."
+            "note": "Key correct. Fixed: English now says 'two mistakes' (matches Hindi); prompt_hi no longer names the words; hint 1 no longer states the 'yoo' sound."
           }
         },
         {
@@ -6469,8 +6476,8 @@
             "a university, an honest crew"
           ],
           "hints": [
-            "Say 'university' aloud: it starts with a 'yoo' sound.",
-            "In 'honest', is the h heard?",
+            "Say each word aloud. Listen to the very first sound, not the first letter.",
+            "Does 'university' begin with a vowel sound? In 'honest', is the h heard?",
             "(a) ___ university, (b) ___ honest crew",
             "A university; an honest crew."
           ],
@@ -6478,7 +6485,7 @@
           "verified": {
             "solverAnswer": "(a) a university; (b) an honest crew",
             "agrees": true,
-            "note": "Key correct. Hint 1 states that 'university' starts with a 'yoo' sound — answer leaked at the first hint."
+            "note": "Key correct. Fixed: hint 1 is now an open nudge (first sound, not letter) instead of stating that 'university' starts with a 'yoo' sound."
           }
         },
         {
@@ -6640,7 +6647,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Why does the poet call the ant 'a giant'?",
-            "prompt_hi": "Cheenti ko 'giant' kyun kaha? Poet jhooth bol raha hai kya?",
+            "prompt_hi": "Poet cheenti ko 'a giant' kyun kehta hai?",
             "options": [
               {
                 "text": "Through the magnifying glass it looks huge, so the poet exaggerates to show the surprise",
@@ -6674,7 +6681,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sounds natural in English?",
-            "prompt_hi": "English mein adjectives ka ek kram hota hai. Kaunsa natural lagta hai?",
+            "prompt_hi": "English mein kaunsa natural lagta hai?",
             "options": [
               {
                 "text": "a tiny black ant",
@@ -6703,7 +6710,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which instrument is used to see very small things like cells?",
-            "prompt_hi": "'Micro' matlab chhota, 'tele' matlab door. Bahut chhoti cheezein dekhne ke liye kya?",
+            "prompt_hi": "Cells jaisi bahut chhoti cheezein dekhne ke liye kaunsa instrument use hota hai?",
             "options": [
               {
                 "text": "A microscope",
@@ -6941,7 +6948,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'The doctor looked at the germs through a telescope.'",
-          "prompt_hi": "Galti dhoondho. Keetanu dekhne ke liye kaunsa instrument hota hai?",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "It should be 'microscope', because germs are tiny, not far away",
           "acceptable": [
             "microscope",
@@ -6957,7 +6964,7 @@
           "verified": {
             "solverAnswer": "'telescope' -> 'microscope'",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -6966,14 +6973,14 @@
           "kind": "practice",
           "difficulty": 3,
           "prompt_en": "Put the adjectives in natural order: 'a (green, thin, beautiful) leaf'",
-          "prompt_hi": "Teen adjectives ko sahi kram mein lagao: opinion, size/shape, colour.",
+          "prompt_hi": "In teen adjectives ko natural English kram mein lagao: 'a (green, thin, beautiful) leaf'.",
           "answer": "a beautiful thin green leaf",
           "acceptable": [
             "a beautiful thin green leaf"
           ],
           "hints": [
-            "Opinion comes first.",
-            "Colour comes just before the noun.",
+            "Which word is your opinion, which is the shape, and which is the colour?",
+            "Opinion comes first, and colour sits right next to the noun.",
             "a ___ ___ ___ leaf",
             "a beautiful thin green leaf."
           ],
@@ -6981,7 +6988,7 @@
           "verified": {
             "solverAnswer": "a beautiful thin green leaf",
             "agrees": true,
-            "note": "Key correct. prompt_hi lists the order categories, pre-solving it."
+            "note": "Key correct. Fixed: prompt_hi no longer lists the order categories; hint 1 asks the child to sort the words instead of stating the rule."
           }
         },
         {
@@ -6990,7 +6997,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'I saw a red small shiny ladybird.'",
-          "prompt_hi": "Galti dhoondho. Adjectives ka kram theek hai kya?",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
           "answer": "Order: 'a small shiny red ladybird' (size and other qualities before colour)",
           "acceptable": [
             "a small shiny red ladybird",
@@ -7007,7 +7014,7 @@
           "verified": {
             "solverAnswer": "a small shiny red ladybird",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -7024,8 +7031,8 @@
             "a shiny little black ant"
           ],
           "hints": [
-            "Size first, then other quality, colour last.",
-            "chhoti = tiny/small, chamakdaar = shiny, kaali = black",
+            "First find the English word for each: chhoti, kaali, chamakdaar.",
+            "Size comes early, and colour sits right next to the noun.",
             "a ___ ___ black ant",
             "a tiny shiny black ant."
           ],
@@ -7033,7 +7040,7 @@
           "verified": {
             "solverAnswer": "a small shiny black ant",
             "agrees": true,
-            "note": "Key correct. Hint 1 states the full order rule ('Size first, then other quality, colour last') — answer leaked at the pump step."
+            "note": "Key correct. Fixed: hint 1 is now a vocabulary nudge; the order rule moved to hint 2 and states only size-early, colour-last."
           }
         },
         {
@@ -7145,7 +7152,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Bibha Chowdhuri studied cosmic rays. What was she?",
-            "prompt_hi": "Physicist aur physician alag hain. Bibha Chowdhuri kya thi?",
+            "prompt_hi": "Bibha Chowdhuri ne cosmic rays par research ki. Woh kya thi?",
             "options": [
               {
                 "text": "A physicist, a scientist who studies physics",
@@ -7174,7 +7181,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is correct?",
-            "prompt_hi": "1913 to beet chuka hai. Kaunsa sentence sahi hai?",
+            "prompt_hi": "Kaunsa sentence sahi hai?",
             "options": [
               {
                 "text": "She was born in Kolkata in 1913.",
@@ -7203,7 +7210,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Why is Bibha Chowdhuri called 'the beam of light that lit the path for women in Indian science'?",
-            "prompt_hi": "Title mein 'beam of light' kyun kaha? Kya woh sach mein torch jalati thi?",
+            "prompt_hi": "Bibha Chowdhuri ko 'the beam of light that lit the path for women in Indian science' kyun kaha gaya hai?",
             "options": [
               {
                 "text": "Because her example showed other women that they too could become scientists",
@@ -7386,7 +7393,7 @@
           "kind": "error_spot",
           "difficulty": 2,
           "prompt_en": "Find the mistake: 'Bibha Chowdhuri is born in Kolkata in 1913.'",
-          "prompt_hi": "Galti dhoondho. 1913 present hai ya past?",
+          "prompt_hi": "Galti dhoondho. Sentence dhyaan se suno, phir sahi karke bolo.",
           "answer": "'Is born' should be 'was born'",
           "acceptable": [
             "Bibha Chowdhuri was born in Kolkata in 1913.",
@@ -7402,7 +7409,7 @@
           "verified": {
             "solverAnswer": "'is born' -> 'was born'",
             "agrees": true,
-            "note": "Key correct."
+            "note": "Key correct. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {
@@ -7485,7 +7492,7 @@
           "kind": "error_spot",
           "difficulty": 3,
           "prompt_en": "Find the mistake: 'Bibha Chowdhuri was a famous physician who studied cosmic rays.'",
-          "prompt_hi": "Galti dhoondho. Cosmic rays padhne wale ko kya kehte hain?",
+          "prompt_hi": "Galti dhoondho, phir poora sentence sahi karke bolo.",
           "answer": "'Physician' should be 'physicist'",
           "acceptable": [
             "physicist",
@@ -7501,7 +7508,7 @@
           "verified": {
             "solverAnswer": "'physician' -> 'physicist'",
             "agrees": true,
-            "note": "Key correct. prompt_hi asks what to call one who studies cosmic rays, pointing at the error."
+            "note": "Key correct. prompt_hi asks what to call one who studies cosmic rays, pointing at the error. prompt_hi made neutral (no longer names the error or the fix)."
           }
         },
         {

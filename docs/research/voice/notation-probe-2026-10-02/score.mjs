@@ -41,13 +41,15 @@ GIVEN TEXT: ${r.input}
 ENGINE TRANSCRIPT: ${r.model_text ?? "(none: TTS)"}
 HEARD: ${r.asr}`;
   for (let a = 1; a <= 4; a++) {
-    const res = await fetch(`${OAI}/chat/completions`, { method: "POST", headers: { "api-key": KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: BRAIN, messages: [{ role: "system", content: SYS }, { role: "user", content: user }], response_format: { type: "json_object" } }) });
+    let res;
+    try { res = await fetch(`${OAI}/chat/completions`, { method: "POST", headers: { "api-key": KEY, "Content-Type": "application/json" }, signal: AbortSignal.timeout(120_000),
+      body: JSON.stringify({ model: BRAIN, messages: [{ role: "system", content: SYS }, { role: "user", content: user }], response_format: { type: "json_object" } }) }); }
+    catch (e) { await sleep(3000 * a); continue; }
     if (res.status === 429) { await sleep(4000 * a); continue; }
     if (!res.ok) return { err: `HTTP ${res.status} ${(await res.text()).slice(0, 100)}` };
     try { return JSON.parse((await res.json()).choices[0].message.content); } catch (e) { return { err: "parse" }; }
   }
-  return { err: "429" };
+  return { err: "retries exhausted" };
 }
 
 const rows = raw.rows.filter((r) => !r.err);

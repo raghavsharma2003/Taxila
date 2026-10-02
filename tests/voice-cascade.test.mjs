@@ -9,9 +9,9 @@ import assert from "node:assert/strict";
 import { splitSentences, MIN_CHARS, MAX_CHARS } from "../server/voice/sentences.js";
 import { sttSession, sttPrompt, turnDetection, ageBandOf, SILENCE_MS } from "../server/voice/stt.js";
 import { speechStyle, cacheKey, cacheable, speakChunk, setCacheStore, Prefetch, STYLE_VERSION } from "../server/voice/speech.js";
-import { Pcm16Decoder, PcmStreamPlayer } from "../src/lesson/ttsStream.ts";
+import { Pcm16Decoder, PcmStreamPlayer, resumePoint } from "../src/lesson/ttsStream.ts";
 import { EnergyVad } from "../src/lesson/vad.ts";
-import { CascadeLink, TranscriptionProtocol, confidenceFromLogprobs } from "../src/lesson/cascadeLink.ts";
+import { CascadeLink, TranscriptionProtocol, confidenceFromLogprobs, isBackchannel, isEcho, skeleton } from "../src/lesson/cascadeLink.ts";
 import { LessonRuntime } from "../src/lesson/runtime.ts";
 import { LevelMeter } from "../src/lesson/level.ts";
 
@@ -219,6 +219,7 @@ class FakeNode {
   disconnect() {}
 }
 class FakeAudioContext {
+  static micLevel = 0;
   constructor() {
     this.t0 = performance.now();
     this.destination = new FakeNode(this);
@@ -229,7 +230,7 @@ class FakeAudioContext {
   resume() { return Promise.resolve(); }
   close() { return Promise.resolve(); }
   createGain() { const n = new FakeNode(this); n.gain = new FakeParam(1); return n; }
-  createAnalyser() { const n = new FakeNode(this); n.fftSize = 1024; n.getFloatTimeDomainData = (b) => b.fill(0); return n; }
+  createAnalyser() { const n = new FakeNode(this); n.fftSize = 1024; n.getFloatTimeDomainData = (b) => b.fill(FakeAudioContext.micLevel); return n; }
   createMediaStreamSource() { return new FakeNode(this); }
   createBuffer(_ch, length, rate) { const data = new Float32Array(length); return { duration: length / rate, getChannelData: () => data }; }
   createBufferSource() {
@@ -245,14 +246,44 @@ class FakeAudioContext {
   }
 }
 
-function installBrowserFakes({ rtc = "fail" } = {}) {
+/**
+ * rtc: "fail" (no WebRTC), "open" (the call comes up and its data channel opens), "hang" (UDP blocked, no
+ * TURN: the channel never opens). mic: "ok" | "denied".
+ */
+function installBrowserFakes({ rtc = "fail", mic = "ok" } = {}) {
   const saved = {};
   const set = (k, v) => { saved[k] = Object.getOwnPropertyDescriptor(globalThis, k); Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true }); };
   const track = { enabled: true, stop() { this.stopped = true; } };
   const stream = { getTracks: () => [track], getAudioTracks: () => [track] };
-  set("navigator", { mediaDevices: { getUserMedia: async () => stream } });
+  FakeAudioContext.micLevel = 0;
+  set("navigator", { mediaDevices: { getUserMedia: async () => {
+    if (mic === "denied") throw Object.assign(new Error("Permission denied"), { name: "NotAllowedError" });
+    return stream;
+  } } });
   set("AudioContext", FakeAudioContext);
-  set("RTCPeerConnection", class { constructor() { if (rtc === "fail") throw new Error("no WebRTC here"); } });
+  const pcs = [];
+  set("RTCPeerConnection", class {
+    constructor() {
+      if (rtc === "fail") throw new Error("no WebRTC here");
+      this.connectionState = "new";
+      pcs.push(this);
+    }
+    addTrack() {}
+    createDataChannel() {
+      this.dc = { readyState: "connecting", sent: [], send(m) { this.sent.push(JSON.parse(m)); }, close() { this.readyState = "closed"; } };
+      return this.dc;
+    }
+    async createOffer() { return { type: "offer", sdp: "v=0" }; }
+    async setLocalDescription(d) { this.localDescription = d; }
+    async setRemoteDescription() {
+      if (rtc !== "open") return;
+      setTimeout(() => { this.dc.readyState = "open"; this.connectionState = "connected"; this.dc.onopen?.(); }, 1);
+    }
+    setState(st) { this.connectionState = st; this.onconnectionstatechange?.(); }
+    close() { this.closed = true; }
+  });
+  const origFetch = globalThis.fetch;
+  set("fetch", async (url, init) => (String(url).endsWith("/realtime/calls") ? new Response("v=0 answer", { status: 201 }) : origFetch(url, init)));
   const recorded = [];
   set("MediaRecorder", class {
     static isTypeSupported(m) { return m === "audio/webm;codecs=opus"; }
@@ -260,14 +291,14 @@ function installBrowserFakes({ rtc = "fail" } = {}) {
     start() { this.state = "recording"; }
     stop() { this.state = "inactive"; this.ondataavailable?.({ data: new Blob([new Uint8Array(4000)], { type: this.mimeType }) }); this.onstop?.(); }
   });
-  return { track, recorded, restore() { for (const [k, d] of Object.entries(saved)) d ? Object.defineProperty(globalThis, k, d) : delete globalThis[k]; } };
+  return { track, recorded, pcs, restore() { for (const [k, d] of Object.entries(saved)) d ? Object.defineProperty(globalThis, k, d) : delete globalThis[k]; } };
 }
 
-/** 1 s of PCM in four chunks, the first after `delayMs`. */
-function pcmStream(delayMs = 5) {
+/** `chunks` × 0.25 s of PCM (default 1 s), the first after `delayMs`. */
+function pcmStream(delayMs = 5, chunks = 4) {
   return async (_req, signal) => new ReadableStream({
     async start(c) {
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < chunks; i++) {
         await sleep(i ? 2 : delayMs);
         if (signal.aborted) return c.close();
         c.enqueue(new Uint8Array(12_000));
@@ -383,8 +414,10 @@ test("runtime + CascadeLink: a spoken final becomes one Director turn with its A
   const reqs = [];
   const speech = pcmStream(2);
   const turns = [];
+  const starts = [];
+  const linkCtx = [];
   const api = {
-    start: async () => ({ lessonId: "L1", topic: { id: "t", title: "T", chapter: "1" }, teacher: { id: "asha", name: "Asha", voice: "marin" }, moduleCommands: [], ui: {}, teacherOpening: "Namaste!", teacherOpeningSeq: 1 }),
+    start: async (req) => (starts.push(req), { lessonId: "L1", topic: { id: "t", title: "T", chapter: "1" }, teacher: { id: "asha", name: "Asha", voice: "marin" }, moduleCommands: [], ui: {}, teacherOpening: "Namaste!", teacherOpeningSeq: 1 }),
     turn: async (req) => { turns.push(req); return { move: { kind: "probe", shape: "x" }, moduleCommands: [], ui: {}, teacherReply: "Achha, kyun?", teacherReplySeq: 3 }; },
     end: async () => ({}),
     realtimeToken: async () => { throw new Error("not used"); },
@@ -392,9 +425,13 @@ test("runtime + CascadeLink: a spoken final becomes one Director turn with its A
   let link;
   // Unref'd timers: the runtime's 20 s end-drain race must not hold the test process open.
   const timers = { setTimeout: (fn, ms) => { const t = setTimeout(fn, ms); t.unref(); return t; }, clearTimeout: (t) => clearTimeout(t) };
-  const rt = new LessonRuntime({ api, timers, createLink: (_m, ctx) => (link = new CascadeLink({ lessonId: ctx.lessonId, levels: ctx.levels, fetchToken: async () => { throw new Error("no STT in tests"); }, speech: (r, s) => { reqs.push(r.seq); return speech(r, s); }, transcribe: async () => ({ text: "" }) })) });
+  const rt = new LessonRuntime({ api, timers, createLink: (_m, ctx) => (linkCtx.push({ mode: _m, cascade: ctx.cascade }), link = new CascadeLink({ lessonId: ctx.lessonId, levels: ctx.levels, fetchToken: async () => { throw new Error("no STT in tests"); }, speech: (r, s) => { reqs.push(r.seq); return speech(r, s); }, transcribe: async () => ({ text: "" }) })) });
   try {
-    await rt.start("child-1", "text");
+    await rt.start("child-1", "cascade");
+    // The server is told "cascade" (spoken, ASR-gated turns); the link is a text-lane link.
+    assert.equal(starts[0].mode, "cascade");
+    assert.deepEqual(linkCtx, [{ mode: "text", cascade: true }]);
+    assert.equal(rt.state.mode, "text");
     await sleep(30);
     assert.equal(rt.state.status, "speaking");
     // The child talks over the opening (barge-in), then finishes a turn.
@@ -417,4 +454,235 @@ test("runtime + CascadeLink: a spoken final becomes one Director turn with its A
     await rt.end();
     env.restore();
   }
+});
+
+// ───────────── connect, mic, ICE ─────────────
+
+const TOKEN = async () => ({ token: "ek_x", expiresAt: 0, base: "https://x.invalid/openai/v1", session: { audio: { input: { turn_detection: { type: "server_vad" } } } } });
+const levels = () => ({ mic: new LevelMeter(), teacher: new LevelMeter() });
+
+test("CascadeLink: a call that never connects (UDP blocked, no TURN) does not hold connect(); the opening plays at once", async () => {
+  const env = installBrowserFakes({ rtc: "hang" });
+  const transports = [];
+  const link = new CascadeLink({ lessonId: "L1", levels: levels(), speech: pcmStream(5), fetchToken: TOKEN, transcribe: async () => ({ text: "" }), onTransport: (t) => transports.push(t) });
+  const events = [];
+  link.on((e) => events.push(e));
+  try {
+    const t0 = performance.now();
+    await link.connect();
+    const connectMs = performance.now() - t0;
+    assert.ok(connectMs < 100, `connect took ${connectMs.toFixed(0)} ms`);
+    assert.equal(link.listening, false, "the call is still coming up");
+    link.promptTeacher({ text: "Namaste! Aaj hum bhinn padhenge.", seq: 1 });
+    await sleep(40);
+    const firstAudio = events.find((e) => e.type === "teacher_audio_start");
+    assert.ok(firstAudio, "her opening sounds while the call is still connecting");
+    console.log(`fallback path: start → connect ${connectMs.toFixed(1)} ms, → first opening audio < 40 ms more (fake audio, 5 ms TTS)`);
+    assert.deepEqual(transports, []);
+  } finally {
+    link.close();
+    env.restore();
+  }
+});
+
+test("CascadeLink: ICE 'disconnected' for 3 s counts as lost (reconnect), and a call that comes up reports webrtc", async () => {
+  const env = installBrowserFakes({ rtc: "open" });
+  const transports = [];
+  let tokens = 0;
+  const link = new CascadeLink({ lessonId: "L1", levels: levels(), speech: pcmStream(5), fetchToken: async () => (tokens++, TOKEN()), transcribe: async () => ({ text: "" }), onTransport: (t) => transports.push(t) });
+  try {
+    await link.connect();
+    await sleep(20);
+    assert.equal(link.listening, true);
+    assert.deepEqual(transports, ["webrtc"]);
+    env.pcs[0].setState("disconnected");
+    await sleep(2_900);
+    assert.equal(tokens, 1, "a short blip is not a loss");
+    await sleep(700); // 3 s mark + the first reconnect backoff (500 ms)
+    assert.equal(tokens, 2, "reconnected after 'disconnected' outlasted 3 s");
+    assert.equal(env.pcs[0].closed, true);
+    await sleep(20);
+    assert.equal(link.listening, true);
+  } finally {
+    link.close();
+    env.restore();
+  }
+});
+
+test("CascadeLink: microphone denied → typed lesson, her voice still plays", async () => {
+  const env = installBrowserFakes({ mic: "denied" });
+  const transports = [];
+  const link = new CascadeLink({ lessonId: "L1", levels: levels(), speech: pcmStream(5), fetchToken: TOKEN, transcribe: async () => ({ text: "" }), onTransport: (t) => transports.push(t) });
+  const events = [];
+  link.on((e) => events.push(e));
+  try {
+    await link.connect();
+    assert.equal(link.transport, "typed");
+    assert.deepEqual(transports, ["typed"]);
+    const err = events.find((e) => e.type === "error");
+    assert.equal(err.code, "mic_unavailable");
+    assert.equal(err.fatal, false);
+    assert.match(err.message, /not allowed/);
+    assert.equal(events.at(-1).type, "connection");
+    link.setPushToTalk(true);
+    link.talkStart(); // no-ops without a mic
+    link.promptTeacher({ text: "Achha, batao.", seq: 2 });
+    await sleep(40);
+    assert.ok(events.some((e) => e.type === "teacher_audio_start"));
+    link.sendChild("teen chauthai");
+    const fin = events.find((e) => e.type === "child_final");
+    assert.equal(fin.typed, true);
+  } finally {
+    link.close();
+    env.restore();
+  }
+});
+
+// ───────────── barge-in: pause, decide, resume ─────────────
+
+async function speakingLink(opts = {}) {
+  const env = installBrowserFakes({ rtc: opts.rtc ?? "fail" });
+  // 3 s of her voice: enough left after a cut for a backchannel to resume her.
+  const link = new CascadeLink({ lessonId: "L1", levels: levels(), speech: pcmStream(5, 12), fetchToken: TOKEN, transcribe: async () => ({ text: "" }), ...opts.link });
+  const events = [];
+  link.on((e) => events.push(e));
+  await link.connect();
+  await sleep(20);
+  events.length = 0;
+  link.promptTeacher({ text: opts.text ?? "Dekho, ek roti ke chaar barabar hisse karo. Har hissa ek chauthai hai. Ab batao, teen hisse kitne hue?", seq: 5 });
+  await sleep(40);
+  assert.ok(events.some((e) => e.type === "teacher_audio_start"));
+  events.length = 0;
+  return { env, link, events, ctx: FakeAudioContext.last };
+}
+
+test("barge-in: speech_started then an EMPTY transcript → she resumes from where she was cut and finishes", async () => {
+  const { env, link, events, ctx } = await speakingLink();
+  try {
+    await sleep(200);
+    const before = ctx.sources.length;
+    link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
+    assert.ok(ctx.sources.every((s) => s.stopped || s.done), "silenced at once");
+    link.protocol.handle({ type: "input_audio_buffer.speech_stopped", item_id: "c1" });
+    link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "" });
+    await flush();
+    assert.ok(ctx.sources.length > before, "the rest of the reply was rescheduled");
+    const resumed = ctx.sources.at(-1);
+    // Cut ~0.2 s into her audio (after the start lead); resumed a little before that.
+    assert.ok(resumed.buffer.duration > 2.7 && resumed.buffer.duration <= 3, `resumed with ${resumed.buffer.duration.toFixed(2)} s left (a little before the cut)`);
+    await sleep(3_100);
+    assert.deepEqual(events.map((e) => e.type), ["teacher_audio_end", "child_speech_start", "child_speech_end", "child_silent", "teacher_audio_start", "teacher_audio_end", "response_done"]);
+    assert.equal(events.at(-1).status, "completed");
+    assert.ok(!events.some((e) => e.type === "teacher_interrupted" || e.type === "child_final"), "no turn, no interruption");
+    assert.equal(link.bargeStats.resumedSilent, 1);
+  } finally {
+    link.close();
+    env.restore();
+  }
+});
+
+test("barge-in: a lone 'hmm' resumes her; her own echo resumes her; a real answer stops her", async () => {
+  {
+    const { env, link, events } = await speakingLink();
+    try {
+      link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
+      link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "हम्म", logprobs: [{ logprob: -0.1 }] });
+      await flush();
+      assert.ok(events.some((e) => e.type === "teacher_audio_start"), "resumed");
+      assert.ok(!events.some((e) => e.type === "child_final"));
+      assert.equal(link.bargeStats.resumedBackchannel, 1);
+    } finally { link.close(); env.restore(); }
+  }
+  {
+    const { env, link, events } = await speakingLink();
+    try {
+      link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
+      link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "एक रोटी के चार बराबर हिस्से करो" });
+      await flush();
+      assert.ok(events.some((e) => e.type === "teacher_audio_start"), "her own voice in Devanagari is recognised as echo");
+      assert.equal(link.bargeStats.resumedEcho, 1);
+    } finally { link.close(); env.restore(); }
+  }
+  {
+    const { env, link, events } = await speakingLink();
+    try {
+      link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
+      link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "teen chauthai", logprobs: [{ logprob: -0.1 }] });
+      assert.deepEqual(events.map((e) => e.type), ["teacher_audio_end", "child_speech_start", "teacher_interrupted", "response_done", "child_final"]);
+    } finally { link.close(); env.restore(); }
+  }
+});
+
+test("barge-in verdicts: backchannels, echo across scripts, and answers", () => {
+  assert.ok(isBackchannel("hmm") && isBackchannel("haan ji") && isBackchannel("हाँ") && isBackchannel("") && isBackchannel("teen", 0.3));
+  assert.ok(!isBackchannel("teen") && !isBackchannel("teen chauthai") && !isBackchannel("haan teen hai"));
+  assert.equal(skeleton("chauthai"), skeleton("चौथाई"));
+  assert.equal(skeleton("roti"), skeleton("रोटी"));
+  assert.equal(skeleton("cube"), skeleton("क्यूब"));
+  const said = "Dekho, ek roti ke chaar barabar hisse karo. Har hissa ek chauthai hai.";
+  assert.ok(isEcho("ek roti ke chaar barabar hisse", said));
+  assert.ok(isEcho("एक रोटी के चार बराबर हिस्से", said));
+  assert.ok(!isEcho("ek chauthai", said), "a short repeat is an answer, not echo");
+  assert.ok(!isEcho("mujhe lagta hai teen hisse", said));
+});
+
+test("barge-in: a reply cut while still LOADING is marked interrupted (the server must not think it was heard)", async () => {
+  const env = installBrowserFakes();
+  const link = new CascadeLink({ lessonId: "L1", levels: levels(), speech: pcmStream(200), fetchToken: TOKEN, transcribe: async () => ({ text: "" }) });
+  const events = [];
+  link.on((e) => events.push(e));
+  try {
+    await link.connect();
+    await flush();
+    events.length = 0;
+    link.promptTeacher({ text: "Achha, ab agla sawaal.", seq: 9 });
+    link.sendChild("ruko didi"); // typing over her before a sample played
+    assert.deepEqual(events.map((e) => e.type), ["response_start", "teacher_delta", "teacher_done", "teacher_interrupted", "response_done", "child_final"]);
+    events.length = 0;
+    link.promptTeacher({ text: "Theek hai.", seq: 10 });
+    link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c2" });
+    link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c2", transcript: "mujhe samajh nahi aaya" });
+    assert.ok(events.some((e) => e.type === "teacher_interrupted"), "spoken over while loading");
+  } finally {
+    link.close();
+    env.restore();
+  }
+});
+
+test("barge-in, hands-free: the local VAD ducks her within ~150 ms of voice and pauses her; unconfirmed, she resumes", async () => {
+  const { env, link, events, ctx } = await speakingLink({ rtc: "open" });
+  try {
+    assert.equal(link.listening, true);
+    const gain = () => ctx.sources[0] && link.player.output.gain.value;
+    const t0 = performance.now();
+    FakeAudioContext.micLevel = 0.1; // the child starts talking (−20 dBFS over a silent room)
+    let duckAt = null, pauseAt = null;
+    while (performance.now() - t0 < 400 && pauseAt === null) {
+      await sleep(5);
+      if (duckAt === null && gain() < 0.5) duckAt = performance.now() - t0;
+      if (events.some((e) => e.type === "teacher_audio_end")) pauseAt = performance.now() - t0;
+    }
+    FakeAudioContext.micLevel = 0;
+    console.log(`local barge-in (20 ms polling, fake audio): duck ${duckAt?.toFixed(0)} ms, pause ${pauseAt?.toFixed(0)} ms after voice onset`);
+    assert.ok(duckAt !== null && duckAt < 150, `duck at ${duckAt} ms`);
+    assert.ok(pauseAt !== null && pauseAt < 200, `pause at ${pauseAt} ms`);
+    assert.equal(link.bargeStats.localPauses, 1);
+    // The server never confirms (it was the TV): she resumes after DUCK_RELEASE_MS.
+    await sleep(800);
+    assert.ok(events.filter((e) => e.type === "teacher_audio_start").length === 1, "resumed");
+    assert.equal(link.bargeStats.localUnconfirmed, 1);
+    assert.ok(!events.some((e) => e.type === "teacher_interrupted"));
+  } finally {
+    link.close();
+    env.restore();
+  }
+});
+
+test("resumePoint: backs up to the last gap between words, else 0.3 s", () => {
+  const rate = 1000;
+  const x = new Float32Array(3000).fill(0.3);
+  x.fill(0, 1500, 1600); // a 100 ms gap
+  const p = resumePoint(x, 2200, rate);
+  assert.ok(p >= 1540 && p <= 1600, String(p));
+  assert.equal(resumePoint(new Float32Array(3000).fill(0.3), 2200, rate), 1900);
 });
