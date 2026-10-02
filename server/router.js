@@ -11,7 +11,16 @@ const ROUTES = {
   "POST /api/children": account.createChild,
   "PATCH /api/children": account.updateChild,
   "DELETE /api/children": account.deleteChild,
-  "GET /api/health": async (_req, res) => send(res, 200, { ok: true, at: new Date().toISOString() }),
+  "GET /api/health": async (req, res) => {
+    const out = { ok: true, at: new Date().toISOString(), driver: process.env.DB_DRIVER || "neon-http" };
+    if ((req.url || "").includes("db=1")) {       // DB round-trip probe: 5 sequential `select 1`
+      const { q } = await import("./db.js");
+      const ms = [];
+      for (let i = 0; i < 5; i++) { const t0 = performance.now(); await q("select 1"); ms.push(Math.round(performance.now() - t0)); }
+      out.dbMs = ms;
+    }
+    send(res, 200, out);
+  },
 };
 
 export function register(table) { Object.assign(ROUTES, table); }
