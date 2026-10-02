@@ -41,7 +41,7 @@ const def: EngineDef = {
     question: { type: "string", enum: ["bigger", "smaller"], default: "bigger", doc: "compare mode question" },
     showLabels: { type: "boolean", default: true, doc: "show n/d above each bar (reveal always shows them)" },
   },
-  emits: ["shade_changed", "compare_answer", "goal_met", "stuck", "params_adjusted"],
+  emits: ["shade_changed", "compare_answer", "compare_retap", "goal_met", "stuck", "params_adjusted"],
 };
 
 const TEXT: Record<string, Record<string, string>> = {
@@ -77,8 +77,12 @@ function FractionBars({ params, goal, lang, highlight, revealed, api }: EnginePr
     progress.current = { changes: 0, wrong: 0, goalSent: false, stuckSent: false };
   }, [goalKey]);
 
+  // Reported once per distinct set of issues: a set_param that leaves them unchanged is not news.
+  const sentIssues = useRef("");
   useEffect(() => {
-    if (cfg.issues.length) api.interaction("params_adjusted", { issues: cfg.issues });
+    const issues = cfg.issues.join("\n");
+    if (issues && issues !== sentIssues.current) api.interaction("params_adjusted", { issues: cfg.issues });
+    sentIssues.current = issues;
     if (cfg.target && need === null) {
       const d = cfg.denominators[cfg.targetBar];
       api.error(`target ${fmt(cfg.target)} cannot be shown on bar ${cfg.targetBar + 1} (${d} parts)`);
@@ -106,14 +110,20 @@ function FractionBars({ params, goal, lang, highlight, revealed, api }: EnginePr
   }
 
   function choose(c: Choice) {
+    const p = progress.current;
+    // Answered right already: later taps are play, not answers (each answer is graded evidence, and a
+    // child mashing buttons after "right" must not log right-then-wrong for the same item).
+    if (p.goalSent) {
+      api.interaction("compare_retap", { choice: c });
+      return;
+    }
     setChoice(c);
     const correct = compareCorrect(fractions, cfg.question, c);
     api.answer({ kind: "compare_answer", question: cfg.question, choice: c, fractions: fractions.map(fmt) }, correct);
-    const p = progress.current;
-    if (correct && !p.goalSent) {
+    if (correct) {
       p.goalSent = true;
       api.goalMet(goal || `compare ${cfg.question}`);
-    } else if (!correct && ++p.wrong >= STUCK_AFTER_WRONG && !p.stuckSent) {
+    } else if (++p.wrong >= STUCK_AFTER_WRONG && !p.stuckSent) {
       p.stuckSent = true;
       api.stuck("repeated_wrong_compare");
     }

@@ -961,3 +961,103 @@ Review sources:
 - Seyama & Nagayama 2007, doi:10.1162/pres.16.4.337.
 - MacDorman et al. 2009, doi:10.1016/j.chb.2008.12.026 (Crossref metadata).
 - Sibling docs `performance-android.md` §0-2 and §6, `audio-to-face-ml.md` G-2/G-3, `character-creation.md` M-AV-1.
+
+### Review addendum: verification pass (resumed session, 2026-10-02)
+
+I re-checked the review above against the same sources: TalkingHead @ b3e277b, HeadAudio @ d3af5f9, three 0.180.0, and the
+optimised GLBs in the bench. Three of its claims need correcting, and there are four new findings. The scripts are
+`bench/review/{mtype,prim,mclose}.mjs`.
+
+**C-1. R-5's morph memory is too high, and the doc's brunette figure is 2× too high [M].**
+- `gltf-transform optimize --compress meshopt` **quantizes the morph targets**. On every sample, POSITION becomes
+  `Int16` normalized and NORMAL becomes `Int8` normalized (`mtype.mjs`). GLTFLoader keeps those typed arrays as they are.
+- So the JS geometry copy costs **9 B per vertex per target, not 24**. R-5's line "meshopt/quantization saves only wire
+  bytes" is wrong for that copy. It is right for the texture, which three.js always expands to Float32.
+- Brunette's targets are **position-only**. three.js then uses `vertexDataCount = 1`, which is 16 B per vertex per target
+  on the GPU, not 32.
+- Corrected cost per vertex per target (three 0.180): **GPU 16·k + JS texel copy 16·k + JS geometry 6–9 B**, where k = 1
+  for position-only and 2 with normals.
+
+| case | doc | R-5 | corrected |
+|---|---|---|---|
+| MPFB optimised (1,519k vertex×targets, with normals) | 49 MB + "same again" | 134 MB | **≈ 111 MB** (GPU 48.6) |
+| §3.1 spec (6k verts × 67 targets, with normals) | 13 MB | 35 MB | **≈ 29 MB** (GPU 12.9, JS 16.5) |
+| §3.1 spec, position-only targets | n/a | n/a | **≈ 15 MB** (GPU 6.4) |
+| brunette (position-only) | 5.7 MB GPU | n/a | **2.8 MB GPU**, 6.7 MB total |
+
+- **New lever: strip morph NORMALs.** That halves both texture copies. A toon or soft-NPR shader (R-9) hides the
+  base-normal shading on the deformed lips and cheeks. Validate it visually on the smile shapes **[U]**.
+
+**C-2. Most of MPFB's morph memory is in eyebrows and eyelashes, not the body [M, `prim.mjs`].**
+
+| primitive | verts | targets | share of vertex×targets | verts moved by target 0 |
+|---|---|---|---|---|
+| base (whole body) | 9,521 | 66 | 41% | **346 (3.6%)** |
+| mind_eyelashes_02 | 16,976 | 33 | **37%** | 5,940 |
+| mind_eyebrows_02 | 11,513 | 23 | **17%** | 6,171 |
+| teeth_base | 4,480 | 12 | 3.5% | 2,176 |
+
+- The hair-card eyelashes and eyebrows cost more than the body itself.
+  - For a stylised character, paint the brows into the head texture or move them with 2–4 brow bones.
+  - Use low-count lash geometry, and give the lashes only the blink/squint/wide targets they need.
+- Do that **before** the head-split surgery R-5 proposes. The split saves less than R-5 implies (the body is 9.5k
+  verts) and costs a neck seam.
+- The targets are about 96% zeros on the body, and three.js has no sparse morph path.
+  - Ordering the face vertices first in the primitive would allow a vendored morph shader that only fetches a
+    face-vertex range **[U, not built]**.
+  - The pipeline validator should also drop **all-zero targets**. On brunette, all 72 targets on each eye mesh are
+    zero, yet they still bind morph textures and upload influences per draw.
+
+**C-3. R-1's "exact timestamps" row is really "coarsened timestamps" [V sim].** `fpscap.mjs` floors t to 0.1 ms or
+5 µs. That models Chrome's timer coarsening (100 µs, or 5 µs when cross-origin isolated), not exact vsync, and that
+flooring is why two vsyncs (33.3 ms) fail the `< 33.333` test. The conclusion stands. The realistic figure is the
+jitter row: **≈ 23 fps on 60 Hz**.
+
+**N-1. The §6.2 driver drives `mouthClose` through the upper lip [M, `mclose.mjs`].**
+- On the sample rigs, `mouthClose` raises the lower lip by **2.1–3.0 cm** and lowers the upper lip by **0.85–1.4 cm**.
+  `jawOpen` at full strength separates the lips by **4.2–4.9 cm**.
+- In other words, `mouthClose` is sculpted to cancel an open jaw, the usual ARKit convention ("closure of the lips
+  independent of jaw position").
+- The driver sets `mouthClose 0.8` on PP and at the same moment vetoes the jaw to `0.55·0.15·jaw` (≤ 0.08). That
+  leaves about **2.5–2.8 cm of lip overlap** on the three samples (0.8 × the summed lip travel, minus ≤ 0.08 of
+  `jawOpen`; peak per-vertex deltas in metres, so an upper bound). That is a gross artefact on exactly the closure frames.
+- **Fix:**
+  - Clamp `mouthClose ≤ jawOpen` every frame.
+  - Better: for closure, drive TalkingHead's own `viseme_PP` key, which is authored from rest. That is also R-4.2's
+    advice on avoiding mood collisions.
+
+**N-2. The §6.2 driver starves the classifier between utterances [V].**
+- `clf.predict()` is called only while the *smoothed* jaw is above 0.02. The 6-slot ring therefore holds the last votes
+  of the previous utterance.
+- `predict` returns `null` on repeated `sil` (classifier.mjs, the `predictionLast` branch), so the ring is not cleared.
+- The first ~6 frames of every new utterance are decided partly by stale votes.
+- **Fix:** run `predict` on every frame, and gate the *output* on energy, not the input.
+
+**N-3. The frame-cap `dt` clamp turns stalls into slow motion [V, `talkinghead.mjs` l.2680].**
+- `if (dt > 2*animFrameDur) dt = 2*animFrameDur` runs **before** `opt.update(dt)`. The hook does run before
+  `updateMorphTargets`, so it is same-frame; that part is verified and fine.
+- After any long task over 67 ms:
+  - the blink, gesture and mood clocks fall behind wall time;
+  - the driver's attack/release advances only 67 ms;
+  - its 512-sample window means **any closure inside the stall is never analysed at all**.
+- This is a second, independent reason for R-3's worklet → worker path. Separately, R-3's 76 ms and 136–303 ms
+  figures are tagged **[M, desktop proxy]** in `performance-android.md` and are not device numbers. The direction is
+  right; the magnitude is unverified on a phone.
+
+**N-4. R-4.3's `setExternalSpeaking` patch has a side effect [V, l.2684–2688].**
+- Once our RMS feeds `vol`, the per-frame `mtRandomized` re-basing grows from `rand/5` to `(1+vol/255)·rand/5`, which is
+  up to 0.4.
+- That re-basing lands on `mouthPress*`, `mouthRoll*` and `mouthStretch*`, the same keys the lip driver writes.
+- **Fix:** remove the mouth keys from `mtRandomized` while external speech is active.
+
+**Licence addendum [V README l.374–379, `avatars/`].**
+- The repo also ships `brunette-t.glb`. Treat **everything in `avatars/` except `mpfb.glb` (CC0)** as denylisted.
+- HeadAudio's `julia.glb` and `david.glb` carry no per-asset licence line. HeadAudio is MIT overall, but don't ship
+  them without asking the author.
+- Mixamo's terms also say its raw animation files "can't be used to train ML models". Keep Mixamo-driven renders out of
+  any training set for the sibling student model.
+
+Sources added:
+- Optimised sample GLBs from `bench/glbstat.mjs`, inspected with `@gltf-transform/core` 4.x.
+- three 0.180.0 `examples/jsm/loaders/GLTFLoader.js` (accessor `normalized` handling).
+- ARKit `mouthClose` definition as quoted in [Pooya Deperson's ARKit-52 guide](https://pooyadeperson.com/the-ultimate-guide-to-creating-arkits-52-facial-blendshapes/) **[S]**.

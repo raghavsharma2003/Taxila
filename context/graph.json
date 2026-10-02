@@ -33,7 +33,7 @@
   {
    "id": "realtime-teacher-bakeoff-2026-10-02",
    "kind": "measurement",
-   "title": "Realtime 2.1 vs mini with teacher prompt: 64\u219225 words/turn when brevity is structural",
+   "title": "Realtime 2.1 vs mini with teacher prompt: 64→25 words/turn when brevity is structural",
    "at": "2026-10-02"
   },
   {
@@ -125,7 +125,7 @@
   {
    "id": "db-driver-latency-2026-10-02",
    "kind": "measurement",
-   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 \u2192 Neon us-east-1",
+   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 → Neon us-east-1",
    "at": "2026-10-02"
   },
   {
@@ -146,6 +146,76 @@
    "kind": "rejection",
    "title": "Persistent VM per student: $0.5-20/student-month for no capability (cost arithmetic, not trial)",
    "at": "2026-10-02"
+  },
+  {
+   "id": "ds-layout-dp-budget",
+   "kind": "decision",
+   "title": "Lesson stage budgets in dp, solved at a 584 dp floor and 744 dp; geometry changes only at phase boundaries",
+   "at": "2026-10-02",
+   "source": "inbox/design.json"
+  },
+  {
+   "id": "ds-mic-tap-default",
+   "kind": "decision",
+   "title": "Tap-to-talk is the default for every band on loudspeaker; open mic opt-in on headset or after EchoProbe; end-of-speech ramp 3 s Young / 2 s Older",
+   "at": "2026-10-02",
+   "source": "inbox/design.json"
+  },
+  {
+   "id": "ds-status-carriers",
+   "kind": "decision",
+   "title": "Each of the four states is carried by pose + glyph + accessible name, colour last; turn ring darkened to #7A4800",
+   "at": "2026-10-02",
+   "source": "inbox/design.json"
+  },
+  {
+   "id": "ds-captions-by-reading-level",
+   "kind": "decision",
+   "title": "Caption defaults follow reading level (R0 icon strip, R1 word follow-along, R2 subtitle on); captions-always is one child tap away",
+   "at": "2026-10-02",
+   "source": "inbox/design.json"
+  },
+  {
+   "id": "ds-band-fork-older",
+   "kind": "decision",
+   "title": "B3-B4 fork: Mukta display, flat tiles, hideable face, explainer notes, honest placement framing, study-tool home",
+   "at": "2026-10-02",
+   "source": "inbox/design.json"
+  },
+  {
+   "id": "ds-progress-no-meters",
+   "kind": "decision",
+   "title": "No in-lesson progress meter; progress is a monotone, absence-invariant map with a list view; no props, name boards or reaction chips",
+   "at": "2026-10-02",
+   "source": "inbox/design.json"
+  },
+  {
+   "id": "ds-parent-gate-pin-default",
+   "kind": "decision",
+   "title": "Guardian PIN is the default parent gate; phone lock optional; consent-grade actions and PIN recovery need OTP off the shared device or a 24 h delay",
+   "at": "2026-10-02",
+   "source": "inbox/design.json"
+  },
+  {
+   "id": "ds-rejected-percentage-layout",
+   "kind": "rejection",
+   "title": "Percentage shares for the lesson stage overflow budget phones (~117% of 800 dp)",
+   "at": "2026-10-02",
+   "source": "inbox/design.json"
+  },
+  {
+   "id": "ds-rejected-chalk-mark-gold",
+   "kind": "rejection",
+   "title": "Pale-gold chalk-mark underline beside the turn ring breaks the one-marigold rule (dE 6.7 under deuteranopia)",
+   "at": "2026-10-02",
+   "source": "inbox/design.json"
+  },
+  {
+   "id": "design-token-contrast-2026-10-02",
+   "kind": "measurement",
+   "title": "Design-token contrast and CVD: turn ring 3.01 -> 4.23:1 vs its fill; status pairs below dE 15 need glyphs; 0 failures",
+   "at": "2026-10-02",
+   "source": "inbox/design.json"
   }
  ],
  "edges": [
@@ -263,6 +333,51 @@
    "src": "forge-sandbox-lanes",
    "rel": "constrains",
    "dst": "azure-only-compute"
+  },
+  {
+   "src": "ds-layout-dp-budget",
+   "rel": "supersedes",
+   "dst": "ds-rejected-percentage-layout"
+  },
+  {
+   "src": "ds-status-carriers",
+   "rel": "measured_by",
+   "dst": "design-token-contrast-2026-10-02"
+  },
+  {
+   "src": "ds-rejected-chalk-mark-gold",
+   "rel": "measured_by",
+   "dst": "design-token-contrast-2026-10-02"
+  },
+  {
+   "src": "ds-rejected-chalk-mark-gold",
+   "rel": "caused_by",
+   "dst": "ds-status-carriers"
+  },
+  {
+   "src": "ds-mic-tap-default",
+   "rel": "measured_by",
+   "dst": "realtime-audio-in-2026-10-02"
+  },
+  {
+   "src": "ds-mic-tap-default",
+   "rel": "blocks",
+   "dst": "open-real-child-audio"
+  },
+  {
+   "src": "voice-turn-config",
+   "rel": "constrains",
+   "dst": "ds-mic-tap-default"
+  },
+  {
+   "src": "ds-captions-by-reading-level",
+   "rel": "blocks",
+   "dst": "open-real-child-audio"
+  },
+  {
+   "src": "ds-progress-no-meters",
+   "rel": "constrains",
+   "dst": "ds-status-carriers"
   }
  ]
 }

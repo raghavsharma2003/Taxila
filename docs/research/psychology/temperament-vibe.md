@@ -897,3 +897,127 @@ Templates are authored and reviewed copy, one per dimension × status, in Hindi 
 - **TM9:** session-level vs child-level ICC per binary dimension (C2).
 - **TVI9:** a parent line renders only if the distinctiveness gate (C3) passes and the render reliability is ≥ .80 (M4).
 - **TVI10:** no V17 or barge-in-derived content in any parent-facing text (C6).
+
+### Second pass (2026-10-02, WebSearch restored): corrections to the review itself, and new findings
+
+**Verification added in this pass.**
+- Roberts & DelVecchio 2000: **full text** read (Table 3). [V]
+- Hughes & Coplan 2010 (*Sch Psychol Q* 25:213; ERIC EJ909520): abstract read. [V]
+- Cimpian et al. 2007: abstract read. Generic ("You are a good drawer") vs non-generic ("You did a good job drawing") praise, 4-year-olds. [V]
+- Shoda, Mischel & Wright 1994: Wediko camp setting confirmed. The clinical-sample detail stays [S].
+- DPDP Rules 2025, Fourth Schedule text read (dpdprules.org mirror). [V for the wording]
+- All review arithmetic re-run:
+  - Fisher p = .218 for 12/15 vs 6/11.
+  - Slope λ = .56 at τ = 1 and .24 at τ = .5.
+  - n for λ = .70 at p = .8: 58 (τ = 1), 233 (τ = .5) and 933 (τ = .25).
+  - Monthly false-alarm rate across 11 dimensions: 1 − .98¹¹ = .199.
+  - S-TV3 n per arm = 4,948.
+  - C1: ρ₁₀ = .79 and ρ₂₀ = .88.
+  - All reproduce.
+
+**R1. The review's C5 is wrong about Hughes & Coplan 2010. Withdraw that bullet.**
+- The abstract says shyness was "negatively related to teacher-rated achievement but not related to standardized test scores". Academic engagement partially mediated the teacher-rating link.
+- The main document's claim is therefore correct and stays [V]. It does not conflict with Crozier & Hostettler 2003. Read together, the two papers say the shyness penalty depends on the **assessment format and rater**:
+  - absent in group standardised tests
+  - present in teacher ratings and in individual oral testing
+- This *strengthens* C5's central point. Taxila is an individual oral assessor, which is the penalising format. Keep C5's corrections 1-4 and TM8. Replace the Hughes & Coplan bullet with: *"Hughes & Coplan 2010 [V] and Crozier & Hostettler 2003 [V] together show the shyness-achievement link appears in teacher ratings and 1:1 oral testing but not in group written tests. Taxila's format is the penalising one."*
+
+**R2. M1 upgraded from memory to [V], and it is stronger than the review stated.**
+- Roberts & DelVecchio Table 3 gives two values per age band: the raw population estimate (ρ) and the estimate controlled to a 6.7-year interval (ρt).
+
+  | age band | ρ | ρt |
+  |---|---|---|
+  | 0-2.9 | .35 | **.31** |
+  | 3-5.9 | .52 | .49 |
+  | 6-11.9 | .45 | **.43** |
+  | 12-17.9 | .47 | **.43** |
+  | 18-21.9 | .51 | .54 |
+
+- The abstract's ".31 in childhood" is therefore the **infant-toddler (0-2.9)** estimate. The document applies it to Taxila's 6-15 range in five places: TV10, §1 item 3, §3.3, §4.2(3) and §8.3. That is a misread citation. The correct figure for 6-15 is **≈ .43 at a 6.7-year interval**.
+- Shorter intervals raise this further. The paper's own interval model, at age 20, gives .55 at 1 year against .52 at 5 years. Mean measure reliability in the 6-11.9 band was .79, so the disattenuated stability is higher still.
+- **Correction:**
+  - Everywhere: replace ".31 (childhood)" with "≈ .43 at a 6.7-year interval for ages 6-18 (.31 is the infant-toddler figure)".
+  - Rewrite §3.3 row 1.
+  - Delete "out of date by 11".
+  - TV10's reason becomes *context-specificity and normative mean-level change*, not low rank-order stability.
+
+**R3. §8.1 contradicts the document's own §4.3 table.**
+- §8.1 claims that "at the best published conversational accuracy, a 'top third' label is wrong more often than right, and wrong in the opposite direction about one time in four". That is true only at r = .27 (Zhu), where P(correct) = .44 and P(opposite) = .23.
+- At the best conversational estimate the document itself cites (r = .44, Peters, eliciting mode), P(correct) = .52 and P(opposite) = .16. At the r = .38-.58 reported in arXiv 2602.15848 (M10), P(correct) is about .50-.60.
+- **Correction:** *"At assistant-style accuracy (r ≈ .12, the mode Taxila is in), a 'top third' label is right 38% of the time (chance is 33%). Even at the best elicitation-mode estimates (r ≈ .44-.58, small adult samples), it is wrong 40-50% of the time."* The anti-label conclusion is unchanged.
+
+**R4. §5.6 dimension-DIF test confuses *impact* with *bias* (Lord's/Kelley's paradox). The default audit has the same problem.**
+- **The DIF regression.** The proposed test is y_dim ~ criterion + group + criterion × group, and it treats a significant group term as bias. That reading is valid only if the criterion is perfectly reliable.
+  - The criteria here are parent questionnaires with expected convergence of r ≈ .2-.35 (§5.7).
+  - Groups truly differ on the latent construct; girls are higher on EC, for example (Else-Quest 2006 [V]).
+  - Conditioning on a noisy observed criterion then leaves a residual group difference *even when the ISP dimension is unbiased*. The test will flag bias that is not there.
+  - **Fix:** model the criterion as latent with its known reliability, using MIMIC or multi-group SEM with invariance constraints. Alternatively, test differential *prediction of a common external outcome* (delayed learning).
+- **The default audit (§5.6 bullet 3: knob distributions must not diverge by gender beyond 0.2 SD).** If children of different genders really do respond differently to Taxila's moves, this rule forces Taxila to suppress valid per-child adaptation, or to re-weight by gender, which would itself be gendered processing.
+  - The right fairness targets are *equal estimation error and calibration* of each contingency by group, and *equal proximal benefit* of adaptation by group. These are S-TV3 MRT effect-moderation analyses, not equal output means.
+  - Keep the rule that priors are fitted without group covariates. Replace the knob-distribution threshold with a differential-error and differential-benefit audit.
+- Cross-reference fix: §3.1(e) cites "DIF, §5.8". The section is §5.6.
+
+**R5. Heterotypic continuity and longitudinal invariance across 6-15 are not addressed.**
+- The same indicator changes meaning with age:
+  - words per turn tracks language growth
+  - latency tracks reading and retrieval speed
+  - question detection depends on ASR quality and syntax
+  - "retry" changes with metacognitive development (CD)
+- S-TV1's 1-, 3- and 6-month stability estimates, and every "changing" flag that spans a birthday or a band boundary, therefore need **longitudinal measurement invariance** (at least metric invariance) of the indicators. Otherwise "stability" and "change" are partly artefacts of the indicator's meaning shifting.
+- Band transitions (A→B, B→C) also change priors and knob defaults in one step, which will create artefactual changepoints.
+- **Fix:**
+  - Run changepoint detection on age-adjusted residuals (continuous age, M7).
+  - Suppress any "changing" line whose only driver is a prior or default change at a band boundary.
+  - Make an invariance test part of S-TV1 before any stability claim is published.
+
+**R6. Selection and missing-not-at-random data are unmodelled, at two levels.**
+- **Between children.**
+  - Under VT decay (H = 60 d), the effective evidence window is H/ln 2 = **86.6 days**. A contingency needing n* contrast trials is therefore estimable only if the child produces at least n*/86.6 *randomised contrast trials per day*.
+  - For ISP5 at p = .8 and an even split, that is 0.67/day at τ = 1 and **2.7/day at τ = .5**. At π = .2 (the edge of the randomisation band) it is 1.05 and 4.2/day (computed).
+  - Contrast trials are *errors on a new kind of problem*, not turns. "Thousands of turns" (§5.2) is the wrong denominator. At realistic τ, ISP5 may be **unestimable for nearly everyone**, and estimable at all only for the heaviest users.
+  - Heavy users are a selected group (SES, device, English-dominance, motivation). S-TV1's ICCs and stabilities then describe them, not all children, and ISP benefits accrue unequally.
+  - **Fix:**
+    - Report the *estimability rate* (share of children reaching each gate) by gender, language and SES proxy, and treat it as a primary S-TV1 outcome.
+    - Add a TM row for it.
+    - State in §5.2 that the decay window caps evidence.
+- **Within children.** Children choose when to study, so tired or difficult days may be under-sampled. Occasion variance (§5.3) is then MNAR, and Con is biased upward. **Fix:** a sensitivity analysis, for example pattern-mixture by session-initiation type (scheduled by the Conductor vs self-initiated).
+
+**R7. ISP6 "bounce-back" partly measures compliance, the very construct §3.2(d) bans.**
+- "Retry within 1 turn after a correction" is, for many Indian children, a response to an implied teacher request. Deference norms are plausible per §3.5 [U]. That makes it A-like compliance with an AI, not effortful control or persistence.
+- §3.2(d) refuses to optimise A-like behaviour, but ISP6 would optimise it under another name.
+- **Fix:**
+  - Split ISP6 into *prompted retry*, which is internal, never parent-facing and only a knob input, and *unprompted re-attempt*, where the child re-engages with the item or a later item of the same skill without a teacher prompt.
+  - Only the unprompted form may carry the persistence interpretation in §7.2.
+  - This also partly resolves M5's outcome-mechanics problem.
+
+**R8. Parent lines pool behaviour across Taxila's own knob states.**
+- Once a knob moves (an opening ramp is added, the error frame switches), later behaviour is observed *under the adapted policy*. "Aarav usually takes 3-5 warm-up turns" after the ramp was added describes the child plus Taxila, and pooling across knob states mixes the two conditions.
+- **Fix:** compute and render each R2-R4 rate stratified by the knob state in force. The template's condition slot (PC1) must name that state ("with the quick-start questions, Aarav…").
+
+**R9. §9.2 "down from 8 in his first week" contradicts §3.5(d).**
+- §3.5(d) says W0 "says nothing stable about the child", yet the parent example reports W0 as a baseline.
+- A first-week value is also the most extreme point on a familiarity curve. The fall from it is mostly familiarisation, practice and regression to the mean, not something about the child.
+- **Fix:** drop the first-week comparison from parent copy. If any change is shown, attribute it explicitly to Taxila being new ("as Taxila became familiar").
+
+**R10. Prior drift can flip a child's line without new child data.**
+- Monthly re-estimation of the band (μ, φ) (§5.1) moves every child's shrunken estimate and reliability. Separately, decay lowers effective n. Without any change in the child, a line can therefore drop below a gate or cross the distinctiveness gate (C3).
+- **Fix:**
+  - Compute reliability on decayed effective n (Σγ), and on effective sessions (C2).
+  - Allow a status transition only when the child's *own* likelihood contribution changed. Hold priors fixed between status evaluations, or show prior-driven transitions to no one.
+
+**R11. C7 update: the DPDP Fourth Schedule wording.**
+- Part A exempts an "educational institution", defined as "an institution of learning that imparts education, including vocational education", from §9(1) and §9(3). The exemption covers tracking and behavioural monitoring restricted to "the educational activities of such institution" or the "safety of children enrolled with such institution".
+- Two things are unresolved:
+  - Whether a direct-to-consumer AI tutor qualifies as such an institution [U, no ruling found].
+  - Whether research reuse for publication counts as "educational activities". It plausibly does not [U].
+- So even if the product monitoring were covered, **S-TV1 to S-TV6 need separate verifiable parental consent for research under §9(1)**, plus ethics approval. C7 stands, and this sharpens it.
+
+**R12. Behavioural inhibition's "unfamiliar person" trigger may not transfer to an AI voice.**
+- §3.5(d) models warm-up as habituation to an unfamiliar *person*. Whether children's inhibition responses generalise to a synthetic-voice agent on a home phone is untested [U].
+- Mark the §3.5 familiarity model as a hypothesis to be tested in S-TV1, not an application of Fox 2005.
+
+**Required additions (second pass).**
+- **TM10:** estimability rate per ISP dimension, overall and by gender, instruction language and SES proxy (R6).
+- **TM11:** longitudinal metric invariance of each continuous indicator across age bands before any stability or change claim is published (R5).
+- **TVI11:** every rendered rate is computed within a single knob state, and that state is named in the line (R8).
+- **TVI12:** no status transition is driven solely by a prior refresh or a band change (R5, R10).

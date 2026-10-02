@@ -127,8 +127,12 @@ export function FrameApp() {
   const api = useMemo(() => makeApi(MODULE_ID), []);
   const def = loaded.status === "ready" ? loaded.engine.def : null;
   const resolved = useMemo(() => (def ? resolveParams(def, raw) : null), [def, raw]);
+  // Once per distinct set of issues (a set_param that leaves them unchanged is noise toward the buffer cap).
+  const sentIssues = useRef("");
   useEffect(() => {
-    if (resolved?.issues.length) api.interaction("params_adjusted", { issues: resolved.issues });
+    const issues = resolved?.issues.join("\n") ?? "";
+    if (issues && issues !== sentIssues.current) api.interaction("params_adjusted", { issues: resolved!.issues });
+    sentIssues.current = issues;
   }, [resolved, api]);
 
   if (!init || loaded.status === "waiting" || loaded.status === "loading") return <div className="frame-wait" aria-busy="true" />;

@@ -1073,3 +1073,396 @@ until QA-M1 has run. It is a predicted failure, not a measured one.
 - `docs/harvest/hp-main-engine.md` (`vision-fab`)
 - `context/decisions.md` (`forge-models`, `forge-infra-azure`, `azure-only-compute`)
 - `context/rejected.md#claude-on-foundry-credits`
+
+---
+
+## Principal review
+
+**Reviewer stance:** adversarial principal engineer, 2026-10-02. **Question asked:** will this gate let Forge put fun,
+correct, bug-free games in front of a 9-year-old within minutes, on Azure, without running LLM code unsafely?
+
+**Short answer.** The *epistemics* are right: code is the oracle, judges must be grounded, answer keys are verified,
+the gate is tested with mutants. I spot-checked the evidence base and it holds. But as written, the runner would
+mismeasure (throttle, clock and process model), take 5–50× longer than budgeted in Q4, and run untrusted code in a
+renderer with no OS sandbox. Several pass rules also false-alarm on ordinary games: MCQ fuzz, partial ship, and
+batched safety calls. Nothing checks whether the game is *fun* or fits *this* child. The corrections below are
+ordered by priority (P0 blocks building the runner, P1 blocks shipping, P2 should be fixed before the measurements).
+
+Tags as in the header. **[V-R]** = verified in this review against the primary source.
+
+### Already raised elsewhere, so adopt them here rather than re-deriving
+
+`sandboxes-per-student.md` (Principal review, second pass) S1–S3 attack this doc directly. Their fixes are not yet
+reflected in §3, §4.11 or §11:
+- **S1.** The bundle with `__forge` compiled in is not the bundle that ships.
+  - Fix: one production bundle; an external, init-script-injected seam; a hash-equality check at publish; a
+    seamless pointer-only smoke run on the exact production bytes.
+  - §3 sentence 1 and §4.11 bullet 1 must change.
+- **S2.** The game shares a JS realm with the probes, so it can overwrite `snapshot()`.
+  - Fix: a frozen, non-configurable seam; "won" requires three channels to agree.
+- **S3.** The untrusted runner both builds and grades the dist.
+- **"Volkswagen" ban.** Game code must not read `navigator.webdriver`, `HeadlessChrome`, `userAgent`, or WebGL
+  `UNMASKED_RENDERER` via `WEBGL_debug_renderer_info`. Add that last one: SwiftShader announces itself through it.
+
+The corrections below are new.
+
+### P0: the runner as written mismeasures, or is unsafe
+
+**R1. `forgeHandle(page)` talks to the wrong frame, and the CDP throttle probably never reaches the game.**
+- §11 mounts the game in `<iframe id="mod" sandbox="allow-scripts">` (an opaque origin), and then calls
+  `forgeHandle(page)` and `ctx.newCDPSession(page)` on the *top* page. `window.__forge` lives in the iframe, so every
+  call is `undefined`.
+- Chromium is rolling out **IsolateSandboxedIframes**, which puts sandboxed iframes in their own process (Edge
+  WebView2 has it on by default from runtime 132 **[S]**). Page-level `Emulation.*` does not reach an
+  out-of-process iframe; it must be sent to the OOPIF's own target **[S]**. So the "calibrated" Q7 numbers would be
+  for an *unthrottled* game.
+- **Fix:**
+  - `const f = await (await page.$('#mod')).contentFrame()`, then `forgeHandle(f)`.
+  - `ctx.newCDPSession(f)`: Playwright accepts a `Frame` there ("it can be a Page or Frame type" **[V-R,
+    class-browsercontext.md]**).
+  - Send `setCPUThrottlingRate` and `setEmulatedVisionDeficiency` to that session.
+  - Add a self-test to QA-M5: a 50 ms busy loop in the frame must take about 50 × rate ms. If it does not, the
+    runner refuses to start.
+- **Also:** CDP throttling slows the renderer main thread. It does not slow the GPU process, where SwiftShader
+  rasterises. Lighthouse itself says that "the amount of variation in each class is quite high" **[V-R,
+  throttling.md]**.
+  - Q7 must gate on *main-thread* JS cost only.
+  - `metrics().frameMs` must exclude the WebGL submit/flush time. Otherwise it double-counts an unthrottled CPU
+    rasteriser.
+
+**R2. The throttle is installed for every check, which makes Q3/Q4/Q6 2–12× slower for no benefit.**
+- `openGame()` applies `rate` to every context.
+- **Fix:** throttle only the Q2 `ready` probe and the Q7 contexts. Logic gates run unthrottled. Throttling them
+  measures nothing and multiplies their wall clock by the rate.
+
+**R3. Playwright's clock fakes `performance`, and it cannot be uninstalled, so Q7 measures fake time.**
+- `page.clock.install()` overrides `Date`, timers, `requestAnimationFrame`, `requestIdleCallback`, `performance`
+  and `Event.timeStamp` **[V-R, clock.md]**. It has `install`, `pauseAt`, `resume`, `runFor` and `fastForward`, but
+  no uninstall.
+- §4.8's "real time with the clock released" is therefore impossible in the same context. The kit's `frameMs`,
+  derived from `performance.now()`, would report the fake step.
+- **Fix:** Q7 (and Q2's `ready` timing) run in a **separate context that never installs the clock**. Use
+  `long-animation-frame`/`longtask` entries and CDP `Performance.getMetrics` as the time source, not page-visible
+  `performance.now()`.
+
+**R4. Q4 as specified takes minutes to tens of minutes, not 20–60 s.**
+
+Arithmetic:
+- **Volume.** `novice` is 20 seeds × ~5 levels × ~40 acts ≈ 4,000 acts. Each act is about 4 CDP round trips: `act`,
+  `step`, `clock.runFor` and `events()`.
+- **Rendering.** `clock.runFor(100)` fires ~6 rAFs, and Phaser's `step()` renders each one through SwiftShader at
+  720×1280 physical px. That is 4,000 × 6 frames × ~10–20 ms ≈ **4–8 min for one bot**, before `fuzz` (3 × 180 s of
+  game time) and `speed`.
+- **Time on task.** The rule asks for 4–8 min of *game* time per novice run. At 60 Hz that is 14–29k rendered
+  frames per seed.
+
+**Fix:**
+- Bots run **in-page**, as kit code: one `evaluate()` per trajectory, returning the whole trajectory. The seeded
+  bot policies ship in the KEEP seam.
+- Simulation advances through Phaser's **`game.headlessStep(time, delta)`**, which updates without rendering
+  **[V-R, Phaser `src/core/Game.js`]**, with `game.loop.sleep()` so rAF does not also render.
+- The page renders **only** at capture-worthy events, with one `game.step()` before the screenshot.
+- Expected effect: Q4 becomes about 2–10 s of CPU **[U, measure in QA-M7]**, and §12's tier B becomes believable.
+- Keep a short real-render `replay` segment per level, because some bugs exist only in the render path.
+
+**R5. `Math.random` cannot be banned in game code alone: Phaser itself calls it, so QA-M5 fails by construction.**
+- `Phaser.Math.Between` is `Math.floor(Math.random() * (max - min + 1) + min)` **[V-R, `src/math/Between.js`]**.
+- `RandomDataGenerator`'s default seed is `(Date.now() * Math.random())` **[V-R]**.
+- Particles, camera shake and `Between`-using helpers are therefore nondeterministic even with a clean AST.
+- **Fix:**
+  - The kit bootstrap (KEEP, and in the *production* bundle, so validated and shipped behaviour match) replaces
+    `Math.random` with the seeded PRNG.
+  - It seeds `Phaser.Math.RND` before `new Phaser.Game`, and the seed comes from `reset(seed)`.
+  - The Q1 ban stays as lint. The determinism guarantee comes from the bootstrap.
+- Otherwise the 0-flake requirement turns every particle effect into a `NONDETERMINISM` blocker against the game.
+
+**R6. The untrusted lane launches Chromium with no OS sandbox *and* with a rasteriser that is documented as unsafe
+for untrusted content.**
+- Playwright's `chromiumSandbox` defaults to **false** **[V, `sandboxes-per-student` R4]**. §11 does not set it.
+- §11 also passes `--enable-unsafe-swiftshader`, which Chromium says "is not intended for running untrusted
+  content" **[V]**.
+- The result is LLM-written JS in an unsandboxed renderer, next to a CPU GPU-emulator, inside a container.
+- **Fix:**
+  - `chromiumSandbox: true` with the fallback recorded, as `sandboxes-per-student` already prescribes.
+  - The runner is **only** an ACA dynamic session (Hyper-V per session): one session per build, destroyed after,
+    no managed identity, no secrets, egress denied at the network layer.
+  - The gate's report says which isolation held.
+  - §11's "runner has no identity" comment is a requirement, so it belongs in §2 as a hard gate precondition
+    (`QaProfile.isolation: "hyperv+chromium-sandbox" | "hyperv-only"`, and refuse anything else).
+
+**R7. The egress controls have holes that a "make it work" repair can fall into.**
+- `--host-resolver-rules` maps hostnames, so **IP literals bypass it**.
+- `ctx.route` does not see **WebSockets**: those need `routeWebSocket`, which only routes sockets created after it
+  is set **[V-R]**. It also does not see service-worker traffic (§11 correctly blocks service workers) **[V-R]**.
+- CSP `connect-src 'none'` does not govern **WebRTC** **[M]**.
+- **Fix:**
+  - Add `RTCPeerConnection`, `RTCDataChannel`, `WebTransport`, `navigator.serviceWorker`, `SharedWorker`,
+    `BroadcastChannel`, `WebAssembly`, `innerHTML`/`outerHTML`/`insertAdjacentHTML`,
+    `document.createElement('script'|'iframe'|'img')` and string-arg `setTimeout`/`setInterval` to the Q1 ban list.
+  - The kit bootstrap deletes or freezes the WebRTC constructors in the iframe realm in production too, because
+    the phone has no network-layer deny.
+  - Production CSP has no `'unsafe-eval'`.
+  - Keep in mind that the AST list is lint, not a boundary: `[].constructor.constructor` defeats it. The boundaries
+    are CSP, the iframe sandbox, the frozen globals and network-level deny in the runner.
+  - M15 should include one WebRTC and one IP-literal beacon.
+
+### P1: pass rules that are wrong or false-alarm
+
+**R8. `fuzz` "progress stays 0" false-alarms on every small-choice game.**
+- A random policy over `legalActions()` in a 3-option MCQ or a 2-bin sort is right 33–50% of the time.
+- `game-mechanics` L9b was written for *locks* ("the code space is ≥ 10⁴ or the dial accepts only an engine-built
+  value").
+- **Fix:** split it in two.
+  - **L9b-lock:** progress 0 on lock mechanics.
+  - **L9b-chance:** for choice mechanics, fuzz progress must not exceed the analytic chance rate × 1.5. Separately,
+    the rapid-guess and gaming detector must fire (`lockbox` already defines "> 3 tries in 10 s → `gaming`"). The
+    game must also **not award mastery stages** for progress the guess detector flagged.
+
+**R9. `decide()` makes `ship_partial` nearly unreachable.**
+- It requires a prefix L1..Lk **and** an abstract last level. In the standard concrete → pictorial → abstract curve,
+  only the last level is abstract. So a passing prefix that ends abstract is the full game, and any failure in the
+  middle or at the end falls back to G1.
+- **Fix:** allow an *order-preserving subset* that keeps L1, contains ≥ 1 level per stage present in the brief,
+  ends abstract and still passes the curve rule. Re-label it.
+- If the abstract level is the one that fails, ship concrete + pictorial as **`ship_partial_noabstract`**. It goes
+  to the teacher as "practice, not mastery evidence", and the Conductor schedules the abstract step in the next
+  lesson. A G1 fallback throws away more learning than that.
+
+**R10. Held-out keypoints leak after their first failure.**
+- §4.1 runs held-out checks "only at the final gate", but §6 has no rule for what happens when one fails. If the
+  failure goes into a repair round, the held-out finding becomes visible and QP7 is gone after one build.
+- **Fix:** a held-out failure **never** becomes a repair finding. The level is trimmed (R9 rules) and the signature
+  is logged for QA-M8.
+
+**R11. Safety: batching, Hindi-only blocklists and the "any S-layer fail = reject build" rule.**
+- **Attribution is lost.** Content Safety returns one severity per request. §4.9 batches strings up to 10k chars,
+  so a hit cannot be attributed to the "offending string id" that §4.9 promises the builder.
+  - Fix: one record per string. At S0 the limit is 1,000 requests per 10 s **[V-R, overview]**. A game has about
+    50–150 strings, so this is a fraction of a second at the quota. Alternatively, bisect on a hit.
+- **The blocklist is literal.** Items are terms of at most 128 characters, with **10,000 terms in total across all
+  lists** **[V-R, use-blocklist]**. There is no transliteration or variant matching, so Hinglish spelling variants
+  (*kutta / kuttaa / kuta*) exhaust the cap.
+  - Fix: run S2 **locally** with our own normaliser: lowercase, de-duplicate vowels, map Devanagari to Latin with a
+    fixed scheme, then fuzzy-match. Keep the Content Safety blocklist only for exact English brand and franchise
+    names.
+- **The S3 classifier can be refused.** The `taxila-brain` classifier sits behind the deployment's own Azure OpenAI
+  content filter. An unsafe input can come back as a `content_filter` refusal instead of `{unsafe:true}` **[M]**.
+  - Fix: a refusal is treated as **unsafe (fail closed)** and logged as such. QA-M4 must count refusals separately.
+- **"Reject on any S-layer fail" is wrong for SST.** Class 7–8 SST is war, partition, Jallianwala Bagh, epidemics.
+  Severity ≥ 2 violence *is the curriculum*.
+  - Fix: a per-topic **curriculum allowance** taken from the verified kit (for example `violence ≤ 2` for
+    `history.c8.*`, never `self-harm` or `sexual`).
+  - A flagged *string* is regenerated through the copy path and re-checked, once.
+  - `reject_unsafe` of the whole build is kept for a code-behaviour hit (S6), an image hit, or a second string hit.
+
+**R12. The blind solves are not independent.**
+- Reasoning models on Azure reject `temperature`/`top_p` **[V-R, reasoning how-to]**, so "different seeds" is not a
+  real lever. Two calls to the same model on the same prompt fail together on exactly the items that matter
+  (ambiguous wording, an NCERT convention the model does not know).
+- **Fix:**
+  - Use solver A on `taxila-brain` and solver B on `taxila-codex`, with a *re-phrased* prompt (options shuffled, a
+    different language where possible).
+  - Each solver returns **all defensible answers**. An item with more than one defensible answer is dropped as
+    ambiguous, which catches what agreement cannot.
+
+**R13. The live canary is per artifact, but a G2 artifact has one child.**
+- "≥ 1 child with ≥ 2 errors in the first 50 plays" and "n ≥ 10 children with mastery ≥ 0.8" can never fire on a
+  game personalised for one learner.
+- **Fix:** two levels.
+  - **Per artifact, this child, in real time.** Any bridge `error` swaps to the G1 game inside the session. Two
+    `stuck` events on one level → the teacher voice offers the worked hint. Quit before L2 → a flag on the recipe.
+  - **Per recipe, kit family and template, over the population.** The §4.11 thresholds move here. The item-anomaly
+    rule works only for items reused across children: kit items, not generated ones.
+
+**R14. Load gate: the size cap and the slow-4G target contradict each other.**
+- Q1 allows 1.5 MB of transfer. Q7 requires a cold `ready` in ≤ 5 s at ~1.6 Mbps. 1.5 MB × 8 / 1.6 Mbps ≈ **7.5 s
+  of bytes alone**, before the RTTs, so a game at the cap fails Q7 by design.
+- The product makes cold load the wrong metric anyway: the game is built while the teacher teaches.
+- **Fix:**
+  - Gate **"ready from cache" ≤ 3 s at the calibrated throttle**.
+  - Make **prefetch-complete-before-offer** an orchestrator rule: the child is never offered a game whose bytes
+    are not yet on the phone.
+  - Cold load becomes info only.
+
+**R15. G1, the actual live path, skips the solver.**
+- G1 is kit code plus *new data*, and data is exactly where solvability breaks: an item set with no correct tile,
+  bins that do not cover the values, a target out of the dial's range.
+- §2.3 gives G1 `replay + misc + fuzz`, but no `solver`.
+- **Fix:** with R4's in-page bots, the solver and the softlock search cost milliseconds. Add them to G1. Also add
+  Q0 range checks per family (domain *and* codomain: every item's answer must be producible by the mechanic's
+  action space).
+
+### P1: failure modes the doc does not cover
+
+**R16. WebView version skew.**
+- The runner uses current Chromium (Playwright 1.63). Android Go phones in India run whatever System WebView the
+  owner last updated, often years old **[U, take it from the app's telemetry]**.
+- Syntax or APIs missing there (`structuredClone`, `Array.prototype.at`, `Object.hasOwn`, newer CSS) crash on the
+  phone and pass in the gate.
+- **Fix:**
+  - esbuild `target` set to the telemetry floor (start at `chrome87` **[U]**).
+  - Q1 runs `es-check` (or an equivalent) against that target.
+  - The kit polyfills the gap.
+  - The device lane includes the *oldest* WebView seen in telemetry, not only cheap hardware.
+
+**R17. Fonts: the container can hide a missing bundled font, or show tofu the phone would not.**
+- Debian-slim images ship no Devanagari font. Full images ship Noto through fontconfig. Either way, the container's
+  fallback is not the phone's.
+- Phaser `Text` rasterises to a canvas when created. If the web font is not loaded yet, the fallback glyphs
+  **persist** until the text changes. That is a real phone bug that `document.fonts.check` does not catch.
+- **Fix:**
+  - The runner image has **no** system Devanagari fonts, so only the kit's bundled font can render Hindi.
+  - The kit awaits `document.fonts.load` for every face before the first scene.
+  - Q6 renders each `hi` entity's actual canvas texture, rather than a fresh offscreen draw, for tofu and conjunct
+    checks.
+
+**R18. Interrupt bot: headless Chromium cannot genuinely background a page.**
+- Pages are always "visible" there **[M]**. A dispatched `visibilitychange` tests only the kit's handler, not
+  whether the WebView actually stops rAF or the audio, so "rafCount ≈ 0 while hidden" is a tautology in the
+  container.
+- **Fix:** keep the synthetic test, renamed to "the kit sleeps its loop on the event", and move the real
+  backgrounding, hardware Back, orientation flip and low-memory kill tests to the device lane (see
+  `sandboxes-per-student` S8 for the OOM case).
+
+**R19. Heap measurement.**
+- `performance.memory` is quantised unless Chromium runs with `--enable-precise-memory-info` **[M]**.
+- Growth measured without a forced GC is mostly allocator noise.
+- **Fix:** call CDP `HeapProfiler.collectGarbage` before each sample, sampled through the *frame's* CDP session
+  (R1), and use `Runtime.getHeapUsage`.
+
+**R20. Contrast trusts the declared `fg`.**
+- WebGL tint, alpha, blend modes and drop shadows change the rendered colour.
+- **Fix:** take the foreground as the glyph-pixel cluster (the 2-means minority cluster inside the text bbox) and
+  the declared `fg` only as a tiebreak. Text over moving backgrounds is sampled on ≥ 3 frames, and the minimum
+  ratio is the one gated.
+
+### P1: the gate never asks whether the game is fun, or right for *this* child
+
+**R21. Add a programmatic "fun floor" from the trajectories the bots already record.**
+- Every one of these comes from data the bots already produce, so none needs a judge. All thresholds are **[U]**,
+  to be set by QA-M6 against Again-Again and quit-before-L2:
+  - **time-to-first-action** ≤ 8 s (B1–B2) or ≤ 12 s (B3–B4) from `ready`;
+  - **dead air:** no stretch longer than 6 s during `playing` with neither child agency (a legal action available
+    and a visible prompt) nor a feedback event;
+  - **juice:** every accepted `act` produces a visible state change or feedback entity within 100 ms of game time.
+    Today this is checked for answers only;
+  - **reward cadence:** the `novice` bot sees a success or progress event at least every 30–45 s;
+  - **agency ratio:** the share of game time with ≥ 1 meaningful legal action is ≥ 0.7, which catches long
+    cutscenes and walls of text;
+  - **variety:** no two consecutive levels with an identical action-type histogram unless the brief asks for drill.
+- The aim is not to prove the game is fun, which only children can do. It is to reject the boring-by-construction
+  failures that an LLM builder produces often and that every correctness gate passes.
+
+**R22. Personalisation is never validated.**
+- The `novice` bot uses a generic p(correct) of 0.6 → 0.8. The design's whole promise is a game fitted to this
+  child's ability and misconceptions.
+- **Fix:** add a **`this-child` bot**, parameterised from the learner model: per-skill mastery → p(correct), and the
+  child's active misconceptions → probability of the misconception answer. Gate on:
+  - predicted L1 success ≥ 0.85 (no frustrating first screen);
+  - predicted completion inside the planned slot;
+  - **≥ 1 trap per active `strong` misconception that the bot actually triggers**.
+- Add a cheap Q0 check: the skin and interest pack id is the one the brief's interest map chose. Child-specific art
+  is otherwise unverified.
+
+### P2: cost and latency corrections
+
+**R23. The frame count in §12 is about 2–3× too low.**
+- §7.1 asks for 6–7 frames per level on 360×640, plus the 412×823 frames. For 5 levels that is about **35–45
+  frames**, not "≈ 16".
+- Each 720×1280 JPEG is about 1–1.5k image tokens at high detail **[M, tile formula for GPT-4o-class models;
+  measure on sol in QA-M3]**. The vision judge input is therefore about 45–70k tokens per call, × 2 with the
+  ensemble.
+- **Fix:** re-derive the Q9 cost line from the real frame count. Or cut the count: one frame per *distinct*
+  event type per level, deduplicated by perceptual hash, gets back to about 15–20 frames.
+
+**R24. Q9 latency has a long tail, so Q9 must not sit on the ship path by default.**
+- The `asset-vlm-gate` probe (today, `taxila-brain`, n = 26 single-image calls) had a median of ≈ 5.1 s and a
+  maximum of **74.9 s**: 1 of 26 calls was more than 10× the median **[V, `asset-vlm-gate-probe-2026-10-02.json`]**.
+  A 40-frame, high-effort, multi-criterion call will be slower.
+- **Fix:**
+  - Q9 runs **post-publish, async, by default** for G2. §15 has this only as a fallback. The game ships on Q0–Q8,
+    and a grounded calibrated Q9 blocker unpublishes it before the next open.
+  - Pre-publish Q9 is used only for G3 promotion.
+  - Each judge call has a 45 s timeout. A timeout is recorded as `skip`, never as `fail`.
+
+**R25. §12's total assumes the stale 8-minute G2.**
+- `llm-game-generation`'s Principal review P5 re-derived G2 at **P50 ≈ 12–15 min and P90 > 20 min**, and called G2 a
+  catalogue builder.
+- **Fix:**
+  - Say plainly that the "within minutes during the lesson" path is **G1 + this gate's G1 subset**.
+  - The QA latency target that matters is G1 at ≤ 8 s P90, which also needs R15's solver.
+  - Optimise and measure QA-M7 for G1 first.
+
+**R26. The weekly Q9 corpus cost is underestimated.**
+- Q9 runs over 6 visual mutant classes × 24 goldens plus 24 clean builds ≈ 170 builds × about $0.2–0.5 ≈ **$35–85
+  per run** **[U]**, not $5–10.
+- The full QA-M2 run is about 430 mutants × a 2–3 min pass ≈ 15–20 runner-hours. That is cheap on ACA but needs
+  pool capacity planned off-peak.
+
+### Smaller corrections
+
+- **The GUI playtester (§7.4)** is described as a "`taxila-brain` computer-use-style loop". Azure's computer-use
+  model is a separate deployment, and the allowed deployments have none.
+  - Adopt `llm-game-generation`'s Principal review P17: **judge the recorded trajectory, do not re-play it**.
+  - A free-roaming pixel agent becomes a G3-only research tool.
+- **The time-on-task rule (§4.5)** uses the generic novice. Use R22's this-child bot.
+- **Model availability.** The computed brief for this run lists `taxila-opus` and `taxila-sonnet` as available.
+  `context/decisions.md` (lines 65 and 88) and `CLAUDE.md` (Azure-only, first-party only, owner directive) say they
+  were deleted and are not allowed. The doc is right to follow the owner directive. The §7.4 cross-family judge
+  stays a reversal condition, and nothing here may depend on it.
+- **Content Safety "custom categories (rapid)"** (preview, text and image, 1,000 requests per 10 s at S0 **[V-R]**)
+  is a better fit for child-specific patterns than the 10k-term blocklist. Evaluate it in QA-M4. "Custom categories
+  (standard)" is English only **[V-R]**.
+
+### Measurements to add (append to §13)
+
+| id | what | pass |
+|---|---|---|
+| QA-M10 | runner self-test: frame-target throttle reaches the game iframe (a busy loop scales with the rate); the seam is reachable through `contentFrame()` | ratio within ±15% of the rate |
+| QA-M11 | in-page headless bots vs CDP-driven bots: wall clock, and identical trajectories on 24 goldens | in-page ≤ 10 s for Q4; trajectories bit-identical |
+| QA-M12 | the fun floor (R21) and the this-child bot (R22) vs live Again-Again / quit-before-L2 on 60 games | ρ ≥ 0.3, or drop the rule |
+| QA-M13 | WebView floor: boot the 24 goldens on the oldest telemetry WebView | 0 syntax or API errors |
+| QA-M14 | Content Safety per-string vs batched, plus the Azure OpenAI filter refusal rate on the S3 classifier, on the QA-M4 set | attribution 100%; refusals counted as unsafe |
+
+### Proposed `context/` entries
+
+- **decision `forge-qa-bots-in-page-headless`.** Bots run inside the page through `headlessStep` and render only at
+  capture events.
+  - Reverse if: QA-M11 shows the CDP-driven path within 2× wall clock, or the in-page path misses a mutant class
+    that the render path catches.
+- **decision `forge-qa-q9-async`.** Q9 runs post-publish for G2 and pre-publish only for G3.
+  - Reverse if: QA-M7 shows Q9 P90 ≤ 30 s **and** QA-M3 shows a calibrated criterion catching a defect that
+    Q0–Q8 miss in ≥ 5% of builds.
+- **decision `forge-qa-safety-per-string-curriculum-allowance`.** One string per record, a local Hinglish
+  normaliser, fail closed on refusals, and per-topic curriculum allowances drawn from verified kits.
+  - Reverse: QA-M4 and QA-M14.
+- **No rejection entries.** Nothing here was tried and failed. R1–R5 are predicted failures from verified API
+  behaviour, and should be logged as rejections only if a runner is built the §11 way and fails QA-M10 or QA-M11.
+
+### Sources checked in this review
+
+- Playwright Clock (the overridden list includes `performance`, `requestAnimationFrame` and `Event.timeStamp`; no
+  uninstall): https://raw.githubusercontent.com/microsoft/playwright/main/docs/src/clock.md **[V-R]**
+- Playwright `BrowserContext.newCDPSession(Page|Frame)`, `route` vs Service Worker, and `routeWebSocket`:
+  https://raw.githubusercontent.com/microsoft/playwright/main/docs/src/api/class-browsercontext.md **[V-R]**
+- Phaser `Math.Between` (uses `Math.random`):
+  https://raw.githubusercontent.com/photonstorm/phaser/master/src/math/Between.js **[V-R]**
+- Phaser `RandomDataGenerator` default seed:
+  https://raw.githubusercontent.com/photonstorm/phaser/master/src/math/random-data-generator/RandomDataGenerator.js
+  **[V-R]**
+- Phaser `Game#headlessStep`: https://raw.githubusercontent.com/photonstorm/phaser/master/src/core/Game.js **[V-R]**
+- Lighthouse throttling (`benchmarkIndex` brackets; "variation in each class is quite high"):
+  https://raw.githubusercontent.com/GoogleChrome/lighthouse/main/docs/throttling.md **[V-R]**
+- Azure AI Content Safety overview (language support, S0 1,000 requests per 10 s, custom categories):
+  https://learn.microsoft.com/en-us/azure/ai-services/content-safety/overview **[V-R]**
+- Azure AI Content Safety blocklists (128 characters per item, 10,000 terms in total):
+  https://learn.microsoft.com/en-us/azure/ai-services/content-safety/how-to/use-blocklist **[V-R]**
+- Azure OpenAI reasoning models (unsupported `temperature`/`top_p`; sol takes image input):
+  https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/reasoning **[V-R]**
+- IsolateSandboxedIframes default in WebView2 132+:
+  https://github.com/MicrosoftEdge/WebView2Announcements/issues/99 **[S]**
+- OOPIF throttling needs the child target: https://webperf.tips/tip/iframe-multi-process/ and search results
+  **[S]**
+- Internal: `factory/asset-vlm-gate-probe-2026-10-02.json` (latency), `factory/sandboxes-per-student.md` (second
+  pass S1–S3, S8), `factory/llm-game-generation.md` (Principal review P5, P17), `content/game-mechanics.md` (L9b,
+  `lockbox@1`), `context/decisions.md` (lines 65, 86 and 88)

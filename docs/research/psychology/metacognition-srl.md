@@ -896,3 +896,74 @@ None of this needs a redesign. Several items must change before the spec workstr
   - R4: ΔConf test-retest .38 at 30 bets and 82% accuracy; 31% of children have < 3 errors
   - R5: spurious λ = +.33 if pL is read after help.
 - **decision** `resolution-must-be-theta-adjusted`. Reversal condition: MS2 shows that raw ΔConf predicts delayed gains net of θ as well as the θ-adjusted ψ does.
+
+### R6. Addendum: second verification pass (2026-10-02, later the same day)
+
+**Method.**
+- Re-ran `metacognition-srl-reviewsim.py`. All R1-R5 numbers reproduce exactly (seed 7).
+- Web search was available for this pass. Ten further abstracts were pulled from ERIC, Europe PMC and Crossref:
+  - Lipko, Dunlosky & Merriman 2009 (*JECP*), the item R1 could not check
+  - Chase 2009; Kornell & Bjork 2009; Karpicke 2009; Hays 2013; Roll 2011; Aleven 2016; Zheng 2016; Ryan, Gheen & Midgley 1998; Bisra 2018
+  - Chen et al. 2026 (Crossref abstract)
+  - Destan et al. 2017; the van Loon et al. 2017 publication record.
+
+**Corrections to this review itself.**
+
+| R-item | correction |
+|---|---|
+| R3, "B1 evidence base" | **van Loon et al. 2017 is not a conference paper.** It is published and peer-reviewed: van Loon MH, Destan N, Spiess MA, de Bruin A, Roebers CM 2017, "Developmental progression in performance evaluations: Effects of children's cue-utilization and self-protection", *Learning and Instruction* 51, 47-60, doi:10.1016/j.learninstruc.2016.11.011. Keep it at [V-record] (abstract not re-read), not [S]. Fix the reference entry in §14, which points to the AERA repository. The B1 base is still thin, but one item stronger than R3 said. |
+| R1, H4 row | **Chen et al. 2026 is cross-sectional**: one assessment wave, 3,946 Chinese sixth-graders, post-test estimates, multilevel. It does not show that H4's *longitudinal* claim was already made. The recommendation stands (drop "first" until a systematic search), but for the right reason: it is unsearched, not refuted. The doc's §4.1 summary of Chen ("general confidence relates to learning attributes; resolution less so") matches the abstract. The authors' own caveat should be carried over: the R² increment is "order-dependent" and "not interpreted as evidence that the block is inherently more important". |
+
+**New findings (not in R1-R5).**
+
+**P9. The parent calibration table is the raw-bias confound one layer up.**
+- S1's table cell, and §7.2's "calibration change" row, report h_pakka = P(correct | "pakka"). That is conditional *accuracy*. It rises with θ and falls when the scheduler moves the child to harder items, with no change in monitoring at all.
+- The "then → now" row "her 'pakka' was right a/n now vs a′/n′" will therefore record ordinary learning, or a difficulty-mix shift, as calibration growth. That is exactly the inference MS-D1 bans for raw bias.
+- **Fix:**
+  - Keep the table only as a *description* ("when she said pakka, the answer was right a of n times").
+  - Drop the "calibration change" shape from v1.
+  - Any change claim must come from the model-based κ (P4), with item difficulty in y* (P1), and must pass §6.3.
+  - Each table window shows the share of items at each difficulty level next to the counts, so a parent can see a harder mix.
+
+**P10. A fixed "reading" slot makes a resolution claim through the back door.**
+- At ≥ 30 bets in any band, §4.1 and §7.2 allow the fixed reading "her 'pakka' and 'shayad' are right about equally often". That is a statement that ψ ≈ 0, made below the 120-bet bar and in B1, where MS-D3 bans resolution outright.
+- Its reliability at 30 bets is .36-.57 by the doc's own computation, and about .38 at mastery-level accuracy (R4).
+- **Fix:** no reading slot compares bet levels below the S2 threshold. The S1 reading set may describe only one level ("her 'pakka' answers were right a of n times").
+
+**P11. The outcome coded against the bet is not the outcome the child judged.**
+- The bet comes after the answer and before feedback, so the child judges "is *this* answer right?".
+- But o = 1 only for KT class C0 (correct on the first try, with **no hint**). A correct answer that followed a hint is C2/C3 and is coded o = 0.
+- As a result, a confident, *correct* aided answer enters the parent table as a "pakka … wrong". This happens most for exactly the children who use help well (MS-D5/D6), and so it penalises help in the metric.
+- **Fix:**
+  - o := correctness of the answer that was bet on.
+  - Either take no bet on an item where help came before the first attempt, or code "aided" as a separate covariate.
+  - Add an invariant: `bet.outcome` is the graded correctness of the bet-on response, never a KT class.
+
+**Citation nuances (all [V] this pass).**
+- **Lipko, Dunlosky & Merriman 2009 (*JECP*)** is read correctly: preschool predictions stayed overconfident across trials, and postdictions were "quite accurate".
+  - But Experiment 2 found the same overconfidence when children predicted *another child's* recall: "wishful thinking cannot fully account for their overconfidence".
+  - Destan et al. 2017 found own-favouring judgements and credit at both 6 and 8.
+  - So "self-protective" (MS-D9, §8) is *one* contributor with mixed evidence. Write "partly self-protective, partly a general optimism that is not self-specific".
+- **Chase et al. 2009.**
+  - The learning gain and the "most pronounced for lower achieving" result come from the **grade-8** study only. The grade-5 study was a verbal-protocol study of time on task and attributions.
+  - §5.2 ("grades 5 and 8 … more effort and learning, largest for lower achievers") should say: effort in both; learning gain and the low-achiever effect in grade 8.
+  - §7.3 "the protégé effect at home" is an extrapolation: Chase used a computer teachable agent, not a parent as the learner. Tag it [U].
+- **Roll et al. 2011** (58 and 67 high-school geometry students) reported that improved help-seeking *transferred* to new content a month later. The "no domain-level learning gain" result is Aleven 2016's summary of the programme. §1 item 5 and the §5.2 row should attribute the null to Aleven 2016, not to both papers.
+- **Ryan, Gheen & Midgley 1998** is N = 516 *sixth-graders*, with avoidance measured by **self-report**. MS-D6 may cite it, but as reported avoidance at age 11-12, with no data for 6-10.
+- **Adult evidence used for children's illusions of competence** (§1 item 4, §4.2):
+  - **Kornell & Bjork 2009:** adults, word pairs, 12 experiments
+  - **Karpicke 2009:** adults, foreign-language items
+  - **Hays, Kornell & Bjork 2013:** adults, and the benefit requires *immediate* feedback
+  - **Deslauriers 2019:** university physics.
+  - Each is read correctly, but the claim that illusions of competence "are general" should say "shown in adults; children's evidence is Metcalfe & Finn 2013 and Lipko 2009". The Hays result supports MS-D5 only when feedback is immediate, which Taxila's ladder must guarantee.
+- **Zheng 2016** (ES = 0.438, 29 articles, N = 2,648) and **Bisra 2018** (g = .55, 69 effect sizes) are correct. Neither is child-specific, and neither should be cited as such.
+
+**Additional required changes (continuing R5).**
+14. §14 reference for van Loon 2017: replace it with the *Learning and Instruction* citation. Undo the [S] instruction in R3.
+15. Drop the "calibration change" parent shape. Show the difficulty mix next to the S1 table (P9).
+16. Remove every comparative reading slot below the S2 threshold (P10).
+17. Bet outcome = correctness of the bet-on response. No bets after pre-answer help, or code aided as a covariate. Add invariant `MSI11` (P11).
+18. Apply the citation nuances above: Lipko and Destan on self-protection, Chase's grade split, Roll 2011 versus Aleven 2016, and adult tags on Kornell, Karpicke, Hays and Deslauriers.
+
+**Additional proposed `context/` entry.**
+- **rejected** `conditional-accuracy-as-calibration-growth`: P(correct | "pakka") over time tracks θ and the difficulty mix, not monitoring. It is not a change metric.

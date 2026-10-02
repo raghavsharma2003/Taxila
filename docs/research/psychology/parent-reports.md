@@ -771,7 +771,7 @@ Does the contingent-worth mechanism (Ng 2014) operate in Indian parents, and doe
 1. The false-claim budget assumes posteriors stay calibrated after screening, and they do not (R1).
 2. The reliability gate uses a formula that does not fit the claims it gates (R2).
 3. Two "pattern" sections make causal claims from policy-confounded observational data (R4, R5).
-4. The anti-Barnum validity test measures agreement with parents' existing beliefs, which the report is meant to correct (R7).
+4. The anti-Barnum validity test measures agreement with parents' existing beliefs, which the report is meant to correct (R8).
 
 There is also one citation that says the opposite of what the file uses it for (C1), and much of the parent-messaging dose evidence comes from parents of 4-5-year-olds or high-schoolers (C3). None of this undermines the "no labels, no pressure" floor, but several *L2 sections should not ship as specified*.
 
@@ -942,3 +942,5 @@ These are well supported and should be kept:
 13. Fixed growth-edge cap (R14).
 14. Realistic power (R15).
 15. Citation fixes C1-C18.
+
+*Re-verification 2026-10-02 (resumed session):* `parent-reports-methodsim.py` was re-run and every number in R1, R2, R7, R9, R10 and R15 reproduces exactly (the R15 figures come from the closed form 2(z₀.₉₇₅ + z₀.₈)²/d², giving 17,442, 6,279 and 1,570). A cross-reference in the verdict was corrected: the anti-Barnum defect is R8, not R7.

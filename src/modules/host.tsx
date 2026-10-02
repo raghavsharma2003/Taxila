@@ -10,6 +10,8 @@
 // messages cannot be trusted after the handshake: a second "ready", or any page-level message from a
 // frame that already has its port, means another document is in the frame, and the module is dropped
 // (module answers are machine truth to the Director; a forged answer{correct:true} must not get through).
+// A navigated frame that stays silent is caught by its load events instead: the frame's src document
+// loads once, so a second load means another document is on screen inside the child's lesson.
 // Ordering: commands that arrive before the handshake are queued; init + the full history are sent on it,
 // so the frame converges on the same state however late it loads.
 import { useEffect, useRef, useState, type CSSProperties } from "react";
@@ -47,6 +49,8 @@ interface Slot {
   port: MessagePort | null;
   frame: HTMLIFrameElement | null;
   timer: ReturnType<typeof setTimeout> | null;
+  /** load events seen on this slot's iframe (the src document is the only one allowed). */
+  loads: number;
 }
 
 type TileStatus = "loading" | "ready" | "slow" | "dead";
@@ -97,6 +101,8 @@ export function ModuleHost({
 }: ModuleHostProps) {
   const slots = useRef(new Map<string, Slot>());
   const [tiles, setTiles] = useState<Tile[]>([]);
+  /** Set by the effect below (it owns kill); called from each iframe's onLoad. */
+  const onFrameLoad = useRef<(key: string) => void>(() => {});
   // Latest callback/options without re-subscribing (a re-subscribe would rebuild every iframe).
   const latest = useRef({ onEvent, lang, ageBand, readyTimeoutMs });
   useEffect(() => {
@@ -166,6 +172,7 @@ export function ModuleHost({
           history: [],
           port: null,
           frame: null,
+          loads: 0,
           timer: setTimeout(() => {
             slot.timer = null;
             if (map.get(cmd.moduleId) !== slot || slot.port) return;
@@ -204,6 +211,11 @@ export function ModuleHost({
       if (msg.type === "ready") handshake(slot);
     };
 
+    onFrameLoad.current = (key) => {
+      const slot = [...map.values()].find((s) => s.key === key);
+      if (slot && ++slot.loads > 1) kill(slot, "module frame navigated");
+    };
+
     window.addEventListener("message", onMessage);
     const unsubscribe = source.subscribe(apply);
     return () => {
@@ -225,6 +237,7 @@ export function ModuleHost({
                 if (s?.key === t.key) s.frame = el;
               }}
               src={`${frameSrc}#${encodeURIComponent(t.moduleId)}`}
+              onLoad={() => onFrameLoad.current(t.key)}
               sandbox="allow-scripts"
               referrerPolicy="no-referrer"
               title={`activity ${t.engine}`}

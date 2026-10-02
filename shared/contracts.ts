@@ -100,7 +100,11 @@ export interface TurnRequest {
   typed?: boolean;                   // no ASR (typed or tapped); does not select the text lane
 }
 export interface TurnResponse {
-  instructions: string;              // full compiled instructions → session.update (applied verbatim)
+  /**
+   * Voice lane only: full compiled instructions → session.update (applied verbatim). They carry the answer
+   * key, so the text lane (whose reply the server writes) never receives them.
+   */
+  instructions?: string;
   move: Move;
   moduleCommands: ModuleCommand[];
   ui: UiDirectives;
@@ -121,13 +125,15 @@ export interface TurnResponse {
 export interface LessonStartRequest { childId: string; topicId?: string; mode?: "voice" | "text" }
 export interface LessonStartResponse {
   lessonId: string; topic: { id: string; title: string; chapter: string };
-  instructions: string; teacher: { id: string; name: string; voice: string };
+  /** Voice lane only (see TurnResponse.instructions). */
+  instructions?: string; teacher: { id: string; name: string; voice: string };
   moduleCommands: ModuleCommand[]; ui: UiDirectives;
   /** Text lane: the teacher's opening line, stored as teacher turn `teacherOpeningSeq`. */
   teacherOpening?: string; teacherOpeningSeq?: number;
 }
 /** POST /api/tts: speak a stored teacher turn of the caller's lesson (never free text). */
 export interface TtsRequest { lessonId: string; seq: number }
+/** `session` is the minted session config WITHOUT its instructions (the secret already carries them). */
 export interface RealtimeTokenResponse { token: string; expiresAt: number; base: string; session: Record<string, unknown> }
 
 // ───────────────────────────── modules ─────────────────────────────

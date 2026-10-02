@@ -81,6 +81,11 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, warmu
     affect: initialAffect(), lastBreakTurn: -99, safeguard: null,
     teachbackAsked: false, teachbackTries: 0, teachbackPassed: false,
     module: null, recent: [], seq: 0,
+    // Voice lane: the client reported the teacher turn that voiced lastMove (routes/lesson.js); cleared when
+    // step() plans a new move. compile() then frames the move as already said.
+    moveVoiced: false,
+    // Items whose key a teacher turn stated before they were posed: their answers are not evidence.
+    spoiled: [],
   };
 }
 
@@ -413,6 +418,7 @@ export function step(prev, input) {
   if (p.probe) move.probe = p.probe;
   if (p.format) move.format = p.format;
   s.lastMove = move;
+  s.moveVoiced = false;
   // A reaction keeps the step's content (e.g. the worked example the teacher is in the middle of) and the
   // activity on screen.
   if (!reacting || p.content) s.lastContent = p.content ?? [];
@@ -432,6 +438,18 @@ export function step(prev, input) {
 export function describe(s, kit) {
   const item = s.lastMove?.itemId ? findItem(s, kit, s.lastMove.itemId) : null;
   return { item, content: s.lastContent ?? [] };
+}
+
+/**
+ * The item the next posing move will put to the child (poseNext's order: a verifying diagnostic, the item
+ * an explain turn queued, then the queue head), or null. An explain, worked-example or re-teach turn that
+ * states THIS item's key spoils it: the child then repeats what they just heard (evals/director-sim.mjs).
+ */
+export function upcomingItem(s, kit) {
+  const skipped = new Set(s.skipped);
+  const verifying = s.verify && !skipped.has(`diag:${s.verify}`) ? findItem(s, kit, `diag:${s.verify}`) : null;
+  const queued = s.nextItemId && !skipped.has(s.nextItemId) ? findItem(s, kit, s.nextItemId) : null;
+  return verifying ?? queued ?? selectNext(s, kit);
 }
 
 /** Fold evidence rows into the state's skill snapshot and outcome history (BKT with forgetting, pure). */
@@ -512,7 +530,8 @@ export function skipItem(prev, kit, itemId, now) {
  * @param {any} s  lesson state before step()
  * @param {any} cls classification
  * @param {any} kit
- * @param {{ leaked?: boolean, discount?: number }} [o]  leaked: the teacher said the key aloud before rung 4
+ * @param {{ leaked?: boolean, discount?: number }} [o]  leaked: the teacher said the key aloud before rung 4;
+ *   an item in `s.spoiled` counts as leaked too
  * @returns {import("../../shared/contracts").Evidence[]}
  */
 export function evidenceFrom(s, cls, kit, { leaked = false, discount = 1 } = {}) {
@@ -534,7 +553,8 @@ export function evidenceFrom(s, cls, kit, { leaked = false, discount = 1 } = {})
   let w = PROBE_WEIGHT[probe] * kitFactor * discount;
   // Young children often cannot verbalise what they do understand: a missed "why" is weak evidence.
   if (why && cls.outcome !== "correct" && cls.outcome !== "misconception") w *= 0.5;
-  const hintsUsed = leaked ? 4 : s.hintLevel;
+  // A key heard before the child answered (this turn, or before the item was posed) makes the answer worth nothing.
+  const hintsUsed = leaked || s.spoiled?.includes(item.id) ? 4 : s.hintLevel;
   const rows = [{ skillId: item.skillId, itemId: item.id, probe, outcome: cls.outcome, ...mis, hintsUsed, weight: round2(w) }];
   // A reason volunteered with an unaided correct answer is a why-probe (P2) the child ran on themself.
   if (probe !== "P2" && cls.outcome === "correct" && hintsUsed === 0 && cls.reason) {

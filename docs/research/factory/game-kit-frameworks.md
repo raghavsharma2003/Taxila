@@ -759,3 +759,266 @@ The planner (taxila-brain) gets the archetype table (§5.9), each archetype's `d
 - GameGen-Verifier, arXiv 2605.07442 (via harnesses doc) **[S]**.
 - Deci, Koestner & Ryan 1999; Rey 2012; Siegler & Ramani 2009; Fyfe, McNeil & Borjas 2015; Anthony et al. (children's touch); Sesame Workshop guidelines: all via `learning-science.md`, `maths-engines.md`, `kids-ux-ages.md` **[S as cited there]**.
 - WCAG 2.2 §2.3.1 (three flashes) **[M]**.
+
+---
+
+## Principal review
+
+**Reviewer stance:** adversarial principal engineer, 2026-10-02. **Question:** will `tgk@1` produce fun, correct, bug-free games for a 9-year-old within minutes, on Azure, safely?
+
+**Short answer.** The *runtime choice* survives: Phaser behind a facade, words in DOM, kit-owned telemetry, the rejections. The *SDK as specified* does not survive yet. It has two security problems specific to this kit and four correctness bugs, one of them in the doc's own worked example. Its benchmark under-measures the device it targets. Its fun policy contradicts two sibling reviews. And it never states an end-to-end build latency, which is the owner's actual question.
+
+Cross-cutting findings already made by sibling reviews are **referenced, not repeated**:
+- CSP `connect-src 'none'` breaks Phaser's XHR loader: `llm-game-generation` P1, `sandboxes-per-student` R1.
+- AST lint is not a boundary: `coding-agent-harnesses` C7, `llm-game-generation` P12.
+- Grading must be kit-owned: harnesses C2, llm-game-gen P7.
+- Ship the tested bundle: llm-game-gen P9.
+- Content Safety is not validated for Hindi: harnesses C10.
+- PII in public builds: sandboxes R13.
+- G2 cannot land inside one lesson: harnesses C4, llm-game-gen P5.
+
+Each of those findings applies to this doc as written. Here §4.1, §4.9 and §4.10 still carry the broken versions.
+
+Tags: **[V-R]** means re-verified in this review, in installed package source (`scratchpad/kitsize/node_modules/{phaser@4.2.1, phaser3@3.90.0, pixi.js@8.22.0, matter-js@0.20.0}`), in the bench files, or in a sibling's raw probe JSON.
+
+### What was re-verified and holds
+
+| claim | check | verdict |
+|---|---|---|
+| `Phaser.Math.TAU` changed from π/2 to 2π | v3 `src/math/const.js:29` `TAU: Math.PI * 0.5`, `PI2: Math.PI*2`; v4 `const.js:16` `TAU: Math.PI * 2`, no `PI2` | [V-R] correct, and the V0 ban is justified |
+| one default touch pointer | v4 `Config.js:281` `input.activePointers` default 1 | [V-R] correct. The *interpretation* is wrong; see K7 |
+| Fisher p ≈ 0.03 (Excalibur), p ≈ 0.47 (KAPLAY) | hypergeometric, two-sided: 0.026 and 0.467 | [V-R] correct |
+| probe spend ≈ $2.40 | 19.4k × $1.75/M + 169k × $14/M = $2.40 | [V-R] consistent |
+| Phaser loader uses XHR in v4 too | v4 `Config.js:579` `loader.imageLoadType` default `'XHR'` | [V-R]. So §4.1 "`connect-src 'none'` still holds" is **false for this kit** (sibling P1/R1) |
+| the runtime pick (Phaser 4 + facade, 3.90 flag) | §2.1–2.4 | holds. Nothing below changes the framework |
+
+### P0: blocks the design as written
+
+**K1. `api.phaser` hands the agent the whole engine, so the stable-subset rule is unenforceable.**
+- `LevelApi.phaser` is the live `Phaser.Scene`. Through it the agent can reach:
+  - `.input`, which bypasses `api.target`, breaks "one registration, four uses", and lets V4's two streams agree while TalkBack and the mirror miss the target;
+  - `.load`, which fetches arbitrary URLs once `connect-src` is opened to `'self'` per the sibling fix;
+  - `.scene`, which hijacks level flow;
+  - `.sys.game`, which reaches the renderer, the canvas and the kit's other scenes.
+- Every GameObject the agent creates carries a `.scene` back-reference, so even a filtered scene handle leaks.
+- An AST ban on literal names (`setInteractive`, `input.on`) misses `obj.scene.input`, `api.phaser['in'+'put']` and a destructured `const {input} = api.phaser`.
+- **Fix, by construction rather than by lint:**
+  1. The agent's scene is created with Scene settings `plugins: ['Clock','TweenManager']`. Phaser installs `DefaultScene` plugins (`Clock, DataManagerPlugin, InputPlugin, Loader, TweenManager, LightsPlugin`) *unless* `plugins` is given **[V-R, `plugins/DefaultPlugins.js:91`, `scene/Settings.js:79`]**. Then `scene.input` and `scene.load` **do not exist**. All textures are loaded by a kit boot scene into the shared `TextureManager`.
+  2. Replace `phaser: Phaser.Scene` with a kit `draw` object that holds the stable subset only: `image/sprite/rect/circle/graphics/container/numeral`, `tween`, `after`, `arcade`, `matter`, `camera.pan/zoom`.
+  3. Extend the V0 allowlist (harnesses C7) so that the member names `scene`, `sys`, `game`, `plugins`, `registry`, `renderer`, `canvas`, `input`, `load`, `cache` and `textures` are rejected on *any* object. Computed member access with a non-literal key is rejected anywhere in agent files. Agent files are 150–300 lines, so the false-positive cost is small.
+  - Run the scan on esbuild output of agent modules, since acorn does not parse TS (llm-game-gen P12).
+
+**K2. Same-realm telemetry forgery. "The agent cannot forge or skip it" (§4.4) is false.**
+- Kit core and `mechanic.ts` share one JS realm. Agent code (buggy, or steered by an injected brief) can monkeypatch the intrinsics the kit uses on the way out (`Array.prototype.push`, `JSON.stringify`, `Object.assign`) or wrap the bridge's `postMessage`. That lets it emit `level_complete{mastered:true}`, or drop `mistake` events.
+- Kit-owned grading (K3) narrows this, but does not close it while the outbound path itself is patchable.
+- **Fix:**
+  - (a) At boot, before the agent module is evaluated, the kit captures `parent.postMessage`, `JSON.stringify` and its own queues in closures. It then hardens intrinsics: `Object.freeze` the prototypes of `Array, Object, Function, JSON, Promise, Map, Set, EventTarget`, the SES `lockdown()` pattern **[M]**. Run this *after* Phaser has finished its import-time polyfills. Measure the boot-time cost in M-K2.
+  - (b) The host recomputes every grade from raw `{item, value}` against the spec (llm-game-gen P7) and rate-limits answers (≤ 5/s).
+  - (c) V2 includes a **tamper test**: a seeded mechanic that tries each of these patches must fail to change the host-side event stream.
+
+**K3. The agent still authors the grade. `Judgement.outcome` is agent-written, and the doc's own law is "a model never grades".**
+- §4.2 has `judge()` returning `{outcome:"correct"|"misc"|"other", misc}`. §4.3 recomputes the *keys*, but the mapping from child action to outcome is generated code.
+- The tests cannot catch it. V4 replays only `solution` (→ correct) and `miscPaths` (→ misc). A judge that returns `correct` for every committed value passes V4.
+- **Fix:** replace the `Mechanic` shape with a **reducer plus view** split. This also deletes three agent-written functions that are classic bug sources: `getState`, `setState` and `judge`.
+
+```ts
+// tgk@1.1 — replaces Mechanic<P,S> in §4.2
+type Json = null | boolean | number | string | Json[] | { [k: string]: Json };
+export interface Observation { item: string; value: MathValue | string }   // a raw fact; NO outcome field
+export type Effect = { kind: string } & Record<string, Prim | MathValue>; // e.g. {kind:"jump", to:{t:"frac",n:5,d:6}}
+
+export interface MechanicV11<P, M extends Json, V> {
+  id: string; archetype: ArchetypeId; paramsSchema: ZodType<P>;
+  init(p: P, ctx: PureCtx): M;                                        // pure; the kit deep-freezes the result
+  reduce(m: Readonly<M>, a: Action, ctx: PureCtx):                    // pure; THE only state transition
+    { model: M; observe?: Observation[]; effects?: Effect[] } | { reject: "locked" | "invalid" | "no_effect" };
+  targets(m: Readonly<M>): TargetSpec[];                              // declarative: world rect + action + label key
+  mount(m: Readonly<M>, draw: DrawApi): V;                            // view objects; may hold Phaser GameObjects
+  render(m: Readonly<M>, v: V, fx: Effect[], draw: DrawApi): void;    // animation only; it never sees an Action
+  facts(m: Readonly<M>): Record<string, Prim>;                        // ≤ 12 keys
+}
+interface PureCtx { math: KitMath; law: KitLaws; rng: SeededRng /* state lives in M */; params: unknown }
+```
+
+How the reducer shape fixes the rest:
+- The kit grades each `Observation` against `items[].key` and the distractor/`MC.*` table, using executable misconception rules (harnesses C2). Telemetry, `mastered`, the hint ladder and the ramp controller are all computed from those grades.
+- `getState`/`setState` become kit serialisation of `M`.
+- WebGL context-loss restore becomes `mount(M)` again.
+- Keypoints assert on `M`.
+- The rule "`update` must not change judged state" (§4.2) becomes true by construction: `render` has no route to `M`, because it is frozen.
+- Determinism means `reduce` is pure and seeded.
+- The **negative-path sweep** (llm-game-gen P7) becomes cheap. For every item, `reduce` is driven with every distractor and with 50 random legal actions, and the kit grade must match an oracle computed from params alone.
+
+**K4. The doc's own worked example cannot express its target misconception.**
+- §4.3 L3 gives the child two tiles, `+1/3` and `+1/6`. The kit then computes `1/2 + 1/3` exactly and jumps to 5/6.
+- A child who "adds across" picks `+1/3` and **lands correctly**, because the *game* did the addition. The only wrong move, `+1/6`, lands at 2/3, which is not a platform and has no misconception.
+- The `miscPaths` entry uses an `aim` action that exists nowhere in the level's input grammar: the solution uses only `pick_tile` and `jump`. So V4 either fails this level or passes it on an action the child can never make.
+- **Fix (verb redesign):** the child **predicts the landing first**. They drag or tap a marker on the line, which snaps to ticks, then commit, then the jump plays the true operation.
+  - The observation is the *predicted value*. ADD_ACROSS shows up as a prediction of 2/5.
+  - The consequence is that the character lands at 5/6, away from the child's marker. The sag platform goes under the *marker*, not under a fixed 2/5.
+- **Grammar rule for the kit:** S1 rejects any `miscPaths` or `hints.demo` action whose `type` is not produced by some `TargetSpec` of that level.
+
+**K5. Matter cannot do what §5.2 asks of it, and "snap if drift > 4 px" is visible cheating.**
+- matter-js 0.20 has **no buoyancy or fluid model** at all **[V-R, no `buoyan|fluid` in `matter-js/src` or Phaser's bundled copy]**. So `float` cannot be simulated; it can only be scripted.
+- A seesaw that balances by the law sits in neutral or unstable equilibrium as a rigid body. Solver jitter tips it within seconds, and the kit then snaps it back.
+- Children notice objects teleporting. A sim that visibly disobeys itself and then corrects is the opposite of the POE "watch what happens" moment.
+- **Fix:** law-judged sandboxes (balance, float, ramp rank, circuits-lite) are **kinematic choreography**. The law evaluator computes the end state and the timeline (tip angle, sink depth, roll order), and kit tweens with tuned easing play it out.
+  - Matter is used only where *nothing is judged*: free-build stacking, toppling for fun, "make it fall".
+  - M-K4 (Matter flake) then mostly disappears.
+  - Rule P1 stays: physics never judges, and now it doesn't animate the judged outcome either.
+
+### P1: wrong, unmeasured or missing
+
+**K6. The benchmark did not render at the DPR the kit ships.**
+- `bench.mjs` sets `deviceScaleFactor: 2`, but `entries/phaser4.js` creates `new Phaser.Game({width:360,height:640})`. Phaser has no DPR handling: the only `devicePixelRatio` reads in `src/` are `OS.pixelRatio` detection and Matter's debug renderer **[V-R]**. So the backing store was 360×640, upsampled by the compositor.
+- §4.8 ships `min(dpr, 2)`. That means 4× the pixels, 4× the fill and 4× the canvas memory, and none of it was measured. Under SwiftShader, fill is exactly the term that dominates.
+- "First frame" is also the first `update()` callback, not the first presented frame.
+- **Fix:** rerun §2.3 with the kit's real DPR path: game size `360·dpr × 640·dpr` with camera zoom `dpr`, or Scale.FIT on a DPR-sized canvas. Measure to first `requestAnimationFrame` after the first WebGL `drawArrays`. Report fps p10, not the median.
+
+**K7. 6× throttle is not a ₹8–10k phone, and the host was contended.**
+- The host is an "Intel Xeon @ 2.10 GHz", 4 vCPU, with load average 6.5–10.9 during the runs (§2.3).
+- Helio G35 Geekbench 6 single-core is about 180–190 **[S, 91mobiles / nanoreview]**. A cloud Xeon core is roughly 1,500–2,000 **[M]**. So the honest ratio is about **8–11×, not 6×**.
+- Contention inflated the desktop numbers too, so the error goes both ways and the 840 ms cannot be scaled with confidence.
+- Expect Phaser cold first frame on a G35 of about 1.2–2.0 s *before* WebView cold start **[U]**. That puts the §4.8 budget of ≤ 1.5 s p50 at risk.
+- **Fixes:**
+  - (a) Calibrate once: run the same boot page on one real G35/T606 phone (an afternoon's work) and derive the throttle multiplier. Use that in V2.
+  - (b) **Pre-warm the kit iframe.** When the Director schedules a game, mount the kit iframe hidden and paused, with Phaser parsed, the WebGL context up and a blank scene, during a teacher speaking turn. Tap → first frame then costs only package parse plus `mount()`, about 50–200 ms **[U]**. The memory cost is about 30–60 MB on a 2–3 GB phone; measure it in M-K2 and tear the iframe down if it is not used within the lesson.
+
+**K8. The game iframe shares the host's main thread on Android, so one infinite loop freezes the teacher.**
+- Android WebView has no OOPIF / site isolation (`avatar/performance-android.md` line 135: "not yet supported in Android WebView" [V]). The sandboxed iframe therefore runs on the **same renderer main thread** as the React host, the avatar's lip path and the realtime session's JS.
+- A `while` loop in `mechanic.ts`, or a 400 ms GC storm, stalls the whole app. A host watchdog cannot fire, because it is blocked on the same thread.
+- V2 only exercises tested paths. The ramp controller's inserted variants and setState fuzz reach untested ones.
+- **Fixes:**
+  - (a) A **build-time loop guard**, the CodePen/JSBin "loop protect" pattern: an esbuild plugin on agent modules only. It injects a budget check on every loop back-edge and every recursive call, and throws `ForgeBudget` once a single `reduce` or `render` call exceeds 8 ms (B1–B2) or 16 ms of wall time, or 10⁶ iterations.
+  - (b) The kit wraps every agent callback. Three budget throws, or 5 frames over 50 ms in a row, puts the game into `error{budget}` → teardown → T1 fallback.
+  - (c) In a **live lesson**, cap at 30 fps and *sleep the loop when nothing animates* (`game.loop.sleep()` / `wake()`). That frees CPU for the realtime audio and the avatar. Add M-K9: audio underruns and avatar frame drops with a game open, on the reference phone.
+
+**K9. WebGL context budget across host avatar, Phaser and the three overlay.**
+- §2.7 overlays a second WebGL canvas (three) on Phaser. The host may also be running the 3D tutor avatar (`avatar/`).
+- That is three live contexts on a 2 GB Mali device. Chromium evicts the oldest context when over its limit **[M]**, and the oldest is likely the avatar's.
+- **Fix:**
+  - At most **one** WebGL context in the iframe. A 3D level is a separate T1 three engine module, not an overlay inside a Phaser game.
+  - The host deliberately suspends the avatar renderer while a game is foreground, and restores it on `quit`.
+  - M-K2 adds a test: context loss and restore with avatar + game, after backgrounding.
+
+**K10. The audio unlock path is wrong for a cross-origin sandboxed iframe.**
+- User activation propagates *up* to ancestors, not *down* into a cross-origin child **[M, HTML user-activation model]**. The host's "play" tap therefore does not unlock the iframe's `AudioContext`.
+- The `level.intro` cue, which plays before the first in-game tap, will be silent in solo mode.
+- **Fix:**
+  - Solo-mode **voice clips play in the host frame**, which is already activated by the mic permission flow. The host owns the "never two voices" rule, and it sends `voice_start`/`voice_end` over the bridge so the kit can duck its SFX.
+  - SFX stay in the iframe, unlocked by the first in-frame tap. The kit's own full-screen "start" tile doubles as the holdover guard.
+  - Add `allow="autoplay"` delegation **only** if M-K6 shows it is needed. Never delegate `microphone`.
+
+**K11. "One pointer suits children's palms" is backwards.**
+- With `activePointers: 1`, the first contact owns the pointer. A resting palm, or the other hand holding the phone edge, *captures* it, and the real finger tap is ignored. This is the commonest "it doesn't work!" complaint in young children's play.
+- The DOM mirror, meanwhile, receives real multi-touch from the browser, so the same tap behaves differently on the two layers.
+- **Fix: the DOM hit layer is the single input path for every discrete target.**
+  - The mirror buttons get `pointer-events:auto`, are kit-positioned from `targets(M)` every frame (not at 10 Hz) and are inert while an effect animates.
+  - The canvas takes input only for kit `drag`/`trace` primitives.
+  - Palm rejection runs in the kit: ignore touches with `Touch.radiusX/Y` above about 12 mm where reported **[M]**, and touches that start in the outer 8 mm edge band.
+  - This also settles a contradiction. Pixi's AccessibilitySystem, which §0.7 copies, is plain `div`s (not shadow DOM). It sits in a `pointer-events:none` container and activates only on Tab or when a screen reader focuses an off-screen touch-hook button **[V-R, `AccessibilitySystem.mjs:92–136`]**. That container cannot also be the tap path and the Playwright selector, which §4.7 asks of it.
+
+**K12. V4's "identical event streams" can never pass as specified.**
+- `answer.latency_ms`, `level_complete.ms` and `perf` differ between any two runs.
+- The holdover guard drops GUI taps within 400 ms of a level transition.
+- The gaming detector fires `rapid_guess` on instant `act()` replays, and discounts the level.
+- **Fix:**
+  - Drive both runs with Playwright `page.clock` (sandboxes R5).
+  - Insert `step(guard + 100 ms)` after every level transition and ≥ 1.6 s between answers.
+  - Compare streams **modulo timing fields**: `latency_ms`, `ms`, `perf.*`, `seq` gaps. The equality that matters is (type, item, value, kit grade, misc).
+
+**K13. Determinism bans miss Phaser's own unseeded randomness.**
+- `Phaser.Math.Between`, `FloatBetween`, `RandomXY*`, `Utils.Array.Shuffle`, `GetRandom` and `RemoveRandomElement` call `Math.random` directly **[V-R]**. They are among the most common calls in v3 code.
+- `Phaser.Math.RND` is seeded from `Date.now() * Math.random()` unless the config passes `seed` **[V-R, `Config.js:168`]**.
+- **Fix:** the kit sets `seed` per level from the spec. V0 bans those six helpers and `Phaser.Math.RND` in agent files, and the error message names `ctx.rng`. Add `performance.now`, `setTimeout`, `setInterval`, `requestAnimationFrame` and `crypto.getRandomValues` (llm-game-gen P10).
+
+**K14. The planner's output schema cannot be produced under strict structured outputs as typed.**
+- Measured on `taxila-brain` and `taxila-fast` (`content/genui-azure-limits-*.json`): **"13 levels of nesting exceeds limit of 10"** **[V-R]**.
+- `GamePackage → levels[] → LevelSpec → variants[] → variant → items[] → item → distractors[] → d → value{t,n,d}` reaches depth **10**, which is at the limit.
+- `params: unknown` and `Record<string, L10n>` / `Record<CueKey, VoiceLine>` (dynamic keys) are not expressible in strict mode, which requires closed objects **[M]**.
+- **Fix:**
+  - The planner emits **intent only**: archetype, mechanic, objective, band, knobs per level role, motif ids and string keys. That is about 1–2k tokens.
+  - A kit generator/solver expands it into `LevelSpec` deterministically (harnesses C2).
+  - Strings and voice become arrays of `{key, hi-Latn, en, deva?}`.
+  - This is also the main latency fix (K16).
+
+**K15. Pre-rendered voice cannot carry runtime slots.**
+- §4.6 says numbers are slots "formatted by the host". But solo clips are rendered **at publish**.
+- Slot values known only at runtime (an inserted variant's numbers, `count_session`, a predicted value) have no clip. Splicing number clips breaks prosody.
+- Hindi number names are irregular from 1 to 99, and fractions have special forms (aadha, pauna, sawa, dhai, teen-chauthai), so splicing would also need a large clip bank.
+- **Fix:**
+  - At S6, enumerate every (cue × slot-tuple) reachable from `levels + variants`. This set is finite, because items are finite, and each tuple is rendered as a whole line.
+  - Ban runtime-only slots in `VoiceLine`; those cues are caption-only.
+  - Cache clips by `sha(text, voice, instructions)` across games, since the same "shabash, ab agla" lines recur.
+  - Use the **same voice id and persona instructions as the realtime teacher** **[M: gpt-4o-mini-tts and realtime share most voice names]**. Otherwise solo play has a different-sounding "teacher", which breaks the exactly-human-teacher premise.
+
+**K16. No end-to-end latency, and "within minutes" holds for only one path.** Here is the missing table, using measured throughput of about 165 tok/s on `taxila-brain` and about 230 tok/s on `taxila-fast` (2,008 tokens in 12.2 s / 8.7 s, structured output, same probe) **[V-R, n = 1 each]**:
+
+| path | critical path | p50 | p90 | $ / game |
+|---|---|---|---|---|
+| **in-lesson: reviewed mechanic + intent planner (K14) + library sprites** | fast planner ~1–2k tok (8–15 s) → kit expand+solve (< 1 s) → V3–V6 on a warm pool (20–40 s) ∥ TTS clips (5–15 s, cache hits) | **≈ 45–75 s [U]** | ≈ 2 min | ≈ $0.01–0.05 |
+| in-lesson as §6 is written: full-spec planner | brain ~6–9k out plus reasoning (60–100 s) → S1 mismatch retries → validators ∥ TTS ∥ per-child gpt-image-2 sprites (about 23 s each, RPM-bound) | 2–4 min [U] | > 5 min | ≈ $0.05–0.2 |
+| new mechanic (codex) | llm-game-gen P5 | 12–15 min | > 20 min | ≈ $1.2–2 |
+
+- State it in the TL;DR: **the in-lesson game is row 1.** A new mechanic is never built live, and never reaches a child before V7 human review plus a real-child playtest (harnesses P3.4).
+- §5's sentence "a new mechanic goes through V7 before the library takes it" is ambiguous about *child exposure*. Make it explicit.
+
+**K17. Fun: the doc's bans contradict two sibling reviews, and its citations do not support the bans.**
+- §4.5.6 and §4.10 ban particles, camera shake, confetti and any celebration. `coding-agent-harnesses` P3 and `llm-game-generation` B9 both require a **kit-owned juice and feel layer**.
+- **Deci, Koestner & Ryan 1999:** *expected tangible* rewards undermine intrinsic motivation, and do so more for children. **Positive informational feedback enhanced free-choice behaviour (d = 0.33)**, though less for children than for college students **[S, Psych. Bull. 125:627; abstract]**. That supports response-contingent, competence-informing feedback, not a ban on it.
+- **Rey 2012 (seductive details)** is about interesting-but-irrelevant *content* added to multimedia lessons. A landing puff on the correct jump is feedback on the core verb, not a seductive detail.
+- **Fix:**
+  - Keep every ban **for agent code** (V0).
+  - Add a human-tuned `kit.feel` per archetype: squash and stretch, landing dust, a correct-intent sparkle ≤ 400 ms, a consequence animation, and a ≤ 1.5 s level-complete ceremony on the journey path.
+  - Keep currencies, points, streaks and leaderboards banned.
+  - Allow **unexpected** mastery cosmetics (a sticker on the hero), which Deci finds non-undermining.
+  - Two archetypes collapse into quizzes in B1–B2:
+    - "gate-stop" runner-gates is a 2-choice quiz with a walking animation, which is the quiz-gate pattern §0.10 bans;
+    - `untimed` rhythm-chant is flashcards.
+    - Mark both as B3+ only, or redesign them: a self-paced sorting conveyor for B1–B2.
+  - Add **M-K8, fun**: level-1 completion, voluntary "play again", time to quit and rage taps per mechanic (harnesses P3.3), with a bandit that demotes mechanics below threshold.
+
+### P2: smaller corrections
+
+- **`MC.DEC.PLACE_ALIGN` example (§5.3) is wrong.** ₹2.50 + ₹1.75 both have two decimals, so place-misalignment *cannot* occur. Neither "2.125" nor any standard error rule produces it. Adding whole and decimal parts separately gives **3.125**, which is a different misconception.
+  - In a money context, where paise always have 2 places, PLACE_ALIGN is nearly unreachable. Use ₹2.5 vs ₹1.75 in a decimals context, where misalignment gives 2.00 or 0.425.
+  - This is direct evidence that misconception examples must be **executable rules** in the catalogue, never planner prose (harnesses C2).
+- **Hit-area inflation without a layout rule overlaps targets.** Integers −5…+6 on a 300 px line are 25 px apart, against a 64 dp B1–B2 minimum and 48 dp for B3–B4.
+  - The kit must resolve overlaps (nearest centre wins).
+  - V5 must fail any level whose inflated areas overlap by more than 20%. The fallback is drag-a-marker with snap and a magnifier, or camera zoom per segment.
+- **Devanagari font subset.** The reskin path adds strings *without* a kit rebuild, so the subset must be the **whole Devanagari block** (U+0900–097F, plus U+A8E0–A8FF, ZWJ/ZWNJ, U+25CC and ₹ U+20B9 in both fonts), kept with full GSUB/GPOS (`pyftsubset --layout-features='*'`). A glyph-used subset breaks conjuncts on the first new string.
+- **Fonts, module scripts and the lazy `import()` of three (§2.7) are CORS-mode fetches from an opaque origin** (`Origin: null`). They need `Access-Control-Allow-Origin: *` on the kit and blob responses (sibling R1). They are not "same origin". The CSP `'self'` matching inside a sandboxed document must be measured (sandboxes R5).
+- **Offline (§4.8, M-K5):**
+  - Do not depend on a service worker controlling an opaque-origin frame **[M: expect it not to]**.
+  - Web: rely on the HTTP cache with immutable, content-hashed URLs.
+  - APK: download packages natively to app storage and serve them through Capacitor's local server. This drops "LRU of 30 in a SW".
+- **`blocking: true` cues (§4.6) need a timeout.** If the teacher's realtime turn never comes (busy, network), input stays locked forever. Unlock after `max(clip length, 6 s)` with the caption shown.
+- **§4.9 "stripped from production by a define"** contradicts llm-game-gen P9 (ship the tested bytes). Keep the hooks in, inert until a one-time harness token arrives.
+- **§4.1 CSP:** replace `connect-src 'none'` with the path-scoped policy of llm-game-gen P1, and set `loader.imageLoadType: 'HTMLImageElement'` as the kit default (sandboxes R1).
+- **Model note (§ header):** the brief again lists `taxila-opus`/`taxila-sonnet` as live. `CLAUDE.md`'s binding directive (2026-10-02, no Anthropic-on-Foundry) wins until the owner says otherwise. The kit is model-neutral. Rerun M-K0 with `--model` only if the directive changes.
+- **"Phaser 4 is known to the builder":** Phaser 4.0 final (2026-04-10) is probably after gpt-5.3-codex's training data **[M]**. The 8/8 shows the v3-compatible subset works, which is what the facade exposes. Ship the 2 trimmed `SKILL.md` excerpts (§6.3) for every v4-only API the facade adds.
+
+### Measurements to add (append to §8)
+
+| id | what | pass bar |
+|---|---|---|
+| M-K2b | rerun §2.3 at the real DPR path (K6), throttle calibrated against one real G35/T606 phone (K7); pre-warmed vs cold iframe | p50 tap → first frame ≤ 1.5 s cold, ≤ 300 ms pre-warmed |
+| M-K8 | fun per mechanic from telemetry (K17), the first 200 child plays | level-1 completion ≥ 80%; "play again" ≥ 30% **[U, set from base rate]** |
+| M-K9 | live-lesson contention: audio underruns and avatar fps with a game open; loop-guard overhead (K8) | 0 audible underruns; guard ≤ 3% frame time |
+| M-K10 | negative-path grading sweep on 24 seeded-bug mechanics under MechanicV11 (K3) | 24/24 caught |
+| M-K11 | tamper battery (K2): intrinsic patching and bridge wrapping | host stream unchanged in 100% of attempts |
+| M-K12 | planner intent → kit expansion: share of intents that expand and solve on the first try; wall clock (K14, K16) | ≥ 95%; p50 ≤ 20 s |
+
+### Proposed context entries (for the main loop to merge via `context/inbox/`)
+
+- **decision `tgk-reducer-mechanic`.** Mechanics are pure `reduce` + view `render`, and the kit grades raw observations. *Reverse never*; this is the "a model never grades" law.
+- **decision `tgk-dom-hit-layer`.** The DOM hit layer is the only discrete-input path, and the agent scene has no `InputPlugin` or `Loader`. *Reverse if* DOM sync costs > 4 ms/frame on the reference phone.
+- **decision `tgk-kinematic-law-sandboxes`.** Judged physics is choreographed from the law evaluator, and Matter is used for unjudged play only. *Reverse if* a future engine gives stable buoyancy and equilibrium with 0 snaps over 20 reruns.
+- **rejection `matter-for-float-and-balance`.** There is no buoyancy model in matter-js 0.20, and rigid-body equilibrium is unstable.
+- **rejection `bench-dpr2-without-backing-store`.** §2.3 fps and first frame were measured at 1× backing store.
+- **measurement:** brain ≈ 165 tok/s and fast ≈ 230 tok/s structured output (n = 1); strict-schema nesting limit 10.
+
+**Sources added in this review:**
+- installed package sources, as cited inline [V-R];
+- Deci, Koestner & Ryan 1999, *Psych. Bull.* 125(6):627–668, abstract and summary via https://pubmed.ncbi.nlm.nih.gov/10589298 and https://home.ubalt.edu/tmitch/642/articles%20syllabus/Deci%20Koestner%20Ryan%20meta%20IM%20psy%20bull%2099.pdf [S];
+- Helio G35 Geekbench 6 single-core: https://www.91mobiles.com/processor/mediatek-helio-g35-pdp and https://nanoreview.net/en/soc/mediatek-helio-g35 [S].

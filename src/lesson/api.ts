@@ -49,8 +49,8 @@ export interface LessonApi {
   start(req: LessonStartRequest): Promise<LessonStartResponse>;
   turn(req: TurnRequest): Promise<TurnResponse>;
   end(lessonId: string): Promise<unknown>;
-  /** Fire-and-forget end that survives page unload (navigator.sendBeacon). */
-  endBeacon?(lessonId: string): void;
+  /** End that survives page unload; rejects if the browser refused to send it. */
+  endBeacon?(lessonId: string): Promise<unknown>;
   realtimeToken(lessonId: string): Promise<RealtimeTokenResponse>;
 }
 
@@ -59,7 +59,14 @@ export const httpLessonApi: LessonApi = {
   turn: (req) => postJson("/api/lesson/turn", req),
   end: (lessonId) => postJson("/api/lesson/end", { lessonId }),
   endBeacon: (lessonId) => {
-    navigator.sendBeacon("/api/lesson/end", new Blob([JSON.stringify({ lessonId })], { type: "application/json" }));
+    const body = JSON.stringify({ lessonId });
+    // text/plain is CORS-safelisted (some engines refuse a beacon typed application/json); the server parses
+    // the body as JSON whatever its type.
+    if (navigator.sendBeacon("/api/lesson/end", new Blob([body], { type: "text/plain;charset=UTF-8" }))) return Promise.resolve();
+    // Refused (queue full, or too large): a keepalive fetch also outlives the page.
+    return fetch("/api/lesson/end", { method: "POST", keepalive: true, credentials: "same-origin", body }).then((res) => {
+      if (!res.ok) throw new ApiError(res.status, `lesson end failed (${res.status})`, null);
+    });
   },
   realtimeToken: (lessonId) => postJson("/api/realtime/token", { lessonId }),
 };

@@ -88,3 +88,14 @@ Method: `/api/health?db=1` runs 5 sequential `select 1` inside the container (n=
   sandbox 0.26-0.58 s, now dominated by client↔Azure network/TLS.
 - Neon moved from Singapore (`billowing-glitter-91836156`, test data only, left in place) to US East
   (`royal-fire-14595065`) to sit beside eastus2; migrations re-applied.
+
+
+<!-- merged from inbox/design.json -->
+## design-token-contrast-2026-10-02
+**Design-token contrast and colour-vision checks for PRODUCT-DESIGN.md (deterministic computation, 2026-10-02).**
+Method: `python3 docs/research/design/product-design-contrast.py`, reusing the WCAG 2 relative-luminance and Machado-2009 (severity 1.0, [M] matrix digits) + CIEDE2000 helpers in `visual-identity-contrast.py`. n = 37 colour pairs (one deterministic computation each; no human or device measurement). Result: 0 failures against the stated floors.
+- Turn ring vs its own marigold fill `#FFB21E`: kids-ux `#9A5B00` 3.01:1 (no margin); `#8A4F00` 3.64; **`#7A4800` 4.23** (7.23 on cream, 7.62 on white). Adopted `#7A4800`.
+- Two-tone focus ring (2 px `#1F1A14` + 2 px white): best tone >= 9.36 on cream, white, board, jamun, marigold, dusk, dark bg, sky panel; 4.48 on a worst-case mid grey.
+- Caption lit-word bar: jamun on cream 8.87, dark jamun on dark bg 8.85. White chalk underline on board 10.86 (dark board 9.82). ink-2 on new light surface-2 `#F1E8D9` 6.39. Status glyphs on cream 5.04-6.20.
+- Status pairs, CIEDE2000 normal/protan/deutan/tritan: done vs stop 59.7/14.1/13.0/58.6; listen vs think 15.9/19.7/19.2/14.4; listen vs jamun 21.5/14.8/10.4/34.8; turn vs parent your-turn fill 10.5/9.9/8.4/9.7; turn vs the removed chalk-mark `#F2CF6B` 11.6/7.9/6.7/9.0. Pairs below 15 under any simulation must carry a glyph.
+- Limits: pixel arithmetic, not legibility for children; no sunlight or cheap-LCD measurement; Machado digits unverified.

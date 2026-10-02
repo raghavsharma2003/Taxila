@@ -304,9 +304,16 @@ try {
     const div = document.createElement("div");
     div.style.cssText = `width:4px;height:4px;background-image:url(${leak}/css)`;
     document.body.append(div);
+    // The background image is fetched only once the div's style is resolved and painted: force both, then
+    // wait for its violation (bounded) instead of a fixed sleep that could end first.
+    void getComputedStyle(div).backgroundImage;
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     const fetched = await fetch(`${leak}/fetch`).then(() => "reached", () => "blocked");
     const local = await fetch("/api/health").then(() => "reached", () => "blocked");
-    await new Promise((r) => setTimeout(r, 1000));
+    const want = ["/img?leak=childdata", "/x.js", "/css", "/fetch"];
+    for (const until = Date.now() + 5000; Date.now() < until && !want.every((u) => refused.has(u));) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
     img.remove(); script.remove(); div.remove();
     return { violations: [...violations].sort(), refused: [...refused].sort(), fetched, local };
   }, LEAK);

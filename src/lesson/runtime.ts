@@ -173,7 +173,7 @@ export class LessonRuntime {
       this.unlisten = link.on((e) => this.onLinkEvent(e));
       await link.connect();
       if (gen !== this.generation) return this.closeQuietly(lessonId);
-      link.applyInstructions(s.instructions);
+      if (s.instructions) link.applyInstructions(s.instructions);
       this.modules.push(s.moduleCommands);
       this.applyUi(s.ui);
       this.store.set({ phase: "live" });
@@ -360,6 +360,7 @@ export class LessonRuntime {
         this.store.set({ error: messageOf(err) });
         if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
           this.teardown();
+          this.modules.clear();
           this.store.set({ phase: "error", pendingTurns: 0 });
         } else if (this.state.mode === "text" && input) {
           this.dispatch({ type: "settle" }); // no reply is coming (a milestone call never started a wait)
@@ -411,7 +412,7 @@ export class LessonRuntime {
   private applyTurn(r: TurnResponse, moduleOnly: boolean): void {
     const link = this.link;
     if (!link) return;
-    if (typeof r.instructions === "string" && r.instructions) link.applyInstructions(r.instructions);
+    if (r.instructions) link.applyInstructions(r.instructions); // voice lane only
     const dropped = this.modules.push(r.moduleCommands ?? []);
     if (dropped) console.warn(`lesson: dropped ${dropped} malformed module command(s)`);
     this.applyUi(r.ui ?? {});
@@ -420,8 +421,10 @@ export class LessonRuntime {
 
     if (link.mode === "text") {
       const reply = r.teacherReply ? { text: r.teacherReply, seq: r.teacherReplySeq } : null;
-      // A milestone's reply must not cut off the reply the child is hearing: it waits for the floor.
-      if (reply && moduleOnly && statusOf(this.flags) !== "your_turn" && !r.end) this.deferred = { reply };
+      // A milestone's reply must not cut off the reply the child is hearing: it waits for the floor — unless
+      // it is a safeguarding hand-off, which is never left where the child speaking next would drop it.
+      const urgent = r.speakNow === "interrupt" || r.move?.kind === "safeguard";
+      if (reply && moduleOnly && !urgent && statusOf(this.flags) !== "your_turn" && !r.end) this.deferred = { reply };
       else if (reply) link.promptTeacher(reply);
       else if (!moduleOnly) this.dispatch({ type: "settle" });
     } else if (r.speakNow === "interrupt") {
@@ -499,20 +502,25 @@ export class LessonRuntime {
   private onPageHide = (): void => {
     const { lessonId, phase } = this.state;
     if (!lessonId || phase !== "live") return;
-    void this.closeOnServer(lessonId, true);
+    void this.closeOnServer(lessonId, true).catch(() => {});
     this.teardown();
+    this.modules.clear();
     this.store.set({ phase: "ended", connection: "closed", pendingTurns: 0 });
   };
 
-  /** POST /api/lesson/end once per lesson (a second end would count the session twice). */
+  /**
+   * POST /api/lesson/end once per lesson (a second end would count the session twice). The lesson counts
+   * as closed while its end is in flight, and stops counting if the end was refused, so a later way out
+   * can still close it.
+   */
   private closeOnServer(lessonId: string, beacon = false): Promise<unknown> {
     if (this.closed.has(lessonId)) return Promise.resolve();
     this.closed.add(lessonId);
-    if (beacon && this.api.endBeacon) {
-      this.api.endBeacon(lessonId);
-      return Promise.resolve();
-    }
-    return this.api.end(lessonId);
+    const sent = beacon && this.api.endBeacon ? this.api.endBeacon(lessonId) : this.api.end(lessonId);
+    return sent.catch((err: unknown) => {
+      this.closed.delete(lessonId);
+      throw err;
+    });
   }
 
   private closeQuietly(lessonId: string): void {
@@ -553,6 +561,7 @@ export class LessonRuntime {
 
   private reset(mode: LessonMode): void {
     this.teardown();
+    this.modules.clear(); // a lesson left by page-hide or an auth error must not replay its modules into this one
     this.flags = INITIAL_FLAGS;
     this.teacherTurns.clear();
     this.chain = Promise.resolve();

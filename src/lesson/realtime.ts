@@ -18,6 +18,14 @@ export const DEFAULT_TURN_DETECTION: Record<string, unknown> = {
 /** Messages kept in the realtime context after each response (≈3 exchanges). */
 export const KEEP_MESSAGES = 6;
 
+/**
+ * A response.create held back while a cancelled response finishes is sent when its response.done arrives,
+ * or after this long if it never does (a lost event must not leave the teacher silent).
+ */
+export const CREATE_AFTER_CANCEL_MS = 1_500;
+/** Resends of a response.create the server refused because a response was still active. */
+const CREATE_RETRIES = 3;
+
 // Error codes that are expected side effects of racing the server (cancelling a response that just
 // finished, deleting an item it already dropped, committing an empty push-to-talk buffer).
 const BENIGN_ERRORS = new Set([
@@ -77,6 +85,8 @@ export interface RealtimeProtocolOptions {
   emit: (event: LinkEvent) => void;
   keepMessages?: number;
   now?: () => number;
+  setTimer?: (fn: () => void, ms: number) => unknown;
+  clearTimer?: (handle: unknown) => void;
 }
 
 export class RealtimeProtocol {
@@ -92,16 +102,29 @@ export class RealtimeProtocol {
   private talkStartedAt: number | null = null;
   /** A push-to-talk commit was sent and its reply is requested only once the server confirms it. */
   private pttCommitPending = false;
+  /**
+   * The response we sent response.cancel for, until its response.done. A response.create sent before then
+   * is refused (conversation_already_has_active_response) — on the safeguard path that would be a
+   * hand-off never spoken — so it waits in `pendingCreate`.
+   */
+  private cancelling: string | null = null;
+  private pendingCreate = false;
+  private createTimer: unknown = null;
+  private createRetries = 0;
   private readonly send: (event: Json) => void;
   private readonly emit: (event: LinkEvent) => void;
   private readonly keep: number;
   private readonly now: () => number;
+  private readonly setTimer: (fn: () => void, ms: number) => unknown;
+  private readonly clearTimer: (handle: unknown) => void;
 
   constructor(opts: RealtimeProtocolOptions) {
     this.send = opts.send;
     this.emit = opts.emit;
     this.keep = opts.keepMessages ?? KEEP_MESSAGES;
     this.now = opts.now ?? Date.now;
+    this.setTimer = opts.setTimer ?? ((fn, ms) => setTimeout(fn, ms));
+    this.clearTimer = opts.clearTimer ?? ((h) => clearTimeout(h as ReturnType<typeof setTimeout>));
   }
 
   get responding(): boolean {
@@ -120,15 +143,18 @@ export class RealtimeProtocol {
     this.send({ type: "session.update", session: { type: "realtime", audio: { input: { ...input, turn_detection: td } } } });
   }
 
+  /** Ask for a teacher turn; held until a response being cancelled has finished. */
   requestResponse(): void {
-    this.send({ type: "response.create" });
+    this.createRetries = 0;
+    if (this.cancelling) this.holdCreate();
+    else this.send({ type: "response.create" });
   }
 
   /** A typed/tapped child turn: cut the teacher off if needed, add the text, ask for a reply. */
   sendUserText(text: string): void {
     this.interrupt();
     this.send({ type: "conversation.item.create", item: { type: "message", role: "user", content: [{ type: "input_text", text }] } });
-    this.send({ type: "response.create" });
+    this.requestResponse();
   }
 
   /** Push-to-talk press: drop audio buffered while the button was up, remember when the turn began. */
@@ -151,7 +177,10 @@ export class RealtimeProtocol {
   /** Stop the teacher: cancel generation and flush audio already queued for playback (WebRTC only). */
   interrupt(): void {
     const id = this.activeResponse ?? this.lastResponse;
-    if (this.activeResponse) this.send({ type: "response.cancel" });
+    if (this.activeResponse) {
+      this.send({ type: "response.cancel" });
+      this.cancelling = this.activeResponse;
+    }
     if (this.teacherAudio) this.send({ type: "output_audio_buffer.clear" });
     if (id && (this.activeResponse || this.teacherAudio)) this.markInterrupted(id);
   }
@@ -169,6 +198,10 @@ export class RealtimeProtocol {
     this.lastResponse = null;
     this.talkStartedAt = null;
     this.pttCommitPending = false;
+    this.cancelling = null;
+    this.pendingCreate = false;
+    this.createRetries = 0;
+    this.clearCreateTimer();
   }
 
   // ───────────── server → client ─────────────
@@ -197,7 +230,7 @@ export class RealtimeProtocol {
         this.talkStartedAt = null;
         if (this.pttCommitPending) {
           this.pttCommitPending = false;
-          this.send({ type: "response.create" });
+          this.requestResponse();
         }
         return;
       }
@@ -278,6 +311,13 @@ export class RealtimeProtocol {
           this.emit({ type: "child_silent" });
           return;
         }
+        if (code === "conversation_already_has_active_response" && this.createRetries < CREATE_RETRIES) {
+          // Our response.create raced a response the server still holds (one being cancelled, or one
+          // server VAD started that we have not heard about yet): ask again once it is done.
+          this.createRetries++;
+          this.holdCreate();
+          return;
+        }
         if (code && BENIGN_ERRORS.has(code)) return;
         this.emit({ type: "error", message: str(err.message) || "realtime error", code, fatal: false });
         return;
@@ -309,8 +349,32 @@ export class RealtimeProtocol {
     this.responses.delete(id);
     this.interrupted.delete(id);
     if (this.activeResponse === id) this.activeResponse = null;
+    if (this.cancelling === id) this.cancelling = null;
     this.emit({ type: "response_done", responseId: id, status });
     this.prune();
+    if (this.pendingCreate && !this.cancelling) this.flushCreate();
+  }
+
+  /** Send the held response.create on the next response.done, or after CREATE_AFTER_CANCEL_MS. */
+  private holdCreate(): void {
+    this.pendingCreate = true;
+    this.clearCreateTimer();
+    this.createTimer = this.setTimer(() => {
+      this.createTimer = null;
+      this.cancelling = null; // its response.done never came; the server has long finished the cancel
+      if (this.pendingCreate) this.flushCreate();
+    }, CREATE_AFTER_CANCEL_MS);
+  }
+
+  private flushCreate(): void {
+    this.pendingCreate = false;
+    this.clearCreateTimer();
+    this.send({ type: "response.create" });
+  }
+
+  private clearCreateTimer(): void {
+    if (this.createTimer !== null) this.clearTimer(this.createTimer);
+    this.createTimer = null;
   }
 
   private markInterrupted(id: string): void {

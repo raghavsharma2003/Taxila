@@ -1374,3 +1374,69 @@ Not in M0: Batch, KEDA, Forge lanes, LLM planner, drift alarm, OTel, rainbow ver
 - Azure Communication Services Advanced Messaging for WhatsApp (templates, delivery reports, BSUID breaking change) — https://learn.microsoft.com/en-us/azure/communication-services/concepts/advanced-messaging/whatsapp/whatsapp-overview [V]
 - pg-boss feature list — https://pgboss.io/ [V]
 - Internal [repo]: `context/decisions.md` (`azure-only-compute`, `hosting-azure-container-apps`, `forge-models`, `infra-segment`), `context/measurements.md` (`db-driver-latency-2026-10-02`, `infra-smoke-2026-10-02`), `context/rejected.md` (`claude-on-foundry-credits`), `docs/ARCHITECTURE.md` §1.4, `docs/research/conductor/day-cycle.md` §3, §9, §11 and `day-cycle.contracts.ts`, `student-workspace.md` W2/W4/W8/W9, `parent-loop.sql`.
+
+---
+
+### R10. Second pass (resumed session, 2026-10-02): what R1-R9 and the `CONDUCTOR.md` synthesis still get wrong
+
+The first pass above was carried into `CONDUCTOR.md` (§3.3-§3.11, X1-X16) and its inbox entries. This pass
+re-read both against each other and probed the lock order on a scratch Postgres 16.14. Severity as in R0.
+
+| id | sev | finding | fix |
+|---|---|---|---|
+| B1 | **P0** | **Lock-order deadlock, measured.** `CONDUCTOR.md` §3.4 moved `child_seq` to the *first* statement of the Conductor commit ("Lock order everywhere: child_seq BEFORE conductor_state"). But `complete_job` locks the `job` row and *then* `child_seq` (through `ingest_event`), and `fire_wakeups` locks `wakeup` rows and *then* `child_seq`. The commit takes `child_seq` → `job` (cancel / `cancel_requested` / revive) → `wakeup` (upsert). Those are two lock cycles | One global rule: **`child_seq` is always the last row a multi-table writer locks**, which is this doc's R2.4 order. Commit = `conductor_state` → `job` → `wakeup`/`notification`/`day_plan` → `child_seq` (computes `has_more`) → lease decision. `complete_job` and `fire_wakeups` already comply. Also treat SQLSTATE `40P01` like `40001` (retry from a fresh snapshot) everywhere, as a backstop |
+| B2 | P1 | R2.4's rationale sentence is wrong: "the competing ingest's own `step()` attempt blocks on the `conductor_state` row lock". The lease is taken by an autocommit `UPDATE` *before* the step, so a competing `step()` finds the lease held and returns `skipped`. That is the lost-wake-up hole. What actually serialises the two is the **`child_seq` row lock**: an in-flight ingest makes the commit's `child_seq` update wait and then re-read `last` | Reword R2.4: correctness rests on the `child_seq` lock plus `has_more`, not on `conductor_state` locking. Measured below |
+| B3 | P1 | R2.1's `ingest_event` updates `child_seq` without creating it. For a child with no row, `s` is NULL and the insert violates `seq NOT NULL` | Already fixed in `CONDUCTOR.md` §3.3 (`insert into child_seq … on conflict do nothing` first). Superseded here; the synthesis is canonical |
+| B4 | P1 | **`conductor.step` as a queued job is the wrong primitive.** This doc never gives it a key. `CONDUCTOR.md` §8.2 keys it `step:{child}:{toSeq}`, so a 45-minute lesson that emits about 20 boundary events mints about 20 jobs. Each one is claimed and most return `skipped` on the lease. With `unique(kind, idem_key)`, a constant key would run once ever (R2.7 revives only `dead`/`cancelled`) | Drop `conductor.step` from `JobKind`. **`child_seq.pending_since` is already the dirty set**: the worker loop runs `select child_id from child_seq where pending_since is not null order by pending_since limit 50` (a plain read with no `FOR UPDATE`, so B1's order is kept) and calls `step()`, where the lease is the mutex. The inline attempt on `taxila-web` stays. One mechanism instead of a job kind plus a sweep |
+| B5 | P1 | **Replay can re-enqueue work.** §4.6 says a full replay from seq 0 serves "tests, audits or a reducer upgrade". Idempotency keys make that safe only while the original `job`/`wakeup`/`notification` rows exist. Once retention prunes them, a replay that reaches `commit` re-runs consolidations and re-sends letters | Replay never commits. Type it: `replay(childId, fromSeq)` gets a reader with **no** `commit`/`tx` handle and returns `(state, commands[])` for comparison only. New invariant **I-R9**: replay mode performs zero writes (the simulator asserts a write-counting DB shim at 0). A reducer upgrade uses `upgradeState` (X16), never replay-and-commit |
+| B6 | P1 | **R3.3's idle hang-up hurts the child.** "2 consecutive turns with no kit-relevant child utterance" (carried into `CONDUCTOR.md` §4.6, idle row) hangs up on a child who is chatting off-topic ("mera kutta aaj…") or thinking aloud. Those are the rapport moments the product rests on, and a 6-8 year old does them all the time. Off-topic is not noise | The hang-up triggers only on audio that is **not the child**: VAD commits with an empty or low-confidence transcript, or no child speech for 90 s after the teacher handed over the turn. Real off-topic child speech gets the Director's redirect move (a shape), never a hang-up. The hang-up happens only at a natural stop, after one "main yahin hoon" shape. Split CM10 into `non_child_audio_turns` and `child_off_topic_turns`. Only the first is a cost leak |
+| B7 | P1 | **R4 and R7.4 rewrite the safeguarding floor from inside an orchestration review.** "Only `critical` holds lock the app; `high` keeps lessons running" (carried into `CONDUCTOR.md` §8.5, safety_hold row) changes what happens after a disclosure. §5.8 says the Conductor never decides safety, and the repo's binding constraints put the safeguarding hand-off in the product floor | Restate it as a **question to the safeguarding protocol owner**, not a rule. Until the owner decides and logs it, every incident → `safety_hold` (the conservative default). R7.4's screen requirements stand either way: warm, 1098 + 14416, no "suspended" language, nothing revealed on a shared phone. The severity split is a proposal tagged [U] |
+| B8 | P2 | **`decision_log.brief_value` grows without bound.** R2.8 stores the brief (or the fields read) on every decision. At about 15 commits per child-day and about 1 KB each [U], that is ≈ 15 KB/child-day: ≈ 1.5 GB/day and ≈ 550 GB/year at 100k children [U]. The brief changes only when KT or memory changes, so most rows repeat the previous value | Content-address it: `brief_snapshot(digest text primary key, value jsonb, created_at)`, `insert … on conflict do nothing`. `decision_log` keeps the `brief_digest` only. Retention follows the replay window (90 d at v1 [U]) |
+| B9 | P2 | **The NOTIFY wake-up is a hint, not a path.** R1's `fast` lane is "woken by `NOTIFY job_ready`". Neon lists "LISTEN / NOTIFY" as unsupported on pooled connections [V Neon pooling], and `taxila-web` uses the pooled endpoint. Separately, a 1 s poll keeps the Neon compute awake 24/7: it scales to zero only after 5 minutes of inactivity [V Neon] | Correctness never depends on NOTIFY. Send `pg_notify` only from a direct connection inside the committing transaction (PG delivers it at commit [V PG docs]), or drop it and poll at 1 s when busy, backing off to 5 s when idle. Price the always-on compute in CM2. It is probably small next to voice [U], but it is a line item |
+| B10 | P2 | **Dormant children still tick.** Every child gets `day_start` and night wakeups daily. At 100k accounts, with most of them dormant [U], that is ≥ 200k `clock.wakeup` events, steps and commits a day (≈ 73M log rows/year) with no child on the other end | After 14 days with no `app.opened`, the reducer stops re-arming recurring wakeups and keeps only parent-chosen ones (weekly letter). The next `app.opened` re-arms them. Same idea as R3.2 "plan only the living", applied to the clock |
+| B11 | P2 | R7.1's off-voice warm-up for 6-8 year olds who cannot read needs **narration audio per kit item** before M0. That is a content-pipeline dependency (TTS on Azure AI Speech or the realtime voice, pre-rendered and cached), not a Conductor detail | Add "narration cached for every warm-up-eligible kit item" to the M0 checklist (R9), with the voice matched to the teacher by blind ear. Otherwise the warm-up is a voice change (R7.7) |
+
+#### R10.1 Measurement: lock order (scratch Postgres 16.14, 2026-10-02, n = 5 per cell)
+
+Method: `docs/research/conductor/orchestration-lock-order-probe.sh` (with `.schema.sql` and `.reset.sql`). It runs
+the minimal substrate (`child_seq`, `student_event`, `job`, `wakeup`, `conductor_state`, `ingest_event`,
+`complete_job`, `fire_wakeups`) in the shapes of `CONDUCTOR.md` §3.3/§3.8/§3.9. A commit and one other writer race
+on one child. `pg_sleep` widens the window so each cell is deterministic. In production the same cycle needs a
+narrower coincidence, and PG aborts one side after `deadlock_timeout` (1 s default). For `fire_wakeups`, that
+rolls back the whole batch of up to 500 wakeups.
+
+| commit order | vs `complete_job` (job → child_seq) | vs `fire_wakeups` (wakeup → child_seq) | vs `complete_job` taking child_seq first |
+|---|---|---|---|
+| `child_seq` first (`CONDUCTOR.md` §3.4) | **5/5 deadlock** | **5/5 deadlock** | 0/5 |
+| `child_seq` last (orch R2.4) | 0/5 | 0/5 | 0/5 |
+
+Plus one correctness check of the `child_seq`-last order (n = 1): an ingest in flight during the commit
+(ingest holds `child_seq` for 0.6 s; the commit's `child_seq` update starts at 0.2 s) made the commit wait and
+return `has_more = true`, with `last = 6` and `pending_since` still set. So moving `child_seq` last keeps the
+no-lost-wake-up property and removes both cycles. Not covered: a multi-child ticker batch racing several
+commits at once, and the parent API (`parent_setting` → `child_seq`) under load. The B1 rule predicts no cycle
+for either, but neither was run.
+
+#### R10.2 Corrections to the text above
+
+- R2.4: replace "the competing ingest's own `step()` attempt blocks on the `conductor_state` row lock until this
+  commit releases the lease" with "an in-flight ingest holds the `child_seq` row lock, so the commit's
+  `child_seq` update waits for it and re-reads `last`; an ingest that starts later waits for this commit, then
+  finds the lease released". Add: `child_seq` must be the last row the commit locks (B1).
+- R3.3, idle row: replace "2 consecutive turns with no kit-relevant child utterance" with the non-child-audio
+  trigger in B6.
+- R4, safety row, and R7.4: "Only `critical` incidents lock the app" becomes a [U] proposal to the
+  safeguarding owner (B7). Default: every incident → `safety_hold`.
+- R6, `generic concurrencyKey` row: the per-child singleton is the lease over the `pending_since` dirty set
+  (B4), not a `conductor.step` job.
+- R8: add I-R9 (replay performs zero writes) and I-R10 (no SQLSTATE `40P01` across 8 seeds of the simulator's
+  concurrent-ingest + completion + ticker persona, with the substrate shim enforcing the B1 order).
+- R9 (M0): add the cached warm-up narration (B11) and the dormant-clock rule (B10). Remove "`conductor.step`
+  jobs" wherever it appears (B4).
+
+#### Sources for R10
+
+- Neon connection pooling ("LISTEN / NOTIFY", "Session-level advisory locks" not supported in transaction mode) — https://neon.com/docs/connect/connection-pooling [V]
+- Neon scale to zero (suspends after 5 minutes of inactivity) — https://neon.com/docs/introduction/scale-to-zero [V]
+- PostgreSQL `NOTIFY` (delivered only at commit; `pg_notify`) — https://www.postgresql.org/docs/current/sql-notify.html [V]
+- Internal [repo]: `docs/research/conductor/CONDUCTOR.md` §3.3, §3.4, §3.8, §3.9, §3.11, §4.6 (idle row), §8.2 (`step:{child}:{toSeq}`), §8.5 (safety_hold row); probe `docs/research/conductor/orchestration-lock-order-probe.{sh,schema.sql,reset.sql}`.

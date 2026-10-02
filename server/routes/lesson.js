@@ -177,6 +177,15 @@ async function warmupItemsFor(childId) {
 
 // ───────────────────────────── POST /api/lesson/start ─────────────────────────────
 
+/**
+ * The compiled instructions carry the answer key ("key, for checking only"), so they reach the client only
+ * where the client must apply them: the voice lane, whose session.update goes over the browser's data
+ * channel. The text lane's reply is generated here, so its client never receives them.
+ * Accepted risk until a server sideband owns session.update: context/inbox/ws1-client.json
+ * (voice-instructions-client-visible).
+ */
+const clientInstructions = (mode, instructions) => (mode === "text" ? {} : { instructions });
+
 /** @type {(req: any, res: any, body: import("../../shared/contracts").LessonStartRequest) => Promise<void>} */
 async function start(req, res, body) {
   const t0 = performance.now();
@@ -225,8 +234,8 @@ async function start(req, res, body) {
   console.info(`[lesson] start ${lesson.id} topic=${topic.id} kit=${kit.verified ? "verified" : "mini"} ${Math.round(performance.now() - t0)}ms`);
   /** @type {import("../../shared/contracts").LessonStartResponse} */
   const out = {
-    lessonId: lesson.id, topic: { id: topic.id, title: topic.title, chapter: topic.chapter.title }, instructions,
-    teacher: { id: teacher.id, name: teacher.name, voice: teacher.voice }, moduleCommands: r.moduleCommands, ui: r.ui,
+    lessonId: lesson.id, topic: { id: topic.id, title: topic.title, chapter: topic.chapter.title },
+    ...clientInstructions(mode, instructions), teacher: { id: teacher.id, name: teacher.name, voice: teacher.voice }, moduleCommands: r.moduleCommands, ui: r.ui,
     ...(teacherOpening ? { teacherOpening, teacherOpeningSeq } : {}),
   };
   send(res, 201, debugFor(req) ? { ...out, debug: { move: r.move, kitVerified: kit.verified, timings: trace } } : out);
@@ -262,7 +271,10 @@ async function realtimeToken(req, res, body) {
   const session = realtimeSession({ instructions: instructionsFor(lesson.state, kit, "voice"), voice: teacherFor(child).voice });
   const secret = await mintRealtimeSecret(session);
   /** @type {import("../../shared/contracts").RealtimeTokenResponse} */
-  const out = { token: secret.value, expiresAt: secret.expires_at, base: endpoint(), session };
+  // The secret was minted WITH the instructions; the client gets the session back without them (it needs
+  // only audio.input, to restore turn detection after push-to-talk) so the key is not in this response.
+  const { instructions: _minted, ...clientSession } = session;
+  const out = { token: secret.value, expiresAt: secret.expires_at, base: endpoint(), session: clientSession };
   send(res, 200, out);
 }
 
@@ -401,7 +413,7 @@ async function turn(req, res, body) {
   console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${r.hold ? " (hold)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"} ${ms}ms`);
   /** @type {import("../../shared/contracts").TurnResponse} */
   const out = {
-    instructions, move: r.move, moduleCommands: r.moduleCommands, ui: r.ui,
+    ...clientInstructions(state.mode, instructions), move: r.move, moduleCommands: r.moduleCommands, ui: r.ui,
     ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
   };
   if (debugFor(req)) {

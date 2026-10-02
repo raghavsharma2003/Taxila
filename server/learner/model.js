@@ -35,40 +35,53 @@ export async function loadDueSkills(childId, limit = 3) {
   return rows.map((r) => fromRow(r));
 }
 
-export async function saveSkillState(childId, s) {
-  const rows = await q(
-    `insert into skill_state(child_id, skill_id, p_known, status, attempts, correct_unaided, generative_pass, delayed_pass, last_seen, next_review)
+// Statement builders ({ text, params }) for writes that must land in one transaction with the turn that
+// caused them (routes/lesson.js); the async writers below run the same statements on their own.
+
+export const skillStateStmt = (childId, s) => ({
+  text: `insert into skill_state(child_id, skill_id, p_known, status, attempts, correct_unaided, generative_pass, delayed_pass, last_seen, next_review)
      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
      on conflict (child_id, skill_id) do update set p_known = excluded.p_known, status = excluded.status, attempts = excluded.attempts,
        correct_unaided = excluded.correct_unaided, generative_pass = excluded.generative_pass, delayed_pass = excluded.delayed_pass,
        last_seen = excluded.last_seen, next_review = excluded.next_review
      returning skill_id`,
-    [childId, s.skillId, s.pKnown, s.status, s.attempts, s.correctUnaided, s.generativePass, s.delayedPass, s.lastSeen, s.nextReview ?? null]);
-  expectRows(rows, 1, "skill_state upsert");
-}
+  params: [childId, s.skillId, s.pKnown, s.status, s.attempts, s.correctUnaided, s.generativePass, s.delayedPass, s.lastSeen, s.nextReview ?? null],
+});
 
-/** @param {import("../../shared/contracts").Evidence} ev */
-export async function insertEvidence(childId, lessonId, ev, turnId) {
-  const rows = await q(
-    `insert into evidence(child_id, lesson_id, skill_id, item_id, probe, outcome, misconception_id, hints_used, weight, turn_id)
-     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning id`,
-    [childId, lessonId, ev.skillId, ev.itemId ?? null, ev.probe, ev.outcome, ev.misconceptionId ?? null, ev.hintsUsed, ev.weight, turnId ?? null]);
-  return expectRows(rows, 1, "evidence insert")[0].id;
-}
+/**
+ * @param {import("../../shared/contracts").Evidence} ev
+ * @param {{ lessonId: string, seq: number } | null} turnRef  the turn row it came from, by (lesson, seq) — inside a
+ *   transaction the row's id is not known yet, and (lesson_id, seq) is unique (db/migrations/002)
+ */
+export const evidenceStmt = (childId, lessonId, ev, turnRef) => ({
+  text: `insert into evidence(child_id, lesson_id, skill_id, item_id, probe, outcome, misconception_id, hints_used, weight, turn_id)
+     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,(select id from turn where lesson_id = $10 and seq = $11)) returning id`,
+  params: [childId, lessonId, ev.skillId, ev.itemId ?? null, ev.probe, ev.outcome, ev.misconceptionId ?? null, ev.hintsUsed, ev.weight,
+    turnRef?.lessonId ?? null, turnRef?.seq ?? null],
+});
 
 /** A misconception showed up again: count it and (re)open it. */
-export async function flagMisconception(childId, misconceptionId) {
-  const rows = await q(
-    `insert into misconception_state(child_id, misconception_id, evidence_count, resolved, last_seen) values ($1,$2,1,false,now())
+export const misconceptionFlagStmt = (childId, misconceptionId) => ({
+  text: `insert into misconception_state(child_id, misconception_id, evidence_count, resolved, last_seen) values ($1,$2,1,false,now())
      on conflict (child_id, misconception_id) do update set evidence_count = misconception_state.evidence_count + 1, resolved = false, last_seen = now()
-     returning evidence_count`, [childId, misconceptionId]);
-  return expectRows(rows, 1, "misconception_state upsert")[0].evidence_count;
-}
+     returning evidence_count`,
+  params: [childId, misconceptionId],
+});
 
 /** An unaided correct answer on an item that targets an open misconception closes it (the count stays). */
-export async function resolveMisconception(childId, misconceptionId) {
-  await q("update misconception_state set resolved = true, last_seen = now() where child_id = $1 and misconception_id = $2 and not resolved",
-    [childId, misconceptionId]);
+export const misconceptionResolveStmt = (childId, misconceptionId) => ({
+  text: "update misconception_state set resolved = true, last_seen = now() where child_id = $1 and misconception_id = $2 and not resolved returning misconception_id",
+  params: [childId, misconceptionId],
+});
+
+export async function saveSkillState(childId, s) {
+  const { text, params } = skillStateStmt(childId, s);
+  expectRows(await q(text, params), 1, "skill_state upsert");
+}
+
+export async function flagMisconception(childId, misconceptionId) {
+  const { text, params } = misconceptionFlagStmt(childId, misconceptionId);
+  return expectRows(await q(text, params), 1, "misconception_state upsert")[0].evidence_count;
 }
 
 /** Open misconception ids, most recent first. */

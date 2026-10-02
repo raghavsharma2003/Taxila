@@ -11,6 +11,13 @@ import { Emitter } from "./store.ts";
 
 type Speech = (req: TtsRequest, signal: AbortSignal) => Promise<Blob>;
 
+/** Audio that has not reported its length this long after it was loaded is given up on. */
+const LOAD_TIMEOUT_MS = 15_000;
+/** Past the clip's own length, a reply whose `ended` never fired (a stall) is ended as completed. */
+const END_SLACK_MS = 3_000;
+/** Upper bound for a reply of unknown length (the reply guard caps a turn at 40 words, ~20 s spoken). */
+const MAX_REPLY_MS = 45_000;
+
 export interface TextLinkOptions {
   lessonId: string;
   levels: LinkLevels;
@@ -28,7 +35,7 @@ export class TextLink implements TeacherLink {
   private ctx: AudioContext | null = null;
   private seq = 0;
   /** The reply being fetched or played; null when the teacher is quiet. */
-  private current: { id: string; abort: AbortController; url: string | null; playing: boolean } | null = null;
+  private current: { id: string; abort: AbortController; url: string | null; playing: boolean; timer?: ReturnType<typeof setTimeout> } | null = null;
 
   constructor(opts: TextLinkOptions) {
     this.lessonId = opts.lessonId;
@@ -115,6 +122,25 @@ export class TextLink implements TeacherLink {
       audio.onended = () => {
         if (this.current?.id === id) this.stop("completed", false);
       };
+      // A playback error, or a load the browser aborted, after play() resolved would otherwise leave the
+      // status on "speaking" for the rest of the lesson.
+      audio.onerror = audio.onabort = () => {
+        if (this.current?.id === id) this.stop("failed", false);
+      };
+      // A stall fires no event that ends the clip, so a timer does: the clip's length plus slack.
+      const arm = (ms: number, status: "completed" | "failed") => {
+        const cur = this.current;
+        if (cur?.id !== id) return;
+        clearTimeout(cur.timer);
+        cur.timer = setTimeout(() => {
+          if (this.current?.id === id) this.stop(status, false);
+        }, ms);
+      };
+      audio.onloadedmetadata = () => {
+        // Some engines report Infinity for a streamed MP3 blob: fall back to the longest reply we allow.
+        arm(Number.isFinite(audio.duration) ? audio.duration * 1000 + END_SLACK_MS : MAX_REPLY_MS, "completed");
+      };
+      arm(LOAD_TIMEOUT_MS, "failed");
       // Never wait on resume(): without a user activation (iOS, Android WebView) it can stay pending
       // forever and the turn would stick on "thinking". A context still suspended here plays silently
       // (the element sounds only through the graph) while the reply is on screen; sendChild() resumes it
@@ -136,8 +162,9 @@ export class TextLink implements TeacherLink {
     if (!cur) return;
     this.current = null;
     cur.abort.abort();
+    clearTimeout(cur.timer);
     if (this.audio) {
-      this.audio.onplaying = this.audio.onended = null;
+      this.audio.onplaying = this.audio.onended = this.audio.onerror = this.audio.onabort = this.audio.onloadedmetadata = null;
       this.audio.pause();
       this.audio.removeAttribute("src");
     }
