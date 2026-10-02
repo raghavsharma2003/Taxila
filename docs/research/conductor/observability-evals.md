@@ -1216,3 +1216,15 @@ the device no longer has to send usage at all.
 - Vercel function duration limits (300 s default; 800 s Pro max; 1800 s beta) — https://vercel.com/docs/functions/configuring-functions/duration [V]
 - Neon pricing (storage $0.35/GB-month; instant-restore history $0.20/GB-month) — https://neon.com/pricing [V]
 - Repo: `context/decisions.md#hosting-azure-container-apps`, `#forge-infra-azure`, `#azure-only-compute`; `context/measurements.md#db-driver-latency-2026-10-02`; `conductor/orchestration-architecture.md` Architect review A1, A11-A13, A15, A18, A19, R1, R3.3, R5, R7 [repo]
+
+### V9. Addendum (resume pass, 2026-10-02)
+
+The pass above was re-read after the session limit and found complete. CONDUCTOR.md X14 has already moved the
+observer to **M1, read-only**, which supersedes V8 item 3. Four gaps remain open:
+
+| id | sev | finding | fix |
+|---|---|---|---|
+| B27 | P0 | V2.1's own `finally` can still leak. If `ledger.insertModelCall(row)` (agent path) throws, `governor.settle` never runs, so this is B1 again. A throw inside `finally` also hides the original error | Run `settle` first, inside its own `try`. Make the insert best-effort with an `obs.ledger_write_failed` counter, and re-throw the original error |
+| B28 | P1 | V2.8 takes `lesson_state … for update` for "the Director commit". If the lock is taken at step start, it is held across the classify/compile model calls (seconds). That pins a pooled Neon connection per live lesson, which can exhaust the pool at 19:00-21:00 IST | Hold no lock across model calls. Read `lesson_state.version`, run the step, then commit with `update … where version=$v`. On conflict, re-fold the newer turn (cheap and pure) rather than wait |
+| B29 | P1 | Observer sockets share `taxila-worker` (min 1 / max 2) with the ticker and job loops. A revision roll drops **every** observer at once, so every live lesson falls back to device metering together, and deploys tend to happen in the evening. A busy event loop on the job side also delays `response.created` timestamps, which inflates the V6.1 staleness SLI | At M1, run a separate `taxila-observer` ACA app scaled on live-lesson count, with no leader. Freeze deploys 18:00-21:30 IST. Stamp staleness with the server event's own time when one exists [U: field presence], not local receive time |
+| B30 | P2 | The staleness SLI (V6.1), the cost unique key (V2.5) and OM5′/OM16 all depend on the observer, and the observer is now M1. So M0 has **no** child-facing instruction-lag signal | At M0, log device-side `session.update` apply time vs the next `response.created` (client clock, untrusted, aggregate only) as a provisional OM16. Replace it with observer timestamps at M1 |

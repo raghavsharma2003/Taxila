@@ -130,6 +130,8 @@ function liveCfg(tx) { // gpt-live-transcribe: realtime transcription session, a
   });
 }
 const PROMPT = ASR_PROMPT, KW = [...KEYWORDS, ...DECOYS];
+// Context with NO vocabulary in it: who is speaking and the script convention only.
+const SCRIPT_PROMPT = "A child aged 8 to 12 in India answers a teacher aloud in Hindi, English, or a Hindi-English mix. Write Hindi words in Devanagari and English words in Latin script, exactly as spoken.";
 export const CONFIGS = {
   "A0 4o-tx(03-20) nohint": oaiCfg("taxila-transcribe", {}),
   "A1 4o-tx(03-20) hi": oaiCfg("taxila-transcribe", { language: "hi" }),
@@ -142,6 +144,12 @@ export const CONFIGS = {
   "C2 azure-fast hi-IN+phrases": fastCfg({ locales: ["hi-IN"], phraseList: { phrases: KW } }),
   "D0 live-tx nohint": liveCfg({}),
   "D1 live-tx hi,en+kw+prompt": liveCfg({ languages: ["hi", "en"], keywords: KW, prompt: PROMPT }),
+  // Ablation (added 2026-10-02 after the first score): which part of D1/A2 does the work, and does a
+  // prompt WITHOUT a term list keep the gain while dropping the recite-the-list failure on non-speech?
+  "A3 4o-tx(03-20) hi+scriptprompt": oaiCfg("taxila-transcribe", { language: "hi", prompt: SCRIPT_PROMPT }),
+  "D2 live-tx kw only": liveCfg({ keywords: KW }),
+  "D3 live-tx scriptprompt only": liveCfg({ prompt: SCRIPT_PROMPT }),
+  "D4 live-tx kw+scriptprompt": liveCfg({ keywords: KW, prompt: SCRIPT_PROMPT }),
 };
 const LIVE_XF = new Set(["child"]); // realtime-paced sessions are slow: run them on the child arm only
 

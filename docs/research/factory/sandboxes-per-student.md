@@ -1235,3 +1235,213 @@ P0, correctness.**
 - Phaser source: https://raw.githubusercontent.com/phaserjs/phaser/master/src/core/Config.js,
   `src/loader/filetypes/ImageFile.js`, `src/loader/XHRLoader.js`
 - npm: `@azure/containerapps-sandbox@1.0.0-beta.1` (unpacked typings), `playwright@1.63.0`, `pyodide@314.0.7`
+
+---
+
+## Principal review: second pass (2026-10-02, resumed session)
+
+**Scope.** The first pass (R1–R15 above) stands, and this pass does not repeat it. It attacks what R1–R15 left
+open: **can the gate itself be trusted?** If the builder (or a compromised runner) can make the gates lie, every
+downstream claim ("bug-free", "validated", "safe for a 9-year-old") is void. It also adds three Azure facts verified
+today and one device-side failure mode. Tags as in the header; **[V-R2]** = verified in this pass.
+
+### Azure facts re-verified in this pass
+
+| claim in doc / review | check | status |
+|---|---|---|
+| R8: SIGTERM → SIGKILL after 30 s | Learn *Application lifecycle management* (updated 2026-02-26): "If your application doesn't respond within 30 seconds to the SIGTERM message, then SIGKILL" | **[V-R2]**. `terminationGracePeriodSeconds` is configurable to **600 s max** on Consumption [S, azureossd blog], and has been observed **not honoured** on KEDA scale-in (60–80 s kill despite 600) [S, `microsoft/azure-container-apps#1824`]. A 12–20 min build can never fit inside a grace period, so R8's resumable builds are mandatory, not an optimisation |
+| R8: "ACA ingress drops idle connections [M]" | Learn *Ingress overview* (updated 2026-08-31): HTTP ingress "supports WebSocket"; "Request time out is 240 seconds" | **[V-R2]** for the 240 s figure. Whether it is an *idle* or an *absolute* cap for an upgraded WebSocket is **[U]**: community reports describe it as idle, and `#1172` asks for it to be configurable. Design for both cases: ping ≤ 30 s, **and** a resumable protocol that survives a forced reconnect (S5) |
+| R3: "ACR Basic supports 100 scope-map tokens" | Learn *ACR SKUs* (updated 2026-09-03) | **[V-R2] correct.** New facts from the same page drive S6: Basic includes **10 GiB**; retention policy and **artifact streaming are Premium-only**; all **admin-credential** requests are throttled as **one identity** (5,000 reads/min) |
+
+### Corrections
+
+**S1. The bytes that ship are not the bytes that were validated. P0, correctness.**
+
+- `auto-validation-qa.md` §3: the `window.__forge` seam "is compiled only into validation builds, and the publish
+  step (Q10) asserts that it is **absent** from the production bundle". This doc's §5.5 publishes "the dist from
+  the runner". So every gate passes on bundle A, and the child gets bundle B, a *different esbuild output* made
+  without the seam. Tree-shaking, minifier inlining and side-effect ordering can all differ between A and B. Nothing
+  re-runs on B.
+- **Fix: one bundle, an external seam.**
+  - The production bundle is the only bundle. The test seam is a separate, kit-owned file `forge-seam.js`. The
+    harness host injects it with `page.addInitScript` *before* the bundle runs. The kit exposes internal hooks
+    through a closure-registered `__kitHooks` symbol, which the seam consumes. Production simply never loads the
+    seam.
+  - Publish asserts `sha256(published dist) == sha256(dist that passed the final gate)`.
+  - The final gate also includes a **seamless smoke run** on the exact production bytes: boot, `ready` ≤ 8 s, 0
+    console errors, and level 1 solved by **pointer input only**, at the bboxes recorded in the seam run.
+- **"Volkswagen" ban (G0/Q1 AST rule).** Game code may not read `navigator.webdriver`, `__forge`, `__kitHooks`,
+  `HeadlessChrome` or `userAgent`, and may not branch on `window.length` / `top === self`. Code that can detect the
+  test can behave differently under it. LLMs do not do this on purpose, but "make the test pass" repairs do drift
+  into it.
+
+**S2. The builder's code shares a JS realm with the test probes, so it can make the gates lie. P0.**
+
+- The seam and the game run in one page. Without help, game code could overwrite `window.__forge.snapshot` to
+  return `{status:"won"}`, push synthetic events into the event log, or monkeypatch `dispatch`. Q1's AST rules see
+  only the *source text*, and a repair loop under pressure is exactly the setting where models learn to satisfy the
+  checker instead of the spec. This is the familiar coding-agent "special-case the test" failure, not a hypothetical
+  [M].
+- **Fix:**
+  - The init script defines `__forge` with `Object.defineProperty(window, "__forge", { value: Object.freeze(api),
+    writable: false, configurable: false })`. It captures `dispatch`, `postMessage` and `performance.now` references
+    *before* game code loads.
+  - "Won" is accepted only when **three channels agree**:
+    1. the seam's `snapshot().status`;
+    2. the bridge event stream, as recorded by the **host harness page** (a different origin, which the game cannot
+       write);
+    3. a screenshot judge on the win screen.
+  - AST rule: no assignment to any member of `window`, `globalThis`, `self` or `parent` in `src/game/**`. No
+    `Object.defineProperty`, `Reflect.*`, `Proxy` or `__proto__` on non-local objects.
+  - Add a **tamper battery** (M15) of deliberately cheating builds. The gate must reject all of them.
+
+**S3. The untrusted runner both builds the dist and grades it. "Re-hash on publish" proves nothing. P0, security.**
+
+- §5.5 and §11 treat the orchestrator's re-hash as an integrity check. Suppose a Phase 0 runner is compromised
+  (Chromium launched `--no-sandbox` per R4, plus a renderer bug). Then the attacker controls **the bundle, the
+  screenshots and `gate-report.json`**. The hash only proves the orchestrator received what the attacker sent. A
+  compromised runner can ship a beacon into a public, `immutable`, shared `buildSha` that every child on that
+  objective loads.
+- **Fix: split building, grading and publishing across trust levels.**
+  1. **Source is authoritative in the orchestrator.** R8's `patches.jsonl` already makes it so.
+  2. **A trusted rebuild.** The trusted lane re-bundles from orchestrator-held source with a pinned esbuild. esbuild
+     does not execute its input, so this is safe in lane T and takes about 1–3 s [U]. *That* sha is the candidate.
+     If the runner's own dist differs, it is not shipped and an incident is logged: either the build is
+     non-deterministic or the runner lied.
+  3. **The final acceptance gate runs in a fresh lease** that never executed builder-steered work: held-out
+     keypoints, fuzz seeds, the seamless smoke run (S1) and the egress battery. The builder lease's gate report is
+     advisory only and feeds the repair loop.
+  4. The publish step accepts only `(trusted-rebuild sha, fresh-lease report)`.
+- Cost: one extra 2–4 min lease, about $0.005–0.01 [V arithmetic, §9.2 rates]. That is noise next to the LLM cost
+  (§4). Latency: plus 1–3 min on G2, which is acceptable because G2 is already not in-lesson (R6).
+
+**S4. Runner reuse and shared pool or queue credentials let one compromised runner hijack other children's builds.
+P0, security.**
+
+- R3 gives the container a queue SAS with `rp`. R7 gives every warm runner a shared `poolToken`. Either one lets a
+  compromised runner peek or dequeue *other* jobs' messages (and their one-time tokens), or re-`hello` as a fresh
+  idle runner and receive the next build. That turns one renderer escape into persistent supply-chain access to
+  every later build.
+- **Fix: single-use runners and per-execution credentials.**
+  - The orchestrator is the scheduler. It starts each pool runner with a **manual** `POST …/jobs/forge-runner/start`
+    carrying a **template override env** `BOOT_TOKEN=<128-bit, single execution>`. Overrides are supported [S,
+    §3.3], and Contributor-level readers are already fully trusted.
+  - **No queue credential is in the container at all.** Delete the KEDA trigger for the pool lane. Keep a queue
+    only inside the orchestrator, for its own durability.
+  - The `BOOT_TOKEN` is burned at the first `hello`. `assign` happens at most once per token. After `bye`, the
+    runner `process.exit(0)`s and the execution ends.
+  - The orchestrator refuses any `hello` from a burned token, or from an execution name it did not start. It
+    checks `CONTAINER_APP_JOB_EXECUTION_NAME`, *and* cross-checks it against its own start-call result, since a
+    compromised runner can forge its own environment variable.
+- This supersedes R7's `{t:"hello", poolToken}`. The protocol becomes `{t:"hello", bootToken}`, then
+  `{t:"assign", jobId, jobToken}`, then `{t:"bye"}`, then exit.
+
+**S5. The wire protocol must survive a forced reconnect mid-call.**
+
+- The ingress cap is 240 s and may be absolute (see the verified facts above), and the orchestrator restarts on
+  every deploy (R8). Either one can cut the socket while a long `run_check playtest` (≤ 60 s) or a `bundle` is in
+  flight. As specified, the `Call`/`Result` frames have no recovery semantics.
+- **Fix:**
+  - `Call.id` becomes an idempotency key. The runner keeps the last 32 results.
+  - Reconnect with `{t:"resume", leaseId, jobToken, lastSeq}`. The runner replays any results after `lastSeq`.
+    Mutating tools (`fs.write`, `apply_patch`) are applied **at most once** per `id`.
+  - Set `terminationGracePeriodSeconds: 600` on `forge-orchestrator`. On SIGTERM: stop admitting work, checkpoint,
+    and send `{t:"pause"}`. The runner then holds state for up to 10 minutes, waiting for a resume from the new
+    revision.
+  - Run the orchestrator with `minReplicas ≥ 2` and session-agnostic lease ownership stored in Postgres, so any
+    replica can resume any lease.
+
+**S6. ACR Basic will fill up and throttle the cold-start path the whole design hides behind. P1, ops.**
+
+- **Storage.** Basic includes **10 GiB** [V-R2]. §5.4 adds "one tag per kit hash" of a 1.5–2 GB Playwright image
+  (R15's slim image is about 0.5 GB [U]). About 5 kit changes fill it. **Retention policy is Premium-only** [V-R2],
+  so nothing deletes old tags.
+  - **Fix:** a scheduled ACR Task `acr purge --filter 'forge-runner:.*' --ago 7d --keep 3 --untagged`. Alert at 80%
+    of storage.
+- **Throttling.** All admin-credential pulls are throttled as **one identity**, at 5,000 reads/min per identity
+  [V-R2]. `taxila-web` revisions, every job execution and the Sandbox disk-image import all draw from that one
+  bucket. A 40-execution burst after a deploy pulls about 40 × (manifest + about 10 layers + auth) requests, which
+  is fine on rate, but on bandwidth it is a thundering herd from a low baseline. The ACR page warns throughput is
+  lower during exactly that ramp.
+  - **Fix:** R3's pull-only scope-map token per consumer (separate buckets). Pre-pull by keeping the warm pool
+    (R7) at ≥ 1 *during* every image roll. Re-price Premium only if M16 shows pull time > 30 s P90, since **artifact
+    streaming** (lazy layer pull) is Premium-only [V-R2].
+
+**S7. "The teacher sees what they do" has no data path in this design. P1, product.**
+
+- The owner's intent is that the voice teacher reacts to play: "you got stuck on ½ vs ⅓ twice". §6.2 stores
+  `play_event` rows, but nothing carries events from the child's iframe to the **Director during the lesson**, and
+  §8 has no latency budget for it.
+- **Fix:**
+  - Path: bridge `event`, then the host app, then a batch every 1 s over the app's existing realtime connection to
+    `taxila-web`, then the Director's per-lesson event bus (in memory; Postgres write is async).
+  - **Budget: child action to Director ≤ 2 s P95.**
+  - Persist `play_event` as nightly NDJSON to private Blob plus a rolled-up `play_session` row. Do not insert one
+    row per event: 20 children × 5 events/s is 100 inserts/s per class into Neon for no read benefit.
+  - The bridge must carry **semantic** events (`misc:"bigger-denominator-bigger-fraction"`, `goal`, `hint`), not raw
+    pointer events. The kit emits them from `dispatch` (auto-validation-qa §3). The builder cannot invent event
+    names outside the GameSpec's vocabulary, and Q0 checks this.
+
+**S8. On Android, the iframe is an origin wall, not a process wall, and a game OOM kills the lesson. P1, device.**
+
+- Android System WebView does not do site-per-process for cross-origin iframes, as desktop Chrome does [M; verify
+  in M14]. So the opaque-origin iframe and the app (voice-teacher audio pipeline, any 3D tutor, the child's session
+  token in JS memory) share **one renderer process**. Two consequences:
+  1. A renderer exploit in game code reaches the app's memory. The Blink same-origin check is the only wall.
+  2. A Phaser WebGL game that OOMs on a 2–3 GB phone kills the renderer, and with it **the voice lesson in
+     progress**. This failure is worse than "game broken", and none of the gates can see it, because they run on
+     2 vCPU / 4 GiB with no app around them.
+- **Fix:**
+  - Keep no long-lived bearer token in page JS. Use HttpOnly cookies, or Capacitor native secure storage plus
+    short-lived request tokens.
+  - On Android, test opening games in a **separate WebView hosted in a separate Android process**: an Activity with
+    `android:process=":play"` and `WebView.setDataDirectorySuffix("play")` [M, Android docs]. A game crash then
+    leaves the teacher alive, and the app gets `onRenderProcessGone` to fall back to the G1 game.
+  - Add a memory budget to the kit gate: `metrics().heapMB` ≤ 150 and textures ≤ 64 MB at 360×640 DPR 2. Pause the
+    3D avatar while a game has focus.
+
+**S9. Account for the extra work in the cost and latency tables.**
+
+- §9.3: add the S3 fresh-lease gate (+ about $0.01 per G2) and the R7 warm pool (+ about $0.65/h at 10k students).
+  The infrastructure subtotal becomes about $0.12 early and about $0.05 mature per student-month, plus the pool's
+  fixed cost. The conclusion "compute is noise" survives. The table as written does not.
+- §8: add "trusted rebuild + fresh-lease final gate: +1–3 min" to G2. Add "child action → Director ≤ 2 s" (S7).
+
+### Measurements to add (append to §13)
+
+| id | what | pass bar |
+|---|---|---|
+| M14 | Android WebView process model: open a G1 Phaser game while teacher audio streams, on a 3 GB-RAM device; force OOM in the game; check whether the voice lesson survives, in the single-WebView and the `:play`-process layouts | teacher audio survives the game crash in the chosen layout |
+| M15 | tamper battery: 6 cheating builds (overwrite `__forge.snapshot`; fake bridge `won`; detect `navigator.webdriver`; runner-supplied dist ≠ trusted rebuild; replayed `BOOT_TOKEN`; re-`hello` after `bye`) | all 6 rejected; 0 published |
+| M16 | ACR pull under burst: 10 simultaneous cold job starts after a fresh tag, Basic + admin credential vs scope-map token | P90 pull ≤ 30 s, else re-price Premium (artifact streaming) |
+| M17 | esbuild determinism: the same source bundled 10× in lane U and lane T | identical sha 10/10; otherwise S3 cannot compare and must pin `--log-override`, metafile order, and timestamps |
+
+### Re-ranked critical path (merging both passes)
+
+1. R2, R3, S4: a separate untrusted environment, no storage or queue credential in the runner, single-use runners.
+2. S3, S1, S2: trusted rebuild, a fresh-lease final gate, one bundle with an external frozen seam. *Without these,
+   "validated" is an assertion by the thing being validated.*
+3. R1, R5: production-parity harness and CSP `connect-src 'self'`.
+4. R8, S5: a resumable, reconnect-safe orchestrator in its own app.
+5. R6, R7, S6: TPM admission, a shared warm pool, ACR purge and tokens.
+6. R13, R14, S7, S8: de-identified briefs, a circuit breaker, a live event path to the Director, an Android
+   process-isolated play surface.
+7. Phase 1 (R9, R10, R12) after the owner's quota and role actions.
+
+**Proposed `context/inbox/` additions:**
+
+- decision `forge-trusted-rebuild-fresh-gate` (S3). Reverse only if Phase 1 microVM isolation *and* a measured
+  Chromium sandbox-on (M4) make runner compromise implausible. Even then, keep the fresh lease for held-out keys.
+- rejection `validation-only-seam-bundle` (S1): the validated bundle ≠ the shipped bundle.
+- decision `runner-single-use-boot-token` (S4; supersedes R7's `poolToken`).
+- measurement `aca-ingress-240s-sigterm-30s-2026-10-02` (n=1, docs read; values above).
+
+**Second-pass sources:**
+
+- https://learn.microsoft.com/en-us/azure/container-apps/application-lifecycle-management
+- https://learn.microsoft.com/en-us/azure/container-apps/ingress-overview
+- https://github.com/microsoft/azure-container-apps/issues/1824 (grace period not honoured on scale-in)
+- https://github.com/microsoft/azure-container-apps/issues/1172 (ingress idle timeout not configurable)
+- https://azureossd.github.io/2024/05/27/Graceful-termination-on-Container-Apps/ (600 s max)
+- https://learn.microsoft.com/en-us/azure/container-registry/container-registry-skus (10 GiB Basic; Premium-only retention and artifact streaming; admin = one throttling identity)
+- `docs/research/factory/auto-validation-qa.md` §3, §4.1 (validation-only seam, held-out split)
