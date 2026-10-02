@@ -1,0 +1,1267 @@
+{
+ "segment": "hp-private-voice",
+ "summary": "Segment hp-private-voice = html-portfolio origin/codex/private-voice-requests25 (tip f0246956, 2026-09-21) vs origin/codex/handoff206 (20263775): 219 commits, 774 files, +97k/-68k lines. Product is Vyakti (personal AI clone of a person), not Meera: this branch DELETES Meera's live-call client (src/voice/liveCall.ts, speech.ts, CallVoice.tsx, native watch Java) and the Maya/Meera personas.\nWaves 21-23 (WS-R151..R181, 2026-09-13) added voice-adjacent product layers: blind paired 4-axis listening test with verdicts in vy_replica_calibration (migration 166) and an activation guard that blocks a losing voice candidate; owner-only audio streaming doors; EmotionOS register reader (60/60 hand-labelled en/hi/Hinglish) and a prosody plan mapping vibe+register to closed rate/energy/pitch/pause bands; per-sentence Room voice clips with a buffer-one-ahead client (5.00x sooner first audio, fake synth, n=10/arm); reply-language policy that also sets the TTS language.\nWave 24 hit the session limit (10 agents) and was preserved as patches (incl. a voice dry-run + VOICE-DAY-ONE runbook).\nWave 25-26 (2026-09-14): owner prioritized private internal testing; built services/internal-voice (Azure Container Apps CPU service + independent supervisor + Blob ETag CAS state) that would run ONE zero-shot Hindi Chatterbox Multilingual V3 synthesis of the owner's retained 10 s reference on a dormant scale-to-zero T4 via a supervised ARM controller (exact revision activate/deactivate, 420 s dispatch, 900 s envelope, micro-USD reservation), a Vercel same-origin proxy, a Studio panel with 4-axis ratings, a five-action least-privilege GPU role. Live: grant verified, CPU /healthz 200, reference primed, GPU dormant - ZERO synthesis or likeness measured.\nThen owner phone tests failed (capture overlap, upload stuck at Paused); root cause was Studio CSP (connect-src self, no media-src) - fixed with real-browser counterfactual tests, ambiguous-PUT reconciliation, compact silver recorder UI; 'saved private Azure audio auditions' = allowing the exact Azure Blob origin in media-src for signed audition URLs.\nTip WIP (f0246956): private voice requests for ANY signed-in account (migration 171 vy_private_voice_run, self-use attestation, frozen Hindi config hindi_v3/seed 31001/.2-.78-.6, effective CFG 0 for unverified reference), offline tests only (13), no route, no consumer, migration not applied.\nAzure Personal Voice: a complete Custom Voice API adapter exists (inherited) but is NOT the live provider (Chatterbox self-hosted is primary by owner decision), is gated on Limited Access approval, and hardcodes xml:lang en-US + English disclosure. Speech key verified: 774 voices, 18 hi-IN, 20 en-IN.\nReal quality evidence is all inherited (Aug 26-30): Chatterbox Hindi ECAPA 0.858 (n=2), one-pass Hinglish 0.825 vs fragmented 0.434, warm RTF 0.79 on T4, cold start 161 s, T4 $0.53-0.60/hr, ~$0.0007/utterance warm; Azure stock 'coral' and gpt-realtime-2.1-mini were rejected by ear (accent identity; 41-53 words/turn). No human listening verdict on any generated clip exists anywhere in this segment.\nHighest-value Taxila takeaways: hindi-text-frontend lexicon (NCERT borrowings), sentence splitter + clip sequencer, register + prosody bands, listening-test form/guard, consent-receipt/attestation pattern (migration 171), CSP/upload lessons, GPU cost envelope, and ~40 rejections.",
+ "assets": [
+  {
+   "id": "pv-01",
+   "title": "Hindi text frontend: reviewed Roman-Hindi + classroom-borrowing lexicon, single-utterance text plan",
+   "subsystem": "tts-voice-identity",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "paths": [
+    "api/_voice/hindi-text-frontend.js"
+   ],
+   "what": "Deterministic text normalizer for Hindi-conditioned TTS. ~150 reviewed Roman-Hindi words (aaj->आज, samjho->समझो), ~150 Indian-English classroom borrowings rendered in Devanagari (chapter->चैप्टर, ncert->एनसीईआरटी, physics->फिज़िक्स, equation->इक्वेशन, formula->फ़ॉर्मूला, jee/neet/iit), A-Z Devanagari letter names for single uppercase symbols, unknown Latin tokens left byte-identical and audited. Emits a signed text-plan (hashes, token-language audit, transformations) and refuses multi-segment plans downstream.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "tts-voice-identity; learning/pedagogy (NCERT term pronunciation)",
+   "evidence": "One-pass continuous Hinglish (the plan this frontend feeds) raised owner ECAPA proxy 0.433967 -> 0.825082 and cut a line from 25.98 s to 7.72 s (context/measurements.md, 2026-08-29, n=1 clip per arm). Acoustic pronunciation benefit of the lexicon itself is NOT measured (file header says so).",
+   "notes": "Best direct reuse for Taxila: extend the borrowing table with NCERT class 1-9 vocabulary (photosynthesis, denominator, etc.) and keep the 'additions need a pronunciation example + regression test' rule. Works for any Hindi TTS (Azure hi-IN neural voices, gpt-realtime text, Chatterbox)."
+  },
+  {
+   "id": "pv-02",
+   "title": "Script-mode detector + Hindi reference-language CFG conditioning",
+   "subsystem": "tts-voice-identity",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "paths": [
+    "api/_voice/language-conditioning.js"
+   ],
+   "what": "voiceScriptMode() counts Devanagari vs Latin code points -> devanagari|mixed|latin_only|unknown. voiceLanguageConditioning() forces Chatterbox cfg_weight=0 when a Hindi target is conditioned on a latin_only/unknown reference (accent-transfer mitigation from Chatterbox guidance) and emits explicit quality warnings and evidence scope (source_transcript|exact_reference|unverified).",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "tts-voice-identity",
+   "evidence": "Receipts carry requested vs effective CFG; wave25 control proved wire cfg_weight .78 for the matched-reference profile and 0 for unknown (services/internal-voice tests n=38, 2026-09-14).",
+   "notes": "voiceScriptMode is copy-ready for Taxila (route TTS language, detect child's Roman-Hindi typing). The CFG rule is Chatterbox-specific; keep only if Taxila self-hosts Chatterbox."
+  },
+  {
+   "id": "pv-03",
+   "title": "Open Chatterbox Multilingual V3 provider (HMAC broker protocol, receipts, PerTh watermark, continuous-utterance law)",
+   "subsystem": "tts-voice-identity",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "paths": [
+    "api/_voice/providers/open-chatterbox-preview.js",
+    "services/open-voice-runtime/"
+   ],
+   "what": "Client for the self-hosted Chatterbox Multilingual V3 (general + hi_v3 packs pinned by commitment) behind an HMAC-signed CPU broker on Azure Container Apps. Signs request (protocol, method, path, timestamp, nonce, body sha) and verifies a signed response; binds request id, reference sha, model pack commitment, text-plan sha, disclosure, conditioning, PCM sha, duration, RTF; requires perth_watermark_verified and perth_score>=0.5; refuses any plan that is not ONE acoustic call; optional LoRA adapter binding; 30 status polls inside an allocation window for cold start.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "tts-voice-identity; infra/azure",
+   "evidence": "AZURE-DEPLOY-STATE.md 2026-08-26: warm RTF 0.79 (4359 ms for 5520 ms audio) on Central India serverless T4; first call on fresh replica ~17 s; synthetic buzz-tone reference only (quality unmeasured).",
+   "notes": "Only relevant if Taxila wants a self-hosted cloned teacher voice; for gpt-realtime-2.1 this is a fallback/offline-lesson-audio lane. Watermark + signed receipt pattern is worth keeping for any generated audio of a child-facing persona."
+  },
+  {
+   "id": "pv-04",
+   "title": "Azure Personal Voice adapter (Custom Voice API 2026-01-01)",
+   "subsystem": "voice-cloning",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "paths": [
+    "api/_voice/providers/azure-personal-voice.js"
+   ],
+   "what": "Full enrolled-voice lifecycle: uploads a consent statement recording (voiceTalentName, companyName, locale) to /customvoice/consents, creates /customvoice/personalvoices from 30-90 s of prompts (product floor above Azure's 5 s minimum), idempotent Operation-Id from stable UUID, waits for Succeeded, synthesizes via SSML <mstts:ttsembedding speakerProfileId> to raw-24khz-16bit-mono-pcm, budget reserve/begin/settle/uncertain around every paid call, signed-URL allow-list for private audio, sha256+WAV probe of every reference, and a deliberately smaller erasure config so deletion never depends on approval flags.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "voice-cloning; tts-voice-identity",
+   "evidence": "Never live-called in this segment: gated on AZURE_PERSONAL_VOICE_LIMITED_ACCESS_APPROVED; rejected.md ws-r168 confirms it is not the live Room/preview provider. Speech catalogue GET returned 774 voices, 18 hi-IN, 20 en-IN (measurements wave25-runtime-bindings-and-live-integrity-20260914, n=1).",
+   "notes": "BUG to fix before reuse for Hindi: synthesizeStream hardcodes xml:lang=\"en-US\" and calls renderTextWithDisclosure(text) without a languageId, so a Hindi lesson would get the English disclosure. Requires Microsoft Limited Access; VOICE-ENROLLMENT-REALITY.md warns open-ended clones may not fit approved categories. For Taxila, a licensed voice-actor teacher voice or stock hi-IN/en-IN neural voices avoids cloning minors entirely."
+  },
+  {
+   "id": "pv-05",
+   "title": "Voice lane registry: self-hosted-first order, single VOICE_PRIMARY_LANE switch, vendor bench arms",
+   "subsystem": "tts-voice-identity",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "paths": [
+    "api/_voice/registry.js",
+    "api/_voice/providers/elevenlabs-pvc.js",
+    "api/_voice/providers/sarvam-bulbul.js",
+    "api/_voice/providers/vendor-common.js"
+   ],
+   "what": "One file owns provider order (open_chatterbox first, azure_personal_voice second) with a written reversal condition tied to a fidelity bench; vendor arms (ElevenLabs PVC, Sarvam Bulbul) exist only as bench arms, enabled by VOICE_VENDOR_ARMS and selected only via VOICE_PRIMARY_LANE, which throws rather than silently falling back. Erasers reachable even when an arm is off.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "tts-voice-identity; evals/gates",
+   "evidence": "Code read; no live vendor call in this segment.",
+   "notes": "Pattern for Taxila: gpt-realtime-2.1 voice primary, Azure neural TTS for generated lesson modules, vendor arms only behind a bench. 'Never silently substitute a provider' is the reusable law."
+  },
+  {
+   "id": "pv-06",
+   "title": "Spoken synthetic-audio disclosure (en/hi) + provider contract check",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "paths": [
+    "api/_voice/contracts.js"
+   ],
+   "what": "SYNTHETIC_AUDIO_DISCLOSURES {en:'This is an AI-generated voice replica.', hi:'यह एआई से बनाई गई आवाज़ की प्रतिकृति है।'}; renderTextWithDisclosure prefixes every synthesis; providers must echo the exact disclosure or the call fails.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "safety-floor/honesty; parent visibility",
+   "evidence": "Enforced on every Chatterbox receipt; rejected.md disclosure-announces-the-clone shows it breaks blind benches.",
+   "notes": "For a children's teacher, a per-clip disclosure is noisy; adapt to a per-session spoken+visual disclosure ('I am an AI teacher') and keep the contract check pattern. Keep the never-deny-being-AI rule."
+  },
+  {
+   "id": "pv-07",
+   "title": "Prosody plan (EmotionOS in the voice): vibe dials + register -> closed rate/energy/pitch bands, pauses, bounded style deltas",
+   "subsystem": "emotional-lens/affect",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "api/_voice/prosody.js",
+    "evals/prosody/run.mjs",
+    "evals/prosody/fixtures.mjs"
+   ],
+   "what": "Pure mapper: five 0-4 vibe dials (warmth, energy, humour, directness, formality) + optional high-confidence register -> {rateBand, energyBand, pitchRangeBand, pauseSentenceMs (160-700), pauseClauseMs=0.45x, pauseGlyph ('…' only for slow), styleDelta on provider numeric fields, appliedRegister, planSha256}. Neutral input is byte-identical to no plan. Never emits free text into any prompt or TTS input except a single punctuation glyph.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "emotional-lens/affect; tts-voice-identity",
+   "evidence": "evals/prosody 20/20; proxy timing table n=60 lines (20 en/20 hi/20 Hinglish): fast 1163 ms < medium 1594 ms < slow 2214 ms, strict ordering on every line (authored constants, not acoustic). No real synthesized duration measured.",
+   "notes": "Taxila: map the same bands to Azure SSML <prosody rate/pitch> and <break> for generated lesson audio, and to closed-enum delivery hints for gpt-realtime (never sentence-shaped). Slow+clear for a confused 7-year-old, energetic for a celebrating one."
+  },
+  {
+   "id": "pv-08",
+   "title": "Register reader: surface-feature delivery classifier for en/hi/Hinglish turns",
+   "subsystem": "emotional-lens/affect",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/engine/register.ts",
+    "evals/emotionos/run.mjs"
+   ],
+   "what": "LLM-free, pull-only classifier of HOW a turn was delivered (rushed, upset, excited, flat, neutral + high/low confidence) from length, punctuation, letter repeats, shouting, laughter tokens (incl. Devanagari हाहा), Hindi marker density, gap since last turn and hour. Render gate: only high-confidence non-neutral renders a hint; never stored; never names an emotion as fact.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "emotional-lens/affect; learning (covert comprehension cue)",
+   "evidence": "60/60 hand-labelled turns (20 en, 20 hi, 20 Hinglish), 36/36 high-confidence correct, 2026-09-13; first run 59/60 until the Devanagari matra fix. Authoring-time self-check, not a held-out corpus.",
+   "notes": "For Taxila feed it ASR transcripts + timing of the child's answers: 'flat'/'rushed' answers after an explanation are cheap covert signals that the child did not engage. Needs re-labelling for child speech (short answers are normal for 6-year-olds)."
+  },
+  {
+   "id": "pv-09",
+   "title": "Sentence splitter with Devanagari danda + abbreviation/decimal/initial/list-marker exceptions",
+   "subsystem": "tts-voice-identity",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "api/_room-speak-plan.js",
+    "evals/room-speak-plan/run.mjs"
+   ],
+   "what": "planReplySentences(text): pure, never throws; splits on . ! ? । ॥ runs, keeps decimals (₹49.99), abbreviations (Dr., etc., डॉ.), initials (A.P.J.), list markers (1.), absorbs closing quotes. roomSpeakPlan returns {sentences,count}; roomSpeakLanguageId maps hindi/hinglish->hi, english->en from the same policy as the text.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "tts-voice-identity; avatar-visual (caption/lip-sync chunking); generative-ui",
+   "evidence": "40 fixture cases; room-speak-plan 125-130 checks green 2026-09-13.",
+   "notes": "Directly reusable for chunking teacher replies into TTS clips, captions, and karaoke-style highlighting for early readers."
+  },
+  {
+   "id": "pv-10",
+   "title": "Buffer-one-ahead voice clip sequencer (framework-free)",
+   "subsystem": "realtime-voice",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/room/voiceSequence.ts",
+    "evals/room-speak-plan/benchmark.mjs"
+   ],
+   "what": "runVoiceSequence({fetchClip, playClip, isActive, waitForResume, onFirstAudio}): fetches clip i+1 as soon as clip i arrives, plays sequentially, pause/resume between clips, supersession checked after every await, count re-read from every server response.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "realtime-voice (TTS fallback lane); avatar-visual",
+   "evidence": "Real Chromium, real loop, fake 400 ms/sentence synth, 5-sentence reply, n=10/arm: time to first audio mean 2001.5 ms -> 400.7 ms (5.00x), reproduced twice 2026-09-13. Real provider per-sentence latency unmeasured.",
+   "notes": "Use for any non-realtime spoken output (generated module narration, story read-aloud, avatar). gpt-realtime-2.1 streams natively, so not needed on the live call path."
+  },
+  {
+   "id": "pv-11",
+   "title": "Per-sentence speak op bound to an HMAC session (server recomputes plan; register bound in session)",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "api/_room-surface.js",
+    "api/room.js",
+    "api/_room-voice.js"
+   ],
+   "what": "roomSay mints an HMAC session token binding the reply hash (lr) plus closed register pair (rg/rc); roomSpeak accepts {session,text,index}, refuses if sha(text)!=lr, recomputes the sentence plan every call, never trusts a client count, builds prosody from the bound register and the declared language policy.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "safety-floor/honesty; realtime-voice",
+   "evidence": "room-speak-plan 130, room-doors 2333, emotionos 45 (60 rows end to end) offline 2026-09-13.",
+   "notes": "Pattern: audio can only ever be synthesized for text the safety-gated text turn already approved. Essential for a child product: TTS endpoint must never speak arbitrary client text."
+  },
+  {
+   "id": "pv-12",
+   "title": "Blind paired listening test + verdict storage + activation guard (law 4)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/studio/ListeningTest.tsx",
+    "src/studio/ListeningTest.css",
+    "api/_replica-calibration.js",
+    "api/_replica-runtime.js",
+    "db/migrations/166_voice_listening_verdict.sql",
+    "evals/listening-test/run.mjs"
+   ],
+   "what": "UI randomizes sample order once per mount with crypto.getRandomValues, hides identity until both samples are rated on 4 axes (owner_likeness, naturalness, indian_accent, pronunciation; 1-5), shows a reference clip outside the blinded grid; server stores verdict as schema vyakti.voice-listening-verdict.v1 in vy_replica_calibration with pair_sha256 = sha(sorted candidate audio hashes + reference hash), winner null on tie; guardedActivateOwnedRuntime refuses activating a candidate that lost its latest verdict unless an override is explicitly passed and audited.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates/verification; tts-voice-identity (teacher voice selection)",
+   "evidence": "listening-test 52 -> 63 -> 86 checks offline 2026-09-13; no human verdict on real generated audio recorded anywhere in this segment.",
+   "notes": "Taxila use: pick the teacher voice per language with parents/teachers/kids via this exact blind form (swap owner_likeness for 'sounds like a kind teacher'/'child understood it'), and gate any voice change on a recorded verdict."
+  },
+  {
+   "id": "pv-13",
+   "title": "Owner-only private audio streaming doors (reference + sealed generation)",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "api/replica-source-audio.js",
+    "api/_replica-source-audio.js",
+    "api/replica-generation-audio.js",
+    "api/_replica-generation-audio.js"
+   ],
+   "what": "GET-only, bearer-authenticated, rate-limited (two-tier) doors that stream an owner's own primary recording or sealed generation through the private signed-read seam; identical refusal codes for wrong owner/forged id/unsealed/malformed/signed-out so existence is not leaked; never re-encodes.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "auth/accounts/consent; parent visibility",
+   "evidence": "listening-test +11 and +13 door checks incl. 5 negative controls each (2026-09-13).",
+   "notes": "Template for 'parent can replay their child's session audio' without exposing storage URLs."
+  },
+  {
+   "id": "pv-14",
+   "title": "Internal owner voice CPU service (Azure Container Apps) orchestrating one zero-shot Hindi synthesis on scale-to-zero GPU",
+   "subsystem": "voice-cloning",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "services/internal-voice/contract.mjs",
+    "services/internal-voice/runtime.mjs",
+    "services/internal-voice/http.mjs",
+    "services/internal-voice/server.mjs",
+    "services/internal-voice/lifecycle.mjs",
+    "services/internal-voice/Dockerfile",
+    "services/internal-voice/README.md",
+    "services/internal-voice/runtime.test.mjs",
+    "services/internal-voice/http.test.mjs"
+   ],
+   "what": "Exact-owner/replica env binding, SHA-pinned authorization JSON (scope, expiry, identity_claim_allowed=false, release_eligible=false, training_allowed=false, ordered purposes), one attempt by default, 202-then-poll run model with client UUID idempotency, uncertain attempts never auto-retried, provider receipt checks (PCM sha, PerTh), WAV wrap, 4-axis ratings, revoke+erase, metrics {total_ms, model_elapsed_ms, duration_ms, real_time_factor, first_audible_ms:null until the browser measures}.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "infra/azure; voice-cloning",
+   "evidence": "40 node tests with synthetic Blob/ARM/broker (2026-09-14); live: CPU /healthz 200, reference primed (480,044 bytes), GPU dormant; zero synthesis or GPU activation ever performed.",
+   "notes": "Owner-only scoping is not reusable as-is; the run model (202 + poll same UUID, never replay uncertain work, honest null metrics) is the reusable idea for Taxila's on-the-fly module generation jobs."
+  },
+  {
+   "id": "pv-15",
+   "title": "Azure Blob ETag compare-and-swap JSON state store",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "services/internal-voice/blob-store.mjs"
+   ],
+   "what": "Durable cross-process state in one state.json blob: read with ETag, mutate synchronously, PUT with If-Match (or If-None-Match:* on create), retry on 412 up to 6x, refuse async mutators, 1 MiB cap; audio blobs create-only; delete includes snapshots.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "infra/azure/vercel/deploy",
+   "evidence": "Concurrent CAS claim and lost-ack cases in services/internal-voice tests (n=37-40, synthetic transport).",
+   "notes": "Handy for small per-job state where Neon is overkill (e.g., a generation job ledger for a GPU worker)."
+  },
+  {
+   "id": "pv-16",
+   "title": "Supervised scale-to-zero Azure GPU controller (exact revision activate/deactivate, deadlines, micro-USD reservation)",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "services/azure-voice-app/controller.mjs",
+    "services/azure-voice-app/controller.test.mjs",
+    "api/_voice/allocation-runtime.js",
+    "api/_voice/allocation-boundary.js",
+    "api/_voice/allocation-admission-handler.js"
+   ],
+   "what": "Validates an approved plan (ARM app id, revision name, isolation tag, internal ingress, image pinned by @sha256, minReplicas 0/maxReplicas 1, Single revision mode, configuration/template hashes, optional separate revision_template_sha256) and a policy (900 s envelope, 420 s dispatch, rate microUSD/s x contingency <= per-allocation cap <= limit, hard_invoice_cap=false, supervisor source sha). Activates only the exact revision inside a durable window, issues one-use child headers per operation, closes idempotently (claimClose), and an independent supervisor deactivates at the dispatch deadline; uncertain ARM mutations are retained, never replayed.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/azure/vercel/deploy (self-hosted GPU for avatar/TTS/image models)",
+   "evidence": "28 controller controls + 12 internal-voice controls offline; live read-only preflight verified dormant Hindi GPU (3 revisions inactive, 0 replicas) 2026-09-14.",
+   "notes": "If Taxila runs its own GPU models (video avatar, open TTS) on Container Apps serverless GPU, this is the cost-safety envelope. Not needed for Azure AI Foundry managed models."
+  },
+  {
+   "id": "pv-17",
+   "title": "Independent heartbeat supervisor with self-hash",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "services/internal-voice/supervisor.mjs"
+   ],
+   "what": "Persistent CPU loop every 5 s: verifies its own source sha matches policy, ticks every open GPU window (deactivate at deadline), commits a 30 s heartbeat lease; the runtime refuses to dispatch unless the lease is fresh and from the exact supervisor source.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/azure/vercel/deploy",
+   "evidence": "stale-supervisor refusal case in tests; never run live with a GPU window.",
+   "notes": "Do not run cleanup from an HTTP-scaled-to-zero process; keep it a separate always-on cheap CPU process."
+  },
+  {
+   "id": "pv-18",
+   "title": "Least-privilege custom role grant script for GPU revision control",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "docs/handoff/2026-09-14/grant-internal-voice-identity-personal-cloud-shell.sh"
+   ],
+   "what": "Cloud Shell script creating a deterministic custom role with exactly five actions (containerApps/read, revisions/read, revisions/replicas/read, revisions/activate/action, revisions/deactivate/action) scoped to one container app and assigned to a dedicated user-assigned managed identity; idempotent with GET readback and mismatch refusal.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/azure/vercel/deploy",
+   "evidence": "Owner ran it; root verified grant via API (measurements wave25-owner-grant-verified-20260914, n=1).",
+   "notes": "Contains subscription/resource identifiers (not secrets) - copy the pattern, not the file."
+  },
+  {
+   "id": "pv-19",
+   "title": "Private voice request model: per-request self-use attestation, frozen server config, snapshot/receipt/config hashes",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "db/migrations/171_private_voice_request.sql",
+    "api/_private-voice-store.js",
+    "api/_private-voice-handler.js",
+    "api/_private-voice-erasure.js",
+    "evals/private-voice/run.test.mjs",
+    "evals/private-voice/fixtures.mjs",
+    "docs/handoff/2026-09-14/PRIVATE-VOICE-REQUEST-CONTRACT.md"
+   ],
+   "what": "One row per attempt (vy_private_voice_run) holds the owner's attestation receipt (statement set private-own-voice/v1, own_voice_private_use:true), a server-resolved snapshot of source/artifact/job/consent rows, a frozen server config (text, model pack commitment, seed, style, conditioning), all SHA-256 hashed over canonical JSON; client may send only selectors + expected snapshot hash; any extra field is a 400; UUID replay is idempotent; requirePrivateVoiceRun re-reads authority before every effect and refuses on drift; revoke closes the lifecycle window; output path reserved at admission so erasure can delete even if the upload ack is lost; erasure fence waits for live leases/windows. DB CHECK constraints enforce scope flags and the output path shape.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "auth/accounts/consent (DPDP parental consent receipts); db-schema",
+   "evidence": "13 node:test cases with synthetic SQL (2026-09-14); migration 171 NOT applied live; no route registered; SQL not yet parsed by live Postgres (WIP commit f0246956 says so).",
+   "notes": "Strong template for DPDP: a consent receipt per processing purpose, server-frozen config, hashes, re-check before each effect, reserved erasure paths. Taxila would key on parent_user_id + child_profile_id."
+  },
+  {
+   "id": "pv-20",
+   "title": "EXPLAIN-only SQL packet generator",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "scripts/private-voice-sql-packet.mjs"
+   ],
+   "what": "Emits the store's real parameterized statements with synthetic parameter values wrapped for EXPLAIN (never ANALYZE/execution) so an operator can parser-check new SQL against the live schema in a READ ONLY transaction.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates/verification; db-schema",
+   "evidence": "Pattern used live for other statements (e.g., private follow-up ADMIT/COMPLETE n=2 EXPLAIN passed 2026-09-14).",
+   "notes": "Cheap way to catch Neon schema drift before deploy."
+  },
+  {
+   "id": "pv-21",
+   "title": "Vercel same-origin proxy to an Azure Container Apps service (no secrets in Vercel)",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "api/internal-voice.js",
+    "api/_internal-voice-proxy.js"
+   ],
+   "what": "Vercel function (maxDuration 30) that 404s unless configured, verifies the Supabase bearer, enforces exact owner, validates the target origin (https, *.azurecontainerapps.io, no port/path/query), forwards the bearer, caps response at 25 MB, passes audio/wav or JSON only. Vercel holds only mode vars and the origin; Blob/ARM credentials live in the Azure service.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/azure/vercel/deploy",
+   "evidence": "Live preview: unauthenticated internal voice 401 (measurements wave26-mobile-notice-and-voice-binding-20260914).",
+   "notes": "Matches Taxila's Vercel + Azure split for long-running module generation."
+  },
+  {
+   "id": "pv-22",
+   "title": "Private Voice Studio panel (explicit generate, poll, authenticated playback, 4-axis ratings, revoke)",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/studio/InternalVoicePanel.tsx",
+    "src/studio/internalVoiceApi.ts",
+    "src/studio/internal-voice-panel.css",
+    "evals/internal-voice-ui.mjs",
+    "evals/internal-voice-ui-browser.mjs"
+   ],
+   "what": "Panel hidden on 404; generation only from an explicit button; polls the same run UUID; fetches reference and sample WAV with bearer and plays via Blob URLs; ratings form placed after the two-column comparison in document flow (phone-safe); failed/unknown runs can only be checked or removed; strict response validation.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "design-system/ux; evals (internal voice QA tool)",
+   "evidence": "Chromium fixture at 390x900 and 1440x1000, no overflow, all four touch ratings saved (2026-09-14); synthetic audio only.",
+   "notes": "Reuse as an internal 'teacher voice QA' admin screen."
+  },
+  {
+   "id": "pv-23",
+   "title": "Browser 24 kHz mono PCM16 WAV capture with strict header inspection",
+   "subsystem": "voice-cloning",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/studio/wavCapture.ts"
+   ],
+   "what": "getUserMedia with echoCancellation/noiseSuppression/autoGainControl OFF, 48 kHz AudioContext + ScriptProcessor capture, OfflineAudioContext resample to 24 kHz, own PCM16 WAV encoder, inspectPcmWav24kMono rejects anything not exactly RIFF/PCM/mono/24k/16-bit with consistent sizes, duration cross-check, level+peak callback, friendly permission error messages, loopback mock microphone for tests (AudioContext resumed inside getUserMedia).",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "voice-cloning; realtime-voice (diagnostic recordings); android/capacitor",
+   "evidence": "wave26 recording-upload-repair n=7 groups incl. Chromium metadata + AudioContext decoding of the exact bytes (2026-09-14).",
+   "notes": "ScriptProcessorNode is deprecated; Taxila should port to AudioWorklet but keep the inspector and resample logic. Do not disable AEC for live tutoring calls - only for clean enrollment samples."
+  },
+  {
+   "id": "pv-24",
+   "title": "Ambiguous-upload reconciliation (PUT failed -> ask idempotent finalizer)",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/studio/recordingUpload.ts",
+    "evals/recording-upload-repair.mjs"
+   ],
+   "what": "transferRecording(): if the browser-to-Blob PUT throws (CORS, network handoff, lost response), call the server's owner-scoped idempotent finalizer; if the object committed, continue without re-upload; otherwise rethrow the original error and keep File/source/intent for Retry.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "infra; android/capacitor (flaky mobile networks in India)",
+   "evidence": "recording-upload-repair suite registered in release; live logs showed source authorization 201 then no PUT reached storage (root cause was CSP).",
+   "notes": "Small, high-value for Indian 4G conditions."
+  },
+  {
+   "id": "pv-25",
+   "title": "Studio CSP that actually permits Azure Blob uploads and signed-media playback, with real-browser counterfactual tests",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "vercel.json",
+    "evals/studio-media-policy/run.mjs"
+   ],
+   "what": "connect-src 'self' https://<account>.blob.core.windows.net plus media-src 'self' blob: https://<account>.blob.core.windows.net on /studio and /studio.html; Chromium suite serves the exact old and new header and proves old blocks upload/blob playback/signed audition while new decodes a 13 s WAV from both blob: and the Azure origin.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/azure/vercel/deploy; design-system/ux",
+   "evidence": "Chromium n=16 checks across both routes (2026-09-14); live header readback n=3 confirmed the old broken policy.",
+   "notes": "connect-src does not govern <audio>; Vite dev server does not serve production headers - test with real headers."
+  },
+  {
+   "id": "pv-26",
+   "title": "Recording quality gate + non-clipping fake microphone WAV for browser tests",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/studio/CloneExperience.tsx",
+    "evals/rehearsal/personal.mjs"
+   ],
+   "what": "ResonanceRecorder accepts a take only if long enough, samplePeak<0.995 and audibleRatio>=0.35 (else 'The microphone clipped...'); tests feed Chromium --use-file-for-fake-audio-capture with a generated 20 s 48 kHz mono WAV at peak 0.3 with light amplitude modulation, because Chromium's built-in fake tone clips.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates/verification; voice-cloning",
+   "evidence": "Personal rehearsal 28/28 over 3 runs and later 63/63 walks (2026-09-13/14).",
+   "notes": "Use for Taxila's mic-check step before a lesson (too loud/too quiet/noisy room)."
+  },
+  {
+   "id": "pv-27",
+   "title": "Compact 'silver' capture surface (waveform + timer + one control) for phones",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/studio/CloneExperience.tsx",
+    "src/studio/clone-experience.css",
+    "evals/clone-experience-qa/mobile-studio26.mjs"
+   ],
+   "what": "Replaced an oversized decorative dial with a compact waveform driven by mic history, timer and one rectangular control; idle/recording/preview share a 342 px minimum surface; errors persist until dismissed, transient notices expire after 6 s and clear on navigation.",
+   "maturity": "shipped-measured",
+   "taxila_use": "idea",
+   "taxila_target": "design-system/ux",
+   "evidence": "n=20 real Chromium renders at 360/390/768/1440 px: zero overflow, 44 px control floor, min contrast 6.13:1, 3 px focus (2026-09-14).",
+   "notes": "Owner explicitly rejected decorative 'scanning' metaphors; for kids keep one obvious control."
+  },
+  {
+   "id": "pv-28",
+   "title": "Capture duration contract: 25 s UI timer under a 30 s decoder ceiling",
+   "subsystem": "voice-cloning",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/studio/LivenessCapture.tsx",
+    "src/creatorStudio/LivenessCapture.tsx",
+    "services/voice-evidence/identity_audio.py"
+   ],
+   "what": "Both capture surfaces auto-stop at 25 s; decoder MAX_FRAMES = 24 kHz x 30 s; oversized/padded media refuse 413 server-side rather than silent trim.",
+   "maturity": "shipped-measured",
+   "taxila_use": "idea",
+   "taxila_target": "voice-cloning; multimodal-vision",
+   "evidence": "Native decoder 7/7: 25 s WebM and MP4 -> 600,000 frames; exact 30 s -> 720,000; padded AAC 720,512 frames refuses 413 (2026-09-14).",
+   "notes": "General rule: UI limits need headroom below server limits; JS timers are not media-duration guarantees."
+  },
+  {
+   "id": "pv-29",
+   "title": "Azure Face liveness v1.2 result parsing (nested latest.result.verifyResult)",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "services/azure-verifier/src/liveness.js",
+    "services/azure-verifier/test/liveness.test.mjs"
+   ],
+   "what": "Parser fixed to Microsoft's documented nesting; flat shape, non-identical identity and low confidence fail closed; model version pinned 2025-05-20.",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "auth/accounts/consent",
+   "evidence": "9 liveness tests (2026-09-14).",
+   "notes": "Face biometrics on minors is a DPDP/child-safety risk; Taxila should not collect it. Listed only for completeness."
+  },
+  {
+   "id": "pv-30",
+   "title": "Audiovisual evidence producer audit (YuNet + Light-ASD active speaker, AASIST spoof baseline)",
+   "subsystem": "multimodal-vision",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "docs/handoff/2026-09-14/VOICE-PRODUCER-NEXT.md",
+    "docs/handoff/2026-09-14/VOICE-ENROLLMENT-REALITY.md"
+   ],
+   "what": "Source + primary-doc audit of what it takes to prove 'the visible person spoke this audio': pinned YuNet ONNX and Light-ASD checkpoint (MIT), CPU-loader caveats, per-window track reset and tail-drop defects in the old runner, diarizer placeholders that must never be used as evidence, a 30-adult consented corpus design (10/10/10 split), five acceptance tests, dataset licence notes (AVA-ActiveSpeaker CC BY 4.0 labels; IndicSynth/AV-Deepfake1M CC BY-NC).",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "multimodal-vision; learning (who is answering?)",
+   "evidence": "Historical synthetic CPU run produced finite Light-ASD [25,2] logits; no real-media inference or calibration.",
+   "notes": "Idea for Taxila: active-speaker detection (camera on) could flag when a parent answers for the child, keeping comprehension signals honest. Do not treat as ready."
+  },
+  {
+   "id": "pv-31",
+   "title": "Science-teaching listening pack with critical units (Hindi, Hinglish, English)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "paths": [
+    "docs/handoff/2026-09-09/listening/manifest.json",
+    "docs/handoff/2026-09-09/listening/index.html",
+    "docs/handoff/2026-09-09/evidence/VOICE-LISTENING106-RECEIPT.json"
+   ],
+   "what": "Six paired texts (pendulum period, Ohm's law current, units check, length ratio) in Hindi, Hinglish and English, each with criticalUnits (e.g., '4 ओम', '12 वोल्ट', 'गुरुत्वीय त्वरण', 'नहीं बढ़ता') that must be pronounced correctly; static blinded A/B page; receipt preserves reference/PCM hashes and only a 44-byte WAV header transform.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates/verification; learning/pedagogy",
+   "evidence": "12/12 clips verified, humanRatings 0, automaticWinner null (2026-09-09).",
+   "notes": "Copy the TEXT + criticalUnits structure to seed Taxila's NCERT pronunciation corpus. Do NOT copy the WAVs: they are conditioned on the owner's voice (biometric)."
+  },
+  {
+   "id": "pv-32",
+   "title": "Sealed blind listening benchmark harness (HMAC ids, attention trials, hidden repeats, unseal after lock)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "paths": [
+    "docs/gurukul/VOICE-LISTENING-BENCHMARK.md",
+    "scripts/voice-listening-benchmark.mjs",
+    "evals/voice-listening-benchmark/lib.mjs",
+    "docs/gurukul/research/expert-fidelity-20260907/voice-listening-methodology.md"
+   ],
+   "what": "Build/verify/listen/score/unseal CLI; 24-char listener ids minted with a fresh HMAC secret; mapping only in a private sealed key; tone attention checks; hidden repeats for listener consistency; disclosure audibility recorded separately; crossProviderWinner left empty unless an exact-text matched cell exists.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates/verification",
+   "evidence": "Instrument ready 2026-08-28 (21 clips, 23 screens, 2 tone checks); no human result recorded.",
+   "notes": "Use for Taxila's teacher-voice bake-off (Azure hi-IN neural voices vs gpt-realtime voices vs custom)."
+  },
+  {
+   "id": "pv-33",
+   "title": "Serverless T4 voice deployment runbook with measured cold start and cost",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "paths": [
+    "docs/gurukul/AZURE-DEPLOY-STATE.md",
+    "docs/gurukul/research/voice-stack.md"
+   ],
+   "what": "Central India Container Apps env with Consumption-GPU-NC8as-T4; CPU admission broker (public) in front of internal GPU runtime; scale-to-zero verified; traps (usages API shows 0 A100 but serverless T4 works; GPU env takes ~45 min extra to create; gpu:1 resource key invalid); hidden runtime network dependency; cold-start timeline.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/azure/vercel/deploy",
+   "evidence": "2026-08-26 measured: cold ready +161 s, request 504 at ~240 s; image 9.70 GB pulled in 78.65 s; T4 ~$0.53-0.60/hr active; idle ~$5/mo; warm ~$0.0007/utterance.",
+   "notes": "Directly relevant if Taxila self-hosts a video-avatar or open TTS model on Azure GPU."
+  },
+  {
+   "id": "pv-34",
+   "title": "Likeness card: fidelity shown 0-100 only at display; human listening method reported as a separate field",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/studio/VoicePreviewPanel.tsx",
+    "api/_replica-voice-preview.js",
+    "api/_fidelity.js"
+   ],
+   "what": "ECAPA cosine stays 0..1 in storage; card shows Math.round(mean*100); listening_method {verdict_count, axes, measured} rendered as its own sentence; never blended into the automated score.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "telemetry/tracing; parent visibility (learning reports)",
+   "evidence": "listening-test 86 checks incl. 'not measured' negative controls (2026-09-13).",
+   "notes": "Same law for Taxila parent reports: never average a human rating and a model score into one number without a validating study."
+  },
+  {
+   "id": "pv-35",
+   "title": "Shared provider spend ledger (reserve -> begin -> settle | release | uncertain) applied to first text reply",
+   "subsystem": "payments",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "api/_provider-budget.js",
+    "api/_replica-dialogue.js",
+    "evals/text-ready/run.mjs"
+   ],
+   "what": "Every paid model/voice call reserves against a shared pilot budget before dispatch, begins, then settles real usage; ambiguous begin/provider/settlement keeps the reservation for reconciliation; cancellation before begin releases it. Wave 25 found and fixed a caller that bypassed it.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "payments; telemetry/tracing (per-student cost caps)",
+   "evidence": "text-ready 65/65 incl. 9 budget scenarios (2026-09-14), synthetic DB/provider.",
+   "notes": "Taxila needs per-child daily cost caps across gpt-realtime minutes, gpt-image-2 and module generation; reuse the state machine."
+  },
+  {
+   "id": "pv-36",
+   "title": "Person-declared reply language policy driving both text and TTS language",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/engine/agents/fromSheet.ts",
+    "src/engine/compiler.ts",
+    "api/_room-speak-plan.js"
+   ],
+   "what": "Closed {language: hindi|hinglish|english, script: devanagari|roman, register: formal|mixed|casual, codeSwitchNote?} projected from a validated sheet into its own compiled tail block; the voice language id is derived from the same policy (hinglish->hi); the follower's UI locale is deliberately ignored (proven by negative control).",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "prompt-compiler/persona-engineering; learning/pedagogy (medium of instruction)",
+   "evidence": "room-reply-language 13, person-sheet 46, text-ready 42 (2026-09-13).",
+   "notes": "Taxila: the child's medium of instruction (Hindi-medium RBSE vs English-medium CBSE) and script literacy should drive both the teacher's words and TTS language from one closed policy."
+  },
+  {
+   "id": "pv-37",
+   "title": "HMAC admission broker in front of GPU + six-field one-use child admission callback",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "services/open-voice-runtime/broker.py",
+    "api/voice-allocation-admission.js",
+    "api/_voice/allocation-admission-handler.js"
+   ],
+   "what": "Public CPU broker verifies HMAC and asks the app plane (POST /api/voice-allocation-admission with {window_id, child_id, operation, body_sha256, broker_origin, runtime_origin}) whether this exact operation is authorized inside an open window before forwarding to the internal GPU; each child id consumable once.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/azure/vercel/deploy",
+   "evidence": "Rebuilt broker image cu3u verified by digest (2026-09-14); deployed brokers had lacked the allocation origin (rejection wave25-deployed-broker-source-is-not-runtime-proof).",
+   "notes": "Random internet traffic can wake only the cheap CPU broker, never the GPU."
+  },
+  {
+   "id": "pv-38",
+   "title": "Real-browser benchmark of the shipped client loop (esbuild-transpiled, fake handlers)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "evals/room-speak-plan/benchmark.mjs"
+   ],
+   "what": "Transpiles the unmodified src/room/voiceSequence.ts and times it in Chromium against a fixed-cost fake synthesizer; numbers are of the code that ships, not a model of it.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates/verification",
+   "evidence": "5.00x TTFA, n=10/arm, twice.",
+   "notes": "Same discipline as the Meera echosim floor."
+  },
+  {
+   "id": "pv-39",
+   "title": "Affect + prosody fixture corpora (60 labelled turns; 60 prosody lines) in en/hi/Hinglish",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "evals/emotionos/run.mjs",
+    "evals/prosody/fixtures.mjs"
+   ],
+   "what": "REGISTER_FIXTURES: 4 turns per register bucket per language; prosody fixtures: 20 lines per language.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates/verification; emotional-lens/affect",
+   "evidence": "Used by 60/60 table and prosody 20/20.",
+   "notes": "Seed Taxila's child-turn affect fixtures; re-author for child speech."
+  },
+  {
+   "id": "pv-40",
+   "title": "VOICE-DAY-ONE runbook + voice dry-run rehearsal (wave-24 WIP patch, not merged)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "docs/handoff/2026-09-14/wave-24-wip/ws-r188-the-voice-programs-dry-run.patch",
+    "docs/gurukul/waves/wave-24/ws-r188-the-voice-programs-dry-run.md"
+   ],
+   "what": "Preserved patch: one Chromium rehearsal walking enrol -> process -> candidate -> listening verdict -> activation guard -> 'Hear the vibe' -> sentence-by-sentence Room clip on the fake provider, plus scripts/voice-day-one.mjs that refuses by env-var NAME and is dry-run by default.",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "evals/gates/verification",
+   "evidence": "Patch only; rejected.md in the patch: shared fake adapter name 'deterministic-fake'/'0-test' trips the anti-poisoning regex downstream.",
+   "notes": "Idea: one end-to-end voice rehearsal on fakes before first paid call; a live script that refuses by missing env NAME."
+  },
+  {
+   "id": "pv-41",
+   "title": "Meera live-call voice client removed in this branch (liveCall.ts, speech.ts, CallVoice.tsx, VoiceNote.tsx, native watch Java)",
+   "subsystem": "realtime-voice",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/private-voice-requests25@f0246956",
+   "paths": [
+    "src/voice/liveCall.ts (deleted)",
+    "src/voice/speech.ts (deleted)",
+    "src/components/CallVoice.tsx (deleted)",
+    "android/app/src/main/java/app/meera/companion/*Watch* (deleted)"
+   ],
+   "what": "Product separation (Vyakti stays, Meera moves out) deleted the Meera audio floor and voice call UI from this ref.",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "realtime-voice",
+   "evidence": "git diff --name-status handoff206..private-voice-requests25: D src/voice/liveCall.ts (3408 lines), D src/voice/speech.ts (2099).",
+   "notes": "Harvest the realtime call client from handoff206/main segments, not from this ref."
+  }
+ ],
+ "measurements": [
+  {
+   "claim": "Time to first audio for a 5-sentence reply fell from mean 2001.5 ms (median 2001.4) to mean 400.7 ms (median 400.4), 5.00x, using per-sentence clips + buffer-one-ahead playback",
+   "source": "context/measurements.md#ws-r156-time-to-first-audio @ origin/codex/private-voice-requests25@f0246956",
+   "method": "evals/room-speak-plan/benchmark.mjs: real voiceSequence.ts in Chromium, fake synthesizer 400 ms/sentence, both arms same page",
+   "n": "10 per arm, reproduced once",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "Register classifier 60/60 (100%) on hand-labelled turns, en 20/20, hi 20/20, Hinglish 20/20; high-confidence calls 36/36; first run 59/60 until Devanagari matra (\\p{M}) fix",
+   "source": "context/measurements.md#ws-r153-register-confusion-table @ origin/codex/private-voice-requests25@f0246956",
+   "method": "evals/emotionos/run.mjs over authored fixtures, offline",
+   "n": "60",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "Register threaded end to end: compiled prompt carries a hint iff high-confidence non-neutral (60/60) and the voice prosody plan applies the same register (60/60); low-confidence row byte-identical to neutral",
+   "source": "context/measurements.md#ws-r176-register-in-reply-and-voice @ origin/codex/private-voice-requests25@f0246956",
+   "method": "real roomSay/roomSpeak over fake Room, fixed clock",
+   "n": "60 (+2 sequential turns)",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "Prosody proxy timing means: fast 1163 ms, medium 1594 ms, slow 2214 ms; slow/fast ratio 1.89-1.92 per language; strict ordering on all 60 lines (authored ms-per-char constants, not acoustic)",
+   "source": "context/measurements.md#ws-r168-prosody-timing-table @ origin/codex/private-voice-requests25@f0246956",
+   "method": "estimateProsodyTimingMs over evals/prosody/fixtures.mjs",
+   "n": "60 lines x 3 plans",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "Listening test suite grew 52 -> 63 -> 86 offline checks (verdict math, pair hash, activation guard, owner-only audio doors, method text) with negative controls; zero human verdicts on real audio",
+   "source": "context/measurements.md#ws-r155-listening-test-suite-2026-09-13, #ws-r163-..., #ws-r179-... @ origin/codex/private-voice-requests25@f0246956",
+   "method": "node evals/listening-test/run.mjs",
+   "n": "86 assertions",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "Azure Speech catalogue reachable with bound key: 774 voices, 18 hi-IN, 20 en-IN (proves key/endpoint, not synthesis or likeness)",
+   "source": "context/measurements.md#wave25-runtime-bindings-and-live-integrity-20260914 @ origin/codex/private-voice-requests25@f0246956",
+   "method": "Speech voices list GET",
+   "n": "1",
+   "date": "2026-09-14"
+  },
+  {
+   "claim": "Internal voice runtime + controller: 37 -> 38 -> 40 node tests pass (real Chatterbox general/hi_v3 provider and real ARM controller over synthetic signed broker, ARM and Blob transports); one synthesis + one activation + one deactivation per run; duplicate request not replayed",
+   "source": "context/measurements.md#wave25-internal-owner-voice-controls-20260914, #wave25-owner-anchor-effective-cfg-20260914, #wave25-exact-revision-template-controls-20260914 @ origin/codex/private-voice-requests25@f0246956",
+   "method": "node --test services/internal-voice/*.test.mjs",
+   "n": "40",
+   "date": "2026-09-14"
+  },
+  {
+   "claim": "Live infra: dedicated UMI grant verified, CPU service /healthz 200 (gpu_probed:false), retained 24 kHz reference primed (480,044 bytes); Hindi GPU dormant (3 revisions inactive, 0 replicas); zero synthesis/GPU activation",
+   "source": "context/measurements.md#wave25-owner-grant-verified-20260914 @ origin/codex/private-voice-requests25@f0246956",
+   "method": "ARM/API readback receipts",
+   "n": "1",
+   "date": "2026-09-14"
+  },
+  {
+   "claim": "Azure returned different app vs revision template JSON for the same Hindi GPU (ephemeralStorage '' vs absent, revisionSuffix '' vs null, cooldown/polling populated vs null) -> separate hashes required",
+   "source": "context/measurements.md#wave25-exact-revision-template-controls-20260914 @ origin/codex/private-voice-requests25@f0246956",
+   "method": "read-only ARM GET of app, revision and revision list",
+   "n": "1",
+   "date": "2026-09-14"
+  },
+  {
+   "claim": "Private voice request store/handler: 13 node:test cases pass (owner/session boundaries, immutable config, duplicate UUID, source/permission change, withdrawal/expiry, receipt tampering, erasure path); no live parse; fresh-reference effective Hindi CFG is 0 while requested is 0.78",
+   "source": "context/measurements.md#private-voice-request171-offline @ origin/codex/private-voice-requests25@f0246956",
+   "method": "evals/private-voice/run.test.mjs with synthetic SQL results",
+   "n": "13",
+   "date": "2026-09-14"
+  },
+  {
+   "claim": "Studio CSP: old policy blocked Azure upload, blob: playback and signed-origin audition; repaired policy accepted block+commit upload and decoded a 13 s WAV from blob and Azure origin",
+   "source": "context/measurements.md#wave26-saved-audio-csp-20260914 @ origin/codex/private-voice-requests25@f0246956",
+   "method": "Chromium with exact production headers, Azure intercepted",
+   "n": "16 checks",
+   "date": "2026-09-14"
+  },
+  {
+   "claim": "Owner phone failure diagnosis: n=5 /api/replica-source POSTs (201,201,200,202,202), zero 5xx, no PUT reached storage; Azure OPTIONS n=3 all 200 -> CSP (connect-src self, no media-src) was the cause, not CORS",
+   "source": "context/measurements.md#wave26-recording-upload-repair-20260914 @ origin/codex/private-voice-requests25@f0246956",
+   "method": "read-only Vercel logs + Azure preflight probes + live header readback",
+   "n": "5 + 3 + 3",
+   "date": "2026-09-14"
+  },
+  {
+   "claim": "Mobile capture surface: zero overflow, 342 px panel, 44 px control floor (record 54, retry 48), min button contrast 6.13:1, 3 px focus outline",
+   "source": "context/measurements.md#wave26-silver-capture-mounted-states-20260914 @ origin/codex/private-voice-requests25@f0246956",
+   "method": "mounted CloneExperience in Chromium at 360/390/768/1440 px, synthetic 24 kHz mic",
+   "n": "20 renders",
+   "date": "2026-09-14"
+  },
+  {
+   "claim": "Identity audio decoder: 25 s WebM and MP4 -> 600,000 frames; 30 s -> 720,000; padded AAC 720,512 frames (30,021.33 ms) refuses 413",
+   "source": "context/measurements.md#wave25-worker-digest-native-decoder-and-ci-20260914 @ origin/codex/private-voice-requests25@f0246956",
+   "method": "7 RealDecodeTests with FFmpeg/ffprobe 9.0.1, Python 3.14.2",
+   "n": "7",
+   "date": "2026-09-14"
+  },
+  {
+   "claim": "Mobile auth CLS 0.109821 -> 0.002132 after reserving artwork geometry, opaque card (no backdrop-filter blur) and action-first order",
+   "source": "context/rejected.md#wave25-separate-premium-tokens-and-blurred-mobile-auth-broke-release-evidence @ origin/codex/private-voice-requests25@f0246956",
+   "method": "CI performance/visibility gates",
+   "n": "deterministic per run",
+   "date": "2026-09-14"
+  },
+  {
+   "claim": "Studio TBT on a quiet machine: /studio median 104 ms, studio-hi 164 ms (budgets tightened to 220/260 ms)",
+   "source": "commit 123aa347 / context/measurements.md#ws-r177-studio-tbt-on-a-quiet-machine-2026-09-13 @ origin/codex/private-voice-requests25@f0246956",
+   "method": "scripts/check-performance.mjs",
+   "n": "12 per target",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "[inherited] Same 10 s owner reference, protected Azure Chatterbox: general Hindi ECAPA mean 0.858449 (p10 0.838685); Hindi pack 0.832045; fragmented Hinglish 25,980 ms at 0.433967; one-pass general Hinglish 7,720 ms at 0.825082; one-pass Hindi-pack Hinglish 9,240 ms at 0.826010; PerTh 1.0 on all",
+   "source": "context/measurements.md (line ~15240) @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "192-dim ECAPA evidence service, signed protected synthesis",
+   "n": "2 Hindi clips per arm, 1 Hinglish per arm",
+   "date": "2026-08-29"
+  },
+  {
+   "claim": "[inherited] Fragmented vs one-pass Hinglish near-silence frames 65.47% vs 24.58%",
+   "source": "docs/gurukul/research/HINDI-HINGLISH-VOICE-QUALITY-FRONTIER-2026-08-30.md @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "analysis of saved owner-reference artifacts",
+   "n": "1 clip per arm",
+   "date": "2026-08-30"
+  },
+  {
+   "claim": "[inherited] Chatterbox on Azure serverless T4: warm 7.2 s wall / 4,359 ms service for 5,520 ms audio (RTF 0.79); first call on fresh replica ~17 s (RTF ~3.1); broker /healthz cold 21.8 s, warm 0.8 s",
+   "source": "docs/gurukul/AZURE-DEPLOY-STATE.md §1, §8 @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "real HTTP requests through HMAC broker, synthetic 6 s reference",
+   "n": "3 synth calls + probes",
+   "date": "2026-08-26"
+  },
+  {
+   "claim": "[inherited] Cold start from zero: GPU scheduled +34 s, 9.70 GB image pulled by +114 s (78.65 s), ready +161 s, triggering request 504 at +242 s (ingress ~240 s, broker 220 s timeout)",
+   "source": "docs/gurukul/AZURE-DEPLOY-STATE.md §8 @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "platform log timeline",
+   "n": "1",
+   "date": "2026-08-26"
+  },
+  {
+   "claim": "[inherited] Cost: NC8as-T4 ~$0.53-0.60/hr active, $0 idle (scale-to-zero); standing ~$5/mo (ACR Basic); warm ~$0.0007 per utterance; one 161 s cold wake ~= 35 warm syntheses; warm 30 s clone speech ~1 cent vs cold request 23-35 cents",
+   "source": "docs/gurukul/AZURE-DEPLOY-STATE.md §9; context/rejected.md#one-flat-voice-price-cannot-hide-cold-gpu-and-carrier-cost @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "Central India list prices x measured uptime",
+   "n": "estimate",
+   "date": "2026-08-26/29"
+  },
+  {
+   "claim": "[inherited] Azure coral (stock neural) vs incumbent: Hindi words 15/15 vs 11/15, first audio 255 ms vs 4.9-12.7 s, $0.0029 vs $0.0148 per utterance, pitch 210 vs 266 Hz - rejected by owner ear for accent identity",
+   "source": "context/rejected.md#azure-tts @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "pronunciation battery + owner listening",
+   "n": "15 words; owner verdict",
+   "date": "pre-2026-08"
+  },
+  {
+   "claim": "[inherited] gpt-realtime-2.1-mini voice call: barge-in VAD 6/6, median 271 ms (incumbent 279); vision 5/5 correct, 0 fabricated; steady first audio 1458-1497 ms median (incumbent 1370); words/turn 41-53 vs 20.5; spoken turn median 14.0 s (p90 18.2); available voices 137-192 Hz",
+   "source": "context/rejected.md#realtime-azure @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "9 sessions / 72 turns on startup credits",
+   "n": "72 turns",
+   "date": "pre-2026-08"
+  },
+  {
+   "claim": "[inherited] OpenVoice V2 tone conversion on IndicF5 base: ECAPA 0.726677 -> 0.680976, script-aware WER 0.3036 -> 0.375, CER 0.2562 -> 0.2975",
+   "source": "context/rejected.md#openvoice-tone-conversion-regressed-owner-proxy-and-asr @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "matched prompts, same 12 s reference, tau 0.3",
+   "n": "2",
+   "date": "2026-08-28"
+  },
+  {
+   "claim": "[inherited] VoxCPM2: three owner-bound clips on T4, ECAPA mean 0.766255; IndicF5 bounded equation normalization reduced symbol errors 4/4 -> 2/4 and numeral errors 3/5 -> 0/5",
+   "source": "docs/gurukul/research/HINDI-HINGLISH-VOICE-QUALITY-FRONTIER-2026-08-30.md @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "ECAPA proxy; ASR-based error counts",
+   "n": "3; 4 and 5 items",
+   "date": "2026-08-30"
+  },
+  {
+   "claim": "[inherited] Science listening pack: 12/12 clips verified (6 paired texts x 2 models), humanRatings 0, automaticWinner null",
+   "source": "docs/handoff/2026-09-09/evidence/VOICE-LISTENING106-RECEIPT.json @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "packaging receipt",
+   "n": "12 clips",
+   "date": "2026-09-09"
+  },
+  {
+   "claim": "[inherited] hmac-skew: voice-evidence 60 s clock skew vs 176 s cold start -> guaranteed 401 on first request; warm-up via unauthenticated /healthz measured 194,505 ms",
+   "source": "context/rejected.md#hmac-skew-shorter-than-cold-start @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "method": "real cold call",
+   "n": "1",
+   "date": "2026-08-26"
+  }
+ ],
+ "rejections": [
+  {
+   "tried": "Express the EmotionOS prosody plan as SSML <prosody> inside azure-personal-voice.js, assuming 'Azure-only serving' meant Room voice uses Azure Personal Voice",
+   "what_broke": "Reading api/room.js showed the live Room and studio preview both construct the Chatterbox provider; Personal Voice is not the live caller. Caught before code.",
+   "source": "context/rejected.md#ws-r168-assumed-azure-personal-voice-was-the-live-room-provider @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Before wiring any voice feature, read the real dependency-construction site, not a policy name or registry comment."
+  },
+  {
+   "tried": "Encode vibe/prosody identity into the existing style_key string to bust the preview cache",
+   "what_broke": "voicePreviewStyle() 400s on any unknown key, so every 'hear the vibe' request would have failed. Fixed by folding planSha256 into regeneration_key instead.",
+   "source": "context/rejected.md#ws-r168-vibe-encoded-into-style-key-throws-on-every-request @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Cache/dedup keys for generated audio must include every parameter that changes the audio; check validators before overloading a key."
+  },
+  {
+   "tried": "Copy moment.ts's padT (strip non-\\p{L}/\\p{N}) into the register classifier",
+   "what_broke": "Devanagari matras are \\p{M}; 'हाहा' shattered into 'ह ह', laughter missed, 59/60. Fix keeps \\p{M} and adds Devanagari laughter tokens -> 60/60.",
+   "source": "context/rejected.md#ws-r153-padt-without-combining-marks-breaks-devanagari-laughter @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Any Hindi text normalizer for a child's typed/ASR answers must keep combining marks; same bug previously produced 74 single-glyph 'tokens'."
+  },
+  {
+   "tried": "Derive the 'sounds like you' percentage by averaging the owner's 1-5 blind ratings and blending with the ECAPA cosine score",
+   "what_broke": "Rejected before code: creates a second unvalidated scorer for one number; human perceptual ratings and embedding cosine are different instruments. Replaced by a separate listening_method field.",
+   "source": "context/rejected.md#ws-r179-listening-method-does-not-recompute-the-fidelity-score @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Taxila parent reports must not blend teacher-observed comprehension with quiz scores into one number without a validating study."
+  },
+  {
+   "tried": "A speak_plan endpoint returning {sentences,count} so the client can request clip i of n",
+   "what_broke": "Would make a client-sent count load-bearing; replaced by recomputing the plan from the HMAC-bound reply on every call.",
+   "source": "context/rejected.md#ws-r156-a-plan-endpoint-that-trusts-a-client-count @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "TTS chunk endpoints should re-derive chunks from server-approved text, never trust client indices."
+  },
+  {
+   "tried": "Test 'replay' by reusing an old session token after a newer turn and expecting refusal",
+   "what_broke": "Session tokens are immutable and bind their own reply; that is a legitimate re-listen, not a replay. The real replay case is the new session asking to speak old text.",
+   "source": "context/rejected.md#ws-r156-an-old-session-replaying-its-own-reply-is-not-stale @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Let a child re-hear an earlier explanation; refuse only text the current credential never authorized."
+  },
+  {
+   "tried": "Prepend the voice activation guard's queries inside activateOwnedRuntime's atomic SQL; then a variant that activates and reverts on block",
+   "what_broke": "Broke four suites that assert exact call order/count; the revert variant briefly makes a losing candidate active, violating law 4. Replaced by a wrapper that decides before the write.",
+   "source": "context/rejected.md#ws-r163-guard-queries-prepended-to-activateownedruntime-broke-four-unrelated-suites @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Gate voice/persona changes before the write, never 'activate then undo'."
+  },
+  {
+   "tried": "Treat vy_replica_profile.definition.speech (inferred from uploaded material) as the person's declared 'how I talk'",
+   "what_broke": "Different system, row and authority; inferred claims can disagree with an explicit declaration. Built a closed declared policy instead.",
+   "source": "context/rejected.md#ws-r180-replica-profile-speech-is-not-persontalk @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Keep the parent/teacher-declared medium of instruction separate from the language the model infers from the child's speech."
+  },
+  {
+   "tried": "Initial internal owner voice runner used .5/.5/.8 style and unknown/unverified reference language",
+   "what_broke": "Existing Hindi conditioning mapped unknown to effective CFG 0, so it could not reproduce the measured .2/.78/.6 identity-anchor baseline; a test also used a nonexistent wire field (effective_cfg_weight vs cfg_weight).",
+   "source": "context/rejected.md#wave25-unmatched-cfg-zero-is-not-baseline + #wave25-default-voice-conditioning-and-code-only-memory @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "A voice A/B is only meaningful if conditioning and seeds match the baseline; log requested vs effective parameters."
+  },
+  {
+   "tried": "Make the retained owner-only internal voice runtime generic by removing its owner check",
+   "what_broke": "Its Blob state holds one static reference, authorization, budget reserve and GPU exclusion; per-account copies would multiply budget and allow concurrent target activation. Replaced by per-request SQL attestations (migration 171) reusing the shared SQL GPU meter. A first SQL draft used USING after an ON join exposing duplicate owner tuple columns.",
+   "source": "context/rejected.md#private-voice-static-grant-expansion @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Do not scale a single-tenant diagnostic by deleting its guard; budget and GPU exclusivity must be shared and per-tenant."
+  },
+  {
+   "tried": "Assume the deployed CPU broker already implemented the six-field allocation callback; use fsync local files for attempt durability",
+   "what_broke": "ARM metadata showed brokers had only HMAC/runtime origin config; no shared durable filesystem exists across Vercel/Container Apps. Switched to Blob ETag CAS and a documented broker rebuild.",
+   "source": "context/rejected.md#wave25-deployed-broker-source-is-not-runtime-proof @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Verify deployed image capability by metadata/digest, not by source; serverless needs object-store CAS, not local files."
+  },
+  {
+   "tried": "Controller assumed app template and target revision template serialize identically",
+   "what_broke": "Azure returns different JSON (ephemeralStorage '' vs absent, revisionSuffix '' vs null, cooldown/polling vs null); runtime would refuse with revision_template_drift before synthesis. Bind both hashes; never normalize away fields.",
+   "source": "context/rejected.md#wave25-app-template-is-not-revision-template + #wave25-premium-gate-and-voice-template-shape @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "When pinning Azure Container Apps state by hash, pin app and revision documents separately."
+  },
+  {
+   "tried": "Reuse four existing attachable managed identities for GPU lifecycle control; browser sign-in on employer laptop",
+   "what_broke": "None had applicable role assignments; operator lacked roleAssignments/write. Owner forbade personal Microsoft browser use on that laptop. Solved with a dedicated UMI plus a five-action custom role run from a personal device.",
+   "source": "context/rejected.md#wave25-attachable-identity-is-not-gpu-authority + #wave25-browser-login-and-assumed-identity-rights @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Least-privilege dedicated identities per capability; never assume attachability equals authority."
+  },
+  {
+   "tried": "Treat a successful role-grant script output ('Verified') as the voice service being created",
+   "what_broke": "Grant only confers permissions; CPU service, broker update, priming and supervisor were separate steps.",
+   "source": "context/rejected.md#wave25-successful-role-grant-is-not-service-creation @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Report infra steps by their actual effect."
+  },
+  {
+   "tried": "Studio deployed CSP connect-src 'self' only and no media-src",
+   "what_broke": "Browser refused the cross-origin Azure Blob PUT after a 201 source authorization; blob: recording playback showed 0:00/0:00. Vite fixtures did not serve production headers so tests stayed green.",
+   "source": "context/rejected.md#wave26-self-only-csp-killed-upload-and-local-playback + #wave26-vite-recorder-fixture-missed-production-csp @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Run recorder/upload tests against the real production CSP; this exact failure would hit Taxila's mic + Blob upload on Vercel."
+  },
+  {
+   "tried": "Repair CSP by allowing Azure in connect-src only",
+   "what_broke": "ProcessingReview sets a short-lived signed Azure URL directly on audio.src; media-src governs that, so the next listening action was still blocked.",
+   "source": "context/rejected.md#wave26-connect-src-does-not-authorize-saved-audio @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Signed media URLs need media-src (and img-src for images from gpt-image-2 stored in Blob)."
+  },
+  {
+   "tried": "Accept green CI plus a retained-owner-only voice panel as product completion",
+   "what_broke": "Owner on a phone could not complete audio/video upload: oversized capture, overlapping text, sticky notice, raw consent_pending/enrolling strings. API 201 is not upload success.",
+   "source": "context/rejected.md#wave26-green-gates-and-owner-pinned-sample-are-not-product-completion + #wave26-floating-orb-and-fixture-layer-order @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Test the real phone journey with real headers; never show raw lifecycle enums to a child or parent."
+  },
+  {
+   "tried": "Freeze the whole wavCapture.ts / recorder logic byte-for-byte as a merge control",
+   "what_broke": "Blocked the requested playback validation and new recorder; frozen-file controls break on the next legitimate change. Narrowed to persisted saga, primary selection and PCM encode/resample invariants.",
+   "source": "context/rejected.md#wave26-historical-recorder-freeze-and-missing-source-stubs + #frozen-file-merge-controls-break-on-the-next-change @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Freeze invariants (WAV encoding, resample), not whole files."
+  },
+  {
+   "tried": "Leave new mobile recorder/upload suites unregistered (run only when called directly)",
+   "what_broke": "Full releases would omit exactly the states that failed on the owner's phone.",
+   "source": "context/rejected.md#wave26-unregistered-recorder-test-is-not-a-release-gate @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Every new capture/upload test must be in the release registry."
+  },
+  {
+   "tried": "Place four rating controls in the left column of the two-column voice comparison",
+   "what_broke": "At 390 px the right stage covered the lower-left controls and intercepted taps.",
+   "source": "context/rejected.md#wave25-internal-owner-voice-rating-overlap @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Put rating/answer controls after media in normal flow on phones."
+  },
+  {
+   "tried": "Decorative giant green dial / spinning 'scanning YOU' orb for recording",
+   "what_broke": "Owner screenshots: cropped dial, instructions over the control, compressed paragraphs; read as a policy document with dead gaps. Replaced with compact silver waveform UI.",
+   "source": "context/rejected.md#wave25-green-everywhere-and-a-scanning-you-orb-are-not-premium + #wave26-floating-orb-and-fixture-layer-order @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Kids need one obvious recording control; avoid technical metaphors."
+  },
+  {
+   "tried": "60 s liveness capture auto-stop; then exactly 30 s",
+   "what_broke": "Decoder enforces MAX_FRAMES = RATE*30, so 60 s always refuses; 30 s has zero margin for scheduling/upload overshoot. Settled on 25 s.",
+   "source": "context/rejected.md#standalone25-capture-duration-60s-rejected-20260914 + #standalone25-capture-duration-zero-margin-rejected-20260914 @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "UI timers need headroom below server limits."
+  },
+  {
+   "tried": "Read Face liveness result at latest.verifyResult",
+   "what_broke": "Microsoft v1.2 nests it at latest.result.verifyResult; two fixtures repeated the wrong shape.",
+   "source": "context/rejected.md#standalone25-face-v12-flat-result-rejected-20260914 @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Provider-shaped fixtures from official docs, not from your own parser."
+  },
+  {
+   "tried": "Treat the voice program as blocked only by a missing Azure credential",
+   "what_broke": "With access working, the real gap was a missing producer binding the visible person to the audible speech plus synthetic-risk decision; ASR + speaker embeddings do not supply that.",
+   "source": "context/rejected.md#wave25-voice-blocker-was-not-only-a-credential + #wave25-public-verifier-is-not-internal-test-readiness @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "If Taxila ever clones a voice (e.g., parent), consent/identity evidence is the hard part, not the API key."
+  },
+  {
+   "tried": "Use Chromium's built-in fake audio device to drive the real recorder in tests",
+   "what_broke": "Built-in tone clips (peak >= 0.995) and the real quality gate correctly refuses it. Use --use-file-for-fake-audio-capture with a generated non-clipping WAV.",
+   "source": "context/rejected.md#ws-r158-chromiums-built-in-fake-audio-device-clips-the-real-recording-quality-gate @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Direct recipe for Taxila's mic-flow browser tests."
+  },
+  {
+   "tried": "Loopback mock microphone created its AudioContext at module load",
+   "what_broke": "Context started suspended under autoplay policy; the mock stream carried zero energy unnoticed. Resume inside the overridden getUserMedia.",
+   "source": "context/rejected.md#ws-r157-loopback-mock-microphone-context-never-resumed @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Same autoplay trap applies to Taxila's audio contexts on Android WebView."
+  },
+  {
+   "tried": "Rely on the hourly Vercel cron for automatic owner memory on a Preview deployment",
+   "what_broke": "Vercel cron runs only on Production; Preview never consolidated. Added a narrow post-turn authenticated caller instead of a global drain.",
+   "source": "context/rejected.md#wave25-preview-cron-only-memory-has-no-caller @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Taxila's memory consolidation after each lesson must not depend on Preview cron."
+  },
+  {
+   "tried": "First text-ready Meet reply called the generator directly (billing_state not_metered)",
+   "what_broke": "Bypassed the shared provider budget ledger; tests on other callers could not catch it.",
+   "source": "context/rejected.md#wave25-first-reply-bypassed-shared-budget @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Audit every paid call site, not just the main path."
+  },
+  {
+   "tried": "Report TypeScript success from tsc --noEmit on a project-reference solution",
+   "what_broke": "Android CI exposed a widened role string; noEmit and Vite build both passed falsely. Use npx tsc -b --force.",
+   "source": "context/rejected.md#wave25-noemit-solution-root-false-confidence @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Taxila CI must run the composite build."
+  },
+  {
+   "tried": "Launch ten parallel agent workstreams at once (wave 24)",
+   "what_broke": "Exhausted the session limit before any finished; WIP preserved as patches. Rule: five agents max, hourly WIP commits.",
+   "source": "context/rejected.md#ten-parallel-agents-exhausted-the-session-limit-before-any-finished @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Directly relevant to how Taxila's own build is orchestrated."
+  },
+  {
+   "tried": "Apply a preserved wave-24 patch wholesale onto the newer tree",
+   "what_broke": "Predated the partial-forget requeue; forgotten content could be resurrected; three-way apply failed. Rebase behavior manually.",
+   "source": "context/rejected.md#wave25-r182-preserved-patch-precedes-current-forget-requeue + #wave25-stale-sources-patch-invented-a-quarantine-cause-and-underreported-removal @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "When harvesting from these branches, port behavior onto Taxila's design rather than pasting old patches."
+  },
+  {
+   "tried": "[WIP patch] Reuse the shared deterministic fake processing adapters downstream of the anti-poisoning check",
+   "what_broke": "Adapter name 'deterministic-fake'/version '0-test' trips the (fake|fixture|test|mock) regex that blocks synthetic evidence from building a voice genome.",
+   "source": "docs/handoff/2026-09-14/wave-24-wip/ws-r188-the-voice-programs-dry-run.patch (rejected.md hunk) @ origin/codex/private-voice-requests25@f0246956",
+   "taxila_relevance": "Keep a hard 'no fake/test adapter output in production artifacts' guard; relabel fakes locally in rehearsals."
+  },
+  {
+   "tried": "[inherited] Move the companion's voice to Azure stock neural voice 'coral'",
+   "what_broke": "Won every measured axis (15/15 Hindi words, 255 ms first audio, 5x cheaper) but owner heard it as 'not human and not Indian'; the battery measured pronunciation, not accent identity.",
+   "source": "context/rejected.md#azure-tts @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "taxila_relevance": "Taxila's teacher voice bake-off must include accent authenticity as a first-class axis, judged by Indian listeners (kids + parents)."
+  },
+  {
+   "tried": "[inherited] gpt-realtime-2.1-mini for the voice call lane",
+   "what_broke": "Barge-in and vision passed, latency close, but 41-53 words/turn and 14 s spoken turns (monologue), weak Hinglish ('doesna nahi chahiye'), and no voice near the target pitch; 'the prompt sets a ceiling, the model decides how close you get'.",
+   "source": "context/rejected.md#realtime-azure @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "taxila_relevance": "Taxila runs gpt-realtime-2.1: measure words/turn and turn length for child-appropriate brevity, Hinglish quality and voice choice before committing; build turn-length enforcement."
+  },
+  {
+   "tried": "[inherited] Synthesize each Hindi/English token run separately and join with 60 ms silence; use identity_anchor (.2/.78/.6) as default delivery",
+   "what_broke": "Every switch reset seed/conditioning/prosody; clip 3.36x longer, 65.47% near-silence; anchor preset heard as flat and robotic.",
+   "source": "context/rejected.md#per-token-voice-fanout-and-flat-identity-anchor @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "taxila_relevance": "Never stitch code-switched TTS; one utterance per sentence. Note the private-voice branch deliberately reuses .2/.78/.6 for baseline comparability only."
+  },
+  {
+   "tried": "[inherited] OpenVoice V2 tone-colour conversion on top of an India-native base TTS",
+   "what_broke": "Lost both identity proxy (0.727 -> 0.681) and intelligibility (WER 0.30 -> 0.375) on n=2.",
+   "source": "context/rejected.md#openvoice-tone-conversion-regressed-owner-proxy-and-asr @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "taxila_relevance": "Do not plan a 'native TTS + voice converter' pipeline for a custom teacher voice without new evidence."
+  },
+  {
+   "tried": "[inherited] Build a blind bench with opaque filenames only",
+   "what_broke": "Every clone clip speaks 'This is an AI-generated voice replica' first, unblinding every trial; operator spot-checks unblind the only listener.",
+   "source": "context/rejected.md#disclosure-announces-the-clone @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "taxila_relevance": "Trim spoken disclosures identically across arms in any Taxila voice bench."
+  },
+  {
+   "tried": "[inherited] Sign a request then let it wake a scale-to-zero service",
+   "what_broke": "60 s HMAC skew vs 176 s cold start -> guaranteed 401 marked non-retryable. Wake on unauthenticated /healthz first.",
+   "source": "context/rejected.md#hmac-skew-shorter-than-cold-start @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "taxila_relevance": "Any Taxila signed call to a scale-to-zero Azure service needs a wake-then-sign pattern."
+  },
+  {
+   "tried": "[inherited] Quote one flat voice price; label cold GPU wakes as failed generations",
+   "what_broke": "Warm vs cold vs always-warm are different products (1 cent vs 23-35 cents vs hundreds/month); 45 rows mislabelled failed taught the owner to retry useful wake work.",
+   "source": "context/rejected.md#one-flat-voice-price-cannot-hide-cold-gpu-and-carrier-cost + #cold-gpu-attempts-cannot-be-model-failures @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "taxila_relevance": "Price model per lesson-minute must separate cold/warm; show 'warming up' honestly to kids."
+  },
+  {
+   "tried": "[inherited] Build the Sarvam arm as a voice-cloning arm from marketing copy",
+   "what_broke": "Public API exposes ~40 preset speakers only; no custom-voice endpoint (cloning only in Dubbing).",
+   "source": "context/rejected.md#ws-r6-sarvam-cloning-from-the-marketing-page @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "taxila_relevance": "Sarvam Bulbul is usable only as a stock Indian voice / pronunciation anchor."
+  },
+  {
+   "tried": "[inherited] Route Hindi automatically to the Chatterbox Hindi pack",
+   "what_broke": "Hindi pack 0.832 vs general 0.858 ECAPA on matched clips; model switching did not fix the Hinglish failure.",
+   "source": "context/rejected.md#hindi-pack-and-segmented-hinglish-cannot-be-promoted-from-this-pack @ origin/codex/private-voice-requests25@f0246956 (inherited; identical at origin/codex/handoff206@20263775)",
+   "taxila_relevance": "A language-specific model card is not evidence; bench before routing."
+  }
+ ],
+ "concepts": [
+  {
+   "name": "Honest capability flags on every artifact",
+   "description": "Every voice run/receipt carries identity_claim_allowed=false, release_eligible=false, training_allowed=false, identity_scope (owner_asserted_internal | account_self_attestation) and scope; DB CHECK constraints enforce them. A private test can never be mistaken for public verification.",
+   "taxila_relevance": "Child-data processing purposes (lesson, memory, parent report, model improvement) as explicit flags per artifact for DPDP."
+  },
+  {
+   "name": "Frozen server config + content hashes per request",
+   "description": "Clients send selectors and an expected snapshot hash; the server resolves sources, freezes text/model/seed/style/conditioning, hashes snapshot/receipt/config over canonical JSON, and re-checks authority before every effect.",
+   "taxila_relevance": "Generated-module jobs and consent receipts should be immutable, hashed and re-validated before each paid step."
+  },
+  {
+   "name": "One acoustic utterance per sentence (never stitch code-switched audio)",
+   "description": "Hindi/Hinglish preview must be one model call; multi-segment plans fail closed. Code-switch quality is a model property; the frontend only normalizes spelling.",
+   "taxila_relevance": "Teacher speech in Hinglish must be generated as whole sentences by one voice."
+  },
+  {
+   "name": "Audio only for already-approved text",
+   "description": "Speak endpoints accept only text whose hash is bound into an HMAC session minted by the safety-gated text turn; server recomputes chunking.",
+   "taxila_relevance": "Child-safety: TTS cannot become a bypass for unsafe content."
+  },
+  {
+   "name": "Pronunciation is not accent identity",
+   "description": "A voice can pronounce 15/15 Hindi words and still be rejected as not human/not Indian; accent authenticity is a separate first-class axis.",
+   "taxila_relevance": "Teacher-voice selection must be judged by Indian children and parents on accent/warmth, not by an ASR word battery."
+  },
+  {
+   "name": "Four-axis blind listening form with ties allowed",
+   "description": "owner_likeness, naturalness, indian_accent, pronunciation (1-5), randomized order, content-hash pair identity, tie stored as null winner; a losing candidate cannot be activated without a logged override.",
+   "taxila_relevance": "Reusable for teacher voice choice and for any generated-audio module QA."
+  },
+  {
+   "name": "Never a second scorer",
+   "description": "Human ratings and automated metrics are displayed separately with their method and count; no blended number without a validating measurement.",
+   "taxila_relevance": "Parent reports: observed comprehension vs quiz outcomes vs time-on-task stay separate, each with method and n."
+  },
+  {
+   "name": "Prosody as closed bands, not prose",
+   "description": "Emotion-to-voice mapping emits rate/energy/pitch bands, numeric pauses and bounded parameter deltas, never instruction text near a generation path (sentence-shaped text gets recited).",
+   "taxila_relevance": "Emotional OS -> voice delivery for the AI teacher without prompt recitation."
+  },
+  {
+   "name": "Surface-feature register read, pull-only, high-confidence-only render",
+   "description": "Delivery register from text shape (length, punctuation, repeats, laughter, gap), never stored as a trait, rendered only at high confidence.",
+   "taxila_relevance": "Cheap covert engagement signal on each child answer."
+  },
+  {
+   "name": "Supervised scale-to-zero GPU with deadlines and reservations",
+   "description": "Activate an exact pinned revision only inside a durable window, one-use child admissions per operation, independent supervisor deactivates at 420 s, 900 s planning envelope, micro-USD reservation, uncertain mutations retained not replayed.",
+   "taxila_relevance": "If Taxila self-hosts avatar/video/TTS on Azure GPU, this prevents runaway GPU bills."
+  },
+  {
+   "name": "Wake-then-sign and never let a user request absorb a cold start",
+   "description": "Cold start (161 s) exceeds request timeouts (220-240 s) and HMAC skew (60 s); warm via unauthenticated health check, show honest warming state.",
+   "taxila_relevance": "Lesson start should pre-warm any self-hosted model before the child arrives."
+  },
+  {
+   "name": "Ambiguous write reconciliation",
+   "description": "A failed client PUT may have committed; ask the idempotent server finalizer before retrying.",
+   "taxila_relevance": "Recording uploads and module asset uploads on flaky Indian mobile networks."
+  },
+  {
+   "name": "Real-header, real-browser counterfactual tests",
+   "description": "Release gates serve the exact production CSP and prove both the failing old policy and the passing new one.",
+   "taxila_relevance": "Vercel CSP for mic, Blob, gpt-image-2 images and generated HTML modules (iframe sandbox) must be tested this way."
+  },
+  {
+   "name": "Owner-observed evidence outranks green gates",
+   "description": "Phone screenshots from the owner superseded CI acceptance; 'green fixtures are not a complete product'.",
+   "taxila_relevance": "Taxila acceptance must include real child/parent phone sessions."
+  },
+  {
+   "name": "Private-first internal testing before public verification",
+   "description": "Owner deferred enrollment review/compliance to test internally with explicit restricted authority, without relabelling it as public readiness.",
+   "taxila_relevance": "Taxila can pilot with consenting families under explicit scoped flags while DPDP processes mature, without claiming compliance it lacks."
+  },
+  {
+   "name": "Critical-unit pronunciation checks for teaching content",
+   "description": "Listening texts carry criticalUnits (numbers with units, scientific terms, negations) that must be heard correctly.",
+   "taxila_relevance": "Taxila TTS QA: every generated explanation's numbers/units/negations must be intelligible; a mispronounced 'नहीं' flips meaning."
+  }
+ ],
+ "unread": [
+  "services/open-voice-runtime Python internals (app.py, broker.py, lora.py) - inherited from handoff206; only the client contract was read",
+  "services/voice-evidence Python (identity_audio.py beyond MAX_FRAMES, diarization app.py) and services/azure-verifier beyond the liveness parser fix",
+  "api/_voice/providers/elevenlabs-pvc.js and sarvam-bulbul.js internals (bench arms) - only registry wiring read",
+  "Full 219-line api/_room-surface.js delta and api/room.js speak wiring (read via decisions/measurements, not line by line)",
+  "Wave-24 WIP patches other than ws-r188 (ws-r182 memory, ws-r183 RelationOS, ws-r184 EmotionOS test-and-tweak, ws-r185..191) - not voice-focused, see other segments",
+  "context/graph.json delta (18,576 lines) - not traversed; decisions/measurements/rejected deltas were read for voice-relevant entries only (~40 of ~450 entries read in full)",
+  "HumanOS/RelationOS/owner-memory/teacher-sheet deltas (waves 21-25) - covered only where they touch voice (reply-language policy, register)",
+  "evals/*/fixtures/** snapshot directories (excluded)",
+  "docs/gurukul/research voice frontier docs dated 2026-09-06..08 (EXPERT-VOICE-BENCHMARK, VOICE-FRONTIER-NEXT-EXPERIMENT, VOICE-NEXT-EXPERIMENT, VOICE179/182/183/184) - inherited, not in this delta",
+  "No live audio was listened to; committed WAVs under docs/handoff/2026-09-09/listening/audio are owner-voice-conditioned (biometric) and were deliberately not opened",
+  "Android/iOS Capacitor changes for the Vyakti flavour (WS-R157/R169) beyond the CSP/WebView notes"
+ ],
+ "doc_path": "/home/user/Taxila/docs/harvest/hp-private-voice.md"
+}

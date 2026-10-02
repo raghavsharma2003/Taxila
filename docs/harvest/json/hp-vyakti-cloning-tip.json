@@ -1,0 +1,2394 @@
+{
+ "segment": "hp-vyakti-cloning-tip",
+ "summary": "Ref origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0 (2026-09-30) is Vyakti, the expert/person AI platform (knowledge + personality + voice + private relationships + memory + sharing), and it is a superset of origin/main, voice-cloning, ai-companion-app, gurukul-platform, every gurukul-ws-* branch, codex/vyakti-completion and handoff206 (0 commits of theirs missing). The only newer work elsewhere is origin/codex/multimodal-layer-20260927 (19 commits: Group-AI portable layer, multimodal claim evidence, Honcho notes) plus small handoff side branches.\nThe 23-commit delta over codex/private-voice-requests25 (2026-09-21 -> 09-30) rebuilt the creator workbench UI (pearl workbench design), personal auth, private text rehearsal with a person (HumanOS) projection, and finished an account-private Hindi voice vertical slice: services/private-voice CPU consumer, migration 172 vy_private_voice_run, exact-revision GPU activation under a USD 1 planning budget, an independent Azure watchdog Job, protection (disclosure + PerTh + C2PA) before create-only storage. It was deployed enabled on 2026-09-29 but no real signed-in user has generated or listened to a sample; voice likeness, English and realtime voice remain unbuilt or unmeasured.\nThe 241 commits since the multimodal fork (2026-09-09) removed the Meera surface (liveCall.ts, components, echosim) and added HumanOS person sheets (163), EmotionOS register + five-dial vibe (164) with a prosody mapper, RelationOS in the Room, per-sentence voice sequencing (5.00x faster first audio), text-ready Meet (167), owner continuity (170), listening test, Vyakti Capacitor flavour + OTA, Hindi studio, and many release-gate repairs.\nContext tail entries record the real Azure gpt-5.6-terra canary (191/49 tokens, 3218 ms), the credit-only GPU approval and the billing-guard gap (spending limits Off, LimitRemoved, balance unreadable), the owner's waiver, the Honcho assessment (adopt ideas: context card, facts vs hypotheses, correction-aware consolidation; no dependency), and process lessons (CSP killed uploads, fixture races, shared npm cache, Job-name limits).\nFor Taxila the highest-value reusable assets are not the cloning stack but: the minor safety floor (clock.ts hard gates, honesty gate + Childline 1098, one-door gatedReply, material detector, safety-floor-teacher spec, expert FLOOR text), the pedagogy core (TeacherSheet doubt ladder/analogy pairs/mistake bank, syllabus-as-data, mastery fold with no decay, observation-vs-pattern evidence bars, student-app gamification rejections), affect primitives (register reader, EXPRESSION_FEATURES, prosody bands, vibe dials), learner communication contract, memory authority/consolidation with leases and metered extraction, fail-closed provider spend ledger, Azure-only serving + Foundry adapter, release gates, Android OTA and WAV capture, and the measured gpt-realtime-2.1-mini rejection (monologue length, voice/accent, no frame channel) which directly informs Taxila's realtime choice.\nGaps for Taxila: no avatar, no generative UI/module generation, no covert comprehension detector, no learning-modality profile, no gpt-realtime integration, no gpt-image usage, no human-validated voice quality anywhere in the repo.",
+ "assets": [
+  {
+   "id": "vt-01",
+   "title": "Live-call audio floor (hold-ring, echo kappa, barge-in arbiter, silence heartbeat)",
+   "subsystem": "realtime-voice",
+   "repo": "html-portfolio",
+   "ref": "origin/main@3a921798 (liveCall.ts last changed 4e5c5863; deleted from tip by 2e6ad0ee; still present unchanged on origin/codex/multimodal-layer-20260927@b514595f)",
+   "paths": [
+    "src/voice/liveCall.ts",
+    "android/.../LiveWatchEngine.java (main)",
+    "evals/echosim/ (main/multimodal)"
+   ],
+   "what": "174 KB browser realtime call engine for Gemini Live: r2-gated echo slope estimator, LISTEN vs BARGE bars, boundary-seeking fade, genInFlight watchdog, SILENCE_ENDPOINT_MS 700 / SILENCE_KEEP 3 heartbeat so server VAD never stalls; echosim drives the real file through room impulse responses (5 couplings x 8 seeds x 2 arms).",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "realtime-voice (gpt-realtime-2.1 WebRTC/WebSocket client)",
+   "evidence": "context/measurements.md#live-model-bake (barge-in 5/5 @ 279 ms, steady first audio 1370 ms median)",
+   "notes": "Not on the tip any more (Vyakti removed Meera surface 2026-09-14). Port the arbiter/heartbeat ideas and the echosim harness, not the Gemini protocol."
+  },
+  {
+   "id": "vt-02",
+   "title": "Azure realtime protocol facts + gpt-realtime-2.1-mini bake-off",
+   "subsystem": "realtime-voice",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "context/measurements.md#azure-realtime-shape",
+    "context/rejected.md#realtime-azure"
+   ],
+   "what": "Measured Azure realtime handshake (/openai/v1/realtime?api-version=preview&model=<deployment> with nested GA session schema), 24 kHz minimum input rate, no continuous image/video buffer (frames only as conversation.item.create input_image), speech_started is VAD onset not semantic interrupt, NODE_USE_ENV_PROXY=1 needed for WS behind proxy.",
+   "maturity": "shipped-measured",
+   "taxila_use": "idea",
+   "taxila_target": "realtime-voice",
+   "evidence": "rejected.md#realtime-azure: barge-in 6/6 median 271 ms; first audio 1458-1497 ms (9 sessions/72 turns); 41-53 words/turn vs 20.5 incumbent",
+   "notes": "Directly relevant: Taxila's chosen model family. Length/monologue risk must be budgeted in the tutor prompt and measured."
+  },
+  {
+   "id": "vt-03",
+   "title": "Per-sentence voice sequencing (buffer-one-ahead)",
+   "subsystem": "realtime-voice",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/room/voiceSequence.ts",
+    "api/_room-speak-plan.js",
+    "evals/room-speak-plan/benchmark.mjs"
+   ],
+   "what": "Framework-free loop fetching clip i+1 while clip i plays; first audio after 1 sentence; supersession via isActive(); pure EN/HI/Hinglish sentence splitter planReplySentences/roomSpeakPlan.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "tts-voice-identity (non-realtime TTS lane, read-aloud of generated modules)",
+   "evidence": "measurements.md#ws-r156-time-to-first-audio: 2001.5 -> 400.7 ms mean, 5.00x, n=10/arm (fake 400 ms synth)",
+   "notes": ""
+  },
+  {
+   "id": "vt-04",
+   "title": "Writing-to-speaking normalisation seam",
+   "subsystem": "tts-voice-identity",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/voice/spokenText.ts"
+   ],
+   "what": "Single seam where display text becomes speech text: strips dashes/markdown/brackets/emoji/URLs only on the audio copy, never the displayed copy.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "tts-voice-identity",
+   "evidence": "rejected.md#recited-prompt, ack-bracket-direction",
+   "notes": ""
+  },
+  {
+   "id": "vt-05",
+   "title": "Android WebView mic permission fast path",
+   "subsystem": "android/capacitor",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "android/app/src/main/java/app/vyakti/studio/MicPermissionFastPath.java"
+   ],
+   "what": "Short-circuits Capacitor's ActivityResultLauncher hop when RECORD_AUDIO is already granted so getUserMedia opens immediately at call start.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "android/capacitor + realtime-voice",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "tts-01",
+   "title": "Hindi text front end (reviewed Roman-Hindi -> Devanagari, borrowings, initialisms)",
+   "subsystem": "tts-voice-identity",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_voice/hindi-text-frontend.js"
+   ],
+   "what": "Deterministic, bounded, reviewed lexicon (vyakti-curated-hi-in-orthography/v3): Roman Hindi function words -> Devanagari, Indian-English borrowings (chapter, class, chemistry...) -> Devanagari, letter-name table for initialisms; unknown tokens left byte-identical in an explicit English segment; max 16 segments.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "tts-voice-identity (Hindi/Hinglish TTS pre-normaliser for Azure TTS / realtime text prompts)",
+   "evidence": "measurements.md#indicf5-objective-intelligibility: curated v1 alias table did not change WER on n=6 clips",
+   "notes": "Contract explicitly guarantees normalisation, not pronunciation; must be ear-tested."
+  },
+  {
+   "id": "tts-02",
+   "title": "Script-mode detection + reference-language conditioning rule",
+   "subsystem": "tts-voice-identity",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_voice/language-conditioning.js"
+   ],
+   "what": "voiceScriptMode counts Devanagari vs Latin code points (devanagari/mixed/latin_only/unknown); for Hindi with latin_only/unknown reference evidence forces effective CFG 0 and emits named quality warnings.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "tts-voice-identity",
+   "evidence": "rejected.md#wave25-unmatched-cfg-zero-is-not-baseline",
+   "notes": "Chatterbox-specific; script-mode helper is generally useful."
+  },
+  {
+   "id": "tts-03",
+   "title": "Prosody plan from vibe dials + register",
+   "subsystem": "emotional-lens/affect",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_voice/prosody.js",
+    "evals/prosody/run.mjs"
+   ],
+   "what": "Pure mapper: five vibe dials (warmth/energy/humour/directness/formality) + optional register read -> closed plan (rate band slow/medium/fast, energy band, pitch-range band, pause ms, provider-neutral styleDelta).",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "emotional-lens/affect -> tts-voice-identity (map bands to Azure SSML prosody / realtime voice instructions)",
+   "evidence": "measurements.md#ws-r168-prosody-timing-table: proxy fast/medium/slow 1163/1594/2214 ms, n=60, strict ordering on every line",
+   "notes": "Timing is an offline proxy, not acoustic."
+  },
+  {
+   "id": "tts-04",
+   "title": "Azure Personal Voice provider adapter",
+   "subsystem": "voice-cloning",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_voice/providers/azure-personal-voice.js",
+    "api/_provider-budget.js#personalVoiceBudgetConfig"
+   ],
+   "what": "Azure Personal Voice (api 2026-01-01) create/synthesize/erase with Limited-Access flag, version-pinned base model (rejects 'latest'), private storage origin allowlist, metered spend reservation, smaller erasure-only config so deletion survives disabled cloning.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "voice-cloning (only if a consented teacher voice is ever cloned on Azure)",
+   "evidence": "rejected.md#ws-r168-assumed-azure-personal-voice-was-the-live-room-provider (no live caller)",
+   "notes": "Never wired to a live caller; Microsoft approval was off the critical path by owner directive."
+  },
+  {
+   "id": "tts-05",
+   "title": "Self-hosted Chatterbox Multilingual V3 runtime + Hindi pack + LoRA + admission broker",
+   "subsystem": "voice-cloning",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "services/open-voice-runtime/{app.py,broker.py,hindi_pack.py,lora.py}",
+    "api/_voice/providers/open-chatterbox-preview.js"
+   ],
+   "what": "Azure Container Apps T4 GPU runtime (scale-to-zero) behind a CPU HMAC admission broker; Hindi model pack; optional per-speaker LoRA; PerTh watermark verified per response.",
+   "maturity": "shipped-measured",
+   "taxila_use": "skip",
+   "taxila_target": "voice-cloning",
+   "evidence": "measurements.md#lora-vs-zero-shot-71s, #reference-window-beats-the-finetune",
+   "notes": "Owner rejected the general arm by ear; voice likeness never human-validated."
+  },
+  {
+   "id": "tts-06",
+   "title": "IndicF5 runtime + pronunciation normalizer",
+   "subsystem": "voice-cloning",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "services/indicf5-runtime/{app.py,pronunciation_normalizer.py,offline_vocoder.py,qualify.mjs}"
+   ],
+   "what": "Pinned AI4Bharat IndicF5 (0.4B, gated HF) reference+transcript cloning service with offline vocoder fix and script-aware normalizer.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "tts-voice-identity",
+   "evidence": "measurements.md#indicf5-owner-qualification-remote (ECAPA 0.8248, RTF 2.87, n=6)",
+   "notes": ""
+  },
+  {
+   "id": "tts-07",
+   "title": "Candidate TTS runtimes: Qwen3-TTS (EN), VoxCPM2, Zonos2, MOSS-TTS, OpenVoice converter",
+   "subsystem": "voice-cloning",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "services/qwen3-tts-runtime/",
+    "services/voxcpm2-runtime/",
+    "services/zonos2-runtime/",
+    "services/moss-tts-runtime/",
+    "services/openvoice-converter/"
+   ],
+   "what": "Each a pinned, consent-gated, scale-to-zero Azure GPU candidate with contract.py, qualify.mjs, Bicep and offline model fetch.",
+   "maturity": "prototype",
+   "taxila_use": "skip",
+   "taxila_target": "voice-cloning",
+   "evidence": "measurements.md#qwen3-tts-english-candidate-live-2026-08-28 (RTF 2.21 mean, n=6)",
+   "notes": "Reference shapes for any future self-hosted model; none won."
+  },
+  {
+   "id": "tts-08",
+   "title": "Speaker-embedding evidence service + fidelity policy",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "services/voice-evidence/{app.py,identity_audio.py}",
+    "api/_fidelity.js"
+   ],
+   "what": "ECAPA-TDNN + x-vector embeddings over <=4 windows per call; fidelityScore/fidelityVerdict with owner-vs-owner ceiling control; embedding similarity as regression floor only.",
+   "maturity": "shipped-measured",
+   "taxila_use": "idea",
+   "taxila_target": "tts-voice-identity (detect voice drift of the tutor voice across releases)",
+   "evidence": "architecture.md: 71 s -> 8 embeddings in 4977 ms warm; 176 s cold",
+   "notes": ""
+  },
+  {
+   "id": "tts-09",
+   "title": "Audio protection: spoken disclosure + PerTh/AudioSeal watermark + C2PA manifest + provenance ledger",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "services/audio-protection/app.py",
+    "api/_provenance/{contracts.js,delivery.js,providers/azure-protection.js,providers/neon-ledger.js,private-voice-ledger.js}"
+   ],
+   "what": "Only path from synthetic PCM to deliverable audio: disclosure prefix, watermark, C2PA claim (Key Vault EC signer), content-free ledger rows bound to generation id.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "safety-floor/honesty (AI-generated audio provenance for child-facing voice)",
+   "evidence": "rejected.md#disclosure-announces-the-clone",
+   "notes": "C2PA signer self-signed (open item)."
+  },
+  {
+   "id": "tts-10",
+   "title": "Voice frontier blind listening kit (36 prompts, 3 speakers, scorecard)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "evals/voice-frontier27/{README.md,corpus.mjs,prepare.mjs,verify.mjs,config.example.json}"
+   ],
+   "what": "Authored teaching-flavoured EN/HI/Hinglish corpus with dev/held-out split, seeded blind preparation, metadata stripping, private key, per-axis 1-5 scorecard (naturalness, likeness, intelligibility, prosody fit, code-switch), latency/cost CSV with blank-not-zero rule.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "evals/gates/verification (Taxila tutor-voice selection among Azure/realtime voices)",
+   "evidence": "No generations run (kit only)",
+   "notes": ""
+  },
+  {
+   "id": "tts-11",
+   "title": "Earbench blind ABX bench with verify-trim",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "evals/earbench/",
+    "scripts/earbench.mjs",
+    "docs/gurukul/EARBENCH.md"
+   ],
+   "what": "Blinded stimulus builder, local listening page, sealed key, ABX/rating, disclosure-prefix trimming that fails closed, verify-trim that exposes only removed prefixes.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates/verification",
+   "evidence": "open: no-human-has-listened",
+   "notes": ""
+  },
+  {
+   "id": "tts-12",
+   "title": "Listening test UI + private voice test (4-axis ratings)",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/studio/ListeningTest.tsx",
+    "src/studio/PrivateVoiceTest.tsx",
+    "src/studio/privateVoiceTestApi.ts"
+   ],
+   "what": "Blind paired four-axis comparison and a run-state UI (queued/claimed/running/ready/failed/unknown/revoked/expired) with ratings owner_likeness/naturalness/indian_accent/pronunciation; server-discovered resume handle (no sessionStorage dependence).",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "tts-voice-identity (parent/teacher voice-preference picker)",
+   "evidence": "measurements.md private voice UI 9/9 mounted",
+   "notes": ""
+  },
+  {
+   "id": "tts-13",
+   "title": "Voice frontier research (2026-09-27) + bake-off protocol",
+   "subsystem": "tts-voice-identity",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "docs/research/2026-09-27-voice-frontier.md",
+    "docs/gurukul/research/VOICE-BAKEOFF-HINDI-ENGLISH-2026-08-28.md",
+    "docs/gurukul/research/voice-stack.md"
+   ],
+   "what": "Primary-source landscape: Fish S2.1/S2 (commercial license needed), ElevenLabs v3 (Azure private H2-2026), Cartesia Sonic 3.6 (Hinglish, Azure VPC enterprise), Qwen3-TTS (no Hindi), Chatterbox V3 Hindi pack, IndicF5; three-arm benchmark spec and real-time targets (p95 EoT->audible <=1.2 s, interruption->silence <=250 ms).",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "tts-voice-identity",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "vc-01",
+   "title": "Account-private voice run service (lease, GPU meter, protection, create-only WAV)",
+   "subsystem": "voice-cloning",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "services/private-voice/{runtime.mjs,lifecycle.mjs,store.mjs,server.mjs,Dockerfile,README.md}",
+    "api/_private-voice-{store,handler,proxy,erasure,cleanup}.js",
+    "api/private-voice.js",
+    "db/migrations/172_private_voice_run.sql"
+   ],
+   "what": "One fixed Hindi sample per explicit self-attested request: FOR UPDATE SKIP LOCKED claim, 10-min lease with stage renewals, 24 h grant, 12 runs/replica/24h, exact-revision GPU activation, signed child-operation consumption, protection before storage, ready only with output hash + receipt, revoke-first cleanup.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "voice-cloning / infra (pattern for any metered async GPU job with consent fences)",
+   "evidence": "measurements.md#private-voice-runtime-offline27 (48/48 node:test); deployed enabled 2026-09-29; zero real generations",
+   "notes": "Deployed but never exercised by a real signed-in user."
+  },
+  {
+   "id": "vc-02",
+   "title": "Supervised scale-to-zero GPU controller + independent watchdog + allocation windows",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "services/azure-voice-app/{controller.mjs,supervisor-job.bicep}",
+    "api/_gpu-allocation-budget.js",
+    "scripts/azure-voice-supervisor53.mjs",
+    "services/azure-gpu-job/"
+   ],
+   "what": "ARM-driven exact-revision activation of a min0/max1 GPU container app, advisory-locked budget window reserve/release SQL, 30 s heartbeat lease, Container Apps Job watchdog every 15 min, explicit 'hard_invoice_cap: false' honesty.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/azure (Forge content factory GPU jobs if any self-hosted model is used)",
+   "evidence": "handoff 2026-09-30: watchdog scheduled executions + fresh heartbeat verified",
+   "notes": "Over-engineered for Taxila v1 unless self-hosted GPUs appear."
+  },
+  {
+   "id": "vc-03",
+   "title": "Three-outcome warming contract (200 audio / 202 warming+Retry-After / named error)",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_voice/warmup.js",
+    "api/_voice/preview-panel.js",
+    "src/studio/VoicePreviewPanel.tsx"
+   ],
+   "what": "Cold GPU is a state, not an error: 202 with countdown that self-retries; HMAC secret never leaves the function.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "realtime-voice / generative-ui (slow module generation states)",
+   "evidence": "architecture.md voice-preview-panel",
+   "notes": ""
+  },
+  {
+   "id": "vc-04",
+   "title": "Video/YouTube enrollment + media extraction posture",
+   "subsystem": "company-brain/knowledge-ingestion",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "services/media-extract/app.py",
+    "api/_video-enroll*.js",
+    "api/_channel/*",
+    "docs/gurukul/youtube-extraction-posture.md"
+   ],
+   "what": "Pinned yt-dlp audio extraction service with route seam and copyright posture (ToS permission is not copyright permission).",
+   "maturity": "prototype",
+   "taxila_use": "skip",
+   "taxila_target": "company-brain/knowledge-ingestion",
+   "evidence": "open: extraction-success-from-datacenter-egress-unmeasured",
+   "notes": ""
+  },
+  {
+   "id": "vc-05",
+   "title": "Azure Face liveness + Document Intelligence verifier service",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "services/azure-verifier/src/{liveness.js,face.js,document-intelligence.js,identity.js}",
+    "api/_liveness/*",
+    "api/_identity/*"
+   ],
+   "what": "Identity proofing for the person being cloned (liveness session, document check, sealed review).",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "auth/accounts/consent (verifiable guardian consent, if ever required)",
+   "evidence": "rejected.md#standalone25-face-v12-flat-result-rejected-20260914",
+   "notes": ""
+  },
+  {
+   "id": "rel-01",
+   "title": "Relationship state dims + stage derivation",
+   "subsystem": "relational-os",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/relstate.ts",
+    "api/_room-relstate.js",
+    "docs/RELATIONALOS.md"
+   ],
+   "what": "Honorific, trust, rupture/repair, code-switch dims with stageForDims; Room dyad keyed (agent_id, person_id) with no extra migration; 'How we are' / 'Start fresh' ops; UI imports the same stage function as the compiler.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "relational-os (tutor-student dyad)",
+   "evidence": "measurements.md#ws-r154-relationos-in-the-room-suite-counts",
+   "notes": "Watch relstate-zero-rows: give every table one named first-row writer."
+  },
+  {
+   "id": "rel-02",
+   "title": "Mentor relationship arc (teacher-arc)",
+   "subsystem": "relational-os",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "docs/gurukul/teacher-arc.md",
+    "src/engine/agents/teacherTypes.ts (stage* fields)"
+   ],
+   "what": "Replacement stage paragraphs by message count (<30 first sessions, 30-150 regular, >=150 long haul), comfort ladder in teacher voice, win/over-investment protocol (praise method not ability), rituals with minor spacing, exam-cycle calendar, [MINOR-STRICTER] list.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "relational-os + learning/pedagogy",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "rel-03",
+   "title": "Disclosure-act evaluator (influence/gist/paraphrase/verbatim, deny-always-wins)",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_relational-core.js",
+    "evals/relational-core/run.mjs",
+    "docs/gurukul/HANDOFF-KERNEL.md"
+   ],
+   "what": "Dependency-free port of GroupAI privacy kernel: closed act list, grant {from,to,act,scope,policy_version,expires_at}, exclusive expiry, named refusal codes; 256-case exhaustive oracle.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "auth/accounts/consent (parent visibility: what of a child's session a guardian may see, at which granularity)",
+   "evidence": "evals/relational-core 25/25",
+   "notes": "Behind ROOM_HANDOFF_KERNEL flag; no live request."
+  },
+  {
+   "id": "rel-04",
+   "title": "Milestones: fire-once sparse tiers, never scheduled",
+   "subsystem": "gamification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/milestones.ts"
+   ],
+   "what": "Threshold-crossing moments (DAY_TIERS 7/30/100/365), latestOnly, backfill-safe, explicitly no streak-loss anxiety.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "gamification",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "rel-05",
+   "title": "Observation vs pattern evidence bars",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/observation.ts",
+    "src/engine/relstate.ts#writePattern",
+    "db/schema.sql (vy_pattern generated prompt_eligible)"
+   ],
+   "what": "vy_observation (1 citation, recalls a detail) vs vy_pattern (>=2 citations to write; support_count>=3 AND distinct_days>=2 before prompt-eligible).",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "learning/pedagogy (learning-profile claims like 'learns best via stories' need pattern-level evidence)",
+   "evidence": "student-app-spec.md section 3.1",
+   "notes": ""
+  },
+  {
+   "id": "rel-06",
+   "title": "Proactive check-ins with quiet hours + dormancy",
+   "subsystem": "relational-os",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_checkins.js",
+    "api/_quiet-hours.js",
+    "api/_dormancy.js",
+    "api/_room-month-note.js"
+   ],
+   "what": "Follower-scheduled task-bound proactive messages, quiet-hours SQL fragment, dormancy policy off by default, monthly note builder.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "growth (parent-facing reminders only; never child re-engagement bait)",
+   "evidence": "open: ws-r16-checkins-open-gaps",
+   "notes": "For minors DPDP engagement-mechanics ban applies."
+  },
+  {
+   "id": "emo-01",
+   "title": "Register read (rushed/upset/excited/flat/neutral) from text surface shape",
+   "subsystem": "emotional-lens/affect",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/register.ts",
+    "evals/emotionos/run.mjs"
+   ],
+   "what": "Pure, LLM-free, pull-only; length/punctuation/letter repeats/caps/laughter tokens/Hindi marker density/danda; renders a hint only at high confidence; neutral never renders; never stored.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "emotional-lens/affect (apply to ASR transcript of child turns, plus audio features)",
+   "evidence": "measurements.md#ws-r153-register-confusion-table: 60/60 (n=60 authored); #ws-r176 60/60 + negative control",
+   "notes": ""
+  },
+  {
+   "id": "emo-02",
+   "title": "Five-dial vibe, versioned with one-tap revert",
+   "subsystem": "emotional-lens/affect",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_replica-vibe.js",
+    "db/migrations/164_replica_vibe.sql",
+    "src/studio/EmotionOsStudio.tsx",
+    "src/studio/replicaVibeApi.ts"
+   ],
+   "what": "warmth/energy/humour/directness/formality 0-4, append-only versions via superseding CTE, revert = re-insert old dims as new version, owner-scoped SQL.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "emotional-lens/affect (tutor persona dials set by parent/teacher; per-child adaptation)",
+   "evidence": "measurements.md#ws-r153-vibe-render-and-door-battery",
+   "notes": ""
+  },
+  {
+   "id": "emo-03",
+   "title": "Expression observations: closed list of measurable delivery features, 24 h expiry",
+   "subsystem": "emotional-lens/affect",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_experience-compiler/{expression-observation.js,expression-observation-store.js,contracts.js,README.md}"
+   ],
+   "what": "EXPRESSION_FEATURES: speech_rate_wpm, pause_ratio, mean_pause_ms, turn_latency_ms, overlap_ratio, interruption_count, backchannel_count, laughter_ratio, energy_rms_db, pitch_median/range, voiced_ratio, emphasis_rate, code_switch_ratio; none names mood/intent; observations expire within 24 h, scoped to one dyad/turn.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "emotional-lens/affect + learning (covert comprehension signals: latency, hesitation, backchannels)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "emo-04",
+   "title": "Moment gate (what a turn is ABOUT)",
+   "subsystem": "emotional-lens/affect",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/moment.ts"
+   ],
+   "what": "Keyword moments (conflict, celebration, silence) read once per turn, rendered only past its bar; sibling of register.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "emotional-lens/affect",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "mem-01",
+   "title": "Room/owner memory authority + leased metered consolidation",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_room-memory-authority.js",
+    "api/_room-memory-consolidation.js",
+    "api/_room-memory-reclassification.js",
+    "api/_consolidation-config.js",
+    "db/migrations/159_room_memory_authority.sql"
+   ],
+   "what": "Per-(agent,person) lease with run token, cold-start readiness SQL (schema+trigger+FK+budget), metered Azure extraction with reserve/begin/settle, epoch-scoped follower memory, owner lane, correct/retract SQL, source-binding snapshots.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "memory-graph/consolidation (per-child memory extraction after each session)",
+   "evidence": "rejected.md#wave25-default-voice-conditioning-and-code-only-memory (deployed cron env missing)",
+   "notes": ""
+  },
+  {
+   "id": "mem-02",
+   "title": "Learner communication contract (language/script/brevity) + structured-output schema",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_learner-communication-contract.js",
+    "src/engine/learnerCommunication.ts"
+   ],
+   "what": "Closed fields english/hindi/hinglish, roman/devanagari, short/detailed; JSON schema with per-field semantics; extraction rule refusing current-turn-only, negated, quoted, third-party, hypothetical, translation-exercise text; newest-first projection with per-field source ids.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "memory-graph + learning profile (extend with modality dims: visual/story/rhyme/game/long-form)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "mem-03",
+   "title": "Bounded expert prompt with private-memory selection",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/expertTextCompiler.ts"
+   ],
+   "what": "UTF-16 section caps (core 8k, private memory 4k, language+protocol 4k, tail 22k, system 30k) that refuse rather than trim; selectExpertPrivateMemoryRows keeps <=3 communication-support rows then fills newest-first <=20; scoped saved-communication precedence policy; request-only search/forget markers with 'no completion claim without receipt'.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "prompt-compiler (tutor turn compiler)",
+   "evidence": "Honcho review flags newest-30 owner recall pool as evaluation target",
+   "notes": ""
+  },
+  {
+   "id": "mem-04",
+   "title": "Graph memory + forget + semantic recall (Meera-era, still at tip)",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/memory.js",
+    "api/consolidate.js",
+    "api/consolidate-sweep.js",
+    "src/engine/memory.ts"
+   ],
+   "what": "Ops log/recall/remember/forget; forgetting is hard delete with meera_forget word store; halfvec person-filtered semantic recall concurrent with keyword path; nightly consolidation with citation discipline.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "memory-graph/consolidation",
+   "evidence": "measurements.md#recall-v2 (8/8 semantic pairs, DB p50 40 ms, embed p50 ~305 ms)",
+   "notes": "See hp-main-engine harvest for depth."
+  },
+  {
+   "id": "mem-05",
+   "title": "Honcho fit assessment (context card, facts vs hypotheses, correction-aware consolidation)",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "docs/research/2026-09-29-honcho-fit.md"
+   ],
+   "what": "Pinned review of plastic-labs/honcho 9d6fe8ca (v3.2.1, AGPL-3.0); proposes compact per-relationship context card, separating facts from tentative interpretations, correction-aware consolidation, and an 8-case EN/HI/Hinglish evaluation matrix (today-only vs permanent preference, sibling quote, cross-room leakage, withdrawn source...).",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "memory-graph/consolidation (Taxila learner model: facts vs hypotheses about how the child learns)",
+   "evidence": "No Honcho code run; benchmark claims not reproduced",
+   "notes": ""
+  },
+  {
+   "id": "mem-06",
+   "title": "Encrypted private conversation store (envelope AES-256-GCM)",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_private-text-rehearsal-crypto.js",
+    "api/_private-text-rehearsal-store.js"
+   ],
+   "what": "Per-row random DEK, KEK-wrapped DEK, AAD bound to owner/replica/request/role/content hash, hash re-check on decrypt, export decrypts only for owner.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "auth/consent + db-schema (child transcripts at rest)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "pc-01",
+   "title": "Context compiler (CORE/TAIL, budgets, optional bundles, byte-identity fixtures)",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/compiler.ts",
+    "src/engine/__fixtures__/",
+    "scripts/check-prompt-budget.mjs"
+   ],
+   "what": "Pure compile with injected AgentModule (no fallback persona), relationship/self/activity/room bundles that are byte-identical when absent, AGE_TIER_SAFETY_OVERRIDE appended to CORE, register hint, 83 byte-identity fixtures, prompt budget gate.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "prompt-compiler/persona-engineering",
+   "evidence": "rejected.md#prompt-position, #age-tier-never-realtime",
+   "notes": "Depth in hp-main-engine."
+  },
+  {
+   "id": "pc-02",
+   "title": "Shapelint (shapes not lines)",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/shapelint.ts"
+   ],
+   "what": "Lints prompt fragments for sentence shape, word caps, first-person openings; enforces exactly-two appended-last rules.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "prompt-compiler",
+   "evidence": "rejected.md#recited-prompt (4/5 recited -> 0 at n=84)",
+   "notes": "open: shapelint-blind-to-hinglish-quotes"
+  },
+  {
+   "id": "pc-03",
+   "title": "TeacherSheet contract (pedagogy + floor fields)",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/agents/teacherTypes.ts",
+    "docs/gurukul/teacher-sheet-spec.md",
+    "src/engine/agents/characters/demoTeacher.ts"
+   ],
+   "what": "61 CharacterSheet fields + required arc overrides + 24 pedagogy fields: explanationOrder, workedExamplePattern, firstMoveOnDoubt, doubtEscalationLadder, rigorFloor, analogyBank {topic, anchor}, boardVerbalisms (<=3 words, >=5 held-out occurrences), commonMistakeBank (tail, match-then-inject), strictness/warmth/pace dials, floor fields cloneDisclosureFact/academicIntegrityStance/escalationRoute/credentialFacts, consentArtifactId, voiceCloneId, person-sheet variant.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "prompt-compiler + learning/pedagogy (Taxila TutorSheet per tutor persona and per subject)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "pc-04",
+   "title": "Sheet validator + consent gate",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/agents/fromSheet.ts",
+    "api/_teachersheet.js",
+    "api/_teacher-sheet-draft.js"
+   ],
+   "what": "Validates sheet kind, consent artifact, helpline numbers (must be in PUBLISHED_HELPLINES), shapelint per row; publish blocks without consent.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "prompt-compiler",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "pc-05",
+   "title": "Interview gap model (ranked gaps -> question SHAPES)",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_interview-gaps.js",
+    "evals/interview/run.mjs"
+   ],
+   "what": "Pure function ranking what is missing from a profile with evidence counts; emits shapes (about + telegraphic notes), never question text; contradiction fragments capped at 9 words/80 chars.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "learning/pedagogy (learning-profile discovery: which modality/interest gaps to probe next, asked in-lesson)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "pc-06",
+   "title": "Clone background life shapes",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/agents/cloneLife.ts",
+    "src/engine/herNow.ts"
+   ],
+   "what": "Pure function of a declared weekly rhythm so 'what are you doing now' never improvises contradictory activities.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "prompt-compiler (tutor persona consistency)",
+   "evidence": "herNow defect: 'reading a book' then 'setting fairy lights' 60 s apart",
+   "notes": "For a child tutor keep life minimal and never feeling-shaped."
+  },
+  {
+   "id": "pc-07",
+   "title": "Agent registry (personas as registered modules)",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/agents/registry.ts",
+    "src/engine/agents/types.ts"
+   ],
+   "what": "Every compile needs an injected module; revocation deregisters the module rather than editing a prompt.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "prompt-compiler (multiple tutor personas)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "saf-01",
+   "title": "Session clock + age-tier hard gates",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/clock.ts",
+    "api/clock.js"
+   ],
+   "what": "MINOR_HARD_GATES frozen (engagementMechanics=false, romanceRegisters=false), gatesFor short-circuits minor before config; unknown tier fails safe; disclosure/break cadence 2h/1h for minor-safe tiers; client mirror persists and reconciles MAX(local, server) so outages never silence disclosure.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "safety-floor/honesty (Taxila: every user is a minor; flip unverified->minor)",
+   "evidence": "",
+   "notes": "Tip still maps unverified->adult (pre-launch owner decision 2026-08-15); Taxila must not inherit that."
+  },
+  {
+   "id": "saf-02",
+   "title": "Honesty gate families + published helplines (incl. Childline 1098)",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/honesty.ts"
+   ],
+   "what": "Output-path predicates: invented identifiers (phone/email/UPI), out-of-band receipts (claims of events that never happened), presupposition, her-commitment ledger; PUBLISHED_HELPLINES whitelist (14416, iCall, KIRAN, 1098...).",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "safety-floor/honesty",
+   "evidence": "measurements.md#honesty-pressure-1; rejected.md#honesty-by-instruction",
+   "notes": ""
+  },
+  {
+   "id": "saf-03",
+   "title": "The one door: gatedReply + never-say rules",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_surface.js",
+    "api/_never-rules.js",
+    "evals/surface.mjs"
+   ],
+   "what": "Every surface's model text leaves through one function running parseBubbles -> stripTextingDashes -> guardReply; static eval asserts single call site; owner never-say rules matched by shingles on the output.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "safety-floor/honesty (single egress for tutor text, including realtime transcript post-hoc audit)",
+   "evidence": "docs/RELATIONALOS.md hazard 1 closed 2026-08-22",
+   "notes": "Realtime speech-to-speech has no post-generation gate (hazard 2)."
+  },
+  {
+   "id": "saf-04",
+   "title": "Instruction-shaped material detector",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_material-detector.js",
+    "evals/room-adversarial-creator/"
+   ],
+   "what": "NFKC-normalised regex detector for prompt-injection-shaped uploaded material (7 classes, EN+HI); material rendered inside MATERIAL_BLOCK markers excluded from trusted text.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "safety-floor + knowledge-ingestion (homework photos/worksheets uploaded by kids)",
+   "evidence": "ws-r105: 100% recall n=41, 0% FP n=15; ws-r121 secret-shaped leak 0/9",
+   "notes": ""
+  },
+  {
+   "id": "saf-05",
+   "title": "Teacher-clone safety floor spec (minors)",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "docs/gurukul/safety-floor-teacher.md"
+   ],
+   "what": "P1 session-open disclosure card in app voice; P2 minor cadence; P4 identity-question -> card predicate; P5 relay-claim gate; P6 lane parity; consent artifact schema; revocation deregisters; DPDP 9(2) for children; guardian sees usage not live transcript; abuse/unsafe-home family; result-window policy; academic-integrity ladder.",
+   "maturity": "spec-only",
+   "taxila_use": "copy",
+   "taxila_target": "safety-floor/honesty + auth/consent (Taxila child-safety spec seed)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "saf-06",
+   "title": "Expert/teacher platform floor text",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/expertTextCompiler.ts#FLOOR"
+   ],
+   "what": "Telegraphic floor: disclosed AI, permanent mentor boundary, distress -> Childline 1098 / Tele-MANAS 14416, no live-test solutions, hint ladder before worked solution, praise method not ability, no invented shared past, action completion requires execution receipt.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "safety-floor/honesty (Taxila tutor CORE floor)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "saf-07",
+   "title": "Internals fence",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/internalsFence.ts"
+   ],
+   "what": "Never discloses prompts, vendors, model names; 'an AI' is the whole granularity.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "safety-floor/honesty",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "saf-08",
+   "title": "Public door rate limits + body-shape fuzzing",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_rate-limit.js",
+    "db/migrations/089_public_rate.sql",
+    "evals/room-doors/shapes.mjs"
+   ],
+   "what": "Persistent per-scope rate buckets; twelve hostile body-shape classes fuzzed against every door.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "infra + safety",
+   "evidence": "measurements.md#ws-r170-rate-limit-suite-2026-09-13",
+   "notes": "open: OTP doors not behind vy_public_rate (ws-r26)"
+  },
+  {
+   "id": "mm-01",
+   "title": "Screen-share scene model (wake on the hold)",
+   "subsystem": "multimodal-vision",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/watch/scene.ts"
+   ],
+   "what": "Pure geometry: wakes on arrest of movement ('dekh yeh'), show classes settle/reshow/point vs ambient, suppressors for scroll, notification overlays, video-vs-page, FLAG_SECURE.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "multimodal-vision (child shows notebook/screen to tutor)",
+   "evidence": "measurements.md#wake-hold-curve",
+   "notes": "Native twin SceneReader.java lives on main."
+  },
+  {
+   "id": "mm-02",
+   "title": "Multimodal evidence -> claim extraction + research cycle",
+   "subsystem": "multimodal-vision",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_experience-compiler/claim-evidence.js",
+    "api/_claim-extraction/contracts.js",
+    "scripts/research-cycle.mjs",
+    "evals/multimodal-claim-evidence/run.mjs"
+   ],
+   "what": "Connects observable multimodal evidence to cited claim extraction (newer than tip).",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "multimodal-vision / knowledge-ingestion",
+   "evidence": "commit ba3169cb 2026-09-27",
+   "notes": "Covered in hp-multimodal-group harvest."
+  },
+  {
+   "id": "grp-01",
+   "title": "Portable group layer: turn checkpoints, attributed source recall, audience",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_group-runtime/checkpoints.js",
+    "api/_group-recall/selection.js",
+    "api/_group-audience.js",
+    "api/_group-source-event.js"
+   ],
+   "what": "Newest Group-AI implementation (2026-10-01): portable turn checkpoints, attributed group source selection with guarded recall experiment, consent-boundary source admission.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "group-ai/multi-agent (sibling/classroom sessions)",
+   "evidence": "b514595f handoff",
+   "notes": "Not on the tip; see hp-multimodal-group."
+  },
+  {
+   "id": "grp-02",
+   "title": "Gate 0 disclosure ACL + multi-owner forget",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "evals/mp/gate0.mjs",
+    "evals/mp/withdraw.mjs",
+    "db/migrations/008a_speaker_participants.sql",
+    "db/migrations/008b_rooms_grants_turns.sql"
+   ],
+   "what": "SQL disclosure predicate across participants with negative control; withdraw-not-delete.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "group-ai/multi-agent + auth/consent",
+   "evidence": "measurements.md#gate0-structural (0 of 31,122 vs prompt 57-98%)",
+   "notes": ""
+  },
+  {
+   "id": "grp-03",
+   "title": "Room leak battery (100-follower world) + door battery",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "evals/room-leak/{run.mjs,world.mjs}",
+    "evals/room-doors/run.mjs"
+   ],
+   "what": "Five Rooms, two Suites, 100 overlapping followers; 336k retrieval row-scenario checks; static repo-wide scan for new readers of private tables.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates (cross-child data isolation)",
+   "evidence": "measurements.md#ws-r68-full-world-leak-battery-2026-09-05",
+   "notes": ""
+  },
+  {
+   "id": "ki-01",
+   "title": "Context Locker extractors with named refusals",
+   "subsystem": "company-brain/knowledge-ingestion",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_context/{extract.js,pdf.js,docx.js,whatsapp.js,image.js,link.js,limits.js}",
+    "api/_context-locker.js",
+    "api/_context-mining.js"
+   ],
+   "what": "Magic-byte detection, dependency-light PDF text-layer and DOCX OOXML extraction, segments with speaker attribution and offsets, caps are refusals (3 MiB item, 400k chars, 8 MiB expanded), named refusals for doc/rtf/pptx/csv..., scans refused (no OCR).",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "company-brain/knowledge-ingestion (teacher/parent uploads; NCERT PDFs need OCR path added)",
+   "evidence": "rejected.md#mine-everything-you-are-handed",
+   "notes": ""
+  },
+  {
+   "id": "ki-02",
+   "title": "Claim extraction with citation coordinates + owner review",
+   "subsystem": "company-brain/knowledge-ingestion",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_claim-extraction/{contracts.js,citation-coordinates.js,providers/azure-foundry.js}",
+    "api/_replica-claims.js",
+    "api/_replica-review.js",
+    "api/_review-queue.js"
+   ],
+   "what": "Model proposes claims bound to exact source spans; owner accepts/rejects/defers/edits; edits create superseding candidates; review queue card kinds.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "company-brain/knowledge-ingestion (curriculum fact cards with citations to NCERT pages)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "ki-03",
+   "title": "Public knowledge block + published material assistant",
+   "subsystem": "company-brain/knowledge-ingestion",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/compiler.ts#renderPublicKnowledge",
+    "src/engine/publishedMaterialAssistant.ts",
+    "api/_room-knowledge.js",
+    "api/_text-publication-*.js"
+   ],
+   "what": "Bounded public-knowledge block inside MATERIAL markers; claims only when supported; missing/conflicting evidence -> bounded uncertainty.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "company-brain/knowledge-ingestion (grounded answers from syllabus content)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "lrn-01",
+   "title": "Syllabus as data with stable derived ids",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/practice/syllabus.ts"
+   ],
+   "what": "Subject/unit/chapter/topic tree with ids derived from slugs (append freely, rename never), chapter as leaf until topics exist, difficulty bands foundation/standard/advanced/pyq, question formats with real marking schemes.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "learning/pedagogy/curriculum (CBSE/NCERT/RBSE classes 1-9 taxonomy)",
+   "evidence": "",
+   "notes": "Content is JEE PCM; shape is what transfers."
+  },
+  {
+   "id": "lrn-02",
+   "title": "Mastery fold: no decay by absence, two-axis thresholds",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/practice/mastery.ts",
+    "evals/mastery.mjs"
+   ],
+   "what": "foldMastery over session summaries, commutative/order-independent, levels unattempted/building/developing/solid/mastered requiring score band AND min attempts (1/3/3/6), no clock read.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "learning/pedagogy/curriculum",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "lrn-03",
+   "title": "Practice session grading + demo bank + practice talk",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/practice/{session.ts,demoBank.ts}",
+    "src/engine/practiceTalk.ts",
+    "src/gurukul/{practiceStore.ts,surface.ts}"
+   ],
+   "what": "Graded attempts tallied per topic (skips excluded), practice activity facts for the tutor to talk about, local practice store.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "learning/pedagogy/curriculum",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "lrn-04",
+   "title": "Student app spec (loops, gamification stance, relational differentiator)",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "docs/gurukul/student-app-spec.md",
+    "docs/gurukul/SPEC-GURUKUL.md",
+    "docs/SPEC-GAMES.md"
+   ],
+   "what": "Daily practice / doubt / spaced revision / mock loops; mastery tracks; XP only from graded outcomes; streaks that never threaten; leagues out; 'you always rush X' only at pattern-level evidence; exam-anxiety check-in.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "learning/pedagogy + gamification",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "lrn-05",
+   "title": "Math answer rendering (explicit TeX only) + KaTeX",
+   "subsystem": "generative-ui/modules",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/studio/answerMath.ts",
+    "package.json (katex 0.18.7)",
+    "docs/gurukul/research/EXPERT-MATH-RENDER29.md"
+   ],
+   "what": "Splits answers on \\( \\) / \\[ \\] only (currency stays literal), caps 64 equations / 4096 chars, inline ** and ` only.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "generative-ui/modules",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "gm-01",
+   "title": "Activity contract (kind, startedAt, facts, nameable)",
+   "subsystem": "generative-ui/modules",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/activity.ts",
+    "src/engine/chessTalk.ts",
+    "src/engine/tttTalk.ts",
+    "src/engine/wyrTalk.ts"
+   ],
+   "what": "Every shared activity (chess, watch, wyr, ttt, practice) is an adapter producing telegraphic facts + an explicit nameable identifier set the honesty gate whitelists; rides the same prompt/memory/relationship.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "generative-ui/modules (each generated lesson module/mini-game registers as an activity)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "gm-02",
+   "title": "Chess (x88 search, adaptive opponent) + tic-tac-toe + would-you-rather engines",
+   "subsystem": "gamification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/chess/*",
+    "src/engine/ttt/*",
+    "src/engine/wyr/*"
+   ],
+   "what": "Deterministic in-browser game engines with adaptive strength and talk adapters.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "gamification",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "gm-03",
+   "title": "One timeline for hand and mouth (think bands, settled clause, send seam)",
+   "subsystem": "gamification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/state/game.ts",
+    "src/engine/chessTalk.ts"
+   ],
+   "what": "THINK_BANDS bounded [300 ms, 7 s] deterministic think time; turnPhase/gamePly staleness stamps; noteVerdict send/stale/hold so voice never narrates a stale board.",
+   "maturity": "shipped-measured",
+   "taxila_use": "idea",
+   "taxila_target": "gamification + realtime-voice (tutor narrating an interactive module)",
+   "evidence": "evals/movevoice.mjs",
+   "notes": ""
+  },
+  {
+   "id": "ev-01",
+   "title": "verify-release gate runner (25 gates)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "scripts/verify-release.mjs",
+    "evals/run.mjs"
+   ],
+   "what": "Prompt budget, Azure build contract, workflow lint, upload boundary, deploy verifier, motion lint, contrast, copy, mirrored constants, schema mirror, enrollment sample-rate/bandwidth, engine bundle freshness, native app, layout readability, performance, ~438-suite eval registry, leak/export/door batteries, accessibility, security headers, plus live-DB relcheck/citations/dialogue SQL; secrets redacted from logs.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates/verification",
+   "evidence": "measurements.md#rebuilt-preview-live-20260929 (25/25 Node22+Node24)",
+   "notes": ""
+  },
+  {
+   "id": "ev-02",
+   "title": "Layout readability / accessibility / performance / headers / contrast / copy gates",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "scripts/check-layout.mjs",
+    "scripts/check-accessibility.mjs",
+    "scripts/check-performance.mjs",
+    "scripts/check-headers.mjs",
+    "scripts/check-contrast.mjs",
+    "scripts/check-copy.mjs",
+    "scripts/check-motion.mjs"
+   ],
+   "what": "Chars-per-line, font floor, Devanagari glyph/tofu probe, axe WCAG 2.1 + keyboard walk, throttled TBT/LCP budgets with load average, CSP/headers, token contrast, banned-copy scopes with negative controls.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "evals/gates/verification + design-system/ux",
+   "evidence": "measurements.md#ws-r177-studio-tbt-on-a-quiet-machine (TBT median 104.5 ms, n=12)",
+   "notes": ""
+  },
+  {
+   "id": "ev-03",
+   "title": "Post-deploy live probe + deploy verifier + source fingerprint marker",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "scripts/probe-live.mjs",
+    "scripts/probeLiveExpectations.mjs",
+    "scripts/verify-deploy.mjs",
+    "scripts/deploy-commitment.mjs",
+    "scripts/write-deploy-marker.mjs"
+   ],
+   "what": "60-surface live probe, 6 deploy checks, sha256 source commitment over the exact input set served as a release marker and compared to checkout.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "infra/azure/vercel/deploy",
+   "evidence": "handoff 2026-09-30: 60/0 findings, 6/6",
+   "notes": ""
+  },
+  {
+   "id": "ev-04",
+   "title": "Zero-orphan relcheck + schema mirror + citation discipline",
+   "subsystem": "db-schema",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "scripts/relcheck.mjs",
+    "scripts/check-schema-mirror.mjs",
+    "scripts/check-citations.mjs",
+    "evals/schema-mirror/run.mjs"
+   ],
+   "what": "Live-DB integrity sweep (42 checks), every migration object mirrored in db/schema.sql, uncited derived rows refused.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "db-schema + evals",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "ev-05",
+   "title": "Bounded-wait scaling + shared browser launcher",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "evals/lib/",
+    "docs/gurukul/waves/wave-23 (WS-R181)"
+   ],
+   "what": "Fixed browser barriers scaled by load per core; 39 browser suites skip honestly without a browser; HTTP barriers instead of click-returns.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "evals/gates",
+   "evidence": "rejected.md#fixture-click-is-not-http-completion-20260929",
+   "notes": ""
+  },
+  {
+   "id": "ev-06",
+   "title": "Project memory graph (context/*.md + graph.json + context.mjs --check)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "context/",
+    "scripts/context.mjs"
+   ],
+   "what": "3,493 nodes / 2,919 edges at tip: decisions with reversal conditions, measurements with n/method/date, rejections with what broke, supersedes edges.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "evals/gates/verification (Taxila context discipline)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "tel-01",
+   "title": "Turn trace keyed by turn_id, off the critical path",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "docs/TRACE.md",
+    "api/_trace.js",
+    "api/trace.js",
+    "scripts/trace.mjs",
+    "src/engine/trace.ts"
+   ],
+   "what": "Every layer that touches a turn leaves a row keyed to one turn_id; one writer, never on a reply path; client batches fire-and-forget.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "telemetry/tracing",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "tel-02",
+   "title": "Content-free incident ledger with withDoor wrapper",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_incidents.js",
+    "db/migrations/109_incident.sql"
+   ],
+   "what": "Daily (kind, door, status) upsert counts, closed kind list enforced by CHECK and static scan, never throws, new-kind web push to operators, 90-day prune.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "telemetry/tracing",
+   "evidence": "measurements: incidents 138/138",
+   "notes": ""
+  },
+  {
+   "id": "tel-03",
+   "title": "Client telemetry + ops board + operator digest",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/engine/telemetry.ts",
+    "api/_ops.js",
+    "api/_operator-digest.js",
+    "api/_self-check.js"
+   ],
+   "what": "Batched client events, platform ops board, daily self-check of env presence by name and DB reachability.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "telemetry/tracing",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "auth-01",
+   "title": "Personal auth gate (Supabase email OTP / Google), Hindi copy",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/studio/PersonalAuthGate.tsx",
+    "src/studio/studioAuth.ts",
+    "src/studio/hiPersonalAuthCopy.ts",
+    "api/account.js",
+    "api/_auth*.js"
+   ],
+   "what": "Form-first phone layout, GoTrue query redirect handling, OTP retry, bounded return URL.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "auth/accounts/consent (parent account sign-in)",
+   "evidence": "rejected.md#standalone25-email-redirect-body-is-not-gotrue-query-20260914",
+   "notes": ""
+  },
+  {
+   "id": "auth-02",
+   "title": "Scoped consent ledger + provider consent",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_replica-consent.js",
+    "api/_replica-provider-consent.js",
+    "src/studio/ModelConsentGate.tsx"
+   ],
+   "what": "Closed consent scopes (capture, storage, transcription, inference, biometric, training, api, model_improvement); grants/revocations; consent recorded once for actual scope, never silently expanded.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "auth/accounts/consent (guardian consent scopes for voice, memory, camera)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "auth-03",
+   "title": "Fenced source and full erasure + readable export",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_replica-source-erasure.js",
+    "api/_replica-full-erasure.js",
+    "api/_room-export-readable.js",
+    "api/_creator-export.js"
+   ],
+   "what": "Revoke first, wait for leases/write reservations, enumerate output paths, delete bytes, then allow row cascades; follower readable export with two-locale table copy.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "auth/accounts/consent (DPDP erasure/export for child + guardian)",
+   "evidence": "measurements: source erasure 62/62, full erasure 35/35 offline",
+   "notes": ""
+  },
+  {
+   "id": "db-01",
+   "title": "Schema + house migration runner",
+   "subsystem": "db-schema",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "db/schema.sql",
+    "db/migrations/apply.mjs",
+    "db/migrations/*.sql (163 files, up to 172)"
+   ],
+   "what": "Neon Postgres via SQL-over-HTTP (api/_db.js); 225 tables; idempotent runner with splitSql; deferred non-cascading FKs for cleanup ledgers.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "db-schema",
+   "evidence": "migration 172 applied 2026-09-29 (3 DDL, 36 EXPLAIN, 3 DB gates)",
+   "notes": ""
+  },
+  {
+   "id": "inf-01",
+   "title": "Fail-closed provider spend ledger",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_provider-budget.js",
+    "docs/PROVIDER-BUDGET.md"
+   ],
+   "what": "Every metered call reserves against one DB-serialised ceiling before network I/O (1 token per UTF-8 byte input estimate, enforced max_tokens output), one-way in-flight marker, settles measured usage, unknown outcome stays reserved (never retried as free); operations claim_extraction/dialogue/transcription/voice_training/synthesis/liveness/watermarking/review_question; content-free rows.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "infra/azure (gpt-realtime minutes, gpt-5.6 tokens, gpt-image-2 images per child/day)",
+   "evidence": "azure-text-canary-20260927 settled through it",
+   "notes": ""
+  },
+  {
+   "id": "inf-02",
+   "title": "Azure-only serving policy",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_model-serving-policy.js"
+   ],
+   "what": "VYAKTI_MODEL_SERVING=azure_only pins every model origin to Azure host patterns and the reply provider to azure_foundry.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "infra/azure",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "inf-03",
+   "title": "Azure Foundry dialogue adapter (gpt-5.6-terra)",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_dialogue/providers/azure-foundry.js",
+    "api/_dialogue/{contracts.js,registry.js,provider-revision.js}",
+    "api/_azure-surface-reply.js"
+   ],
+   "what": "Endpoint validation (*.services.ai.azure.com, api 2024-05-01-preview), deadline/abort, 512 KB streamed body cap, measured usage required, expected response model pin (gpt-5.6-terra-2026-07-09), rate commitment hash, revision receipts.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "infra/azure (gpt-5.6 text lane)",
+   "evidence": "measurements.md#azure-text-canary-20260927: 191 in / 49 out tokens, 3218 ms, n=1",
+   "notes": ""
+  },
+  {
+   "id": "inf-04",
+   "title": "Azure processing worker job + Bicep templates",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "services/replica-processing-worker/",
+    "services/*/infra/main.bicep",
+    "services/azure-web/"
+   ],
+   "what": "Container Apps scheduled Job with ClamAV, per-service Bicep with UMI and Key Vault refs, alternative Azure web hosting with cron runner.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/azure (Forge workers)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "inf-05",
+   "title": "Vercel deploy wrapper + product selection",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "scripts/deploy-vercel.mjs",
+    "scripts/vercel-build.sh",
+    "scripts/vercel-install.sh",
+    "scripts/vercel-product.mjs",
+    "vercel.json"
+   ],
+   "what": "Exact-source deploy with project-local npm cache, product selection, install-script allowlist.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/vercel",
+   "evidence": "rejected.md#shared-npm-cache-and-staged-voice-20260929",
+   "notes": ""
+  },
+  {
+   "id": "ux-01",
+   "title": "Design direction + tokens (pearl workbench) + DESIGN-LAW",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "DESIGN.md",
+    "PRODUCT.md",
+    "docs/gurukul/DESIGN-LAW.md",
+    "docs/gurukul/DESIGN-SYSTEM.md",
+    "src/studio/design/tokens.css"
+   ],
+   "what": "Calm professional workbench: paper #f7f8fa, ink #20242d, active #4452bd, 44 px targets, 4.5:1, 200% text / 360 px reflow, one authored motion, recording locks navigation.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "design-system/ux",
+   "evidence": "rejected.md#wave25-green-everywhere..., #patch-only-redesign-20260927",
+   "notes": "Adult creator aesthetic; Taxila kids need its own direction but keep the verification discipline."
+  },
+  {
+   "id": "ux-02",
+   "title": "Bilingual copy registries + language tagging + Devanagari font pipeline",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/studio/copy.ts",
+    "src/studio/hiCopy.ts",
+    "src/studio/Localized.tsx",
+    "src/room/Localized.tsx",
+    "@fontsource/noto-sans-devanagari"
+   ],
+   "what": "English copy plus lazily loaded Hindi chunk, lang attribute tagging helpers, first Hindi paint budget 800 ms.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "design-system/ux (Hindi/English UI for Indian kids and parents)",
+   "evidence": "ws-r177: first Hindi DOM paint median 493 ms",
+   "notes": ""
+  },
+  {
+   "id": "ux-03",
+   "title": "Canvas (Skia) card rasteriser for Devanagari",
+   "subsystem": "growth/seo",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_room-card.js"
+   ],
+   "what": "Pure layout + @napi-rs/canvas fillText instead of resvg (which corrupts matra clusters).",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "growth/seo (shareable progress cards with Hindi text)",
+   "evidence": "rejected.md#ws-r55-resvg-devanagari-shaping",
+   "notes": ""
+  },
+  {
+   "id": "and-01",
+   "title": "OTA web bundle updater (no third-party plugin)",
+   "subsystem": "android/capacitor",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "android/app/src/main/java/app/vyakti/studio/{OtaUpdater.java,OtaBundle.java,OtaPlugin.java,OtaState.java}",
+    "scripts/ota-bundle.mjs"
+   ],
+   "what": "Fetch/verify/unpack a zip into filesDir and switch Capacitor server base path on NEXT launch only (never under a running session).",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "android/capacitor",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "and-02",
+   "title": "Capacitor flavours + assetlinks door + iOS scaffold",
+   "subsystem": "android/capacitor",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "capacitor.vyakti.config.ts",
+    "scripts/select-capacitor-config.mjs",
+    "api/_well-known-assetlinks.js",
+    "ios/"
+   ],
+   "what": "Second app identity app.vyakti.studio, release signing wiring, /.well-known/assetlinks.json from fingerprint env.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "android/capacitor",
+   "evidence": "measurements.md#ws-r169-mobile-app-proven (161/161 checks)",
+   "notes": "open: release signing unconfigured for vyakti flavour"
+  },
+  {
+   "id": "and-03",
+   "title": "24 kHz mono WAV capture without MediaRecorder",
+   "subsystem": "android/capacitor",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "src/studio/wavCapture.ts",
+    "src/studio/callCapture.ts",
+    "src/studio/recordingUpload.ts"
+   ],
+   "what": "getUserMedia + AudioContext + manual PCM16 WAV encode + OfflineAudioContext resample; strict WAV inspector; permission error messages; many <=30 s windows from one open stream.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "android/capacitor + realtime-voice (fallback recording, voice notes)",
+   "evidence": "measurements.md#ws-r157-mobile-webview-record-flow",
+   "notes": ""
+  },
+  {
+   "id": "pay-01",
+   "title": "Payments seam + Razorpay subscriptions (UPI Autopay) + fake twin",
+   "subsystem": "payments",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_payments.js",
+    "api/_payments/providers/{razorpay.js,fake.js}",
+    "api/payments-webhook.js",
+    "api/_renewals.js",
+    "api/_receipt.js"
+   ],
+   "what": "Plans keyed per rupee amount, subscriptions with short_url mandate, webhook signature verification, renewal reminders, receipts, reconciliation; RBI e-mandate note (no AFA under Rs 15,000 after AFA-registered mandate).",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "payments (parent subscription)",
+   "evidence": "open: ws-r11-payments-open-gaps (no real Razorpay account exercised)",
+   "notes": ""
+  },
+  {
+   "id": "gr-01",
+   "title": "Share kit, referrals, creator directory, sitemap, room page",
+   "subsystem": "growth/seo",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_share-kit.js",
+    "api/_room-page.js",
+    "api/_creator-page.js",
+    "api/_sitemap.js",
+    "db/migrations/123_room_referral.sql",
+    "db/migrations/133_referral_reward.sql"
+   ],
+   "what": "Crawler-rendered public pages, WhatsApp share text builder, referral links with reward after three completed friends.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "growth/seo",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "gr-02",
+   "title": "Web push from scratch (RFC 8291/8292) + WhatsApp/Telegram transports",
+   "subsystem": "growth/seo",
+   "repo": "html-portfolio",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "paths": [
+    "api/_push/webpush.js",
+    "api/_room-whatsapp*.js",
+    "api/_room-telegram.js"
+   ],
+   "what": "node:crypto-only aes128gcm push encryption with RFC test vectors; WhatsApp utility templates; Telegram transport over the same follower model.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "growth/seo (parent notifications/weekly report delivery)",
+   "evidence": "",
+   "notes": ""
+  }
+ ],
+ "measurements": [
+  {
+   "claim": "gpt-realtime-2.1-mini on Azure: barge-in VAD speech_started 6/6 within watchdog, median 271 ms (audio stops 245 ms); vision 5/5 correct 0 fabricated; steady first audio 1458-1497 ms median vs incumbent 1370 ms; 41 then 53 words/turn vs 20.5; median spoken turn 14.0 s (p90 18.2 s); 13/24 turns had questions; six voices 137-192 Hz; declined.",
+   "source": "context/rejected.md#realtime-azure@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "byte-identical prompt to incumbent, live sessions",
+   "n": "9 sessions / 72 turns; 24 scored turns",
+   "date": "2026-08 (pre-tip, carried)"
+  },
+  {
+   "claim": "Incumbent Gemini 3.1 flash live: steady median 1370 ms, IQR 231 ms, barge-in 5/5 @ 279 ms; native-audio alternatives 2272-2449 ms and miss the 600 ms release watchdog.",
+   "source": "context/measurements.md#live-model-bake@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "live call bake-off",
+   "n": "24 turns per model",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "Live reply floor: text turn without VAD 720 ms; audio path adds ~745 ms; silenceDurationMs 150/300/500 within 50 ms of each other.",
+   "source": "context/measurements.md#live-floor@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "timed live turns",
+   "n": "n=15",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "Azure realtime input below 24 kHz refused (integer_below_min_value); no input_image_buffer/input_video_buffer events.",
+   "source": "context/measurements.md#azure-realtime-shape@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "protocol probe (enum from gpt-4o-mini-tts socket)",
+   "n": "",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "Azure coral TTS vs incumbent: Hindi words correct 15/15 vs 11/15; first audio 255 ms vs 4.9-12.7 s; $0.0029 vs $0.0148 per utterance; pitch 210 vs 266 Hz; owner rejected by ear (not human, not Indian).",
+   "source": "context/rejected.md#azure-tts@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "battery + owner listening",
+   "n": "15 words",
+   "date": "2026-08"
+  },
+  {
+   "claim": "OpenRouter TTS stream:true is a no-op (first byte 2267 ms, complete 2283 ms); free-served first audio p50 886 ms vs paid p50 2476 ms.",
+   "source": "context/measurements.md#openrouter-no-stream@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "direct endpoint test + production",
+   "n": "10 of 12 requests",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "Per-sentence voice sequencing cuts time to first audio 2001.5 -> 400.7 ms mean (5.00x), reproduced.",
+   "source": "context/measurements.md#ws-r156-time-to-first-audio@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "real voiceSequence.ts in Chromium, fake 400 ms/sentence synth, 5-sentence reply",
+   "n": "n=10 per arm, 2 runs",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "Register reader confusion table 60/60 correct (en 20/20, hi 20/20, hinglish 20/20); high-confidence 36/36; first run 59/60 (Devanagari laughter bug).",
+   "source": "context/measurements.md#ws-r153-register-confusion-table@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "hand-authored labelled turns through readRegister",
+   "n": "n=60",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "Register reaches both compiled prompt and voice prosody plan 60/60 with a byte-identical negative control.",
+   "source": "context/measurements.md#ws-r176-register-in-reply-and-voice@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "real roomSay/roomSpeak over fake room",
+   "n": "n=60",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "Prosody plan proxy timing fast/medium/slow 1163/1594/2214 ms; strict ordering on all 60 lines (proxy, not acoustic).",
+   "source": "context/measurements.md#ws-r168-prosody-timing-table@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "estimateProsodyTimingMs",
+   "n": "n=60",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "71 s owner LoRA (r=16, 0.728% params, 140.4 s on T4) raises ECAPA mean 0.775278 -> 0.795857 (18.4% of gap to 0.886850 ceiling); p10 worsens after 15 epochs.",
+   "source": "context/measurements.md#lora-vs-zero-shot-71s@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "same-session zero-shot control, fixed windows/seeds",
+   "n": "n=2 runs per arm, 1 speaker",
+   "date": "2026-08-26"
+  },
+  {
+   "claim": "Choice of 10 s conditioning window spans 0.0625 ECAPA (best 0.8058 > best LoRA 0.7959); full 71 s reference scores below best windows because Chatterbox truncates to first 10 s/6 s.",
+   "source": "context/measurements.md#reference-window-beats-the-finetune@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "5 zero-shot arms, fixed scoring windows",
+   "n": "n=1 run per arm, 1 speaker",
+   "date": "2026-08-26"
+  },
+  {
+   "claim": "IndicF5 owner-bound Hindi/Hinglish: ECAPA mean 0.824822 (p10 0.815361); mean RTF 2.8705 (2.13-4.16); PerTh >=0.998.",
+   "source": "context/measurements.md#indicf5-owner-qualification-remote-2026-08-28@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "remote Azure run, sealed pack",
+   "n": "n=6 clips (71.069 s)",
+   "date": "2026-08-28"
+  },
+  {
+   "claim": "IndicF5 objective intelligibility via Azure Speech hi-IN: WER/CER 0.328/0.277 overall; Devanagari 0.205/0.100; mixed-script Hinglish 0.453/0.438; chemical symbols 6/8 wrong, numerals 4/11 wrong.",
+   "source": "context/measurements.md#indicf5-objective-intelligibility-azure-speech-2026-08-28@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "one ASR pass, no retries",
+   "n": "n=6 clips, 174 words",
+   "date": "2026-08-28"
+  },
+  {
+   "claim": "OpenVoice V2 tone conversion regressed ECAPA 0.726677 -> 0.680976 and WER 0.304 -> 0.375, CER 0.256 -> 0.298.",
+   "source": "context/rejected.md#openvoice-tone-conversion-regressed-owner-proxy-and-asr@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "matched prompts, same reference/seed",
+   "n": "n=2",
+   "date": "2026-08-28"
+  },
+  {
+   "claim": "Chatterbox matched blind pack: RTF 0.78-2.48 by arm/CFG; ~2,965 active GPU/broker seconds ~ USD 0.68 list estimate; Hindi pack refused English without provider call.",
+   "source": "context/measurements.md#chatterbox-matched-blind-pack-live-2026-08-28@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "5 Azure syntheses",
+   "n": "n=5",
+   "date": "2026-08-28"
+  },
+  {
+   "claim": "Qwen3-TTS 1.7B English: mean RTF 2.2082; 11.0 GB image; 799 s GPU allocation ~ USD 0.37 estimate.",
+   "source": "context/measurements.md#qwen3-tts-english-candidate-live-2026-08-28@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "isolated Azure deployment",
+   "n": "n=6 requests",
+   "date": "2026-08-28"
+  },
+  {
+   "claim": "GPU cold start from zero replicas: 161 s (runtime) and 176 s (voice-evidence); warm evidence 71 s -> 8 embeddings in 4977 ms.",
+   "source": "context/architecture.md (first-clone chain)@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "live first-clone run",
+   "n": "n=1",
+   "date": "2026-08-26"
+  },
+  {
+   "claim": "Real Azure text canary: gpt-5.6-terra-2026-07-09, 191 input / 49 output tokens, 3218 ms dispatch through metering settlement.",
+   "source": "context/measurements.md#azure-text-canary-20260927@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "one synthetic call through adapter + budget ledger",
+   "n": "n=1",
+   "date": "2026-09-27"
+  },
+  {
+   "claim": "Disclosure control: prompt-instruction arm leaked 57.1% naturalistic / 98.1% adversarial; SQL predicate leaked 0 of 31,122 row x scenario checks (negative control caught 162); join p50 53 ms.",
+   "source": "context/measurements.md#gate0-structural@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "494 scenarios",
+   "n": "31,122 checks",
+   "date": "2026-08-18"
+  },
+  {
+   "claim": "Example quotes recited verbatim on 4/5 turns -> 0 after removal; polished taste sentences echoed, telegraphic notes cut echo to 1/32 and register defection 13/96 -> 0/32.",
+   "source": "context/rejected.md#recited-prompt@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "paired runs",
+   "n": "n=84; 32; 96",
+   "date": "2026-08"
+  },
+  {
+   "claim": "Same rule fired 0/8 placed mid-brief vs 8/8 appended last.",
+   "source": "context/rejected.md#honesty-by-instruction (prompt-position)@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "paired placement",
+   "n": "n=8 each",
+   "date": "2026-08"
+  },
+  {
+   "claim": "Fabricated-receipt family before the gate: 1/8 (12.5%), n=31 scored overall, real compile() through gemini-3.6-flash.",
+   "source": "context/rejected.md#honesty-by-instruction@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "adversarial arm",
+   "n": "n=31",
+   "date": "2026-08-20"
+  },
+  {
+   "claim": "Semantic recall 8/8 zero-overlap pairs; person-filtered halfvec scan p50 40 ms; embed call p50 ~305 ms; nightly finalize ~USD 0.0007/person/night.",
+   "source": "context/measurements.md#recall-v2@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "live production data",
+   "n": "n=15 latency",
+   "date": "2026-08-13"
+  },
+  {
+   "claim": "Recall lost on surface switch: 89.2% before fix, 13.5% after (offline lower bound).",
+   "source": "context/measurements.md#surface-switch-recall@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "recallbench, mocked DB",
+   "n": "44 questions, 3 dyads",
+   "date": "2026-08-26"
+  },
+  {
+   "claim": "vy_rel_state had zero rows for all 40 real users (UPDATE-only writers).",
+   "source": "context/rejected.md#relstate-zero-rows@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "production table audit",
+   "n": "40 users",
+   "date": "2026-08-15"
+  },
+  {
+   "claim": "Instruction-shaped material detector: 100% recall on hostile corpus, 0% false positives on adversarially benign corpus.",
+   "source": "context/measurements.md#ws-r105-detector-recall-and-false-positive-rate@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "regex over NFKC text",
+   "n": "n=41 hostile / n=15 benign",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Secret-shaped material leak through real gate 0/9 across all injectable sheet fields (down from 2/5).",
+   "source": "context/measurements.md#ws-r121-secret-shaped-leak-rate-0-of-9-all-nine-injectable-fields@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "echoEverything fake through roomSay",
+   "n": "n=9",
+   "date": "2026-09-05"
+  },
+  {
+   "claim": "Studio quiet-machine performance: TBT median 104.5 ms (p90 126), LCP 1722 ms; Hindi studio TBT 164.5 ms, first Hindi DOM paint 493 ms.",
+   "source": "context/measurements.md#ws-r177-studio-tbt-on-a-quiet-machine-2026-09-13@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "check-performance, load avg 0.54-2.07",
+   "n": "n=12 per target",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "First five minutes, text-only fixture: landing->sign-in->first source->Meet total ~3.8/5.0/6.4 s.",
+   "source": "context/measurements.md#ws-r164-first-five-minutes-text-only-wall-clock-2026-09-13@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "real Chromium, fixture server",
+   "n": "n=3",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "Private voice runtime offline battery 46/46 then 48/48 node:test cases with real HTTP server/store/controller and synthetic SQL/ARM/Blob.",
+   "source": "context/measurements.md#private-voice-runtime-offline27@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "node --test",
+   "n": "n=48",
+   "date": "2026-09-27"
+  },
+  {
+   "claim": "Accepted release 5fe2fa25: Node22 and Node24 each 25/25; Android pass; 60 live probes 0 findings; deploy verifier 6/6; migration 172 applied with 36 EXPLAINs and 42 relcheck checks; 390 px sign-in no overflow, 0 console errors.",
+   "source": "context/measurements.md#rebuilt-preview-live-20260929@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "GitHub Actions + live probes",
+   "n": "25 gates x 2 Node",
+   "date": "2026-09-29"
+  },
+  {
+   "claim": "Private voice pilot enabled: USD 1 planning budget spent 0/reserved 0; watchdog Job every 15 min with fresh heartbeat; GPU 3 revisions inactive 0 replicas; real-account generations 0.",
+   "source": "context/measurements.md#private-voice-activation-closeout-20260930@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "content-free receipts readback",
+   "n": "n=1 readback",
+   "date": "2026-09-29/30"
+  },
+  {
+   "claim": "Startup sponsorship billing: subscription and billing-profile spending limits Off, status LimitRemoved, initial USD 5,000 (not a balance); billing profile GET 403, credit lots GET 401.",
+   "source": "context/measurements.md#credit-only-billing-readback-20260929@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "authorized SP read-only ARM calls",
+   "n": "n=1 readback",
+   "date": "2026-09-29"
+  },
+  {
+   "claim": "Vyakti mobile app suite 161/161 checks; WAV capture reaches submittable recording with MediaRecorder deleted, WebView UA, 390x844.",
+   "source": "context/measurements.md#ws-r169-mobile-app-proven-2026-09-13 + #ws-r157-mobile-webview-record-flow@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "real Chromium fixture",
+   "n": "n=1 deterministic",
+   "date": "2026-09-13"
+  },
+  {
+   "claim": "Luna vs incumbent overall 17-18 (tie), specificity 9-25 for luna (p=0.009); luna spoken turns 37% longer, crisis beat collapsed into clinical script, 0 media tags in 144 replies.",
+   "source": "context/measurements.md#charm-luna@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "paired judged charm battery",
+   "n": "144 replies",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "Foundry deployment behaviour drifted within 4 days (engagement before-arm 20.4% -> 7.9%/7.3%).",
+   "source": "context/measurements.md#vision-drift-4day@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "method": "archived battery re-run",
+   "n": "n=240/720/1360",
+   "date": "2026-08-15"
+  }
+ ],
+ "rejections": [
+  {
+   "tried": "gpt-realtime-2.1-mini (Azure) as the voice-call brain with an unchanged prompt.",
+   "what_broke": "Monologue length (41-53 words/turn, 14 s turns), weak Hinglish ('doesna nahi chahiye'), no plausible Indian ~266 Hz voice, no continuous frame channel; latency and barge-in were fine.",
+   "source": "context/rejected.md#realtime-azure@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Taxila's chosen realtime family: budget turn length in the tutor prompt, ear-test voices for Indian accent, plan frames as discrete items."
+  },
+  {
+   "tried": "Moving the voice to Azure coral TTS because every measured axis improved.",
+   "what_broke": "Owner's ear: not human, not Indian. Battery measured pronunciation, not accent identity.",
+   "source": "context/rejected.md#azure-tts@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Make accent authenticity a first-class axis in Taxila voice selection."
+  },
+  {
+   "tried": "stream:true on the paid OpenRouter TTS lane.",
+   "what_broke": "Accepted and does nothing; synthesis is buffered then flushed.",
+   "source": "context/rejected.md#openrouter-streaming@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Verify streaming with first-byte vs complete timing before relying on it."
+  },
+  {
+   "tried": "Example quotes and polished sentences in the persona brief.",
+   "what_broke": "Recited verbatim (4/5 turns; taste echoed twice eight turns apart; register defection).",
+   "source": "context/rejected.md#recited-prompt@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Tutor sheets must be shapes/facts; never sample lines a tutor could recite to a child."
+  },
+  {
+   "tried": "Enforcing honesty (no invented email/address/receipt) with a well-written persona bullet.",
+   "what_broke": "Rule sat 38.6% into the brief; mid-brief rules fire 0/8; she claimed a resume arrived in a mailbox she does not have.",
+   "source": "context/rejected.md#honesty-by-instruction@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Decide decidable properties on output bytes (no fake homework 'submitted', no invented teacher relay)."
+  },
+  {
+   "tried": "A second hand-assembled realtime prompt beside compile().",
+   "what_broke": "Dropped FORGET_DECISION and AGE_TIER_SAFETY_OVERRIDE; a minor's romance-register refusal never reached the realtime lane.",
+   "source": "context/rejected.md#age-tier-never-realtime@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "One assembler for text and gpt-realtime instructions; assert floor per lane."
+  },
+  {
+   "tried": "UPDATE-only writers for relationship state.",
+   "what_broke": "Zero rows ever existed for 40 users; relational surface silently invisible.",
+   "source": "context/rejected.md#relstate-zero-rows@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Every Taxila table needs a named first-row owner; derivers upsert."
+  },
+  {
+   "tried": "Accumulating more call audio into the voice reference to 'learn' the voice.",
+   "what_broke": "Chatterbox conditions on first 10 s/6 s only; synthesis cannot change while the ECAPA meter rises.",
+   "source": "context/rejected.md#mirror-reference-accumulation-was-inert@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "A pipeline whose inputs grow is not one that learns; read consumer truncation before building accumulation."
+  },
+  {
+   "tried": "Blinding a listening bench by filename/order only.",
+   "what_broke": "Every clip spoke 'This is an AI-generated voice replica' first; operator check would unblind the only listener.",
+   "source": "context/rejected.md#disclosure-announces-the-clone@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Ask what the shipping path adds to an artifact before benchmarking it."
+  },
+  {
+   "tried": "Native Hindi TTS then OpenVoice V2 tone-color conversion to owner timbre.",
+   "what_broke": "ECAPA fell 0.727->0.681 and WER rose 0.304->0.375.",
+   "source": "context/rejected.md#openvoice-tone-conversion-regressed-owner-proxy-and-asr@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Avoid cascaded timbre conversion for tutor voice."
+  },
+  {
+   "tried": "Synthesising each Hindi/English token run separately and crossfading; identity-anchor preset as default voice.",
+   "what_broke": "Every switch reset prosody/breath; clip 3.36x longer with 65% near-silence; anchor preset sounded flat and robotic.",
+   "source": "context/rejected.md#per-token-voice-fanout-and-flat-identity-anchor@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Never stitch code-switched speech per language; one utterance per sentence."
+  },
+  {
+   "tried": "Calling structural code-switch passes, a curated orthography table or higher ECAPA a quality win.",
+   "what_broke": "Checks do not listen; owner still heard robotic and wrong switches.",
+   "source": "context/rejected.md#structural-code-switch-passes-cannot-certify-perceptual-voice-quality@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Only blind human ratings certify voice quality."
+  },
+  {
+   "tried": "Using an unmatched setup (unknown language -> effective CFG 0) as the voice baseline.",
+   "what_broke": "Did not reproduce the measured identity-anchor clips; test referenced a nonexistent wire field.",
+   "source": "context/rejected.md#wave25-unmatched-cfg-zero-is-not-baseline@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Baselines must match the exact measured configuration."
+  },
+  {
+   "tried": "Claiming automatic background memory after merging the consolidation code.",
+   "what_broke": "Deployed env lacked the sweep/model variables and previews do not run Vercel cron.",
+   "source": "context/rejected.md#wave25-default-voice-conditioning-and-code-only-memory@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Prove the deployed scheduler runs before claiming per-child memory consolidation."
+  },
+  {
+   "tried": "Studio CSP connect-src 'self' with uploads to Azure Blob and no media-src.",
+   "what_broke": "Upload refused after a 201 authorization; blob playback 0:00; UI showed only 'Paused'. Vite fixtures lacked production headers.",
+   "source": "context/rejected.md#wave26-self-only-csp-killed-upload-and-local-playback@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Run real-header browser counterfactuals for any recording/upload flow."
+  },
+  {
+   "tried": "Treating green CI gates and an owner-pinned sample as product completion.",
+   "what_broke": "Owner on phone could not upload; overlapping capture UI, sticky notices, raw status strings.",
+   "source": "context/rejected.md#wave26-green-gates-and-owner-pinned-sample-are-not-product-completion@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Acceptance is a real device journey, not fixtures."
+  },
+  {
+   "tried": "Patch-only redesign of the September-21 interface.",
+   "what_broke": "Owner rejected it despite passing fixtures; no clear full workflow.",
+   "source": "context/rejected.md#patch-only-redesign-20260927@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Design the whole journey for kids/parents up front; verify signed-in states at 390/1440."
+  },
+  {
+   "tried": "Green-tinted cream landing and a spinning 'scanning YOU' orb.",
+   "what_broke": "Read as a policy document with dead gaps; technical metaphor did not explain the next action.",
+   "source": "context/rejected.md#wave25-green-everywhere-and-a-scanning-you-orb-are-not-premium@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "One visible next action per screen."
+  },
+  {
+   "tried": "60-second liveness capture auto-stop.",
+   "what_broke": "voice-evidence identity_audio.py refuses frames beyond 30 s.",
+   "source": "context/rejected.md#standalone25-capture-duration-60s-rejected-20260914@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Align client capture caps with server decoder limits."
+  },
+  {
+   "tried": "First text-ready reply calling the generator directly.",
+   "what_broke": "Returned not_metered; bypassed the shared spend ledger.",
+   "source": "context/rejected.md#wave25-first-reply-bypassed-shared-budget@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Every model call (first-turn included) through the spend ledger."
+  },
+  {
+   "tried": "Sending the visible browser transcript back as conversation history; auto-reusing older consent rows.",
+   "what_broke": "Client text becomes trusted history; one-question attestation broadened after the fact.",
+   "source": "context/rejected.md#wave25-private-followup-cannot-trust-client-history-or-old-one-question-consent@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Server-held encrypted history only; consent is prospective and scoped."
+  },
+  {
+   "tried": "Reusing the public C2PA/generation path for private runs; splicing absent-table references into erasure SQL.",
+   "what_broke": "Public genome contract unsatisfiable; Postgres resolves an absent table even behind a false predicate; a single 10-min lease could expire mid paid write.",
+   "source": "context/rejected.md#private-voice-public-manifest-and-absent-erasure27@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Catalog-gate optional tables; renew leases per stage."
+  },
+  {
+   "tried": "Treating Sponsored quota id, a USD 1 app cap or cost alerts as no-charge proof.",
+   "what_broke": "Spending limits Off/LimitRemoved; 5,000 is an initial amount; balance unreadable (401/403).",
+   "source": "context/rejected.md#sponsored-quota-is-not-no-charge-proof-20260929@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Taxila Azure credits need provider-side protection; app caps are planning only."
+  },
+  {
+   "tried": "Interpreting nonempty encrypted Vercel env values as usable config / asking owner to paste secrets.",
+   "what_broke": "Decrypt list did not return values; existing vault already supplied them.",
+   "source": "context/rejected.md#private-voice-sensitive-env-is-not-readable27@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Read secrets via exact per-variable endpoints or vault; never by pasting."
+  },
+  {
+   "tried": "Releasing fixture holds on a click return.",
+   "what_broke": "Node24 races: list released before request arrived; global mode switched before GET.",
+   "source": "context/rejected.md#fixture-click-is-not-http-completion-20260929@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Use HTTP arrival barriers in browser tests."
+  },
+  {
+   "tried": "Asserting a recorder guard by its exact JSX source spelling.",
+   "what_broke": "Correct capture lock broke the regex; removing the lock would restore data loss.",
+   "source": "context/rejected.md#stale-drawer-source-assertion-20260929@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Test behaviour by executing the shipping expression."
+  },
+  {
+   "tried": "Deploying with the shared npm cache.",
+   "what_broke": "npm ECOMPROMISED lock error before deployment creation.",
+   "source": "context/rejected.md#shared-npm-cache-and-staged-voice-20260929@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Project-local npm cache for deploys."
+  },
+  {
+   "tried": "33-character Container Apps Job name; API redeploy without source metadata; reusing Vercel transport for Azure probe.",
+   "what_broke": "Azure 400/GET 404; install guard failed; origin guard refused before transmit.",
+   "source": "context/rejected.md#interrupted-activation-closeout-lessons-20260930@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Job names <= 32 chars; deploy via verified CLI wrapper; separate transports per provider."
+  },
+  {
+   "tried": "Assuming Azure Personal Voice was the live voice provider.",
+   "what_broke": "Live caller was the Chatterbox preview adapter; caught by reading wiring.",
+   "source": "context/rejected.md#ws-r168-assumed-azure-personal-voice-was-the-live-room-provider@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Trace the real call graph before designing a mapping."
+  },
+  {
+   "tried": "Threading the follower's raw turn text into the voice door to apply register to speech.",
+   "what_broke": "Would create a second path for text to reach rendering; roomSpeak only sees its own approved reply. Superseded by WS-R176: only the closed {register, confidence} pair is bound into the HMAC-signed 12 h session token.",
+   "source": "context/decisions.md#ws-r168-register-not-threaded-into-roomspeak (superseded at decisions.md line ~25058)@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "In Taxila compute affect once per turn and carry it as a closed enum, not raw text."
+  },
+  {
+   "tried": "Whole-word padding that strips combining marks for Devanagari.",
+   "what_broke": "Matras shattered words; Hindi laughter 'हाहा' misread as rushed.",
+   "source": "context/rejected.md#ws-r153-padt-without-combining-marks-breaks-devanagari-laughter@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Keep \\p{M} in any Indic text normaliser."
+  },
+  {
+   "tried": "Installing Honcho / sending conversations to Honcho cloud because its site suggests it.",
+   "what_broke": "Third-party content is not permission; AGPL; benchmarks vendor-reported; Neuromancer weights not verified for Azure.",
+   "source": "context/decisions.md#honcho-evidence-before-dependency-20260930 + rejected.md#avoid-repeating-waived-billing-step-20260929@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Evaluate memory ideas on own data before any dependency."
+  },
+  {
+   "tried": "Voice frontier shortcuts: Fish S2 Pro as open-commercial, Qwen3 as Hindi-ready, newer Hindi pack auto-loads via generic example, high-frequency energy as identity.",
+   "what_broke": "Primary licenses/language lists contradict; aliases move.",
+   "source": "docs/research/2026-09-27-voice-frontier.md@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Pin dated model snapshots; check license and language lists from primary sources."
+  },
+  {
+   "tried": "Persistent audio cache keyed by text+style only.",
+   "what_broke": "Voice switch moved generation lanes but replay caches kept serving the old voice.",
+   "source": "context/rejected.md#cache-outlives-the-voice@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Any cached tutor audio/embedding key must include voice/model identity."
+  },
+  {
+   "tried": "Device-keyed retrieval legs while identity is person-keyed.",
+   "what_broke": "89.2% of recall lost when a person switched surface.",
+   "source": "context/measurements.md#surface-switch-recall@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Key child memory by child id, never device/surface (web vs Android)."
+  },
+  {
+   "tried": "Mining every uploaded file/link/chat export as the owner's own words.",
+   "what_broke": "Majority speaker often not the owner; textbooks/articles mine cleanly as false evidence.",
+   "source": "context/rejected.md#mine-everything-you-are-handed@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Attribution is required input; a textbook is content, not the child's voice."
+  },
+  {
+   "tried": "@resvg/resvg-js for Hindi share cards.",
+   "what_broke": "Corrupts consonant+matra clusters and drops spaces; woff2 silently blank.",
+   "source": "context/rejected.md#ws-r55-resvg-devanagari-shaping@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Use Skia (@napi-rs/canvas) for server-rendered Hindi images."
+  },
+  {
+   "tried": "One flat per-minute voice price.",
+   "what_broke": "Warm ~1 cent/30 s vs cold 23-35 cents vs always-warm hundreds/month; PSTN extra.",
+   "source": "context/rejected.md#one-flat-voice-price-cannot-hide-cold-gpu-and-carrier-cost@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Price Taxila sessions with cold/warm and channel split."
+  },
+  {
+   "tried": "Adopting PhoneLLM on B200 benchmark numbers.",
+   "what_broke": "English text model, 63 GB BF16, no Hindi, cost from 88-process utilisation.",
+   "source": "context/rejected.md#phonellm-b200-benchmarks-cannot-certify-hindi-or-t4@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Vendor benchmarks on other hardware do not transfer."
+  },
+  {
+   "tried": "Model candidates: luna/terra for vision; terra as 8x cost saving; Sarvam/Indic models on Foundry; open-weight models.",
+   "what_broke": "Read-part-assert-rest on screens; only 1.14x cheaper and slower; not credit-eligible and tuned for formal Devanagari; register defection 63-99.8%.",
+   "source": "context/rejected.md (Model candidates evaluated and dropped)@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Casual romanised Hinglish needs frontier models; verify vision fabrication before using gpt-5.6 for homework photos."
+  },
+  {
+   "tried": "Gamification: speed bonuses, XP for streak length, XP for asking doubts, notification re-engagement, Duolingo-style leagues.",
+   "what_broke": "Punishes careful checking; reintroduces loss-anxiety; pollutes the safe doubt loop; manufactured urgency for minors.",
+   "source": "docs/gurukul/student-app-spec.md sections 2.4-2.6@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Directly applicable design-time rejections for Taxila (DPDP 9(2))."
+  },
+  {
+   "tried": "Auto-filling boardVerbalisms from mined lecture frequency.",
+   "what_broke": "Top hits were lecture vocabulary ('squared', 'equals'): recited-prompt with a pipeline in front.",
+   "source": "context/decisions.md#gurukul-ws3-landed@origin/claude/vyakti-cloning-platform-aq05n4@ebe16cc0",
+   "taxila_relevance": "Human picks catchphrases; held-out corpus prunes."
+  }
+ ],
+ "concepts": [
+  {
+   "name": "Structural beats behavioural",
+   "description": "If a property is decidable from the bytes, decide it on the bytes; prompt rules leak 57-98%, SQL predicates 0/31,122.",
+   "taxila_relevance": "Child safety, privacy and academic integrity as predicates on output and retrieval, not tutor-prompt sentences."
+  },
+  {
+   "name": "Shapes, never lines",
+   "description": "Prompt material is telegraphic facts and shapes; any sentence-shaped text is recited.",
+   "taxila_relevance": "TutorSheet, lesson plans and learner-profile notes must be shapes."
+  },
+  {
+   "name": "Position is mechanism",
+   "description": "Only the appended-last slot reliably fires (0/8 vs 8/8); capped to two rules by shapelint.",
+   "taxila_relevance": "Reserve the last slot for the minor safety override and the current pedagogical move."
+  },
+  {
+   "name": "The one door",
+   "description": "All model text leaves through gatedReply; static test asserts a single call site.",
+   "taxila_relevance": "Single egress for tutor text; realtime audio needs input-side fences and post-hoc transcript audit."
+  },
+  {
+   "name": "Pull-only, never stored affect",
+   "description": "Register/moment reads are pure functions of the current turn, rendered only at high confidence, never persisted as a label.",
+   "taxila_relevance": "Covert comprehension/affect signals adapt the next move without building a stored emotional profile of a child."
+  },
+  {
+   "name": "Expression features not emotions",
+   "description": "Closed list of measurable delivery features (latency, pauses, backchannels, rate, pitch), 24 h expiry, no inner-state claims.",
+   "taxila_relevance": "Basis for covert comprehension detection: hesitation/latency/backchannel patterns, not 'the child is confused' labels."
+  },
+  {
+   "name": "Observation vs pattern evidence bars",
+   "description": "One citation recalls a detail; a generalising pattern needs >=2 citations, >=3 support, >=2 distinct days.",
+   "taxila_relevance": "Learning-profile claims ('learns best via stories') must clear pattern bars before steering lessons."
+  },
+  {
+   "name": "Facts vs hypotheses (Honcho-inspired)",
+   "description": "Store what was said separately from tentative interpretations; hypotheses suggest questions, never become facts.",
+   "taxila_relevance": "Learner model: observed outcomes vs inferred learning style hypotheses under test."
+  },
+  {
+   "name": "Today-only vs durable preference",
+   "description": "Current-turn override adapts this reply without rewriting the saved preference; permanent change supersedes with provenance.",
+   "taxila_relevance": "'Aaj Hindi mein samjhao' must not overwrite the child's saved English preference."
+  },
+  {
+   "name": "No decay by absence",
+   "description": "Mastery is a pure fold of graded attempts; nothing reads time since last attempt.",
+   "taxila_relevance": "A child returning after a break is never shown a lower mastery number."
+  },
+  {
+   "name": "Minor hard gates short-circuit",
+   "description": "Minor branch returns a frozen constant before any config is read; unknown tier fails safe.",
+   "taxila_relevance": "Every Taxila user is a minor; no flag can enable engagement mechanics."
+  },
+  {
+   "name": "Disclosure as app voice, failure toward disclosing",
+   "description": "Statutory AI disclosure fires from the client clock even offline, MAX(local, server).",
+   "taxila_relevance": "Session-open 'I am an AI tutor' card and break nudges independent of the model."
+  },
+  {
+   "name": "Disclosure acts with deny-always-wins",
+   "description": "influence/gist/paraphrase/verbatim acts, policy-versioned grants, exclusive expiry, named refusals.",
+   "taxila_relevance": "Parent visibility granularity (gist of progress vs verbatim transcript) as an evaluated grant."
+  },
+  {
+   "name": "Fail-closed spend ledger",
+   "description": "Reserve before network I/O, settle measured usage, unknown outcome stays reserved; app caps are not invoice caps.",
+   "taxila_relevance": "Per-child/day caps on realtime minutes, text tokens and image generations."
+  },
+  {
+   "name": "Warming is a state",
+   "description": "Cold resources return 202 with retry rather than an error.",
+   "taxila_relevance": "Generated-module and image generation latency surfaced as an honest in-lesson state."
+  },
+  {
+   "name": "Inputs that grow are not learning",
+   "description": "Read the consumer's truncation before building accumulation (Chatterbox 10 s/6 s).",
+   "taxila_relevance": "Do not assume longer session history in the prompt means the tutor learns; measure retrieval."
+  },
+  {
+   "name": "What does the shipping path add?",
+   "description": "Production safety features (spoken disclosure) can be bench defects.",
+   "taxila_relevance": "When evaluating tutor voices, account for disclosure/watermark artifacts."
+  },
+  {
+   "name": "Caps are refusals, never trims",
+   "description": "Silent truncation ate the crisis helplines once; over-budget prompts/items are refused with numbers.",
+   "taxila_relevance": "Prompt budget gate for tutor prompts; refuse oversized uploads explicitly."
+  },
+  {
+   "name": "Every table has a first-row owner",
+   "description": "relstate-zero-rows: updates against rows nobody inserts silently do nothing.",
+   "taxila_relevance": "Learner profile/mastery tables need explicit seeding owners."
+  },
+  {
+   "name": "Identity in every cache key",
+   "description": "Persisted audio/embeddings must carry voice/model identity in the key.",
+   "taxila_relevance": "Cached tutor audio and TTS clips keyed by voice id + model version."
+  },
+  {
+   "name": "Memory keyed by person, never surface",
+   "description": "Device-keyed retrieval lost 89% of recall on surface switch.",
+   "taxila_relevance": "Web and Android sessions of the same child share memory by child id."
+  },
+  {
+   "name": "Attribution before mining",
+   "description": "Text about a person is not evidence of how they talk; only a human can say who wrote it.",
+   "taxila_relevance": "Uploaded textbooks are content, not learner evidence."
+  },
+  {
+   "name": "One utterance per sentence for code-switching",
+   "description": "Per-language token stitching destroys prosody; one Hindi-conditioned utterance per sentence keeps it.",
+   "taxila_relevance": "Hinglish tutor speech: synthesise per sentence, never per language span."
+  },
+  {
+   "name": "Accent authenticity is its own axis",
+   "description": "Pronunciation correctness and sounding Indian/human are different properties.",
+   "taxila_relevance": "Tutor voice selection must include Indian-accent and child-friendliness ratings by ear."
+  },
+  {
+   "name": "Fixtures are not journeys",
+   "description": "Green CI and pinned samples did not prove a phone user could upload.",
+   "taxila_relevance": "Acceptance = real child/parent device journeys at 390 px, real headers, real network."
+  },
+  {
+   "name": "Activities ride one relationship",
+   "description": "Every activity is an adapter producing facts + nameable identifiers on the same prompt/memory.",
+   "taxila_relevance": "Generated lesson modules and mini-games plug in as activities, keeping tutor continuity across chat, call, and module."
+  },
+  {
+   "name": "Interview gaps as shapes",
+   "description": "Rank what the profile lacks and hand the model a question shape, never a question.",
+   "taxila_relevance": "Learning-profile discovery inside lessons without test-like quizzing."
+  }
+ ],
+ "unread": [
+  "context/decisions.md (25,596 lines), measurements.md (19,204) and rejected.md (19,360) at the tip were read selectively: delta since private-voice-requests25 in full, plus targeted entries; most of the ~3,300 entries were not read.",
+  "docs/gurukul/waves/* (60 wave brief files) and most of docs/gurukul/research/* (~150 research/handoff files) not read; only voice bake-off, safety floor, teacher arc headings and student app spec gamification sections.",
+  "api/_room-surface.js (235 KB), api/memory.js (305 KB), api/consolidate.js (164 KB), api/_payments.js (155 KB), src/engine/brain.ts/persona.ts/compiler.ts bodies only skimmed via headers.",
+  "src/studio/StudioApp.tsx (129 KB), CloneExperience.tsx (104 KB) and the Hindi copy registries not read beyond file inventory.",
+  "services/*/app.py Python runtimes (open-voice-runtime, indicf5, zonos2, voxcpm2, moss, qwen3, voice-evidence, audio-protection, media-extract) not read in full.",
+  "evals/* (1,030 files) only inventoried; individual suite logic not verified.",
+  "docs/handoff/2026-09-30/VERIFICATION.json and docs/handoff/2026-09-21/WRAP-UP.md not opened (START-HERE/RELEASE/CREDIT-ONLY were).",
+  "Group AI and multimodal claim-evidence code on origin/codex/multimodal-layer-20260927 only identified by diff stat (covered by the hp-multimodal-group segment).",
+  "No code was executed; no evals or gates were run in this harvest. api/_config.js is gitignored and absent from the tree; api/_config.example.js was not opened; no secret values were seen.",
+  "Avatar/video avatar and on-the-fly generative UI modules: no implementation exists anywhere in html-portfolio refs inspected (gap, not unread)."
+ ],
+ "doc_path": "/home/user/Taxila/docs/harvest/hp-vyakti-cloning-tip.md"
+}

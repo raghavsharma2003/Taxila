@@ -729,3 +729,309 @@ Prior knowledge, not re-checked this session [M]
 - Cepeda NJ, Vul E, Rohrer D, Wixted JT, Pashler H. Spacing effects in learning: a temporal ridgeline of optimal retention. *Psychol Sci* 2008.
 - Pan SC, Carpenter SK. Prequestioning and pretesting effects: a review. *Educ Psychol Rev* 2023.
 - Android `POST_NOTIFICATIONS` runtime permission (API 33) and notification channels.
+
+---
+
+## Architect review
+
+Adversarial systems review, 2026-10-02, against `docs/ARCHITECTURE.md`, `context/decisions.md`
+(`hosting-azure-container-apps`, `azure-only-compute`, `forge-infra-azure`), the sibling
+`conductor/orchestration-architecture.md` (C1-C9, §4, §7, §9) and `conductor/student-workspace.md`. The
+learning design above is mostly sound. Most of the problems are in the gaps between this file and the
+substrate it runs on. Tags as in the header. The cost and capacity numbers come from
+`conductor/day-cycle-review-cost.py` (reproducible; prices from `realtime-cost-model.py`).
+
+**Verdict:** the plan has no lane in it. Every slot in §3 is drawn as if voice minutes were free and
+unlimited, and they are the scarcest resource in the system. The fixes below are mostly
+*subtractions*. The ones marked **blocker** must be resolved before §3/§9/§10 go into the build.
+
+### AR-1 Cost: the default day costs 10-30× the revenue line (blocker)
+
+The file never says which slots run on `gpt-realtime-2.1`. Read literally (the Director runs homework
+help and the lesson; the reflection and preview are "voice-led"), the default day is all realtime:
+
+| band | planned min/day (0.7 × cap) | rt-2.1, 1-turn window, 20 days/mo | rt-2.1-mini | cascade (STT → luna → TTS) | revenue |
+|---|---|---|---|---|---|
+| B1 | 21 | **$36.7** | $9.0 | $3.3 | $3.1 |
+| B2 | 28 | **$48.9** | $12.0 | $4.4 | $3.1 |
+| B3 | 42 | **$73.4** | $17.9 | $6.5 | $3.1 |
+| B4 | 52.5 | **$91.7** | $22.4 | $8.2 | $3.1 |
+
+[I: model; per-minute prices are [V] in `realtime-cost-model.py`; ₹299 ≈ $3.1 is [S] from
+orchestration §9.1]. On its own, the 4-minute evening reflection on rt-2.1 is about $0.35/day, or about
+$7/month at 20 days. That is twice the revenue line, spent on a slot that by design updates nothing in
+FSRS (§5.7). Even if *only* the teach and transfer segments of the lesson are realtime and everything
+else is tap or cached TTS, B4 still costs $23-38/month on rt-2.1 and $5.6-9.4 on mini (script, block B).
+
+**Correction.** Plan voice minutes as an explicit budget, give every slot a lane, and make the plan
+validator reject a plan whose realtime minutes exceed the tier budget:
+
+```ts
+export type Lane = "realtime" | "realtime_mini" | "cascade" | "tap";   // tap = kit items + cached narration, ~0 marginal
+export interface PlannedSlot { /* …existing… */ lane: Lane; voiceMin: number }   // voiceMin ≤ targetMin
+export interface DayPlan    { /* …existing… */ voiceBudgetMin: Record<Lane, number>; voiceMinPlanned: Record<Lane, number> }
+// validator (orchestration §4.5): reject if voiceMinPlanned.realtime > voiceBudgetMin.realtime (from tier × cost governor),
+// or any homework_help slot has lane "realtime" (AR-4), or reflection/morning_preview lane is "realtime".
+```
+
+The default lane map for v1 [I; tune with DC-M3 and the governor]:
+
+| slot | lane | why |
+|---|---|---|
+| `live_lesson` teach, teach-back, transfer | `realtime` (governor may degrade to mini or cascade) | the human-like teacher is the product here |
+| `live_lesson` retrieve, practice, play | `tap` + short cascade turns | kit-keyed items need no open conversation; a tap answer is cleaner evidence than ASR |
+| `homework_help` | `cascade` | cheap, and every turn can be pre-checked for answer leaks (AR-4) |
+| `burst` | `tap` | already items-only (§5.2) |
+| `reflection`, `morning_preview` | `cascade`, or folded into the lesson wrap (AR-9) | recall plus one line, nothing conversational |
+
+The tier, not this file, sets how many realtime minutes a child gets (orchestration §9.1 says so).
+§3.3 must therefore be re-expressed as *minutes of learning by lane*, not minutes of "live lesson".
+Treat DC4's 20/25/35/45 as session length, not realtime length.
+
+### AR-2 Capacity: the after-school peak is a launch blocker the plan makes worse (blocker)
+
+- Taxila's realtime deployment was created at **10 RPM** (decisions.md [V]). The documented Tier-1
+  default for `gpt-realtime` GlobalStandard is **200 RPM / 100k TPM** (Azure quotas page, 2026-08-20 [V];
+  `gpt-realtime-2.1` is not listed separately [U]). Quotas are moving to a subscription-level pool shared
+  across regions [V], so a second region adds availability, not quota.
+- One live session at the cost model's turn shape uses about 6.6k tokens/min [I; whether TPM counts cached and
+  audio tokens is U]. 100k TPM is then about **15 concurrent lessons**. §2 puts every anchor in a
+  16:00-19:00 band, which caps the product at about **55-110 children per evening** at Tier 1 (script, block C).
+- The day as written opens 3-4 separate voice sessions per child (homework, lesson, reflection,
+  preview), each one a session start against the RPM cap. One call per sitting (homework → lesson →
+  wrap) cuts session starts about 3×.
+
+**Correction.** (a) One realtime session per sitting. Homework help moves to the cascade lane (AR-4), the
+reflection folds into the wrap, and the lesson's voice segments share one call. (b) Lesson start takes
+an admission token from the per-deployment bucket (orchestration §9.3). When the bucket is empty the
+child gets a 3-10 s "teacher is getting ready" state and then a tap-lane opener, never an error. (c)
+Stagger the peak with the anchor itself: the onboarding anchor picker offers windows, and the
+Conductor may shift a burst or warm-up ±15 min. (d) Log "Tier-1 realtime = ~15 concurrent lessons" as a
+launch blocker in `context/` and file the quota request before any cohort > 30 children.
+
+### AR-3 This file and orchestration-architecture.md define the same things twice (blocker for the build)
+
+Each pair below is two owners for one fact, which orchestration §6 ("one writer per fact") forbids:
+
+| here | there | resolution |
+|---|---|---|
+| `DayPhase` (8 clock phases: morning…night) | `DayPhase` (night/planned/active/in_lesson/idle/wound_down/paused/safety_hold) | keep orchestration's *behavioural* phase in `conductor_state`. This file's clock phases become a pure function `clockPhase(routine, now)` (below), never stored and never emitted as `phase_entered` |
+| `DayPlan` + `day_plan` table (versioned) | `DayPlan` in `conductor_state.plan` (rev, CAS) + `plan.proposed` events | one `DayPlan` type (merge: slots carry `kind`, `lane`, `voiceMin`, `why[]` with refs). Plan history = `plan.proposed` events; drop the `day_plan` table |
+| `DayEvent` + `day_event` (bigserial, **no idempotency key**) | `student_event` (ULID, `unique(child_id, idem_key)`) | drop `day_event`. Its types map to `app.opened`, `lesson.*`, `homework.submitted`, `parent.*`, `clock.wakeup`. Add `slot.started/completed/skipped{endedBy}` to `StudentEvent` |
+| `notification_log` | `notification` outbox (dedupe unique) | one table: `notification` gains `decision`, `cls`, `guardian_id`, `opened_at`, `dismissed_at` |
+| `night_job` (no unique key: retries duplicate rows) | `job` + `agent_run` (idem keys, fencing) | drop `night_job`. Night steps are `job` kinds with idem `prep:{child|topic}:{forDay}:{inputsHash}` |
+| `child_routine.allowed_*`, `daily_cap_min` | `parent_setting` + `conductor_state.limits` | `child_routine` keeps only routine facts (anchor, bedtime, school times). Limits live in `parent_setting` |
+| `calendar_event` per child | `school.*` events + school mirror | shared `calendar` rows (national, state, school id) + per-child overrides. Diwali must not be 100k rows |
+
+```ts
+// pure, cheap, recomputed on every read; replaces stored phases and phase_entered events
+export function clockPhase(r: ChildRoutine, s: ParentLimits, nowUtc: Date, cal: DayKindLookup): DayPhase {
+  const t = localTime(nowUtc, r.tz);                 // NEVER the server clock: web runs in eastus2 (UTC)
+  const day = learningDay(nowUtc, r.tz);             // local date of (now − 4 h): 00:00-04:00 belongs to "yesterday" (AR-5 R7)
+  /* …free_day if cal.kind(day) ∈ {weekend, holiday, festival, vacation}; boundaries from r and min(s.allowedTo, bedtime) … */
+}
+```
+
+### AR-4 Homework answer-leak check is impossible on the realtime lane as written (child-safety-adjacent)
+
+H1 says the leak check "runs on every teacher turn … against the answer the matcher computed".
+ARCHITECTURE §1.6 says the opposite for realtime: "The realtime lane cannot be pre-checked". The teacher's
+audio is heard before her transcript exists. With realtime, H1 can only be a post-check, and by then
+the answer has been said. Keeping the school item's answer out of the instructions does not help either:
+the model can work out 7 × 8 or a past-tense form itself.
+
+**Correction.** Homework help runs on the **cascade lane**: luna produces the turn as text, then code checks it,
+then TTS speaks it. The check normalises numerals and Devanagari digits, unit and number words in Hindi and
+English, and the matched final answer, plus the items' intermediate values for H2. It runs in under 5 ms. A hit
+regenerates once and then falls back to a fixed ladder shape. For **unmatched** items (open question 3), the
+answer comes from a separate luna "solve" call before the ladder starts. If the solver is unsure, the
+mode is "explain the idea on a parallel example" only, and the parallel example comes from the kit, not
+the model. The measured low-end cascade path gives about 0.58 s STT + 1.04 s first sentence (luna, effort
+none) + 0.27-0.32 s TTS TTFB from a US host (`design/low-end-cascade-probe-2026-10-02.json`, n = 5 [V]),
+plus India↔eastus2 RTT [U]. About 2 s per turn is acceptable for "let me look at your sum" and wrong for
+banter, which is fine for homework. Risk: the TTS voice must be the same character voice as the realtime
+teacher, or the child hears two teachers [U: compare `gpt-4o-mini-tts` vs realtime voice by blind ear,
+per the inherited law].
+
+### AR-5 Race conditions
+
+| # | race | what breaks | fix |
+|---|---|---|---|
+| R1 | parent's phone and the child's tablet both hit "first open" | two `day_plan` v2 rows, so the parent and child see different plans | plan adoption only through the Conductor CAS (orchestration §7.1). The code plan is deterministic in `planInputsHash`, so both devices compute the same plan anyway |
+| R2 | late homework photo triggers a replan while a lesson is running | the replan rewrites the live slot, so the Director's brief and the plan disagree | validator rejects any change to a started slot (orchestration §4.5). Homework goes into a *new* slot after the lesson |
+| R3 | night prep reads KT before a late lesson's consolidation commits | tomorrow's warm-up misses today's skills or re-checks a skill acquired today (breaks DC6) | no global 22:30 fan-out. Per-child prep is triggered by `memory.consolidate` `job.done` or the child's `night` wakeup, whichever is later, and the plan is always recomputed at first open (pure code, < 50 ms [U]) |
+| R4 | two devices or a profile switch start lessons for the same child | daily cap exceeded, because `usage` is a fold that lags the second start | `/api/lesson/start` reserves minutes atomically, the same shape as the budget reserve: `update conductor_usage set reserved = reserved + $m where child_id = $1 and day = $2 and used + reserved + $m <= cap returning *`. Reserve in 5-min blocks, aligned with the governor's voice blocks |
+| R5 | two notifier workers both read `sentToday = 0` | the cap is exceeded by one per race | capped classes carry a semantic dedupe key in the outbox's `unique(child_id, dedupe)`: `anchor:{guardianId}:{learningDay}`, `weekly:{guardianId}:{isoWeek}`, `test_window:{eventId}`, `milestone:{guardianId}:{isoWeek}`. The insert is the cap |
+| R6 | client photo retry and Director both advance `homework_request.state` | lost transition (e.g. `checking` overwritten by `laddering`) | `update homework_request set state=$3 where id=$1 and state=$2` (expected-state CAS). Transitions stay code-only (§4.3) |
+| R7 | lesson or burst spans midnight, or a B4 opens at 00:20 | usage splits across two caps, "tomorrow's" plan is used tonight, the DC6 "same day" check is wrong | `learningDay = localDate(now − 4 h)` everywhere (caps, FSRS same-day rule, dedupe keys) |
+| R8 | parent moves bedtime earlier while a lesson is running | `LessonBrief.hardStopAt` is stale, so the lesson ends after the new bedtime − 60 | `parent.setting_changed` emits `brief.refresh`. The Director takes the new `hardStopAt` at the next segment boundary, never mid-item |
+| R9 | extraction job retried after the image was already deleted (H6) | retry fails, or worse, re-uploads | mark `extracted_at` before delete. Deletion is its own idempotent job with `image_deleted_at`. Blob soft-delete or versioning on the container would keep the "deleted" diary photo, so set retention to 0 for the `homework/` prefix [M: Azure Blob soft delete] |
+
+### AR-6 `mayNotify()` defects (one is a child-safety bug)
+
+1. **Safety bypasses the safeguarding suppression branch.** `if (i.cls === "safety") return { ok: true }`
+   sends a parent alert even when the disclosure concerns a family member. orchestration §5.8 and
+   parent-experience §11 route that case to Childline 1098 and suppress the parent alert. Fix:
+   `if (i.cls === "safety") return safeguarding.allowsParentAlert(i.incidentId) ? ok : { ok: false, why: "protocol_suppressed" }`,
+   and `NotificationIntent` gains `incidentId` for this class. This is the floor and needs a test with a negative control.
+2. **`notBefore` / `notAfter` are never checked**, so the "intent expires, never queues up" claim in §11
+   is false in code. Add `if (now < notBefore || now > notAfter) return { ok:false, why:"expired" }` as
+   the second line.
+3. **`inQuietHours(ctx.now)` has no timezone.** The web runs in eastus2. Without the child's or guardian's tz,
+   "20:30 IST" is 15:00 UTC, and every check is wrong by 5.5 h. Pass `tz`.
+4. **The cap scope is ambiguous.** Counts are per guardian, but anchor reminders are per child, so a parent of two
+   children gets two reminders a day. Cap per guardian per learning day, with one combined reminder
+   ("Taxila time for Riya and Aarav").
+5. **`weekly_report` (1/week) and `test_window` (1 per window) caps are claimed in §10.2 but not enforced.**
+   With AR-5 R5 the dedupe keys enforce them.
+6. **DC9 contradicts itself.** A daily note is 5-7 messages/week and cannot "replace the milestone within the
+   ≤ 2/week learning cap". State it honestly: a parent-chosen daily note is a *parent-requested* class,
+   counted outside the 2/week cap like anchor reminders, and it self-pauses when unread 5 days running.
+7. **"Ignored 3 times" is unobservable as written.** FCM deprioritises high-priority messages that do not
+   produce user-visible notifications, judged over 7 days per app instance [V, FCM message-priority docs].
+   OEM battery managers on common Indian phones also kill background delivery [M]. A non-delivery then
+   looks like "ignored". Define ignored as *no `app.opened` for that child within the anchor window after
+   the reminder*, which needs no receipt.
+8. **Anchor reminders do not need the server at all.** They are a fixed, parent-set daily time.
+   Schedule them as on-device local notifications (Capacitor Local Notifications, inexact alarm; exact
+   alarms are restricted on Android 14+ [M]) re-synced whenever `child_routine` changes. That removes
+   Notification Hubs from the v1 path and works offline. The server-side gate stays for the weekly report,
+   test window, safety, account and payment classes.
+9. Copy lint belongs at template registration and in `verify-release`, because strings come from a template set.
+   The runtime call is only a backstop.
+
+WhatsApp: Meta assigns template categories and "businesses are responsible for reviewing the category"
+[V, Meta pricing docs]. India's marketing rate went up on 2026-01-01 [V]. A daily progress note is the kind
+of template that gets recategorised from utility to marketing [I]. Utility templates are free only
+inside an open customer-service window [V]. So the daily WhatsApp note is a cost and deliverability risk
+as well as a cadence risk. It is v2 at the earliest.
+
+### AR-7 What cannot run where it is drawn, and what needs a worker
+
+Hosting is now Azure Container Apps (`hosting-azure-container-apps`, supersedes the Vercel deploy). The
+web app is a long-lived Node process with min 1 replica, so the Vercel 60 s cap no longer applies. Note that
+orchestration §7.3 still draws the fast lane on "Vercel sin1", and that should be reconciled there.
+
+| work | where | note |
+|---|---|---|
+| plan build (code), `clockPhase`, `mayNotify`, minute reservation | inline in `taxila-web` | pure code; one SQL round trip (a `plpgsql` function), because every query from eastus2 to Neon Singapore costs ~200 ms (decisions.md [S]) |
+| homework OCR + item split + kit match | inline, ≤ 8 s, with a "teacher is reading your page" state | downscale to ≤ 1024 px on the device. Cap at 6 photos/day/child (cost guard) |
+| ticker (wakeups every minute) | **a loop inside `taxila-web`** with a Postgres advisory-lock leader | not an ACA scheduled job: a once-a-minute cron starts a container 1,440 times a day, and ACA cron is evaluated in **UTC** [V, ACA jobs docs], so "22:30 IST" is `0 17 * * *` |
+| images for the library, Forge builds, sora | ACA jobs (`slow`/`sandbox` lanes) | already in `forge-infra-azure` |
+| weekly report | Azure OpenAI **Batch**, submitted ≥ 30 h ahead | Batch has a 24 h *target* and "doesn't expire jobs that take longer" [V, Azure batch docs]. **Never put Batch on the overnight critical path.** Night prep cannot use it |
+| per-child night prep | **removed in v1** (AR-8) | |
+
+Keep-alive cost: KEDA's Postgres scaler polls every 30 s by default [V, ACA jobs docs], and a per-minute
+ticker polls Neon too. Either keeps Neon compute from scaling to zero, so it runs 24/7 [I]. The in-process
+ticker with a piggyback drain is the cheaper of the two. Measure Neon CU-hours in week 1 [U].
+
+### AR-8 Single points of failure
+
+| SPOF | effect | mitigation |
+|---|---|---|
+| **Neon (one primary, Singapore)** holds events, jobs, wakeups, budgets, rate buckets and auth | no lesson can start, because the token mint authenticates against the DB | the device keeps the last `DayPlan` + `LessonBrief` + kit pack (student-workspace §8 replica). The mint verifies a signed session token without a DB read, and evidence queues in the outbox. Tap-lane practice works fully offline |
+| **one Azure OpenAI resource (eastus2) for realtime** | no teacher | a second realtime deployment in another region, with failover in `/api/realtime/token`. The governor then degrades to cascade, then tap (orchestration §9.4) |
+| **the 22:30 global night fan-out** | one failed run means nothing is prepared for anyone | N2 already makes it non-critical. Removing per-child prep (below) removes the SPOF |
+| **Notification Hubs → FCM** | reminders silently stop | local notifications for anchors (AR-6.8). Server pushes only for low-frequency classes |
+| **one ACA environment (eastus2)** for web and workers | a regional incident takes everything down | accepted for v1. Write it in `context/decisions.md` with the reversal condition (paying users > N) |
+
+### AR-9 Over-engineering for v1: what to cut
+
+The nightly per-child pipeline (§9.1) is the largest piece of v1 machinery, and it buys almost nothing.
+Plans are pure code (< 50 ms). Engine parameters are a ~1-2 s luna call that can run while the child
+picks a profile or does homework. Images are keyed by (topic, theme, style) and shared, so they belong to a
+**topic-level** library job, not a per-child one. Per-child text overlays are rendered client-side in CSS,
+never generated. Per-child speculation is also wasted on every child who does not open the app that day,
+which is likely 40-60% of the base in the habit-forming weeks [U]. Cut list:
+
+| cut from v1 | keep in v1 instead | bring back when |
+|---|---|---|
+| per-child night pipeline, `night_job`, N3/N4 | plan on open; a topic-level library prefetch job for the next 2 weeks of syllabus | DC-M10 shows first-open latency > 2 s or a library miss rate > 30% |
+| 8-phase stored day state machine | `clockPhase()` pure function | never needed stored |
+| separate evening `reflection` slot | a 60-90 s recall + plan move in the lesson wrap; evening reflection opt-in for B3-B4 on the cascade lane | DC-M measurement shows evening free recall beats wrap recall on next-day retrieval |
+| `morning_preview` | nothing | parents ask for it; there is no evidence it moves outcomes for this age |
+| week shapes (lighter Friday, Saturday project) | same daily template every day | v2 content |
+| Cepeda back-scheduling with R-target 0.95 | parent enters test date + chapters ⇒ topics restricted to those chapters; last 2 days retrieval only | test windows are common enough to tune |
+| layered festival and regional calendars, festival bursts | national holidays + parent "off" days | school sync is real |
+| WhatsApp daily note, Notification Hubs | in-app parent note; one local anchor reminder; weekly report in-app | AR-6 issues closed |
+| T3 codegen and sora in the day cycle | nothing (Forge owns them, library level) | already gated by ARCHITECTURE §1.4 |
+| 11 measurements (§12) | instrument DC-M1, M3, M4 and first-open latency; leave the rest for later | n > 200 active children |
+
+### AR-10 Missing child-experience considerations
+
+1. **The late-start collapse penalises children of working parents.** "Anchor missed, child opens at 20:30 ⇒
+   tiny day" punishes the child whose phone comes home at 19:30. Collapse should depend on *time left
+   before bedtime − 60* (that is sleep, DC7), never on lateness against the anchor. A child who opens at
+   19:30 with a 22:00 bedtime gets a full sitting.
+2. **Siblings on one phone.** Two children with the same 16:00 anchor on one shared phone is the common case
+   that §2 implies, and the plan is per child. Add a household view: the anchor belongs to the household,
+   sittings are ordered (younger first, shorter), and the second child's plan shifts by the first's
+   planned length. The profile-mix-up check (kids-ux S1) matters more here.
+3. **Hitting the cap mid-enthusiasm.** A motivated child gets a "teacher is resting" wall. The wrap needs
+   a warm off-ramp: an offline task, a book or an outdoor suggestion, and "kal hum …" naming tomorrow's
+   choice. It must never be "come back tomorrow for more" (that is a hook). B4 can ask the parent for +10.
+4. **Network drops and power cuts mid-lesson.** `endedBy` has no `network`. Add it. A reconnect within
+   10 min resumes the same lesson and segment without a re-greeting. Minutes count only voice actually
+   used, so the cap and the voice budget are not burned by a dead call.
+5. **The homework time box leaves a child with unfinished homework due tomorrow.** For an Indian child that
+   can mean fear of the school teacher's response. At the box, show a parent-facing card ("2 items left
+   for tonight, here is what was tried"), logistics only. The child should hear "your parent knows", not
+   just "it's for you or school tomorrow".
+6. **"Show Mumma"** assumes the mother is home. Use the parent-set home-adult name (grandparent, father,
+   didi). Same for the reflection's "parent present".
+7. **No countdowns to the child.** §10 bans countdown *notifications*. Also ban in-app test countdowns and
+   "N days left" banners on the child surface, which are the same pressure moved to a different screen.
+8. **Night voice and safety.** A B3-B4 evening reflection is a child alone with a voice character at
+   night, when disclosures are more likely [I]. If it runs, it runs on the cascade lane, where the safety
+   monitor sees the text before the reply is spoken. The web cannot dim the system screen; only the
+   Android plugin can, and the web gets an overlay. Say so rather than promise "dimmed screen".
+9. **H5's copied-answer guard** reads as an accusation. Shape it as curiosity ("pick the one you liked
+   solving") and never mention that answers were detected.
+
+### AR-11 Contradictions inside this file
+
+- **Allowed hours vs the templates.** Parent-experience §10 defaults allowed hours to **07:00-20:30**, and
+  §3.1 says "the stricter wins". The B3 reflection at 20:45, B4 bursts 20:00-21:00 and the B4 reflection at
+  21:15 are therefore all outside the default, and `child_routine.allowed_to` defaults to `'20:30'`. Fix
+  by setting allowed-hours defaults per band (B1 20:00, B2 20:30, B3 21:00, B4 21:30, each still bounded by
+  bedtime − 30), or by moving the slots.
+- **Quiet hours 20:30-08:00 vs a B1 anchor reminder at 15:45 and a B4 anchor at 18:00** are fine. But a
+  backup window (B4 20:00) reminder would fall within 30 min of quiet hours. Make backup windows silent
+  by rule.
+- **§6 "generated at `closing`"** depends on a phase this review removes. Generate the note on
+  `lesson.ended` (debounced 30 min) from ledger facts as a template, with no model needed. Then nothing
+  waits on a clock.
+- **DC12 / N6 vs orchestration C9** say the same thing. Keep one (C9) and reference it.
+
+### AR-12 Changes to the sibling contract files (apply when this file is revised)
+
+- `day-cycle.contracts.ts`: delete `DayPhase` (use `clockPhase`), `DayEvent` (use `StudentEvent` + `slot.*`),
+  and the duplicate `DayPlan`. Add `Lane`, `voiceMin`, `voiceBudgetMin`, `endedBy: "network"`, and
+  `NotificationIntent.incidentId`. Fix `mayNotify` per AR-6.1-6.5.
+- `day-cycle.sql`: drop `day_plan`, `day_event`, `notification_log` and `night_job`. Add
+  `homework_request.extracted_at, image_asset_id, image_deleted_at`. Add the expected-state CAS for
+  `homework_request`, `conductor_usage(child_id, learning_day, used_min, reserved_min, cap_min)` for R4, and a
+  shared `calendar` with `calendar_override(child_id, …)`.
+- New invariants (with negative controls): no plan whose `voiceMinPlanned.realtime` exceeds the budget; no
+  `homework_help` slot on `realtime`; no safety push without `allowsParentAlert`; no notification intent sent
+  after `notAfter`; two concurrent `lesson/start` calls can never reserve past the cap.
+
+### Sources added by this review
+
+- Azure OpenAI quotas and limits (tiers; `gpt-realtime` GlobalStandard Tier 1 200 RPM / 100k TPM;
+  `gpt-image-2` 6 RPM; subscription-level quota pooling), updated 2026-08-20.
+  https://learn.microsoft.com/en-us/azure/ai-foundry/openai/quotas-limits [V]
+- Azure OpenAI global batch: "24-hour target turnaround at 50% less cost"; "doesn't expire jobs that take
+  longer"; completion window must be `24h`. https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/batch [V]
+- Azure Container Apps jobs: cron "evaluated in Coordinated Universal Time (UTC)"; event-job polling
+  interval default 30 s; maintenance can interrupt long replicas, so design for at-least-once.
+  https://learn.microsoft.com/en-us/azure/container-apps/jobs [V]
+- Firebase, Android message priority: high-priority messages that do not produce user-facing notifications
+  "may be deprioritized", judged over 7 days per app instance.
+  https://firebase.google.com/docs/cloud-messaging/android/message-priority [V]
+- Meta WhatsApp Business pricing: categories assigned by Meta, businesses responsible for reviewing them;
+  India marketing rate raised 2026-01-01; utility free inside an open service window.
+  https://developers.facebook.com/docs/whatsapp/pricing [V]
+- `docs/research/realtime-cost-model.py` (per-minute prices), `design/low-end-cascade-probe-2026-10-02.json`
+  (cascade latency, n = 5), `context/decisions.md` (10 RPM realtime at creation; eastus2 ↔ Singapore).
+- `conductor/day-cycle-review-cost.py`: this review's cost and capacity model [I/U].

@@ -4,6 +4,7 @@ import type {
   LessonStartRequest,
   LessonStartResponse,
   RealtimeTokenResponse,
+  TtsRequest,
   TurnRequest,
   TurnResponse,
 } from "../../shared/contracts.ts";
@@ -48,6 +49,8 @@ export interface LessonApi {
   start(req: LessonStartRequest): Promise<LessonStartResponse>;
   turn(req: TurnRequest): Promise<TurnResponse>;
   end(lessonId: string): Promise<unknown>;
+  /** Fire-and-forget end that survives page unload (navigator.sendBeacon). */
+  endBeacon?(lessonId: string): void;
   realtimeToken(lessonId: string): Promise<RealtimeTokenResponse>;
 }
 
@@ -55,16 +58,19 @@ export const httpLessonApi: LessonApi = {
   start: (req) => postJson("/api/lesson/start", req),
   turn: (req) => postJson("/api/lesson/turn", req),
   end: (lessonId) => postJson("/api/lesson/end", { lessonId }),
+  endBeacon: (lessonId) => {
+    navigator.sendBeacon("/api/lesson/end", new Blob([JSON.stringify({ lessonId })], { type: "application/json" }));
+  },
   realtimeToken: (lessonId) => postJson("/api/realtime/token", { lessonId }),
 };
 
-/** Text-mode teacher voice: POST /api/tts → audio/mpeg. */
-export async function fetchSpeech(text: string, voice: string, signal?: AbortSignal): Promise<Blob> {
+/** Text-mode teacher voice: POST /api/tts → audio/mpeg of a stored teacher turn (the server picks the voice). */
+export async function fetchSpeech(req: TtsRequest, signal?: AbortSignal): Promise<Blob> {
   const res = await fetch("/api/tts", {
     method: "POST",
     credentials: "same-origin",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ text, voice }),
+    body: JSON.stringify(req),
     signal,
   });
   if (!res.ok) throw new ApiError(res.status, `speech failed (${res.status})`, await res.text().catch(() => ""));

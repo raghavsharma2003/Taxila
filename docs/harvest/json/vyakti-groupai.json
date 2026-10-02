@@ -1,0 +1,1299 @@
+{
+ "segment": "vyakti-groupai",
+ "summary": "Vyakti GroupAI (/home/user/vyakti-groupai; branches main@d06efdc 3 commits, codex/relational-core@4bae159 40, claude/vyakti-cloning-platform-aq05n4@451de5a 43 = codex + 2 Claude fixes for migration 019) is the trust kernel for an 'AI common friend': one AI identity with distinct relationships to each person, dyad and group, which may bridge private info into a group only through explicit, scoped, revocable grants, and whose success is measured by human-human outcomes (Commitment Keeper), with silence first-class. Architecture: append-only social event ledger per 'social world' (RLS on world_id), immutable audience epochs, cited memories with versioned DisclosurePolicy (purposes, acts influence/gist/paraphrase/verbatim, obligations, deny-wins), derivation that cannot declassify, authorization before any plaintext reaches a model, an authorization-issued Context Capsule with whole-block budgets and manifest hash, a deterministic non-LLM intervention policy, and durable Postgres machinery (fenced head-of-line turns, model request ledger where timeouts become 'ambiguous' and are reconciled not retried, delivery lanes, shared/exclusive per-world privacy barrier, cryptographic erasure). 12 TS packages (~41k lines incl. tests) + 19 migrations (17.4k SQL lines) + 7.3k lines of SQL verifies, built in 6 days (2026-08-30..09-04). Evidence: 375/375 local tests; hosted CI run 33758157417 applied/verified 001-019 and passed 17/17 runtime integrations; Neon PG18 proof only for 001-013; synthetic Campaigns 0/0B/0C (960 worlds, 3,120 assertions) at zero violations. I replicated all three campaigns from source with Taxila's own tsc 7.0.2 + zod 4.6.5 and ran a 50,000-case differential of authorizeDisclosure against an independently written oracle: 0 mismatches, plus a REAL negative control (deny-ignoring evaluator caught 799 times) because the repo's own negative controls are tautological. Nothing is deployed: no UI, channel adapter, production provider, KMS, composition root or human pilot; Campaign 1 is shadow-only and hard NO-SHIP. The branch name says 'cloning platform' but contains no voice/TTS/avatar code. It is adult-only by construction (adultOnly literal, adultAttested consent), which Taxila must invert to guardian consent. Portable now: relational-core, intervention-policy, context-capsule, simulator compile cleanly with Taxila's toolchain and can be vendored; pilot-telemetry, follow-through-core reminders, model-gateway and delivery-runtime are adapt-grade; postgres-runtime and migrations 014-019 should be mined for patterns, not depended on. Key caveat for Vercel+Neon: the privacy barrier needs a direct session connection (not pooler/HTTP). The highest-value harvest is the 48-node failure log (Postgres parameter/column shadowing that made revoked consent look current, JSONB null, sparse-array unanimity bypass, lock-upgrade deadlock, BYPASSRLS Neon roles).",
+ "assets": [
+  {
+   "id": "VG01",
+   "title": "authorizeDisclosure privacy kernel",
+   "subsystem": "relational-os",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/relational-core/src/privacy.ts"
+   ],
+   "what": "Deterministic recipient-aware disclosure decision: 15 denial codes, deny-wins, consent-grant capability matching (owner, policy version, recipients, conversation, purpose, act, attribution, validity, exclusive expiry, revocation), consent witness IDs, SHA-256 decisionId, frozen WeakSet-issued decision.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "relational-os; safety-floor (what parent/sibling/classmate may hear of a child's session and in what form)",
+   "evidence": "26 unit tests; 500-case fast-check oracle; harvest replication: 50,000 randomized cases, 0 mismatches vs independent oracle",
+   "notes": "Add TOMBSTONED/MEMORY_EXPIRED checks; enum codes exist but are never emitted"
+  },
+  {
+   "id": "VG02",
+   "title": "deriveDisclosurePolicy (derivation cannot declassify)",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/relational-core/src/privacy.ts"
+   ],
+   "what": "Derived policy: readers intersect, owners/denials/obligations union, strictest sensitivity, earliest expiry, proactive only if all parents, refuses no_derivatives and cross-world.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "memory-graph/consolidation (lesson summaries, parent notes never widen source policy)",
+   "evidence": "unit tests incl. 'refuses to launder a no-derivatives policy through a summary'"
+  },
+  {
+   "id": "VG03",
+   "title": "MemoryRecord schema",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/relational-core/src/memory.ts"
+   ],
+   "what": "Zod memory: kind, subjects, sourceEventIds>=1, lineage, epistemic status+confidence+contradiction set, valid vs observed time, salience/decay/expiry, version, policy bound to same world/agent.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "memory-graph; learner model (add misconception, format preference, affect_hypothesis kinds)"
+  },
+  {
+   "id": "VG04",
+   "title": "RelationshipState dyad/group dimensions",
+   "subsystem": "relational-os",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/relational-core/src/relationships.ts"
+   ],
+   "what": "Dyad (1 human) vs group (2+) state with familiarity, trust, warmth, playfulness, tension, reciprocity in [-1,1], interaction count, version. Schema only, no update rule.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "relational-os (rel_state)",
+   "notes": "No hysteresis/rupture-repair update logic exists in this repo"
+  },
+  {
+   "id": "VG05",
+   "title": "IdentityBinding directory",
+   "subsystem": "auth/accounts/consent",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/relational-core/src/identity.ts"
+   ],
+   "what": "Verified (surface, integrationId, externalUserId) to one person; valid from verifiedAt, dead from revokedAt; collision throws.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "auth/accounts (one child across web and Android; never device UUID as identity)",
+   "evidence": "Campaign 0C 1,200 assertions, 0 violations (replicated)"
+  },
+  {
+   "id": "VG06",
+   "title": "Idempotent event append with source-hash dedupe",
+   "subsystem": "db-schema",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/relational-core/src/events.ts"
+   ],
+   "what": "Exact replay no-op; ID reuse with changed content throws; provider retry with new internal ID dedupes on source hash excluding id/observedAt.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "db-schema; telemetry (lesson event ledger, webhook dedupe)"
+  },
+  {
+   "id": "VG07",
+   "title": "assembleAuthorizedContext",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/relational-core/src/context-assembler.ts"
+   ],
+   "what": "Rank candidates, authorize each for exact request, content-free allow/deny audit, item/token budget, frozen issued items; counterfactual test shows forbidden content changes leave output identical.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "prompt-compiler; memory-graph",
+   "evidence": "context-assembler.test.ts counterfactual test",
+   "notes": "Token estimate is ceil(len/4); add expiry/tombstone filter"
+  },
+  {
+   "id": "VG08",
+   "title": "Context Capsule compiler + manifest",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/context-capsule/src/compiler.ts",
+    "packages/context-capsule/src/schema.ts"
+   ],
+   "what": "Accepts only authorization-issued blocks, exact scope match, priority/ID order, whole-block include or drop-with-reason, canonical manifest + manifestHash, verifyContextCapsule recomputes all.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "prompt-compiler (solves silent truncation structurally; persist manifestHash per lesson)",
+   "evidence": "14 tests; compiles clean with Taxila tsc 7.0.2 + zod 4.6.5 (harvest)",
+   "notes": "Keep safety floor outside capsule as fixed tail (position is mechanism)"
+  },
+  {
+   "id": "VG09",
+   "title": "Authorized current-turn issuance",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/context-capsule/src/authorization.ts"
+   ],
+   "what": "Current turn enters prompt only from a trusted authority snapshot exactly matching request scope with content digest; block kinds current_turn/memory/relationship/social/self/commitment/activity/safety.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "prompt-compiler; safety (single door for child transcript)"
+  },
+  {
+   "id": "VG10",
+   "title": "Canonical JSON + SHA-256",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/context-capsule/src/canonical-json.ts"
+   ],
+   "what": "45-line canonical JSON (sorted keys, -0 to 0, rejects non-finite), locale-free compareCodeUnits, sha256.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "evals; telemetry (stable hashes for manifests, prompts, cache keys)"
+  },
+  {
+   "id": "VG11",
+   "title": "Deterministic intervention policy",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/intervention-policy/src/policy.ts",
+    "packages/intervention-policy/src/types.ts"
+   ],
+   "what": "Non-LLM act selection silent/react/reply/ask_permission/move_to_dm/perform_action via evidence integrity, identity, privacy, addressee, triggers, 10-min group cooldown, interruption cost, permission gate, action authorization; typed trace; no wall-clock reads.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "group-ai; realtime-voice (when teacher should not speak: mid-game, sibling addressed, ambiguous addressee)",
+   "evidence": "9 tests; compiles clean (harvest)"
+  },
+  {
+   "id": "VG12",
+   "title": "Model request key + durable ledger contract",
+   "subsystem": "generative-ui/modules",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/model-gateway/src/request.ts",
+    "packages/model-gateway/src/ledger.ts",
+    "packages/model-gateway/src/gateway.ts"
+   ],
+   "what": "mrq_v1_ stable key over provider/model/tokenizer/manifest/block+message hashes/generation/output; ledger acquire/coalesced/cached_terminal/replay_denied/unresolved_ambiguous; markDispatched before bytes leave; thrown/aborted call becomes ambiguous, never retried; reconcile only from durable ambiguity.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "generative-ui/modules (gpt-5.6 module and gpt-image-2 jobs: dedupe via asset_cache, no double charge)",
+   "evidence": "22 tests; hosted ledger integration"
+  },
+  {
+   "id": "VG13",
+   "title": "verifyContextCapsuleTokens",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/model-gateway/src/tokenizer.ts"
+   ],
+   "what": "Re-verifies canonical manifest hash, block set, block content hashes, authoritative per-block token counts and total at dispatch.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "evals/gates (prompt budget verified at dispatch, not only at build)"
+  },
+  {
+   "id": "VG14",
+   "title": "Structured output contract with schema hash",
+   "subsystem": "generative-ui/modules",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/model-gateway/src/output.ts"
+   ],
+   "what": "Zod structured-output contract identified by schemaId, version, schemaHash of z.toJSONSchema; request must match exactly.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "generative-ui/modules (module JSON specs, lesson plans)"
+  },
+  {
+   "id": "VG15",
+   "title": "ProviderCapabilities contract",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/model-gateway/src/schema.ts"
+   ],
+   "what": "Context window, max output, modes, roles, seed, cancellation guaranteed/best_effort/unsupported, idempotency native/gateway_only/none, reconciliation, usage/cost reporting; gateway_only without ledger is DURABLE_LEDGER_REQUIRED.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/azure (honest description of Azure Foundry deployments)"
+  },
+  {
+   "id": "VG16",
+   "title": "Delivery runtime: lanes, idempotency, deterministic jitter, reconciliation",
+   "subsystem": "growth/seo",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/delivery-runtime/src/policy.ts",
+    "packages/delivery-runtime/src/runtime.ts",
+    "packages/delivery-runtime/src/types.ts",
+    "packages/delivery-runtime/src/repository.ts"
+   ],
+   "what": "9-state delivery intents, per-lane hash, length-prefixed stable idempotency key, exponential backoff with key-derived jitter, boundary denial codes, thrown send is ambiguous then reconcile.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "parent notifications (WhatsApp/SMS/email exactly once; stop if consent revoked mid-flight)",
+   "evidence": "15 tests; in-memory repository",
+   "notes": "Mapped subsystem: closest is growth/notifications; no Neon repository yet"
+  },
+  {
+   "id": "VG17",
+   "title": "Content-free pilot telemetry + prohibited engagement metrics",
+   "subsystem": "telemetry/tracing",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/pilot-telemetry/src/events.ts",
+    "packages/pilot-telemetry/src/validation.ts",
+    "packages/pilot-telemetry/src/protocol.ts"
+   ],
+   "what": "Closed event union, exact-key validation, recursive rejection of content-bearing field names, regex rejecting engagement/session-length/time-spent/dwell/message-count/DAU/retention/CTR/streak metrics, safety metrics must be rates, maxP0Incidents 0.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "telemetry; auth/consent (DPDP: no behavioural tracking of children)",
+   "evidence": "17 tests",
+   "notes": "Consent evidence requires adultAttested === true literal; must become guardian-verified consent"
+  },
+  {
+   "id": "VG18",
+   "title": "Deterministic hash arm assignment",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/pilot-telemetry/src/exposure.ts"
+   ],
+   "what": "Arm = hash(manifestHash, namespace, cohort, participantKey) mod total weight with BigInt; no RNG.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "evals (format trials story/song/game reproducible and auditable)"
+  },
+  {
+   "id": "VG19",
+   "title": "Derived campaign exit gates",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/pilot-telemetry/src/aggregator.ts"
+   ],
+   "what": "Exit gates derived from consent-bound deduplicated contiguous sequences with overflow checks; predecessor cohort must close with exitGatePassed.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "evals/gates (school pilot go/no-go cannot be self-reported)"
+  },
+  {
+   "id": "VG20",
+   "title": "CommonFriendOrchestrator pipeline",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/agent-orchestrator/src/orchestrator.ts",
+    "packages/agent-orchestrator/src/types.ts"
+   ],
+   "what": "claim, durable preparation, decideIntervention, validPreparation (key recompute, capsule verify, scope and witness equality), silent/not-implemented, bind before dispatch, model under shared barrier, encrypt, record, commit; lease ordering enforced in constructor.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "Director text lanes and background jobs",
+   "evidence": "10 tests"
+  },
+  {
+   "id": "VG21",
+   "title": "Consent-first follow-through reducer (Commitment Keeper)",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/follow-through-core/src/state-machine.ts",
+    "packages/follow-through-core/src/types.ts",
+    "packages/follow-through-core/src/validation.ts",
+    "packages/follow-through-core/README.md"
+   ],
+   "what": "10 human intents; >=2 accountable humans; independent opt-ins; correction/dispute clears consent; unanimous completion attestation; content-free (statement digest only); fenced versions; linear replay.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "learning/pedagogy (parent+child study plans); gamification",
+   "evidence": "33 tests; 22 adversarial cases; 600-event replay",
+   "notes": "Drop heavy source-witness machinery for v1"
+  },
+  {
+   "id": "VG22",
+   "title": "decideReminder cadence slots",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/follow-through-core/src/reminders.ts"
+   ],
+   "what": "Fixed cadence slots from firstReminderAt; latest slot <= trusted now; never re-authorizes enqueued slot; missed_window past maxLateness; none at/after deadline or after attestation; private destination only.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "notifications; spaced-repetition nudges (combine with html-portfolio quiet hours)"
+  },
+  {
+   "id": "VG23",
+   "title": "Bucketed outcome telemetry + retention schedule",
+   "subsystem": "telemetry/tracing",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/follow-through-core/src/telemetry.ts"
+   ],
+   "what": "Outcome, activation, bucketed participant/reminder/elapsed counts, dispute boolean; no IDs/text/times; checkpoint is not purge authority.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "telemetry (parent/school reports from buckets)"
+  },
+  {
+   "id": "VG24",
+   "title": "Shadow-pilot manifest, consent scopes, ambient gate, irreversible breaker",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/shadow-pilot-core/src/manifest.ts",
+    "packages/shadow-pilot-core/src/types.ts",
+    "packages/shadow-pilot-core/src/state-machine.ts",
+    "packages/shadow-pilot-core/README.md"
+   ],
+   "what": "Frozen SHA-256 manifest with exact wire; 9 consent scopes; evaluateAmbientProcessingGate breaker/audience/active/eligibility/unanimity; single-use epochs; breaker without reset; daily caps; observation close.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "evals/gates; safety (ship new teacher behaviours in shadow mode first)",
+   "evidence": "40 tests",
+   "notes": "adultOnly: true literal"
+  },
+  {
+   "id": "VG25",
+   "title": "Private rating enum + all-member gate",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/shadow-pilot-core/src/types.ts"
+   ],
+   "what": "welcome/unnecessary/bad_timing/wrong_addressee/privacy_concern/missed_safe_opportunity; every affected member must rate; one non-welcome fails; privacy concern irreversible.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals (parents/teachers rate hidden re-explain or interjection judgments)"
+  },
+  {
+   "id": "VG26",
+   "title": "Two-boundary hidden-record orchestration",
+   "subsystem": "safety-floor/honesty",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/shadow-pilot-orchestrator/src/orchestrator.ts",
+    "packages/shadow-pilot-orchestrator/README.md"
+   ],
+   "what": "Authorization before model egress and again before KMS seal + hidden persistence; success valid only if callback body ran; silence still crosses persistence; recovery reconciles never redispatches.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "safety-floor; evals",
+   "evidence": "41 tests"
+  },
+  {
+   "id": "VG27",
+   "title": "CommonFriendSimulator + synthetic gauntlets 0/0B/0C",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/simulator/src/simulator.ts",
+    "packages/simulator/src/campaigns.ts"
+   ],
+   "what": "In-memory social world (people, DM/room, epochs, grants, revoke, withdraw, assemble) with canary strings; Campaign 0 360 worlds, 0B 300, 0C 300.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "evals/gates (household privacy gauntlet in verify-release)",
+   "evidence": "Replicated 2026-10-02: all zero violations",
+   "notes": "Negative control is a counter, not executed; add a real broken evaluator"
+  },
+  {
+   "id": "VG28",
+   "title": "PILOT_CAMPAIGNS ladder registry",
+   "subsystem": "growth/seo",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/simulator/src/campaigns.ts"
+   ],
+   "what": "Executable campaign ladder: id, mode, dependsOn, primaryMetrics, hardStops, externalPrerequisites; universal hard stops.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "growth (school/parent pilot ladder as code)"
+  },
+  {
+   "id": "VG29",
+   "title": "Foundation schema: append-only trigger, RLS loop, inbox, epochs, tombstones",
+   "subsystem": "db-schema",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "db/migrations/001_foundation.sql"
+   ],
+   "what": "reject_mutation trigger on 24 tables, world_isolation RLS on 32 tables, inbox_receipts unique external event, membership epochs with per-member consent_state, normalized policy/grant tables, encrypted memories with epistemic fields, memory_lineage, deletion_tombstones + deletion_jobs per target kind.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "db-schema (memory, consent, audit, DPDP erasure jobs)",
+   "evidence": "Hosted PG17/18; Neon PG18 for 001-013"
+  },
+  {
+   "id": "VG30",
+   "title": "Head-of-line turn claim (SKIP LOCKED)",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/postgres-runtime/src/runtime.ts"
+   ],
+   "what": "FOR UPDATE OF turn SKIP LOCKED + NOT EXISTS earlier unresolved sequence; expired leases reclaimable; generated resumes delivery without model recall.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "infra (per-lesson ordered job queue)",
+   "evidence": "hosted integration"
+  },
+  {
+   "id": "VG31",
+   "title": "Postgres privacy barrier (shared/exclusive advisory lock)",
+   "subsystem": "safety-floor/honesty",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "packages/postgres-runtime/src/privacy-barrier.ts",
+    "db/migrations/006_privacy_barrier.sql"
+   ],
+   "what": "Per-world pg_advisory_lock_shared across model/provider call; exclusive side for privacy mutations; world check; poisoned connection destroy; AggregateError on body+cleanup failure.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "safety; db-schema (revoke never races a parent-note send)",
+   "notes": "Needs direct non-pooler TCP session on Neon; not compatible with PgBouncer transaction mode or HTTP driver"
+  },
+  {
+   "id": "VG32",
+   "title": "Model-result cryptographic erasure lifecycle",
+   "subsystem": "auth/accounts/consent",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "db/migrations/011_model_result_erasure.sql",
+    "packages/postgres-runtime/src/model-result-erasure.ts"
+   ],
+   "what": "terminal to erasure_pending to erased only with KMS receipt; both deny replay without decrypt; key reference returned with ciphertext and bound in same transaction.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "auth/consent (DPDP erasure of cached generated content naming a child)",
+   "evidence": "hosted 011-012, 018"
+  },
+  {
+   "id": "VG33",
+   "title": "Neon role hardening procedure",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "scripts/verify-neon.mjs",
+    "context/nodes/dec-20260830-neon-app-roles-created-by-sql.json"
+   ],
+   "what": "CLI-created Neon roles inherit neon_superuser/BYPASSRLS; create app roles in SQL with NOINHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS, assert flags false, enumerate grants, refuse production endpoint, run-scoped DB with cleanup.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "infra/neon; db-schema (RLS void under BYPASSRLS role)",
+   "evidence": "Neon PG18 proof br-young-moon-azkkn22c"
+  },
+  {
+   "id": "VG34",
+   "title": "CI-only infra verification guards",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "scripts/verify-db.mjs",
+    "scripts/verify-runtime.mjs"
+   ],
+   "what": "Refuse unless CI/GITHUB_ACTIONS/github-hosted runner; readiness waits for init-complete marker plus a real query.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "evals/gates",
+   "notes": "Contains throwaway localhost CI container credentials (not real secrets; not copied)"
+  },
+  {
+   "id": "VG35",
+   "title": "Per-record context graph tooling",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "scripts/context-graph.mjs",
+    "context/schema/node.schema.json",
+    "context/schema/edge.schema.json"
+   ],
+   "what": "One JSON file per node/edge, 12 node kinds, typed relations, verify/render/summary; reduces merge conflicts.",
+   "maturity": "prototype",
+   "taxila_use": "skip",
+   "taxila_target": "Taxila already has context/graph.json + scripts/context.mjs; idea if parallel workstreams conflict"
+  },
+  {
+   "id": "VG36",
+   "title": "Common-friend breakthrough thesis",
+   "subsystem": "relational-os",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "docs/research/2026-08-30-common-friend-breakthrough.md"
+   ],
+   "what": "Category thesis, JTBD by topology, 14-row consent failure table, 5-test value filter, falsifiers, disclosure-preview UX, product principles as release gates.",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "relational-os; product (family as group: child, parent, teacher AI)"
+  },
+  {
+   "id": "VG37",
+   "title": "Pilot charter and measurement system",
+   "subsystem": "safety-floor/honesty",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "docs/pilots/2026-08-30-pilot-campaign-system.md",
+    "docs/pilots/PILOT-PROGRAM.md"
+   ],
+   "what": "8 consent scopes, unanimity for ambient, anonymous private veto; no-engagement list; human-value metrics (inclusion floor = minimum member, displacement, choose-again); safety targets; P0-P3 with automatic breaker; averages never cancel incidents.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "safety-floor; evals; parent visibility",
+   "notes": "Charter is adults-only and excludes classrooms/education admissions"
+  },
+  {
+   "id": "VG38",
+   "title": "Maya reference audit do-not-copy list",
+   "subsystem": "relational-os",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "docs/research/maya-reference-audit.md"
+   ],
+   "what": "17 defects in Maya companion: bearer device UUID, client-only default-open consent, unenforced grant fields, retroactive audiences, non-atomic forget, dual stores, 60 KB persona mixing policy, prompt position as enforcement, non-portable gates.",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "cross-repo guard for anything taken from Meera/Maya"
+  },
+  {
+   "id": "VG39",
+   "title": "Group-AI landscape research",
+   "subsystem": "growth/seo",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "docs/research/landscape-2026-08-30.md"
+   ],
+   "what": "Competitors, platform constraints (Telegram privacy mode, Discord intents, WhatsApp 2026 terms), memory benchmarks, contextual integrity/DLM/Zanzibar/Cedar, DPDP Rules cited.",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "growth; memory-graph (vector DB does not solve memory)"
+  },
+  {
+   "id": "VG40",
+   "title": "48-node failure log",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "context/nodes/fail-*.json"
+   ],
+   "what": "Richest Postgres-invariant failure log in owner's repos: parameter/column shadowing, JSON null, sparse arrays, lock upgrade deadlock, joined-row locks, BYPASSRLS roles, etc.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "Taxila context/rejected.md entries where relevant"
+  },
+  {
+   "id": "VG41",
+   "title": "Durable follow-through SQL boundary (014-016)",
+   "subsystem": "db-schema",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "db/migrations/014_durable_follow_through.sql",
+    "db/migrations/015_follow_through_attestation_recovery.sql",
+    "db/migrations/016_follow_through_recovery_scheduler.sql",
+    "packages/postgres-runtime/src/follow-through-runtime.ts"
+   ],
+   "what": "Source attestations, pending human-decision fence, world-global event reservation, CAS/hash chains, server-bound checkpoint verifier, recovery scheduler with recovery-only role (~7.6k SQL lines).",
+   "maturity": "prototype",
+   "taxila_use": "skip",
+   "taxila_target": "n/a for v1 (overkill)",
+   "evidence": "hosted 11/11 then 13/13"
+  },
+  {
+   "id": "VG42",
+   "title": "Shadow runtime SQL (017-019)",
+   "subsystem": "db-schema",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "db/migrations/017_shadow_pilot_runtime.sql",
+    "db/migrations/018_shadow_model_pending_recovery.sql",
+    "db/migrations/019_shadow_preprovider_provenance.sql",
+    "packages/postgres-runtime/src/shadow-pilot-runtime.ts"
+   ],
+   "what": "Forced-RLS one-world no-delivery shadow runtime, model_pending recovery, pre-provider provenance witness.",
+   "maturity": "prototype",
+   "taxila_use": "skip",
+   "taxila_target": "n/a",
+   "evidence": "hosted 17/17 at 17096b9"
+  },
+  {
+   "id": "VG43",
+   "title": "pg_get_functiondef static SQL guards",
+   "subsystem": "evals/gates/verification",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "origin/claude/vyakti-cloning-platform-aq05n4@451de5a",
+   "paths": [
+    "db/verify/019_shadow_preprovider_provenance.sql"
+   ],
+   "what": "Static guards asserting function bodies never reintroduce a bare parameter name; pitfall: unanchored substring probe matched inside the fix.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "evals/gates (static guards over generated SQL and prompts)"
+  },
+  {
+   "id": "VG44",
+   "title": "JS port of relational-core privacy evaluator",
+   "subsystem": "relational-os",
+   "repo": "/home/user/vyakti-groupai",
+   "ref": "/home/user/html-portfolio (see hp-vyakti-b HVB11)",
+   "paths": [
+    "api/_relational-core.js"
+   ],
+   "what": "Dependency-free JS port of privacy.ts@9cdc1dc (influence/gist/paraphrase/verbatim, deny first, grants bound by policy version/scope).",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "relational-os (fastest path into Taxila .js server; re-run VG01 differential against it)",
+   "evidence": "25/25 vectors (per hp-vyakti-b)"
+  }
+ ],
+ "measurements": [
+  {
+   "claim": "Campaign 0 privacy gauntlet: 0 unauthorized disclosures, 0 false denials, 0 membership-epoch violations",
+   "source": "context/nodes/exp-20260830-campaign-zero-privacy-gauntlet.json; packages/simulator/src/campaigns.ts",
+   "n": "360 worlds / 720 assertions",
+   "method": "deterministic in-memory simulator",
+   "date": "2026-08-30"
+  },
+  {
+   "claim": "[replicated] Campaign 0 identical result, 388 ms wall",
+   "source": "this harvest",
+   "n": "360 worlds",
+   "method": "compiled @T source with Taxila tsc 7.0.2 + zod 4.6.5, Node 22.22.0",
+   "date": "2026-10-02"
+  },
+  {
+   "claim": "Campaign 0B consent/replay: 0 revocation, 0 withdrawal, 0 replay-duplication violations (replicated, 406 ms)",
+   "source": "context/nodes/exp-20260830-campaign-zero-b-consent-replay.json; this harvest",
+   "n": "300 worlds / 1,200 assertions",
+   "method": "in-memory simulator",
+   "date": "2026-08-30 / replicated 2026-10-02"
+  },
+  {
+   "claim": "Campaign 0C identity: 0 linked failures, 0 unverified, 0 revoked resolutions (replicated, 11 ms)",
+   "source": "context/nodes/exp-20260830-campaign-zero-c-identity.json; this harvest",
+   "n": "300 worlds / 1,200 assertions",
+   "method": "in-memory simulator",
+   "date": "2026-08-30 / replicated 2026-10-02"
+  },
+  {
+   "claim": "authorizeDisclosure matches independent strict oracle",
+   "source": "packages/relational-core/src/privacy-matrix.test.ts",
+   "n": "500 fast-check cases, seed 20260830",
+   "method": "property test, no grants/obligations",
+   "date": "2026-08-30"
+  },
+  {
+   "claim": "[replicated, stronger] 0 mismatches vs independently written oracle; 2,288 allows (1,385 via consent grant) incl. grants, revocation, attribution, ask_before_sharing, do_not_quote, do_not_attribute",
+   "source": "this harvest (scratchpad/vg-run/diff.mjs)",
+   "n": "50,000 randomized cases",
+   "method": "mulberry32 seed 20261002 biased toward allow; oracle written from ARCHITECTURE.md rules",
+   "date": "2026-10-02"
+  },
+  {
+   "claim": "Real negative control: an evaluator ignoring the deny-list diverges from the kernel in 799/50,000 cases (harness detects leaks); repo's own controls are tautological",
+   "source": "this harvest",
+   "n": "50,000",
+   "method": "same harness",
+   "date": "2026-10-02"
+  },
+  {
+   "claim": "Kernel cost ~19 microseconds per full disclosure decision (50,000 in 0.97 s)",
+   "source": "this harvest",
+   "n": "50,000",
+   "method": "single Node 22 process wall time incl. zod parse and SHA-256",
+   "date": "2026-10-02"
+  },
+  {
+   "claim": "Local source gate 375/375 (model-gateway 24, shadow-orchestrator 39, postgres-runtime 131)",
+   "source": "README.md; context/nodes/exp-20260902-shadow-model-recovery-hosted-gate.json",
+   "n": "375 tests",
+   "method": "vitest all packages",
+   "date": "2026-09-02 @b9da0ee"
+  },
+  {
+   "claim": "338/338 tests on Ubuntu and Windows (shadow-core 40, shadow-orch 26, pg-runtime 113); CI 2m07s",
+   "source": "context/nodes/exp-20260831-shadow-pilot-hosted-gate.json",
+   "n": "338",
+   "method": "GitHub Actions CI #33 run 33356820044",
+   "date": "2026-08-31 @659ef1d"
+  },
+  {
+   "claim": "Hosted migrations 001-019 applied+verified in 17 s; runtime:verify 4 files 17/17; 63 shadow-orch + 200 pg-runtime unit tests",
+   "source": "context/nodes/exp-20260903-shadow-preprovider-provenance-hosted-gate.json",
+   "n": "17 integration tests",
+   "method": "GitHub Actions run 33758157417",
+   "date": "2026-09-03 @17096b9"
+  },
+  {
+   "claim": "Pre-provider witness gates dispatch: after tombstoning a bound non-input source, authorization returned provenance_stale, provider body ran 0 more times, 0 candidates/turns/outbox/attempts",
+   "source": "context/journal/2026-09-03-shadow-preprovider-provenance.md",
+   "n": "1 integration case",
+   "method": "hosted PostgreSQL integration",
+   "date": "2026-09-03"
+  },
+  {
+   "claim": "Hosted 001-018 + 16 integration tests incl. exact model_pending recovery with zero live-message/outbox writes",
+   "source": "context/nodes/exp-20260902-shadow-model-recovery-hosted-gate.json",
+   "n": "16 tests",
+   "method": "GitHub Actions run 33545202883",
+   "date": "2026-09-02 @b9da0ee"
+  },
+  {
+   "claim": "Recovery control plane 001-016: 13/13 db integrations; 272/272 local, pg-runtime 113/113; CI 2m12s",
+   "source": "context/nodes/exp-20260830-follow-through-recovery-control-plane-hosted-proof.json",
+   "n": "13 integrations",
+   "method": "GitHub Actions run 33320406846",
+   "date": "2026-08-30 @e27f6e5"
+  },
+  {
+   "claim": "Follow-through end-to-end: private reminder sent exactly once to Alice's DM only; 11/11 integrations",
+   "source": "context/nodes/exp-20260830-durable-follow-through-hosted-proof.json",
+   "n": "11 integrations",
+   "method": "GitHub Actions run 33316887751 (PG17 migrations, PG18 runtime)",
+   "date": "2026-08-30 @9080c59"
+  },
+  {
+   "claim": "Disposable Neon PG18: 001-013 + 10/10 runtime cases under SQL-created non-BYPASSRLS role",
+   "source": "context/nodes/exp-20260830-neon-pg18-runtime-proof.json",
+   "n": "10 cases",
+   "method": "branch br-young-moon-azkkn22c",
+   "date": "2026-08-30"
+  },
+  {
+   "claim": "Neon proof for 014-019 does NOT exist; rehearsal stopped after verify 001 (OAuth expired)",
+   "source": "context/nodes/exp-20260901-shadow-neon-isolated-rehearsal.json",
+   "n": "1 attempt",
+   "method": "isolated Neon branch codex-shadow-017-20260901",
+   "date": "2026-09-01"
+  },
+  {
+   "claim": "Follow-through adversarial audit: 22 cases + bounded 600-event replay",
+   "source": "context/nodes/exp-20260830-follow-through-adversarial-audit.json",
+   "n": "22 cases",
+   "method": "two adversarial review passes",
+   "date": "2026-08-30"
+  },
+  {
+   "claim": "Per-package test counts at @T: pg-runtime 151, shadow-orch 41, shadow-core 40, follow-through 33, relational-core 26, gateway 22, telemetry 17, delivery 15, capsule 14, orchestrator 10, simulator 10, intervention 9",
+   "source": "this harvest",
+   "n": "12 packages",
+   "method": "grep it(/test( in src/*.test.ts",
+   "date": "2026-10-02"
+  },
+  {
+   "claim": "Context graph 157 nodes / 212 edges (48 failure, 32 decision, 27 artifact, 21 risk, 16 experiment)",
+   "source": "context/journal/2026-09-03-shadow-preprovider-provenance.md; context/nodes",
+   "n": "157 nodes",
+   "method": "pnpm context:check + file count",
+   "date": "2026-09-03"
+  },
+  {
+   "claim": "External: GroupMemBench strongest system 46.0% avg accuracy, knowledge updates 27.1%",
+   "source": "docs/research/landscape-2026-08-30.md (arXiv 2605.14498, not verified)",
+   "n": "benchmark",
+   "method": "cited",
+   "date": "cited 2026-08-30"
+  },
+  {
+   "claim": "External: relational AI suggestions reduced self-written messages ~24%",
+   "source": "context/nodes/res-20260830-relational-assistance-authorship-tradeoff.json (arXiv 2510.21984)",
+   "n": "557 people",
+   "method": "cited study",
+   "date": "cited 2026-08-30"
+  },
+  {
+   "claim": "External: explicit addressees in ~20% of triadic turns; GPT-4o marginally above chance on addressee recognition",
+   "source": "docs/research/2026-08-30-common-friend-breakthrough.md (Inoue et al. 2025)",
+   "n": "benchmark",
+   "method": "cited",
+   "date": "cited 2026-08-30"
+  }
+ ],
+ "rejections": [
+  {
+   "tried": "Generic shared chatbot (assistant in a room) as product",
+   "what_broke": "Consumer ChatGPT group chats and Copilot Group Chat retired in 2026; no trust moat",
+   "source": "context/nodes/dec-20260830-reject-generic-shared-chatbot.json; res-20260830-shared-chatbot-disconfirmation",
+   "taxila_relevance": "Taxila value must be relational and pedagogical, not a generic tutor bot"
+  },
+  {
+   "tried": "Wholesale port of Maya companion",
+   "what_broke": "Bearer device-UUID identity, client-only default-open consent, unenforced grants, retroactive audiences, non-atomic delete, dual stores, 60 KB persona mixing policy, prompt position as enforcement, non-portable gates",
+   "source": "context/nodes/fail-20260830-wholesale-maya-port.json; docs/research/maya-reference-audit.md",
+   "taxila_relevance": "Apply this checklist to anything Taxila imports from Meera/Maya"
+  },
+  {
+   "tried": "WhatsApp as first channel",
+   "what_broke": "2026 terms restrict AI-primary providers; third-party agent chats not E2EE",
+   "source": "context/nodes/dec-20260830-platform-order.json",
+   "taxila_relevance": "Parent notifications via WhatsApp need official route"
+  },
+  {
+   "tried": "Engagement metrics (messages, session length, DAU, streaks, attachment) as success",
+   "what_broke": "Optimizes against welfare; AI suggestions cut human authorship ~24%; made structurally impossible via regex",
+   "source": "context/nodes/fail-20260830-gameable-pilot-telemetry.json; docs/pilots/2026-08-30-pilot-campaign-system.md",
+   "taxila_relevance": "Streaks only as diagnostic/guardrail for children"
+  },
+  {
+   "tried": "Caller-authored pilot aggregates/exit gates",
+   "what_broke": "Replayable, reorderable, overflowable, gameable",
+   "source": "context/nodes/fail-20260830-gameable-pilot-telemetry.json"
+  },
+  {
+   "tried": "Consent inferred from group membership, model judgment, or another participant",
+   "what_broke": "Coerced group consent; replaced by private per-person consent, unanimity, anonymous veto",
+   "source": "context/journal/2026-08-31-shadow-pilot.md",
+   "taxila_relevance": "Sibling/classmate never consents for another child"
+  },
+  {
+   "tried": "Treating hidden model output as value or review authorization",
+   "what_broke": "Encrypted storage is not review right; reviewer must recheck current consent before decrypt",
+   "source": "context/journal/2026-08-31-shadow-pilot.md; risk-20260830-shadow-reviewer-current-consent"
+  },
+  {
+   "tried": "First Context Capsule factory accepting caller-supplied allowed policy refs",
+   "what_broke": "Caller could bless fabricated authorization; factory became the authority",
+   "source": "context/nodes/fail-20260830-forgeable-capsule-factory.json",
+   "taxila_relevance": "Only kernel-issued decisions may enter the prompt"
+  },
+  {
+   "tried": "Append-only membership rows still allowing late member insertion",
+   "what_broke": "Retroactively widened audience of already-cited epochs",
+   "source": "context/nodes/fail-20260830-late-audience-mutation.json",
+   "taxila_relevance": "Late joiner (sibling, parent, classmate) must never see earlier content"
+  },
+  {
+   "tried": "Privacy fence covering only revocation/tombstones",
+   "what_broke": "Missed subject, source, lineage, membership, policy and grant mutations",
+   "source": "context/nodes/fail-20260830-incomplete-privacy-fence.json"
+  },
+  {
+   "tried": "Free-standing in-memory send permit",
+   "what_broke": "Stale before provider send after revocation/membership change",
+   "source": "context/nodes/fail-20260830-free-standing-send-permit.json",
+   "taxila_relevance": "Recheck parent-note authorization at send time"
+  },
+  {
+   "tried": "Unqualified evaluated_at parameter colliding with disclosure_audits.evaluated_at (migration 013 era)",
+   "what_broke": "Postgres silently used historical column; revoked grant looked current at commit",
+   "source": "context/nodes/fail-20260830-consent-revalidation-time-shadowing.json",
+   "taxila_relevance": "Never name PL/pgSQL params like columns"
+  },
+  {
+   "tried": "Same collision reintroduced in migration 019; first guard used unanchored substring",
+   "what_broke": "42702 red CI for 3 runs; guard matched inside the alias fix; relaxing guard, renaming arg and IS NOT DISTINCT workaround all rejected",
+   "source": "context/nodes/fail-20260903-shadow-provenance-time-shadowing.json; context/journal/2026-09-03-shadow-preprovider-provenance.md"
+  },
+  {
+   "tried": "First durable worker draft",
+   "what_broke": "Concurrent adjacent claims, stranded generated reply, incomplete replay checks, cross-conversation outbox",
+   "source": "context/nodes/fail-20260830-first-worker-draft-p0.json"
+  },
+  {
+   "tried": "Process-local model idempotency",
+   "what_broke": "Cannot prove provider acceptance after crash; blind retry double-charges",
+   "source": "context/nodes/fail-20260830-stateless-model-idempotency.json",
+   "taxila_relevance": "Module/image generation timeouts must not re-bill"
+  },
+  {
+   "tried": "Model dispatch not durably bound to preparation",
+   "what_broke": "Model called with one capsule, metadata recorded for another",
+   "source": "context/nodes/fail-20260830-unbound-model-dispatch.json"
+  },
+  {
+   "tried": "Update-only binding trigger",
+   "what_broke": "Pre-bound INSERT bypassed it",
+   "source": "context/nodes/fail-20260830-agent-turn-insert-binding-bypass.json"
+  },
+  {
+   "tried": "Result-key binding detached from terminal persistence",
+   "what_broke": "Ciphertext without erasure key ref; two separate writes",
+   "source": "context/nodes/fail-20260830-detached-result-key-binding.json"
+  },
+  {
+   "tried": "Underbound KMS AAD for hidden candidates",
+   "what_broke": "Missing campaign/world/audience/source/preparation/result/candidate binding",
+   "source": "context/nodes/fail-20260830-shadow-kms-aad-underbinding.json"
+  },
+  {
+   "tried": "Cached model result accepted without execution-profile binding",
+   "what_broke": "Result for different candidate could be sealed",
+   "source": "context/nodes/fail-20260830-shadow-cached-model-mismatch.json"
+  },
+  {
+   "tried": "Trusting authorization boundary success",
+   "what_broke": "Did not prove callback body ran; forged success could skip protected op",
+   "source": "context/nodes/fail-20260830-shadow-authorization-callback.json"
+  },
+  {
+   "tried": "Timeout vs AbortError handling",
+   "what_broke": "Ambiguous model attempt recorded as terminal silence",
+   "source": "context/nodes/fail-20260830-shadow-timeout-abort-race.json"
+  },
+  {
+   "tried": "Durable replay inheriting command idempotency",
+   "what_broke": "Silently accepted duplicate persisted rows",
+   "source": "context/nodes/fail-20260830-shadow-duplicate-replay.json"
+  },
+  {
+   "tried": "Attest and apply human decision in separate transactions without fence",
+   "what_broke": "Racing reminder stayed authorized after verified revoke",
+   "source": "context/nodes/fail-20260830-follow-through-dual-transaction-race.json"
+  },
+  {
+   "tried": "Persistence trusting caller nextState projection",
+   "what_broke": "Caller could fabricate opt-in, consent, completion",
+   "source": "context/nodes/fail-20260830-follow-through-projection-trust.json"
+  },
+  {
+   "tried": "Shared privacy lock then upgrade to exclusive",
+   "what_broke": "Shared-to-exclusive deadlock between same-world writers",
+   "source": "context/nodes/fail-20260830-follow-through-lock-upgrade-deadlock.json"
+  },
+  {
+   "tried": "Domain event IDs unique only per commitment",
+   "what_broke": "Cross-aggregate ID collision; reminder could steal unapplied command ID",
+   "source": "context/nodes/fail-20260830-follow-through-domain-event-reservation.json"
+  },
+  {
+   "tried": "UNIQUE(commitment,target_version) on immutable attestations",
+   "what_broke": "Quarantined command permanently consumed head+1 and bricked the commitment",
+   "source": "context/nodes/fail-20260830-quarantined-attestation-target-brick.json"
+  },
+  {
+   "tried": "sourceEventId allowed to equal domainEventId",
+   "what_broke": "Permanent liveness failure",
+   "source": "context/nodes/fail-20260830-source-domain-event-alias.json"
+  },
+  {
+   "tried": "Arbitrary text as presentationTimeZone",
+   "what_broke": "Unapplyable pending command; fixed via pg_timezone_names",
+   "source": "context/nodes/fail-20260830-follow-through-timezone-text.json"
+  },
+  {
+   "tried": "Checkpoint validation requiring opt-ins before activatedAt",
+   "what_broke": "False after valid revoke and reactivation",
+   "source": "context/nodes/fail-20260830-checkpoint-reactivation-timestamp.json"
+  },
+  {
+   "tried": "Caller-supplied checkpoint verifier labels",
+   "what_broke": "Forgeable circular provenance",
+   "source": "context/nodes/fail-20260830-forgeable-checkpoint-verifier-labels.json"
+  },
+  {
+   "tried": "JSONB null treated as SQL NULL",
+   "what_broke": "Valid proposal rejected; fixed with NULLIF(...,'null'::jsonb)",
+   "source": "context/nodes/fail-20260830-follow-through-json-null-normalization.json",
+   "taxila_relevance": "Same trap in any Taxila JSONB wire"
+  },
+  {
+   "tried": "JSONB minus untyped literal",
+   "what_broke": "SQLSTATE 42725 operator overload ambiguity",
+   "source": "context/nodes/fail-20260830-follow-through-jsonb-subtraction-overload.json"
+  },
+  {
+   "tried": "Reminder projection off authorized cadence slot",
+   "what_broke": "23514 invariant failure",
+   "source": "context/nodes/fail-20260830-follow-through-reminder-projection-slot.json"
+  },
+  {
+   "tried": "Recovery claim-then-apply across two transactions or with a time lease",
+   "what_broke": "Recreates crash gap; lease expiry ambiguity",
+   "source": "context/journal/2026-08-30-foundation.md (lines ~920-935)"
+  },
+  {
+   "tried": "Recovery credential with app authority; queue/high-water as authority; one lease for replicas; mutable last_* fields; 30-day empty-world nextAt",
+   "what_broke": "Collapses role boundary; projection becomes security-critical; concurrent ownership; lost outcome unreconcilable; sleeper misses work 30 days",
+   "source": "context/journal/2026-08-30-foundation.md (lines ~996-1005)"
+  },
+  {
+   "tried": "TTL or retry-count expiry of pending human authority",
+   "what_broke": "Would erase live human restriction; only objective facts may quarantine",
+   "source": "context/nodes/dec-20260830-objective-recovery-quarantine.json"
+  },
+  {
+   "tried": "Fresh audience inheriting prior cohort evidence",
+   "what_broke": "Readiness without own observation",
+   "source": "context/nodes/fail-20260830-shadow-audience-lineage-inheritance.json"
+  },
+  {
+   "tried": "Reactivating historical audience epoch",
+   "what_broke": "Resurrected old consent",
+   "source": "context/nodes/fail-20260830-shadow-epoch-reactivation.json"
+  },
+  {
+   "tried": "Non-P0 privacy/consent/identity incidents not blocking readiness",
+   "what_broke": "Zero-tolerance incidents invisible",
+   "source": "context/nodes/fail-20260830-shadow-incident-invisibility.json"
+  },
+  {
+   "tried": "Privacy concern derived from latest rating only",
+   "what_broke": "Later revision erased the safety signal",
+   "source": "context/nodes/fail-20260830-shadow-privacy-veto-mutability.json"
+  },
+  {
+   "tried": "14-day observation as minimum only",
+   "what_broke": "Day-15 candidates admitted; silence skipped locked boundary",
+   "source": "context/nodes/fail-20260830-shadow-late-window-admission.json"
+  },
+  {
+   "tried": "Destination-authorized cross-context citations in shadow prep",
+   "what_broke": "Memory from another conversation cited",
+   "source": "context/nodes/fail-20260830-shadow-cross-context-citations.json"
+  },
+  {
+   "tried": "Hole-skipping JS array checks",
+   "what_broke": "Sparse length-3 audience with 2 IDs opened the unanimity gate",
+   "source": "context/nodes/fail-20260830-shadow-sparse-array-bypass.json",
+   "taxila_relevance": "Any 'all guardians consented' check over arrays"
+  },
+  {
+   "tried": "Treating Postgres image init server as ready",
+   "what_broke": "Migrations ran during shutdown",
+   "source": "context/nodes/fail-20260830-postgres-ci-readiness-race.json"
+  },
+  {
+   "tried": "Unqualified digest() under search_path=pg_catalog",
+   "what_broke": "pgcrypto in public not resolved",
+   "source": "context/nodes/fail-20260830-pgcrypto-search-path.json"
+  },
+  {
+   "tried": "Fixture writing fenced table before setting world",
+   "what_broke": "Correctly rejected; fixture order wrong",
+   "source": "context/nodes/fail-20260830-verify-world-scope-order.json"
+  },
+  {
+   "tried": "Binding trigger checking reservation before format",
+   "what_broke": "Wrong SQLSTATE order",
+   "source": "context/nodes/fail-20260830-binding-validation-order.json; fail-20260830-binding-verifier-sqlstate.json"
+  },
+  {
+   "tried": "Revoking direct conversations UPDATE while sequence claim ran as invoker",
+   "what_broke": "Runtime lost narrow write; fixed via hardened SECURITY DEFINER",
+   "source": "context/nodes/fail-20260830-sequence-claim-privilege.json"
+  },
+  {
+   "tried": "Unqualified FOR UPDATE in a join",
+   "what_broke": "Locked joined event rows; needed UPDATE privilege on read-only history",
+   "source": "context/nodes/fail-20260830-joined-row-lock-privilege.json"
+  },
+  {
+   "tried": "Unique index on preparation key",
+   "what_broke": "Same content on two turns is legal; preparation key is not dispatch identity",
+   "source": "context/nodes/fail-20260830-runtime-contract-fixtures.json"
+  },
+  {
+   "tried": "Unqualified SET CONSTRAINTS name",
+   "what_broke": "Not resolvable under verify search path",
+   "source": "context/nodes/fail-20260830-follow-through-constraint-qualification.json"
+  },
+  {
+   "tried": "Local Docker/Postgres on employer laptop",
+   "what_broke": "Violated workstation constraint; now cloud-CI-only with script guards",
+   "source": "context/nodes/fail-20260830-local-infrastructure-assumption.json"
+  },
+  {
+   "tried": "Neon CLI-created roles as app roles",
+   "what_broke": "Inherit neon_superuser/BYPASSRLS; RLS silently void",
+   "source": "context/nodes/dec-20260830-neon-app-roles-created-by-sql.json",
+   "taxila_relevance": "Directly applicable to Taxila on Neon"
+  },
+  {
+   "tried": "Remote-MCP-only Neon control",
+   "what_broke": "Superseded by pinned foreground clients",
+   "source": "context/nodes/dec-20260830-neon-remote-control-plane.json (superseded)"
+  },
+  {
+   "tried": "Manual Neon workflow without configured secret",
+   "what_broke": "Stopped safely at guard before any connection; still blocked",
+   "source": "context/nodes/fail-20260830-neon-ci-owner-secret-missing.json"
+  },
+  {
+   "tried": "Negative control implemented as counter (campaigns.ts) or () => true (privacy-matrix.test.ts)",
+   "what_broke": "Cannot fail, proves nothing; real broken evaluator diverged 799/50,000",
+   "source": "packages/simulator/src/campaigns.ts; packages/relational-core/src/privacy-matrix.test.ts; this harvest",
+   "taxila_relevance": "Taxila gauntlets must run a real broken implementation"
+  }
+ ],
+ "concepts": [
+  {
+   "name": "Social world",
+   "description": "Tenant and planned crypto isolation unit: one AI identity, its people, conversations, policies; RLS on world_id",
+   "taxila_relevance": "Household = world: guardians, children, teacher agent; lessons are DMs"
+  },
+  {
+   "name": "Common friend",
+   "description": "AI with distinct relationships to each person, dyad, group; success measured between humans; silence first-class",
+   "taxila_relevance": "Teacher as common friend of child and parent: bridges learning to parent in policy-allowed form, not a surveillance pipe"
+  },
+  {
+   "name": "Audience / membership epoch",
+   "description": "Immutable membership snapshot cited by each event; joins/leaves create new epoch; no retroactive access",
+   "taxila_relevance": "Siblings on one device, parent joining mid-lesson, future group classes"
+  },
+  {
+   "name": "Disclosure acts",
+   "description": "influence < gist < paraphrase < verbatim; grants are act-scoped",
+   "taxila_relevance": "Parent reports default to gist for child's personal disclosures"
+  },
+  {
+   "name": "Scoped declassification capability",
+   "description": "Grant bound to memory, policy version, recipients, conversation, purpose, act, attribution, validity; deny wins",
+   "taxila_relevance": "Child-issued narrow expiring 'tell Mom' grants"
+  },
+  {
+   "name": "Derivation cannot declassify",
+   "description": "Derived readers = intersection; obligations/denials = union; no_derivatives refusal",
+   "taxila_relevance": "Consolidations and parent notes inherit strictest source policy"
+  },
+  {
+   "name": "Pre-model authorization",
+   "description": "Authorize before plaintext enters prompt; output scanning is defense in depth",
+   "taxila_relevance": "Compile realtime instructions only from authorized capsule"
+  },
+  {
+   "name": "Context Capsule",
+   "description": "Typed IR of authorized blocks, whole-block budget, drop reasons, citations, manifest hash",
+   "taxila_relevance": "One assembler for every lane, auditable record of what the model saw"
+  },
+  {
+   "name": "Epistemic status and affect as hypothesis",
+   "description": "observed/reported/inferred/hypothesis + confidence; emotion is a short-lived uncertain hypothesis, not a diagnosis",
+   "taxila_relevance": "Covert comprehension and affect estimates stored as evidence-bearing hypotheses, parent-visible"
+  },
+  {
+   "name": "No secret social score",
+   "description": "Relationship signals are uncertain, purpose-limited, never used to rank or persuade",
+   "taxila_relevance": "Learning-profile estimates never compare or pressure children"
+  },
+  {
+   "name": "Intervention policy",
+   "description": "Deterministic act selection with silence as success and typed trace",
+   "taxila_relevance": "When the teacher holds back during thinking or games"
+  },
+  {
+   "name": "Honest action surface",
+   "description": "Only fully implemented actions execute; others return action_not_implemented",
+   "taxila_relevance": "Unsafe generated modules fail closed"
+  },
+  {
+   "name": "Privacy barrier + durable egress witness",
+   "description": "Shared/exclusive advisory lock across external I/O plus durable in-flight state",
+   "taxila_relevance": "Revoke/erasure never races a parent notification"
+  },
+  {
+   "name": "Durable side-effect ledger",
+   "description": "reserve, dispatched, terminal or ambiguous, reconcile; never blind retry",
+   "taxila_relevance": "Exactly-once parent messages and no double-billed generation"
+  },
+  {
+   "name": "Fencing token / lease",
+   "description": "Unguessable token, monotonic fence, DB-time expiry",
+   "taxila_relevance": "Serverless background jobs"
+  },
+  {
+   "name": "Commitment Keeper",
+   "description": "Consent-first shared commitment; unanimous opt-in and completion attestation; private reminders",
+   "taxila_relevance": "Parent+child study plans"
+  },
+  {
+   "name": "Shadow mode",
+   "description": "AI decides but delivers nothing; hidden candidates rated later by all affected",
+   "taxila_relevance": "Trial new pedagogy moves before going live"
+  },
+  {
+   "name": "All-member acceptability / private veto",
+   "description": "One non-welcome rating fails; privacy concern irreversible; worst member over average",
+   "taxila_relevance": "Optimize for worst-served child"
+  },
+  {
+   "name": "Irreversible circuit breaker",
+   "description": "No reset event; recovery needs new manifest lineage",
+   "taxila_relevance": "Child-safety P0 stops capability globally"
+  },
+  {
+   "name": "Content-free telemetry",
+   "description": "Closed enums, opaque IDs, buckets; content fields rejected by name; engagement metrics banned",
+   "taxila_relevance": "DPDP-aligned analytics for children (legal mapping to verify)"
+  },
+  {
+   "name": "Cryptographic erasure",
+   "description": "erasure_pending then erased with KMS receipt; ciphertext retained and described honestly",
+   "taxila_relevance": "Precise deletion language to parents"
+  },
+  {
+   "name": "Counterfactual non-interference",
+   "description": "Changing a forbidden secret must not change authorized output",
+   "taxila_relevance": "Sibling secret must not change what teacher says to the other child"
+  },
+  {
+   "name": "Negative control",
+   "description": "An unsafe implementation must fail the suite (repo's version is tautological)",
+   "taxila_relevance": "Run a real broken evaluator in Taxila gates"
+  },
+  {
+   "name": "Contextual integrity / Decentralized Label Model",
+   "description": "Flows judged on sender, subject, recipient, type, context, principle; one principal cannot remove another's restriction",
+   "taxila_relevance": "Child, parent, school as separate principals"
+  },
+  {
+   "name": "Common-friend-only value test and falsifiers",
+   "description": "4-of-5 feature filter; explicit kill conditions",
+   "taxila_relevance": "Taxila-specific value test and falsifiers per feature"
+  },
+  {
+   "name": "Cloud-only infra verification",
+   "description": "Scripts refuse local infra; CI-hosted Postgres; disposable Neon",
+   "taxila_relevance": "Per-PR disposable Neon branch for migrations"
+  }
+ ],
+ "unread": [
+  "postgres-runtime large adapters (delivery-repository, follow-through-runtime, shadow-pilot-runtime, model-ledger, model-result-erasure, follow-through-persistence/ingress/scheduler; ~8k lines) only skimmed",
+  "shadow-pilot-core state-machine beyond ambient gate; pilot-telemetry aggregator internals; delivery-runtime repository.ts",
+  "Migration bodies 002-019 (~16k lines) read via grep/db README/failure nodes, not line by line; db/verify/*.sql (7.3k lines) and fixtures not read",
+  "Most test files read by name only; repo vitest suites not run (vitest/fast-check not installed); only 4 pure packages compiled and executed",
+  "No SQL executed anywhere (no local infra by rule)",
+  "context/GRAPH.md 212 edges not read individually; journals 2026-08-31 and 2026-09-02 rejected sections only",
+  "docs/pilots/2026-08-30-pilot-campaign-system.md Campaigns 2-5 detail sections skimmed",
+  "External citations (arXiv, Nature, SOUPS, WhatsApp terms, DPDP Rules) not fetched or verified",
+  "DPDP legal mapping for children's data is inference and needs counsel review"
+ ],
+ "doc_path": "/home/user/Taxila/docs/harvest/vyakti-groupai.md"
+}

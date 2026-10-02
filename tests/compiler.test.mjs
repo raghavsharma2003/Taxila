@@ -48,9 +48,24 @@ test("the item prompt is verbatim content; the key is marked unsaid until rung 4
   const input = inputAfter(toFirstItem());
   const text = compile(input);
   assert.ok(text.includes(input.item.prompt_hi), "item prompt is posed verbatim in the child's language");
-  assert.match(text, /ONE MORE CHECK: the key stays unsaid this turn \(ladder rung 0 of 4\)/);
+  const check = text.split("\n").at(-2);
+  assert.ok(check.startsWith("ONE MORE CHECK: the only question this turn"), "the posed question is pinned in the appended-last check");
+  assert.ok(check.includes(input.item.prompt_hi));
+  assert.match(check, /the key stays unsaid \(ladder rung 0 of 4\)/);
+  const hinted = compile(inputAfter([...toFirstItem(), cls("incorrect")]));
+  assert.match(hinted.split("\n").at(-2), /the same one again .* no new question; the key stays unsaid \(ladder rung 1 of 4\)/);
   const atFour = compile(inputAfter([...toFirstItem(), cls("incorrect"), cls("incorrect"), cls("incorrect"), cls("incorrect")]));
   assert.match(atFour, /rung 4 now: say the key plainly/);
+});
+
+test("lanes share every byte except the voice-only contingency lines", () => {
+  const input = inputAfter(toFirstItem());
+  const voice = compile({ ...input, lane: "voice" });
+  const text = compile({ ...input, lane: "text" });
+  assert.match(voice, /AFTER their next reply \(not now\)/);
+  assert.doesNotMatch(text, /AFTER their next reply/);
+  const strip = (t) => t.split("\n").filter((l) => !l.includes("AFTER their next reply")).join("\n");
+  assert.equal(strip(voice), text);
 });
 
 test("budget: optional rows are shed first, lowest priority first, the floor and turn shape never", () => {
@@ -95,7 +110,7 @@ test("persona notes and move shapes are shapes, not lines she could say", () => 
   const shapes = [
     SH.greet({ ...CTX, warmup: true }), SH.greet({ ...CTX, warmup: false }), SH.retrievalNext(), SH.warmupMoveOn(),
     SH.hook({ interest: "cricket", contexts: K.interestContexts, protege: CTX.protege }), SH.explain({ skillTitle: "x" }),
-    SH.worked({ part: 1, parts: 2 }), SH.pose({ item }), SH.why({ ageBand: "6-9" }), SH.why({ ageBand: "10-15" }),
+    SH.worked({ part: 1, parts: 2 }), SH.pose({ item }), SH.why({ ageBand: "6-9", contrast: true }), SH.why({ ageBand: "6-9" }), SH.why({ ageBand: "10-15" }),
     SH.hint({ level: 2, rungShape: item.hints[1] }), SH.reteach({ representation: "r", moveShape: "m", again: true }),
     SH.changeApproach(), SH.repairUnclear(), SH.repairOffTopic(), SH.takeBreak(), SH.stretch(), SH.safeguard(),
     SH.safeguardStay(), SH.resumeAfterSafeguard(), SH.teachback({ protege: CTX.protege }),

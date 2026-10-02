@@ -3,20 +3,21 @@ import { getTopic, topicIdByPrefix } from "./curriculum.js";
 import { kitFromFile, kitIdIndex } from "./kits.js";
 import { cachedMiniKit, buildMiniKit } from "./minikit.js";
 
-export { getTopic, topicSequence, SUBJECT_ORDER } from "./curriculum.js";
+export { getTopic, topicSequence } from "./curriculum.js";
 
 /** Mini-kits by topic id. File kits are not memoised here: kitFromFile re-checks mtime on each call. */
 const miniKits = new Map();
 
 /**
- * The kit to teach a topic from. A verified file kit always wins (it may land mid-session); otherwise a
- * cached mini-kit, otherwise one is generated when `generate` is true.
+ * The kit to teach a topic from. A verified file kit wins; otherwise a cached mini-kit, otherwise one is
+ * generated when `generate` is true. `mini: true` pins a lesson that started on a mini-kit to it: a file
+ * kit landing mid-lesson has different item ids, and the lesson state refers to the old ones.
  * @returns {Promise<import("../../shared/contracts").TopicKit | null>}
  */
-export async function getKit(topicId, { generate = true, trace } = {}) {
+export async function getKit(topicId, { generate = true, mini = false, trace } = {}) {
   const topic = getTopic(topicId);
   if (!topic) return null;
-  const fileKit = kitFromFile(topic);
+  const fileKit = mini ? null : kitFromFile(topic);
   if (fileKit) return fileKit;
   if (miniKits.has(topicId)) return miniKits.get(topicId);
   const kit = (await cachedMiniKit(topic)) ?? (generate ? await buildMiniKit(topic, { trace }) : null);

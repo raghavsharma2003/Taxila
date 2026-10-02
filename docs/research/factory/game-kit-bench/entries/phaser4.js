@@ -1,0 +1,2 @@
+import * as Phaser from 'phaser'; import {N,W,H,mkBalls,stepBalls,frame} from './_common.js';
+const balls=mkBalls(); new Phaser.Game({type:Phaser.WEBGL,width:W,height:H,audio:{noAudio:true},scene:{create(){ const g=this.add.graphics(); g.fillStyle(0xff8800).fillCircle(8,8,8); g.generateTexture('b',16,16); g.destroy(); this.s=balls.map(b=>this.add.image(b.x,b.y,'b')); this.t=this.add.text(10,10,'score 0',{fontSize:'20px'}); }, update(){ stepBalls(balls); this.s.forEach((s,i)=>s.setPosition(balls[i].x,balls[i].y)); frame(); }}});

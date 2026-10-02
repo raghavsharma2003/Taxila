@@ -15,23 +15,28 @@ test("readUtterance: pata-nahi, just-tell-me and minimal answers in Hinglish, Hi
 });
 
 test("frustration loop after three don't-knows; a real answer resets it", () => {
-  const dk = { read: readUtterance("pata nahi"), at: 0 };
+  const dk = { read: readUtterance("pata nahi") };
   let a = initialAffect();
   a = nextAffect(a, dk); a = nextAffect(a, dk);
   assert.equal(frustrationLoop(a), false);
   a = nextAffect(a, dk);
   assert.equal(frustrationLoop(a), true);
-  assert.equal(nextAffect(a, { read: readUtterance("1/2"), outcome: "correct", itemId: "i1", at: 1 }).dontKnowStreak, 0);
+  assert.equal(nextAffect(a, { read: readUtterance("1/2"), outcome: "correct", itemId: "i1", answer: "1/2" }).dontKnowStreak, 0);
 });
 
-test("gaming: repeated just-tell-me or rapid wrong guesses on one item discount evidence", () => {
+test("gaming: repeated just-tell-me or cycling through different wrong answers discounts evidence", () => {
   let a = initialAffect();
-  for (let i = 0; i < 3; i++) a = nextAffect(a, { read: readUtterance("1/3"), outcome: "incorrect", itemId: "i3", at: i * 2000 });
+  for (const ans of ["1/3", "1/4", "1/5"]) a = nextAffect(a, { read: readUtterance(ans), outcome: "incorrect", itemId: "i3", answer: ans });
   assert.equal(gaming(a), true);
   assert.equal(gamingDiscount(a), 0.5);
-  let slow = initialAffect();
-  for (let i = 0; i < 3; i++) slow = nextAffect(slow, { read: readUtterance("1/3"), outcome: "incorrect", itemId: "i3", at: i * 30_000 });
-  assert.equal(gaming(slow), false, "slow, thoughtful wrong answers are not gaming");
+  let held = initialAffect();
+  for (let i = 0; i < 3; i++) held = nextAffect(held, { read: readUtterance("1/3"), outcome: "misconception", itemId: "i3", answer: "1/3" });
+  assert.equal(gaming(held), false, "repeating one wrong answer is a held belief, not gaming");
+  let asks = initialAffect();
+  for (let i = 0; i < 2; i++) asks = nextAffect(asks, { read: readUtterance("answer batao na"), itemId: "i3" });
+  assert.equal(gaming(asks), true);
+  for (let i = 0; i < 10; i++) asks = nextAffect(asks, { read: readUtterance("1/2"), outcome: "correct", itemId: `x${i}`, answer: "1/2" });
+  assert.equal(gaming(asks), false, "asks age out of the window");
 });
 
 test("wheel-spinning: ten opportunities without three in a row", () => {
@@ -69,6 +74,8 @@ test("safety predicate: self-harm, abuse and fear families in three scripts; idi
   assert.equal(scanSafety("mujhe jeena nahi hai").kind, "self_harm");
   assert.equal(scanSafety("papa hits me when I lose").kind, "abuse");
   assert.equal(scanSafety("मुझे मारते हैं").kind, "abuse");
+  assert.equal(scanSafety("didi mujhe papa maarte hain").kind, "abuse", "actor between mujhe and the verb");
+  assert.equal(scanSafety("मुझे पापा मारते हैं").kind, "abuse");
   assert.equal(scanSafety("school mein sab mujhe chidhate hain, bully karte").kind, "fear");
   assert.equal(scanSafety("beats me, no idea").distress, false);
   assert.equal(scanSafety("1/3 bada hai").distress, false);

@@ -52,11 +52,11 @@ export const pose = ({ item, prefix }) => join(
   item.diagnostic ? "say the options plainly; no lean in your voice toward either" : KIND_NOTE[item.kind],
 );
 
-export const why = ({ ageBand, prefix }) => join(
-  prefix,
-  ageBand === "6-9"
-    ? "ask how they knew — offer two reasons to pick from: the right reason vs the wrong belief (both in LESSON NOW), in either order"
-    : "ask how they knew or why it works; one open question; wait",
+export const why = ({ ageBand, contrast }) => join(
+  "confirm in two or three words only — the reason is theirs to give, so do not explain it",
+  ageBand !== "6-9" ? "ask how they knew or why it works about THIS question; one open question; wait"
+    : contrast ? "ask how they knew — offer two reasons to pick from: the right reason vs the wrong belief (both in LESSON NOW), in either order"
+      : "ask how they knew about THIS question, simply — they may say it in their own words",
   "it is a real question, not a test of whether they were lucky",
 );
 

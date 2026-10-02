@@ -68,8 +68,8 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, warmu
     queue: buildPracticeQueue(kit, { activeMisconceptionIds }),
     // Experienced learners attempt before any explanation, so their skills count as introduced.
     introduced: novice ? [] : kit.skills.map((sk) => sk.id),
-    retaught: [], changedApproach: [], flagged: {}, asserted: [],
-    nextItemId: undefined, tries: 0, unclear: 0, practiced: 0, easier: false,
+    retaught: [], changedApproach: [], flagged: {},
+    nextItemId: undefined, verify: undefined, tries: 0, unclear: 0, practiced: 0, easier: false,
     skills: Object.fromEntries(Object.entries(skills).map(([id, st]) => [id, snapshotSkill(st)])), history,
     affect: initialAffect(), lastBreakTurn: -99, safeguard: null,
     teachbackAsked: false, teachbackTries: 0, teachbackPassed: false,
@@ -183,8 +183,10 @@ function poseNext(s, input, prefix, preferred) {
   s.activeItemId = undefined; s.hintLevel = 0; s.pendingWhy = undefined;
   if (leavePractice(s, kit)) return enterTeachback(s, prefix);
   const queued = s.nextItemId ? findItem(s, kit, s.nextItemId) : null;
-  const item = preferred ?? queued ?? selectNext(s, kit, { easier: s.easier });
-  s.nextItemId = undefined; s.easier = false;
+  const verifying = s.verify ? findItem(s, kit, `diag:${s.verify}`) : null;
+  const item = preferred ?? verifying ?? queued ?? selectNext(s, kit, { easier: s.easier });
+  if (verifying && queued) s.queue = [queued.id, ...s.queue.filter((id) => id !== queued.id)];
+  s.nextItemId = undefined; s.easier = false; s.verify = undefined;
   if (!item) return enterTeachback(s, prefix);
   // A skill nobody has explained yet gets one short explain turn first (novices; experienced attempt first).
   if (!s.introduced.includes(item.skillId)) {
@@ -213,14 +215,31 @@ function practice(s, input, item) {
   return unclear(s, input, item, v, () => afterMiss(s, input, item));
 }
 
+/** Correct answer, wrong reason — the correct-answer trap (rule 3): a misconception flag, not a success. */
+function trap(s, kit, item, misconceptionId) {
+  const m = kit.misconceptions.find((x) => x.id === misconceptionId);
+  if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
+  if (!m || s.retaught.includes(m.id)) return null;
+  s.retaught.push(m.id); s.activeItemId = undefined;
+  return plan("reteach", SH.reteach({ ...m.remediation, again: false }), { skillId: item.skillId, representation: m.remediation.representation });
+}
+
 function afterCorrect(s, input, item) {
-  const { kit } = input;
+  const { kit, cls } = input;
   const unaided = s.hintLevel === 0;
   s.itemsDone.push(item.id); s.practiced += 1;
+  // A reason volunteered with the answer already is the "why" — asking again would be robotic.
+  if (unaided && cls?.reason === "misconception") {
+    const p = trap(s, kit, item, cls.reasonMisconceptionId);
+    if (p) return p;
+  }
+  if (unaided && cls?.reason === "right") return poseNext(s, input, SH.CONFIRM.whyGood);
   if (unaided && shouldAskWhy(s, item, s.skills[item.skillId])) {
     s.pendingWhy = item.id;
-    const mis = kit.misconceptions.find((m) => m.id === item.targetsMisconception) ?? kit.misconceptions[0];
-    return plan("probe", SH.why({ ageBand: s.ctx.ageBand, prefix: SH.CONFIRM.correct }), {
+    // Only a belief this item can actually surface is offered as the wrong reason; an unrelated one
+    // pulled the teacher into a different question (measured in evals/director-sim.mjs).
+    const mis = (item.misconceptions ?? kit.misconceptions).find((m) => m.id === item.targetsMisconception);
+    return plan("probe", SH.why({ ageBand: s.ctx.ageBand, contrast: !!mis }), {
       item, probe: "P2",
       content: [`key idea (right reason): ${whyKey(kit, item.skillId) ?? item.answer}`, ...(mis ? [`wrong belief to listen for: ${mis.belief}`] : [])],
     });
@@ -231,21 +250,15 @@ function afterCorrect(s, input, item) {
 function afterWhy(s, input, item) {
   const { kit, cls } = input;
   s.pendingWhy = undefined;
-  // Correct answer, wrong reason: the correct-answer trap (rule 3) — a misconception, not a success.
-  const m = cls?.outcome === "misconception" ? kit.misconceptions.find((x) => x.id === cls.misconceptionId) : null;
-  if (m) {
-    s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
-    if (!s.retaught.includes(m.id)) {
-      s.retaught.push(m.id); s.activeItemId = undefined;
-      return plan("reteach", SH.reteach({ ...m.remediation, again: false }), { skillId: item.skillId, representation: m.remediation.representation });
-    }
+  if (cls?.outcome === "misconception") {
+    const p = trap(s, kit, item, cls.misconceptionId);
+    if (p) return p;
   }
   return poseNext(s, input, verdict(cls) === "right" ? SH.CONFIRM.whyGood : SH.CONFIRM.whyMissed);
 }
 
 function afterMiss(s, input, item) {
   const { kit, cls } = input;
-  s.tries += 1;
   const m = cls?.outcome === "misconception" ? (item.misconceptions ?? kit.misconceptions).find((x) => x.id === cls.misconceptionId) : null;
   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
   // P21: no 3-in-a-row in ~10 opportunities — a different approach, not more of the same.
@@ -261,7 +274,6 @@ function afterMiss(s, input, item) {
     return plan("reteach", SH.reteach({ ...m.remediation, again: true }), { item, representation: m.remediation.representation });
   }
   s.hintLevel = Math.min(4, s.hintLevel + 1);
-  if (s.hintLevel === 4) s.asserted.push(item.id);
   return plan("hint", SH.hint({ level: s.hintLevel, rungShape: item.hints[s.hintLevel - 1], askedForAnswer: cls?.flags?.asksForAnswer }), { item });
 }
 
@@ -314,6 +326,12 @@ function decide(s, input, item) {
     return plan("repair", SH.resumeAfterSafeguard(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
   }
   if (s.phase === "done") return toWrap(s, { stopping: true });
+  // A wrong belief voiced outside a keyed item is a hypothesis: flag it, and verify it with its spoken
+  // diagnostic next (fusion rule 2: a detector triggers a verifying probe, it never decides alone).
+  if (cls?.voiced) {
+    s.flagged[cls.voiced] = (s.flagged[cls.voiced] ?? 0) + 1;
+    if (!s.itemsDone.includes(`diag:${cls.voiced}`)) s.verify = cls.voiced;
+  }
   // 2. The child wants to stop: whatever was mid-way is over (NEVER MANIPULATE — no holding at goodbye).
   if (flags.wantsToStop) return toWrap(s, { stopping: true });
   // 3. Choices offered by a break.
@@ -341,7 +359,8 @@ function decide(s, input, item) {
 /**
  * One director step.
  * @param {any} prev  lesson state (not mutated)
- * @param {{ event: "start"|"turn", kit: any, cls?: any, chipId?: string, now?: number }} input
+ * @param {{ event: "start"|"turn", kit: any, cls?: any, chipId?: string, answer?: string, now?: number }} input
+ *   answer: the child's normalized words (affect counters tell a held belief from option cycling)
  */
 export function step(prev, input) {
   const s = structuredClone(prev);
@@ -349,7 +368,7 @@ export function step(prev, input) {
   if (input.event !== "start") s.turn += 1;
   s.minutes = Math.round((now - s.startedAt) / 6000) / 10;
   if (input.event === "turn") {
-    s.affect = nextAffect(s.affect, { read: input.cls?.flags ?? {}, outcome: input.cls?.outcome, itemId: s.activeItemId, at: now });
+    s.affect = nextAffect(s.affect, { read: input.cls?.flags ?? {}, outcome: input.cls?.outcome, itemId: s.activeItemId, answer: input.answer });
   }
   const p = decide(s, input, findItem(s, input.kit, s.activeItemId));
 
@@ -417,8 +436,18 @@ export function evidenceFrom(s, cls, kit, { leaked = false, discount = 1 } = {})
   if (!item || s.hintLevel >= 4) return [];
   const why = s.pendingWhy === item.id;
   const probe = why ? "P2" : probeFor(item);
-  let w = PROBE_WEIGHT[probe] * ((item.kitVerified ?? kit.verified) ? 1 : 0.5) * discount;
+  const kitFactor = (item.kitVerified ?? kit.verified) ? 1 : 0.5;
+  let w = PROBE_WEIGHT[probe] * kitFactor * discount;
   // Young children often cannot verbalise what they do understand: a missed "why" is weak evidence.
   if (why && cls.outcome !== "correct" && cls.outcome !== "misconception") w *= 0.5;
-  return [{ skillId: item.skillId, itemId: item.id, probe, outcome: cls.outcome, ...mis, hintsUsed: leaked ? 4 : s.hintLevel, weight: round2(w) }];
+  const hintsUsed = leaked ? 4 : s.hintLevel;
+  const rows = [{ skillId: item.skillId, itemId: item.id, probe, outcome: cls.outcome, ...mis, hintsUsed, weight: round2(w) }];
+  // A reason volunteered with an unaided correct answer is a why-probe (P2) the child ran on themself.
+  if (probe !== "P2" && cls.outcome === "correct" && hintsUsed === 0 && cls.reason) {
+    rows.push({
+      skillId: item.skillId, itemId: item.id, probe: "P2", outcome: cls.reason === "right" ? "correct" : "misconception",
+      ...(cls.reasonMisconceptionId ? { misconceptionId: cls.reasonMisconceptionId } : {}), hintsUsed: 0, weight: round2(PROBE_WEIGHT.P2 * kitFactor * discount),
+    });
+  }
+  return rows;
 }

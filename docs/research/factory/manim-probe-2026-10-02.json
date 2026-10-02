@@ -1,0 +1,263 @@
+{
+  "date": "2026-10-02",
+  "manim": "Manim Community v0.21.0",
+  "quality": "-ql 854x480@15",
+  "results": [
+    {
+      "model": "taxila-codex",
+      "concept": "c1-fraction",
+      "rounds": [
+        {
+          "round": 0,
+          "gen_ms": 34345,
+          "out_tokens": 4061,
+          "in_tokens": 316,
+          "render_ok": false,
+          "render_ms": 1268,
+          "plan_s": 30,
+          "error": "╰──────────────────────────────────────────────────────────────────────────────╯ | TypeError: manim.mobject.geometry.arc.AnnularSector.__init__() got multiple  | values for keyword argument 'outer_radius'"
+        },
+        {
+          "round": 1,
+          "gen_ms": 12350,
+          "out_tokens": 1936,
+          "in_tokens": 1955,
+          "render_ok": true,
+          "render_ms": 5736,
+          "plan_s": 30,
+          "video_s": 30.133008
+        }
+      ],
+      "pass_first": false,
+      "pass_any": true
+    },
+    {
+      "model": "taxila-codex",
+      "concept": "c2-place-value",
+      "rounds": [
+        {
+          "round": 0,
+          "gen_ms": 29203,
+          "out_tokens": 4033,
+          "in_tokens": 315,
+          "render_ok": true,
+          "render_ms": 5129,
+          "plan_s": 30,
+          "video_s": 30.066341
+        }
+      ],
+      "pass_first": true,
+      "pass_any": true
+    },
+    {
+      "model": "taxila-codex",
+      "concept": "c3-area",
+      "rounds": [
+        {
+          "round": 0,
+          "gen_ms": 33686,
+          "out_tokens": 4457,
+          "in_tokens": 313,
+          "render_ok": true,
+          "render_ms": 5732,
+          "plan_s": 30,
+          "video_s": 30.132682
+        }
+      ],
+      "pass_first": true,
+      "pass_any": true
+    },
+    {
+      "model": "taxila-codex",
+      "concept": "c4-reflection",
+      "rounds": [
+        {
+          "round": 0,
+          "gen_ms": 24062,
+          "out_tokens": 3249,
+          "in_tokens": 303,
+          "render_ok": true,
+          "render_ms": 5530,
+          "plan_s": 30,
+          "video_s": 30.066016
+        }
+      ],
+      "pass_first": true,
+      "pass_any": true
+    },
+    {
+      "model": "taxila-codex",
+      "concept": "c5-triangle-sum",
+      "rounds": [
+        {
+          "round": 0,
+          "gen_ms": 40263,
+          "out_tokens": 4655,
+          "in_tokens": 292,
+          "render_ok": false,
+          "render_ms": 874,
+          "plan_s": 30,
+          "error": "╰──────────────────────────────────────────────────────────────────────────────╯ | TypeError: manim.mobject.geometry.arc.AnnularSector.__init__() got multiple  | values for keyword argument 'outer_radius'"
+        },
+        {
+          "round": 1,
+          "gen_ms": 10371,
+          "out_tokens": 1634,
+          "in_tokens": 1858,
+          "render_ok": true,
+          "render_ms": 5063,
+          "plan_s": 30,
+          "video_s": 30.133008
+        }
+      ],
+      "pass_first": false,
+      "pass_any": true
+    },
+    {
+      "model": "taxila-fast",
+      "concept": "c1-fraction",
+      "rounds": [
+        {
+          "round": 0,
+          "gen_ms": 24475,
+          "out_tokens": 3337,
+          "in_tokens": 316,
+          "render_ok": true,
+          "render_ms": 4953,
+          "plan_s": 30,
+          "video_s": 30
+        }
+      ],
+      "pass_first": true,
+      "pass_any": true
+    },
+    {
+      "model": "taxila-fast",
+      "concept": "c2-place-value",
+      "rounds": [
+        {
+          "round": 0,
+          "gen_ms": 18796,
+          "out_tokens": 3136,
+          "in_tokens": 315,
+          "render_ok": true,
+          "render_ms": 4194,
+          "plan_s": 30,
+          "video_s": 30
+        }
+      ],
+      "pass_first": true,
+      "pass_any": true
+    },
+    {
+      "model": "taxila-fast",
+      "concept": "c3-area",
+      "rounds": [
+        {
+          "round": 0,
+          "gen_ms": 20696,
+          "out_tokens": 3069,
+          "in_tokens": 313,
+          "render_ok": true,
+          "render_ms": 4494,
+          "plan_s": 30,
+          "video_s": 29.999674
+        }
+      ],
+      "pass_first": true,
+      "pass_any": true
+    },
+    {
+      "model": "taxila-fast",
+      "concept": "c4-reflection",
+      "rounds": [
+        {
+          "round": 0,
+          "gen_ms": 26807,
+          "out_tokens": 3683,
+          "in_tokens": 303,
+          "render_ok": true,
+          "render_ms": 4389,
+          "plan_s": 30,
+          "video_s": 30
+        }
+      ],
+      "pass_first": true,
+      "pass_any": true
+    },
+    {
+      "model": "taxila-fast",
+      "concept": "c5-triangle-sum",
+      "rounds": [
+        {
+          "round": 0,
+          "gen_ms": 27422,
+          "out_tokens": 3780,
+          "in_tokens": 292,
+          "render_ok": true,
+          "render_ms": 4151,
+          "plan_s": 30,
+          "video_s": 30
+        }
+      ],
+      "pass_first": true,
+      "pass_any": true
+    }
+  ],
+  "method": "node --env-file=.env.local docs/research/factory/manim-probe.mjs --manim <venv>/bin/manim; Responses API, codex reasoning medium, fast default; render -ql 854x480@15 on a 4-vCPU container; <=2 repair rounds fed the traceback. Contact sheets (12 frames) rated by eye by one rater (the research agent): correct = maths/science shown is right; collision = any label overlapping another label or a shape it does not annotate in any of 12 frames.",
+  "eye_rating": {
+    "taxila-codex": {
+      "c1-fraction": {
+        "correct": true,
+        "collision": true
+      },
+      "c2-place-value": {
+        "correct": true,
+        "collision": true
+      },
+      "c3-area": {
+        "correct": true,
+        "collision": true
+      },
+      "c4-reflection": {
+        "correct": true,
+        "collision": true
+      },
+      "c5-triangle-sum": {
+        "correct": false,
+        "collision": false,
+        "note": "the three moved corners overlap and do not tile a straight angle: shows the claim without showing it"
+      }
+    },
+    "taxila-fast": {
+      "c1-fraction": {
+        "correct": true,
+        "collision": false
+      },
+      "c2-place-value": {
+        "correct": true,
+        "collision": false
+      },
+      "c3-area": {
+        "correct": true,
+        "collision": false
+      },
+      "c4-reflection": {
+        "correct": true,
+        "collision": true,
+        "note": "40° labels sit on the arcs"
+      },
+      "c5-triangle-sum": {
+        "correct": true,
+        "collision": true,
+        "note": "60° labels inside wedges overlap"
+      }
+    }
+  },
+  "render_timing_720p30_1080p60": {
+    "c2 codex 720p30 s": 9.4,
+    "c2 codex 1080p60 s": 30.2,
+    "c4 codex 720p30 s": 10.5
+  },
+  "devanagari": "Text(font=Noto Sans Devanagari) shapes गुरुत्वाकर्षण, क्ष, त्र correctly via Pango (requires the font in the image)."
+}

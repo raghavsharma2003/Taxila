@@ -115,3 +115,34 @@ test("classify: model flags merge in, and an outage costs evidence, never the tu
   assert.equal(down.source, "error");
   assert.equal(calls.length, 3, "one call, then the failed call and its single retry");
 });
+
+test("parse: a reason volunteered with a correct answer is labelled right or as the misconception it expresses", () => {
+  const t = targetOn("i3");
+  assert.deepEqual(t.ideas, K.expectations, "the kit's key ideas are the yardstick for reasons");
+  const right = parseClassification({ match: "key", reason: "right", confidence: 0.9, ...flags }, t);
+  assert.equal(right.reason, "right");
+  const trap = parseClassification({ match: "key", reason: "m1", confidence: 0.9, ...flags }, t);
+  assert.equal(trap.outcome, "correct");
+  assert.equal(trap.reason, "misconception");
+  assert.equal(trap.reasonMisconceptionId, M1);
+  assert.equal(parseClassification({ match: "other_wrong", reason: "right", confidence: 0.9, ...flags }, t).reason, undefined, "a reason only counts beside a correct answer");
+});
+
+test("classify: the teacher's last turn goes to the classifier so an answer to another question is not evidence", async () => {
+  reply = { match: "no_attempt", reason: "none", confidence: 0.9, ...flags };
+  const r = await classify({ target: targetOn("i3"), childText: "1/4 bada hai", heard: "Ab 1/4 aur 1/8 mein kaunsa bada hai?", typed: true, classLevel: 4 });
+  assert.match(calls[0].body.messages[1].content, /WHAT THE TEACHER LAST SAID: Ab 1\/4 aur 1\/8/);
+  assert.match(calls[0].body.messages[0].content, /DIFFERENT question/);
+  assert.equal(r.outcome, "no_evidence");
+});
+
+test("parse: with no keyed item a voiced wrong belief is a flag, never graded evidence", () => {
+  const s = stateOn(undefined);
+  const t = targetFor(s, K, null);
+  assert.equal(t.mode, "none");
+  assert.equal(t.misconceptions.length, K.misconceptions.length);
+  const r = parseClassification({ belief: "m1", ...flags }, t);
+  assert.equal(r.outcome, "no_evidence");
+  assert.equal(r.voiced, K.misconceptions[0].id);
+  assert.equal(parseClassification({ belief: "none", ...flags }, t).voiced, undefined);
+});

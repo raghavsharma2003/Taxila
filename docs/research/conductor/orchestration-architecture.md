@@ -868,3 +868,509 @@ Where real isolated compute *is* needed:
 - Sora 2 on Azure Foundry pricing — https://azure.microsoft.com/en-us/blog/sora-2-now-available-in-azure-ai-foundry/ [S]
 - Claude Opus/Sonnet 5.5 on Foundry pricing — https://technspire.com/en/blog/claude-opus-5-5-foundry-opus-5-migration-cost-math [S]
 - Internal: `docs/ARCHITECTURE.md`; `docs/research/learning-science.md` §6; `docs/research/learner/kt-algorithms.md`; `docs/research/learner/vibe-temperament.md`; `docs/research/design/parent-experience.md`; `docs/research/tech-and-market.md` §1.9; `context/decisions.md`; `context/rejected.md`.
+
+---
+
+## Architect review
+
+**Date:** 2026-10-02 · **Reviewer stance:** adversarial systems architect. Read against `context/decisions.md`,
+`context/measurements.md`, `context/rejected.md`, the repo `CLAUDE.md` binding constraints and the sibling
+conductor docs (`day-cycle.*`, `student-workspace.*`, `parent-loop.*`, `observability-evals.md`).
+Tags as above: **[V]** checked this session against the primary source, **[S]** secondary, **[U]** estimate or
+design default to measure, **[repo]** a fact in this repository.
+
+**Verdict.** The core shape is right and should survive: a pure reducer, a state row per child, one event log,
+an outbox written in the same transaction, idempotency keys derived from facts, and a code planner that always
+exists. Four things are wrong enough to block M0:
+1. **The host premise is stale.** The design is laid out for Vercel sin1 next to a Singapore Neon. The
+   repo has since moved to Azure Container Apps in eastus2 and Neon US East.
+2. **The event log can silently skip events**, because `seq` order is not commit order.
+3. **Three of the "atomic" hand-offs are not atomic**: ticker → event, job → `job.done`, and step → next step.
+4. **The live codegen race contradicts the human-review law**, so it can only spend money, never put a game
+   in front of a child.
+
+Beyond those, the v1 scope is roughly twice what a first cohort needs, and several child-facing moments
+(admission waits, plan churn, safety holds, hitting the cap mid-homework) are left undesigned.
+
+### R0. Findings on one screen
+
+Severity: **P0** = fix before M0 ships. **P1** = fix before more than ~1k children or before the named
+milestone. **P2** = simplification or clean-up.
+
+| id | sev | finding | fix (section) |
+|---|---|---|---|
+| A1 | P0 | §7.3, §1 and C5 assume Vercel functions (sin1) and the Neon HTTP driver. Binding decisions `azure-only-compute` and `hosting-azure-container-apps` moved web+API to ACA `taxila-web` (eastus2, min 1 / max 5, HTTP-scaled), and Neon to `aws-us-east-1` reached over a `pg` Pool at 9-12 ms/query [repo] | Rebase lanes on ACA: a separate `taxila-worker` app for ticker and claims (R1) |
+| A2 | P0 | `student_event.seq` is an identity column. A sequence value is taken before commit, so a slower transaction can commit a *lower* seq after the step has already advanced `cursorSeq` past it. That event is never folded [V event-driven.io] | Per-child sequence under a row lock (R2.1) |
+| A3 | P0 | Ticker marks `fired_at` and *then* ingests `clock.wakeup` in a separate step. A crash between the two loses the wakeup forever (the dual write that C4 exists to forbid) | One statement / one function (R2.2) |
+| A4 | P0 | Job completion and the `job.done`/`job.failed` event are not specified as one transaction. If the event is lost, `pending.jobs` never clears and a plan is never adopted | `complete_job()` (R2.3) |
+| A5 | P0 | Events that arrive while a step holds the lease are noticed only by the next ticker or event, so a child can wait up to a minute after `lesson.ended` | `conductor_commit` returns `has_more` from inside the transaction (R2.4) |
+| A6 | P0 | §5.2 live race: a `forge.build` (T2/T3 generated code) result is pushed to the device as `module.ready`. But §5.3, ARCHITECTURE §1.4 and day-cycle N5 all require human review before any generated code reaches a child. The race can never deliver, so every library miss is pure spend | Live path limited to T1 params + scene DSL. Codegen only offline into a review queue (R3.1) |
+| A7 | P0 | Banned models in the design: Claude Sonnet 5.5 (§5.3 degrade, §9.1, §16 q5) and `gpt-5.6-terra` (§4.5 weekly review, §5.3, §9.4). The allowed list has sol/luna/codex only [repo `azure-only-compute`, `claude-on-foundry-credits`] | Replace terra→`taxila-brain` (sol) or `taxila-fast` (luna). Delete the Sonnet bake-off (R3.6) |
+| A8 | P1 | Batch lane: Azure Batch needs a separate `GlobalBatch`/`DataZoneBatch` *deployment*. The supported-model table does not list the gpt-5.6 family. Jobs past 24 h are not expired, so the T-2 h standard re-run pays twice unless the batch is cancelled [V] | Drop Batch from v1 (saves ≈ $0.04/child-month). If revived, cancel on fallback (R3.4) |
+| A9 | P1 | `report.weekly` idem key includes `ledgerHash`, so every lesson in the 30 h window mints a new report job: N reports paid per week, and the last writer wins | Fixed data cutoff; key without the hash (R3.4) |
+| A10 | P1 | Thundering herd: every IST child shares `day_start 05:30`, `night`, and Sunday `weekly_report`. Ticker drains 500/min. At 100k children that is a 200-minute backlog plus a TPM spike on luna | Per-child jitter, loop-until-empty drain, plan only recently active children (R3.2) |
+| A11 | P1 | Cost governor reserves on every model call. That includes per-turn Director calls, which hit hot `global`/`deployment` budget rows and the `rate_bucket` row. This adds 2 round trips per child turn and a single-row lock at peak | Reserve per lesson block; exact PG admission only for realtime session starts (R3.3) |
+| A12 | P1 | Realtime leaks: TV/sibling noise triggers server VAD (teacher talks to the TV and bills tokens). Sessions hard-stop at 60 min [V]. Every reconnect after a network drop is a new session start against the 10 RPM cap | Idle hang-up, session renewal, reconnect priority (R3.3) |
+| A13 | P1 | Single points of failure not named: one Neon compute for ingest + Director + queue + governor; one realtime deployment in one region; **one human** to clear `safety_hold` and to review Forge output | R4 |
+| A14 | P1 | Five overlapping specs for the same facts across sibling docs: two `DayPhase` enums, two `DayPlan` types, `day_plan` vs `conductor_state.plan`, `day_event` vs `student_event`, `notification_log` vs `notification`, `wrapAt` vs `hardStopAt`, cap = lesson minutes vs all slots | One owner per fact, applied to the specs (R5) |
+| A15 | P1 | Replay is not deterministic as written. `lazyBrief` reads live KT, and `now` is per batch, but neither is recorded. The nightly drift alarm (§11) will page on every child whose mastery changed | Record `now` + brief digest *and value* in `decision_log` (R2.8) |
+| A16 | P1 | Poison-event quarantine advances the cursor. If the poisoned event is `parent.consent_changed{granted:false}`, `parent.pause` or `safety.incident`, skipping it continues the day *against* a higher authority (§5.9) | Authority events never skip; they fail into a hold (R2.9) |
+| A17 | P2 | `conductor_commit` parses commands out of jsonb in plpgsql. That made sense for the HTTP driver's non-interactive transactions. With a `pg` Pool it is the hardest code in the system to test and evolve (every new `Command` kind is a migration) | Plain interactive transaction in JS (R6) |
+| A18 | P2 | Rainbow reducer versions, Batch lane, KEDA scaler, generic concurrency keys, OTel GenAI spans, 400-day fold, nightly replay at M0 | Defer (R6) |
+| A19 | P1 | Child experience gaps: admission waits, plan churn under the child, broken teacher promises, punitive-feeling safety hold, the cap landing mid-homework on a test eve, restart after a network drop, a voice change on degrade | R7 |
+
+---
+
+### R1. Rebase the substrate on what is actually deployed
+
+**What changed** [repo]:
+- `hosting-azure-container-apps` supersedes `deploy-vercel-single-function`; the Vercel project is paused.
+- `db-driver-latency-2026-10-02`: Neon moved to `aws-us-east-1` beside eastus2. Over a persistent `pg` Pool
+  a query costs 9-12 ms; over the HTTP driver it cost ~230 ms.
+- §7.1's justification ("one HTTP round trip from Vercel to Neon in Singapore") and §7.3's "fast lane stays
+  in Vercel sin1 next to the DB" are therefore both obsolete.
+
+**What the new host changes, mechanically:**
+
+| concern | Vercel (as designed) | ACA (as deployed) | consequence |
+|---|---|---|---|
+| post-response work | `waitUntil` promises "have the same timeout as the function itself. If the function times out, the promises will be cancelled" [V Vercel] | no request timeout, but a scale-in sends SIGTERM and SIGKILLs after **30 s** [V ACA] | `taxila-web` scales on HTTP concurrency, so its replicas disappear whenever traffic drops. Background work must not live there beyond a ≤ 10 s post-response step |
+| ticker | needs Pro cron or an external host | any always-on process | an in-process loop in a **dedicated `taxila-worker`** app (min 1), leader-elected with `pg_try_advisory_lock` |
+| advisory locks, LISTEN/NOTIFY | n/a over HTTP | **not supported through Neon's pooler** (transaction mode: "LISTEN / NOTIFY … Session-level advisory locks" unsupported) [V Neon] | the worker uses the **direct (unpooled)** Neon endpoint; `taxila-web` keeps the pooled one |
+| interactive transactions | not on the HTTP driver | yes, on the `pg` Pool | the plpgsql jsonb commit is no longer forced (A17) |
+| DBOS / pg-boss | rejected because "serverless" (§7.5) | long-lived Node processes exist now | the rejection's premise is gone; see R6 for whether to adopt |
+
+**Revised lanes (replaces §7.3):**
+
+| lane | host | claimer | max run | jobs |
+|---|---|---|---|---|
+| `inline` | `taxila-web` request path | none; synchronous in the request | ≤ 10 s, then hand off | ingest + one `step()` attempt; `brief.refresh` for a lesson start |
+| `fast` | **`taxila-worker`** (ACA app, min 1, max 2 at v1, direct DB connection) | in-process poll loop, 1 s idle backoff, woken by `NOTIFY job_ready` | 120 s by policy | `conductor.step`, `plan.*`, `forge.spec`, `homework.prepare`, `memory.consolidate`, `notify.send`, ticker |
+| `slow` | same `taxila-worker` at v1; split into an ACA *job* only when CPU-heavy work (image post-processing, headless renders) starves the fast loop | worker | 30 min | `forge.image`, `memory.nightly`, `kt.refold`, reports |
+| `sandbox` | ACA worker driving ACA Sandboxes / dynamic sessions (M3) | worker | per build | `forge.build` (offline only, R3.1) |
+
+Worker shutdown contract: on SIGTERM, stop claiming, let in-flight jobs heartbeat for ≤ 25 s, then exit. Any
+job still running is recovered by lease expiry, and its checkpointed steps (§7.5) skip paid calls on resume.
+
+**Cross-region note.** Users are in India; app, DB and Azure OpenAI are in the US. Ingest → decision adds
+one India↔eastus2 RTT (~200-250 ms [U, not yet measured from India]). That is fine for the Conductor. It
+matters only for the Director's per-turn route, which `hosting-azure-container-apps` already flags for
+measurement. Nothing in the Conductor sits on the voice critical path.
+
+---
+
+### R2. Correctness fixes to the substrate
+
+#### R2.1 Event order must be commit order (A2)
+
+Ordering by a global sequence is unsafe because "sequences are evaluated before the transaction commit", so
+a faster transaction can take a higher number and commit first. A reader that advances past it then never
+sees the slower one [V event-driven.io]. Per-child volume is tiny (tens of events a day), so serialize
+per-child ingest on one row and take the sequence there:
+
+```sql
+create table child_seq (child_id uuid primary key references child(id) on delete cascade,
+                        last bigint not null default 0,
+                        pending_since timestamptz);          -- set on ingest, cleared by commit (R2.4)
+alter table student_event alter column seq drop identity;   -- seq is now per child, assigned below
+
+create or replace function ingest_event(p_child uuid, p_id text, p_type text, p_source text, p_idem text,
+  p_occurred timestamptz, p_corr text, p_cause text, p_body jsonb) returns bigint language plpgsql as $$
+declare s bigint;
+begin
+  if exists (select 1 from student_event where child_id=p_child and idem_key=p_idem) then return null; end if;
+  update child_seq set last=last+1, pending_since=coalesce(pending_since, now())
+   where child_id=p_child returning last into s;            -- row lock held to commit → per-child commit order
+  insert into student_event (child_id, seq, id, type, source, idem_key, occurred_at, correlation_id, causation_id, body)
+  values (p_child, s, p_id, p_type, p_source, p_idem, p_occurred, p_corr, p_cause, p_body)
+  on conflict (child_id, idem_key) do nothing;              -- a concurrent duplicate leaves a harmless gap
+  return s;
+end $$;
+```
+
+The row lock on `child_seq` is held until the ingesting transaction commits, so seq N+1 cannot be assigned
+before N is committed. Readers may see gaps but never an out-of-order commit. That includes the parent API's
+"settings row + event in one transaction" (§6), which simply holds the lock a few ms longer.
+
+#### R2.2 Firing a wakeup is one statement (A3)
+
+```sql
+-- ticker (leader only), loop until it returns 0 rows
+with d as (select child_id, dedupe, reason from wakeup
+            where fired_at is null and due_at <= now()
+            order by due_at for update skip locked limit 500),
+     f as (update wakeup w set fired_at = now() from d
+            where w.child_id = d.child_id and w.dedupe = d.dedupe returning w.child_id, w.dedupe, w.reason)
+select f.child_id,
+       ingest_event(f.child_id, gen_ulid(), 'clock.wakeup', 'clock', 'wake:'||f.dedupe, now(),
+                    'wake:'||f.dedupe, null, jsonb_build_object('reason', f.reason, 'wakeupId', f.dedupe))
+  from f;
+```
+
+The update and the inserts commit together or not at all. (`gen_ulid()` is a small SQL function or
+`pgcrypto`-based; any unique text works because the idem key, not the id, dedupes.) The caller then
+enqueues `conductor.step` for the returned child ids. Losing *that* enqueue is harmless, because
+`child_seq.pending_since` (R2.4) is swept.
+
+#### R2.3 Finishing a job and telling the Conductor is one transaction (A4)
+
+```sql
+create or replace function complete_job(p_job bigint, p_attempt int, p_ok boolean, p_result text,
+                                        p_error text, p_final boolean) returns boolean language plpgsql as $$
+declare j job%rowtype;
+begin
+  update job set status = case when p_ok then 'done' when p_final then 'dead' else 'retry' end,
+         result_ref = p_result, last_error = p_error, lease_until = null,
+         finished_at = case when p_ok or p_final then now() end,
+         run_after = case when not p_ok and not p_final
+                          then now() + make_interval(secs => least(power(2, attempts), 300) * (0.8 + random()*0.4)) end
+   where id = p_job and attempts = p_attempt and status = 'running'
+   returning * into j;
+  if not found then return false; end if;                    -- fenced: a zombie attempt changes nothing
+  if j.child_id is not null and (p_ok or p_final) then
+    perform ingest_event(j.child_id, gen_ulid(), case when p_ok then 'job.done' else 'job.failed' end, 'agent',
+                         'job:'||j.id||':'||case when p_ok then 'done' else 'failed' end, now(),
+                         j.correlation_id, 'job:'||j.id,
+                         jsonb_build_object('jobId', j.id::text, 'kind', j.kind, 'resultRef', p_result,
+                                            'error', p_error, 'final', p_final));
+  end if;
+  return true;
+end $$;
+```
+
+Library-level jobs (no `child_id`, e.g. Forge) fan out to the children that asked by a separate `module.ready`
+read model, not by events into every mailbox.
+
+#### R2.4 No lost wake-ups between steps (A5)
+
+Two fixes:
+- `conductor_commit` ends with
+  `update child_seq set pending_since = case when last > p_cursor then pending_since else null end where child_id = p_child returning (last > p_cursor) as has_more`.
+  `step()` loops while `has_more`. The new event is visible because READ COMMITTED reads use a statement
+  snapshot, and the competing ingest's own `step()` attempt blocks on the `conductor_state` row lock until
+  this commit releases the lease.
+- Backstop sweep by the ticker:
+  `select child_id from child_seq where pending_since < now() - interval '30 seconds'`
+  (partial index `where pending_since is not null`). This is O(dirty children), not O(children).
+
+#### R2.5 A lease belongs to one invocation, not one worker (A5 sibling)
+
+`acquireLease(childId, WORKER_ID, 30)` accepts `lease_owner = $2` as already mine. Two concurrent requests in
+one Node process (always the case on ACA, and on Vercel fluid compute) share `WORKER_ID`, so both "hold"
+the lease. Use a random token per `step()` call (`lease_owner = randomUUID()`) and drop the
+`or lease_owner=$2` clause. The CAS still guarantees correctness, but the lease exists to stop duplicate
+model spend, and as written it does not.
+
+#### R2.6 Cancellation (A4 sibling)
+
+- §7.1's cancel matches `idem_key` only. Keys are unique per *kind*, so the cancel must also match `kind`
+  and `child_id`: `where child_id=p_child and (kind, idem_key) in (…)`.
+- A `running` job cannot be cancelled. Add `cancel_requested boolean` that the commit sets for running
+  jobs. Workers check it at every `durableStep` boundary and in `complete_job` before emitting any child-facing
+  effect. This matters for consent revocation (§10 row "consent revoked mid-flight"): checking at claim is
+  not enough for a 3-minute consolidation.
+
+#### R2.7 Dead keys must be revivable
+
+`on conflict (kind, idem_key) do nothing` means a `dead` or `cancelled` `memory.consolidate:{lessonId}` can
+never run again, and the reducer's re-emit silently no-ops. Use:
+
+```sql
+on conflict (kind, idem_key) do update set status='queued', attempts=0, run_after=now(), last_error=null
+  where job.status in ('dead','cancelled') and excluded.input->>'revive' = 'true'
+```
+
+The reducer sets `revive` only on an explicit cause (operator redrive, consent re-granted, a new day for a
+plan). Otherwise duplicates stay no-ops.
+
+#### R2.8 Make replay actually replayable (A15)
+
+`decide` is pure only relative to its inputs. Two inputs are not stored: `now` (one per batch) and the brief
+read by `lazyBrief` (live KT, which changes as evidence lands). Store both in `decision_log`:
+`{ now, briefDigest, briefValue }`. The value can be the ≤ 600-token ChildBrief, or only the fields the fired
+rules touched. Replay must feed back the recorded values. Without that, the §11 drift alarm compares
+today's KT to last week's decision and fires a P1 on every learning child. Add an invariant: a replay that
+reads anything not in `(event, state, recorded now, recorded brief, cfg@reducerVersion)` fails the test.
+
+#### R2.9 Authority events never get quarantined past (A16)
+
+Quarantine is allowed only for events whose types rank below the cost governor in §5.9. If
+`safety.*`, `parent.consent_changed`, `parent.pause` or `parent.setting_changed` throws three times:
+- a hard-coded **fail-safe handler** runs. It is a separate, minimal function with no dependencies: safety →
+  `safety_hold`; consent revoked → cancel jobs of that purpose; pause → `paused`; limit lowered → apply it.
+- the child's actor stays in that conservative state until an operator replays. Continuing the day while
+  ignoring a revocation is worse than stopping it.
+
+---
+
+### R3. Cost blowups
+
+#### R3.1 The live codegen race cannot deliver; remove it from the live path (A6)
+
+§5.2 sends `module.requested` at every lesson start. Any library miss becomes a `forge.*` job "with that
+deadline", and if a `forge.build` finishes in time the device gets `module.ready`. Three binding rules forbid
+that last step:
+- ARCHITECTURE §1.4: "free-form generated HTML (T3) is offline-only, validated headlessly and human-reviewed".
+- §5.3 itself: "human review before library promotion".
+- day-cycle N5: "never served to a child the next morning unreviewed".
+
+So on the live path the race only buys a build that no child can see until a human approves it. At launch
+the library is empty, so *every* lesson start misses. Codegen with up to 10 fix rounds costs minutes and
+dollars per artefact (§5.3, tech-and-market §3), against ≈ $3 of monthly revenue per child.
+
+Corrected live path:
+
+| need during a lesson | allowed live | latency | gate |
+|---|---|---|---|
+| configure an existing engine (T1) | `forge.spec` on luna | 1-3 s [U] | engine zod schema + param ranges |
+| compose a scene from the DSL (T2) | luna, validated by the renderer schema | seconds | renderer schema; no free code |
+| illustration | **library or night-prefetched only**; gpt-image-2 took 23 s for one low-quality image [repo measurement] | n/a live | label overlay, classifier |
+| new game (T3 codegen) | **never live.** A miss writes `forge_request(objective, engine_gap, demand_count)`; the night/offline Forge builds the most-demanded gaps into the review queue | days | human review → library |
+
+"A game is built while she teaches" becomes true for T1/T2 within a lesson and for T3 across children.
+Measure CM4 on that definition, and do not market the stronger claim.
+
+Also, `specHash` must exclude personalisation (names, interest skins), which C8 already says. Add a
+validator rule: a `forge.*` input containing any `ChildBrief` field outside the Forge projection
+(student-workspace W8) is rejected at enqueue. Otherwise the cache key cardinality explodes and the hit rate
+goes to zero.
+
+#### R3.2 The night is a thundering herd (A10)
+
+- **Jitter.** `day_start`, `night`, `weekly_report` and night planning get a per-child offset
+  `hash(childId) mod window` (e.g. night planning spread over 22:30-04:30, reports over the parent's chosen
+  hour). Wakeup dedupe keys stay semantic, and only `due_at` moves.
+- **Drain until empty.** The ticker loops the R2.2 statement while it returns 500 rows. It does not wait a
+  minute per 500.
+- **Plan only the living.** `plan.day` at night runs only for children active in the last 7 days. Everyone
+  else gets the code planner synchronously at `app.opened`. That cuts LLM plans and Forge prefetch for the
+  long tail of dormant accounts, which in consumer edtech is most accounts [U].
+- **Global Forge budget.** Prefetch (day-cycle N3: ≤ 2 topics/child/night) must resolve to *library keys*
+  first and be deduped across children before any spend: `select key, count(*) from tomorrow_needs group by key
+  order by count desc`, then build down the list until `budget(scope='global', scope_id='forge', period='day:…')`
+  is exhausted. Per-child prefetch of images at medium quality (≈ $0.053 each [S]) is 2 × 30 × $0.053 ≈
+  **$3.2/child-month**, which exceeds the revenue line on its own. Library-first is the only version that fits.
+- **TPM.** Night planning for 100k children at ~7k tokens each is ~700M tokens. Spread over 6 h that is
+  ~2M tokens/min on `taxila-fast`. Check the deployment's TPM before M2; the Batch alternative is not
+  available for gpt-5.6 (R3.4).
+
+#### R3.3 Live voice: where the real money leaks (A11, A12)
+
+| leak | mechanism | fix |
+|---|---|---|
+| noise-driven turns | server VAD fires on TV, siblings or a pressure cooker, and the teacher answers the room. Each response bills audio-out, the dominant cost line (§9.1 floor $1.38/45 min is audio-out alone) | Director idle rule: after 2 consecutive turns with no kit-relevant child utterance, or 90 s with no child speech, the teacher wraps ("main yahin hoon, jab ready ho tap karna"), and the client closes the WebRTC session. Reopening is one tap and goes through admission. Counts toward CM6 |
+| session cap | "Realtime sessions have a maximum duration of 60 minutes" and a 32k input-token context [V Azure] | lessons are ≤ 45 min (day-cycle B4), so renewal is needed only for overruns, but the Director must own a `session.renew` move at a natural stop, carrying the brief + lesson summary (already the pruning design) |
+| reconnect storms | every reconnect after a network drop is a new session start against the 10 RPM cap. At 19:00-21:00 on patchy mobile data, reconnects can eat the admission budget meant for new lessons | admission priority: `reconnect of an in-progress lesson` (0) > `lesson start` (1) > everything else. A reconnect keeps the lesson's reservation and does not reserve again |
+| per-turn reservations | §9.2 reserves before *every* model call. The Director's per-turn classifier call then does reserve + settle round trips and updates `global`/`deployment` budget rows that every concurrent lesson shares (single-row lock) | reserve per **5-minute lesson block covering voice and all Director text calls**. Settle per block from realtime `usage` + the Director's call ledger. Global/deployment ceilings are enforced from per-replica in-memory counters synced every 10 s (bounded overshoot = replicas × 10 s of spend). The exact Postgres token bucket is kept only for realtime session starts (≤ 10/min, no contention) |
+| fail-closed mid-lesson | if the governor's DB call errors, "fails closed" ends the lesson | in-flight lessons fail **open for at most one extra block**, logged. New lessons and background jobs fail closed. A child is never cut off by an infrastructure error |
+
+#### R3.4 Reports: one job per week, and no Batch in v1 (A8, A9)
+
+- **Key without the ledger hash.** `report.weekly:{child}:{isoWeek}`, with a **data cutoff** fixed at enqueue
+  (`cutoffAt = send − 30 h`, stated in the letter: "is hafte ka hisaab shanivaar dopahar tak"). Evidence after
+  the cutoff goes into next week's letter. As written, every lesson in the 30-hour window mints a new
+  report job and pays again.
+- **Batch is not available as assumed.** It needs a `GlobalBatch` or `DataZoneBatch` deployment of the model,
+  and the supported-model table on the current page lists gpt-5.4/5.5-family and older, not gpt-5.6 [V Azure
+  Batch]. "It doesn't expire jobs that take longer", so a T-2 h standard re-run must also **cancel** the batch
+  job or both are billed [V]. The saving is 50% of ≈ $0.08/child-month ≈ $0.04. That does not pay for a
+  second lane, a second deployment and a collect poller. **Drop Batch from M1**; run reports on `taxila-fast`
+  standard, spread by jitter. Revisit when there are > 50k children and gpt-5.6 appears in the Batch table.
+- parent-loop's `weekly_letter` (`unique(child_id, iso_week)`, `ledger_hash` column) is the report store. The
+  job writes it, and the hash is kept for audit, not for idempotency.
+
+#### R3.5 Retries multiply worst-case reservations
+
+`maxAttempts: 5` × "reserve the worst case of the call" means a flapping job can hold 5× its budget
+reservation over time, and spend up to 5× on partial outputs. Make `budget.maxMicroUsd` a **per-job total
+across attempts**, tracked in `agent_run.spent_micro_usd`. The claimer refuses an attempt whose remaining job
+budget is below the next call's worst case and takes the fallback.
+
+#### R3.6 Only allowed models (A7)
+
+| where | as written | replace with |
+|---|---|---|
+| §4.5 weekly review | terra (Batch) → luna → template | `taxila-brain` (sol) standard → `taxila-fast` → template |
+| §5.3 `forge.spec` | luna → terra → kit defaults | `taxila-fast` → kit defaults |
+| §5.3 `forge.build` | gpt-5.3-codex or Sonnet 5.5 | `taxila-codex` only (decision `forge-models`) |
+| §9.1 price lines | Sonnet/Opus 5.5 rows | remove (not buildable: `claude-on-foundry-credits`) |
+| §9.4 report rung 0 | terra Batch | `taxila-fast` standard |
+| §16 q5 | codex vs Sonnet bake-off | remove; reopen only on the `forge-models` reversal condition |
+
+#### R3.7 The Notifier's channel is a vendor decision
+
+WhatsApp and push are not AI/compute, but the Azure-only directive says to prefer Azure-native options.
+Azure Communication Services Advanced Messaging sends WhatsApp template messages with delivery reports
+through Event Grid [V ACS]. Meta's per-message fees still apply [U: current India utility-template rate].
+day-cycle's `daily_note` (DC9), sent every day, is ~30 messages/child-month versus ~9 under the
+2-per-week cap. Price both before choosing the default. Also note the ACS breaking change: `from`/`to` may be
+empty for users with WhatsApp usernames, so key recipients by BSUID [V ACS].
+
+---
+
+### R4. Single points of failure
+
+| SPOF | blast radius | v1 mitigation | later |
+|---|---|---|---|
+| **one Neon compute** (ingest, Director turn route, Conductor, queue, governor, rate bucket) | every lesson | the device keeps the last brief and an event outbox (§10 already). The Director's per-turn route must degrade to "no evidence this turn" rather than failing the turn. Neon read replica for the parent dashboard and ops timeline so analytics never load the writer | cells (student-workspace W9) give blast-radius isolation |
+| **one realtime deployment, one region, 10 RPM** | all live voice | lite-mode rung and tap practice (§9.4). Request quota (§16 q4) | a second `taxila-realtime` deployment in another region behind the admission bucket, with region chosen per session |
+| **one human clears `safety_hold`** (§5.8: "never a timer") | a child is locked out indefinitely when the owner is asleep or away | protocol SLA: page on entry; if not acknowledged in 2 h, escalate to a second named adult; the hold *state* is never auto-cleared, but the child-facing screen is designed (R7.3). Only `critical` holds lock the app; `high` continues with monitoring | a staffed rota |
+| **one human reviews Forge output** | the T3 library grows only as fast as the owner reviews | T1/T2 carry v1 (R3.1); the review queue is ordered by `demand_count` | reviewer rota; auto-promotion only for engine-param artefacts |
+| `taxila-worker` single replica | ticker, jobs | min 1 + leader election lets a second replica take over in seconds; piggyback drains on device requests keep active children moving (§10) | max 2-3 |
+| Key Vault on the read path (student-workspace W4 DEK unwrap) | transcripts, memory text unreadable → brief builder fails | cache unwrapped DEKs in-process for the session, TTL ≤ 15 min; brief builder degrades to KT-only fields | — |
+
+---
+
+### R5. One writer per fact, applied to the specs themselves (A14)
+
+The sibling docs each define the same nouns. If they ship as written, there will be two writers for the plan,
+two event logs and two notification logs. That is exactly the drift §6 forbids. Resolution:
+
+| noun | defined in | resolution (single owner) |
+|---|---|---|
+| day phase | here §4.2 (`night/planned/active/in_lesson/idle/wound_down/paused/safety_hold`) and day-cycle §3.1 (`morning/at_school/recovery/learning_window/wind_down/closing/night`) | they are **two orthogonal fields**. `clockPhase` is day-cycle's enum, computed from `child_routine` + calendar by the Scheduler. `mode` is `free/in_lesson/paused/safety_hold`. The §4.2 allowed-actions table is re-keyed on (clockPhase, mode). `planned/active/idle` collapse into `clockPhase=learning_window, mode=free` |
+| `DayPlan` | here §4.5 and `day-cycle.contracts.ts` | one type in `shared/conductor/plan.ts`: day-cycle's fields (`mode`, `band`, `phases`, `capMin`, `plannedMin`, `splitLevelVsSchool`, `builtBy`, `version`) + this doc's `slots[].why[]` and `prefetch[]` + `budgetMicroUsd` |
+| plan storage | `conductor_state.plan` vs `day_plan(child_id, day, version)` | `day_plan` is the versioned store (the parent must be able to see the morning version, day-cycle §11). `conductor_state` holds `{planDay, planVersion}` only. The Conductor is its only writer |
+| event log | `student_event` vs `day_event` | `student_event` only. day-cycle's `DayEvent` members become `StudentEvent` types (`slot.offered/started/completed/skipped`, `phase.entered`, …). Drop `day_event` |
+| notification log | `notification` vs `notification_log` (records blocked decisions too) vs parent-loop `parent_alert` | `notification` is the outbox. Blocked decisions go to `decision_log` (they are decisions). `parent_alert` is the parent-loop's candidate table and points at `notification.id` (it already has the column) |
+| notify intents | here `weekly_report/milestone/safety/account/payment/ptm_summary`; day-cycle adds `anchor_reminder/daily_note/test_window`; parent-loop adds `wellbeing_note/struggle/commitment_result` | one union in `shared/conductor/notify.ts`; `mayNotify()` (day-cycle) is the Notifier's gate; `notAfter` expiry (day-cycle) is adopted |
+| lesson brief | here `wrapAt`, `holdNewTopics`; day-cycle `hardStopAt`, `segments`, `reviewItemIds` | one `LessonBrief` in `shared/contracts.ts`. `wrapAt` (governor/limits) and `hardStopAt` (bedtime − 60) both exist, and the Director wraps at the earlier one |
+| the daily cap | here `usage.lessonMinToday ≥ dailyMin` → `wound_down`; day-cycle: "all slots summed" | day-cycle wins: `usage.minutesToday` counts every slot kind. Homework help has its own sub-cap (day-cycle §3.2) |
+
+Add one schema test to the W2 workspace-map test: no two migrations create tables whose names match
+`*_event`, `*_plan` or `notification*` without an entry in `WORKSPACE_MAP` naming the owner.
+
+---
+
+### R6. What v1 does not need (A17, A18)
+
+The first cohort is tens to hundreds of children on one Neon compute and one worker. Rule used below: keep
+anything that is hard to retrofit (data shapes, idempotency, atomicity, the invariants). Defer anything that
+only pays at scale or only adds observability you can get from SQL.
+
+| item | v1 (M0-M1) | why |
+|---|---|---|
+| pure reducer, `conductor_state`, `student_event`, outbox, fact-derived idem keys, invariants, simulator | **keep** | these are the retrofit-proof core |
+| `conductor_commit` as plpgsql parsing jsonb commands | **replace** with a JS interactive transaction over the `pg` Pool: `BEGIN; CAS update; insert jobs (multi-row VALUES); insert wakeups; insert notifications; insert decision_log; COMMIT`. ≈ 6 queries × 10 ms [repo measurement] | testable in the simulator without a database function, and a new `Command` kind is a code change, not a migration |
+| hand-written queue (§7.2 claim, retry, dead letter, singleton, cron) | **consider pg-boss** (open-source, runs on our ACA compute, so allowed): SKIP LOCKED, "automatic retries with exponential backoff", "dead letter queues with redrive", "Cron and RRULE scheduling", singleton/throttle/debounce policies, and "send or complete jobs inside your existing transaction" [V pg-boss]. Measure claim latency and Neon compute-hours against the home-grown version in staging before choosing (new CM9). Either way the job contract in §5.1 stays | the claim/retry/heartbeat code is the part most likely to have the bugs R2 found |
+| rainbow `reducer_version` held until `night` | **drop.** Use `upgradeState(state, fromVersion)` migrations and a deploy freeze 18:30-21:30 IST | a child in `paused`/`safety_hold` never reaches `night`, so two reducers live forever; and the deploy script would have to ship both |
+| Batch lane | **drop** (R3.4) | ≈ $0.04/child-month |
+| KEDA Postgres scaler, ACA jobs per slow job | **defer**; the worker's poll loop is enough until CPU contention | one less moving part |
+| generic `concurrencyKey/limit` per job | **two hard-coded limits**: per-child singleton for `conductor.step`, and `azure:image ≤ 3` | the generic subquery over-admits anyway (§7.2 caveat) |
+| OTel GenAI spans | **defer**; correlation id columns on every row + the L1 timeline SQL | the conventions are experimental [S]; the rows already join |
+| nightly 1% replay drift alarm | **defer to M2**, after R2.8 makes replay meaningful | it would only produce false P1s today |
+| 400-day fold-and-delete retention | **defer**; volume is KB per child | no data to fold yet |
+| LLM planner | already deferred to M2 (shadow) | — |
+| `agent_run` checkpoints | **Forge and report only** | other jobs are single model calls; idempotent re-run is cheaper than checkpoint code |
+
+---
+
+### R7. Missing child-experience considerations (A19)
+
+The product is whether the teacher feels like a real person and the day feels kind. The design specifies
+what the *system* does in these moments, but not what the *child* sees.
+
+1. **Admission waits become the warm-up, not a spinner.** At 10 RPM, peak lesson starts queue (§9.3, CM5).
+   For a 6-8 year old, a wait of more than a few seconds on a "getting ready" screen is a drop-off point. The
+   plan's first slot is already `retrieval_warmup` (rule 18, ≥ 2 items). Run it **off-voice** (tap items
+   from the kit with cached narration) while admission resolves, then the teacher joins and picks up from
+   the warm-up results ("tumne 3 mein se 2 sahi kiye, chalo teesra saath mein dekhte hain"). The wait turns
+   into pedagogy, and the realtime minutes saved are real. Never show a queue position to the child; the
+   parent sees "busy hour" honestly in the dashboard.
+2. **Plan stability under the child.** A debounced re-plan after `lesson.ended` can reorder the home screen
+   while the child is looking at it. Rule: a re-plan may change only slots **not yet shown**. Anything shown on
+   screen, or said aloud, is frozen for the day. Add `slot.shown` to the event log and a validator rule
+   ("rewrites a shown slot").
+3. **The teacher's promises are commitments.** A real teacher who says "kal hum volcano wala game khelenge"
+   and then doesn't is the fastest way to stop feeling real. The Director's close step emits
+   `teacher.promise{what, by, ref}` (shapes, never quoted lines). The planner validator rejects a plan that
+   lets an unexpired promise lapse without a slot, unless a higher authority (§5.9) blocks it, and then the
+   teacher acknowledges it next time. This mirrors parent-loop's `parent_commitment` for parents.
+4. **Safety hold must not feel like punishment.** A child who has just disclosed something serious and then
+   finds the app locked learns that telling gets you shut out. The hold screen is designed with the
+   safeguarding protocol, not by the Conductor. It is warm and calm, carries Childline 1098 and
+   Tele-MANAS 14416, has no "account suspended" language, and on a shared phone it reveals nothing to whoever
+   is holding it. Only `critical` incidents lock the app. `high` keeps lessons running with the protocol
+   monitoring. Add an SLA (R4).
+5. **The cap landing at the wrong moment.** On a test eve, mid-homework, `minutesToday ≥ cap` must not cut the
+   child off mid-problem. The Director wraps at the next natural stop (this doc's rule), the teacher closes
+   the current item with the child, and a parent-gated "+10 min" (day-cycle §3.2) is offered *to the parent*,
+   never to the child as a bargaining chip. Invariant: no wrap mid-item; at most one wrap per item.
+6. **A dropped connection resumes the same lesson.** `lesson.ended{reason:'network'}` followed by
+   `app.opened` within 15 min must **resume** (same lessonId, same brief, teacher acknowledges the break). It
+   must not start a new lesson that repeats the opening and counts the warm-up minutes twice. The reducer
+   holds a `resumable` window, and the Director's opening move for a resume is a shape, not a fresh greeting.
+7. **A voice change on degrade is a different person.** Dropping from gpt-realtime-2.1 to cascaded lite mode
+   (§9.4) swaps the voice pipeline. If the TTS voice differs from the realtime voice, the child hears a new
+   teacher. Rule: a lesson never changes rung mid-lesson except for an outage. Rungs are chosen at lesson
+   start for the whole lesson. Lite mode must use the closest voice by blind ear test (inherited law:
+   "voice chosen by blind ear, not metrics") [U: whether gpt-4o-mini-tts offers the same named voice].
+8. **Shared phones.** `app.opened` before a profile is picked is a *device/guardian* event. It must not go into any
+   child's log (inherited law: identity is an authenticated child id, never a device). A sibling switch
+   mid-day writes `app.closed` for one actor and `app.opened` for the other. The admission queue is per
+   device, so siblings do not double-book the 10 RPM bucket by tapping twice.
+9. **First open must be instant.** "If no adopted plan: adopt the code plan now" is right. Make it a budget:
+   the home screen renders from the device's cached plan in < 300 ms, and the server's code plan replaces
+   it only if it differs on unshown slots (point 2). Do not block the first paint on a server round trip
+   from India to eastus2.
+10. **Late or out-of-window opens.** A child opening at 21:30 on a holiday, or in `night`, sees a calm
+    "rest" screen with one tap-only "tiny day" burst if the parent's allowed hours permit it (day-cycle
+    DC3). It should never feel like being turned away.
+
+---
+
+### R8. Amendments to §12 (invariants) and §15 (measurements)
+
+**New invariants** (added to the gate, each with a negative control):
+- I-R1: for every child, the set of folded events equals the set of committed events (simulator injects
+  concurrent ingests with randomized commit delays; with the identity-seq version this fails, as R2.1 predicts).
+- I-R2: no `wakeup` row has `fired_at` set without a matching `clock.wakeup` event; no `job` is `done`/`dead`
+  with a `child_id` and no matching `job.*` event.
+- I-R3: a replay reads only recorded inputs (R2.8).
+- I-R4: no authority-class event (§5.9 above the governor) is ever quarantined past.
+- I-R5: no `forge.build` result is delivered to a device without `forge_artifact.reviewed_by`.
+- I-R6: no re-plan changes a slot with a `slot.shown` event; no unexpired `teacher.promise` lapses silently.
+- I-R7: no lesson changes degrade rung mid-lesson except with `reason='outage'`.
+- I-R8: no job input or model call references a model outside the `azure-only-compute` allowed list
+  (static check over the model registry).
+
+**New measurements** (log with n, method, date):
+
+| id | measure | why | method |
+|---|---|---|---|
+| CM9 | claim latency p95 and Neon compute-hours/day: home-grown queue vs pg-boss, same workload | R6 choice | staging, simulator load at 1k and 10k children |
+| CM10 | share of realtime audio-out tokens in turns with no kit-relevant child utterance | R3.3 noise leak | `turn_trace` + `model_call`, first 50 real households |
+| CM11 | admission wait p95 at 19:00-21:00 and drop-off rate during the off-voice warm-up vs a spinner | R7.1 | micro-RCT, pre-registered (rule 37) |
+| CM12 | resume rate after `network` endings, and duplicate warm-up minutes | R7.6 | event log |
+| CM13 | India → eastus2 ingest → decision p95 | R1 cross-region | real devices, 3 cities |
+
+---
+
+### R9. Revised M0 (replaces §14 item 1)
+
+M0 ships with the first live lessons:
+- `child_seq` + `ingest_event` (R2.1)
+- `conductor_state` + pure reducer + JS-transaction commit with `has_more` (R2.4, R6)
+- the unified `DayPlan`/`day_plan` store and `clockPhase × mode` (R5)
+- the code planner
+- `lesson.ended → memory.consolidate` via `complete_job` (R2.3)
+- wakeups with the one-statement fire and per-child jitter (R2.2, R3.2)
+- `taxila-worker` on ACA with leader-elected ticker and a direct DB connection (R1)
+- per-child daily cap + realtime session admission bucket with reconnect priority (R3.3)
+- the off-voice warm-up during admission (R7.1)
+- the idle hang-up (R3.3)
+- the simulator with I-R1…I-R8
+
+Not in M0: Batch, KEDA, Forge lanes, LLM planner, drift alarm, OTel, rainbow versions.
+
+### Sources for this review
+
+- Oskar Dudycz, *How Postgres sequences issues can impact your messaging guarantees* — https://event-driven.io/en/ordering_in_postgres_outbox/ [V]
+- Vercel `@vercel/functions` reference (`waitUntil` shares the function timeout; `getDeadline`) — https://vercel.com/docs/functions/functions-api-reference/vercel-functions-package [V]
+- Azure Container Apps application lifecycle (SIGTERM, 30 s to SIGKILL on scale-in) — https://learn.microsoft.com/en-us/azure/container-apps/application-lifecycle-management [V]
+- Neon connection pooling (transaction mode: no LISTEN/NOTIFY, no session-level advisory locks) — https://neon.com/docs/connect/connection-pooling [V]
+- Azure OpenAI global batch (GlobalBatch/DataZoneBatch deployment types, supported models, jobs not expired after 24 h, 50% off) — https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/batch [V]
+- Azure OpenAI Realtime audio (60-minute session cap, 32k input tokens, rate limits on concurrent sessions) — https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/realtime-audio [V]
+- Azure Communication Services Advanced Messaging for WhatsApp (templates, delivery reports, BSUID breaking change) — https://learn.microsoft.com/en-us/azure/communication-services/concepts/advanced-messaging/whatsapp/whatsapp-overview [V]
+- pg-boss feature list — https://pgboss.io/ [V]
+- Internal [repo]: `context/decisions.md` (`azure-only-compute`, `hosting-azure-container-apps`, `forge-models`, `infra-segment`), `context/measurements.md` (`db-driver-latency-2026-10-02`, `infra-smoke-2026-10-02`), `context/rejected.md` (`claude-on-foundry-credits`), `docs/ARCHITECTURE.md` §1.4, `docs/research/conductor/day-cycle.md` §3, §9, §11 and `day-cycle.contracts.ts`, `student-workspace.md` W2/W4/W8/W9, `parent-loop.sql`.

@@ -1,0 +1,1211 @@
+{
+ "segment": "hp-multimodal-group",
+ "doc_path": "/home/user/Taxila/docs/harvest/hp-multimodal-group.md",
+ "summary": "Segment covers origin/codex/multimodal-layer-20260927 (tip b514595f, last tested code 808ad32f; 23 commits since handoff-history-20260909). It is Codex's continuation of Vyakti with two halves.\n\n(1) A multimodal evidence layer (Sep 27-29). Stored text, document, audio-transcript and video-transcript evidence reaches the claim extractor and the owner review UI with honest modality, locator and limitation descriptors. It fixed a Number(null) zero-timestamp bug. Images are refused as semantics; there is no vision model at all.\n\n(2) Hardening of the common-friend Group AI (Sep 29 - Oct 1). This is an AI persona that is a member of a Telegram group of 2-6 linked adults. Consent comes from admin promotion. Privacy is a SQL disclosure predicate over immutable per-turn episode participants. Speaking is decided in code (lurk/react/speak on explicit address only). There is a per-addressee honorific roster, app-voiced cards and commands, and negotiated forgetting.\n\nNew this branch:\n- portable dependency-free checkpoint kernel (A/S/A/S re-reads, sticky invalidation);\n- complete Telegram audience witness;\n- attributed source-turn selector with whole-payload byte budgets (lexical recall measured and NOT promoted: 27/54 vs 0/54, but 0/27 under adversarial distractors);\n- truthful delivery outcomes;\n- known-consent source-time fence in JS and SQL;\n- keyless hosted synthetic-PostgreSQL SQL proof (50 groups);\n- a 44 px touch-target fix with a negative-control test;\n- five research/audit reports (Honcho, portable layer, durability, native identity, recall).\n\nFinal state: release 24/24 on Node 22 and 24, SQL50 and APK pass. But no real transport, provider or human group task ever ran. Live vy_group had 0 rows. Native web group identity/UI, grant writer, group media, durable dedup and dependent forgetting remain open, and two owner policy questions are unanswered. The handoff itself records that process overhead displaced real user journeys.\n\nFor Taxila, the most valuable reusable pieces are: the disclosure predicate plus per-turn episode ACL (sibling/parent privacy), the checkpoint kernel, truthful delivery, the consent-time fence, the participation decision and roster (to be inverted to teacher-led), modality-honest evidence descriptors, source-aware claim review, and the evaluation/CI patterns. The adult gate must invert into a parental-consent gate.",
+ "assets": [
+  {
+   "id": "HMG01",
+   "title": "Portable turn checkpoints kernel (@vyakti/turn-checkpoints)",
+   "subsystem": "relational-os",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_group-runtime/checkpoints.js",
+    "api/_group-runtime/checkpoints.d.ts",
+    "api/_group-runtime/README.md",
+    "api/_group-runtime/package.json"
+   ],
+   "what": "Dependency-free ESM kernel. It binds one operation to a frozen scope, a policy version and an authority snapshot, and binds the source snapshot exactly once. assertCurrent() re-reads authority, sources, authority, sources (A/S/A/S). Any mismatch or reader failure permanently invalidates the turn. Receipts are canonical, ignore key order and respect array order. It rejects accessors, sparse arrays and non-plain objects, has hard size limits, and throws frozen content-free errors. The guarantee is 'checkpointed', not atomic.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "relational-os / safety-floor: re-verify session seats and consent before the teacher uses a private memory aloud or releases TTS; also before generative-ui module publish",
+   "evidence": "kernel 39 groups + actual caller 170; hosted 24/24 at 808ad32f; registry experiment portable-turn-checkpoints completed/pass at offline_contract scope",
+   "notes": "Private, UNLICENSED, unpublished. It cannot detect a revoke-and-restore between reads, and gives no durable idempotency. A hung reader blocks progress."
+  },
+  {
+   "id": "HMG02",
+   "title": "Group turn guard adapter (createGroupTurnGuard)",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_surface.js:1351-1393"
+   ],
+   "what": "Adapter over HMG01. Authority is the current SQL group row (read consent, entitled, quorum >= 2, cap, linked_members) plus a complete platform audience witness. The witness recipient list must exactly equal the SQL recipients, with a 64-hex revision. The guard exposes recipients, bindSources and assertAuthority, and maps every failure to group_authority_unavailable.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "group-ai: session seat roster + consent rows as the authority; a seat-roster revision as the witness",
+   "evidence": "group-turn authority 170 groups hosted",
+   "notes": "The adapter owns all SQL and platform checks. The kernel only compares."
+  },
+  {
+   "id": "HMG03",
+   "title": "Attributed source-turn selector (@vyakti/source-turn-selection)",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_group-recall/selection.js",
+    "api/_group-recall/selection.d.ts",
+    "api/_group-recall/README.md"
+   ],
+   "what": "Pure synchronous selector over already-authorized attributed turns {sourceId, order, episodeId, speakerId, speakerLabel, recordedAt, text}. It always keeps the latest 20 turns including the current one. lexical_recency mode adds up to 12 older matches by distinct-token overlap (NFKC, lowercase). It emits a self-describing source_turns/v1 packet with interpretation historical_observations and currentStateEstablished:false; temporal order is recorded order, not event time, and subject/reply/revision are null. A 32,768-byte budget applies to the whole serialized turns. Mandatory overflow refuses. rawTexts is returned separately for honesty vocabulary.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "memory-graph: per-child long-horizon recall packets with exact speaker attribution in sibling/group sessions",
+   "evidence": "selector 46 groups; frozen 48-case comparison (lexical 27/54 vs recency 0/54 older targets; 0/27 in the adversarial half; 288 distractors)",
+   "notes": "Lexical mode is NOT promoted. Taxila needs semantic retrieval but should keep the packet, attribution and budget discipline."
+  },
+  {
+   "id": "HMG04",
+   "title": "Known-consent source admission fence",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_group-source-event.js",
+    "api/_room.js:682-738",
+    "api/_room.js:774-813",
+    "api/tg.js (parse sourceEventKind/sourceSentAtSeconds)"
+   ],
+   "what": "A source is persisted only if its authenticated original send time is strictly later than group read consent AND every current recipient's linked_at. Arrival and edit time are never used, and equality is refused. The check runs in JS and is repeated inside the episode and log INSERT...SELECT. The PostgreSQL timestamp parser is microsecond-exact and accepts Z, +00, +0000 and +00:00.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "auth/consent (DPDP): never persist child audio/text captured before verifiable parental consent or before a peer/sibling seat's consent",
+   "evidence": "ingress 26; SQL50 including case 31 with the real PostgreSQL wire format; registry known-consent-source-admission completed/pass 2026-10-01",
+   "notes": "It does not reconstruct historical audience, deduplicate or serialize erasure."
+  },
+  {
+   "id": "HMG05",
+   "title": "Telegram current-audience witness",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_group-audience.js"
+   ],
+   "what": "Calls getMe, getChatMemberCount before/after, getChatMember per linked member (bot must be admin) and getChat before/after. Admits only private, unlinked, hidden-history groups. The count must equal linked members plus 1, so every reader must be linked. HUMAN_CAP is 6. Produces a SHA-256 revision digest. Explicitly not atomic.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "group-ai: the 'authorized set must equal the complete current listener set' rule for native in-app sessions",
+   "evidence": "Telegram audience suite 58",
+   "notes": "Taxila should not run children on Telegram."
+  },
+  {
+   "id": "HMG06",
+   "title": "Truthful delivery outcomes",
+   "subsystem": "telemetry/tracing",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_surface.js:650-717"
+   ],
+   "what": "Preflights the whole render before any send. Requires an own data property ok:true for each fragment or reaction, and stops at the first unconfirmed one. Throws a frozen surface_delivery_unconfirmed {phase, outcome unknown|not_executed, accepted/attempted counts, retrySafe:false} with no raw cause. The assistant log is written only after confirmed delivery.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "realtime-voice + telemetry: log 'teacher said X' only after audio playback is confirmed; parent notification marked sent only on a provider receipt; never auto-retry unknown",
+   "evidence": "surface-delivery 44; baseline probes reproduced the false-success bugs",
+   "notes": "Adapter acceptance is not human receipt."
+  },
+  {
+   "id": "HMG07",
+   "title": "Provider-envelope budget, refuse before slicing",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_surface.js:444-474"
+   ],
+   "what": "JSON.stringify({compiled:{core,tail},turns}) must be at most 98,304 UTF-8 bytes. Core must be at most 64,000 and tail at most 24,000 string units, which are the adapters' slice points. Refuses before dispatch instead of letting adapters truncate safety text.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "prompt-compiler: guarantee the child-safety floor at the end of the prompt is never sliced",
+   "evidence": "empty-turn envelope 55,541 B; ordinary question 56,452 B; double-count bug at 111,236 B fixed",
+   "notes": ""
+  },
+  {
+   "id": "HMG08",
+   "title": "Ordered group turn pipeline (onGroupMessage)",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_surface.js:1400-1622"
+   ],
+   "what": "Steps in order: freeze ev/ctx/adapter; resolve room; commands first (app-voiced); guard; consent-time fence; deterministic participation decision; STORE episode + human log only if consent, quorum, linked speaker and entitled; log the decision; RETRIEVE facts/bridge/roster/candidates through the predicate; bind the whole candidate pool; select; compile with roomBundle; gated reply with authority checks before and after the model; deliver with a check per fragment; then the assistant log.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "group-ai: Taxila group-session turn loop (STORE -> DECIDE -> RETRIEVE -> RENDER)",
+   "evidence": "caller 170 hosted",
+   "notes": ""
+  },
+  {
+   "id": "HMG09",
+   "title": "Immutable-audience episode + log writers",
+   "subsystem": "db-schema",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_room.js:698-813"
+   ],
+   "what": "A single-statement CTE creates the episode and all participants and verifies the count. The log insert re-checks that episode participants equal current linked members, that there is no deny, scope=participants, consent before the source, and no relink at or after the source. Refusal returns null and the caller throws.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "db-schema: session_episode + session_participant per turn/segment for multi-child sessions",
+   "evidence": "SQL50 cases 'one statement creates exact immutable audience', 'late joiner cannot inherit', temporal-writer groups",
+   "notes": "Neon SQL-over-HTTP needs one statement per request, hence CTEs."
+  },
+  {
+   "id": "HMG10",
+   "title": "Structural disclosure predicate",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_disclosure.js"
+   ],
+   "what": "One SQL fragment for fact, phrase and episode. Deny wins (row and cited episodes). Sensitive or negative-affect rows never cross a boundary. Otherwise a row needs a cited grant covering every recipient, OR every recipient participated in every cited episode. An uncited row goes only to its owner's 1:1. Room isolation uses a scalar room id, and there is a DM-to-DM kill switch. Separately, bridgeEligibilityClause implements ruling A.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "safety-floor + relational-os: parent/sibling visibility of what a child said; group-session recall",
+   "evidence": "Gate 0: 0/31,122 violations vs prompt arm 57.1%/98.1%; migration 008 live 2026-08-18",
+   "notes": "Already noted at main by hp-main-engine (A59); the tip uses it with per-turn episodes."
+  },
+  {
+   "id": "HMG11",
+   "title": "Deterministic participation decision",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "src/engine/room.ts:236-371"
+   ],
+   "what": "Runs before the model. Structural gates first (consent, entitlement, quorum, linked speaker), then silent/quiet levels. Explicit address means speak, even under quiet. A 10-minute cooldown only raises the bar. A room-word hit buys only a 👀 reaction; otherwise lurk. Name matching works across Devanagari and Latin without \\b. Every decision is logged to vy_group_turn.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "group-ai: who-is-being-addressed and turn-taking in multi-child voice sessions (invert to teacher-led defaults)",
+   "evidence": "tgbot 101/101 offline 2026-08-18; no live rooms",
+   "notes": "Implicit-addressee inference deliberately not built."
+  },
+  {
+   "id": "HMG12",
+   "title": "Address strip roster (honorific/rank per member)",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "src/engine/room.ts:108-140",
+    "api/_room.js:376-420"
+   ],
+   "what": "k:v data per member: say:aap|tum|tu, with rank derived from it (aap=elder, tu=younger, tum=peer, no row=unknown), plus quiet and unlinked:nothing-they-say-is-kept. Rows are dropped whole at the 900-char budget, never half-rendered. The cap of 6 members follows from that budget.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "persona-engineering: teacher addresses a parent as aap and children as tum/tu in one turn; sibling names and classes",
+   "evidence": "",
+   "notes": "R6 (multi-register in one turn) is a named open gap."
+  },
+  {
+   "id": "HMG13",
+   "title": "ROOM_MODE_NOTE group rule block (shapes, not lines)",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "src/engine/room.ts:200-231"
+   ],
+   "what": "Group rules appended at the END OF CORE, never in the appended-last pair: per-addressee register; no hints of DM content ('a hint is a disclosure with deniability'); rooms do not touch; no sides; nobody nudged; unlinked people not kept; same AI-honesty. There is also a one-time intro directive written as a shape.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "prompt-compiler: group-session note for the teacher persona (modify 'nobody nudged' to gentle invite)",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HMG14",
+   "title": "App-voiced room card, receipts and command grammar",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_surface.js:215-236",
+    "api/_surface.js:1693-1757"
+   ],
+   "what": "Deterministic Hinglish card posted before the first episode, listing five facts. A distinct withdraw receipt is sent only after commit. Commands: /chup (room), /chup me, /bolo, /bhool (withdraw), /kya and /kaise (re-post card). Command acknowledgements are app text, never model text.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "ux + safety: session-start card read aloud; child or parent mute controls; parent-visible privacy card",
+   "evidence": "",
+   "notes": "/chup runs before the membership guard; /bhool scope is agent-wide (audit finding)."
+  },
+  {
+   "id": "HMG15",
+   "title": "Ruling A/B: departure and shared-forget semantics",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_disclosure.js:291-319",
+    "docs/design/PROPOSAL-MULTIPARTY-V1.md §3.2"
+   ],
+   "what": "A: peers of a departed member keep reactive recall, but the AI never proactively raises it. B: shared room memory is fully erased only when all participants ask. Withdrawal deletes the member's own turns, participant rows and grants.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "memory-graph: sibling leaves a study group; one sibling asks to forget a shared session",
+   "evidence": "withdraw 22/22 (Gate 0, 2026-08-18)",
+   "notes": ""
+  },
+  {
+   "id": "HMG16",
+   "title": "State-inert group episodes (stateWriteCount)",
+   "subsystem": "relational-os",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_room.js:832-878"
+   ],
+   "what": "Group turns write episodes, facts and phrases but never dyadic relationship state (rel_event, pattern, taste, currency). Inertness is asserted by counting rows from outside. The code notes it is fragile: 'inert by three-valued logic'.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "relational-os: a group session must not move one child's 1:1 bond/emotional state; learning evidence must be per-speaker attributed",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HMG17",
+   "title": "Multimodal evidence normalizer (claim-evidence.js, prompt v3)",
+   "subsystem": "multimodal-vision",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_experience-compiler/claim-evidence.js",
+    "api/_experience-compiler/README.md",
+    "api/_claim-extraction/contracts.js",
+    "api/_replica-claims.js"
+   ],
+   "what": "Projects authority-selected evidence into the claim extractor. Text/markdown and pdf/docx get a UTF-16 locator, SHA-256 and page_mapping:unavailable; their time fields must be null. Audio/video becomes a transcript_span with a ms window and limitations (transcription_may_be_incorrect, word_alignment_unavailable, original_source_time_mapping_unavailable, speaker_identity_not_asserted, plus visual_content_not_observed for video). image_region is refused. The input-set hash includes the prompt version and the outbound projection. Private source fingerprints are stripped before the provider. Claim schema stays v2.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "multimodal-vision + learning/pedagogy: a child's spoken answer, notebook photo or worksheet becomes typed evidence with honest limits feeding learning-profile and comprehension claims",
+   "evidence": "multimodal 19 checks; hosted 24/24 at 4cc5e662",
+   "notes": "No image understanding exists. Taxila must add a vision-model interpretation kind with its own limitations."
+  },
+  {
+   "id": "HMG18",
+   "title": "Source-aware claim review (server + client projection)",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "src/studio/sourceAwareReview.ts",
+    "src/studio/types.ts",
+    "api/_person-model.js (clientCitation, CLAIMS_SQL)",
+    "src/studio/PersonModelStudio.tsx",
+    "src/studio/ContextLockerPanel.tsx",
+    "src/studio/CloneExperience.tsx"
+   ],
+   "what": "The server re-verifies each citation before emitting it: evidence normalizes, source is in the claim's source_ids, the UTF-16 slice equals the excerpt, and sha256(excerpt) equals quote_hash. Only then does it emit a typed projection (modality, format, interpretation, locator, limitations). The client re-validates exact keys and the limitation sets and drops malformed rows. Claims can be filtered by the selected source item. Previews are blanked without training consent.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "learning-profile discovery + parent dashboard: 'why does Taxila think Riya learns best with stories?' with exact cited moments and accept/reject",
+   "evidence": "UI 20 source/22 mounted hosted",
+   "notes": ""
+  },
+  {
+   "id": "HMG19",
+   "title": "44px touch targets with a rejecting negative-control test",
+   "subsystem": "design-system/ux",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "src/studio/source-aware-review.css",
+    "evals/source-aware-review-ui/run.mjs",
+    "evals/source-aware-review-ui/README.md"
+   ],
+   "what": "Scoped minimum 44x44 px and an 8 px gap token, with the focus ring extended. A hosted Playwright check at 390 and 1440 measures real DOM rects, gap and overlap, actual Tab focus, and five-point elementFromPoint occlusion with zero mutations. An injected minimum-zero CSS must be detected at 27 px, then restored in finally.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "design-system/ux + evals: kids' targets at least 48-56 px gated the same way",
+   "evidence": "measured 44 px at both widths; negative 27 px detected (2026-10-01)",
+   "notes": ""
+  },
+  {
+   "id": "HMG20",
+   "title": "Keyless hosted synthetic-PostgreSQL SQL proof",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    ".github/workflows/group-authority.yml",
+    "evals/group-sql-authority/harness.mjs",
+    "evals/group-sql-authority/run.mjs",
+    "evals/group-sql-authority/source-only.mjs"
+   ],
+   "what": "GitHub Actions postgres:16.15-bookworm service container. hostedGuard refuses NEON/DATABASE/PG*/AZURE/OPENAI env vars and anything other than GitHub-hosted Linux. Production SQL is inserted byte-for-byte via PREPARE/EXECUTE, so PostgreSQL infers the parameter types; arrays go through array-input text. Canonical DDL is extracted from the migrations. There are 50 groups with rejecting SQL mutations.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "evals/gates: prove Taxila's Neon queries type-check and enforce consent/ACL without touching Neon",
+   "evidence": "SQL50 pass 2026-10-01 (27 tables / 249 DDL)",
+   "notes": "It caught the text[] vs uuid[] mismatch that mocks hid."
+  },
+  {
+   "id": "HMG21",
+   "title": "Actual-module offline harness (transpile real source into a VM)",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "evals/group-turn-authority/fixture.mjs",
+    "evals/group-turn-authority/run.mjs"
+   ],
+   "what": "Transpiles the real _room.js, _surface.js, checkpoints.js and selection.js with TypeScript into vm.runInNewContext with an approved-import map. fetch is poisoned (offline_unexpected_io). The query double asserts the full shipping disclosure predicate text and binds before returning declared rows. Hooks inject mutations during authority, model, send and writes.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals: drive Taxila's real turn loop offline with only I/O replaced",
+   "evidence": "group caller 170",
+   "notes": ""
+  },
+  {
+   "id": "HMG22",
+   "title": "Held-request barrier for UI race tests",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "evals/teacher-sheet-publication/held-request.mjs",
+    "evals/teacher-sheet-publication/barrier-controls.mjs",
+    "evals/teacher-sheet-publication/mounted.mjs"
+   ],
+   "what": "expect(kind) resolves only once the fixture server has parsed and held that exact request kind and generation. It supports explicit release; reset() bumps the generation and rejects stale expectations. No fixed sleeps or timeout inflation.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "evals: stale-scope tests (child switches profile; parent switches child mid-request)",
+   "evidence": "publication 40 mounted + 8 controls",
+   "notes": ""
+  },
+  {
+   "id": "HMG23",
+   "title": "Byte-reversible AST instrumentation probe",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "evals/first-use-private-flow/readiness-probe.mjs",
+    "evals/first-use-private-flow/readiness-probe-controls.mjs",
+    "evals/first-use-private-flow/refresh.mjs"
+   ],
+   "what": "Uses the TypeScript AST to insert uniquely located observer statements into the real StudioApp readiness effect, then asserts that removing them restores every original byte. An init-script probe records begin/poll/registered/disposed and fires exactly one real focus event when idle.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "evals: observe real React effects without modifying production",
+   "evidence": "refresh 12 mounted / 24 outcomes + 10 observer controls",
+   "notes": ""
+  },
+  {
+   "id": "HMG24",
+   "title": "Research registry + research-cycle CLI",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "scripts/research-cycle.mjs",
+    "docs/gurukul/research/registry.json",
+    "evals/research-cycle/run.mjs",
+    "docs/gurukul/research/MULTIMODAL-RESEARCH-CYCLE-20260927.md"
+   ],
+   "what": "Offline ledger with 24 source cards and 11 experiments. Each card records kind, retrievedAt, version, evidence class and decision (adopt/experiment/watch). Each experiment has state (planned/implemented/completed) and outcome (pass/fail/inconclusive, only once completed), plus successCriteria, evidenceScope and result. Review intervals are 14 days for docs/repos and 90 for papers. Citations are validated as public HTTPS with no query or credentials. Commands are display-only.",
+   "maturity": "prototype",
+   "taxila_use": "copy",
+   "taxila_target": "evals/governance: Taxila research and experiment ledger (e.g. covert-comprehension detector)",
+   "evidence": "research-cycle 15 groups",
+   "notes": ""
+  },
+  {
+   "id": "HMG25",
+   "title": "Preregistered SHA-frozen comparison harness",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "evals/group-source-recall/cases.mjs",
+    "evals/group-source-recall/run.mjs",
+    "evals/group-source-recall/README.md",
+    "docs/gurukul/research/GROUP-SOURCE-RECALL-EVAL-20261001.md"
+   ],
+   "what": "The corpus and method hashes were sent before the method was inspected. 8 families x EN/HI/code-switch x 2 variants, with an adversarial variant 2. The runner re-verifies the hashes on every run. Per-family and per-variant results are reported unpooled. There are 23 separate contract groups, including exact byte-boundary accept and +1-byte refuse.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "evals: frozen held-out evaluation of Taxila's comprehension detector and learning-style classifier",
+   "evidence": "48 cases + 23 controls",
+   "notes": ""
+  },
+  {
+   "id": "HMG26",
+   "title": "Six-level acceptance ledger",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "docs/gurukul/research/GROUPAI-READINESS-20260929.md",
+    "context/decisions.md#groupai20260929-layer-acceptance-ledger"
+   ],
+   "what": "Levels: source review, then offline real caller, then actual SQL, then hosted browser/release, then real transport/provider, then consented human task. Each level needs its own receipt, and failed predecessors are preserved.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/gates: Taxila per-subsystem launch gates",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HMG27",
+   "title": "Durable effect/intake design",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "docs/gurukul/research/GROUP-DELIVERY-DURABILITY-20261001.md"
+   ],
+   "what": "Immutable intake key (surface, installation, event_kind, event_id) plus a canonical payload hash; same key with a different hash is a conflict. Effects carry the states prepared/executing/confirmed/not_executed/unknown/cancelled. Model generation counts as an effect. No resend on unknown, and no lease takeover. Retention and tombstone tradeoffs are analyzed; queued disclosures must be cancellable.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "infra: gpt-image-2 / generated-module jobs, parent notifications, payment webhooks",
+   "evidence": "",
+   "notes": "Not implemented; the owner's policy choice is pending."
+  },
+  {
+   "id": "HMG28",
+   "title": "Native identity account-link challenge design",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "docs/gurukul/research/GROUP-NATIVE-IDENTITY-20261001.md"
+   ],
+   "what": "Link a verified web account to a platform identity with a short-lived single-use challenge bound to account, purpose, subject and expiry. Conflicts fail closed, with no opportunistic person_id merge. A member-only status door returns minimal state and no roster. Owner of the AI is not a member of the group. A private follower Room session is not group authority.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "auth: parent account to child profile to device seat; sibling seats on a shared tablet",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HMG29",
+   "title": "Honcho adoption analysis",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "docs/gurukul/research/HONCHO-ADOPTION-20260929.md"
+   ],
+   "what": "Five transfers: observer-to-subject perspectives; explicit vs inferred facts; a bounded read-set receipt distinct from citations; cheap context assembly separate from costly reasoning; dependency-aware retraction. The dependency itself was rejected (AGPL core; hosted privacy policy permits de-identified fine-tuning; competing-systems ToS clause).",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "memory-graph: teacher-view vs parent-view of the child; inferred learning style stays provisional",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HMG30",
+   "title": "Portable group layer research table",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "docs/gurukul/research/PORTABLE-GROUP-LAYER-20261001.md"
+   ],
+   "what": "Primary-source review with pinned commits and licenses: Temporal (MIT), Restate (BSL 1.1, rejected), Zanzibar/SpiceDB, OpenFGA, outbox/idempotent consumer, Helland 2007, Graphiti v0.30.2, Hindsight v0.10.2, GroupMemBench v2, SocialMemBench v1, LongMemEval-V2, GroupGPT/MUIR. Each entry lists the transferable technique and its limits.",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "group-ai + memory evals",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HMG31",
+   "title": "Webhook ingress hardening (tg.js)",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/tg.js"
+   ],
+   "what": "Group updates with multiple kinds or with guest/ephemeral/business/anonymous/edit/offline fields become ignore before dispatch. Only message.date becomes the source time. The event is frozen before any await. A single per-clone client sends and reads authority, and a missing capability is never filled from the default bot.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "infra: WhatsApp parent-notification webhooks; inbound event normalization",
+   "evidence": "ingress 26",
+   "notes": ""
+  },
+  {
+   "id": "HMG32",
+   "title": "Release-gate CI (Node 22+24, keyless stub)",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    ".github/workflows/release-gate.yml",
+    ".github/workflows/build-apk.yml"
+   ],
+   "what": "Matrix on Node 22 and 24. write-config --stub with every key empty. Asserts no 'secrets.' reference in the workflow. Fetches a pinned history archive at depth 2 for regression controls. Sanitized failure logs are kept 7 days. A weekly scheduled Hindi rehearsal job runs separately. Concurrency cancels in-progress runs.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "infra/CI for Taxila",
+   "evidence": "24/24 at 808ad32f",
+   "notes": ""
+  },
+  {
+   "id": "HMG33",
+   "title": "Multiparty research corpus and v1 design",
+   "subsystem": "group-ai/multi-agent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "docs/research/multiparty/MULTIPARTY.md",
+    "docs/design/PROPOSAL-MULTIPARTY-V1.md",
+    "docs/research/multiparty/triadic-social.md",
+    "docs/research/multiparty/group-conversation.md",
+    "docs/research/multiparty/disclosure-control.md",
+    "docs/research/multiparty/competitive-multiparty.md",
+    "docs/research/multiparty/whatsapp-platform.md",
+    "docs/research/multiparty/multiparty-schema.md",
+    "docs/SURFACES.md"
+   ],
+   "what": "Six-track synthesis. Behavior rules R1-R8: CPM-negotiated disclosure; accurate, selective, non-negative relay; mediator not tertius; transparency card; never publicly correct an elder; per-addressee register; graduated quiet; the human-confidant ~30% leak bar. Ten felt moments M1-M10 including the consent moment M4 and the wall M6. Crisis-in-room ruling, Gate 0 and a pilot design.",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "group-ai + parent visibility + safety-floor design for sibling/study-group/parent sessions",
+   "evidence": "Gate 0 measured; pilot never run",
+   "notes": ""
+  },
+  {
+   "id": "HMG34",
+   "title": "Linking tap + adult gate",
+   "subsystem": "auth/accounts/consent",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_surface.js:1196-1279",
+    "api/_room.js:144-186"
+   ],
+   "what": "The linking tap opens the DM, binds identity, verifies membership and sets linked_at, followed by a one-time intro written as a shape. A known minor is refused a binding, so nothing they say can persist.",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "auth/consent: inverts for children; keep only the 'no consent row means no persistence' shape for a parental-consent gate",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HMG35",
+   "title": "Group as paying unit (trial, quorum, cap, entitlement)",
+   "subsystem": "payments",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_room.js:48-53",
+    "api/_room.js:283-354",
+    "docs/design/PROPOSAL-MULTIPARTY-V1.md §6.6"
+   ],
+   "what": "14-day per-room trial. Quorum of 2 linked members to ingest; cap of 6 enforced on every arrival path. A lapsed room goes quiet but never disables anyone's 1:1 ('hostage-taking is NEVER MANIPULATE').",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "payments: family/sibling/study-group seats; a lapse never holds a child's 1:1 teacher hostage",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HMG36",
+   "title": "Raw-text honesty vocabulary separation",
+   "subsystem": "safety-floor/honesty",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_surface.js:422-457"
+   ],
+   "what": "When the model input is an attributed JSON packet, the honesty gate's human vocabulary and open commitments derive only from raw selected texts (humanSourceTexts). JSON keys, IDs and labels never become a person's speech.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "safety-floor: support set for 'did the child actually say this?'",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HMG37",
+   "title": "Handoff discipline and process post-mortem",
+   "subsystem": "evals/gates/verification",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "docs/handoff/2026-09-09/NEXT-AGENT.md",
+    "docs/handoff/2026-09-09/START-HERE.md",
+    "AGENTS.md",
+    "CLAUDE.md"
+   ],
+   "what": "Explicit post-mortem: too much coordination, source freezing, defensive test infrastructure and bookkeeping came before one real signed-in journey or listening result. It sets the order: real journey, then owner listening, then memory correctness. Do not replay consumed run identities.",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "governance: Taxila build plan should put the real child journey first",
+   "evidence": "",
+   "notes": ""
+  },
+  {
+   "id": "HMG38",
+   "title": "Authority-first bounded candidate reader",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "html-portfolio",
+   "ref": "origin/codex/multimodal-layer-20260927@b514595f",
+   "paths": [
+    "api/_room.js:446-509"
+   ],
+   "what": "roomSourceCandidates applies the full episode disclosure predicate before ORDER/LIMIT: human only, non-null speaker, unsuperseded episode, l.id <= throughLogId (the current turn's own stored id). Typed binds, max 160. Errors propagate and never become an empty fallback.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "memory-graph / db-schema: bounded per-child recall reads",
+   "evidence": "SQL50 candidate cases",
+   "notes": ""
+  }
+ ],
+ "measurements": [
+  {
+   "claim": "Prompt-instruction privacy leaked 57.1% naturalistic / 98.1% adversarial scenarios. The SQL disclosure predicate leaked 0. A negative control (clauses 4+6 removed) caught 162 violations. Participant-join p50 53 ms.",
+   "source": "context/measurements.md#gate0-structural@MM",
+   "n": "494 scenarios, 31,122 row x scenario checks",
+   "method": "offline Gate 0 fixture A/B through real compiler, coordinator rerun",
+   "date": "2026-08-18"
+  },
+  {
+   "claim": "ConfAIde Tier-3 ChatGPT leaks 93% (GPT-4 22%). PiSAs partitioning cuts violations from 100% to 33.5%, but adding memory returns them to 63-90%. Behavioral control leaves a 9-90% residual.",
+   "source": "context/measurements.md#disclosure-leak-rates@MM",
+   "n": "literature",
+   "method": "adversarially verified literature sweep",
+   "date": "2026-08-13"
+  },
+  {
+   "claim": "tgbot surface 101/101 offline checks. mp slots use 371/2,000 chars on the live path. Webhook returns 401 without the secret.",
+   "source": "context/measurements.md#tgbot-landed@MM",
+   "n": "101 checks + 1 production probe",
+   "method": "offline suite + live probe",
+   "date": "2026-08-18"
+  },
+  {
+   "claim": "Live vy_group / vy_group_member / vy_tg_person = 0 rows. The Group AI was never used live.",
+   "source": "context/measurements.md#never-scheduled@MM",
+   "n": "full table counts",
+   "method": "live DB counts",
+   "date": "2026-08-18"
+  },
+  {
+   "claim": "Frozen recall: older targets recency 0/54 vs lexical 27/54. Lexical gets 0 of 27 in all 24 adversarial cases and selects 288 distractors. Both keep 960/960 mandatory recent and 3/3 corrections, 0 refusals. Max bytes 9,430 vs 17,664.",
+   "source": "docs/gurukul/research/GROUP-SOURCE-RECALL-EVAL-20261001.md@MM",
+   "n": "48 frozen invented cases",
+   "method": "offline, Node 24.13.0, selector SHA 87afbb37",
+   "date": "2026-10-01"
+  },
+  {
+   "claim": "Attribution and exact text/span preserved for 2,235/2,235 selected records across both arms.",
+   "source": "docs/gurukul/research/GROUP-SOURCE-RECALL-EVAL-20261001.md@MM",
+   "n": "2,235 records",
+   "method": "offline runner",
+   "date": "2026-10-01"
+  },
+  {
+   "claim": "Compiler envelope: double-counting the duplicate system gave 111,236 B and refused a normal reply. The consumed empty-turn envelope is 55,541 B; an ordinary short question is 56,452 B with a 913 B source wrapper.",
+   "source": "context/decisions.md#grouprecall20261001-provider-projection-correction@MM",
+   "n": "real-compiler probes",
+   "method": "actual caller, offline",
+   "date": "2026-10-01"
+  },
+  {
+   "claim": "Baseline delivery defects: a duplicate event gives 2 model / 2 send / 2 episode / 2 human-log / 2 assistant-log effects. {ok:false} still gives said:true and an assistant log. Fragment-1 fail + fragment-2 ok returns ok.",
+   "source": "docs/gurukul/research/GROUP-DELIVERY-DURABILITY-20261001.md@MM",
+   "n": "n=3 probes",
+   "method": "read-only actual-module fault injection (author-reported)",
+   "date": "2026-10-01"
+  },
+  {
+   "claim": "Review action targets measure 44 px high at 390 and 1440 (widths 72.55 / 94.47 / 75.03 / 78.88, gap >= 8). The minimum-zero negative control gives 27 px and is detected. Focus and 5-point hit tests pass with 0 mutations.",
+   "source": "context/measurements.md#groupreview20261001-measured-touch-targets-fe652992@MM",
+   "n": "4 targets x 2 widths",
+   "method": "hosted Playwright, Node 22.23.2, artifact SHA c0c1ee3d",
+   "date": "2026-10-01"
+  },
+  {
+   "claim": "Accepted 808ad32f: release 24/24 on Node 22 and on Node 24 (relational gates skipped without NEON_URL). SQL 50/50 on PostgreSQL 16.15 (27 tables / 249 DDL). APK 19,310,090 B.",
+   "source": "context/measurements.md#groupconsent20261001-final-combined-808ad32f@MM",
+   "n": "2 release jobs + 1 SQL + 1 APK",
+   "method": "GitHub Actions runs 36894264452 / 36894264361 / 36894264406",
+   "date": "2026-10-01"
+  },
+  {
+   "claim": "Test-group counts at 808ad32f: caller 170, kernel 39, selector 46, delivery 44, ingress 26, agentroom 48, UI 20 source / 22 mounted, publication 40 + 8, refresh 12 mounted / 24 outcomes.",
+   "source": "context/measurements.md#groupconsent20261001-final-combined-808ad32f@MM",
+   "n": "per-suite groups",
+   "method": "hosted APK eval logs",
+   "date": "2026-10-01"
+  },
+  {
+   "claim": "Portable kernel 3e036e7d: release 24/24 on both Node versions; SQL 30 groups; APK 19,310,119 B.",
+   "source": "context/measurements.md#groupai20261001-hosted-3e036e7d@MM",
+   "n": "2 + 1 + 1 jobs",
+   "method": "hosted",
+   "date": "2026-10-01"
+  },
+  {
+   "claim": "Multimodal evidence 19 checks; extraction 55; grounding 7; Mirror 25; canonical evidence 39; citation 7; compiler 82 + 1,000 property trials.",
+   "source": "context/measurements.md#multimodal20260927-focused-evidence@MM",
+   "n": "per suite",
+   "method": "offline network-blocked, mocked Azure serializer",
+   "date": "2026-09-27"
+  },
+  {
+   "claim": "APK eval failures went from 55 suites (ba3169cb) to 3 (0fdbf7d1) to 0 (4cc5e662). Release 24/24 on both Node versions; Gradle 1m51s.",
+   "source": "docs/gurukul/research/MULTIMODAL-LAYER-HANDOFF-20260927.md@MM",
+   "n": "3 APK runs",
+   "method": "hosted logs",
+   "date": "2026-09-27"
+  },
+  {
+   "claim": "Group-turn authority failed at run.mjs:337 after 46 passing groups (source-receipt mutation). Review backend 21/21, audience 58/58, UI source 14/14, SQL source-only 5/5.",
+   "source": "context/measurements.md#groupai20260929-audit-and-initial-evidence@MM",
+   "n": "n=5 commands",
+   "method": "network-blocked root execution",
+   "date": "2026-09-30"
+  },
+  {
+   "claim": "Honcho vendor results (not reproduced): LongMem S 452/500 (90.4%). LoCoMo headline 89.9% is a per-conversation mean; raw 1,378/1,540 (89.48%) excludes the adversarial category. BEAM 10M displays 0.409 vs a raw 0.405675.",
+   "source": "docs/gurukul/research/HONCHO-ADOPTION-20260929.md@MM",
+   "n": "vendor artifacts",
+   "method": "source/artifact review",
+   "date": "2026-09-29"
+  },
+  {
+   "claim": "Addressing literature: implicit-addressee GPT-4o 80.9% vs majority baseline 80.1%; 80/322 turns carry an explicit addressee. MUCA fixed cadence rated excessive by 56.25%. MultiLIGHT bundled condition 49.5%. Inner Thoughts most-restrained condition least preferred (2/12).",
+   "source": "src/engine/room.ts:272-321@MM; docs/design/PROPOSAL-MULTIPARTY-V1.md §1 M5",
+   "n": "literature",
+   "method": "cited papers",
+   "date": "2026-08"
+  },
+  {
+   "claim": "Bots can Snoop: 3.6% cross-group re-identification. Human confidants pass on ~30% of secrets (Slepian, secondary). 'Secret Soulmates': over half conceal companion use; regular use linked to a 46% drop in relationship stability (n>2,000, not peer reviewed).",
+   "source": "docs/research/multiparty/MULTIPARTY.md §5@MM; PROPOSAL §1 M7",
+   "n": "literature",
+   "method": "secondary/primary as labeled",
+   "date": "2026-08"
+  },
+  {
+   "claim": "Azure synthetic probe: HTTP 200, 2,794 ms, 83 in / 26 out tokens. Dev ledger: 4 settled receipts = 152 micro-USD.",
+   "source": "docs/gurukul/research/GROUPAI-RELATIONAL-INTEGRATION-2026-09-06.md@MM",
+   "n": "n=1 probe; 4 receipts",
+   "method": "live synthetic call + ledger readback",
+   "date": "2026-09-06"
+  }
+ ],
+ "rejections": [
+  {
+   "tried": "Read raw room history by group_id only.",
+   "what_broke": "A group id is not an ACL; history leaked across audiences. Fixed with audience-bound reads that apply the episode predicate before LIMIT.",
+   "source": "GROUPAI-READINESS-20260929.md findings; context/rejected.md#groupai20260929-no-private-group-equivalence",
+   "taxila_relevance": "Never key multi-child session recall on session_id alone."
+  },
+  {
+   "tried": "A mutable 45-minute episode extended with late joiners.",
+   "what_broke": "Today's members were retroactively authorized to hear yesterday's conversation. Fixed with an immutable-audience episode per human turn.",
+   "source": "api/_room.js:688-697; GROUPAI-READINESS",
+   "taxila_relevance": "A sibling or peer joining mid-month must not see earlier sessions."
+  },
+  {
+   "tried": "logRoomTurn without episode_id.",
+   "what_broke": "Logs had no lineage, so their original audience could not be established.",
+   "source": "GROUPAI-READINESS findings",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Use the DB's linked-member subset as the audience.",
+   "what_broke": "It omitted unlinked readers who could see the text. Fixed by comparing against the platform's complete member count.",
+   "source": "GROUPAI-READINESS; api/_group-audience.js",
+   "taxila_relevance": "Unknown listeners (a parent walking in, a friend on the call) must block private-memory use."
+  },
+  {
+   "tried": "Admit membership on a guessed /start r<id> deep link.",
+   "what_broke": "A room id is not proof of membership. Fixed with verified platform membership.",
+   "source": "GROUPAI-READINESS",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Ordinary messages after withdrawal treated as renewed consent.",
+   "what_broke": "Withdrawal was revived.",
+   "source": "context/rejected.md#groupai20260929-no-private-group-equivalence",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Immutable authority receipt with a separately mutable delivery destination.",
+   "what_broke": "After an await, the send could target a different chat than the one authorized. Fixed by freezing ev/ctx/adapter/room before the first await and capturing the default send with a frozen receiver.",
+   "source": "context/rejected.md#groupai20261001-mutable-destination-and-benchmark-transfer",
+   "taxila_relevance": "Freeze session/seat binding before async LLM/TTS work."
+  },
+  {
+   "tried": "Command dispatch before the group guard (/chup), and /bhool as 'forget this group'.",
+   "what_broke": "An unlinked or null speaker can mute the room, so onCommand is not a membership boundary. /bhool withdraws across all of the agent's groups, so a 'forget this group' label would lie.",
+   "source": "docs/gurukul/research/GROUP-NATIVE-IDENTITY-20261001.md",
+   "taxila_relevance": "Label forget scopes truthfully; allow privacy-reducing actions without full onboarding, but gate re-enable separately."
+  },
+  {
+   "tried": "Privacy as persona/prompt instructions.",
+   "what_broke": "Leaked 57.1% naturalistic / 98.1% adversarial in Gate 0, vs 0 for SQL.",
+   "source": "context/measurements.md#gate0-structural",
+   "taxila_relevance": "Parent/sibling visibility must be a predicate, not a prompt."
+  },
+  {
+   "tried": "A universal-quantifier structural clause over cited episodes.",
+   "what_broke": "It failed OPEN for uncited rows (vacuous truth). Fixed with an owner-channel-only branch.",
+   "source": "context/measurements.md#gate0-structural; api/_disclosure.js clause 2b",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "A member's whole-wipe deleting room-derived rows.",
+   "what_broke": "It deleted shared memory for everyone. Fixed with wipeWhere (withdraw, not delete).",
+   "source": "context/measurements.md#gate0-structural",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Downgrade a whole episode to 1:1 once anyone leaves.",
+   "what_broke": "It silently amputates room memory for those who stayed. Declined in favour of ruling A.",
+   "source": "api/_disclosure.js:291-301",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Implicit-addressee inference.",
+   "what_broke": "GPT-4o 80.9% vs 80.1% majority baseline, i.e. no better than chance; not built.",
+   "source": "src/engine/room.ts:287-292",
+   "taxila_relevance": "In group voice sessions use explicit name/seat addressing."
+  },
+  {
+   "tried": "Fixed speaking cadence and idle nudges in groups.",
+   "what_broke": "MUCA found it excessive (56.25%); the Meta AI WhatsApp backlash; the 1:1 idle nudge was already killed.",
+   "source": "src/engine/room.ts:272-277, 352-358",
+   "taxila_relevance": "Teacher interjections between kids should be bounded."
+  },
+  {
+   "tried": "Citing MultiLIGHT as evidence that silence must be decided separately.",
+   "what_broke": "Overstated (its bundled condition scored 49.5%). Reclassified as an engineering bet logged for measurement.",
+   "source": "context/measurements.md#disclosure-leak-rates (amended 2026-08-15)",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Lexical recall as an improvement over recency.",
+   "what_broke": "27/54 vs 0/54 overall, but 0/27 in all 24 adversarial cases and 288 distractors selected. Not promoted; recency stays default and lexical is a server-only opt-in.",
+   "source": "context/rejected.md#grouprecall20261001-no-lexical-promotion-or-segment-truncation",
+   "taxila_relevance": "Do not rely on keyword recall for months-long child memory."
+  },
+  {
+   "tried": "Tuning lexical weights after seeing the evaluation answers.",
+   "what_broke": "That invalidates held-out claims. Preregister, freeze the SHA, and require new cases for any successor.",
+   "source": "context/rejected.md#grouprecall20261001-no-posthoc-or-partial-budget-proof",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Text-only or inner-object byte counting.",
+   "what_broke": "It ignores metadata, escaping, wrappers and the current question. Measure the whole serialized packet.",
+   "source": "same",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "A 96 KiB whole-input byte limit as sufficient.",
+   "what_broke": "A 65,000-char ASCII core fits the bytes but is sliced at 64,000 by the adapters. Added core/tail segment refusal.",
+   "source": "same",
+   "taxila_relevance": "Prevent silent truncation of the child-safety floor."
+  },
+  {
+   "tried": "Budgeting the full compiler output.",
+   "what_broke": "The unused duplicate system was counted, giving 111,236 B and refusing an ordinary reply. Count only consumed {core, tail, turns}.",
+   "source": "same; context/decisions.md#grouprecall20261001-provider-projection-correction",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "An unconditional 32-term query cap in recency mode.",
+   "what_broke": "It refused ordinary long paragraphs for a limit recency does not use.",
+   "source": "GROUP-SOURCE-RECALL-EVAL final rerun",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Binding only the selected rows to the authority guard.",
+   "what_broke": "Changing an omitted candidate could change the correct selection. The whole pool is bound.",
+   "source": "GROUP-SOURCE-RECALL-PLAN-20261001.md",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Admitting assistant paraphrases into history and treating storage time as event time.",
+   "what_broke": "No dependency lineage for paraphrases; at is recording time. Both rejected.",
+   "source": "GROUP-SOURCE-RECALL-PLAN; api/_room.js:446-450",
+   "taxila_relevance": "The teacher's own past explanations need lineage before reuse as evidence."
+  },
+  {
+   "tried": "Honcho: scopes as ACLs, session deletion/queue counters as forgetting, vendor benchmarks as product quality; adopting it as a dependency.",
+   "what_broke": "Derived conclusions survive deletion and there is no completion endpoint. AGPL core; hosted policy permits de-identified fine-tuning; competing-systems ToS clause.",
+   "source": "context/rejected.md#honcho20260929-no-authority-or-quality-shortcuts",
+   "taxila_relevance": "Children's data cannot go to such a vendor."
+  },
+  {
+   "tried": "Restate for durable steps.",
+   "what_broke": "Server license is BSL 1.1, not open source.",
+   "source": "PORTABLE-GROUP-LAYER-20261001.md",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Returning said:true / an assistant-success log after an unconfirmed send; continuing later fragments; auto-retrying ambiguous sends; labeling throw/timeout as not executed.",
+   "what_broke": "False success, duplicate disclosure risk, and lying logs.",
+   "source": "context/rejected.md#groupdelivery20261001-no-ambiguous-retry-or-success",
+   "taxila_relevance": "Voice: never mark an utterance delivered until playback is confirmed."
+  },
+  {
+   "tried": "Render shape checks outside the sanitizing catch.",
+   "what_broke": "A revoked Proxy or throwing length leaked raw error text.",
+   "source": "same; GROUP-DELIVERY-DURABILITY review section",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Using arrival time or edit_date as the source time for consent comparison.",
+   "what_broke": "Delayed messages appear to postdate consent. A JS check alone is insufficient; the snapshot is repeated in INSERT...SELECT.",
+   "source": "context/rejected.md#groupconsent20261001-no-receipt-time-or-policy-laundering",
+   "taxila_relevance": "Recordings must carry capture time vs consent time."
+  },
+  {
+   "tried": "A colon-only timezone offset parser for authority timestamps.",
+   "what_broke": "It rejects real PostgreSQL +00. Normalizing it in the fixture would hide the production mismatch.",
+   "source": "same",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Code comment that Telegram retries webhooks forever; a monotonic update_id max as dedup.",
+   "what_broke": "Primary docs say bounded retries, and update_id can restart non-sequentially.",
+   "source": "GROUP-DELIVERY-DURABILITY-20261001.md",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "A blind port of the archived GroupAI runtime/context graph into the app.",
+   "what_broke": "It would duplicate authority and still leave the real metadata-loss bug unfixed.",
+   "source": "context/rejected.md#multimodal20260927-parallel-runtime-replay",
+   "taxila_relevance": "Prefer adapters over parallel runtimes."
+  },
+  {
+   "tried": "A claim schema version bump just to describe modality.",
+   "what_broke": "Version-keyed batch identity could requeue already completed extraction work.",
+   "source": "same",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Number(null) for absent document times.",
+   "what_broke": "Invented a zero timestamp. This was a real bug.",
+   "source": "same; context/decisions.md#multimodal20260927-existing-compiler",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Array validation via iteration.",
+   "what_broke": "A sparse [ , x ] array passed. Fixed with an own-index guard on every slot.",
+   "source": "same",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Image dimensions/regions as artwork understanding; one correction as a learning cycle.",
+   "what_broke": "Geometry is not meaning. One correction cannot meet the 12-session / 30-pair / 20-dev / 30-test gate.",
+   "source": "context/rejected.md#multimodal20260927-no-single-correction-learning-claim",
+   "taxila_relevance": "Taxila needs a real vision step; do not infer meaning from metadata."
+  },
+  {
+   "tried": "Actual213: storing a corrected Hindi/Devanagari preference and expecting the next reply to follow it.",
+   "what_broke": "The correction stored correctly but the delivered reply was entirely English. Retained as completed/fail.",
+   "source": "docs/gurukul/research/registry.json#actual213-corrected-hindi; docs/handoff/2026-09-09/START-HERE.md",
+   "taxila_relevance": "Language-preference memory must be verified on the delivered output."
+  },
+  {
+   "tried": "Focused passes as release acceptance; click completion as proof of request arrival; extra focus events and timeout inflation for fixtures.",
+   "what_broke": "The APK still failed 55 suites; 0 pending POSTs after 21 passing checks; focus during polling was ignored.",
+   "source": "context/rejected.md#multimodal20260927-no-green-ci-inference, #grouprelease20261001-no-click-completion-as-request-proof, #grouprelease20261001-no-shared-cause-or-auth-shortcut",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "A mutable global activityScope in the fixture, and a proposed token allowlist or error filter.",
+   "what_broke": "Auth mismatches across page unload. The allowlist/filter was rejected; fixed with per-document generations and pre-await scope capture.",
+   "source": "context/rejected.md#grouprelease20261001-no-auth-allowlist-or-error-filter",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Fixture assumed old abort-on-close request semantics.",
+   "what_broke": "Node v24.21.0 IncomingMessage.signal changed; the assertion threw and surfaced as HTTP 500, not a provider outage.",
+   "source": "context/rejected.md#release20260927-three-suite-no-completion",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "A hardcoded 'October 5' next-month fixture.",
+   "what_broke": "It stopped being next month in October.",
+   "source": "context/rejected.md#groupai20261001-mutable-destination-and-benchmark-transfer",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Synthetic SQL arrays serialized as ARRAY['uuid'].",
+   "what_broke": "Typed as text[] and not coercible to uuid[]. Fixed with array-input text so PREPARE infers the type.",
+   "source": "evals/group-sql-authority/harness.mjs:33-40; readiness ledger Oct 1",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Waiving the high-severity brace-expansion audit finding.",
+   "what_broke": "The security gate failed. Fixed by moving to 5.0.12.",
+   "source": "context/rejected.md#groupai20261001-no-portability-or-green-shortcuts",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Relying on a header-only 44 px rule for compact review buttons.",
+   "what_broke": "The buttons were about 27 px (7 px padding). Fixed with a scoped 44x44 minimum, measured with a negative control.",
+   "source": "context/rejected.md#groupai20261001-green-software-not-whole-layer",
+   "taxila_relevance": "Children need bigger targets."
+  },
+  {
+   "tried": "Compiler T2 using the host clock despite input.nowMs; generic export query-error fallback.",
+   "what_broke": "Replay silently aged ruptures, and incomplete exports looked plausible. Fixed with an explicit turn clock and a 503.",
+   "source": "context/rejected.md#release20260927-host-clock-and-silent-export",
+   "taxila_relevance": ""
+  },
+  {
+   "tried": "Process: heavy coordination, repeated source freezing, defensive test infrastructure and handoff bookkeeping before any real journey.",
+   "what_broke": "No real signed-in journey or owner listening result. On this branch the Group AI has zero real-group runs after many CI-receipt checkpoints.",
+   "source": "docs/handoff/2026-09-09/NEXT-AGENT.md; context/STATE.md START HERE blocks",
+   "taxila_relevance": "Taxila: ship the real child journey first and measure with real users early."
+  }
+ ],
+ "concepts": [
+  {
+   "name": "Common-friend Group AI",
+   "description": "One AI persona is a member of a multi-human chat (2-6 linked humans). 'The friend who was in the room with you.' Its value is remembering the room and carrying room context into each member's DM, never carrying DM secrets into rooms.",
+   "taxila_relevance": "Sibling, study-group, parent+child+teacher sessions."
+  },
+  {
+   "name": "Two products both called Room",
+   "description": "The common-friend group (/api/tg etc. through _surface/_room) vs the creator-private follower Room (/api/room). The latter's tests never authorize the former.",
+   "taxila_relevance": "Keep 1:1 tutoring and group sessions as separate authorities."
+  },
+  {
+   "name": "Structural disclosure",
+   "description": "Privacy as a SQL WHERE clause applied before ranking; a row never retrieved cannot leak. Measured 0/31,122 vs prompt arm 57-98%.",
+   "taxila_relevance": "Parent visibility and sibling privacy."
+  },
+  {
+   "name": "Episode-participant ACL",
+   "description": "A derived row's audience is everyone who participated in every cited episode. Membership governs the live channel; participation governs history.",
+   "taxila_relevance": "Late joiners never see old sessions."
+  },
+  {
+   "name": "Immutable audience per turn",
+   "description": "Each human turn gets a fresh episode whose participants equal the exact current linked set, created in one SQL statement.",
+   "taxila_relevance": ""
+  },
+  {
+   "name": "Consent as a platform act + app-voiced card",
+   "description": "Admin promotion is read consent; a deterministic card states the rules before the first episode. Disclosures are app strings, never model output.",
+   "taxila_relevance": "Session-start privacy card; parental consent screen."
+  },
+  {
+   "name": "No person row, no persistence (adult gate)",
+   "description": "Unlinked or unconsented speakers exist only in the live window. Known minors are refused in Vyakti.",
+   "taxila_relevance": "Invert into a verifiable-parental-consent gate."
+  },
+  {
+   "name": "Deterministic participation decision",
+   "description": "lurk/react/speak decided in code before the model. Explicit address only; silence logged as an event; cooldown only raises the bar.",
+   "taxila_relevance": "Turn-taking among multiple children."
+  },
+  {
+   "name": "Per-addressee register (address strip)",
+   "description": "Each member's honorific (aap/tum/tu) and derived rank rendered as data; never publicly correct an elder.",
+   "taxila_relevance": "Teacher addresses parent vs child correctly."
+  },
+  {
+   "name": "Ruling A / Ruling B",
+   "description": "A: departed members' shared past is answerable but never raised. B: shared memory fully erased only when all ask.",
+   "taxila_relevance": ""
+  },
+  {
+   "name": "State-inert group channel",
+   "description": "Group episodes never move dyadic relationship state.",
+   "taxila_relevance": "Group sessions must not move one child's emotional bond without attributed evidence."
+  },
+  {
+   "name": "Checkpointed guarantee (A/S/A/S)",
+   "description": "Repeated authority/source reads with sticky invalidation. Detects observed change; not atomic, not exactly-once.",
+   "taxila_relevance": "Re-check before LLM dispatch and TTS."
+  },
+  {
+   "name": "Complete audience witness",
+   "description": "The current platform audience must equal the authorized set; a bounded observation, not a transaction.",
+   "taxila_relevance": "Seat roster revision in native sessions."
+  },
+  {
+   "name": "Known-consent admission fence",
+   "description": "Source time must be strictly later than every known consent/link boundary, enforced in JS and in SQL.",
+   "taxila_relevance": "No persistence of pre-consent captures."
+  },
+  {
+   "name": "Adapter-reported acceptance / truthful delivery",
+   "description": "Success only on explicit ok:true. Unknown outcomes are never blindly retried. Logs only after confirmation.",
+   "taxila_relevance": ""
+  },
+  {
+   "name": "Durable effect states",
+   "description": "prepared / executing / confirmed / not_executed / unknown / cancelled; model generation is also an effect.",
+   "taxila_relevance": "Generated-module and notification jobs."
+  },
+  {
+   "name": "Attributed source packet",
+   "description": "Exact text/spans; recorded speaker separate from the current label; null subject/reply/revision/event time; the packet declares its own limits.",
+   "taxila_relevance": ""
+  },
+  {
+   "name": "Speaker vs subject",
+   "description": "A speaking about B does not make B the speaker; quoting is not authorship.",
+   "taxila_relevance": "Credit the right child for an answer."
+  },
+  {
+   "name": "Whole-payload budgets, refuse not truncate",
+   "description": "Measure the full serialized representation; refuse rather than cut required or safety text.",
+   "taxila_relevance": ""
+  },
+  {
+   "name": "Six-level evidence ledger",
+   "description": "Source, offline real caller, actual SQL, hosted release, real transport/provider, consented human task.",
+   "taxila_relevance": "Taxila launch gates."
+  },
+  {
+   "name": "Preregistered frozen comparison",
+   "description": "Hash the corpus before inspecting the method; report adversarial failures unpooled; any successor needs new held-out cases.",
+   "taxila_relevance": "Evaluating covert comprehension detection."
+  },
+  {
+   "name": "Negative controls everywhere",
+   "description": "Every gate proves it can fail: CSS minimum-zero, predicate-removal mutants, Gate 0 clause removal.",
+   "taxila_relevance": ""
+  },
+  {
+   "name": "CPM co-ownership and the mediator role",
+   "description": "Petronio: a confidant becomes a co-owner bound by the discloser's rules. Simmel: be mediator, never tertius gaudens.",
+   "taxila_relevance": "A teacher must ask the child before telling the parent (consent moment M4)."
+  },
+  {
+   "name": "Observer-to-subject perspectives",
+   "description": "Honcho-style separation of what each observer may know about a subject; explicit vs inferred facts.",
+   "taxila_relevance": "Teacher-view vs parent-view of the child."
+  },
+  {
+   "name": "Modality-honest evidence",
+   "description": "Each evidence row states modality, interpretation (owner text vs machine transcription), locator units and limitations; images are not interpreted without a vision step.",
+   "taxila_relevance": "A child's voice answers and notebook photos as evidence."
+  }
+ ],
+ "unread": [
+  "vyakti-groupai repo (original GroupAI kernel: relational-core, context capsule, delivery runtime, shadow pilot), out of segment; archived commits b476a3c/56b3537 not in html-portfolio",
+  "context/STATE.md older history beyond the 2026-09-27..10-01 START HERE blocks (1,751 lines)",
+  "docs/research/multiparty/* tracks beyond MULTIPARTY.md §5 and PROPOSAL §1, §2.7, §6.4, §8 (headings only)",
+  "api/discord.js, api/whatsapp.js adapters; api/memory.js withdrawSharedRows; engine guardReply internals",
+  "Full assertion bodies of evals/group-turn-authority/run.mjs (859 lines), group-sql-authority/run.mjs (694), turn-checkpoints/run.mjs (500), source-turn-selection, group-audience, group-source-event, surface-delivery",
+  "Production UI behind readiness/publication fixtures: StudioApp.tsx readiness effect, teacher-sheet publication UI, ActivityPanel; PersonModelStudio.tsx full diff",
+  "build-apk.yml / android delta in detail",
+  "docs/handoff/2026-09-09/{evidence,listening,context-root}",
+  "No real-group, live-provider or vision evidence exists on this branch to harvest"
+ ]
+}

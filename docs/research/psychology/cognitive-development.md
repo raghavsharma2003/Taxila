@@ -703,3 +703,188 @@ Tags as in the header. "EPMC" = abstract read via Europe PMC this session.
 - Scaria, L. M., Bhaskaran, D., & George, B. (2023). Prevalence of specific learning disorders among children in India: systematic review and meta-analysis. *Indian J Psychol Med*. doi:10.1177/02537176221100128 [V, EPMC]
 - Yang, L., et al. (2022). Prevalence of developmental dyslexia in primary school children: a systematic review and meta-analysis. *Brain Sci*. doi:10.3390/brainsci12020240 [V, EPMC]
 - India ORF benchmarks and the NCERT Foundational Learning Study figures: https://www.centralsquarefoundation.org/articles/fluency-and-its-role-in-foundational-literacy [S]
+
+---
+
+## Methodologist review
+
+**Reviewer stance:** an adversarial developmental psychologist and psychometrician. **Date:** 2026-10-02.
+
+**Method.**
+- Re-pulled 30 primary abstracts from the Europe PMC REST API this session: Taylor 2022, Rouder & Haaf 2019, Rouder, Kumar & Haaf 2023, Enkavi 2019, Arrondo 2024, Kofler 2013, Brod 2020, Kievit 2019, Lehtonen 2018, Lowe 2021, Gunnerud 2020, Scaria 2023, Howard 2020, Ratcliff 2012, Karr 2018, Karr 2022, Lee, Bull & Ho 2013, Younger 2023, Dick 2019, Galeano Weber 2018, Spiegel 2021, Johann & Karbach 2018, Banerjee 2025, Schneider 2018, Melby-Lervåg 2012, Rueda 2004, Morrow 2012, Astill 2012, Davidson 2006, Gathercole 2004, Luna 2004, Kail & Ferrer 2007, Usha 2020, Pedersen 2023 and Bhavnani 2025.
+- Ran one small simulation of EZ-diffusion robustness: 20,000 simulated diffusion trials with child-like parameters v = .20, a = .14, Ter = .45 s. The script is `scratchpad/ezsim.py`. It is not committed.
+- Web search was not available (session budget exhausted). Items I could not check are tagged [U].
+
+**Overall verdict.** The document is better than most of the literature it summarises. It already bans the worst ideas: IQ, ADHD flags, brain training, bilingual-advantage claims, cross-child ranking. Most citations are read correctly. Its remaining problems are of three kinds:
+- (a) a few **misapplied citations**, where adult evidence is used for children or a sample is described wrongly;
+- (b) **psychometric gaps that matter most exactly where the document feels safest**: "own-trend only" change statements, shrinkage, and separating practice from development;
+- (c) **parent-facing example sentences that break the document's own contract**.
+
+None of these needs a redesign. Several need a rule change before the spec workstream copies the examples.
+
+### R1. Citation checks
+
+| claim in doc | what the source actually says | verdict |
+|---|---|---|
+| NIH-TB ICC "0.32-0.77"; quoted *"None of the tests met criteria for clinical use"* (Taylor 2022) | The abstract gives ICC **0.31-0.76** for the full sample, with marked **site differences**. Its wording is "none of the tests exhibited adequate reliability for use in clinical applications". | Substance is right. The quotation marks are wrong (it is a paraphrase), and the range is off by .01. Add the site-difference finding: it is directly relevant to Taxila's device and home heterogeneity. |
+| Rouder & Haaf 2019: hierarchical models "recover reliability"; CD2 reversal says "estimated hierarchically" | The 2019 abstract says hierarchical models "rescue classical concepts" of reliability and correlation. **The follow-up (Rouder, Kumar & Haaf 2023, PBR [V])** found trial noise in 24 tasks was **~8x true individual variability**, and that hierarchical models "also perform poorly in localizing correlations. The advantage of these models is not in estimation efficiency, but in providing a sense of uncertainty." | **Misleading as written.** Hierarchical models correct the attenuation *bias*. They do not create *information*. Fix §2.3 and CD2: a hierarchical model tells you honestly that you cannot know a child's interference effect. It does not let you know it. The doc's own [U] illustration (γ = .125) can now be tagged [V]: 1/8 is Rouder 2023's empirical ratio. |
+| Enkavi 2019: model parameters "as stable as raw DVs", given as a reason to prefer them (§2.3 b) | The abstract says "certain model parameters are as stable as raw DVs", and raw task DVs are the unreliable ones. | **Misread direction.** "As stable as an unreliable DV" is not a reason to use model parameters for reliability. Their case rests on *interpretability* (separating caution from quality), not reliability. Reword §2.3(b). |
+| Bilingual EF advantage absent: Lehtonen 2018, Paap & Greenberg 2013 | **Both are adult samples.** Lehtonen's title is "...in adults?" (152 studies on adults). | **Wrong population for a child product.** Replace with child meta-analyses. **Lowe et al. 2021, *Psych Sci*** [V]: ages 3-17, 1,194 effect sizes, g = .08, which became −.04 after bias correction. **Gunnerud et al. 2020, *Psych Bull*** [V]: ≤ 18 years, g = .06, small-study effects. Note that Gunnerud found a **switching advantage that survived bias correction**, plus large unexplained heterogeneity. "No advantage" is right for overall EF. It is slightly overstated for switching. CD7's *decision* stands, because Taxila makes no advantage claims either way. Dick 2019 (children aged 9-10, n = 4,524) is correctly cited. |
+| Bialystok 2010 supports "vocabulary in either language alone under-states their lexicon" and conceptual scoring | Bialystok measured **English receptive vocabulary only**. It shows the deficit is concentrated in home-context words. It does not test conceptual (cross-language) scoring. | **Over-attributed.** The conceptual-vocabulary rationale comes from the Pearson, Fernández & Oller (1993) tradition [U: not re-verified]. Cite that, or mark the claim [U]. |
+| EF differentiates "around age 10" (CD3, §1.4); Younger 2023 shows a "3-community structure" of WM/inhibition/flexibility | Younger 2023 [V]: **N = 1,286, ages 8-14**, three components "by age 10", "refinement continues through at least age 14". The components are **WM, context monitoring and interference resolution**, not Diamond's WM/inhibition/flexibility. **Lee, Bull & Ho 2013 (*Child Dev*, N = 688, ages 6-15, cohort-sequential, Singapore) [V]: a two-factor structure from 5-13, and a separated three-factor structure only at 15.** Karr 2018 [V]: individual school-age CFAs most often *accepted* three factors, but the bootstrap re-analysis *selected* unidimensional models for children and adolescents, with low acceptance rates overall (publication bias). | **Developmental claim stated too precisely.** The age of differentiation is method-dependent, ranging from ~10 (ACE network models) to ~15 (Lee 2013 CFA). ACE has **no data below age 8**, so it cannot support anything about 6-7. Apparent unity in children is partly a *measurement artefact*: unreliable child tasks correlate weakly with everything, and that flattens factor structure. Fix: "components are research-only at every age until S2". The CD3 cut at 10 should become a hypothesis, not a reporting rule. Lee 2013 must be cited. It is the only one of these studies that spans Taxila's exact age range. |
+| Brod 2020: "only 9-12-year-olds with higher inhibitory control learned from wrong predictions" | [V]: **n = 51**, ages 9-12, Experiment 2. The title says "executive function skills"; the abstract says inhibitory control. | The reading is right, but the evidence is thin. A single n = 51 moderation finding is fragile. State the n. S4 is correctly framed as a replication, not as established mechanism. |
+| Arrondo 2024; Kofler 2013; Morrow 2012; Scaria 2023; Polanczyk 2007 | All [V] and correctly reported: sens .75 / spec .71; g = .76 vs typically developing, .25 vs clinical controls; RR 1.30 boys and 1.70 girls; 8% (95% CI 4-11), 6 studies, n = 8,133. | Correct. Two caveats should be stated. First, Scaria's six studies all used **Indian screening instruments** (NIMHANS SLD index, GLAD), and the 95% CI is 4-11%, so PPV must be computed across that range, not at one point. Second, using **ADHD CPT accuracy as a stand-in for an SLD flag** (§7.3) is an *analogy*, not evidence about reading or maths screeners. Label it as such. |
+| Usha 2020 = "strong developmental signal" (matrix §8.1) | [V]: **cross-sectional**, 45 children per grade, one Kannada-medium sample, 67 akshara. The "plateau" is defined by a non-significant post-hoc Bonferroni contrast. | **Overclaimed.** It is a useful descriptive anchor and weak developmental evidence. Kannada's orthography is larger and denser in conjuncts than Hindi's, so the timetable does not transfer [U]. Downgrade the matrix cell to "descriptive anchor, other script; S8 needed". |
+| Banerjee 2025 | [V]: correct (n = 1,436 working children, 471 schoolchildren, 1% vs > ⅓). | The numbers are correct. Two inferential limits should be stated. (a) It is a **between-population** contrast: working and non-working children differ in selection, schooling and age. (b) It shows lack of transfer. It does not show a child-level "context gap" trait. S5 is the right way to test that. |
+| Ratcliff 2012; Davidson 2006; Gathercole 2004; Luna 2004; Kail & Ferrer 2007; Rueda 2004; Galeano Weber 2018; Spiegel 2021; Karr 2022; Howard 2020; Kievit 2019; Schneider 2018; Melby-Lervåg 2012; Astill 2012; Johann & Karbach 2018; Pedersen 2023 | All checked [V] and read correctly. | One nuance. Rueda's "conflict stable after 7" is a *flanker RT difference score*, exactly the unreliable kind the doc rejects. It must not be read as "interference control matures at 7". NIH-TB Flanker scores keep improving through adolescence [U]. |
+| S1 "First validated game-based EF battery for Indian children in Hindi and English" | **DEEP** (Bhavnani et al. 2025, *PLOS Digit Health*) [V] is a gamified, IRT-scored, longitudinally validated cognitive assessment of Hindi-speaking children in rural Haryana at 39, 60 and 95 months (n = 1,359 → 600), with r = .37 with Raven's CPM and r = .32 predicting school outcomes at 8. | **"First" is unsafe.** Cite DEEP and narrow the claim: *first in-the-wild, embedded, 6-15, Hindi/English EF measures with in-deployment reliability*. Any "first" needs a systematic search before submission. |
+
+### R2. Psychometric problems (ranked by consequence)
+
+**P1. "Own-trend only" is the ethically safest framing and the psychometrically weakest one.** Difference scores inherit the reliability paradox at the individual level:
+
+```
+ρ_D = (ρ_xx − r_12) / (1 − r_12)      reliability of a child's change score (equal variances)
+ρ_xx = .70, r_12 = .60  →  ρ_D = .25      (a trait that is stable month to month makes change nearly unmeasurable)
+RCI threshold at ρ = .70:  |Δ| > 1.96·√2·√(1−.70)·SD = 1.52 SD
+```
+
+Developmental change in WM or speed over 3 months is perhaps 0.1 SD [U: back-calculated from roughly linear growth across 6-15]. So **individual "development" will almost never pass CD10 in a 3-month window.** Anything that does pass is mostly practice or state. Consequences:
+- (a) The §2.6 growth rule (β1 + u1_i > 0 over ≥ 3 months) should be **≥ 12 months for cognitive-process metrics**. Development claims belong to *group* papers, not to individual parent reports.
+- (b) Within-child change statements on cognitive-process metrics (span, drift) should be **suppressed** by default. Change statements are allowed on *learning* metrics (fluency per skill, number-line PAE, akshara θ), where change is large and is the point.
+- (c) The `card.rho ≥ .7` gate in invariant (ii) gates *level*. **Add a separate gate for change**: an RCI pass computed with the reliability of the *change score*, at matched information (see P2).
+
+**P2. Shrinkage manufactures spurious own-trend change.** Every child-level model in the doc uses partial pooling. Examples: κ_i ~ N(μ_age, σ²), ζ_i ~ N(0, σ²) with an age covariate, and the Kalman filter. Early in a child's history the posterior sits near the age mean. As data accrue it moves toward the child's true value. For a child truly 1 SD below the mean, with shrinkage weight w = n/(n + σ²_e/σ²_θ) moving from .3 to .8, the estimate moves from −0.3 to −0.8 SD. That is **a 0.5 SD "decline" that never happened.** A child above the mean shows a fake "improvement".
+
+Two further consequences:
+- An age-centred prior **is a normative comparison** smuggled in under CD4. The child's estimate is literally "deviation from same-age children".
+- Rules:
+  - (i) Compute change statements only between windows of **matched information**, or from the likelihood (unpooled) contrast.
+  - (ii) Never display the trajectory of a pooled posterior mean as development.
+  - (iii) Document in each reliability card what the prior pools over (age band, language, device class). That pooling group defines a norm group, with all of CD4's caveats.
+
+**P3. Practice and development are not separately identifiable within a child.** In §2.6, `age_it` and `log(1 + n_it)` both rise monotonically over a child's months. Within one child they are nearly collinear. Separation comes only from (a) between-child variation in age at entry, which reintroduces SES and device confounds, and (b) variation in exposure density, which is endogenous: engaged children play more and also differ in other ways. The log-practice form is also an assumption. Retest gains partly reset after gaps, and they differ by form.
+
+**Fix:**
+- an **accelerated (cohort-sequential) design** for development
+- **planned measurement bursts** with fresh alternate forms at fixed calendar intervals, and exposure held constant across children at each burst
+- practice estimated from **within-burst** trials
+
+Also, the Kalman filter in §2.7 has no practice term, so its "climate" absorbs practice gains. Merge §2.6 into the observation equation (y_t = η_t + γ·log(1 + n_t) + s_t + e_t), or the parent-facing climate is a practice curve.
+
+**P4. Reliability measured in the wrong conditions.** S1 runs in a *supervised session* with a 2-week retest. Taylor 2022 found reliability **lower than shorter-interval work and different between sites**. Supervised short-interval ICCs will overstate home, month-scale reliability. Reliability cards used for gating must come from **in-deployment** data: split-half across home sessions, or hierarchical trial-level reliability (Rouder-Haaf) per age band × device class × language. The interval must match the interval of the claim being made. S1's supervised data are for *validity* against standard tasks.
+
+**P5. EZ-diffusion is not "device-robust" in practice; it is lapse-fragile.** The simulation (20k diffusion trials, v = .20, a = .14, Ter = .45, accuracy 95%):
+
+| condition | v | a | Ter |
+|---|---|---|---|
+| clean | .203 | .146 | .447 |
+| touch latency +80 ms, jitter SD 30 ms | .202 | .146 | .524 |
+| audio latency +200 ms, jitter SD 100 ms | .194 (−4%) | .152 | .618 |
+| 5% fast guesses | .183 (−10%) | .139 | .432 |
+| **3% slow lapses (2-5 s)** | **.133 (−34%)** | **.221 (+51%)** | **.102** |
+| sampling noise, 30-trial block | CV 18% | | |
+
+So the doc's claim holds for **touch** latency, which mostly lands in Ter as stated. It weakens for **audio-onset** stimuli. It **fails badly for lapses**. Children at home lapse often, and lapse rates differ by household and device, so lapses reintroduce exactly the confounds v was meant to escape. EZ assumes no contaminant RTs. **Fix:**
+- trim (e.g., RT < 200 ms or > the child's 99th percentile or > 2.5 s), or better, fit a **hierarchical diffusion model with a contaminant mixture** (HDDM-style)
+- report lapse rate as a separate weather variable
+- avoid EZ when accuracy > ~97%, where the edge correction dominates the estimate
+- treat "v absorbs device latency" as a hypothesis for Open Question 1, now partly supported for touch only
+
+The EZ equations as written match Wagenmakers et al. 2007 to my knowledge [U], and the doc already says to check them before coding.
+
+**P6. Staircase threshold vs model parameter.** §3.1 defines span as the 50% point, (κ_i − δ)/λ. The 2-up/1-down staircase converges near **70.7%**, i.e. load = (κ_i − δ − 0.88)/λ. Report one quantity consistently. Span loads are small integers (2-9), so a 3-minute block gives few reversals and a coarse threshold. Estimate κ_i from all trials with the IRT model, not from reversal averages.
+
+**P7. Adaptive item selection hides decline in accuracy.** Lessons that hold accuracy at ~70% by design (ACE-style) flatten the accuracy-over-minutes slope. The §3.5 vigilance model includes item difficulty, which is good. The decrement must then be read off the **difficulty-adjusted** (IRT) scale, not raw accuracy. Session length is also **informative censoring**: tired children stop early. Model drop-off jointly, or restrict to fixed-length blocks.
+
+**P8. The vocabulary model's general factor is not conceptual vocabulary.** In a bifactor model, θ^gen is the *shared* variance across languages. A child who knows many concepts *only in Hindi* gets a high θ^Hindi and a modest θ^gen. Conceptual vocabulary is a **disjunctive** construct (known in Hindi *or* English). Use a concept-level model:
+
+```
+P(knows concept c) = σ(θ_i^concept − b_c)
+P(correct on item (c, L) | knows c) = σ(θ_i^L − b_cL)        (label access in language L)
+P(correct | not known) = g_item                               (4-AFC picture choice: g ≈ .25; add 3PL guessing)
+```
+
+Translation-equivalent pairs link the scales. Report concepts known and labels per language. Do not report θ^gen.
+
+**P9. LLTM fit.** A pure LLTM assumes features explain item difficulty completely. They rarely do, and misfit biases η_k. Use an LLTM with a **random item residual** (b_j = Σ q_jk η_k + ε_j, the "LLTM+ε"/explanatory IRT of De Boeck & Wilson 2004 [U]). Child-specific feature slopes ν_ik need many items per feature per child. Gate them by reliability like everything else.
+
+**P10. PPV framing for a multi-stage pathway.** The single-test PPV arithmetic in §7.3 is correct. The *pathway* is sequential, though, and its stages are correlated: they share the same instructional context and the same ASR. The true PPV is therefore not the product of independent likelihood ratios, and is unknown until S9. Also:
+- At n = 50 evaluations, the 95% CI on a PPV of .40 is about ±.14. The kill criterion needs an interval rule, e.g. "upper 95% bound < .5".
+- PPV depends on the reference standard. Indian instruments (NIMHANS index, DALI) carry their own error. Report verification bias.
+
+### R3. Developmental inaccuracies and gaps
+
+1. **EF differentiation timing.** See R1 (Lee 2013 vs Younger 2023). State it as a range of ~10-15 that depends on method.
+2. **"A 6-year-old reliably holds about one instruction step with one condition"** [U] is an invented, product-relevant norm. Typical forward spans at 6 are several items [U], and classroom instruction-following studies show multi-step recall in 7-9-year-olds (the Gathercole "following instructions" line [U]). Delete it, or make it the S3 hypothesis. Do not let it set chunk length by default for all 6-year-olds.
+3. **Number line ceilings.** 0-100 estimates become near-linear in early primary school in US samples, and 0-1,000 later (Siegler & Booth/Opfer [U]). So 0-100 PAE goes to ceiling for most Class 3+ children. Plan scale progression: 0-100 → 0-1,000 → fractions 0-1 → 0-5 improper fractions. Expect Indian timetables to differ with instruction (ASER).
+4. **Akshara timetable** taken from Kannada: see R1. The Hindi orthography's size and conjunct density differ [U].
+5. **Adolescent sleep phase.** Parent statements such as "mornings were stronger than late evenings" ignore the pubertal shift toward eveningness from ~12-13 [U: Carskadon/Crowley line]. They are also confounded by who uses the phone when, weekday vs weekend, and lesson content. Time-of-day effects are between-session comparisons with selection. Report them only from within-child, content-matched, randomised scheduling (S6). Until then, do not report them to parents.
+6. **Spatial reasoning is missing.** Mental rotation and spatial visualisation are malleable and predict STEM outcomes (the Uttal 2013 training meta-analysis line [U]), and they are game-native. They belong with the domain-cognitive flagships (CD5) as a candidate construct for S-series validation.
+7. **Processing speed "adult-like ~15"** comes from Luna's oculomotor latency. Psychometric speed tasks keep improving into the late teens or early 20s (Kail's curves [U]). Say "task-dependent".
+
+### R4. Ethically risky inferences and contract violations in the doc's own examples
+
+The parent-facing *Shape* examples will be copied into templates, so they must pass the doc's own contract (§8.2). Several fail:
+
+| section | example text | problem | fix |
+|---|---|---|---|
+| §6.2 | "she now knows 3/4 is bigger than 2/3, **which most children find hard**" | A **comparison with other children**. This breaks CD4 and contract rule 2. It is also a claim from a single item. | Drop the comparison. Base the statement on a calibrated set of fraction comparisons, not one pair. |
+| §3.1 | "now remembers about **[k] positions**... which **helps her finish problems on her own**" | (a) A **raw span number** works as a normed score. Parents can look up digit-span norms online, and siblings will be compared. (b) "Helps her finish on her own" asserts the effect that **S3 has not yet tested**. | Give the teaching adjustment only ("we're giving instructions in shorter chunks in the lamp game and in lessons"). No span number. No efficacy claim until S3. |
+| §3.4 | "Fluency like this **frees attention** for harder problems" | The doc itself tags this mechanism [U] in §6.1. | Remove it, or phrase it as Taxila's teaching rationale ("we practise this so that...") rather than as fact about the child's mind. |
+| §3.5 | "**after that, accuracy dips**"; "mornings were stronger" | Weather presented as a stable pattern without the confound handling in R3.5. | Allowed only with a within-child, content-matched estimate and its n. |
+| §7.3 | the flag message must say "does not mean she has a **learning disorder**" | It contains a word from the banned list in §8.2. The predicate will block it, or someone will add an exemption ad hoc. | Make an explicit, reviewer-signed exemption channel for flag messages. Better, rephrase without the term ("this is not a diagnosis"). |
+| §8.2 rule 5 | a banned-word list as the safety predicate | LLM-written text paraphrases freely ("finds it hard to sit still", "struggles to focus", "a bit slow with numbers"). A word list catches almost none of this. | Template-constrained generation, with slot values from the CognitiveLayer. Add a **semantic** classifier predicate (trait-attribution / deficit-framing / cross-child comparison), audited on a labelled set, alongside the word list. |
+
+Other ethical points:
+- **Disproportion rule (§7.3 condition 3) has an equity problem.** Requiring a large gap relative to the child's *own* progress elsewhere is a discrepancy criterion. Discrepancy models were discredited in the SLD literature (the IQ-achievement discrepancy debate [U]). Dyslexia commonly co-occurs with weaker oral language (Peterson & Pennington 2015 [V]). The rule therefore systematically **under-refers children with broad difficulties**, who are disproportionately the most disadvantaged. Make it a *confidence modifier* (a "protects against flagging poor schooling" note for the reviewer), not a required condition.
+- **Assent at 10+ only (§9).** Research ethics boards and journals expect age-appropriate assent from younger children too. Indian research guidance commonly expects assent from about age 7 [U: verify against the ICMR 2017 National Ethical Guidelines]. This concerns publishability and the child's dignity, not compliance theatre. Build a spoken, child-language assent for 6-9-year-olds. A child's refusal is honoured even when the parent consents.
+- **Pooled priors as hidden norms.** See P2. Every child-level estimate built on an age-centred prior is a comparison with other children. CD4's "no cross-child comparison" holds only if no *display* contrasts the child with the prior mean, *and* if change claims avoid shrinkage artefacts.
+- **Knob decisions from unreliable estimates.** CD1(a) lets cognitive estimates set instruction chunk length, wait time and break timing. That is a low-stakes use. But persistent mis-set knobs, such as permanently short chunks for a child mis-estimated as low-WM, are a quiet form of **lowered expectations**: the same expectancy risk §7.3 guards against after a flag. Fix: knobs default to population values; individualise only within bounded ranges; re-randomise periodically (micro-randomised, as in S3) so a wrong setting cannot become permanent.
+
+### R5. Constructs that cannot be validly measured from these logs (confirm or extend the doc's bans)
+
+- **Confirmed bans:**
+  - individual interference and switch costs (now stronger, given Rouder 2023)
+  - ANS Weber fractions
+  - an ADHD or attention trait
+  - general ability
+  - RAN from unvalidated ASR timestamps
+- **Should be added to the research-only list:**
+  - **cognitive flexibility from games**, at all ages (already done)
+  - **component EF profiles at any age** until S2 (R1)
+  - **per-child "context-transfer gap" φ_ic** until S5 shows it is stable within a child. At present it is a population finding (R1, Banerjee)
+  - **per-child time-of-day effects** (R3.5)
+- **Should be removed from "estimate" status until S1 reports in-deployment reliability:** relational-reasoning random slopes ν_ik, and the number-line β (compression). β is notoriously unstable at the individual level, and the doc rightly prefers PAE [U].
+
+### R6. Corrections required before this document feeds the spec or `context/`
+
+1. Replace the adult bilingual meta-analyses with Lowe 2021 and Gunnerud 2020, and note Gunnerud's switching result.
+2. Rewrite §2.3 and CD2 using Rouder, Kumar & Haaf 2023: hierarchical models quantify uncertainty; they do not rescue individual precision.
+3. Reword §2.3(b) on Enkavi: model parameters are preferred for interpretability, not reliability.
+4. Add Lee, Bull & Ho 2013. Restate the timing of EF differentiation as a method-dependent range (~10-15). ACE has no data below age 8. Make EF components research-only until S2.
+5. Add a **change-score reliability gate**, distinct from the level gate. Raise the window for cognitive-process growth claims to ≥ 12 months. Default to suppressing within-child change on process metrics.
+6. Add a **shrinkage-artefact rule**: change only between matched-information windows or unpooled contrasts. Document the prior pooling group on each card.
+7. Put the practice term into the §2.7 state-space model, and use a burst or alternate-form design to separate practice from development.
+8. Reliability cards must come from in-deployment data at the claim's interval. S1's supervised retest is used for validity.
+9. EZ: add lapse and fast-guess handling, or use a hierarchical DDM with a contaminant mixture. "Device-robust" holds for touch latency only.
+10. Make the staircase threshold and the 50% span point consistent (P6).
+11. Replace the bifactor vocabulary model with a disjunctive concept × label model with a guessing term.
+12. Use LLTM with a random item residual.
+13. Fix the five parent example sentences in R4, and add a semantic deficit/comparison predicate alongside the banned-word list.
+14. Make §7.3's disproportion condition a reviewer note, not a gate. Use an interval-based kill criterion for S9. Compute PPV across Scaria's CI (4-11%). Label the CPT analogy as an analogy.
+15. Downgrade Usha 2020 to "descriptive, other script". Fix the Taylor quote and ICC range, and add the site-difference finding.
+16. Cite DEEP (Bhavnani 2025) and drop the "first validated" claim for S1.
+17. Add spatial reasoning as a candidate domain construct. Make time-of-day parent statements research-only until S6.
+18. Add spoken assent for ages 6-9 in §9.
+
+### R7. References added by this review
+
+- Rouder, J. N., Kumar, A., & Haaf, J. M. (2023). Why many studies of individual differences with inhibition tasks may not localize correlations. *Psychon Bull Rev*. doi:10.3758/s13423-023-02293-3 [V, EPMC]
+- Lee, K., Bull, R., & Ho, R. M. H. (2013). Developmental changes in executive functioning. *Child Dev*. doi:10.1111/cdev.12096 [V, EPMC]
+- Lowe, C. J., Cho, I., Goldsmith, S. F., & Morton, J. B. (2021). The bilingual advantage in children's executive functioning is not related to language status: a meta-analytic review. *Psychol Sci*. doi:10.1177/0956797621993108 [V, EPMC]
+- Gunnerud, H. L., ten Braak, D., Reikerås, E. K. L., Donolato, E., & Melby-Lervåg, M. (2020). Is bilingualism related to a cognitive advantage in children? *Psychol Bull*. doi:10.1037/bul0000301 [V, EPMC]
+- Bhavnani, S., et al. (2025). A non-specialist worker delivered digital assessment of cognitive development (DEEP) in young children: a longitudinal validation study in rural India. *PLOS Digit Health*. doi:10.1371/journal.pdig.0000824 [V, EPMC]
+- McHenry, M. S., Mukherjee, D., Bhavnani, S., et al. (2023). The current landscape and future of tablet-based cognitive assessments for children in low-resourced settings. *PLOS Digit Health*. doi:10.1371/journal.pdig.0000196 [V, EPMC]
+- De Boeck, P., & Wilson, M. (2004). *Explanatory Item Response Models*. Springer. [U]
+- Pearson, B. Z., Fernández, S. C., & Oller, D. K. (1993). Lexical development in bilingual infants and toddlers: comparison to monolingual norms. *Lang Learn* 43:93-120. [U]

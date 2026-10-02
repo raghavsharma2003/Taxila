@@ -23,6 +23,8 @@ export function reduceStatus(f: StatusFlags, e: StatusInput): StatusFlags {
       return { ...f, childSpeaking: true };
     case "child_speech_end":
       return { ...f, childSpeaking: false, awaiting: true };
+    case "child_silent":
+      return { ...f, childSpeaking: false, awaiting: false };
     case "child_final":
       // Voice transcripts often land after the teacher has already started answering; only a typed turn
       // starts a wait of its own.

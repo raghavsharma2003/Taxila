@@ -1,0 +1,166 @@
+{
+ "inputs_note": "see docstring; A = assumption",
+ "ltv": {
+  "pess": {
+   "web_upi_autopay": {
+    "monthly_lifetime_months": 3.49,
+    "gross_revenue_ltv_monthly_plan_inr": 1045,
+    "contribution_ltv_monthly_plan_inr": 347,
+    "contribution_ltv_annual_plan_inr": 1270,
+    "contribution_ltv_blended_inr": 532
+   },
+   "play_billing_subs": {
+    "monthly_lifetime_months": 3.49,
+    "gross_revenue_ltv_monthly_plan_inr": 1045,
+    "contribution_ltv_monthly_plan_inr": 301,
+    "contribution_ltv_annual_plan_inr": 1102,
+    "contribution_ltv_blended_inr": 461
+   },
+   "play_user_choice": {
+    "monthly_lifetime_months": 3.49,
+    "gross_revenue_ltv_monthly_plan_inr": 1045,
+    "contribution_ltv_monthly_plan_inr": 308,
+    "contribution_ltv_annual_plan_inr": 1128,
+    "contribution_ltv_blended_inr": 472
+   },
+   "web_with_15pct_school_share": {
+    "monthly_lifetime_months": 3.49,
+    "gross_revenue_ltv_monthly_plan_inr": 1045,
+    "contribution_ltv_monthly_plan_inr": 295,
+    "contribution_ltv_annual_plan_inr": 1080,
+    "contribution_ltv_blended_inr": 452
+   }
+  },
+  "base": {
+   "web_upi_autopay": {
+    "monthly_lifetime_months": 5.05,
+    "gross_revenue_ltv_monthly_plan_inr": 1509,
+    "contribution_ltv_monthly_plan_inr": 752,
+    "contribution_ltv_annual_plan_inr": 2222,
+    "contribution_ltv_blended_inr": 1267
+   },
+   "play_billing_subs": {
+    "monthly_lifetime_months": 5.05,
+    "gross_revenue_ltv_monthly_plan_inr": 1509,
+    "contribution_ltv_monthly_plan_inr": 652,
+    "contribution_ltv_annual_plan_inr": 1928,
+    "contribution_ltv_blended_inr": 1099
+   },
+   "play_user_choice": {
+    "monthly_lifetime_months": 5.05,
+    "gross_revenue_ltv_monthly_plan_inr": 1509,
+    "contribution_ltv_monthly_plan_inr": 667,
+    "contribution_ltv_annual_plan_inr": 1973,
+    "contribution_ltv_blended_inr": 1124
+   },
+   "web_with_15pct_school_share": {
+    "monthly_lifetime_months": 5.05,
+    "gross_revenue_ltv_monthly_plan_inr": 1509,
+    "contribution_ltv_monthly_plan_inr": 639,
+    "contribution_ltv_annual_plan_inr": 1889,
+    "contribution_ltv_blended_inr": 1077
+   }
+  },
+  "opt": {
+   "web_upi_autopay": {
+    "monthly_lifetime_months": 8.27,
+    "gross_revenue_ltv_monthly_plan_inr": 2472,
+    "contribution_ltv_monthly_plan_inr": 1540,
+    "contribution_ltv_annual_plan_inr": 3285,
+    "contribution_ltv_blended_inr": 2413
+   },
+   "play_billing_subs": {
+    "monthly_lifetime_months": 8.27,
+    "gross_revenue_ltv_monthly_plan_inr": 2472,
+    "contribution_ltv_monthly_plan_inr": 1336,
+    "contribution_ltv_annual_plan_inr": 2849,
+    "contribution_ltv_blended_inr": 2092
+   },
+   "play_user_choice": {
+    "monthly_lifetime_months": 8.27,
+    "gross_revenue_ltv_monthly_plan_inr": 2472,
+    "contribution_ltv_monthly_plan_inr": 1367,
+    "contribution_ltv_annual_plan_inr": 2916,
+    "contribution_ltv_blended_inr": 2142
+   },
+   "web_with_15pct_school_share": {
+    "monthly_lifetime_months": 8.27,
+    "gross_revenue_ltv_monthly_plan_inr": 2472,
+    "contribution_ltv_monthly_plan_inr": 1309,
+    "contribution_ltv_annual_plan_inr": 2792,
+    "contribution_ltv_blended_inr": 2051
+   }
+  }
+ },
+ "cac": {
+  "paid_social_to_app": {
+   "pess": 4000,
+   "base": 1000,
+   "opt": 312,
+   "note": "RevenueCat 2026 D35 download->paid: hard paywall 10.7%, freemium 2.1% (V, global medians)"
+  },
+  "click_to_whatsapp_diagnostic": {
+   "pess": 1333,
+   "base": 333,
+   "opt": 100,
+   "note": "72h free entry-point window (V, Meta); no general-purpose AI chat allowed (S, Jan-2026 policy)"
+  },
+  "school_seeded_parent_pays": {
+   "pess": 3000,
+   "base": 818,
+   "opt": 333,
+   "note": "~205 K-9 pupils per private unaided school (UDISE+ 2025-26, D); BaSE: 63% discover EdTech via school (V)"
+  },
+  "youtube_creator_integration": {
+   "pess": 12500,
+   "base": 1600,
+   "opt": 250,
+   "note": "creator rates in India not verified this session (U)"
+  },
+  "parent_referral": {
+   "pess": 350,
+   "base": 220,
+   "opt": 150,
+   "note": "cost = COGS of the free months + share-card ops; BaSE: 58% discover via friends/classmates (V)"
+  }
+ },
+ "breakeven": {
+  "paid_social_to_app": {
+   "conversion_needed_for_CAC_422": "9.5%",
+   "conversion_needed_for_CAC_1267": "3.2%"
+  },
+  "click_to_whatsapp_diagnostic": {
+   "conversion_needed_for_CAC_422": "4.7%",
+   "conversion_needed_for_CAC_1267": "1.6%"
+  },
+  "school_seeded_parent_pays": {
+   "payers_per_school_for_CAC_422": 21.3,
+   "payers_per_school_for_CAC_1267": 7.1
+  }
+ },
+ "school_paid": {
+  "pess": {
+   "revenue_net_inr": 61017,
+   "cogs_inr": 60000,
+   "contribution_inr": 1017,
+   "acquisition_cost_inr": 18000
+  },
+  "base": {
+   "revenue_net_inr": 137288,
+   "cogs_inr": 54000,
+   "contribution_inr": 83288,
+   "acquisition_cost_inr": 9000
+  },
+  "opt": {
+   "revenue_net_inr": 264407,
+   "cogs_inr": 39000,
+   "contribution_inr": 225407,
+   "acquisition_cost_inr": 6000
+  }
+ },
+ "cac_ceiling_base_inr": {
+  "LTV/CAC=1": 1267,
+  "LTV/CAC=3": 422
+ },
+ "revenuecat_in_sea_y1_ltv_per_payer_inr": 1344.0
+}

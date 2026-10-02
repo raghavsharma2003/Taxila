@@ -1,0 +1,11 @@
+import { Engine } from "@babylonjs/core/Engines/engine.js";
+import { Scene } from "@babylonjs/core/scene.js";
+import { FreeCamera } from "@babylonjs/core/Cameras/freeCamera.js";
+import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight.js";
+import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
+import { LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader.js";
+import "@babylonjs/core/Morph/morphTargetManager.js";
+import "@babylonjs/loaders/glTF/2.0/index.js";
+const e = new Engine(document.querySelector("canvas")); const s = new Scene(e);
+new FreeCamera("c", new Vector3(0,0,-1), s); new HemisphericLight("h", new Vector3(0,1,0), s);
+LoadAssetContainerAsync("a.glb", s).then(c => c.addAllToScene()); e.runRenderLoop(() => s.render());

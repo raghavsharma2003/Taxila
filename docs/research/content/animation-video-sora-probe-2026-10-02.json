@@ -1,0 +1,267 @@
+{
+ "date": "2026-10-02",
+ "from": "cloud build container (US) -> eastus2",
+ "deployment": "taxila-sora",
+ "api": "POST /openai/v1/videos (v1, sora-2 schema)",
+ "size": "1280x720",
+ "seconds": "4",
+ "cases": [
+  {
+   "id": "seed",
+   "tests": "direction: root must grow DOWN, shoot UP (gravitropism); stage order",
+   "prompt": "Flat 2D children's educational cartoon, simple clean shapes, soft cream background, static camera, no people, no speech, soft ambient sound only. Side cross-section of soil in a clear glass jar. A single bean seed swells, its seed coat splits, a white root grows straight down into the soil, then a green shoot grows up out of the soil and opens two leaves. No text.",
+   "events": [
+    {
+     "t_s": 6.802,
+     "status": "in_progress",
+     "progress": 10
+    },
+    {
+     "t_s": 12.623,
+     "status": "in_progress",
+     "progress": 40
+    },
+    {
+     "t_s": 24.812,
+     "status": "in_progress",
+     "progress": 67
+    },
+    {
+     "t_s": 41.979,
+     "status": "in_progress",
+     "progress": 99
+    },
+    {
+     "t_s": 53.504,
+     "status": "completed",
+     "progress": 100
+    }
+   ],
+   "create": {
+    "status": 200,
+    "ms": 910,
+    "id": "video_6abfc8fcbee08190992487b72cd5513d"
+   },
+   "final": {
+    "status": "completed",
+    "expires_at": 1791040124,
+    "created_at": 1790953724,
+    "completed_at": 1790953777
+   },
+   "wall_s": 53.505,
+   "bytes": 1016288,
+   "download_status": 200,
+   "ffprobe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "h264",
+      "codec_type": "video",
+      "width": 1280,
+      "height": 720,
+      "r_frame_rate": "30/1"
+     },
+     {
+      "codec_name": "aac",
+      "codec_type": "audio",
+      "r_frame_rate": "0/0"
+     }
+    ],
+    "format": {
+     "duration": "4.100000",
+     "bit_rate": "1983000"
+    }
+   },
+   "review": {
+    "verdict": "partial",
+    "ok": [
+     "root grows down",
+     "shoot grows up",
+     "two leaves open",
+     "flat 2D style held",
+     "static camera"
+    ],
+    "wrong": [
+     "leaves open INSIDE the soil: the shoot never breaks the soil surface",
+     "seed coat shatters into shards that fly upward",
+     "root branches instantly (no primary root elongation)"
+    ]
+   }
+  },
+  {
+   "id": "count",
+   "tests": "counting (exactly 3 + 4 = 7 objects) and English text rendering",
+   "prompt": "Flat 2D children's educational cartoon, simple clean shapes, soft cream background, static camera, no people, no speech, soft ambient sound only. A wooden table with exactly three red apples on the left and exactly four green apples on the right. The apples slide together into one group of seven apples. A green chalkboard behind the table shows \"3 + 4 = 7\" written in white chalk.",
+   "events": [
+    {
+     "t_s": 8.519,
+     "status": "in_progress",
+     "progress": 10
+    },
+    {
+     "t_s": 13.934,
+     "status": "in_progress",
+     "progress": 46
+    },
+    {
+     "t_s": 26.266,
+     "status": "in_progress",
+     "progress": 72
+    },
+    {
+     "t_s": 42.923,
+     "status": "in_progress",
+     "progress": 99
+    },
+    {
+     "t_s": 57.135,
+     "status": "completed",
+     "progress": 100
+    }
+   ],
+   "create": {
+    "status": 200,
+    "ms": 1066,
+    "id": "video_6abfc8fcd800819083bcfe018f9d43b6"
+   },
+   "final": {
+    "status": "completed",
+    "expires_at": 1791040124,
+    "created_at": 1790953724,
+    "completed_at": 1790953775
+   },
+   "wall_s": 57.136,
+   "bytes": 1537301,
+   "download_status": 200,
+   "ffprobe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "h264",
+      "codec_type": "video",
+      "width": 1280,
+      "height": 720,
+      "r_frame_rate": "30/1"
+     },
+     {
+      "codec_name": "aac",
+      "codec_type": "audio",
+      "r_frame_rate": "0/0"
+     }
+    ],
+    "format": {
+     "duration": "4.100000",
+     "bit_rate": "2999611"
+    }
+   },
+   "review": {
+    "verdict": "fail",
+    "ok": [
+     "chalk text '3 + 4 = 7' rendered exactly in every frame",
+     "clean flat style"
+    ],
+    "wrong": [
+     "right group has 3 green apples, not 4",
+     "merged group shows 6 apples next to a board that says 7"
+    ]
+   }
+  },
+  {
+   "id": "shadow",
+   "tests": "shadow geometry (shorter as sun rises, points away from sun) and Devanagari text",
+   "prompt": "Flat 2D children's educational cartoon, simple clean shapes, soft cream background, static camera, no people, no speech, soft ambient sound only. A wooden stick stands upright in flat ground on a sunny day. The sun moves from low on the left side of the sky to directly overhead. The stick's shadow points away from the sun and gets shorter as the sun rises. A small Hindi label \"छाया\" sits next to the shadow.",
+   "events": [
+    {
+     "t_s": 6.413,
+     "status": "in_progress",
+     "progress": 10
+    },
+    {
+     "t_s": 11.867,
+     "status": "in_progress",
+     "progress": 40
+    },
+    {
+     "t_s": 17.708,
+     "status": "in_progress",
+     "progress": 48
+    },
+    {
+     "t_s": 23.753,
+     "status": "in_progress",
+     "progress": 73
+    },
+    {
+     "t_s": 40.361,
+     "status": "in_progress",
+     "progress": 99
+    },
+    {
+     "t_s": 51.367,
+     "status": "completed",
+     "progress": 100
+    }
+   ],
+   "create": {
+    "status": 200,
+    "ms": 972,
+    "id": "video_6abfc937ddcc81908e9578395bd23d37"
+   },
+   "final": {
+    "status": "completed",
+    "expires_at": 1791040183,
+    "created_at": 1790953783,
+    "completed_at": 1790953832
+   },
+   "wall_s": 51.368,
+   "bytes": 1322918,
+   "download_status": 200,
+   "ffprobe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "h264",
+      "codec_type": "video",
+      "width": 1280,
+      "height": 720,
+      "r_frame_rate": "30/1"
+     },
+     {
+      "codec_name": "aac",
+      "codec_type": "audio",
+      "r_frame_rate": "0/0"
+     }
+    ],
+    "format": {
+     "duration": "4.100000",
+     "bit_rate": "2581303"
+    }
+   },
+   "review": {
+    "verdict": "pass",
+    "ok": [
+     "shadow points away from the sun in every sampled frame",
+     "shadow shortens as the sun climbs",
+     "Devanagari label 'छाया' rendered correctly"
+    ],
+    "wrong": [
+     "'directly overhead' is drawn at the top edge of the frame, not overhead (a 2D-framing limit)"
+    ]
+   }
+  }
+ ],
+ "billed_seconds_upper_bound": 12,
+ "review_method": "agent visual review (Claude) of 2 fps contact sheets + 3 full-size keyframes per clip; n=3 clips, 1 rep — anecdotal, aimed at known failure classes",
+ "summary": {
+  "completed": "3/3",
+  "wall_s": [
+   53.505,
+   57.136,
+   51.368
+  ],
+  "fully_correct": "1/3",
+  "text_correct": "2/2 (English chalk, Devanagari label)",
+  "count_correct": "0/1",
+  "usd_billed_est": 1.2
+ }
+}

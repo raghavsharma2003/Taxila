@@ -37,6 +37,16 @@ export function turnDetectionFrom(session: unknown): Record<string, unknown> {
   return td && typeof td === "object" ? (td as Json) : DEFAULT_TURN_DETECTION;
 }
 
+/**
+ * The whole audio.input the session was minted with (transcription, noise reduction, turn detection).
+ * A push-to-talk toggle re-sends all of it with only turn_detection swapped: if the server replaces
+ * audio.input rather than merging it, a partial update would silently drop transcription — and with it
+ * every child transcript and Director turn.
+ */
+export function audioInputFrom(session: unknown): Record<string, unknown> {
+  return { ...obj(obj(obj(session).audio).input) };
+}
+
 /** Mean per-token probability from transcription logprobs (present only if the session asked for them). */
 export function confidenceFromLogprobs(logprobs: unknown): number | undefined {
   if (!Array.isArray(logprobs) || !logprobs.length) return undefined;
@@ -80,6 +90,8 @@ export class RealtimeProtocol {
   private lastResponse: string | null = null;
   private interrupted = new Set<string>();
   private talkStartedAt: number | null = null;
+  /** A push-to-talk commit was sent and its reply is requested only once the server confirms it. */
+  private pttCommitPending = false;
   private readonly send: (event: Json) => void;
   private readonly emit: (event: LinkEvent) => void;
   private readonly keep: number;
@@ -102,9 +114,10 @@ export class RealtimeProtocol {
     this.send({ type: "session.update", session: { type: "realtime", instructions } });
   }
 
-  /** null disables server VAD (push-to-talk). */
-  setTurnDetection(td: Record<string, unknown> | null): void {
-    this.send({ type: "session.update", session: { type: "realtime", audio: { input: { turn_detection: td } } } });
+  /** null disables server VAD (push-to-talk). `input` is the rest of audio.input (see audioInputFrom). */
+  setTurnDetection(td: Record<string, unknown> | null, input: Record<string, unknown> = {}): void {
+    if (td) this.pttCommitPending = false; // server VAD commits (and answers) on its own from here
+    this.send({ type: "session.update", session: { type: "realtime", audio: { input: { ...input, turn_detection: td } } } });
   }
 
   requestResponse(): void {
@@ -125,10 +138,14 @@ export class RealtimeProtocol {
     this.send({ type: "input_audio_buffer.clear" });
   }
 
-  /** Push-to-talk release. */
+  /**
+   * Push-to-talk release: commit, and ask for a reply only when the server confirms the commit. An
+   * accidental tap (likely for a 6-year-old) commits an empty buffer, gets no reply, and is reported as
+   * child_silent so nobody waits for one.
+   */
   endTalk(): void {
+    this.pttCommitPending = true;
     this.send({ type: "input_audio_buffer.commit" });
-    this.send({ type: "response.create" });
   }
 
   /** Stop the teacher: cancel generation and flush audio already queued for playback (WebRTC only). */
@@ -151,6 +168,7 @@ export class RealtimeProtocol {
     this.activeResponse = null;
     this.lastResponse = null;
     this.talkStartedAt = null;
+    this.pttCommitPending = false;
   }
 
   // ───────────── server → client ─────────────
@@ -177,6 +195,10 @@ export class RealtimeProtocol {
         const itemId = str(e.item_id);
         if (itemId && !this.speechStarts.has(itemId)) this.speechStarts.set(itemId, this.talkStartedAt ?? this.now());
         this.talkStartedAt = null;
+        if (this.pttCommitPending) {
+          this.pttCommitPending = false;
+          this.send({ type: "response.create" });
+        }
         return;
       }
       case "conversation.item.added":
@@ -251,6 +273,11 @@ export class RealtimeProtocol {
       case "error": {
         const err = obj(e.error);
         const code = str(err.code) || undefined;
+        if (code === "input_audio_buffer_commit_empty" && this.pttCommitPending) {
+          this.pttCommitPending = false;
+          this.emit({ type: "child_silent" });
+          return;
+        }
         if (code && BENIGN_ERRORS.has(code)) return;
         this.emit({ type: "error", message: str(err.message) || "realtime error", code, fatal: false });
         return;

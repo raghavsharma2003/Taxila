@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-02T15:33:26.133Z",
+  "account": "<redacted>",
+  "deployments": {
+    "error": "account not found",
+    "n": 0,
+    "tokOk": false,
+    "listErr": "InvalidAuthenticationToken"
+  },
+  "claude": {
+    "status": 404,
+    "ms": 501,
+    "body": "{\"error\":{\"code\":\"DeploymentNotFound\",\"message\":\"The API deployment taxila-opus does not exist. If you created the deployment within the last 5 minutes, please wait a moment and try again.\",\"details\":\"The API deployment taxila-opus does not exist. If you created the deployment within the last 5 minu"
+  },
+  "codex": [
+    {
+      "label": "cold-medium",
+      "effort": "medium",
+      "status": 200,
+      "ms": 6493,
+      "in": 10935,
+      "cached": 0,
+      "out": 453,
+      "reasoning": 265,
+      "headers": {
+        "x-ms-region": "East US 2",
+        "x-ratelimit-abusepenalty-active": "False",
+        "x-ratelimit-key": "taxila-codex",
+        "x-ratelimit-limit-requests": "5000",
+        "x-ratelimit-limit-tokens": "500000",
+        "x-ratelimit-remaining-requests": "4999",
+        "x-ratelimit-remaining-tokens": "489856",
+        "x-ratelimit-renewalperiod-requests": "60",
+        "x-ratelimit-renewalperiod-tokens": "60",
+        "x-ratelimit-reset-requests": "0",
+        "x-ratelimit-reset-tokens": "1"
+      },
+      "sample": "import { BaseTrackScene } from '../core/BaseTrackScene';\n\nexport class FractionTrackScene extends BaseTrackScene {\n  getTrackConfig(): { min: number; max: number; ticks: number } {\n    return { min: 0"
+    },
+    {
+      "label": "warm-medium",
+      "effort": "medium",
+      "status": 200,
+      "ms": 4315,
+      "in": 10935,
+      "cached": 10752,
+      "out": 386,
+      "reasoning": 195,
+      "headers": {
+        "x-ms-region": "East US 2",
+        "x-ratelimit-abusepenalty-active": "False",
+        "x-ratelimit-key": "taxila-codex",
+        "x-ratelimit-limit-requests": "5000",
+        "x-ratelimit-limit-tokens": "500000",
+        "x-ratelimit-remaining-requests": "4999",
+        "x-ratelimit-remaining-tokens": "489856",
+        "x-ratelimit-renewalperiod-requests": "60",
+        "x-ratelimit-renewalperiod-tokens": "60",
+        "x-ratelimit-reset-requests": "0",
+        "x-ratelimit-reset-tokens": "1"
+      },
+      "sample": "import { BaseTrackScene } from '../core/BaseTrackScene';\n\nexport class FractionTrackScene extends BaseTrackScene {\n  override getTrackConfig(): { min: number; max: number; ticks: number } {\n    return"
+    },
+    {
+      "label": "warm-high",
+      "effort": "high",
+      "status": 200,
+      "ms": 10906,
+      "in": 10935,
+      "cached": 0,
+      "out": 1330,
+      "reasoning": 1125,
+      "headers": {
+        "x-ms-region": "East US 2",
+        "x-ratelimit-abusepenalty-active": "False",
+        "x-ratelimit-key": "taxila-codex",
+        "x-ratelimit-limit-requests": "5000",
+        "x-ratelimit-limit-tokens": "500000",
+        "x-ratelimit-remaining-requests": "4999",
+        "x-ratelimit-remaining-tokens": "489856",
+        "x-ratelimit-renewalperiod-requests": "60",
+        "x-ratelimit-renewalperiod-tokens": "60",
+        "x-ratelimit-reset-requests": "0",
+        "x-ratelimit-reset-tokens": "1"
+      },
+      "sample": "import { BaseTrackScene } from '../core/BaseTrackScene';\n\nexport class FractionTrackScene extends BaseTrackScene {\n  protected override getTrackConfig(): { min: number; max: number; ticks: number } {\n"
+    },
+    {
+      "label": "warm-low",
+      "effort": "low",
+      "status": 200,
+      "ms": 3289,
+      "in": 10935,
+      "cached": 0,
+      "out": 300,
+      "reasoning": 109,
+      "headers": {
+        "x-ms-region": "East US 2",
+        "x-ratelimit-abusepenalty-active": "False",
+        "x-ratelimit-key": "taxila-codex",
+        "x-ratelimit-limit-requests": "5000",
+        "x-ratelimit-limit-tokens": "500000",
+        "x-ratelimit-remaining-requests": "4999",
+        "x-ratelimit-remaining-tokens": "489856",
+        "x-ratelimit-renewalperiod-requests": "60",
+        "x-ratelimit-renewalperiod-tokens": "60",
+        "x-ratelimit-reset-requests": "0",
+        "x-ratelimit-reset-tokens": "1"
+      },
+      "sample": "import { BaseTrackScene } from '../core/BaseTrackScene';\n\nexport class FractionTrackScene extends BaseTrackScene {\n  override getTrackConfig(): { min: number; max: number; ticks: number } {\n    return"
+    }
+  ],
+  "cacheRepeat": {
+    "method": "6 sequential identical-prefix (10.9k tok) Responses calls, effort low, prompt_cache_key set",
+    "res": [
+      {
+        "i": 0,
+        "status": 200,
+        "ms": 1371,
+        "in": 10804,
+        "cached": 0,
+        "out": 21,
+        "remTok": "489984"
+      },
+      {
+        "i": 1,
+        "status": 200,
+        "ms": 1405,
+        "in": 10804,
+        "cached": 10624,
+        "out": 6,
+        "remTok": "489984"
+      },
+      {
+        "i": 2,
+        "status": 200,
+        "ms": 3911,
+        "in": 10804,
+        "cached": 10624,
+        "out": 6,
+        "remTok": "489984"
+      },
+      {
+        "i": 3,
+        "status": 200,
+        "ms": 929,
+        "in": 10804,
+        "cached": 10624,
+        "out": 6,
+        "remTok": "489984"
+      },
+      {
+        "i": 4,
+        "status": 200,
+        "ms": 1181,
+        "in": 10804,
+        "cached": 10624,
+        "out": 6,
+        "remTok": "487768"
+      },
+      {
+        "i": 5,
+        "status": 200,
+        "ms": 1092,
+        "in": 10804,
+        "cached": 10624,
+        "out": 6,
+        "remTok": "488102"
+      }
+    ]
+  }
+}

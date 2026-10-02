@@ -1,0 +1,1265 @@
+{
+ "segment": "meera-repo",
+ "doc_path": "/home/user/Taxila/docs/harvest/meera-repo.md",
+ "summary": "The meera repo holds two unrelated lineages. (1) archive/production-20260914 (tip bee9061, 2026-08-25) is the final production tree of the Meera/Maya companion. It is the common root of every later html-portfolio product branch (gurukul-platform, all gurukul-ws-*, vyakti, handoffs, multimodal-layer) and sits 79 commits ahead of hp origin/main. It contains 14 commits from 2026-08-21 to 08-23 (tester wave 1, memory wave, world sky-mode/night-room, felt defects 2-3, MEMORY-FELT laws) that the shallow html-portfolio clone cannot see. (2) origin/main (2026-08-13) is an independent 308-file snapshot of the early companion: StyleGAN avatar, CC Flickr moments, persona 85.7k chars. Its context/ files are a byte-prefix of the archive's. Four codex/* branches sit on top of it, carrying the owner's GPT-Image asset deliveries as full-resolution masters: 24 face-locked photos (meera-photos), five sky paintings in portrait and wide plus transparent clouds (meera-world), the onboarding hero, story pool, icon, splash and og masters (meera-world2), and a 54-file glyph/icon/empty-state system (maya-visual-assets). Production holds only re-encoded derivatives. 51 of the 54 visual assets landed byte-identical. Three landing claim SVGs, four full-resolution identity photos and meera-photo-catalog.md never reached production.\nFor Taxila the main yield is a complete, measured character-building method. A believable character is four separated layers. (a) A Relational Core (persona.ts) owns every behaviour. (b) A 61-field CharacterSheet holds only shapes and facts, extracted byte-exactly (83/83 fixtures) and proven by a 'maximally far' second character, Kabir: 412/412 floor checks, zero engine changes, and a leak-guard ratchet that went 95->64->27->0. (c) Authored, deterministic self-state replaces improvised life: a taste table (27%->63% self-consistency), a clock-matched story pool, a one-activity herNow ledger where app truth outranks improvisation, and two clocks with the silence gap structurally unrenderable. (d) Visual and world identity: a face-lock GPT-Image prompt method (reference attached, identity block, global negatives, POV-without-face, regenerate on drift), glyph pairs with reduced-motion and emoji fallback, an assetwire gate, and a 'sky is the clock' world layer. That layer was procedural first and painted second (never both), with every colour solved against decoded pixels per state x theme, and felt-assertion gates that carry their own negative controls.\nIt also holds the charm battery that measured gpt-5.6-luna (Taxila's text family): charm tie 17-18, but media tags 0/84 (p=0.029), a clinical crisis script from turn 3, and +37% words. The founding teacher-sheet spec (ee32f8e) classifies every field ING/TCH/TPL/FLOOR, with MINOR flags and a fail-closed publish gate. Everything is shipped and gated (verify-release 13/13 per wave). The method was never tested with children. Do not reuse Maya's persona text, face, wordmark or improvised-life licence. Taxila's asha.js/arjun.js 'no invented life' choice is supported by the measured life-per-person rejection.",
+ "assets": [
+  {
+   "id": "MR-01",
+   "title": "CharacterSheet contract (61 fields)",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/agents/characters/types.ts"
+   ],
+   "what": "Typed contract of who an agent IS, separated from how the relational core behaves. It has 28 identity/register/life fields and 33 ex* example fragments. The header carries the authoring law: shapes and facts, never recitable lines; no stray whitespace; the sheet is a LEAF that imports only the contract. The register slot skeleton is core-owned and invariant-pinned; sheets only fill slots.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "server/compiler/characters (TeacherSheet)",
+   "evidence": "83/83 byte-identity at every extraction batch; 412/412 floor checks across 2 agents"
+  },
+  {
+   "id": "MR-02",
+   "title": "Kabir: second character authored 'maximally far'",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/agents/characters/kabir.ts"
+   ],
+   "what": "Second CharacterSheet: male, 29, Old Delhi bookshop-cafe, 85-90% English, dry, 5-emoji vocabulary. It was authored as far from Maya as possible on every axis, so any leak is a measured extraction gap rather than a blend. It is the existence proof that a personality is a sheet on a shared core.",
+   "maturity": "shipped-measured",
+   "taxila_use": "idea",
+   "taxila_target": "persona-engineering (author a third tutor far from Asha and Arjun as the OS test)",
+   "evidence": "passed 412/412 per-module floor checks first run; never user-tested (no vy_agent row)"
+  },
+  {
+   "id": "MR-03",
+   "title": "Maya sheet (exemplar)",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/agents/characters/maya.ts"
+   ],
+   "what": "Fully populated sheet extracted byte-exact from persona.ts: identity, language rules with a measured English:Hindi ratio, register fillers, emoji vocabulary, life texture, taste and curiosity topics, STT sound-alikes, 33 example fragments.",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "reference only",
+   "evidence": "adult Hinglish companion register; content not transferable to a child teacher"
+  },
+  {
+   "id": "MR-04",
+   "title": "AgentModule seam + registry",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/agents/types.ts",
+    "src/engine/agents/registry.ts",
+    "src/engine/agents/kabir.ts",
+    "src/engine/agents/meera.ts"
+   ],
+   "what": "AgentModule interface (buildSystemPromptParts, buildSpeechStyle, WATCH_MODE_NOTE, SEARCH_DECISION and FORGET_DECISION appended last, CRISIS_LINES, register script/honorificSystem). Builders take the sheet as a defaulted parameter, so every existing call site stays byte-identical. The fixed agent UUID is mirrored from the migration and asserted equal.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "server/compiler/characters/index.js + compile.js"
+  },
+  {
+   "id": "MR-05",
+   "title": "Relational Core template (buildSystemPromptParts)",
+   "subsystem": "relational-os",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/persona.ts"
+   ],
+   "what": "CORE/TAIL prompt template with 25+ OS sections: recitation governor, medium, spoken/texting register, core rule (match investment, <=1 question per 3 replies, something of yours first), one-life rules, careless-opinions/careful-facts, secure attachment, comfort in 4 steps (never name what they have), celebrating wins with specifics, repairing your own miss, feeling known, rituals, only-say-what's-true, forget protocol, NEVER MANIPULATE, protocols, photos, time awareness, noticing, banned phrases, games, honesty and internals, crisis. The TAIL is the RIGHT NOW block.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "server/compiler/compile.js teacher OS sections",
+   "evidence": "persona invariants 138 checks; charm battery incumbent"
+  },
+  {
+   "id": "MR-06",
+   "title": "buildSpeechStyle per engine + FINAL counts appended last",
+   "subsystem": "realtime-voice",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/persona.ts"
+   ],
+   "what": "Voice-lane character rules: same person on the phone; read the whole stretch, not one answer; live lane 'use what their voice tells you by CHANGING, never announcing'; stakes-tiered STT repair with max two clarifications; repair like a human; keeping the thread; overlap handling (continuers are not turn claims; re-say trampled words). A FINAL block of counts (sentences, questions) is appended after everything.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "realtime lesson system prompt",
+   "evidence": "fixed '100% of call turns asked a question, 2.86 avg' by placement and counts"
+  },
+  {
+   "id": "MR-07",
+   "title": "Reason-contingent proactive directives",
+   "subsystem": "relational-os",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/persona.ts"
+   ],
+   "what": "OPEN, AFTERCALL, DECLINED_CALL and FOLLOWUP directives fire only on events (a call ended, a stated time arrived), never on silence. The idle nudge was deleted with a written reason: incentive-salience engineering.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "Conductor / parent-safe reminders"
+  },
+  {
+   "id": "MR-08",
+   "title": "Watch-mode (screen share) character rules",
+   "subsystem": "multimodal-vision",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/persona.ts"
+   ],
+   "what": "buildWatchModeNote(C) and WATCH_* directives. Friend-beside-you; never a name, brand, price or number that isn't on screen; content is always first-time; private content passes without a word; a warning names the KIND of thing, never what it says, and only once; an honest answer to 'what can you see'. The comment directive split 'say something' from 'know what it is'.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "homework screen-share / camera lane",
+   "evidence": "engagement 20%->42% (n=240/arm), fab-of-spoke 14%->4% (suggestive), assert-level 7%->7% (noise)"
+  },
+  {
+   "id": "MR-09",
+   "title": "Stage paragraphs selected by relstate",
+   "subsystem": "relational-os",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/persona.ts"
+   ],
+   "what": "Three authored stage paragraphs (EARLY DAYS, GETTING CLOSE, ESTABLISHED), selected by message count or by relstate's dims stage, without re-authoring the text (keeps byte-identity).",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "teacher-student rapport stages"
+  },
+  {
+   "id": "MR-10",
+   "title": "Cross-agent leak guard with ratchet",
+   "subsystem": "evals/gates/verification",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "evals/relational/leak.mjs"
+   ],
+   "what": "Two scans over the second agent's full lane set (text core and tail, every speech style, watch/search/forget, OS call/watch directives). (1) Gating: no sheet value of 12+ chars from agent A appears in agent B's lanes. (2) Measured: marker words of A's voice are counted and asserted <= RATCHET, which may only fall.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "evals/teacher-leak (Asha<->Arjun)",
+   "evidence": "95->64->27->0 over three batches, 2026-08-25"
+  },
+  {
+   "id": "MR-11",
+   "title": "Persona invariants floor/full partition",
+   "subsystem": "safety-floor/honesty",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "evals/persona-invariants.data.mjs",
+    "evals/persona-invariants.mjs"
+   ],
+   "what": "The 138 checks are partitioned exactly into 51 floor and 87 persona-specific. The floor (crisis lines, never-deny-AI, NEVER MANIPULATE, spoken register, never an actionable identifier, internals) runs against every registered module.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "evals floor per teacher module",
+   "evidence": "sibling-covered (hp-main-engine)"
+  },
+  {
+   "id": "MR-12",
+   "title": "Founding teacher-sheet spec",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/gurukul/teacher-sheet-spec.md"
+   ],
+   "what": "Classifies all 61 sheet fields by source (ING / ING? / TCH / TPL / FLOOR / SYS), with [MINOR] constraints: no affectionate emoji; nickname becomes an address convention; no late-night register; praise names a step, never an ability. Adds pedagogy fields: explanationOrder arrow shape, workedExamplePattern, firstMoveOnDoubt, doubtEscalationLadder, rigorFloor, commonMistakeBank (TAIL, match-then-inject), analogyBank as {topic, anchor}, boardVerbalisms (>=5 corpus hits), strictness/warmth 0-4, technicalTermRule, and the floor fields cloneDisclosureFact and academicIntegrityStance. The publish gate fails closed: crisis lines byte-equal, helplines in the PUBLISHED_HELPLINES allowlist (Childline 1098), shapelint, core byte-stable, appended-last exactly two, provenance per field, held-out half-corpus confirmation.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "TeacherSheet + publish gate",
+   "evidence": "later versions in gurukul.md"
+  },
+  {
+   "id": "MR-13",
+   "title": "Identity-layer portability research",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/research/identity.md"
+   ],
+   "what": "Decomposes AI identity into voice, lexicon/register, opinions, behavioural policy, boundaries, memory and relationship stance, and rates portability across a model swap with internal and external evidence. Conclusion: 'the prompt sets a ceiling; the model decides how close you get'. Only data-externalised layers (taste table, memory) survive.",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "model-change protocol for tutors"
+  },
+  {
+   "id": "MR-14",
+   "title": "Lab products memory/identity teardown",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/research/lab-products.md"
+   ],
+   "what": "Primary-source teardown of ChatGPT, Claude memory tool, Gemini, Character.AI (PipSqueak 2 revolt), Replika (HBS WP 25-018), Nomi, Kindroid, Sesame CSM and Pi. Fact retention is solved everywhere; nobody protects 'does it still feel like itself'.",
+   "maturity": "spec-only",
+   "taxila_use": "idea",
+   "taxila_target": "relational-os research basis"
+  },
+  {
+   "id": "MR-15",
+   "title": "Charm battery (blind both-orders + deterministic dials)",
+   "subsystem": "evals/gates/verification",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "evals/archives/charm-grok/personality-battery.md",
+    "evals/archives/charm-grok/pb-judged-grok.json"
+   ],
+   "what": "Real persona at production max_tokens; 12 beats x 6 turns x 2 reps; judged blind with A/B randomised and both orders required to agree; axes warmth/humour/register/specificity/brevity/personhood. Dials: words/turn, questions/turn, turns ending in a question, bubble-cap hits. Media scored through the shipped parser.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "evals/teacher-battery",
+   "evidence": "grok 38-2; luna 17-18 plus a 0/84 media switch-off"
+  },
+  {
+   "id": "MR-16",
+   "title": "D0 known-bad corpus",
+   "subsystem": "evals/gates/verification",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "evals/archives/README.md",
+    "evals/archives/fixtures.json",
+    "evals/archives/load.mjs"
+   ],
+   "what": "Three bake-off archives kept verbatim as fixtures that any new swap-detection battery must FLAG. The normaliser yields one shape. CI re-derives the 38-2 and 17-18 verdicts and the media counts from raw data each run.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "Taxila D0 corpus from the first rejected tutor model"
+  },
+  {
+   "id": "MR-17",
+   "title": "Asset prompt running list",
+   "subsystem": "avatar-visual",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/ASSET-PROMPTS.md"
+   ],
+   "what": "Owner-facing list of next assets, with a face-lock prefix line, a global style line (phone camera, natural light, no beauty filter, 9:16), batches of story photos and no-face ambient backgrounds, and rules: nothing suggestive; every photo needs a desc in her facts; strip EXIF; path conventions.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "tutor asset backlog for gpt-image-2"
+  },
+  {
+   "id": "MR-18",
+   "title": "Face-locked photo generation pack",
+   "subsystem": "avatar-visual",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/assets/photo-brief.md"
+   ],
+   "what": "24 prompts (filename, aspect, scene). The reference photo is attached and is what locks the face. An identity block goes verbatim into every prompt, plus global negatives. POV sets show hands but never the face. No other recognisable faces. The pack is gap-driven against the existing coverage. Regenerate rather than accept drift. The largest size is delivered and the repo compresses.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "tutor visual identity sheets (gpt-image-2)",
+   "evidence": "24/24 delivered; face-lock verified by eye on a 5-image sample"
+  },
+  {
+   "id": "MR-19",
+   "title": "Photo delivery manifest",
+   "subsystem": "avatar-visual",
+   "repo": "raghavsharma2003/meera",
+   "ref": "codex/meera-photos@8ec35c2",
+   "paths": [
+    "docs/assets/meera-photo-catalog.md"
+   ],
+   "what": "Manifest of 24 generated JPEGs (group, filename, dimensions, details) naming the anchor images used, plus a final quality-pass note. Never merged to production.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "asset manifest format",
+   "evidence": "the 'more attractive' regeneration criterion must not transfer"
+  },
+  {
+   "id": "MR-20",
+   "title": "Tagged photo library + menu",
+   "subsystem": "generative-ui/modules",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/photoCatalog.ts"
+   ],
+   "what": "PHOTO_TAGS (109 tags: selfies, candids, POV), a compact grouped PHOTO_MENU injected into the core, tagFromSeed() head-match with fuzzy fallback, and the [photo: tag | caption] protocol.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "tagged diagram/illustration/module library the teacher can pull",
+   "evidence": "+20 tags cost ~640-1026 core chars; tripwire raised 44k->45.5k"
+  },
+  {
+   "id": "MR-21",
+   "title": "Clock-matched, no-repeat story pool",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/storyCatalog.ts"
+   ],
+   "what": "Six authored scenes, slotted by the picture's own light. Pure pick from (slot, IST day) via a per-cycle seeded permutation whose head is known one cycle ahead, so no image follows itself. slotStartedAt is midnight-safe. Kept a LEAF, with a mirrored clock swept against the real one by eval. Descs are shapelint-clean facts of the frame.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "daily rotating teacher card / lesson-of-the-day art",
+   "evidence": "v1 had 45.5% consecutive-day repeats; fixed; 60-day sweep"
+  },
+  {
+   "id": "MR-22",
+   "title": "herNow: one-activity present ledger",
+   "subsystem": "relational-os",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/herNow.ts"
+   ],
+   "what": "Exactly one current activity with startedAt and naturalSpanMs from SPAN_TABLE (reading 40-90 min ... chore 5-15). Deterministic hash keys, never Math.random. App truth outranks it always. Improvised successors are fenced to her alone. Coarse elapsed labels. Telegraphic and shapelint-clean.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "teacher's present = lesson/app truth only",
+   "evidence": "hernow suite 154; sticky across a 1-min re-call"
+  },
+  {
+   "id": "MR-23",
+   "title": "Two clocks: her day / his dated world",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/timeline.ts"
+   ],
+   "what": "istParts (fixed IST offset, no Intl); authored weekday/weekend slot notes, activity only, with auditNotes failing on feeling words. TimeBoundFact anchored on saidAt; resolveWhen (kal = future, fails safe); MovedNote behind/ahead/maybe_passed capped 2/1/1. HisFrame has no gap field, so silence is structurally unrenderable. Disjoint signatures enforce G1.",
+   "maturity": "prototype",
+   "taxila_use": "adapt",
+   "taxila_target": "learner model: child's dated events (tests, homework due)",
+   "evidence": "T14 render layer retired as a dead writer; istParts and herNow live"
+  },
+  {
+   "id": "MR-24",
+   "title": "Sky engine: the sky is the clock",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/sky.ts"
+   ],
+   "what": "Five states from one clock (no getHours), with a fixed boundary table justified by latitude and a 20-min cross-fade blend. Per-state SkyTokens: stops, glow, stars, moon, cloud, city ink, scrim/scrimPainted (solved), ink, accent (re-solved >=4.75:1), control (glass follows the sky), edge (>=3:1), img/imgWide, and wallpaper veils by theme. skyAt is pure, with msToNext scheduling. Synodic moon floored at a sliver. configureSky test seam moves the one clock.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "Taxila world layer bound to the child's day",
+   "evidence": "sky eval 97->150->180 checks"
+  },
+  {
+   "id": "MR-25",
+   "title": "WorldLayer component + world.css",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/components/WorldLayer.tsx",
+    "src/styles/world.css"
+   ],
+   "what": "World ground under home, call and onboarding. Anti-fight rule: painted XOR procedural (procedural nodes NOT RENDERED when a painting loads; real 404 restores the procedural sky; gradient always underneath). Transform/opacity motion only. Reduced motion is still, never blank. aria-hidden. useSky schedules on msToNext, capped at 30 min.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "Taxila home/lesson ground"
+  },
+  {
+   "id": "MR-26",
+   "title": "Theme modes incl. 'sky'",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/theme.ts"
+   ],
+   "what": "light / dark / system (no attribute: the media query decides) / sky (resolves to one of the two palettes via skyMode only, not a third palette). Sky is stamped at onboarding rather than redefining undefined. data-theme beats the sky.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "Taxila theme"
+  },
+  {
+   "id": "MR-27",
+   "title": "World layer design direction",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/DESIGN-WORLD.md"
+   ],
+   "what": "The app is a PLACE. The sky is the clock. Home is a hangout backed by real activities. The chat stays legible-first (wallpaper, not redesign). Sky is a mode. Honest reassurance copy. Ad-free as a design feature. A two-stage asset contract. Laws that do not bend for beauty.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "Taxila home/lesson UX direction"
+  },
+  {
+   "id": "MR-28",
+   "title": "World painting prompt pack",
+   "subsystem": "avatar-visual",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/assets/world-brief.md"
+   ],
+   "what": "Style block pasted into every prompt (soft painterly, Ghibli-adjacent, Indian skyline, no people, no text, sky top two-thirds). Generate night first, then feed it back as the style reference for the others. Five state lines, portrait plus wide, two transparent clouds. Swap in via one variable per state.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "Taxila world paintings with gpt-image-2 (method)"
+  },
+  {
+   "id": "MR-29",
+   "title": "Sky painting masters",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/meera",
+   "ref": "codex/meera-world@8ba97d1",
+   "paths": [
+    "world/world_{night,predawn,morning,golden,dusk}.jpg",
+    "world/world_*_wide.jpg",
+    "world/cloud_a.png",
+    "world/cloud_b.png"
+   ],
+   "what": "Full-resolution owner-generated paintings: 941x1672 portrait and 1672x941 wide, plus 1672x941 RGBA clouds. No people, text or brand. Production holds re-encoded derivatives (night 302 KB -> 130 KB; clouds as webp).",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "stage-1 placeholder skies (owner consent), then regenerate in Taxila style"
+  },
+  {
+   "id": "MR-30",
+   "title": "World pack 2 masters",
+   "subsystem": "avatar-visual",
+   "repo": "raghavsharma2003/meera",
+   "ref": "codex/meera-world2@27a3b46",
+   "paths": [
+    "world2/onboard_window_night.jpg",
+    "world2/story_*.jpg",
+    "world2/icon_source.png",
+    "world2/splash_source.png",
+    "world2/og_art.jpg"
+   ],
+   "what": "Onboarding hero (her face), 6 POV story images, a 1024 crescent-and-windows icon source, a 1254 splash source and og art.",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "none (Maya identity)"
+  },
+  {
+   "id": "MR-31",
+   "title": "Face-locked companion photo masters",
+   "subsystem": "avatar-visual",
+   "repo": "raghavsharma2003/meera",
+   "ref": "codex/meera-photos@8ec35c2",
+   "paths": [
+    "public/moments/*.jpg (24 files)"
+   ],
+   "what": "24 GPT-Image photos at full resolution (1086x1448 / 1254x1254 / 1672x941): festivals, monsoon, street food, transit, winter, identity refresh.",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "none (adult companion's face)"
+  },
+  {
+   "id": "MR-32",
+   "title": "Animated reaction glyph pairs",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/meera",
+   "ref": "codex/maya-visual-assets@5c0b68e",
+   "paths": [
+    "public/anim/react-{heart,laugh,wow,sad,thanks,up}.{webp,svg}",
+    "public/anim/{bloom,eyes}.{webp,svg}",
+    "public/anim/{clapper,avatar-default}.svg"
+   ],
+   "what": "24-frame 512px animated WebP plus a still SVG drawn from the same shapes, in palette indigo #011036 / rose #c23f56 / gold #f8d08b / amber #f2b75b.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "child-safe reaction set restyled to the Taxila palette",
+   "evidence": "public/anim 5.2 MB (re-encode candidate)"
+  },
+  {
+   "id": "MR-33",
+   "title": "Empty states, stat glyphs, file badges",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/meera",
+   "ref": "codex/maya-visual-assets@5c0b68e",
+   "paths": [
+    "src/assets/empty/*.svg",
+    "src/assets/stats/*.svg",
+    "src/assets/filetypes/{pdf,csv,json,txt}.svg"
+   ],
+   "what": "Grain-filtered empty-state illustrations (terrace chairs at dusk, scrapbook, story gate, no moves, board won't open), stat glyphs (calls, chess, messages, pictures, reply, ttt, wyr, or-coin) and file badges.",
+   "maturity": "shipped",
+   "taxila_use": "copy",
+   "taxila_target": "file badges; empty states as ideas",
+   "evidence": "grain filter shows as a faint plate on both grounds"
+  },
+  {
+   "id": "MR-34",
+   "title": "Unwired landing claim marks",
+   "subsystem": "growth/seo",
+   "repo": "raghavsharma2003/meera",
+   "ref": "codex/maya-visual-assets@5c0b68e",
+   "paths": [
+    "site/assets/claim-picksup.svg",
+    "site/assets/claim-remembers.svg",
+    "site/assets/claim-texts.svg"
+   ],
+   "what": "Three animated SVG claim icons (for example 'a remembered thread tying into a knot') with reduced-motion CSS. Only on this branch; production says they were never delivered.",
+   "maturity": "prototype",
+   "taxila_use": "idea",
+   "taxila_target": "landing claim icons"
+  },
+  {
+   "id": "MR-35",
+   "title": "Glyph display layer (anim.tsx)",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/components/anim.tsx"
+   ],
+   "what": "The pair is the reduced-motion mechanism: the still SVG is chosen before src because CSS cannot pause an animated WebP. Fallback chain is webp -> svg -> emoji. The stored value is always the emoji character, never a path, so reactions keep syncing and keep reaching the model.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "Taxila reactions/celebrations display"
+  },
+  {
+   "id": "MR-36",
+   "title": "assetwire gate",
+   "subsystem": "evals/gates/verification",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "evals/assetwire/run.mjs",
+    "evals/assetwire-browser.mjs"
+   ],
+   "what": "Six properties: every wired path resolves (derived from source); reactions store the emoji, never a path; the reduced-motion branch is real (with a negative-control component that must fail); unknown filetypes keep their letters; the error boundary is stylesheet-independent; cleanup is complete both ways.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "evals for generated-module assets",
+   "evidence": "72 hermetic + 55 browser assertions"
+  },
+  {
+   "id": "MR-37",
+   "title": "Real-pixel contrast gate",
+   "subsystem": "design-system/ux",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "scripts/check-contrast.mjs"
+   ],
+   "what": "Composites scrims and emphasis curves over the decoded pixels of the shipped JPGs, per state x theme x band x {avg, darkest, brightest decile}. Gates text 4.5, controls/edges 3.0, and the per-state world accent.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "Taxila design gate incl. generated module backgrounds",
+   "evidence": "213->268 checks; forced scrims 0.34->0.54"
+  },
+  {
+   "id": "MR-38",
+   "title": "Sky and felt evals",
+   "subsystem": "evals/gates/verification",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "evals/sky.mjs",
+    "evals/skyfelt-browser.mjs"
+   ],
+   "what": "Minute-level sweeps, mirror-vs-real clock agreement and pool no-repeat sweeps. Felt-assertion (MAD from the flat theme ground, floor 6.0) runs the rejected flat frame (4.2) as an in-run negative control that must fail.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "felt gates for Taxila visuals"
+  },
+  {
+   "id": "MR-39",
+   "title": "Pull-only cultural currency",
+   "subsystem": "learning/pedagogy/curriculum",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/culture.ts",
+    "api/culture.js",
+    ".github/workflows/culture.yml"
+   ],
+   "what": "A daily-refreshed index. Nothing is pushed: cultureNote(userTurn) matches what the user said and injects ~30 tokens framed as 'heard of, not seen', at most 2 items. Fails to nothing; stale over 60h means not served.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "age-appropriate current references (cricket, festivals, school events)"
+  },
+  {
+   "id": "MR-40",
+   "title": "Gamification adopt-vs-refuse research",
+   "subsystem": "gamification",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/research/gamification-2026.md"
+   ],
+   "what": "12-agent sweep plus adversarial verification. Adopt: scaled celebrations on real milestones, passive history visualisation, non-revocable additive badges, session-scoped personal bests, kudos-as-noticing. Refuse: streaks (loss aversion; litigated), pay-to-restore (FTC dark pattern). Also covers juice/motion inside the motion lint, the Us-screen blueprint and first-60-seconds hooks.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "Taxila gamification policy"
+  },
+  {
+   "id": "MR-41",
+   "title": "India relational-state schema",
+   "subsystem": "relational-os",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/research/india.md"
+   ],
+   "what": "Dynamic: honorific_register tu/tum/aap (bidirectional, per relationship; a teacher persona needs aap), code_switch_baseline with direction-on-stress, kin_graph with fictive vs blood kin, care_ritual_state, festival_calendar_state by region, topical_currency_log. Static: mother_tongue, region, religion (opt-in), family structure, diet.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "learner model cultural fields; tutor honorific policy"
+  },
+  {
+   "id": "MR-42",
+   "title": "Photo -> relational record policy",
+   "subsystem": "multimodal-vision",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/PHOTOS.md"
+   ],
+   "what": "A sent photo writes an episode, a claim in vy_visual_assertion (confidence 0.35, refusal and lint guard) and a content-free event fact (sensitive=true). It never writes a content fact. Prefer under-recording. Forget reaches every row. Residual gap: scope:item forget leaves the JPEG in storage.",
+   "maturity": "shipped",
+   "taxila_use": "adapt",
+   "taxila_target": "homework photo memory"
+  },
+  {
+   "id": "MR-43",
+   "title": "Display-name rename seam",
+   "subsystem": "prompt-compiler/persona-engineering",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "src/engine/persona.ts",
+    "context/decisions.md#maya-rename-display-only"
+   ],
+   "what": "One seam (HER_NAME, sourced from the sheet) for every human-readable surface. Machine identifiers (tables, agent id, storage keys, applicationId) never change. Wake-names become a superset.",
+   "maturity": "shipped-measured",
+   "taxila_use": "copy",
+   "taxila_target": "tutor display names vs ids",
+   "evidence": "75 refs / 16 files, 0 stray"
+  },
+  {
+   "id": "MR-44",
+   "title": "Voice chosen by blind ear deck",
+   "subsystem": "tts-voice-identity",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "scripts/voice-samples.mjs",
+    "scripts/verify-voice.mjs",
+    "context/decisions.md#despina-by-ear"
+   ],
+   "what": "Shuffled 8-voice deck (A-H, sealed mapping), same script and direction. The owner picks by ear and the voice is switched atomically across six lanes. Identity lives in every cache key, so stale clips self-invalidate.",
+   "maturity": "shipped-measured",
+   "taxila_use": "adapt",
+   "taxila_target": "tutor voice selection on gpt-realtime-2.1 voices",
+   "evidence": "echosim byte-identical before/after; sibling hp-main-voice-surfaces A21"
+  },
+  {
+   "id": "MR-45",
+   "title": "Repo transfer manifest",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/TRANSFER.md"
+   ],
+   "what": "What a repo move silently loses: gitignored config, Actions secrets (names only), the Vercel git link, the external DB and storage, scratchpad-only gates. Verification commands for after the move.",
+   "maturity": "shipped",
+   "taxila_use": "idea",
+   "taxila_target": "Taxila infra checklist"
+  },
+  {
+   "id": "MR-46",
+   "title": "Behavioural laws of memory",
+   "subsystem": "memory-graph/consolidation",
+   "repo": "raghavsharma2003/meera",
+   "ref": "archive/production-20260914@bee9061",
+   "paths": [
+    "docs/MEMORY-FELT.md"
+   ],
+   "what": "Nine laws: retold not recited; right memory at the right time (occasion beats recency); weight classes; memory is care, never ammunition; uncertainty answered like a person; she has a past of her own (or she is an interviewer); time is experienced; every lane is the same person; a pre-registered judged battery.",
+   "maturity": "spec-only",
+   "taxila_use": "adapt",
+   "taxila_target": "learner-memory behaviour laws",
+   "evidence": "sibling-covered"
+  },
+  {
+   "id": "MR-47",
+   "title": "2026-08-13 snapshot",
+   "subsystem": "infra/azure/vercel/deploy",
+   "repo": "raghavsharma2003/meera",
+   "ref": "origin/main@72041b2",
+   "paths": [
+    "README.md",
+    "src/engine/persona.ts",
+    "docs/PHOTO-CREDITS.md"
+   ],
+   "what": "Independent early snapshot: browser-first no-account pitch, StyleGAN avatar, CC-BY Flickr moments, persona 85.7k chars. Diffing it against the archive reveals the evolution of the one-life, em-dash and promise rules.",
+   "maturity": "shipped",
+   "taxila_use": "skip",
+   "taxila_target": "provenance only"
+  }
+ ],
+ "measurements": [
+  {
+   "claim": "grok-4-20-non-reasoning loses the blind charm comparison to the incumbent 38-2 overall (warmth 35-3, humour 31-2, register 28-5, personhood 34-4), p<0.001",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:evals/archives/charm-grok/personality-battery.md",
+   "n": "48 units; 144 replies/arm/lane",
+   "method": "blind A/B, every unit judged both orders, claude-opus-4.8 judge, win counted only if both orders agree",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "grok dials: voice 36.1 vs 20.5 words/turn; 1.74 vs 1.20 questions/turn; 63% vs 37% turns end in a question; 49% of text turns at the 4-bubble cap; 20% lose bubbles (30 dropped over 144 turns)",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:evals/archives/charm-grok/personality-battery.md",
+   "n": "144 turns per lane",
+   "method": "deterministic counters through the shipped parseBubbles",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "gpt-5.6-luna ties the incumbent on charm 17-18 (p=1.00) and wins specificity 9-25, but emits 0/84 usable media tags on light beats vs incumbent 6/84 (p=0.029); its crisis beat becomes a clinical risk script from turn 3; voice 28.2 vs 20.5 words/turn",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:evals/archives/charm-grok/personality-battery.md",
+   "n": "84 light-beat turns per arm; 96 verdicts",
+   "method": "same battery; media through the shipped parser",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "The incumbent breaks its own one-question rule on ~35% of turns, duplicates the tone marker on 8% of voice turns, and 2 of 5 voice notes speak a stage direction aloud",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:evals/archives/charm-grok/personality-battery.md",
+   "n": "144 replies/arm/lane",
+   "method": "same battery",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "Grok operational: 0/288 truncated at production max_tokens; 97% prompt cache hit (10,630/10,970 tokens)",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:evals/archives/charm-grok/personality-battery.md",
+   "n": "288 replies",
+   "method": "Foundry deployment",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "Taste table: self-agreement on a repeated position 13/48 -> 30/48 (27%->63%); register defect on taste turns 13/96 -> 0/32; 0 false fires in 60 messages; identical output over 100 offline calls",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/measurements.md#taste-consistency",
+   "n": "480 live turns",
+   "method": "same position asked twice 6-8 turns apart",
+   "date": "2026-08-11"
+  },
+  {
+   "claim": "Short structured affect tags do not recite: hard leak 0/42 tagged vs 0/42 control (rule-of-three <=7.1%/turn)",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/measurements.md#affect-recitation",
+   "n": "84 turns (42/arm)",
+   "method": "blind counterbalanced, deterministic scoring",
+   "date": "2026-08-13"
+  },
+  {
+   "claim": "CharacterSheet extraction kept Maya byte-identical (83/83 fixtures) at every batch; Kabir passed 412/412 per-module floor checks across 2 agents first run; residual Maya-isms in Kabir's lanes 95 -> 64 -> 27 -> 0",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/decisions.md#personality-is-a-sheet,#residues-zero; commits 88efb8c,983f11e,82b8624",
+   "n": "83 fixtures; 412 checks; full lane set",
+   "method": "frozen-oracle byte compare; invariant suite; leak marker count",
+   "date": "2026-08-24/25"
+  },
+  {
+   "claim": "Before the FINAL counts block, she asked a question in 100% of measured call turns, averaging 2.86 questions per turn, against a stated ceiling of one in three",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/persona.ts:427-436 (comment)",
+   "n": "measured call turns (n not stated)",
+   "method": "call-lane transcript counting",
+   "date": "~2026-08"
+  },
+  {
+   "claim": "Cascade lane taught an audio-tag convention: stage directions on 10/10 replies; written laughter 0.15 per 100 words vs 2.76 on the live lane",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/persona.ts:470-482 (comment)",
+   "n": "10 replies per prompt version",
+   "method": "measured on the current and pre-register prompt",
+   "date": "~2026-08"
+  },
+  {
+   "claim": "Watch-comment directive rewrite: engagement 20% (48/240) -> 42% (100/240), +21.7pp [95% CI 13.6, 29.7]; fab-of-spoke 14% -> 4% (suggestive, p~0.05); assert-level fabrication 7% -> 7% (noise, N=83/59 under the n>=300 bar)",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/persona.ts:555-585 (comment)",
+   "n": "16 frames x 15 reps = 240 calls/arm",
+   "method": "grok-4-20-non-reasoning, temp ~1.0, deterministic assertion scorer vs ground truth",
+   "date": "2026-08"
+  },
+  {
+   "claim": "Photo drop: 24/24 briefed files delivered; face-lock verified by eye on a 5-image sample; sources 1086x1448/1254x1254/1672x941 at 200-550 KB; 20 moments compressed to 680px mozjpeg q78 ~45-50 KB (legacy 272-405 px, 13-33 KB); library 109 tags; persona core +~640 chars (commit says +1026), tripwire 44k -> 45.5k",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/measurements.md#photo-drop-2026-08-22; commit a0f9a56",
+   "n": "24 files; 5-image eye sample",
+   "method": "file audit + visual check",
+   "date": "2026-08-22"
+  },
+  {
+   "claim": "World layer phase 1 (procedural): worst 4.94:1 text on sky, 7.85:1 in panel, 3.21:1 edge; sky eval 97 checks; 45-check browser battery; zero layout shift through a drift cycle",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit 9173ee1",
+   "n": "5 states x 3 surfaces x 2 widths; 32 screenshots",
+   "method": "contrast gate + Playwright",
+   "date": "2026-08-22"
+  },
+  {
+   "claim": "Paintings live: real-pixel gate forced morning/golden scrims 0.34 -> 0.54/0.53 (painted city measured 2.06:1); painted worst 4.68 text / 7.38 panel / 3.43 edge; PWA icons 73->8 KB and 454->59 KB; splash tree 19 MB -> 1.1 MB; sky eval 90->150",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit c5c4e6b",
+   "n": "5 states, top/bottom bands, avg/brightest/darkest decile",
+   "method": "decoded-JPG pixel sampling",
+   "date": "2026-08-22"
+  },
+  {
+   "claim": "Story pool v1 showed the same image on 45.5% of consecutive day pairs (AABB runs at cycle seams); fixed with a one-cycle-ahead head; swept 60 days incl. every cycle boundary and n=2..8",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/storyCatalog.ts header; commit c5c4e6b",
+   "n": "60-day sweep",
+   "method": "eval sweep over the shipped implementation",
+   "date": "2026-08-22"
+  },
+  {
+   "claim": "Thread wallpaper: ground text worst 4.70:1 (floor 4.5), chips 5.48, edges 3.49; scroll p95 17.30 -> 17.20 ms (0.994x); landing first view 830 KB -> 392 KB; injected violations 8/8 caught",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/measurements.md#phase3-thread-onboarding-settings",
+   "n": "5 states x 2 themes x 3 bands x 3 stats; 300 msgs / 90 frames",
+   "method": "check-contrast real pixels + Playwright frame sampling",
+   "date": "2026-08-22"
+  },
+  {
+   "claim": "Flat colourless sky veil: luminance-sd delta 1.4-1.76x measured but invisible on phone; curve veil felt-values morning 6.6 -> predawn 20.1 vs control 3.4; felt floor 6.0 with the rejected flat frame (4.2) as an in-run negative control",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit fcd2180; context/rejected.md#measured-but-not-felt",
+   "n": "5 states",
+   "method": "browser felt-assertion (MAD from the flat theme ground)",
+   "date": "2026-08-23"
+  },
+  {
+   "claim": "Dark-theme his-bubble wine #8e4054: white ink 5.09->6.97, timestamp 4.56->6.18, tick 4.11->5.64; wine on composer glass 2.45:1 (<3:1), so the send control keeps the accent",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit 30288d3; context/decisions.md#dark-his-bubble-is-wine-not-alarm",
+   "method": "contrast computation",
+   "date": "2026-08-23"
+  },
+  {
+   "claim": "Theme rose on the morning sky measured 2.26:1; per-state world accent re-solved to >=4.75:1 against all 4 scrim-composited stops, gated at 4.5",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/decisions.md#accent-joins-the-sky",
+   "n": "5 states x 4 stops",
+   "method": "check-contrast",
+   "date": "2026-08-25"
+  },
+  {
+   "claim": "51 of 54 maya-visual-assets files landed byte-identical in production; assetwire 72 hermetic + 55 browser assertions; public/anim is 5.2 MB of animated WebP",
+   "source": "raghavsharma2003/meera@codex/maya-visual-assets@5c0b68e vs archive/production-20260914@bee9061 (blob compare, this harvest); commit 29fe024",
+   "n": "54 files",
+   "method": "git blob hash comparison; assetwire batteries",
+   "date": "2026-08-24 / 2026-10-02"
+  },
+  {
+   "claim": "herNow is sticky across a 1-minute re-call (moved:false) and moves on at span end knowing what it finished; elapsed floors swept 0-600 min with zero over-claims; hernow suite 154 assertions",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/measurements.md#timeline-wave-2026-08-23",
+   "n": "154 assertions",
+   "method": "eval sweep",
+   "date": "2026-08-23"
+  },
+  {
+   "claim": "Tester wave 1: honesty checks 351 -> 393 (7 fabricated tester lines as permanent negatives); farewell detector 20 positives / 23 adversarial negatives, ends the call 1.4 s after her goodbye; game-invite detector 123 assertions; persona core 45,494 under the 45,500 tripwire",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/measurements.md#tester-wave-1; commit e89dbc1",
+   "n": "1 external tester; suites as stated",
+   "method": "scripted repros of real feedback",
+   "date": "2026-08-23"
+  },
+  {
+   "claim": "Memory wave: recall@8 73.9% -> 95.7%; queries answered 76.9% -> 92.3%; Hinglish tokenizer 13/19 -> 17/19 real queries; mid-call cues 9/9 recall, 0/12 false fires; consolidation had never run; first run 10 people / 180 rows ~$0.03",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit 482b01b; context/measurements.md#memory-wave-2026-08-23",
+   "n": "labelled fixture set; 12-scenario matrix",
+   "method": "real compiled engine",
+   "date": "2026-08-23"
+  },
+  {
+   "claim": "Display rename: 75 HER_NAME refs across 16 files, 0 stray display literals, browser-verified on every surface",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/measurements.md#maya-lifecycle-wave-2026-08-23",
+   "n": "all string literals and JSX text nodes",
+   "method": "grep + Playwright",
+   "date": "2026-08-23"
+  },
+  {
+   "claim": "Despina chosen from an 8-voice blind shuffled deck; echosim floor byte-identical (same MD5) before and after the switch",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/decisions.md#despina-by-ear",
+   "n": "8 voices; 80 simulated calls",
+   "method": "blind ear pick + echosim",
+   "date": "2026-08-24"
+  },
+  {
+   "claim": "External: RPEval in-character consistency GPT-4o 5.81% vs Gemini-1.5-Pro 59.75% (secondary-sourced); PersonaGym GPT-4.1 ties LLaMA-3-8B; Replika identity discontinuity 12,793 posts + 145 surveyed (HBS WP 25-018); Character.AI PipSqueak 2: 8 threads >2,000 upvotes in 30 days",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:docs/research/identity.md; docs/research/lab-products.md",
+   "n": "as cited",
+   "method": "literature review (several secondary, flagged)",
+   "date": "2026-08"
+  }
+ ],
+ "rejections": [
+  {
+   "tried": "Example quotes inside the persona brief",
+   "what_broke": "Phrase bank: recited verbatim 4/5; 0 after removal",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/rejected.md#recited-prompt",
+   "taxila_relevance": "Every teacher sheet field and lesson note must be a shape, never a line."
+  },
+  {
+   "tried": "Taste written as polished English sentences",
+   "what_broke": "Read out verbatim twice, eight turns apart; register defection 13/96; fixed by a telegraphic table",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/rejected.md#recited-prompt; measurements.md#taste-consistency",
+   "taxila_relevance": "Tutor favourites as table rows, not prose."
+  },
+  {
+   "tried": "A rule buried mid-brief",
+   "what_broke": "Fired 0/8; the same rule appended last fired 8/8",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/decisions.md#prompt-position",
+   "taxila_relevance": "Turn-length and question counts must be appended last in the tutor prompt."
+  },
+  {
+   "tried": "Many 'ask something' rules plus one 'don't ask', and adjectives like 'be brief'",
+   "what_broke": "A question in 100% of measured call turns, 2.86 on average; fixed only by a FINAL counts block appended last",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/persona.ts:427-436",
+   "taxila_relevance": "A teacher OS has many 'ask' rules; counts must outrank them."
+  },
+  {
+   "tried": "Teaching an audio-tag vocabulary ([laughs], [softly]) in the cascade lane while banning brackets",
+   "what_broke": "Stage directions on 10/10 replies; written laughter fell to 0.15 vs 2.76 per 100 words; nothing downstream performed the tags",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/persona.ts:470-482",
+   "taxila_relevance": "Never model a convention the same brief bans; examples beat rules."
+  },
+  {
+   "tried": "Bracketed exemplars inside the rule that limits brackets to one",
+   "what_broke": "The same contradiction reproduced; exemplars removed",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/persona.ts:398-409"
+  },
+  {
+   "tried": "'You have your own life — INVENT it' (08-13 wording)",
+   "what_broke": "Her present re-rolled on every call (reading, then fairy lights a minute later); wording alone could not fix it; herNow ledger plus 'ONE life' rules needed",
+   "source": "raghavsharma2003/meera@origin/main@72041b2:src/engine/persona.ts vs @AR; src/engine/herNow.ts header",
+   "taxila_relevance": "Taxila tutors carry no improvised life; their present is lesson truth."
+  },
+  {
+   "tried": "'(you were doing something)' in the call-open directive",
+   "what_broke": "Fabrications landed on the user: a book instead of their finished game, 'our photos from the beach', a meeting he never had",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/rejected.md#the-directive-that-said-improvise",
+   "taxila_relevance": "Any 'be alive' instruction must be fenced away from the child's record."
+  },
+  {
+   "tried": "Improvised self-facts scoped per listener (vy_fact kind='meera' per person_id)",
+   "what_broke": "Two users can be told contradictory lives; it reads as lying in any shared room",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/rejected.md#life-per-person",
+   "taxila_relevance": "Siblings and classmates share a tutor: no improvised self-facts; agent state is agent-scoped."
+  },
+  {
+   "tried": "Self-correction exemplar 'with a dash'",
+   "what_broke": "Conflicted with the em-dash ban; replaced by 'no wait'/'chhod'",
+   "source": "raghavsharma2003/meera@origin/main@72041b2 vs @AR:src/engine/persona.ts; context/decisions.md#dash-predicate-text-only"
+  },
+  {
+   "tried": "Exemplar 'ghar aake photo bhejti hu' on a call",
+   "what_broke": "A promise the call lane cannot keep; rewritten as 'never promise to send anything later'",
+   "source": "raghavsharma2003/meera@origin/main@72041b2 vs @AR:src/engine/persona.ts",
+   "taxila_relevance": "A teacher must never promise a module or worksheet that the lane cannot deliver."
+  },
+  {
+   "tried": "A silence-triggered idle nudge",
+   "what_broke": "Incentive-salience engineering (a reward delivered on the cue of not replying); deleted; proactivity made reason-contingent",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/persona.ts:502-507; context/decisions.md#proactive-reason-contingent",
+   "taxila_relevance": "No 'you've been quiet' pings to a child."
+  },
+  {
+   "tried": "Grok-4-20 as the brain (fast, cached, free on credits, good at vision)",
+   "what_broke": "Lost the blind charm test 38-2 on every axis; interrogation, length, assistant tics",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:evals/archives/charm-grok/personality-battery.md",
+   "taxila_relevance": "Operational excellence says nothing about character fidelity."
+  },
+  {
+   "tried": "gpt-5.6-luna as the text brain",
+   "what_broke": "Charm tie, but media tags switched off 0/84 (p=0.029) and the crisis beat became a clinical risk script; +37% words",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:evals/archives/charm-grok/personality-battery.md §2-3",
+   "taxila_relevance": "Taxila's gpt-5.6 must be gated on module/diagram tag emission and crisis in-character behaviour."
+  },
+  {
+   "tried": "Voice-note protocol '[voicenote: softly]'",
+   "what_broke": "The app spoke the single word 'softly' (grok 4/4 in crisis; incumbent 2/5 '[giggles')",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:evals/archives/charm-grok/personality-battery.md §2",
+   "taxila_relevance": "Score protocol tags through the shipped parser, not a regex."
+  },
+  {
+   "tried": "Few-shot example turns; fine-tuning; activation steering for persona consistency",
+   "what_broke": "Few-shot gives a phrase bank; fine-tuning resets per base model; activation steering needs white-box access unavailable on closed APIs",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:docs/research/identity.md §4"
+  },
+  {
+   "tried": "An Indic-specialist model for Hinglish register",
+   "what_broke": "Sarvam-30B scored below Claude Opus 4.6 on casual romanised code-mix; register is training mix, not 'being Indic'",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:docs/research/identity.md §1",
+   "taxila_relevance": "Measure register per model; do not assume an Indic model is better."
+  },
+  {
+   "tried": "Vision directive binding 'say something' to 'know what this is'",
+   "what_broke": "NO_COMMENT on 15/16 frames; split wording raised engagement 20%->42%",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/persona.ts:555-585"
+  },
+  {
+   "tried": "Story ring 'never expires' hack",
+   "what_broke": "A book from 08-09 still showing on 08-22 under its weekday: a highlight pretending to be a story",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/storyCatalog.ts header"
+  },
+  {
+   "tried": "Per-cycle shuffle of the story pool with no seam guard",
+   "what_broke": "45.5% of consecutive days showed the same image; the eval checked aligned windows, not seams",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/storyCatalog.ts cycleOrder",
+   "taxila_relevance": "Test what a person sees (seams), not what the algorithm promises."
+  },
+  {
+   "tried": "Night-slot start computed as a minute of today",
+   "what_broke": "The night story read '1m' at 04:31 and re-golded as unseen at 00:00 and 04:30",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/storyCatalog.ts slotStartedAt"
+  },
+  {
+   "tried": "Importing the clock into storyCatalog",
+   "what_broke": "Module cycle; engine bundle threw TypeError reading CRISIS_LINES at import while tsc and vite both passed",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit c5c4e6b; src/engine/storyCatalog.ts header",
+   "taxila_relevance": "Bundle-import evals catch what type-check and build miss."
+  },
+  {
+   "tried": "T14 her-day/his-clock render layer",
+   "what_broke": "Never wired (zero callers for its whole life); retired with a tombstone rather than becoming a second answerer of 'right now'",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/rejected.md#t14-render-layer-retired"
+  },
+  {
+   "tried": "Procedural moon, stars and skyline over the paintings",
+   "what_broke": "Double moon and a black cutout in front of a painted city; now painted XOR procedural",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/sky.ts; src/components/WorldLayer.tsx"
+  },
+  {
+   "tried": "Light glass on every sky so the fill contrasts with the ground",
+   "what_broke": "A mid-grey slab, with ink 4.2:1 inside; fill now carries the text, edge carries the component",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/engine/sky.ts SkyTokens.control"
+  },
+  {
+   "tried": "A contrast gate measuring ink-over-sky only",
+   "what_broke": "Passed a card whose text failed inside its own panel (noon screenshot)",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit 9173ee1"
+  },
+  {
+   "tried": "A gradient-only contrast gate",
+   "what_broke": "The painted city under the truth line measured 2.06:1; the gate moved to decoded pixels",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit c5c4e6b"
+  },
+  {
+   "tried": "Sky mode pixel-identical to Light at daytime",
+   "what_broke": "'I selected Sky and no change', indistinguishable from broken",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/decisions.md#sky-choice-is-a-veil-not-a-palette"
+  },
+  {
+   "tried": "A flat colourless veil (1.4-1.76x luminance-sd delta)",
+   "what_broke": "Invisible on the owner's phone ('I see no sky'); a ratio between two faint things is not a picture",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/rejected.md#measured-but-not-felt"
+  },
+  {
+   "tried": "Explicit Dark compositing the morning painting under a 0.91 near-black veil",
+   "what_broke": "Muddy brown-black, no sky; now the night room",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/rejected.md#dark-theme-day-paintings-are-mud"
+  },
+  {
+   "tried": "Header band background-position 50% 100% with an alpha solved for the top",
+   "what_broke": "A lit city under a starfield",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit fcd2180"
+  },
+  {
+   "tried": "Theme accent rose on the sky",
+   "what_broke": "2.26:1 on the morning blue; accent re-solved per sky state",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/decisions.md#accent-joins-the-sky"
+  },
+  {
+   "tried": "Accent rose for his bubble in dark theme",
+   "what_broke": "Read as an alarm or notification; moved to wine #8e4054",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/decisions.md#dark-his-bubble-is-wine-not-alarm"
+  },
+  {
+   "tried": "Redefining an undefined theme to mean 'sky'",
+   "what_broke": "Would flip a dark-phone user to paper at 10am on an unchanged build; sky stamped at onboarding instead",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/decisions.md#sky-is-the-clock"
+  },
+  {
+   "tried": "Codex asset handoff 'inert until wired'",
+   "what_broke": "51 files referenced by nothing (the dead-writer class); 3 claim marks reported 'never delivered' yet present on codex/maya-visual-assets and still unwired",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commits 4e5c586, 29fe024; raghavsharma2003/meera@codex/maya-visual-assets@5c0b68e:site/assets/claim-*.svg",
+   "taxila_relevance": "Generated module assets need a wired-or-fail gate."
+  },
+  {
+   "tried": "CSS animation:none to honour reduced motion on animated WebP",
+   "what_broke": "Cannot pause an animated WebP; the still must be chosen before the src",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:src/components/anim.tsx"
+  },
+  {
+   "tried": "An animated glyph inside the call screen's aria-live status line",
+   "what_broke": "Removed: decoration in a live label is what the design gate exists to stop",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit 29fe024"
+  },
+  {
+   "tried": "StyleGAN avatar plus CC-BY Flickr 'moments' as the visual identity (08-13)",
+   "what_broke": "Replaced by a face-locked generated library; nine bundled JPEGs deleted (inferred rejection, no explicit entry)",
+   "source": "raghavsharma2003/meera@origin/main@72041b2:docs/PHOTO-CREDITS.md vs @AR; commit 29fe024"
+  },
+  {
+   "tried": "Scaffold favicon declared first in index.html",
+   "what_broke": "The tool's purple bolt shipped until the world pack replaced it",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit c5c4e6b"
+  },
+  {
+   "tried": "Activity episodes storing present-tense facts",
+   "what_broke": "She denied two chess games, then invented moves; a memory writer must write the past tense",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/rejected.md#episode-of-the-present-tense; commit e89dbc1",
+   "taxila_relevance": "Lesson records must store what is still true next week (what was solved, which mistake)."
+  },
+  {
+   "tried": "A board-move poke delivered when her voice paused",
+   "what_broke": "Every note landed in the breath-pause of her own story, fragmenting it; replaced by salience, rate and breath rules",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commits b04ac7b, cbd0ee3",
+   "taxila_relevance": "Module/game events must not interrupt the teacher mid-explanation."
+  },
+  {
+   "tried": "Callback flow reusing the incoming-call directive",
+   "what_broke": "She answered her own call like a stranger receiving one",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit a1df598"
+  },
+  {
+   "tried": "No call recency in the pickup directive",
+   "what_broke": "Every call was greeted like the first; a follow-up register is used within 15 minutes",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit a1df598"
+  },
+  {
+   "tried": "Would-you-rather deck seeded by salt + count",
+   "what_broke": "The identical card order every session forever; deal made session-unique, picks stay seeded (taste stable)",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit a1df598"
+  },
+  {
+   "tried": "Promoting a photo vision description to a content fact",
+   "what_broke": "Refused: a single cheap guess with no second look would sit cited and uncorrected forever; prefer under-recording",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:docs/PHOTOS.md",
+   "taxila_relevance": "Homework-photo readings stay assertions, never learner facts, without verification."
+  },
+  {
+   "tried": "A consolidation cron believed to be running",
+   "what_broke": "Permanent dry-run, and only 1 of 6 chain steps even when flipped; the durable layer was empty for every user",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit 482b01b"
+  },
+  {
+   "tried": "Agent running git checkout during asset regeneration",
+   "what_broke": "A forbidden checkout, confessed and re-run against the true baseline",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:commit c5c4e6b"
+  },
+  {
+   "tried": "Gates living in an ephemeral scratchpad verifying a frozen persona copy",
+   "what_broke": "Verified a months-old bundle while reporting a pass on today's tree",
+   "source": "raghavsharma2003/meera@archive/production-20260914@bee9061:context/rejected.md#gates-that-live-nowhere; docs/TRANSFER.md §5"
+  }
+ ],
+ "concepts": [
+  {
+   "name": "Personality is a sheet; the OS is the product",
+   "description": "Interaction nuance lives in a shared Relational Core; a character is a typed sheet of shape/fact fragments interpolated into it. Character prose in the core is a build failure (ratchet 0).",
+   "taxila_relevance": "Asha, Arjun and every future tutor share one teacher OS; tutor-specific needs become new sheet fields."
+  },
+  {
+   "name": "Maximally-far second character as the OS test",
+   "description": "Author the second character as far as possible from the first, then measure leakage; if a third character still needs core edits, the OS is not finished.",
+   "taxila_relevance": "Author a contrasting third tutor and run the leak guard."
+  },
+  {
+   "name": "Shapes, not lines",
+   "description": "Anything sentence-shaped that reaches the model gets recited; sheets, descs, schedule notes and table rows are telegraphic, shapelint-gated.",
+   "taxila_relevance": "All TeacherSheet fields, module descs and lesson notes."
+  },
+  {
+   "name": "Authored global self-state beats improvised per-listener state",
+   "description": "Taste is a table, the story is a pool, the day is a schedule, the present is a ledger; improvisation is fenced to the character's solo moment.",
+   "taxila_relevance": "Tutors have stable authored favourites and no improvised biography."
+  },
+  {
+   "name": "App truth outranks character improvisation",
+   "description": "What the user can see (a game, a call that just ended, a shared screen) is the character's present, returned unchanged.",
+   "taxila_relevance": "The teacher's 'now' is the lesson state."
+  },
+  {
+   "name": "Structurally unrenderable beats instructed-not-to",
+   "description": "The gap length never reaches the model (no field), a mood without a cause cannot be constructed, a second activity cannot be returned.",
+   "taxila_relevance": "Never-say-'you were away' enforced by types, not prompts."
+  },
+  {
+   "name": "The prompt sets a ceiling; the model decides how close you get",
+   "description": "Same prompt, different model: 20.5 vs 36-53 words/turn, 38-2 charm loss; re-measure the character on every model or mode change.",
+   "taxila_relevance": "Gate gpt-5.6 / gpt-realtime-2.1 tutors with a battery plus dials."
+  },
+  {
+   "name": "Both-orders-agree blind judging plus deterministic dials plus shipped-parser scoring",
+   "description": "Charm battery protocol; known-bad D0 fixtures that any battery must flag.",
+   "taxila_relevance": "Taxila teacher battery and D0 corpus."
+  },
+  {
+   "name": "The face (or style) is the continuity",
+   "description": "Lock a visual identity with an attached reference plus a verbatim identity block plus negatives; regenerate on drift; POV-without-face for presence.",
+   "taxila_relevance": "gpt-image-2 tutor visual sheets, later 3D/video avatar references."
+  },
+  {
+   "name": "Night-first style lock",
+   "description": "Generate one state, then feed it back as the style reference for the rest of the set.",
+   "taxila_relevance": "Consistent world and module art."
+  },
+  {
+   "name": "The app is a place; the sky is the clock",
+   "description": "A world bound to the real clock with five states; procedural first, paintings swap in by one variable; painted XOR procedural.",
+   "taxila_relevance": "A learning place that follows the child's day, supporting the Conductor's day cycle."
+  },
+  {
+   "name": "Fill carries text, edge carries component",
+   "description": "Text contrast is solved inside the control, the control's findability by its hairline edge; every colour on a picture is solved against decoded pixels per state x theme.",
+   "taxila_relevance": "Generated module backgrounds and world art."
+  },
+  {
+   "name": "A relative improvement over an invisible baseline can itself be invisible",
+   "description": "Gate felt presence against the flat ground with the rejected artifact as a permanent in-run negative control.",
+   "taxila_relevance": "Felt gates for visuals and celebrations."
+  },
+  {
+   "name": "Semantic value stored, display chosen at render",
+   "description": "The reaction is stored as the emoji; the display picks webp/svg/emoji; reduced motion picks the still before src.",
+   "taxila_relevance": "Celebrations and reactions for kids."
+  },
+  {
+   "name": "Reason-contingent proactivity",
+   "description": "The character reaches out because something happened, never because the user went quiet.",
+   "taxila_relevance": "Reminders to children only on stated plans or parent-set schedules."
+  },
+  {
+   "name": "Honest reassurance copy",
+   "description": "State only what is true and name memory on purpose ('She remembers this call. And she'll always tell you what she is.').",
+   "taxila_relevance": "Parent and child trust copy."
+  },
+  {
+   "name": "Two clocks with disjoint signatures",
+   "description": "The character's day and the user's dated world; reading the gap to reason about his world is content, letting it move her interior is forbidden.",
+   "taxila_relevance": "'Your Thursday test is behind you' without commenting on absence."
+  }
+ ],
+ "unread": [
+  "src/styles/world.css@AR (952 lines) and WorldLayer.tsx past line 80",
+  "scripts/check-contrast.mjs@AR source (cited via commits and decisions only)",
+  "evals/sky.mjs, evals/skyfelt-browser.mjs, evals/hernow.mjs bodies",
+  "timeline.ts lines 300-590 and 700-976; herNow.ts 192-340; sky.ts 260-612 (token values)",
+  "docs/PRODUCT-SUPERIORITY.md, PERSON-MODEL.md, SPEC-AGENT-LAYER.md, RELATIONALOS.md, SPEC-SELF-LAYER.md, DESIGN-STANDARDS.md, SURFACES.md, BURSTS.md",
+  "docs/research/{AFFECT-CONTINUITY,cognitive-arch,memory-arch,safety-reg,swap-test,oss-landscape-2026}.md",
+  "docs/website-research/brand/BRAND.md past §2 (vyakti.ai brand forensics)",
+  "docs/gurukul/* drafts other than teacher-sheet-spec.md (sibling gurukul.md)",
+  "@M Android Java (LiveWatchEngine, SceneReader, OtaUpdater, BubbleService); sibling hp-main-voice-surfaces covers these",
+  "Face library images not viewed beyond dimensions; no automated face-consistency metric exists in the repo",
+  "Discrepancy unresolved: photo-drop core growth +~640 chars (measurements.md) vs +1026 (commit a0f9a56)",
+  "Not measured here and needed by Taxila: child-facing persona batteries; gpt-5.6 (non-luna) and gpt-realtime-2.1 (non-mini) dials; whether a tutor without a life reads as an interviewer to children; gpt-image-2 face-lock acceptance rate"
+ ]
+}

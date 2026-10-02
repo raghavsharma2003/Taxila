@@ -1,14 +1,16 @@
 // End-to-end TEXT-MODE check of the client live-lesson runtime in real Chromium (not part of `npm test`:
 // it needs the network for Neon + Azure TTS).
 //
-//   NODE_USE_ENV_PROXY=1 node tests/client-e2e.mjs [--base http://localhost:5173] [--shots <dir>]
+//   NODE_USE_ENV_PROXY=1 node tests/client-e2e.mjs [--base http://localhost:5173] [--mock] [--shots <dir>]
 //
 // Without --base it starts its own API (the dev-api code path: .env.local + server/index.js) and a Vite dev
 // server on spare ports, so it never collides with servers other work has running. It drives /dev/lesson:
 // create a test family → start a text lesson → two child turns → mount fraction-bars → shade 3/4 → goal_met
 // reaches the Director → unknown engine shows "coming soon" → highlight/reveal → end.
-// If /api/lesson/* is not implemented yet (404 "no route"), those three routes are mocked IN THIS TEST
-// ONLY with a scripted Director; the real auth, consent, TTS and every client file are exercised for real.
+// With the real Director it checks what the client does with real answers. With --mock (or when
+// /api/lesson/* is not implemented, 404 "no route") those three routes are answered IN THIS TEST ONLY by a
+// scripted Director, which makes the exact request-shape checks deterministic (teacher-turn attribution,
+// milestone batching) at no model cost; auth, consent, TTS and every client file still run for real.
 import http from "http";
 import { readFileSync, mkdirSync } from "fs";
 import assert from "node:assert/strict";
@@ -56,8 +58,9 @@ if (!base) {
 // Is the real lesson Director there? A missing route answers 404 "no route ..."; a real one 400/401.
 const probe = await fetch(`${base}/api/lesson/start`, { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
 const probeBody = await probe.text();
-const mockDirector = probe.status === 404 && probeBody.includes("no route");
-console.log(mockDirector ? "lesson routes: not implemented yet → scripted mock Director (test-only)" : `lesson routes: real (probe ${probe.status})`);
+const routesMissing = probe.status === 404 && probeBody.includes("no route");
+const mockDirector = routesMissing || process.argv.includes("--mock");
+console.log(mockDirector ? `lesson routes: scripted mock Director (${routesMissing ? "routes not implemented" : "--mock"}; test-only)` : `lesson routes: real (probe ${probe.status})`);
 
 // ───────────── browser ─────────────
 const browser = await chromium.launch({
@@ -131,6 +134,13 @@ const yourTurn = () =>
 // Before clicking anything: no Director call in flight and the teacher quiet. A Director answer can change
 // the whiteboard/chips and shift the layout under a pending click (seen with the real Director: a click
 // meant for a dev button landed on a fraction part inside the frame).
+// Scroll first, let the page come to rest, then click. Clicking in the same step as a long programmatic
+// scroll delivered a parent-page button click to an out-of-process module frame (a stray shade on part 4).
+const tap = async (locator) => {
+  await locator.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(250);
+  await locator.click();
+};
 const settled = () =>
   page.waitForFunction(
     () =>
@@ -174,7 +184,7 @@ try {
 
   // Module: Director-mounted in mock mode, otherwise mounted by the dev button.
   await settled();
-  if (!mockDirector) await page.getByTestId("dev-mount").click();
+  if (!mockDirector) await tap(page.getByTestId("dev-mount"));
   const iframe = page.locator("iframe[data-engine='fraction-bars@1']").first();
   await iframe.waitFor({ timeout: 15_000 });
   check("iframe is sandboxed allow-scripts only", (await iframe.getAttribute("sandbox")) === "allow-scripts");
@@ -194,6 +204,8 @@ try {
 
   const turnsBefore = director.turns.length;
   await settled();
+  await iframe.scrollIntoViewIfNeeded(); // in-frame targets: bring the <iframe> into view, then click inside it
+  await page.waitForTimeout(250);
   for (const k of [0, 1, 2]) await frame.locator(`.fb-part[data-part="${k}"]`).click();
   await page.waitForFunction(() => !!document.querySelector('[data-testid="module-events"] li[data-type="goal_met"]'), null, { timeout: 10_000 });
   check("shading 3 of 4 parts → goal_met event", true, await frame.locator(".fb-label").first().textContent());
@@ -209,22 +221,24 @@ try {
   }
 
   await settled();
-  await page.getByRole("button", { name: "Highlight bar 0" }).click();
+  await tap(page.getByRole("button", { name: "Highlight bar 0" }));
   await frame.locator(".fb-outline.is-highlight").waitFor({ timeout: 5_000 });
   check("highlight command reaches the engine", true);
-  await page.getByRole("button", { name: "Reveal" }).click();
+  await tap(page.getByRole("button", { name: "Reveal" }));
   await frame.locator(".fb-part.is-ghost").first().waitFor({ timeout: 5_000 });
   check("reveal command reaches the engine (target outlined)", (await frame.locator(".fb-part.is-ghost").count()) === 3);
 
   // Compare mode: tap the bigger bar (3/4 vs 2/3) → answer(correct) + goal_met.
   await settled();
-  await page.getByRole("button", { name: "Mount compare 3/4 vs 2/3" }).click();
+  await tap(page.getByRole("button", { name: "Mount compare 3/4 vs 2/3" }));
   const cmp = page.frameLocator("iframe[data-engine='fraction-bars@1']").last();
+  await page.locator("iframe[data-engine='fraction-bars@1']").last().scrollIntoViewIfNeeded();
+  await page.waitForTimeout(250);
   await cmp.locator('.fb-choice[data-bar="0"]').click();
   await page.waitForFunction(() => [...document.querySelectorAll('[data-testid="module-events"] li[data-type="answer"]')].some((li) => li.textContent.includes('"correct":true')), null, { timeout: 10_000 });
   check("compare mode: tapping 3/4 over 2/3 is a correct answer", true);
   await settled();
-  await page.getByTestId("dev-mount-unknown").click();
+  await tap(page.getByTestId("dev-mount-unknown"));
   const unknown = page.frameLocator("iframe[data-engine='number-line@1']");
   await unknown.locator(".frame-card").waitFor({ timeout: 15_000 });
   check("unknown engine → 'coming soon' card", /coming soon/i.test((await unknown.locator(".frame-card").textContent()) ?? ""));
@@ -233,7 +247,7 @@ try {
   await shot("3-unknown");
 
   await settled();
-  await page.getByTestId("end").click();
+  await tap(page.getByTestId("end"));
   await page.waitForFunction(() => document.querySelector('[data-testid="phase"]')?.textContent?.includes("ended"), null, { timeout: 15_000 });
   check("lesson ended", true);
   if (mockDirector) check("POST /api/lesson/end called with the lesson id", director.ends[0]?.lessonId === "mock-lesson-1");
@@ -241,10 +255,10 @@ try {
   // aborted), so count only that every completed speech request succeeded, for at least the four turns
   // the test waited out (opening, two child turns, the goal milestone).
   check("teacher replies spoken via /api/tts", ttsResponses.length >= 4 && ttsResponses.every((r) => r.status === 200 && r.type === "audio/mpeg"), `${ttsResponses.length} × ${JSON.stringify(ttsResponses[0])}`);
-  // Expected: the signed-out /api/me probe (401), and the frame's CSP refusing Vite's HMR socket (dev) and
-  // this test's own fetch probe.
+  // Expected: the signed-out /api/me probe (401), the app shell's missing favicon (dev server), and the
+  // frame's CSP refusing Vite's HMR socket (dev) and this test's own fetch probe.
   const cspRefusal = (e) => /Content Security Policy/.test(e) && (/'ws:\/\//.test(e) || /\/api\/health/.test(e));
-  const expected = (e) => /^me: .*401/.test(e) || cspRefusal(e);
+  const expected = (e) => /^me: .*401/.test(e) || /^favicon\.ico: .*404/.test(e) || cspRefusal(e);
   const relevant = consoleErrors.filter((e) => !expected(e));
   check("no unexpected console errors", relevant.length === 0, relevant.join(" | "));
 } catch (err) {

@@ -38,7 +38,7 @@ by = {}
 for r in rows:
     by.setdefault(r["arm"], []).append(r)
 want_loud = "--loudness" in sys.argv
-print("| arm | n | median first audio ms | median wall ms | recall raw | recall script-aware | heard-as-Urdu (of 2 passes x n) | chars/s | verbatim (S2S) | LUFS |")
+print("| arm | n | median first audio ms | median wall ms | recall raw | recall script-aware | non-Hindi script (2 ASR passes × Hindi clips) | chars/s | verbatim (S2S) | LUFS |")
 print("|---|---|---|---|---|---|---|---|---|---|")
 summary = []
 for arm, rs in by.items():
@@ -49,7 +49,11 @@ for arm, rs in by.items():
     med = lambda k: int(statistics.median([r[k] for r in ok]))
     raw = [r.get("recall_nohint", r.get("key_recall")) for r in ok if r.get("key_recall") is not None]
     sa = [r["recall_sa"] for r in ok if r.get("recall_sa") is not None]
-    urdu = sum(int(bool(r.get("heard_urdu"))) + int(bool(r.get("heard_urdu_hinted"))) for r in ok)
+    # non-Hindi script in the ASR output (Urdu/Nastaliq or Bengali), counted over both ASR passes,
+    # Hindi stimuli only: a language-ID signal, not an intelligibility one
+    nonhi = lambda t: bool(re.search(r"[\u0600-\u06FF\u0980-\u09FF]", t or ""))
+    hindi = [r for r in ok if r["stim"] != "s5-english"]
+    urdu = sum(int(nonhi(r.get("asr"))) + int(nonhi(r.get("asr_hi"))) for r in hindi)
     cps = statistics.median([len(STIM[r["stim"]]) / r["audio_s"] for r in ok])
     fid = "" if not any(r.get("said") for r in ok) else f"{statistics.mean([fidelity(r['stim'], r.get('said')) for r in ok]):.2f}"
     loud = ""
@@ -60,5 +64,6 @@ for arm, rs in by.items():
     f2 = lambda xs: f"{statistics.mean(xs):.2f}" if xs else "n/a"
     summary.append({"arm": arm, "n": len(ok), "ttfa": med("ttfa_ms"), "wall": med("wall_ms"), "raw": statistics.mean(raw) if raw else None,
                     "sa": statistics.mean(sa) if sa else None, "urdu": urdu, "cps": cps, "lufs": loud, "errs": len(errs)})
-    print(f"| `{arm}` | {len(ok)}{'+'+str(len(errs))+'err' if errs else ''} | {med('ttfa_ms')} | {med('wall_ms')} | {f2(raw)} | {f2(sa)} | {urdu}/{2*len(ok)} | {cps:.1f} | {fid} | {loud} |")
+    shown = arm.replace("|", " + ")
+    print(f"| `{shown}` | {len(ok)}{'+'+str(len(errs))+'err' if errs else ''} | {med('ttfa_ms')} | {med('wall_ms')} | {f2(raw)} | {f2(sa)} | {urdu}/{2*len(hindi)} | {cps:.1f} | {fid} | {loud} |")
 json.dump(summary, open(os.path.join(out, "summary.json"), "w"), indent=1)

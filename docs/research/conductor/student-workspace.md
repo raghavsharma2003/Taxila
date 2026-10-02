@@ -656,3 +656,335 @@ move a data copy, not a redesign.
 - PowerSync (Postgres/Neon source, Capacitor SDK over Capacitor Community SQLite, Open Edition self-hosted) — https://powersync.com/blog/powersync-open-edition-release , https://www.npmjs.com/package/@powersync/capacitor , https://docs.powersync.com/configuration/source-db/connection [S]
 - ElectricSQL (read-path shapes over HTTP; writes through your API; self-hostable) — https://electric-sql.com/docs/intro [S]
 - Internal: `docs/ARCHITECTURE.md`; `docs/research/conductor/orchestration-architecture.md`; `docs/research/conductor/day-cycle.md` and `.sql`; `docs/research/learner/kt-algorithms.md`; `docs/research/learner/vibe-temperament.md`; `docs/research/safety/dpdp-deep.md`; `docs/research/design/parent-experience.md`; `docs/research/design/kids-ux-ages.md`; `docs/research/design/onboarding-flow.md`; `docs/research/learning-science.md`; `context/decisions.md`; `context/rejected.md`; `db/migrations/001_core.sql`.
+
+---
+
+## Architect review
+
+**Date:** 2026-10-02 · **Reviewer stance:** adversarial systems architect. Read against the repo `CLAUDE.md`
+binding constraints, `context/decisions.md` (`hosting-azure-container-apps`, `infra-segment`),
+`context/measurements.md` (`db-driver-latency-2026-10-02`), the sibling reviews in
+`orchestration-architecture.md` (§ Architect review, R1 lanes) and `day-cycle.md`, `design/kids-ux-ages.md`
+S1/§8, and `learning-science.md` §6. Tags as above: **[V]** checked this session against the primary source,
+**[S]** secondary, **[U]** estimate to measure, **[repo]** a fact in this repository. Sensitivity numbers come from
+`python3 docs/research/conductor/student-workspace-review-cost.py` (new, deterministic; reuses the base model's prices).
+
+**Verdict.** W1 is right and should be kept: the "little VM" is a logical workspace (rows + a Blob prefix + a
+device replica + the Conductor actor), and a per-child container is correctly rejected on cost and quota. The
+map (W2), single-writer layers (W6/§9), server re-grade (W7) and agent projections (W8) are the strongest
+parts. Five things are wrong enough to block M0:
+
+1. **The crypto-shred does not shred.** The wrapped DEK sits in `child_key` inside the same Neon project whose
+   instant-restore history the shred is meant to defeat. Restoring to one minute before the erase brings back
+   the wrapped DEK. The KEK is still live, so every "unreadable" copy is readable again (R3.1).
+2. **A store eviction silently drops new data.** `notebook_op`'s idempotency key is `(child, page, writer,
+   writer_seq)` with `writer = device_id`. If the replica is evicted (W5 expects this) and the device id
+   survives, `writer_seq` restarts at 1. Every new stroke then collides with an old row and is acked as a
+   "replay". The child's new notebook work disappears without an error (R3.2).
+3. **One bad op wedges the outbox for good.** Sync applies "one transaction per batch". Any failing op aborts
+   the whole batch: an FK error because no op creates `notebook_page`, a revoked consent that the writer
+   *throws* on (I10), or a schema error. The device retries the same 200 ops forever, and every later offline
+   answer waits behind them (R3.3).
+4. **Late-evidence refold races the live lesson.** `kt.refold` re-folds from the earliest late event. It runs
+   as a job while the same child may be in a live lesson on a second device, and the Director writes
+   evidence each turn. Nothing serializes the two KT writers, so one overwrites the other (R3.4).
+5. **The premises are stale.** The doc assumes Neon in Singapore at about 200 ms. Neon moved to
+   `aws-us-east-1` beside eastus2, and a query now takes 9-12 ms over a `pg` Pool [repo
+   `db-driver-latency-2026-10-02`]. The Blob account is placed in Central India, so every archive,
+   notebook-snapshot and export read crosses the Pacific from the app, with no residency gain because the hot
+   copy is in the US. The computed brief for this review still says "Vercel functions (sin1)". `CLAUDE.md`
+   and `hosting-azure-container-apps` say ACA `taxila-web` + `taxila-worker` (R1).
+
+Beyond these, cell sizing uses average load where it should use peak load. Ink is stored as one row per
+stroke. About half of the machinery is not needed for the first cohort (R6). Several child-facing moments are
+hostile: dormancy wipes the offline pack, an unused profile is erased after 30 days, the class increments
+automatically, and a sibling's answers on the wrong profile cannot be undone (R7).
+
+### R0. Findings on one screen
+
+Severity: **P0** = fix before M0 ships. **P1** = fix before ~1k children or the named milestone. **P2** =
+simplification or clean-up.
+
+| id | sev | finding | fix |
+|---|---|---|---|
+| SW1 | P0 | W4/§12.2 crypto-shred: `child_key` lives in the PITR'd Neon project, and the KEK is never rotated out, so a restore inside the history window (default 1 d, up to 30 d on Scale [V Neon]) resurrects the wrapped DEK | Key store outside the PITR'd DB with a bounded backup window, or defer W4 for v1 (R3.1, R6) |
+| SW2 | P0 | `notebook_op` PK `(child,page,writer,writer_seq)` with `writer = device_id`. After a store loss, `writer_seq` restarts and new ops are deduplicated away as replays. `device_child.last_op_seq` and `OutboxEntry.deviceSeq` have the same flaw | `writer = replica_id` (a ULID minted when the store file is created), dedupe on `op_id` (R3.2) |
+| SW3 | P0 | §8.4 "one transaction per batch". A single failing op aborts all 200, and the device retries forever. `WorkspaceOp` has no page-create op, but `notebook_op` has an FK to `notebook_page`, so the first offline page always fails | Validate per op in code, then apply with set-based upserts. Auto-create pages. Per-op rejections in `SyncResponse` (R3.3) |
+| SW4 | P0 | `kt.refold` (job) and the Director's per-turn KT writes are unserialized, so the KT state is lost-update prone. A refold mid-lesson can also visibly retract a child's star | Every KT write takes `workspace` row lock `FOR UPDATE`. Refold is deferred to lesson end while a lesson is live. Display states are monotone within a day (R3.4, R7) |
+| SW5 | P0 | Stale region: §5, §13.2, SQL `region default 'sea'` assume Neon Singapore at 200 ms. Blob is in Central India, away from the app and DB | Neon US East (as deployed). Blob `taxilaws` in eastus2 for v1. Move all three together when an India region is decided (R1) |
+| SW6 | P1 | Erasure vs in-flight work: running jobs and a 10-min in-process DEK cache keep writing after step 1. Blob writes after the step-4 prefix delete leave orphans that nothing indexes (the `workspace_object` insert fails its FK) | Fencing check on `workspace.state` inside each job's write transaction. DEK cache keyed by `(child, key_epoch)` and checked at every open. Tombstone sweeper re-lists erased prefixes at +24 h and +7 d (R3.5) |
+| SW7 | P1 | Cell size (150k) comes from *average* CU-hours. At peak a 150k cell needs ≈ 8.4 CU with sync included (the model omits sync), and ≈ 34 CU if a CU sustains 200 statements/s, the doc's own sensitivity case. That is over the 16 CU autoscale ceiling | Size cells by peak statements/s (WS-M2 at peak mix incl. sync). Expect 50-75k children per cell unless WS-M2 says otherwise. No cells before ~50k children (R4.2) |
+| SW8 | P1 | Notebook ink as one `notebook_op` row per stroke means ≈ 12 B rows/month inserted and then deleted at 1M children [U]. The 500-op compaction trigger is per page, so a busy page churns constantly | One row per `(page, replica, sync batch)` holding an op array. Compress before encrypting (R4.3) |
+| SW9 | P1 | WAL history is undercounted. The model bills history only on appended rows (1.4 MB/child-month). `conductor_state` and `lesson.state` jsonb rewrites add ≈ 10 MB/child-month [U], which is $455/mo (7 d) to $1,950/mo (30 d) at 1M against the model's $66-283 | Keep hot state rows small: split fast-changing scalars from slow jsonb, append deltas, and set the history window to 7 d (R4.1) |
+| SW10 | P1 | §4 says sharing packs across children cuts CDN cost. It does not: Front Door bills edge→client bytes on cache hits too [V Front Door billing]. Only device-side dedup cuts egress (≈ −34% at 1M [U]) | Manifest lists hashes. The device fetches only hashes it lacks. The model counts *new* bytes per day (R4.4) |
+| SW11 | P1 | Contradiction: §1 says "never in the workspace: raw audio", yet `child_creation.kind` includes `teachback_audio` and `workspace_object.kind` includes `voice_moment`. ARCHITECTURE §1.7 says "Audio is never stored" and rule 35 requires separate opt-in | Remove both kinds from the v1 DDL. If audio is ever added, it needs its own map entry, purpose and opt-in (R8) |
+| SW12 | P1 | §1.4/§10 rely on the ModuleHost iframe having "no network". The `sandbox` attribute has no network flag [V WHATWG sandboxing flag set], so a generated module can still beacon out the runtime `skin.name` with `fetch` or `<img>` | CSP on every `lib/` response (`default-src 'none'; script-src 'self'; img-src 'self' data:; connect-src 'none'`) plus the iframe `csp` attribute. An e2e test asserts that a module's `fetch` fails (R3.6) |
+| SW13 | P1 | SPOFs left unnamed: the global `child_directory` (on every request at 1M), Key Vault (every lesson start that needs memory text), a single Neon compute per cell with nothing degraded behind it for the Director, and a single-region LRS Blob holding the only copy of children's creations | R2 |
+| SW14 | P1 | Work that cannot live in a request (on Vercel or on scale-in-prone `taxila-web`) is placed "API route / ACA web": refold, compaction + SVG render, erase purge, export PDF, rollover, notice timers, KEK rotation | Lane table (R5) |
+| SW15 | P1 | Child-experience gaps: dormancy wipes device packs, so a child returning from a village summer has nothing offline. `provisional` erases after 30 d of no lesson. The 48-h notice falls in a single window. Rollover increments the class automatically. A wrong-profile session cannot be undone. Eviction forces a guardian OTP re-pair | R7 |
+| SW16 | P2 | v1 scope ≈ 2× what the first cohort needs: cells + directory, segments, per-child DEK, per-child SQLCipher files, SQLite-wasm on OPFS, PDF/SVG export, byte-identical round-trip (I9), the M0-M3 write gates in every writer | R6 |
+| SW17 | P2 | Schema nits: `artifact_use` has no PK, so I8 (replay = no-op) cannot hold. `workspace.state='erased'` cannot be stored, because the row cascades away. `pack.manifest` jsonb is ≈ 10 KB × 1M rows/night, inserted and deleted | R8 |
+| SW18 | P2 | Free text that W4 misses: `student_event` payloads, `decision_log`, the `attempt.response` (typed or ASR text), and `homework_request` can all carry child words in plaintext | Typed payloads with no free-text fields. A lint in the map test. Encrypt `attempt.response` when it is free text (R8) |
+
+---
+
+### R1. Rebase on what is deployed
+
+| premise in the doc | what is true [repo] | consequence |
+|---|---|---|
+| Neon Singapore, ~200 ms per round trip (§5, §13.2, W9) | `royal-fire-14595065` in `aws-us-east-1`, 9-12 ms/query over a persistent `pg` Pool from eastus2 | §13.2's "one SQL function returns the whole bundle" is now an optimisation, not a necessity. Orchestration review A17 already prefers plain interactive transactions in JS over plpgsql jsonb parsing. Keep `openWorkspace` as one query because it is simpler, not because it is forced |
+| Blob `taxilaws` in Central India | app and DB in eastus2 | Each archive, snapshot or export read crosses India↔US twice (app→Blob→app→device). Data-residency gain is zero while the hot copy is in the US. **Put Blob in eastus2 now**, and move DB + Blob + app together if an India region is ever chosen (§17 q1). The bundle format already makes that a copy |
+| "Vercel functions (sin1)" (this review's computed brief) and orchestration §7.3 | Vercel project paused; `taxila-web` (min 1 / max 5, HTTP-scaled) and `taxila-worker` (min 1) on ACA; scale-in sends SIGTERM and SIGKILLs after 30 s (orchestration R1 [V]) | Nothing may run after a response in `taxila-web` beyond a ≤ 10 s step. Every job in §2 marked "API route / ACA web" moves to the worker (R5) |
+| `child_directory.region default 'sea'` | no Singapore cell exists in production | default `'us-east'`; region is a property of the cell, not of the child |
+
+### R2. Single points of failure
+
+| SPOF | blast radius | v1 mitigation | later |
+|---|---|---|---|
+| **Neon compute (one cell)** | all Director turns, sync, Conductor. Voice keeps talking (WebRTC goes straight to Azure), but the teacher is steered by stale instructions | **Director degraded mode:** if `/api/lesson/turn` fails twice, the client keeps the last instructions, which already carry the lesson step. The client queues turn payloads in the same outbox (`k:'event'`) and shows nothing to the child. The Director resumes from the queued turns. Lesson start fails *before* the call connects, with a friendly retry card (never a teacher who goes silent mid-call) | read replica for the parent dashboard and reports, so they never compete with turns |
+| **Key Vault** (W4) | any open that needs DEK text (memory callbacks in the brief, safety review, parent transcript view) | Brief degrades to "no memory callbacks" on unwrap failure. Never block a lesson on Key Vault. Back off on 429. The limit is 4,000 RSA-2048 software-key ops per 10 s per vault [V], ≈ 14× the 1M peak lesson-start rate [U], so throttling only bites on bulk jobs (nightly brief build, KEK rotation): pace those at ≤ 200/s | Key Vault in the app's region (eastus2) |
+| **`child_directory`** (global, on every request at 1M) | every request at 1M students | none needed at v1: no directory, one database | put `cell` in the signed session claim. A cell returns `409 moved{cell}` after a move, and the client refreshes the claim. The directory is read only at login and on move |
+| **Blob LRS, single region** | the *only* copy of child creations and notebook snapshots (the device copy is a 14-day cache) | Use ZRS for `cr/` and `nb/`: it is the emotionally irreplaceable part, and it is small. Keep `seg/` on LRS: it is not re-derivable, but it is cold history nobody shows to the child | GRS if creations studio ships |
+| **The nightly pack build** | every child's offline day | Pack build is lazy as well as nightly: if no pack for today exists at first open, build the `personal` part inline (< 50 KB, ≤ 1 s, no LLM). Shared objects already exist | — |
+| **The single `taxila-worker`** | erase, export, refold, compaction | as orchestration R1: min 1, leader election, lease recovery | split slow lane to an ACA job on CPU contention |
+
+### R3. Race conditions and correctness, with fixes
+
+#### R3.1 A crypto-shred that survives restore (SW1)
+
+The goal of W4 is that after erase, copies in Neon history and Blob soft-delete are unreadable. That holds only
+if **no** copy of the wrapped DEK survives longer than the purge target. Two designs work:
+
+- **(a) Separate key store with a short, matched backup window.** Put `child_key` in its own small Neon project
+  `taxila-keys` with `history_retention_seconds` set to 0. Neon allows a zero window, which "disables instant
+  restore and Time Travel" [V Neon history window]. Then add a bounded backup of its own: a nightly encrypted
+  dump of the key table under the KEK, kept for 48 h. Erase sets `shred_at = now()` and deletes the row. After
+  48 h no backup holds the key, so the parent notice can say "unreadable everywhere within 2 days". Losing
+  `taxila-keys` loses every child's encrypted data, so it gets the 48-h dump, ZRS, and a monthly restore drill
+  (WS-M7).
+- **(b) Defer W4 for v1** (recommended, R6). `CLAUDE.md` deprioritises compliance. Use hard delete, a 7-day
+  history window on the main project, and Blob soft-delete set to 7 days. Change the parent promise from "purged
+  within 24 h" to "removed now; backup copies expire within 7 days" (parent-experience §10 must change too). Build
+  (a) when compliance is re-prioritised, never the in-database version.
+
+Either way, `child_key` in the main project is rejected. Log it in `context/rejected.md` as
+`dek-in-pitr-database`.
+
+#### R3.2 Replica identity (SW2)
+
+```sql
+-- replaces the writer column semantics; a replica is one store file's lifetime, not a device
+alter table notebook_op rename column writer to replica;          -- 'director' | replica ULID
+-- device_child gains the current replica; a new replica id is a fresh sequence space
+alter table device_child add column replica_id text, add column replica_started_at timestamptz;
+-- outbox dedupe is by op id, globally unique (ULID), not by (device, seq)
+create table sync_op_seen (child_id uuid not null references child(id) on delete cascade,
+  op_id text not null, at timestamptz not null default now(), primary key (child_id, op_id));
+-- prune rows older than the 72 h clamp window + 7 d
+```
+
+The device mints `replica_id` when it creates `ws_<child>.db`, and sends it in every `SyncRequest`. Keep the
+device credential in Capacitor Preferences (native SharedPreferences), not in the evictable WebView store.
+Otherwise every eviction forces a guardian login + OTP before the child can practise (R7). Add invariant
+**I13**: delete the replica file, write 10 ops, and assert that all 10 are stored.
+
+#### R3.3 Sync apply that cannot wedge (SW3)
+
+```ts
+// server/workspace/sync.ts — per-op validation in code, set-based apply, no batch-wide abort
+export async function applyBatch(h: WorkspaceHandle, req: SyncRequest, db: Tx): Promise<SyncResponse> {
+  const seen = await db.seenOps(h.childId, req.ops.map(o => o.opId));          // 1 query
+  const fresh = req.ops.filter(o => !seen.has(o.opId));
+  const verdicts = fresh.map(o => validateOp(h, o));                           // schema, consent, legal mode, quota, clamp
+  const ok = fresh.filter((_, i) => verdicts[i].ok);
+  await db.tx(async t => {                                                     // one short transaction
+    await t.lockWorkspace(h.childId);                                          // R3.4: serialises with Director/KT
+    await t.ensurePages(h.childId, ok);                                        // insert … on conflict do nothing
+    await t.insertByKind(h.childId, ok);                                       // unnest()-based multi-row inserts, on conflict do nothing
+    await t.markSeen(h.childId, fresh.map(o => o.opId));                       // rejected ops are 'seen' too
+  });
+  return { acked: ok.map(o => o.opId),
+           rejected: fresh.flatMap((o, i) => verdicts[i].ok ? [] : [{ opId: o.opId, why: verdicts[i].why }]),
+           /* docs computed AFTER the apply: read-your-writes for prefs (R7) */ ...await docsFor(h, req.docs) };
+}
+```
+
+If the transaction itself fails (DB down), nothing is acked and the batch is retried with backoff. A batch
+that fails three times is split in half on the device, so a poison op is isolated in log₂(200) ≈ 8 tries.
+Writers *refuse* (return a verdict) instead of throwing; I10 stays as a throw only for server-internal writes.
+
+#### R3.4 One KT writer at a time per child (SW4)
+
+- Every transaction that writes `kt_*` first runs `select 1 from workspace where child_id=$1 for update`. That
+  includes the Director's per-turn evidence, the sync `attempt` apply and `kt.refold`. It is a per-child row,
+  so it has no global contention, and it is a transaction-level lock, so it works through Neon's
+  transaction-mode pooler (session-level advisory locks do not [V via orchestration R1]).
+- While `lesson` has an open row for the child, late offline evidence is *appended* with its true
+  `occurred_at`, and the refold job gets `not_before = lesson.ended_at`. The Director never sees KT state
+  shift underneath its cached brief mid-lesson.
+- Re-grade uses the **kit version pinned in the pack** (`packId → kit_version`), not today's kit. If a kit
+  erratum landed overnight, re-grade marks the attempt `kit_superseded` and gives it no evidence weight. It
+  never flips the outcome the child already saw.
+
+#### R3.5 Erasure fencing (SW6)
+
+1. Each job's final write transaction re-reads `workspace.state` `for share` and aborts if
+   `state in ('erasing','erased')`. This is the fencing token: a job claimed before step 1 cannot commit after it.
+2. The DEK cache key is `(child_id, key_epoch)`. `openWorkspace` returns the epoch, and erase bumps it to
+   `-1`, so a cached DEK is unusable at the next open, not 10 minutes later.
+3. Blob writers write the `workspace_object` row **before** the blob, so no blob exists without an index
+   row. If the row insert fails (FK, child gone), the blob is never written.
+4. A sweeper lists `c/<cell>/<child>/` for every tombstone at +24 h and +7 d, and I7 asserts the listing is
+   empty after the second sweep.
+5. Notice-timer race: `notice → erasing` is one statement,
+   `update workspace set state='erasing' where child_id=$1 and state='notice' and coalesce(last_active_at,'epoch') < notice_sent_at`.
+   An app open between the notice and the timer wins.
+
+#### R3.6 The ModuleHost leak path (SW12)
+
+`sandbox="allow-scripts"` gives an opaque origin, but no sandboxing flag restricts fetches [V WHATWG]. Front
+Door must send a CSP header on every `lib/` object. The host also sets the iframe `csp` attribute (embedded
+enforcement; Chromium, which covers Android WebView) as a second layer. Without both, the runtime skin token
+design (§10, I4) protects the public file but not the running module. A codegen module that reaches the
+library after human review must still be unable to phone home.
+
+### R4. Cost: where the model undercounts (none changes the ranking)
+
+Output of `student-workspace-review-cost.py` (all usage [U]):
+
+| item | base model | with the missing term | note |
+|---|---|---|---|
+| R4.1 Neon history at 1M (7 d / 30 d window) | $66 / $283 | **$455 / $1,950** | jsonb rewrites of `conductor_state` (25/day) and `lesson.state` (50/lesson) ≈ 9.8 MB WAL/child-month. Fix by splitting hot scalars out of the jsonb and keeping the window at 7 d |
+| R4.2 peak statements per 150k cell | 1,250/s → 4.7 CU | **2,250/s → 8.4 CU** (sync included); **34 CU** at 200 st/s/CU | cell count is a *peak* question. The model's average CU-hours set the bill, not the ceiling |
+| R4.3 notebook rows at 1M | — | **12 B rows/month** one-per-stroke; 0.24 B batched ×50 | encrypted ops do not compress, so compress before encrypting |
+| R4.4 CDN egress at 1M (excl. request fees) | 100 TB, $8.6k | +1 short video per lesson: **220 TB, $14.7k**; device dedup instead: **64 TB, $5.7k** | Front Door bills cache hits to the client [V]. The family's data bill moves the same way: 100 → 220 MB/child-month with video |
+
+The workspace stays cents per child in every case. Real blowups sit just outside it, and this doc's
+interfaces are where they get stopped:
+- **Per-child generation disguised as personalisation.** If the pack builder or Forge projection ever calls
+  an LLM or image model per child per night, that costs orders of magnitude more than this whole document.
+  Assert in the pack builder: no model calls; personal part is template + tokens.
+- **Video in the module path.** Cap module bytes per lesson in `PackManifest.budgetBytes` and the live module
+  path alike (default 4 MB/lesson [U]). Video is library-level, played at most once per child, and cached on
+  the device by hash.
+- **Nightly builds for children who will not open the app.** Build packs only for children active in the last
+  7 days, and build lazily otherwise (R2). This saves the 30/20 overbuild and the 3-day-expiry churn.
+
+### R5. Where each piece of work runs (ACA as deployed; the Vercel column shows why the brief's premise fails)
+
+| work | duration | `taxila-web` request | `taxila-worker` | would it fit Vercel? |
+|---|---|---|---|---|
+| sync apply, `openWorkspace`, doc ETags, lazy personal pack | ms-1 s | **yes** | — | yes |
+| KT update on a turn or sync | ms | **yes**, under the R3.4 lock | — | yes |
+| `kt.refold` | ms-s, but deferred to lesson end | — | **yes** (fast lane) | it fits, but `waitUntil` dies with the function [V via orch.]; needs a queue |
+| notebook compaction + SVG render | seconds per page | — | **yes** | marginal; it would need a queue anyway |
+| nightly pack + brief build fan-out (≈ 700k children at 1M) | hours of wall time, jittered | — | **yes**, chunked by child, each chunk a job | no: 300 s Hobby / 800 s Pro cap [V via orch.]; it needs cron + queue |
+| erase purge (cascade, Blob prefix delete with retry, sweeper at +24 h/+7 d) | minutes, then retries over days | step 1 only (revoke) | **yes** | the revoke fits; the purge does not |
+| export bundle (NDJSON + readable HTML; PDF later) | minutes | — | **yes** | headless PDF rendering does not fit |
+| cell move, KEK rotation, rollover | hours | — | **yes**, paced (Key Vault ≤ 200/s) | no |
+| dormancy / notice / rollover timers | ticker | — | **yes** (the orchestration ticker, per-child jitter) | needs Pro cron |
+
+Rollover is a thundering herd if scheduled on 1 April for every CBSE child. Fire it per child on the parent's
+confirmation (R7), spread over the first week of the session.
+
+### R6. The v1 cut (first cohort: tens to low thousands of children, one Neon compute)
+
+| keep for v1 | defer, with its trigger |
+|---|---|
+| `WORKSPACE_MAP` + I1/I2/I7 tests (cheap, and they prevent erasure drift forever) | **cells + `child_directory`**: until peak WS-M2 says one compute cannot hold the next 6 months' growth. Keep `child_id`-leading keys so a move stays possible |
+| `projectFor` typed projections (W8), Forge never sees a name (I4, I6) | **archive segments + `archive_segment`**: at 100k children hot storage is ≈ 530 GB ≈ $185/month [U]. Use plain retention deletes until hot storage costs more than a week of engineering per year |
+| server re-grade (W7, I5) with pinned kit version | **per-child DEK / Key Vault** (R3.1 b) |
+| outbox up + ETag docs down (W6), with R3.2/R3.3 fixes | **SQLite-wasm on OPFS for web.** Web v1 uses an IndexedDB outbox + Cache API for packs. If OPFS comes later, use `opfs-sahpool`: the plain `opfs` VFS needs COOP/COEP cross-origin isolation [V sqlite.org], which would also gate every cross-origin `lib/` iframe |
+| Android: one Capacitor SQLite DB in app-private storage, rows keyed by `child_id` | **one SQLCipher file per child.** The profile picker has no PIN, so a sibling reaches any profile through the app anyway (§8.6 admits this). Per-file encryption only protects against file extraction from a rooted phone, and the device holds no transcripts. One DB, one migration path |
+| notebook: per-page layers, batched op rows (R4.3), snapshot at close | **SVG renders for the parent and Yjs**; render on demand in the parent view |
+| hard delete + 7-d history + receipt | **I9 byte-identical round trip, PDF export.** v1 export = NDJSON + one HTML page. I9 matters only once cells move |
+| lifecycle: `active ⇄ dormant`, `paused`, erase | **`notice` automation and the M0-M3 per-writer gates.** Compliance is deprioritised [repo `CLAUDE.md`]. Keep the single `legal_mode` column so the gates can be added in one place |
+
+This roughly halves the build. It removes three of the five P0 surfaces (the key store, cross-region Blob and
+cell routing) instead of hardening them.
+
+### R7. The child's side of the workspace
+
+1. **Dormancy must not empty the phone.** §11.1 wipes packs and caches at 30 days without a session. That
+   catches the North Indian summer vacation (May-June, day-cycle §7.4) and Diwali, exactly when a child is in
+   a village with no data. Change it: dormant means *stop building*, and the device keeps the last pack, the
+   shelf and the notebook. On return the child gets a "welcome back" from the last pack while a fresh one
+   downloads. The "wipe" side effect is reserved for revocation and erasure.
+2. **No silent erase of a child who never started.** `provisional → erasing` after 30 days with no lesson
+   erases a profile a parent made during exams. Replace it with a parent reminder at 14 days and erase only
+   after explicit choice or the 12-month rule.
+3. **A notice period you can actually catch.** Forty-eight hours is the legal floor, not a product choice.
+   Use 30 days with reminders at 30, 7 and 1 day(s) on WhatsApp + email, and "any open keeps it".
+4. **Rollover asks; it never assumes.** Promotion is not certain (results, repeats, board change). Use the
+   parent's one-tap confirmation in the report around results week. With no answer, stay in the old class and
+   keep teaching from the skill graph (rule 28 places by level anyway). The child must never hear "Class 6"
+   content the week before a Class 5 exam.
+5. **Undo the wrong profile.** kids-ux S1 already detects "I didn't do that". The workspace needs the data
+   operation behind it: `session.reassign{lessonId|packId, toChild}` by a guardian, which moves the session's
+   evidence, turns and notebook pages to the sibling (same guardian only) and re-folds both. Without it a
+   six-year-old's taps permanently corrupt an older sibling's mastery and plan.
+6. **Never retract what the child saw.** Server re-grade can disagree with the on-device feedback, and a
+   refold can move display states. The rule: anything shown to the child today (a "sahi!", a star, "learned
+   today") is never visibly taken back. The learner model changes silently, and the next session's plan
+   absorbs it.
+7. **Show the child that her work is safe.** Notebook pages and creations are what a child cares about. Upload
+   them ahead of evidence. Show a small "saved" tick per page once acked, and "saved on this phone" when not.
+   Never show a sync error to the child; the parent area carries the count (§8.6).
+8. **Do not spend the family's data.** Most households have no Wi-Fi (kids-ux §8). "Download at first open"
+   on mobile data puts a 3 MB wait in front of the child. The first screen must never wait on the pack.
+   Prefetch in the background (Capacitor background task, charging + unmetered when available), and show the
+   monthly total in the parent corner (R4.4: 64-220 MB/child-month).
+9. **Re-pairing after eviction must not need the parent.** With the device credential in native Preferences
+   (R3.2), a lost store is rebuilt silently and the child goes straight to the profile picker.
+10. **Prefs must not bounce.** A child says "Hindi mein bolo" and the next sync returns the old `prefs` doc.
+    Docs are computed after the batch applies (R3.3), and the device keeps a local override until it sees a
+    doc version ≥ the op's ack.
+
+### R8. Corrections to the body
+
+1. §0 W4, §12.2 steps 2/6, §12.3: the shred requires keys outside the PITR'd database (R3.1). As written,
+   step 2 does not make Neon-history copies unreadable.
+2. §4 "Reading the table", first bullet: sharing shared parts across children reduces *origin* fetches, not
+   billed egress. Device dedup is the lever (R4.4).
+3. §3.5 / §13.1: the 150k cell size is an average-load figure; size by peak (R4.2).
+4. §5 diagram, §13.2, SQL `region default 'sea'`, §16 item 3: Neon is US East; Blob moves to eastus2 (R1).
+5. §8.4: "one transaction per batch" → per-op validation + set-based apply (R3.3). Add `nb` page auto-create.
+   Dedupe by `opId`.
+6. §8.5: the clamp lower bound `last_sync_at − 72 h` should be `last_sync_at − 5 min` (ops are created after
+   the last sync). Use the 72 h only as a cap on how old an op may be after a long offline stretch, with older
+   ops kept but given no evidence weight.
+7. §8.6 / §11.1 "→ dormant ... wipe docs and packs on devices": remove (R7.1).
+8. §9 prose lists `move` ops, but `NotebookOp` has none. Add `{ t: 'stroke.move'; id; dx; dy }` or drop it from
+   the prose.
+9. §1 table and the SQL: delete `teachback_audio` and `voice_moment` from v1 (SW11).
+10. SQL: `artifact_use` gets `op_id text primary key`. `pack` stores a pointer (`manifest_url`, `sha256`), not
+    the manifest jsonb. `workspace.state` drops `'erased'` (the directory/lifecycle receipt carries it).
+    `notebook_op.op` holds an op *array* per batch.
+11. §2: `kt.refold` and compaction are worker jobs, not API-route work (R5).
+12. §6 says the DDL is "draft, not applied"; the header and I1 say it was applied to a scratch Postgres 16.
+    Say "applied to a scratch DB, not migrated".
+
+### R9. New invariants and measurements
+
+- **I13** replica loss: deleting the store file and writing new ops loses nothing (R3.2).
+- **I14** poison batch: a batch containing one invalid op acks all the others (R3.3).
+- **I15** one KT writer: a concurrent refold + Director-turn fixture ends in the same KT state as the serial
+  order (R3.4).
+- **I16** erase fencing: a job claimed before erase step 1 cannot commit rows or blobs after it (R3.5).
+- **I17** module egress: a fixture module's `fetch('https://example.com')` and `new Image().src=` both fail
+  inside ModuleHost on Android WebView and Chrome (R3.6).
+- **I18** no retraction: after a re-grade disagreement or refold, every display state the child saw today is
+  unchanged in the child UI (R7.6).
+- **WS-M10** peak statements/s per cell, including sync, at the evening peak (replaces the average in WS-M2).
+- **WS-M11** WAL bytes per child-month from `pg_stat_wal` deltas ÷ active children (R4.1).
+- **WS-M12** pack bytes actually downloaded per child-day after device dedup (R4.4).
+- **WS-M13** profile mix-up rate and `session.reassign` use (pairs with kids-ux M-UX-10).
+
+### Sources added by this review
+
+- Neon history window (Free 6 h; Launch default 1 d, max 7 d; Scale default 1 d, max 30 d; can be set to zero via `history_retention_seconds`, which disables instant restore; $0.20/GB-month) — https://neon.com/docs/introduction/history-window [V]
+- Azure Key Vault service limits (RSA-2048 software key: 4,000 "all other" transactions per 10 s per vault per region; subscription-wide 5×) — https://learn.microsoft.com/en-us/azure/key-vault/general/service-limits [V]
+- Azure Front Door billing (edge→client bytes billed even when served from cache; origin→edge not billed) — https://learn.microsoft.com/en-us/azure/frontdoor/billing [V]
+- WHATWG HTML, sandboxing flag set (no flag restricts network fetches) — https://html.spec.whatwg.org/multipage/browsers.html#sandboxing-flag-set [V]; MDN `<iframe>` (`csp` attribute) — https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe [V]
+- SQLite WASM persistence (`opfs` needs COOP/COEP; `opfs-sahpool` does not, one connection per thread) — https://sqlite.org/wasm/doc/trunk/persistence.md [V]
+- Internal: `context/measurements.md#db-driver-latency-2026-10-02`, `context/decisions.md#hosting-azure-container-apps`, `orchestration-architecture.md` § Architect review R1 (ACA SIGTERM 30 s, Neon pooler limits, Vercel 300/800 s caps), `design/kids-ux-ages.md` S1 and §8, `day-cycle.md` §7.4 [repo]

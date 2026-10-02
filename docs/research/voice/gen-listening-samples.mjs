@@ -7,6 +7,9 @@
 //
 // Phases:
 //   gen   — synthesise every arm, write samples/raw/<code>.<ext>, write samples/KEY.json (unblinded)
+//   catches — ensure one degraded control per passage block (idempotent), then inject the page
+//   page  — inject samples/manifest.json into samples/blind-test.html and scan it for identity words
+//   listen — re-render listening copies + re-score recall for an existing KEY (idempotent, no API calls)
 //   post  — duration/loudness, blinded listening copies samples/<code>.mp3 (trimmed, loudness-matched,
 //           one format), catch trials (degraded controls + hidden repeats), ASR round-trip, manifest
 // Run:
@@ -47,13 +50,13 @@ export const PASSAGES = {
     keys: null },
   P2: { label: "Equivalent fractions with a pizza (Hinglish, Roman script)", lang: "hinglish", script: "roman",
     text: "Achha, ek pizza socho. Usko do barabar hisson mein kaata, aur tumne ek hissa liya... yaani half, one by two. Ab wahi pizza chaar barabar slices mein kaato. Half pizza ke liye ab kitne slices lene padenge? Do, hai na? Toh one by two aur two by four dikhte alag hain, par pizza utna hi milta hai. Inhe kehte hain equivalent fractions. Achha, ek baat batao... agar pizza aath slices mein kata ho, toh half ke liye kitne slices logi?",
-    keys: [["pizza", "पिज़्ज़ा", "पिज्जा", "पिज़ा"], ["barabar", "बराबर"], ["half", "हाफ"], ["slices", "slice", "स्लाइस", "स्लाइसेस"], ["equivalent", "इक्विवेलेंट", "इक्वीवेलेंट", "इक्विवैलेंट"], ["fractions", "fraction", "फ्रैक्शंस", "फ्रैक्शन्स", "फ्रेक्शन"], ["aath", "आठ", "8", "eight"], ["chaar", "char", "चार", "4", "four"]] },
+    keys: [["pizza", "पिज़्ज़ा", "पिज्जा", "पिज़ा", "पीजा", "पीज़ा"], ["barabar", "बराबर"], ["half", "हाफ"], ["slices", "slice", "स्लाइस", "स्लाइसेस"], ["equivalent", "इक्विवेलेंट", "इक्वीवेलेंट", "इक्विवैलेंट"], ["fractions", "fraction", "फ्रैक्शंस", "फ्रैक्शन्स", "फ्रेक्शन"], ["aath", "आठ", "8", "eight"], ["chaar", "char", "चार", "4", "four"]] },
   P2m: { label: "Equivalent fractions with a pizza (Hinglish, mixed script)", lang: "hinglish", script: "mixed", base: "P2",
     text: "अच्छा, एक pizza सोचो। उसको दो बराबर हिस्सों में काटा, और तुमने एक हिस्सा लिया... यानी half, one by two. अब वही pizza चार बराबर slices में काटो। Half pizza के लिए अब कितने slices लेने पड़ेंगे? दो, है ना? तो one by two और two by four दिखते अलग हैं, पर pizza उतना ही मिलता है। इन्हें कहते हैं equivalent fractions. अच्छा, एक बात बताओ... अगर pizza आठ slices में कटा हो, तो half के लिए कितने slices लोगी?",
     keys: null },
   P3: { label: "Equivalent fractions with a pizza (pure Hindi, Devanagari, class 3)", lang: "hindi", script: "devanagari",
     text: "अच्छा, एक पिज़्ज़ा सोचो। उसे दो बराबर टुकड़ों में काटा, और तुमने एक टुकड़ा लिया... यानी आधा पिज़्ज़ा। अब वही पिज़्ज़ा चार बराबर टुकड़ों में काटो। आधे पिज़्ज़ा के लिए अब कितने टुकड़े लेने होंगे? दो, है ना? तो एक बटा दो और दो बटा चार देखने में अलग हैं, पर पिज़्ज़ा उतना ही मिलता है। इन्हें तुल्य भिन्न कहते हैं। अच्छा, एक बात बताओ... अगर पिज़्ज़ा आठ टुकड़ों में कटा हो, तो आधे के लिए कितने टुकड़े लोगी?",
-    keys: [["पिज़्ज़ा", "पिज्जा", "पिज़ा", "pizza"], ["बराबर"], ["टुकड़ों", "टुकड़े", "टुकडों", "टुकडे"], ["आधा", "आधे"], ["बटा"], ["तुल्य"], ["भिन्न"], ["आठ", "8"]] },
+    keys: [["पिज़्ज़ा", "पिज्जा", "पिज़ा", "पीजा", "पीज़ा", "pizza"], ["बराबर"], ["टुकड़ों", "टुकड़े", "टुकडों", "टुकडे"], ["आधा", "आधे"], ["बटा"], ["तुल्य"], ["भिन्न"], ["आठ", "8"]] },
 };
 PASSAGES.P1m.keys = PASSAGES.P1.keys;
 PASSAGES.P2m.keys = PASSAGES.P2.keys;
@@ -191,7 +194,9 @@ async function gen() {
 // ---------------------------------------------------------------------------------------------
 const ff = (args) => { const r = spawnSync("ffmpeg", ["-hide_banner", "-nostdin", ...args], { encoding: "utf8", maxBuffer: 64 << 20 }); if (r.status !== 0) throw new Error(r.stderr.slice(-800)); return r.stderr; };
 const dur = (f) => +(+execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f], { encoding: "utf8" }).trim()).toFixed(2);
-const LN = "I=-20:TP=-2:LRA=11";
+// I=-24 (1 LU under EBU R128 -23): measured peak-to-loudness ratio tops out at 22.4 dB (sage P2m), so every clip fits a LINEAR gain under
+// TP -1. At I=-20/TP-2 loudnorm silently fell back to dynamic (time-varying) gain on the peakiest clips (2026-10-02 run).
+const LN = "I=-24:TP=-1:LRA=20";
 let KBPS = process.env.LISTEN_KBPS || "64";
 function measure(f) { const e = ff(["-i", f, "-af", `loudnorm=${LN}:print_format=json`, "-f", "null", "-"]); return JSON.parse(e.slice(e.lastIndexOf("{"), e.lastIndexOf("}") + 1)); }
 const TRIM = "silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05,areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05,areverse";
@@ -200,11 +205,12 @@ function listenCopy(src, dst, extra = "") {
   const tmp = dst + ".trim.wav";
   ff(["-y", "-i", src, "-af", TRIM + (extra ? "," + extra : ""), "-ar", "24000", "-ac", "1", tmp]);
   const m = measure(tmp);
-  ff(["-y", "-i", tmp, "-af", `loudnorm=${LN}:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true,adelay=150:all=1,apad=pad_dur=0.4`,
+  const e2 = ff(["-y", "-i", tmp, "-af", `loudnorm=${LN}:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true:print_format=json,adelay=150:all=1,apad=pad_dur=0.4`,
     "-ar", "24000", "-ac", "1", "-c:a", "libmp3lame", "-b:a", `${KBPS}k`, dst]);
+  const applied = JSON.parse(e2.slice(e2.lastIndexOf("{"), e2.lastIndexOf("}") + 1)).normalization_type;
   const trimmed_s = dur(tmp); fs.unlinkSync(tmp);
   const after = measure(dst);
-  return { trimmed_speech_s: trimmed_s, listen_lufs: +after.input_i, listen_tp: +after.input_tp, loudnorm_type: m.normalization_type ?? null };
+  return { trimmed_speech_s: trimmed_s, trimmed_lufs: +m.input_i, trimmed_tp: +m.input_tp, trimmed_lra: +m.input_lra, listen_lufs: +after.input_i, listen_tp: +after.input_tp, loudnorm_applied: applied };
 }
 
 async function asr(file) {
@@ -290,5 +296,67 @@ async function post() {
   console.log(`post done: ${manifest.length} listening clips (${catches.length} catch)`);
 }
 
+// Re-render every listening copy from its recorded source (same codes, same catch trials), and re-score ASR key
+// recall from the stored ASR text with the current alias lists. No API calls.
+async function relisten() {
+  const key = JSON.parse(fs.readFileSync(KEYF, "utf8"));
+  const DEGRADE = "highpass=f=450,lowpass=f=2600,aresample=8000,acrusher=bits=5:mode=log:mix=0.55,aresample=24000";
+  for (const [c, v] of Object.entries(key.clips)) {
+    if (v.kind === "arm") {
+      for (const f of ["loudnorm_type"]) delete v[f];
+      Object.assign(v, listenCopy(path.join(OUT, v.raw_file), path.join(OUT, `${c}.mp3`)));
+      v.words_per_s = +(norm(v.transcript || PASSAGES[v.passage].text).length / v.trimmed_speech_s).toFixed(2);
+      if (v.asr?.text !== undefined) Object.assign(v.asr, keyRecall(PASSAGES[v.passage].keys, v.asr.text));
+      console.log(`listen ${c} ${v.engine}/${v.voice}/${v.passage} ${v.trimmed_lufs}->${v.listen_lufs} LUFS tp ${v.listen_tp} ${v.loudnorm_applied}`);
+    }
+  }
+  for (const [c, v] of Object.entries(key.clips)) {
+    if (v.kind === "degraded-control") { delete v.loudnorm_type; Object.assign(v, listenCopy(path.join(OUT, key.clips[v.source_code].raw_file), path.join(OUT, `${c}.mp3`), DEGRADE)); v.degrade_filter = DEGRADE; }
+    if (v.kind === "hidden-repeat") fs.copyFileSync(path.join(OUT, key.clips[v.source_code].listen_file), path.join(OUT, `${c}.mp3`));
+  }
+  const all = Object.values(key.clips).filter((v) => v.listen_lufs !== undefined);
+  Object.assign(key.post, { relisten_at: new Date().toISOString(), loudness_target: LN,
+    applied_types: [...new Set(all.map((v) => v.loudnorm_applied))], listen_lufs_range: [Math.min(...all.map((v) => v.listen_lufs)), Math.max(...all.map((v) => v.listen_lufs))] });
+  const files = [...fs.readdirSync(OUT).filter((f) => /\.(mp3|wav|flac)$/.test(f)).map((f) => path.join(OUT, f)), ...fs.readdirSync(RAW).map((f) => path.join(RAW, f))];
+  key.post.total_audio_bytes = files.reduce((s, f) => s + fs.statSync(f).size, 0);
+  fs.writeFileSync(KEYF, JSON.stringify(key, null, 1));
+  console.log(`relisten done: types ${key.post.applied_types} LUFS ${key.post.listen_lufs_range} total ${(key.post.total_audio_bytes / 1e6).toFixed(2)} MB`);
+}
+
+// Every passage block must hold >= 1 degraded control, so a listener who rates only one block (a child's short
+// session, `blind-test.html?blocks=A`) can still be validated. Adds what is missing; never touches existing codes.
+async function ensureCatches() {
+  const key = JSON.parse(fs.readFileSync(KEYF, "utf8"));
+  for (const c of Object.keys(key.clips)) used.add(c);
+  const blockOf = (p) => (p.startsWith("P1") ? "A" : p.startsWith("P2") ? "B" : "C");
+  const DEGRADE = "highpass=f=450,lowpass=f=2600,aresample=8000,acrusher=bits=5:mode=log:mix=0.55,aresample=24000";
+  const manifest = JSON.parse(fs.readFileSync(path.join(OUT, "manifest.json"), "utf8"));
+  for (const b of ["A", "B", "C"]) {
+    if (Object.values(key.clips).some((v) => v.kind === "degraded-control" && blockOf(v.passage) === b)) continue;
+    const xs = Object.entries(key.clips).filter(([, v]) => v.kind === "arm" && blockOf(v.passage) === b && v.instructions !== "none");
+    const [src, sv] = xs[crypto.randomInt(xs.length)]; const c = code();
+    const meta = listenCopy(path.join(OUT, sv.raw_file), path.join(OUT, `${c}.mp3`), DEGRADE);
+    key.clips[c] = { kind: "degraded-control", source_code: src, passage: sv.passage, engine: sv.engine, voice: sv.voice, listen_file: `${c}.mp3`, ...meta, degrade_filter: DEGRADE,
+      expect: "clarity and real-teacher ratings well below the same listener's rating of the source clip", added: "ensureCatches (one degraded control per block)" };
+    key.post.catches.push(c);
+    manifest.splice(crypto.randomInt(manifest.length + 1), 0, { code: c, block: b });
+    console.log(`added degraded control ${c} for block ${b} from ${src} (${sv.engine}/${sv.voice}/${sv.passage})`);
+  }
+  fs.writeFileSync(path.join(OUT, "manifest.json"), JSON.stringify(manifest));
+  fs.writeFileSync(KEYF, JSON.stringify(key, null, 1));
+}
+
+// Inject manifest.json (codes + block only) into samples/blind-test.html between /*MANIFEST*/ and /*END*/.
+function injectPage() {
+  const page = path.join(OUT, "blind-test.html"); const m = fs.readFileSync(path.join(OUT, "manifest.json"), "utf8");
+  const html = fs.readFileSync(page, "utf8").replace(/\/\*MANIFEST\*\/[\s\S]*?\/\*END\*\//, `/*MANIFEST*/${m}/*END*/`);
+  const leaks = ["alloy", "ash", "ballad", "coral", "echo", "sage", "shimmer", "verse", "marin", "cedar", "realtime", "mini-tts", "gpt-"].filter((w) => new RegExp(`\\b${w}\\b`, "i").test(html));
+  if (leaks.length) throw new Error(`blinding leak in page: ${leaks}`);
+  fs.writeFileSync(page, html); console.log(`page: ${JSON.parse(m).length} clips injected, no identity words in page`);
+}
+
+if (PHASE === "catches") await ensureCatches();
+if (PHASE === "page" || PHASE === "catches") injectPage();
+if (PHASE === "listen") await relisten();
 if (PHASE === "gen" || PHASE === "all") await gen();
 if (PHASE === "post" || PHASE === "all") await post();

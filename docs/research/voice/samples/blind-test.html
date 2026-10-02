@@ -149,8 +149,8 @@
 (() => {
   "use strict";
   // Injected by the generator: [{code, block}] only. Voice and engine identities live in KEY.json, never here.
-  const MANIFEST = /*MANIFEST*/[]/*END*/;
-  const PAGE_VERSION = "2026-10-02.1";
+  const MANIFEST = /*MANIFEST*/[{"code":"RED3","block":"C"},{"code":"7NAF","block":"B"},{"code":"3LT9","block":"A"},{"code":"YE4M","block":"C"},{"code":"DNAQ","block":"A"},{"code":"X3F3","block":"B"},{"code":"Y9WR","block":"B"},{"code":"E37F","block":"C"},{"code":"NFMQ","block":"A"},{"code":"FW7Q","block":"C"},{"code":"R9DN","block":"C"},{"code":"VQJJ","block":"B"},{"code":"7JUD","block":"B"},{"code":"34NE","block":"A"},{"code":"YUKN","block":"B"},{"code":"LXEE","block":"C"},{"code":"4HHM","block":"A"},{"code":"RKUX","block":"B"},{"code":"M4QR","block":"A"},{"code":"9QWJ","block":"A"},{"code":"4KKV","block":"B"},{"code":"VJ4F","block":"A"},{"code":"4MT7","block":"C"},{"code":"ACJU","block":"B"},{"code":"XWRT","block":"B"},{"code":"WTND","block":"B"},{"code":"ERCY","block":"B"},{"code":"HEYJ","block":"C"},{"code":"HC7V","block":"C"},{"code":"DK4M","block":"B"},{"code":"LT47","block":"A"},{"code":"H49F","block":"A"},{"code":"MVTV","block":"A"},{"code":"QN97","block":"A"},{"code":"M3UC","block":"B"},{"code":"CHY7","block":"A"},{"code":"EYXN","block":"A"},{"code":"4JAM","block":"A"},{"code":"AHK4","block":"B"},{"code":"UXKT","block":"B"},{"code":"7HVJ","block":"C"},{"code":"KDVY","block":"A"},{"code":"QWXN","block":"A"},{"code":"QATU","block":"C"},{"code":"RXW7","block":"C"},{"code":"WX3N","block":"C"},{"code":"XRRA","block":"A"},{"code":"F7QE","block":"C"},{"code":"W4CR","block":"B"},{"code":"KUNC","block":"A"},{"code":"VNQA","block":"B"},{"code":"XDMF","block":"B"},{"code":"TTQM","block":"B"},{"code":"FYWT","block":"A"},{"code":"DWVT","block":"C"},{"code":"3FWU","block":"B"},{"code":"TUHH","block":"B"}]/*END*/;
+  const PAGE_VERSION = "2026-10-02.2";
   const BLOCKS = {
     A: { title: "Passage 1: greeting a child", sub: "Hinglish", script: ["Hello Riya! Kaisi ho aaj? Arre haan, pichhli baar tumne bataya tha na ki Sunday ko nani aane wali hain... aur ki nani ke haath ke aloo parathe duniya mein sabse best hote hain. Toh? Aayi nani? Parathe mile?"] },
     B: { title: "Passage 2: fractions with a pizza", sub: "Hinglish", script: ["Achha, ek pizza socho. Usko do barabar hisson mein kaata, aur tumne ek hissa liya... yaani half, one by two. Ab wahi pizza chaar barabar slices mein kaato. Half pizza ke liye ab kitne slices lene padenge? Do, hai na? Toh one by two aur two by four dikhte alag hain, par pizza utna hi milta hai. Inhe kehte hain equivalent fractions. Achha, ek baat batao... agar pizza aath slices mein kata ho, toh half ke liye kitne slices logi?"] },
@@ -177,7 +177,9 @@
   const byBlock = {};
   for (const m of MANIFEST) (byBlock[m.block] ||= []).push(m.code);
   for (const b of Object.keys(byBlock)) { const xs = byBlock[b]; for (let i = xs.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } }
-  const ORDER = ["A", "B", "C"].filter((b) => byBlock[b]).flatMap((b) => byBlock[b]);
+  // Optional short session: blind-test.html?blocks=A (or A,C). Every block holds its own degraded control.
+  const SHOWN = (() => { let q = ""; try { q = new URLSearchParams(location.search).get("blocks") || ""; } catch {} const want = q.toUpperCase().split(/[^ABC]+/).filter(Boolean); const xs = ["A", "B", "C"].filter((b) => byBlock[b] && (!want.length || want.includes(b))); return xs.length ? xs : ["A", "B", "C"].filter((b) => byBlock[b]); })();
+  const ORDER = SHOWN.flatMap((b) => byBlock[b]);
 
   const clipState = (code) => (state.clips[code] ||= { ratings: {}, note: "", plays: 0, listened_frac: 0 });
   const isDone = (code) => { const c = state.clips[code]; return !!c && AXES.every((a) => c.ratings[a.id] !== undefined && c.ratings[a.id] !== null); };
@@ -191,8 +193,8 @@
 
   const blocksEl = $("#blocks");
   if (!MANIFEST.length) blocksEl.append(el("div", { class: "card warn-box", text: "No clips found: this copy of the page has an empty manifest." }));
-  for (const b of ["A", "B", "C"]) {
-    if (!byBlock[b]) continue;
+  if (SHOWN.length < Object.keys(byBlock).length) blocksEl.append(el("p", { class: "muted small", style: "margin-top:16px", text: "Short session: " + SHOWN.map((b) => BLOCKS[b].title.split(":")[0]).join(", ") + " only." }));
+  for (const b of SHOWN) {
     const meta = BLOCKS[b];
     blocksEl.append(el("div", { class: "block-head" }, [el("h2", { text: meta.title }), el("span", { class: "muted small", text: meta.sub + " · " + byBlock[b].length + " clips" })]));
     const det = el("details", { class: "script" }, [el("summary", { text: "Show what the teacher is saying" })]);
@@ -298,7 +300,7 @@
     for (const code of ORDER) { const c = state.clips[code]; if (!c) continue; clips[code] = { ratings: Object.fromEntries(AXES.map((a) => [a.id, c.ratings[a.id] ?? null])), note: c.note || "", plays: c.plays || 0, listened_frac: c.listened_frac || 0, first_play_at: c.first_play_at || null, rated_at: c.rated_at || null, position: ORDER.indexOf(code) }; }
     return { schema: "taxila-blind-test-ratings/v1", page_version: PAGE_VERSION, manifest_hash: MANIFEST_HASH, exported_at: new Date().toISOString(), started_at: state.started_at, order_seed: state.seed,
       listener: { initials: state.listener.lid || "", role: state.listener.role || "", age: state.listener.age || "", home_language: state.listener.lang || "", device: state.listener.dev || "", place: state.listener.city || "" },
-      axes: AXES.map((a) => a.id), n_clips: ORDER.length, n_rated: ORDER.filter(isDone).length, clips };
+      axes: AXES.map((a) => a.id), blocks_shown: SHOWN, n_clips: ORDER.length, n_rated: ORDER.filter(isDone).length, clips };
   }
   $("#exportBtn").addEventListener("click", () => {
     const p = payload(); const name = "taxila-voice-ratings-" + ((p.listener.initials || "anon").replace(/[^\w-]+/g, "_")) + "-" + p.exported_at.slice(0, 16).replace(/[:T]/g, "") + ".json";

@@ -17,6 +17,8 @@ export type LinkEvent =
   | { type: "child_speech_start"; at: number; itemId?: string }
   /** Child stopped talking (VAD end or push-to-talk release). */
   | { type: "child_speech_end"; at: number }
+  /** A push-to-talk press carried no audio (an accidental tap): no reply is coming. */
+  | { type: "child_silent" }
   /** Streaming ASR text for a child utterance (captions only, never evidence). */
   | { type: "child_partial"; itemId: string; text: string }
   /** A finished child turn. text "" + asrConfidence 0 means "the child spoke but ASR failed". */
@@ -39,6 +41,12 @@ export interface LinkLevels {
   teacher: LevelMeter;
 }
 
+/** A Director-written teacher line (text lane): its words, and the stored turn /api/tts may speak. */
+export interface TeacherReply {
+  text: string;
+  seq?: number;
+}
+
 export interface TeacherLink {
   readonly mode: LessonMode;
   readonly levels: LinkLevels;
@@ -50,10 +58,10 @@ export interface TeacherLink {
   /** A typed or tapped child turn. Emits child_final; in voice mode the realtime teacher also answers it. */
   sendChild(text: string, opts?: { chipId?: string }): void;
   /**
-   * Give the teacher the floor. Voice: response.create from the current instructions (replyText is ignored,
-   * the voice model writes its own words). Text: speak replyText.
+   * Give the teacher the floor. Voice: response.create from the current instructions (reply is ignored,
+   * the voice model writes its own words). Text: show reply and speak it (only a stored turn is spoken).
    */
-  promptTeacher(replyText?: string): void;
+  promptTeacher(reply?: TeacherReply): void;
   /** Stop the teacher mid-turn. */
   interrupt(): void;
   /** Push-to-talk (voice only; no-ops in text mode). */

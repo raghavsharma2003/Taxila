@@ -121,16 +121,22 @@ export function kitFromFile(topic) {
   return raw ? normalizeKit(raw, { topicId: topic.id, verified: true }) : null;
 }
 
-/** skillId / misconceptionId → topicId across every kit file on disk (re-read when files change). */
+let idIndex = { signature: "", map: new Map() };
+
+/** skillId / misconceptionId → topicId across every kit file on disk; rebuilt only when a file changes. */
 export function kitIdIndex() {
-  const out = new Map();
   let names = [];
-  try { names = readdirSync(DIR).filter((f) => /^c\d+-[a-z]+\.json$/.test(f)); } catch { return out; }
-  for (const f of names) {
-    for (const [topicId, t] of readKitFile(f)?.topics ?? []) {
-      for (const s of t.skills || []) if (str(s?.id)) out.set(s.id, topicId);
-      for (const m of t.misconceptions || []) if (str(m?.id)) out.set(m.id, topicId);
+  try { names = readdirSync(DIR).filter((f) => /^c\d+-[a-z]+\.json$/.test(f)).sort(); } catch { return idIndex.map; }
+  const entries = names.map((f) => [f, readKitFile(f)]);
+  const signature = entries.map(([f, e]) => `${f}@${e?.mtimeMs ?? 0}`).join("|");
+  if (signature === idIndex.signature) return idIndex.map;
+  const map = new Map();
+  for (const [, e] of entries) {
+    for (const [topicId, t] of e?.topics ?? []) {
+      for (const s of t.skills || []) if (str(s?.id)) map.set(s.id, topicId);
+      for (const m of t.misconceptions || []) if (str(m?.id)) map.set(m.id, topicId);
     }
   }
-  return out;
+  idIndex = { signature, map };
+  return map;
 }

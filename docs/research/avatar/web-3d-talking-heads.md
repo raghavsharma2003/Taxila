@@ -681,3 +681,283 @@ Secondary:
 - [Echo cancellation with Web Audio and Chromium (crbug 687574)](https://focused.io/lab/echo-cancellation-with-web-audio-api-and-chromium)
 - [Browser voice AI pitfalls 2026 (AEC)](https://dev.to/orca_forge/browser-voice-interaction-ai-pitfall-guide-2026-16-common-traps-with-aec-getusermedia-and-40hd)
 - [ITU-R BT.1359-1](https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.1359-1-199811-I!!PDF-E.pdf)
+
+---
+
+## Graphics review
+
+Adversarial review by a real-time graphics engineer, 2026-10-02. I re-read the cloned sources (TalkingHead @ b3e277b,
+HeadAudio @ d3af5f9, three.js 0.180.0 from npm) and `bench/bench.mjs`, re-ran the bundle sizes and simulated TalkingHead's
+frame cap. Scripts are in `bench/review/`. Tags as above. **[M-sim]** means a simulation, not a device measurement.
+Items are ranked by how much they change the build.
+
+### R-1. The 30 fps cap actually delivers 20–27 fps with judder [V source, M-sim]
+
+`animate()` does `dt = t - this.animTimeLast; if (dt < this.animFrameDur) return; this.animTimeLast = t;`, with
+`animFrameDur = 1000/30` (`talkinghead.mjs` l.2411–2415, l.761).
+
+On a 60 Hz panel, two vsyncs are 33.33 ms, and that fails `< 33.333…` once the timestamp is rounded or jitters by a few
+microseconds. The cap therefore waits a third vsync. `bench/review/fpscap.mjs` gives these results:
+
+| panel | effective fps | gaps > 40 ms |
+|---|---|---|
+| 60 Hz, exact timestamps | **20.0** | 100% |
+| 60 Hz, 0.3 ms jitter | 22.9–23.2 | ~60% |
+| 90 Hz | ~25 | ~60% |
+| 120 Hz | ~26–27 | ~50–60% |
+
+Consequences:
+- §9's pass bar (p50 ≥ 28 fps) fails on a cap bug, not on the GPU.
+- At 20–23 fps with 50 ms holds, a 40–60 ms bilabial closure is often not shown at all. That hurts exactly the cue §5 fought for.
+
+**Fix (patch in our vendored copy):**
+- Use `if (dt < this.animFrameDur - 3) return;`. Better still, render every ⌈refresh/30⌉-th rAF.
+- Advance `animTimeLast += animFrameDur` (re-anchoring after long gaps) instead of `= t`.
+- Re-measure on device: E-5 must log rAF and render deltas separately.
+
+### R-2. The desync direction is backwards: on phones the face will *lead* the sound [V source, U magnitude]
+
+§6.1 rule 3 says "lips may trail audio by up to ~45 ms … RMS ~0 lag … we are inside the budget". There are two errors.
+
+**(a) The "0 ms lag" is an artefact of the bench.**
+- `bench.mjs` smooths the ground truth with the **same causal one-pole τ = 50 ms** it applies to the RMS arm (`smooth()`,
+  l.98, l.123 and l.131). Matched filters cancel, so "lag 0" means "as late as a 50 ms-smoothed ground truth".
+- Measured against the raw Azure viseme onsets, RMS lags by roughly τ plus half the window, about 50–55 ms at onsets
+  **[U, not re-run]**. The HeadAudio and wawa lags are relative to the same delayed reference, so their absolute lags
+  are also about 50 ms larger.
+- The shipped driver (§6.2) uses a 40/80 ms attack/release, not the benched symmetric 50 ms. So **the shipped jaw path is
+  unbenched**.
+
+**(b) Output latency was omitted.**
+- The analyser tap sees samples when WebAudio renders them. The `<audio>` element plays them later, after its own
+  output path: 40–100 ms on low-end Android in communication mode, and 150–300 ms on cheap A2DP earbuds
+  (`audio-to-face-ml.md` G-2 **[U]**).
+- Against that, the face adds algorithmic smoothing (~50 ms), the compositor pipeline (≈2–3 vsyncs, 33–50 ms) and frame
+  hold (17–25 ms) **[U]**.
+- On the loudspeaker the two roughly cancel. On Bluetooth the face leads by 100–250 ms.
+- ITU-R BT.1359 tolerates video-early much better than audio-early: detectability is −125 ms and acceptability −185 ms,
+  against +45/+90 ms in the other direction. So the risk is BT, not the jaw filter.
+
+**Fix:**
+- Replace rule 3 with the sibling's signed, per-route `latencyComp` applied as a delay line on the *face* (G-2 there). Delaying the face is free.
+- Re-score the bench against **unsmoothed** ground truth, with the arms' own filters, before quoting any lag.
+
+### R-3. The main-thread lip driver is contradicted by a sibling measurement [V cross-doc]
+
+`performance-android.md` §0-2 measured the main-thread path at **≈76 ms median and 136–303 ms p99** lip latency under load.
+The AudioWorklet → render-worker path measured **35–40 / 42–66 ms**. On a ₹10k phone the main thread also runs React,
+Forge modules and GC. A long task freezes the mouth while the voice carries on, which is the most visible failure possible.
+
+This doc moved code *off* the audio thread to honour companion-tech §13. But its own numbers show HeadAudio at **0.08 ms
+p99** per 2.67 ms quantum (3%), which is not "heavy".
+
+**Fix:** adopt the sibling design.
+- Feature extraction (RMS plus 12 MFCCs, about 52 B per 16 ms hop) goes in an AudioWorklet **that is not connected to
+  `destination`**.
+- A `MessagePort` carries the features to an OffscreenCanvas worker running TalkingHead `avatarOnly`.
+- Keep §6.2 as the fallback only.
+- The echosim before/after rule still applies, because an AudioContext is added.
+
+### R-4. Bugs in the §6.2 / §6.3 code [V source]
+
+1. **`newvalue` is *not* eased by TalkingHead.**
+   - In `updateMorphTargets()` (l.1652 ff.), the `newvalue` branch assigns the value directly. Only `fixed`/`system`/`base`/`baseline` targets get exponential smoothing.
+   - §2.2 says otherwise. The driver's own smoothing is therefore the only smoothing; keep it.
+2. **Mood baselines collide with the driver's keys.**
+   - TalkingHead mood baselines write the same ARKit mouth keys: `sad` has `mouthPucker 0.5, mouthStretchLeft 0.4`; `angry` has `mouthFrown* 0.7, mouthRollLower 0.2, jawForward 0.3` (l.479, l.501).
+   - The per-frame random re-basing list `mtRandomized` includes `mouthPress*`, `mouthStretch*` and `mouthRollLower` (l.735).
+   - During speech the driver overwrites some keys and leaves others additive. Result: "sad" loses its pucker while talking, and `mouthRollLower` from a mood fights the PP closure.
+   - **Fix:**
+     - Drive TalkingHead's separate `viseme_*` (Oculus) morphs plus `jawOpen`, which no mood touches, as TalkingHead's own speech path does.
+     - Or add an explicit compositor: `mouth = mood·(1−k·speaking) + lips`.
+3. **`isSpeaking` is never true with external audio.**
+   - It is set only inside TalkingHead's own `speak*`/`stream*` paths (l.3314, l.3612, l.3834). So `avatarSpeakingEyeContact`, `avatarSpeakingHeadMove` and the volume-driven head nod (l.2477–2484, which reads TalkingHead's *own* `audioAnalyzerNode`) never run.
+   - The §7 "speaking" row is not out of the box.
+   - **Fix:** a small vendored patch, `setExternalSpeaking(bool, getVol)`, that feeds our RMS into `vol`.
+4. **Sample-rate assumption.**
+   - `const r = Math.round(ctx.sampleRate/16000)` gives 3 at both 48 kHz and 44.1 kHz. On a 44.1 kHz device the MFCC sees 14.7 kHz audio labelled 16 kHz, so the mel bands shift by about 8%, much like a formant shift. That costs accuracy silently.
+   - TalkingHead creates `new AudioContext()` at the device rate (l.938–940).
+   - **Fix:** pass `audioCtx: new AudioContext({ sampleRate: 48000 })` in options, or resample fractionally.
+5. **Autoplay and suspension.**
+   - TalkingHead's context is created at construction, before any gesture, so on Chrome or Android WebView it starts `suspended`. A suspended context feeds the analyser nothing: the mouth stays shut and nothing throws.
+   - **Fix:** `ctx.resume()` in the "start lesson" tap.
+   - Also watch `statechange`, since Android suspends the context on audio-focus loss (phone call, other app) **[U]**.
+6. **Barge-in closes the mouth while the voice is still audible.**
+   - `input_audio_buffer.speech_started` arrives after server VAD detection plus network time. Forcing `rest` at that moment shuts the mouth while the jitter-buffer tail and output latency (R-2) are still playing.
+   - **Fix:**
+     - Let RMS alone govern the mouth, because it follows what is actually audible.
+     - Use the event only for gaze, brow and state.
+     - Resume on the RMS gate, not on `output_audio_buffer.started` (a server-side send time).
+7. **Closure timing.**
+   - `Classifier.predict` majority-votes a 6-slot ring, and ties go to the **highest** viseme id (`count >= maxCount`, so `sil` = 14 wins ties).
+   - At 30 Hz the PP decision lands ≈ 1.5 frames (≈ 50 ms) late, i.e. on the following vowel. That is the "snaps shut on vowels" chatter seen in §5.
+   - Shrinking the ring to 3 (§6.2 note) helps the window but not the causality. A causal closure detector needs the F2/F3 transition cue (sibling G-3), not more voting.
+8. **Bundle claim.**
+   - TalkingHead does `import * as THREE from 'three'` and statically imports `FBXLoader`, `DRACOLoader`, `OrbitControls`, `RoomEnvironment` and `Stats`. So it ships **all of three**, the same sin §2.4 charges R3F with.
+   - Re-measured **[M]** with three 0.180.0:
+
+     | bundle | gzip |
+     |---|---|
+     | three + TalkingHead | **217.5 KB** (doc: 204) |
+     | all of three | 178.9 KB |
+     | TalkingHead itself (three external) | 36.3 KB |
+     | three + GLTFLoader + meshopt | 149.8 KB (doc: 145) |
+     | Babylon 9.29 deep imports + glTF loader | 777.8 KB (doc: 759, OK) |
+     | R3F + react-dom + three | 305.5 KB |
+     | react-dom alone | 68.8 KB |
+
+   - react-dom is sunk cost in a React 19 app, so **R3F's marginal cost is ≈ 87 KB, not 298**.
+   - R3F's `useFrame` mutates refs outside reconciliation, so the claim that it "costs React reconciliation on the frame path" is wrong.
+   - Skipping R3F is still right, because TalkingHead owns its renderer. But the stated reasons are wrong.
+   - **Also budget the KTX2 transcoder:** `basis_transcoder.wasm` + `.js` = **260 KB gzip** **[M]**, more than TalkingHead itself. It is fetched once and cached; count it.
+9. **Dependency, not peer.** TalkingHead's `package.json` lists `"three": "^0.180.0"` under `dependencies` (on 0.x a caret pins the minor). If Forge modules use a newer three, npm installs **two copies**, roughly +179 KB, with duplicate-instance bugs. Vendoring with a bare `three` import resolved by our app fixes it. Say so in §10.
+
+### R-5. Morph memory is about 2.75× the stated figure [V three.js 0.180 source]
+
+`WebGLMorphtargets.js` builds a `Float32Array(width·height·4·targets)` `DataArrayTexture` (l.50–53). The JS array stays
+referenced by `texture.image`. GLTFLoader *also* keeps `geometry.morphAttributes` (position + normal vec3 Float32 =
+24 B/vertex/target).
+
+Real cost per vertex per target: **24 (JS attributes) + 32 (JS texel buffer) + 32 (GPU) ≈ 88 B**.
+
+| case | doc's figure | real figure |
+|---|---|---|
+| §3.1 spec (6k verts × 67 targets) | "≈ 13 MB" | **≈ 35 MB**, of which ≈ 22 MB is JS heap |
+| MPFB as shipped | "49 MB + same again" | **≈ 134 MB** |
+
+Two traps:
+- **The texture spans the *whole primitive's* vertex count.** "Morphs on head only" works only if the head is a separate primitive.
+  MPFB's base mesh is one body mesh. Its viseme and faceunit packs are applied to it, and its `Refit assets to basemesh`
+  workflow assumes that. Splitting the head creates a neck seam (normals and skin weights) to fix per character, and you
+  lose refit.
+- **Meshopt or quantization saves only wire bytes.** Morphs are expanded to Float32 on load.
+
+**Mitigation:** after the first upload, drop the geometry arrays (`geometry.morphAttributes = {}` once the texture exists,
+keeping a URL to reload on `webglcontextlost`) **[U, test with context-loss]**.
+
+### R-6. Perf claims that need correction or a caveat
+
+- **WebGPU "22× slower" (#29980) [V].** The issue reports WebGPU morphs 1.80 ms against no-morph 0.53 ms, against WebGL's
+  0.08–0.16 ms. It also reports morph+skin at 1.03 ms, *faster* than morph-only, and the reporter doubts
+  `renderer.info.render.timestamp`. It is one unreliable fixture.
+  - Not-v1 still stands, for better reasons: WebGPU availability in Android WebView on Mali-G52-class drivers, and no device data **[U]**.
+- **#24545 (">241 targets") [V].** That is a uniform-vector limit on 2019–2022 Adreno/Mali drivers: `morphTargetInfluences[]`
+  costs one vec4 slot per float on many GLES compilers, against a 256-vector floor. At 67 targets we are fine, but don't
+  plan "add more expression keys" without counting uniforms.
+- **The vertex shader's zero-skip doesn't help in practice.** TalkingHead keeps 20–35 of the 67 influences non-zero:
+  - mood baselines,
+  - `mtRandomized` jitter, which re-bases one key per frame by up to 0.2 and then eases it back,
+  - blinks and eye looks,
+  - the driver's keys.
+
+  Budget for about 30 active targets × 2 `texelFetch` per vertex. That is trivial for a 6k-vertex head, and 4× worse if the
+  body carries morphs (R-5).
+- **The real GPU risks on Mali-G52 MC2 are not named in §9:**
+  - alpha-blended hair cards: overdraw, sort artefacts, and no early-Z;
+  - PBR skin with ACES at DPR 1.5;
+  - `alpha:true` on the canvas: an extra compositor blend, so use `alpha:false` (sibling §6).
+- **MSAA [U, Arm best-practice guidance, not fetched].** On Mali/Adreno tilers, 4× MSAA resolves on-chip and is close to
+  free in bandwidth. Keep `antialias:true` and spend the savings on DPR, not the reverse as §9 suggests.
+- **The CPU estimate uses the wrong core.**
+  - The main thread runs on the big cluster: Helio G85 and Unisoc T606 have 2× A75, Dimensity 6100+ has 2× A76, Snapdragon 4 Gen 2 has 2× A78. Expect about 2–3× slower than the Xeon, not 4–6× **[U]**.
+  - The audio thread can land on an A55.
+  - It also matters which per-quantum figure is used. One classification costs about the **p99** of HeadAudio's per-quantum
+    time, not the p50: the p50 is non-MFCC quanta that only buffer.
+- **RAM is inconsistent.** §1 says 3–4 GB and §9 says 4–6 GB. Use 3–4 GB as the design floor. Android's low-memory killer
+  takes the WebView renderer first, and R-5's 35 MB JS heap per character counts against it.
+
+### R-7. Bench methodology issues that weaken the "RMS beats classifiers" headline
+
+1. **The shared smoothing favours RMS** (R-2a). RMS is passed through the *identical* τ = 50 ms one-pole as the ground
+   truth, so its waveform shape is matched by construction. HeadAudio's 100 ms sigmoid ramps are not.
+   - §5.1's caveat that the table "favours classifiers" is offset by this; it may even be reversed.
+   - Re-score with ground truth unsmoothed and each arm smoothed by its own filter.
+2. **r includes silence frames,** where RMS is trivially right. A speech-only r (ground truth not `sil`) would separate "jaw
+   tracking" from "VAD". Report both.
+3. **The bench reads raw PCM at exact frame instants.** It does not go through a real `AnalyserNode` render quantum, nor
+   over Opus at the WebRTC bitrate. Opus at 24–32 kbps smears fricatives and reshapes the MFCC distributions that
+   HeadAudio's prototypes depend on, and comfort noise or DTX shifts the RMS gate. E-3 should use **received WebRTC audio**
+   (loopback through a real PeerConnection), not the TTS WAVs.
+
+### R-8. Licence traps not covered
+
+- **Mixamo FBX at runtime.** TalkingHead's own README: Mixamo "raw animation files can't be distributed outside the project
+  team" **[V]**. `playAnimation(url)` fetches FBX into the client, which means every user downloads the raw file.
+  - Bake retargeted clips into our GLB, or author idle and gesture clips ourselves.
+  - Legal must sign off on the bake **[U]**.
+  - Never ship TalkingHead's sample `walking.fbx` or `dance.fbx`.
+- **MakeHuman ecosystem assets are "CC0/CC-BY"** (TalkingHead README l.511) **[V]**, not uniformly CC0.
+  - CC-BY skins, hair or clothes require in-app attribution, and community packs vary.
+  - Keep a per-asset licence manifest in the character pipeline, and add a CI check that fails on any asset without a recorded licence.
+  - The MPFB add-on is GPL-3: authoring only, which is fine, but don't vendor its code into the app.
+- **Every other TalkingHead sample avatar (`avaturn`, `avatarsdk`, `vroid`) is "for non-commercial use"** **[V README
+  l.376–378]**, not only `brunette`. They must not leak into a build, so add them to a CI denylist.
+- **Faceit is a paid per-seat Blender add-on.** It is an authoring cost, not a runtime trap, but budget for it.
+
+### R-9. Uncanny-valley risks for children: the art recommendation is internally inconsistent
+
+- **"Stylised, Pixar-ish" (§0-9) and "one MPFB base" (§0-2, §8) pull in opposite directions.** MPFB/MakeHuman is a
+  *semi-realistic* parametric human: realistic proportions and PBR skin. Its age and gender sliders are realistic targets.
+  A realistic-proportion head with game-grade shading and mediocre lip-sync (r 0.56 on Hindi, 33–65% closures) is the
+  textbook valley floor.
+  - Brink, Gray & Wellman 2019 (*Child Development*, n = 240, ages 3–18) **[V abstract, via OpenAlex]**: children **older
+    than 9** rate a human-like agent creepier, and younger ones do not. That is classes 4–9, most of the user base.
+- **Realism mismatch is itself eerie** (Seyama & Nagayama 2007, *Presence* 16(4), doi:10.1162/pres.16.4.337; MacDorman et
+  al. 2009, *CHB*, doi:10.1016/j.chb.2008.12.026) **[V bibliographic; findings from memory, U]**.
+  - Do not put photo-sourced skin or iris textures on a stylised head. Keep eyes, skin, hair and shading at one realism level.
+  - Use toon or soft-NPR shading (MToon-like ramp) rather than PBR + ACES. This also cuts GPU cost.
+- **The face–voice mismatch is the risk this product uniquely carries.** The voice is "exactly human", and Mitchell et al.
+  2011 (cited in the siblings) found a mismatch of face and voice realism uncanny. Stylised-*human* (Pixar-like people)
+  is the known-safe pairing with human voices. Robots and animals with a human adult voice are the riskier choice for
+  the classes 1–3 character. Test it in M-AV-1 (character-creation.md) rather than assume it.
+- **Concrete behaviour risks in §7:**
+  - A permanent `mouthSmile` baseline without eye involvement reads as a fixed, non-Duchenne smile. Couple any resting
+    smile to `cheekSquint`/`eyeSquint` at low gain, or drop it.
+  - Listening eye contact of 0.8 is a stare. Human listeners gaze at a speaker about 70–75% of the time with breaks
+    **[U, Argyle & Cook]**; keep aversion breaks.
+  - **Visible teeth and tongue amplify lip errors.** At this lip-sync accuracy, a stylised mouth with simplified interior
+    (dark mouth bag, a single upper-teeth row) hides mistimed tongue and teeth shapes.
+  - The 20 fps judder from R-1 makes all of this worse.
+
+### R-10. Production effort is unestimated, and the hidden costs are large [U, engineering judgement]
+
+The doc costs only the experiments (about 9.5 days). Missing:
+
+| work | estimate |
+|---|---|
+| Pipeline: MPFB → TalkingHead rig → head split and seam fix → morph strip → KTX2 (UASTC face, ETC1S rest) → validator (tris, primitives, targets, licence) → manifest | 2–3 tech-artist weeks |
+| Each **stylised** character: concept 3–5 d; head stylisation on the shared topology 4–8 d; **re-authoring the 52 ARKit + 15 viseme shapes** 3–6 d (TalkingHead's MPFB keys are for the realistic head, and Faceit gets about 70% before lip and eyelid cleanup); hair cards + dynamic bones 3–5 d; outfit 3–6 d (a saree pallu or dupatta under dynamic bones is notoriously fiddly); textures 3–5 d; lip and expression QA 2–3 d | **4–7 artist-weeks each**, so 5 characters ≈ 5–8 artist-months |
+| The non-human character | cannot share MPFB topology, so its own rig, shapes and lip tuning: +50% |
+| Engineering: worklet + worker renderer, vendored TalkingHead patches (R-1, R-4), mouth compositor, state machine, latency compensation, Rive fallback, device lab | 5–7 engineer-weeks |
+| E-1 retrain | the 1-day estimate is optimistic. A phone-level aligner for code-mixed Hinglish on gpt-realtime audio does not exist off the shelf, so 3–5 d |
+
+- "Lip-sync tuned once for all characters" holds only for identical mouth geometry. Stylised heads with different lip
+  shapes need per-character shape correction and a per-character pass of the E-4 clip test.
+- **UASTC face textures blow the 2.5 MB GLB budget.** UASTC + zstd runs ≈ 0.6–1 MB per 1024² map **[U]**. Either accept
+  ≈ 3–3.5 MB, or use ETC1S for everything except the face albedo. ETC1S banding on skin gradients is visible at bust
+  framing.
+
+### Net verdict
+
+Keep three.js + TalkingHead (vendored), the RMS-jaw-plus-shape structure, static picker thumbnails, the unchanged
+`<audio>` path and the not-v1 list.
+
+Change:
+- R-1 cap patch;
+- R-3 worklet → worker;
+- R-4 compositing and `isSpeaking` patches;
+- R-2 signed per-route face delay;
+- R-9 decide the art direction *before* committing to MPFB. If it is stylised, MPFB is the topology donor at most, and the 52 shapes are re-authored.
+
+Re-run the bench with R-7's fixes before any lag or r number is used as a gate.
+
+Review sources:
+- Cloned and read: TalkingHead `modules/talkinghead.mjs` (l.148–186, 735, 761, 840–845, 920–940, 1652 ff., 2403–2420,
+  2477–2484, 2680–2745), `README.md` l.374–379, 511–522, `blender/MPFB/MPFB.md`, `package.json`.
+- HeadAudio `modules/{classifier,processor,parameters,ringbuffer}.mjs`.
+- three 0.180.0 `src/renderers/webgl/WebGLMorphtargets.js` and `ShaderChunk/morph{target,normal}_vertex.glsl.js`.
+- [three.js #29980](https://github.com/mrdoob/three.js/issues/29980), [three.js #24545](https://github.com/mrdoob/three.js/issues/24545).
+- Brink, Gray & Wellman 2019, doi:10.1111/cdev.12999 (abstract via api.openalex.org).
+- Seyama & Nagayama 2007, doi:10.1162/pres.16.4.337.
+- MacDorman et al. 2009, doi:10.1016/j.chb.2008.12.026 (Crossref metadata).
+- Sibling docs `performance-android.md` §0-2 and §6, `audio-to-face-ml.md` G-2/G-3, `character-creation.md` M-AV-1.

@@ -17,7 +17,7 @@ import {
 } from "../learner/model.js";
 import { classify, targetFor } from "../director/classify.js";
 import { initLessonState, step, describe, evidenceFrom, snapshotSkill, LIMITS } from "../director/state.js";
-import { findItem, promptFor, revealsAnswer } from "../director/items.js";
+import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, norm as normAnswer } from "../director/items.js";
 import { compile, TURN_WORDS } from "../compiler/compile.js";
 import { CHARACTERS, teacherFor } from "../compiler/characters/index.js";
 
@@ -43,18 +43,22 @@ async function loadLessonFor(req, lessonId) {
   return { lesson, guardian, child };
 }
 
-/** Kit for a lesson's topic; content can vanish (file rewritten) so a missing kit is a 503, not a crash. */
-async function kitFor(topicId, trace) {
-  const kit = await getKit(topicId, { trace });
+/**
+ * Kit for a lesson's topic, pinned to the kind the lesson started on (state.kitVerified). Content can
+ * vanish (a file mid-rewrite), so a missing kit is a 503, not a crash.
+ */
+async function kitFor(topicId, state, trace) {
+  const kit = await getKit(topicId, { trace, mini: state?.kitVerified === false });
   if (!kit) throw new HttpError(503, "no teaching content is available for this topic yet");
   return kit;
 }
 
-function instructionsFor(state, kit) {
+/** One compile() for both lanes; the lane only decides whether the voice-only contingency lines appear. */
+function instructionsFor(state, kit, lane = state.mode === "text" ? "text" : "voice") {
   const topic = getTopic(state.topicId);
   return compile({
     character: CHARACTERS[state.ctx.teacherId], brief: state.brief, lessonState: state, move: state.lastMove,
-    ...describe(state, kit), topic, language: state.ctx.lang,
+    ...describe(state, kit), topic, language: state.ctx.lang, lane,
   });
 }
 
@@ -85,33 +89,68 @@ function trimToWords(text, max) {
   return (out || String(text).split(/\s+/).slice(0, max).join(" ") + "…").trim();
 }
 
+/** Moves whose turn must put the active item's question to the child (at rung 0, before any nudge). */
+const POSING_MOVES = new Set(["practice", "probe", "retrieval", "greet"]);
+/** Moves that end the exchange or hold it; every other turn must hand the floor back. */
+const CLOSING_MOVES = new Set(["wrap", "safeguard"]);
 /**
- * Text-mode teacher reply from the SAME compiled instructions, guarded on the bytes: an answer leak
- * before rung 4 or an over-long turn gets one rewrite; a leak that survives is replaced by re-posing the
- * question itself (content), never shipped.
+ * Scripts a written reply may use: Roman for Hinglish/English (the compiled rule asks for it), Roman or
+ * Devanagari for Hindi. Measured in evals/director-sim.mjs: a stray Gujarati word and Devanagari fragments
+ * inside Roman Hinglish both reached the child before this check.
+ */
+const LATIN = /^[\p{Script=Latin}\p{Script=Common}\p{M}]*$/u;
+const SCRIPT_OK = { hinglish: LATIN, english: LATIN, hindi: /^[\p{Script=Latin}\p{Script=Devanagari}\p{Script=Common}\p{M}]*$/u };
+const OFF_SCRIPT = { hinglish: /[^\p{Script=Latin}\p{Script=Common}\p{M}]/gu, english: /[^\p{Script=Latin}\p{Script=Common}\p{M}]/gu,
+  hindi: /[^\p{Script=Latin}\p{Script=Devanagari}\p{Script=Common}\p{M}]/gu };
+
+/**
+ * Text-mode teacher reply from the SAME compiled instructions, guarded on the bytes: an answer leak before
+ * rung 4, a posing turn that does not pose the item (drift), or an over-long turn gets one rewrite; a leak
+ * or drift that survives is replaced by the question itself (content), never shipped.
  */
 async function textReply({ instructions, state, kit, childText, trace }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
-  const max = REPLY_MAX_WORDS[state.ctx.ageBand];
+  const lang = state.ctx.lang;
+  // A diagnostic's options are content read aloud, so they do not count against the turn length.
+  const max = REPLY_MAX_WORDS[state.ctx.ageBand] + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
   const guardable = item && state.hintLevel < 4 && state.pendingWhy !== item.id;
-  const problems = (t) => [guardable && revealsAnswer(t, item) && "leak", words(t) > max && "long"].filter(Boolean);
+  const mustPose = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
+  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind);
+  const whyProbe = !!item && state.pendingWhy === item.id;
+  const problems = (t) => [
+    guardable && revealsAnswer(t, item) && "leak",
+    mustPose && !posesItem(t, item, lang) && "drift",
+    whyProbe && !asksWhy(t) && "nowhy",
+    mustHandBack && !handsBack(t) && "flat",
+    !(SCRIPT_OK[lang] ?? LATIN).test(t) && "script",
+    words(t) > max && "long",
+  ].filter(Boolean);
   const messages = [
     { role: "system", content: instructions },
     ...state.recent.slice(0, -1).map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: t.text })),
     { role: "user", content: childText || "(the child has joined the lesson and is listening)" },
   ];
-  const ask = (msgs) => chat(DEPLOY.fast, msgs, { maxTokens: 220, effort: "none", timeoutMs: 15_000, trace }).then((r) => r.text.trim());
+  // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
+  const ask = (msgs) => chat(DEPLOY.fast, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace }).then((r) => r.text.trim());
   let reply = await ask(messages);
   let found = problems(reply);
-  const guard = { leakCaught: found.includes("leak"), rewritten: false, replaced: false };
+  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}) };
   if (found.length) {
     const why = [found.includes("leak") && "it gives away the key answer — the hint ladder has not reached rung 4",
+      found.includes("drift") && `it must ask exactly this question and no other: "${promptFor(item, lang)}"`,
+      found.includes("nowhy") && "it must ask how they knew or why — about the question they just answered, not a new problem; the reason is theirs to give",
+      found.includes("flat") && !found.includes("nowhy") && "it never hands the floor back — end with one question for the child about the same thing (and do not answer it yourself)",
+      found.includes("script") && (lang === "hindi" ? "write it in Roman or Devanagari only" : "write it in Roman script only — no Devanagari or any other script"),
       found.includes("long") && `it is too long — at most ${TURN_WORDS[state.ctx.ageBand]} words`].filter(Boolean).join("; and ");
     reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: `Rewrite that turn: ${why}. Same move, same language, one idea, end by handing the floor back.` }]);
     guard.rewritten = true;
     found = problems(reply);
-    if (found.includes("leak")) { reply = promptFor(item, state.ctx.lang); guard.replaced = true; }
-    else if (found.includes("long")) reply = trimToWords(reply, max);
+    guard.afterRewrite = found;
+    if (found.includes("leak") || found.includes("drift")) { reply = promptFor(item, lang); guard.replaced = true; }
+    else {
+      if (found.includes("script")) reply = reply.replace(OFF_SCRIPT[lang] ?? OFF_SCRIPT.english, "").replace(/\s{2,}/g, " ").trim();
+      if (found.includes("long")) reply = trimToWords(reply, max);
+    }
   }
   return { reply, guard };
 }
@@ -127,7 +166,7 @@ async function warmupItemsFor(childId) {
       .sort((a, b) => (b.kind === "retrieval") - (a.kind === "retrieval") || a.difficulty - b.difficulty)[0];
     if (!it) continue;
     out.push({
-      ...it, kind: "retrieval", topicId, topicType: kit.topicType, kitVerified: kit.verified,
+      ...it, kind: "retrieval", topicId, topicType: kit.topicType, kitVerified: kit.verified, expectations: kit.expectations,
       misconceptions: kit.misconceptions.filter((m) => m.id === it.targetsMisconception)
         .map((m) => ({ id: m.id, belief: m.belief, signs: m.signs, remediation: m.remediation })),
     });
@@ -149,7 +188,7 @@ async function start(req, res, body) {
   const mode = body.mode === "text" ? "text" : "voice";
   const topic = body.topicId ? getTopic(body.topicId) : await nextTopicFor(child);
   if (!topic) throw bad(body.topicId ? `unknown topic ${body.topicId}` : "no topic available for this class");
-  const kit = await kitFor(topic.id, trace);
+  const kit = await kitFor(topic.id, null, trace);
   const warmupItems = await warmupItemsFor(child.id);
   const skillIds = [...new Set([...kit.skills.map((s) => s.id), ...warmupItems.map((w) => w.skillId)])];
   const [skills, history, activeMisconceptionIds, brief] = await Promise.all([
@@ -171,7 +210,7 @@ async function start(req, res, body) {
     },
   });
   const r = step(state0, { event: "start", kit, now });
-  const state = { ...r.state, brief, mode };
+  const state = { ...r.state, brief, mode, kitVerified: kit.verified };
   const instructions = instructionsFor(state, kit);
   const lesson = await one("insert into lesson(child_id, topic_id, kind, state) values ($1,$2,'live',$3) returning id", [child.id, topic.id, state]);
   if (!lesson) throw new Error("lesson insert did not land");
@@ -210,10 +249,12 @@ export function realtimeSession({ instructions, voice }) {
 }
 
 async function realtimeToken(req, res, body) {
-  const { lesson, child } = await loadLessonFor(req, need(body, "lessonId").lessonId);
+  const { lesson, guardian, child } = await loadLessonFor(req, need(body, "lessonId").lessonId);
   if (lesson.ended_at) throw new HttpError(409, "lesson has ended");
-  const kit = await kitFor(lesson.topic_id);
-  const session = realtimeSession({ instructions: instructionsFor(lesson.state, kit), voice: teacherFor(child).voice });
+  // A live call sends the child's voice to the model: it needs consent at the moment it starts.
+  if (!(await hasConsent(guardian.id, child.id, "core_tutoring"))) throw forbidden("core_tutoring consent is required for a live call");
+  const kit = await kitFor(lesson.topic_id, lesson.state);
+  const session = realtimeSession({ instructions: instructionsFor(lesson.state, kit, "voice"), voice: teacherFor(child).voice });
   const secret = await mintRealtimeSecret(session);
   /** @type {import("../../shared/contracts").RealtimeTokenResponse} */
   const out = { token: secret.value, expiresAt: secret.expires_at, base: endpoint(), session };
@@ -230,13 +271,13 @@ async function turn(req, res, body) {
   if (lesson.ended_at) throw new HttpError(409, "lesson has ended");
   const prev = lesson.state;
   const state = structuredClone(prev);
-  const kit = await kitFor(lesson.topic_id, trace);
-  const core = await hasConsent(guardian.id, child.id, "core_tutoring");
+  const [kit, core] = await Promise.all([kitFor(lesson.topic_id, state, trace), hasConsent(guardian.id, child.id, "core_tutoring")]);
   const typed = !!body.typed || state.mode === "text";
   const childText = String(body.childText || "").slice(0, 2000).trim();
 
   // The teacher's last turn as heard (voice lane), then the child's turn.
   const activeItem = findItem(state, kit, state.activeItemId);
+  const heard = body.teacherText ?? state.recent.findLast((t) => t.who === "teacher")?.text;
   const leaked = !!body.teacherText && !!activeItem && state.hintLevel < 4 && state.pendingWhy !== activeItem.id && revealsAnswer(body.teacherText, activeItem);
   const turnRows = [];
   if (body.teacherText) turnRows.push({ speaker: "teacher", text: String(body.teacherText).slice(0, 2000), meta: { interrupted: !!body.teacherInterrupted, ...(leaked ? { answerLeak: true } : {}) } });
@@ -251,7 +292,7 @@ async function turn(req, res, body) {
   const moduleAnswer = (body.moduleEvents || [])
     .filter((e) => e?.type === "answer" && state.module && e.moduleId === state.module.id && state.module.itemId === state.activeItemId).at(-1)?.data ?? null;
   const cls = await classify({
-    target: targetFor(state, kit, activeItem), childText, asrConfidence: body.asrConfidence, typed, chipId: body.chipId,
+    target: targetFor(state, kit, activeItem), childText, heard, asrConfidence: body.asrConfidence, typed, chipId: body.chipId,
     moduleAnswer, classLevel: child.class_level, trace,
   });
 
@@ -259,27 +300,39 @@ async function turn(req, res, body) {
   const evidence = evidenceFrom(state, cls, kit, { leaked, discount: gamingDiscount(state.affect) });
   const skillChanges = {};
   if (core && evidence.length) {
-    const current = await loadSkillStates(child.id, evidence.map((e) => e.skillId));
+    const current = await loadSkillStates(child.id, [...new Set(evidence.map((e) => e.skillId))]);
+    const topicType = activeItem?.topicType ?? kit.topicType;
     const now = new Date();
-    await Promise.all(evidence.map(async (ev) => {
-      const before = current[ev.skillId] ?? newSkillState(ev.skillId, activeItem?.topicType ?? kit.topicType, now);
-      const after = applyEvidence(before, ev, { topicType: activeItem?.topicType ?? kit.topicType, now, lessonStartedAt: lesson.started_at });
-      await Promise.all([insertEvidence(child.id, lesson.id, ev, childTurnId), saveSkillState(child.id, after)]);
-      state.skills[ev.skillId] = snapshotSkill(after);
+    const writes = [];
+    // Fold rows for the same skill in order (an answer and its volunteered reason are two rows).
+    for (const ev of evidence) {
+      const before = current[ev.skillId] ?? newSkillState(ev.skillId, topicType, now);
+      const after = applyEvidence(before, ev, { topicType, now, lessonStartedAt: lesson.started_at });
+      current[ev.skillId] = after;
+      writes.push(insertEvidence(child.id, lesson.id, ev, childTurnId));
+      if (ev.misconceptionId) writes.push(flagMisconception(child.id, ev.misconceptionId));
       state.history[ev.skillId] = [...(state.history[ev.skillId] ?? []), ev.outcome].slice(-10);
-      skillChanges[ev.skillId] = { before: Math.round(before.pKnown * 1000) / 1000, after: Math.round(after.pKnown * 1000) / 1000, status: after.status };
-    }));
-    if (cls.misconceptionId) await flagMisconception(child.id, cls.misconceptionId);
-    const resolved = activeItem?.targetsMisconception && cls.outcome === "correct" && state.hintLevel === 0 && state.pendingWhy !== activeItem.id;
-    if (resolved) await resolveMisconception(child.id, activeItem.targetsMisconception);
+      skillChanges[ev.skillId] ??= { before: Math.round(before.pKnown * 1000) / 1000 };
+      Object.assign(skillChanges[ev.skillId], { after: Math.round(after.pKnown * 1000) / 1000, status: after.status });
+    }
+    for (const id of Object.keys(skillChanges)) {
+      writes.push(saveSkillState(child.id, current[id]));
+      state.skills[id] = snapshotSkill(current[id]);
+    }
+    const resolved = activeItem?.targetsMisconception && cls.outcome === "correct" && cls.reason !== "misconception"
+      && state.hintLevel === 0 && state.pendingWhy !== activeItem.id;
+    if (resolved) writes.push(resolveMisconception(child.id, activeItem.targetsMisconception));
+    await Promise.all(writes);
   }
+  // A belief voiced outside a keyed item counts on the misconception ledger, never as graded evidence.
+  if (core && cls.voiced) await flagMisconception(child.id, cls.voiced);
   if (cls.flags.distress) {
     await q("insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3)",
       [child.id, lesson.id, { turnId: childTurnId, source: cls.source === "predicate" ? "predicate" : "classifier", family: cls.flags.distressKind }]);
   }
 
   // Director step → compile → (text mode) reply from the same instructions.
-  const r = step(state, { event: "turn", kit, cls, chipId: body.chipId, now: Date.now() });
+  const r = step(state, { event: "turn", kit, cls, chipId: body.chipId, answer: normAnswer(childText), now: Date.now() });
   const next = r.state;
   if (core && r.move.kind === "explain" && r.move.skillId && !next.skills[r.move.skillId]) {
     const intro = markIntroduced(newSkillState(r.move.skillId, kit.topicType));
@@ -289,8 +342,9 @@ async function turn(req, res, body) {
   const instructions = instructionsFor(next, kit);
   let teacherReply, guard;
   if (typed) {
-    ({ reply: teacherReply, guard } = await textReply({ instructions, state: next, kit, childText: childText || `(tapped: ${body.chipId ?? "nothing"})`, trace }));
-    await insertTurns(lesson.id, next, [{ speaker: "teacher", text: teacherReply, meta: { move: r.move.kind, ...(guard.leakCaught ? { leakCaught: true } : {}) } }]);
+    const tapped = body.chipId?.startsWith("opt:") ? activeItem?.options?.[Number(body.chipId.slice(4))]?.text : body.chipId?.split(":")[1];
+    ({ reply: teacherReply, guard } = await textReply({ instructions, state: next, kit, childText: childText || `(tapped: ${tapped ?? "nothing"})`, trace }));
+    await insertTurns(lesson.id, next, [{ speaker: "teacher", text: teacherReply, meta: { move: r.move.kind, ...(guard.caught.length ? { guard: guard.caught } : {}) } }]);
   }
   const saved = await q("update lesson set state = $2 where id = $1 and (state->>'turn')::int = $3 returning id", [lesson.id, next, prev.turn]);
   if (saved.length !== 1) throw new HttpError(409, "another turn for this lesson landed first; retry");
@@ -303,9 +357,9 @@ async function turn(req, res, body) {
     const item = r.item;
     out.debug = {
       phase: next.phase, turn: next.turn, hintLevel: next.hintLevel,
-      classification: { outcome: cls.outcome, misconceptionId: cls.misconceptionId, confidence: cls.confidence, source: cls.source, flags: cls.flags },
+      classification: { outcome: cls.outcome, misconceptionId: cls.misconceptionId, voiced: cls.voiced, confidence: cls.confidence, source: cls.source, flags: cls.flags },
       evidence, skills: skillChanges, flagged: next.flagged, guard,
-      item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable } : null,
+      item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
       kitVerified: kit.verified, ms, timings: trace,
     };
   }
@@ -342,21 +396,33 @@ function citedTurn(mem, childTurns) {
   return toks(mem.text).some((w) => turnWords.has(w)) ? t : null;
 }
 
-/** Deterministic facts the summary is written FROM (the model words them; it does not decide them). */
+/** Items that probe a misconception: its diagnostic, and kit items that target it. */
+const probesMisconception = (kit, itemId, misId) => itemId === `diag:${misId}` || kit.items.find((i) => i.id === itemId)?.targetsMisconception === misId;
+
+/**
+ * Deterministic facts the summary is written FROM (the model words them; it does not decide them).
+ * A misconception reports how often it showed and how many correct answers on its own items came after
+ * the last time it showed — "mixed up, then got it twice after the strips" is a different note to a parent.
+ */
 function lessonFacts(state, evidence, kit) {
   const bySkill = {};
   for (const e of evidence) {
-    const s = (bySkill[e.skill_id] ??= { attempts: 0, unaided: 0, misconceptions: new Set() });
+    const s = (bySkill[e.skill_id] ??= { attempts: 0, unaided: 0 });
     s.attempts += 1;
     if (e.outcome === "correct" && e.hints_used === 0) s.unaided += 1;
-    if (e.misconception_id) s.misconceptions.add(e.misconception_id);
   }
+  const misIds = [...new Set(evidence.map((e) => e.misconception_id).filter(Boolean))];
   return {
     topic: getTopic(state.topicId)?.title, minutes: state.minutes, teachbackPassed: state.teachbackPassed,
-    skills: Object.entries(bySkill).map(([id, s]) => ({
-      skill: kit.skills.find((k) => k.id === id)?.title ?? "an earlier skill", attempts: s.attempts, unaidedCorrect: s.unaided,
-      mixedUp: [...s.misconceptions].map((m) => kit.misconceptions.find((x) => x.id === m)?.belief).filter(Boolean),
-    })),
+    skills: Object.entries(bySkill).map(([id, s]) => ({ skill: kit.skills.find((k) => k.id === id)?.title ?? "an earlier skill", attempts: s.attempts, unaidedCorrect: s.unaided })),
+    misconceptions: misIds.map((m) => {
+      const last = evidence.map((e) => e.misconception_id).lastIndexOf(m);
+      return {
+        belief: kit.misconceptions.find((x) => x.id === m)?.belief ?? "an earlier mix-up",
+        timesSeen: evidence.filter((e) => e.misconception_id === m).length,
+        correctAfterLastSeen: evidence.slice(last + 1).filter((e) => e.outcome === "correct" && probesMisconception(kit, e.item_id, m)).length,
+      };
+    }),
   };
 }
 
@@ -369,7 +435,7 @@ async function end(req, res, body) {
     q("select id, seq, speaker, text from turn where lesson_id = $1 order by seq", [lesson.id]),
     q("select skill_id, item_id, probe, outcome, misconception_id, hints_used from evidence where lesson_id = $1 order by at", [lesson.id]),
     hasConsent(guardian.id, child.id, "memory"), hasConsent(guardian.id, child.id, "learning_profile"),
-    getKit(lesson.topic_id, { generate: false }),
+    getKit(lesson.topic_id, { generate: false, mini: state.kitVerified === false }),
   ]);
   const facts = kit ? lessonFacts(state, evidence, kit) : { topic: getTopic(lesson.topic_id)?.title, skills: [] };
   const childTurns = turns.filter((t) => t.speaker === "child" && !t.text.startsWith("["));
@@ -379,7 +445,7 @@ async function end(req, res, body) {
     const { json } = await chat(DEPLOY.fast, [
       { role: "system", content: [
         `You write the record of one tutoring lesson with ${child.first_name} (class ${child.class_level}).`,
-        "Write ONLY from the FACTS and the child's numbered turns. summary: short factual lines. parentNote: plain, warm, specific — what was practised, what went well (the method, not ability), what is still mixed up, one way to help at home. Never use ability words (smart, weak, slow, intelligent, topper…), never compare with other children, never predict marks.",
+        "Write ONLY from the FACTS and the child's numbered turns. summary: short factual lines. parentNote: plain, warm, specific — what was practised, what went well (the method, not ability), any mix-up and whether it was corrected later in the lesson (correctAfterLastSeen), one way to help at home. Never use ability words (smart, weak, slow, intelligent, topper…), never compare with other children, never predict marks.",
         "memories: at most 3 harmless things the child SAID about themself (interests, preferences, a win, a joke, a happy event). Cite the number of the child turn it came from. Never anything about religion, caste, health, family problems, money, location, school name or other people's names. Empty if nothing fits.",
       ].join("\n") },
       { role: "user", content: `FACTS: ${JSON.stringify(facts)}\nCHILD TURNS:\n${childTurns.map((t, i) => `${i}. ${t.text}`).join("\n") || "(none)"}` },
@@ -390,7 +456,7 @@ async function end(req, res, body) {
     memories = memoryOk ? json.memories : [];
   } catch (e) {
     console.warn("[lesson] end summary unavailable:", e.message);
-    summary = `Practised ${facts.topic}. ${facts.skills.map((s) => `${s.skill}: ${s.unaidedCorrect}/${s.attempts} on their own`).join("; ")}`;
+    summary = `Practised ${facts.topic}. ${(facts.skills || []).map((s) => `${s.skill}: ${s.unaidedCorrect}/${s.attempts} on their own`).join("; ")}`;
     parentNote = `Today ${child.first_name} practised ${facts.topic}.`;
   }
 

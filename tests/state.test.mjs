@@ -192,3 +192,26 @@ test("step is pure: the input state is not mutated", () => {
   step(s, { event: "start", kit: K, now: 0 });
   assert.equal(JSON.stringify(s), snapshot);
 });
+
+test("a reason volunteered with the answer replaces the why; a wrong one is the correct-answer trap", () => {
+  let r = toPractice();
+  const right = { ...cls("correct"), reason: "right" };
+  const ev = evidenceFrom(r.state, right, K);
+  assert.deepEqual(ev.map((e) => e.probe), ["P15", "P2"], "the volunteered reason is its own generative evidence row");
+  const next = turn(r, right);
+  assert.notEqual(next.move.probe, "P2", "no 'how did you know?' after they already said how");
+  const trapped = turn(r, { ...cls("correct"), reason: "misconception", reasonMisconceptionId: "c4-maths-ch05-t01-m1" });
+  assert.equal(trapped.move.kind, "reteach");
+  assert.equal(trapped.state.flagged["c4-maths-ch05-t01-m1"], 1);
+});
+
+test("a misconception voiced during teaching is flagged and verified by its diagnostic next", () => {
+  let r = step(fresh(), { event: "start", kit: K, now: 0 });
+  r = turn(r, NE);                                                   // hook
+  r = turn(r, { ...NE, voiced: "c4-maths-ch05-t01-m2" });            // child voices "parts need not be equal"
+  assert.equal(r.state.flagged["c4-maths-ch05-t01-m2"], 1);
+  assert.deepEqual(evidenceFrom(r.state, { ...NE, voiced: "c4-maths-ch05-t01-m2" }, K), [], "a flag, not evidence");
+  while (!r.move.itemId) r = turn(r, NE);
+  assert.equal(r.move.itemId, "diag:c4-maths-ch05-t01-m2", "the first practice item verifies the voiced belief");
+  assert.equal(r.move.probe, "P7");
+});

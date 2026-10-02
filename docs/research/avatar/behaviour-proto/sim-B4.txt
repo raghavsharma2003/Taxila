@@ -1,0 +1,28 @@
+
+Behaviour controller sim: 40 seeded lessons, band B4, 30 fps, 421161 frames (234.0 min)
+update() cost: mean 2.25 us, p50 1.49, p99 7.20, p99.9 53.23 us
+
+blinks/min by state (blink attributed to the state/gaze mode at onset):
+  module       158 blinks    17.5 /min over 543 s in state
+  idle          14 blinks   105.8 /min over 8 s in state
+  speaking    2151 blinks    29.1 /min over 4441 s in state
+  yielding     858 blinks    22.5 /min over 2287 s in state
+  listening    693 blinks    17.7 /min over 2356 s in state
+  thinking    1148 blinks    22.0 /min over 3133 s in state
+  your_turn    350 blinks    16.5 /min over 1271 s in state
+
+gaze aversions by function (s): module n=624 mean 1.54 | shared-attention n=88 mean 1.10 | cognitive n=1440 mean 3.05 | intimacy n=265 mean 1.96 | floor n=248 mean 2.19 | ring n=131 mean 2.50
+THINKING aversion onset after child stop: p10 0.20 p50 0.33 p90 0.46 s (missing 0/720)
+re-gaze to child after her speech onset: p10 0.23 p50 0.77 p90 1.19 s
+mutual gaze held before a floor-passing end (true voice rate +-15% off calibration): p10 1.84 p50 3.09 p90 5.61 s; <1.0 s in 0/670
+listening nods in OPEN turns: 1.01 per turn (106 turns)
+barge-in: gaze on child after 33 ms (p50) / 36 ms (max); expression released after p50 128 ms, max 165 ms
+max smile during THINKING (after 350 ms): 0.000
+
+invariants:
+  pass  I1 verdict-neutral THINKING
+  pass  I2 no nod on closed answer
+  pass  I5 big-expression budget
+  pass  I6 thinking aversion
+  pass  I7 barge gaze
+  pass  I7 barge expression

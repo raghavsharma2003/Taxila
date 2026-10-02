@@ -6,8 +6,6 @@ const DONT_KNOW = /(pata\s*nahi+n?|nahi+n?\s*pata|maa?lo+o?m\s*nahi+n?|nahi+n?\s
 const JUST_TELL = /(just\s*tell|tell\s*me\s*the\s*answer|(answer|jawa+b|uttar)\s*(batao|bata\s*do|bolo|de\s*do)|(aap|tum|didi|bhaiya|sir)\s*(hi\s*)?bata\s*do|bas\s*bata\s*do|जवाब\s*बता|बता\s*दो)/i;
 const MINIMAL = /^(h+m+|u+m+|u+h+|o+k+(a+y+)?|ha+n?|ji+|achh?a+|thee?k\s*hai|thik|yes|no|nahi+n?|hmm+)[\s.!?…]*$/i;
 
-/** Rapid answers closer together than this on the same item read as guessing, not thinking. */
-const RAPID_MS = 5000;
 const WINDOW = 10;
 
 /** Lexical read of one utterance. */
@@ -22,18 +20,20 @@ export function readUtterance(text) {
   };
 }
 
-export const initialAffect = () => ({ dontKnowStreak: 0, minimalStreak: 0, justTellMe: 0, recent: [] });
+export const initialAffect = () => ({ dontKnowStreak: 0, minimalStreak: 0, asks: [], recent: [] });
 
 /**
  * @param {ReturnType<typeof initialAffect>} prev
- * @param {{ read: ReturnType<typeof readUtterance>, outcome?: string, itemId?: string, at: number }} turn
+ * @param {{ read: ReturnType<typeof readUtterance>, outcome?: string, itemId?: string, answer?: string }} turn
+ *   answer: the child's words, normalized — what tells cycling through options from holding one belief
  */
-export function nextAffect(prev, { read, outcome, itemId, at }) {
-  const recent = outcome && outcome !== "no_evidence" ? [...prev.recent, { itemId, outcome, at }].slice(-WINDOW) : prev.recent;
+export function nextAffect(prev, { read, outcome, itemId, answer = "" }) {
+  const recent = outcome && outcome !== "no_evidence" ? [...prev.recent, { itemId, outcome, answer }].slice(-WINDOW) : prev.recent;
   return {
     dontKnowStreak: read.dontKnow ? prev.dontKnowStreak + 1 : 0,
     minimalStreak: read.minimal ? prev.minimalStreak + 1 : 0,
-    justTellMe: Math.min(WINDOW, prev.justTellMe + (read.asksForAnswer ? 1 : 0)),
+    // "just tell me" over the last WINDOW turns only: an early ask must not discount the whole lesson.
+    asks: [...prev.asks, !!read.asksForAnswer].slice(-WINDOW),
     recent,
   };
 }
@@ -43,14 +43,18 @@ export function frustrationLoop(a) {
   return a.dontKnowStreak >= 3 || a.minimalStreak >= 4;
 }
 
-/** P22: "just tell me" more than once, or three wrong answers on one item each within seconds. */
+/**
+ * P22: "just tell me" more than once, or three wrong answers on one item that are all DIFFERENT (cycling
+ * through options). Repeating one wrong answer is a held belief, not gaming. Speed is deliberately not a
+ * signal here: turn timestamps include pipeline latency, and rule 8 forbids reading that as the child —
+ * a rapid-guess rule needs a response-onset measure from the client first.
+ */
 export function gaming(a) {
-  if (a.justTellMe >= 2) return true;
+  if (a.asks.filter(Boolean).length >= 2) return true;
   const r = a.recent;
   for (let i = 2; i < r.length; i++) {
     const run = [r[i - 2], r[i - 1], r[i]];
-    if (run.every((x) => x.itemId === run[0].itemId && x.outcome !== "correct")
-      && run[1].at - run[0].at < RAPID_MS && run[2].at - run[1].at < RAPID_MS) return true;
+    if (run.every((x) => x.itemId === run[0].itemId && x.outcome !== "correct") && new Set(run.map((x) => x.answer)).size === 3) return true;
   }
   return false;
 }

@@ -11,7 +11,7 @@
 //   (a) the teacher never states the active item's key while the ladder is below rung 4
 //   (b) every teacher reply is ≤ 40 words
 //   (c) at least one probe move other than plain practice ran
-//   (d) the misconception was flagged
+//   (d) the misconception was flagged in the learner model (a misconception_state row for the child)
 // and exits non-zero if any check fails. Costs real Azure tokens (≈30 small calls).
 import http from "http";
 import { readFileSync } from "fs";
@@ -27,6 +27,7 @@ const TOPIC = arg("topic", "c4-maths-ch05-t01");
 const KEEP = process.argv.includes("--keep");
 
 const { chat, DEPLOY } = await import("../server/azure.js");
+const { q } = await import("../server/db.js");
 let base = arg("base"), server;
 if (!base) {
   const { handle } = await import("../server/index.js");
@@ -54,9 +55,10 @@ const PERSONA = [
   "You are role-playing Riya, a shy 9-year-old girl in class 4 in Jaipur, on a live tutoring call with her AI teacher Asha didi.",
   "Reply ONLY with what Riya says next: one short line of speech, no actions, no quotes.",
   "How Riya talks: Hinglish in Roman script, usually 2-10 words, a little shy. About one reply in five is 'pata nahi', 'hmm' or 'nahi pata didi', especially when a question feels hard.",
-  "What Riya believes about fractions, firmly at first: a fraction with a BIGGER bottom number is BIGGER — 1/3 is bigger than 1/2, 1/8 is bigger than 1/4 — 'kyunki 3 bada hai 2 se'. She uses this belief whenever she compares fractions or explains why.",
+  "What Riya believes about fractions: a fraction with a BIGGER bottom number is BIGGER — 1/3 is bigger than 1/2, 1/8 is bigger than 1/4 — 'kyunki 3 bada hai 2 se'.",
+  "The first two times she is asked to compare two fractions (or asked why one is bigger), she picks the one with the bigger bottom number and gives that reason — even if the teacher hints. Only after the teacher has shown it with same-size rotis, bars or pictures at least twice does she slowly start to doubt it.",
   "She does know that 1/2 means one of two equal pieces, and can name simple fractions like 1/2 or 1/4 of a roti.",
-  "Only after the teacher has shown it with same-size rotis, bars or pictures at least twice does she start to doubt the belief. She is 9: never an expert, never long explanations.",
+  "She answers exactly what the teacher just asked. She is 9: never an expert, never long explanations.",
   "Never say you are an AI or that this is a simulation.",
 ].join("\n");
 
@@ -72,7 +74,10 @@ const lower = (t) => String(t || "").toLowerCase();
 const VERDICT = /(bada|badi|bade|zyada|jyada|bigger|larger|greater|more|chhota|chhoti|smaller|sahi|correct|right|answer|jawab|uttar)/;
 /** (a): the reply states the key — anywhere if the question does not name it, else in a non-question verdict sentence. */
 function statesKey(reply, item, childText) {
-  const forms = [item.answer, ...(item.acceptable || [])].map(lower).filter((f) => f.length >= 2 || /\d/.test(f));
+  // A diagnostic's options are read aloud by design: take them out, and look for the correct option's head word.
+  if (item.options) reply = item.options.reduce((r, o) => r.split(new RegExp(o.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "ig")).join(" ; "), reply);
+  const forms = (item.options ? [item.answer.split(/,| because /i)[0]] : [item.answer, ...(item.acceptable || [])])
+    .map(lower).filter((f) => f.length >= 2 || /\d/.test(f));
   const prompt = lower(`${item.prompt_en} ${item.prompt_hi}`);
   for (const f of forms) {
     if (!lower(reply).includes(f)) continue;
@@ -115,14 +120,14 @@ try {
     const d = r.debug;
     const c = d.classification;
     console.log(`[${String(i).padStart(2, "0")}] C: ${childText}`);
-    console.log(`     cls ${c.outcome}${c.misconceptionId ? `(${c.misconceptionId.split("-").pop()})` : ""} via ${c.source}${c.flags.dontKnow ? " · dont-know" : ""}`
+    console.log(`     cls ${c.outcome}${c.misconceptionId ? `(${c.misconceptionId.split("-").pop()})` : ""}${c.voiced ? ` · voiced ${c.voiced.split("-").pop()}` : ""} via ${c.source}${c.flags.dontKnow ? " · dont-know" : ""}`
       + `${d.evidence.length ? ` · evidence ${d.evidence.map((e) => `${e.probe} ${e.outcome} h${e.hintsUsed} w${e.weight}`).join("; ")}` : ""}`
       + `${Object.keys(d.skills).length ? ` · pKnown ${fmtSkills(d.skills)}` : ""} · ${d.ms} ms`);
     const m = r.move;
-    console.log(`     T (${m.kind}${m.probe ? ` ${m.probe}` : ""}${m.hintLevel !== undefined ? ` rung ${m.hintLevel}` : ""}${d.guard?.rewritten ? " · guard rewrote" : ""}): ${r.teacherReply}`);
+    console.log(`     T (${m.kind}${m.probe ? ` ${m.probe}` : ""}${m.hintLevel !== undefined ? ` rung ${m.hintLevel}` : ""}${d.guard?.caught?.length ? ` · guard: ${d.guard.caught.join("+")} → ${d.guard.replaced ? `replaced (${d.guard.afterRewrite.join("+")} survived)` : "rewrote"}` : ""}): ${r.teacherReply}`);
     history.push({ who: "teacher", text: r.teacherReply });
     moves.push(m);
-    if (d.evidence.some((e) => e.outcome === "misconception") || c.misconceptionId) flagged = true;
+    if (c.misconceptionId || c.voiced) flagged = true;
     if ((m.kind === "probe" && m.probe !== "P15") || m.kind === "teachback") probes++;
     if (words(r.teacherReply) > 40) fail(`(b) turn ${i} reply is ${words(r.teacherReply)} words`);
     if (d.item && (m.hintLevel ?? 0) < 4 && m.probe !== "P2") {
@@ -132,10 +137,12 @@ try {
     if (r.end) { console.log("     (lesson reached its wrap)"); break; }
   }
   if (!probes) fail("(c) no probe move other than plain practice ran");
-  if (!flagged) fail("(d) the misconception was never flagged");
+  const ledger = await q("select misconception_id, evidence_count from misconception_state where child_id = $1", [child.id]);
+  console.log(`\nmisconception_state: ${ledger.map((m) => `${m.misconception_id.split("-").pop()}×${m.evidence_count}`).join(", ") || "(none)"}`);
+  if (!flagged || !ledger.length) fail("(d) the misconception was never flagged in the learner model");
 
   const endR = await api("POST", "/api/lesson/end", { lessonId: start.lessonId });
-  console.log(`\nsummary: ${endR.summary}\nparent note: ${endR.parentNote}\nmemories saved: ${endR.memoriesSaved} · sessions: ${endR.sessions}`);
+  console.log(`summary: ${endR.summary}\nparent note: ${endR.parentNote}\nmemories saved: ${endR.memoriesSaved} · sessions: ${endR.sessions}`);
   const kinds = moves.reduce((acc, mv) => ({ ...acc, [mv.kind]: (acc[mv.kind] ?? 0) + 1 }), {});
   console.log(`moves: ${JSON.stringify(kinds)} · probes other than practice: ${probes} · misconception flagged: ${flagged}`);
   if (!KEEP) await api("DELETE", "/api/children", { childId: child.id });

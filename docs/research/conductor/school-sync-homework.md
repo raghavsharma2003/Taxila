@@ -771,3 +771,327 @@ The benchmark idea is this file's. Its thresholds are proposals, not literature 
 - Eedi, *Mining Misconceptions in Mathematics* (Kaggle 2024) — https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics [S]
 - MoE/NCERT, *Policy on School Bag 2020* — https://ncert.nic.in/pdf/Final%20School%20Bag%20Policy%202020.pdf [V]
 - Repo: `docs/harvest/json/hp-main-engine.json` (vision-fab, vision drift), `hp-main-voice-surfaces.json` (A35 camera, grounding by delivery), `hp-companion-voiceclone.json` (HC51 DAG, noisy-input law) [V, repo]
+
+---
+
+## Architect review
+
+Adversarial systems review, 2026-10-02. Checked against `docs/ARCHITECTURE.md`, `context/decisions.md`
+(`hosting-azure-container-apps`, `azure-only-compute`, `infra-segment`), `conductor/orchestration-architecture.md`
+(§7 substrate, §9 governor), `conductor/day-cycle.md` and its own Architect review (AR-1, AR-4, AR-5,
+AR-10), and `conductor/student-workspace.md` (W2-W4). Tags are as in the header. The cost and peak-load
+numbers come from `conductor/school-sync-review-cost.py`, which is reproducible. Its token counts are
+[I/U]. Its DI prices are [V], from the Azure Retail Prices API (eastus2 and centralindia, S0, queried today).
+
+**Verdict.** The evidence work (literal-first, D1-D4, constrained mapping, teacher mark as grader, SS11/SS12)
+is careful, and it should survive as the *v2 target*. The *system* has four problems:
+- It processes every page as if every item will be worked on.
+- It pays `taxila-brain` reasoning prices for keys that nobody asks for.
+- It runs the homework conversation on a lane where the leak guard can only apologise after the fact.
+- It builds eight input pipelines before one has been used by a real family.
+
+Most of the fixes below are subtractions. Items marked **blocker** must be resolved before §3-§5 go to
+the build.
+
+### AR-1 Cost: the designed page costs ₹20-47, against a ₹1 target (blocker)
+
+`school-sync-review-cost.py` block A prices the §3.2 DAG plus §8.1 night prep. Night prep, which
+`homework.prepare` does for "tasks due tomorrow", computes keys *and* isomorphs for every item on the page:
+
+| per page, 8 items, 4 crops | sol solve = 400 out tok | sol solve = 1,500 out tok |
+|---|---|---|
+| DI **layout** (S2) | $0.010 (₹0.96: the whole ₹1 budget on its own) [V price] | same |
+| S4 sol crops + DI read *per crop* (each DI call bills a page) | $0.031 | same |
+| K3 dual solves, all non-computable items | $0.063 | $0.204 |
+| generated isomorphs **plus their own keys** (an isomorph is a new item and needs a verified answer too, which §4.3 omits) | $0.096 | $0.237 |
+| **total** | **$0.21 = ₹20** | **$0.49 = ₹47** |
+| × 20 homework days per month | $4.10 | $9.73, against $3.11 revenue |
+
+The conversation around the homework costs more again (block C). SS7 assumes the realtime voice lane,
+which is about **$1.05 per 12-minute sitting, or $21/month**. On the cascade lane it is $0.09, or
+$1.87/month. Day-cycle AR-1 already puts `homework_help` on cascade. This file must say so as well, and
+homework minutes must count against the day's voice budget.
+
+**Corrections (all [I]):**
+1. **Pick first, extract second.** Run one DI **Read** call on the whole page. Read costs $1.50 per 1k
+   pages; Layout costs $10 per 1k. It returns lines with polygons. Code segments question boxes from those
+   lines, the child taps one box (or says which one), and only that item goes through S4-S9. Use Layout
+   only for `timetable` and `date_sheet`, where tables are the point.
+2. **No model-made keys in v1.** Keys come only from kit K1 or a K2 code solver. Every other item is
+   `process_only`: HL0-HL3 shapes and "explain the idea" on a kit example, with no correctness talk. The
+   file already allows this as K3'. For the leak guard, a non-computable item gets **one** luna solve, used
+   only as a *blocklist candidate*. A false block costs one regeneration. A missing block costs a leak.
+   Block B2 of the script prices this at **₹0.72 per sitting**.
+3. **Isomorphs come from kit K2 templates only** (code-parameterised, answer computed by the same code).
+   Generated isomorphs return with dual-solve keys in v2.
+4. **Night prep does not run per item.** If prefetching is wanted, it runs only on items the child
+   *picked* and then left unfinished. In practice, delete `homework.prepare` from v1, following day-cycle
+   AR-9 (no per-child night pipeline).
+5. **Reserve before every capture.** Make the worst-case reservation with the governor (orchestration
+   §9.2). Hard caps: 6 captures per child per learning day (as day-cycle AR-7), and test papers at 2 per
+   week. If the reservation fails, degrade to "padh ke sunao" (read it aloud), never to an error.
+
+**Peak load** (block D). Homework clusters at 17:00-19:00 IST:
+- 10k active children: the design as written needs about 350 sol RPM; pick-first needs about 105.
+- 100k active children: about 3,500 sol RPM versus about 1,050.
+
+`taxila-brain` also serves Conductor deliberation and Forge, and its quota is not recorded in
+`decisions.md` [U]. Add a `rate_bucket('taxila-brain')` with homework at priority 1, below lesson starts
+and above Forge. Log the sol quota beside the realtime launch blocker.
+
+### AR-2 The leak guard is a post-check on the wrong lane, and its code passes leaks (blocker, child-safety adjacent)
+
+1. **Wrong lane.** SS7 and §5.4 post-check realtime speech, so the child has already heard the answer.
+   Day-cycle AR-4 moved homework help to the **cascade** lane: luna writes the text, code checks it, and
+   only then does TTS speak. With that change, the check becomes a **pre-check** for voice as well as
+   screen. `homework.leak` becomes a near-impossible fallback rather than the main mechanism. M-SS3's
+   "voice leaks ≤ 1%" gate becomes **0 spoken leaks**, the same as the screen lane. A one-sitting call
+   (day-cycle AR-2) then switches lanes inside one session. The teacher voice must be the same character
+   voice in both lanes (day-cycle AR-4 risk, blind-ear test).
+2. **Bug in `containsAnswer`.** `!key.allowContexts.some(c => t.includes(c))` exempts the *whole
+   utterance* whenever it quotes any part of the question. "34 + 10 = 44" contains the allowed context
+   "34 + 10", so the leak passes. The fix removes the allowed spans and then matches on what remains:
+
+```ts
+// server/homework/leakGuard.ts (corrected)
+export function containsAnswer(text: string, key: AnswerKey): boolean {
+  let t = normalise(text);
+  for (const c of key.allowContexts.map(normalise)) t = t.split(c).join(' ⟂ ');   // remove spans, never exempt
+  const nums = extractRationals(t);        // numerals, Devanagari digits, Hindi/Hinglish/English number words, a/b, decimals, "saadhe"
+  return key.forms.some(f => f.kind === 'number' ? nums.some(n => eqRational(n, f.value, f.unit))
+                                                 : tokenMatch(t, f.text));
+}
+export interface AnswerForm { kind: 'number' | 'text'; value?: string /* canonical rational */; unit?: string; text?: string }
+export interface AnswerKey  { itemId: string; forms: AnswerForm[]; intermediates: AnswerForm[];   // H2: also block step values
+                              allowContexts: string[]; source: 'kit' | 'code' | 'leak_candidate' }
+// cascade flow: draft = luna(turn); if containsAnswer(draft, key) || containsAny(draft, key.intermediates):
+//   regenerate once with the violation named; second hit ⇒ fixed ladder shape from the kit (no model text)
+```
+
+3. **False blocks on small answers.** Class 1-3 answers are often single digits, and "step 5" or "5
+   minutes" will block an answer of 5. A regeneration is cheap, but a teacher stuck on canned shapes
+   sounds robotic. M-SS3 must report a **false-block rate** by band next to the leak rate [U].
+4. **Isomorph collision.** An isomorph with "different numbers" can still give the child the answer: the
+   same answer, or a one-step offset (35 + 10 next to 34 + 10). The isomorph validator therefore requires:
+   - `answer(iso) ∉ key.forms`;
+   - every operand differs from the corresponding school operand by more than 1;
+   - an isomorph number may not equal the school item's answer.
+
+### AR-3 Where each stage runs: Vercel, ACA, worker
+
+Hosting is now ACA (`hosting-azure-container-apps`). §8.1 inherits orchestration §7.3's "fast lane =
+Vercel sin1, 60 s", and that line is stale twice over.
+
+| work | as drawn | problem | where it should run |
+|---|---|---|---|
+| homework page, child waiting | `fast` lane, inline | On Vercel, DI analyse is asynchronous (submit, then poll the operation) [M], and S4 crops, embeddings and the S9 calls run serially. That fits 60 s, but `waitUntil` shares the function's duration cap and any retry restarts the clock. On ACA it fits, but a revision rollout or scale-in kills in-flight work | `taxila-web`, in process, **backed by the job row** (claim, lease, checkpoint) so a killed replica is re-claimed. Budget: 6 s to boxes, then the child picks |
+| test paper (≤ 12 pages), timetable, contents page, circular | `slow`, ACA | fine. But Batch must never be used: its target is 24 h [V, day-cycle AR-7] | ACA worker on the `slow` lane |
+| K3 dual solves with reasoning | "while HL0-HL1 run" | a sol solve with reasoning takes tens of seconds [U], and HL0-HL1 can end in 20 s | v2 only. Add the `awaiting_key` guard (AR-4 R6) |
+| checkpoints and item inserts | `durableStep` per stage plus row inserts per item | eastus2 → Neon Singapore is about 200 ms per round trip (decisions.md). 25-40 round trips per page add 5-8 s, which is the entire 8 s p50 target | one `capture_commit(p_capture, p_stage, p_out jsonb, p_items jsonb)` plpgsql call per stage, so ≤ 4 round trips per page |
+| raw image upload | Blob `taxila-captures` (region unstated) | a 2-3 MB upload from an Indian 4G phone to eastus2 is slow [U] | a Central India storage account (student-workspace W3 already puts per-child Blob there). DI and AOAI fetch through a short-lived read SAS, server to server |
+| Android share target | "intent filter … PWA equivalent" | sharing into a Capacitor app needs a native activity and plugin, and on a cold start the listener can miss the intent (send-intent README [V]). iOS needs a Share Extension | v1 Android only, using the `send-intent` pattern plus a startup `checkSendIntentReceived()` call |
+| S0 face blur | every page | needs an Azure Face resource. Face *detection* needs no Limited-Access registration, but Face API is "available only to customers managed by Microsoft" [V, MS Learn Limited Access page]. Value is marginal, because raw images are deleted anyway | cut in v1. If "notebook keep" is on, blur with an open-source detector (e.g. OpenCV YuNet) on ACA, which `azure-only-compute` allows |
+
+SAS hygiene: issue one **create-only** SAS per page blob name, valid 10 minutes. A SAS cannot cap object
+size [M], so the commit step HEADs each blob and rejects any over 4 MB. The server never trusts the
+`childId` in the path. It derives the child from the authenticated session, which is the inherited
+identity law.
+
+### AR-4 Race conditions
+
+| # | race | what breaks | fix |
+|---|---|---|---|
+| R1 | `capture.submitted` is emitted after the SAS PUT, but a page upload is still in flight or has failed | S2 reads a missing or partial blob, and the extract silently drops pages | replace it with `POST /api/capture/:id/commit {pages:[{n, sha256, bytes}]}`. The server HEADs every blob, checks length and hash, then ingests `capture.committed` and enqueues the job. No commit within 15 min deletes the blobs |
+| R2 | the same page is captured twice (a retake, a double tap, both parents forwarding one WhatsApp date sheet) | duplicate `homework_task` rows, duplicate `school.test_announced`, double cost | `capture_page.unique(child_id, sha256)`. Exact bytes match for shares; a perceptual hash catches retakes [I]. Tasks dedupe on `(child_id, subject, due_on, itemRefsHash)`. `test_announced` idem key `test:{child}:{subject}:{date}` |
+| R3 | S10 deletes the raw image while D4 read-back, check-my-working or a job retry still needs it | the read-back has no crop to show, or the retry fails (day-cycle R9) | delete only after `max(extract committed, read-back resolved, session ended)`, with a 24 h hard TTL. Deletion is its own idempotent job that writes `raw_deleted_at`. Container soft-delete and versioning are off for the `captures` prefix [M] |
+| R4 | two capture jobs fold pointer votes into `school_mirror.pointers` at the same time | lost vote. The table has `version` but no CAS is written, and the "school-sync module" is a second writer beside the Conductor | votes are events (`school.pointer_vote`), and the mirror is a pure fold inside the Conductor step, stored in `conductor_state.state.school`. Drop `school_mirror` as a mutable table: one writer per fact (orchestration §6; same pattern as day-cycle AR-3) |
+| R5 | two flows read `confirm_asked = 0` and both ask the parent | the 1-per-week cap is broken | the ask is a notification with dedupe `school_ask:{guardianId}:{isoWeek}`. The insert is the cap (day-cycle R5) |
+| R6 | the ladder reaches HL2/HL5/"check" before the key exists, or the key job fails | correctness talk with no key, or the session stalls | `awaiting_key` guard: HL0-HL1 run without a key. Any transition that needs one waits ≤ 3 s, then goes to `process_only` for that item (no correctness talk). In v1 keys are synchronous (kit or code, < 50 ms), so the guard should never fire |
+| R7 | client retry and Director both advance the homework session state | lost transition | `update homework_session set state=$3, state_v=state_v+1 where id=$1 and state_v=$2` (day-cycle R6) |
+| R8 | a WhatsApp share lands while sibling B's profile is active, or with no profile | the test paper or date sheet is attached to the wrong child, which pollutes KT and test windows | share intents always open "kiska hai?" with the household's profiles. Never default to the last-active profile. B1-B2 captures sit behind the parent gate |
+| R9 | the model deployment version changes between S4 attempt 1 and its retry | one extract mixes model versions, so the M-SS1 drift guard is blind | `extract_version` per stage output. A retry after a version change re-runs the capture from S2 |
+| R10 | a test paper is analysed while that subject's `test_announced` window is being replanned | probes are scheduled into a window that was just cancelled | probes go through the Conductor step only (boundary rule), never written directly by `test.analyse` |
+
+### AR-5 Single points of failure
+
+| SPOF | effect | mitigation |
+|---|---|---|
+| **Document Intelligence**: one resource, not yet provisioned or recorded in `decisions.md` | no boxes, no printed-Hindi read | Fallback: sol at `detail: high` on the whole page, with every token marked `uncertain`. Or "padh ke sunao" / type the question. Record the DI resource and its region in `context/decisions.md` |
+| **`taxila-brain`**: one deployment shared with the Conductor and Forge | at peak, homework starves planning or Forge starves homework | per-deployment bucket and priorities (AR-1). In v1, nothing on the child's waiting path needs sol except check-my-working crops |
+| **dual solve as "independent" verification** (SS9) | two solves by the *same* model are not independent. Across *different* LLMs, "models agree 60% of the time when both models err" (Kim et al. 2025 [V, abstract]), and one model sampled twice is likely worse [I]. Agreement therefore does not establish a key | v2: keys need a code check or a kit match, *or* two different model families that Azure-only allows (sol + codex writing executable code that is then run) [I]. M-SS4's "< 0.5% key error at n ≥ 500" cannot be shown: with 0 errors in 500 the 95% upper bound is 3/500 = 0.6% (rule of three). It needs n ≥ 600 with zero errors, or about 950 with at most one |
+| **human QA for book aliases** (§4.2 step 4) | aliases stay `draft` forever, so private-book families stay unmapped | v1 has no alias pipeline (AR-6). In v2, `draft` aliases are used with route `ask`, and QA only raises them to `auto` |
+| **D4 child read-back** | a child who skips produces no evidence | by design. Accept it. Evidence also comes from the spoken/tapped ladder |
+| Neon, Blob | as orchestration §10 | captures queue on the device outbox (student-workspace §8.4) and upload when the network returns. The child can still do "padh ke sunao" offline only if the cascade lane is reachable, so say so in the UI |
+
+### AR-6 Over-engineering for v1: what to cut
+
+There is no school sync in v1 that families have used yet. So no fusion weight, half-life, calibration
+logistic or alias precision in this file can be fitted, and they are all [U]. Ship the smallest loop
+that produces the data to fit them.
+
+| cut from v1 | keep in v1 instead | bring back when |
+|---|---|---|
+| 8 input kinds | 3: homework (photo / read aloud / type), "school is on chapter X" (parent pick, child chip), test date + chapters (manual entry, chips) | each input's manual path is used by > 20% of families in month 1 |
+| S1 classifier, S2 Layout, S3-S7 full DAG, two-channel reconcile, colour masks | DI Read on the page, code question boxes, child picks one item, luna structures only that item | pick-first shows > 30% of sittings needing more than 2 items per page |
+| answer transcription as **evidence** (D1-D4, I3) | photos give *help only* in v1. Evidence comes from the ladder's spoken and tapped attempts (Director classification, H4 down-weight) | M-SS1 passes for `en-hand` and `math-hand` |
+| check-my-working via sol over-correction defences | keep check-my-working for **computable kinds only**: code re-evaluates the transcribed lines. The result is "line 3 dekho", or "I couldn't read line 3, read it to me". No evidence | M-SS1 |
+| pointer fusion with 7 half-lives and a drift prior | last parent pick, else last mapped homework chapter. A weekly "school still on Ch 5?" chip that counts against the ask budget | ≥ 500 families give enough votes to fit half-lives |
+| mapping calibration (logistic on M-SS2) | `auto` only when the top-1 is in the pointer chapter; otherwise always 2 chips. The child's tap is the label set that M-SS2 needs | 1k labelled taps |
+| library alias pipeline (SS6) | "other book" → the parent picks the closest NCERT chapter once per chapter when it first comes up, stored per child | > 30% of families use non-NCERT books (measure from that pick) |
+| test-paper analysis, hypotheses, `test_question`, `misconception_hypothesis` | nothing. The parent can enter "the test went badly in fractions", which is a parent goal | v1.5, after M-SS1 and M-SS4 |
+| PTM clause classifier | PTM notes are parent-typed private text. Nothing reads them except the parent | parents ask for it |
+| timetable OCR | tap-grid editor (2 minutes, once per term) | never needed, unless the editor is abandoned |
+| face blur, S8 on extracted essays | no raw retention and no essay transcription in v1, so there is nothing to scan | notebook keep or essay help ships |
+| tables: `page_extract`, `extract_item`, `school_mirror`, `school_book*`, `test_*`, `misconception_hypothesis` | `capture`, `capture_page`, `homework_task`, `homework_item` (extract jsonb inline), `homework_key`, `homework_session`, `hint_event`, `ptm_note` | with the features above |
+| M-SS1 full bench (5 cells × 3 arms × ≥ 300), M-SS2 (500 × 2 teachers), M-SS4 | **M-SS3** (leak + false-block, cascade), **M-SS6** (capture usability), M-SS2-lite (top-1 on 100 tapped items), M-SS7 (below) | with each v2 feature |
+
+### AR-7 Missing child-experience considerations
+
+1. **Voice first, camera second.** Most homework nights are 1-3 questions. A photo adds upload, 8-15 s and
+   retake loops [U, M-SS6]. Make the entry three equal chips: photo / "padh ke sunao" / type. The read-aloud
+   path also gives Hindi-medium children (SS4) the same experience instead of a degraded one.
+2. **Fill the wait.** While the page is being read, the teacher asks a shape like "kaunsa sawaal sabse
+   mushkil laga?". The answer can *pick* the item by voice, so the latency becomes the HL0 restatement.
+3. **Read-back framing and load.** Read back only the chosen item, ≤ 3 highlighted tokens. Frame the
+   uncertainty as the teacher's eyes ("mujhe yeh saaf nahi dikh raha"), never the child's handwriting.
+   For B1-B2 the parent reads back.
+4. **Test papers and trust.** A parent can photograph a B4 child's failed test, after which the teacher
+   "knows". If that is never disclosed and it shows up as targeted probes, a teenager will experience
+   it as surveillance. Rules:
+   - the teacher never mentions marks or the test;
+   - the B3-B4 child surface shows one neutral line ("Papa ne tumhara Maths test share kiya; tricky bits
+     practice karenge");
+   - nothing extra is scheduled the same day.
+   This is v1.5, but decide the rule now.
+5. **Leak recovery must not add homework.** "A fresh isomorph to solve alone" after the teacher's own
+   slip turns her mistake into extra work for the child, which goes against SS14. The isomorph is
+   *offered*, sits inside the time box, and produces no evidence.
+6. **"Ask your teacher tomorrow" is hard for a shy child and scary for an Indian one.**
+   - Give the child the question to ask, as a shape in the child's own words ("Ma'am, step 2 mein
+     borrowing kab karte hain?").
+   - Put a parent-facing logistics card on the same screen (day-cycle AR-10.5).
+7. **Shared phone.** Covered by R8. Also, never show sibling A's homework thumbnails on sibling B's
+   profile.
+8. **Low-end phones.** Canvas re-encoding of a 12-50 MP photo can exhaust WebView memory on 2-3 GB
+   devices. Use `createImageBitmap(file, {resizeWidth})`, one page at a time. Start at 1,600 px, not
+   2,048: DI needs legible strokes, not pixels [U, M-SS6]. WhatsApp forwards arrive already compressed
+   [M], so skip re-encoding them.
+9. **Copied answers** (H5): the curiosity shape from day-cycle AR-10.9 ("which one did you like solving?").
+   Never say that answers were detected.
+10. **Unmapped and `process_only` items must not feel like a dodge.** The teacher says plainly that she
+    will show the idea on her own example, because this one is the child's to do. That is the integrity
+    contract, said once in the child's register.
+
+### AR-8 Defects and contradictions inside this file
+
+- **SS1 "two independent sources"** is undefined. Two `child_said` votes are not independent. Define
+  independence classes as `{child}`, `{parent}`, `{artefact: homework/worksheet/test_syllabus}` and
+  `{calendar}`. Agreement must come from two different classes.
+- **`confirmBudget max: 1`** counts every confirmation. A parent who uploads a date sheet in the same week
+  as a pointer ask cannot confirm it, so the test window never opens. Count only *Taxila-initiated* asks.
+  A confirmation of something the parent just submitted is part of that flow and is free.
+- **§3.1 "≤ 6 pages (vision cap 10 images per request)".** Crops go in separate calls, so that cap is not
+  the constraint. Half-yearly papers run 8-12 pages, and `capture.pages between 1 and 6` blocks them. Let
+  `test_paper` own several captures.
+- **§6.2 `correct` → `grader: 'human'`** is really *our reading* of a human mark, done by colour mask or
+  vision, so it is not human-graded evidence. Carry the mark-reading confidence, and require the parent
+  to confirm the total score before writing any `school_test` evidence.
+- **Hypotheses from answers that were never read back** (§6.1 reads back only 3-5 questions). Restrict
+  `misread`, `procedural` and `conceptual` classification to items whose read-back resolved.
+- **`homework_session` is listed in §8.2 but missing from §8.3**, and `hint_event.hw_session_id` has no FK.
+  Added in AR-9.
+- **The key sits on `homework_item`**, a row the Director reads to compile. A single wrong `select *`
+  sends the key into `compile()`. Move it to `homework_key`, readable only by `leakGuard` and the check
+  locator. Enforce that with a static import test (like I4) plus I1's fuzz.
+- **Free text is not DEK-encrypted.** `question_text`, `child_answer`, `page_extract.body` (essays,
+  diaries) and `ptm_note.raw_text` must use the per-child DEK (student-workspace W4). `extract_item` also
+  has no `child_id`, so W2's map test never sees it. Add `child_id … on delete cascade`.
+- **`school_book.id = hash(publisher, title, …)`** from OCR'd titles makes a new id for every spelling. It
+  needs normalisation plus fuzzy match before hashing (v2).
+- **The DI Read vs Layout price difference (6.7×)** is not in §10. The "< ₹1/page" target is unreachable
+  as designed (AR-1).
+
+### AR-9 Corrected v1 contracts
+
+```ts
+// shared/school/homework-v1.ts
+export type HwEntry = 'photo' | 'read_aloud' | 'typed' | 'share';
+export type HwStateV1 =
+  | 'entry' | 'uploading' | 'reading_page'          // DI Read; teacher fills the wait (AR-7.2)
+  | 'picking'                                       // tap a box or voice pick; ONE item
+  | 'mapping_ask'                                   // 2 chips unless top-1 ∈ pointer chapter
+  | { ladder: 'HL0' | 'HL1' | 'HL2' | 'HL3' | 'HL4' | 'HL5' }   // only with a kit/code key
+  | 'process_only'                                  // no key: shapes + kit example, no correctness talk
+  | 'child_writing' | 'checking' | 'stuck_exit' | 'timeboxed' | 'done' | 'abandoned';
+// picking → (key from kit|code) ? {ladder:'HL0'} : 'process_only'      (synchronous, < 50 ms)
+// every teacher utterance in any state: cascade draft → containsAnswer pre-check → TTS (AR-2)
+// lane is always 'cascade' or 'tap'; a homework_help slot on 'realtime' fails the plan validator (day-cycle AR-1)
+
+// additions to StudentEvent (replace capture.submitted)
+| { type: 'capture.committed'; captureId: string; pages: number; by: 'child' | 'parent'; via: HwEntry }
+| { type: 'homework.item_picked'; hwSessionId: string; itemId: string; via: 'tap' | 'voice' | 'typed' }
+| { type: 'homework.utterance_blocked'; hwSessionId: string; itemId: string; attempt: 1 | 2; fellBackToShape: boolean }
+| { type: 'capture.raw_deleted'; captureId: string }
+| { type: 'school.pointer_vote'; subject: Subject; chapterId: string; cls: 'child' | 'parent' | 'artefact' | 'calendar'; ref: string }
+```
+
+```sql
+-- deltas to §8.3 for v1
+create table capture_page (
+  capture_id uuid not null references capture(id) on delete cascade, n int not null,
+  child_id uuid not null references child(id) on delete cascade,
+  sha256 text not null, bytes int not null check (bytes <= 4000000),
+  primary key (capture_id, n), unique (child_id, sha256));                       -- R2
+alter table capture add column committed_at timestamptz, add column extracted_at timestamptz,
+  drop constraint if exists capture_pages_check, add constraint capture_pages_check check (pages between 1 and 12);
+create table homework_session (
+  id uuid primary key, child_id uuid not null references child(id) on delete cascade,
+  lesson_id uuid, entry text not null, lane text not null check (lane in ('cascade','tap')),
+  state jsonb not null, state_v int not null default 0,                            -- R7 CAS
+  minutes real not null default 0, started_at timestamptz not null default now(), ended_at timestamptz);
+alter table hint_event add constraint hint_event_session_fk
+  foreign key (hw_session_id) references homework_session(id) on delete cascade;
+alter table homework_item drop column key;
+create table homework_key (                                                       -- read only by leakGuard + locator
+  item_id uuid primary key references homework_item(id) on delete cascade,
+  child_id uuid not null references child(id) on delete cascade,
+  source text not null check (source in ('kit','code','leak_candidate')),
+  forms jsonb not null, intermediates jsonb not null default '[]', allow_contexts jsonb not null default '[]',
+  may_talk_correctness boolean generated always as (source in ('kit','code')) stored);
+```
+
+New invariants, each with a negative control:
+- **I7** `containsAnswer("34 + 10 = 44", key{44, allow:["34 + 10"]})` is true. This test fails on the
+  §5.4 code.
+- **I8** No `homework_session.lane = 'realtime'` can be inserted.
+- **I9** No correctness-bearing ladder transition happens when `may_talk_correctness` is false.
+- **I10** The `compile()` import graph cannot reach `homework_key`.
+- **I11** No isomorph has an answer equal to any key form, or an operand within ±1 of the school
+  operand.
+
+### AR-10 Measurements to add
+
+| id | what | gate [I] |
+|---|---|---|
+| M-SS3 (amended) | on the cascade lane: spoken leaks, screen leaks, **false-block rate** by band, regeneration latency | 0 leaks. False blocks ≤ 5% of teacher turns in B1-B2 |
+| M-SS7 | pick-first: time from shutter to tappable boxes, box-segmentation recall on real diary and worksheet pages, share of sittings that use read-aloud or typed entry | boxes ≤ 6 s p90 from India. Recall ≥ 90% |
+| M-SS8 | homework cost per sitting from `cost_ledger` (DI pages, sol and luna tokens, cascade minutes) | ≤ ₹2 excluding voice. Voice inside the day budget |
+
+### Sources added by this review
+
+- Azure Retail Prices API, Document Intelligence S0 (eastus2 and centralindia): Read $1.50 per 1k pages
+  ($0.60 per 1k above 1M), Pre-built/Layout $10 per 1k, add-ons $6 per 1k. Queried 2026-10-02.
+  https://prices.azure.com/api/retail/prices [V]
+- Microsoft Learn, vision-enabled chat models (updated 2026-07-31): `high` uses 512×512 segments at double
+  token budget; worked example "170 + 85 image tokens". https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/gpt-with-vision [V]
+- Microsoft Learn, Limited Access features of Face (updated 2026-06-05): "The Face Detection operation is
+  available without registration"; Face API "available only to customers managed by Microsoft".
+  https://learn.microsoft.com/en-us/legal/cognitive-services/computer-vision/limited-access-identity [V]
+- Kim, Garg, Peng & Garg 2025, *Correlated Errors in Large Language Models*: "models agree 60% of the time
+  when both models err". https://arxiv.org/abs/2506.07962 [V, abstract]
+- `send-intent` Capacitor plugin README (Android share needs a manifest activity and intent-filters; a
+  cold-start listener can miss the intent; iOS needs a Share Extension). https://github.com/carsten-klaffke/send-intent [V]
+- `conductor/school-sync-review-cost.py`: this review's cost and peak-load model [I/U].
+- `conductor/day-cycle.md` Architect review AR-1, AR-4, AR-5, AR-7, AR-9 and AR-10 (lanes, cascade
+  pre-check, races, hosting, cuts, child experience). `context/decisions.md` `hosting-azure-container-apps`
+  and `infra-segment` [V, repo].

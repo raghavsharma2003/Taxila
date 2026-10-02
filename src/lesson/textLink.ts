@@ -1,23 +1,28 @@
 // Text mode (sandbox, e2e, accessibility, no-mic rooms): the child types or taps, the Director writes the
 // teacher's reply (TurnResponse.teacherReply), and this link shows it and speaks it through /api/tts.
+// /api/tts speaks only a teacher turn the server stored for this lesson (by seq), in the teacher's voice,
+// so the link never sends free text to be spoken.
 // Same TeacherLink surface as VoiceLink, including the teacher level meter for lip-sync.
+import type { TtsRequest } from "../../shared/contracts.ts";
 import { fetchSpeech } from "./api.ts";
-import type { LinkEvent, LinkLevels, TeacherLink } from "./link.ts";
+import type { LinkEvent, LinkLevels, TeacherLink, TeacherReply } from "./link.ts";
 import { createLevelAnalyser } from "./level.ts";
 import { Emitter } from "./store.ts";
 
+type Speech = (req: TtsRequest, signal: AbortSignal) => Promise<Blob>;
+
 export interface TextLinkOptions {
-  voice: string;
+  lessonId: string;
   levels: LinkLevels;
   /** Injectable for tests; defaults to POST /api/tts. */
-  speech?: (text: string, voice: string, signal: AbortSignal) => Promise<Blob>;
+  speech?: Speech;
 }
 
 export class TextLink implements TeacherLink {
   readonly mode = "text" as const;
   readonly levels: LinkLevels;
-  private readonly voice: string;
-  private readonly speech: (text: string, voice: string, signal: AbortSignal) => Promise<Blob>;
+  private readonly lessonId: string;
+  private readonly speech: Speech;
   private readonly events = new Emitter<LinkEvent>();
   private audio: HTMLAudioElement | null = null;
   private ctx: AudioContext | null = null;
@@ -26,7 +31,7 @@ export class TextLink implements TeacherLink {
   private current: { id: string; abort: AbortController; url: string | null; playing: boolean } | null = null;
 
   constructor(opts: TextLinkOptions) {
-    this.voice = opts.voice;
+    this.lessonId = opts.lessonId;
     this.levels = opts.levels;
     this.speech = opts.speech ?? fetchSpeech;
   }
@@ -56,12 +61,13 @@ export class TextLink implements TeacherLink {
   applyInstructions(): void {}
 
   sendChild(text: string, opts: { chipId?: string } = {}): void {
+    void this.ctx?.resume().catch(() => {}); // called inside the child's tap or submit: a user activation
     this.interrupt();
     this.events.emit({ type: "child_final", text, startedAt: Date.now(), typed: true, chipId: opts.chipId });
   }
 
-  promptTeacher(replyText?: string): void {
-    const text = replyText?.trim();
+  promptTeacher(reply?: TeacherReply): void {
+    const text = reply?.text.trim();
     if (!text) return;
     this.stop("cancelled", false);
     const id = `text-${++this.seq}`;
@@ -71,7 +77,7 @@ export class TextLink implements TeacherLink {
     // The caption appears at once; speech follows when the audio arrives.
     this.events.emit({ type: "teacher_delta", responseId: id, delta: text });
     this.events.emit({ type: "teacher_done", responseId: id, text });
-    void this.play(id, text, abort.signal);
+    void this.play(id, reply?.seq, abort.signal);
   }
 
   interrupt(): void {
@@ -92,10 +98,11 @@ export class TextLink implements TeacherLink {
     this.events.clear();
   }
 
-  private async play(id: string, text: string, signal: AbortSignal): Promise<void> {
+  private async play(id: string, seq: number | undefined, signal: AbortSignal): Promise<void> {
     const audio = this.audio;
     try {
-      const blob = await this.speech(text, this.voice, signal);
+      if (seq === undefined) throw new Error("reply has no stored turn to speak");
+      const blob = await this.speech({ lessonId: this.lessonId, seq }, signal);
       if (this.current?.id !== id || !audio) return;
       const url = URL.createObjectURL(blob);
       this.current.url = url;
@@ -108,7 +115,11 @@ export class TextLink implements TeacherLink {
       audio.onended = () => {
         if (this.current?.id === id) this.stop("completed", false);
       };
-      await this.ctx?.resume().catch(() => {});
+      // Never wait on resume(): without a user activation (iOS, Android WebView) it can stay pending
+      // forever and the turn would stick on "thinking". A context still suspended here plays silently
+      // (the element sounds only through the graph) while the reply is on screen; sendChild() resumes it
+      // inside the child's own tap, which is the activation those platforms require.
+      void this.ctx?.resume().catch(() => {});
       await audio.play();
     } catch (err) {
       if (signal.aborted || this.current?.id !== id) return;

@@ -1,6 +1,11 @@
 // The module frame's runtime: speaks the HostToModule/ModuleToHost protocol with the parent page and
 // renders one engine. Loaded by modules.html inside <iframe sandbox="allow-scripts"> (opaque origin, no
-// same-origin access to the app, no network: see the CSP in modules.html).
+// same-origin access to the app, no network: see the CSP vite.config.ts injects into modules.html).
+//
+// Transport: the frame announces "ready" with window.postMessage; the host answers with init and a
+// MessagePort, and every later message in either direction goes over that port. A document this frame
+// is navigated to cannot reach the port, so it cannot speak as the engine (a page-level message from the
+// frame after the handshake makes the host drop it).
 import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { HostToModule, ModuleToHost } from "../../../shared/contracts.ts";
 import type { EngineApi, EngineModule } from "./engine.ts";
@@ -16,8 +21,19 @@ const MODULE_ID = decodeURIComponent(location.hash.slice(1));
 // host lives; messages are only accepted from, and only sent to, that origin.
 const PARENT_ORIGIN = location.origin;
 
+/** The host's end of this session, handed over with init. */
+let port: MessagePort | null = null;
+let announced = false;
+
 function post(msg: ModuleToHost): void {
-  window.parent.postMessage(msg, PARENT_ORIGIN);
+  if (port) port.postMessage(msg);
+}
+
+/** Say "ready" once per document: a second announcement looks like a navigated frame to the host. */
+function announce(): void {
+  if (announced) return;
+  announced = true;
+  window.parent.postMessage({ type: "ready", moduleId: MODULE_ID } satisfies ModuleToHost, PARENT_ORIGIN);
 }
 
 function makeApi(moduleId: string): EngineApi {
@@ -42,9 +58,8 @@ export function FrameApp() {
   const initRef = useRef<Init | null>(null);
 
   useEffect(() => {
-    const onMessage = (e: MessageEvent) => {
-      if (e.source !== window.parent || e.origin !== PARENT_ORIGIN) return;
-      const msg = parseHostToModule(e.data);
+    const handle = (data: unknown) => {
+      const msg = parseHostToModule(data);
       if (!msg) return;
       switch (msg.type) {
         case "init":
@@ -73,8 +88,16 @@ export function FrameApp() {
           return;
       }
     };
+    // Only the handshake arrives on the window: init, from the parent, carrying the port.
+    const onMessage = (e: MessageEvent) => {
+      if (port || e.source !== window.parent || e.origin !== PARENT_ORIGIN || !e.ports[0]) return;
+      if (parseHostToModule(e.data)?.type !== "init") return;
+      port = e.ports[0];
+      port.onmessage = (m) => handle(m.data);
+      handle(e.data);
+    };
     window.addEventListener("message", onMessage);
-    post({ type: "ready", moduleId: MODULE_ID });
+    announce();
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
@@ -109,10 +132,10 @@ export function FrameApp() {
   }, [resolved, api]);
 
   if (!init || loaded.status === "waiting" || loaded.status === "loading") return <div className="frame-wait" aria-busy="true" />;
-  if (loaded.status === "missing") return <ComingSoon />;
+  if (loaded.status === "missing") return <ComingSoon lang={init.lang} />;
   const Engine = loaded.engine.Component;
   return (
-    <EngineBoundary key={resetKey} onError={(m) => api.error(m)}>
+    <EngineBoundary key={resetKey} lang={init.lang} onError={(m) => api.error(m)}>
       <Engine
         params={resolved!.params}
         goal={init.goal}
@@ -126,18 +149,25 @@ export function FrameApp() {
   );
 }
 
-function ComingSoon() {
+const TEXT: Record<string, Record<string, string>> = {
+  soon: { english: "This activity is coming soon", hinglish: "Yeh activity jald aa rahi hai", hindi: "यह गतिविधि जल्द आ रही है" },
+  stopped: { english: "This activity stopped working", hinglish: "Yeh activity ruk gayi", hindi: "यह गतिविधि रुक गई" },
+  carryOn: { english: "Your teacher will carry on without it.", hinglish: "Teacher iske bina aage chalenge.", hindi: "टीचर इसके बिना आगे बढ़ेंगे।" },
+};
+const say = (key: string, lang: string) => TEXT[key][lang] ?? TEXT[key].english;
+
+function ComingSoon({ lang }: { lang: string }) {
   return (
-    <div className="frame-card" role="status">
+    <div className="frame-card" role="status" data-card="coming-soon">
       <div className="frame-card-icon" aria-hidden="true">✨</div>
-      <p className="frame-card-title">This activity is coming soon</p>
-      <p className="frame-card-text">Your teacher will carry on without it.</p>
+      <p className="frame-card-title">{say("soon", lang)}</p>
+      <p className="frame-card-text">{say("carryOn", lang)}</p>
     </div>
   );
 }
 
 /** An engine that throws shows a calm card instead of a blank frame, and the Director is told. */
-class EngineBoundary extends Component<{ children: ReactNode; onError: (message: string) => void }, { failed: boolean }> {
+class EngineBoundary extends Component<{ children: ReactNode; lang: string; onError: (message: string) => void }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };
@@ -148,9 +178,9 @@ class EngineBoundary extends Component<{ children: ReactNode; onError: (message:
   render() {
     if (!this.state.failed) return this.props.children;
     return (
-      <div className="frame-card" role="status">
-        <p className="frame-card-title">This activity stopped working</p>
-        <p className="frame-card-text">Your teacher will carry on without it.</p>
+      <div className="frame-card" role="status" data-card="stopped">
+        <p className="frame-card-title">{say("stopped", this.props.lang)}</p>
+        <p className="frame-card-text">{say("carryOn", this.props.lang)}</p>
       </div>
     );
   }

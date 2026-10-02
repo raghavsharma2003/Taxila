@@ -1,17 +1,19 @@
 // Client live-lesson runtime: everything that runs without a DOM (Node strips the TS types on import).
-// Covers the realtime protocol mapping + context pruning, the four-state status rule, Director-turn
-// attribution and ordering, module-event debouncing, the module command channel, the frame protocol,
-// param resolution and the fraction-bars verdicts.
+// Covers the realtime protocol mapping + context pruning, push-to-talk commits, the four-state status rule,
+// Director-turn attribution and ordering, module-event buffering and module-only turns, voicing what the
+// Director says must be heard now (safeguarding, the goodbye), closing the lesson on every way out, the
+// module command channel, the frame protocol, param resolution and the fraction-bars verdicts.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { ConversationLedger } from "../src/lesson/ledger.ts";
-import { RealtimeProtocol, confidenceFromLogprobs, turnDetectionFrom, DEFAULT_TURN_DETECTION } from "../src/lesson/realtime.ts";
+import { RealtimeProtocol, audioInputFrom, confidenceFromLogprobs, turnDetectionFrom, DEFAULT_TURN_DETECTION } from "../src/lesson/realtime.ts";
 import { INITIAL_FLAGS, reduceStatus, statusOf } from "../src/lesson/status.ts";
-import { ModuleEventBuffer, MAX_BUFFERED } from "../src/lesson/moduleEvents.ts";
+import { ModuleEventBuffer, MAX_BUFFERED, MILESTONE_TYPES } from "../src/lesson/moduleEvents.ts";
 import { ModuleChannel } from "../src/lesson/moduleChannel.ts";
 import { TeacherTurns } from "../src/lesson/teacherTurns.ts";
 import { LessonRuntime } from "../src/lesson/runtime.ts";
+import { ApiError } from "../src/lesson/api.ts";
 import { LevelMeter, levelFromRms } from "../src/lesson/level.ts";
 import { parseHostToModule, parseModuleToHost, toModuleEvent } from "../src/modules/frame/protocol.ts";
 import { resolveParams } from "../src/modules/frame/params.ts";
@@ -63,6 +65,8 @@ class FakeLink {
     this.listeners = new Set();
     this.instructions = [];
     this.prompts = [];
+    this.replySeqs = [];
+    this.interrupts = 0;
     this.sent = [];
     this.closed = false;
   }
@@ -84,7 +88,8 @@ class FakeLink {
     this.emit({ type: "child_final", text, startedAt: Date.now(), typed: true, chipId: opts.chipId });
   }
   promptTeacher(reply) {
-    this.prompts.push(reply ?? null);
+    this.prompts.push(reply?.text ?? null);
+    this.replySeqs.push(reply?.seq ?? null);
   }
   /** Simulate a whole teacher turn. */
   speak(id, text, at = Date.now()) {
@@ -94,7 +99,9 @@ class FakeLink {
     this.emit({ type: "teacher_audio_end" });
     this.emit({ type: "response_done", responseId: id, status: "completed" });
   }
-  interrupt() {}
+  interrupt() {
+    this.interrupts++;
+  }
   setPushToTalk() {}
   talkStart() {}
   talkEnd() {}
@@ -117,12 +124,13 @@ function fakeApi({ turn } = {}) {
         moduleCommands: [],
         ui: { whiteboard: { kind: "text", value: "1/2" } },
         teacherOpening: "Namaste Aarav!",
+        teacherOpeningSeq: 1,
       };
     },
     turn: async (req) => {
       calls.turn.push(req);
       if (turn) return turn(req, calls.turn.length);
-      return { instructions: `INSTR-${calls.turn.length}`, move: { kind: "probe", shape: "ask why" }, moduleCommands: [], ui: {}, teacherReply: `reply ${calls.turn.length}` };
+      return { instructions: `INSTR-${calls.turn.length}`, move: { kind: "probe", shape: "ask why" }, moduleCommands: [], ui: {}, teacherReply: `reply ${calls.turn.length}`, teacherReplySeq: 10 + calls.turn.length };
     },
     end: async (lessonId) => {
       calls.end.push(lessonId);
@@ -236,9 +244,10 @@ test("protocol: push-to-talk turns are dated from the press; failures and benign
   const { p, sent, events } = protocol();
   p.beginTalk();
   p.endTalk();
-  assert.deepEqual(sent.map((e) => e.type), ["input_audio_buffer.clear", "input_audio_buffer.commit", "response.create"]);
+  assert.deepEqual(sent.map((e) => e.type), ["input_audio_buffer.clear", "input_audio_buffer.commit"], "no reply asked before the commit lands");
   const pressAt = 1010;
   p.handle({ type: "input_audio_buffer.committed", item_id: "u9" });
+  assert.equal(sent.at(-1).type, "response.create", "the reply is asked once the server confirms the commit");
   p.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "u9", transcript: "paanch" });
   assert.equal(events.at(-1).startedAt, pressAt);
   p.handle({ type: "conversation.item.input_audio_transcription.failed", item_id: "u10" });
@@ -250,12 +259,32 @@ test("protocol: push-to-talk turns are dated from the press; failures and benign
   assert.deepEqual(events.at(-1), { type: "error", message: "bad", code: "invalid_value", fatal: false });
 });
 
+test("protocol: an accidental push-to-talk tap (empty commit) asks no reply and reports child_silent", () => {
+  const { p, sent, events } = protocol();
+  p.beginTalk();
+  p.endTalk();
+  p.handle({ type: "error", error: { code: "input_audio_buffer_commit_empty", message: "buffer too small" } });
+  assert.ok(!sent.some((e) => e.type === "response.create"));
+  assert.deepEqual(events.map((e) => e.type), ["child_silent"]);
+  // a later VAD commit (push-to-talk off again) does not pick up the stale request
+  p.setTurnDetection(DEFAULT_TURN_DETECTION);
+  p.handle({ type: "input_audio_buffer.committed", item_id: "u1" });
+  assert.ok(!sent.some((e) => e.type === "response.create"));
+  const s = [{ type: "child_speech_end" }, { type: "child_silent" }].reduce(reduceStatus, reduceStatus(INITIAL_FLAGS, { type: "settle" }));
+  assert.equal(statusOf(s), "your_turn", "nobody waits for a reply that is not coming");
+});
+
 test("protocol client events have the GA session shape", () => {
   const { p, sent } = protocol();
   p.applyInstructions("X");
   p.setTurnDetection(null);
   assert.deepEqual(sent[0], { type: "session.update", session: { type: "realtime", instructions: "X" } });
   assert.deepEqual(sent[1], { type: "session.update", session: { type: "realtime", audio: { input: { turn_detection: null } } } });
+  // A push-to-talk toggle re-sends the whole minted audio.input with only turn_detection swapped.
+  const minted = { audio: { input: { transcription: { model: "taxila-transcribe" }, noise_reduction: { type: "near_field" }, turn_detection: { type: "server_vad" } } } };
+  p.setTurnDetection(null, audioInputFrom(minted));
+  assert.deepEqual(sent[2].session.audio.input, { transcription: { model: "taxila-transcribe" }, noise_reduction: { type: "near_field" }, turn_detection: null });
+  assert.equal(minted.audio.input.turn_detection.type, "server_vad", "the minted session is not mutated");
   assert.deepEqual(turnDetectionFrom({ audio: { input: { turn_detection: { type: "semantic_vad" } } } }), { type: "semantic_vad" });
   assert.equal(turnDetectionFrom({}), DEFAULT_TURN_DETECTION);
   assert.equal(confidenceFromLogprobs(undefined), undefined);
@@ -297,7 +326,7 @@ test("level meter maps RMS to a 0..1 scale and is inert without an analyser", ()
 
 // ───────────── turn attribution ─────────────
 
-test("teacher turns go to the child turn that followed them, once", () => {
+test("teacher turns go to the child turn that followed them, once, and only when finished", () => {
   const t = new TeacherTurns();
   t.begin("r1", 100);
   t.done("r1", "Teen chauthai kaise?");
@@ -305,34 +334,42 @@ test("teacher turns go to the child turn that followed them, once", () => {
   t.delta("r2", "Bahut ");
   assert.deepEqual(t.take(200), { text: "Teen chauthai kaise?", interrupted: false });
   assert.equal(t.take(200), null, "consumed");
+  assert.ok(t.streaming() && !t.streaming(200));
+  assert.equal(t.take(), null, "a turn still streaming is never taken half-said");
   t.interrupted("r2");
-  assert.deepEqual(t.take(), { text: "Bahut", interrupted: true });
+  t.done("r2", "Bahut badhiya, ab answer hai teen chauthai");
+  assert.deepEqual(t.take(), { text: "Bahut badhiya, ab answer hai teen chauthai", interrupted: true });
+  t.begin("r3", 400);
+  t.finish("r3"); // a response that ended with no text
+  assert.equal(t.take(), null);
+  assert.ok(!t.streaming());
 });
 
 // ───────────── module events ─────────────
 
-test("module events batch every 3 s; milestones flush at once; drain cancels the batch", () => {
-  const timers = fakeTimers();
-  const flushes = [];
-  const b = new ModuleEventBuffer((m) => flushes.push(m), { timers });
+test("module events: interactions and errors only ride along; milestones call at once; drops are counted", () => {
+  let calls = 0;
+  const b = new ModuleEventBuffer(() => calls++);
   const ev = (type, name) => ({ moduleId: "m1", engine: "fraction-bars@1", type, name, at: 0 });
   b.add(ev("interaction", "shade_changed"));
-  b.add(ev("interaction", "shade_changed"));
-  timers.advance(2999);
-  assert.deepEqual(flushes, []);
-  timers.advance(1);
-  assert.deepEqual(flushes, [false]);
-  b.drain();
-  b.add(ev("interaction", "shade_changed"));
+  b.add(ev("error", "error"));
+  assert.equal(calls, 0, "no timer flush, and an engine error is not a milestone");
+  assert.deepEqual([...MILESTONE_TYPES].sort(), ["answer", "goal_met", "stuck"]);
   b.add(ev("goal_met", "shade 3/4"));
-  assert.deepEqual(flushes, [false, true]);
-  assert.equal(b.drain().length, 2);
-  assert.equal(timers.size, 0);
+  assert.equal(calls, 1);
+  assert.deepEqual(b.drain(), { events: [ev("interaction", "shade_changed"), ev("error", "error"), ev("goal_met", "shade 3/4")], dropped: 0 });
   for (let i = 0; i < MAX_BUFFERED + 5; i++) b.add(ev("interaction", "tap"));
   b.add(ev("stuck", "x"));
   const kept = b.drain();
-  assert.equal(kept.length, MAX_BUFFERED);
-  assert.equal(kept.at(-1).type, "stuck", "milestones survive the cap");
+  assert.equal(kept.events.length, MAX_BUFFERED);
+  assert.equal(kept.dropped, 6, "the Director is told how many events were dropped");
+  assert.equal(kept.events.at(-1).type, "stuck", "milestones survive the cap");
+  b.add(ev("interaction", "late"));
+  b.restore(kept);
+  const back = b.drain();
+  assert.equal(back.events.at(-1).name, "late", "a failed call's events go back in front of newer ones");
+  assert.equal(back.events.length, MAX_BUFFERED);
+  assert.equal(back.dropped, 6 + 1, "the restored count plus the one event the cap dropped on restore");
 });
 
 test("module channel replays live commands to late subscribers and validates them", () => {
@@ -428,11 +465,12 @@ test("fraction-bars: compare answers", () => {
 
 // ───────────── runtime (fake link + fake API) ─────────────
 
-test("runtime text mode: opening, typed turn carries the teacher turn it answered, reply is spoken", async () => {
+test("runtime text mode: opening, typed turn, reply is spoken from its stored turn", async () => {
   const { rt, api, link } = await startRuntime("text");
   assert.equal(rt.state.phase, "live");
   assert.deepEqual(link.instructions, ["INSTR-0"]);
   assert.deepEqual(link.prompts, ["Namaste Aarav!"]);
+  assert.deepEqual(link.replySeqs, [1], "the opening is spoken by its stored turn seq, never as free text");
   assert.deepEqual(rt.state.ui.whiteboard, { kind: "text", value: "1/2" });
   link.speak("t1", "Namaste Aarav!", 1);
   assert.equal(rt.state.status, "your_turn");
@@ -441,14 +479,23 @@ test("runtime text mode: opening, typed turn carries the teacher turn it answere
   assert.equal(rt.state.status, "thinking");
   await flush();
   assert.equal(api.calls.turn.length, 1);
-  assert.deepEqual(api.calls.turn[0], {
-    lessonId: "L1", childText: "teen chauthai", teacherText: "Namaste Aarav!", teacherInterrupted: false, typed: true,
-  });
+  // The server wrote and stored the teacher's lines in text mode: echoing them back stored each one twice.
+  assert.deepEqual(api.calls.turn[0], { lessonId: "L1", childText: "teen chauthai", typed: true });
   assert.deepEqual(link.instructions, ["INSTR-0", "INSTR-1"]);
   assert.deepEqual(link.prompts, ["Namaste Aarav!", "reply 1"]);
+  assert.deepEqual(link.replySeqs, [1, 11]);
   assert.deepEqual(rt.state.move, { kind: "probe", shape: "ask why" });
   assert.deepEqual(rt.state.ui.whiteboard, { kind: "text", value: "1/2" }, "whiteboard persists when absent");
   assert.deepEqual(rt.state.captions.map((c) => [c.who, c.text]), [["teacher", "Namaste Aarav!"], ["child", "teen chauthai"]]);
+
+  // Typing over the teacher: only the fact that she was cut off travels.
+  link.emit({ type: "response_start", responseId: "t2", at: 2 });
+  link.emit({ type: "teacher_done", responseId: "t2", text: "reply 1" });
+  link.emit({ type: "teacher_audio_start" });
+  link.emit({ type: "teacher_interrupted", responseId: "t2" });
+  rt.say("ruko");
+  await flush();
+  assert.deepEqual(api.calls.turn[1], { lessonId: "L1", childText: "ruko", teacherInterrupted: true, typed: true });
 
   await rt.end();
   assert.equal(rt.state.phase, "ended");
@@ -456,37 +503,65 @@ test("runtime text mode: opening, typed turn carries the teacher turn it answere
   assert.ok(link.closed);
 });
 
-test("runtime: module interactions ride with the next child turn; milestones call the Director at once", async () => {
+test("runtime: module interactions ride with the next child turn; a milestone calls at once and carries no teacher turn", async () => {
   const { rt, api, link } = await startRuntime("text", {
     turn: (req, n) => ({
-      instructions: `I${n}`, move: { kind: "show_module", shape: "s" }, ui: { chips: [{ id: "c1", label: "Cricket" }] }, teacherReply: "ok",
+      instructions: `I${n}`, move: { kind: n === 1 ? "show_module" : "celebrate", shape: "s" }, ui: n === 1 ? { chips: [{ id: "c1", label: "Cricket" }] } : {},
+      teacherReply: `reply ${n}`, teacherReplySeq: 20 + n,
       moduleCommands: n === 1 ? [{ op: "mount", moduleId: "fb1", engine: "fraction-bars@1", params: { denominators: [4], target: "3/4" } }] : [],
     }),
   });
   link.speak("t1", "Namaste", 1);
   rt.say("haan");
   await flush();
+  link.speak("t2", "reply 1", 2);
   assert.deepEqual(rt.modules.mounted(), ["fb1"], "moduleCommands reach the module channel");
   assert.deepEqual(rt.state.ui.chips, [{ id: "c1", label: "Cricket" }]);
 
   const ev = (type, name) => ({ moduleId: "fb1", engine: "fraction-bars@1", type, name, at: 5 });
   rt.moduleEvent(ev("interaction", "shade_changed"));
   rt.moduleEvent(ev("interaction", "shade_changed"));
+  rt.moduleEvent(ev("error", "error"));
   await flush();
-  assert.equal(api.calls.turn.length, 1, "interactions wait for a batch");
+  assert.equal(api.calls.turn.length, 1, "plain interactions and errors never call the Director on their own");
   rt.tapChip({ id: "c1", label: "Cricket" });
   await flush();
   assert.equal(api.calls.turn.length, 2);
   assert.equal(api.calls.turn[1].chipId, "c1");
   assert.equal(api.calls.turn[1].childText, "Cricket");
-  assert.equal(api.calls.turn[1].moduleEvents.length, 2);
-  assert.equal(rt.state.ui.chips?.length, 1, "new turn's chips shown");
+  assert.deepEqual(api.calls.turn[1].moduleEvents.map((e) => e.type), ["interaction", "interaction", "error"]);
+  link.speak("t3", "reply 2", 3);
+  assert.equal(rt.state.status, "your_turn");
 
   rt.moduleEvent(ev("goal_met", "shade 3/4"));
   await flush();
   assert.equal(api.calls.turn.length, 3);
-  assert.equal(api.calls.turn[2].childText, "");
-  assert.deepEqual(api.calls.turn[2].moduleEvents.map((e) => e.type), ["goal_met"]);
+  assert.deepEqual(api.calls.turn[2], { lessonId: "L1", childText: "", moduleEvents: [ev("goal_met", "shade 3/4")] }, "a module-only turn");
+  assert.equal(link.prompts.at(-1), "reply 3", "the floor was free: the reaction is spoken");
+  link.speak("t4", "reply 3", 4);
+
+  // A milestone while the teacher is speaking: its reply waits for the floor instead of cutting her off.
+  link.emit({ type: "response_start", responseId: "t5", at: 5 });
+  link.emit({ type: "teacher_audio_start" });
+  rt.moduleEvent(ev("stuck", "many_changes_without_goal"));
+  await flush();
+  assert.equal(api.calls.turn.length, 4);
+  assert.equal(link.prompts.at(-1), "reply 3", "not spoken over her");
+  link.emit({ type: "teacher_audio_end" });
+  link.emit({ type: "response_done", responseId: "t5", status: "completed" });
+  assert.equal(link.prompts.at(-1), "reply 4", "spoken once the floor is free");
+  assert.equal(link.replySeqs.at(-1), 24);
+
+  // ...and is dropped if the child takes the floor first.
+  link.emit({ type: "response_start", responseId: "t6", at: 6 });
+  link.emit({ type: "teacher_audio_start" });
+  rt.moduleEvent(ev("goal_met", "shade 3/4"));
+  await flush();
+  rt.say("aur ek");
+  link.emit({ type: "teacher_audio_end" });
+  link.emit({ type: "response_done", responseId: "t6", status: "cancelled" });
+  await flush();
+  assert.ok(!link.prompts.includes("reply 5"), "a reaction the child talked over is never voiced late");
 });
 
 test("runtime voice mode: a transcript that lands after the reply started still carries the previous teacher turn", async () => {
@@ -504,6 +579,124 @@ test("runtime voice mode: a transcript that lands after the reply started still 
   });
   assert.equal(link.prompts.length, 1, "voice mode does not speak teacherReply");
   assert.deepEqual(link.instructions, ["INSTR-0", "INSTR-1"]);
+});
+
+test("runtime voice mode: a milestone during a streaming reply; the child turn then carries her whole turn and the cut", async () => {
+  const { rt, api, link } = await startRuntime("voice", {
+    turn: (req, n) => ({ instructions: `I${n}`, move: { kind: "celebrate", shape: "s" }, moduleCommands: [], ui: {}, ...(req.childText ? {} : { speakNow: "when_free" }) }),
+  });
+  link.speak("r1", "Batao, kitne hisse?", 100);
+  link.emit({ type: "response_start", responseId: "r2", at: 300 });
+  link.emit({ type: "teacher_audio_start" });
+  link.emit({ type: "teacher_delta", responseId: "r2", delta: "Bahut badhiya, ab" });
+  rt.moduleEvent({ moduleId: "m1", engine: "fraction-bars@1", type: "goal_met", name: "shade 3/4", at: 350 });
+  await flush();
+  assert.deepEqual(api.calls.turn[0], { lessonId: "L1", childText: "", moduleEvents: [{ moduleId: "m1", engine: "fraction-bars@1", type: "goal_met", name: "shade 3/4", at: 350 }] });
+  assert.equal(link.prompts.length, 1, "she is talking: the reaction waits");
+  // The child barges in; the transcript lands before her cut-off turn is final.
+  link.emit({ type: "child_speech_start", at: 500, itemId: "u1" });
+  link.emit({ type: "teacher_interrupted", responseId: "r2" });
+  link.emit({ type: "child_speech_end", at: 900 });
+  link.emit({ type: "child_final", text: "teen chauthai", startedAt: 500, typed: false, itemId: "u1", asrConfidence: 0.9 });
+  await flush();
+  assert.equal(api.calls.turn.length, 1, "the child turn waits for her turn to finish streaming");
+  link.emit({ type: "teacher_done", responseId: "r2", text: "Bahut badhiya, ab answer hai teen chauthai" });
+  link.emit({ type: "response_done", responseId: "r2", status: "cancelled" });
+  link.emit({ type: "teacher_audio_end" });
+  await flush();
+  assert.deepEqual(api.calls.turn[1], {
+    lessonId: "L1", childText: "teen chauthai", asrConfidence: 0.9,
+    teacherText: "Batao, kitne hisse? Bahut badhiya, ab answer hai teen chauthai", teacherInterrupted: true,
+  });
+  assert.equal(link.prompts.length, 1, "the deferred reaction was dropped: the child took the floor");
+});
+
+test("runtime voice mode: a module milestone with the floor free is voiced; a hold (no speakNow) is not", async () => {
+  let speak = true;
+  const { rt, api, link } = await startRuntime("voice", {
+    turn: () => ({ instructions: "I", move: { kind: "celebrate", shape: "s" }, moduleCommands: [], ui: {}, ...(speak ? { speakNow: "when_free" } : {}) }),
+  });
+  link.speak("r1", "Namaste", 100);
+  assert.equal(rt.state.status, "your_turn");
+  rt.moduleEvent({ moduleId: "m1", engine: "e", type: "goal_met", name: "g", at: 1 });
+  await flush();
+  assert.deepEqual(link.prompts, [null, null]);
+  speak = false;
+  rt.moduleEvent({ moduleId: "m1", engine: "e", type: "answer", name: "answer", at: 2 });
+  await flush();
+  assert.equal(api.calls.turn.length, 2);
+  assert.deepEqual(link.prompts, [null, null], "nothing changed, nothing said");
+});
+
+test("runtime voice mode: a safeguarding move is voiced at once, cutting off a reply from the old instructions", async () => {
+  const { rt, link } = await startRuntime("voice", {
+    turn: () => ({
+      instructions: "SAFEGUARD", move: { kind: "safeguard", shape: "s" }, moduleCommands: [], speakNow: "interrupt",
+      ui: { whiteboard: { kind: "text", value: "Childline 1098 · Tele-MANAS 14416" } },
+    }),
+  });
+  link.speak("r1", "Namaste", 100);
+  link.emit({ type: "child_speech_start", at: 200, itemId: "u1" });
+  link.emit({ type: "child_speech_end", at: 900 });
+  link.emit({ type: "response_start", responseId: "r2", at: 1000 });
+  link.emit({ type: "teacher_audio_start" });
+  link.emit({ type: "teacher_delta", responseId: "r2", delta: "Chalo, fractions dekhte hain!" });
+  link.emit({ type: "child_final", text: "papa mujhe maarte hain", startedAt: 200, typed: false, itemId: "u1", asrConfidence: 0.9 });
+  await flush();
+  assert.equal(link.instructions.at(-1), "SAFEGUARD");
+  assert.equal(link.interrupts, 1, "the reply from the old instructions is cut off");
+  assert.deepEqual(link.prompts, [null, null], "and the hand-off is voiced now, not on the child's next turn");
+  assert.match(rt.state.ui.whiteboard.value, /1098/, "the helplines are on screen too");
+});
+
+test("runtime voice mode: the Director's end is voiced as a goodbye once the floor is free, then the call ends", async () => {
+  const { rt, api, link } = await startRuntime("voice", {
+    turn: () => ({ instructions: "WRAP", move: { kind: "wrap", shape: "s" }, moduleCommands: [], ui: {}, end: true }),
+  });
+  link.speak("r1", "Namaste!", 100);
+  link.emit({ type: "child_speech_start", at: 200, itemId: "u1" });
+  link.emit({ type: "child_speech_end", at: 900 });
+  link.emit({ type: "response_start", responseId: "r2", at: 1000 }); // she answers from the old instructions
+  link.emit({ type: "teacher_audio_start" });
+  link.emit({ type: "child_final", text: "mujhe band karna hai", startedAt: 200, typed: false, itemId: "u1", asrConfidence: 0.9 });
+  await flush();
+  assert.equal(link.instructions.at(-1), "WRAP");
+  assert.deepEqual(link.prompts, [null], "not while she is still talking");
+  link.emit({ type: "teacher_done", responseId: "r2", text: "Achha, 3/4 bada hai ya 2/3?" });
+  link.emit({ type: "teacher_audio_end" });
+  link.emit({ type: "response_done", responseId: "r2", status: "completed" });
+  assert.deepEqual(link.prompts, [null, null], "floor free: the goodbye is asked for, once");
+  assert.equal(api.calls.end.length, 0, "the call is not dropped before the goodbye is heard");
+  link.speak("r3", "Theek hai, aaj ke liye bas. Bye!", 2000);
+  await flush();
+  await flush();
+  assert.deepEqual(api.calls.end, ["L1"]);
+  assert.equal(rt.state.phase, "ended");
+  assert.ok(link.closed);
+  assert.deepEqual(link.prompts, [null, null], "exactly one goodbye");
+});
+
+test("runtime voice mode: a teacher who holds the floor past the grace is cut off for the goodbye", async () => {
+  const { rt, api, link, timers } = await startRuntime("voice", {
+    turn: () => ({ instructions: "WRAP", move: { kind: "wrap", shape: "s" }, moduleCommands: [], ui: {}, end: true }),
+  });
+  link.speak("r1", "Namaste!", 100);
+  link.emit({ type: "child_speech_start", at: 200, itemId: "u1" });
+  link.emit({ type: "child_speech_end", at: 900 });
+  link.emit({ type: "response_start", responseId: "r2", at: 1000 });
+  link.emit({ type: "teacher_audio_start" });
+  link.emit({ type: "child_final", text: "bye", startedAt: 200, typed: false, itemId: "u1", asrConfidence: 0.9 });
+  await flush();
+  timers.advance(11_999);
+  assert.equal(link.interrupts, 0);
+  timers.advance(1);
+  assert.equal(link.interrupts, 1);
+  assert.deepEqual(link.prompts, [null, null]);
+  timers.advance(12_000); // the goodbye never finished: end anyway
+  await flush();
+  await flush();
+  assert.deepEqual(api.calls.end, ["L1"]);
+  assert.equal(rt.state.phase, "ended");
 });
 
 test("runtime: a failed Director call in text mode clears 'thinking'; ASR failure still reaches the Director", async () => {
@@ -524,9 +717,48 @@ test("runtime: a failed Director call in text mode clears 'thinking'; ASR failur
   assert.equal(api.calls.turn.length, 2);
 });
 
+test("runtime: a failed call's module events ride with the next call; drops at the cap are reported", async () => {
+  let fail = true;
+  const { rt, api, link } = await startRuntime("text", {
+    turn: () => {
+      if (fail) {
+        fail = false;
+        return Promise.reject(new Error("boom"));
+      }
+      return { instructions: "I", move: { kind: "probe", shape: "s" }, moduleCommands: [], ui: {} };
+    },
+  });
+  link.speak("t1", "Namaste", 1);
+  for (let i = 0; i < MAX_BUFFERED + 3; i++) rt.moduleEvent({ moduleId: "m1", engine: "e", type: "interaction", name: `tap${i}`, at: i });
+  rt.say("a");
+  await flush();
+  await flush();
+  assert.equal(api.calls.turn[0].moduleEvents.length, MAX_BUFFERED);
+  assert.equal(api.calls.turn[0].droppedEvents, 3);
+  rt.say("b");
+  await flush();
+  assert.equal(api.calls.turn[1].moduleEvents.length, MAX_BUFFERED, "restored after the failure");
+  assert.equal(api.calls.turn[1].moduleEvents[0].name, "tap3");
+  assert.equal(api.calls.turn[1].droppedEvents, 3);
+});
+
+test("runtime: 'lesson has ended' (409) is terminal and does not end the lesson twice", async () => {
+  const { rt, api, link } = await startRuntime("text", { turn: () => Promise.reject(new ApiError(409, "lesson has ended", {})) });
+  link.speak("t1", "Namaste", 1);
+  rt.say("hello");
+  await flush();
+  await flush();
+  assert.equal(rt.state.phase, "ended");
+  assert.ok(link.closed);
+  rt.say("still there?");
+  await rt.end();
+  assert.equal(api.calls.turn.length, 1);
+  assert.deepEqual(api.calls.end, [], "it was closed elsewhere");
+});
+
 test("runtime: Director end waits for the teacher to finish speaking", async () => {
   const { rt, api, link } = await startRuntime("text", {
-    turn: () => ({ instructions: "I", move: { kind: "wrap", shape: "s" }, moduleCommands: [], ui: {}, teacherReply: "Bye!", end: true }),
+    turn: () => ({ instructions: "I", move: { kind: "wrap", shape: "s" }, moduleCommands: [], ui: {}, teacherReply: "Bye!", teacherReplySeq: 9, end: true }),
   });
   link.speak("t1", "Namaste", 1);
   rt.say("bye");
@@ -540,4 +772,81 @@ test("runtime: Director end waits for the teacher to finish speaking", async () 
   await flush();
   assert.deepEqual(api.calls.end, ["L1"]);
   assert.equal(rt.state.phase, "ended");
+});
+
+test("runtime: end() lets the Director call in flight land before closing (up to the server's worst case)", async () => {
+  let release;
+  const { rt, api, link, timers } = await startRuntime("text", {
+    turn: () => new Promise((r) => (release = () => r({ instructions: "I", move: { kind: "probe", shape: "s" }, moduleCommands: [], ui: {} }))),
+  });
+  link.speak("t1", "Namaste", 1);
+  rt.say("teen chauthai");
+  await flush();
+  const ending = rt.end();
+  assert.ok(link.closed, "the teacher stops at once");
+  timers.advance(5_000);
+  await flush();
+  assert.deepEqual(api.calls.end, [], "a 5 s turn is still landing");
+  release();
+  await ending;
+  assert.deepEqual(api.calls.end, ["L1"]);
+  assert.equal(rt.state.phase, "ended");
+  assert.equal(rt.state.pendingTurns, 0);
+});
+
+test("runtime: unmount, a fatal link error and ending while starting all close the lesson on the server", async () => {
+  // unmount mid-lesson
+  {
+    const { rt, api } = await startRuntime("text");
+    rt.dispose();
+    await flush();
+    assert.deepEqual(api.calls.end, ["L1"]);
+    assert.equal(rt.state.phase, "ended");
+  }
+  // voice reconnects exhausted
+  {
+    const { rt, api, link } = await startRuntime("voice");
+    link.emit({ type: "error", message: "the voice call dropped and could not reconnect", fatal: true });
+    await flush();
+    assert.equal(rt.state.phase, "error");
+    assert.ok(link.closed);
+    assert.deepEqual(api.calls.end, ["L1"]);
+  }
+  // end() while api.start is still in flight
+  {
+    const api = fakeApi();
+    let resolveStart;
+    const realStart = api.start;
+    api.start = (req) => new Promise((r) => (resolveStart = () => r(realStart(req))));
+    let created = 0;
+    const rt = new LessonRuntime({ api, timers: fakeTimers(), createLink: (m, ctx) => (created++, new FakeLink(m, ctx.levels)) });
+    const starting = rt.start("child-1", "text");
+    await rt.end();
+    resolveStart();
+    await starting;
+    await flush();
+    assert.equal(rt.state.phase, "ended");
+    assert.equal(created, 0, "no link for a lesson that was ended while starting");
+    assert.deepEqual(api.calls.end, ["L1"]);
+  }
+});
+
+test("runtime: a lesson whose link cannot connect is closed on the server and reported", async () => {
+  const api = fakeApi();
+  const rt = new LessonRuntime({
+    api,
+    timers: fakeTimers(),
+    createLink: (m, ctx) => {
+      const link = new FakeLink(m, ctx.levels);
+      link.connect = async () => {
+        throw new Error("voice channel did not open");
+      };
+      return link;
+    },
+  });
+  await assert.rejects(rt.start("child-1", "voice"), /did not open/);
+  await flush();
+  assert.equal(rt.state.phase, "error");
+  assert.equal(rt.state.error, "voice channel did not open");
+  assert.deepEqual(api.calls.end, ["L1"]);
 });

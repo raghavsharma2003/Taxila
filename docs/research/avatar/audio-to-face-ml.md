@@ -664,3 +664,275 @@ Behavioural science
 - Eyebrow–F0 (Cavé et al. 1996) and head–prosody (Busso et al. 2007) summarised in: https://www.sciencedirect.com/science/article/abs/pii/S0167639313000691 **[S]**
 - Glenberg, Schroeder and Robertson 1998, gaze aversion: https://link.springer.com/article/10.3758/BF03211385 **[S]**
 - Doherty-Sneddon et al., children's gaze aversion: https://dspace.stir.ac.uk/bitstream/1893/361/1/gazeaversionpaper9.pdf **[S]**
+
+---
+
+## Graphics review
+
+Reviewer: an adversarial real-time graphics and audio engineer, 2026-10-02. The job was to break this document. I checked the
+load-bearing claims against primary sources and ran one micro-bench of my own (`bench/student-ort/`). Tags are as above, plus
+**[M]** for a number I measured myself, with n and method given in place.
+
+**Overall verdict.** The architecture holds up: `FaceFrame` = ARKit-52 + head + gaze; a teacher offline and a student on the phone;
+upper face driven by intent and prosody rather than by the lip model; no added audio delay. But five things are wrong in ways
+that would bite:
+
+1. The phone compute estimate is about 4–6× optimistic.
+2. The ORT-web size is about 7× understated.
+3. The sync model assumes the mouth lags the audio. On Android it is at least as likely to **lead**, and it varies with the
+   output route, so a static per-device `latencyComp` is the wrong design.
+4. Two playback-adjacent features, pre-baked cached audio (§5.7) and barge-in collapse (§5.4), create the very
+   audio-floor or desync bugs the document says it avoids.
+5. The suggested Hindi aligner (MMS) is non-commercial.
+
+The effort estimate is off by roughly 5–8×.
+
+### G-1. Verified as stated (no change)
+
+| claim | check | result |
+|---|---|---|
+| `wav2arkit_cpu.onnx.data` is 402,063,360 B; the graph is 1.86 MB | HF tree API | **[V]** exact |
+| A2F v3.0: 3,269 FPS (1 track) and 1,250 FPS (8 tracks); v2.3: 453 and 413; RTX 4090, TensorRT; these are throughput, not latency | arXiv 2508.16401 HTML | **[V]** |
+| A2F v3.0 `network_info.json`: 2 diffusion steps, 2-layer GRU of 256, buffer 16,000 samples with 16,000 padding on each side, 15/30/15 frame truncation | file fetched | **[V]**. The file's `id.version` reads **"3.2"**, not 3.0 |
+| A2F v3.0 is a **725 MB** fp32 `network.onnx` (≈181 M params) | HF tree API | **[V]**. This supports "server only" |
+| HeadAudio: MFCC 0.025 ms + classifier 0.005 ms per frame; ~14 kB model; the node has no audio output | README | **[V]**. But README says end-to-end latency is "approximately **50 ms**", not "50–100 ms" |
+| Azure viseme support: `en-IN` has viseme ID and blend shapes; `hi-IN` has viseme ID only | MicrosoftDocs viseme.md | **[V]** |
+| LAM-20K reaches 562.9 FPS on an A100 and "110+FPS" on a Xiaomi 14 | LAM README table | **[V]** that the README says it. The phone column is "(A & R)" and does not say WebGL or native **[U]** |
+
+### G-2. Wrong perf claims
+
+**(a) The student's phone cost: "≈5–10% of one A55 core" is optimistic by about 4–6×.**
+
+I built the §5.2 student as a real streaming ONNX graph:
+- 5 causal conv layers (kernel 3, dilations 1-2-4-8-16) with explicit conv-state tensors in and out;
+- 1 GRU;
+- a linear layer to 26 outputs.
+
+I ran one 10 ms frame per `session.run` on onnxruntime-web 1.30.0, `wasm` EP, 1 thread, SIMD, Node 22, on a 2.1 GHz Xeon cloud
+core. Each model had 300 warm-up runs, then n = 2000 timed runs **[M]**:
+
+| params | median | p95 | share of one Xeon core at 100 Hz |
+|---|---|---|---|
+| 3.5 k (fixed-overhead probe) | 0.078 ms | 0.21 ms | 0.8% |
+| 194 k | 0.32 ms | 0.52 ms | 3% |
+| 463 k | 0.49–0.64 ms | 0.79–0.82 ms | 5–6% |
+| 905 k | 1.11 ms | 1.49 ms | 11% |
+
+The effective throughput is about 1.5–1.9 GFLOP/s, well below SIMD peak. Small-tensor kernels in ORT-web are overhead- and
+memory-bound, so the document's "2 × params FLOPs" arithmetic is the wrong model for this workload.
+
+A Cortex-A55 is in-order, with one 128-bit NEON pipe. For WASM it is plausibly **4–6× slower** than this Xeon core, and an
+A75/A76 about 2× slower **[U, must be measured on the E-2 phones]**. Extrapolated:
+
+| model | on an A55 | on an A75/A76 |
+|---|---|---|
+| 0.5 M | ≈2–4 ms per frame, so **20–40% of the core** | ≈1–1.3 ms |
+| 1 M | ≈5–7 ms per frame, so **50–70% of the core** | n/a |
+
+What this means:
+- The §5.2 gate (p95 < 2 ms on the slowest phone) **fails for ≥0.5 M on little cores**, and the 1 M variant is not viable there.
+- Android's scheduler decides which core the Worker lands on, not us. On a 2+6 SoC that is already decoding Opus, running the
+  WebRTC stack, three.js and the compositor, assume little cores for the p95.
+
+Fixes, in order:
+1. Cap the student at ≈0.2–0.3 M.
+2. Run the network at a **20 ms hop** (50 Hz). Mouth shapes do not need 100 Hz, and rendering is 30 fps.
+3. Feed 2 frames per `run` only if the added ≤10 ms fits the lag budget.
+4. Keep the hand-written WASM kernel (§5.2) as a real option, not a footnote. A fused conv/GRU with no per-op dispatch is
+   plausibly 3–5× faster at this size **[U]**.
+
+Also:
+- ORT's dynamic int8 quantisation has a dedicated LSTM path (`DynamicQuantizeLSTM`) but I know of no GRU equivalent, and
+  quantise/dequantise overhead can make int8 *slower* than fp32 at this scale **[U]**. Bench fp32 first. At 0.3 M params, fp32
+  is only 1.2 MB.
+- The worklet's "coarse YIN" is not free. A time-domain YIN over a 400-sample window with a 400-lag search is about 16 M
+  multiply-adds per second in JS on the audio thread **[U, arithmetic]**. Derive F0 from the FFT you already compute for the mel
+  spectrum (autocorrelation via the power spectrum), or move F0 into the Worker. The audio thread must stay trivially light.
+  That is the §13 rule this document cites.
+
+**(b) "ORT-web startup or size … (≈ 1–2 MB)" is wrong.**
+
+`onnxruntime-web@1.30.0/dist/ort-wasm-simd-threaded.wasm` is **14,239,897 B raw and 3,659,936 B gzip -9** **[M, downloaded
+from jsDelivr, 2026-10-02]**. The JSEP and asyncify builds are 26–28 MB. The npm package unpacks to 144.6 MB.
+
+Consequences:
+- **Web.** First-lesson download is about 3.7 MB before the face can move.
+- **APK.** About 14 MB is added.
+- **Low-end phones.** V8 compile time and code-space memory for a 14 MB module are on the order of a second and tens of MB
+  **[U]**. The "Worker heap ≤ 20 MB" gate is therefore unlikely to pass with ORT-web at all **[U]**.
+
+This moves the hand-written kernel (≈ tens of kB) from fallback to **default**, with ORT-web kept as the training-parity
+reference.
+
+**(c) Teacher-labelling cost: "20 h ≈ 2.16 M frames, about 11 minutes on a 4090, under $1" is wrong twice.**
+
+1. The SDK docs say the diffusion model "generates 60 frames per second" **[V, Audio2Face-3D-SDK docs/README.md]**. So 20 h is
+   **4.32 M** frames, about 22 minutes **per pass**.
+2. §5.5 asks for 3 identities × 6 emotion settings = **18 passes**. That is ≈6.6 GPU-hours on a 4090, and on a T4 (5–8× slower
+   **[U]**) ≈35–55 h, so **≈$20–35 per voice** at $0.579/h. The blend-shape solve is extra.
+
+It is still cheap, but not "under $1". The real blocker is different: **Azure startup subscriptions usually start with zero
+GPU-family vCPU quota** (NCas_T4_v3, NVadsA10_v5), and a quota request can take days or be refused **[U, check the
+subscription's quota now]**. Put the quota request on the critical path, ahead of E-1.
+
+**(d) The Gaussian head on a ₹10k phone: "≈10–25 FPS on Mali-G52-class" is probably 3–5× too high.**
+
+The Snapdragon 8 Gen 3's Adreno 750 against a Mali-G52 MC2 is a **≈25–40× gap** in fp32 throughput and a similar one in
+bandwidth **[U, vendor-spec arithmetic]**, not "an order of magnitude". Splatting is fill-rate- and sort-bound. 110 FPS ÷ 30
+gives ≈3–5 FPS, not 10–25. The verdict ("not for ₹10k") stands, more strongly. E-6 should still run, but expect it to fail on
+the ₹10k phones.
+
+**(e) The §5.4 lag table is incomplete, and its sign is unknown.**
+
+It counts only the analysis side. It omits:
+- (i) the `MediaStreamAudioSourceNode` input FIFO from Chrome's WebRTC renderer into WebAudio, variable at about 10–40 ms **[U]**;
+- (ii) display latency after rAF: compositor plus SurfaceFlinger, typically 1–3 vsyncs (17–50 ms), with WebView adding a frame
+  **[U]**;
+- (iii) the most important term: the **`<audio>` element's own output latency**. On low-end Android in communication mode this
+  is typically 40–100 ms, and on **Bluetooth A2DP earbuds 150–300 ms** **[U]**. Cheap BT earbuds are common among the target
+  users.
+
+Because the analysis path receives samples *before* the element plays them, the face can **lead** the sound. On BT it would
+lead by ≈100–250 ms, past BT.1359's −125 ms detectability and near its −185 ms acceptability. Adding a 40 ms forecast makes
+a lead worse.
+
+Correct design:
+1. `latencyComp` is a **signed, per-output-route runtime value**, not a per-UA bucket.
+2. Initialise it from `AudioContext.outputLatency` + `baseLatency` of a context on the same sink **[U, how well this tracks the
+   element's path on Android must be measured]**.
+3. Re-derive it on `devicechange` (BT connect or disconnect).
+4. Add a **delay line on the FaceFrame ring**, since delaying the *face* is free and delaying audio is forbidden.
+5. E-4 must test speaker, wired and BT routes separately, on at least 3 phones.
+6. Forecast Δ should be chosen *per route*, and may be 0.
+
+### G-3. Lip-sync and desync risks on the WebRTC path
+
+1. **The forecast head is physically limited exactly where it matters.** In a bilabial stop the lips close during the
+   **silent** closure, before the burst. A causal model sees silence there, and silence is ambiguous with /t k/ closures and
+   with pauses. Its only early cue is the labial formant transition (falling F2/F3) at the end of the preceding vowel. Expect the
+   student to close **late** on /p b m/ by roughly the closure duration (≈50–100 ms **[U]**), however good the teacher is.
+
+   Changes:
+   - Add a **student closure-rate metric to E-3**, using E-1's definition (`mouthClose`+`mouthPress` ≥ 0.4 within ±40 ms of the
+     aligner mark), measured per Δ. Today E-1 gates only the teacher.
+   - Budget an **onset rule**: a short closure pulse on burst detection, which reads better than missing the closure.
+2. **Runtime audio is not training audio.** At runtime the student hears Opus at the realtime bitrate, then NetEq jitter
+   buffering with **accelerate / preemptive-expand time-stretching and packet-loss concealment**. The teacher data is clean PCM.
+   The student will animate PLC artefacts and drift on stretched segments.
+
+   Changes:
+   - Train with an Opus encode/decode round trip plus simulated loss and jitter (libopus with a NetEq-like stretcher) as
+     augmentation **[U]**.
+   - Gate L_lip on an energy/voicing VAD so that comfort noise and PLC tails do not flutter the lips.
+3. **Barge-in collapse on `input_audio_buffer.speech_started` creates desync.** When the server truncates, audio that is
+   already in the jitter buffer and the output path keeps playing for tens to a few hundred ms. Forcing the mouth shut on the
+   *event* produces a closed mouth over an audible voice, which is the most obvious possible dub error.
+   - The lip layer is audio-driven, so let **the audio** close the mouth: release on the faceTap VAD going silent.
+   - Use `speech_started` only to switch the **upper-face** state to `listening`.
+   - Use `output_audio_buffer.cleared` (a WebRTC-only event) as a backstop with a 300 ms timeout.
+4. **Firing the Director's face program on `output_audio_buffer.started`** (§6.1) leads the audible audio by the full network,
+   jitter-buffer and output path, roughly 100–300 ms **[U]**, so the praise smile arrives before the praise.
+   - Arm the program on the event.
+   - **Fire it on the first faceTap voiced frame after arming**, then apply the same `latencyComp`.
+5. **A new playback path that §5.7 does not mention.** Cached greetings and narration with pre-baked tracks must play
+   *locally*. A local `<audio>`/WebAudio clip played while the mic track is live is **not** in Chrome's software-AEC3 far-end
+   reference: the reference is WebRTC playout, and system-wide echo cancellation is the open Chromium issue 40871060 that this
+   document itself cites. Low-cost Android devices frequently lack an effective hardware AEC **[U]**. The realtime model would
+   then hear its own greeting through the mic, triggering false `speech_started`, self-barge-in, or a transcript of the tutor as
+   the child. This is the audio-floor failure class.
+   - Rule: play cached clips **only while the uplink track is disabled** (`track.enabled = false`, or before the session
+     connects). Otherwise they need their own echosim and on-device run.
+   - **Treat §5.7 as an audio-path change, not an avatar feature.**
+6. **E-5 as written cannot prove the faceTap is a no-op.** Echosim simulates the portfolio's `liveCall.ts` logic, not the
+   Android audio HAL. Creating an extra `AudioContext` on Android opens its own output stream, even with nothing connected to the
+   destination. That can affect audio mode, routing or volume stream, and BT SCO/A2DP selection, in ways a simulator cannot see
+   **[U]**.
+   - Add an **on-device E-5b**: a 10-minute call on each reference phone over speaker, wired and BT, with and without the tap,
+     comparing tutor self-interruptions, `concealedSamples`/`totalSamplesReceived`, and the echo the model reports.
+   - Also verify on the Android WebView that `createMediaStreamSource(remoteStream)` yields non-silent samples. Chromium has a
+     long history of remote-stream-in-WebAudio silence, which is why the `<audio>` element workaround exists.
+   - Use `numberOfOutputs: 0` on the worklet so it is an automatically pulled node and nothing connects to `destination`
+     **[U, verify Chromium pulls it in WebView]**.
+
+### G-4. Licence traps that were missed or understated
+
+| item | the document says | the reality | action |
+|---|---|---|---|
+| Hindi forced aligner (§5.5 step 2: "an MMS-based aligner") | unspecified | fairseq MMS README: "The MMS code and model weights are released under the **CC-BY-NC 4.0** license" **[V]**. torchaudio's `MMS_FA` bundle is the same model | **Do not use MMS** for the commercial label pipeline. Use Azure Speech word timestamps (first-party, so it fits the Azure-only directive) plus Azure TTS viseme events where the audio is Azure TTS. Montreal Forced Aligner or a commercially licensed Hindi acoustic model are alternatives **[U, licence per model]** |
+| LAM-20K Gaussian heads | blocked only on FLAME (#111) | the published LAM-20K checkpoint row says it was trained on **VFHQ + NeRSemble**; both are distributed for research via access forms **[V for the training-data row; U for their exact terms]**, so these weights carry the same data encumbrance §2.1 applies to VOCASET/BIWI | the v3 gate needs **(a) the FLAME edition, (b) the dataset terms, (c) or retraining on licensed captures** |
+| LAM-A2E as a teacher | "probably yes" | Apache-2.0 weights with **undisclosed** training data **[V]**. Output use is probably fine; the problem is that "clean chain" (§7) cannot be asserted for undisclosed data | keep LAM-A2E as a *secondary* teacher; confirm the student meets E-3 with **A2F + Azure labels only**, so LAM can be dropped if challenged |
+| Training a student on gpt-realtime output audio | not discussed | Azure OpenAI terms restrict using output to develop competing models **[U, read the current Product Terms]**. A lip model is very unlikely to "compete", but it is a sign-off item | add it to the §7 legal list |
+| A2F identities | "derivative models ours" | correct **[V]**. But the student learns Claire/James/Mark's *articulation style*; that is no licence issue, only a style issue | the per-character `styleId` should not be marketed as any actor's likeness |
+| Character faces (all tiers) | n/a | for a children's product, no selectable tutor may resemble a real person (teacher, celebrity) without a signed likeness release | add to the character pipeline |
+
+### G-5. Uncanny-valley risks specific to children
+
+1. **The audience spans the age at which uncanny feelings appear.** Brink, Gray and Wellman (2019, *Child Development*,
+   n = 240, ages 3–18) found that children **older than about 9** judged a very human-like robot creepier than a machine-like
+   one, and younger children did not. The effect was predicted by how human-like a mind the children attributed to the robot
+   **[V, abstract]**. Classes 1–9 cover ages ≈6–15, and parents watch too. The older half of the users is in the sensitive
+   band, and an "exactly-human" voice *raises* mind attribution. This strengthens "stylised at v1" and argues against pushing
+   the 10–15 cohort to "video-real" before a kids' panel (E-3/E-7) is split by age band (≤9 versus ≥10).
+2. **Face–voice realism mismatch is itself uncanny.** Mitchell et al. (2011, *i-Perception*): "a mismatch in the human realism
+   of a character's face and voice causes it to be evaluated as eerie" **[V, abstract]**. A human-grade gpt-realtime voice on a
+   cartoon face is that mismatch. Mitigations:
+   - pick a *semi*-stylised art direction, with believable skin and eyes and simplified proportions, rather than a toon;
+   - make motion quality (the non-lip layers) match the voice's quality;
+   - add an **E-9 face–voice congruence A/B** with each character's actual voice.
+3. **Repetition reads as robotic faster than imperfection does.** A child may answer 40–80 items in a lesson, and §6.1 fires
+   the same Duchenne program on every correct one. Changes:
+   - **variant pools** of at least 3–5 parameterised versions per program, with randomised timing, asymmetry and amplitude;
+   - **habituation decay**: intensity drops with repetitions in a window and resets on a streak or milestone;
+   - a cap on full-intensity praise faces per minute.
+4. **Stare risk.** Eye contact of 0.85–0.9 while listening or probing, on a camera-facing avatar, can feel like being watched
+   for a shy child. Children are also commonly taught to lower their gaze before teachers **[U]**. Cap listening eye contact at
+   about 0.7, break gaze every 2–4 s, and include "felt watched or scolded" as a rated item in E-7 for the kids' panel.
+5. **Morph-only ageing is a trap for "Dadi" and "Sir".** Wrinkles and skin folds do not deform under blend shapes without
+   corrective shapes or wrinkle normal maps. An older face that stays smooth while smiling looks rubbery. Signal age with
+   stylised cues (hair, glasses, proportions, slower motion) and keep the realism level equal across characters.
+6. **Mouth interior.** The student predicts `jawOpen` and the `mouth*` channels, and the only tongue channel is `tongueOut`.
+   Hindi dentals (त द, tongue tip visible at the teeth) and wide `jawOpen` × `lipGain` > 1 expose a dark, empty cavity on
+   stylised rigs. Every character therefore needs:
+   - modelled teeth and tongue;
+   - a darkened mouth-cavity gradient;
+   - a `jawOpen` ceiling per character.
+
+### G-6. Production effort: "1–2 weeks of ML work" for T2 is about 5–8× low
+
+Here is a realistic plan for one strong ML and graphics engineer, assuming GPU quota is granted **[U, my estimate]**:
+
+| work | engineer-weeks |
+|---|---|
+| A2F SDK + TensorRT build on an Azure GPU VM, blend-shape solve per actor, ARKit retarget validation on our rigs | 1.5–2 |
+| Licence-clean Hindi/Hinglish alignment (MMS is excluded) and closure-mark QA | 1 |
+| 10–20 h of tutor-register audio per voice, with Opus/NetEq augmentation | 1 |
+| Student training: forecast heads, closure loss, a streaming export with state I/O, the hand-written kernel | 3–4 |
+| faceTap worklet, Worker, compositor, route-aware `latencyComp`, barge-in, VAD gating | 2–3 |
+| Device work: E-2, E-4 and E-5b on at least 3 phones × 3 output routes | 1.5–2 |
+| Blind A/B with adults and a consented kids' panel, split by age band | 2 (elapsed) |
+
+The total is **≈12–15 engineer-weeks** for the lip and behaviour stack. That excludes per-character rigs, where 52 quality
+ARKit shapes plus correctives, teeth and tongue per character are the dominant cost (see `character-creation.md`). HeadAudio-Hindi
+(§5.6) plus the procedural layers (§6) can ship first, in about 3–4 weeks, and the student can replace HeadAudio later behind the
+`FaceFrame` seam. **Sequence it that way, and do not promise T2 at launch.**
+
+### G-7. Changes to the experiment table
+
+- **E-1:** also report the per-pass GPU time on the actual Azure SKU (this replaces the "11 min" arithmetic).
+- **E-2:** pass bars are p95 per **20 ms** frame on the *little* core, with the Worker pinned by load and not by hope; the
+  Worker's total memory includes the WASM module; and **cold start ≤ 1.5 s** to the first `FaceFrame`.
+- **E-3:** add the student closure rate per Δ, and split the kids' panel by age band (≤9 versus ≥10).
+- **E-4:** measure each output route (speaker, wired, BT) separately; the pass bar is **−125 ms ≤ offset ≤ +45 ms**, with the
+  sign recorded.
+- **E-5b (new):** an on-device audio-floor run with and without the faceTap, and with cached-clip playback.
+- **E-9 (new):** face–voice congruence per character, with the actual voice.
+
+Sources added in this review
+- A2F-3D SDK `docs/README.md` (diffusion "generates 60 frames per second", 15/30/15 truncation): https://github.com/NVIDIA/Audio2Face-3D-SDK **[V, read]**
+- A2F-3D v3.0 file listing (`network.onnx` 724,844,664 B) and `network_info.json`: https://huggingface.co/nvidia/Audio2Face-3D-v3.0/tree/main **[V]**
+- onnxruntime-web 1.30.0 dist files: https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ **[M]**
+- fairseq MMS licence: https://github.com/facebookresearch/fairseq/blob/main/examples/mms/README.md **[V]**
+- LAM README (training data and mobile FPS rows): https://github.com/aigc3d/LAM **[V]**
+- Brink, Gray and Wellman 2019, "Creepiness Creeps In: Uncanny Valley Feelings Are Acquired in Childhood", *Child Development*, doi:10.1111/cdev.12999 **[V, abstract]**
+- Mitchell et al. 2011, "A Mismatch in the Human Realism of Face and Voice Produces an Uncanny Valley", *i-Perception*, doi:10.1068/i0415 **[V, abstract]**
+- Micro-bench: `bench/student-ort/` (`mk.py`, `b.mjs`, README) **[M]**

@@ -12,8 +12,10 @@ const FAMILIES = {
   abuse: [
     // A named actor keeps idioms out ("beats me" = no idea; "it hurts me" = a sore arm).
     /\b(he|she|they|papa|mummy|mumma|dad|mom|uncle|aunty|teacher|someone|somebody|bhaiya|didi)\s+(hits|beats|beat|slaps|slapped|touched|touches|hurts|hurt)\s+me\b|\bbad\s*touch\b/i,
-    /\b(mujhe\s*(maar|maarte|marte|peet|peet?te|chhoo?te|chhut[ae])|gandi?\s*tarah\s*(se\s*)?chh?u)/i,
-    /(मुझे\s*(मारते|पीटते|छूते)|गंदा\s*छू)/,
+    // Hindi word order moves the actor around ("mujhe papa maarte hain", "papa mujhe maarte hain"):
+    // allow up to two words between "mujhe" and the verb.
+    /\bmujhe(?:\s+\S+){0,2}?\s+(maar(te|ti|ta)?|marte|peet(te|ti|a)?|chhoo?(te|ta|ti)|chhu(a|te|ta))\b|\bgandi?\s*tarah\s*(se\s*)?chh?u/i,
+    /(मुझे(?:\s+\S+){0,2}?\s+(मारते|मारती|पीटते|पीटती|छूते|छूता)|गंदा\s*छू)/,
   ],
   fear: [
     /\b(scared|afraid)\s*(to\s*go\s*)?(at\s*)?home\b|\bbull(y|ied|ying)\b/i,

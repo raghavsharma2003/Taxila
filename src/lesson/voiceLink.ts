@@ -6,7 +6,7 @@
 import type { RealtimeTokenResponse } from "../../shared/contracts.ts";
 import type { LinkEvent, LinkLevels, TeacherLink } from "./link.ts";
 import { createLevelAnalyser } from "./level.ts";
-import { RealtimeProtocol, turnDetectionFrom } from "./realtime.ts";
+import { audioInputFrom, RealtimeProtocol, turnDetectionFrom } from "./realtime.ts";
 import { Emitter } from "./store.ts";
 
 export interface VoiceLinkOptions {
@@ -45,12 +45,20 @@ export class VoiceLink implements TeacherLink {
   private outbox: Record<string, unknown>[] = [];
   private instructions: string | null = null;
   private turnDetection: Record<string, unknown> = {};
+  /** audio.input as minted (transcription, noise reduction); re-sent whole on a push-to-talk toggle. */
+  private audioInput: Record<string, unknown> = {};
   private pushToTalk = false;
   private talking = false;
   private closed = false;
   private reconnecting = false;
   private reconnects = 0;
   private disconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private pttTailTimer: ReturnType<typeof setTimeout> | null = null;
+  /**
+   * Fails the open() in progress. A peer that dies before its data channel opens fails that attempt (so
+   * connect() or the reconnect loop decides what next) instead of starting a reconnect that would race it.
+   */
+  private failOpen: ((err: Error) => void) | null = null;
 
   constructor(opts: VoiceLinkOptions) {
     this.lessonId = opts.lessonId;
@@ -70,9 +78,15 @@ export class VoiceLink implements TeacherLink {
 
   async connect(): Promise<void> {
     this.events.emit({ type: "connection", state: "connecting" });
-    this.mic = await navigator.mediaDevices.getUserMedia({
+    const mic = await navigator.mediaDevices.getUserMedia({
       audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
     });
+    if (this.closed) {
+      // Closed while the permission prompt was up: release the microphone we were just given.
+      for (const t of mic.getTracks()) t.stop();
+      throw new Error("the voice call was closed");
+    }
+    this.mic = mic;
     this.ctx = new AudioContext();
     void this.ctx.resume().catch(() => {});
     this.levels.mic.attach(createLevelAnalyser(this.ctx, this.ctx.createMediaStreamSource(this.mic)));
@@ -106,14 +120,16 @@ export class VoiceLink implements TeacherLink {
 
   setPushToTalk(on: boolean): void {
     if (on === this.pushToTalk) return;
+    this.clearPttTail(); // a release still in its tail must not mute the mic (or commit) in VAD mode
     this.pushToTalk = on;
     this.talking = false;
-    this.protocol.setTurnDetection(on ? null : this.turnDetection);
+    this.protocol.setTurnDetection(on ? null : this.turnDetection, this.audioInput);
     this.setMicEnabled(!on);
   }
 
   talkStart(): void {
     if (!this.pushToTalk || this.talking) return;
+    this.clearPttTail();
     this.talking = true;
     this.protocol.beginTalk();
     this.setMicEnabled(true);
@@ -124,8 +140,10 @@ export class VoiceLink implements TeacherLink {
     if (!this.talking) return;
     this.talking = false;
     this.events.emit({ type: "child_speech_end", at: Date.now() });
-    setTimeout(() => {
-      if (this.closed || this.talking) return;
+    this.clearPttTail();
+    this.pttTailTimer = setTimeout(() => {
+      this.pttTailTimer = null;
+      if (this.closed || this.talking || !this.pushToTalk) return;
       this.setMicEnabled(false);
       this.protocol.endTalk();
     }, PTT_TAIL_MS);
@@ -134,6 +152,7 @@ export class VoiceLink implements TeacherLink {
   close(): void {
     if (this.closed) return;
     this.closed = true;
+    this.clearPttTail();
     this.teardownPeer();
     this.protocol.reset();
     for (const t of this.mic?.getTracks() ?? []) t.stop();
@@ -155,6 +174,7 @@ export class VoiceLink implements TeacherLink {
     const tok = await this.fetchToken(this.lessonId);
     if (this.closed) return;
     this.turnDetection = turnDetectionFrom(tok.session);
+    this.audioInput = audioInputFrom(tok.session);
 
     const pc = new RTCPeerConnection();
     this.pc = pc;
@@ -162,15 +182,20 @@ export class VoiceLink implements TeacherLink {
     pc.ontrack = (e) => this.onRemoteStream(e.streams[0] ?? new MediaStream([e.track]));
     pc.oniceconnectionstatechange = () => this.onIceState(pc);
     pc.onconnectionstatechange = () => {
-      if (this.pc === pc && pc.connectionState === "failed") void this.reconnect();
+      if (pc.connectionState === "failed") this.lost(pc);
     };
 
     const dc = pc.createDataChannel("oai-events");
     this.dc = dc;
     const opened = new Promise<void>((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error("voice channel did not open")), CHANNEL_OPEN_TIMEOUT_MS);
+      this.failOpen = (err) => {
+        clearTimeout(timer);
+        reject(err);
+      };
       dc.onopen = () => {
         clearTimeout(timer);
+        this.failOpen = null;
         this.onChannelOpen();
         resolve();
       };
@@ -184,7 +209,7 @@ export class VoiceLink implements TeacherLink {
       }
     };
     dc.onclose = () => {
-      if (this.dc === dc && !this.closed) void this.reconnect();
+      if (this.dc === dc) this.lost(pc);
     };
 
     await pc.setLocalDescription(await pc.createOffer());
@@ -206,7 +231,7 @@ export class VoiceLink implements TeacherLink {
     const queued = this.outbox;
     this.outbox = [];
     if (this.instructions !== null) this.protocol.applyInstructions(this.instructions);
-    if (this.pushToTalk) this.protocol.setTurnDetection(null);
+    if (this.pushToTalk) this.protocol.setTurnDetection(null, this.audioInput);
     for (const e of queued) this.send(e);
   }
 
@@ -237,12 +262,19 @@ export class VoiceLink implements TeacherLink {
     const s = pc.iceConnectionState;
     if (this.disconnectTimer) clearTimeout(this.disconnectTimer);
     this.disconnectTimer = null;
-    if (s === "failed") void this.reconnect();
+    if (s === "failed") this.lost(pc);
     else if (s === "disconnected") {
       this.disconnectTimer = setTimeout(() => {
-        if (this.pc === pc && pc.iceConnectionState === "disconnected") void this.reconnect();
+        if (pc.iceConnectionState === "disconnected") this.lost(pc);
       }, DISCONNECT_GRACE_MS);
     }
+  }
+
+  /** The current peer died: fail the open() in progress, or rebuild a call that was up. */
+  private lost(pc: RTCPeerConnection): void {
+    if (this.pc !== pc || this.closed) return;
+    if (this.failOpen) this.failOpen(new Error("the voice call could not connect"));
+    else void this.reconnect();
   }
 
   /**
@@ -278,6 +310,9 @@ export class VoiceLink implements TeacherLink {
   private teardownPeer(): void {
     if (this.disconnectTimer) clearTimeout(this.disconnectTimer);
     this.disconnectTimer = null;
+    const fail = this.failOpen;
+    this.failOpen = null;
+    fail?.(new Error("the voice call was closed"));
     const { pc, dc } = this;
     this.pc = null;
     this.dc = null;
@@ -292,6 +327,11 @@ export class VoiceLink implements TeacherLink {
     this.remoteSource?.disconnect();
     this.remoteSource = null;
     this.levels.teacher.detach();
+  }
+
+  private clearPttTail(): void {
+    if (this.pttTailTimer) clearTimeout(this.pttTailTimer);
+    this.pttTailTimer = null;
   }
 
   private setMicEnabled(on: boolean): void {

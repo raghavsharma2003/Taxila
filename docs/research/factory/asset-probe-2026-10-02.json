@@ -1,0 +1,442 @@
+{
+  "date": "2026-10-02",
+  "model": "taxila-image",
+  "base": "https://<res>.openai.azure.com/openai/v1",
+  "rows": [
+    {
+      "id": "A-transparent",
+      "kind": "gen",
+      "http": 200,
+      "ms": 17473,
+      "req": {
+        "prompt": "Flat 2D vector illustration for a children's learning app: rounded shapes, uniform thick dark-brown outline, flat colour fills with one shade tone, no gradients",
+        "size": "1024x1024",
+        "quality": "low",
+        "background": "transparent",
+        "output_format": "png"
+      },
+      "bytes": 780352,
+      "usage": {
+        "input_tokens": 64,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 64
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 260
+      },
+      "revised": null,
+      "pngColorType": 6,
+      "safety": {
+        "http": 200,
+        "ms": 826,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "B-magenta-mango",
+      "kind": "gen",
+      "http": 200,
+      "ms": 13428,
+      "req": {
+        "prompt": "Flat 2D vector illustration for a children's learning app: rounded shapes, uniform thick dark-brown outline, flat colour fills with one shade tone, no gradients",
+        "size": "1024x1024",
+        "quality": "low",
+        "output_format": "png"
+      },
+      "bytes": 419157,
+      "usage": {
+        "input_tokens": 92,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 92
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 288
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 602,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "C-protege-sheet",
+      "kind": "gen",
+      "http": 200,
+      "ms": 28014,
+      "req": {
+        "prompt": "Flat 2D vector illustration for a children's learning app: rounded shapes, uniform thick dark-brown outline, flat colour fills with one shade tone, no gradients",
+        "size": "1536x1024",
+        "quality": "medium",
+        "output_format": "png"
+      },
+      "bytes": 1140683,
+      "usage": {
+        "input_tokens": 179,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 179
+        },
+        "output_tokens": 1372,
+        "output_tokens_details": {
+          "image_tokens": 1372,
+          "text_tokens": 0
+        },
+        "total_tokens": 1551
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 598,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "D1-edit-wave",
+      "kind": "edit",
+      "http": 200,
+      "ms": 18494,
+      "req": {
+        "prompt": "The exact same character Golu from the reference sheet, same face, hair, skin tone, clothes and colours, same flat outline style. Single full-body pose: waving ",
+        "size": "1024x1024",
+        "quality": "low",
+        "input_fidelity": "high",
+        "refs": [
+          "C-protege-sheet.png"
+        ]
+      },
+      "bytes": 546956,
+      "usage": {
+        "input_tokens": 1616,
+        "input_tokens_details": {
+          "image_tokens": 1536,
+          "text_tokens": 80
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 1812
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 493,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "D2-edit-think",
+      "kind": "edit",
+      "http": 200,
+      "ms": 18200,
+      "req": {
+        "prompt": "The exact same character Golu from the reference sheet, same face, hair, skin tone, clothes and colours, same flat outline style. Single full-body pose: thinkin",
+        "size": "1024x1024",
+        "quality": "low",
+        "input_fidelity": "high",
+        "refs": [
+          "C-protege-sheet.png"
+        ]
+      },
+      "bytes": 585214,
+      "usage": {
+        "input_tokens": 1614,
+        "input_tokens_details": {
+          "image_tokens": 1536,
+          "text_tokens": 78
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 1810
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 584,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "D3-edit-think-lowfid",
+      "kind": "edit",
+      "http": 200,
+      "ms": 15328,
+      "req": {
+        "prompt": "The exact same character Golu from the reference sheet, same face, hair, skin tone, clothes and colours, same flat outline style. Single full-body pose: thinkin",
+        "size": "1024x1024",
+        "quality": "low",
+        "input_fidelity": "low",
+        "refs": [
+          "C-protege-sheet.png"
+        ]
+      },
+      "bytes": 600738,
+      "usage": {
+        "input_tokens": 1614,
+        "input_tokens_details": {
+          "image_tokens": 1536,
+          "text_tokens": 78
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 1810
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 739,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "E-prop-in-style",
+      "kind": "edit",
+      "http": 200,
+      "ms": 17617,
+      "req": {
+        "prompt": "Using only the illustration style of the reference (outline weight, flat fills, palette), draw a steel plate with two rotis and a small bowl of yellow dal. No c",
+        "size": "1024x1024",
+        "quality": "low",
+        "refs": [
+          "C-protege-sheet.png"
+        ]
+      },
+      "bytes": 928041,
+      "usage": {
+        "input_tokens": 1607,
+        "input_tokens_details": {
+          "image_tokens": 1536,
+          "text_tokens": 71
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 1803
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 622,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "F-unguided-1",
+      "kind": "gen",
+      "http": 200,
+      "ms": 23216,
+      "req": {
+        "prompt": "Children's book illustration: an Indian family eating dinner together at home.",
+        "size": "1024x1024",
+        "quality": "low"
+      },
+      "bytes": 2090752,
+      "usage": {
+        "input_tokens": 20,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 20
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 216
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 983,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "F-unguided-2",
+      "kind": "gen",
+      "http": 200,
+      "ms": 22985,
+      "req": {
+        "prompt": "Children's book illustration: an Indian family eating dinner together at home.",
+        "size": "1024x1024",
+        "quality": "low"
+      },
+      "bytes": 2131721,
+      "usage": {
+        "input_tokens": 20,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 20
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 216
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 899,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "F-castspec-1",
+      "kind": "gen",
+      "http": 200,
+      "ms": 20543,
+      "req": {
+        "prompt": "Flat 2D vector illustration for a children's learning app: rounded shapes, uniform thick dark-brown outline, flat colour fills with one shade tone, no gradients",
+        "size": "1024x1024",
+        "quality": "low"
+      },
+      "bytes": 1592988,
+      "usage": {
+        "input_tokens": 130,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 130
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 326
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 729,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "F-castspec-2",
+      "kind": "gen",
+      "http": 200,
+      "ms": 17941,
+      "req": {
+        "prompt": "Flat 2D vector illustration for a children's learning app: rounded shapes, uniform thick dark-brown outline, flat colour fills with one shade tone, no gradients",
+        "size": "1024x1024",
+        "quality": "low"
+      },
+      "bytes": 1443374,
+      "usage": {
+        "input_tokens": 130,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 130
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 326
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 608,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "G-rupee-unguided",
+      "kind": "gen",
+      "http": 200,
+      "ms": 18867,
+      "req": {
+        "prompt": "A ten rupee coin and a fifty rupee note on a table, illustration for kids.",
+        "size": "1024x1024",
+        "quality": "low"
+      },
+      "bytes": 1784972,
+      "usage": {
+        "input_tokens": 25,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 25
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 221
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 580,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    },
+    {
+      "id": "G-rupee-generic",
+      "kind": "gen",
+      "http": 200,
+      "ms": 14694,
+      "req": {
+        "prompt": "Flat 2D vector illustration for a children's learning app: rounded shapes, uniform thick dark-brown outline, flat colour fills with one shade tone, no gradients",
+        "size": "1024x1024",
+        "quality": "low"
+      },
+      "bytes": 502611,
+      "usage": {
+        "input_tokens": 116,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 116
+        },
+        "output_tokens": 196,
+        "output_tokens_details": {
+          "image_tokens": 196,
+          "text_tokens": 0
+        },
+        "total_tokens": 312
+      },
+      "revised": null,
+      "pngColorType": 2,
+      "safety": {
+        "http": 200,
+        "ms": 1152,
+        "body": "{\"categoriesAnalysis\":[{\"category\":\"Hate\",\"severity\":0},{\"category\":\"SelfHarm\",\"severity\":0},{\"category\":\"Sexual\",\"severity\":0},{\"category\":\"Violence\",\"severity\":0}]}"
+      }
+    }
+  ]
+}

@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Module frame: loaded in <iframe sandbox="allow-scripts"> by src/modules/host.tsx. Engines get no
-         network (connect-src 'none'), cannot submit forms or retarget URLs. -->
-    <meta http-equiv="Content-Security-Policy" content="connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'" />
+    <!-- Module frame: loaded in <iframe sandbox="allow-scripts"> by src/modules/host.tsx. Its
+         Content-Security-Policy (no network at all) is injected first in <head> by vite.config.ts, the
+         build variant strict and the dev variant allowing only Vite's inline refresh preamble;
+         server/serve.mjs adds the HTTP-level sandbox and frame-ancestors. -->
     <title>Taxila activity</title>
   </head>
   <body>

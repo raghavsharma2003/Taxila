@@ -202,7 +202,7 @@ function LessonPanel({ me, onSignedOut }: { me: Me; onSignedOut: () => Promise<v
             End lesson
           </button>
           <span data-testid="phase">phase: {state.phase}</span>
-          <span>connection: {state.connection}</span>
+          <span data-testid="connection" data-connection={state.connection}>connection: {state.connection}</span>
           <span data-testid="pending" data-pending={state.pendingTurns}>director calls: {state.pendingTurns}</span>
         </div>
         {!me.children.length && <p>This account has no child yet.</p>}

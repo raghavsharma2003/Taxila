@@ -499,3 +499,148 @@ Platform and law
 - WhatsApp pricing: https://developers.facebook.com/docs/whatsapp/pricing/ ; https://whautomate.com/whatsapp-business-api-pricing-india ; https://360dialog.com/blog/whatsapp-service-message-charging-october-2026/
 - WhatsApp general-purpose AI ban: https://respond.io/blog/whatsapp-general-purpose-chatbots-ban
 - DPDP Schedule IV: https://www.dpdpa.com/schedule/schedule4.html ; Rule 14 timelines: https://ruleexpert.com/guides/dpdp-rules-2025/
+
+---
+
+## Critique
+
+Reviewer: design critic, 2026-10-02. Method: read the document against its own rules (PX1-PX10, §12-13) and
+against the product brief (classes 1-9, shared low-end phones, patchy data). No new sources were fetched;
+every point below is [inference] from the document's own evidence unless tagged [M] (verify before build).
+Severity: **B** blocks build, **S** should fix before build, **N** note.
+
+### A. Babyish for 10-15 (and surveillance-flavoured)
+
+1. **B. The persistent "Mummy-Papa dekh sakte hain" chip is shown to Class 5-9 children (§12).** A 12-15
+   year old reads a permanent parent-is-watching badge as surveillance and as babyish. It also works against
+   the document's own admission (§12 rationale) that teens who know a parent reads will not disclose
+   distress. Correction: show the chip for Class 1-4 only. For Class 5-9, tell the child once at handover
+   and once in settings, in neutral wording ("what you learn goes into a weekly report"), and make the
+   in-lesson notice event-based (only when transcripts are opened), as §12 already proposes. Also drop
+   "Mummy-Papa": say "ghar ke bade" or "your family", since the phone owner may be a grandparent, aunt or
+   guardian.
+2. **S. O8 avatar pick is one choice for ages 6-15.** Offer age-banded options (cartoon for 1-4; neutral or
+   no avatar for 5-9) and let a 10+ child skip it. Name the child-facing surface as out of scope here, or
+   link its doc; this one has no child screen at all.
+3. **N. Adult-register tone in §14 is right for parents; keep it out of the child mode.** The parent
+   strings ("aap", PTM register) must not leak into anything the child sees on a shared phone.
+
+### B. Accessibility
+
+4. **B. The weekly report is an image with the facts baked in (§8).** A screen reader reads nothing, text
+   cannot be resized, and a low-vision or low-literacy parent cannot have it spoken unless they tap "Suno".
+   Correction: the template body carries the same facts as real text (it already has ≤5 lines; make them
+   complete, not teaser), the image is a convenience for forwarding, and the image gets alt text where the
+   channel allows. Do not rely on the image as the only carrier.
+5. **B. Roman-script Hinglish is the mock script everywhere (§7-8), while 46.7% of rural mothers in the
+   doc's own evidence have never been to school (§1.1).** Roman Hindi is harder to read for many of them
+   than Devanagari. Correction: the default script follows the O1 language tile (हिन्दी gets Devanagari,
+   not Roman); the four state words need Devanagari forms (अभी नहीं, सीख रही, आ गया, पक्का), and the
+   spoken version is the primary path for low literacy, not the fallback.
+6. **B. State words are gendered.** "Seekh rahi" and "Ab kar sakti hai" hard-code a girl; the doc's mocks
+   use "she/Riya" throughout, and O4 collects no gender. For a boy, "seekh rahi" is simply wrong Hindi.
+   Correction: either collect gender (optional, with "prefer not to say") and conjugate, or use
+   gender-neutral forms (noun phrases like "abhyaas jaari", or the child's name plus an infinitive).
+   Pick one and lint it; the gender field then needs its own DPDP minimisation note.
+7. **S. Caption floor 13 px is too small for Devanagari on a low-end screen.** Matras and conjuncts at 13 px
+   on a 720p, 5-inch panel are unreadable to many older eyes. Correction: floor 14 px Devanagari / 13 px
+   Latin only for non-essential metadata; the four state chips, dates and home-task text stay at body size.
+8. **S. Touch targets.** 44 px is the web figure; Android Material guidance is 48 dp [M: confirm the number
+   against Material docs]. Use 48 dp for chips, speaker buttons and the "Ho gaya / Is hafte nahi" pair, with
+   8 dp spacing so a thumb on a cracked screen does not hit the wrong one.
+9. **S. "Voice note after the parent taps Suno" adds a step for the least literate parents (§8).** The most
+   accessible form is the one that arrives without a tap. Test sending the voice note as a template where
+   the channel allows [M: audio header support unverified, as the doc itself says], and measure the tap-through
+   before assuming parents will find "Suno".
+10. **N. Hindi TTS on the device.** The speaker buttons need either an on-device Hindi voice (often absent or
+    low quality on Android Go) or server audio over patchy data. Under the Azure-only directive this means
+    Azure speech, so cache the 10 most common strings per language in the APK and degrade to text.
+
+### C. Reward-economy creep
+
+11. **B. "Mehnat" counts (retries, own-words explanations, questions) are a hidden points system (§0.8, §7).**
+    Anything counted and shown weekly becomes a target: the tutor or child is nudged to produce more
+    retries and questions (Goodhart), and a parent will read 5 vs 3 as a score. It contradicts "no points"
+    in spirit. Correction: show effort as a descriptive sentence about one real event this week ("tried the
+    borrowing sum again after a wrong answer on Tuesday"), not a tally; never show week-on-week change in
+    effort; never let the Director optimise for these counts, and say so in the logged decision
+    (`px-effort-as-actions` should reverse to "descriptive, not counted").
+12. **S. "Compare to last week" toggle (§8) is a streak by another name.** An own-past comparison still
+    creates a trend line to defend. Limit it to skill states ("last week practising, now got it") and drop
+    any minutes/lessons delta.
+13. **S. The "Ho gaya" button and M3 "home task completion rate" make completion a metric.** Parents then
+    feel graded, and Kraft-Rogers' mechanism is changed talk at home, not a ticked box. Correction: the
+    button logs nothing visible to the child; measure the delayed retention of the skill, and treat completion
+    rate as diagnostic only, never a KPI or a reminder trigger.
+14. **S. Milestone alerts ("a skill turned Pakka") and the filled Pakka chip are celebration objects.**
+    Keep them, but never confetti, badge, count of Pakka skills over time as a headline, or "N skills this
+    month" totals shown to the child. The syllabus header "topics pakka" count is fine as coverage; do not
+    chart it over time.
+15. **N. Two good reward-free choices to keep:** no public recognition (rejected from Rocket Learning), no
+    streak or absence alerts (§11).
+
+### D. Text load (6-9 and low-literacy parents)
+
+16. **B. Transcripts are default-visible for Class 1-4 (§12) and a 6-9 year old cannot be asked to consent to,
+    or even read, what is exposed.** That is acceptable for a parent, but the parent is often non-literate
+    (§1.1) and a transcript is the worst format for them. Correction: the default parent view for 1-4 is a
+    spoken 20-second summary per lesson, with the transcript behind one tap.
+17. **S. The Home dashboard has seven stacked blocks (§7) and the consent screen five rows plus an
+    eight-item trust page (§6 O5-O6).** For a first-time, low-literacy parent this is a wall. Correction:
+    Home shows three things in order (this week in one sentence with a speaker button, the one home task, a
+    "more" door); everything else is a second level. O6 shows the three promises that matter (price and
+    cancel, no sales calls, delete anything) as icon plus one line each, with the full text one tap deeper.
+18. **S. The child-facing text budget is absent.** For ages 6-9 any child-visible text (state words, the
+    family chip, handover prompt) should be spoken first and ≤6 words; add this as a rule (PX11) rather than
+    leaving it to the child-surface doc.
+19. **N. Home task copy "roti in 3 and 4" assumes a shared dinner, a kitchen, and an adult who cuts food.**
+    It also casts the cooking as the mother's task. Correction: the parent picks the object (a rupee note,
+    paper fold, a handful of anything) from three options, and the example set must not be all food.
+
+### E. Low-end Android and patchy data
+
+20. **B. The PIN recovery OTP goes to the parent's number, and §1.1 says the shared phone is most often the
+    mother's.** The child holds the device that receives the OTP, so a Class 6-9 child can reset the Parent
+    PIN and read transcripts. The doc rejected the maths gate for the same child-can-solve reason but
+    accepts this one. Correction: recovery needs a second factor not on the shared device (WhatsApp from a
+    different registered number, or a time-delay of 24 h with notice to the parent), and OTP SMS-autofill
+    must be disabled on the PIN reset screen.
+21. **B. Safety alerts and reports arrive as WhatsApp notifications on the same shared phone (§11).** The
+    text never quotes the child, but a lock-screen preview saying a "safety-relevant moment" happened is a
+    disclosure event for a child who is holding the phone, and also chills disclosure for 10-15. Correction:
+    the template wording must be neutral to a shoulder-surfer ("an update about Taxila"), with detail behind
+    the PIN; check whether Taxila should suppress WhatsApp for safety on shared-device households and use
+    in-app plus a call-me route [M: safeguarding expert, per rule 33].
+22. **S. "Android ships Noto Sans and Noto Sans Devanagari, zero font bytes" (§13) is not safe as written.**
+    System fonts are not reliably addressable by family name from a WebView, and Android Go builds vary
+    [M: test on real Android 8-10 Go devices]. Correction: use `sans-serif` with `lang="hi"` so the system
+    fallback applies, and ship one subsetted Devanagari WOFF2 (budget it, <60 KB) as the guaranteed floor;
+    do not claim zero bytes before measuring.
+23. **S. Patchy data on the first-run path.** O1 plays voice samples and O2 streams a 20 s greeting before
+    anything is cached. Correction: bundle O1/O2 audio in the APK; make every parent screen after O3 render
+    from a cached last-good state with a visible "last updated" line, and queue "Ho gaya" and consent
+    toggles offline. State a payload budget for the Home view (target <100 KB JSON, no images except the
+    report card).
+24. **S. The Rule 10 consent step (DigiLocker or verified identity) on a 1-2 GB RAM device with a slow
+    network is the likeliest drop-off point (the doc says as much in §17).** Provide a resumable step and a
+    "continue on another phone" link by WhatsApp so the parent is not stuck on the shared device.
+25. **N. Report card image 1080×1350, ≤300 KB** is fine for data, but render the WhatsApp text body so it
+    works if the image fails to download on 2G.
+
+### F. Consistency problems inside the document
+
+26. **S. §0.11 says "parents see all learning" while §12 hides transcripts from the parents of 10-15 year olds
+    until requested.** The Kaise pata? sheet already shows child's words (≤25 words) for every claim, so the
+    carve-out is thinner than it reads. State clearly which is the rule, and what is withheld.
+27. **S. "Aa gaya" (got it today) can be read as "finished".** Parents trained by marks will treat it as a
+    pass. Test the four words with ≥4 parents with ≤Class 8 schooling (M6) before locking PX2; keep the
+    re-check date on the chip itself, not only in the sheet.
+28. **N. Two decisions rely on thresholds that are guesses (the 25-minute break for 10-15, daily minutes by
+    class).** The doc tags them [inference]; keep them as pilot-tunable defaults, not copy shown to parents
+    as guidance.
+
+### G. What survives the attack (keep)
+
+Utility-only report; one home task; no comparison or siblings; no absence alerts; Pakka needs a delayed
+check; "Kaise pata?" evidence sheet; unbundled consent with a real "no"; safety alerts that never quote the
+child. These are sound and should not be loosened by the corrections above.

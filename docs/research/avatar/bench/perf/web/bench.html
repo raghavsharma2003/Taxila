@@ -1,0 +1,37 @@
+<!doctype html><meta charset="utf-8"><title>avatar perf bench</title>
+<body style="margin:0;background:#222">
+<canvas id="c" style="width:360px;height:400px"></canvas>
+<script type="module">
+// Query: mode=main|worker  avatar=<glb>  load=0|light|heavy  lip=direct|relay|none  dpr  seconds
+const q = new URLSearchParams(location.search);
+const mode = q.get("mode") || "main", load = q.get("load") || "0", lipMode = q.get("lip") || "none";
+const opts = { avatar: "/glb/" + (q.get("avatar") || "brunette.glb"), w: 360, h: 400, dpr: +(q.get("dpr") || 1), seconds: +(q.get("seconds") || 10) };
+// A "module iframe" in the SAME renderer process (Android WebView has no out-of-process iframes): busy-waits on its own schedule.
+if (load !== "0") { const busy = load === "heavy" ? 50 : 16;
+  const f = document.createElement("iframe"); f.setAttribute("sandbox", "allow-scripts allow-same-origin");
+  f.srcdoc = `<script>setInterval(()=>{const e=performance.now()+${busy};while(performance.now()<e);},100)<\/script>`; document.body.appendChild(f); }
+// Lip source: an AudioWorklet that emits an envelope value every 8 quanta (~21 ms at 48 kHz).
+let lipPortForWorker = null, mainLip = 0; const mainGaps = []; let lastArr = 0;
+if (lipMode !== "none") {
+  const ctx = new AudioContext({ sampleRate: 48000 });
+  const code = `class P extends AudioWorkletProcessor{constructor(){super();this.n=0;this.port.onmessage=e=>{this.out=e.data;}}
+    process(){if((++this.n&7)===0){const v=0.5+0.5*Math.sin(currentTime*9);(this.out||this.port).postMessage(v);}return true}} registerProcessor("p",P);`;
+  await ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([code], { type: "text/javascript" })));
+  const node = new AudioWorkletNode(ctx, "p"); node.connect(ctx.destination); await ctx.resume();
+  if (lipMode === "direct") { const ch = new MessageChannel(); node.port.postMessage(ch.port1, [ch.port1]); lipPortForWorker = ch.port2; }
+  else { // relay: worklet -> main thread -> (worker | main render)
+    const ch = new MessageChannel(); lipPortForWorker = mode === "worker" ? ch.port2 : null;
+    node.port.onmessage = (m) => { const n = performance.now(); if (lastArr) mainGaps.push(n - lastArr); lastArr = n; mainLip = m.data; if (mode === "worker") ch.port1.postMessage(m.data); };
+  }
+}
+const canvas = document.getElementById("c");
+let res;
+if (mode === "worker") {
+  const off = canvas.transferControlToOffscreen(); const w = new Worker("./worker.js", { type: "module" });
+  res = await new Promise((r) => { w.onmessage = (e) => r(e.data); w.postMessage({ canvas: off, opts, port: lipPortForWorker }, [off, ...(lipPortForWorker ? [lipPortForWorker] : [])]); });
+} else {
+  const { start } = await import("./render.js");
+  res = await start(canvas, { ...opts, getLip: lipMode !== "none" ? () => mainLip : null }); res.lipGaps = mainGaps;
+}
+window.__result = res;
+</script>

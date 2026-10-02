@@ -584,3 +584,246 @@ LT10 is a wellbeing gate. If L2 reports increase parent pressure or child anxiet
 - Brandmaier, A. M., von Oertzen, T., Ghisletta, P., Lindenberger, U., & Hertzog, C. (2018). Precision, reliability, and effect size of slope variance in latent growth curve models. *Frontiers in Psychology* 9:294. https://doi.org/10.3389/fpsyg.2018.00294 [V full text via Europe PMC]
 - Rast, P., & Hofer, S. M. (2014). Longitudinal design considerations to optimize power to detect variances and covariances among rates of change. *Psychological Methods* 19, 133-154. [S]
 - Willett, J. B. (1989). Some results on reliability for the longitudinal measurement of change. *Educational and Psychological Measurement* 49, 587-602. [S via Brandmaier]
+
+---
+
+## Methodologist review
+
+**Reviewer stance:** adversarial (developmental psychologist + psychometrician). **Date:** 2026-10-02.
+**What was checked:**
+- Re-ran `learning-over-time-relsim.py` unchanged.
+- Re-simulated durability reliability under the lag design that §5.8 and invariant 5 actually permit. The script is in the session scratchpad (`lagsim.py`, seed 11, 300 children per cell); the same code is restated inline below.
+- Recomputed the §5.7 GRR claim.
+- Checked key citations against primary sources:
+  - Europe PMC abstracts for Koedinger 2023, Zerr 2018, Brainerd 1990, Cepeda 2008, Darby & Sloutsky 2015a/b, Henderson 2012, Vlach & Sandhofer 2012 and Dewald 2010.
+  - Cepeda 2008 full text (ERIC PDF), Lee et al. 2026 (arXiv HTML), and Brandmaier 2018 full text (PMC5932409).
+  - Crossref metadata for Shuell & Keppel 1970, Slamecka & McElree 1983, Loftus 1985 and Lee & Bussey 2001.
+
+The search budget for this session ran out before the review, so a few points below rest on reviewer knowledge and are tagged [U].
+
+**Overall verdict.** The document is cautious in the right places. It refuses rate claims, bans trait language, makes the system explanation the first explanation, and gates wellbeing. But four of its load-bearing numbers or readings do not survive checking:
+- the durability reliability that justifies LT-D1 and the L2 threshold;
+- the reading of Brainerd 1990 in the executive summary;
+- the reading of Lee et al. 2026 in LT-D3;
+- the GRR arithmetic in §5.7.
+
+In addition, the parent-facing grade-equivalent band is psychometrically indefensible as written. None of these problems overturns the architecture. All of them change what can be promised and when.
+
+### R1 (critical). Durability reliability is overstated, because the simulation's lag design is one the document itself forbids
+
+§5.6 draws lags from U(1, 30) days at a base half-life of 8 days, so true recall at the longest lags falls to about 0.07. But:
+- §5.8.4 and invariant 5 cap randomisation at predicted retention ≥ 0.6;
+- the scheduler targets R ≈ 0.9, with jitter × U(0.6, 1.6).
+
+The original simulation therefore observes the steep tail of the curve, which is exactly what the design never sees. This is the range-restriction problem the document itself diagnoses in Settles & Meeder (AUC 0.538).
+
+Re-simulation (same model and priors as §5.6; child SD 0.5, item SD 0.5, h = 8 d) gives *computed* reliability corr(est, truth)²:
+
+| lag design | M = 20 | M = 40 | M = 80 |
+|---|---|---|---|
+| §5.6 original, U(1, 30) d | 0.40 | 0.70 | 0.82 |
+| widest window invariant 5 allows (population R ∈ [0.6, 0.95]) | 0.36 | 0.52 | 0.67 |
+| scheduler as specified (R = 0.9 × U(0.6, 1.6)) | 0.31 | **0.43** | 0.49 |
+| scheduler + 5% fixed-lag probes (1-30 d) | 0.21 | 0.42 | 0.55 |
+
+Even these figures are optimistic. The simulation also:
+- treats hyperparameters as known;
+- ignores error in S0 (the LT-D4 covariate);
+- ignores the testing effect (each check changes the memory);
+- ignores the asymptote a, which cannot be identified at all without long lags.
+
+**Corrections:**
+- LT-D1's "durability reaches about 0.7 at about 40 delayed checks" becomes "about 0.4-0.5 at 40 under the permitted design; 0.7 needs well over 80 checks per topic type, or a wider lag window."
+- The §6.3 L2 floor of "≥ 30 randomised-lag checks" is inconsistent with the document's own numbers. Set it from LT6 using the permitted lag distribution; expect it to be 80 or more.
+- State the trade-off explicitly: the wellbeing bound (R ≥ 0.6) and identifiability of durability pull against each other. The owner must choose the operating point; it should not be hidden in a simulation default.
+
+### R2 (critical). The fixed-lag calibration probes contradict invariant 5
+
+§5.8.2 places ≤ 5% of probes at fixed lags of 1, 3, 7, 14 and 30 days on "a randomly chosen mastered skill". At the half-lives the document assumes, a 30-day probe has R far below 0.6. That breaks invariant 5, unless probes are restricted to skills whose current FSRS stability makes the lag safe. Restricting them selects on S and brings back range restriction.
+
+**Correction:** choose one of the following and document it:
+- (a) Probes are exempt from invariant 5, because a failed probe is followed by immediate review and so costs one item, not learning. Justify this explicitly.
+- (b) Probes are S-conditional, and the selection is modelled by inverse-propensity weighting.
+
+The current text claims both properties at once.
+
+### R3 (critical). Out-of-platform exposure is the dominant confound for "durability", and it is unnamed
+
+Indian children in classes 1-9 are taught the same chapters at school during the retention interval. Many also attend tuition and do homework, and parents help [U on prevalence for Taxila users]. A delayed check after 14 days on the chapter the school is teaching this month is not a measure of memory decay.
+
+As a result, u_c,tt (and φ_c) estimates **retention in the child's whole learning ecology**. That quantity is correlated with:
+- the school calendar;
+- board (CBSE, RBSE, others);
+- SES;
+- parental help during sessions (contamination of the response itself).
+
+I11 handles only session spacing.
+
+**Corrections:**
+- Name the estimand as ecological retention.
+- Add an exposure covariate: whether the chapter is currently being taught at school, from a board or term calendar plus a one-tap parent or child report.
+- Interpret H3 and H8 conditional on it.
+- Parent sentences already describe topics rather than memory, which is fine. They must never be paraphrased by the generator into memory language ("her memory for…").
+
+### R4 (critical). Brainerd et al. 1990 is misread in the executive summary, and overstated in §3.2
+
+The abstract [V] says that repeated findings of age-invariant forgetting "may have been artifacts of … measurement insensitivity, floor effects, and stages-of-learning confounds". It then proceeds "assuming, as some later studies suggest, that forgetting rates vary with age when these factors are controlled".
+- §1 point 4 says the opposite: "Children forget at rates similar to adults once learning is equated … (Brainerd et al. 1990)".
+- §3.2 turns "assuming, as some later studies suggest" into an established finding.
+
+**Correction:**
+- §1.4 should read: "Apparent age-invariance of forgetting is probably a measurement artefact (Brainerd et al. 1990). Whether forgetting slows between 7 and 15 once degree of learning is equated is unresolved, and that is H3."
+- §3.2 should read "argue that", not "forgetting rates do vary".
+
+### R5 (critical). Lee et al. 2026 is misread in LT-D3
+
+The paper [V, arXiv HTML] does **not** claim that mastery-based exit causes *under*-estimation of slope heterogeneity.
+- It proposes, without adjudicating, a cognitive alternative: learning curves are concave, so linear slopes fitted through early opportunities are steeper than slopes fitted through late ones.
+- It states that its results "do not establish that students learn at substantially different rates … [this] is a substantive question this paper does not resolve."
+- The +233% is a pattern-mixture contrast, short-pair vs long-pair slope SD. It is not a "short-practice-only fit".
+
+**Corrections:**
+- LT-D3's rationale becomes: "the sign of the exit bias is unknown, so only randomised exposure can identify it." Randomisation remains the right decision, but for an honest reason.
+- §5.2's iAFM is linear in T on the logit scale. Concavity alone can generate slope-variance differences between short and long sequences. LT1 must therefore fit a concave form (log(1 + T), as §5.5 already does) and report how the slope-variance estimate moves between forms.
+
+### R6 (critical). The grade-equivalent band in parent reports (§3.7, §7 principle 7, report block [Progress])
+
+Grade equivalents are the most criticised score type in educational measurement:
+- they are not equal-interval;
+- they depend on a norming sample;
+- they extrapolate beyond the grades actually tested;
+- parents systematically misread them as placement statements [U: standard psychometric consensus, e.g. the AERA/APA/NCME Standards; not re-verified this session].
+
+Taxila has no Indian norming sample, and no vertical scale (K4 is open). "Working at early Class 5 level" is a norm-referenced comparison, which contradicts principle 7 ("no comparisons"). For an Indian parent of a Class 6 child, it is also a high-stakes, below-grade label.
+
+**Correction:**
+- Replace GE bands with criterion-referenced statements against NCERT chapter learning outcomes ("can add unlike fractions; next: …"), plus the θ trajectory on an unlabelled scale with its ribbon.
+- A GE band may be reconsidered only after vertical scaling, a representative norming study and a parent-comprehension test. The default is never.
+
+### R7 (critical). The §5.7 GRR arithmetic is wrong by about a factor of two in the required slope SD
+
+Monthly snapshots over 6 months (7 occasions, t in years) give SST = 0.194 yr². With σ_ε = 0.3 the *computed* GRR is:
+
+| σ_S (GE/yr) | 0.25 | 0.5 | 0.75 | 1.0 | 1.5 |
+|---|---|---|---|---|---|
+| GRR, 6 months monthly | 0.12 | **0.35** | 0.55 | 0.68 | 0.83 |
+| GRR, 12 months monthly | n/a | 0.78 | n/a | n/a | n/a |
+
+So "useful GRR only if σ_S ≳ 0.5 GE/yr" is wrong. GRR 0.7 at 6 months needs σ_S ≈ 1.04 GE/yr, which is implausible when mean growth is about 1 GE/yr by construction. Two further problems:
+- **Units.** Glicko σ is on the rating/logit scale, not GE.
+- **Independence.** Monthly Glicko μ snapshots are *filtered* estimates: each one contains all earlier data. Their errors are autocorrelated, so Willett's GRR, which assumes independent occasion errors, does not apply. Use occasion-specific θ estimated from that month's responses only.
+
+**Correction:** no individual growth-rate statement under about 12 months, in any form. The trajectory with its ribbon is the only growth display. The Brandmaier worked example (3 occasions over 5 years: ECR 0.64, GRR 0.63) is verified in the full text.
+
+### R8 (major). "High" reliability for C1, and Monte-Carlo precision of §5.6
+
+- **"High" is too strong.** Reliability 0.68 at 35 observations implies a 90% interval of about ±0.93 population SD on a child's standing. The conventional bar for individual-level interpretation is 0.8-0.9 [U]. Relabel C1 as "moderate at 35; adequate for low-stakes routing at about 70".
+- **The simulation is optimistic.** It passes the true KC difficulties and true hyperparameters to the fitter.
+- **The figures carry Monte-Carlo error.** Re-running the unchanged script gave:
+  - intercept 0.64 at 35 observations (reported 0.68), and 0.81 at 70;
+  - slope 0.53 at 900 observations (reported 0.61).
+
+  All other cells reproduced. With 300-400 children per cell and a shared RNG stream, the Monte-Carlo error is roughly ±0.05-0.08. Report intervals from replicated seeds, not two-decimal point values.
+- **The 1,000-observation result is informative.** The script also computed 100 skills × 10 opportunities = 1,000 observations, which §5.6 does not show: slope reliability was 0.23, below 450 observations at 30 × 15. Per-skill sequence length, not total observations, drives slope reliability. Add this row; it strengthens LT-D1.
+
+### R9 (major). "Fades faster" is scale-dependent
+
+Whether two forgetting curves differ in *rate* depends on the scale: proportion correct, logit, or Loftus's horizontal time-to-equal-performance comparison (Loftus 1985; Slamecka 1985 comment; Slamecka & McElree 1983, which reported roughly parallel forgetting across degrees of learning) [metadata V; content U from reviewer knowledge].
+
+HLR-C's log2 half-life metric builds in an exponential form. A child with a lower degree of learning but the same absolute decay will show a shorter half-life. Conditioning on S0 (LT-D4) helps, but it does not remove functional-form dependence.
+
+**Correction:** before any L2 claim, and in H2/H3:
+- show that the child effect has the same sign and similar size under exponential-plus-floor, power (FSRS-6) and horizontal comparisons;
+- otherwise report nothing.
+
+### R10 (major). The direct child test of Underwood is missing
+
+Shuell & Keppel 1970 (*J. Educational Psychology*, doi 10.1037/h0028756) [metadata V] is the classic study with schoolchildren. Reviewer recollection [U] is that fast learners retained more when *trials* were equated, and the advantage largely vanished when *degree of learning* was equated. Underwood 1954 is mainly a methods paper. Cite Shuell & Keppel as the child evidence for LT-D4, after verifying the content.
+
+### R11 (major). The overnight-consolidation contrast (κ, H5) is confounded, and "in-the-wild replication of Henderson" overclaims
+
+- **The same-day arm spans the school day.** A same-day 10-14 h gap is effectively a morning-to-evening interval containing a school day: heavy intervening exposure and interference. Children who show this pattern are a selected minority.
+- **Test time of day differs between arms**: morning vs evening. Invariant 4 bans exactly the feature needed to balance it.
+- **The "calendar date changed" flag is too loose.** It fires for 23:50 → 00:10.
+- **What Henderson actually showed.** Henderson et al. 2012 [V abstract] counterbalanced a.m./p.m. learning. Recognition and recall improved only after sleep, at about 12 h for the p.m. group and about 24 h for the a.m. group. The effects were declarative, not procedural. That supports the T2/T3 > T4 prediction, but it needs a controlled design.
+
+**Corrections:**
+- Define "overnight" as a date change *and* elapsed time ≥ 8 h.
+- Allow a coarse time-of-test band (morning/afternoon/evening) as a population-level balancing covariate only. It is never used per child and never reported. Alternatively, accept that κ is an "overnight vs school-day interval" contrast and stop calling it sleep consolidation.
+- Rename H5's contribution to "overnight-interval effect in the wild".
+
+### R12 (major). The parent sleep tip is not what the evidence says, and may conflict with sleep hygiene
+
+The evidence is that sleep *after* learning helps, whichever time of day learning happens (Henderson: morning learners also consolidated after the night). Nothing shows that evening learning is better. Recommending evening screen sessions to children also runs against paediatric guidance on screens before bed [U].
+
+**Correction:** the tip becomes "a quick check the next day helps new words and facts settle". Do not recommend evening sessions.
+
+Also add effect sizes for Dewald et al. 2010 [V abstract]: sleepiness r = −0.133, quality r = 0.096, duration r = 0.069, described by the authors as "modest", with larger effects in younger samples. These magnitudes keep sleep messaging proportionate.
+
+### R13 (major). H2 (learning efficiency) is weakly identified, and the S-conditioning test is not clean
+
+- **The correlation may be unidentifiable.** If σ_β ≈ 0.015, the correlation Ω[2,3] between a near-zero-variance effect and φ_c is weakly identified, and the LKJ(2) prior will dominate.
+  - Gate H2 on LT1 showing σ_β clearly above 0.
+  - Report prior sensitivity (LKJ 1 / 2 / 4).
+  - Add ρ recovery to LT6.
+- **S_ck is post-treatment.** It counts successes, which are caused by α_c and β_c. Putting it inside the decay term mechanically induces dependence among the child effects. The "with vs without S" contrast therefore does not adjudicate between Zerr and Underwood.
+- **Construct translation.** Zerr's measure is trials-to-criterion on a lab paired-associate task in adults [V abstract]. Mapping it to an in-the-wild β_c is a construct translation [U]. Pre-register an exogenous degree-of-learning manipulation instead: the fixed-length calibration sequences already provide one.
+
+### R14 (major). H3 cross-sectional forgetting-by-class is confounded by content and modality
+
+Different classes practise different KCs, with different formats and different ASR error rates. Spoken-recall ASR noise falls with age, which would manufacture a "younger children forget more" result. This is the measurement-artefact trap Brainerd describes.
+
+**Correction:** H3 needs common anchor tasks administered across bands (for example, the same fact or vocabulary types), measurement-invariance checks, and ASR-confidence stratification. Without them, φ0-by-band differences are uninterpretable.
+
+### R15 (major). The interference design rule extrapolates from preschoolers
+
+Both Darby & Sloutsky 2015 papers used **preschool-age** children [V abstract]; §3.4 omits the age for 2015b. The 2015b benefit held only when children had "enough information to form complex memory structures". Rule (b), "do not introduce j within 1-2 days of k", extrapolates from 4-5-year-olds' paired associates to classes 1-9 curricula. It also sits in tension with interleaving evidence in grade 7 (Rohrer et al. 2020).
+
+**Correction:** mark rule (b) as [U, low confidence]. Implement it as a randomised arm of H6 rather than a hard-coded rule.
+
+### R16 (major). Ethically risky inference: the "human escalation" row of §6.1
+
+"Slow start, fades … human escalation if persistent across topics" is, in effect, a learning-difficulty screen built from logs, with unknown sensitivity and specificity. Learning-disability stigma is high in this context, and a false positive is harmful.
+
+**Corrections:**
+- Escalation goes first to a *pedagogy* review: content, format, ASR, prerequisites.
+- Any parent contact is "worth a conversation with her teacher", with no diagnostic vocabulary (dyslexia, dyscalculia, "learning disability", ADHD).
+- Any screening use requires a validated instrument and a separate validation study.
+
+### R17 (major). LT10's wellbeing measures are not valid as specified
+
+"Session avoidance" is not a measure of child anxiety: it is confounded with schedule, interest and device access.
+- Use brief, validated, age-appropriate measures: child self-report for older children (for example, a short maths-anxiety scale) and parent report for younger ones [U on specific instrument].
+- Measure parent pressure behaviours directly: report-triggered scolding, extra tuition, more sessions.
+- Test L2 *wording variants* too. "Tends to need a quick review after 3-4 days" can still read as a property of the child.
+
+### R18 (moderate). Smaller claims to correct
+
+- **Cepeda et al. 2008 ratio** [V full text]:
+  - The optimal-gap ratio runs "from about 20 to 40% of a 1-week test delay to about 5 to 10% of a 1-year test delay", not "about 20% at a few weeks … 5-7% at one year".
+  - The +64% (d = 1.1) recall, +26% (d = 1.5) recognition, the +10 / 59 / 111 / 77% series and the 7-day +10% recall vs +1% recognition contrast are all confirmed.
+  - The participants were adults: mean age 34, range 18-72.
+  - The "err long" asymmetry concerns the inter-study gap for a fixed final test. Applying it to Taxila's check-lag jitter (§5.8.1) is plausible, but [U] for children.
+- **Koedinger et al. 2023 sample** [V abstract]: the datasets span "elementary to college courses". Replace "[U on exact ages] mostly middle school to college". The ~7-opportunity figure is not in the abstract; keep it at [S].
+- **The parent "hope" message (§7.8)** rests on the contested rate regularity (R5). Hedge it: "Practice helps every child; children who start behind usually need more practice." Never promise "will close the gap".
+- **"Ethically trivial" over-practice (§5.8.3)** is an assertion. Log abandonment and affect during calibration sequences. Mid-sequence quitting is itself MNAR and must be reported in LT1.
+- **Generalisability.** Publications must say "Taxila users": self-selected families with device access. Do not say "Indian children aged 6-15" (H1, §1.10a). Class 9 alone is a thin band.
+- **Missing developmental mechanisms (§3.1).** The developmental account omits the mechanisms that would make acquisition and durability change with age [U]: memory-strategy development (rehearsal and organisation emerging around 7-10), knowledge-base effects (expert children out-recall novice adults), working-memory growth, and the adolescent sleep-phase delay. H3's directional predictions should be derived from these, not from age alone.
+- **Tag updates from this review:**
+  - Zerr et al. 2018: [V abstract]. The body says [V]; the reference list already says [V abstract]. Its N = 281 over 30 h and N = 92 (follow-up n = 46) over 3 years are confirmed.
+  - Vlach & Sandhofer 2012: [V abstract]. There were three schedules (massed, clumped, spaced), and the generalisation benefit held for simple and complex concepts.
+  - Henderson et al. 2012, Darby & Sloutsky 2015b and Dewald et al. 2010: [V abstract].
+  - Lee & Bussey 2001: metadata only; the content remains [S].
+  - Brandmaier et al. 2018 worked example: [V].
+
+### What survives unchanged
+
+- The refusal to report acquisition rate (LT-D1's direction is *strengthened* by R5 and R8).
+- Hierarchical, decaying child parameters (LT-D2).
+- Randomised lags, with the revised rationale.
+- Degree-of-learning conditioning as an invariant.
+- The schedule-first attribution order.
+- The ban on sleep inference.
+- Absence handled as uncertainty rather than loss.
+- The banned-wording list and the "describe learning, not the learner" principles.
+- LT10 as a gate that can withdraw L2 reports.

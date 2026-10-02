@@ -85,6 +85,17 @@ export function normalizeConfig(p: Record<string, unknown>): BarsConfig {
   };
 }
 
+/** Changes when the bars must be re-cut (set_param on mode, denominators or numerators). */
+export const structureKey = (cfg: BarsConfig): string => `${cfg.mode}|${cfg.denominators.join(",")}|${cfg.numerators.join(",")}`;
+
+/**
+ * Changes when the goal changes: the bars, the target, the bar it is checked on, or the compare question.
+ * Progress toward a goal (changes, wrong answers, goal/stuck sent) belongs to that goal alone; keyed on the
+ * structure only, a set_param with a new target never fired goal_met and fired stuck early from old changes.
+ */
+export const progressKey = (cfg: BarsConfig): string =>
+  `${structureKey(cfg)}|${cfg.target ? fmt(cfg.target) : ""}|${cfg.targetBar}|${cfg.mode === "compare" ? cfg.question : ""}`;
+
 /** Parts shaded from the left, per bar. */
 export function initialShading(cfg: BarsConfig): boolean[][] {
   return cfg.denominators.map((d, i) => Array.from({ length: d }, (_, k) => k < cfg.numerators[i]));

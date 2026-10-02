@@ -30,8 +30,11 @@ function characterParts(c) {
   ];
 }
 
-/** Drop priorities (lower sheds first): brief memory 1 … wins 2 … interests 3 … vibe 4 … rel 5, then lesson extras. */
-function lessonParts({ lessonState: s, item, next, content = [], topic, language }) {
+/**
+ * Drop priorities (lower sheds first): brief callbacks 1, wins 2, interests 3, vibe 4, relationship 5;
+ * then the voice "if right" branch 6 (with the brief's misconceptions), content lines 8, the "if not" branch 9.
+ */
+function lessonParts({ lessonState: s, item, next, content = [], topic, language, lane }) {
   const parts = [
     { text: "LESSON NOW", drop: null },
     { text: `- topic: ${topic.title} (class ${topic.classLevel} ${topic.subject}) · phase ${s.phase} · turn ${s.turn} · minute ${s.minutes}`, drop: null },
@@ -53,8 +56,11 @@ function lessonParts({ lessonState: s, item, next, content = [], topic, language
     }
   }
   content.forEach((line) => parts.push({ text: `- ${line}`, drop: 8 }));
-  if (next?.onRight) parts.push({ text: `- AFTER their next reply (not now) — if it matches the key: ${next.onRight}`, drop: 6 });
-  if (next?.onWrong) parts.push({ text: `- AFTER their next reply (not now) — if not: ${next.onWrong}`, drop: 9 });
+  // Voice lane only: the realtime teacher answers the child on the instructions it already holds (the
+  // director refreshes them off the critical path), so it needs both branches in advance. The text lane
+  // replies AFTER the director has classified, and there these lines measurably pulled the model ahead.
+  if (lane === "voice" && next?.onRight) parts.push({ text: `- AFTER their next reply (not now) — if it matches the key: ${next.onRight}`, drop: 6 });
+  if (lane === "voice" && next?.onWrong) parts.push({ text: `- AFTER their next reply (not now) — if not: ${next.onWrong}`, drop: 9 });
   return parts;
 }
 
@@ -73,11 +79,18 @@ const LANGUAGE = {
 };
 function languageRule(language, ageBand) {
   const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
-  return `LANGUAGE: ${LANGUAGE[language] ?? LANGUAGE.hinglish} Maths and science words in English, with the Hindi word beside a new one.${words}`;
+  return `LANGUAGE: ${LANGUAGE[language] ?? LANGUAGE.hinglish} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
 }
 
-/** The two appended-last rules: the check that must fire this turn, then the turn shape as the final line. */
-function lastParts({ lessonState: s, move, item, ageBand }) {
+const SAME_ITEM_MOVES = new Set(["hint", "reteach", "repair"]);
+
+/**
+ * The two appended-last rules: the check that must fire this turn, then the turn shape as the final line.
+ * The check pins WHICH question is asked: measured in evals/director-sim.mjs, a teacher told mid-prompt to
+ * "pose the question as written" improvised her own questions instead, and the child's answers were then
+ * judged against a question nobody asked.
+ */
+function lastParts({ lessonState: s, move, item, ageBand, language, protegeName }) {
   const n = TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"];
   let check, shape;
   if (move.kind === "safeguard") {
@@ -87,12 +100,23 @@ function lastParts({ lessonState: s, move, item, ageBand }) {
     check = "no new question, no new idea, nothing left hanging.";
     shape = `at most ${n + 8} words. End with a warm goodbye, then stop.`;
   } else {
-    if (item && s.pendingWhy !== item.id && s.hintLevel < 4) {
-      check = `the key stays unsaid this turn (ladder rung ${s.hintLevel} of 4): no answer, no giveaway, no "almost, it is…"; if they ask for it, give the next nudge instead.`;
-    } else if (item && s.hintLevel >= 4) {
-      check = "rung 4 now: say the key plainly with a one-line reason.";
+    const lvl = s.hintLevel;
+    const open = item && ["why", "teachback"].includes(item.kind);
+    const keyRule = open
+      ? `the key idea stays unsaid (ladder rung ${lvl} of 4) — do not explain it for them; if they ask for it, nudge instead.`
+      : `the key stays unsaid (ladder rung ${lvl} of 4) — no answer, no giveaway; if they ask for it, nudge instead.`;
+    if (item && s.pendingWhy === item.id) {
+      check = "the only question this turn: how they knew, or why it works — do not give the reason yourself; no new problem.";
+    } else if (item && lvl >= 4) {
+      check = "rung 4 now: say the key plainly with a one-line reason, then ask them to say it back in their own words — no new problem yet.";
+    } else if (item && SAME_ITEM_MOVES.has(move.kind)) {
+      check = `the only question this turn is the same one again ("${promptFor(item, language)}"), nudged as the move says — no new question; ${keyRule}`;
+    } else if (item) {
+      check = `the only question this turn, in their language: "${promptFor(item, language)}" — no other question; ${keyRule}`;
+    } else if (move.kind === "teachback") {
+      check = `the only ask this turn: that they teach ${protegeName} — no quiz question of your own.`;
     } else {
-      check = "ask, don't tell — the child does the thinking; never ask 'samjha?' or 'understood?', ask a real question instead.";
+      check = "no practice question of your own; at most one small check about the idea just shown; never ask 'samjha?' or 'understood?'.";
     }
     shape = `at most ${n} words. One idea. End by handing the floor back — one question or a try-this — then stop.`;
   }
@@ -105,7 +129,8 @@ function lastParts({ lessonState: s, move, item, ageBand }) {
 /**
  * @param {{ character: any, brief: import("../../shared/contracts").ChildBrief, lessonState: any,
  *   move: import("../../shared/contracts").Move, item?: any, next?: { onRight?: string, onWrong?: string } | null,
- *   content?: string[], topic: { title: string, classLevel: number, subject: string }, language: string }} input
+ *   content?: string[], topic: { title: string, classLevel: number, subject: string }, language: string,
+ *   lane?: "voice" | "text" }} input
  * @param {{ budget?: number, caps?: Partial<typeof SECTION_CAPS> }} [opts]
  * @returns {{ text: string, tokens: number, sections: { id: string, tokens: number }[], dropped: string[] }}
  */
@@ -116,10 +141,10 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } = 
     { id: "character", parts: characterParts(input.character) },
     { id: "floor", parts: [{ text: floorText(), drop: null }] },
     { id: "brief", parts: [{ text: "CHILD", drop: null }, ...briefRows(input.brief)] },
-    { id: "lesson", parts: lessonParts(input) },
+    { id: "lesson", parts: lessonParts({ lane: "voice", ...input }) },
     { id: "move", parts: moveParts(input.move) },
     { id: "language", parts: [{ text: languageRule(input.language, ageBand), drop: null }] },
-    { id: "last", parts: lastParts({ ...input, ageBand }) },
+    { id: "last", parts: lastParts({ ...input, ageBand, protegeName: input.character.protege.name }) },
   ];
   const dropped = [];
   const tokensOf = (sec) => estimateTokens(sec.parts.map((p) => p.text).join("\n"));

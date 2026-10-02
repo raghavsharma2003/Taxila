@@ -5,7 +5,8 @@
 // Pre-registered before any rating existed (do not tune after looking):
 //   - Listener EXCLUDED if, on EITHER degraded control, their clarity rating is >= their clarity rating of the
 //     clean source clip (they were not listening), OR if BOTH hidden repeats differ from their source by > 1
-//     point on >= 2 axes (random clicking). Excluded listeners are reported, never silently dropped.
+//     point on >= 2 axes (random clicking), OR if they rated NEITHER degraded control (unvalidated).
+//     Excluded listeners are reported, never silently dropped.
 //   - "can't judge" ratings are missing data, not a 3.
 //   - Arms are compared on listener-level means with a percentile bootstrap over LISTENERS (2,000 resamples).
 //     Two arms are called different only if the 95% interval of the paired per-listener difference excludes 0.
@@ -42,12 +43,12 @@ for (const f of files) {
 // ---- catch trials ----
 for (const l of L) {
   const r = (c, a) => num(l.e.clips[c]?.ratings?.[a]);
-  const notes = []; let exclude = false; let repeatFails = 0;
+  const notes = []; let exclude = false; let repeatFails = 0; let degradedRated = 0;
   for (const [c, v] of Object.entries(clips)) {
     if (v.kind === "degraded-control") {
       const d = r(c, "clarity"), s = r(v.source_code, "clarity");
       if (d === null || s === null) notes.push(`degraded ${c}: not rated`);
-      else if (d >= s) { exclude = true; notes.push(`degraded ${c}: clarity ${d} >= source ${s} FAIL`); }
+      else if ((degradedRated++, d >= s)) { exclude = true; notes.push(`degraded ${c}: clarity ${d} >= source ${s} FAIL`); }
       else notes.push(`degraded ${c}: ${d} < ${s} ok`);
     }
     if (v.kind === "hidden-repeat") {
@@ -58,6 +59,7 @@ for (const l of L) {
     }
   }
   if (repeatFails >= 2) { exclude = true; notes.push("both hidden repeats inconsistent FAIL"); }
+  if (degradedRated === 0) { exclude = true; notes.push("UNVALIDATED: no degraded control rated"); }
   l.exclude = exclude; l.catchNotes = notes;
 }
 const kept = L.filter((l) => !l.exclude);

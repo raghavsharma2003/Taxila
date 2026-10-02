@@ -1,0 +1,178 @@
+{
+ "nodes": [
+  {
+   "id": "conductor-code-reducer",
+   "kind": "decision",
+   "title": "Conductor = one code virtual actor per child (pure reducer); LLMs only propose typed objects that code validates",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "conductor-substrate-neon",
+   "kind": "decision",
+   "title": "Conductor substrate on Neon: commit-ordered per-child event seq, one-transaction outbox, fenced home-grown job queue",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "conductor-hosting-lanes",
+   "kind": "decision",
+   "title": "taxila-web inline <=10 s; new taxila-worker (min 1, direct Neon) runs ticker, job lanes, observers; ACA scheduled jobs run detectors; nothing on Vercel",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-lane-budget",
+   "kind": "decision",
+   "title": "Every plan slot carries a voice lane; realtime only for teach/teach-back/transfer/wrap within the tier budget; homework on cascade; one call per sitting",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "no-vm-per-student",
+   "kind": "decision",
+   "title": "The 'little VM per student' is a logical workspace (rows + private Blob prefix + device replica + actor); isolated compute only per Forge job",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "safety-parent-notice-settle",
+   "kind": "decision",
+   "title": "S-class parent notices settle before sending; any possible family implication goes to a human; at M0 every S notice goes to a human",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "forge-live-codegen-race",
+   "kind": "rejection",
+   "title": "Live game codegen racing the lesson cannot deliver: human review law blocks it, so every library miss is pure spend",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "dek-in-pitr-database",
+   "kind": "rejection",
+   "title": "Per-child DEK stored in the same PITR'd Neon project: a restore resurrects it, so the crypto-shred does not shred",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "azure-batch-reports-v1",
+   "kind": "rejection",
+   "title": "Azure OpenAI Batch for weekly reports/night work: gpt-5.6 unsupported, late jobs not expired (double billing), saves ~$0.04/child-month",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "per-child-night-pipeline",
+   "kind": "rejection",
+   "title": "Per-child overnight prep (plans, engine params, images): wasted on non-openers, thundering herd, per-child images alone exceed revenue",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "conductor-substrate-pg16-2026-10-02",
+   "kind": "measurement",
+   "title": "Conductor SQL substrate exercised on scratch Postgres 16.14 (n=1): all properties hold; caught a NOT NULL bug in complete_job",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "open-voice-price-and-quota",
+   "kind": "open",
+   "title": "Realtime teacher minutes unbudgeted: Rs 299 covers ~16 rt-2.1 min/month at a 60% cost ceiling, and 10 RPM caps lesson starts at ~10/min",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "conductor-substrate-neon",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "conductor-substrate-neon",
+   "rel": "measured_by",
+   "dst": "conductor-substrate-pg16-2026-10-02"
+  },
+  {
+   "src": "conductor-substrate-neon",
+   "rel": "measured_by",
+   "dst": "db-driver-latency-2026-10-02"
+  },
+  {
+   "src": "conductor-hosting-lanes",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "conductor-hosting-lanes",
+   "rel": "constrains",
+   "dst": "hosting-azure-container-apps"
+  },
+  {
+   "src": "conductor-hosting-lanes",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "conductor-code-reducer",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "conductor-code-reducer",
+   "rel": "constrains",
+   "dst": "scope-classes-1-9"
+  },
+  {
+   "src": "voice-lane-budget",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "voice-lane-budget",
+   "rel": "caused_by",
+   "dst": "voice-realtime-model"
+  },
+  {
+   "src": "voice-lane-budget",
+   "rel": "blocks",
+   "dst": "open-voice-price-and-quota"
+  },
+  {
+   "src": "open-voice-price-and-quota",
+   "rel": "caused_by",
+   "dst": "infra-segment"
+  },
+  {
+   "src": "no-vm-per-student",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "safety-parent-notice-settle",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "forge-live-codegen-race",
+   "rel": "part_of",
+   "dst": "forge-infra-azure"
+  },
+  {
+   "src": "dek-in-pitr-database",
+   "rel": "part_of",
+   "dst": "no-vm-per-student"
+  },
+  {
+   "src": "azure-batch-reports-v1",
+   "rel": "part_of",
+   "dst": "conductor-hosting-lanes"
+  },
+  {
+   "src": "azure-batch-reports-v1",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "per-child-night-pipeline",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  }
+ ],
+ "md": {
+  "decisions": "## conductor-code-reducer\n**The Conductor (the AI that runs a child's whole day) is code: one virtual actor per child, made of a state row (`conductor_state`), a mailbox (`student_event`) and a pure reducer `decide(state, event, ctx) -> {state', commands}`. Language models are called only to *propose* typed objects (an LLM day plan in shadow from M2, letter wording, engine params, scene DSL), and code validates every proposal (validator V1-V14) and may reject it. A code planner always exists and is always computed.** (2026-10-02)\n- Rationale: learning-science rule 14 (Kestin: the prompt \"could not reliably provide enough structure\"); 12-factor agents \"own your control flow / stateless reducer\"; MAST attributes 41.8% of multi-agent failures to specification and 36.9% to inter-agent misalignment [S]. Agents never call each other: results return as events. The Director owns the minute and the Conductor owns the day; lessons change only at boundaries. Authority order: safety > consent > parent controls > policy caps > cost governor > plan > Director > vibe, enforced as ordered guards. Spec: `docs/research/conductor/CONDUCTOR.md` §1, §3, §4.5. Models are limited to the azure-only-compute list (no Claude, no gpt-5.6-terra).\n- Reverse if: an LLM controller running in shadow beats code reducer + code planner on delayed retrieval (DRS-7) and session completion in a pre-registered micro-RCT, with zero invariant violations over 10k simulated student-weeks (CM3).\n\n## conductor-substrate-neon\n**The Conductor's substrate is Neon Postgres. Per-child event seq is assigned by `ingest_event()` under a `child_seq` row lock, so read order equals commit order. All outbound work (jobs, wakeups, notifications, day_plan, decision_log) is written in ONE interactive JS transaction with the state CAS, using a per-invocation lease token. Small SQL functions make the cross-writer hand-offs atomic (`ingest_event`, `fire_wakeups`, `complete_job` with attempt fencing and erasure fencing, `create_commitment`). Caps are inserts (`conductor_usage` minute reservation, `notify_slot`, `rate_bucket` headroom). The job queue is home-grown at M0.** (2026-10-02)\n- Rationale: a global identity seq skips events committed late (event-driven.io [V]); the original ticker, job completion and step hand-offs were dual writes (orchestration R2). With `pg` Pool at 9-12 ms/query (`db-driver-latency-2026-10-02`), the plpgsql jsonb commit is no longer forced. `complete_job` must ingest `job.done` atomically, which is why the queue is ours. Verified by `conductor-substrate-pg16-2026-10-02`.\n- Reverse if: CM9 (claim latency + Neon CU-hours at 1k/10k simulated children) shows pg-boss (MIT; transactional send) is cheaper to run or the home-grown queue costs > 1 engineer-day/month; or claims exceed ~500/s sustained, which would warrant a managed queue.\n\n## conductor-hosting-lanes\n**Placement of Conductor work on Azure: `taxila-web` (HTTP-scaled) serves requests plus inline work of <= 10 s, including one inline `step()` after each ingest, admission, sync, code planning, T1/T2 Forge and job-row-backed homework extraction. A new ACA app `taxila-worker` (min 1 / max 2, no ingress, DIRECT unpooled Neon URL) runs the leader-elected ticker (session advisory lock), the fast and slow job lanes, the letter fan-out, the TTS voice notes, WhatsApp inbound processing and (M1) the realtime observer WebSockets. ACA scheduled jobs (cron in UTC) run the canary and the nightly rollups/census, so the detectors outlive the worker. ACA Sandboxes run offline Forge T3 builds (M3). Nothing runs on Vercel.** (2026-10-02)\n- Rationale: ACA sends SIGTERM and then SIGKILL after 30 s on scale-in [V], so `taxila-web` cannot host timers or sockets. Neon's pooler does not support session advisory locks or LISTEN/NOTIFY [V]. Vercel `waitUntil` shares the function timeout [V] and the project is paused (`hosting-azure-container-apps`). This resolves the day-cycle review's \"ticker inside taxila-web\" in favour of the worker. Spec: CONDUCTOR.md §8.\n- Reverse if: CPU-heavy work starves the worker's fast lane (then split the slow lane into ACA jobs), or a managed durable-execution service on Azure removes the need for our own worker.\n\n## voice-lane-budget\n**Every planned slot and lesson segment carries a voice lane (`realtime | realtime_mini | cascade | tap`). `realtime` is wanted only for teach, teach-back, transfer and wrap. Retrieval and practice are tap. Homework help is always cascade (luna text -> code leak pre-check -> gpt-4o-mini-tts); the validator rejects realtime homework. A sitting is one call (homework -> lesson -> wrap with the recall folded in). Lanes are granted at lesson start from the tier's monthly voice budget and never change mid-lesson except for an outage. DC4's 20/25/35/45 min are session lengths, not realtime minutes.** (2026-10-02)\n- Rationale: read literally, the day-cycle plan cost $37-92/child-month on rt-2.1 against ~$3.1 revenue (day-cycle-review-cost.py [I]). The realtime lane cannot be pre-checked for answer leaks; cascade can. One call per sitting cuts session starts ~3x against the 10 RPM cap. A rung change mid-lesson is heard as a different teacher.\n- Reverse if: blind-ear tests show children cannot tell cascade from realtime and DRS is equal (then default lower), or realtime prices fall enough that the tier budget covers whole lessons.\n\n## no-vm-per-student\n**The owner's \"little VM per student\" is implemented logically. Each child has: the Conductor actor (state row + mailbox, costs nothing idle), Postgres tables keyed by `child_id` and registered in `WORKSPACE_MAP` (enforced by a schema test), one private Blob prefix (eastus2), and a device replica (Android SQLite / web IndexedDB) that is a cache plus an outbox and never the truth. Isolated compute exists per Forge job (ACA Sandboxes), never per child. No cells, per-child DEK or archive segments in v1.** (2026-10-02)\n- Rationale: an always-on container is ~$15-20/child-month [U] and a suspended per-child sandbox adds ~$0.57/child-month plus ~10,400 cores at 1M children, against ~$3.1 revenue. The logical workspace costs ~$0.02-0.04/child-month [V prices, U usage] (student-workspace.md §4). ACA dynamic sessions have no persistent storage [V]. Spec: CONDUCTOR.md §5.\n- Reverse if: a feature needs a per-child process alive between events (e.g. a creations studio with long-running builds) and suspended sandbox snapshots priced per child fit the tier.\n\n## safety-parent-notice-settle\n**The child-side safety floor (care + Childline 1098 / Tele-MANAS 14416 on the same turn, no secrecy promise) never waits. The parent-side S notice goes through `safetyParentNotice()`: moderation flags -> none. If `familyImplicated` is yes or unknown, or the category is abuse/neglect/violence_at_home -> human safeguarding queue, never auto-sent. Self-harm with an explicit \"no family\" -> sent when the protocol script closes or 10 min have passed [U, advisor sets]. Dedupe is per incidentId, and the push names nothing (content behind the PIN). At M0, EVERY S notice goes to the human. A delivery ladder runs: WhatsApp + push -> SMS/PSTN -> \"parent unreachable\" to the human at 30 min. Two named adults, with a 2 h escalation.** (2026-10-02)\n- Rationale: perpetrators are often named turns later or never (parent-loop review PA1); the original gate sent immediately and checked suppression only at gate time. A single WhatsApp number backs a \"cannot be turned off\" promise that no mechanism delivers (PA2). day-cycle's `mayNotify` bypassed the suppression branch for safety (AR-6.1).\n- Reverse if: a safeguarding advisor specifies a different settle window or routing; or PLM14 shows the human queue misses its 2 h acknowledgement target (then staff a rota, never auto-send).\n",
+  "measurements": "## conductor-substrate-pg16-2026-10-02\n**Functional check of the Conductor SQL substrate in CONDUCTOR.md §2.4, §3.1, §3.8, §3.9, §4.10.3, §8.3 (2026-10-02).**\nMethod: `001_core.sql` + the CONDUCTOR.md DDL and functions applied to a scratch local PostgreSQL 16.14 (Ubuntu package, default config). Then scripted SQL cases, plus two two-session concurrency cases using `pg_sleep(2)` inside an open transaction. n = 1 run per case. This is a correctness check, not a performance number. Database dropped afterwards.\n- Idempotent ingest: duplicate `idem_key` → `ingest_event` returns null and adds no row.\n- `fire_wakeups`: 2 due + 1 future wakeup → 2 `clock.wakeup` events (seq 2, 3); a second call fires 0; orphaned fired wakeups = 0 (I-R2).\n- `complete_job`: wrong attempt (zombie) → false. ok → `done` + one `job.done` event; repeat → false. `cancel_requested` → `cancelled`, no event. Exhausted retries → `dead` + `job.failed`. A child workspace in `erasing` → `cancelled`, 0 events (erasure fence).\n- Caps: a third 5-min reserve against a 12-min `conductor_usage` cap updates 0 rows. A p1 admission needs 2 tokens and a p0 reconnect takes the last one. A third learning `notify_slot` for the same week is refused. A stale-version CAS updates 0 rows. Child erase cascades `student_event`, `job`, `wakeup`, `child_seq`, `notify_slot` to 0.\n- Concurrency: an ingest started 0.5 s into another child-transaction's open ingest blocked until that commit (≈ 1.5 s) and received seq + 1 (I-R1, commit order = seq order). The commit's `update child_seq … returning last > cursor` issued during an in-flight ingest waited and returned has_more = true with `pending_since` kept (no lost wake-up).\n- Defect found and fixed: orchestration review R2.3's `complete_job` set `run_after = case when retry then … end`, which writes NULL into a NOT NULL column on every non-retry outcome (it errored on the first successful completion). Fixed with `else run_after`.\n",
+  "rejected": "## forge-live-codegen-race\nProposed (orchestration-architecture §5.2, 2026-10-02; rejected in review before any build): at lesson start the Director emits `module.requested`. A library miss becomes a `forge.build` codegen job with a deadline of \"start + theory minutes\", and if the generated game verifies in time it is pushed to the device as `module.ready`. What breaks: ARCHITECTURE §1.4, Forge's own promotion rule and day-cycle N5 all require human review before generated code reaches a child, so the race can never deliver. The library is empty at launch, so every lesson start would pay for codegen with up to 10 fix rounds (minutes and dollars per artefact) against ~$3 of monthly revenue. Replacement: the live path is T1 engine params and T2 scene DSL only; a miss writes `forge_request(objective, engine_gap, demand_count)` and T3 is built offline, demand-ranked, into human review. Do not market \"a game is built while she teaches\" beyond T1/T2.\n\n## dek-in-pitr-database\nProposed (student-workspace W4, 2026-10-02; rejected in review): a per-child data-encryption key, wrapped by one Key Vault KEK, stored in `child_key` inside the main Neon project. Erasure deletes the row first (\"crypto-shred\"), so the copies in Neon history and Blob soft-delete become unreadable. What breaks: instant restore (default 1 d, up to 30 d) brings the wrapped DEK back, and the KEK is still live, so every \"unreadable\" copy is readable again. A working version needs the key store in a separate project with `history_retention_seconds = 0` plus a bounded 48 h key backup. v1 instead uses hard delete, a 7-day history window and 7-day Blob soft-delete, with the parent promise \"removed now; backups expire within 7 days\".\n\n## azure-batch-reports-v1\nProposed (orchestration-architecture §5.4 and parent-loop §2, 2026-10-02; rejected in review): weekly reports and nightly work on the Azure OpenAI Batch lane (50% off, 24 h target), enqueued at send - 30 h with a standard-API fallback at send - 2 h. What breaks: Batch needs a separate GlobalBatch/DataZoneBatch deployment, and the current supported-model table does not list the gpt-5.6 family. Batch \"doesn't expire jobs that take longer\", so the fallback double-bills unless the batch is cancelled [V Azure batch docs]. The saving is ~$0.04/child-month, which does not pay for a second lane, deployment and collector. Revisit at > 50k children if gpt-5.6 appears in the Batch table; never put Batch on an overnight critical path.\n\n## per-child-night-pipeline\nProposed (day-cycle §9 and DC10, 2026-10-02; rejected in review): a 22:30 IST global fan-out that builds tomorrow's plan, engine params, scene DSL and medium images for 2 predicted topics per child, plus a lesson-brief draft. What breaks: plans are pure code (< 50 ms [U]) and engine params are a ~1-2 s luna call at open. Per-child speculation is wasted on the 40-60% [U] who don't open that day. Every IST child shares the same hour, which at 100k children is a ~200-minute backlog plus a luna TPM spike. Per-child medium images alone cost ~$3.2/child-month, more than revenue. The 22:30 global job reads KT before late consolidations commit (it broke the next-day re-check rule). Replacement: plan on open, with a topic-level library prefetch for the next 2 weeks of syllabus within a global Forge budget.\n"
+ }
+}

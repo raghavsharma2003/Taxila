@@ -82,23 +82,38 @@ export interface UiDirectives {
   caption?: string;
 }
 
+/**
+ * One Director call. A MODULE-ONLY turn is one with no childText, no chipId, asrConfidence not 0 and at
+ * least one moduleEvent: the child acted in an activity and said nothing. It is never graded as a reply
+ * (no child turn row, no transcript classification); a module answer on the active item is still machine
+ * truth, and goal_met / stuck get a reaction without moving the lesson plan.
+ */
 export interface TurnRequest {
   lessonId: string;
-  childText: string;                 // final transcript of the child's last turn ("" if only module events)
-  asrConfidence?: number;
-  teacherText?: string;              // teacher's last turn transcript (as heard)
-  teacherInterrupted?: boolean;
-  moduleEvents?: ModuleEvent[];      // debounced since the last call
+  childText: string;                 // final transcript of the child's last turn ("" for a module-only turn)
+  asrConfidence?: number;            // 0 with childText "" = the child spoke and ASR failed (a child turn, not module-only)
+  teacherText?: string;              // voice lane: teacher's finished turn(s) as heard. Text lane omits it (the server wrote and stored them)
+  teacherInterrupted?: boolean;      // the child cut that teacher turn off (text lane: the latest stored teacher turn)
+  moduleEvents?: ModuleEvent[];      // buffered since the last call
+  droppedEvents?: number;            // events the client dropped at its buffer cap since the last call
   chipId?: string;                   // the child tapped a choice chip
-  typed?: boolean;                   // text-mode turn (no ASR)
+  typed?: boolean;                   // no ASR (typed or tapped); does not select the text lane
 }
 export interface TurnResponse {
   instructions: string;              // full compiled instructions → session.update (applied verbatim)
   move: Move;
   moduleCommands: ModuleCommand[];
   ui: UiDirectives;
-  /** In text mode the server also returns the teacher's reply text (no realtime voice). */
+  /** Text lane only: the teacher's reply text (no realtime voice), stored as teacher turn `teacherReplySeq`. */
   teacherReply?: string;
+  /** Seq of the stored teacher turn holding teacherReply: what /api/tts may speak. */
+  teacherReplySeq?: number;
+  /**
+   * Voice lane: voice these instructions now instead of waiting for the child's next turn.
+   * "interrupt": cut the teacher off and speak at once (a safeguarding hand-off is never left to the
+   * old instructions); "when_free": speak if nobody holds the floor (a reaction to a module milestone).
+   */
+  speakNow?: "interrupt" | "when_free";
   end?: boolean;
   debug?: Record<string, unknown>;
 }
@@ -107,8 +122,12 @@ export interface LessonStartRequest { childId: string; topicId?: string; mode?: 
 export interface LessonStartResponse {
   lessonId: string; topic: { id: string; title: string; chapter: string };
   instructions: string; teacher: { id: string; name: string; voice: string };
-  moduleCommands: ModuleCommand[]; ui: UiDirectives; teacherOpening?: string;
+  moduleCommands: ModuleCommand[]; ui: UiDirectives;
+  /** Text lane: the teacher's opening line, stored as teacher turn `teacherOpeningSeq`. */
+  teacherOpening?: string; teacherOpeningSeq?: number;
 }
+/** POST /api/tts: speak a stored teacher turn of the caller's lesson (never free text). */
+export interface TtsRequest { lessonId: string; seq: number }
 export interface RealtimeTokenResponse { token: string; expiresAt: number; base: string; session: Record<string, unknown> }
 
 // ───────────────────────────── modules ─────────────────────────────

@@ -1,36 +1,33 @@
-// Debounces module interaction events on their way to the Director. Taps and drags stream in fast; the
-// Director only needs them batched (with the next child turn, or every few seconds), except milestones,
-// which change what the teacher should do next and go immediately.
+// Buffers module events on their way to the Director. Taps and drags stream in fast and are not worth a
+// Director call of their own: they ride with the next call, which is the child's next turn or a milestone.
+// Milestones (the child reached the goal, is stuck, or committed an answer) change what the teacher should
+// do next, so they call the Director at once.
+//
+// There is deliberately no timer flush. A call carrying only plain interactions reached the server as an
+// empty child reply, which was graded "unclear" and walked the lesson plan: measured, 4 interaction-only
+// calls walked the whole teach phase, each with a new spoken reply. An engine error is not a milestone
+// either: it is reported to the Director with the next call.
 import type { ModuleEvent } from "../../shared/contracts.ts";
 
-/** Event types that call the Director at once instead of waiting for the batch. */
-export const MILESTONE_TYPES: ReadonlySet<ModuleEvent["type"]> = new Set(["goal_met", "stuck", "answer", "error"]);
-export const FLUSH_INTERVAL_MS = 3000;
-/** Cap on buffered events; the oldest non-milestone events are dropped first. */
+/** Event types that call the Director at once instead of waiting for the next child turn. */
+export const MILESTONE_TYPES: ReadonlySet<ModuleEvent["type"]> = new Set(["goal_met", "stuck", "answer"]);
+/** Cap on buffered events; the oldest non-milestone events are dropped first, and every drop is counted. */
 export const MAX_BUFFERED = 40;
 
-export interface Timers {
-  setTimeout: (fn: () => void, ms: number) => unknown;
-  clearTimeout: (handle: unknown) => void;
+/** What one Director call carries: the events, and how many were dropped at the cap (truncation is never silent). */
+export interface ModuleBatch {
+  events: ModuleEvent[];
+  dropped: number;
 }
-
-export const realTimers: Timers = {
-  setTimeout: (fn, ms) => setTimeout(fn, ms),
-  clearTimeout: (h) => clearTimeout(h as ReturnType<typeof setTimeout>),
-};
 
 export class ModuleEventBuffer {
   private events: ModuleEvent[] = [];
-  private timer: unknown = null;
-  private readonly onFlush: (milestone: boolean) => void;
-  private readonly timers: Timers;
-  private readonly intervalMs: number;
+  private dropped = 0;
+  private readonly onMilestone: () => void;
 
-  /** onFlush is a request to call the Director; it should drain() when the call is actually made. */
-  constructor(onFlush: (milestone: boolean) => void, opts: { timers?: Timers; intervalMs?: number } = {}) {
-    this.onFlush = onFlush;
-    this.timers = opts.timers ?? realTimers;
-    this.intervalMs = opts.intervalMs ?? FLUSH_INTERVAL_MS;
+  /** onMilestone is a request to call the Director; that call drain()s the buffer when it is actually made. */
+  constructor(onMilestone: () => void) {
+    this.onMilestone = onMilestone;
   }
 
   get size(): number {
@@ -39,36 +36,35 @@ export class ModuleEventBuffer {
 
   add(ev: ModuleEvent): void {
     this.events.push(ev);
-    if (this.events.length > MAX_BUFFERED) {
-      const drop = this.events.findIndex((e) => !MILESTONE_TYPES.has(e.type));
-      this.events.splice(drop >= 0 ? drop : 0, 1);
-    }
-    if (MILESTONE_TYPES.has(ev.type)) {
-      this.cancelTimer();
-      this.onFlush(true);
-    } else if (this.timer === null) {
-      this.timer = this.timers.setTimeout(() => {
-        this.timer = null;
-        if (this.events.length) this.onFlush(false);
-      }, this.intervalMs);
-    }
+    this.trim();
+    if (MILESTONE_TYPES.has(ev.type)) this.onMilestone();
   }
 
-  /** Take everything buffered (and stop the pending batch timer). */
-  drain(): ModuleEvent[] {
-    this.cancelTimer();
-    const out = this.events;
+  /** Take everything buffered. */
+  drain(): ModuleBatch {
+    const out = { events: this.events, dropped: this.dropped };
     this.events = [];
+    this.dropped = 0;
     return out;
   }
 
-  dispose(): void {
-    this.cancelTimer();
-    this.events = [];
+  /** Put a batch back in front of newer events (its Director call failed), so it rides with the next call. */
+  restore(batch: ModuleBatch): void {
+    this.events = [...batch.events, ...this.events];
+    this.dropped += batch.dropped;
+    this.trim();
   }
 
-  private cancelTimer(): void {
-    if (this.timer !== null) this.timers.clearTimeout(this.timer);
-    this.timer = null;
+  dispose(): void {
+    this.events = [];
+    this.dropped = 0;
+  }
+
+  private trim(): void {
+    while (this.events.length > MAX_BUFFERED) {
+      const i = this.events.findIndex((e) => !MILESTONE_TYPES.has(e.type));
+      this.events.splice(i >= 0 ? i : 0, 1);
+      this.dropped++;
+    }
   }
 }

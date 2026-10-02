@@ -16,7 +16,9 @@ import {
   initialShading,
   normalizeConfig,
   partsForTarget,
+  progressKey,
   step,
+  structureKey,
   STUCK_AFTER_CHANGES,
   STUCK_AFTER_WRONG,
   toggle,
@@ -59,8 +61,9 @@ function FractionBars({ params, goal, lang, highlight, revealed, api }: EnginePr
   const need = partsForTarget(cfg);
 
   // Re-cut the bars when their structure changes (set_param on denominators/numerators/mode); other
-  // params (labels, target) keep the child's work.
-  const structure = `${cfg.mode}|${cfg.denominators.join(",")}|${cfg.numerators.join(",")}`;
+  // params (labels, target) keep the child's work. Progress toward the goal starts over with each new goal.
+  const structure = structureKey(cfg);
+  const goalKey = progressKey(cfg);
   const [shading, setShading] = useState(() => initialShading(cfg));
   const [choice, setChoice] = useState<Choice | null>(null);
   const [seen, setSeen] = useState(structure);
@@ -72,7 +75,7 @@ function FractionBars({ params, goal, lang, highlight, revealed, api }: EnginePr
   const progress = useRef({ changes: 0, wrong: 0, goalSent: false, stuckSent: false });
   useEffect(() => {
     progress.current = { changes: 0, wrong: 0, goalSent: false, stuckSent: false };
-  }, [structure]);
+  }, [goalKey]);
 
   useEffect(() => {
     if (cfg.issues.length) api.interaction("params_adjusted", { issues: cfg.issues });
@@ -211,7 +214,8 @@ function Bar({ index, d, row, cfg, hl, seq, ghost, showLabel, selected, isAnswer
   );
 
   const svg = (
-    <svg className="fb-svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${n} of ${d} parts shaded`}>
+    // Children of role="img" are presentational: tappable parts need a group for screen readers to reach them.
+    <svg className="fb-svg" viewBox={`0 0 ${W} ${H}`} role={editable ? "group" : "img"} aria-label={`${n} of ${d} parts shaded`}>
       {row.map((on, k) => {
         const partHl = hl === `bar:${index}:part:${k}`;
         return (
