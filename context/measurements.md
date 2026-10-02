@@ -514,3 +514,8 @@ Method: `scripts/prod-smoke.mjs` from the sandbox (adds a US-east round trip fro
 | text | 1,705 | 1,688 / 1,694 / 1,223 | 1,565 |
 | cascade | 947 | 1,218 / 1,307 / 1,345 | 1,540 |
 The cascade figure is the Director only: speech-to-text, the end-of-speech wait and TTS first byte add about 1.8 s, so the estimated end-to-end time is about 3.0-3.2 s against the 2.0 s target. Observed: replies carry numerals ('45,000', '62,314', 'one lakh seven thousand forty'), which notation-probe-2026-10-02 measured as misread 9-11/15 when sent to TTS as written. The spoken rendering is not built yet. Also observed: 'mujhe nahi pata' was answered with explain-then-new-question, not a reteach move; this needs a check against the Director's affect rules.
+
+
+<!-- merged from inbox/conductor-db-race-run.json -->
+## conductor-db-race-2026-10-02
+Method: `node --test tests/conductor-db.test.mjs` from the sandbox, against Neon branch `conductor-test` (br-nameless-snow-b7ldeg1h, branched from production at LSN 0/681DE58, so all migrations through 007 are present). CONDUCTOR_TEST_DATABASE_URL is in .env.local only. n=1 run: 14 pass, 0 fail, 0 skipped. Covers idempotent and concurrent ingest, exactly-once timers, job lock and fence, the step lease, has_more and replay. The suite had been skipped since wave 2 because no test branch existed. Reset the branch from its parent when it drifts.
