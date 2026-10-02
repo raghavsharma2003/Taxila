@@ -1,0 +1,53 @@
+{
+ "nodes": [
+  {
+   "id": "conductor-pause-at-lesson-end",
+   "kind": "decision",
+   "title": "parent.pause during a live lesson takes effect when the lesson ends (or at the 3 h stale-lesson clock close), not at the next day boundary as CONDUCTOR.md \u00a73.3 says",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "conductor-budget-threshold-today",
+   "kind": "decision",
+   "title": "budget.threshold (child scope, >=80%) narrows TODAY's unshown slots to cascade via a debounced re-plan, not only tomorrow's plan as \u00a73.3 says; shown/started slots stay frozen (V10)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "open-conductor-m0-deliverables",
+   "kind": "open",
+   "title": "Conductor M0 exit criteria NOT met: missing budget/cost_ledger/price_book/model_call/turn_trace/parent_setting tables; actor rows created lazily (actorRowStmts unused, not in child-creation tx); no shared/conductor/*.ts contracts; validator V1-V4,V10,V12,V15,V30 of V1-V30; planner R0,R1,R3,R8,R10 of R0-R14; no verify-release G0-G4 or evals/conductor-sim. Owner: Conductor workstream (post-wave-2 task #10)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "open-conductor-db-tests-unverified",
+   "kind": "open",
+   "title": "tests/conductor-db.test.mjs (idempotent ingest, exactly-once timers, SKIP LOCKED, lease/has_more, X29 lock order, replay, syncParentFacts) is SKIPPED in npm test: no CONDUCTOR_TEST_DATABASE_URL. The DB substrate is unverified by the gate until the owner/main loop creates a dedicated Neon branch (e.g. conductor-test), applies every migration, sets CONDUCTOR_TEST_DATABASE_URL in .env.local and records the run in measurements.md. Owner: main loop",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "conductor-pause-at-lesson-end",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "conductor-budget-threshold-today",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "open-conductor-m0-deliverables",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "open-conductor-db-tests-unverified",
+   "rel": "part_of",
+   "dst": "conductor-substrate-neon"
+  }
+ ],
+ "md": {
+  "decisions": "## conductor-pause-at-lesson-end\n**A `parent.pause` that arrives while the child is in a live lesson is held as `pendingPause` and takes effect when the lesson ends: `lesson.ended`, or the clock's stale-lesson close (no `lesson.ended` for 3 h), both through one helper (`endLessonMode`). If the pause has already ended by then, it lapses. CONDUCTOR.md \u00a73.3 says \"at the next day boundary\".** (2026-10-02)\n- Rationale: a parent who pauses at 16:25 means today. Waiting for the day boundary would let the child start another lesson the same evening, against the parent's intent (pl PA-21 C5). Cutting the live lesson off mid-segment is the Director's job at a segment boundary (dc AR-5 R8), so the Conductor does not do it. The review of conductor-m0 found that the stale-close path used to set `paused` without `pauseUntil`, which locked the child out permanently. That bug is fixed and covered by a test in tests/conductor-decide.test.mjs.\n- Reverse if: the parent-loop research or a parent study (n>=10 households) shows parents expect a pause to end the current lesson at once, or expect it to start at the next day. Then `parent.pause` either sends `brief.refresh{end}` or waits for the day boundary.\n\n## conductor-budget-threshold-today\n**`budget.threshold` (child scope, pct >= 80) sets `budget.low` and debounces a re-plan of TODAY. The unshown slots move from realtime lanes to cascade (R10). Shown and started slots stay frozen (V10). \u00a73.3 says tomorrow's plan uses the lower lanes.** (2026-10-02)\n- Rationale: at 80% of a monthly budget, another realtime lesson that same evening can overrun it. Changing a lane the child has not seen yet costs the child nothing visible, and the child is never told about money. V3 now also compares against the month's remaining realtime seconds (`usage.voiceSecMonth`), and the planner steps down to cascade instead of producing a plan that V3 rejects.\n- Reverse if: cascade-vs-realtime quality measurements show that a same-day lane switch inside one learning day is noticeable to children (for example a drop in the vibe close on switch days, n>=30 sessions). Then the switch is deferred to the next day.\n"
+ }
+}

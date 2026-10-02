@@ -1,0 +1,50 @@
+{
+ "nodes": [
+  {
+   "id": "stt-default-live-transcribe-kw",
+   "kind": "decision",
+   "title": "Default cascade STT = taxila-live-transcribe (gpt-live-transcribe) + per-lesson keywords + vocabulary-free speaker/script prompt; streaming fallback Azure Speech real-time continuous LID hi-IN/en-IN; lane-G second opinion Azure Fast hi-IN+en-IN",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "stt-hinglish-v2-synthetic",
+   "kind": "measurement",
+   "title": "stt-hinglish v2 (synthetic, 30 utt x 2 TTS families x clean/white/pink 10 dB, n=180/arm): live-tx D4 cerNorm 0.026, numbers 92/96, answers 76/78, 0 wrong-script/decoy/halluc; Azure RT LID 0.071, 73/96, 74/78; Azure Fast 0.072, 78/96, 73/78; gpt-4o-transcribe+script 0.225, 58/96; final latency live-tx 657 ms p50 after commit, Azure RT ~880 ms after speech end",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "gpt4o-transcribe-fabricates-noise",
+   "kind": "rejection",
+   "title": "gpt-4o(-mini)-transcribe rejected for live/grading lanes: fluent invented sentences on white noise 10 dB (CER 0.61-0.84) and 3/3 output on non-speech even with a vocabulary-free script prompt",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "azure-phraselist-hi-noop-realtime",
+   "kind": "rejection",
+   "title": "Azure Speech PhraseListGrammar on hi-IN is a no-op in real-time too (R2 == R1 on every metric, n=180), as in batch (E0)",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "stt-hinglish-v2-synthetic",
+   "rel": "informs",
+   "dst": "stt-default-live-transcribe-kw"
+  },
+  {
+   "src": "gpt4o-transcribe-fabricates-noise",
+   "rel": "informs",
+   "dst": "stt-default-live-transcribe-kw"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw",
+   "rel": "informs",
+   "dst": "voice-lane-cascade-default"
+  }
+ ],
+ "md": {
+  "decisions": "## stt-default-live-transcribe-kw\n2026-10-02. Cascade lane L STT = `taxila-live-transcribe` with per-lesson `keywords` (lesson terms + the item's answer numbers in both scripts) and a speaker+script prompt containing NO vocabulary; client VAD gates/commits; watchdog strips refused fields and retries. Streaming fallback: Azure Speech real-time, continuous LID hi-IN+en-IN. Lane G second opinion: Azure Fast Transcription hi-IN+en-IN; L/G disagreement on the answer value = ungraded + natural repair. gpt-4o(-mini)-transcribe excluded from live and grading lanes. Rationale: docs/research/voice/v2/stt-hinglish.md (best arm on every metric, both TTS families, all noise arms; zero hallucination). Reverse if: E1 real-child accuracy favours another engine, or a rerun with gpt-transcribe / gpt-realtime-whisper-2 / MAI-Transcribe-2 (Central India) beats it.",
+  "measurements": "## stt-hinglish-v2-synthetic\n2026-10-02, US container -> eastus2. 30 child-answer utterances (Hinglish 10, Hindi 8, English 7, hesitant 5) synthesised by gpt-4o-mini-tts (child-instructed) and Azure neural hi-IN/en-IN (pitch +25%, rate +12%), clean/white/pink at 10 dB SNR + 3 non-speech; 11 arms x 183 clips = 2,013 calls, one pass; deterministic skeleton scorer (Devanagari<->Roman normalised). cerNorm / numSeq(96) / answers(78): live-tx kw+script 0.026 / 92 / 76; live-tx no context 0.068 / 78 / 65 (19 wrong-script clips); Azure Fast hi+en 0.072 / 78 / 73; Azure RT LID 0.071 / 73 / 74; Azure RT hi-IN 0.116 / 70 / 74; Azure RT en-IN 0.063 cer but raw WER 0.65 (Hindi romanised); gpt-4o-transcribe hi+script 0.225 / 58 / 51; 4o-mini 0.302 / 52 / 47. Latency: first partial Azure RT ~1.0 s (LID 2.3 s), live-tx 1.4 s after onset; final live-tx 657/760 ms p50/p90 after commit, Azure RT 820-880 ms p50 after speech end; batch 262-355 ms. SYNTHETIC - instrument only. Full: docs/research/voice/v2/stt-hinglish.md.",
+  "rejected": "## gpt4o-transcribe-fabricates-noise\nTried gpt-4o-transcribe and gpt-4o-mini-transcribe (no hint, and language=hi + a vocabulary-free script prompt) as child STT. Broke: on white noise at 10 dB they wrote fluent never-said sentences (\"मैं कक्षा में आठ बजे पहुँची थी।\", \"Teacher: What's the capital of India? Student: Delhi.\"), CER 0.61-0.84; with the script prompt they output text on 3/3 non-speech clips (\"मैं 7 बजे घर आऊंगा.\" on silence). A grader reading these could mark a silent child. live-transcribe with the same prompt: 0/3.\n\n## azure-phraselist-hi-noop-realtime\nTried Azure Speech real-time PhraseListGrammar (22 terms) on hi-IN. Broke: identical CER/recall to no list (n=180), as E0 found for Fast Transcription. Biasing must live in live-transcribe `keywords`."
+ }
+}

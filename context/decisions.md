@@ -801,3 +801,86 @@ Q5-DB: every pack runs non-understanding policies; fail above chance+10pp first-
 **In `RealtimeProtocol`, a `response.create` sent while a response we cancelled is still active is held until that response's `response.done` (or 1.5 s, if it never comes), and a create the server refuses with `conversation_already_has_active_response` is re-sent after the next `response.done` (same fallback), at most 3 times per request, then surfaced.** (2026-10-02)
 - Rationale: cancel-then-create back to back raced the server; the refusal was a non-fatal store error with no retry. On `speakNow: "interrupt"` that create IS the safeguarding hand-off (Childline 1098 / Tele-MANAS 14416), so the predicate fired and the hand-off could go unspoken; typed and chip turns could lose the teacher's reply the same way.
 - Covered by unit tests against a fake protocol only (tests/client-runtime.test.mjs); not yet measured against Azure. Reverse if: a live probe shows Azure accepts create immediately after cancel (then the hold only costs latency on the barge-in path), or the 1.5 s fallback is shown to fire before a real cancelled `response.done` on slow links (then lengthen it).
+
+
+<!-- merged from inbox/comprehension.json -->
+## comprehension-facet-belief
+**The per-concept belief is five facets over one skill: K = BKT-R pL (unchanged), U = explains/evaluates (why, teach-back, error-spot, predict), T = transfers (near/far), D = FSRS retention + ledger delayed/durable flags (unchanged), M = misconception layer (unchanged). U and T are logit accumulators folded inside ledger.js (L.comp) with the same emissions, grader folding, symmetric retrieval gate, tempering and 1/j weights as K, a tighter session clamp (+/- log 20), prior 0.2 and a capped teach transition (0.10). State ladder: not_yet / shallow / fragile / understood / durable; understood needs display >= mastered, U >= 0.75, T >= 0.6, no misconception >= 0.3 and non-game U and T evidence; never above the ledger display; absence never lowers a state.** (2026-10-02)
+- Rationale: a right answer does not show the reasoning behind it (hidden-misconception detectors 4-8 false alarms per hit, papers #3); computed: a K-only rule certified 86.2% of correct-answer-trap children (comprehension-mc-2026-10-02). One fold keeps replay = online and the vibe/affect isolation tests.
+- Reverse if: CE-M10 on pilot data shows U and T add < 0.02 AUC over pL for predicting delayed far-transfer success; thresholds move only on CE-M6 pilot calibration under both sim truth families.
+- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §2.
+
+## comprehension-probe-budget-scheduler
+**The Director's probe scheduler is pure code. Mandatory probes (why after a first correct on a new skill, why after a coincident correct, a different-family verifier at misconception p >= 0.7, one follow-up after a partial, 2-4 delayed checks at session open) are budget-exempt but take the lowest-weight shape and cannot be deferred by strain. Optional probes are ranked by expected information gain on the open facet x urgency x novelty x code-grader bonus / test weight, ties by the counter-based draw. Test weights 1.0 / 0.5 / 0.25 by test risk (x0.5 for learning-move probes); caps per 10 child turns 1.5/2.0/2.5/2.5 and per session 20%/20%/25%/25% of child turns (B1-B4); never two probes in a row; <= 2 U probes per concept per session from different families; a facet read high stops being probed, one read low keeps one probe per session.** (2026-10-02)
+- Rationale: fusion rule 5 and the repeated-question effect (conversation-probes §1); computed: with 1 U probe per concept-session understood detection fell to 0.067, LLM-only U probes to 0.238, freezing low facets to 0.206, vs 0.407 for the spec (3 sessions, matched-model upper bounds).
+- Reverse if: M-PT shows < 5% of children feel tested at double the budget (relax) or > 15% at this budget (tighten); CE-M2 shows a different U-probe cap detects faster at equal CE-M3.
+- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §3.
+
+## comprehension-weave-cross-topic
+**A skill reaching learned_today enters a weave queue (earliest anchor + 20 h, due at FSRS R = 0.9). When the Conductor plans a topic 2-3 topics later that the kit lists as a host, the host item makes the earlier skill a necessary sub-step, graded by code as exactly one event on the earlier skill (item.open, or probe.transfer.near when the host structure is novel). It counts as the ledger's delayed check under the existing isCheck rule. With no host after 5 topics or 2 days past due, it becomes a C31 callback at the next session open; a C34 protege return runs at 3-10 days.** (2026-10-02)
+- Rationale: owner request for checks 2-3 topics later; the LearnLM x Eedi RCT outcome was novel problems on later topics [S]; one event per answer per skill avoids double counting K.
+- Reverse if: CE-M2 / pilot logs show woven checks miss their window > 30% of the time (then explicit callbacks become primary).
+- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §3.5.
+
+## comprehension-grading-closed-label
+**Every probe is graded by classification against kit data: R-KEY (normalised answer key, EN/HI number words), R-OPT (option -> misconceptionId) and R-CATCH (planted error caught/located/fixed) in code; R-EXP (one expectation per call: present/partial/absent/contradicted), R-MIS (retrieve -> rerank into the kit misconception list, detection only) and R-INST (valid/invalid/irrelevant, checked against verified instances) as closed-label LLM calls. The request carries only the child span and one kit target, never teacher turns or the child's confidence; a positive label needs a quoted span that code finds in the transcript; schema failure or low ASR -> NA; partial never scores. Routing: DeepSeek-V4-Pro primary, gpt-5.6-sol fallback (Azure Direct), one sample, moderate effort; LR stays at the 0.7-diagonal prior until kappa >= 0.7 on 300 human-labelled Indian-child turns per family, EN and Hinglish.** (2026-10-02)
+- Rationale: free-form LLM diagnosis F1 < 0.5 [V via papers]; graders degrade on part-right answers and give way to confident students [V]; bake-off C: DeepSeek-V4-Pro 12/12 at 822 ms p50 (n = 12, direction only).
+- Reverse if: M-GRADE shows another configuration beats an operator's kappa per language, or an operator's kappa stays < 0.6 (then that family's shapes are tap/choice only).
+- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §4.
+
+## comprehension-voice-zero-weight
+**Voice and vibe features (onset latency, pauses, disfluency, f0 slope, rate; all per-child z) have zero likelihood weight in K, U and T at launch. They may only move an already-eligible probe on the current item one slot earlier (followUpProbe), make the entry hint rung gentler, set wait/endpoint knobs, and break a re-teach tie within 0.05 toward the lighter arm. features.js MASTERY_NUDGE_CAP (0.03) stays as an unused ceiling.** (2026-10-02)
+- Rationale: children's disfluency tracks correctness, not confidence [S]; no product or 2025 paper uses child prosody as a comprehension signal (products-live #18); R2h-I needs byte-identical KT under permuted timing features.
+- Reverse if: VF-M1 (per-child calibration, research E3) shows a feature adds >= 0.03 AUC on delayed items within skill; it may then enter as one LR <= 1.1 event class.
+- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §1.3.
+
+## vibe-adapter-compiled-row
+**The vibe adapter turns closed inputs (explicit preferences, barge-ins, onset latency, humour uptake, the child's own register and address, accepted challenges, this-session interests, live code-mix, engagement state) into bounded knobs (teacherTurnWords, waitNudgeSec, endpointSilenceMs, humourDose, register, address, exampleDomain, challengeFrame, energy, languageMix, probeSkin). Precedence: safety -> strain -> explicit -> session -> slow knobs (M3) -> band defaults; one step after 2 consistent signals in 10 turns, at most 1 non-explicit step per 10 min. compile() renders it as one key=value VIBE row (cap 60 tokens, drop priority 4) between the lesson and move sections; pace knobs go to session config; re-teach turns force humour off, lower-third turn length and no decorative detail.** (2026-10-02)
+- Rationale: style adaptation moves engagement, not learning (RT10; Lubold 2018 p = .6; Gordon 2016 valence only); position is mechanism and sentence-shaped text gets recited (inherited laws).
+- Reverse if: a Taxila MRT shows a per-child style arm moving y_delay (then that knob gets a learning reward), or G1/G6 show the row fires better in a different tail position.
+- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §6.
+
+## reteach-randomise-from-second
+**Re-teach selection: RT9 recap when a resolved skill fails a delayed check; exclusions for arms already used, classes failed in the last 2 attempts and representations with pRead < 0.5; prerequisite descent after 2 distinct failed arms, park after 3; the kit primary arm is deterministic for the first re-teach of a confirmed misconception; a TS-PostDiff population bandit (floor 0.2, c = 0.05) chooses only from the second re-teach on; reward 0.3 now + 0.3 next unaided + 0.4 delayed covert; the re-check uses a different probe family.** (2026-10-02)
+- Rationale: resolves the open question in reteach-personalisation (PZ review A4 forbids gambling on the first fix; the bandit still needs data); RT1-RT9 evidence.
+- Reverse if: the owner wants no randomisation on misconceptions (bandit then learns from generic arms only), or RT-M2 shows arm effects converge (freeze to the best arm at the 0.2 floor).
+- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §5.
+
+
+<!-- merged from inbox/conductor-m0-fix.json -->
+## conductor-pause-at-lesson-end
+**A `parent.pause` that arrives while the child is in a live lesson is held as `pendingPause` and takes effect when the lesson ends: `lesson.ended`, or the clock's stale-lesson close (no `lesson.ended` for 3 h), both through one helper (`endLessonMode`). If the pause has already ended by then, it lapses. CONDUCTOR.md §3.3 says "at the next day boundary".** (2026-10-02)
+- Rationale: a parent who pauses at 16:25 means today. Waiting for the day boundary would let the child start another lesson the same evening, against the parent's intent (pl PA-21 C5). Cutting the live lesson off mid-segment is the Director's job at a segment boundary (dc AR-5 R8), so the Conductor does not do it. The review of conductor-m0 found that the stale-close path used to set `paused` without `pauseUntil`, which locked the child out permanently. That bug is fixed and covered by a test in tests/conductor-decide.test.mjs.
+- Reverse if: the parent-loop research or a parent study (n>=10 households) shows parents expect a pause to end the current lesson at once, or expect it to start at the next day. Then `parent.pause` either sends `brief.refresh{end}` or waits for the day boundary.
+
+## conductor-budget-threshold-today
+**`budget.threshold` (child scope, pct >= 80) sets `budget.low` and debounces a re-plan of TODAY. The unshown slots move from realtime lanes to cascade (R10). Shown and started slots stay frozen (V10). §3.3 says tomorrow's plan uses the lower lanes.** (2026-10-02)
+- Rationale: at 80% of a monthly budget, another realtime lesson that same evening can overrun it. Changing a lane the child has not seen yet costs the child nothing visible, and the child is never told about money. V3 now also compares against the month's remaining realtime seconds (`usage.voiceSecMonth`), and the planner steps down to cascade instead of producing a plan that V3 rejects.
+- Reverse if: cascade-vs-realtime quality measurements show that a same-day lane switch inside one learning day is noticeable to children (for example a drop in the vibe close on switch days, n>=30 sessions). Then the switch is deferred to the next day.
+
+
+<!-- merged from inbox/open-tts-on-azure.json -->
+## own-teacher-voice-record-once
+Proposed (not yet owner-approved). Record a consented work-for-hire Hindi-English teacher corpus once (~2,000 utterances, 48k/24-bit, multi-style sets) and train (A) Azure Professional Voice hi-IN (HD/multi-style/cross-lingual supported; training $52/compute-h, ~10 h; hosting $4.032/h per model; synthesis $24/M, HD $48/M; Limited Access + recorded consent statement required) and (B) a LoRA fine-tune of Veena/Svara (Apache) on Azure A100 (~$5-40/run). Rationale: Azure route keeps SSML/no GPU ops; OSS route is the hedge with emotion control and owned weights. Self-hosting serving beats DragonHD price only above ~10 sustained concurrent sessions (A100 VM $3.673/h, ~50 sessions/GPU estimate).
+- Reverse if: the human blind test shows stock MAI-Voice-2.1 HD / DragonHD already indistinguishable from a real teacher (then no custom voice), or Microsoft declines Limited Access (then Route B only).
+
+
+<!-- merged from inbox/stt-hinglish-v2.json -->
+## stt-default-live-transcribe-kw
+2026-10-02. Cascade lane L STT = `taxila-live-transcribe` with per-lesson `keywords` (lesson terms + the item's answer numbers in both scripts) and a speaker+script prompt containing NO vocabulary; client VAD gates/commits; watchdog strips refused fields and retries. Streaming fallback: Azure Speech real-time, continuous LID hi-IN+en-IN. Lane G second opinion: Azure Fast Transcription hi-IN+en-IN; L/G disagreement on the answer value = ungraded + natural repair. gpt-4o(-mini)-transcribe excluded from live and grading lanes. Rationale: docs/research/voice/v2/stt-hinglish.md (best arm on every metric, both TTS families, all noise arms; zero hallucination). Reverse if: E1 real-child accuracy favours another engine, or a rerun with gpt-transcribe / gpt-realtime-whisper-2 / MAI-Transcribe-2 (Central India) beats it.
+
+
+<!-- merged from inbox/ui-a-shell-parent-fix.json -->
+## parent-recheck-from-missed-check
+2026-10-02. server/routes/parent.js foldDelayedChecks: a P10 row is a delayed check when the previous non-no_evidence contact with the skill was in a different lesson and >= 20 h earlier (the bkt.js crossesSession rule). One miss after a delayed pass on a learned skill = Pakka + tag; two consecutive = Aa gaya; a pass clears it. Rationale: §6.4.1/R25 and absence invariance (PD-G19, R13): bkt 'due' only means the scheduled time passed. Reverse if the learner fold starts writing an explicit recheck_due / miss counter (then read that instead of re-folding evidence), or if M6 parent testing changes the tag rule. Covered by tests/parent-state.test.mjs.
+
+## reauth-password-for-erasure
+2026-10-02. DELETE /api/children and consent core_tutoring:false require body.password via checkAccountPassword(…,'child_erase'|'consent_withdraw'). Reverse when the §6.2/§6.9 OTP exists (replace, do not stack). The PIN-unlock reset of the password window exists because on a shared phone the child and parent share one session, so per-session keying would not help.
+
+## login-slow-limiter
+2026-10-02. INTERIM: bounds a guesser to about 100 tries/day rather than 5/24 h, chosen so anyone who knows the email cannot lock the guardian out of login for a day. Reverse when OTP/off-device factor lands, or if audit shows sustained slow guessing.
+
+
+<!-- merged from inbox/kit-fit-margin.json -->
+## kit-fit-margin (2026-10-02)
+The load gate `checkFits` (server/compiler/compile.js) simulates voice branches with a stand-in hint; real branches came out up to 1 token longer, so c7-english-ch03-t01-i07 and c9-english-ch08-t01-i04 passed the load gate and failed the real compile (361/360). Gate now admits only items fitting cap-3. Dropped items 102 → 108 of 10,815 (0.998%, the test's 1% ceiling is now nearly hit). **Reverse/revisit:** when the dropped count crosses 1%, shorten the dropped items in their kits rather than raising the cap or the ceiling; or make checkFits compile the real branchesFor() output and drop the margin.

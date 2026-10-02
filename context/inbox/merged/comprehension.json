@@ -1,0 +1,157 @@
+{
+ "nodes": [
+  {
+   "id": "comprehension-facet-belief",
+   "kind": "decision",
+   "title": "Comprehension belief = facets K (BKT-R pL), U (explains/evaluates), T (transfers), D (FSRS + delayed flags), M (misconceptions); U and T are new logit accumulators inside the ledger fold; 5-state ladder not_yet/shallow/fragile/understood/durable never above ledger display",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "comprehension-probe-budget-scheduler",
+   "kind": "decision",
+   "title": "Probe scheduler in code: mandatory probes (first-correct why, misconception verify, coincident why, partial follow-up, session-open delayed checks) + optional probes by EIG per unit test weight; per-band test-weight caps; <=2 U probes per concept-session from different families; facet read low keeps 1 probe/session",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "comprehension-weave-cross-topic",
+   "kind": "decision",
+   "title": "Checks 2-3 topics later are woven sub-steps graded as ONE event on the earlier skill (item.open, or transfer.near when the host structure is novel); fallback C31 callback at session open; protege return C34 at 3-10 d",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "comprehension-grading-closed-label",
+   "kind": "decision",
+   "title": "Grading by classification only: R-KEY/R-OPT/R-CATCH in code; R-EXP/R-MIS/R-INST closed-label LLM, one kit target per call, blind to teacher turns, code-checked quoted span; partial never scores; primary DeepSeek-V4-Pro pending kappa>=0.7 gate",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "comprehension-voice-zero-weight",
+   "kind": "decision",
+   "title": "Voice/vibe features carry LR weight 0 in K/U/T at launch; they only advance an eligible probe one slot, break re-teach ties toward the lighter arm, and set pace knobs",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "vibe-adapter-compiled-row",
+   "kind": "decision",
+   "title": "Vibe adapter: closed-vocabulary knobs (turn words, wait, humour, register, address, exampleDomain, challenge, energy, language mirror, probe skin) with band bounds, compiled as one key=value VIBE row between LESSON NOW and PEDAGOGY NOW; suppressed on re-teach turns",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "reteach-randomise-from-second",
+   "kind": "decision",
+   "title": "First re-teach of a confirmed misconception is the kit primary arm; TS-PostDiff population bandit (floor 0.2) only from the second re-teach; two failed arms -> prerequisite descent",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "comprehension-mc-2026-10-02",
+   "kind": "measurement",
+   "title": "Matched-model MC (n=20k per truth type): quiz+K-only rule calls 86.2% of correct-answer-trap children understood; covert facet scheduler 0.1% (worst false-understood 1.5-2.2%) but certifies only 40.7% (3 sessions) / 59.5% (5 sessions) of true understanders",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "quiz-k-only-mastery",
+   "kind": "rejection",
+   "title": "Computed: overt quiz items + a KT-only mastery rule cannot separate 'does it' from 'gets it' (86.2% of shallow children certified understood)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "facet-stop-when-low",
+   "kind": "rejection",
+   "title": "Computed: a scheduler that stops probing a facet once it reads low freezes unlucky understanders as shallow (understood detection 0.206 vs 0.407 after 3 sessions)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "comprehension-owner-items",
+   "kind": "open",
+   "title": "Owner items: accept slow certification (~41% by session 3) vs more probe load; kit schema change to ReteachArmSpec[] + new kit fields; new 'register' vibe knob",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "comprehension-facet-belief",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-facet-belief",
+   "rel": "measured_by",
+   "dst": "comprehension-mc-2026-10-02"
+  },
+  {
+   "src": "comprehension-facet-belief",
+   "rel": "caused_by",
+   "dst": "quiz-k-only-mastery"
+  },
+  {
+   "src": "comprehension-facet-belief",
+   "rel": "constrains",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "comprehension-probe-budget-scheduler",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-probe-budget-scheduler",
+   "rel": "measured_by",
+   "dst": "comprehension-mc-2026-10-02"
+  },
+  {
+   "src": "comprehension-probe-budget-scheduler",
+   "rel": "caused_by",
+   "dst": "facet-stop-when-low"
+  },
+  {
+   "src": "comprehension-weave-cross-topic",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-grading-closed-label",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-grading-closed-label",
+   "rel": "constrains",
+   "dst": "language-english-first-bilingual"
+  },
+  {
+   "src": "comprehension-voice-zero-weight",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-voice-zero-weight",
+   "rel": "caused_by",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "vibe-adapter-compiled-row",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "vibe-adapter-compiled-row",
+   "rel": "constrains",
+   "dst": "learner-brief-and-tail-order"
+  },
+  {
+   "src": "reteach-randomise-from-second",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-owner-items",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  }
+ ],
+ "md": {
+  "decisions": "## comprehension-facet-belief\n**The per-concept belief is five facets over one skill: K = BKT-R pL (unchanged), U = explains/evaluates (why, teach-back, error-spot, predict), T = transfers (near/far), D = FSRS retention + ledger delayed/durable flags (unchanged), M = misconception layer (unchanged). U and T are logit accumulators folded inside ledger.js (L.comp) with the same emissions, grader folding, symmetric retrieval gate, tempering and 1/j weights as K, a tighter session clamp (+/- log 20), prior 0.2 and a capped teach transition (0.10). State ladder: not_yet / shallow / fragile / understood / durable; understood needs display >= mastered, U >= 0.75, T >= 0.6, no misconception >= 0.3 and non-game U and T evidence; never above the ledger display; absence never lowers a state.** (2026-10-02)\n- Rationale: a right answer does not show the reasoning behind it (hidden-misconception detectors 4-8 false alarms per hit, papers #3); computed: a K-only rule certified 86.2% of correct-answer-trap children (comprehension-mc-2026-10-02). One fold keeps replay = online and the vibe/affect isolation tests.\n- Reverse if: CE-M10 on pilot data shows U and T add < 0.02 AUC over pL for predicting delayed far-transfer success; thresholds move only on CE-M6 pilot calibration under both sim truth families.\n- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §2.\n\n## comprehension-probe-budget-scheduler\n**The Director's probe scheduler is pure code. Mandatory probes (why after a first correct on a new skill, why after a coincident correct, a different-family verifier at misconception p >= 0.7, one follow-up after a partial, 2-4 delayed checks at session open) are budget-exempt but take the lowest-weight shape and cannot be deferred by strain. Optional probes are ranked by expected information gain on the open facet x urgency x novelty x code-grader bonus / test weight, ties by the counter-based draw. Test weights 1.0 / 0.5 / 0.25 by test risk (x0.5 for learning-move probes); caps per 10 child turns 1.5/2.0/2.5/2.5 and per session 20%/20%/25%/25% of child turns (B1-B4); never two probes in a row; <= 2 U probes per concept per session from different families; a facet read high stops being probed, one read low keeps one probe per session.** (2026-10-02)\n- Rationale: fusion rule 5 and the repeated-question effect (conversation-probes §1); computed: with 1 U probe per concept-session understood detection fell to 0.067, LLM-only U probes to 0.238, freezing low facets to 0.206, vs 0.407 for the spec (3 sessions, matched-model upper bounds).\n- Reverse if: M-PT shows < 5% of children feel tested at double the budget (relax) or > 15% at this budget (tighten); CE-M2 shows a different U-probe cap detects faster at equal CE-M3.\n- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §3.\n\n## comprehension-weave-cross-topic\n**A skill reaching learned_today enters a weave queue (earliest anchor + 20 h, due at FSRS R = 0.9). When the Conductor plans a topic 2-3 topics later that the kit lists as a host, the host item makes the earlier skill a necessary sub-step, graded by code as exactly one event on the earlier skill (item.open, or probe.transfer.near when the host structure is novel). It counts as the ledger's delayed check under the existing isCheck rule. With no host after 5 topics or 2 days past due, it becomes a C31 callback at the next session open; a C34 protege return runs at 3-10 days.** (2026-10-02)\n- Rationale: owner request for checks 2-3 topics later; the LearnLM x Eedi RCT outcome was novel problems on later topics [S]; one event per answer per skill avoids double counting K.\n- Reverse if: CE-M2 / pilot logs show woven checks miss their window > 30% of the time (then explicit callbacks become primary).\n- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §3.5.\n\n## comprehension-grading-closed-label\n**Every probe is graded by classification against kit data: R-KEY (normalised answer key, EN/HI number words), R-OPT (option -> misconceptionId) and R-CATCH (planted error caught/located/fixed) in code; R-EXP (one expectation per call: present/partial/absent/contradicted), R-MIS (retrieve -> rerank into the kit misconception list, detection only) and R-INST (valid/invalid/irrelevant, checked against verified instances) as closed-label LLM calls. The request carries only the child span and one kit target, never teacher turns or the child's confidence; a positive label needs a quoted span that code finds in the transcript; schema failure or low ASR -> NA; partial never scores. Routing: DeepSeek-V4-Pro primary, gpt-5.6-sol fallback (Azure Direct), one sample, moderate effort; LR stays at the 0.7-diagonal prior until kappa >= 0.7 on 300 human-labelled Indian-child turns per family, EN and Hinglish.** (2026-10-02)\n- Rationale: free-form LLM diagnosis F1 < 0.5 [V via papers]; graders degrade on part-right answers and give way to confident students [V]; bake-off C: DeepSeek-V4-Pro 12/12 at 822 ms p50 (n = 12, direction only).\n- Reverse if: M-GRADE shows another configuration beats an operator's kappa per language, or an operator's kappa stays < 0.6 (then that family's shapes are tap/choice only).\n- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §4.\n\n## comprehension-voice-zero-weight\n**Voice and vibe features (onset latency, pauses, disfluency, f0 slope, rate; all per-child z) have zero likelihood weight in K, U and T at launch. They may only move an already-eligible probe on the current item one slot earlier (followUpProbe), make the entry hint rung gentler, set wait/endpoint knobs, and break a re-teach tie within 0.05 toward the lighter arm. features.js MASTERY_NUDGE_CAP (0.03) stays as an unused ceiling.** (2026-10-02)\n- Rationale: children's disfluency tracks correctness, not confidence [S]; no product or 2025 paper uses child prosody as a comprehension signal (products-live #18); R2h-I needs byte-identical KT under permuted timing features.\n- Reverse if: VF-M1 (per-child calibration, research E3) shows a feature adds >= 0.03 AUC on delayed items within skill; it may then enter as one LR <= 1.1 event class.\n- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §1.3.\n\n## vibe-adapter-compiled-row\n**The vibe adapter turns closed inputs (explicit preferences, barge-ins, onset latency, humour uptake, the child's own register and address, accepted challenges, this-session interests, live code-mix, engagement state) into bounded knobs (teacherTurnWords, waitNudgeSec, endpointSilenceMs, humourDose, register, address, exampleDomain, challengeFrame, energy, languageMix, probeSkin). Precedence: safety -> strain -> explicit -> session -> slow knobs (M3) -> band defaults; one step after 2 consistent signals in 10 turns, at most 1 non-explicit step per 10 min. compile() renders it as one key=value VIBE row (cap 60 tokens, drop priority 4) between the lesson and move sections; pace knobs go to session config; re-teach turns force humour off, lower-third turn length and no decorative detail.** (2026-10-02)\n- Rationale: style adaptation moves engagement, not learning (RT10; Lubold 2018 p = .6; Gordon 2016 valence only); position is mechanism and sentence-shaped text gets recited (inherited laws).\n- Reverse if: a Taxila MRT shows a per-child style arm moving y_delay (then that knob gets a learning reward), or G1/G6 show the row fires better in a different tail position.\n- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §6.\n\n## reteach-randomise-from-second\n**Re-teach selection: RT9 recap when a resolved skill fails a delayed check; exclusions for arms already used, classes failed in the last 2 attempts and representations with pRead < 0.5; prerequisite descent after 2 distinct failed arms, park after 3; the kit primary arm is deterministic for the first re-teach of a confirmed misconception; a TS-PostDiff population bandit (floor 0.2, c = 0.05) chooses only from the second re-teach on; reward 0.3 now + 0.3 next unaided + 0.4 delayed covert; the re-check uses a different probe family.** (2026-10-02)\n- Rationale: resolves the open question in reteach-personalisation (PZ review A4 forbids gambling on the first fix; the bandit still needs data); RT1-RT9 evidence.\n- Reverse if: the owner wants no randomisation on misconceptions (bandit then learns from generic arms only), or RT-M2 shows arm effects converge (freeze to the best arm at the 0.2 floor).\n- Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §5.\n",
+  "measurements": "## comprehension-mc-2026-10-02\n**Matched-model Monte Carlo of the comprehension engine, 2026-10-02.** Method: `node docs/research/comprehension/comp-engine-calc.mjs` (seed 7), output `comp-engine-calc-2026-10-02.json`. n = 20,000 simulated children per truth type (not_yet, shallow, fragile_bound, fragile_forgets, understood), answers drawn from the real launch emission tables in `server/learner/kt/outcomes.js` with LLM grader diagonal 0.7 (or 0.55 true vs 0.7 assumed), K updated with the real `bktr.js` spend/transition. Adaptive policy: 2 code-graded items per concept-session (first one in sessions >= 2 = delayed check at R = 0.9), <= 2 U probes (why LLM, error-spot code, teach-back LLM, predict code), <= 1 T probe (near in session 1, far later).\n- Overt quiz (4 items/session) + K-only mastery rule, 3 sessions: shallow -> understood 0.862; macro accuracy 0.431.\n- Covert spec, 3 sessions: macro accuracy 0.639; shallow -> understood 0.001; worst false-understood 0.015; understood detected 0.407 (median 2.55 sessions when correct); 1.83 probes per concept-session.\n- Same, 5 sessions: macro 0.698; worst false-understood 0.022; understood detected 0.595.\n- Grader true 0.55 vs assumed 0.7: detected 0.373, worst false-understood 0.014.\n- U only from LLM-graded why/teach-back: detected 0.238. Max 1 U probe/session: 0.067. U mainly from game predictions at w = 0.5: 0.122. Stop probing a facet read low: 0.206.\n- Deterministic: 8 game predictions at w = 0.5 -> K 0.825, U 0.342 (shallow).\n- Scope: answers come from the same tables the engine inverts (inverse crime): upper bounds, no children, independent latent bits, no in-session learning, no ASR noise.\n",
+  "rejected": "## quiz-k-only-mastery\nTried (computed, 2026-10-02): certifying understanding from overt quiz items plus the KT-only mastery rule (pL >= 0.95 and a delayed success). Broke: in comprehension-mc-2026-10-02, 86.2% of simulated correct-answer-trap children (right answers, no understanding behind them) were certified understood, as were 85.8% of instance-bound understanders who cannot transfer. Items inform K only; nothing in them separates \"does it\" from \"gets it\". Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §0.1.\n\n## facet-stop-when-low\nTried (computed, 2026-10-02): a probe scheduler that stops probing a facet once its posterior drops to the low decision bound. Broke: an understander's single unlucky early miss (why none, error-spot missed) froze them as shallow; understood detection after 3 sessions was 0.206 vs 0.407 when a low facet keeps one probe per session (comprehension-mc-2026-10-02). Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §3.4.\n"
+ }
+}

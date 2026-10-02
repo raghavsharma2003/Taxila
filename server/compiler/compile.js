@@ -251,7 +251,11 @@ export const compile = (input, opts) => compileWithReport(input, opts).text;
  * allowed hint — and measures them against the `last` cap. normalizeKit drops what fails, so the budget
  * gate fails at load (and in tests/kit-budget.test.mjs), never in the middle of a child's lesson.
  */
-export function checkFits(item, { cap = SECTION_CAPS.last } = {}) {
+// The load gate simulates the voice branches with a stand-in hint, and the real branches can come out a few
+// tokens longer (c7-english i07 and c9-english i04 fit here and failed the real compile by 1 token). So the gate
+// keeps a margin: an item it admits must fit in every real compile, never be dropped mid-lesson.
+const FIT_MARGIN = 3;
+export function checkFits(item, { cap = SECTION_CAPS.last - FIT_MARGIN } = {}) {
   const longHint = "x".repeat(HINT_TOKEN_MAX * 3.5);
   const prefixes = [...Object.values(SH.CONFIRM), SH.retrievalNext(), "now a similar one for them", "an easier one now"];
   const lead = prefixes.reduce((a, b) => (b.length > a.length ? b : a));

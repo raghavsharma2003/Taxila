@@ -255,3 +255,29 @@ Tried (2026-10-02, the English kit workflow's copyright rule "write ORIGINAL sho
 
 ## indicf5-live-loop
 **Tried (Gurukul) / considered:** AI4Bharat IndicF5 as the live teacher voice. **Broke:** no streaming, a reference clip + transcript per call, RTF 2.87 on a T4, mixed-script WER 0.45, chemical symbols 6/8 wrong. Kept only as a possible offline narration option.
+
+
+<!-- merged from inbox/comprehension.json -->
+## quiz-k-only-mastery
+Tried (computed, 2026-10-02): certifying understanding from overt quiz items plus the KT-only mastery rule (pL >= 0.95 and a delayed success). Broke: in comprehension-mc-2026-10-02, 86.2% of simulated correct-answer-trap children (right answers, no understanding behind them) were certified understood, as were 85.8% of instance-bound understanders who cannot transfer. Items inform K only; nothing in them separates "does it" from "gets it". Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §0.1.
+
+## facet-stop-when-low
+Tried (computed, 2026-10-02): a probe scheduler that stops probing a facet once its posterior drops to the low decision bound. Broke: an understander's single unlucky early miss (why none, error-spot missed) froze them as shallow; understood detection after 3 sessions was 0.206 vs 0.407 when a low facet keeps one probe per session (comprehension-mc-2026-10-02). Source: `docs/research/comprehension/COMPREHENSION-ENGINE.md` §3.4.
+
+
+<!-- merged from inbox/open-tts-on-azure.json -->
+## t4-cannot-serve-3b-codec-tts
+Considered ACA serverless T4 ($0.263/h GPU meter) for Veena/Svara/Orpheus. Breaks on arithmetic: SNAC 24 kHz needs ~82 tokens/s per real-time stream; batch-1 decode of a 3B fp16 model on 320 GB/s caps at ~48 tok/s (int4 ~1.2x real time, one stream). Estimate, not measured on hardware; would reverse if a measured T4 int4 run sustains >=1.5x real time for >=4 streams.
+
+
+<!-- merged from inbox/stt-hinglish-v2.json -->
+## gpt4o-transcribe-fabricates-noise
+Tried gpt-4o-transcribe and gpt-4o-mini-transcribe (no hint, and language=hi + a vocabulary-free script prompt) as child STT. Broke: on white noise at 10 dB they wrote fluent never-said sentences ("मैं कक्षा में आठ बजे पहुँची थी।", "Teacher: What's the capital of India? Student: Delhi."), CER 0.61-0.84; with the script prompt they output text on 3/3 non-speech clips ("मैं 7 बजे घर आऊंगा." on silence). A grader reading these could mark a silent child. live-transcribe with the same prompt: 0/3.
+
+## azure-phraselist-hi-noop-realtime
+Tried Azure Speech real-time PhraseListGrammar (22 terms) on hi-IN. Broke: identical CER/recall to no list (n=180), as E0 found for Fast Transcription. Biasing must live in live-transcribe `keywords`.
+
+
+<!-- merged from inbox/voice-v2-reference-judge.json -->
+## gpt-audio-not-a-judge
+Tried openai/gpt-audio as an audio judge of Indian-voice nativeness. Broke: gave an American-accent negative control 5.0 native_indian with 0% leak, rated 89% of TTS naturalness 5 and 95% 'human'. Uninformative. See docs/research/models/audio-judge-models.md.

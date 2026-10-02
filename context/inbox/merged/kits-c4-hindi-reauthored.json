@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "kits-c4-hindi-reauthored",
+   "kind": "measurement",
+   "title": "c4-hindi re-authored against NCERT Veena 4 chapter PDFs: 12/13 topics rebuilt from the real texts (ch08 kept), 182 items, all keys re-checked; server lint 0 dropped / 0 hints replaced / 0 leaks; kit-budget leak and compile tests pass for the file",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "kits-c4-hindi-reauthored",
+   "rel": "supersedes",
+   "dst": "kit-invented-companion-texts"
+  }
+ ],
+ "md": {
+  "measurements": "## kits-c4-hindi-reauthored\n2026-10-02. Input: a blind checker read the real NCERT Veena 4 chapter PDFs (dhve101-113, Reprint 2026-27) and found 56 of 176 items disagreeing. The source text was invented in ch01, 02, 03, 07, 10, 11 and 12 and partly invented in ch04, 05, 06 and 09. Examples: a dawn/neem-branch bird poem in place of the egg-nest-branches-sky poem; a butterfly in the rain in place of the snail leaving the garden through a hole in the wall; Gudiya at a fair in place of the Kananpur king's fake diamonds; Tinku and Dadi in place of Madan's nonsense poem catching Dhannu Shah; Meenu, Rahul and Dadaji in place of Tenali Raman's chess play. ch13 was accurate but its hints named characters (Didi, Chintu) who are not in the dialogue. Fix: ch01-07 and ch09-13 were rebuilt from the real chapter texts. ch08 (Onam) was kept, with 3 leaking hints and one over-long acceptable list repaired. Each rebuilt chapter was read against its PDF text before it was written. Facts, plot and names are paraphrased. Quotes are kept to short single phrases: the longest shared Devanagari run is 24 characters, a list of names or a muhavara, and every quoted run over 24 characters was reworded. Checks: the c4 build lint (skills 3-5, items 10-14, at least 5 kinds, exactly one correct option per diagnostic, revealsAnswer on rungs 0-2, and normalizeKit with 0 items dropped, 0 diagnostics dropped and 0 hints replaced) passes. tests/kit-budget leak and compile tests pass for c4-hindi; the one failure in that suite is a pre-existing c7-english item. Not covered: no second blind solver has run on the rebuilt items. The `verified` blocks are from the re-authoring pass, which read the text, so a fresh blind check is still worth doing. Sources: scratchpad c4/*.mjs plus build.mjs."
+ }
+}

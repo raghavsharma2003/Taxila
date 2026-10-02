@@ -1213,6 +1213,237 @@
    "title": "response.create after response.cancel waits for the cancelled response's response.done (1.5 s fallback); 'conversation_already_has_active_response' is retried, at most 3 times",
    "at": "2026-10-02",
    "source": "inbox/ws1-client.json"
+  },
+  {
+   "id": "comprehension-facet-belief",
+   "kind": "decision",
+   "title": "Comprehension belief = facets K (BKT-R pL), U (explains/evaluates), T (transfers), D (FSRS + delayed flags), M (misconceptions); U and T are new logit accumulators inside the ledger fold; 5-state ladder not_yet/shallow/fragile/understood/durable never above ledger display",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "comprehension-probe-budget-scheduler",
+   "kind": "decision",
+   "title": "Probe scheduler in code: mandatory probes (first-correct why, misconception verify, coincident why, partial follow-up, session-open delayed checks) + optional probes by EIG per unit test weight; per-band test-weight caps; <=2 U probes per concept-session from different families; facet read low keeps 1 probe/session",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "comprehension-weave-cross-topic",
+   "kind": "decision",
+   "title": "Checks 2-3 topics later are woven sub-steps graded as ONE event on the earlier skill (item.open, or transfer.near when the host structure is novel); fallback C31 callback at session open; protege return C34 at 3-10 d",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "comprehension-grading-closed-label",
+   "kind": "decision",
+   "title": "Grading by classification only: R-KEY/R-OPT/R-CATCH in code; R-EXP/R-MIS/R-INST closed-label LLM, one kit target per call, blind to teacher turns, code-checked quoted span; partial never scores; primary DeepSeek-V4-Pro pending kappa>=0.7 gate",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "comprehension-voice-zero-weight",
+   "kind": "decision",
+   "title": "Voice/vibe features carry LR weight 0 in K/U/T at launch; they only advance an eligible probe one slot, break re-teach ties toward the lighter arm, and set pace knobs",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "vibe-adapter-compiled-row",
+   "kind": "decision",
+   "title": "Vibe adapter: closed-vocabulary knobs (turn words, wait, humour, register, address, exampleDomain, challenge, energy, language mirror, probe skin) with band bounds, compiled as one key=value VIBE row between LESSON NOW and PEDAGOGY NOW; suppressed on re-teach turns",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "reteach-randomise-from-second",
+   "kind": "decision",
+   "title": "First re-teach of a confirmed misconception is the kit primary arm; TS-PostDiff population bandit (floor 0.2) only from the second re-teach; two failed arms -> prerequisite descent",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "comprehension-mc-2026-10-02",
+   "kind": "measurement",
+   "title": "Matched-model MC (n=20k per truth type): quiz+K-only rule calls 86.2% of correct-answer-trap children understood; covert facet scheduler 0.1% (worst false-understood 1.5-2.2%) but certifies only 40.7% (3 sessions) / 59.5% (5 sessions) of true understanders",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "quiz-k-only-mastery",
+   "kind": "rejection",
+   "title": "Computed: overt quiz items + a KT-only mastery rule cannot separate 'does it' from 'gets it' (86.2% of shallow children certified understood)",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "facet-stop-when-low",
+   "kind": "rejection",
+   "title": "Computed: a scheduler that stops probing a facet once it reads low freezes unlucky understanders as shallow (understood detection 0.206 vs 0.407 after 3 sessions)",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "comprehension-owner-items",
+   "kind": "open",
+   "title": "Owner items: accept slow certification (~41% by session 3) vs more probe load; kit schema change to ReteachArmSpec[] + new kit fields; new 'register' vibe knob",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension.json"
+  },
+  {
+   "id": "conductor-pause-at-lesson-end",
+   "kind": "decision",
+   "title": "parent.pause during a live lesson takes effect when the lesson ends (or at the 3 h stale-lesson clock close), not at the next day boundary as CONDUCTOR.md §3.3 says",
+   "at": "2026-10-02",
+   "source": "inbox/conductor-m0-fix.json"
+  },
+  {
+   "id": "conductor-budget-threshold-today",
+   "kind": "decision",
+   "title": "budget.threshold (child scope, >=80%) narrows TODAY's unshown slots to cascade via a debounced re-plan, not only tomorrow's plan as §3.3 says; shown/started slots stay frozen (V10)",
+   "at": "2026-10-02",
+   "source": "inbox/conductor-m0-fix.json"
+  },
+  {
+   "id": "open-conductor-m0-deliverables",
+   "kind": "open",
+   "title": "Conductor M0 exit criteria NOT met: missing budget/cost_ledger/price_book/model_call/turn_trace/parent_setting tables; actor rows created lazily (actorRowStmts unused, not in child-creation tx); no shared/conductor/*.ts contracts; validator V1-V4,V10,V12,V15,V30 of V1-V30; planner R0,R1,R3,R8,R10 of R0-R14; no verify-release G0-G4 or evals/conductor-sim. Owner: Conductor workstream (post-wave-2 task #10)",
+   "at": "2026-10-02",
+   "source": "inbox/conductor-m0-fix.json"
+  },
+  {
+   "id": "open-conductor-db-tests-unverified",
+   "kind": "open",
+   "title": "tests/conductor-db.test.mjs (idempotent ingest, exactly-once timers, SKIP LOCKED, lease/has_more, X29 lock order, replay, syncParentFacts) is SKIPPED in npm test: no CONDUCTOR_TEST_DATABASE_URL. The DB substrate is unverified by the gate until the owner/main loop creates a dedicated Neon branch (e.g. conductor-test), applies every migration, sets CONDUCTOR_TEST_DATABASE_URL in .env.local and records the run in measurements.md. Owner: main loop",
+   "at": "2026-10-02",
+   "source": "inbox/conductor-m0-fix.json"
+  },
+  {
+   "id": "kits-c4-hindi-reauthored",
+   "kind": "measurement",
+   "title": "c4-hindi re-authored against NCERT Veena 4 chapter PDFs: 12/13 topics rebuilt from the real texts (ch08 kept), 182 items, all keys re-checked; server lint 0 dropped / 0 hints replaced / 0 leaks; kit-budget leak and compile tests pass for the file",
+   "at": "2026-10-02",
+   "source": "inbox/kits-c4-hindi-reauthored.json"
+  },
+  {
+   "id": "oss-tts-hindi-landscape",
+   "kind": "measurement",
+   "title": "Open TTS for Hindi (2026-10-02): commercially licensed + Hindi-capable = Veena (Apache), Svara (Apache, Orpheus-hi base), Chatterbox-Multilingual-hi (MIT), VoxCPM2 (Apache); passage (b) ASR round-trip 10/10 English terms for Svara/VoxCPM2/Chatterbox, IndicF5 0/10; excluded: Sesame CSM + Kyutai (no Hindi), Fish S2 + XTTS + F5 base (non-commercial), CosyVoice3 (no Hindi)",
+   "at": "2026-10-02",
+   "source": "inbox/open-tts-on-azure.json"
+  },
+  {
+   "id": "indicf5-last-in-indian-preference-study",
+   "kind": "measurement",
+   "title": "arXiv 2604.21481 (120k pairwise, 1,900 native raters, 10 langs): BT Gemini-2.5-Pro-TTS 1128.5 > ElevenLabs v3 1056 > Sonic 3 1051 > Bulbul V3 1022 > Speech 2.8 HD 994 > gpt-4o-mini-tts 943 > IndicF5 806 (win 19%)",
+   "at": "2026-10-02",
+   "source": "inbox/open-tts-on-azure.json"
+  },
+  {
+   "id": "t4-cannot-serve-3b-codec-tts",
+   "kind": "rejection",
+   "title": "T4 (ACA serverless) rejected for Veena/Svara/Orpheus: ~82 SNAC tok/s needed per stream, fp16 3B bandwidth ceiling ~48 tok/s on T4 (estimate); A100 is the floor",
+   "at": "2026-10-02",
+   "source": "inbox/open-tts-on-azure.json"
+  },
+  {
+   "id": "own-teacher-voice-record-once",
+   "kind": "decision",
+   "title": "Proposed: record one consented work-for-hire Hinglish teacher corpus (~2,000 utt, 3-4 h) usable for both Azure Professional Voice (hi-IN supports HD, multi-style, cross-lingual, multilingual; $52/train-h ~10 h, $4.03/h hosting, $24-48/M chars) and a LoRA fine-tune of Veena/Svara; Azure route is production, OSS route is the hedge; gated on human blind test",
+   "at": "2026-10-02",
+   "source": "inbox/open-tts-on-azure.json"
+  },
+  {
+   "id": "stt-default-live-transcribe-kw",
+   "kind": "decision",
+   "title": "Default cascade STT = taxila-live-transcribe (gpt-live-transcribe) + per-lesson keywords + vocabulary-free speaker/script prompt; streaming fallback Azure Speech real-time continuous LID hi-IN/en-IN; lane-G second opinion Azure Fast hi-IN+en-IN",
+   "at": "2026-10-02",
+   "source": "inbox/stt-hinglish-v2.json"
+  },
+  {
+   "id": "stt-hinglish-v2-synthetic",
+   "kind": "measurement",
+   "title": "stt-hinglish v2 (synthetic, 30 utt x 2 TTS families x clean/white/pink 10 dB, n=180/arm): live-tx D4 cerNorm 0.026, numbers 92/96, answers 76/78, 0 wrong-script/decoy/halluc; Azure RT LID 0.071, 73/96, 74/78; Azure Fast 0.072, 78/96, 73/78; gpt-4o-transcribe+script 0.225, 58/96; final latency live-tx 657 ms p50 after commit, Azure RT ~880 ms after speech end",
+   "at": "2026-10-02",
+   "source": "inbox/stt-hinglish-v2.json"
+  },
+  {
+   "id": "gpt4o-transcribe-fabricates-noise",
+   "kind": "rejection",
+   "title": "gpt-4o(-mini)-transcribe rejected for live/grading lanes: fluent invented sentences on white noise 10 dB (CER 0.61-0.84) and 3/3 output on non-speech even with a vocabulary-free script prompt",
+   "at": "2026-10-02",
+   "source": "inbox/stt-hinglish-v2.json"
+  },
+  {
+   "id": "azure-phraselist-hi-noop-realtime",
+   "kind": "rejection",
+   "title": "Azure Speech PhraseListGrammar on hi-IN is a no-op in real-time too (R2 == R1 on every metric, n=180), as in batch (E0)",
+   "at": "2026-10-02",
+   "source": "inbox/stt-hinglish-v2.json"
+  },
+  {
+   "id": "parent-recheck-from-missed-check",
+   "kind": "decision",
+   "title": "Parent 'Pakka · dobara jaanch' tag is derived from evidence (a missed delayed P10 check after a delayed pass), never from bkt status 'due'; 'due' reads as its underlying level",
+   "at": "2026-10-02",
+   "source": "inbox/ui-a-shell-parent-fix.json"
+  },
+  {
+   "id": "reauth-password-for-erasure",
+   "kind": "decision",
+   "title": "Interim until OTP: child erasure and core_tutoring withdrawal re-ask the account password (counted, checkAccountPassword); a correct PIN unlock restarts the password-try window",
+   "at": "2026-10-02",
+   "source": "inbox/ui-a-shell-parent-fix.json"
+  },
+  {
+   "id": "login-slow-limiter",
+   "kind": "decision",
+   "title": "Login bounded per guardian: 5 free wrong tries / 24 h, then one checked try per 15 min; refused tries not stored; async scrypt; per-session/IP burst limit",
+   "at": "2026-10-02",
+   "source": "inbox/ui-a-shell-parent-fix.json"
+  },
+  {
+   "id": "ui-a-open-gaps",
+   "kind": "open",
+   "title": "ui-a unbuilt spec items: §2.3 tap plays the name aloud on /who; §2.2 P6 NameSayer TTS preview + optional first subject; §6.5 level bridge and school sync; §6.6 delete per lesson; §6.10 in-app safety alert (GET /api/parent/alerts over incident, never quoting the child, with helplines, safeguarding suppression branch); §6.2 WhatsApp notice of a pending PIN reset; ChildShell should call useSurface/ensureFont and drop src/child/tokens.css duplicates (ui-b)",
+   "at": "2026-10-02",
+   "source": "inbox/ui-a-shell-parent-fix.json"
+  },
+  {
+   "id": "voice-v2-ai-judge-proxy",
+   "kind": "measurement",
+   "title": "AI-judge proxy (Gemini-3.1-Pro audio judge, n=5 passages/arm): directed Gemini-3.8-flash-tts 5.00, Azure MAI-Voice-2.1 HD Priya 4.85, DragonHD Diya 4.70, Gemini without director note 4.45; coverage partial (178/278 clips) due to OpenRouter $10 cap",
+   "at": "2026-10-02",
+   "source": "inbox/voice-v2-reference-judge.json"
+  },
+  {
+   "id": "gpt-audio-not-a-judge",
+   "kind": "rejection",
+   "title": "openai/gpt-audio rejected as voice judge: rated an American-accent negative control 5.0 native-Indian, 89% of TTS at naturalness 5",
+   "at": "2026-10-02",
+   "source": "inbox/voice-v2-reference-judge.json"
+  },
+  {
+   "id": "kit-fit-margin",
+   "kind": "decision",
+   "title": "Load-time checkFits keeps a 3-token margin under the last-section cap",
+   "at": "2026-10-02",
+   "source": "inbox/kit-fit-margin.json"
+  },
+  {
+   "id": "oss-tts-hindi-landscape-v2",
+   "kind": "measurement",
+   "title": "Open TTS passage (b) round-trip, completed set (n=1 clip each): Veena kavya, Svara, VoxCPM2, Chatterbox-hi, Chatterbox V3 all 10/10 English terms; IndicF5 0/10 Latin-script but 10/10 when English words are pre-transliterated to Devanagari",
+   "at": "2026-10-02",
+   "source": "inbox/open-tts-on-azure-followup.json"
+  },
+  {
+   "id": "snac-82-tokens-per-audio-second",
+   "kind": "measurement",
+   "title": "Veena (SNAC 24 kHz) emits 82.1 audio tokens per second of speech (1,820 tokens / 22.2 s, 5 sentences, measured): the per-stream real-time floor for Veena/Svara/Orpheus serving",
+   "at": "2026-10-02",
+   "source": "inbox/open-tts-on-azure-followup.json"
   }
  ],
  "edges": [
@@ -2215,6 +2446,121 @@
    "src": "voice-instructions-client-visible",
    "rel": "constrains",
    "dst": "voice-realtime-model"
+  },
+  {
+   "src": "comprehension-facet-belief",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-facet-belief",
+   "rel": "measured_by",
+   "dst": "comprehension-mc-2026-10-02"
+  },
+  {
+   "src": "comprehension-facet-belief",
+   "rel": "caused_by",
+   "dst": "quiz-k-only-mastery"
+  },
+  {
+   "src": "comprehension-facet-belief",
+   "rel": "constrains",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "comprehension-probe-budget-scheduler",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-probe-budget-scheduler",
+   "rel": "measured_by",
+   "dst": "comprehension-mc-2026-10-02"
+  },
+  {
+   "src": "comprehension-probe-budget-scheduler",
+   "rel": "caused_by",
+   "dst": "facet-stop-when-low"
+  },
+  {
+   "src": "comprehension-weave-cross-topic",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-grading-closed-label",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-grading-closed-label",
+   "rel": "constrains",
+   "dst": "language-english-first-bilingual"
+  },
+  {
+   "src": "comprehension-voice-zero-weight",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-voice-zero-weight",
+   "rel": "caused_by",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "vibe-adapter-compiled-row",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "vibe-adapter-compiled-row",
+   "rel": "constrains",
+   "dst": "learner-brief-and-tail-order"
+  },
+  {
+   "src": "reteach-randomise-from-second",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-owner-items",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "conductor-pause-at-lesson-end",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "conductor-budget-threshold-today",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "open-conductor-m0-deliverables",
+   "rel": "part_of",
+   "dst": "conductor-code-reducer"
+  },
+  {
+   "src": "open-conductor-db-tests-unverified",
+   "rel": "part_of",
+   "dst": "conductor-substrate-neon"
+  },
+  {
+   "src": "kits-c4-hindi-reauthored",
+   "rel": "supersedes",
+   "dst": "kit-invented-companion-texts"
+  },
+  {
+   "src": "oss-tts-hindi-landscape-v2",
+   "rel": "supersedes",
+   "dst": "oss-tts-hindi-landscape"
+  },
+  {
+   "src": "t4-cannot-serve-3b-codec-tts",
+   "rel": "measured_by",
+   "dst": "snac-82-tokens-per-audio-second"
   }
  ]
 }

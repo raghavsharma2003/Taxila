@@ -1,0 +1,13 @@
+{
+ "nodes": [
+  {"id": "oss-tts-hindi-landscape-v2", "kind": "measurement", "title": "Open TTS passage (b) round-trip, completed set (n=1 clip each): Veena kavya, Svara, VoxCPM2, Chatterbox-hi, Chatterbox V3 all 10/10 English terms; IndicF5 0/10 Latin-script but 10/10 when English words are pre-transliterated to Devanagari", "at": "2026-10-02"},
+  {"id": "snac-82-tokens-per-audio-second", "kind": "measurement", "title": "Veena (SNAC 24 kHz) emits 82.1 audio tokens per second of speech (1,820 tokens / 22.2 s, 5 sentences, measured): the per-stream real-time floor for Veena/Svara/Orpheus serving", "at": "2026-10-02"}
+ ],
+ "edges": [
+  {"src": "oss-tts-hindi-landscape-v2", "rel": "supersedes", "dst": "oss-tts-hindi-landscape"},
+  {"src": "t4-cannot-serve-3b-codec-tts", "rel": "measured_by", "dst": "snac-82-tokens-per-audio-second"}
+ ],
+ "md": {
+  "measurements": "## oss-tts-hindi-landscape-v2\n2026-10-02. Supersedes oss-tts-hindi-landscape (that entry was logged before the Veena, Chatterbox V3 and IndicF5-Devanagari clips finished). Method unchanged: passage (b), one clip per model, round-trip ASR with taxila-transcribe, 10 English-term slots. Veena kavya (local CPU bf16, sentence-wise) 10/10, 14.4 chars/s; Svara 10/10 (13.0); VoxCPM2 10/10 (11.7); Chatterbox-Multilingual-hi 10/10 (12.2); Chatterbox V3 10/10 (13.1, possible inserted 'yaani'); IndicF5 0/10 with Latin-script English (17.6 chars/s, words dropped) and 10/10 with the same words transliterated to Devanagari (13.9). Consequence: the IndicF5/F5 family needs a Latin->Devanagari pass in the spoken-notation normaliser. Intelligibility only; naturalness unmeasured. Clips: docs/research/voice/v2/samples/oss-*.mp3; report docs/research/voice/v2/open-tts-on-azure.md.\n\n## snac-82-tokens-per-audio-second\n2026-10-02. Veena (maya-research/Veena, SNAC 24 kHz, 7 tokens/frame) on passage (b), 5 sentences: 308/217/511/308/476 tokens for 3.75/2.65/6.23/3.75/5.80 s = 82.1 tokens per audio second. Method: count of generated audio-code tokens vs decoded sample length. A real-time stream therefore needs >=82 tok/s of decode, with headroom ~1.5x."
+ }
+}

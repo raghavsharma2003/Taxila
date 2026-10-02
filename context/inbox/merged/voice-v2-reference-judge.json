@@ -1,0 +1,13 @@
+{
+ "nodes": [
+  {"id": "voice-v2-ai-judge-proxy", "kind": "measurement", "title": "AI-judge proxy (Gemini-3.1-Pro audio judge, n=5 passages/arm): directed Gemini-3.8-flash-tts 5.00, Azure MAI-Voice-2.1 HD Priya 4.85, DragonHD Diya 4.70, Gemini without director note 4.45; coverage partial (178/278 clips) due to OpenRouter $10 cap", "at": "2026-10-02"},
+  {"id": "gpt-audio-not-a-judge", "kind": "rejection", "title": "openai/gpt-audio rejected as voice judge: rated an American-accent negative control 5.0 native-Indian, 89% of TTS at naturalness 5", "at": "2026-10-02"}
+ ],
+ "edges": [
+  {"src": "voice-v2-ai-judge-proxy", "rel": "informs", "dst": "voice-lane-cascade-default"}
+ ],
+ "md": {
+  "measurements": "## voice-v2-ai-judge-proxy\n2026-10-02. Method: 278 clips (183 Azure, 90 OpenRouter reference-not-for-production, 5 IndicTTS human anchors), uniform loudnorm/-24 LUFS mp3 re-encode, blind to name; judges gemini-3.1-pro-preview, qwen3.8-omni-flash, gpt-audio via OpenRouter (experiments only). Headline = Gemini-Pro (only judge catching the American-accent control: native 2.4, leak 80%; test-retest Spearman 0.94, n=26). Composite: Gemini-3.8-flash-tts with director note 5.00; MAI-Voice-2.1 HD Priya 4.85; DragonHD Diya 4.70; MAI Flash Dhruv 4.65; Gemini Sulafat no note 4.45; other MAI 3.5-4.1; human anchor 3.25 (scale is not humanness). Azure leaders tie Gemini on native/Hindi (5.0, 0 leak) and trail only on naturalness. Coverage PARTIAL: 100 Azure clips (most en-IN DragonHD, omni, 4o-mini-tts, Swara) unrated — key cap. Possible judge self-family bias (Gemini TTS 4.94 vs others 3.57). Proxy only; human blind test decides. Full: docs/research/voice/v2/judge-summary.md.",
+  "rejected": "## gpt-audio-not-a-judge\nTried openai/gpt-audio as an audio judge of Indian-voice nativeness. Broke: gave an American-accent negative control 5.0 native_indian with 0% leak, rated 89% of TTS naturalness 5 and 95% 'human'. Uninformative. See docs/research/models/audio-judge-models.md."
+ }
+}

@@ -430,3 +430,46 @@ numberline-jump pack, 4 pads (key, add-across, whole-number-ish, filler), 4 leve
 - voices-hindi (221 clips, 44 arms, n=5/arm): first audio azure-realtime 476 ms, gpt-realtime-2.1 native 776 ms, Voice Live + Azure voice 858 ms, gpt-4o-mini-tts streamed 283 ms; every arm key-term recall >= 0.92 (ASR cannot rank voices); unhinted ASR wrote non-Devanagari script for 6/40 native-OpenAI Hindi clips vs 0/84 Azure Indian (single pass, observation only); raw loudness spread 16 LU.
 - ASR E0 (1515 calls, synthetic child TTS pitch-shifted, clean/child/10 dB TV/silence): gpt-live-transcribe + keywords + script-only prompt skeleton CER 0.043, answers 14/15, 0/3 output on near-silence (upper bound wide); gpt-4o-transcribe text on near-silence 5/5 in every config; Azure Fast phraseList no effect for hi-IN (126 clips); 10 dB TV CER >= 0.56 on every engine.
 - Method and raw data: docs/research/voice/{hl-probe-2026-10-02,characters/probe-2026-10-02,relational-probe-2026-10-02*.json,attune-probe-2026-10-02*,probe-2026-10-02-results.json,asr-e0}.
+
+
+<!-- merged from inbox/comprehension.json -->
+## comprehension-mc-2026-10-02
+**Matched-model Monte Carlo of the comprehension engine, 2026-10-02.** Method: `node docs/research/comprehension/comp-engine-calc.mjs` (seed 7), output `comp-engine-calc-2026-10-02.json`. n = 20,000 simulated children per truth type (not_yet, shallow, fragile_bound, fragile_forgets, understood), answers drawn from the real launch emission tables in `server/learner/kt/outcomes.js` with LLM grader diagonal 0.7 (or 0.55 true vs 0.7 assumed), K updated with the real `bktr.js` spend/transition. Adaptive policy: 2 code-graded items per concept-session (first one in sessions >= 2 = delayed check at R = 0.9), <= 2 U probes (why LLM, error-spot code, teach-back LLM, predict code), <= 1 T probe (near in session 1, far later).
+- Overt quiz (4 items/session) + K-only mastery rule, 3 sessions: shallow -> understood 0.862; macro accuracy 0.431.
+- Covert spec, 3 sessions: macro accuracy 0.639; shallow -> understood 0.001; worst false-understood 0.015; understood detected 0.407 (median 2.55 sessions when correct); 1.83 probes per concept-session.
+- Same, 5 sessions: macro 0.698; worst false-understood 0.022; understood detected 0.595.
+- Grader true 0.55 vs assumed 0.7: detected 0.373, worst false-understood 0.014.
+- U only from LLM-graded why/teach-back: detected 0.238. Max 1 U probe/session: 0.067. U mainly from game predictions at w = 0.5: 0.122. Stop probing a facet read low: 0.206.
+- Deterministic: 8 game predictions at w = 0.5 -> K 0.825, U 0.342 (shallow).
+- Scope: answers come from the same tables the engine inverts (inverse crime): upper bounds, no children, independent latent bits, no in-session learning, no ASR noise.
+
+
+<!-- merged from inbox/kits-c4-hindi-reauthored.json -->
+## kits-c4-hindi-reauthored
+2026-10-02. Input: a blind checker read the real NCERT Veena 4 chapter PDFs (dhve101-113, Reprint 2026-27) and found 56 of 176 items disagreeing. The source text was invented in ch01, 02, 03, 07, 10, 11 and 12 and partly invented in ch04, 05, 06 and 09. Examples: a dawn/neem-branch bird poem in place of the egg-nest-branches-sky poem; a butterfly in the rain in place of the snail leaving the garden through a hole in the wall; Gudiya at a fair in place of the Kananpur king's fake diamonds; Tinku and Dadi in place of Madan's nonsense poem catching Dhannu Shah; Meenu, Rahul and Dadaji in place of Tenali Raman's chess play. ch13 was accurate but its hints named characters (Didi, Chintu) who are not in the dialogue. Fix: ch01-07 and ch09-13 were rebuilt from the real chapter texts. ch08 (Onam) was kept, with 3 leaking hints and one over-long acceptable list repaired. Each rebuilt chapter was read against its PDF text before it was written. Facts, plot and names are paraphrased. Quotes are kept to short single phrases: the longest shared Devanagari run is 24 characters, a list of names or a muhavara, and every quoted run over 24 characters was reworded. Checks: the c4 build lint (skills 3-5, items 10-14, at least 5 kinds, exactly one correct option per diagnostic, revealsAnswer on rungs 0-2, and normalizeKit with 0 items dropped, 0 diagnostics dropped and 0 hints replaced) passes. tests/kit-budget leak and compile tests pass for c4-hindi; the one failure in that suite is a pre-existing c7-english item. Not covered: no second blind solver has run on the rebuilt items. The `verified` blocks are from the re-authoring pass, which read the text, so a fresh blind check is still worth doing. Sources: scratchpad c4/*.mjs plus build.mjs.
+
+
+<!-- merged from inbox/open-tts-on-azure.json -->
+## oss-tts-hindi-landscape
+2026-10-02. Method: model cards + licences for 13 open TTS families; passage (b) synthesised on public HF ZeroGPU Spaces (Svara, VoxCPM2 voice-design, Chatterbox-Multilingual-hi and IndicF5 cloning the vendor demo prompt hi_f1.flac) and Veena on local CPU; n=1 clip per model; round-trip ASR with taxila-transcribe counting 10 English-term slots. Svara 10/10 (13.0 chars/s), VoxCPM2 10/10 (11.7), Chatterbox-hi 10/10 (12.2), IndicF5 0/10 (pizza->hezaa, Latin words garbled/dropped, 17.6 chars/s). Intelligibility only — naturalness unmeasured (OpenRouter judge budget exhausted). Full: docs/research/voice/v2/open-tts-on-azure.md.
+
+## indicf5-last-in-indian-preference-study
+arXiv 2604.21481: 5,357 sentences, 10 Indian languages, 120k+ pairwise comparisons, 1,900+ native raters, Bradley-Terry. Gemini 2.5 Pro TTS 1128.53 (win 70%), ElevenLabs v3 1056.28, Sonic 3 1050.83, Bulbul V3 Beta 1021.91, Speech 2.8 HD 993.94, GPT-4o-mini-TTS 942.76 (40%), IndicF5 805.75 (19%).
+
+
+<!-- merged from inbox/stt-hinglish-v2.json -->
+## stt-hinglish-v2-synthetic
+2026-10-02, US container -> eastus2. 30 child-answer utterances (Hinglish 10, Hindi 8, English 7, hesitant 5) synthesised by gpt-4o-mini-tts (child-instructed) and Azure neural hi-IN/en-IN (pitch +25%, rate +12%), clean/white/pink at 10 dB SNR + 3 non-speech; 11 arms x 183 clips = 2,013 calls, one pass; deterministic skeleton scorer (Devanagari<->Roman normalised). cerNorm / numSeq(96) / answers(78): live-tx kw+script 0.026 / 92 / 76; live-tx no context 0.068 / 78 / 65 (19 wrong-script clips); Azure Fast hi+en 0.072 / 78 / 73; Azure RT LID 0.071 / 73 / 74; Azure RT hi-IN 0.116 / 70 / 74; Azure RT en-IN 0.063 cer but raw WER 0.65 (Hindi romanised); gpt-4o-transcribe hi+script 0.225 / 58 / 51; 4o-mini 0.302 / 52 / 47. Latency: first partial Azure RT ~1.0 s (LID 2.3 s), live-tx 1.4 s after onset; final live-tx 657/760 ms p50/p90 after commit, Azure RT 820-880 ms p50 after speech end; batch 262-355 ms. SYNTHETIC - instrument only. Full: docs/research/voice/v2/stt-hinglish.md.
+
+
+<!-- merged from inbox/voice-v2-reference-judge.json -->
+## voice-v2-ai-judge-proxy
+2026-10-02. Method: 278 clips (183 Azure, 90 OpenRouter reference-not-for-production, 5 IndicTTS human anchors), uniform loudnorm/-24 LUFS mp3 re-encode, blind to name; judges gemini-3.1-pro-preview, qwen3.8-omni-flash, gpt-audio via OpenRouter (experiments only). Headline = Gemini-Pro (only judge catching the American-accent control: native 2.4, leak 80%; test-retest Spearman 0.94, n=26). Composite: Gemini-3.8-flash-tts with director note 5.00; MAI-Voice-2.1 HD Priya 4.85; DragonHD Diya 4.70; MAI Flash Dhruv 4.65; Gemini Sulafat no note 4.45; other MAI 3.5-4.1; human anchor 3.25 (scale is not humanness). Azure leaders tie Gemini on native/Hindi (5.0, 0 leak) and trail only on naturalness. Coverage PARTIAL: 100 Azure clips (most en-IN DragonHD, omni, 4o-mini-tts, Swara) unrated — key cap. Possible judge self-family bias (Gemini TTS 4.94 vs others 3.57). Proxy only; human blind test decides. Full: docs/research/voice/v2/judge-summary.md.
+
+
+<!-- merged from inbox/open-tts-on-azure-followup.json -->
+## oss-tts-hindi-landscape-v2
+2026-10-02. Supersedes oss-tts-hindi-landscape (that entry was logged before the Veena, Chatterbox V3 and IndicF5-Devanagari clips finished). Method unchanged: passage (b), one clip per model, round-trip ASR with taxila-transcribe, 10 English-term slots. Veena kavya (local CPU bf16, sentence-wise) 10/10, 14.4 chars/s; Svara 10/10 (13.0); VoxCPM2 10/10 (11.7); Chatterbox-Multilingual-hi 10/10 (12.2); Chatterbox V3 10/10 (13.1, possible inserted 'yaani'); IndicF5 0/10 with Latin-script English (17.6 chars/s, words dropped) and 10/10 with the same words transliterated to Devanagari (13.9). Consequence: the IndicF5/F5 family needs a Latin->Devanagari pass in the spoken-notation normaliser. Intelligibility only; naturalness unmeasured. Clips: docs/research/voice/v2/samples/oss-*.mp3; report docs/research/voice/v2/open-tts-on-azure.md.
+
+## snac-82-tokens-per-audio-second
+2026-10-02. Veena (maya-research/Veena, SNAC 24 kHz, 7 tokens/frame) on passage (b), 5 sentences: 308/217/511/308/476 tokens for 3.75/2.65/6.23/3.75/5.80 s = 82.1 tokens per audio second. Method: count of generated audio-code tokens vs decoded sample length. A real-time stream therefore needs >=82 tok/s of decode, with headroom ~1.5x.
