@@ -69,7 +69,7 @@ export function decide(state0, ev, ctx) {
   };
 
   // ── day rollover: a missed `night` is caught up by the first event of a later learning day, once (§3.3) ──
-  if (s.learningDay && s.learningDay < today && s.adapt.foldedDay !== s.learningDay) foldNight(s, s.learningDay, H, now, { arm: true });
+  if (s.learningDay && s.learningDay < today && s.adapt.foldedDay !== s.learningDay) foldNight(s, s.learningDay, H, { arm: true });
   s.learningDay = today;
   // an in_lesson that never ended (crashed client) is closed by the clock, not left to block the day
   if (s.mode === "in_lesson" && s.lesson && nowMs - Date.parse(s.lesson.since) > LESSON_STALE_MS && ev.type !== "lesson.ended") {
@@ -115,7 +115,7 @@ function replan(s, reason, pctx, H) {
 }
 
 /** Close a learning day (§3.3 night): once per day; trims, expires, recounts, re-arms if not dormant (X36). */
-function foldNight(s, day, H, now, { arm }) {
+function foldNight(s, day, H, { arm }) {
   const cut = addDays(day, -PLAN.closesMaxDays);
   s.adapt.closes = s.adapt.closes.filter((c) => c.day >= cut).slice(-PLAN.closesRing);
   s.counters.activeDays = s.counters.activeDays.filter((d) => d > addDays(day, -7)).sort();
@@ -130,7 +130,6 @@ function foldNight(s, day, H, now, { arm }) {
     if (active && daysBetween(active, day) <= PLAN.dormantDays) H.armAhead(day);
     else H.rule("dormant_not_rearmed");
   }
-  void now;
 }
 
 const markActive = (s, day) => {
@@ -274,7 +273,7 @@ const HANDLERS = {
       case "night": {
         const d = ev.wakeupId?.startsWith("night:") ? ev.wakeupId.slice(6) : addDays(t.today, 0);
         if (s.adapt.foldedDay && s.adapt.foldedDay >= d) { H.rule("fold_night_already"); break; }
-        foldNight(s, d, H, t.now, { arm: true });
+        foldNight(s, d, H, { arm: true });
         break;
       }
       case "replan":

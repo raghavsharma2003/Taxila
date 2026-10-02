@@ -322,6 +322,8 @@ export class CascadeLink implements TeacherLink {
   private duckTimer: ReturnType<typeof setTimeout> | null = null;
   private pauseTimer: ReturnType<typeof setTimeout> | null = null;
   private disconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Rejects the open() in flight (teardown or close), so its channel timer never outlives the call. */
+  private abandonOpen: ((err: Error) => void) | null = null;
   private recorder: { rec: MediaRecorder; parts: Blob[]; startedAt: number; releasedAt?: number; heard: boolean } | null = null;
   private replySeq = 0;
   /** The reply being fetched, played or held paused; null when the teacher is quiet. */
@@ -742,6 +744,7 @@ export class CascadeLink implements TeacherLink {
         clearTimeout(timer);
         reject(err);
       };
+      this.abandonOpen = fail;
       dc.onopen = () => {
         clearTimeout(timer);
         resolve();
@@ -790,6 +793,8 @@ export class CascadeLink implements TeacherLink {
     if (!res.ok) throw new Error(`transcription call refused (${res.status})`);
     await pc.setRemoteDescription({ type: "answer", sdp: await res.text() });
     await opened;
+    this.abandonOpen = null;
+    if (this.pc !== pc) throw new Error("the transcription call was replaced");
     this.callUp = true;
     if (this.pushToTalk) this.sendSession(null);
   }
@@ -858,6 +863,8 @@ export class CascadeLink implements TeacherLink {
     this.pc = null;
     this.dc = null;
     this.callUp = false;
+    this.abandonOpen?.(new Error("the transcription call was torn down"));
+    this.abandonOpen = null;
     if (this.disconnectTimer) clearTimeout(this.disconnectTimer);
     this.disconnectTimer = null;
     if (dc) {

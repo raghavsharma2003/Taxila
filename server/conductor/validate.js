@@ -10,10 +10,10 @@ const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
 /**
  * @param {any} plan     planDay(inputs).plan
  * @param {any} inputs   the PlannerInputs it was built from
- * @param {{ childId: string, prevSlots?: any[] }} ctx
+ * @param {{ childId: string }} ctx
  * @returns {Array<{ rule: string, detail: string }>}
  */
-export function validatePlan(plan, inputs, { childId, prevSlots = [] } = {}) {
+export function validatePlan(plan, inputs, { childId } = {}) {
   const out = [];
   const bad = (rule, detail) => out.push({ rule, detail });
   const b = BAND[inputs.child.band];
@@ -58,6 +58,5 @@ export function validatePlan(plan, inputs, { childId, prevSlots = [] } = {}) {
   }
   // V30 (and V14's spirit): no other child's id anywhere in the plan.
   for (const m of jcs(plan).match(UUID) || []) if (m.toLowerCase() !== String(childId).toLowerCase()) bad("V30", `foreign id ${m.slice(0, 8)}…`);
-  void prevSlots;
   return out;
 }
