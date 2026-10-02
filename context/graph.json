@@ -29,6 +29,32 @@
    "kind": "measurement",
    "title": "Azure deployment smoke latencies (n=1)",
    "at": "2026-10-02"
+  },
+  {
+   "id": "realtime-teacher-bakeoff-2026-10-02",
+   "kind": "measurement",
+   "title": "Realtime 2.1 vs mini with teacher prompt: 64\u219225 words/turn when brevity is structural",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-realtime-model",
+   "kind": "decision",
+   "title": "Live teacher voice = gpt-realtime-2.1 full, director-driven per turn",
+   "at": "2026-10-02",
+   "status": "live"
+  },
+  {
+   "id": "meera-realtime-azure",
+   "kind": "rejection",
+   "title": "(inherited) gpt-realtime-mini talked 14 s monologues for Meera",
+   "at": "2026-09",
+   "source": "html-portfolio context/rejected.md#realtime-azure"
+  },
+  {
+   "id": "brevity-by-instruction",
+   "kind": "rejection",
+   "title": "Asking for short turns in the brief does not shorten realtime turns",
+   "at": "2026-10-02"
   }
  ],
  "edges": [
@@ -36,6 +62,26 @@
    "src": "infra-segment",
    "rel": "measured_by",
    "dst": "infra-smoke-2026-10-02"
+  },
+  {
+   "src": "voice-realtime-model",
+   "rel": "measured_by",
+   "dst": "realtime-teacher-bakeoff-2026-10-02"
+  },
+  {
+   "src": "voice-realtime-model",
+   "rel": "caused_by",
+   "dst": "meera-realtime-azure"
+  },
+  {
+   "src": "meera-realtime-azure",
+   "rel": "inherits",
+   "dst": "realtime-teacher-bakeoff-2026-10-02"
+  },
+  {
+   "src": "brevity-by-instruction",
+   "rel": "measured_by",
+   "dst": "realtime-teacher-bakeoff-2026-10-02"
   }
  ]
 }
