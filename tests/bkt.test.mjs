@@ -90,3 +90,12 @@ test("no decay by absence: time alone never lowers pKnown; it only makes a skill
   assert.equal(withDue(s, new Date(2 * DAY)).status, "mastered");
   assert.equal(deriveStatus({ ...s, attempts: 0, status: "unseen" }), "unseen");
 });
+
+test("legacy delayed retrieval uses the 20 h rule (PRODUCT-DESIGN §6.4.1): 19 h later is not delayed, 20 h is", () => {
+  assert.equal(MIN_DELAY_MS, 20 * H);
+  const t1 = new Date(10 * DAY);
+  let s = { ...newSkillState("s", "T3", t1), pKnown: 0.9, attempts: 5, correctUnaided: 3, generativePass: true, status: "learned_today", lastSeen: t1.toISOString() };
+  const at = (h) => new Date(t1.getTime() + h * H);
+  assert.equal(applyEvidence(s, ev("correct", "P10", 0, 1.5), { topicType: "T3", now: at(19), lessonStartedAt: at(19) }).delayedPass, false);
+  assert.equal(applyEvidence(s, ev("correct", "P10", 0, 1.5), { topicType: "T3", now: at(20), lessonStartedAt: at(20) }).delayedPass, true);
+});

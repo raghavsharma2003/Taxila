@@ -92,6 +92,7 @@ export class UiBridge {
   private teacherAudioEndAt = 0;
   private teacherSounding = false;
   private resumedEcho = 0;
+  private waiting = 0;
 
   constructor(base: LessonApi = httpLessonApi) {
     const api: LessonApi = {
@@ -128,7 +129,8 @@ export class UiBridge {
         // An own property shadows the method, so the link's own fallback (recording → tap) is seen too.
         cascade.setPushToTalk = (on: boolean) => {
           set(on);
-          this.store.set({ pushToTalk: (cascade as unknown as { pushToTalk: boolean }).pushToTalk || cascade.transport === "typed" });
+          const now = (cascade as unknown as { pushToTalk: boolean }).pushToTalk || cascade.transport === "typed";
+          if (now !== this.state.pushToTalk) this.store.set({ pushToTalk: now });
         };
         cascade.setPushToTalk(this.pttWanted);
         link = cascade;
@@ -154,18 +156,17 @@ export class UiBridge {
     return this.store.get();
   }
 
-  /** The screen's talk policy: true = tap-to-talk. Applied to a cascade link at creation and at once. */
+  /**
+   * The screen's talk policy (true = tap-to-talk), applied to a cascade link when it is created, before it
+   * connects (so the mic is never hands-free by default). Once live, runtime.setPushToTalk carries changes.
+   */
   setPushToTalk(on: boolean): void {
     this.pttWanted = on;
-    if (this.link instanceof CascadeLink) this.link.setPushToTalk(on);
   }
 
-  talkStart(): void {
-    if (this.link instanceof CascadeLink) this.link.talkStart();
-  }
-
-  talkEnd(): void {
-    if (this.link instanceof CascadeLink) this.link.talkEnd();
+  /** Teacher turns waiting on the speech hold (pause): on continue, these play instead of a replay. */
+  get speechWaiting(): number {
+    return this.waiting;
   }
 
   /**
@@ -247,6 +248,16 @@ export class UiBridge {
 
   /** Resolves when speech may start (immediately unless held); rejects when the turn is abandoned. */
   private async waitHold(signal: AbortSignal): Promise<void> {
+    if (!this.hold) return;
+    this.waiting++;
+    try {
+      await this.waitHoldLoop(signal);
+    } finally {
+      this.waiting--;
+    }
+  }
+
+  private async waitHoldLoop(signal: AbortSignal): Promise<void> {
     while (this.hold) {
       const h = this.hold;
       await new Promise<void>((resolve, reject) => {

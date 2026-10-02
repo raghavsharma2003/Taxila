@@ -45,17 +45,64 @@ const START_LEAD_MS = 60, OUTPUT_LATENCY_MS = 50;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const WD = fs.mkdtempSync(path.join(os.tmpdir(), "cascade-lat-"));
 
-// Child lines: varied lengths, Hinglish, some answers, one hesitation. Inputs to the TTS, never to a prompt.
-const LINES = [
-  "Haan didi, main ready hoon.",
-  "Mujhe lagta hai teen chauthai bada hai.",
-  "Kyunki usme zyada hissa hai... shayad.",
-  "Mujhe nahi pata, ek baar aur batao na.",
-  "Do tihai matlab teen mein se do hisse.",
-  "Achha, toh chaar hisse karne padenge?",
-  "Haan, samajh gaya.",
-  "Pizza ke aath slice hote hain, toh char slice aadha hai.",
-];
+// Child lines answer what the teacher actually put on the table (the move's item), so turns are real lesson turns:
+// an earlier fixed list talked fractions while the lesson was 3D shapes, and the classifier rightly flagged most
+// turns off-topic, which is not what a child's turn costs. Per posed item the child cycles right (in a sentence,
+// so the model classifies it), wrong (the misconception's answer), unsure, right again; with no item on the table
+// it says an on-topic engagement line. Inputs to the child-voice TTS, never to a prompt.
+const SCRIPT = {
+  "c4-maths-ch01-t01": {
+    talk: ["Haan didi, main ready hoon.", "Achha, toh dabbe ki flat side ko face kehte hain?", "Haan, samajh gaya. Do faces jahan milte hain woh edge hai.",
+      "Achha, aur corner woh point hai na jahan edges milte hain?"],
+    items: {
+      "c4-maths-ch01-t01-i01": ["Mujhe lagta hai dice ke chhe faces hain.", "Teen faces hain didi."],
+      "c4-maths-ch01-t01-i02": ["Woh line edge hai, kinara.", "Woh toh corner hai na?"],
+      "c4-maths-ch01-t01-i03": ["Cube ke aath corners hote hain.", "Chhe corners?"],
+      "c4-maths-ch01-t01-i04": ["Picture mein teen dikhte hain, par asal mein chhe faces honge.", "Teen faces."],
+      "c4-maths-ch01-t01-i05": ["Kyunki har face ke peeche ek chhupa hua face hai, upar neeche, aage peeche.", "Kyunki maine gine the."],
+      "c4-maths-ch01-t01-i06": ["Dono mein barabar, baarah baarah edges hain.", "Maachis mein zyada hain kyunki woh lambi hai."],
+      "c4-maths-ch01-t01-i07": ["Baarah edges aur aath corners.", "Aath edges aur chhe corners."],
+      "c4-maths-ch01-t01-i08": ["Nahi, aath toh corners hain, edges baarah hote hain.", "Haan, aath hi hain."],
+      "c4-maths-ch01-t01-i09": ["Baarah sticks aur aath goliyan.", "Aath sticks chahiye."],
+      "c4-maths-ch01-t01-i10": ["Paanch faces, ek square aur chaar triangle.", "Chaar faces?"],
+      "c4-maths-ch01-t01-i11": ["Paanch corners hain.", "Chaar corners."],
+      "c4-maths-ch01-t01-i12": ["Chintu, peeche aur neeche wale faces bhi gino, jodi mein gino toh chhe hote hain.", "Chintu, teen hi hain."],
+      "c4-maths-ch01-t01-i13": ["Chhe faces, baarah edges, aath corners.", "Chhe faces, aath edges, baarah corners."],
+    },
+  },
+};
+const UNSURE = "Mujhe nahi pata, ek baar aur batao na.";
+/** The diagnostic for a misconception (item id `diag:<misId>`): right = the correct option, wrong = the misconception's own. */
+function diagLines(topic, itemId) {
+  const m = topic?.misconceptions?.find((x) => `diag:${x.id}` === itemId);
+  const opts = m?.diagnostic?.options ?? [];
+  const right = opts.find((o) => o.correct)?.text, wrong = opts.find((o) => o.misconceptionId === m.id)?.text;
+  return right ? [`Mujhe lagta hai ${right}.`, ...(wrong ? [`${wrong}?`] : [])] : null;
+}
+/** What the child says next, given the teacher's move (TurnResponse.move) and how often each item was answered. */
+function childLine(topicId, topic, move, seen, turnIdx) {
+  const s = SCRIPT[topicId];
+  const itemId = move?.itemId;
+  if (itemId) {
+    const k = (seen[itemId] = (seen[itemId] ?? 0) + 1) - 1;
+    let lines = s?.items[itemId] ?? diagLines(topic, itemId);
+    if (!lines) {
+      const it = topic?.items?.find((i) => i.id === itemId);
+      lines = it ? [`Mujhe lagta hai ${it.acceptable?.at(-1) ?? it.answer}.`] : [];
+    }
+    const cycle = [lines[0], lines[1] ?? UNSURE, UNSURE, lines[0]].filter(Boolean);
+    if (cycle.length) return cycle[(k + (turnIdx % 2)) % cycle.length];
+  }
+  const talk = s?.talk ?? ["Haan, main sun raha hoon.", "Achha, aage batao."];
+  // The "ready" line opens the lesson only; later engagement lines cycle through the rest.
+  return turnIdx === 0 || talk.length < 2 ? talk[0] : talk[1 + ((turnIdx - 1) % (talk.length - 1))];
+}
+function topicFacts(topicId) {
+  const cls = topicId.match(/^c(\d+)-([a-z]+)-/);
+  if (!cls) return null;
+  try { return JSON.parse(fs.readFileSync(`${ROOT}data/kits/c${cls[1]}-${cls[2]}.json`, "utf8")).topics.find((t) => t.topicId === topicId) ?? null; }
+  catch { return null; }
+}
 const CHILD_VOICE = "Voice of a shy 9-year-old Indian child answering a teacher in class. Natural, a little hesitant, Indian accent, not theatrical.";
 
 async function childClip(text, voice) {
@@ -190,20 +237,26 @@ try {
   console.log(`opening: first byte ${Math.round(opening.firstAt - opening.t0)} ms (server ${opening.serverFirstMs}), ${opening.sentences} sentences, ${opening.audioMs} ms audio`);
   const tok = await api("POST", "/api/voice/stt-token", { lessonId: s.lessonId });
   console.log(`stt-token: ${tok.token.startsWith("ek_") ? "ek_…" : "?"} model=${tok.session.audio.input.transcription.model} vad=${JSON.stringify(tok.session.audio.input.turn_detection)}`);
-  console.log("generating synthetic child clips…");
-  const clips = [];
-  for (let i = 0; i < TURNS; i++) clips.push(await childClip(LINES[i % LINES.length], i % 2 ? "sage" : "coral"));
+  const topic = topicFacts(s.topic.id);
+  if (!SCRIPT[s.topic.id]) console.log(`  (no hand script for ${s.topic.id}: generic lines from the kit's keys)`);
+  const seen = {};
+  let move = s.debug?.move;
   const stt = sttSocket(tok.session);
   await stt.ready;
   for (let i = 0; i < TURNS; i++) {
-    const heard = await speak(stt, clips[i]);
+    // Generated per turn from the move just made (outside the measured window: the clip exists before it is spoken).
+    const line = childLine(s.topic.id, topic, move, seen, i);
+    const clip = await childClip(line, i % 2 ? "sage" : "coral");
+    const heard = await speak(stt, clip);
     const tTurn = performance.now();
     const r = await api("POST", "/api/lesson/turn", { lessonId: s.lessonId, childText: heard.text, ...(heard.conf !== undefined ? { asrConfidence: heard.conf } : {}) });
     const replyAt = performance.now();
+    const asked = move?.itemId ?? null;
+    move = r.move;
     if (!r.teacherReplySeq) { console.log(`  turn ${i + 1}: no reply (${r.move?.kind})`); continue; }
     const tts = await firstByte(s.lessonId, r.teacherReplySeq);
     const row = {
-      said: LINES[i % LINES.length], heard: heard.text, conf: heard.conf === undefined ? null : +heard.conf.toFixed(3), move: r.move?.kind,
+      said: line, asked, heard: heard.text, conf: heard.conf === undefined ? null : +heard.conf.toFixed(3), move: r.move?.kind,
       reply: r.teacherReply,
       endpoint: Math.round(heard.vadAt - heard.speechEndAt), stt: Math.round(heard.finalAt - heard.vadAt),
       director: Math.round(replyAt - tTurn), tts: Math.round(tts.firstAt - replyAt), total: Math.round(tts.firstAt - heard.speechEndAt),
@@ -244,5 +297,5 @@ console.log(`speculative replies: ${spec.filter((r) => r.speculation === "hit").
 const spoken = stored.filter((t) => t.meta?.typed === false && typeof t.asr_conf === "number");
 console.log(`stored child turns spoken (asr_conf set, typed:false): ${spoken.length}/${stored.length}`);
 summary.storedSpoken = { spoken: spoken.length, of: stored.length };
-if (OUT) fs.writeFileSync(OUT, JSON.stringify({ method: { date: new Date().toISOString().slice(0, 10), turns: rows.length, classLevel: CLASS, from: os.hostname(), note: `synthetic child speech; WebSocket transcription transport; in-process API (Neon HTTP from the eval host); lesson mode cascade; sound = first byte + ${START_LEAD_MS} ms lead + ${OUTPUT_LATENCY_MS} ms nominal output latency; TAXILA_SPECULATE=${process.env.TAXILA_SPECULATE ?? "3"}` }, summary, rows }, null, 1));
+if (OUT) fs.writeFileSync(OUT, JSON.stringify({ method: { date: new Date().toISOString().slice(0, 10), turns: rows.length, classLevel: CLASS, from: os.hostname(), note: `synthetic child speech; WebSocket transcription transport; in-process API (Neon HTTP from the eval host); lesson mode cascade; sound = first byte + ${START_LEAD_MS} ms lead + ${OUTPUT_LATENCY_MS} ms nominal output latency; TAXILA_SPECULATE=${process.env.TAXILA_SPECULATE ?? "3"}`, reply: process.env.DEPLOY_REPLY || process.env.DEPLOY_FAST || "taxila-fast", classify: process.env.DEPLOY_CLASSIFY || process.env.DEPLOY_FAST || "taxila-fast" }, summary, rows }, null, 1));
 process.exit(rows.length && spoken.length === stored.length ? 0 : 1);

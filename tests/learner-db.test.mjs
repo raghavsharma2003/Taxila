@@ -7,7 +7,7 @@ import { after, before, describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "fs";
 import { randomUUID } from "crypto";
-import { neon } from "@neondatabase/serverless";
+import { neon, neonConfig } from "@neondatabase/serverless";
 import { fold, newLedger, canonical } from "../server/learner/kt/ledger.js";
 import { currentTheta } from "../server/learner/kt/ability.js";
 import { makeLog } from "../server/learner/kt/gen.js";
@@ -22,17 +22,25 @@ const run = (stmts) => sql.transaction((t) => stmts.map((s) => t.query(s.text, s
 // Probed inside before(), never at import: other files' tests mock global fetch while they run, and an
 // import-time query would land in their counters.
 let reachable = false;
+// Other files stub global fetch inside their tests (Azure calls); pin this suite's Neon HTTP calls to the
+// fetch that existed at import, for the suite's duration only.
+const nativeFetch = globalThis.fetch;
+let prevFetchFn;
 
 describe("learner writer on Neon", { skip: !sql && "no DATABASE_URL", concurrency: false, timeout: 120_000 }, () => {
   let guardian, kid;
   before(async () => {
-    console.error("[learner-db] fetch native:", String(globalThis.fetch).includes("fetchImpl"));
+    prevFetchFn = neonConfig.fetchFunction;
+    neonConfig.fetchFunction = nativeFetch;
     reachable = await Promise.race([sql.query("select 1 from kt_evidence limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 15_000))]);
     if (!reachable) return;
     guardian = (await sql.query("insert into guardian (email, pw_hash, name) values ($1, 'x', 'learner-test') returning id", [`learner-test+${randomUUID()}@test.invalid`]))[0].id;
     kid = (await sql.query("insert into child (guardian_id, first_name, class_level) values ($1, 'Test', 5) returning id, legal_mode, class_level", [guardian]))[0];
   });
   after(async () => {
+    try { await cleanup(); } finally { neonConfig.fetchFunction = prevFetchFn; }
+  });
+  async function cleanup() {
     if (guardian) await sql.query("delete from guardian where id = $1", [guardian]);
     if (kid) {
       const [r] = await sql.query(`select (select count(*) from kt_evidence where child_id = $1) + (select count(*) from kt_skill_state where child_id = $1)
@@ -40,7 +48,7 @@ describe("learner writer on Neon", { skip: !sql && "no DATABASE_URL", concurrenc
         + (select count(*) from kt_ability_epoch where child_id = $1) as n`, [kid.id]);
       assert.equal(Number(r.n), 0, "erasing the child cascades every learner row");
     }
-  });
+  }
 
   test("new children default to M1; staged statements commit; kt_evidence replays to identical bytes", async (t) => {
     if (!reachable) return t.skip("database not reachable");

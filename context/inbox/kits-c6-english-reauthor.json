@@ -1,0 +1,32 @@
+{
+ "nodes": [
+  {
+   "id": "kit-invented-companion-texts",
+   "kind": "rejection",
+   "title": "Language kits built on invented 'original' companion texts: story/poem items unanswerable from the textbook",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "kits-c6-english-reauthored",
+   "kind": "measurement",
+   "title": "c6-english re-authored against NCERT Poorvi unit PDFs: 16/16 topics, 248 items, 64 misconceptions; 0 dropped / 0 hints replaced; kit-budget 3/3 on the file alone",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "kits-c6-english-reauthored",
+   "rel": "supersedes",
+   "dst": "kit-invented-companion-texts"
+  },
+  {
+   "src": "kit-invented-companion-texts",
+   "rel": "measured_by",
+   "dst": "kits-c6-english-reauthored"
+  }
+ ],
+ "md": {
+  "rejected": "## kit-invented-companion-texts\nTried (2026-10-02, the English kit workflow's copyright rule \"write ORIGINAL short passages/poems on the chapter's theme; refer to the chapter only by title/theme\"): c6-english was authored on invented stories and poems that kept only the NCERT title. Examples: Rama Natha and the sage became Arun and an old woman; Mr Raven's morsel became a female raven's cheese; the thief-and-kotwal comic became Kabir helping Tara; Gajaraj and Buntee became a tortoise and a goat; free verse ('The Winner') became a rhyming race poem. What broke: the invented texts were stored nowhere (no passage field, nothing in the repo), so every recall, inference and rhyme item could be answered only by someone who had read a text the child never sees. A child who had read the book was marked wrong (cheese vs morsel, her vs his, 'say/day' rhymes that are not in the poem). Skill titles named devices the real poems do not have (ABAB on an ABCB poem, a rhyme scheme on free verse, similes that do not exist). The blind checker disputed 48 items and 10 diagnostics. Replacement: author against the real chapter. Facts, plot and names are paraphrased; quotes are limited to single rhyme words and 2-3 word phrases needed for figurative-language work; grammar and vocabulary items stay self-contained. Never keep an invented text unless it is stored and shown in the lesson. The same rule likely affects every other language kit written under the same instruction (c1-c9 english, and the hindi kits note facts 'NOT checked against the chapter text').",
+  "measurements": "## kits-c6-english-reauthored\n**data/kits/c6-english.json re-authored against the NCERT Poorvi 6 unit PDFs fepr101-105 (Reprint 2026-27): 16/16 topics, 248 items (14-16 per topic, 8-10 kinds), 5 skills and 4 misconceptions per topic (64 in all).** (2026-10-02)\n- n: 16 topics / 248 items / 64 diagnostics. Method: text extracted with pdftotext; the 'Rama to the Rescue' comic pages (pp. 21-25) were rendered to PNG and read, because their text is image-only. Every chapter-dependent key was checked by the fixer against that text, and each item's verified.note says what it was checked against. These are fixer checks, NOT fresh blind solves, so a second independent solver pass is still owed. normalizeKit plus revealsAnswer were run per topic. tests/kit-budget.test.mjs was pointed at a directory holding only this file: 3/3 pass, 7,104 lesson states compiled, 0 items dropped, 0 diagnostics dropped, 0 hints replaced. In the full `npm test` the only failure (1 of 314) is c7-english-ch03-t01-i07 (361 > 360 tokens), which is another kit.\n- Also fixed: all 50 previous diagnostics were rebuilt so that each has exactly one correct option; diagnostic prompt_hi no longer adds cues the English prompt lacks; skill titles now match the real poems (ch08 ABCB, ch11 free verse, ch05 AABB couplets, ch14 'like coloured birds', ch16 eternal flame); ch03's theme is presence of mind. Still open: data/curriculum/c6-english.json gives ch03's theme as 'helping someone in trouble', which does not match the book."
+ }
+}

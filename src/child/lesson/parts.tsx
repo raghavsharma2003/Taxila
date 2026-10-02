@@ -39,11 +39,6 @@ export interface LedgeChip {
   value: string;
 }
 
-/** Young ledge chips: pictures, numerals and short words only (§3.7; the Young 2-text-region limit). */
-export const YOUNG_CHIP_MAX = 12;
-export function ledgeChipFits(c: { kind: string; value: string }, family: Family): boolean {
-  return family !== "young" || c.kind !== "text" || c.value.trim().length <= YOUNG_CHIP_MAX;
-}
 
 /**
  * The chalk ledge (§3.7): 1-3 chips, newest on the right with a white chalk underline (shape, not hue).

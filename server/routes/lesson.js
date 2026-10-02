@@ -410,7 +410,10 @@ function activitySummary(events, dropped) {
 async function turn(req, res, body) {
   const t0 = performance.now();
   const trace = [];
+  // Phase marks (ms since the request arrived) ride in debug.timings beside the model calls: evals/cascade-latency.mjs.
+  const mark = (name) => trace.push({ kind: `@${name}`, ms: Math.round(performance.now() - t0) });
   const { lesson, guardian, child, core } = await loadTurnContext(req, need(body, "lessonId").lessonId);
+  mark("ctx");
   if (lesson.ended_at) throw new HttpError(409, "lesson has ended");
   const childText = String(body.childText || "").slice(0, 2000).trim();
   // Consent is checked per turn, like start and token: once core_tutoring is withdrawn the child's words are
@@ -433,6 +436,7 @@ async function turn(req, res, body) {
     ? turnVoice({ lessonId: lesson.id, childId: child.id, itemId: prev.activeItemId, voiceFeatures: body.voiceFeatures })
     : Promise.resolve(null);
   const kit = await kitFor(lesson.topic_id, state);
+  mark("kit");
   // The lane is the lesson's mode. `typed` only says there was no ASR: a typed or tapped turn in a voice
   // lesson is still voice-lane (a text reply for it was never heard, yet was stored as a teacher turn).
   const { textLane, typed } = turnLane(state.mode, body);
@@ -491,10 +495,12 @@ async function turn(req, res, body) {
     ? speculate(state, target, fast.flags, planCtx, { said, historyOf })
     : [];
   const cls = classified ? await classify(clsArgs) : null;
+  mark("classified");
 
   // Evidence → learner model → Director step → compile, all staged as statements for the turn's one transaction.
   const plan = await planTurn(state, cls, { ...planCtx, now: Date.now() });
   const { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
+  mark("planned");
   const next = r.state;
   let teacherReply, teacherReplySeq, guard, speculation;
   if (textLane && !r.hold) {
@@ -512,6 +518,7 @@ async function turn(req, res, body) {
       meta: { move: r.move.kind, ...(guard.caught.length ? { guard: guard.caught } : {}), ...(replySpoils ? { spoils: replySpoils } : {}) } }]);
     staged.push(row);
     teacherReplySeq = row.seq;
+    mark("replied");
   } else if (specs.length) {
     speculation = { tried: specs.length, hit: false };
   }
@@ -538,6 +545,7 @@ async function turn(req, res, body) {
     const ended = (await one("select ended_at from lesson where id = $1", [lesson.id]))?.ended_at;
     throw new HttpError(409, ended ? "lesson has ended" : "another turn for this lesson landed first; retry");
   }
+  mark("stored");
 
   // Voice lane: what must be heard now rather than on the child's next turn (contracts.ts TurnResponse).
   const speakNow = textLane ? undefined

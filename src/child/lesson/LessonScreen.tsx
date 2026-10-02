@@ -1,24 +1,32 @@
 // The live-lesson screen (PRODUCT-DESIGN §3): one living teacher, one module canvas, one chalk ledge, one
 // caption line, one control bar. Driven entirely by useLesson (src/lesson); the only additive runtime surface
-// is src/lesson/uiBridge.ts (phir-se buffer, end summary). Geometry changes only at phase boundaries; within
-// a phase only state changes. Exactly one element holds the marigold ring, and only in YOUR TURN.
+// is src/lesson/uiBridge.ts (phir-se buffer, end summary, speech hold, cascade talk state, EchoGuard).
+// Geometry changes only at phase boundaries; within a phase only state changes. Exactly one element holds
+// the marigold ring, and only in YOUR TURN.
+// Voice lessons start on the CASCADE lane (decision voice-lane-cascade-default): to the runtime it reports
+// mode "text", so every mic decision below keys on `spoken` (a spoken lane), never on LessonMode.
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import type { LessonMode, TeacherStatus } from "../../lesson/link.ts";
-import { UiBridge } from "../../lesson/uiBridge.ts";
+import { ECHO_DEMOTE_FLAGS, UiBridge } from "../../lesson/uiBridge.ts";
 import { useLesson } from "../../lesson/useLesson.ts";
 import { ModuleHost } from "../../modules/host.tsx";
 import { TeacherStage } from "../../stage/TeacherStage.tsx";
+import { useDelight } from "../../stage/useDelight.ts";
 import { ageBandOf, BAND_TOKENS } from "../band.ts";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
 import { Door, EarArrow, FingerTap, House, Keyboard, Mic, PauseHand, Send } from "../icons.tsx";
+import { markLessonDone } from "../day.ts";
 import { saveArtefact } from "../prefs.ts";
 import { captionMode, readingFor } from "./captions.ts";
 import { geometryOf, nextPhase, phaseWord, type ArcPhase } from "./geometry.ts";
+import { openMicAllowed, useHeadset } from "./headset.ts";
 import { playTurnEarcon, useContainerSize, useMountedModules, useStall, useTapToTalk, useYourTurn } from "./hooks.ts";
 import { solveLayout } from "./layout.ts";
+import { ledgeChipFits } from "./ledge.ts";
 import { CaptionLine, ChalkLedge, ChoiceTiles, ConnectionChip, LeaveGuard, PauseSheet, StatusGlyph, type LedgeChip } from "./parts.tsx";
+import { ringTarget } from "./ring.ts";
 import "./lesson.css";
 
 export type LessonVariant = "lesson" | "practice" | "doubt";
@@ -29,8 +37,6 @@ export interface LessonScreenProps {
   /** Doubt: the child's own problem, sent as the first typed turn once the lesson is live. */
   firstText?: string;
 }
-
-type RingTarget = "chips" | "mic" | "input" | "finish" | "start" | null;
 
 const OLDER_REQUESTS = {
   hint: ["Hint chahiye", "संकेत चाहिए", "Can I have a hint"],
@@ -55,7 +61,10 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const bs = useSyncExternalStore(bridge.store.subscribe, bridge.store.get, bridge.store.get);
 
   const textOnly = variant === "practice" || search.get("mode") === "text" || prefs.quiet;
+  // The child's lane choice: "voice" = spoken (started as the cascade lane), "text" = typed.
   const [mode, setMode] = useState<LessonMode>(textOnly ? "text" : "voice");
+  const spoken = mode === "voice" && bs.transport !== "typed";
+  const timing = [1, 1.5, 2].includes(Number(child.timing_multiplier)) ? Number(child.timing_multiplier) : 1;
   const [startError, setStartError] = useState<string | null>(null);
   const live = state.phase === "live";
   const ended = state.phase === "ended";
@@ -73,10 +82,10 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const made = useRef<string[]>([]);
   const wb = state.ui.whiteboard;
   useEffect(() => {
-    if (!wb?.value) return;
+    if (!wb?.value || !ledgeChipFits(wb, family)) return; // Young: no sentence-length chips (§3.7)
     setChips((cs) => (cs.at(-1)?.value === wb.value ? cs : [...cs.filter((c) => c.value !== wb.value), { id: `${Date.now()}`, kind: wb.kind, value: wb.value }].slice(-3)));
     if (wb.kind !== "image" && !made.current.includes(wb.value)) made.current = [...made.current, wb.value].slice(-4);
-  }, [wb?.value, wb?.kind]);
+  }, [wb?.value, wb?.kind, family]);
   const prevPhase = useRef(phase);
   useEffect(() => {
     const a = prevPhase.current;
@@ -93,6 +102,12 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   // ───────── overlays and pause ─────────
   const [sheet, setSheet] = useState<null | "pause" | "help" | "leave">(null);
   const paused = sheet !== null;
+  // §3.13: while the pause sheet is up no new teacher audio starts (a Director turn in flight keeps its
+  // caption; its speech waits). The safeguarding help sheet never holds her voice.
+  useEffect(() => {
+    bridge.holdSpeech(sheet === "pause");
+  }, [sheet, bridge]);
+  const resumeTurn = useRef(false);
   const lastSafeguard = useRef<unknown>(null);
   useEffect(() => {
     // Safety by predicate: the server's safeguard move raises the help sheet itself (PD-G24).
@@ -103,12 +118,19 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   }, [state.move]);
 
   // ───────── talking ─────────
-  const openMic = family === "older" && prefs.talk === "open";
+  // Open mic only with a headset (or a passed EchoProbe), never after two EchoGuard flags (§3.9).
+  const headset = useHeadset();
+  const openMic = openMicAllowed({ older: family === "older", wanted: prefs.talk === "open", headset, echoDemoted: bs.echoFlags >= ECHO_DEMOTE_FLAGS });
+  const wantPtt = !openMic || paused; // a pause closes the open mic too
+  bridge.setPushToTalk(wantPtt); // applied to the cascade link at creation, before it connects
   useEffect(() => {
-    if (live && mode === "voice") runtime.setPushToTalk(!openMic);
-  }, [live, mode, openMic, runtime]);
+    if (live && spoken) runtime.setPushToTalk(wantPtt);
+  }, [live, spoken, wantPtt, runtime]);
+  // The cascade link owns its tap-to-talk state (it may force it: the recording fallback); realtime: runtime.
+  const pttOn = bs.cascade ? bs.pushToTalk : state.pushToTalk;
+  const tapToTalk = spoken && (live ? pttOn : !openMic);
   const ptt = useTapToTalk({
-    enabled: live && mode === "voice" && state.pushToTalk && !paused,
+    enabled: live && tapToTalk && !paused,
     tokens,
     mic: runtime.levels.mic,
     start: () => {
@@ -119,28 +141,20 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   });
 
   // ───────── YOUR TURN escalation, stall ladder, tap options ─────────
-  const changeKey = `${status}|${uiChips.map((c) => c.id).join(",")}`;
-  const yt = useYourTurn(yourTurn, changeKey, tokens, paused);
+  // A finished replay is a new YOUR TURN entry: its timers start again.
+  const changeKey = `${status}|${uiChips.map((c) => c.id).join(",")}|${bs.replays}`;
+  const yt = useYourTurn(yourTurn, changeKey, tokens, paused, timing);
+  // Holdover guard (§3.9) on every commit, not only the chips. Closing the mic is never guarded.
+  const openTalk = yt.guard(() => ptt.toggle());
+  const micTap = () => (ptt.talking ? ptt.toggle() : openTalk());
   const stall = useStall(status === "thinking", paused);
   const [inputOpen, setInputOpen] = useState(false);
   useEffect(() => {
     if (yt.tapOptions || stall.rung === "tap" || stall.rung === "weak") setInputOpen(true);
   }, [yt.tapOptions, stall.rung]);
-  const showInput = mode === "text" || inputOpen || family === "older";
+  const showInput = !spoken || inputOpen || family === "older" || (live && !tapToTalk && young);
 
-  const target: RingTarget = ended
-    ? "finish"
-    : !live
-      ? state.phase === "idle" || state.phase === "error"
-        ? "start"
-        : null
-      : !yourTurn || paused
-        ? null
-        : chipsLive
-          ? "chips"
-          : mode === "voice" && !openMic && !(inputOpen && young)
-            ? "mic"
-            : "input";
+  const target = ringTarget({ phase: state.phase, yourTurn, paused, chipsLive, tapToTalk, youngTyping: inputOpen && young });
 
   // Entering YOUR TURN: earcon (Young default on), haptic tick, polite announcement, focus to the target.
   const [announce, setAnnounce] = useState("");
@@ -162,10 +176,19 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const teacherCap = useMemo(() => [...state.captions].reverse().find((c) => c.who === "teacher") ?? null, [state.captions]);
   const lastCap = state.captions.at(-1) ?? null;
   const heard = family === "older" && lastCap?.who === "child" && lastCap.final ? lastCap.text : null;
-  const [spoken, setSpoken] = useState("");
+  // Announced when her speech ENDS (speaking → not speaking), not when the caption turns final (on the
+  // text lane that is before her audio starts). A replay of the same line is not announced again.
+  const [spokenLine, setSpokenLine] = useState("");
+  const prevStatus = useRef<TeacherStatus | null>(null);
+  const announcedCap = useRef<string | null>(null);
   useEffect(() => {
-    if (teacherCap?.final && status !== "speaking") setSpoken(teacherCap.text);
-  }, [teacherCap?.final, teacherCap?.text, status]);
+    const was = prevStatus.current;
+    prevStatus.current = status;
+    if (was === "speaking" && status !== "speaking" && teacherCap?.final && teacherCap.id !== announcedCap.current) {
+      announcedCap.current = teacherCap.id;
+      setSpokenLine(teacherCap.text);
+    }
+  }, [status, teacherCap]);
   const childTurns = state.captions.filter((c) => c.who === "child" && c.final).length;
 
   // ───────── actions ─────────
@@ -175,7 +198,8 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     made.current = [];
     setChips([]);
     try {
-      await runtime.start(cid, m, topicId || search.get("topic") || undefined);
+      // Voice = the cascade lane (≈ Rs28/h vs Rs512/h realtime, and the only lane that can be leak pre-checked).
+      await runtime.start(cid, m === "voice" ? "cascade" : "text", topicId || search.get("topic") || undefined);
     } catch (e) {
       setStartError(e instanceof Error ? e.message : String(e));
     }
@@ -194,17 +218,19 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     const slower = now - lastReplay.current < 10_000;
     lastReplay.current = now;
     ptt.stop();
-    if (state.status === "speaking") runtime.interrupt();
+    // While she speaks: stop her quietly (not a child barge-in for the Director) and replay the CURRENT
+    // turn from the start; the buffer's newest clip is the turn she was on.
+    if (state.status === "speaking") bridge.quietStop();
     bridge.replay(slower);
   };
   const [text, setText] = useState("");
-  const send = () => {
+  const send = yt.guard(() => {
     const v = text.trim();
     if (!v || !live) return;
     bridge.stopReplay();
     runtime.say(v);
     setText("");
-  };
+  });
   const request = (row: readonly [string, string, string]) => {
     if (!live) return;
     bridge.stopReplay();
@@ -217,8 +243,19 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const openPause = () => {
     ptt.stop();
     bridge.stopReplay();
-    if (state.status === "speaking") runtime.interrupt();
+    bridge.holdSpeech(true); // at once, before the effect: a turn landing now must not start
+    // Her current turn stops quietly; on continue it plays again from its start (the last turn boundary).
+    resumeTurn.current = state.status === "speaking";
+    if (resumeTurn.current) bridge.quietStop();
     setSheet("pause");
+  };
+  const continueLesson = () => {
+    const replayTurn = sheet === "pause" && resumeTurn.current;
+    resumeTurn.current = false;
+    // A held newer turn plays on release (the effect); otherwise the interrupted one is replayed.
+    const newerWaiting = bridge.speechWaiting > 0;
+    setSheet(null);
+    if (replayTurn && !newerWaiting) bridge.replay(false);
   };
   const leave = async () => {
     setSheet(null);
@@ -229,25 +266,38 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   };
   const finish = () => {
     if (state.lessonId) saveArtefact(cid, { lessonId: state.lessonId, topic: state.topic?.title ?? "", chips: made.current, at: Date.now() });
-    // A sibling profile on this device → the picker with teardown; else the done home (§2.5.1 a).
+    // Today's marker (keyed by plan day, carrying the lesson/end answer) until the plan read exists: the
+    // home derives `done` from it or from the server, never from navigation state (PD-G-RET1).
+    if (variant === "lesson") markLessonDone(cid, state.lessonId, bs.ended);
+    // A sibling profile on this device → the picker with teardown; else the home (§2.5.1 a).
     if (me.children.length >= 2) navigate("/who");
-    else navigate(`/c/${cid}`, { state: { done: true } });
+    else navigate(`/c/${cid}`);
   };
 
-  // Laptop keys (§3.4): only when no text field has focus.
+  // Laptop keys (§3.4): only when no text field has focus, and only while the child's setting is on (A9).
   useEffect(() => {
+    if (!prefs.shortcuts) return;
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null;
       if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
-      if (e.key === "Escape") return paused ? setSheet(null) : live && openPause();
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key === "Escape") {
+        if (sheet === "help") return; // one key never dismisses the safeguarding hand-off
+        if (sheet === "pause") return continueLesson();
+        if (sheet) return setSheet(null);
+        return live ? openPause() : undefined;
+      }
       if (!live || paused) return;
-      if (e.key === " " && mode === "voice") {
+      if (e.key === " " && tapToTalk) {
+        // A focused button (the ringed mic at YOUR TURN) gets Space as its own click: never toggle twice.
+        if (el?.closest?.("button, [role=button], a, [role=radio], [role=menuitem]")) return;
         e.preventDefault();
-        ptt.toggle();
+        micTap();
       } else if (/^[1-4]$/.test(e.key) && chipsLive) {
         const c = uiChips[Number(e.key) - 1];
         if (c) pickChip(c);
       } else if (e.key === "r" || e.key === "R") phirSe();
+      else if (e.key === "h" || e.key === "H") request(OLDER_REQUESTS.hint);
       else if (e.key === "c" || e.key === "C") setPrefs({ captionsAlways: !prefs.captionsAlways });
     };
     window.addEventListener("keydown", onKey);
@@ -270,15 +320,17 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
 
   // ───────── pieces ─────────
   const floor = live ? status : null;
-  const delight = useMemo(() => {
+  const delightTag = useMemo(() => {
     const affect = (state.ui as { affect?: string }).affect;
     return affect === "insight" || affect === "effort" ? { turn: childTurns } : null;
   }, [state.ui, childTurns]);
+  // One gate for the whole lesson (the stage remounts at every layout change); timed from her audio start.
+  const delighting = useDelight(delightTag, state.status === "speaking" && !bs.replaying);
   const gaze = status === "speaking" && (hasModule || chips.length) ? "canvas" : "child";
   const stage = (framing: "medium" | "close", extra?: string) => (
     <TeacherStage
       floor={floor}
-      delight={delight}
+      delighting={delighting}
       teacherId={state.teacher?.id ?? child.teacher_id}
       teacherName={state.teacher?.name}
       band={band}
@@ -320,7 +372,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
 
   const ledge =
     chips.length > 0 || geometry !== "L1" ? (
-      <ChalkLedge chips={chips} family={family} rail={L.ledgeRail} flat={band === "b4"} onChip={() => bridge.replay(false)} />
+      <ChalkLedge chips={chips} family={family} rail={L.ledgeRail} flat={band === "b4"} onChip={() => bridge.replay(false)} label={t("phirSe", lang)} />
     ) : null;
 
   const caption = (
@@ -383,14 +435,15 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     ) : null;
 
   const micBtn =
-    mode === "voice" && !openMic ? (
+    tapToTalk ? (
       <button
         type="button"
         ref={target === "mic" ? setRing : undefined}
         className={`tx-mic ${target === "mic" ? "tx-ring" : ""} ${target === "mic" && yt.glowStrong ? "tx-ring--strong" : ""} ${ptt.talking ? "tx-mic--on" : ""}`}
-        onClick={ptt.toggle}
+        onClick={micTap}
         disabled={!live || paused}
         aria-pressed={ptt.talking}
+        aria-describedby={status ? "tx-status-glyph" : undefined}
         aria-label={ptt.talking ? t("stopTalk", lang) : t("talk", lang)}
         data-testid="mic"
         style={{ "--drain": ptt.drain } as CSSProperties}
@@ -438,20 +491,20 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const control =
     family === "young" ? (
       <div className="tx-control tx-control--young">
-        {mode === "voice" ? (
+        {spoken ? (
           <>
             <button type="button" className="tx-iconbtn" onClick={() => setInputOpen((v) => !v)} aria-label={t("tapInstead", lang)} aria-pressed={inputOpen}>
               <FingerTap />
             </button>
             {inputOpen ? inputRow : null}
             <span className="tx-micwrap">
-              {status && <StatusGlyph status={status} lang={lang} family={family} mic={runtime.levels.mic} />}
+              {status && <StatusGlyph id="tx-status-glyph" status={status} lang={lang} family={family} mic={runtime.levels.mic} />}
               {micBtn}
             </span>
           </>
         ) : (
           <>
-            {status && <StatusGlyph status={status} lang={lang} family={family} mic={runtime.levels.mic} />}
+            {status && <StatusGlyph id="tx-status-glyph" status={status} lang={lang} family={family} mic={runtime.levels.mic} />}
             {inputRow}
           </>
         )}
@@ -471,7 +524,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
           {inputRow}
           {phirSeBtn}
           {micBtn}
-          {status && <StatusGlyph status={status} lang={lang} family={family} mic={runtime.levels.mic} />}
+          {status && <StatusGlyph id="tx-status-glyph" status={status} lang={lang} family={family} mic={runtime.levels.mic} />}
           {thinkingNote}
         </div>
       </div>
@@ -526,6 +579,9 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
       data-geometry={geometry}
       data-status={status ?? state.phase}
       data-phase={phase}
+      data-lane={spoken ? (bs.cascade ? "cascade" : "voice") : "text"}
+      data-talk={tapToTalk ? "tap" : spoken ? "open" : "typed"}
+      data-transport={bs.transport ?? undefined}
       data-testid="lesson"
     >
       {body}
@@ -585,12 +641,12 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
       )}
 
       {sheet === "pause" || sheet === "help" ? (
-        <PauseSheet lang={lang} helpFirst={sheet === "help"} onContinue={() => setSheet(null)} onStop={() => void leave()} />
+        <PauseSheet lang={lang} helpFirst={sheet === "help"} onContinue={continueLesson} onStop={() => void leave()} />
       ) : null}
       {sheet === "leave" && <LeaveGuard lang={lang} family={family} onNo={() => setSheet(null)} onYes={() => void leave()} />}
 
       <div className="tx-sr" aria-live="polite" data-testid="announce">{announce}</div>
-      <div className="tx-sr" aria-live="polite" data-testid="spoken">{spoken}</div>
+      <div className="tx-sr" aria-live="polite" data-testid="spoken">{spokenLine}</div>
     </div>
   );
 }

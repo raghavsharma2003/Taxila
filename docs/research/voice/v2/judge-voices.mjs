@@ -43,6 +43,7 @@ if (HUMAN_DIR && fs.existsSync(path.join(HUMAN_DIR, "meta.json"))) {
   for (const [h, m] of Object.entries(meta)) clips.push({ id: `human-${h}`, file: path.join(HUMAN_DIR, `${h}.wav`), passage: "human-anchor", text: m.text, lang: "hindi", set: "human-anchor", maxDur: 20 });
 }
 
+if (process.env.CLIP_IDS) { const ids = new Set(process.env.CLIP_IDS.split(",")); const pick = clips.filter((c) => ids.has(c.id)); clips.length = 0; clips.push(...pick); }
 if (process.env.LIMIT) { const L = +process.env.LIMIT; const pick = clips.filter((c) => c.set === "azure").slice(0, L).concat(clips.filter((c) => c.set !== "azure").slice(0, L)); clips.length = 0; clips.push(...pick); }
 
 // ---- uniform re-encode ----
