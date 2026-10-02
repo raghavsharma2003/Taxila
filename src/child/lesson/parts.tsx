@@ -9,8 +9,12 @@ import { clauseAt, clauses, type CaptionMode } from "./captions.ts";
 
 const STATUS_KEY = { your_turn: "yourTurn", listening: "listening", thinking: "thinking", speaking: "speaking" } as const;
 
-/** The status glyph beside the mic (§3.9): glyph always; Older adds one word (hideable). Colour is last. */
-export function StatusGlyph({ status, lang, family, mic }: { status: TeacherStatus; lang: Lang; family: Family; mic?: { subscribe(fn: (v: number) => void): () => void } }) {
+/**
+ * The status glyph beside the mic (§3.9): glyph always; Older adds one word (hideable). Colour is last.
+ * Not a live region (A3): only YOUR TURN is announced, through the screen's single polite announce region;
+ * the other states are read as this image's label (and the mic's aria-describedby).
+ */
+export function StatusGlyph({ status, lang, family, mic, id }: { status: TeacherStatus; lang: Lang; family: Family; mic?: { subscribe(fn: (v: number) => void): () => void }; id?: string }) {
   const Icon = status === "your_turn" ? OpenHand : status === "listening" ? Ear : status === "thinking" ? Dots : MouthSound;
   const arc = useRef<HTMLSpanElement>(null);
   // The level arc follows input level straight from the meter (no React render per frame).
@@ -21,7 +25,7 @@ export function StatusGlyph({ status, lang, family, mic }: { status: TeacherStat
     });
   }, [status, mic]);
   return (
-    <span className="tx-status" data-status={status} role="status" aria-label={t(STATUS_KEY[status], lang)}>
+    <span className="tx-status" id={id} data-status={status} role="img" aria-label={t(STATUS_KEY[status], lang)}>
       <Icon />
       {status === "listening" && <span ref={arc} className="tx-status-arc" aria-hidden="true" />}
       {family === "older" && <span className="tx-status-word" aria-hidden="true">{t(STATUS_KEY[status], lang)}</span>}
@@ -35,21 +39,34 @@ export interface LedgeChip {
   value: string;
 }
 
-/** The chalk ledge (§3.7): 1-3 chips, newest on the right with a white chalk underline (shape, not hue). */
+/** Young ledge chips: pictures, numerals and short words only (§3.7; the Young 2-text-region limit). */
+export const YOUNG_CHIP_MAX = 12;
+export function ledgeChipFits(c: { kind: string; value: string }, family: Family): boolean {
+  return family !== "young" || c.kind !== "text" || c.value.trim().length <= YOUNG_CHIP_MAX;
+}
+
+/**
+ * The chalk ledge (§3.7): 1-3 chips, newest on the right with a white chalk underline (shape, not hue).
+ * Older: a chip is a button (replays her line) at the band's --hit-min. Young: the chips are display-only
+ * (the 56-72 dp ledge cannot hold 64 dp targets; phir se replays her line).
+ */
 export function ChalkLedge({ chips, family, rail, onChip, flat }: { chips: LedgeChip[]; family: Family; rail?: boolean; onChip?: (c: LedgeChip) => void; flat?: boolean }) {
+  const tappable = family === "older" && !!onChip;
   return (
-    <div className={`tx-ledge ${rail ? "tx-ledge--rail" : ""} ${flat ? "tx-ledge--flat" : ""}`} data-family={family} aria-label="board">
-      {chips.map((c, i) => (
-        <button
-          key={c.id}
-          type="button"
-          className={`tx-chip ${i === chips.length - 1 ? "tx-chip--new" : ""} ${c.kind !== "image" && c.value.length > 16 ? "tx-chip--long" : ""}`}
-          onClick={() => onChip?.(c)}
-          aria-label={c.kind === "image" ? "picture" : c.value}
-        >
-          {c.kind === "image" ? <img src={c.value} alt="" /> : <span className={c.kind === "math" ? "tx-num" : undefined}>{c.value}</span>}
-        </button>
-      ))}
+    <div className={`tx-ledge ${rail ? "tx-ledge--rail" : ""} ${flat ? "tx-ledge--flat" : ""}`} data-family={family} role={tappable ? undefined : "img"} aria-label={tappable ? "board" : chips.map((c) => (c.kind === "image" ? "picture" : c.value)).join(", ") || "board"}>
+      {chips.map((c, i) => {
+        const cls = `tx-chip ${i === chips.length - 1 ? "tx-chip--new" : ""} ${c.kind !== "image" && c.value.length > 16 ? "tx-chip--long" : ""} ${tappable ? "tx-chip--tap" : ""}`;
+        const inner = c.kind === "image" ? <img src={c.value} alt="" /> : <span className={c.kind === "math" ? "tx-num" : undefined}>{c.value}</span>;
+        return tappable ? (
+          <button key={c.id} type="button" className={cls} onClick={() => onChip?.(c)} aria-label={c.kind === "image" ? "picture" : c.value}>
+            {inner}
+          </button>
+        ) : (
+          <span key={c.id} className={cls} aria-hidden="true">
+            {inner}
+          </span>
+        );
+      })}
     </div>
   );
 }

@@ -53,8 +53,8 @@
             "Says 'has-na' without the nasal hum"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling means 'to laugh'?",
-            "prompt_hi": "बताओ, ‘हँसना’ — यानी ठहाका लगाना — इनमें से कैसे लिखते हैं?",
+            "prompt_en": "What do we call laughing out loud? Pick the correctly written word.",
+            "prompt_hi": "खिलखिलाकर ठहाका लगाने को क्या कहते हैं? इनमें से सही लिखा शब्द चुनो।",
             "options": [
               {
                 "text": "हँसना",
@@ -77,7 +77,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Solved blind; exactly one correct option; prompt_en faithful."
+              "note": "Solved blind; exactly one correct option; prompt_en faithful. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -578,8 +578,8 @@
             "Reads चींटी without the nasal hum"
           ],
           "diagnostic": {
-            "prompt_en": "Which is the correct way to write 'ant'?",
-            "prompt_hi": "‘चींटी’ — इनमें से सही कैसे लिखा है?",
+            "prompt_en": "The tiny hard-working creature from the poem that carries grain in a line — which spelling of its name is right?",
+            "prompt_hi": "कविता वाली नन्ही, मेहनती जीव, जो लाइन में दाना ढोती है — उसका नाम इनमें से सही कैसे लिखा है?",
             "options": [
               {
                 "text": "चींटी",
@@ -602,7 +602,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Fixed after checker review (2026-10-02): distractor 'चिंटी' untagged (short-i error, not the plural-matra belief it was tagged with). Solved blind; exactly one correct option."
+              "note": "Fixed after checker review (2026-10-02): distractor 'चिंटी' untagged (short-i error, not the plural-matra belief it was tagged with). Solved blind; exactly one correct option. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -1006,6 +1006,36 @@
             "agrees": true,
             "note": "Solved blind; matches key."
           }
+        },
+        {
+          "id": "c3-hindi-ch02-t01-i13",
+          "skillId": "c3-hindi-ch02-t01-s4",
+          "kind": "error_spot",
+          "difficulty": 2,
+          "prompt_en": "Meena wrote 'चीटी दाना ले गई'. What is missing in 'चीटी'?",
+          "prompt_hi": "मीना ने लिखा — ‘चीटी दाना ले गई।’ ‘चीटी’ में क्या छूट गया?",
+          "answer": "ची के ऊपर बिंदु (ं) छूट गया — सही है चींटी",
+          "acceptable": [
+            "चींटी",
+            "बिंदु",
+            "bindu",
+            "बिंदी",
+            "bindi",
+            "ऊपर बिंदु",
+            "cheenti"
+          ],
+          "hints": [
+            "Say the word slowly. Do you feel a hum in your nose after ची?",
+            "That nose-hum needs a mark on top of the letter.",
+            "ची + a dot on top + टी = ?",
+            "चींटी needs a bindu (ं) on ची."
+          ],
+          "targetsMisconception": "c3-hindi-ch02-t01-mc-bindu-drop",
+          "verified": {
+            "solverAnswer": "बिंदु छूटा — चींटी",
+            "agrees": true,
+            "note": "Added after checker review (2026-10-02): no item targeted ch02 bindu-drop, so its diagnostic was anchored to items[0] and recorded evidence against the wrong skill. Solved independently; key agrees."
+          }
         }
       ],
       "workedExample": {
@@ -1092,8 +1122,8 @@
             "Reads पैर with an 'e' sound"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling means 'leg/foot'?",
-            "prompt_hi": "‘पैर’ — यानी जिससे हम चलते हैं — सही कैसे लिखते हैं?",
+            "prompt_en": "What do we walk and run with? Pick the correctly written word.",
+            "prompt_hi": "जिनसे हम चलते और दौड़ते हैं, उन्हें क्या कहते हैं? सही लिखा शब्द चुनो।",
             "options": [
               {
                 "text": "पैर",
@@ -1116,7 +1146,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Fixed after checker review (2026-10-02): distractor 'पार' untagged (ा error, not the ै/े confusion). Solved blind; exactly one correct option."
+              "note": "Fixed after checker review (2026-10-02): distractor 'पार' untagged (ा error, not the ै/े confusion). Solved blind; exactly one correct option. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -1378,7 +1408,7 @@
           ],
           "hints": [
             "Is पैर a 'he' word?",
-            "We say एक पैर — he-word, so the question ends in -ने.",
+            "We say 'मेरा पैर दुखता है' — पैर is a he-word, so the question uses -ने.",
             "कुत्ते के kit___ पैर?",
             "It is कितने पैर."
           ],
@@ -1386,7 +1416,7 @@
           "verified": {
             "solverAnswer": "कितने",
             "agrees": true,
-            "note": "Solved blind; matches key. Hint 2 reasons 'we say एक पैर — he-word', but एक does not mark gender; a better cue is 'मेरा पैर' / 'पैर दुखता है'. Left as is (still leads to the right rule)."
+            "note": "Fixed after checker review (2026-10-02): hint 2 used to reason from 'एक पैर', but एक does not show gender. It now reasons from 'मेरा पैर दुखता है'. Key agrees."
           }
         },
         {
@@ -1607,8 +1637,8 @@
             "Puts a dot under ड at the start of डाली"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling of 'bird' is right?",
-            "prompt_hi": "‘चिड़िया’ — इनमें से सही कैसे लिखा है?",
+            "prompt_en": "What do we call the one that flies with wings and builds a nest on a branch? Pick the correctly written word.",
+            "prompt_hi": "जो पंखों से उड़ती है और डाली पर घोंसला बनाती है, उसे क्या कहते हैं? सही लिखा शब्द चुनो।",
             "options": [
               {
                 "text": "चिड़िया",
@@ -1631,7 +1661,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Solved blind; exactly one correct option; prompt_en faithful."
+              "note": "Solved blind; exactly one correct option; prompt_en faithful. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -2036,6 +2066,36 @@
             "agrees": true,
             "note": "Solved blind; matches key."
           }
+        },
+        {
+          "id": "c3-hindi-ch04-t01-i13",
+          "skillId": "c3-hindi-ch04-t01-s4",
+          "kind": "contrast",
+          "difficulty": 2,
+          "prompt_en": "Say 'चिड़िया'. Is the first sound short or long — does it take छोटी इ (ि) or बड़ी ई (ी)?",
+          "prompt_hi": "‘चिड़िया’ बोलो। पहली आवाज़ छोटी है या खिंची हुई — ‘च’ पर छोटी इ (ि) आएगी या बड़ी ई (ी)?",
+          "answer": "छोटी इ (ि) — चिड़िया",
+          "acceptable": [
+            "छोटी इ",
+            "chhoti i",
+            "ि",
+            "छोटी",
+            "chhoti",
+            "छोटी वाली",
+            "चिड़िया"
+          ],
+          "hints": [
+            "Clap it: चि-ड़ि-या. Is the first beat quick or stretched?",
+            "A quick sound gets the small matra.",
+            "च + ___ = चि (ि or ी)?",
+            "चिड़िया starts with छोटी इ: चि."
+          ],
+          "targetsMisconception": "c3-hindi-ch04-t01-mc-i-ii",
+          "verified": {
+            "solverAnswer": "छोटी इ (ि)",
+            "agrees": true,
+            "note": "Added after checker review (2026-10-02): no item targeted ch04 i-ii, so its diagnostic was anchored to items[0] and recorded evidence against the wrong skill. Solved independently; key agrees."
+          }
         }
       ],
       "workedExample": {
@@ -2124,8 +2184,8 @@
             "Reads बूढ़ा without the breathy ह"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling means 'old'?",
-            "prompt_hi": "‘बूढ़ा’ — यानी जो बहुत उम्र का हो — सही कैसे लिखेंगे?",
+            "prompt_en": "What do we call someone who is very old? Pick the correctly written word.",
+            "prompt_hi": "जो बहुत उम्र का हो, उसे क्या कहते हैं? सही लिखा शब्द चुनो।",
             "options": [
               {
                 "text": "बूढ़ा",
@@ -2148,7 +2208,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Fixed after checker review (2026-10-02): distractor 'बुढ़ा' untagged (pointed at c3-hindi-ch05-t01-mc-u-uu, which does not exist in this topic (dangling id)). Solved blind; exactly one correct option."
+              "note": "Fixed after checker review (2026-10-02): distractor 'बुढ़ा' untagged (pointed at c3-hindi-ch05-t01-mc-u-uu, which does not exist in this topic (dangling id)). Solved blind; exactly one correct option. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -2164,8 +2224,8 @@
             "Reads पत्ता fast without the pause"
           ],
           "diagnostic": {
-            "prompt_en": "Which word means 'leaf'?",
-            "prompt_hi": "पेड़ का ‘पत्ता’ — इनमें से कौन-सा सही है?",
+            "prompt_en": "What is the green thing on a tree branch that falls in autumn called? Pick the right word.",
+            "prompt_hi": "पेड़ की डाली पर जो हरी चीज़ लगती है और पतझड़ में गिर जाती है, उसे क्या कहते हैं? सही शब्द चुनो।",
             "options": [
               {
                 "text": "पत्ता",
@@ -2183,7 +2243,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; prompt_en faithful."
+              "note": "Solved blind; exactly one correct option; prompt_en faithful. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -2681,8 +2741,8 @@
             "Reads the ड़ with a hard knock"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling is right?",
-            "prompt_hi": "‘खिचड़ी’ — इनमें से सही कौन-सा है?",
+            "prompt_en": "What is the rice-and-dal dish Birbal cooked in the pot called? Pick the correctly written word.",
+            "prompt_hi": "बीरबल ने हाँडी में चावल-दाल मिलाकर जो पकाई, उसे क्या कहते हैं? सही लिखा शब्द चुनो।",
             "options": [
               {
                 "text": "खिचड़ी",
@@ -2705,7 +2765,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Fixed after checker review (2026-10-02): distractor 'खीचड़ी' untagged (long-for-short; the tagged ii-name belief is short-for-long). Solved blind; exactly one correct option."
+              "note": "Fixed after checker review (2026-10-02): distractor 'खीचड़ी' untagged (long-for-short; the tagged ii-name belief is short-for-long). Solved blind; exactly one correct option. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -3081,6 +3141,38 @@
             "agrees": true,
             "note": "Solved blind; matches key."
           }
+        },
+        {
+          "id": "c3-hindi-ch06-t01-i13",
+          "skillId": "c3-hindi-ch06-t01-s4",
+          "kind": "contrast",
+          "difficulty": 2,
+          "prompt_en": "Say 'बीरबल' slowly. Which matra goes on the first letter ब — छोटी इ (ि) or बड़ी ई (ी)?",
+          "prompt_hi": "‘बीरबल’ धीरे-धीरे बोलो। पहले अक्षर ‘ब’ पर कौन-सी मात्रा लगेगी — छोटी इ (ि) या बड़ी ई (ी)?",
+          "answer": "बड़ी ई (ी) — बीरबल",
+          "acceptable": [
+            "बड़ी ई",
+            "badi ee",
+            "badi i",
+            "ी",
+            "लंबी ई",
+            "lambi ee",
+            "बड़ी",
+            "बड़ी वाली",
+            "बीरबल"
+          ],
+          "hints": [
+            "Clap it: बी-र-बल. Is the first beat quick or stretched?",
+            "A stretched ई sound gets the long matra.",
+            "ब + ___ = बी (ि or ी)?",
+            "बीरबल takes बड़ी ई (ी)."
+          ],
+          "targetsMisconception": "c3-hindi-ch06-t01-mc-ii-name",
+          "verified": {
+            "solverAnswer": "बड़ी ई (ी)",
+            "agrees": true,
+            "note": "Added after checker review (2026-10-02): no item targeted ch06 ii-name, so its diagnostic was anchored to items[0] and recorded evidence against the wrong skill. Solved independently; key agrees."
+          }
         }
       ],
       "workedExample": {
@@ -3165,8 +3257,8 @@
             "Reads मित्र as 'mi-tar'"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling of 'friend' is right?",
-            "prompt_hi": "‘मित्र’ — यानी दोस्त — सही कैसे लिखते हैं?",
+            "prompt_en": "Riya wrote \"प्रिय ___ सारा\" in the letter — which spelling of the word for friend is right?",
+            "prompt_hi": "रिया ने पत्र में ‘प्रिय ___ सारा’ लिखा — दोस्त के लिए जो शब्द आया, वह सही कैसे लिखा है?",
             "options": [
               {
                 "text": "मित्र",
@@ -3189,7 +3281,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Fixed after checker review (2026-10-02): distractor 'मीत्र' untagged (इ/ई error, not splitting त्र). Solved blind; exactly one correct option."
+              "note": "Fixed after checker review (2026-10-02): distractor 'मीत्र' untagged (इ/ई error, not splitting त्र). Solved blind; exactly one correct option. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -3724,8 +3816,8 @@
             "Reads the last letter with a hard knock"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling is right?",
-            "prompt_hi": "‘गीदड़’ — सही कैसे लिखेंगे?",
+            "prompt_en": "Which animal cleverly sent the tiger back into the cage? Which spelling of its name is right?",
+            "prompt_hi": "बाघ को चालाकी से वापस पिंजरे में भेजने वाला जानवर कौन था? उसका नाम सही कैसे लिखा है?",
             "options": [
               {
                 "text": "गीदड़",
@@ -3748,7 +3840,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Solved blind; exactly one correct option; prompt_en faithful."
+              "note": "Solved blind; exactly one correct option; prompt_en faithful. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -4218,8 +4310,8 @@
             "Says 'pra-ki-ri-ti'"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling of 'nature' is right?",
-            "prompt_hi": "‘प्रकृति’ — यानी पेड़, फूल, नदी, पहाड़ सब — सही कैसे लिखते हैं?",
+            "prompt_en": "Trees, flowers, rivers, mountains — what do we call all of these together? Pick the correctly written word.",
+            "prompt_hi": "पेड़, फूल, नदी, पहाड़ — इन सबको मिलाकर क्या कहते हैं? सही लिखा शब्द चुनो।",
             "options": [
               {
                 "text": "प्रकृति",
@@ -4242,7 +4334,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Fixed after checker review (2026-10-02): distractor 'परकृति' untagged (splits प्र; keeps ृ, so not the ृ→रि belief). Solved blind; exactly one correct option."
+              "note": "Fixed after checker review (2026-10-02): distractor 'परकृति' untagged (splits प्र; keeps ृ, so not the ृ→रि belief). Solved blind; exactly one correct option. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -5265,8 +5357,8 @@
             "Stretches 'doo' in जादुई"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling is right for 'magical'?",
-            "prompt_hi": "‘जादुई’ — यानी जादू वाला — सही कैसे लिखते हैं?",
+            "prompt_en": "Something with जादू (magic) — \"___ पिटारा\". Which spelling of the missing word is right?",
+            "prompt_hi": "‘जादू’ वाली चीज़ — ‘___ पिटारा’। खाली जगह का शब्द सही कैसे लिखा है?",
             "options": [
               {
                 "text": "जादुई",
@@ -5289,7 +5381,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Fixed after checker review (2026-10-02): distractor 'जादुइ' untagged (keeps short ु; the error is the final इ, not the ू-stays belief). Solved blind; exactly one correct option."
+              "note": "Fixed after checker review (2026-10-02): distractor 'जादुइ' untagged (keeps short ु; the error is the final इ, not the ू-stays belief). Solved blind; exactly one correct option. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -5305,8 +5397,8 @@
             "Puffs air on ट"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling of 'box' is right?",
-            "prompt_hi": "‘पिटारा’ — सही कैसे लिखेंगे?",
+            "prompt_en": "Grandma's big box that stories come out of — what does the poem call it? Pick the correctly written word.",
+            "prompt_hi": "दादी का वह बड़ा डिब्बा, जिसमें से कहानियाँ निकलती हैं — कविता में उसे क्या कहा है? सही लिखा शब्द चुनो।",
             "options": [
               {
                 "text": "पिटारा",
@@ -5329,7 +5421,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Fixed after checker review (2026-10-02): distractor 'पीटारा' untagged (इ/ई error; was tagged jadui-matra (ू-shortening)). Solved blind; exactly one correct option."
+              "note": "Fixed after checker review (2026-10-02): distractor 'पीटारा' untagged (इ/ई error; was tagged jadui-matra (ू-shortening)). Solved blind; exactly one correct option. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -5705,6 +5797,37 @@
             "solverAnswer": "कहानियाँ, पहेलियाँ, खेल — यही असली जादू, नई दुनिया",
             "agrees": true,
             "note": "Solved blind; matches key."
+          }
+        },
+        {
+          "id": "c3-hindi-ch11-t01-i13",
+          "skillId": "c3-hindi-ch11-t01-s2",
+          "kind": "error_spot",
+          "difficulty": 2,
+          "prompt_en": "Golu wrote 'दादी का पिठारा'. Which letter in 'पिठारा' is wrong?",
+          "prompt_hi": "गोलू ने लिखा — ‘दादी का पिठारा।’ ‘पिठारा’ में कौन-सा अक्षर गलत है?",
+          "answer": "ठ गलत है, ट आएगा — पिटारा",
+          "acceptable": [
+            "ठ",
+            "ट",
+            "ठ गलत है",
+            "टमाटर वाला ट",
+            "पिटारा",
+            "pitara",
+            "tha",
+            "ta"
+          ],
+          "hints": [
+            "Say पि-टा-रा. Is there a puff of air after the middle sound?",
+            "ठ has a puff (ठंडा); ट has none (टमाटर).",
+            "पि___ारा — ट or ठ?",
+            "It is पिटारा, with ट, not ठ."
+          ],
+          "targetsMisconception": "c3-hindi-ch11-t01-mc-ta-tha",
+          "verified": {
+            "solverAnswer": "ठ की जगह ट — पिटारा",
+            "agrees": true,
+            "note": "Added after checker review (2026-10-02): no item targeted ch11 ta-tha, so its diagnostic was anchored to items[0] and recorded evidence against the wrong skill. Solved independently; key agrees."
           }
         }
       ],
@@ -6317,8 +6440,8 @@
             "Reads the name without the small stop"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling of the name is right?",
-            "prompt_hi": "‘तिमक्का’ — नाम सही कैसे लिखेंगे?",
+            "prompt_en": "The grandmother who planted banyans by the road and was called the mother of trees — which spelling of her name is right?",
+            "prompt_hi": "जो दादी सड़क किनारे बरगद लगाकर ‘पेड़ों की अम्मा’ कहलाईं, उनका नाम सही कैसे लिखा है?",
             "options": [
               {
                 "text": "तिमक्का",
@@ -6341,7 +6464,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Solved blind; exactly one correct option; prompt_en faithful."
+              "note": "Solved blind; exactly one correct option; prompt_en faithful. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -6888,8 +7011,8 @@
             "Says 'ho-si-yaar'"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling is right?",
-            "prompt_hi": "‘होशियारी’ — सही कैसे लिखते हैं?",
+            "prompt_en": "What do we call getting things done with brains and good sense? Pick the correctly written word.",
+            "prompt_hi": "दिमाग़ और समझदारी से काम निकालने को क्या कहते हैं? सही लिखा शब्द चुनो।",
             "options": [
               {
                 "text": "होशियारी",
@@ -6907,7 +7030,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; prompt_en faithful."
+              "note": "Solved blind; exactly one correct option; prompt_en faithful. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -7370,8 +7493,8 @@
             "Reads उत्तर with no stop"
           ],
           "diagnostic": {
-            "prompt_en": "Which word means 'north'?",
-            "prompt_hi": "दिशा ‘उत्तर’ — सही कैसे लिखेंगे?",
+            "prompt_en": "Which is the right name of the direction in which the Himalaya lies in India?",
+            "prompt_hi": "भारत में हिमालय जिस दिशा में है, उस दिशा का नाम सही कौन-सा है?",
             "options": [
               {
                 "text": "उत्तर",
@@ -7389,7 +7512,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; prompt_en faithful."
+              "note": "Solved blind; exactly one correct option; prompt_en faithful. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -7653,7 +7776,6 @@
           "acceptable": [
             "neecha",
             "nicha",
-            "छोटा",
             "low"
           ],
           "hints": [
@@ -7665,7 +7787,7 @@
           "verified": {
             "solverAnswer": "नीचा",
             "agrees": true,
-            "note": "Solved blind; matches key. Acceptable 'छोटा' is a loose antonym of ऊँचा (standard is नीचा); left in."
+            "note": "Fixed after checker review (2026-10-02): removed 'छोटा' from acceptable. It is the opposite of बड़ा; the opposite of ऊँचा is नीचा. Key agrees."
           }
         },
         {
@@ -7891,8 +8013,8 @@
             "Reads 'chan-dar'"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling is right?",
-            "prompt_hi": "‘चंद्रयान’ — सही कैसे लिखते हैं?",
+            "prompt_en": "India's craft that landed on the Moon — which spelling of its name is right?",
+            "prompt_hi": "भारत का जो यान चाँद पर उतरा, उसका नाम सही कैसे लिखा है?",
             "options": [
               {
                 "text": "चंद्रयान",
@@ -7915,7 +8037,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Fixed after checker review (2026-10-02): distractor 'चंद्यान' untagged (drops र rather than splitting द्र). Solved blind; exactly one correct option."
+              "note": "Fixed after checker review (2026-10-02): distractor 'चंद्यान' untagged (drops र rather than splitting द्र). Solved blind; exactly one correct option. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -7971,8 +8093,8 @@
             "Says 'dachhini'"
           ],
           "diagnostic": {
-            "prompt_en": "Which spelling of 'space' is right?",
-            "prompt_hi": "‘अंतरिक्ष’ — सही कैसे लिखेंगे?",
+            "prompt_en": "The open place above the Earth where the stars and planets are — what is it called? Pick the correctly written word.",
+            "prompt_hi": "धरती के ऊपर, जहाँ तारे और ग्रह हैं, उस खुली जगह को क्या कहते हैं? सही लिखा शब्द चुनो।",
             "options": [
               {
                 "text": "अंतरिक्ष",
@@ -7995,7 +8117,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 3,
-              "note": "Solved blind; exactly one correct option; prompt_en faithful."
+              "note": "Solved blind; exactly one correct option; prompt_en faithful. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -8464,8 +8586,8 @@
             "Reads 'maad' without the nasal"
           ],
           "diagnostic": {
-            "prompt_en": "Which is the right spelling of 'den'?",
-            "prompt_hi": "जानवर का घर ‘माँद’ — सही कैसे लिखेंगे?",
+            "prompt_en": "The jackal's cave-like home where the lion hid — what is it called? Pick the correctly written word.",
+            "prompt_hi": "गीदड़ का गुफा जैसा घर, जिसमें शेर छिपा था, उसे क्या कहते हैं? सही लिखा शब्द चुनो।",
             "options": [
               {
                 "text": "माँद",
@@ -8483,7 +8605,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; prompt_en faithful."
+              "note": "Solved blind; exactly one correct option; prompt_en faithful. Fixed after checker review (2026-10-02): prompt_hi used to spell the correct option, so a child shown the prompt as text could copy it. It now gives a meaning cue. Solved again: exactly one option fits the cue and is correctly spelled. Spoken options can sound alike (nasal/matra contrasts), so this diagnostic needs the on-screen option chips."
             }
           },
           "remediation": {
@@ -8767,7 +8889,11 @@
             "गूँजती",
             "गरजती",
             "मोटी आवाज़",
-            "deep"
+            "deep",
+            "मीठी आवाज़",
+            "meethi awaaz",
+            "बुलाने वाली आवाज़",
+            "sweet"
           ],
           "hints": [
             "Is the lion small or huge?",
@@ -8778,7 +8904,7 @@
           "verified": {
             "solverAnswer": "भारी, गूँजती",
             "agrees": true,
-            "note": "Solved blind; matches key. Lion is luring the jackal in, so a falsely sweet/inviting voice would also be a defensible reading; key (deep, echoing) is fine."
+            "note": "Fixed after checker review (2026-10-02): the lion is luring the jackal in, so a falsely sweet, inviting voice is also a valid reading; added those forms to acceptable. Key (deep, echoing) unchanged and agrees."
           }
         },
         {

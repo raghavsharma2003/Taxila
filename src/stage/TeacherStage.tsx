@@ -2,12 +2,13 @@
 // framing, the computer-teacher badge and the face slot; the face is the 2D illustrated teacher by default
 // and a 3D <TutorStage> later (avatar-v1-stack mounts into this same frame via `face`).
 //
-// ReactionGate (PD-G7): the face state comes from the four floor states only, plus `delight`, which callers
-// raise ONLY from a Director `affect: insight | effort` tag (never from correctness, a count or a streak);
-// this component rate-limits it to one per 5 turns and plays it at one fixed intensity.
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+// ReactionGate (PD-G7): the face state comes from the four floor states only, plus `delighting`, which the
+// lesson screen raises ONLY from a Director `affect: insight | effort` tag (never from correctness, a count or
+// a streak) through useDelight (src/stage/useDelight.ts): ONE gate per lesson, not per stage instance, since
+// the stage remounts at every layout change. It plays at one fixed intensity.
+import type { CSSProperties, ReactNode } from "react";
 import { TeacherFace, type LevelSource } from "./TeacherFace.tsx";
-import { DelightGate, type FaceState, type GazeTarget, type StageOrientation } from "./faceController.ts";
+import type { FaceState, GazeTarget, StageOrientation } from "./faceController.ts";
 import "./stage.css";
 
 export type FloorState = "your_turn" | "listening" | "thinking" | "speaking";
@@ -15,8 +16,8 @@ export type FloorState = "your_turn" | "listening" | "thinking" | "speaking";
 export interface TeacherStageProps {
   /** The four-state floor (src/lesson status), or null before/after a live lesson (idle). */
   floor: FloorState | null;
-  /** A Director insight/effort tag on the current turn, with the child-turn index it belongs to. */
-  delight?: { turn: number } | null;
+  /** The lesson's delight window is open (useDelight: gated once per lesson, timed from her audio start). */
+  delighting?: boolean;
   teacherId?: string | null;
   teacherName?: string;
   band: string;
@@ -41,23 +42,7 @@ export interface TeacherStageProps {
 }
 
 export function TeacherStage(p: TeacherStageProps) {
-  const gate = useMemo(() => new DelightGate(), []);
-  const [delighting, setDelighting] = useState(false);
-  const lastDelightTurn = useRef<number | null>(null);
-
-  useEffect(() => {
-    const d = p.delight;
-    if (!d || d.turn === lastDelightTurn.current) return;
-    lastDelightTurn.current = d.turn;
-    if (gate.allow(d.turn)) setDelighting(true);
-  }, [p.delight, gate]);
-  useEffect(() => {
-    if (!delighting) return;
-    const t = setTimeout(() => setDelighting(false), 1700);
-    return () => clearTimeout(t);
-  }, [delighting]);
-
-  const state: FaceState = !p.floor ? "idle" : delighting && p.floor === "speaking" ? "delighted" : p.floor;
+  const state: FaceState = !p.floor ? "idle" : p.delighting && p.floor === "speaking" ? "delighted" : p.floor;
 
   const body = p.face ?? (
     <TeacherFace
