@@ -25,6 +25,13 @@ export const MIN_RUN_MS = 100;
 /** Speech gate: this far above the adaptive noise floor, and never below the absolute floor. */
 export const SPEECH_ABOVE_FLOOR_DB = 12;
 export const SPEECH_ABS_MIN_DB = -50;
+/** Noise-floor seeding window after attach, steady-noise window, and the floor caps (FrameAnalyzer). */
+export const FLOOR_SEED_MS = 300;
+export const FLOOR_STEADY_MS = 10_000;
+const FLOOR_MAX_DB = -35;
+const FLOOR_STEADY_MAX_DB = -20;
+const clampFloor = (db: number, max: number) => Math.min(max, Math.max(-90, db));
+const lowQuantile = (xs: number[], q: number) => quantile(xs.slice().sort((a, b) => a - b), q);
 /** A voiced run at least this long with less than this pitch spread looks like a filled pause ("ummm"). */
 export const FLAT_RUN_MS = 300;
 export const FLAT_RUN_ST = 1.0;
@@ -102,8 +109,14 @@ export function yin(x: ArrayLike<number>, sr = RATE, fMin = F0_MIN, fMax = F0_MA
 
 /**
  * Streaming framer + per-frame analysis. push() 16 kHz samples with the epoch time of their first sample;
- * complete frames come back. Keeps an adaptive noise floor (fast down, slow up) for the speech gate, so a
- * fan or a TV raises the bar instead of reading as continuous speech.
+ * complete frames come back. The speech gate sits on an adaptive noise floor:
+ *   - seeded from the first FLOOR_SEED_MS after attach (a room at -45 dB is not speech from frame one);
+ *   - updated only from frames below the gate (fast down, slow up), frozen during speech — a floor that also
+ *     climbed during a 4-6 s read-aloud raised the gate 10-15 dB and turned soft trailing syllables into
+ *     false pauses (pauseFrac / longestPauseMs are hesitation cues);
+ *   - lifted to the running 10th percentile when even that sits above the gate for FLOOR_STEADY_MS: no
+ *     child speaks 10 s without dips, so that is a TV or a fan, and it raises the bar instead of reading as
+ *     continuous speech.
  */
 export class FrameAnalyzer {
   private buf = new Float32Array(FRAME * 4);
@@ -111,6 +124,9 @@ export class FrameAnalyzer {
   /** Epoch ms of buf[0]. */
   private t0 = 0;
   floorDb = -60;
+  private seed: number[] | null = [];
+  private recent: number[] = [];
+  private recentAt = 0;
 
   push(samples: Float32Array, startMs: number): Frame[] {
     if (this.len === 0) this.t0 = startMs;
@@ -142,9 +158,30 @@ export class FrameAnalyzer {
 
   private analyse(x: Float32Array, t: number): Frame {
     const rmsDb = toDb(rmsOf(x));
-    this.floorDb = rmsDb < this.floorDb ? 0.8 * this.floorDb + 0.2 * rmsDb : this.floorDb + Math.min(0.05, (rmsDb - this.floorDb) * 0.005);
-    this.floorDb = Math.min(-35, Math.max(-90, this.floorDb));
-    const speech = rmsDb > Math.max(this.floorDb + SPEECH_ABOVE_FLOOR_DB, SPEECH_ABS_MIN_DB);
+    let seeding = false;
+    if (this.seed) {
+      this.seed.push(rmsDb);
+      seeding = true;
+      if (this.seed.length * HOP_MS >= FLOOR_SEED_MS) {
+        this.floorDb = clampFloor(lowQuantile(this.seed, 0.2), FLOOR_MAX_DB);
+        this.seed = null;
+      }
+    }
+    const gate = () => Math.max(this.floorDb + SPEECH_ABOVE_FLOOR_DB, SPEECH_ABS_MIN_DB);
+    if (rmsDb <= gate()) {
+      this.floorDb = rmsDb < this.floorDb ? 0.8 * this.floorDb + 0.2 * rmsDb : this.floorDb + Math.min(0.05, (rmsDb - this.floorDb) * 0.005);
+      this.floorDb = clampFloor(this.floorDb, FLOOR_MAX_DB);
+    }
+    // Steady-noise escape: a ring of the last FLOOR_STEADY_MS, checked every 0.5 s.
+    this.recent.push(rmsDb);
+    if (this.recent.length * HOP_MS > FLOOR_STEADY_MS) this.recent.shift();
+    if (++this.recentAt >= 25 && this.recent.length * HOP_MS >= FLOOR_STEADY_MS) {
+      this.recentAt = 0;
+      const p10 = lowQuantile(this.recent, 0.1);
+      if (p10 > gate()) this.floorDb = clampFloor(p10, FLOOR_STEADY_MAX_DB);
+    }
+    // Seeding frames are never speech: the gate is not known yet (attach is at connect, before anyone answers).
+    const speech = !seeding && rmsDb > gate();
     // Pitch only on speech frames: most of a lesson is silence, so this is most of the CPU saving.
     const f0 = speech ? yin(x).f0 : null;
     return { t, rmsDb, f0, speech };

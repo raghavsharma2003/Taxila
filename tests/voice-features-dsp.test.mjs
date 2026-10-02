@@ -185,3 +185,74 @@ test("no text or audio ever appears in the feature record (numbers only)", () =>
   for (const [k, v] of Object.entries(u.features)) assert.equal(typeof v, "number", k);
   assert.ok(!JSON.stringify(u).includes("Aarav"));
 });
+
+// ───────────── review fixes: stale marks, implausible rates, the noise floor ─────────────
+
+test("a cough (start → child_silent) does not poison the next answer: onset kept, no barge-in", () => {
+  const t0 = 10_000;
+  // Teacher turn 1 plays; a cough during it; teacher turn 2 ends at t0 + 3000; the child answers at t0 + 3800.
+  const tr = tracked([{ ms: 3800 }, { ms: 800, f0: 260 }, { ms: 600 }], t0);
+  tr.teacherAudioStarted();
+  tr.speechStart(t0 + 500);          // the cough, while the teacher is talking
+  tr.cancel();                       // child_silent: the transcript was empty
+  tr.teacherAudioEnded(t0 + 1500);
+  tr.teacherAudioStarted();          // her next turn
+  tr.teacherAudioEnded(t0 + 3000);
+  tr.speechStart(t0 + 3800);
+  tr.speechEnd(t0 + 4600);
+  const u = tr.finalize({ text: "paanch", startedAt: t0 + 3800, asrConfidence: 0.9 }, t0 + 5200);
+  assert.ok(u);
+  assert.equal(u.bargeIn, false);
+  assert.ok(Math.abs(u.features.onsetMs - 800) <= 40, `onset ${u.features.onsetMs}`);
+});
+
+test("a stale speech-start mark (lost silent event) is replaced after 30 s", () => {
+  const t0 = 10_000;
+  const tr = tracked([{ ms: 40_000 }, { ms: 800, f0: 260 }, { ms: 400 }], t0);
+  tr.speechStart(t0 + 1000);         // never finalized, never cancelled
+  tr.teacherAudioStarted();
+  tr.teacherAudioEnded(t0 + 39_500);
+  tr.speechStart(t0 + 40_000);
+  const u = tr.finalize({ text: "paanch", startedAt: t0 + 40_000 }, t0 + 41_200);
+  assert.equal(u.bargeIn, false);
+  assert.ok(Math.abs(u.features.onsetMs - 500) <= 40, `onset ${u.features.onsetMs}`);
+});
+
+test("implausible derived rates are left out, not sent (the server would reject them)", () => {
+  const t0 = 10_000;
+  // The acoustic gate caught 350 ms; the ASR heard 7 words → 20 wps.
+  const tr = tracked([{ ms: 300 }, { ms: 350, f0: 260 }, { ms: 400 }], t0);
+  const u = tr.finalize({ text: "ek do teen chaar paanch chhe saat", startedAt: t0 + 300 }, t0 + 1100);
+  assert.ok(u);
+  assert.equal(u.features.speechRateWps, undefined);
+  assert.equal(u.features.articulationWps, undefined);
+  assert.equal(u.features.words, 7);
+});
+
+test("noise floor freezes during speech: 8 s steady voice + a 20 dB quieter tail has no false pause", () => {
+  const x = synth([{ ms: 500 }, { ms: 8000, f0: 240 }]);
+  const tail = synth([{ ms: 1000, f0: 240 }], { amp: 0.02 });
+  const all = new Float32Array(x.length + tail.length + 8000);
+  all.set(x); all.set(tail, x.length);
+  const fr = frames(all, 0);
+  const st = utteranceStats(fr, HOP_MS);
+  assert.equal(st.pauseCount, 0, `pauses ${st.pauseCount}, longest ${st.longestPauseMs}`);
+  assert.ok(st.durationMs > 8800, `duration ${st.durationMs}`);
+});
+
+test("noise floor: seeded from the room (−45 dB) instead of reading it as speech; a steady TV lifts it", () => {
+  // A room at about −45 dBFS from the first frame, then a 600 ms answer well above it.
+  const room = (ms) => synth([{ ms }], { noise: 0.009 });
+  const fa = new FrameAnalyzer();
+  const x = new Float32Array([...room(1000), ...synth([{ ms: 600, f0: 250 }], { noise: 0.009 }), ...room(500)]);
+  const out = [];
+  for (let i = 0; i < x.length; i += 320) out.push(...fa.push(x.slice(i, i + 320), (i / RATE) * 1000));
+  const speechMs = out.filter((f) => f.speech).length * HOP_MS;
+  assert.ok(speechMs >= 500 && speechMs <= 800, `speech ${speechMs} ms (the room must not count)`);
+  // A TV at about −30 dB for 15 s: steady, no dips → after FLOOR_STEADY_MS it stops reading as speech.
+  const tv = new FrameAnalyzer();
+  const t = synth([{ ms: 15_000, f0: 150 }], { amp: 0.03, noise: 0.01 });
+  const tf = [];
+  for (let i = 0; i < t.length; i += 320) tf.push(...tv.push(t.slice(i, i + 320), (i / RATE) * 1000));
+  assert.ok(tf.slice(-100).every((f) => !f.speech), "a steady TV is not continuous speech");
+});

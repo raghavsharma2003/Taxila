@@ -81,6 +81,8 @@ export interface UiDirectives {
   chips?: { id: string; label: string }[];          // 2-4 low-stakes choices
   status?: "listening" | "thinking" | "speaking" | "your_turn";
   caption?: string;
+  /** The text the child is asked to read aloud right now (voice features measure WCPM against it). */
+  readAloud?: string;
 }
 
 /**
@@ -99,6 +101,20 @@ export interface TurnRequest {
   droppedEvents?: number;            // events the client dropped at its buffer cap since the last call
   chipId?: string;                   // the child tapped a choice chip
   typed?: boolean;                   // no ASR (typed or tapped); does not select the text lane
+  voiceFeatures?: VoiceUtterance;    // on-device numeric features of this spoken turn (src/voice/); never audio or text
+}
+/**
+ * One child utterance's voice features, computed on the device (src/voice/tracker.ts UtteranceFeatures).
+ * The server validates every key against server/voice/features.js FEATURE_RANGES, stores it, z-scores it
+ * against the child's own baseline, and derives capped tie-breaker signals for THIS turn.
+ */
+export interface VoiceUtterance {
+  context: "answer" | "read_aloud";
+  itemId?: string;
+  asrConf?: number;
+  bargeIn: boolean;
+  at: number;
+  features: { [feature: string]: number | undefined };
 }
 export interface TurnResponse {
   /**
@@ -123,7 +139,8 @@ export interface TurnResponse {
   debug?: Record<string, unknown>;
 }
 
-export interface LessonStartRequest { childId: string; topicId?: string; mode?: "voice" | "text" }
+/** "cascade": the default voice lane — spoken child turns (ASR-gated), Director-written replies, streamed TTS. */
+export interface LessonStartRequest { childId: string; topicId?: string; mode?: "voice" | "text" | "cascade" }
 export interface LessonStartResponse {
   lessonId: string; topic: { id: string; title: string; chapter: string };
   /** Voice lane only (see TurnResponse.instructions). */

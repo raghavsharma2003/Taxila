@@ -100,33 +100,49 @@ function sttSocket(session) {
   return { ws, ready, on: (fn) => (listeners.add(fn), () => listeners.delete(fn)) };
 }
 
-/** Stream one utterance in real time; resolve with wall times of speech end, VAD stop and the final. */
+/**
+ * Stream one utterance in real time; resolve once the audio (with its 3 s tail) is sent and every committed
+ * segment is transcribed. A clip the server VAD split into several segments (a mid-utterance pause) is joined;
+ * the stage times use the LAST segment, because that is when the runtime would send the turn that ends it.
+ */
 function speak(stt, pcm) {
   const lead = Buffer.alloc(BPS / 2), tail = Buffer.alloc(BPS * 3);
   const all = Buffer.concat([lead, pcm, tail]);
   const endInAll = 500 + speechEndMs(pcm);
   return new Promise((resolve, reject) => {
-    const out = {};
-    const timeout = setTimeout(() => { off(); reject(new Error("no final transcript in 20 s")); }, 20_000);
+    const out = { segments: 0 };
+    const committed = [], texts = new Map(), confs = [];
+    const timeout = setTimeout(() => { off(); reject(new Error("transcripts incomplete after 25 s")); }, 25_000);
+    // Done when the segment that ended AFTER the true end of speech (the last one) and every earlier one are
+    // transcribed; the remaining silent tail keeps streaming, as a live mic would.
+    const check = () => {
+      if (out.vadAt === undefined || out.vadAt < out.speechEndAt || !committed.length || committed.some((id) => !texts.has(id))) return;
+      clearTimeout(timeout);
+      off();
+      out.segments = committed.length;
+      out.text = committed.map((id) => texts.get(id)).filter(Boolean).join(" ");
+      out.conf = confs.length ? confs.reduce((a, b) => a + b, 0) / confs.length : undefined;
+      resolve(out);
+    };
     const off = stt.on((e, at) => {
-      if (e.type === "input_audio_buffer.speech_stopped" && out.vadAt === undefined) out.vadAt = at;
-      if (e.type === "conversation.item.input_audio_transcription.completed") {
+      if (e.type === "input_audio_buffer.speech_stopped") out.vadAt = at;
+      if (e.type === "input_audio_buffer.committed") committed.push(e.item_id);
+      if (e.type === "conversation.item.input_audio_transcription.completed" || e.type === "conversation.item.input_audio_transcription.failed") {
         out.finalAt = at;
-        out.text = String(e.transcript || "").trim();
+        texts.set(e.item_id, String(e.transcript || "").trim());
         const lps = (e.logprobs || []).map((l) => l.logprob).filter((v) => typeof v === "number");
-        out.conf = lps.length ? Math.exp(lps.reduce((a, b) => a + b, 0) / lps.length) : undefined;
-        clearTimeout(timeout);
-        off();
-        resolve(out);
+        if (lps.length) confs.push(Math.exp(lps.reduce((a, b) => a + b, 0) / lps.length));
+        check();
       }
     });
     const t0 = performance.now();
     out.speechEndAt = t0 + endInAll;
-    let off2 = 0, n = 0;
+    let pos = 0, n = 0;
+    const step = (BPS * CHUNK_MS) / 1000;
     const tick = () => {
-      if (off2 >= all.length) return;
-      stt.ws.send(JSON.stringify({ type: "input_audio_buffer.append", audio: all.subarray(off2, off2 + (BPS * CHUNK_MS) / 1000).toString("base64") }));
-      off2 += (BPS * CHUNK_MS) / 1000;
+      if (pos >= all.length) return;
+      stt.ws.send(JSON.stringify({ type: "input_audio_buffer.append", audio: all.subarray(pos, pos + step).toString("base64") }));
+      pos += step;
       n++;
       // Paced against the start time, so drift does not accumulate.
       setTimeout(tick, Math.max(0, t0 + n * CHUNK_MS - performance.now()));
@@ -148,7 +164,7 @@ async function firstByte(lessonId, seq) {
     bytes += value.length;
   }
   return { firstAt: first, t0, bytes, audioMs: Math.round(bytes / (BPS / 1000)), totalMs: Math.round(performance.now() - t0),
-    serverFirstMs: Number(res.headers.get("x-tts-first-ms")), sentences: Number(res.headers.get("x-tts-sentences")), cache: res.headers.get("x-tts-cache") };
+    serverFirstMs: Number(res.headers.get("x-tts-first-ms")), serverSetupMs: Number(res.headers.get("x-tts-setup-ms")), sentences: Number(res.headers.get("x-tts-sentences")), cache: res.headers.get("x-tts-cache") };
 }
 
 const rows = [];
@@ -160,7 +176,7 @@ try {
   await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
   // The cascade's server lane today is the text lane (the Director writes and stores every reply).
   const s = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text" });
-  console.log(`lesson ${s.lessonId} topic=${s.topic.id} teacher=${s.teacher.id}/${s.teacher.voice}`);
+  console.log(`lesson ${s.lessonId} topic=${s.topic.id} teacher=${s.teacher.id}/${s.teacher.voice} db=${process.env.DB_DRIVER || "neon-http"}`);
   const opening = await firstByte(s.lessonId, s.teacherOpeningSeq);
   console.log(`opening: first byte ${Math.round(opening.firstAt - opening.t0)} ms (server ${opening.serverFirstMs}), ${opening.sentences} sentences, ${opening.audioMs} ms audio`);
   const tok = await api("POST", "/api/voice/stt-token", { lessonId: s.lessonId });
@@ -182,12 +198,12 @@ try {
       reply: r.teacherReply,
       endpoint: Math.round(heard.vadAt - heard.speechEndAt), stt: Math.round(heard.finalAt - heard.vadAt),
       director: Math.round(replyAt - tTurn), tts: Math.round(tts.firstAt - replyAt), total: Math.round(tts.firstAt - heard.speechEndAt),
-      ttsServerFirst: tts.serverFirstMs, sentences: tts.sentences, cache: tts.cache, replyAudioMs: tts.audioMs,
+      ttsServerFirst: tts.serverFirstMs, ttsServerSetup: tts.serverSetupMs, segments: heard.segments, sentences: tts.sentences, cache: tts.cache, replyAudioMs: tts.audioMs,
       directorServer: r.debug?.ms, directorTimings: r.debug?.timings?.map((t) => `${t.kind}:${t.ms}`).join(" "),
     };
     rows.push(row);
     console.log(`  turn ${i + 1}: endpoint ${row.endpoint} · stt ${row.stt} · director ${row.director} · tts ${row.tts} = ${row.total} ms  [${row.move}] "${row.heard}" (conf ${row.conf}) → "${row.reply}"`);
-    console.log(`           director calls: ${row.directorTimings ?? "?"}`);
+    console.log(`           director calls: ${row.directorTimings ?? "?"} · tts server: setup ${row.ttsServerSetup} first ${row.ttsServerFirst} (${row.sentences} sentences, cache ${row.cache}) · vad segments ${row.segments}`);
     if (r.end) break;
   }
   stt.ws.close();

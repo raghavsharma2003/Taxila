@@ -155,8 +155,25 @@ test("EnergyVad: onset after sustained energy above the floor, offset after a qu
   assert.deepEqual(run(0.001, 50), []); // -60 dB room
   assert.deepEqual(run(0.2, 2), []); // a 40 ms click
   assert.deepEqual(run(0.001, 5), []);
-  assert.deepEqual(run(0.1, 10), ["onset"]);
+  assert.deepEqual(run(0.1, 10), ["onset", "sustain"]);
   assert.deepEqual(run(0.001, 20), ["offset"]);
+});
+
+test("EnergyVad (defaults, 20 ms frames): duck at ≤100 ms of voice, pause at ≤140 ms — the <150 ms barge-in budget", () => {
+  const v = new EnergyVad();
+  for (let i = 0; i < 50; i++) v.push(0.001, 20); // a -60 dBFS room
+  const edges = [];
+  for (let t = 20; t <= 400; t += 20) { const e = v.push(0.05, 20); if (e) edges.push([e, t]); } // -26 dBFS voice
+  const at = (k) => edges.find(([e]) => e === k)?.[1];
+  assert.ok(at("onset") <= 100, JSON.stringify(edges));
+  assert.ok(at("sustain") <= 140, JSON.stringify(edges));
+  // A 100 ms cough ducks her but never reaches "sustain" (no pause).
+  const w = new EnergyVad();
+  for (let i = 0; i < 50; i++) w.push(0.001, 20);
+  const cough = [];
+  for (let i = 0; i < 5; i++) { const e = w.push(0.2, 20); if (e) cough.push(e); }
+  for (let i = 0; i < 30; i++) { const e = w.push(0.001, 20); if (e) cough.push(e); }
+  assert.deepEqual(cough, ["onset", "offset"]);
 });
 
 // ───────────── transcription protocol ─────────────
@@ -275,13 +292,15 @@ test("CascadeLink: WebRTC unavailable → push-to-talk recording; a recorded tur
   link.on((e) => events.push(e));
   try {
     await link.connect();
+    await flush(); // the transcription call comes up (here: fails) in the background, after connect resolves
     assert.equal(link.transport, "recording");
     assert.deepEqual(transports, ["recording"]);
     assert.ok(events.some((e) => e.type === "error" && e.code === "stt_fallback_ptt" && !e.fatal));
-    assert.equal(events.at(-1).type, "connection");
-    // The local VAD must hear speech during the press, or the press counts as an accidental tap.
+    assert.deepEqual(events.filter((e) => e.type === "connection").map((e) => e.state), ["connecting", "connected"]);
+    assert.ok(events.findIndex((e) => e.type === "connection" && e.state === "connected") < events.findIndex((e) => e.code === "stt_fallback_ptt"),
+      "connected before the call's fate is known");
+    // The local VAD does not gate the upload (a soft child may never clear it): it is only counted.
     link.talkStart();
-    link.recorder.heard = true;
     await sleep(260);
     link.talkEnd();
     await sleep(PTT_WAIT);
@@ -291,7 +310,8 @@ test("CascadeLink: WebRTC unavailable → push-to-talk recording; a recorded tur
     assert.equal(fin.typed, false);
     assert.equal(fin.asrConfidence, 0.8);
     assert.equal(clips[0].type, "audio/webm;codecs=opus");
-    // A press with no speech is not uploaded.
+    assert.equal(link.bargeStats.pttUnheard, 1, "uploaded although the local VAD heard nothing");
+    // An accidental tap (released within MIN_CLIP_MS) is not uploaded.
     events.length = 0;
     link.talkStart();
     link.talkEnd();
@@ -315,6 +335,7 @@ test("CascadeLink: speaks a stored reply as streamed PCM, and a barge-in stops e
   link.on((e) => events.push(e));
   try {
     await link.connect();
+    await flush();
     events.length = 0;
     link.promptTeacher({ text: "Achha! Ab batao, kaun bada hai?", seq: 7 });
     assert.deepEqual(reqs, [{ lessonId: "L1", seq: 7 }], "speaks the stored turn by seq, never free text");
@@ -322,15 +343,20 @@ test("CascadeLink: speaks a stored reply as streamed PCM, and a barge-in stops e
     assert.deepEqual(events.map((e) => e.type), ["response_start", "teacher_delta", "teacher_done", "teacher_audio_start"]);
     const ctx = FakeAudioContext.last;
     assert.equal(ctx.sources.length, 4);
-    // Barge-in through the transcription protocol (what speech_started does on the data channel).
+    // Barge-in through the transcription protocol (what speech_started does on the data channel): she is
+    // silenced at once (paused, the reply kept)…
     const t0 = performance.now();
     link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
     const stopMs = performance.now() - t0;
     assert.ok(stopMs < 150, `stopped in ${stopMs.toFixed(1)} ms`);
     assert.ok(ctx.sources.every((s) => s.stopped || s.done), "every scheduled chunk stopped");
-    const after = events.slice(4).map((e) => e.type);
-    assert.deepEqual(after, ["teacher_interrupted", "teacher_audio_end", "response_done", "child_speech_start"]);
+    assert.deepEqual(events.slice(4).map((e) => e.type), ["teacher_audio_end", "child_speech_start"]);
+    // …and a real answer stops her for good, before the child's turn goes out.
+    link.protocol.handle({ type: "input_audio_buffer.speech_stopped", item_id: "c1" });
+    link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "do tihai bada hai", logprobs: [{ logprob: -0.05 }] });
+    assert.deepEqual(events.slice(6).map((e) => e.type), ["child_speech_end", "teacher_interrupted", "response_done", "child_final"]);
     assert.equal(events.find((e) => e.type === "response_done").status, "cancelled");
+    assert.equal(link.bargeStats.confirmed, 1);
     // A reply that plays to the end completes.
     events.length = 0;
     link.promptTeacher({ text: "Shabash!", seq: 8 });

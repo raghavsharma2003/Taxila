@@ -7,15 +7,20 @@
 // may read is signalsFrom(z): capped tie-breakers, never an emotion or ability label (learning-science §1.10,
 // rules 7-8; Azure Code of Conduct on emotion inference).
 //
-// Director call site (server/director/** is not this module's to edit): in server/routes/lesson.js `turn`,
-// after classify() and before step(), read the newest reliable row for the lesson —
-//   const v = await latestSignals(lesson.id, { withinMs: 15_000 });
-// — and pass `v.signals` into step() as a tie-breaker input: followUpProbe may turn a bare "correct" into a
-// "why?" probe, gentlerHint may choose the lower hint rung, slowerPace may lengthen the next pause/turn
-// budget. None of them may move pKnown by more than MASTERY_NUDGE_CAP. Better still (no race with the turn
-// POST): accept TurnRequest.voiceFeatures and call recordUtterances() in-process, then signalsFrom(z).
+// The primary path is in-process: the runtime puts the spoken turn's features on its own
+// POST /api/lesson/turn (TurnRequest.voiceFeatures), and the turn handler calls turnVoice() — the signals
+// it returns belong to THAT utterance, never to the previous answer (a separate fire-and-forget POST raced
+// the turn and was read one utterance late). Director use (server/director/** is not this module's to
+// edit): followUpProbe may turn a bare "correct" into a "why?" probe, gentlerHint may choose the lower hint
+// rung, slowerPace may lengthen the next pause/turn budget; none may move pKnown by more than
+// MASTERY_NUDGE_CAP. POST /api/voice/features stays for clients without a turn to ride on.
+//
+// RMS features (rmsMeanDb/rmsStdDb/rmsP90Db) are measured AFTER the browser's autoGainControl and
+// noiseSuppression (both links capture with them on): they describe the AGC output, not the child's
+// loudness, so none of them is baselined or z-scored.
 import { q, one, tx } from "../db.js";
-import { requireChild } from "../auth.js";
+import { requireChild, requireGuardian } from "../auth.js";
+import { requireParentChild } from "../routes/parent.js";
 import { bad, need, notFound, send, HttpError } from "../http.js";
 
 // ───────────── feature schema ─────────────
@@ -30,6 +35,12 @@ export const FEATURE_RANGES = {
   disfluencyPer100Words: [0, 10_000], targetWords: [0, 2000], wcpm: [0, 600], readAccuracy: [0, 1],
 };
 const REQUIRED = ["durationMs", "voicedFrac", "words"];
+/**
+ * Derived from two measurements that can disagree (ASR words over an acoustic span that caught only part of
+ * the turn): out of range here is a measurement artefact, so the feature is dropped and the utterance marked
+ * unreliable instead of rejecting the batch. Every other feature out of range is still a 400.
+ */
+export const DERIVED = new Set(["speechRateWps", "articulationWps", "wcpm"]);
 export const CONTEXTS = ["answer", "read_aloud"];
 export const MAX_UTTERANCES = 20;
 
@@ -48,7 +59,6 @@ export const BASELINED = {
   f0MedianHz: { sdFloor: 8 },
   f0IqrSt: { sdFloor: 0.5 },
   f0EndSlopeStPerS: { sdFloor: 2 },
-  rmsMeanDb: { sdFloor: 1.5 },
   voicedFrac: { sdFloor: 0.03 },
   wcpm: { sdFloor: 5 },
   readAccuracy: { sdFloor: 0.03 },
@@ -76,18 +86,23 @@ export function validateUtterance(u) {
   const f = u.features;
   if (!f || typeof f !== "object" || Array.isArray(f)) throw bad("missing features");
   const features = {};
+  const dropped = [];
   for (const [k, v] of Object.entries(f)) {
     const range = FEATURE_RANGES[k];
     if (!range) throw bad(`unknown feature: ${k}`);
     if (v == null) continue;
-    if (typeof v !== "number" || !Number.isFinite(v) || v < range[0] || v > range[1]) throw bad(`feature out of range: ${k}`);
+    if (typeof v !== "number" || !Number.isFinite(v)) throw bad(`feature not a number: ${k}`);
+    if (v < range[0] || v > range[1]) {
+      if (DERIVED.has(k)) { dropped.push(k); continue; }
+      throw bad(`feature out of range: ${k}`);
+    }
     features[k] = v;
   }
   for (const k of REQUIRED) if (features[k] == null) throw bad(`missing feature: ${k}`);
   const bargeIn = u.bargeIn === true;
   const asrConf = u.asrConf ?? null;
-  const reliable = !bargeIn && (asrConf == null || asrConf >= MIN_ASR_CONF) && features.durationMs >= MIN_RELIABLE_MS;
-  return { context, itemId: u.itemId ?? null, asrConf, bargeIn, reliable, features };
+  const reliable = !dropped.length && !bargeIn && (asrConf == null || asrConf >= MIN_ASR_CONF) && features.durationMs >= MIN_RELIABLE_MS;
+  return { context, itemId: u.itemId ?? null, asrConf, bargeIn, reliable, features, dropped };
 }
 
 // ───────────── running baseline (Welford, capped) ─────────────
@@ -175,13 +190,14 @@ export const MIN_CUES_AVAILABLE = 3;
  */
 export function signalsFrom(z) {
   const v = (k) => (typeof z?.[k] === "number" && Number.isFinite(z[k]) ? z[k] : null);
+  // Two correlated measures of one cue are averaged, never max/min'd: taking the extreme of a pair raises
+  // the null fire rate above the nominal CUE_Z (tests: Monte Carlo under correlated N(0,1)).
+  const mean = (xs) => { const ok = xs.filter((x) => x != null); return ok.length ? ok.reduce((a, b) => a + b, 0) / ok.length : null; };
   const onset = v("onsetMs");
-  const pause = [v("pauseFrac"), v("longestPauseMs")].filter((x) => x != null);
-  const pauseHigh = pause.length ? Math.max(...pause) : null;
+  const pauseHigh = mean([v("pauseFrac"), v("longestPauseMs")]);
   const disfl = v("disfluencyPer100Words");
   const rising = v("f0EndSlopeStPerS");
-  const rate = [v("speechRateWps"), v("articulationWps")].filter((x) => x != null);
-  const rateLow = rate.length ? Math.min(...rate) : null;
+  const rateLow = mean([v("speechRateWps"), v("articulationWps")]);
   const cues = [onset, pauseHigh, disfl, rising, rateLow == null ? null : -rateLow];
   const available = cues.filter((c) => c != null).length;
   if (available < MIN_CUES_AVAILABLE) return {};
@@ -250,17 +266,44 @@ export async function recordUtterances(d, { lessonId, childId, utterances }) {
   return utterances.map((u, i) => ({ id: Number(rows[i]?.[0]?.id), reliable: u.reliable, ...scored[i] }));
 }
 
-/** Newest reliable utterance's signals for a lesson (the Director's read path). */
-export async function latestSignals(lessonId, { withinMs = 15_000 } = {}, d = defaultDeps) {
+/**
+ * Newest reliable utterance's signals for a lesson ON THIS ITEM (fallback read path; prefer turnVoice()).
+ * The item is required: signals from one answer must never be applied to another question.
+ */
+export async function latestSignals(lessonId, { itemId, withinMs = 15_000 } = {}, d = defaultDeps) {
+  if (!itemId) return { z: {}, signals: {} };
   const row = await d.one(
-    `select z, signals, at from voice_feature where lesson_id = $1 and reliable and at > now() - ($2 || ' milliseconds')::interval
-     order by at desc limit 1`, [lessonId, String(withinMs)]);
+    `select z, signals, at from voice_feature where lesson_id = $1 and item_id = $3 and reliable
+       and at > now() - ($2 || ' milliseconds')::interval
+     order by at desc limit 1`, [lessonId, String(withinMs), itemId]);
   return row ? { z: row.z, signals: row.signals, at: row.at } : { z: {}, signals: {} };
+}
+
+/**
+ * In-process path for POST /api/lesson/turn: validate TurnRequest.voiceFeatures, store it against the
+ * lesson's child under the server's own active item id (the client's itemId is an ASR item, not a kit
+ * item), and return this utterance's { id, reliable, z, signals }. Never throws: features are tie-breakers
+ * and a bad or lost one must not cost the child their turn. null when there is nothing (valid) to record.
+ */
+export async function turnVoice({ lessonId, childId, itemId, voiceFeatures }, d = defaultDeps) {
+  if (!voiceFeatures) return null;
+  try {
+    const u = validateUtterance(voiceFeatures);
+    u.itemId = typeof itemId === "string" && /^[\w:.\-]{1,80}$/.test(itemId) ? itemId : null;
+    if (u.dropped.length) console.warn(`[voice] turn ${lessonId}: dropped ${u.dropped.length} implausible feature(s): ${u.dropped.join(",")}`);
+    const [out] = await recordUtterances(d, { lessonId, childId, utterances: [u] });
+    return out;
+  } catch (e) {
+    console.warn(`[voice] turn ${lessonId}: features not recorded: ${e?.message ?? e}`);
+    return null;
+  }
 }
 
 // ───────────── routes ─────────────
 
-const defaultDeps = { q, one, tx, requireChild };
+const defaultDeps = { q, one, tx, requireChild, requireGuardian, requireParentChild };
+/** A lesson ended this recently still accepts features (keepalive POSTs in flight at the goodbye). */
+export const ENDED_GRACE_MS = 60_000;
 
 /** Route factory: deps injectable so authorization is tested without a database. */
 export function makeRoutes(d = defaultDeps) {
@@ -271,11 +314,18 @@ export function makeRoutes(d = defaultDeps) {
     const list = Array.isArray(body.utterances) ? body.utterances : body.utterance ? [body.utterance] : null;
     if (!list || !list.length) throw bad("missing utterances");
     if (list.length > MAX_UTTERANCES) throw bad(`at most ${MAX_UTTERANCES} utterances per request`);
-    const lesson = await d.one("select id, child_id from lesson where id = $1", [lessonId]);
+    // Signed in first: an anonymous caller learns nothing about which lessons exist.
+    await d.requireGuardian(req);
+    const lesson = await d.one(
+      "select id, child_id, ended_at, ended_at < now() - ($2 || ' milliseconds')::interval as ended_long_ago from lesson where id = $1",
+      [lessonId, String(ENDED_GRACE_MS)]);
     if (!lesson) throw notFound("lesson not found");
     // The child is the LESSON's child, never a body field: a guardian can only write their own child's rows.
     const { guardian, child } = await d.requireChild(req, lesson.child_id);
+    if (lesson.ended_long_ago) throw new HttpError(409, "lesson has ended");
     const utterances = list.map(validateUtterance);
+    const dropped = utterances.reduce((n, u) => n + u.dropped.length, 0);
+    if (dropped) console.warn(`[voice] ${lesson.id}: dropped ${dropped} implausible derived feature(s)`);
     if (!allowFeatures(guardian.id, utterances.length)) throw new HttpError(429, "too many feature uploads");
     const out = await recordUtterances(d, { lessonId: lesson.id, childId: child.id, utterances });
     send(res, 200, { utterances: out });
@@ -287,7 +337,8 @@ export function makeRoutes(d = defaultDeps) {
     const childId = params.get("childId") || "";
     if (!UUID.test(childId)) throw bad("invalid childId");
     const weeks = Math.min(52, Math.max(1, Number.parseInt(params.get("weeks") || "12", 10) || 12));
-    const { child } = await d.requireChild(req, childId);
+    // Parent-report data: behind the Parent corner's PIN unlock, not just the family session the child uses.
+    const { child } = await d.requireParentChild(req, childId);
     const rows = await d.q(TRENDS_SQL, [child.id, String(weeks)]);
     send(res, 200, { childId: child.id, weeks: rows.map(trendRow) }, { "cache-control": "no-store" });
   }

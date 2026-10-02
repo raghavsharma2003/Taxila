@@ -675,3 +675,16 @@ floor stays (product, not compliance).
 **Every safety incident puts the child in `safety_hold`: a warm hold screen with 1098/14416, no "suspended" language, nothing revealed on a shared phone. This holds until the safeguarding protocol owner rules on a severity split (D-SAFE). Letting `high` incidents keep lessons running under monitoring (orchestration R4/R7.4) is a [U] proposal, not a rule, because the Conductor never decides safety. The child-side safety floor (care + Childline 1098 / Tele-MANAS 14416 on the same turn, no secrecy promise) never waits. The parent-side S notice goes through `safetyParentNotice()`: moderation flags -> none. If `familyImplicated` is yes or unknown, or the category is abuse/neglect/violence_at_home -> human safeguarding queue, never auto-sent. Self-harm with an explicit "no family" -> sent when the protocol script closes or 10 min have passed [U, advisor sets]. Dedupe is per incidentId, and the push names nothing (content behind the PIN). At M0, EVERY S notice goes to the human. A delivery ladder runs: WhatsApp + push -> SMS/PSTN -> "parent unreachable" to the human at 30 min. Two named adults, with a 2 h escalation.** (2026-10-02)
 - Rationale: perpetrators are often named turns later or never (parent-loop review PA1); the original gate sent immediately and checked suppression only at gate time. A single WhatsApp number backs a "cannot be turned off" promise that no mechanism delivers (PA2). day-cycle's `mayNotify` bypassed the suppression branch for safety (AR-6.1).
 - Reverse if: the safeguarding owner logs a severity split (then only the incidents it names lock the app); a safeguarding advisor specifies a different settle window or routing; or PLM14 shows the human queue misses its 2 h acknowledgement target (then staff a rota, never auto-send).
+
+## azure-billed-open-models
+**Owner (2026-10-02): open models may be used for any task where they win — DeepSeek, Kimi, gpt-oss, Llama, Mistral,
+Grok, Phi, FLUX image models — as long as they are sold *Direct from Azure* on Foundry (Azure-metered, covered by the
+startup credits).** Narrows `azure-only-compute`'s "first-party Azure OpenAI only" to "Azure-billed Foundry models";
+Marketplace partner models (Anthropic/Claude) stay excluded (`claude-on-foundry-credits`).
+- Deployed for the bake-off: taxila-ds41 (DeepSeek-V4.1-Flash), taxila-kimi-code (Kimi-K2.7-Code, 100), taxila-oss120
+  (gpt-oss-120b), taxila-grok46 (grok-4.6), taxila-flux2 (FLUX.2-pro, 1 RPM quota), taxila-kontext (FLUX.1-Kontext-pro);
+  pre-existing DeepSeek-V4-Flash/Pro, grok-4-1-fast-non-reasoning, Mistral-Large-3 all answer on the same
+  `/openai/v1/chat/completions` endpoint + key (smoke test n=1: 0.99-1.90 s).
+- Model choice per task is decided by `evals/model-bakeoff.mjs` (diagrams / teacher reply / classification) and recorded
+  in `server/models/router` as a routing table with fallbacks — measured, not assumed.
+- Reverse if: a model is moved to Marketplace billing, or output quality/safety for children fails on a model.

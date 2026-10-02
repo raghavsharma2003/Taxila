@@ -10,8 +10,10 @@
 // The Director runs off the voice critical path: the realtime teacher answers from her current
 // instructions while the turn call is in flight; its result shapes her NEXT turn — except where the
 // Director says it must be voiced now (TurnResponse.speakNow, and the goodbye after `end`).
-import type { LessonStartResponse, ModuleEvent, Move, TurnRequest, TurnResponse, UiDirectives } from "../../shared/contracts.ts";
+import type { LessonStartResponse, ModuleEvent, Move, TurnRequest, TurnResponse, UiDirectives, VoiceUtterance } from "../../shared/contracts.ts";
+import type { VoiceFeaturesLike } from "../voice/features.ts";
 import { ApiError, httpLessonApi, type LessonApi } from "./api.ts";
+import { CascadeLink, primeCascadeAudio } from "./cascadeLink.ts";
 import { LevelMeter } from "./level.ts";
 import type { LessonMode, LinkConnection, LinkEvent, LinkLevels, TeacherLink, TeacherReply, TeacherStatus } from "./link.ts";
 import { ModuleChannel } from "./moduleChannel.ts";
@@ -56,18 +58,39 @@ export interface LinkContext {
   voice: string;
   levels: LinkLevels;
   api: LessonApi;
+  /** The lesson was started as "cascade": a text-lane link whose child turns are spoken (CascadeLink). */
+  cascade?: boolean;
 }
 export type LinkFactory = (mode: LessonMode, ctx: LinkContext) => TeacherLink;
+
+/**
+ * How a lesson is started. "cascade" = the default voice lane: to the runtime and the link contract it is a
+ * text lane (the Director writes every reply and the link speaks the stored turn), but the server is told
+ * "cascade" so the child's turns are stored and graded as spoken — with their ASR confidence — not typed.
+ */
+export type StartMode = LessonMode | "cascade";
 
 export const defaultLinkFactory: LinkFactory = (mode, c) =>
   mode === "voice"
     ? new VoiceLink({ lessonId: c.lessonId, levels: c.levels, fetchToken: c.api.realtimeToken })
-    : new TextLink({ lessonId: c.lessonId, levels: c.levels });
+    : c.cascade
+      ? new CascadeLink({ lessonId: c.lessonId, levels: c.levels })
+      : new TextLink({ lessonId: c.lessonId, levels: c.levels });
+
+/** On-device voice features for a voice link (false: off). The default loads src/voice/features.ts lazily. */
+export type VoiceFeaturesFactory = false | (() => VoiceFeaturesLike | Promise<VoiceFeaturesLike>);
+
+const defaultVoiceFeatures: VoiceFeaturesFactory = async () => {
+  if (typeof AudioWorkletNode === "undefined") throw new Error("no AudioWorklet");
+  const { VoiceFeatures } = await import("../voice/features.ts");
+  return new VoiceFeatures();
+};
 
 export interface RuntimeDeps {
   api?: LessonApi;
   createLink?: LinkFactory;
   timers?: Timers;
+  voiceFeatures?: VoiceFeaturesFactory;
 }
 
 const MAX_CAPTIONS = 60;
@@ -108,6 +131,7 @@ interface ChildInput {
   asrConfidence?: number;
   chipId?: string;
   typed?: boolean;
+  voiceFeatures?: VoiceUtterance;
 }
 
 /**
@@ -130,6 +154,10 @@ export class LessonRuntime {
   private readonly timers: Timers;
   private readonly buffer: ModuleEventBuffer;
   private readonly teacherTurns = new TeacherTurns();
+  private readonly vfFactory: VoiceFeaturesFactory;
+  /** Voice features of the running voice link (decision voice-features-longitudinal). */
+  private vf: VoiceFeaturesLike | null = null;
+  private readAloud: string | null = null;
   private link: TeacherLink | null = null;
   private unlisten: (() => void) | null = null;
   private flags: StatusFlags = INITIAL_FLAGS;
@@ -149,6 +177,7 @@ export class LessonRuntime {
     this.api = deps.api ?? httpLessonApi;
     this.createLink = deps.createLink ?? defaultLinkFactory;
     this.timers = deps.timers ?? realTimers;
+    this.vfFactory = deps.voiceFeatures ?? defaultVoiceFeatures;
     this.buffer = new ModuleEventBuffer(() => this.queueTurn(null));
   }
 
@@ -156,23 +185,29 @@ export class LessonRuntime {
     return this.store.get();
   }
 
-  async start(childId: string, mode: LessonMode = "voice", topicId?: string): Promise<void> {
+  async start(childId: string, startMode: StartMode = "voice", topicId?: string): Promise<void> {
     if (this.state.phase === "starting" || this.state.phase === "live") throw new Error("a lesson is already running");
+    const cascade = startMode === "cascade";
+    const mode: LessonMode = cascade ? "text" : startMode;
+    // Still inside the child's tap (nothing awaited yet): an AudioContext made after the network round trip
+    // stays suspended on iOS Safari and some WebViews, and her opening line would be silent.
+    if (cascade) primeCascadeAudio();
     this.reset(mode);
     const gen = this.generation;
     this.store.set({ phase: "starting", connection: "connecting" });
     let lessonId: string | null = null;
     try {
-      const s = await this.api.start({ childId, topicId, mode });
+      const s = await this.api.start({ childId, topicId, mode: startMode });
       lessonId = s.lessonId;
       // Ended or unmounted while starting: the server opened a lesson nobody will run.
       if (gen !== this.generation) return this.closeQuietly(lessonId);
       this.store.set({ lessonId: s.lessonId, topic: s.topic, teacher: s.teacher });
-      const link = this.createLink(mode, { lessonId: s.lessonId, voice: s.teacher.voice, levels: this.levels, api: this.api });
+      const link = this.createLink(mode, { lessonId: s.lessonId, voice: s.teacher.voice, levels: this.levels, api: this.api, ...(cascade ? { cascade } : {}) });
       this.link = link;
       this.unlisten = link.on((e) => this.onLinkEvent(e));
       await link.connect();
       if (gen !== this.generation) return this.closeQuietly(lessonId);
+      void this.startVoiceFeatures(link, gen);
       if (s.instructions) link.applyInstructions(s.instructions);
       this.modules.push(s.moduleCommands);
       this.applyUi(s.ui);
@@ -259,7 +294,42 @@ export class LessonRuntime {
 
   // ───────────── link events ─────────────
 
+  /**
+   * Attach on-device voice features to the link's own mic. Never on the critical path: a failure (no
+   * AudioWorklet, a worklet that will not load) leaves the lesson exactly as it was, without features.
+   */
+  private async startVoiceFeatures(link: TeacherLink, gen: number): Promise<void> {
+    const tap = link.micTap?.();
+    if (!tap || this.vfFactory === false) return;
+    let vf: VoiceFeaturesLike | null = null;
+    try {
+      vf = await this.vfFactory();
+      if (gen !== this.generation) return vf.detach();
+      vf.setReadAloudTarget(this.readAloud);
+      this.vf = vf; // fed from now on: link events before the worklet runs still set the turn's marks
+      await vf.attachTap(tap, this.levels.teacher);
+      if (gen !== this.generation) vf.detach();
+    } catch (err) {
+      if (vf && this.vf === vf) this.vf = null;
+      vf?.detach();
+      console.warn("lesson: voice features unavailable", err);
+    }
+  }
+
+  /** The text the child is reading aloud now (null: ordinary answers). The Director sends it as ui.readAloud. */
+  setReadAloudTarget(text: string | null): void {
+    this.readAloud = text && text.trim() ? text : null;
+    this.vf?.setReadAloudTarget(this.readAloud);
+  }
+
   private onLinkEvent(e: LinkEvent): void {
+    // First, in order: a child_final's features must exist before its turn is queued (they ride on it).
+    let voice: VoiceUtterance | null = null;
+    try {
+      voice = this.vf?.onLinkEvent(e) ?? null;
+    } catch (err) {
+      console.warn("lesson: voice features failed on an event", err);
+    }
     if (e.type === "child_speech_start" || e.type === "child_final") this.deferred = null; // the child took the floor
     switch (e.type) {
       case "response_start":
@@ -302,7 +372,7 @@ export class LessonRuntime {
         else this.removeCaption(id);
         // "" with confidence 0 = the child spoke and ASR failed: still worth a Director call (repair move).
         if ((e.text || e.asrConfidence === 0) && this.state.phase === "live") {
-          this.queueTurn({ childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed });
+          this.queueTurn({ childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}) });
         }
         return;
       }
@@ -394,6 +464,7 @@ export class LessonRuntime {
       }
       if (input.chipId) req.chipId = input.chipId;
       if (input.typed) req.typed = true;
+      if (input.voiceFeatures) req.voiceFeatures = input.voiceFeatures;
     }
     // A milestone call (no input) carries no teacher turn: those ride with the next child turn, whole.
     if (batch.events.length) req.moduleEvents = batch.events;
@@ -445,6 +516,7 @@ export class LessonRuntime {
    */
   private applyUi(ui: UiDirectives): void {
     this.store.set((s) => ({ ui: { ...ui, whiteboard: ui.whiteboard ?? s.ui.whiteboard } }));
+    this.setReadAloudTarget(ui.readAloud ?? null);
   }
 
   // ───────────── ending ─────────────
@@ -573,6 +645,8 @@ export class LessonRuntime {
     this.generation++;
     this.unlisten?.();
     this.unlisten = null;
+    this.vf?.detach(); // before the link closes the AudioContext it lent
+    this.vf = null;
     this.link?.close();
     this.link = null;
     this.buffer.dispose();

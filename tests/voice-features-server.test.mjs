@@ -4,7 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   welfordStep, variance, emptyBaseline, zOf, scoreBatch, signalsFrom, validateUtterance, makeRoutes, trendRow,
-  MIN_BASELINE_N, N_MAX, Z_CLIP, BASELINED, FEATURE_RANGES, MASTERY_NUDGE_CAP,
+  latestSignals, turnVoice, MIN_BASELINE_N, N_MAX, Z_CLIP, BASELINED, FEATURE_RANGES, MASTERY_NUDGE_CAP, CUE_Z,
 } from "../server/voice/features.js";
 import { forbidden, HttpError } from "../server/http.js";
 
@@ -89,6 +89,27 @@ test("signalsFrom: needs two agreeing cues; one extreme feature fires nothing", 
   assert.deepEqual(signalsFrom({ onsetMs: "9", disfluencyPer100Words: NaN, speechRateWps: null }), {});
 });
 
+test("signalsFrom under the null: correlated N(0,1) z-scores fire followUpProbe ≤ ~5%, slowerPace ≤ ~1%", () => {
+  // Pairs (pauseFrac, longestPauseMs) and (speechRateWps, articulationWps) correlate ρ ≈ 0.8 in real
+  // speech; the other cues are independent. A child at their own usual must rarely trigger anything.
+  const r = rng(11);
+  const N = 40_000;
+  let probe = 0, pace = 0, hint = 0;
+  for (let i = 0; i < N; i++) {
+    const pair = () => { const a = gauss(r), b = 0.8 * a + 0.6 * gauss(r); return [a, b]; };
+    const [p1, p2] = pair(), [s1, s2] = pair();
+    const s = signalsFrom({ onsetMs: gauss(r), pauseFrac: p1, longestPauseMs: p2, disfluencyPer100Words: gauss(r),
+      f0EndSlopeStPerS: gauss(r), speechRateWps: s1, articulationWps: s2 });
+    if (s.followUpProbe) probe++;
+    if (s.slowerPace) pace++;
+    if (s.gentlerHint) hint++;
+  }
+  console.log(`null fire rates: followUpProbe ${(100 * probe / N).toFixed(2)}%, gentlerHint ${(100 * hint / N).toFixed(2)}%, slowerPace ${(100 * pace / N).toFixed(2)}% (CUE_Z ${CUE_Z})`);
+  assert.ok(probe / N <= 0.05, `followUpProbe ${probe / N}`);
+  assert.ok(hint / N <= 0.005, `gentlerHint ${hint / N}`);
+  assert.ok(pace / N <= 0.01, `slowerPace ${pace / N}`);
+});
+
 test("signalsFrom output is capped tie-breakers: only the three boolean keys, never a label", () => {
   const r = rng(5);
   const allowed = new Set(["slowerPace", "gentlerHint", "followUpProbe"]);
@@ -112,9 +133,9 @@ test("validation: allowlisted numeric features only, reliability rules", () => {
   const v = validateUtterance({ context: "answer", asrConf: 0.9, features: base });
   assert.equal(v.reliable, true);
   assert.throws(() => validateUtterance({ features: { ...base, transcript: "mera naam" } }), /unknown feature: transcript/);
-  assert.throws(() => validateUtterance({ features: { ...base, words: "4" } }), /out of range: words/);
+  assert.throws(() => validateUtterance({ features: { ...base, words: "4" } }), /not a number: words/);
   assert.throws(() => validateUtterance({ features: { ...base, voicedFrac: 2 } }), /out of range/);
-  assert.throws(() => validateUtterance({ features: { ...base, f0MedianHz: Infinity } }), /out of range/);
+  assert.throws(() => validateUtterance({ features: { ...base, f0MedianHz: Infinity } }), /not a number/);
   assert.throws(() => validateUtterance({ features: { voicedFrac: 0.5, words: 1 } }), /missing feature: durationMs/);
   assert.throws(() => validateUtterance({ context: "emotion", features: base }), /invalid context/);
   assert.throws(() => validateUtterance({ itemId: "<script>", features: base }), /invalid itemId/);
@@ -123,6 +144,21 @@ test("validation: allowlisted numeric features only, reliability rules", () => {
   assert.equal(validateUtterance({ features: { ...base, durationMs: 200 } }).reliable, false, "too short");
   assert.equal(validateUtterance({ features: base }).reliable, true, "unknown ASR confidence is not low confidence");
   for (const [k, [lo, hi]] of Object.entries(FEATURE_RANGES)) assert.ok(lo < hi, k);
+});
+
+test("validation: an implausible DERIVED rate is dropped and the utterance marked unreliable, not a 400", () => {
+  // The acoustic gate caught 350 ms of a 7-word turn: 20 wps; a 1 s fast read of 12 words: 720 wcpm.
+  const v = validateUtterance({ context: "read_aloud", asrConf: 0.9, features: { ...base, durationMs: 350, speechRateWps: 20, articulationWps: 23, wcpm: 720 } });
+  assert.equal(v.reliable, false);
+  assert.deepEqual(v.dropped.sort(), ["articulationWps", "speechRateWps", "wcpm"]);
+  assert.equal(v.features.speechRateWps, undefined);
+  assert.equal(v.features.durationMs, 350, "the rest of the utterance is kept");
+  // Non-derived features out of range are still input errors.
+  assert.throws(() => validateUtterance({ features: { ...base, pauseFrac: 3 } }), /out of range: pauseFrac/);
+});
+
+test("RMS features are not baselined (they measure the browser's AGC output, not the child)", () => {
+  for (const k of ["rmsMeanDb", "rmsStdDb", "rmsP90Db"]) assert.equal(BASELINED[k], undefined, k);
 });
 
 // ───────────── routes + authorization (fake deps) ─────────────
@@ -137,13 +173,30 @@ function fakeDeps() {
   const d = {
     writes,
     requireChildCalls: [],
-    one: async (sql, params) => (sql.includes("from lesson") && params[0] === L1 ? { id: L1, child_id: C1 } : null),
+    lessonCalls: 0,
+    endedLongAgo: false,
+    one: async (sql, params) => {
+      if (!sql.includes("from lesson")) return null;
+      d.lessonCalls++;
+      return params[0] === L1 ? { id: L1, child_id: C1, ended_at: d.endedLongAgo ? new Date(0) : null, ended_long_ago: d.endedLongAgo } : null;
+    },
     q: async (sql, params) => {
       if (sql.includes("from voice_baseline")) return [];
       if (sql.includes("from voice_feature")) return [{ week: "2026-09-28", n: 5, speech_rate: 2.345, speech_rate_n: 4, onset_ms: 812.4, onset_n: 3, disfl_events: 3, answer_words: 40, wcpm: null, wcpm_n: 0, _params: params }];
       return [];
     },
     tx: async (stmts) => { writes.push(...stmts); return stmts.map((_, i) => [{ id: i + 1 }]); },
+    requireGuardian: async (req) => {
+      const g = req.headers["x-guardian"];
+      if (!g) throw new HttpError(401, "not signed in");
+      return { id: g };
+    },
+    requireParentChild: async (req, childId) => {
+      if (!/^[0-9a-f-]{36}$/i.test(childId)) throw new HttpError(400, "invalid childId");
+      await d.requireGuardian(req); // like server/routes/parent.js requireParent: signed in, then unlocked
+      if (req.headers["x-parent-unlocked"] !== "1") throw new HttpError(403, "parent corner is locked");
+      return d.requireChild(req, childId);
+    },
     requireChild: async (req, childId) => {
       d.requireChildCalls.push(childId);
       const g = req.headers["x-guardian"];
@@ -154,9 +207,9 @@ function fakeDeps() {
   };
   return d;
 }
-function call(fn, { guardian, url = "/", body } = {}) {
+function call(fn, { guardian, url = "/", body, unlocked = false } = {}) {
   const res = { statusCode: 0, headers: {}, body: null, setHeader(k, v) { this.headers[k] = v; }, end(b) { this.body = b ? JSON.parse(b) : null; } };
-  const req = { url, headers: guardian ? { "x-guardian": guardian } : {} };
+  const req = { url, headers: { ...(guardian ? { "x-guardian": guardian } : {}), ...(unlocked ? { "x-parent-unlocked": "1" } : {}) } };
   return fn(req, res, body).then(() => res);
 }
 const utt = { context: "answer", asrConf: 0.9, features: base };
@@ -201,15 +254,55 @@ test("POST /api/voice/features: input errors", async () => {
 test("GET /api/voice/trends: own child only; weekly rows shaped for the parent report", async () => {
   const d = fakeDeps();
   const get = makeRoutes(d)["GET /api/voice/trends"];
-  const res = await call(get, { guardian: G1, url: `/api/voice/trends?childId=${C1}&weeks=8` });
+  // The family session alone (a child on the guardian's phone) is not enough: the Parent corner must be unlocked.
+  await assert.rejects(call(get, { guardian: G1, url: `/api/voice/trends?childId=${C1}&weeks=8` }), (e) => e.status === 403);
+  const res = await call(get, { guardian: G1, unlocked: true, url: `/api/voice/trends?childId=${C1}&weeks=8` });
   assert.equal(res.statusCode, 200);
   assert.deepEqual(res.body.weeks[0], {
     weekStart: "2026-09-28", n: 5, speechRateWps: 2.35, speechRateN: 4, onsetMs: 812, onsetN: 3,
     disfluencyPer100Words: 7.5, answerWords: 40, wcpm: null, wcpmN: 0,
   });
-  await assert.rejects(call(get, { guardian: G1, url: `/api/voice/trends?childId=${C2}` }), (e) => e.status === 403);
+  await assert.rejects(call(get, { guardian: G1, unlocked: true, url: `/api/voice/trends?childId=${C2}` }), (e) => e.status === 403);
   await assert.rejects(call(get, { guardian: G1, url: `/api/voice/trends?childId=nope` }), (e) => e.status === 400);
   await assert.rejects(call(get, { url: `/api/voice/trends?childId=${C1}` }), (e) => e.status === 401);
+});
+
+test("POST /api/voice/features: 401 before any lesson lookup; an ended lesson is 409 after the grace period", async () => {
+  const d = fakeDeps();
+  const post = makeRoutes(d)["POST /api/voice/features"];
+  await assert.rejects(call(post, { body: { lessonId: "dddddddd-dddd-dddd-dddd-dddddddddddd", utterances: [utt] } }), (e) => e.status === 401);
+  assert.equal(d.lessonCalls, 0, "an anonymous caller cannot probe which lessons exist");
+  d.endedLongAgo = true;
+  await assert.rejects(call(post, { guardian: G1, body: { lessonId: L1, utterances: [utt] } }), (e) => e.status === 409);
+  assert.equal(d.writes.length, 0);
+});
+
+test("POST /api/voice/features: an implausible derived rate no longer loses the utterance", async () => {
+  const d = fakeDeps();
+  const post = makeRoutes(d)["POST /api/voice/features"];
+  const res = await call(post, { guardian: G1, body: { lessonId: L1, utterances: [{ ...utt, features: { ...base, speechRateWps: 22 } }] } });
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.utterances[0].reliable, false);
+});
+
+test("turnVoice: records THIS turn's utterance under the server's item id; bad input never throws", async () => {
+  const d = fakeDeps();
+  const out = await turnVoice({ lessonId: L1, childId: C1, itemId: "c3-maths-i02", voiceFeatures: { ...utt, itemId: "item_ASR123" } }, d);
+  assert.equal(out.reliable, true);
+  assert.deepEqual(out.signals, {});
+  const ins = d.writes.find((s) => s.text.includes("insert into voice_feature"));
+  assert.equal(ins.params[2], "c3-maths-i02", "the kit item, not the client's ASR item id");
+  assert.equal(await turnVoice({ lessonId: L1, childId: C1, voiceFeatures: { features: { audio: 1 } } }, d), null);
+  assert.equal(await turnVoice({ lessonId: L1, childId: C1 }, d), null);
+});
+
+test("latestSignals requires an item match (no signals from a previous question)", async () => {
+  const calls = [];
+  const d = { one: async (sql, params) => { calls.push({ sql, params }); return { z: { onsetMs: 2 }, signals: { followUpProbe: true }, at: new Date() }; } };
+  assert.deepEqual(await latestSignals(L1, {}, d), { z: {}, signals: {} });
+  assert.equal(calls.length, 0);
+  await latestSignals(L1, { itemId: "i1" }, d);
+  assert.ok(calls[0].sql.includes("item_id = $3") && calls[0].params[2] === "i1");
 });
 
 test("trendRow: no words → null disfluency, Date weeks", () => {

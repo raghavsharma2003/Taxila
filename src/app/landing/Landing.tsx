@@ -7,6 +7,7 @@ import "../../styles/landing.css";
 import { Link } from "react-router-dom";
 import { ButtonLink, Hi, Icon, StateChip, TeacherFace, useClip } from "../../ui/index.ts";
 import { loadMe } from "../api.ts";
+import { useSurface } from "../band.ts";
 import { PROMISES } from "../Public.tsx";
 import { Footer, Helplines, TopBar } from "../Shell.tsx";
 import { StillTeach, StillTeachBack, StillWarmup } from "./Stills.tsx";
@@ -65,6 +66,7 @@ function SampleEvidenceCard() {
 }
 
 export default function Landing() {
+  useSurface({ surface: "parent" });
   const [speaking, setSpeaking] = useState<string | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   useEffect(() => { loadMe().then((m) => setSignedIn(!!m), () => {}); }, []);
@@ -81,7 +83,7 @@ export default function Landing() {
         <section className="hero page" aria-labelledby="hero-h">
           <div className="hero-face">
             <TeacherFace size={260} speaking={!!speaking} />
-            <p className="t-meta hero-caption">Her voice is real. Her face here is a drawing.</p>
+            <p className="t-meta hero-caption">This is the voice she teaches with. Her face here is a drawing.</p>
           </div>
           <div className="hero-copy stack">
             <p className="eyebrow">Classes 1 to 9 · CBSE, NCERT, RBSE and state boards</p>
@@ -143,7 +145,7 @@ export default function Landing() {
                 </li>
               ))}
             </ul>
-            <Link to="/trust">Read all our promises</Link>
+            <Link to="/trust" className="block-link">Read all our promises</Link>
           </div>
         </section>
 

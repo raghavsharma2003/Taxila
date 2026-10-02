@@ -33,7 +33,7 @@
   {
    "id": "realtime-teacher-bakeoff-2026-10-02",
    "kind": "measurement",
-   "title": "Realtime 2.1 vs mini with teacher prompt: 64→25 words/turn when brevity is structural",
+   "title": "Realtime 2.1 vs mini with teacher prompt: 64\u219225 words/turn when brevity is structural",
    "at": "2026-10-02"
   },
   {
@@ -125,7 +125,7 @@
   {
    "id": "db-driver-latency-2026-10-02",
    "kind": "measurement",
-   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 → Neon us-east-1",
+   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 \u2192 Neon us-east-1",
    "at": "2026-10-02"
   },
   {
@@ -575,7 +575,7 @@
   {
    "id": "voice-lane-cascade-default",
    "kind": "decision",
-   "title": "Default voice = STT→Director→TTS cascade (~₹28/h); realtime 2.1 premium share",
+   "title": "Default voice = STT\u2192Director\u2192TTS cascade (~\u20b928/h); realtime 2.1 premium share",
    "at": "2026-10-02"
   },
   {
@@ -855,6 +855,12 @@
    "title": "Realtime teacher minutes unbudgeted: Rs 299 covers ~16 rt-2.1 min/month at a 60% cost ceiling, and 10 RPM caps lesson starts at ~10/min",
    "at": "2026-10-02",
    "source": "inbox/conductor.json"
+  },
+  {
+   "id": "azure-billed-open-models",
+   "kind": "decision",
+   "title": "Open models (DeepSeek, Kimi, gpt-oss, Grok, FLUX\u2026) allowed if Direct-from-Azure billed; per-task routing by bake-off",
+   "at": "2026-10-02"
   }
  ],
  "edges": [
@@ -1607,6 +1613,11 @@
    "src": "no-vm-per-student",
    "rel": "caused_by",
    "dst": "vm-per-student"
+  },
+  {
+   "src": "azure-billed-open-models",
+   "rel": "supersedes",
+   "dst": "azure-only-compute"
   }
  ]
 }

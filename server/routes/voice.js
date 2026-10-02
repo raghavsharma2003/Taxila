@@ -6,7 +6,7 @@
 // reply there (one compile() for every lane), and the client speaks it through tts-stream by seq.
 // Like /api/tts, nothing here speaks free text: only lines the Director stored for that lesson.
 import { one } from "../db.js";
-import { requireChild, hasConsent } from "../auth.js";
+import { requireChild, requireGuardian, hasConsent } from "../auth.js";
 import { AzureError, endpoint, mintRealtimeSecret } from "../azure.js";
 import { bad, need, notFound, forbidden, HttpError } from "../http.js";
 import { teacherFor } from "../compiler/characters/index.js";
@@ -22,22 +22,63 @@ export const MAX_CLIP_BYTES = 2_000_000;
 /** Chunks generating ahead of the one playing (1 = the next sentence starts while this one plays). */
 const LOOKAHEAD = 1;
 
-async function lessonFor(req, lessonId, { live = true } = {}) {
+async function lessonFor(req, lessonId) {
   if (!/^[0-9a-f-]{36}$/i.test(String(lessonId))) throw bad("invalid lessonId");
   const lesson = await one("select id, child_id, state, ended_at from lesson where id = $1", [lessonId]);
   if (!lesson) throw notFound("lesson not found");
   const { guardian, child } = await requireChild(req, lesson.child_id);
-  if (live && lesson.ended_at) throw new HttpError(409, "lesson has ended");
+  if (lesson.ended_at) throw new HttpError(409, "lesson has ended");
   return { lesson, guardian, child };
 }
 
+/**
+ * Wait until `res` can take more bytes — or is gone. 'drain' never fires after the client disconnects with
+ * the socket buffer full (a barge-in on a slow mobile link), so waiting on it alone hung the handler forever
+ * and kept every prefetched sentence referenced.
+ */
+export function writable(res) {
+  if (res.destroyed || res.writableEnded) return Promise.resolve();
+  return new Promise((resolve) => {
+    const done = () => {
+      res.off("drain", done);
+      res.off("close", done);
+      res.off("error", done);
+      resolve();
+    };
+    res.once("drain", done);
+    res.once("close", done);
+    res.once("error", done);
+  });
+}
+
+/** Sliding one-minute window per guardian: true while under `max`. */
+function limiter(max) {
+  const times = new Map();
+  return (id, now = Date.now()) => {
+    if (times.size > 5000) for (const [k, ts] of times) if (ts.at(-1) <= now - 60_000) times.delete(k);
+    const ts = (times.get(id) ?? []).filter((t) => t > now - 60_000);
+    const ok = ts.length < max;
+    if (ok) ts.push(now);
+    times.set(id, ts);
+    return ok;
+  };
+}
+
 // ───────────── POST /api/voice/stt-token ─────────────
+
+/**
+ * Each token opens a billable transcription session that streams audio for as long as it is up; a lesson
+ * needs one, plus a reconnect or two. 10 a minute per guardian covers reconnects and a sibling's lesson.
+ */
+export const STT_TOKENS_PER_MINUTE = 10;
+export const allowSttToken = limiter(STT_TOKENS_PER_MINUTE);
 
 /** @type {(req: any, res: any, body: { lessonId: string }) => Promise<void>} */
 async function sttToken(req, res, body) {
   const { lesson, guardian, child } = await lessonFor(req, need(body, "lessonId").lessonId);
   // The child's voice goes to a model from here on: the same gate as the realtime call.
   if (!(await hasConsent(guardian.id, child.id, "core_tutoring"))) throw forbidden("core_tutoring consent is required for voice");
+  if (!allowSttToken(guardian.id)) throw new HttpError(429, "too many voice sessions; wait a minute");
   const session = sttSession({ ageBand: ageBandOf(lesson, child) });
   let secret;
   try {
@@ -57,15 +98,7 @@ async function sttToken(req, res, body) {
 // ───────────── POST /api/voice/transcribe ─────────────
 
 const CLIP_PER_MINUTE = 30;
-const clipTimes = new Map();
-function allowClip(guardianId, now = Date.now()) {
-  if (clipTimes.size > 5000) for (const [id, ts] of clipTimes) if (ts.at(-1) <= now - 60_000) clipTimes.delete(id);
-  const ts = (clipTimes.get(guardianId) ?? []).filter((t) => t > now - 60_000);
-  const ok = ts.length < CLIP_PER_MINUTE;
-  if (ok) ts.push(now);
-  clipTimes.set(guardianId, ts);
-  return ok;
-}
+const allowClip = limiter(CLIP_PER_MINUTE);
 
 /**
  * Body is JSON { lessonId, audio: base64, mime }: the one router parses every POST body as JSON, so a
@@ -108,11 +141,21 @@ async function ttsStream(req, res, body) {
   const t0 = performance.now();
   const { lessonId, seq } = need(body, "lessonId", "seq");
   if (!Number.isInteger(seq) || seq < 1) throw bad("invalid seq");
-  // An ended lesson's goodbye is still spoken (it is stored before the client hears it).
-  const { lesson, guardian, child } = await lessonFor(req, lessonId, { live: false });
+  if (!/^[0-9a-f-]{36}$/i.test(String(lessonId))) throw bad("invalid lessonId");
+  // This route is on the latency path (child stops → first audio), so it is two queries in parallel, not
+  // requireChild's chain: the turn joined to its lesson's child, and the session's guardian; the ownership
+  // check is the same one requireChild makes (the child is this guardian's). An ended lesson's goodbye is
+  // still spoken (it is stored before the client hears it).
+  const [row, guardian] = await Promise.all([
+    one(`select t.text as turn_text, c.* from turn t join lesson l on l.id = t.lesson_id join child c on c.id = l.child_id
+          where l.id = $1 and t.seq = $2 and t.speaker = 'teacher'`, [lessonId, seq]),
+    requireGuardian(req),
+  ]);
+  if (!row) throw notFound("no teacher turn to speak");
+  if (row.guardian_id !== guardian.id) throw forbidden("child not found for this account");
   if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
-  const turn = await one("select text from turn where lesson_id = $1 and seq = $2 and speaker = 'teacher'", [lesson.id, seq]);
-  const text = turn?.text?.trim();
+  const { turn_text: turnText, ...child } = row;
+  const text = String(turnText ?? "").trim();
   if (!text) throw notFound("no teacher turn to speak");
   if (text.length > MAX_TTS_CHARS) throw bad(`teacher turn is longer than ${MAX_TTS_CHARS} characters`);
   const teacher = teacherFor(child);
@@ -146,7 +189,8 @@ async function ttsStream(req, res, body) {
           res.flushHeaders?.();
         }
         wrote += chunk.length;
-        if (!res.write(chunk)) await new Promise((r) => res.once("drain", r));
+        if (!res.write(chunk)) await writable(res);
+        if (abort.signal.aborted) return;
       }
     }
     res.end();

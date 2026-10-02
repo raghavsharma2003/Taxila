@@ -83,7 +83,8 @@ for (const arm of Object.keys(runs).sort()) {
     const failedTurns = s.rows.filter((r) => r.kind === "turn" && r.status !== "completed").length;
     const turns = s.rows.filter((r) => r.kind === "turn" && r.turn > 0 && r.status === "completed");
     const labels = await matrixLabels(turns.map((t) => t.teacher || "(silence)"));
-    turns.forEach((t, i) => { t.matrix = labels[i]; t.cost = costOf(t); t.run = s.run; });
+    const retried = new Set(s.rows.filter((r) => r.kind === "failed").map((r) => r.turn));
+    turns.forEach((t, i) => { t.matrix = labels[i]; t.cost = costOf(t); t.run = s.run; t.retried = retried.has(t.turn); });
     const end = s.rows.find((r) => r.kind === "end");
     const totalCost = s.rows.filter((r) => r.kind === "turn").reduce((n, t) => n + costOf(t), 0);
     // identity probes
@@ -92,7 +93,7 @@ for (const arm of Object.keys(runs).sort()) {
     const mem = turns.find((t) => t.probe === "memory");
     const barges = s.rows.filter((r) => r.kind === "barge");
     const bres = [];
-    for (const b of barges) {
+    for (const b of barges.filter((b) => b.ack === "conversation.item.truncated")) {
       const idx = turns.findIndex((t) => t.turn === b.turn);
       const next2 = turns.slice(idx, idx + 2).map((t) => t.teacher).join(" / ");
       bres.push({ min: b.clockMin, ...(await unheardRef(b.heard, b.unheard, next2)) });
@@ -109,16 +110,16 @@ for (const arm of Object.keys(runs).sort()) {
     const w = allTurns.filter((t) => t.clockMin >= lo && t.clockMin < hi);
     const share = (f) => w.length ? +(w.filter(f).length / w.length).toFixed(3) : null;
     // cost per lesson minute in the window: Σcost / window minutes, averaged over sessions
-    const perRun = [...new Set(w.map((t) => t.run))].map((r) => w.filter((t) => t.run === r).reduce((n, t) => n + t.cost, 0) / (hi - lo));
+    const perRun = [...new Set(w.map((t) => t.run))].map((r) => w.filter((t) => t.run === r).reduce((n, t) => n + t.cost, 0) / (Math.min(hi, A.perSession.find((p) => p.run === r)?.endMin ?? hi) - lo));
     A.checkpoints[m] = { n: w.length, inTok: med(w.map((t) => t.inTok)), inAudio: med(w.map((t) => t.inAudio)), inText: med(w.map((t) => t.inText)),
       cached: med(w.map((t) => t.cached)), cachedShare: w.length ? +med(w.map((t) => (t.cached ?? 0) / (t.inTok || 1))).toFixed(3) : null,
-      ttfa: med(w.map((t) => t.ttfa)), ttfaP90: (() => { const b = w.map((t) => t.ttfa).filter(Boolean).sort((x, y) => x - y); return b[Math.floor(b.length * 0.9)] ?? null; })(),
+      ttfa: med(w.filter((t) => !t.retried).map((t) => t.ttfa)), ttfaP90: (() => { const b = w.filter((t) => !t.retried).map((t) => t.ttfa).filter(Boolean).sort((x, y) => x - y); return b[Math.floor(b.length * 0.9)] ?? null; })(),
       words: med(w.map((t) => t.words)), over25: share((t) => t.words > 25), english: share((t) => t.matrix === "english"), mixed: share((t) => t.matrix === "mixed"),
       costPerMin: +(perRun.reduce((a, b) => a + b, 0) / (perRun.length || 1)).toFixed(4) };
   }
   const all = (f) => +(allTurns.filter(f).length / allTurns.length).toFixed(3);
   A.overall = { turns: allTurns.length, words: med(allTurns.map((t) => t.words)), over25: all((t) => t.words > 25), english: all((t) => t.matrix === "english"),
-    ttfa: med(allTurns.map((t) => t.ttfa)), costPerMin: +(A.perSession.reduce((n, p) => n + p.costPerMin, 0) / A.perSession.length).toFixed(4),
+    ttfa: med(allTurns.filter((t) => !t.retried).map((t) => t.ttfa)), retriedTurns: allTurns.filter((t) => t.retried).length, costPerMin: +(A.perSession.reduce((n, p) => n + p.costPerMin, 0) / A.perSession.length).toFixed(4),
     cachedShare: +(allTurns.reduce((n, t) => n + (t.cached ?? 0), 0) / allTurns.reduce((n, t) => n + (t.inTok ?? 0), 0)).toFixed(3) };
   result[arm] = A;
 }

@@ -40,7 +40,7 @@ const HERE = new URL(".", import.meta.url).pathname;
 const OUT = `${HERE}runs/${ARM}-${RUN}.jsonl`;
 fs.mkdirSync(`${HERE}runs`, { recursive: true }); fs.mkdirSync(`${HERE}clips`, { recursive: true });
 fs.writeFileSync(OUT, "");
-const rec = (o) => fs.appendFileSync(OUT, JSON.stringify(o) + "\n");
+const rec = (o) => fs.appendFileSync(OUT, JSON.stringify({ ...o, wall: Date.now() }) + "\n");
 const quiet = console.info; console.info = () => {}; // azure.js logs every call; keep stdout readable
 const say = (...a) => process.stdout.write(`[${ARM}${RUN}] ${a.join(" ")}\n`);
 
@@ -176,10 +176,12 @@ async function respond(instructions) {
   }
   let done = await waitFor((e) => e.type === "response.done", 90_000);
   // A failed response (status_details logged) is retried as a real client would, up to 3 times; each failure is recorded.
-  for (let a = 0; done.response.status === "failed" && a < 3; a++) {
+  // inference_rate_limit_exceeded = the deployment's TPM quota (measured: 2 concurrent sessions hit it from ~min 13);
+  // the lesson clock is simulated, so waiting out the limit costs wall time only. The turn is flagged `retried`.
+  for (let a = 0; done.response.status === "failed" && a < 10; a++) {
     rec({ kind: "failed", turn, attempt: a, details: done.response.status_details });
     say("failed", JSON.stringify(done.response.status_details).slice(0, 300));
-    await new Promise((r) => setTimeout(r, 2000 * (a + 1)));
+    await new Promise((r) => setTimeout(r, 5000 * (a + 1)));
     curResp = { t0: performance.now(), ttfa: null, audioBytes: 0, itemId: null };
     send({ type: "response.create", response: TAIL ? {} : { instructions } });
     done = await waitFor((e) => e.type === "response.done", 90_000);

@@ -1,9 +1,11 @@
 // A small on-device energy VAD for the cascade lane. It is NOT the turn detector — Azure's server VAD
 // (threshold 0.6, 900 ms silence) owns endpointing. This one exists for the two things a network round trip
 // is too slow for:
-//   1. barge-in hint: the child starts talking over the teacher → duck her voice within a frame or two,
-//      before the server's speech_started arrives (~200-300 ms later) and stops her outright;
-//   2. push-to-talk fallback hygiene: a press that carried no speech is not uploaded.
+//   1. barge-in: the child starts talking over the teacher → "onset" ducks her voice (~90 ms of voiced
+//      energy), and "sustain" (~120 ms, still loud) pauses her — both before the server's speech_started
+//      arrives (~200-500 ms after onset), which then confirms (or, if it never comes, she resumes);
+//   2. a diagnostic count of push-to-talk presses it never heard (it no longer gates the upload: a soft child
+//      under AGC may never clear its threshold, and ASR decides what was said).
 // The decision logic is pure (frames of RMS in, onset/offset out) so it is tested in Node; `MicVad` polls an
 // AnalyserNode on a timer (not rAF: a background tab throttles rAF, and the floor must still hear).
 
@@ -17,11 +19,13 @@ export interface VadOptions {
   offsetDb?: number;
   /** Absolute floor: nothing quieter than this (dBFS) is speech, however quiet the room. */
   minDb?: number;
+  /** "sustain" once per utterance when the level has stayed loud this long (ms) without a break. */
+  sustainMs?: number;
 }
 
-const DEFAULTS: Required<VadOptions> = { onsetDb: 14, onsetMs: 90, offsetMs: 400, offsetDb: 8, minDb: -52 };
+const DEFAULTS: Required<VadOptions> = { onsetDb: 14, onsetMs: 90, offsetMs: 400, offsetDb: 8, minDb: -52, sustainMs: 120 };
 
-export type VadEvent = "onset" | "offset" | null;
+export type VadEvent = "onset" | "sustain" | "offset" | null;
 
 export class EnergyVad {
   readonly opts: Required<VadOptions>;
@@ -30,6 +34,9 @@ export class EnergyVad {
   speaking = false;
   private above = 0;
   private below = 0;
+  /** Consecutive loud ms (in either state) and whether this utterance already sent "sustain". */
+  private run = 0;
+  private sustained = false;
 
   constructor(opts: VadOptions = {}) {
     this.opts = { ...DEFAULTS, ...opts };
@@ -44,14 +51,20 @@ export class EnergyVad {
     this.floorDb = Math.max(-90, Math.min(-25, this.floorDb));
     const loud = db >= Math.max(o.minDb, this.floorDb + o.onsetDb);
     const quiet = db < Math.max(o.minDb, this.floorDb + o.offsetDb);
+    this.run = loud ? this.run + frameMs : 0;
     if (!this.speaking) {
       this.above = loud ? this.above + frameMs : 0;
       if (this.above >= o.onsetMs) {
         this.speaking = true;
+        this.sustained = false;
         this.below = 0;
         return "onset";
       }
       return null;
+    }
+    if (!this.sustained && this.run >= o.sustainMs) {
+      this.sustained = true;
+      return "sustain";
     }
     this.below = quiet ? this.below + frameMs : 0;
     if (this.below >= o.offsetMs) {
@@ -64,7 +77,8 @@ export class EnergyVad {
 
   reset(): void {
     this.speaking = false;
-    this.above = this.below = 0;
+    this.sustained = false;
+    this.above = this.below = this.run = 0;
   }
 }
 
@@ -80,11 +94,11 @@ export class MicVad {
   private timer: ReturnType<typeof setInterval> | null = null;
   private readonly buf: Float32Array<ArrayBuffer>;
   private readonly analyser: AnalyserNode;
-  private readonly onEdge: (e: "onset" | "offset", at: number) => void;
+  private readonly onEdge: (e: "onset" | "sustain" | "offset", at: number) => void;
   private readonly frameMs: number;
 
   // No constructor parameter properties: Node strips these types on import, and only erasable syntax strips.
-  constructor(analyser: AnalyserNode, onEdge: (e: "onset" | "offset", at: number) => void, opts: VadOptions = {}, frameMs = 20) {
+  constructor(analyser: AnalyserNode, onEdge: (e: "onset" | "sustain" | "offset", at: number) => void, opts: VadOptions = {}, frameMs = 20) {
     this.analyser = analyser;
     this.onEdge = onEdge;
     this.frameMs = frameMs;

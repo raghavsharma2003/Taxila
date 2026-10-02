@@ -6,6 +6,7 @@ import { randomUUID } from "crypto";
 import { q, one, tx, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, send, HttpError } from "../http.js";
 import { requireChild, hasConsent } from "../auth.js";
+import { turnVoice } from "../voice/features.js";
 import { chat, mintRealtimeSecret, endpoint, DEPLOY } from "../azure.js";
 import { getTopic, getKit, pinKit, pinnedKit, topicOf, topicSequence } from "../content/index.js";
 import { nextTopicFor } from "../content/next-topic.js";
@@ -16,7 +17,7 @@ import {
   buildChildBrief, loadSkillStates, loadActiveMisconceptionIds, loadRecentOutcomes, loadDueSkills,
   skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt,
 } from "../learner/model.js";
-import { classify, targetFor } from "../director/classify.js";
+import { classify, classifyFast, targetFor } from "../director/classify.js";
 import { scanSafety } from "../director/safety.js";
 import { initLessonState, step, evidenceFrom, snapshotSkill, upcomingItem, LIMITS } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, norm as normAnswer } from "../director/items.js";
@@ -243,7 +244,33 @@ async function warmupItemsFor(childId) {
  * Accepted risk until a server sideband owns session.update: context/inbox/ws1-client.json
  * (voice-instructions-client-visible).
  */
-const clientInstructions = (mode, instructions) => (mode === "text" ? {} : { instructions });
+export const clientInstructions = (mode, instructions) => (laneOf(mode) === "voice" ? { instructions } : {});
+/**
+ * The lesson's lane. "cascade" (the default voice lane: STT → Director → streamed TTS) is a text lane to the
+ * server — the Director writes and stores every reply — but its child turns are SPOKEN: they carry an ASR
+ * confidence that is stored and gates classify, exactly as on the realtime lane. Only "text" means typed.
+ */
+const LANES = new Set(["voice", "text", "cascade"]);
+const laneOf = (mode) => (LANES.has(mode) ? mode : "voice");
+
+/**
+ * A turn's lane rules from the lesson's mode: who writes the reply (text lanes: the Director, here), and
+ * whether the child's words came without ASR (typed). `body.typed` marks a typed or tapped turn on any lane.
+ * Exported for tests.
+ */
+export function turnLane(mode, body) {
+  const lane = laneOf(mode);
+  return { lane, textLane: lane !== "voice", typed: !!body.typed || lane === "text" };
+}
+
+/** The stored child row: a spoken turn keeps its ASR confidence (asr_conf), a typed one has none. Exported for tests. */
+export function childTurnRow({ childText, chipId, asrConfidence, typed, extra = {} }) {
+  return {
+    speaker: "child", text: childText || (chipId ? `[tap ${chipId}]` : "[no speech]"),
+    asrConf: typed ? null : (typeof asrConfidence === "number" ? asrConfidence : null),
+    meta: { typed, ...(chipId ? { chipId } : {}), ...extra },
+  };
+}
 
 /** @type {(req: any, res: any, body: import("../../shared/contracts").LessonStartRequest) => Promise<void>} */
 async function start(req, res, body) {
@@ -254,7 +281,7 @@ async function start(req, res, body) {
     hasConsent(guardian.id, child.id, "core_tutoring"), hasConsent(guardian.id, child.id, "memory"),
   ]);
   if (!core) throw forbidden("core_tutoring consent is required before a lesson");
-  const mode = body.mode === "text" ? "text" : "voice";
+  const mode = body.mode === "text" || body.mode === "cascade" ? body.mode : "voice";
   const topic = body.topicId ? getTopic(body.topicId) : await nextTopicFor(child);
   if (!topic) throw bad(body.topicId ? `unknown topic ${body.topicId}` : "no topic available for this class");
   const kit = await getKit(topic.id, { trace });
@@ -287,7 +314,7 @@ async function start(req, res, body) {
   const lessonId = randomUUID();
 
   let teacherOpening, teacherOpeningSeq, rows = [];
-  if (mode === "text") {
+  if (mode !== "voice") {
     teacherOpening = (await textReply({ instructions, state, kit, childText: "", trace })).reply;
     rows = stageTurns(state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind } }]);
     teacherOpeningSeq = rows[0].seq;
@@ -375,11 +402,16 @@ async function turn(req, res, body) {
   }
   const prev = lesson.state;
   const state = structuredClone(prev);
+  // This spoken turn's on-device voice features (TurnRequest.voiceFeatures): stored and z-scored against the
+  // child's own baseline alongside classify, so the signals are this utterance's, never the previous one's.
+  // Off the critical path (runs in parallel; never throws). Tie-breakers only — see server/voice/features.js.
+  const voiceP = body.voiceFeatures && !body.typed
+    ? turnVoice({ lessonId: lesson.id, childId: child.id, itemId: prev.activeItemId, voiceFeatures: body.voiceFeatures })
+    : Promise.resolve(null);
   const kit = await kitFor(lesson.topic_id, state);
   // The lane is the lesson's mode. `typed` only says there was no ASR: a typed or tapped turn in a voice
   // lesson is still voice-lane (a text reply for it was never heard, yet was stored as a teacher turn).
-  const textLane = state.mode === "text";
-  const typed = !!body.typed || textLane;
+  const { textLane, typed } = turnLane(state.mode, body);
   const moduleEvents = Array.isArray(body.moduleEvents) ? body.moduleEvents : [];
   const dropped = Number.isInteger(body.droppedEvents) && body.droppedEvents > 0 ? body.droppedEvents : 0;
   // contracts.ts TurnRequest: the child acted in an activity and said nothing. Never graded as a reply —
@@ -407,12 +439,8 @@ async function turn(req, res, body) {
   const extra = dropped ? { droppedEvents: dropped } : {};
   turnRows.push(moduleOnly
     ? { speaker: "system", text: `[activity: ${activitySummary(moduleEvents, dropped)}]`, meta: { module: true, ...extra } }
-    : {
-      speaker: "child", text: childText || (body.chipId ? `[tap ${body.chipId}]` : "[no speech]"),
-      asrConf: typed ? null : body.asrConfidence, meta: { typed, ...(body.chipId ? { chipId: body.chipId } : {}), ...extra },
-    });
+    : childTurnRow({ childText, chipId: body.chipId, asrConfidence: body.asrConfidence, typed, extra }));
   const staged = stageTurns(state, turnRows);
-  const childSeq = staged.at(-1).seq; // the child's row, or a module-only turn's activity row
 
   // Classify against the active item's key (never free grading). A module answer on the active item's own
   // module is machine truth; a module-only turn has nothing else to classify.
@@ -420,66 +448,36 @@ async function turn(req, res, body) {
   const moduleAnswer = moduleEvents
     .filter((e) => e?.type === "answer" && state.module && e.moduleId === state.module.id && state.module.itemId === state.activeItemId).at(-1)?.data ?? null;
   const machineAnswer = typeof moduleAnswer?.correct === "boolean" && target.mode === "item";
-  const cls = moduleOnly && !machineAnswer ? null : await classify({
-    target, childText, heard, asrConfidence: body.asrConfidence, typed, chipId: body.chipId,
-    moduleAnswer, classLevel: child.class_level, trace,
-  });
-
-  // Evidence → learner model, all staged as statements for the turn's one transaction (below). Gaming is
-  // read from the affect AFTER this turn (the same update step() makes), so the second "just tell me" or the
-  // third different wrong answer is already discounted.
+  const clsArgs = { target, childText, heard, asrConfidence: body.asrConfidence, typed, chipId: body.chipId, moduleAnswer, classLevel: child.class_level, trace };
+  const classified = !(moduleOnly && !machineAnswer);
   const answer = normAnswer(childText);
-  const affectNow = moduleOnly ? state.affect
-    : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer });
-  const evidence = cls ? evidenceFrom(state, cls, kit, { leaked, discount: gamingDiscount(affectNow) }) : [];
-  const writes = [];
-  const skillChanges = {};
-  if (evidence.length) {
-    const current = await loadSkillStates(child.id, [...new Set(evidence.map((e) => e.skillId))]);
-    const topicType = activeItem?.topicType ?? kit.topicType;
-    const now = new Date();
-    // Fold rows for the same skill in order (an answer and its volunteered reason are two rows).
-    for (const ev of evidence) {
-      const before = current[ev.skillId] ?? newSkillState(ev.skillId, topicType, now);
-      const after = applyEvidence(before, ev, { topicType, now, lessonStartedAt: lesson.started_at });
-      current[ev.skillId] = after;
-      writes.push(evidenceStmt(child.id, lesson.id, ev, { lessonId: lesson.id, seq: childSeq }));
-      if (ev.misconceptionId) writes.push(misconceptionFlagStmt(child.id, ev.misconceptionId));
-      state.history[ev.skillId] = [...(state.history[ev.skillId] ?? []), ev.outcome].slice(-10);
-      skillChanges[ev.skillId] ??= { before: Math.round(before.pKnown * 1000) / 1000 };
-      Object.assign(skillChanges[ev.skillId], { after: Math.round(after.pKnown * 1000) / 1000, status: after.status });
-    }
-    for (const id of Object.keys(skillChanges)) {
-      writes.push(skillStateStmt(child.id, current[id]));
-      state.skills[id] = snapshotSkill(current[id]);
-    }
-    const resolved = activeItem?.targetsMisconception && cls.outcome === "correct" && cls.reason !== "misconception"
-      && state.hintLevel === 0 && state.pendingWhy !== activeItem.id;
-    if (resolved) writes.push(misconceptionResolveStmt(child.id, activeItem.targetsMisconception));
-  }
-  // A belief voiced outside a keyed item counts on the misconception ledger, never as graded evidence.
-  if (cls?.voiced) writes.push(misconceptionFlagStmt(child.id, cls.voiced));
-  const incident = cls?.flags.distress ? { source: cls.source === "predicate" ? "predicate" : "classifier", family: cls.flags.distressKind } : null;
-  if (incident) writes.push(incidentStmt(child.id, lesson.id, childSeq, incident));
+  const tapped = body.chipId?.startsWith("opt:") ? activeItem?.options?.[Number(body.chipId.slice(4))]?.text : body.chipId?.split(":")[1];
+  const said = childText || (moduleOnly ? `(no words; in the activity: ${activitySummary(moduleEvents, 0)})` : `(tapped: ${tapped ?? "nothing"})`);
+  const planCtx = { kit, child, lesson, activeItem, moduleOnly, moduleEvents, chipId: body.chipId, answer, leaked, loadSkills: skillLoader(child.id) };
+  // A module-only turn stored no child row, so the whole recent transcript is history.
+  const historyOf = (next) => (moduleOnly ? next.recent : next.recent.slice(0, -1));
 
-  // Director step → compile → (text lane) reply from the same instructions.
-  const now = Date.now();
-  const stepped = moduleOnly
-    ? step(state, { event: "module", kit, cls: cls ?? undefined, moduleEvents, now })
-    : step(state, { event: "turn", kit, cls, chipId: body.chipId, answer, now });
-  if (stepped.move.kind === "explain" && stepped.move.skillId && !stepped.state.skills[stepped.move.skillId]) {
-    const intro = markIntroduced(newSkillState(stepped.move.skillId, kit.topicType));
-    writes.push(skillStateStmt(child.id, intro));
-    stepped.state.skills[stepped.move.skillId] = snapshotSkill(intro);
-  }
-  const { r, instructions, skipped } = instructionsAfter(stepped, kit, now);
+  // Text lanes: when the classifier must ask the model, the reply for its likely outcomes starts NOW, in
+  // parallel, and the one whose inputs turn out identical to the real plan's is used (speculate()).
+  const fast = classified ? classifyFast(clsArgs) : null;
+  const specs = textLane && fast && !fast.result && !fast.lowAsr
+    ? speculate(state, target, fast.flags, planCtx, { said, historyOf })
+    : [];
+  const cls = classified ? await classify(clsArgs) : null;
+
+  // Evidence → learner model → Director step → compile, all staged as statements for the turn's one transaction.
+  const plan = await planTurn(state, cls, { ...planCtx, now: Date.now() });
+  const { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
   const next = r.state;
-  let teacherReply, teacherReplySeq, guard;
+  let teacherReply, teacherReplySeq, guard, speculation;
   if (textLane && !r.hold) {
-    const tapped = body.chipId?.startsWith("opt:") ? activeItem?.options?.[Number(body.chipId.slice(4))]?.text : body.chipId?.split(":")[1];
-    const said = childText || (moduleOnly ? `(no words; in the activity: ${activitySummary(moduleEvents, 0)})` : `(tapped: ${tapped ?? "nothing"})`);
-    // A module-only turn stored no child row, so the whole recent transcript is history.
-    ({ reply: teacherReply, guard } = await textReply({ instructions, state: next, kit, childText: said, trace, ...(moduleOnly ? { history: next.recent } : {}) }));
+    const key = replyKey(next, kit, r, instructions, said, historyOf(next));
+    const hit = await pickSpeculation(specs, key);
+    speculation = specs.length ? { tried: specs.length, hit: !!hit } : undefined;
+    if (hit) trace.push(...hit.trace.map((t) => ({ ...t, speculative: true })));
+    ({ reply: teacherReply, guard } = hit
+      ? hit.result
+      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next) }));
     const replyItem = next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null;
     const replySpoils = spoiledBy(teacherReply, next, kit, replyItem);
     if (replySpoils) next.spoiled = [...(next.spoiled ?? []), replySpoils];
@@ -487,6 +485,8 @@ async function turn(req, res, body) {
       meta: { move: r.move.kind, ...(guard.caught.length ? { guard: guard.caught } : {}), ...(replySpoils ? { spoils: replySpoils } : {}) } }]);
     staged.push(row);
     teacherReplySeq = row.seq;
+  } else if (specs.length) {
+    speculation = { tried: specs.length, hit: false };
   }
 
   // One transaction: the state check first (`and ended_at is null`: a turn still in flight when the lesson
@@ -516,8 +516,9 @@ async function turn(req, res, body) {
   const speakNow = textLane ? undefined
     : r.move.kind === "safeguard" && !prev.safeguard ? "interrupt"
       : moduleOnly && !r.hold ? "when_free" : undefined;
+  const voice = await voiceP;
   const ms = Math.round(performance.now() - t0);
-  console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${r.hold ? " (hold)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"} ${ms}ms`);
+  console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${r.hold ? " (hold)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"}${speculation ? ` spec=${speculation.hit ? "hit" : "miss"}/${speculation.tried}` : ""} ${ms}ms`);
   /** @type {import("../../shared/contracts").TurnResponse} */
   const out = {
     ...clientInstructions(state.mode, instructions), move: r.move, moduleCommands: r.moduleCommands, ui: r.ui,
@@ -529,11 +530,138 @@ async function turn(req, res, body) {
       phase: next.phase, turn: next.turn, teachIdx: next.teachIdx, hintLevel: next.hintLevel, unclear: next.unclear, moduleOnly, hold: !!r.hold,
       classification: cls ? { outcome: cls.outcome, misconceptionId: cls.misconceptionId, voiced: cls.voiced, confidence: cls.confidence, source: cls.source, flags: cls.flags } : null,
       evidence, skills: skillChanges, flagged: next.flagged, guard, spoiled: next.spoiled, ...(skipped ? { skipped } : {}),
+      ...(speculation ? { speculation } : {}),
       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
       kitVerified: kit.verified, ms, timings: trace,
+      ...(voice ? { voice: { reliable: voice.reliable, signals: voice.signals, z: voice.z } } : {}),
     };
   }
   send(res, 200, out);
+}
+
+/**
+ * Skill states for a turn, loaded once per skill however many plans ask (the real one and the speculative
+ * ones), and copied per caller: applyEvidence must never fold one plan's evidence into another's states.
+ */
+function skillLoader(childId) {
+  const cache = new Map();
+  return async (ids) => {
+    const missing = ids.filter((id) => !cache.has(id));
+    if (missing.length) {
+      const p = loadSkillStates(childId, missing);
+      for (const id of missing) cache.set(id, p.then((all) => all[id]));
+    }
+    const out = {};
+    for (const id of ids) {
+      const st = await cache.get(id);
+      if (st) out[id] = structuredClone(st);
+    }
+    return out;
+  };
+}
+
+/**
+ * Everything a classified turn decides, from a COPY of the staged state: the evidence and its learner-model
+ * writes, the affect, the Director step, and its compiled instructions. Pure apart from reading skill states,
+ * so the speculative replies run exactly the same code as the real turn. Gaming is read from the affect AFTER
+ * this turn (the same update step() makes), so the second "just tell me" or the third different wrong answer
+ * is already discounted.
+ */
+async function planTurn(base, cls, c) {
+  const state = structuredClone(base);
+  const { kit, child, lesson, activeItem, moduleOnly } = c;
+  const affectNow = moduleOnly ? state.affect
+    : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer: c.answer });
+  const evidence = cls ? evidenceFrom(state, cls, kit, { leaked: c.leaked, discount: gamingDiscount(affectNow) }) : [];
+  const writes = [];
+  const skillChanges = {};
+  const childSeq = state.seq; // the child's row, or a module-only turn's activity row (staged last)
+  if (evidence.length) {
+    const current = await c.loadSkills([...new Set(evidence.map((e) => e.skillId))]);
+    const topicType = activeItem?.topicType ?? kit.topicType;
+    const now = new Date(c.now);
+    // Fold rows for the same skill in order (an answer and its volunteered reason are two rows).
+    for (const ev of evidence) {
+      const before = current[ev.skillId] ?? newSkillState(ev.skillId, topicType, now);
+      const after = applyEvidence(before, ev, { topicType, now, lessonStartedAt: lesson.started_at });
+      current[ev.skillId] = after;
+      writes.push(evidenceStmt(child.id, lesson.id, ev, { lessonId: lesson.id, seq: childSeq }));
+      if (ev.misconceptionId) writes.push(misconceptionFlagStmt(child.id, ev.misconceptionId));
+      state.history[ev.skillId] = [...(state.history[ev.skillId] ?? []), ev.outcome].slice(-10);
+      skillChanges[ev.skillId] ??= { before: Math.round(before.pKnown * 1000) / 1000 };
+      Object.assign(skillChanges[ev.skillId], { after: Math.round(after.pKnown * 1000) / 1000, status: after.status });
+    }
+    for (const id of Object.keys(skillChanges)) {
+      writes.push(skillStateStmt(child.id, current[id]));
+      state.skills[id] = snapshotSkill(current[id]);
+    }
+    const resolved = activeItem?.targetsMisconception && cls.outcome === "correct" && cls.reason !== "misconception"
+      && state.hintLevel === 0 && state.pendingWhy !== activeItem.id;
+    if (resolved) writes.push(misconceptionResolveStmt(child.id, activeItem.targetsMisconception));
+  }
+  // A belief voiced outside a keyed item counts on the misconception ledger, never as graded evidence.
+  if (cls?.voiced) writes.push(misconceptionFlagStmt(child.id, cls.voiced));
+  const incident = cls?.flags.distress ? { source: cls.source === "predicate" ? "predicate" : "classifier", family: cls.flags.distressKind } : null;
+  if (incident) writes.push(incidentStmt(child.id, lesson.id, childSeq, incident));
+
+  const stepped = moduleOnly
+    ? step(state, { event: "module", kit, cls: cls ?? undefined, moduleEvents: c.moduleEvents, now: c.now })
+    : step(state, { event: "turn", kit, cls, chipId: c.chipId, answer: c.answer, now: c.now });
+  if (stepped.move.kind === "explain" && stepped.move.skillId && !stepped.state.skills[stepped.move.skillId]) {
+    const intro = markIntroduced(newSkillState(stepped.move.skillId, kit.topicType));
+    writes.push(skillStateStmt(child.id, intro));
+    stepped.state.skills[stepped.move.skillId] = snapshotSkill(intro);
+  }
+  const { r, instructions, skipped } = instructionsAfter(stepped, kit, c.now);
+  return { evidence, writes, skillChanges, incident, r, instructions, skipped };
+}
+
+/**
+ * Everything textReply() reads, as one string: two plans with the same key get the same reply (the same
+ * prompt, history and guards), so a speculative reply with the real plan's key IS the real reply.
+ */
+function replyKey(next, kit, r, instructions, said, history) {
+  return JSON.stringify([instructions, said, history, next.lastMove, next.hintLevel, next.pendingWhy, next.ctx?.lang,
+    next.ctx?.ageBand, next.spoiled ?? [], upcomingItem(next, kit)?.id ?? null, !!r.hold]);
+}
+
+/**
+ * Outcomes worth a speculative reply while the classifier's model call runs, most likely first. The
+ * fan-out (TAXILA_SPECULATE, default 2, 0 = off) is extra taxila-fast reply calls per model-classified
+ * turn; a miss costs only those tokens, never the reply's quality — the real reply is then written as before.
+ */
+const SPEC_OUTCOMES = { item: ["correct", "incorrect", "partial"], why: ["correct", "incorrect", "partial"], teachback: ["partial", "correct"], none: ["no_evidence"] };
+const specFanout = () => {
+  const n = Number(process.env.TAXILA_SPECULATE ?? 2);
+  return Number.isFinite(n) ? Math.max(0, Math.min(3, Math.floor(n))) : 2;
+};
+
+function speculate(state, target, flags, planCtx, { said, historyOf }) {
+  const outcomes = (SPEC_OUTCOMES[target.mode] ?? []).slice(0, specFanout());
+  return outcomes.map((outcome) => {
+    const trace = [];
+    const cls = { outcome, confidence: 1, source: "speculative", flags: { ...flags } };
+    const p = planTurn(state, cls, { ...planCtx, now: Date.now() }).then((plan) => {
+      if (plan.r.hold) return null;
+      const next = plan.r.state;
+      const history = historyOf(next);
+      return {
+        key: replyKey(next, planCtx.kit, plan.r, plan.instructions, said, history), trace,
+        result: textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history }),
+      };
+    });
+    p.catch(() => {}); // a failed speculation is a miss, never the turn's error
+    return p;
+  });
+}
+
+/** The speculative reply whose plan matches `key` (awaited), or null. */
+async function pickSpeculation(specs, key) {
+  for (const p of specs) {
+    const s = await p.catch(() => null);
+    if (s?.key === key) return { trace: s.trace, result: await s.result };
+  }
+  return null;
 }
 
 /**

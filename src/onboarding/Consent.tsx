@@ -21,7 +21,7 @@ export function TrustStep() {
           </li>
         ))}
       </ul>
-      <Link to="/trust">Full text</Link>
+      <Link to="/trust" className="block-link">Full text</Link>
     </StepFrame>
   );
 }

@@ -20,7 +20,9 @@ test("pure fillers always count, elongations included", () => {
 
 test("discourse fillers count only where they behave like fillers", () => {
   assert.equal(transcriptStats("haan").fillerCount, 0, "a bare haan is an answer");
-  assert.equal(transcriptStats("haan, paanch").fillerCount, 1, "haan before a pause, then the answer");
+  assert.equal(transcriptStats("haan, paanch").fillerCount, 0, "an opening haan, is the start of the answer");
+  assert.equal(transcriptStats("haan, paanch hai").fillerCount, 0);
+  assert.equal(transcriptStats("haan umm paanch hai").fillerCount, 2, "haan next to a filler is one");
   assert.equal(transcriptStats("woh wala bada hai").fillerCount, 0, "woh as 'that' is content");
   assert.equal(transcriptStats("umm woh matlab paanch").fillerCount, 3, "a filler run counts every member");
   assert.equal(transcriptStats("iska matlab kya hai").fillerCount, 0, "matlab as 'meaning' is content");

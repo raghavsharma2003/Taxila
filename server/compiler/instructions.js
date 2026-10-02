@@ -10,7 +10,7 @@ import { describe, branchesFor, skipItem } from "../director/state.js";
  * (director/state.js branchesFor): its appended-last check is what the realtime model does on that reply,
  * and without them the check fell back to "nothing new; a short warm close" on every voice turn.
  */
-export function instructionsFor(state, kit, lane = state.mode === "text" ? "text" : "voice") {
+export function instructionsFor(state, kit, lane = state.mode === "voice" || !state.mode ? "voice" : "text") {
   return compile({
     character: CHARACTERS[state.ctx.teacherId], brief: state.brief, lessonState: state, move: state.lastMove,
     ...describe(state, kit), ...(lane === "voice" ? { branches: branchesFor(state, kit) } : {}),

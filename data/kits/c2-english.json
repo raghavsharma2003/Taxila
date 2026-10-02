@@ -234,7 +234,7 @@
           "kind": "retrieval",
           "difficulty": 2,
           "prompt_en": "In our cycle rhyme we rode up the lane. Where did we ride down?",
-          "prompt_hi": "Hamari cycle wali rhyme mein hum lane ke upar gaye. Neeche kahan se aaye?",
+          "prompt_hi": "Hamari cycle wali rhyme mein hum lane mein aage gaye. Phir kahan se neeche aaye?",
           "answer": "down the hill",
           "acceptable": [
             "the hill",
@@ -249,7 +249,7 @@
           "verified": {
             "solverAnswer": "down the hill",
             "agrees": true,
-            "note": "Key correct. prompt_hi 'lane ke upar gaye' renders 'up the lane' as 'on top of the lane'; better 'lane mein aage gaye'."
+            "note": "FIXED (checker flag resolved): prompt_hi now 'lane mein aage gaye' (was 'lane ke upar' = on top of the lane). Key unchanged."
           }
         },
         {
@@ -257,24 +257,24 @@
           "skillId": "c2-english-ch01-t01-s1",
           "kind": "predict",
           "difficulty": 3,
-          "prompt_en": "Here is a new line: 'Ring, ring, I ride along, singing my happy cycle ___.' Which word fits and rhymes with 'along': 'song' or 'bell'?",
-          "prompt_hi": "Nayi line: 'Ring, ring, I ride along, singing my happy cycle ___.' Kaunsa word fit hoga aur 'along' se rhyme karega — 'song' ya 'bell'?",
-          "answer": "song",
+          "prompt_en": "Here is a NEW line, not in our rhyme: 'Ring, ring, I ride so far, faster than a little ___.' Which word fits and rhymes with 'far': 'car' or 'fan'?",
+          "prompt_hi": "Ek nayi line suno, jo hamari rhyme mein nahi hai: 'Ring, ring, I ride so far, faster than a little ___.' Kaunsa word fit hoga aur 'far' se rhyme karega — 'car' ya 'fan'?",
+          "answer": "car",
           "acceptable": [
-            "a song",
-            "cycle song"
+            "a car",
+            "little car"
           ],
           "hints": [
-            "What do we do when we sing?",
-            "Listen to the end of 'along': -ong.",
-            "Which word ends in -ong?",
-            "Song. Along and song rhyme."
+            "Which one can go fast on the road?",
+            "Listen to the end of 'far': -ar.",
+            "Which word ends in -ar?",
+            "Car. Far and car rhyme."
           ],
           "targetsMisconception": "c2-english-ch01-t01-m-rhyme-first-sound",
           "verified": {
-            "solverAnswer": "song",
+            "solverAnswer": "car",
             "agrees": true,
-            "note": "Key correct. Labelled 'a new line' but it is the passage's own line 6 (Singing my happy cycle song), so this is retrieval, not prediction; use a genuinely new line."
+            "note": "FIXED (checker flag resolved): Replaced the passage's own line 6 with a genuinely new line, so this is prediction, not retrieval. Distractor 'fan' shares the first sound with 'far' (targets m-rhyme-first-sound)."
           }
         },
         {
@@ -695,12 +695,15 @@
           "skillId": "c2-english-ch02-t01-s2",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Point to the ball and say it fully: 'This is ___ ball.' What small word goes in the gap?",
-          "prompt_hi": "Ball ki taraf ishaara karke poora bolo: 'This is ___ ball.' Beech mein kaunsa chhota word aayega?",
+          "prompt_en": "Point to the ball and say: 'This is ___ ball.' What small word goes in the gap? Now say the whole sentence.",
+          "prompt_hi": "Ball ki taraf ishaara karo aur bolo: 'This is ___ ball.' Beech mein kaunsa chhota word aayega? Ab poora sentence bolo.",
           "answer": "This is a ball.",
           "acceptable": [
             "a",
-            "This is a ball"
+            "This is a ball",
+            "the",
+            "This is the ball",
+            "This is the ball."
           ],
           "hints": [
             "Say it slowly. Is something missing?",
@@ -710,9 +713,9 @@
           ],
           "targetsMisconception": "c2-english-ch02-t01-m-article-drop",
           "verified": {
-            "solverAnswer": "a (This is a ball.)",
+            "solverAnswer": "This is a ball.",
             "agrees": true,
-            "note": "Key correct but too narrow: 'This is the ball.' is also correct English for a ball in a shown picture and is not in acceptable. Add 'the' / 'This is the ball' or reword the prompt to elicit 'a'. Also 'say it fully' conflicts with 'what small word goes in the gap'."
+            "note": "FIXED (checker flag resolved): Added 'the' / 'This is the ball' (also correct for a shown picture). Prompt now asks for the gap word first, then the whole sentence, so the two asks no longer conflict."
           }
         },
         {
@@ -1170,7 +1173,7 @@
             "ghongha"
           ],
           "hints": [
-            "Which one has no legs and no wings?",
+            "Which one moves on the ground, not in the sky or in the water?",
             "It carries a little shell on its back.",
             "Sn___.",
             "The snail crawls very slowly."
@@ -1178,7 +1181,7 @@
           "verified": {
             "solverAnswer": "snail",
             "agrees": true,
-            "note": "Key correct. Hint 1 ('Which one has no legs and no wings?') does not discriminate: a fish also has no legs and no wings. Use the shell or the slowness instead."
+            "note": "FIXED (checker flag resolved): Hint 1 now discriminates (bird = sky, fish = water, snail = ground); the old 'no legs and no wings' also fit the fish."
           }
         },
         {
@@ -2089,8 +2092,8 @@
             "Uses 'run' or 'drive' for a cycle"
           ],
           "diagnostic": {
-            "prompt_en": "We ___ a cycle. Is it 'ride' or 'drive'?",
-            "prompt_hi": "Cycle ko hum ___ karte hain. 'ride' ya 'drive'?",
+            "prompt_en": "We ___ a cycle. Is it 'ride', 'drive' or 'run'?",
+            "prompt_hi": "Cycle ko hum ___ karte hain. 'ride', 'drive' ya 'run'?",
             "options": [
               {
                 "text": "ride",
@@ -2126,8 +2129,7 @@
           "answer": "a train",
           "acceptable": [
             "train",
-            "the train",
-            "rail"
+            "the train"
           ],
           "hints": [
             "Listen: choo-choo! What makes that sound?",
@@ -2138,7 +2140,7 @@
           "verified": {
             "solverAnswer": "train",
             "agrees": true,
-            "note": "Key correct. Acceptable 'rail' is not quite right for a vehicle ('rail' = the track); consider removing."
+            "note": "FIXED (checker flag resolved): Removed 'rail' (the track, not the vehicle)."
           }
         },
         {
@@ -2637,22 +2639,22 @@
           "skillId": "c2-english-ch06-t01-s1",
           "kind": "practice",
           "difficulty": 1,
-          "prompt_en": "Read this sentence with me: 'The dog wags its tail.' Now tap the word 'the'.",
-          "prompt_hi": "Mere saath padho: 'The dog wags its tail.' Ab 'the' word pe tap karo.",
+          "prompt_en": "Listen and look as I read and point to each word: 'The dog wags its tail.' Now tap the word 'the'.",
+          "prompt_hi": "Main padhti hoon aur har word pe ungli rakhti hoon, tum dekho aur suno: 'The dog wags its tail.' Ab 'the' word pe tap karo.",
           "answer": "The",
           "acceptable": [
             "the"
           ],
           "hints": [
-            "Which word comes at the very start?",
+            "Say it slowly: th-e. Now look at each word as I point.",
             "It has three letters: t, h, e.",
-            "Tap the first word: T___.",
+            "It is the first word: T___.",
             "This word is 'The'."
           ],
           "verified": {
             "solverAnswer": "The",
             "agrees": true,
-            "note": "Key correct. Hint 1 ('Which word comes at the very start?') gives the location immediately, leaving nothing to read; move it later. Print-recognition task: fine for class 2 only with read-along support."
+            "note": "FIXED (checker flag resolved): Hint 1 no longer gives the location; the position cue moves to hint 3. Prompt now carries read-aloud-and-point support (class 2 sight-word task)."
           }
         },
         {
@@ -2908,8 +2910,8 @@
           "skillId": "c2-english-ch06-t01-s1",
           "kind": "retrieval",
           "difficulty": 2,
-          "prompt_en": "Read: 'The dog sat by the tree.' How many times do you see the word 'the'?",
-          "prompt_hi": "Padho: 'The dog sat by the tree.' 'the' word kitni baar aaya?",
+          "prompt_en": "Listen and look as I read and point to each word: 'The dog sat by the tree.' Clap every time you hear 'the'. How many times was it?",
+          "prompt_hi": "Main padhti hoon aur har word pe ungli rakhti hoon: 'The dog sat by the tree.' Jab bhi 'the' suno, taali bajao. Kitni baar aaya?",
           "answer": "2",
           "acceptable": [
             "two",
@@ -2917,15 +2919,15 @@
             "two times"
           ],
           "hints": [
-            "Look at the start of the sentence.",
-            "Now look near the end, before 'tree'.",
+            "Listen to the start of the sentence.",
+            "Now listen just before 'tree'.",
             "Once at the start and once before 'tree'. That makes ___.",
             "Two times: 'The' at the start and 'the' before tree."
           ],
           "verified": {
             "solverAnswer": "2",
             "agrees": true,
-            "note": "Key correct. Requires independent visual scanning of print; for class 2 (oral/picture-first) pair with read-aloud and pointing."
+            "note": "FIXED (checker flag resolved): Now has an oral path (listen and clap) with read-aloud and pointing support, instead of independent print scanning. Key unchanged."
           }
         },
         {
@@ -2958,9 +2960,10 @@
           "difficulty": 3,
           "prompt_en": "Tell Bittu how you go from home to school, and one rule to stay safe on the road.",
           "prompt_hi": "Bittu ko batao tum ghar se school kaise jaate ho, aur road pe safe rehne ka ek rule.",
-          "answer": "I go to school by walking, bus or auto; before crossing, stop and look left and right.",
+          "answer": "I walk to school (or I go to school by bus or auto); before crossing, I stop and look left and right.",
           "acceptable": [
             "I walk to school; look left and right before crossing",
+            "I go to school by bus; I stop and look before crossing",
             "stop and look before crossing"
           ],
           "hints": [
@@ -2972,7 +2975,7 @@
           "verified": {
             "solverAnswer": "I walk to school with Didi. At the road I stop and look left and right.",
             "agrees": true,
-            "note": "Model answer says 'I go to school by walking', which is the non-standard 'by walk' pattern this kit itself corrects in ch05 (m-by-walk). Change to 'I walk to school, or go by bus or auto'."
+            "note": "FIXED (checker flag resolved): Model answer now 'I walk to school', not the non-standard 'by walking' pattern corrected in ch05 (m-by-walk)."
           }
         }
       ],
@@ -3226,7 +3229,9 @@
           "prompt_hi": "Town map pe park ki taraf ishaara karo aur poora bolo: 'This is ___ park.'",
           "answer": "This is a park.",
           "acceptable": [
-            "This is a park"
+            "This is a park",
+            "This is the park.",
+            "This is the park"
           ],
           "hints": [
             "Say it slowly. Is something missing?",
@@ -3236,9 +3241,9 @@
           ],
           "targetsMisconception": "c2-english-ch07-t01-m-article-drop",
           "verified": {
-            "solverAnswer": "a (This is a park.)",
+            "solverAnswer": "This is a park.",
             "agrees": true,
-            "note": "Key correct but too narrow: pointing at the one park on a town map, 'This is the park.' is natural correct English and is not accepted. Add 'the' variants."
+            "note": "FIXED (checker flag resolved): Added 'This is the park.' to acceptable: natural correct English when pointing at the one park on the town map. Canonical key unchanged; the article-drop target is still caught."
           }
         },
         {
@@ -3299,7 +3304,9 @@
           "prompt_hi": "Bittu bank ki taraf ishaara karke kehta hai, 'This is bank.' Kya chhoot gaya? Sahi bolo.",
           "answer": "This is a bank.",
           "acceptable": [
-            "This is a bank"
+            "This is a bank",
+            "This is the bank.",
+            "This is the bank"
           ],
           "hints": [
             "Say it slowly. Does it sound complete?",
@@ -3311,7 +3318,7 @@
           "verified": {
             "solverAnswer": "This is a bank.",
             "agrees": true,
-            "note": "Key correct; 'This is the bank.' is also correct and should be acceptable."
+            "note": "FIXED (checker flag resolved): Added 'This is the bank.' to acceptable: natural correct English when pointing at the one bank on the town map. Canonical key unchanged; the article-drop target is still caught."
           }
         },
         {
@@ -3376,7 +3383,9 @@
           "answer": "This is a school.",
           "acceptable": [
             "This is a school",
-            "This is my school."
+            "This is my school.",
+            "This is the school.",
+            "This is the school"
           ],
           "hints": [
             "Start the way we did: 'This is ...'",
@@ -3388,7 +3397,7 @@
           "verified": {
             "solverAnswer": "This is a school.",
             "agrees": true,
-            "note": "Key correct; add 'This is the school.' to acceptable."
+            "note": "FIXED (checker flag resolved): Added 'This is the school.' to acceptable: natural correct English when pointing at the one school on the town map. Canonical key unchanged; the article-drop target is still caught."
           }
         },
         {
@@ -3806,8 +3815,8 @@
           "skillId": "c2-english-ch08-t01-s4",
           "kind": "why",
           "difficulty": 3,
-          "prompt_en": "In our poem, why did the elephant cloud change into a rabbit?",
-          "prompt_hi": "Hamari poem mein haathi wala baadal khargosh kyun ban gaya?",
+          "prompt_en": "In our poem, why did a cloud change into a rabbit?",
+          "prompt_hi": "Hamari poem mein ek baadal khargosh kyun ban gaya?",
           "answer": "The wind blew and moved the cloud, so its shape changed",
           "acceptable": [
             "the wind blew",
@@ -3824,7 +3833,7 @@
           "verified": {
             "solverAnswer": "The wind blew and changed its shape",
             "agrees": true,
-            "note": "Key correct. The poem does not actually say the elephant cloud became the rabbit; 'Now it is a rabbit' most naturally refers to the boat cloud (nearest referent). Ask 'why did a cloud change into a rabbit?'."
+            "note": "FIXED (checker flag resolved): Prompt no longer claims the elephant cloud became the rabbit (the poem does not say which cloud). Key unchanged: the wind blew and changed its shape."
           }
         },
         {
@@ -4077,11 +4086,6 @@
               },
               {
                 "text": "Your name is what?",
-                "misconceptionId": "c2-english-ch09-t01-m-question-order",
-                "correct": false
-              },
-              {
-                "text": "What your name is?",
                 "misconceptionId": "c2-english-ch09-t01-m-question-order",
                 "correct": false
               }
@@ -4356,25 +4360,26 @@
           "skillId": "c2-english-ch09-t01-s4",
           "kind": "predict",
           "difficulty": 3,
-          "prompt_en": "The policewoman says on the big mike, 'Vikram Sharma is at the help desk.' What do you think happens next?",
-          "prompt_hi": "Policewoman bade mike pe kehti hai, 'Vikram Sharma help desk pe hai.' Tumhe kya lagta hai, aage kya hoga?",
-          "answer": "His mother hears it and comes to the help desk to take him",
+          "prompt_en": "Imagine the story goes on. Next time Chintu goes to a mela with Amma, what do you think he will do?",
+          "prompt_hi": "Socho kahani aage chalti hai. Agli baar jab Chintu Amma ke saath mela jaayega, tumhe kya lagta hai woh kya karega?",
+          "answer": "He will hold Amma's hand tightly and not let go.",
           "acceptable": [
-            "Amma comes",
-            "his mother comes running",
-            "his mother finds him",
-            "he goes home with Amma"
+            "hold Amma's hand",
+            "hold his mother's hand",
+            "he will not let go of her hand",
+            "stay close to Amma",
+            "he will tell his full name if he gets lost"
           ],
           "hints": [
-            "Who is looking for Chintu?",
-            "Who will hear the name on the mike?",
-            "His mother ___ and comes ___.",
-            "His mother hears it and comes running to the help desk."
+            "How did Chintu get lost?",
+            "What did he let go of at the start?",
+            "He will hold Amma's h___ tightly.",
+            "He will hold Amma's hand tightly and not let go."
           ],
           "verified": {
-            "solverAnswer": "His mother hears and comes running to the help desk",
+            "solverAnswer": "He will hold Amma's hand and not let go.",
             "agrees": true,
-            "note": "Key correct, but the outcome is stated in the passage ('Soon Amma came running and hugged him'), so this is retrieval labelled as predict."
+            "note": "FIXED (checker flag resolved): Old outcome was stated in the passage (retrieval). Now asks for a beyond-text prediction grounded in the story's cause (he let go of Amma's hand)."
           }
         },
         {
@@ -4436,8 +4441,9 @@
           "prompt_hi": "Chintu ka asli, poora naam kya hai?",
           "answer": "Vikram Sharma",
           "acceptable": [
-            "Vikram",
-            "his name is Vikram Sharma"
+            "his name is Vikram Sharma",
+            "His full name is Vikram Sharma",
+            "Vikram Sharma."
           ],
           "hints": [
             "He told it to the policewoman.",
@@ -4448,7 +4454,7 @@
           "verified": {
             "solverAnswer": "Vikram Sharma",
             "agrees": true,
-            "note": "Key correct. Acceptable includes bare 'Vikram' for a question that explicitly asks for the full name, which rewards the very gap the story teaches; remove it."
+            "note": "FIXED (checker flag resolved): Removed bare 'Vikram': the question asks for the FULL name, which is the story's point. 'Vikram' alone is graded partial."
           }
         },
         {
@@ -4755,9 +4761,9 @@
           "answer": "a peacock and a parrot",
           "acceptable": [
             "peacock and parrot",
-            "peacock",
-            "parrot",
-            "a peacock"
+            "a parrot and a peacock",
+            "parrot and peacock",
+            "peacock, parrot"
           ],
           "hints": [
             "One bird is blue with a long tail.",
@@ -4768,7 +4774,7 @@
           "verified": {
             "solverAnswer": "a peacock and a parrot",
             "agrees": true,
-            "note": "Key correct. Acceptable includes single 'peacock', 'parrot', 'a peacock' although the prompt asks for two birds; remove single-bird entries or grade as partial."
+            "note": "FIXED (checker flag resolved): Removed single-bird entries ('peacock', 'parrot', 'a peacock'); the prompt asks for two birds, so one bird is graded partial."
           }
         },
         {
@@ -4879,7 +4885,7 @@
           "kind": "near_transfer",
           "difficulty": 3,
           "prompt_en": "A little sparrow says, 'I wish I were big like an eagle.' What could the crow tell her?",
-          "prompt_hi": "Ek chhoti chidiya kehti hai, 'Kaash main cheel jitni badi hoti.' Kauwa usse kya keh sakta hai?",
+          "prompt_hi": "Ek chhoti chidiya kehti hai, 'Kaash main baaz (eagle) jitni badi hoti.' Kauwa usse kya keh sakta hai?",
           "answer": "Be happy as you are; you can do good things too",
           "acceptable": [
             "you are nice as you are",
@@ -4896,7 +4902,7 @@
           "verified": {
             "solverAnswer": "Be happy as you are.",
             "agrees": true,
-            "note": "Key fine. prompt_hi renders 'eagle' as 'cheel' (which is a kite, the bird); 'baaz' is closer to eagle."
+            "note": "FIXED (checker flag resolved): prompt_hi now renders eagle as 'baaz' (cheel = kite). Key unchanged."
           }
         },
         {
@@ -5055,7 +5061,7 @@
       ],
       "expectations": [
         "Two cats found one roti and fought over it",
-        "The monkey said he would share it, but kept biting the bigger piece",
+        "The monkey said he would divide it for them, but kept biting the bigger piece",
         "The monkey ate the whole roti and the cats got nothing",
         "The monkey was clever but not fair; the cats should have shared it themselves",
         "Retells using past forms (found, broke, ate, ran)"
@@ -5100,7 +5106,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Mini and Tini were sad. Which is right: 'They looked at each other.' or 'He looked at each other.'?",
-            "prompt_hi": "Mini aur Tini udaas thi. Kaunsa sahi hai — 'They looked at each other.' ya 'He looked at each other.'?",
+            "prompt_hi": "Mini aur Tini udaas thin. Kaunsa sahi hai — 'They looked at each other.' ya 'He looked at each other.'?",
             "options": [
               {
                 "text": "They looked at each other.",
@@ -5181,7 +5187,7 @@
           "skillId": "c2-english-ch11-t01-s1",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Who came to share the roti for the cats?",
+          "prompt_en": "Who came to divide the roti for the cats?",
           "prompt_hi": "Billiyon ke liye roti baantne kaun aaya?",
           "answer": "a monkey",
           "acceptable": [
@@ -5197,7 +5203,7 @@
           "verified": {
             "solverAnswer": "a monkey",
             "agrees": true,
-            "note": "Key correct. Prompt and passage use 'share it for you', which is not standard English (share = use together); for ESL learners model 'divide it for you' / 'Who came to divide the roti for the cats?'."
+            "note": "FIXED (checker flag resolved): Passage and prompt now model 'divide it for you' instead of the non-standard 'share it for you'. Key unchanged (a monkey)."
           }
         },
         {
@@ -5215,7 +5221,7 @@
             "big piece"
           ],
           "hints": [
-            "He said he wanted the pieces to be equal.",
+            "Think back: what did the monkey do right after he broke the roti?",
             "Which one would he make smaller?",
             "He bit the b___ piece.",
             "He bit the bigger piece first."
@@ -5223,7 +5229,7 @@
           "verified": {
             "solverAnswer": "the bigger piece",
             "agrees": true,
-            "note": "Key correct. Hint 1 states 'He said he wanted the pieces to be equal', which the passage does not say."
+            "note": "FIXED (checker flag resolved): Hint 1 no longer claims the monkey said he wanted equal pieces (not in the passage). Key unchanged."
           }
         },
         {
@@ -5486,9 +5492,9 @@
           "skillId": "c2-english-ch11-t01-s3",
           "kind": "teachback",
           "difficulty": 3,
-          "prompt_en": "Tell Bittu the story of the smart monkey in three sentences, and say what it teaches us.",
+          "prompt_en": "Tell Bittu the story of the tricky monkey in three sentences, and say what it teaches us.",
           "prompt_hi": "Bittu ko teen sentences mein chalaak bandar ki kahani sunao, aur batao isse kya seekh milti hai.",
-          "answer": "Two cats fought over one roti; the monkey said he would share it but kept biting it until it was gone; we should share fairly ourselves and not fight.",
+          "answer": "Two cats fought over one roti; the monkey said he would divide it for them but kept biting it until it was gone; we should share fairly ourselves and not fight.",
           "acceptable": [
             "cats fought, monkey ate it all, share and do not fight",
             "sharing is better than fighting"
@@ -5502,7 +5508,7 @@
           "verified": {
             "solverAnswer": "Two cats fought over a roti; the monkey kept biting it until it was gone; we should share fairly ourselves.",
             "agrees": true,
-            "note": "Open teachback. Note the topic labels the greedy trickster 'the smart monkey', which muddles the moral for 7-year-olds; prefer 'the clever/greedy monkey' or 'the tricky monkey'."
+            "note": "FIXED (checker flag resolved): Framing changed from 'the smart monkey' to 'the tricky monkey' (matches prompt_hi 'chalaak') so the moral is not muddled; model answer uses 'divide it for them'."
           }
         }
       ],
@@ -5543,7 +5549,7 @@
         "pets at home",
         "a toy everyone wants"
       ],
-      "passage": "Two cats, Mini and Tini, found one roti. 'It is mine!' said Mini. 'No, it is mine!' said Tini. A monkey came by. 'Let me share it for you,' he said. He broke the roti into two pieces. One piece was bigger, so he took a bite of it. Now the other piece was bigger! He took a bite of that one too. Bite, bite, bite. Soon the roti was all gone. The monkey ran up the tree. The cats looked at each other. 'We should have shared it ourselves,' they said."
+      "passage": "Two cats, Mini and Tini, found one roti. 'It is mine!' said Mini. 'No, it is mine!' said Tini. A monkey came by. 'Let me divide it for you,' he said. He broke the roti into two pieces. One piece was bigger, so he took a bite of it. Now the other piece was bigger! He took a bite of that one too. Bite, bite, bite. Soon the roti was all gone. The monkey ran up the tree. The cats looked at each other. 'We should have shared it ourselves,' they said."
     },
     {
       "topicId": "c2-english-ch12-t01",
@@ -6145,8 +6151,8 @@
             "Cannot say why 'Onam' starts with a big letter"
           ],
           "diagnostic": {
-            "prompt_en": "Look at 'we celebrate diwali.' Which words need a capital letter?",
-            "prompt_hi": "'we celebrate diwali.' dekho. Kaun se words ko bada (capital) letter chahiye?",
+            "prompt_en": "Listen and look as I read and point: 'we celebrate diwali.' Which words need a capital letter?",
+            "prompt_hi": "Main padhti hoon aur har word pe ungli rakhti hoon: 'we celebrate diwali.' Kaun se words ko bada (capital) letter chahiye?",
             "options": [
               {
                 "text": "We and Diwali",
@@ -6223,14 +6229,15 @@
           "skillId": "c2-english-ch13-t01-s2",
           "kind": "translate_rep",
           "difficulty": 2,
-          "prompt_en": "Look at the picture: people are dancing in circles with dandiya sticks in Gujarat. What is the dance called, and at which festival?",
-          "prompt_hi": "Picture dekho: Gujarat mein log dandiya leke gol-gol naach rahe hain. Is naach ka naam kya hai, aur kis tyohaar pe hota hai?",
+          "prompt_en": "Look at the picture: in Gujarat, people are dancing in big circles and clapping their hands. What is the dance called, and at which festival?",
+          "prompt_hi": "Picture dekho: Gujarat mein log taali bajaate hue bade gol ghere mein naach rahe hain. Is naach ka naam kya hai, aur kis tyohaar pe hota hai?",
           "answer": "garba, at Navratri",
           "acceptable": [
-            "garba",
-            "Navratri",
             "garba at Navratri",
-            "dandiya at Navratri"
+            "the garba, at Navratri",
+            "garba, Navratri",
+            "It is garba, at Navratri",
+            "They dance the garba at Navratri"
           ],
           "hints": [
             "Find the line about Gujarat.",
@@ -6239,9 +6246,9 @@
             "It is the garba, at Navratri."
           ],
           "verified": {
-            "solverAnswer": "dandiya (raas), at Navratri",
-            "agrees": false,
-            "note": "Factual mismatch: dancing in circles WITH DANDIYA STICKS is dandiya raas; garba is danced with hand-claps, no sticks. Key 'garba, at Navratri' (from the passage) contradicts the picture described. Fix the picture to clapping in circles (keep garba) or change key to dandiya and the passage line to match."
+            "solverAnswer": "garba, at Navratri",
+            "agrees": true,
+            "note": "FIXED (checker flag resolved): Picture re-described as clapping in circles (no sticks), which is garba, matching the passage line. Removed 'dandiya at Navratri'. Prompt asks for dance AND festival, so a single part ('garba' or 'Navratri') is graded partial, not accepted."
           }
         },
         {
@@ -6348,8 +6355,8 @@
           "skillId": "c2-english-ch13-t01-s1",
           "kind": "error_spot",
           "difficulty": 3,
-          "prompt_en": "Look at this sentence: 'we celebrate diwali.' Which two words need a capital letter?",
-          "prompt_hi": "Yeh sentence dekho: 'we celebrate diwali.' Kaun se do words ko capital letter chahiye?",
+          "prompt_en": "Listen and look as I read and point to each word: 'we celebrate diwali.' Two words need a capital letter. Tap them, or say them.",
+          "prompt_hi": "Main padhti hoon aur har word pe ungli rakhti hoon, tum dekho aur suno: 'we celebrate diwali.' Do words ko capital (bada) letter chahiye. Un pe tap karo ya bolo.",
           "answer": "We and Diwali",
           "acceptable": [
             "we, diwali",
@@ -6366,7 +6373,7 @@
           "verified": {
             "solverAnswer": "We and Diwali",
             "agrees": true,
-            "note": "Key correct. Purely written-convention task (capital letters) with no oral path; for class 2 oral/picture-first, present with print support and teacher read-aloud, or defer."
+            "note": "FIXED (checker flag resolved): Now presented with teacher read-aloud, word-by-word pointing and a tap-or-say response path (class 2 oral/print-support rule). Key unchanged."
           }
         },
         {
@@ -6456,14 +6463,14 @@
           ],
           "hints": [
             "Find the line about Assam.",
-            "It is a short name with two sounds.",
+            "It is a short name with just two beats.",
             "B___.",
             "People in Assam celebrate Bihu."
           ],
           "verified": {
             "solverAnswer": "Bihu",
             "agrees": true,
-            "note": "Key correct. Hint 2 'a short name with two sounds' is inaccurate (two syllables, four sounds); say 'two beats'."
+            "note": "FIXED (checker flag resolved): Hint 2 now says 'two beats' (Bihu has two syllables, four sounds)."
           }
         },
         {

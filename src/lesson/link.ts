@@ -41,6 +41,18 @@ export interface LinkLevels {
   teacher: LevelMeter;
 }
 
+/**
+ * A voice link's microphone, for on-device voice features (src/voice/features.ts): the same MediaStream and
+ * AudioContext the link already captured, so no second getUserMedia or context. Audio stays on the device.
+ * teacherEnd says where the link's teacher_audio_end comes from: "local" = this device's playback ended
+ * (cascade lane), "remote" = the server's buffer stopped (realtime lane; re-timed from the teacher meter).
+ */
+export interface MicTap {
+  stream: MediaStream;
+  ctx: AudioContext;
+  teacherEnd: "local" | "remote";
+}
+
 /** A Director-written teacher line (text lane): its words, and the stored turn /api/tts may speak. */
 export interface TeacherReply {
   text: string;
@@ -69,4 +81,6 @@ export interface TeacherLink {
   talkStart(): void;
   talkEnd(): void;
   close(): void;
+  /** Voice links once connected: the mic for on-device voice features (null before connect / after close). */
+  micTap?(): MicTap | null;
 }

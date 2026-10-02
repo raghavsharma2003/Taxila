@@ -47,19 +47,19 @@
           "signs": [
             "Says 'I have two hand'",
             "Says 'two ear, two eye' while pointing",
-            "Repeats the rhyme as 'two little foot'"
+            "Says the rhyme line as 'my two eye'"
           ],
           "diagnostic": {
-            "prompt_en": "Listen to two ways of saying it. Which one is right in English: 'I have two hand' or 'I have two hands'?",
-            "prompt_hi": "Suno, do tarah se bolte hain. English mein sahi kaunsa hai — 'I have two hand' ya 'I have two hands'?",
+            "prompt_en": "Our doll is standing on the table. Which is right in English: 'My doll has two leg' or 'My doll has two legs'?",
+            "prompt_hi": "Hamari doll table pe khadi hai. English mein sahi kaunsa hai — 'My doll has two leg' ya 'My doll has two legs'?",
             "options": [
               {
-                "text": "I have two hands",
+                "text": "My doll has two legs",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "I have two hand",
+                "text": "My doll has two leg",
                 "misconceptionId": "c1-english-ch01-t01-m1",
                 "correct": false
               }
@@ -79,16 +79,16 @@
             "Uses one word for both"
           ],
           "diagnostic": {
-            "prompt_en": "Point and tell me: which one do we HEAR music with — ears or eyes?",
-            "prompt_hi": "Batao aur ungli se dikhao: gaana hum kis se SUNTE hain — ears se ya eyes se?",
+            "prompt_en": "Mummy rings a bell behind you, so you cannot see it. Which one tells you the bell is ringing — your ears or your eyes?",
+            "prompt_hi": "Mummy tumhare peeche ghanti bajati hain, tum use dekh nahi sakte. Kaun batata hai ki ghanti baj rahi hai — tumhare ears ya tumhare eyes?",
             "options": [
               {
-                "text": "Ears",
+                "text": "My ears",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Eyes",
+                "text": "My eyes",
                 "misconceptionId": "c1-english-ch01-t01-m2",
                 "correct": false
               }
@@ -108,16 +108,16 @@
             "Says any two words with the same first letter rhyme"
           ],
           "diagnostic": {
-            "prompt_en": "Which word rhymes with 'clap' — 'cat' or 'tap'?",
-            "prompt_hi": "'Clap' ke saath kaunsa word rhyme karta hai — 'cat' ya 'tap'? Aakhri awaaz pe dhyaan do.",
+            "prompt_en": "Which word rhymes with 'hat' — 'ham' or 'mat'?",
+            "prompt_hi": "'Hat' ke saath kaunsa word rhyme karta hai — 'ham' ya 'mat'?",
             "options": [
               {
-                "text": "tap",
+                "text": "mat",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "cat",
+                "text": "ham",
                 "misconceptionId": "c1-english-ch01-t01-m3",
                 "correct": false
               }
@@ -141,8 +141,7 @@
           "acceptable": [
             "eyes",
             "my eyes",
-            "I see with my eyes",
-            "eye"
+            "I see with my eyes"
           ],
           "hints": [
             "What helps you look at the sky?",
@@ -153,7 +152,7 @@
           "verified": {
             "solverAnswer": "eyes",
             "agrees": true,
-            "note": "Key correct. Acceptable list includes singular 'eye', which rewards the dropped-plural error (m1) this topic targets; suggest removing it."
+            "note": "Fixed after checker review (2026-10-02): removed singular 'eye' from acceptable (it rewarded the dropped-plural error m1). Key 'eyes' agrees."
           }
         },
         {
@@ -167,8 +166,7 @@
           "acceptable": [
             "ears",
             "my ears",
-            "I hear with my ears",
-            "ear"
+            "I hear with my ears"
           ],
           "hints": [
             "What helps you hear Mummy calling you?",
@@ -180,7 +178,7 @@
           "verified": {
             "solverAnswer": "ears",
             "agrees": true,
-            "note": "Key correct. Acceptable list includes singular 'ear' (same plural-s concern as i01); suggest removing it."
+            "note": "Fixed after checker review (2026-10-02): removed singular 'ear' from acceptable (same plural-s reason as i01). Key 'ears' agrees."
           }
         },
         {
@@ -339,8 +337,8 @@
           "skillId": "c1-english-ch01-t01-s3",
           "kind": "predict",
           "difficulty": 2,
-          "prompt_en": "Listen to our rhyme: 'Two little feet go tap, tap, tap. Two little hands go clap, clap, ___.' What comes next?",
-          "prompt_hi": "Hamari rhyme suno: 'Two little feet go tap, tap, tap. Two little hands go clap, clap, ___.' Aage kya aayega?",
+          "prompt_en": "Listen to our rhyme: 'My feet say tap! My hands say clap! Tap with me, and clap, clap, ___.' What comes next?",
+          "prompt_hi": "Hamari rhyme suno: 'My feet say tap! My hands say clap! Tap with me, and clap, clap, ___.' Aage kya aayega?",
           "answer": "clap",
           "acceptable": [
             "clap",
@@ -355,7 +353,7 @@
           "verified": {
             "solverAnswer": "clap",
             "agrees": true,
-            "note": "Key correct. The rhyme lines are the traditional 'Two Little Hands' rhyme that NCERT Mridang ch1 reprints (public-domain nursery rhyme, order swapped): low risk, but it is the textbook's own text."
+            "note": "Fixed after checker review (2026-10-02): replaced the traditional 'Two Little Hands' lines (the textbook's own text) with the kit's ORIGINAL rhyme stored in topic.passage (last two lines). Key 'clap' checked against the passage."
           }
         },
         {
@@ -451,24 +449,25 @@
           "skillId": "c1-english-ch01-t01-s3",
           "kind": "retrieval",
           "difficulty": 2,
-          "prompt_en": "Remember our body rhyme? What sound did the little feet make?",
-          "prompt_hi": "Hamari body wali rhyme yaad hai? Chhote pair kya awaaz karte the?",
-          "answer": "tap, tap, tap",
+          "prompt_en": "Remember our body rhyme? What did the feet say?",
+          "prompt_hi": "Hamari body wali rhyme yaad hai? Pair kya bolte the?",
+          "answer": "tap",
           "acceptable": [
             "tap",
             "tap tap tap",
-            "they go tap tap tap"
+            "my feet say tap",
+            "they say tap"
           ],
           "hints": [
             "Tap your feet on the floor.",
             "It rhymes with 'clap'.",
-            "The feet go t___, t___, t___.",
-            "The feet go tap, tap, tap."
+            "The feet say t___!",
+            "My feet say tap!"
           ],
           "verified": {
-            "solverAnswer": "tap, tap, tap",
+            "solverAnswer": "tap",
             "agrees": true,
-            "note": "Key correct. Same traditional-rhyme note as i09."
+            "note": "Fixed after checker review (2026-10-02): now uses the ORIGINAL rhyme in topic.passage ('My feet say tap!'), not the traditional textbook rhyme. Key checked against the passage."
           }
         }
       ],
@@ -506,7 +505,8 @@
         "dance to a film song",
         "cricket (catch with hands, run with feet)",
         "pet dog or cat (its ears, nose, paws)"
-      ]
+      ],
+      "passage": "I look up high and see the sky,\nMy two eyes watch a bird fly by.\nMy two ears hear the school bell ring,\nMy one nose smells a flower in spring.\nMy feet say tap! My hands say clap!\nTap with me, and clap, clap, clap!"
     },
     {
       "topicId": "c1-english-ch02-t01",
@@ -581,21 +581,21 @@
             "Says 'Good morning' to Papa when he returns from work at night"
           ],
           "diagnostic": {
-            "prompt_en": "Aman meets his friend after lunch, at 2 o'clock. Which greeting fits?",
-            "prompt_hi": "Aman lunch ke baad, 2 baje apne dost se milta hai. Kaunsa greeting theek hai?",
+            "prompt_en": "Pooja's Nani comes to pick her up from school at 3 o'clock in the afternoon. What should Pooja say?",
+            "prompt_hi": "Pooja ki Nani dopahar 3 baje use school se lene aati hain. Pooja kya bole?",
             "options": [
               {
-                "text": "Good afternoon!",
+                "text": "Good afternoon, Nani!",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Good morning!",
+                "text": "Good morning, Nani!",
                 "misconceptionId": "c1-english-ch02-t01-m2",
                 "correct": false
               },
               {
-                "text": "Good night!",
+                "text": "Good night, Nani!",
                 "misconceptionId": "c1-english-ch02-t01-m1",
                 "correct": false
               }
@@ -614,8 +614,8 @@
             "Stays silent after someone thanks them"
           ],
           "diagnostic": {
-            "prompt_en": "Meena gives Raju a pencil. Raju says, 'Thank you!' What can Meena say back?",
-            "prompt_hi": "Meena Raju ko pencil deti hai. Raju bolta hai, 'Thank you!' Meena kya jawab de?",
+            "prompt_en": "Dadi gives Sonu a laddoo. Sonu says, 'Thank you, Dadi!' What can Dadi say back?",
+            "prompt_hi": "Dadi Sonu ko ek laddoo deti hain. Sonu bolta hai, 'Thank you, Dadi!' Dadi kya jawab dein?",
             "options": [
               {
                 "text": "You're welcome!",
@@ -1010,7 +1010,8 @@
         "shop / kirana store",
         "wedding or festival get-together",
         "phone call with a relative"
-      ]
+      ],
+      "passage": "Riya's Day (original story)\nThe sun is up. Riya walks into class. Her teacher smiles at her.\n'Good morning, Ma'am!' says Riya.\n'Good morning, Riya! How are you?'\n'I am fine, thank you.'\nAfter lunch, Riya meets her friend Raju. 'Good afternoon, Raju!'\nRaju has no pencil, so Riya gives him one. 'Thank you, Riya!' 'You're welcome!'\nIn the evening, Dadaji comes home from the park. 'Good evening, Dadaji!'\nAt bedtime, Riya hugs Mummy. 'Good night, Mummy!'"
     },
     {
       "topicId": "c1-english-ch03-t01",
@@ -1060,16 +1061,16 @@
             "Says 'There is parrot on tree'"
           ],
           "diagnostic": {
-            "prompt_en": "Listen to two ways of saying it. Which sounds right in English: 'I can see cow' or 'I can see a cow'?",
-            "prompt_hi": "Suno, do tarah se bolte hain. English mein sahi kaunsa lagta hai: 'I can see cow' ya 'I can see a cow'?",
+            "prompt_en": "There is a frog in the pond. Which sounds right in English: 'I can see frog' or 'I can see a frog'?",
+            "prompt_hi": "Talaab mein ek mendhak hai. English mein sahi kaunsa lagta hai: 'I can see frog' ya 'I can see a frog'?",
             "options": [
               {
-                "text": "I can see a cow",
+                "text": "I can see a frog",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "I can see cow",
+                "text": "I can see frog",
                 "misconceptionId": "c1-english-ch03-t01-m1",
                 "correct": false
               }
@@ -1089,16 +1090,16 @@
             "Pauses awkwardly between 'a' and the word"
           ],
           "diagnostic": {
-            "prompt_en": "Which is easier to say and right in English: 'a owl' or 'an owl'?",
-            "prompt_hi": "Kaunsa bolna aasaan hai aur English mein sahi hai: 'a owl' ya 'an owl'?",
+            "prompt_en": "A tiny ant is walking on the leaf. Which is right in English: 'I can see a ant' or 'I can see an ant'?",
+            "prompt_hi": "Patte pe ek chhoti si cheenti chal rahi hai. English mein sahi kaunsa hai: 'I can see a ant' ya 'I can see an ant'?",
             "options": [
               {
-                "text": "an owl",
+                "text": "I can see an ant",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "a owl",
+                "text": "I can see a ant",
                 "misconceptionId": "c1-english-ch03-t01-m2",
                 "correct": false
               }
@@ -1118,16 +1119,16 @@
             "Has no English action word for an animal sound"
           ],
           "diagnostic": {
-            "prompt_en": "What does a dog do when it sees a stranger? 'It barks' or 'It speaks'?",
-            "prompt_hi": "Kutta anjaan aadmi ko dekh ke kya karta hai? 'It barks' ya 'It speaks'?",
+            "prompt_en": "The cat is hungry and wants milk. What does it do: 'The cat meows' or 'The cat speaks'?",
+            "prompt_hi": "Billi ko bhookh lagi hai, use doodh chahiye. Woh kya karti hai: 'The cat meows' ya 'The cat speaks'?",
             "options": [
               {
-                "text": "It barks",
+                "text": "The cat meows",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "It speaks",
+                "text": "The cat speaks",
                 "misconceptionId": "c1-english-ch03-t01-m3",
                 "correct": false
               }
@@ -1476,9 +1477,9 @@
             "It was the crow."
           ],
           "verified": {
-            "solverAnswer": "UNKNOWN (story-dependent; likely crow or parrot)",
+            "solverAnswer": "the crow",
             "agrees": true,
-            "note": "Key 'crow' depends on the picture, which is not in the kit. The i03 hint ('sitting on the tree in our picture') matches it, so the picture asset must show a crow on the tree."
+            "note": "Fixed after checker review (2026-10-02): the pond picture is now specified in topic.passage (a black crow is the only bird sitting on the tree; the parrot is flying over the pond). Key 'crow' checked against it; consistent with i03 hint 2 and i12."
           }
         }
       ],
@@ -1517,7 +1518,8 @@
         "birds on the balcony",
         "jungle cartoons",
         "animal sounds game"
-      ]
+      ],
+      "passage": "Pond picture (original scene; the illustrator draws exactly this and the tutor describes only this):\nA pond near a village on a sunny day.\nA brown-and-white cow stands at the edge of the pond, drinking water.\nThree white ducks are swimming in the pond.\nA big tree grows beside the pond. A black crow is sitting on a branch of the tree. It is the only bird in the tree.\nA green parrot with a red beak is flying over the pond.\nA dog is running along the bank towards the ducks."
     },
     {
       "topicId": "c1-english-ch04-t01",
@@ -1566,16 +1568,16 @@
             "Cannot say what happened first"
           ],
           "diagnostic": {
-            "prompt_en": "What happened first: the cap-seller fell asleep, or the monkeys took the caps?",
-            "prompt_hi": "Pehle kya hua: cap-seller so gaya, ya bandar topiyaan le gaye?",
+            "prompt_en": "At the end of the story, who threw a cap down first: the cap-seller or the monkeys?",
+            "prompt_hi": "Kahani ke end mein pehle topi kisne neeche phenki: cap-seller ne ya bandaron ne?",
             "options": [
               {
-                "text": "The cap-seller fell asleep first",
+                "text": "The cap-seller threw his cap first",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "The monkeys took the caps first",
+                "text": "The monkeys threw the caps first",
                 "misconceptionId": "c1-english-ch04-t01-m1",
                 "correct": false
               }
@@ -2047,7 +2049,8 @@
         "copying games (Simon says)",
         "naughty younger sibling",
         "a balloon-seller at the park"
-      ]
+      ],
+      "passage": "The Cap-seller and the Monkeys (original retelling of the folk tale)\nA cap-seller walked from village to village with a big basket of caps on his head.\nOne day it was very hot. He was tired, so he sat down under a big tree and fell asleep.\nUp in the tree lived many monkeys. They came down, took the caps from his basket and climbed back up.\nThe cap-seller woke up. His basket was empty! He looked up and saw the monkeys wearing his caps.\nHe shook his fist. The monkeys shook their fists. He scratched his head. The monkeys scratched their heads.\n'They copy me!' he thought. So he took off his own cap and threw it on the ground.\nThe monkeys threw their caps on the ground too.\nThe cap-seller picked up all the caps, put them in his basket and went on his way."
     },
     {
       "topicId": "c1-english-ch05-t01",
@@ -2096,11 +2099,11 @@
             "Refuses the English sound word"
           ],
           "diagnostic": {
-            "prompt_en": "In Hindi the rooster says 'kukdoo-koo'. In English, what does the rooster say?",
-            "prompt_hi": "Hindi mein murga 'kukdoo-koo' bolta hai. English mein murga kya bolta hai?",
+            "prompt_en": "In Hindi we say a dog goes 'bhau-bhau'. In English, what does a dog say?",
+            "prompt_hi": "Hindi mein hum kehte hain kutta 'bhau-bhau' karta hai. English mein kutta kya bolta hai?",
             "options": [
               {
-                "text": "cock-a-doodle-doo",
+                "text": "woof woof",
                 "misconceptionId": null,
                 "correct": true
               },
@@ -2124,16 +2127,16 @@
             "Points to the rooster when asked for the hen"
           ],
           "diagnostic": {
-            "prompt_en": "Which one sings 'cock-a-doodle-doo' in the morning: the hen or the rooster?",
-            "prompt_hi": "Subah 'cock-a-doodle-doo' kaun gaata hai: hen ya rooster?",
+            "prompt_en": "'Murga' — what is it called in English: a hen or a rooster?",
+            "prompt_hi": "'Murga' ko English mein kya kehte hain: hen ya rooster?",
             "options": [
               {
-                "text": "The rooster",
+                "text": "a rooster",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "The hen",
+                "text": "a hen",
                 "misconceptionId": "c1-english-ch05-t01-m2",
                 "correct": false
               }
@@ -2153,16 +2156,16 @@
             "Says 'sip' for ship"
           ],
           "diagnostic": {
-            "prompt_en": "Listen: 'sheep' ... 'seep'. Which one is the woolly farm animal?",
-            "prompt_hi": "Suno: 'sheep' ... 'seep'. Inme se oon wala farm ka jaanwar kaunsa hai?",
+            "prompt_en": "Listen: 'ship' ... 'sip'. Which one is the big boat that goes on the sea?",
+            "prompt_hi": "Suno: 'ship' ... 'sip'. Samundar pe chalne wala bada jahaaz kaunsa hai?",
             "options": [
               {
-                "text": "sheep",
+                "text": "ship",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "seep",
+                "text": "sip",
                 "misconceptionId": "c1-english-ch05-t01-m3",
                 "correct": false
               }
@@ -2540,7 +2543,8 @@
         "a village animal mela",
         "animal-sound guessing game",
         "farm cartoon"
-      ]
+      ],
+      "passage": "On our farm, the cow says moo,\nThe pigeon says coo,\nAnd the rooster sings cock-a-doodle-doo!\nQuack, quack, quack, says the little duck,\nCluck, cluck, cluck, says the hen, cluck-cluck!\nBaa, baa, baa, says the woolly sheep,\nShh! Now the farm is fast asleep."
     },
     {
       "topicId": "c1-english-ch06-t01",
@@ -2590,16 +2594,16 @@
             "Answers 'Do you like apples?' with 'Yes, I am liking'"
           ],
           "diagnostic": {
-            "prompt_en": "Which is the usual way to say it in English: 'I am liking mangoes' or 'I like mangoes'?",
-            "prompt_hi": "English mein aam taur pe kaise bolte hain: 'I am liking mangoes' ya 'I like mangoes'?",
+            "prompt_en": "Which is the usual way to say it in English: 'I am liking grapes' or 'I like grapes'?",
+            "prompt_hi": "English mein aam taur pe kaise bolte hain: 'I am liking grapes' ya 'I like grapes'?",
             "options": [
               {
-                "text": "I like mangoes",
+                "text": "I like grapes",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "I am liking mangoes",
+                "text": "I am liking grapes",
                 "misconceptionId": "c1-english-ch06-t01-m1",
                 "correct": false
               }
@@ -2618,16 +2622,16 @@
             "Picks the potato picture for 'tomato'"
           ],
           "diagnostic": {
-            "prompt_en": "This one is red, round and we put it in salad. Is it a tomato or a potato?",
-            "prompt_hi": "Yeh laal hai, gol hai aur salad mein daalte hain. Yeh tomato hai ya potato?",
+            "prompt_en": "This one is brown and bumpy, and we mash it to make tikki. Is it a tomato or a potato?",
+            "prompt_hi": "Yeh bhoora hai, thoda ubad-khabad, aur ise mash karke tikki banate hain. Yeh tomato hai ya potato?",
             "options": [
               {
-                "text": "tomato",
+                "text": "potato",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "potato",
+                "text": "tomato",
                 "misconceptionId": "c1-english-ch06-t01-m2",
                 "correct": false
               }
@@ -2646,8 +2650,8 @@
             "Uses 'apple' for any red round food"
           ],
           "diagnostic": {
-            "prompt_en": "This is round and red, and we cook it in sabzi and dal. Is it an apple or a tomato?",
-            "prompt_hi": "Yeh gol aur laal hai, aur ise sabzi aur dal mein pakate hain. Yeh apple hai ya tomato?",
+            "prompt_en": "This red, round thing is squeezed to make ketchup for your samosa. Is it an apple or a tomato?",
+            "prompt_hi": "Is laal, gol cheez se samose wala ketchup banta hai. Yeh apple hai ya tomato?",
             "options": [
               {
                 "text": "a tomato",
@@ -2857,7 +2861,11 @@
             "i like bananas",
             "i like grapes",
             "i like oranges",
-            "i like"
+            "i like guavas",
+            "i like papaya",
+            "i like watermelon",
+            "i like mango",
+            "i like apple"
           ],
           "hints": [
             "Which fruit do you eat happily?",
@@ -2869,7 +2877,7 @@
           "verified": {
             "solverAnswer": "I like (mangoes/...)",
             "agrees": true,
-            "note": "Key correct. Acceptable list includes bare 'i like', which passes a sentence with no fruit in it; minor."
+            "note": "Fixed after checker review (2026-10-02): removed bare 'i like' from acceptable (it passed a sentence with no fruit); the key requires 'I like' + a fruit name and acceptable now lists only complete examples."
           }
         },
         {
@@ -3037,7 +3045,8 @@
         "lunch-box fruits",
         "fruit-chaat stall",
         "kitchen garden"
-      ]
+      ],
+      "passage": "Market-stall picture (original scene; the illustrator draws exactly this):\nPinky and her Papa stand at a market stall.\nThe fruit basket has a yellow mango, a bunch of yellow bananas, green grapes and a red apple.\nThe vegetable basket has brown potatoes, onions, red tomatoes, orange carrots and a green pea pod."
     },
     {
       "topicId": "c1-english-ch07-t01",
@@ -3086,16 +3095,16 @@
             "Switches he/she for the same person"
           ],
           "diagnostic": {
-            "prompt_en": "Meenu is a girl. Which is right: 'He eats idli' or 'She eats idli'?",
-            "prompt_hi": "Meenu ek ladki hai. Sahi kaunsa hai: 'He eats idli' ya 'She eats idli'?",
+            "prompt_en": "Kavya is a girl. Which is right: 'He drinks milk' or 'She drinks milk'?",
+            "prompt_hi": "Kavya ek ladki hai. Sahi kaunsa hai: 'He drinks milk' ya 'She drinks milk'?",
             "options": [
               {
-                "text": "She eats idli",
+                "text": "She drinks milk",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "He eats idli",
+                "text": "He drinks milk",
                 "misconceptionId": "c1-english-ch07-t01-m1",
                 "correct": false
               }
@@ -3115,16 +3124,16 @@
             "Uses the same verb form for I and she"
           ],
           "diagnostic": {
-            "prompt_en": "Which sounds right: 'Arjun eat rice' or 'Arjun eats rice'?",
-            "prompt_hi": "Kaunsa sahi lagta hai: 'Arjun eat rice' ya 'Arjun eats rice'?",
+            "prompt_en": "Which sounds right: 'Dadaji eat roti' or 'Dadaji eats roti'?",
+            "prompt_hi": "Kaunsa sahi lagta hai: 'Dadaji eat roti' ya 'Dadaji eats roti'?",
             "options": [
               {
-                "text": "Arjun eats rice",
+                "text": "Dadaji eats roti",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Arjun eat rice",
+                "text": "Dadaji eat roti",
                 "misconceptionId": "c1-english-ch07-t01-m2",
                 "correct": false
               }
@@ -3143,21 +3152,21 @@
             "Calls the evening snack 'breakfast'"
           ],
           "diagnostic": {
-            "prompt_en": "Which meal do we eat at night before we sleep?",
-            "prompt_hi": "Raat ko sone se pehle hum kaunsa khaana khaate hain?",
+            "prompt_en": "Which meal do we eat in the middle of the day, at about 1 o'clock?",
+            "prompt_hi": "Din ke beech mein, lagbhag 1 baje, hum kaunsa khaana khaate hain?",
             "options": [
               {
-                "text": "dinner",
+                "text": "lunch",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "breakfast",
+                "text": "dinner",
                 "misconceptionId": "c1-english-ch07-t01-m3",
                 "correct": false
               },
               {
-                "text": "lunch",
+                "text": "breakfast",
                 "misconceptionId": "c1-english-ch07-t01-m3",
                 "correct": false
               }
@@ -3329,15 +3338,15 @@
             "eat"
           ],
           "hints": [
-            "'Eat' is the second word.",
-            "It starts with an 'ee' sound.",
-            "I — eat — roti. Tap the middle one.",
+            "Listen again: I eat roti.",
+            "'Eat' starts with a long 'ee' sound — like 'ee-t'.",
+            "I — eat — roti. Tap the middle word.",
             "This word is 'eat'."
           ],
           "verified": {
             "solverAnswer": "taps 'eat'",
             "agrees": true,
-            "note": "Key correct. Hint 1 (the pump) says ''Eat' is the second word', which gives away where the answer is on the first rung; a pump should not point to it (e.g. 'Listen again: I eat roti')."
+            "note": "Fixed after checker review (2026-10-02): hint ladder reordered so the pump no longer points to the answer; position ('the middle word') now appears only on rung 3."
           }
         },
         {
@@ -3376,11 +3385,12 @@
           "prompt_hi": "Batao tum nashte mein kya khaate ho. Bolo: 'I eat ___ for breakfast.'",
           "answer": "'I eat ___ for breakfast' with any food, e.g. 'I eat poha for breakfast.'",
           "acceptable": [
-            "i eat",
-            "for breakfast",
             "i eat poha for breakfast",
             "i eat paratha for breakfast",
-            "i eat bread for breakfast"
+            "i eat bread for breakfast",
+            "i eat idli for breakfast",
+            "i eat upma for breakfast",
+            "i eat roti for breakfast"
           ],
           "hints": [
             "What did you eat this morning?",
@@ -3391,7 +3401,7 @@
           "verified": {
             "solverAnswer": "I eat ___ for breakfast (any food)",
             "agrees": true,
-            "note": "Blind answer matches key; English, class-1 oral/picture register, Hinglish prompt and hint ladder OK."
+            "note": "Fixed after checker review (2026-10-02): removed bare frame fragments 'i eat' and 'for breakfast' from acceptable (they passed a sentence with no food); key requires the full frame with a food."
           }
         },
         {
@@ -3455,8 +3465,8 @@
           "prompt_hi": "Doosre state se ek nayi dost aayi hai. Use batao tumhari family lunch mein kya do cheezein khaati hai.",
           "answer": "Two foods in a sentence, e.g. 'We eat rice and dal for lunch.'",
           "acceptable": [
-            "we eat",
-            "for lunch",
+            "we eat rice and dal for lunch",
+            "we eat roti and sabzi for lunch",
             "rice",
             "dal",
             "roti",
@@ -3471,7 +3481,7 @@
           "verified": {
             "solverAnswer": "two lunch foods e.g. We eat roti and dal for lunch.",
             "agrees": true,
-            "note": "Blind answer matches key; English, class-1 oral/picture register, Hinglish prompt and hint ladder OK."
+            "note": "Fixed after checker review (2026-10-02): removed bare frame fragments 'we eat' and 'for lunch' from acceptable (teachback key ideas are the foods). Key agrees."
           }
         },
         {
@@ -3495,9 +3505,9 @@
             "Arjun eats rice and fish."
           ],
           "verified": {
-            "solverAnswer": "UNKNOWN (story-dependent; likely rice)",
+            "solverAnswer": "rice and fish",
             "agrees": true,
-            "note": "Blind solver answered 'rice'; the key is 'rice and fish', and 'rice' is accepted, so they agree. The read-along text is not stored in the kit, so 'fish' cannot be checked against a source."
+            "note": "Fixed after checker review (2026-10-02): the read-along is now stored in topic.passage ('Arjun eats rice and fish.'); key 'rice and fish' checked against it."
           }
         }
       ],
@@ -3537,7 +3547,8 @@
         "festival food (laddoo, kheer)",
         "street food (pav, chaat)",
         "train journey food"
-      ]
+      ],
+      "passage": "Food Time (original read-along)\nGood morning! It is breakfast time.\nI eat roti. I drink milk.\nMeenu eats idli with chutney.\nNow it is lunch time.\nArjun eats rice and fish.\nThe moon is up. It is dinner time.\nWe all eat khichdi together. Yum, yum, yum!"
     },
     {
       "topicId": "c1-english-ch08-t01",
@@ -3585,16 +3596,16 @@
             "Starts weather sentences with 'Is'"
           ],
           "diagnostic": {
-            "prompt_en": "Which is right in English: 'Is very cold' or 'It is very cold'?",
-            "prompt_hi": "English mein sahi kaunsa hai: 'Is very cold' ya 'It is very cold'?",
+            "prompt_en": "Look outside — the sun is out. Which is right in English: 'Is sunny today' or 'It is sunny today'?",
+            "prompt_hi": "Bahar dekho — dhoop nikli hai. English mein sahi kaunsa hai: 'Is sunny today' ya 'It is sunny today'?",
             "options": [
               {
-                "text": "It is very cold",
+                "text": "It is sunny today",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Is very cold",
+                "text": "Is sunny today",
                 "misconceptionId": "c1-english-ch08-t01-m1",
                 "correct": false
               }
@@ -3613,16 +3624,16 @@
             "Offers 'nose' as a rhyme for 'night'"
           ],
           "diagnostic": {
-            "prompt_en": "Which word rhymes with 'night': 'white' or 'wet'?",
-            "prompt_hi": "'Night' ke saath kaunsa word rhyme karta hai: 'white' ya 'wet'?",
+            "prompt_en": "Which word rhymes with 'rain': 'rat' or 'train'?",
+            "prompt_hi": "'Rain' ke saath kaunsa word rhyme karta hai: 'rat' ya 'train'?",
             "options": [
               {
-                "text": "white",
+                "text": "train",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "wet",
+                "text": "rat",
                 "misconceptionId": "c1-english-ch08-t01-m2",
                 "correct": false
               }
@@ -3642,16 +3653,16 @@
             "Cannot tell 'wine' from 'vine' when heard"
           ],
           "diagnostic": {
-            "prompt_en": "Listen: 'winter' ... 'vinter'. Which is the cold season's English name?",
-            "prompt_hi": "Suno: 'winter' ... 'vinter'. Thandi ritu ka English naam kaunsa hai?",
+            "prompt_en": "Listen: 'wind' ... 'vind'. Which is the English word for the air that blows (hawa)?",
+            "prompt_hi": "Suno: 'wind' ... 'vind'. Chalti hawa ka English word kaunsa hai?",
             "options": [
               {
-                "text": "winter",
+                "text": "wind",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "vinter",
+                "text": "vind",
                 "misconceptionId": "c1-english-ch08-t01-m3",
                 "correct": false
               }
@@ -3754,15 +3765,15 @@
             "garden"
           ],
           "hints": [
-            "In our rhyme, what does spring bring?",
-            "'Spring flowers, a pretty sight!'",
-            "Look for the fl___.",
-            "The flowers picture is spring."
+            "Is spring cold, rainy, or bright and fresh?",
+            "In our rhyme, what does spring bring to the garden?",
+            "'Spring fl___, a pretty sight!' — find that picture.",
+            "Spring flowers, a pretty sight — the flowers picture is spring."
           ],
           "verified": {
             "solverAnswer": "taps flowers in a garden",
             "agrees": true,
-            "note": "Key correct. Hint 2 quotes 'Spring flowers, a pretty sight!', which gives the answer away on the second rung; move that quote to hint 3 or 4."
+            "note": "Fixed after checker review (2026-10-02): the full quote 'Spring flowers, a pretty sight!' moved off rung 2; rung 3 gives a blanked version and rung 4 asserts. Key checked against topic.passage line 4."
           }
         },
         {
@@ -3825,7 +3836,8 @@
           "prompt_hi": "Suno: 'Summer sun, hot and bright, rainy clouds, grey and ___.' Aage kya aayega?",
           "answer": "white",
           "acceptable": [
-            "white"
+            "white",
+            "light"
           ],
           "hints": [
             "It rhymes with 'bright'.",
@@ -3834,9 +3846,9 @@
             "Grey and white."
           ],
           "verified": {
-            "solverAnswer": "white (ambiguous; light also rhymes)",
+            "solverAnswer": "white",
             "agrees": true,
-            "note": "Key 'white' agrees. 'light' also rhymes with 'bright' and could fit the line; hint 2 narrows it to a colour. Consider accepting 'light'."
+            "note": "Fixed after checker review (2026-10-02): 'light' added to acceptable — it rhymes with 'bright' and fits the line (clouds can be grey and light). The rhyme in topic.passage uses 'white', so the teacher affirms 'light' as a good rhyme and then says the real line."
           }
         },
         {
@@ -3950,12 +3962,12 @@
           "prompt_hi": "Apne Dadaji ko English mein batao tumhe kaunsi ritu sabse achhi lagti hai aur ek wajah.",
           "answer": "'I like ___ because ___', e.g. 'I like the rainy season because I can play in the puddles.'",
           "acceptable": [
-            "i like",
-            "because",
-            "i like summer",
-            "i like winter",
-            "i like the rainy season",
-            "i like spring"
+            "i like the rainy season because i can play in the puddles",
+            "i like winter because i can eat hot halwa",
+            "i like summer because i can eat mangoes",
+            "i like summer because there is no school",
+            "i like spring because there are flowers",
+            "i like winter because i can wear my sweater"
           ],
           "hints": [
             "Which season do you enjoy most?",
@@ -3966,7 +3978,7 @@
           "verified": {
             "solverAnswer": "I like ___ best because ___",
             "agrees": true,
-            "note": "Blind answer matches key; English, class-1 oral/picture register, Hinglish prompt and hint ladder OK."
+            "note": "Fixed after checker review (2026-10-02): removed bare fragments 'i like' and 'because' from acceptable; accepted forms are complete 'I like <season> because <reason>' examples (any season + any sensible reason is correct)."
           }
         },
         {
@@ -4032,7 +4044,8 @@
         "spring flowers and kites",
         "dressing up for the weather",
         "weather on TV news"
-      ]
+      ],
+      "passage": "Summer sun, hot and bright,\nRainy clouds, grey and white,\nWinter wind, cold at night,\nSpring flowers, a pretty sight!"
     },
     {
       "topicId": "c1-english-ch09-t01",
@@ -4088,16 +4101,16 @@
             "Says 'green colour tree'"
           ],
           "diagnostic": {
-            "prompt_en": "Which is the usual way in English: 'a red colour ball' or 'a red ball'?",
-            "prompt_hi": "English mein normal tareeka kaunsa hai: 'a red colour ball' ya 'a red ball'?",
+            "prompt_en": "Which is the usual way in English: 'a green colour leaf' or 'a green leaf'?",
+            "prompt_hi": "English mein normal tareeka kaunsa hai: 'a green colour leaf' ya 'a green leaf'?",
             "options": [
               {
-                "text": "a red ball",
+                "text": "a green leaf",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "a red colour ball",
+                "text": "a green colour leaf",
                 "misconceptionId": "c1-english-ch09-t01-m1",
                 "correct": false
               }
@@ -4117,16 +4130,16 @@
             "Writes 'b' facing the wrong way"
           ],
           "diagnostic": {
-            "prompt_en": "'Blue' starts with which letter? Tap it: b or d.",
-            "prompt_hi": "'Blue' kis letter se shuru hota hai? Tap karo: b ya d.",
+            "prompt_en": "'Doll' starts with which letter? Listen: d-d-doll. Tap it: b or d.",
+            "prompt_hi": "'Doll' kis letter se shuru hota hai? Suno: d-d-doll. Tap karo: b ya d.",
             "options": [
               {
-                "text": "b",
+                "text": "d",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "d",
+                "text": "b",
                 "misconceptionId": "c1-english-ch09-t01-m2",
                 "correct": false
               }
@@ -4145,21 +4158,21 @@
             "Says 'Chotu drawed a kite'"
           ],
           "diagnostic": {
-            "prompt_en": "The story already happened. Which is right: 'Tara draw a rainbow' or 'Tara drew a rainbow'?",
-            "prompt_hi": "Kahani pehle ho chuki hai. Sahi kaunsa hai: 'Tara draw a rainbow' ya 'Tara drew a rainbow'?",
+            "prompt_en": "Yesterday Chotu made a pink kite with his crayon. Which is right: 'Chotu draw a kite', 'Chotu drew a kite' or 'Chotu drawed a kite'?",
+            "prompt_hi": "Kal Chotu ne crayon se ek pink kite banayi. Sahi kaunsa hai: 'Chotu draw a kite', 'Chotu drew a kite' ya 'Chotu drawed a kite'?",
             "options": [
               {
-                "text": "Tara drew a rainbow",
+                "text": "Chotu drew a kite",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "Tara draw a rainbow",
+                "text": "Chotu draw a kite",
                 "misconceptionId": "c1-english-ch09-t01-m3",
                 "correct": false
               },
               {
-                "text": "Tara drawed a rainbow",
+                "text": "Chotu drawed a kite",
                 "misconceptionId": "c1-english-ch09-t01-m3",
                 "correct": false
               }
@@ -4300,8 +4313,8 @@
           "skillId": "c1-english-ch09-t01-s3",
           "kind": "retrieval",
           "difficulty": 2,
-          "prompt_en": "What did Chotu draw in the sky?",
-          "prompt_hi": "Chotu ne aasmaan mein kya banaya?",
+          "prompt_en": "In our story, Tara's little brother Chotu came running. What did Chotu draw in the sky over Tara's rainbow?",
+          "prompt_hi": "Hamari kahani mein Tara ka chhota bhai Chotu bhaagta hua aaya. Chotu ne Tara ke rainbow ke upar aasmaan mein kya banaya?",
           "answer": "a pink kite",
           "acceptable": [
             "pink kite",
@@ -4316,9 +4329,9 @@
             "Chotu drew a pink kite."
           ],
           "verified": {
-            "solverAnswer": "UNKNOWN (Chotu not introduced in prompts)",
-            "agrees": false,
-            "note": "Cannot be solved blind: Chotu and the pink kite appear in no prompt, worked example or curriculum entry, only in this key and in i12's key. The kit needs the retold story text (e.g. a story field) before this answer can be checked."
+            "solverAnswer": "a pink kite",
+            "agrees": true,
+            "note": "Fixed after checker review (2026-10-02): the story is now stored in topic.passage (original text, girl named Tara, brother Chotu draws a pink kite in the sky over the rainbow) and the prompt introduces Chotu. Key 'a pink kite' checked against the passage."
           }
         },
         {
@@ -4405,7 +4418,11 @@
           "prompt_hi": "Apne ghar ki koi laal cheez batao. Bolo: 'I have a red ___.'",
           "answer": "'I have a red' + a thing, e.g. 'I have a red ball.'",
           "acceptable": [
-            "i have a red",
+            "i have a red ball",
+            "i have a red bag",
+            "i have a red car",
+            "i have a red bottle",
+            "i have a red pencil",
             "red ball",
             "red bag",
             "red car",
@@ -4422,7 +4439,7 @@
           "verified": {
             "solverAnswer": "I have a red ___ (any)",
             "agrees": true,
-            "note": "Blind answer matches key; English, class-1 oral/picture register, Hinglish prompt and hint ladder OK."
+            "note": "Fixed after checker review (2026-10-02): removed bare frame 'i have a red' from acceptable (it passed a sentence with no thing). Key agrees."
           }
         },
         {
@@ -4473,9 +4490,9 @@
           ],
           "targetsMisconception": "c1-english-ch09-t01-m3",
           "verified": {
-            "solverAnswer": "short retelling: no rainbow after rain, Tara draws one with crayons",
+            "solverAnswer": "There was no rainbow; Tara drew one with crayons; Chotu drew a pink kite.",
             "agrees": true,
-            "note": "Key's 'Chotu added a pink kite' detail is not in any source in the kit (see i06). The rest is consistent."
+            "note": "Fixed after checker review (2026-10-02): every detail of the key (no rainbow after rain, Tara draws one with crayons, Chotu adds a pink kite) is now in topic.passage."
           }
         },
         {
@@ -4487,12 +4504,12 @@
           "prompt_hi": "Agar tumhare paas jaadu wala crayon hota, toh tum kya banate, aur kis rang ka? Bolo: 'I would draw a ___ ___.'",
           "answer": "'I would draw a' + colour + thing, e.g. 'I would draw a purple elephant.'",
           "acceptable": [
-            "i would draw a",
-            "a blue",
-            "a red",
-            "a green",
-            "a purple",
-            "a pink"
+            "i would draw a purple elephant",
+            "i would draw a blue horse",
+            "i would draw a red car",
+            "i would draw a green dragon",
+            "i would draw a pink house",
+            "i would draw a yellow sun"
           ],
           "hints": [
             "What would you love to see on your wall?",
@@ -4504,7 +4521,7 @@
           "verified": {
             "solverAnswer": "I would draw a <colour> <thing>",
             "agrees": true,
-            "note": "Blind answer matches key; English, class-1 oral/picture register, Hinglish prompt and hint ladder OK."
+            "note": "Fixed after checker review (2026-10-02): removed fragments ('i would draw a', bare 'a blue/a red/...') from acceptable; accepted forms now have both a colour and a thing. Any colour + thing in the frame is correct."
           }
         },
         {
@@ -4514,25 +4531,27 @@
           "difficulty": 2,
           "prompt_en": "Name three colours in Tara's rainbow.",
           "prompt_hi": "Tara ke rainbow ke teen rang batao.",
-          "answer": "Any three of: red, orange, yellow, green, blue, purple",
+          "answer": "Any three of: red, orange, yellow, green, blue, indigo, violet",
           "acceptable": [
             "red",
             "orange",
             "yellow",
             "green",
             "blue",
+            "indigo",
+            "violet",
             "purple"
           ],
           "hints": [
             "She started with the colour of a tomato.",
-            "Then the colour of a banana, a leaf...",
+            "Then orange, then the colour of a banana, then a leaf...",
             "R___, y___, gr___.",
             "For example: red, yellow and green."
           ],
           "verified": {
-            "solverAnswer": "any three of red, orange, yellow, green, blue, purple/indigo/violet",
+            "solverAnswer": "any three of red, orange, yellow, green, blue, indigo, violet",
             "agrees": true,
-            "note": "Key correct. Acceptable list lacks 'violet' and 'indigo', which Indian children learn through VIBGYOR; add both."
+            "note": "Fixed after checker review (2026-10-02): the story in topic.passage now has all seven VIBGYOR colours; 'indigo' and 'violet' added to acceptable ('purple' kept as a child's word for violet)."
           }
         }
       ],
@@ -4571,7 +4590,8 @@
         "rainbow after the monsoon",
         "colourful clothes and bangles",
         "cartoon characters' colours"
-      ]
+      ],
+      "passage": "Tara's Rainbow (original story on the chapter's theme)\nIt rained all morning. When the rain stopped, Tara ran outside and looked up.\n'Where is the rainbow?' she asked. The sky was grey. There was no rainbow.\nTara went inside and picked up her crayons.\nOn the big white wall of her room, she drew a rainbow: red like a tomato, orange, yellow like a banana,\ngreen like a leaf, blue like the sky, indigo, and violet like a brinjal.\n'Now I have my own rainbow!' said Tara.\nHer little brother Chotu came running. He took the pink crayon and drew a pink kite in the sky, flying over the rainbow.\nTara and Chotu clapped. It was the happiest wall in the house."
     }
   ]
 }

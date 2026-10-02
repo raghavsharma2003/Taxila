@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "kits-c8-hindi-authored",
+   "kind": "measurement",
+   "title": "c8-hindi kit authored: 10/10 topics, 131 items (12-14/topic, 9-10 kinds each), 30 misconceptions; normalizeKit lint 0 dropped / 0 hints replaced; kit-budget test 3/3 on this file alone",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "norm-strips-devanagari-matras",
+   "rel": "constrains",
+   "dst": "kits-c8-hindi-authored"
+  }
+ ],
+ "md": {
+  "measurements": "## kits-c8-hindi-authored\n**data/kits/c8-hindi.json: 10 of 10 curriculum topics (मल्हार, NCERT 2026-27), 131 items (12-14 per topic, 9-10 distinct kinds), 5 skills and 3 misconceptions per topic.** (2026-10-02)\n- n: 10 topics / 131 items. Method: a generator script built the file. normalizeKit() and revealsAnswer() were run on every topic, and tests/kit-budget.test.mjs passed 3/3 with only this file in the kits dir (3624 lesson states compiled, 0 BudgetError). First pass: 5 hint rungs leaked an acceptable form (English glosses such as feminine, tradition, clean environment, plus a nukta form that the matra-stripping norm reduced to ज). One acceptable form was over 60 chars. All were rewritten. Final: 0 items dropped, 0 diagnostics dropped, 0 hints replaced. The full-repo run of kit-budget still fails, but on other files (107/10600 items dropped repo-wide, and c9-english-ch08-t01-i04 is over the voice cap). c8-hindi contributes 0 to either failure.\n- No NCERT text is reproduced. Every stanza, scene and passage is original. The exceptions are Kabir dohas, which are public domain and widely known; they may not all be in Malhar. Chapter facts were written from general knowledge and have NOT been checked against the chapter text. These are: the स्वदेश stone-heart image, the father-and-sparrows arc in दो गौरैया, the blessing images in एक आशीर्वाद, the widow-and-basket plot in एक टोकरी भर मिट्टी, the room-to-universe chain in आदमी का अनुपात, and Bose addressing the youth. मत बाँधो and नए मेहमान stay at the genre, title and theme level, plus original stanzas and scenes, because the chapter details were unavailable. Kavita and doha topics are T1 with primary F5. Kahani, patra, ekanki and udbodhan topics are T3 with primary F4. Answer keys are NOT yet blind-solver verified (no verified field)."
+ }
+}

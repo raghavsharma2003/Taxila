@@ -8,7 +8,8 @@ child's whole learning day and reports deeply to parents.
 
 ## Binding constraints (owner directives)
 - **Azure-only compute and AI (2026-10-02).** Every paid AI/compute resource must come from the owner's Azure
-  startup grant: Azure AI Foundry **first-party (Azure OpenAI) models** and Azure services (Container Apps,
+  startup grant: Azure AI Foundry models **sold Direct from Azure** (Azure OpenAI + open models like DeepSeek, Kimi, gpt-oss, Grok,
+  Llama, Mistral, Phi, FLUX — chosen per task by measured bake-off) and Azure services (Container Apps,
   Storage, Container Registry). No Anthropic/Claude-on-Foundry or other Marketplace models, no third-party AI
   APIs (ElevenLabs, Sarvam, Simli, HeyGen, Suno, …) — research may cite them, builds may not call them.
   Neon Postgres is allowed (owner's separate Neon grant). Hosting moves from Vercel to Azure Container Apps.

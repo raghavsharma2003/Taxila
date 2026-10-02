@@ -14,11 +14,20 @@ export const POSTROLL_MS = 300;
 export const ECHO_TAIL_MS = 80;
 /** An onset this long is not an answer to the teacher's turn (the child wandered off and came back). */
 export const MAX_ONSET_MS = 20_000;
+/** A speech-start mark older than this with no final is stale (a lost child_silent): a new start replaces it. */
+export const STALE_MARK_MS = 30_000;
+/**
+ * Derived rates above these are measurement artefacts, not children: the acoustic gate caught only part of a
+ * turn the ASR heard whole (7 words over 350 ms = 20 wps). They are left out rather than sent — the server
+ * would reject them — and the utterance keeps its other features.
+ */
+export const MAX_RATE_WPS = 10;
+export const MAX_WCPM = 400;
 
 export type UtteranceContext = "answer" | "read_aloud";
 
 /** Numeric features of one child utterance. Only these leave the device; never audio, never text. */
-export interface VoiceFeatureValues {
+export type VoiceFeatureValues = {
   durationMs: number;
   voicedFrac: number;
   f0MedianHz?: number;
@@ -45,7 +54,7 @@ export interface VoiceFeatureValues {
   targetWords?: number;
   wcpm?: number;
   readAccuracy?: number;
-}
+};
 
 export interface UtteranceFeatures {
   context: UtteranceContext;
@@ -94,20 +103,38 @@ export class UtteranceTracker {
   teacherAudioEnded(at: number): void {
     if (!this.teacherPlaying) return;
     this.teacherPlaying = false;
+    if (this.speechStartAt != null && at - this.speechStartAt >= STALE_MARK_MS) this.cancel();
     this.teacherEndAt = at;
     // After a barge-in the child is already talking: there is no answer onset to measure.
     this.awaitingAnswer = this.speechStartAt == null;
   }
 
   speechStart(at: number): void {
-    if (this.speechStartAt != null) return;
+    if (this.speechStartAt != null && at - this.speechStartAt < STALE_MARK_MS) return;
     this.speechStartAt = at;
     this.speechEndAt = null;
-    if (this.teacherPlaying) this.bargeIn = true;
+    this.bargeIn = this.teacherPlaying;
   }
 
   speechEnd(at: number): void {
     this.speechEndAt = at;
+  }
+
+  /**
+   * The link heard a start but no turn came of it (child_silent: a cough, a chair, an empty push-to-talk; or
+   * a reconnect). Drops the marks without producing an utterance, so the next real answer keeps its own
+   * start, its onset and a clean barge-in flag. The teacher-end stamp and awaitingAnswer stay as they were.
+   */
+  cancel(): void {
+    this.speechStartAt = this.speechEndAt = null;
+    this.bargeIn = false;
+  }
+
+  /** The link dropped (reconnect/close): forget the teacher turn too, so nothing later reads as a barge-in or an onset. */
+  resetTurn(): void {
+    this.cancel();
+    this.teacherPlaying = false;
+    this.awaitingAnswer = false;
   }
 
   /** The next utterances are read-aloud attempts of this text (null: ordinary answers). */
@@ -137,9 +164,11 @@ export class UtteranceTracker {
     const { speechStartAt, speechEndAt, ...acoustic } = ac;
     const features: VoiceFeatureValues = { ...acoustic, ...tx };
     if (tx.words > 0 && ac.durationMs >= 300) {
-      features.speechRateWps = tx.words / (ac.durationMs / 1000);
+      const rate = tx.words / (ac.durationMs / 1000);
+      if (rate <= MAX_RATE_WPS) features.speechRateWps = rate;
       const speaking = ac.durationMs - ac.pauseTotalMs;
-      if (speaking >= 300) features.articulationWps = tx.words / (speaking / 1000);
+      const art = tx.words / (speaking / 1000);
+      if (speaking >= 300 && art <= MAX_RATE_WPS * 1.5) features.articulationWps = art;
     }
     const onset = this.awaitingAnswer && !marks.bargeIn && this.teacherEndAt != null ? speechStartAt - this.teacherEndAt : null;
     if (onset != null && onset >= 0 && onset <= MAX_ONSET_MS) features.onsetMs = onset;
@@ -150,7 +179,7 @@ export class UtteranceTracker {
       context = "read_aloud";
       const rf = readingFluency(this.target, turn.text, ac.durationMs);
       features.targetWords = rf.targetWords;
-      if (rf.wcpm != null) features.wcpm = rf.wcpm;
+      if (rf.wcpm != null && rf.wcpm <= MAX_WCPM) features.wcpm = rf.wcpm;
       if (rf.readAccuracy != null) features.readAccuracy = rf.readAccuracy;
     }
     void speechEndAt;

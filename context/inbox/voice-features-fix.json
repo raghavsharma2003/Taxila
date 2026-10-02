@@ -1,0 +1,65 @@
+{
+ "nodes": [
+  {
+   "id": "voice-features-wired-2026-10-02",
+   "kind": "measurement",
+   "title": "Voice features wired into live lessons: runtime → TurnRequest.voiceFeatures → turnVoice() in /api/lesson/turn (114 ms Neon write, parallel to classify); browser smoke: 1 PTT turn → 1 turn POST with numbers-only features",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-features-onset-one-clock",
+   "kind": "measurement",
+   "title": "Onset measured in one clock (receipt-relative chunk stamps, + outputLatency on teacher end): Chromium, n=5, known 700 ms gap → 630-647 ms (outputLatency 32 ms; residual −21..−38 ms = 40 ms window-centre bias)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-signals-null-fire-rate",
+   "kind": "measurement",
+   "title": "signalsFrom null fire rates (MC n=40k, correlated pairs ρ=0.8): max/min of pairs 5.71/0.56/1.13 % (probe/gentler/slower) → mean of pairs 3.54/0.25/0.37 %",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-rms-is-agc-output",
+   "kind": "measurement",
+   "title": "RMS voice features measure the browser's AGC/noise-suppression output (both links capture with them on): not baselined; rmsMeanDb removed from BASELINED",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-features-latest-signals-race",
+   "kind": "rejection",
+   "title": "Rejected: separate fire-and-forget POST /api/voice/features + latestSignals(lesson, withinMs) as the Director's read — the turn POST races it and reads the PREVIOUS utterance's signals (different item)",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "voice-features-wired-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "voice-features-onset-one-clock",
+   "rel": "measured_by",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "voice-signals-null-fire-rate",
+   "rel": "measured_by",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "voice-rms-is-agc-output",
+   "rel": "constrains",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "voice-features-wired-2026-10-02",
+   "rel": "supersedes",
+   "dst": "voice-features-latest-signals-race"
+  }
+ ],
+ "md": {
+  "measurements": "## voice-features-wired-2026-10-02\n**Voice features now reach the server from real lessons.** Before: `voice_feature` held 0 rows; nothing outside src/voice/ constructed VoiceFeatures. Now LessonRuntime attaches VoiceFeatures to the link's own mic (`TeacherLink.micTap()`: CascadeLink teacherEnd=local, VoiceLink teacherEnd=remote), feeds it every link event first, and a spoken child_final's features ride on that turn's POST /api/lesson/turn (`TurnRequest.voiceFeatures`); the handler runs `turnVoice()` in parallel with classify, under the server's activeItemId. (2026-10-02)\n- n: 1 live Neon round trip (114 ms, row stored with item_id, then deleted); browser smoke (tests/voice-features-browser.test.mjs, VOICE_BROWSER=1): real runtime + CascadeLink in PTT-recording fallback, fake mic tone → 1 turn request, features numbers only, f0 240.02 Hz. Signals are returned in turn debug only: the Director does not consume them yet (server/director/** not this workstream's).\n\n## voice-features-onset-one-clock\n**Onset latency is computed in one clock.** Chunks stamped `now − (ctx.currentTime − chunkTime) − track input latency`; teacher end = receipt + ctx.outputLatency (read live, so speaker↔Bluetooth switches are followed); realtime lane holds the server's output_audio_buffer.stopped until the local teacher meter has been quiet 150 ms. (2026-10-02)\n- n=5 trials, Chromium headless, oscillator gated 700 ms after a teacher_audio_end: 630, 647, 647, 646, 645 ms vs expected 668 (700 − outputLatency 32). Residual −21..−38 ms is the 40 ms analysis window's centre (a frame reads as speech when half-filled). Not measured: real Android/Bluetooth devices; input latency from getSettings().latency is 0 in headless Chromium.\n\n## voice-signals-null-fire-rate\n**Averaging correlated cue pairs cuts null false fires.** Monte Carlo n=40,000 under N(0,1) z with (pauseFrac,longestPauseMs) and (speechRate,articulation) correlated ρ=0.8: max/min-of-pair 5.71% followUpProbe / 0.56% gentlerHint / 1.13% slowerPace → mean-of-pair 3.54% / 0.25% / 0.37%. (2026-10-02, tests/voice-features-server.test.mjs)\n\n## voice-rms-is-agc-output\n**rms* features are AGC-normalised.** Both links capture with echoCancellation+noiseSuppression+autoGainControl; rmsMeanDb/rmsStdDb/rmsP90Db therefore describe the AGC output. rmsMeanDb removed from BASELINED (no z, no baseline); still stored. Soft fillers may be eaten by noise suppression (weakens flatVoicedRuns) — unmeasured. Reversal: a second, unprocessed analysis track measured to not disturb the AEC'd capture on Android. (2026-10-02)\n",
+  "rejected": "## voice-features-latest-signals-race\n**Tried:** client fires POST /api/voice/features (fire-and-forget, ~108 ms write) at child_final while the runtime POSTs /api/lesson/turn at the same moment; the Director would read `latestSignals(lesson, {withinMs:15000})`.\n**Broke:** the turn usually reads the PREVIOUS utterance's row — another item, possibly another question — so a tie-breaker from one answer is applied to a different one. The query matched neither item nor turn.\n**Instead:** features ride on the turn (TurnRequest.voiceFeatures → turnVoice()); latestSignals now requires an itemId match and returns {} without one. (2026-10-02)\n"
+ }
+}

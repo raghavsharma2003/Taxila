@@ -7,10 +7,24 @@ export const unauthorized = (msg = "not signed in") => new HttpError(401, msg);
 export const forbidden = (msg = "forbidden") => new HttpError(403, msg);
 export const notFound = (msg = "not found") => new HttpError(404, msg);
 
-export async function readJson(req) {
+/**
+ * Largest JSON body any route takes: a push-to-talk clip (server/routes/voice.js MAX_CLIP_BYTES = 2 MB) is
+ * ~2.7 MB as base64. Checked as chunks arrive, before auth, so an oversized body is never buffered whole.
+ */
+export const MAX_BODY_BYTES = 3_000_000;
+
+export async function readJson(req, { maxBytes = MAX_BODY_BYTES } = {}) {
   if (req.body && typeof req.body === "object") return req.body;           // Vercel pre-parses JSON
+  const declared = Number(req.headers?.["content-length"]);
+  if (Number.isFinite(declared) && declared > maxBytes) throw new HttpError(413, "request body too large");
   const chunks = [];
-  for await (const c of req) chunks.push(c);
+  let size = 0;
+  for await (const c of req) {
+    size += c.length;
+    // Stop reading (nothing more is buffered); Node drops the rest of the body after the 413 is sent.
+    if (size > maxBytes) throw new HttpError(413, "request body too large");
+    chunks.push(c);
+  }
   const raw = Buffer.concat(chunks).toString("utf8");
   if (!raw) return {};
   try { return JSON.parse(raw); } catch { throw bad("invalid JSON body"); }

@@ -27,6 +27,7 @@ const DISCOURSE_FILLER = new Set([
   "like", "basically", "actually", "so",
   "मतलब", "वो", "वह", "हाँ", "हां", "तो", "अच्छा", "यानी",
 ]);
+const AFFIRMATION = new Set(["haan", "han", "हाँ", "हां"]);
 /** Hindi/English reduplication is grammar, not disfluency ("jaldi jaldi", "kya kya", "alag alag"). */
 const REDUPLICATIVE = new Set([
   "jaldi", "dheere", "dhire", "kya", "alag", "thoda", "bahut", "saath", "ghar", "kabhi", "kahin", "kuch",
@@ -72,6 +73,12 @@ export function transcriptStats(text: string): TranscriptStats {
     t.forEach((tok, i) => {
       if (filler[i] || !DISCOURSE_FILLER.has(tok.w) || t.length < 2) return;
       const nearFiller = filler[i - 1] || filler[i + 1];
+      // "haan, paanch hai": an opening affirmation is the start of the answer, not a hesitation — it is a
+      // filler only next to another filler ("haan umm…").
+      if (i === 0 && AFFIRMATION.has(tok.w)) {
+        if (nearFiller) filler[i] = true;
+        return;
+      }
       const opensLong = i === 0 && t.length >= 4 && tok.punctAfter;
       if (nearFiller || (tok.punctAfter && i < t.length - 1) || opensLong) filler[i] = true;
     });

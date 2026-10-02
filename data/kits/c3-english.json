@@ -53,7 +53,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'a orange' or 'an orange'?",
-            "prompt_hi": "Kaunsa sahi hai — 'a orange' ya 'an orange'? Dhyan do, orange kis awaaz se shuru hota hai.",
+            "prompt_hi": "Kaunsa sahi hai — 'a orange' ya 'an orange'?",
             "options": [
               {
                 "text": "an orange",
@@ -82,7 +82,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Listen: 'bright' and 'white'. Do they rhyme?",
-            "prompt_hi": "Suno: 'bright' aur 'white'. Kya ye rhyme karte hain? Spelling mat dekho, sirf awaaz suno.",
+            "prompt_hi": "Suno: 'bright' aur 'white'. Kya ye rhyme karte hain?",
             "options": [
               {
                 "text": "Yes, they end with the same sound",
@@ -435,7 +435,7 @@
           "kind": "contrast",
           "difficulty": 4,
           "prompt_en": "Which is right: 'an red apple' or 'a red apple'?",
-          "prompt_hi": "Kaunsa sahi hai — 'an red apple' ya 'a red apple'? Apple se pehle kaunsa word aa raha hai, woh dekho.",
+          "prompt_hi": "Kaunsa sahi hai — 'an red apple' ya 'a red apple'?",
           "answer": "a red apple",
           "acceptable": [
             "'a red apple'",
@@ -451,7 +451,7 @@
           "verified": {
             "solverAnswer": "a red apple",
             "agrees": true,
-            "note": "Key correct. prompt_hi adds a leading hint not in prompt_en (\"Apple se pehle kaunsa word aa raha hai, woh dekho\") that points at the decisive cue; drop it so the contrast is fair."
+            "note": "Fixed: removed the leading cue from prompt_hi so it is a faithful rendering of prompt_en. Key unchanged."
           }
         }
       ],
@@ -551,7 +551,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Tara is a girl. ___ has a puppy. Is it 'He' or 'She'?",
-            "prompt_hi": "Tara ek ladki hai. ___ has a puppy. 'He' bolenge ya 'She'? Hindi mein 'woh' dono ke liye hota hai, par English mein alag hai.",
+            "prompt_hi": "Tara ek ladki hai. '___ has a puppy.' 'He' bolenge ya 'She'?",
             "options": [
               {
                 "text": "She",
@@ -579,7 +579,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Golu is a boy puppy. Golu wags ___ tail. Is it 'his' or 'her'?",
-            "prompt_hi": "Golu ek boy puppy hai. 'Golu wags ___ tail.' 'His' ya 'her'? Yaad rakho, English mein yeh malik pe depend karta hai, cheez pe nahi.",
+            "prompt_hi": "Golu ek boy puppy hai. 'Golu wags ___ tail.' 'His' ya 'her'?",
             "options": [
               {
                 "text": "his",
@@ -1044,7 +1044,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'Square is bigger than Circle.' or 'Square is more bigger than Circle.'?",
-            "prompt_hi": "Kaunsa sahi hai: 'bigger than' ya 'more bigger than'? Ek hi kaafi hai.",
+            "prompt_hi": "Kaunsa sahi hai: 'Square is bigger than Circle.' ya 'Square is more bigger than Circle.'?",
             "options": [
               {
                 "text": "Square is bigger than Circle.",
@@ -1100,7 +1100,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sounds right: 'A circle is a shape.' or 'A circle is shape.'?",
-            "prompt_hi": "Kaunsa sahi lagta hai: 'A circle is a shape.' ya 'A circle is shape.'? Hindi mein 'a' nahi hota, par English mein lagta hai.",
+            "prompt_hi": "Kaunsa sahi lagta hai: 'A circle is a shape.' ya 'A circle is shape.'?",
             "options": [
               {
                 "text": "A circle is a shape.",
@@ -1537,15 +1537,15 @@
       "misconceptions": [
         {
           "id": "c3-english-ch04-t01-m-in-on",
-          "belief": "'in' and 'on' mean the same, so 'on the garden' and 'in the grass' are both fine",
+          "belief": "'in' and 'on' mean the same, so 'I play on the garden' is as fine as 'I play in the garden'",
           "signs": [
             "Says 'I play on the garden'",
-            "Says 'sit in the swing'",
+            "Says 'the book is in the table' for a book lying on top",
             "Picks in/on at random"
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'I play in the garden.' or 'I play on the garden.'?",
-            "prompt_hi": "Kaunsa sahi hai: 'in the garden' ya 'on the garden'? Garden ke andar ho ya garden ke upar?",
+            "prompt_hi": "Kaunsa sahi hai: 'I play in the garden.' ya 'I play on the garden.'?",
             "options": [
               {
                 "text": "I play in the garden.",
@@ -1560,7 +1560,7 @@
             ]
           },
           "remediation": {
-            "representation": "Picture scene: a fenced garden (inside = in), a ball resting on top of grass (surface = on), a child under a tree",
+            "representation": "Picture scene: a fenced garden (inside the area = in), a ball resting on top of short grass (surface = on; a ball hidden in long grass can also be 'in the grass'), a child under a tree",
             "moveShape": "Child drags a toy into, onto and under things on screen and says the place word; then makes a new sentence"
           }
         },
@@ -1573,7 +1573,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'The sparrow singing.' or 'The sparrow is singing.'?",
-            "prompt_hi": "Kaunsa sahi hai: 'The sparrow singing.' ya 'The sparrow is singing.'? Abhi ho raha hai toh 'is' bhi chahiye.",
+            "prompt_hi": "Kaunsa sahi hai: 'The sparrow singing.' ya 'The sparrow is singing.'?",
             "options": [
               {
                 "text": "The sparrow is singing.",
@@ -1724,23 +1724,25 @@
           "skillId": "c3-english-ch04-t01-s3",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Fill in: 'The ball is ___ the grass.' (in / on / under)",
-          "prompt_hi": "Bharo: 'The ball is ___ the grass.' — in, on ya under?",
+          "prompt_en": "Look at the picture: the ball is resting on top of the short grass. Fill in: 'The ball is ___ the grass.' (in / on / under)",
+          "prompt_hi": "Picture dekho: ball chhoti ghaas ke upar rakhi hai. Bharo: 'The ball is ___ the grass.' — in, on ya under?",
           "answer": "on",
           "acceptable": [
-            "on the grass"
+            "on the grass",
+            "in",
+            "in the grass"
           ],
           "hints": [
-            "Where does a ball rest in a garden?",
+            "Look at where the ball is in the picture.",
             "It is lying on top of the grass.",
             "Top of something means o__.",
-            "'On the grass.'"
+            "'On the grass.' ('In the grass' is also fine English when the grass is long.)"
           ],
           "targetsMisconception": "c3-english-ch04-t01-m-in-on",
           "verified": {
             "solverAnswer": "on",
-            "agrees": false,
-            "note": "Key \"on\" only, but \"The ball is in the grass.\" is also correct English (ball in long grass). Without a picture showing the ball resting on top, the item is ambiguous; add \"in\" to acceptable or anchor to a picture. Linked misconception m-in-on wrongly lists \"in the grass\" as an error."
+            "agrees": true,
+            "note": "Fixed: anchored to a picture of a ball resting on short grass so 'on' is the target, and added 'in' / 'in the grass' to acceptable because 'The ball is in the grass' is also correct English."
           }
         },
         {
@@ -1849,23 +1851,31 @@
           "difficulty": 2,
           "prompt_en": "Name two action words from our garden poem.",
           "prompt_hi": "Garden poem ke do action words batao.",
-          "answer": "Any two of: jump, run, swing, sing, sit, rest, dancing, flying.",
+          "answer": "Any two of: jump, run, hear, sing, sit, rest, dancing, flying.",
           "acceptable": [
             "jump and run",
-            "sing and swing",
+            "hear and sing",
             "sit and rest",
-            "dancing and flying"
+            "dancing and flying",
+            "jump",
+            "run",
+            "sing",
+            "sit",
+            "rest",
+            "hear",
+            "dancing",
+            "flying"
           ],
           "hints": [
             "What does the child do in the poem?",
-            "Think of the grass and the swing.",
+            "Think of what the child does on the grass and under the tree.",
             "I j___ on the grass, I r___ to the swing.",
             "Jump and run are two action words in the poem."
           ],
           "verified": {
             "solverAnswer": "jump and run",
-            "agrees": false,
-            "note": "Answer/acceptable list \"swing\" (and \"sing and swing\") as an action word, but in the poem \"swing\" is a noun (\"I run to the swing\"). Remove \"swing\" from the answer and the \"sing and swing\" acceptable; poem verbs are jump, run, hear, sing, sit, rest (+dancing, flying)."
+            "agrees": true,
+            "note": "Fixed: removed 'swing' (a noun in 'I run to the swing') from answer and acceptable; poem verbs are jump, run, hear, sing, sit, rest (+ dancing, flying). Hint 2 no longer points at 'swing'. Single verbs accepted so the grader can credit any two."
           }
         },
         {
@@ -2038,7 +2048,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which question is right: 'Where are you going?' or 'Where you are going?'?",
-            "prompt_hi": "Kaunsa question sahi hai: 'Where are you going?' ya 'Where you are going?'? English mein question mein 'are' aage aata hai.",
+            "prompt_hi": "Kaunsa question sahi hai: 'Where are you going?' ya 'Where you are going?'?",
             "options": [
               {
                 "text": "Where are you going?",
@@ -2066,7 +2076,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'The toys are talking.' or 'The toys is talking.'?",
-            "prompt_hi": "Kaunsa sahi hai: 'The toys are talking.' ya 'The toys is talking.'? Ek ke liye is, bahut ke liye are.",
+            "prompt_hi": "Kaunsa sahi hai: 'The toys are talking.' ya 'The toys is talking.'?",
             "options": [
               {
                 "text": "The toys are talking.",
@@ -2157,13 +2167,13 @@
           "hints": [
             "Look at the mark after I am.",
             "That mark is called an exclamation mark.",
-            "It tells us to read with f___.",
+            "It tells us to read it in a loud, happy voice.",
             "Excited: the ! tells us the train is eager."
           ],
           "verified": {
             "solverAnswer": "an excited voice, because of the exclamation mark",
             "agrees": true,
-            "note": "Key correct. Hint 3 \"read with f___\" has no clear target word (feeling? force?); make it concrete, e.g. \"read it in a happy, loud voice\"."
+            "note": "Fixed: hint 3 made concrete ('read it in a loud, happy voice') instead of the ambiguous 'f___'."
           }
         },
         {
@@ -2532,7 +2542,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'Ravi made a boat.' or 'Ravi maked a boat.'?",
-            "prompt_hi": "Kaunsa sahi hai: 'Ravi made a boat.' ya 'Ravi maked a boat.'? Kuch words ka past alag hota hai.",
+            "prompt_hi": "Kaunsa sahi hai: 'Ravi made a boat.' ya 'Ravi maked a boat.'?",
             "options": [
               {
                 "text": "Ravi made a boat.",
@@ -2560,7 +2570,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'Yesterday Noor folded a boat.' or 'Yesterday Noor fold a boat.'?",
-            "prompt_hi": "'Yesterday' aaya hai, toh kaunsa sahi: 'Noor folded a boat' ya 'Noor fold a boat'?",
+            "prompt_hi": "Kaunsa sahi hai: 'Yesterday Noor folded a boat.' ya 'Yesterday Noor fold a boat.'?",
             "options": [
               {
                 "text": "Yesterday Noor folded a boat.",
@@ -3025,7 +3035,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'the biggest laddoo' or 'the most biggest laddoo'?",
-            "prompt_hi": "Kaunsa sahi hai: 'the biggest laddoo' ya 'the most biggest laddoo'? -est already 'sabse' ka matlab hai.",
+            "prompt_hi": "Kaunsa sahi hai: 'the biggest laddoo' ya 'the most biggest laddoo'?",
             "options": [
               {
                 "text": "the biggest laddoo",
@@ -3054,7 +3064,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'Please give me some milk.' or 'Please give me some milks.'?",
-            "prompt_hi": "Kaunsa sahi hai: 'some milk' ya 'some milks'? Doodh ko gin nahi sakte.",
+            "prompt_hi": "Kaunsa sahi hai: 'Please give me some milk.' ya 'Please give me some milks.'?",
             "options": [
               {
                 "text": "Please give me some milk.",
@@ -3082,8 +3092,8 @@
             "Reads 'bad' as 'dab'"
           ],
           "diagnostic": {
-            "prompt_en": "Which word means very large: 'big' or 'dig'?",
-            "prompt_hi": "Kaunsa word 'bahut bada' ka matlab hai: 'big' ya 'dig'? b aur d mein dhyan do.",
+            "prompt_en": "Which word means large: 'big' or 'dig'?",
+            "prompt_hi": "Kaunsa word ka matlab 'bada' hai: 'big' ya 'dig'?",
             "options": [
               {
                 "text": "big",
@@ -3205,8 +3215,8 @@
           "skillId": "c3-english-ch07-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Three laddoos: one big, one bigger, one even larger. The largest one is the ___.",
-          "prompt_hi": "Teen laddoo: ek big, ek bigger, aur ek sabse bada. Sabse bada wala the ___ hai.",
+          "prompt_en": "Three laddoos: one is big, the next is bigger, and the last is the ___ of all. (big)",
+          "prompt_hi": "Teen laddoo: ek big hai, doosra bigger hai, aur teesra sabse ___ hai. (big se banao)",
           "answer": "biggest",
           "acceptable": [
             "the biggest",
@@ -3222,7 +3232,7 @@
           "verified": {
             "solverAnswer": "biggest",
             "agrees": true,
-            "note": "Key \"biggest\" is fine, but prompt_en is muddled: \"one even larger. The largest one is the ___\" mixes large/larger/largest into a big/bigger/biggest drill and makes the blank near-tautological. prompt_hi (\"ek sabse bada\") does not match \"even larger\". Rewrite: \"Three laddoos: big, bigger and the ___ (big).\""
+            "note": "Fixed: prompt rewritten as a clean big/bigger/___ drill (no 'larger/largest'), prompt_hi now matches prompt_en. Key 'biggest' unchanged."
           }
         },
         {
@@ -3305,8 +3315,8 @@
           "skillId": "c3-english-ch07-t01-s5",
           "kind": "contrast",
           "difficulty": 1,
-          "prompt_en": "Listen and tap: which word means very large, 'big' or 'dig'?",
-          "prompt_hi": "Suno aur tap karo: kaunsa word 'bahut bada' hai — 'big' ya 'dig'?",
+          "prompt_en": "Listen and tap: which word means large, 'big' or 'dig'?",
+          "prompt_hi": "Suno aur tap karo: kaunsa word 'bada' hai — 'big' ya 'dig'?",
           "answer": "big",
           "acceptable": [
             "b-i-g"
@@ -3315,13 +3325,13 @@
             "Say both words slowly.",
             "'Dig' is what we do with a spade.",
             "The large one starts with /b/, like ball: b___.",
-            "'Big' means very large."
+            "'Big' means large."
           ],
           "targetsMisconception": "c3-english-ch07-t01-m-b-d-reversal",
           "verified": {
             "solverAnswer": "big",
             "agrees": true,
-            "note": "Key correct. Minor: \"big\" means large, not \"very large\" (that is huge); prompt_en/hi and hint 4 overstate the meaning. Use \"which word means large\"."
+            "note": "Fixed: 'very large' changed to 'large' in prompt_en, prompt_hi ('bada') and hint 4. Key 'big' unchanged."
           }
         },
         {
@@ -3519,7 +3529,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'The soldiers were angry.' or 'The soldiers was angry.'?",
-            "prompt_hi": "Kaunsa sahi hai: 'The soldiers were angry.' ya 'The soldiers was angry.'? Ek ke liye was, bahut ke liye were.",
+            "prompt_hi": "Kaunsa sahi hai: 'The soldiers were angry.' ya 'The soldiers was angry.'?",
             "options": [
               {
                 "text": "The soldiers were angry.",
@@ -3548,7 +3558,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which question is right: 'Why did you thank God?' or 'Why you thanked God?'?",
-            "prompt_hi": "Kaunsa question sahi hai: 'Why did you thank God?' ya 'Why you thanked God?'? Past ke question mein 'did' aata hai.",
+            "prompt_hi": "Kaunsa question sahi hai: 'Why did you thank God?' ya 'Why you thanked God?'?",
             "options": [
               {
                 "text": "Why did you thank God?",
@@ -3576,7 +3586,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'The king laughed at him.' or 'The king laughed on him.'?",
-            "prompt_hi": "Hindi mein 'us par hansa' kehte hain. Par English mein kaunsa sahi: 'laughed at him' ya 'laughed on him'?",
+            "prompt_hi": "Kaunsa sahi hai: 'The king laughed at him.' ya 'The king laughed on him.'?",
             "options": [
               {
                 "text": "The king laughed at him.",
@@ -4007,7 +4017,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'I want to eat a paratha.' or 'I want eat a paratha.'?",
-            "prompt_hi": "Kaunsa sahi hai: 'I want to eat' ya 'I want eat'? Want ke baad 'to' aata hai.",
+            "prompt_hi": "Kaunsa sahi hai: 'I want to eat a paratha.' ya 'I want eat a paratha.'?",
             "options": [
               {
                 "text": "I want to eat a paratha.",
@@ -4063,7 +4073,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'Pihu shared her food with Arjun.' or 'Pihu shared Arjun her food.'?",
-            "prompt_hi": "Kaunsa sahi hai: 'shared her food with Arjun' ya 'shared Arjun her food'? Share ke saath 'with' aata hai.",
+            "prompt_hi": "Kaunsa sahi hai: 'Pihu shared her food with Arjun.' ya 'Pihu shared Arjun her food.'?",
             "options": [
               {
                 "text": "Pihu shared her food with Arjun.",
@@ -4500,7 +4510,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which spelling is right: 'nite' or 'night'?",
-            "prompt_hi": "Sahi spelling kaunsi hai: 'nite' ya 'night'? Kuch letters chup rehte hain.",
+            "prompt_hi": "Sahi spelling kaunsi hai: 'nite' ya 'night'?",
             "options": [
               {
                 "text": "night",
@@ -4529,7 +4539,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which sounds right: 'The moon is in the sky.' or 'Moon is in sky.'?",
-            "prompt_hi": "Kaunsa sahi lagta hai: 'The moon is in the sky.' ya 'Moon is in sky.'? Ek hi chaand, ek hi aasmaan — toh 'the'.",
+            "prompt_hi": "Kaunsa sahi lagta hai: 'The moon is in the sky.' ya 'Moon is in sky.'?",
             "options": [
               {
                 "text": "The moon is in the sky.",
@@ -4594,14 +4604,14 @@
           ],
           "hints": [
             "Think of the second line.",
-            "The stars come out to t___ and play.",
             "It is like a tiny blink of light.",
+            "The stars come out to t___ and play.",
             "The stars twinkle and play."
           ],
           "verified": {
             "solverAnswer": "they twinkle and play",
             "agrees": true,
-            "note": "Key correct. Hint ladder out of order: hint 2 (\"come out to t___ and play\") gives more than hint 3 (\"tiny blink of light\"); swap them."
+            "note": "Fixed: hints 2 and 3 swapped so the ladder rises (meaning clue, then cloze, then answer)."
           }
         },
         {
@@ -4991,7 +5001,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is the right spelling: 'fourty' or 'forty'?",
-            "prompt_hi": "Sahi spelling kaunsi hai: 'fourty' ya 'forty'? Yeh ek tricky word hai.",
+            "prompt_hi": "Sahi spelling kaunsi hai: 'fourty' ya 'forty'?",
             "options": [
               {
                 "text": "forty",
@@ -5047,7 +5057,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is right: 'There are many stars.' or 'There are much stars.'?",
-            "prompt_hi": "Kaunsa sahi hai: 'many stars' ya 'much stars'? Jo gin sakte hain unke liye many.",
+            "prompt_hi": "Kaunsa sahi hai: 'There are many stars.' ya 'There are much stars.'?",
             "options": [
               {
                 "text": "There are many stars.",
@@ -5155,14 +5165,14 @@
           "hints": [
             "What did Chanda Mama say after thirty?",
             "It is four tens.",
-            "f-o-r-t-y: there is no u.",
+            "It sounds like four, but there is no u: f-o-r-___.",
             "'Forty', spelt f-o-r-t-y."
           ],
           "targetsMisconception": "c3-english-ch11-t01-m-fourty-spelling",
           "verified": {
             "solverAnswer": "forty (f-o-r-t-y)",
             "agrees": true,
-            "note": "Key correct. Hint 3 \"f-o-r-t-y: there is no u.\" spells the full answer before the assertion stage; hint leaks early. Use \"four tens: f-o-r-___ (no u)\"."
+            "note": "Fixed: hint 3 no longer spells the full answer; only hint 4 asserts f-o-r-t-y."
           }
         },
         {
@@ -5280,14 +5290,14 @@
           ],
           "hints": [
             "What did he say at the end?",
-            "'I will just ___ them.'",
             "Will he keep counting?",
+            "'I will just ___ them.'",
             "He will probably just enjoy the stars without counting."
           ],
           "verified": {
             "solverAnswer": "just look at and enjoy the stars",
             "agrees": true,
-            "note": "Key correct. Hint 2 quotes the cloze \"I will just ___ them\" which is stronger than hint 3 \"Will he keep counting?\"; swap order."
+            "note": "Fixed: hints 2 and 3 swapped so the cloze 'I will just ___ them' comes after the open question."
           }
         },
         {
@@ -5481,7 +5491,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which question is right: 'When did Vikram land?' or 'When Vikram landed?'?",
-            "prompt_hi": "Kaunsa question sahi hai: 'When did Vikram land?' ya 'When Vikram landed?'? Past ke question mein 'did' aata hai.",
+            "prompt_hi": "Kaunsa question sahi hai: 'When did Vikram land?' ya 'When Vikram landed?'?",
             "options": [
               {
                 "text": "When did Vikram land?",
@@ -5539,7 +5549,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Which is written correctly: 'Ira lives in India.' or 'ira lives in india.'?",
-            "prompt_hi": "Kaunsa sahi likha hai: 'Ira lives in India.' ya 'ira lives in india.'? Naam hamesha capital letter se.",
+            "prompt_hi": "Kaunsa sahi likha hai: 'Ira lives in India.' ya 'ira lives in india.'?",
             "options": [
               {
                 "text": "Ira lives in India.",
@@ -5574,14 +5584,14 @@
           ],
           "hints": [
             "Find the word lander in the passage.",
-            "Its lander, V___, landed gently.",
             "It is also a boy's name in India.",
+            "Its lander, V___, landed gently.",
             "The lander was called Vikram."
           ],
           "verified": {
             "solverAnswer": "Vikram",
             "agrees": true,
-            "note": "Key correct. Hint 2 (cloze \"V___\") is stronger than hint 3 (\"also a boy's name\"); swap order."
+            "note": "Fixed: hints 2 and 3 swapped so the 'boy's name' clue comes before the 'V___' cloze."
           }
         },
         {
@@ -5668,8 +5678,10 @@
           "answer": "23 August 2023",
           "acceptable": [
             "on 23 August 2023",
-            "in August 2023",
-            "2023"
+            "23 August",
+            "on 23 August",
+            "23rd August 2023",
+            "August 23, 2023"
           ],
           "hints": [
             "Look for a date in what Dadi said.",
@@ -5680,7 +5692,7 @@
           "verified": {
             "solverAnswer": "on 23 August 2023",
             "agrees": true,
-            "note": "Key correct; acceptable \"2023\" alone is lenient for a \"when\" retrieval that the passage answers with a full date."
+            "note": "Fixed: removed lenient 'in August 2023' and '2023' alone; acceptable now requires the day and month (with common date variants)."
           }
         },
         {

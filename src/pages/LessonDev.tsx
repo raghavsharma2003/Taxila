@@ -129,14 +129,17 @@ function AuthPanel({ onDone }: { onDone: () => Promise<void> }) {
 type DevMode = LessonMode | "cascade";
 
 function LessonPanel({ me, onSignedOut }: { me: Me; onSignedOut: () => Promise<void> }) {
-  // The runtime's createLink hook picks the cascade link for a text-lane lesson started from "cascade".
-  const cascade = useRef({ on: false });
+  // The runtime starts a "cascade" lesson with ctx.cascade set; this hook only adds the dev readouts.
+  const cascade = useRef<{ element: boolean; link: CascadeLink | null }>({ element: false, link: null });
   const [transport, setTransport] = useState<CascadeTransport | null>(null);
+  const [aecElement, setAecElement] = useState(false);
   const [createLink] = useState(() => {
     const factory: LinkFactory = (m, ctx) => {
-      if (m !== "text" || !cascade.current.on) return defaultLinkFactory(m, ctx);
+      if (!ctx.cascade) return defaultLinkFactory(m, ctx);
       setTransport("webrtc");
-      return new CascadeLink({ lessonId: ctx.lessonId, levels: ctx.levels, onTransport: setTransport });
+      const link = new CascadeLink({ lessonId: ctx.lessonId, levels: ctx.levels, onTransport: setTransport, output: cascade.current.element ? "element" : "context" });
+      cascade.current.link = link;
+      return link;
     };
     return factory;
   });
@@ -163,10 +166,10 @@ function LessonPanel({ me, onSignedOut }: { me: Me; onSignedOut: () => Promise<v
   );
 
   const start = () => {
-    cascade.current = { on: mode === "cascade" };
+    cascade.current = { element: aecElement, link: null };
     setTransport(null);
     setPtt(false);
-    void runtime.start(childId, mode === "cascade" ? "text" : mode, topicId.trim() || undefined).catch(() => {});
+    void runtime.start(childId, mode, topicId.trim() || undefined).catch(() => {});
   };
   const cascadeLive = live && mode === "cascade" && transport !== null;
   const cascadePtt = transport === "recording" || ptt;
@@ -212,6 +215,9 @@ function LessonPanel({ me, onSignedOut }: { me: Me; onSignedOut: () => Promise<v
           </label>
           <label>
             <input type="radio" name="mode" data-testid="mode-cascade" checked={mode === "cascade"} disabled={live || busy} onChange={() => setMode("cascade")} /> voice (cascade, default)
+          </label>
+          <label title="echo test: render her voice through an <audio> element so the browser's echo canceller sees it">
+            <input type="checkbox" checked={aecElement} disabled={live || busy} onChange={(e) => setAecElement(e.target.checked)} /> cascade via &lt;audio&gt;
           </label>
           <label>
             <input type="radio" name="mode" data-testid="mode-voice" checked={mode === "voice"} disabled={live || busy} onChange={() => setMode("voice")} /> voice (realtime)
@@ -274,7 +280,12 @@ function LessonPanel({ me, onSignedOut }: { me: Me; onSignedOut: () => Promise<v
         )}
         {cascadeLive && (
           <div style={row} data-testid="cascade-controls" data-transport={transport ?? ""}>
-            <span>ears: {transport === "recording" ? "push-to-talk upload (fallback)" : "hands-free (WebRTC transcription)"}</span>
+            <span>
+              ears: {transport === "recording" ? "push-to-talk upload (fallback)" : transport === "typed" ? "no microphone (type below)" : "hands-free (WebRTC transcription)"}
+            </span>
+            <span data-testid="barge-stats" style={{ fontSize: 12, opacity: 0.7 }}>
+              barge {JSON.stringify(cascade.current.link?.bargeStats ?? {})}
+            </span>
             {transport === "webrtc" && (
               <label>
                 <input

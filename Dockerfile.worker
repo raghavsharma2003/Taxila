@@ -1,0 +1,13 @@
+# taxila-worker image (built in Azure Container Registry from the GitHub repo by scripts/deploy-worker.mjs).
+# The Conductor's background host: ticker (leader), dirty-set step loop, job lanes. No web build, no ingress.
+# Same server/ code as taxila-web; handlers that later need kits/curriculum import from data/, so it ships too.
+FROM node:22-slim
+WORKDIR /app
+ENV NODE_ENV=production
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --no-audit --no-fund
+COPY server ./server
+COPY shared ./shared
+COPY data ./data
+# SIGTERM reaches node directly (exec form), so the shutdown contract (stop claiming, unlock, ≤ 25 s) runs.
+CMD ["node", "server/worker.mjs"]

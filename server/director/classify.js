@@ -187,15 +187,13 @@ async function distressCheck(text, classLevel, trace) {
 }
 
 /**
- * Classify one child turn.
- * `heard` is what the teacher last said: it lets the classifier refuse evidence for a question nobody asked.
- * @param {{ target: ReturnType<typeof targetFor>, childText: string, asrConfidence?: number, typed?: boolean,
- *   chipId?: string, moduleAnswer?: { correct?: boolean } | null, heard?: string, classLevel: number, trace?: object[] }} args
- * @returns {Promise<{ outcome: string, misconceptionId?: string, confidence: number, source: string,
- *   covered?: string[], missing?: string[],
- *   flags: { dontKnow: boolean, asksForAnswer: boolean, minimal: boolean, offTopic: boolean, distress: boolean, distressKind: string|null, wantsToStop: boolean } }>}
+ * The deterministic part of classify(): chips, module answers, empty, the safety predicate, exact key or option
+ * matches and a lexical don't-know. Returns the label when the bytes decide, or null when classify() must ask
+ * the model (or, for a low-ASR transcript, run its distress backup) — which is what lets the turn route start
+ * the teacher's reply speculatively alongside that model call (server/routes/lesson.js).
+ * @returns {{ result: Awaited<ReturnType<typeof classify>> | null, flags: object, text: string }}
  */
-export async function classify({ target, childText, heard, asrConfidence, typed, chipId, moduleAnswer, classLevel, trace }) {
+export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer }) {
   const text = String(childText || "").trim();
   const read = readUtterance(text);
   const safety = scanSafety(text);
@@ -203,7 +201,7 @@ export async function classify({ target, childText, heard, asrConfidence, typed,
     dontKnow: read.dontKnow, asksForAnswer: read.asksForAnswer, minimal: read.minimal,
     offTopic: false, distress: safety.distress, distressKind: safety.kind, wantsToStop: wantsToStop(text),
   };
-  const done = (outcome, source, extra = {}) => ({ outcome, confidence: 1, source, flags, ...extra });
+  const done = (outcome, source, extra = {}) => ({ result: { outcome, confidence: 1, source, flags, ...extra }, flags, text });
 
   // Taps and module answers are machine truth: no model, no transcript.
   if (chipId && target.options && /^opt:\d+$/.test(chipId)) {
@@ -215,10 +213,7 @@ export async function classify({ target, childText, heard, asrConfidence, typed,
   }
   if (!text) return done("no_evidence", "empty");
   if (safety.distress) return done("no_evidence", "predicate");
-  if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) {
-    flags.distress = await distressCheck(text, classLevel, trace);
-    return done("no_evidence", "asr");
-  }
+  if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) return { result: null, flags, text, lowAsr: true };
   if (target.mode === "item") {
     const t = norm(text);
     if ([target.key, ...(target.also || [])].some((k) => k && norm(k) === t)) return done("correct", "exact");
@@ -228,6 +223,28 @@ export async function classify({ target, childText, heard, asrConfidence, typed,
   // A bare "pata nahi" / "just tell me" (no number, a few words) needs no model to read.
   if ((target.mode === "item" || target.mode === "why") && !/\d/.test(text)
     && (read.dontKnow && read.words <= 4 || read.asksForAnswer && read.words <= 8)) return done("no_evidence", "lexical");
+  return { result: null, flags, text };
+}
+
+/**
+ * Classify one child turn.
+ * `heard` is what the teacher last said: it lets the classifier refuse evidence for a question nobody asked.
+ * @param {{ target: ReturnType<typeof targetFor>, childText: string, asrConfidence?: number, typed?: boolean,
+ *   chipId?: string, moduleAnswer?: { correct?: boolean } | null, heard?: string, classLevel: number, trace?: object[] }} args
+ * @returns {Promise<{ outcome: string, misconceptionId?: string, confidence: number, source: string,
+ *   covered?: string[], missing?: string[],
+ *   flags: { dontKnow: boolean, asksForAnswer: boolean, minimal: boolean, offTopic: boolean, distress: boolean, distressKind: string|null, wantsToStop: boolean } }>}
+ */
+export async function classify(args) {
+  const { target, heard, classLevel, trace } = args;
+  const fast = classifyFast(args);
+  if (fast.result) return fast.result;
+  const { flags, text } = fast;
+  const done = (outcome, source, extra = {}) => ({ outcome, confidence: 1, source, flags, ...extra });
+  if (fast.lowAsr) {
+    flags.distress = await distressCheck(text, classLevel, trace);
+    return done("no_evidence", "asr");
+  }
 
   try {
     const { json } = await chat(DEPLOY.fast, [

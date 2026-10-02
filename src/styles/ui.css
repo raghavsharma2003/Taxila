@@ -144,3 +144,24 @@ button.chip[aria-pressed="true"] { border-color: var(--jamun); background: var(-
 
 /* <details> summaries are targets too (A6) */
 .summary { cursor: pointer; font-weight: 600; min-height: 52px; display: flex; align-items: center; }
+
+/* 200% text (A13): long chip labels wrap instead of pushing the page sideways */
+button.chip { white-space: normal; text-align: left; max-width: 100%; }
+.state { white-space: normal; flex-wrap: wrap; max-width: 100%; }
+.block-link { display: inline-flex; align-items: center; min-height: 48px; }
+.stepper { display: grid; grid-template-columns: 56px 1fr 56px; gap: var(--space-2); align-items: center; }
+.stepper .btn { font-size: 1.5rem; padding: 0; }
+.stepper-val { text-align: center; font-size: 1.125rem; }
+.stepper-val strong { font-size: 1.75rem; font-variant-numeric: tabular-nums; }
+.hours { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: var(--space-3); }
+.hours .input { min-width: 0; }
+
+/* evidence rows (Kaise pata?, landing example) */
+.ev-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.ev-list li { display: grid; grid-template-columns: 4.5rem 1fr; column-gap: var(--space-3); row-gap: 2px; padding-top: var(--space-3); border-top: 1px solid var(--surface-2); }
+.ev-list li > :not(.ev-date) { grid-column: 2; }
+.ev-date { grid-row: span 3; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.ev-what { font-weight: 600; }
+.ev-quote { font-style: normal; background: var(--surface-2); border-radius: var(--radius-sm); padding: var(--space-1) var(--space-2); }
+
+.state { align-self: flex-start; }

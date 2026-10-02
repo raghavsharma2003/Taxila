@@ -4,7 +4,7 @@
 // The handshake is the one proven in evals/webrtc/: ephemeral key from our server, offer SDP POSTed to
 // `${base}/realtime/calls` with the key as Bearer, events over the "oai-events" data channel.
 import type { RealtimeTokenResponse } from "../../shared/contracts.ts";
-import type { LinkEvent, LinkLevels, TeacherLink } from "./link.ts";
+import type { LinkEvent, LinkLevels, MicTap, TeacherLink } from "./link.ts";
 import { createLevelAnalyser } from "./level.ts";
 import { audioInputFrom, RealtimeProtocol, turnDetectionFrom } from "./realtime.ts";
 import { Emitter } from "./store.ts";
@@ -74,6 +74,10 @@ export class VoiceLink implements TeacherLink {
 
   on(fn: (e: LinkEvent) => void): () => void {
     return this.events.on(fn);
+  }
+
+  micTap(): MicTap | null {
+    return this.mic && this.ctx && !this.closed ? { stream: this.mic, ctx: this.ctx, teacherEnd: "remote" } : null;
   }
 
   async connect(): Promise<void> {
