@@ -54,8 +54,8 @@
       "Stretches the first sound when reading: 'kee-ran'"
      ],
      "diagnostic": {
-      "prompt_en": "Which spelling of 'sunbeam' is correct?",
-      "prompt_hi": "‘किरन’ — यानी सूरज की रोशनी की लकीर — इनमें से सही कैसे लिखते हैं?",
+      "prompt_en": "The poem's word for 'sunbeam' (किरन, standard written form किरण) — which spelling is correct?",
+      "prompt_hi": "कविता में आया शब्द ‘किरन’ — यानी सूरज की रोशनी की लकीर — इनमें से सही कैसे लिखते हैं?",
       "options": [
        {
         "text": "किरन",
@@ -270,7 +270,6 @@
      "answer": "दरवाज़ा",
      "acceptable": [
       "दरवाजा",
-      "दर",
       "darwaza",
       "darwaja",
       "door",
@@ -286,7 +285,7 @@
      "verified": {
       "solverAnswer": "दरवाज़ा",
       "agrees": true,
-      "note": "acceptable 'दर' is ambiguous (usually means rate); left in, low risk."
+      "note": "Fixed: removed ambiguous 'दर' (usually means 'rate') from acceptable[]. Solved blind; agrees."
      }
     },
     {
@@ -2276,8 +2275,7 @@
       "गाय की बच्ची",
       "bachhiya",
       "bachiya",
-      "calf",
-      "गाय"
+      "calf"
      ],
      "hints": [
       "Listen to the very first sentence.",
@@ -2288,7 +2286,7 @@
      "verified": {
       "solverAnswer": "भूरी बछिया",
       "agrees": true,
-      "note": "acceptable includes 'गाय' (a बछिया is a calf, not a cow); near-miss, left in."
+      "note": "Fixed: removed 'गाय' from acceptable[] (a बछिया is a calf, not a cow). Solved blind; agrees."
      }
     },
     {
@@ -2351,8 +2349,8 @@
      "skillId": "c5-hindi-ch05-t01-s2",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "What does सेवा mean in the story?",
-     "prompt_hi": "कहानी में ‘तीन दिन दवा और सेवा’ — यहाँ ‘सेवा’ का मतलब क्या है?",
+     "prompt_en": "Listen: when Sundariya fell ill, for three days Maa and Baba gave her medicine and सेवा; Maa got up at night to give her water. What does सेवा mean here?",
+     "prompt_hi": "सुनो — ‘सुंदरिया बीमार पड़ी तो तीन दिन तक माँ और बाबा ने उसकी दवा और सेवा की। माँ रात में भी उठकर उसे पानी पिलातीं।’ यहाँ ‘सेवा’ का मतलब क्या है?",
      "answer": "देखभाल",
      "acceptable": [
       "ख़याल रखना",
@@ -2370,7 +2368,7 @@
      "verified": {
       "solverAnswer": "देखभाल",
       "agrees": true,
-      "note": "Prompt quotes 'तीन दिन दवा और सेवा', which no item passage contains; relies on the full story being read in the lesson."
+      "note": "Fixed: prompt now carries its own story context (तीन दिन दवा और सेवा) so the item stands alone. Re-solved blind: देखभाल; agrees."
      }
     },
     {
@@ -2512,8 +2510,8 @@
      "skillId": "c5-hindi-ch05-t01-s4",
      "kind": "predict",
      "difficulty": 3,
-     "prompt_en": "If Baba had not called the vet, what might have happened?",
-     "prompt_hi": "अगर बाबा पशु-डॉक्टर को न बुलाते, तो क्या हो सकता था?",
+     "prompt_en": "Listen: Sundariya's fever kept rising, so Baba fetched the vet from the village, who gave her medicine. If Baba had not called the vet, what might have happened?",
+     "prompt_hi": "सुनो — ‘सुंदरिया का बुखार बढ़ता गया, तो बाबा गाँव से पशु-डॉक्टर को बुला लाए। डॉक्टर ने उसे दवा दी।’ अगर बाबा पशु-डॉक्टर को न बुलाते, तो क्या हो सकता था?",
      "answer": "सुंदरिया और बीमार हो सकती थी, शायद ठीक न होती",
      "acceptable": [
       "और बीमार हो जाती",
@@ -2530,7 +2528,7 @@
      "verified": {
       "solverAnswer": "और बीमार होकर शायद ठीक न होती",
       "agrees": true,
-      "note": "Baba and the vet appear in no item passage; relies on the full story."
+      "note": "Fixed: prompt now introduces Baba and the vet itself. Re-solved blind: और बीमार होकर शायद ठीक न होती; agrees."
      }
     },
     {
@@ -2617,8 +2615,8 @@
      "skillId": "c5-hindi-ch05-t01-s4",
      "kind": "teachback",
      "difficulty": 4,
-     "prompt_en": "Explain why, at the end, the narrator felt Sundariya was a family member.",
-     "prompt_hi": "समझाओ — कहानी के अंत में लेखक को सुंदरिया ‘घर की सदस्य’ क्यों लगी?",
+     "prompt_en": "Listen: during her illness Maa, Baba and I took turns sitting by her; the day she jumped about again, the house felt like a festival. Explain why, at the end, the narrator felt Sundariya was a family member.",
+     "prompt_hi": "सुनो — ‘बीमारी के दिनों में माँ, बाबा और मैं बारी-बारी से उसके पास बैठे। जिस दिन वह फिर उछलने लगी, उस दिन घर में त्योहार जैसा लगा।’ समझाओ — कहानी के अंत में लेखक को सुंदरिया ‘घर की सदस्य’ क्यों लगी?",
      "answer": "उसकी बीमारी में पूरे घर ने परिवार के सदस्य जैसी सेवा की और लेखक को उससे गहरा लगाव था — प्यार से पाला जानवर परिवार का हिस्सा बन जाता है",
      "acceptable": [
       "पूरे घर ने सेवा की",
@@ -2636,7 +2634,7 @@
      "verified": {
       "solverAnswer": "(open) पूरे घर ने परिवार जैसी सेवा की, गहरा लगाव",
       "agrees": true,
-      "note": "Open item solved blind; key is a valid model answer."
+      "note": "Fixed: prompt now carries the care-and-recovery context. Open item re-solved blind: पूरे घर ने परिवार जैसी सेवा की, गहरा लगाव; key is a valid model answer; agrees."
      }
     }
    ],
@@ -2997,7 +2995,7 @@
       "sherni"
      ],
      "hints": [
-      "Think of मोर and his partner.",
+      "What do we call the mother lion in the jungle?",
       "Add the ending -नी.",
       "Sher___.",
       "शेरनी."
@@ -3006,7 +3004,7 @@
      "verified": {
       "solverAnswer": "शेरनी",
       "agrees": true,
-      "note": "Fixed: removed 'sheran' from acceptable[] (not a standard form). Hint 1 cues मोर, which pre-empts i08; minor."
+      "note": "Fixed: removed 'sheran' from acceptable[] (not a standard form); hint 1 no longer cues मोर, which pre-empted i08. Solved blind; agrees."
      }
     },
     {
@@ -4447,8 +4445,8 @@
      "skillId": "c5-hindi-ch09-t01-s4",
      "kind": "why",
      "difficulty": 3,
-     "prompt_en": "What did the teacher mean by \"झूठ से भरोसा टूटता है\"?",
-     "prompt_hi": "अध्यापिका ने कहा — ‘झूठ से भरोसा टूटता है।’ इसका क्या मतलब है?",
+     "prompt_en": "Listen: the teacher says the glass can be replaced, but a lie breaks trust and that does not mend so easily. What does \"झूठ से भरोसा टूटता है\" mean?",
+     "prompt_hi": "सुनो — ‘अध्यापिका: शीशा तो नया लग जाएगा, रोहन, पर झूठ से भरोसा टूटता है, और वह इतनी आसानी से नहीं जुड़ता।’ ‘झूठ से भरोसा टूटता है’ — इसका क्या मतलब है?",
      "answer": "झूठ बोलने पर लोग हम पर विश्वास करना छोड़ देते हैं; शीशा फिर लग सकता है पर भरोसा मुश्किल से लौटता है",
      "acceptable": [
       "विश्वास टूट जाता है",
@@ -4465,7 +4463,7 @@
      "verified": {
       "solverAnswer": "झूठ बोलने पर लोग विश्वास करना छोड़ देते हैं",
       "agrees": true,
-      "note": "The quote 'झूठ से भरोसा टूटता है' is in no item passage; relies on the full scene."
+      "note": "Fixed: the quote now sits in the item's own passage (with the glass contrast the key relies on). Re-solved blind; agrees."
      }
     },
     {
@@ -4605,8 +4603,8 @@
      "skillId": "c5-hindi-ch09-t01-s2",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "What does हाथ बँटाना mean?",
-     "prompt_hi": "‘हाथ बँटाना’ — इस मुहावरे का क्या मतलब है?",
+     "prompt_en": "Listen: the teacher says that from tomorrow Rohan will हाथ बँटाना in keeping the ground tidy after games. What does the idiom हाथ बँटाना mean?",
+     "prompt_hi": "सुनो — ‘अध्यापिका: कल से तुम खेल के बाद मैदान ठीक रखने में हाथ बँटाओगे।’ यहाँ ‘हाथ बँटाना’ मुहावरे का क्या मतलब है?",
      "answer": "मदद करना",
      "acceptable": [
       "madad karna",
@@ -4623,7 +4621,7 @@
      "verified": {
       "solverAnswer": "मदद करना",
       "agrees": true,
-      "note": "Asked before i12, where हाथ बँटाओगे first appears in a passage; hint 2 depends on that context."
+      "note": "Fixed: prompt now gives the idiom in context, so hint 2 no longer depends on i12. Re-solved blind: मदद करना; agrees."
      }
     },
     {
