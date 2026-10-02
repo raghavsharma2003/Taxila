@@ -1,11 +1,11 @@
 // Lesson-screen parts: status glyph, chalk ledge, caption line, choice tiles, pause/help sheet, leave guard,
 // connection chip. Each is presentational; LessonScreen owns state and the single ring.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import type { TeacherStatus } from "../../lesson/link.ts";
 import { t, type Lang } from "../copy.ts";
 import { Cross, Dots, Ear, EarArrow, MouthSound, OpenHand, PhoneHelp, Tick, Tortoise } from "../icons.tsx";
 import type { Family } from "../band.ts";
-import { clauseAt, clauses, type CaptionMode } from "./captions.ts";
+import { clauseAt, clauses, restingLine, type CaptionMode } from "./captions.ts";
 
 const STATUS_KEY = { your_turn: "yourTurn", listening: "listening", thinking: "thinking", speaking: "speaking" } as const;
 
@@ -106,14 +106,18 @@ export function CaptionLine({
     );
   }
   const i = clauseAt(list, ms, speaking);
+  const line = speaking ? (i >= 0 ? list[i] : "") : restingLine(text);
   return (
     <div className={`tx-caption ${pill ? "tx-caption--pill" : ""}`} aria-hidden="true">
-      {heard ? <span className="tx-heard">“{heard}”</span> : <span className="tx-caption-text" lang={lang === "hindi" ? "hi" : undefined}>{i >= 0 ? list[i] : ""}</span>}
+      {heard ? <span className="tx-heard">“{heard}”</span> : <span className={`tx-caption-text ${speaking ? "" : "tx-caption-text--rest"}`} lang={lang === "hindi" ? "hi" : undefined}>{line}</span>}
     </div>
   );
 }
 
-/** Choice tiles (§3.10): the ring sits on the GROUP frame (one element), never on a tile. */
+/**
+ * Choice tiles (§3.10): the ring sits on the GROUP frame (one element), never on a tile. The tiles act on
+ * activation, so they are plain buttons in a group (not radios: nothing is "checked" before it is sent).
+ */
 export function ChoiceTiles({
   chips, ringed, strong, onPick, max,
 }: {
@@ -127,13 +131,13 @@ export function ChoiceTiles({
   return (
     <div
       className={`tx-choices ${ringed ? "tx-ring" : ""} ${ringed && strong ? "tx-ring--strong" : ""}`}
-      role="radiogroup"
+      role="group"
       aria-label="choices"
       data-testid="choices"
       tabIndex={-1}
     >
       {shown.map((c, k) => (
-        <button key={c.id} type="button" role="radio" aria-checked="false" className="tx-tile tx-choice" onClick={() => onPick(c)} data-key={k + 1}>
+        <button key={c.id} type="button" className="tx-tile tx-choice" onClick={() => onPick(c)} data-key={k + 1}>
           <span className="tx-num">{c.label}</span>
         </button>
       ))}
@@ -141,10 +145,64 @@ export function ChoiceTiles({
   );
 }
 
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+/**
+ * Modal focus for the lesson sheets: on open, focus moves to `first` (the first helpline on the help sheet,
+ * Continue / No otherwise); Tab is trapped inside the sheet; every sibling of the veil except the screen's
+ * live regions is made inert (so a keyboard or screen-reader child cannot wander into the lesson behind
+ * the safeguarding hand-off); on close, focus returns to whatever held it before.
+ */
+export function useModalFocus(veil: RefObject<HTMLElement | null>, first: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const root = veil.current;
+    if (!root) return;
+    const before = document.activeElement as HTMLElement | null;
+    const parent = root.parentElement;
+    const madeInert: Element[] = [];
+    if (parent) {
+      for (const sib of Array.from(parent.children)) {
+        if (sib === root || sib.classList.contains("tx-sr") || sib.hasAttribute("inert")) continue;
+        sib.setAttribute("inert", "");
+        madeInert.push(sib);
+      }
+    }
+    (first.current ?? root.querySelector<HTMLElement>(FOCUSABLE))?.focus({ preventScroll: true });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const items = Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE));
+      if (!items.length) return;
+      const a = items[0];
+      const z = items[items.length - 1];
+      const cur = document.activeElement;
+      if (!root.contains(cur)) {
+        e.preventDefault();
+        a.focus();
+      } else if (e.shiftKey && cur === a) {
+        e.preventDefault();
+        z.focus();
+      } else if (!e.shiftKey && cur === z) {
+        e.preventDefault();
+        a.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey, true);
+    return () => {
+      document.removeEventListener("keydown", onKey, true);
+      for (const el of madeInert) el.removeAttribute("inert");
+      if (before && before.isConnected && before !== document.body) before.focus?.({ preventScroll: true });
+    };
+  }, [veil, first]);
+}
+
 /** Pause sheet (§3.14): help is the FIRST row on every rung; continue and stop are equal tiles. */
 export function PauseSheet({ lang, onContinue, onStop, helpFirst }: { lang: Lang; onContinue: () => void; onStop: () => void; helpFirst?: boolean }) {
+  const veil = useRef<HTMLDivElement>(null);
+  const helpline = useRef<HTMLAnchorElement>(null);
+  const cont = useRef<HTMLButtonElement>(null);
+  useModalFocus(veil, helpFirst ? helpline : cont);
   return (
-    <div className="tx-sheet-veil" role="dialog" aria-modal="true" aria-label={helpFirst ? t("help", lang) : t("pause", lang)}>
+    <div ref={veil} className="tx-sheet-veil" role="dialog" aria-modal="true" aria-label={helpFirst ? t("help", lang) : t("pause", lang)}>
       <div className="tx-sheet">
         <section className="tx-help" aria-label={t("help", lang)}>
           <div className="tx-help-head">
@@ -153,7 +211,7 @@ export function PauseSheet({ lang, onContinue, onStop, helpFirst }: { lang: Lang
           </div>
           <div className="tx-row">
             {/* Helplines: Childline 1098, Tele-MANAS 14416 [re-verify at launch] */}
-            <a className="tx-tile tx-tile--plain tx-help-call" href="tel:1098">
+            <a ref={helpline} className="tx-tile tx-tile--plain tx-help-call" href="tel:1098" data-testid="help-1098">
               <span>Childline</span>
               <span className="tx-num tx-help-num">1098</span>
             </a>
@@ -164,7 +222,7 @@ export function PauseSheet({ lang, onContinue, onStop, helpFirst }: { lang: Lang
           </div>
         </section>
         <div className="tx-sheet-pair">
-          <button type="button" className="tx-tile" onClick={onContinue} data-testid="pause-continue">
+          <button ref={cont} type="button" className="tx-tile" onClick={onContinue} data-testid="pause-continue">
             {t("continueLesson", lang)}
           </button>
           <button type="button" className="tx-tile" onClick={onStop} data-testid="pause-stop">
@@ -178,12 +236,15 @@ export function PauseSheet({ lang, onContinue, onStop, helpFirst }: { lang: Lang
 
 /** Leave guard (§2.9): Young full-screen tick / cross, Older a standard dialog; never a sad face; ink, never red. */
 export function LeaveGuard({ lang, family, onYes, onNo }: { lang: Lang; family: Family; onYes: () => void; onNo: () => void }) {
+  const veil = useRef<HTMLDivElement>(null);
+  const no = useRef<HTMLButtonElement>(null);
+  useModalFocus(veil, no);
   return (
-    <div className={`tx-sheet-veil ${family === "young" ? "tx-sheet-veil--full" : ""}`} role="alertdialog" aria-modal="true" aria-label={t("leaveQ", lang)}>
+    <div ref={veil} className={`tx-sheet-veil ${family === "young" ? "tx-sheet-veil--full" : ""}`} role="alertdialog" aria-modal="true" aria-label={t("leaveQ", lang)}>
       <div className="tx-sheet">
         <h2>{t("leaveQ", lang)}</h2>
         <div className="tx-sheet-pair">
-          <button type="button" className="tx-tile" onClick={onNo} aria-label={t("no", lang)}>
+          <button ref={no} type="button" className="tx-tile" onClick={onNo} aria-label={t("no", lang)} data-testid="leave-no">
             {family === "young" ? <Cross /> : t("no", lang)}
           </button>
           <button type="button" className="tx-tile" onClick={onYes} aria-label={t("yes", lang)}>

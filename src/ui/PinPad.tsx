@@ -4,12 +4,13 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Icon } from "./Icon.tsx";
 
-export function PinPad({ min = 4, max = 6, onComplete, label, disabled, resetKey, okLabel = "OK" }:
-  { min?: number; max?: number; onComplete: (pin: string) => void; label: string; disabled?: boolean; resetKey?: unknown; okLabel?: string }) {
+/** autoFocus (default off, §7.1 focus order): only the locked-gate unlock pad, where the PIN is the one thing to do. */
+export function PinPad({ min = 4, max = 6, onComplete, label, disabled, resetKey, okLabel = "OK", autoFocus = false }:
+  { min?: number; max?: number; onComplete: (pin: string) => void; label: string; disabled?: boolean; resetKey?: unknown; okLabel?: string; autoFocus?: boolean }) {
   const [pin, setPin] = useState("");
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => { setPin(""); }, [resetKey]);
-  useEffect(() => { ref.current?.focus(); }, []);
+  useEffect(() => { if (autoFocus) ref.current?.focus({ preventScroll: true }); }, [autoFocus]);
 
   const push = (d: string) => { if (!disabled) setPin((p) => (p.length >= max ? p : p + d)); };
   const pop = () => { if (!disabled) setPin((p) => p.slice(0, -1)); };

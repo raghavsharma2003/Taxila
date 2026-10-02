@@ -138,6 +138,21 @@ test("ledgeChipFits: Young keeps numerals, pictures and short words; drops sente
   assert.equal(ledgeChipFits({ kind: "text", value: "aadha" }, "young"), true);
   assert.equal(ledgeChipFits({ kind: "text", value: "Which fraction is bigger, one half or one third?" }, "young"), false);
   assert.equal(ledgeChipFits({ kind: "text", value: "Which fraction is bigger, one half or one third?" }, "older"), true);
+  // Worked-example problems arrive as kind "math" but are sentences: off the Young ledge.
+  assert.equal(ledgeChipFits({ kind: "math", value: "Count the faces, edges and corners of a cube." }, "young"), false);
+  assert.equal(ledgeChipFits({ kind: "math", value: "Count the faces, edges and corners of a cube." }, "older"), true);
+  assert.equal(ledgeChipFits({ kind: "math", value: "12 + 7 = 19" }, "young"), true);
+  assert.equal(ledgeChipFits({ kind: "text", value: "ek do teen chaar" }, "young"), false, "more than 3 words");
+});
+
+test("ledgeChipFits: the safeguarding helplines always reach the Young ledge (safety by predicate)", () => {
+  const HELPLINES = { kind: "text", value: "Childline 1098 · Tele-MANAS 14416" }; // server/director/state.js
+  for (const family of ["young", "older"]) {
+    assert.equal(ledgeChipFits(HELPLINES, family), true, family);
+    assert.equal(ledgeChipFits(HELPLINES, family, { safeguard: true }), true, family);
+  }
+  assert.equal(ledgeChipFits({ kind: "text", value: "Kisi bade se baat karo abhi" }, "young", { safeguard: true }), true);
+  assert.equal(ledgeChipFits({ kind: "text", value: "Tele-MANAS 14416" }, "young"), true);
 });
 
 test("open mic: only Older, only with a headset (or a passed probe), never after EchoGuard demotion", () => {
@@ -233,4 +248,17 @@ test("UiBridge: the cascade stream passes through untouched and its copy lands i
     globalThis.fetch = realFetch;
     b.dispose();
   }
+});
+
+test("captions: dashes are clause boundaries, short tails merge, at rest the last full sentence stays up", async () => {
+  const { clauses, restingLine } = await import("../src/child/lesson/captions.ts");
+  const q = "Aaj hum ek mazedaar cheez dekhenge jo tumne pehle bhi dekhi hai—likhne ya padhne mein?";
+  const list = clauses(q);
+  assert.ok(list.every((c) => c.split(" ").length <= 12), JSON.stringify(list));
+  assert.equal(list.at(-1), "likhne ya padhne mein?");
+  // 11 words without punctuation: no stranded 2-word tail.
+  const long = clauses("ek do teen chaar paanch chheh saat aath nau das gyaarah");
+  assert.equal(long.length, 1);
+  assert.equal(restingLine("Bahut accha. Ab batao, kaunsa bada hai — aadha ya teesra?"), "Ab batao, kaunsa bada hai — aadha ya teesra?");
+  assert.equal(restingLine(""), "");
 });

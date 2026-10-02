@@ -28,6 +28,19 @@ export function useDraft() {
   }, []);
   return [d, set] as const;
 }
+/**
+ * The guardian's name, email and phone stay on a shared family phone only until the account exists: cleared
+ * after a successful signup or login, and the whole draft at the P8 handover (review: PII left in localStorage).
+ */
+export const clearDraftContact = () => {
+  const d = readStore<Draft>(KEY, {});
+  writeStore(KEY, { ...d, name: undefined, email: undefined, phone: undefined });
+};
+/** P8: everything but the language tile (not personal; the add-a-child flow defaults the child's language from it). */
+export const clearDraft = () => {
+  const { lang } = readStore<Draft>(KEY, {});
+  writeStore(KEY, lang ? { lang } : null);
+};
 export const clearDraftChild = () => {
   const d = readStore<Draft>(KEY, {});
   writeStore(KEY, { ...d, child: undefined, childId: undefined });

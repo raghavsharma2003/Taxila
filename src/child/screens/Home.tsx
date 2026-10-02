@@ -43,7 +43,11 @@ export function Home() {
     const r = await requestLesson(cid);
     setRequesting(false);
     setAsking(false);
-    if (r.granted && r.lid) return navigate(`/c/${cid}/lesson/${encodeURIComponent(r.lid)}`);
+    // A grant carries its topic as ?topic= (LessonScreen starts that topic); the lid stays in the path.
+    if (r.granted && (r.lid || r.topicId)) {
+      const q = r.topicId ? `?topic=${encodeURIComponent(r.topicId)}` : "";
+      return navigate(`/c/${cid}/lesson/${encodeURIComponent(r.lid ?? "new")}${q}`);
+    }
     markRefused(cid);
     setResting(true);
   };

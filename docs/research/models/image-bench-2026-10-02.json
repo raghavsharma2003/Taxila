@@ -1,0 +1,207 @@
+{
+ "at": "2026-10-02T23:06:23.047Z",
+ "judge": "taxila-brain (gpt-5.6-sol) effort medium",
+ "quality": "gpt-image-2 medium; FLUX defaults",
+ "rows": [
+  {
+   "prompt": "diagram",
+   "arm": "gpt-image-2",
+   "ms": 39756,
+   "err": null,
+   "file": "docs/research/models/image-bench/diagram-gpt-image-2.jpg",
+   "usage": {
+    "input_tokens": 61,
+    "input_tokens_details": {
+     "image_tokens": 0,
+     "text_tokens": 61
+    },
+    "output_tokens": 1756,
+    "output_tokens_details": {
+     "image_tokens": 1756,
+     "text_tokens": 0
+    },
+    "total_tokens": 1817
+   },
+   "judge": {
+    "adherence": 5,
+    "text": 5,
+    "authenticity": 5,
+    "appeal": 5,
+    "artifacts": 5,
+    "label_errors": [],
+    "issue": "All five labels are correct, readable, and point to the appropriate plant parts."
+   }
+  },
+  {
+   "prompt": "diagram",
+   "arm": "FLUX.2-pro",
+   "ms": 6857,
+   "err": null,
+   "file": "docs/research/models/image-bench/diagram-FLUX.2-pro.jpg",
+   "judge": {
+    "adherence": 2,
+    "text": 1,
+    "authenticity": 4,
+    "appeal": 4,
+    "artifacts": 5,
+    "label_errors": [
+     "Root",
+     "Stem",
+     "Leaf",
+     "Flower",
+     "Fruit"
+    ],
+    "issue": "Leaf is missing, and all four visible leader lines incorrectly point to leaves."
+   }
+  },
+  {
+   "prompt": "diagram",
+   "arm": "FLUX.1-Kontext-pro",
+   "ms": 4628,
+   "err": null,
+   "file": "docs/research/models/image-bench/diagram-FLUX.1-Kontext-pro.jpg",
+   "judge": {
+    "adherence": 2,
+    "text": 2,
+    "authenticity": 4,
+    "appeal": 3,
+    "artifacts": 4,
+    "label_errors": [
+     "Root",
+     "Stem",
+     "Leaf",
+     "Flower",
+     "Fruit"
+    ],
+    "issue": "All leader lines point to incorrect or empty areas, and no fruit is shown."
+   }
+  },
+  {
+   "prompt": "classroom",
+   "arm": "gpt-image-2",
+   "ms": 46866,
+   "err": null,
+   "file": "docs/research/models/image-bench/classroom-gpt-image-2.jpg",
+   "usage": {
+    "input_tokens": 76,
+    "input_tokens_details": {
+     "image_tokens": 0,
+     "text_tokens": 76
+    },
+    "output_tokens": 1756,
+    "output_tokens_details": {
+     "image_tokens": 1756,
+     "text_tokens": 0
+    },
+    "total_tokens": 1832
+   },
+   "judge": {
+    "adherence": 5,
+    "text": 5,
+    "authenticity": 5,
+    "appeal": 5,
+    "artifacts": 5,
+    "label_errors": [],
+    "issue": "No significant issues."
+   }
+  },
+  {
+   "prompt": "classroom",
+   "arm": "FLUX.2-pro",
+   "ms": 10761,
+   "err": null,
+   "file": "docs/research/models/image-bench/classroom-FLUX.2-pro.jpg",
+   "judge": {
+    "adherence": 4,
+    "text": 2,
+    "authenticity": 5,
+    "appeal": 4,
+    "artifacts": 5,
+    "label_errors": [
+     "The blackboard has two equals signs, reading visually as stacked '1 = 2' and '2 = 4' rather than '1/2 = 2/4'."
+    ],
+    "issue": "The classroom is warm and authentically Indian, but the fraction equation is formatted incorrectly."
+   }
+  },
+  {
+   "prompt": "classroom",
+   "arm": "FLUX.1-Kontext-pro",
+   "ms": 4191,
+   "err": null,
+   "file": "docs/research/models/image-bench/classroom-FLUX.1-Kontext-pro.jpg",
+   "judge": {
+    "adherence": 3,
+    "text": 1,
+    "authenticity": 5,
+    "appeal": 4,
+    "artifacts": 4,
+    "label_errors": [
+     "Unwanted garbled caption below the illustration",
+     "Faint stray markings on the blackboard"
+    ],
+    "issue": "The requested classroom scene is clear and Indian, but prominent gibberish text violates the no-other-text instruction."
+   }
+  },
+  {
+   "prompt": "tutor",
+   "arm": "gpt-image-2",
+   "ms": 37003,
+   "err": null,
+   "file": "docs/research/models/image-bench/tutor-gpt-image-2.jpg",
+   "usage": {
+    "input_tokens": 52,
+    "input_tokens_details": {
+     "image_tokens": 0,
+     "text_tokens": 52
+    },
+    "output_tokens": 1756,
+    "output_tokens_details": {
+     "image_tokens": 1756,
+     "text_tokens": 0
+    },
+    "total_tokens": 1808
+   },
+   "judge": {
+    "adherence": 5,
+    "text": 5,
+    "authenticity": 5,
+    "appeal": 5,
+    "artifacts": 5,
+    "label_errors": [],
+    "issue": "No significant issues; the character clearly matches the requested friendly Indian cartoon tutor."
+   }
+  },
+  {
+   "prompt": "tutor",
+   "arm": "FLUX.2-pro",
+   "ms": 6192,
+   "err": null,
+   "file": "docs/research/models/image-bench/tutor-FLUX.2-pro.jpg",
+   "judge": {
+    "adherence": 5,
+    "text": 5,
+    "authenticity": 5,
+    "appeal": 5,
+    "artifacts": 5,
+    "label_errors": [],
+    "issue": "No significant issues."
+   }
+  },
+  {
+   "prompt": "tutor",
+   "arm": "FLUX.1-Kontext-pro",
+   "ms": 4547,
+   "err": null,
+   "file": "docs/research/models/image-bench/tutor-FLUX.1-Kontext-pro.jpg",
+   "judge": {
+    "adherence": 3,
+    "text": 5,
+    "authenticity": 4,
+    "appeal": 5,
+    "artifacts": 5,
+    "label_errors": [],
+    "issue": "The character wears a sari rather than a simple kurta and is not shown full body."
+   }
+  }
+ ]
+}

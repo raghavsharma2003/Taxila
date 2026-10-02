@@ -38,9 +38,11 @@ export function validatePlan(plan, inputs, { childId, now, tz } = {}) {
     if (to > end) bad("V2", `slot ${s.id} ends after bedtime − 60 (${teachingEnd(inputs)})`);
     if (nowDM !== null && (from < nowDM - 15 || to <= nowDM)) bad("V2", `slot ${s.id} window ${s.window[0]}-${s.window[1]} already past at ${localTime(now, tz)}`);
   }
-  // V3: realtime wanted within the remaining tier budget.
+  // V3: realtime wanted within the REMAINING tier budget (tier month − month-to-date use, planner.remainingVoice).
+  // The inputs' figure is authoritative: a plan cannot raise its own budget.
   const rt = plan.slots.reduce((a, s) => a + (s.voiceSecWanted?.realtime || 0), 0);
-  if (rt > (plan.voiceBudgetSec?.realtime ?? 0)) bad("V3", `realtime ${rt}s > budget ${plan.voiceBudgetSec?.realtime ?? 0}s`);
+  const rtBudget = Math.min(plan.voiceBudgetSec?.realtime ?? 0, inputs.voice?.voiceBudgetSec?.realtime ?? Infinity);
+  if (rt > rtBudget) bad("V3", `realtime ${rt}s > remaining budget ${rtBudget}s`);
   // V4: homework help never on realtime (the leak guard must be a pre-check).
   for (const s of plan.slots) {
     if (s.kind === "homework_help" && (s.segments || []).some((g) => g.laneWanted === "realtime" || g.laneWanted === "realtime_mini")) bad("V4", `slot ${s.id} homework on realtime`);

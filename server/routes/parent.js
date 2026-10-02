@@ -20,6 +20,7 @@ import { topicOf, skillById, misconceptionById } from "../content/index.js";
 import { topicStatus } from "../content/next-topic.js";
 import { AzureError, tts } from "../azure.js";
 import { allowSpeech, DEFAULT_VOICE, MAX_TTS_CHARS } from "./tts.js";
+import { MIN_DELAY_MS } from "../learner/bkt.js";
 
 export const PIN_RE = /^\d{4,6}$/;
 export const PIN_MAX_TRIES = 5;
@@ -90,22 +91,22 @@ const checkPinShape = (p) => {
 };
 
 /**
- * The latest PIN event decides whether a forgotten-PIN reset is pending: a `pin_reset_pending` row not yet
- * followed by an apply, a cancel, or a fresh set/change. Kept in audit (no schema change) because it IS the
- * audit trail, and the pending hash never leaves the server.
+ * A pending forgotten-PIN reset lives on guardian_pin (pending_hash, pending_effective_at; migration 007), not
+ * in audit: the audit trail will be exportable (§6.9) and a 4-6 digit PIN hash is brute-forceable offline.
+ * Audit keeps only the request metadata.
  */
 async function pendingReset(guardianId) {
-  const r = await one(`select id, detail, at from audit where guardian_id = $1
-      and action in ('pin_reset_pending','pin_reset_applied','pin_reset_cancelled','pin_set','pin_change') order by id desc limit 1`, [guardianId]);
-  return r?.detail && r.detail.pinHash && r.detail.effectiveAt ? { id: r.id, requestedAt: r.at, effectiveAt: r.detail.effectiveAt, pinHash: r.detail.pinHash } : null;
+  const r = await one(`select pending_effective_at, pending_requested_at from guardian_pin where guardian_id = $1 and pending_hash is not null`, [guardianId]);
+  return r ? { requestedAt: r.pending_requested_at, effectiveAt: new Date(r.pending_effective_at).toISOString() } : null;
 }
-/** Apply a pending reset whose delay has passed. Idempotent (same hash). */
+/** Apply a pending reset whose delay has passed. Idempotent (the update clears the pending columns). */
 async function applyDueReset(guardianId) {
-  const p = await pendingReset(guardianId);
-  if (!p || new Date(p.effectiveAt).getTime() > Date.now()) return;
-  await q("update guardian_pin set pin_hash = $2, failed = 0, locked_until = null, updated_at = now() where guardian_id = $1", [guardianId, p.pinHash]);
-  await audit(guardianId, "pin_reset_applied", { requestId: String(p.id) });
+  const r = await one(`update guardian_pin set pin_hash = pending_hash, pending_hash = null, pending_effective_at = null, pending_requested_at = null,
+      failed = 0, locked_until = null, updated_at = now()
+    where guardian_id = $1 and pending_hash is not null and pending_effective_at <= now() returning guardian_id`, [guardianId]);
+  if (r) await audit(guardianId, "pin_reset_applied");
 }
+const CLEAR_PENDING = "pending_hash = null, pending_effective_at = null, pending_requested_at = null";
 
 async function gateState(req, guardianId) {
   const pin = await one("select failed, locked_until, locked_until > now() as is_locked from guardian_pin where guardian_id = $1", [guardianId]);
@@ -132,9 +133,11 @@ const stampUnlock = async (req) => {
 /**
  * One account-password try on the shared device, counted before it is checked. Insert-then-count bounds a
  * burst: of any set of concurrent tries, the one that counts last sees every insert of the set, so at most
- * PW_MAX_TRIES of them can see a count within the limit. A correct password resets the window.
+ * PW_MAX_TRIES of them can see a count within the limit. A correct password resets the window, and so does a
+ * correct current PIN (unlock): proof of the parent, so a child who burns the tries at "Forgot the PIN?" cannot
+ * keep the guardian out of PIN change for 24 h.
  */
-async function checkAccountPassword(guardianId, password, purpose) {
+export async function checkAccountPassword(guardianId, password, purpose) {
   await audit(guardianId, "pw_attempt", { purpose });
   const c = await one(`select count(*)::int as n, min(at) as first from audit where guardian_id = $1 and action = 'pw_attempt'
       and at > now() - ($2 || ' hours')::interval
@@ -209,7 +212,7 @@ async function setPin(req, res, body) {
   }
   const hash = await hashSecret(p);
   await q(`insert into guardian_pin(guardian_id, pin_hash) values ($1,$2)
-    on conflict (guardian_id) do update set pin_hash = excluded.pin_hash, failed = 0, locked_until = null, updated_at = now()`, [g.id, hash]);
+    on conflict (guardian_id) do update set pin_hash = excluded.pin_hash, failed = 0, locked_until = null, ${CLEAR_PENDING}, updated_at = now()`, [g.id, hash]);
   // Only a password-verified first set opens the corner; the onboarding set hands the phone on locked.
   if (!st.hasPin && body.password) await stampUnlock(req);
   await audit(g.id, st.hasPin ? "pin_change" : "pin_set");
@@ -233,7 +236,9 @@ async function resetPin(req, res, body) {
   if (!has) throw locked("set");
   await checkAccountPassword(g.id, password, "pin_reset");
   const effectiveAt = new Date(Date.now() + RESET_DELAY_H * 3600_000).toISOString();
-  await audit(g.id, "pin_reset_pending", { pinHash: await hashSecret(p), effectiveAt });
+  await q(`update guardian_pin set pending_hash = $2, pending_effective_at = $3, pending_requested_at = now() where guardian_id = $1`,
+    [g.id, await hashSecret(p), effectiveAt]);
+  await audit(g.id, "pin_reset_pending", { effectiveAt });
   send(res, 200, await gateState(req, g.id));
 }
 
@@ -267,10 +272,12 @@ async function unlock(req, res, body) {
     }
     throw new HttpError(403, "wrong PIN", { gate: "locked", triesLeft: PIN_MAX_TRIES - row.failed });
   }
-  await q("update guardian_pin set failed = 0, locked_until = null where guardian_id = $1", [g.id]);
-  // Whoever knows the current PIN is the parent: a pending forgotten-PIN reset (maybe not theirs) is cancelled.
+  // Whoever knows the current PIN is the parent: a pending forgotten-PIN reset (maybe not theirs) is cancelled,
+  // and the account-password try window restarts (see checkAccountPassword).
   const pend = await pendingReset(g.id);
-  if (pend) await audit(g.id, "pin_reset_cancelled", { requestId: String(pend.id) });
+  await q(`update guardian_pin set failed = 0, locked_until = null, ${CLEAR_PENDING} where guardian_id = $1`, [g.id]);
+  if (pend) await audit(g.id, "pin_reset_cancelled", { requestedAt: pend.requestedAt });
+  await audit(g.id, "pw_attempt_ok", { purpose: "pin_unlock" });
   await stampUnlock(req);
   send(res, 200, await gateState(req, g.id));
 }
@@ -285,17 +292,57 @@ async function lock(req, res) {
 // ───────────────────────────── ledger words ─────────────────────────────
 
 /**
- * skill_state row → the parent's state (§6.4 table; R11 words). `due` in server/learner/bkt.js means the
- * scheduled re-check date has passed, not that a check was missed, so it never reads as a demotion: a skill
- * with a delayed pass stays Pakka with the re-check tag, otherwise it stays Aa gaya (untagged; the client shows the date).
+ * Delayed checks of one skill, folded from its evidence rows (ascending, `no_evidence` excluded). A P10 row is a
+ * delayed check under the same rule as server/learner/bkt.js applyEvidence: the previous contact with the skill
+ * was in a different lesson and at least MIN_DELAY_MS (20 h) earlier. Returns whether a delayed check has ever
+ * passed and how many delayed checks have been missed in a row since the latest pass (§6.4.1, R25).
+ * @param {{ at: any, probe: string, outcome: string, hints_used?: number, lesson_id?: string|null }[]} rows
+ * @returns {{ passed: boolean, misses: number }}
+ */
+export function foldDelayedChecks(rows) {
+  let passed = false, misses = 0, prev = null;
+  for (const r of rows) {
+    if (r.outcome === "no_evidence") continue;
+    if (r.probe === "P10" && prev && prev.lesson_id !== r.lesson_id && new Date(r.at).getTime() - new Date(prev.at).getTime() >= MIN_DELAY_MS) {
+      if (r.outcome === "correct" && !(r.hints_used > 0)) { passed = true; misses = 0; } else if (passed) misses += 1;
+    }
+    prev = r;
+  }
+  return { passed, misses };
+}
+
+/** skill_id → foldDelayedChecks for a child (one query; only skills with a P10 row can have a delayed check). */
+async function delayedCheckMap(childId, skillIds = null) {
+  const rows = await q(`select skill_id, at, probe, outcome, hints_used, lesson_id from evidence
+      where child_id = $1 and outcome <> 'no_evidence' and ($2::text[] is null or skill_id = any($2::text[]))
+        and skill_id in (select skill_id from evidence where child_id = $1 and probe = 'P10')
+      order by skill_id, at, id`, [childId, skillIds]);
+  const by = new Map();
+  for (const r of rows) { if (!by.has(r.skill_id)) by.set(r.skill_id, []); by.get(r.skill_id).push(r); }
+  return new Map([...by].map(([k, v]) => [k, foldDelayedChecks(v)]));
+}
+
+const LEARNED = new Set(["learned_today", "mastered", "due"]);
+
+/**
+ * skill_state row (+ its delayed checks) → the parent's state (§6.4 table; R11 words).
+ * - `due` (server/learner/bkt.js) only means the scheduled re-check time has passed; it is read as its
+ *   underlying level (Pakka if a delayed pass exists, else Aa gaya with its date) and NEVER as "re-check due":
+ *   elapsed time alone must not change what the parent sees (absence invariance, PD-G19, R13).
+ * - "Pakka · dobara jaanch" needs evidence: a learned skill whose latest delayed check, after a delayed pass,
+ *   was missed once (§6.4.1, R25). Two consecutive misses read Aa gaya. The bkt fold clears delayed_pass on a
+ *   miss, so the evidence (not the row's flag) is what decides here.
+ * @param {any} row skill_state row or null
+ * @param {{ passed: boolean, misses: number } | null} [dc] foldDelayedChecks for the skill
  * @returns {{ level: 0|1|2|3, key: "unseen"|"practising"|"learned_today"|"mastered", recheck: boolean }}
  */
-export function parentState(row) {
+export function parentState(row, dc = null) {
   const s = row?.status ?? "unseen";
+  if (LEARNED.has(s) && dc?.passed && dc.misses === 1) return { level: 3, key: "mastered", recheck: true };
+  if (LEARNED.has(s) && dc?.passed && dc.misses >= 2) return { level: 2, key: "learned_today", recheck: false };
   if (s === "mastered") return { level: 3, key: "mastered", recheck: false };
   if (s === "learned_today") return { level: 2, key: "learned_today", recheck: false };
-  // The re-check tag belongs to Pakka only (§6.4); a non-Pakka "due" shows its re-check date instead.
-  if (s === "due") return row.delayed_pass ? { level: 3, key: "mastered", recheck: true } : { level: 2, key: "learned_today", recheck: false };
+  if (s === "due") return row.delayed_pass ? { level: 3, key: "mastered", recheck: false } : { level: 2, key: "learned_today", recheck: false };
   if (s === "introduced" || s === "practising") return { level: 1, key: "practising", recheck: false };
   return { level: 0, key: "unseen", recheck: false };
 }
@@ -416,8 +463,9 @@ async function homeData(child) {
          from lesson where child_id = $1 and started_at > now() - interval '7 days'`, [child.id]),
     one("select * from child_controls where child_id = $1", [child.id]),
   ]);
+  const dcs = skills.length ? await delayedCheckMap(child.id, skills.map((r) => r.skill_id)) : new Map();
   const titled = await Promise.all(skills.map(async (r) => ({
-    skillId: r.skill_id, title: (await skillTitle(r.skill_id)) ?? r.skill_id, ...parentState(r),
+    skillId: r.skill_id, title: (await skillTitle(r.skill_id)) ?? r.skill_id, ...parentState(r, dcs.get(r.skill_id)),
     nextReview: r.next_review, lastSeen: r.last_seen,
   })));
   const weekAgo = Date.now() - 7 * 86400_000;
@@ -451,11 +499,12 @@ async function evidence(req, res) {
   const { child } = await requireParentChild(req, sp.get("childId"));
   const skill = sp.get("skill");
   if (!skill || skill.length > 120) throw bad("invalid skill");
-  const [state, rows] = await Promise.all([
+  const [state, rows, dcs] = await Promise.all([
     one("select * from skill_state where child_id = $1 and skill_id = $2", [child.id, skill]),
     q(`select e.id, e.at, e.probe, e.outcome, e.misconception_id, e.hints_used, e.lesson_id, t.text as child_text, t.speaker
          from evidence e left join turn t on t.id = e.turn_id
         where e.child_id = $1 and e.skill_id = $2 order by e.at desc limit 40`, [child.id, skill]),
+    delayedCheckMap(child.id, [skill]),
   ]);
   const beliefs = new Map();
   for (const r of rows) {
@@ -467,7 +516,7 @@ async function evidence(req, res) {
   const topic = topicId ? getTopic(topicId) : null;
   send(res, 200, {
     skill: { id: skill, title: (await skillTitle(skill)) ?? skill, outcomes: topic?.outcomes ?? [], topic: topic ? { id: topic.id, title: topic.title, chapter: topic.chapter.title } : null },
-    state: state ? { ...parentState(state), nextReview: state.next_review, attempts: state.attempts, correctUnaided: state.correct_unaided,
+    state: state ? { ...parentState(state, dcs.get(skill)), nextReview: state.next_review, attempts: state.attempts, correctUnaided: state.correct_unaided,
       generativePass: state.generative_pass, delayedPass: state.delayed_pass } : { ...parentState(null), nextReview: null },
     rows: rows.map((r) => ({
       id: String(r.id), at: r.at, kind: PROBE_KIND[r.probe] ?? "practice", probe: r.probe, outcome: r.outcome, hintsUsed: r.hints_used,
@@ -508,6 +557,7 @@ async function lessonCard(req, res) {
   ]);
   const states = ev.length ? await q("select * from skill_state where child_id = $1 and skill_id = any($2::text[])", [child.id, ev.map((r) => r.skill_id)]) : [];
   const byId = new Map(states.map((s) => [s.skill_id, s]));
+  const dcs = ev.length ? await delayedCheckMap(child.id, ev.map((r) => r.skill_id)) : new Map();
   const t = getTopic(l.topic_id);
   // One child quote: the longest child turn (a sentence the child actually built), capped at 25 words.
   const childTurns = turns.filter((x) => x.speaker === "child" && x.text?.trim());
@@ -519,7 +569,7 @@ async function lessonCard(req, res) {
     lesson: { id: l.id, topic: t ? { id: t.id, title: t.title, chapter: t.chapter.title, subject: t.subject } : { id: l.topic_id, title: l.topic_id },
       startedAt: l.started_at, endedAt: l.ended_at, note: l.parent_note, summary: l.summary },
     skills: await Promise.all(ev.map(async (r) => ({ skillId: r.skill_id, title: (await skillTitle(r.skill_id)) ?? r.skill_id, attempts: r.n, unaided: r.unaided,
-      ...parentState(byId.get(r.skill_id)), nextReview: byId.get(r.skill_id)?.next_review ?? null }))),
+      ...parentState(byId.get(r.skill_id), dcs.get(r.skill_id)), nextReview: byId.get(r.skill_id)?.next_review ?? null }))),
     quote: best ? quote(best.text) : null,
     transcript: transcriptVisible ? turns.map((x) => ({ seq: x.seq, speaker: x.speaker, text: x.text })) : null,
     transcriptPolicy: transcriptVisible ? "visible" : "on_request",

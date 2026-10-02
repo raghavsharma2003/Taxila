@@ -114,6 +114,8 @@ export function markerPlan(cid: string): ChildPlan {
 export interface RequestAnswer {
   granted: boolean;
   lid?: string;
+  /** The topic the grant is for: the lesson route starts THAT topic (?topic=), not the next planned one. */
+  topicId?: string;
   /** The check endpoint is not there yet: nothing is granted. */
   unavailable?: boolean;
 }
@@ -121,8 +123,10 @@ export interface RequestAnswer {
 /** §2.5.1 (c): the child asked for another lesson. Only the server can grant it. */
 export async function requestLesson(cid: string): Promise<RequestAnswer> {
   try {
-    const r = await postJson<{ granted?: unknown; lid?: unknown }>("/api/lesson/request", { cid });
-    return r?.granted === true ? { granted: true, lid: typeof r.lid === "string" ? r.lid : undefined } : { granted: false };
+    const r = await postJson<{ granted?: unknown; lid?: unknown; topicId?: unknown }>("/api/lesson/request", { cid });
+    return r?.granted === true
+      ? { granted: true, lid: typeof r.lid === "string" ? r.lid : undefined, topicId: typeof r.topicId === "string" ? r.topicId : undefined }
+      : { granted: false };
   } catch (e) {
     if (e instanceof ApiError && (e.status === 404 || e.status === 405)) return { granted: false, unavailable: true };
     return { granted: false };

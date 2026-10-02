@@ -29,7 +29,9 @@ function Frame({ title, children, testid }: { title: string; children: ReactNode
 
 export function LessonRoute() {
   const { lid } = useParams();
-  // "new" (or any id this device is not running) starts the next planned lesson; there is no resume API yet.
+  // "new" starts the next planned lesson. A server grant arrives with its topic as ?topic= (Home.ask), which
+  // LessonScreen reads. The lid itself cannot be started or resumed yet: there is no lesson/request or resume
+  // endpoint that maps a lid to a lesson (flagged to the lesson/Conductor workstream).
   return <LessonScreen variant="lesson" key={lid} />;
 }
 

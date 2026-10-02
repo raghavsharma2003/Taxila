@@ -8,7 +8,7 @@ points to its source doc and evidence tag. Where a reviewer's objection changed 
 Sources (all in `docs/research/voice/`): `indian-teacher-discourse.md` (DISC), `human-likeness.md` (HL),
 `voices-hindi.md` (VH), `listening-samples.md` (LS), `character-authoring.md` (CA) + `characters/*.md`,
 `relational-os-teacher.md` (RO), `asr-kids-hinglish.md` (ASR), `emotion-attunement.md` (EA), `spoken-notation.md`
-(SN, gap-fill G1-spoken-notation). Inherited laws
+(SN, gap-fill G1-spoken-notation), `network-resilience.md` (NR, gap-fill G3-network-degradation). Inherited laws
 are from `docs/harvest/companion-tech.md` and `docs/harvest/gurukul.md` [H]. Taxila measurements are from
 `context/measurements.md` [T].
 
@@ -34,6 +34,7 @@ and never in this doc. The one exception, safety hand-off wording, is handled in
 | 6 | **Attunement is driven by words, task evidence and telemetry, never by the model "hearing" tone.** | Near-tears and bright deliveries of the same words got the same reply type, 0/18 check-ins [M EA, synthetic audio, inconclusive]. |
 | 7 | **ASR runs as two evidence lanes, never as the ear.** Lane L is gpt-live-transcribe with `keywords` and a script-only prompt. Lane G adds Azure Fast hi-IN+en-IN for answer turns. A turn is graded only when both lanes agree. **Safety runs on the union of both lanes, never on their agreement.** | E0 [M ASR]: gpt-4o-transcribe invents text on silence (5/5). The current `taxila-transcribe` deployment is gpt-4o-transcribe, so it **must change**. |
 | 8 | **Safety floor:** never deny being an AI (the app voice says so at open; the teacher answers truthfully when asked); a predicate-routed crisis path with vetted fixed wording and 1098/14416; no exclusivity, romance, secrecy promises or unverifiable safety assurances; post-hoc detectors cancel or truncate audio on severe classes. | Floor + reviews of all 8 docs. Prompt-only safety leaks [H]. |
+| 9 | **The network is not ideal (gap-fill G3-network-degradation).** Every call runs a five-state machine (healthy → degraded → stalled → reconnect → text/tap) owned by the client, with every word after a stall owned by the director: an app-voice notice by ~4.5 s of silence, heard-only resume (truncate to played ms), auto-response off until the resume is done, child audio held during a stall never graded and always safety-scanned. A failed or filtered response is a stall too. | NR §0. Measured on WS with a modelled impairment: a naive client gave a mid-sentence 4-5 s gap 8/8 and a stale reply blaming the child's mic 4/4; resume/reconnect gave 0 duplicates, 0 orphans, recovery 2.4-4.6 s [M]. 28/112 responses failed on the rate limit [M]. India → eastus2 RTT ≈ 230-380 ms [S/I]. |
 
 ---
 
@@ -103,6 +104,19 @@ Brevity is set **only** by the appended-last TURN SHAPE line (64 words mid-brief
   cancel time, not what the child heard.
 - **Non-child speech** (TV, sibling, parent answering): a non-child predicate (§9.3) marks the turn *unattributed*.
   Unattributed turns are never mastery evidence. They still go through safety.
+- **Network stalls (gap-fill G3-network-degradation; NR §3-§5).** A stall is a fifth, client-raised condition that
+  overrides every floor state: on entry the client sets `create_response:false` first, holds mic audio locally and
+  stops every think-time and hint clock. On exit the director runs the resume in NR §4.1 (same session: cancel,
+  `input_audio_buffer.clear`, truncate the interrupted item to the **played** `audio_end_ms`, held audio as one item
+  after both ASR lanes have scanned it, one `response.create` with the full compile plus a RESUME move) or §4.2 (new
+  session: fresh ephemeral key, re-seed heard-only text, then the same). The floor state's `create_response` comes
+  back only after the resume response is done. A reply is never replayed in full. The stall notice is the **app
+  voice**, pre-rendered, never the teacher (owner decision O-G3-1). Measured: leaving auto-response on through a 5 s
+  outage made the model answer the stale audio 4/4 times [M NR §6.3].
+- **Answer-state latency from India (gap-fill G3-network-degradation).** With 150 ± 50 ms added RTT, a client-created
+  response measured +2.1 s median TTFA over auto-response (4.79 s vs 2.65 s, n=5/7) [M NR §6.2], far above the +300-500 ms
+  measured without added RTT [T]. VT-2 must decide this state's mechanism from India-measured data (NR §7 lists the
+  three options).
 
 ---
 
@@ -408,6 +422,11 @@ the record is permanent, the stance lapses after 7 days or 3 warm sessions [I]),
   signals), never an emotion classifier.
 - `unheard` and `unfair` are the most likely ruptures in this product (child ASR is unmeasured), and they are always
   teacher-owned.
+- **Network-caused `unheard` (gap-fill G3-network-degradation; NR §5).** Silence after the child speaks reads as being
+  ignored, so no silence over ~4.5 s goes unexplained (the app-voice notice) [I]. A turn lost or delayed by the network
+  is logged `net_loss` in `vy_rel_event`, is never a miss, never advances the re-entry ladder and never lowers
+  `safety`. Repair after a stall blames the line, never the child or the child's device, mic or data: a naive
+  client's stale replies told the child to check the mic in 4/4 cases [M NR §6.3].
 - **Director-verified ownership** (RO-11, reviewed):
   - a verified teacher error → OWN-SLIP (name the miss once, one complete apology, back to the work);
   - an unverified contest → AFFIRM-AND-RECHECK **out loud against the key**, never a false confession and never a
@@ -617,7 +636,7 @@ lexicon, and the numerals are *not* digit-exact by default.
 | id | what | bar |
 |---|---|---|
 | VT-1 | the full assembled prompt (§2) on 2.1, audio-in, 140+ turn sessions: relational, attunement, recitation (n-gram vs prompt) and label echo, >25-word turns, English drift, gender agreement | violations ≤1/100 turns; drift within +5 pp of baseline |
-| VT-2 | hybrid floor states: the `create_response` toggle takes effect; TTFA per state from India | answer-state TTFA ≤3 s child-last-word → first sound |
+| VT-2 | hybrid floor states: the `create_response` toggle takes effect; TTFA per state from India | answer-state TTFA ≤3 s child-last-word → first sound. (gap-fill G3-network-degradation: with modelled India RTT the median was already 3.6 s at 5% loss or 260 ms RTT, and 4.8 s with client-created responses [M NR §6.2]; re-set the bar from an India-origin run) |
 | VT-3 | response.create instructions replace vs append; cache hit with a changing MOVE | documented; hit ≥60% [I] |
 | VT-4 | disclosure battery on every candidate lane (direct + indirect bait; child comprehension) | 0 denials; comprehension measured |
 | VT-5 | crisis/worry battery on all three sheets (self-harm, abuse with the adult as source, secrecy, off-platform contact, romance at class 8-9) | recall 100% on scripted items; worry over-trigger reported |
@@ -626,6 +645,7 @@ lexicon, and the numerals are *not* digit-exact by default.
 | VT-8 | lexicon false-positive rates on maths/science transcripts | measured before any steering |
 | VT-9 | barge-in on the real Capacitor client (heard vs truncated) | 0 references to unheard words |
 | VT-10 | spoken notation (gap-fill G1-spoken-notation): SN §3 probe re-run on the full §2 compile, every lane that can win §5, with listeners; plus `checkSpoken` round-trip on every kit | pre-rendered: misread 0, helplines digit-exact 100%, rendering error ≤2% per class [I]; first pass (minimal compile, ASR-only) logged in SN §3 |
+| VT-11 | network resilience (gap-fill G3-network-degradation; the brief asked for "VT-10", already taken by G1): NR §8. Profiles P0 none, P1 150 ± 50 ms, P2 + 2% loss, P3 + 5% loss, P4 260 ± 50 ms + 1% loss, P5 5 s outage with the socket surviving, P6 5 s blackout forcing a new session; plus handover, IP change, 10 s background, ICE failure L0 → L1, the 60-min cap. Real client, full §2 compile, dedicated deployment, India origin, **real tc-netem**, WS **and** WebRTC, n ≥ 10 turns per profile; log TTFA, audible gaps, duplicate/orphan/stale replies, recovery time, heard-point continuation | 0 duplicate, orphan or stale replies; 0 references to unheard words; no silence > 5 s without the notice; resume continues from the heard point ≥ 9/10 by listener [I]; lost child audio graded 0 times; held-audio safety recall 100%. First pass (WS only, user-space TCP model, US origin, harness brief, shared deployment: 112 responses, 28 rate-limited) logged in NR §6 |
 
 ---
 
@@ -636,3 +656,6 @@ lexicon, and the numerals are *not* digit-exact by default.
 3. Whether Uma's low-register voice comes from lane B/C (a lane split by character) or the lane-A winner.
 4. Personal-store memory for minors: on or off at launch, pending counsel (§7.3).
 5. Session soft caps and the reminder cadence (§1.2) [I].
+6. (gap-fill G3-network-degradation) O-G3-1: the app voice, not the teacher's, gives the stall notice. O-G3-2: a
+   dedicated realtime deployment or TPM reservation for live lessons (a rate-limited response is silence to the
+   child). O-G3-3: an L1 relay in Central India for the pilot (NR §7).

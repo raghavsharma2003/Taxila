@@ -14,6 +14,7 @@ import { allowSpeech, MAX_TTS_CHARS, DEFAULT_VOICE } from "./tts.js";
 import { ageBandOf, sttPrompt, sttSession } from "../voice/stt.js";
 import { PCM_RATE, speakChunk, speechStyle, transcribeClip } from "../voice/speech.js";
 import { splitSentences } from "../voice/sentences.js";
+import { take as prewarmTake } from "../voice/prewarm.js";
 import { routes as featureRoutes } from "../voice/features.js";
 
 const VOICES = new Set(["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"]);
@@ -62,6 +63,12 @@ function limiter(max) {
     times.set(id, ts);
     return ok;
   };
+}
+
+/** The lesson teacher's speech style (voice + delivery notes) for a child row: one rule for tts-stream and /turn's prewarm. */
+export function styleForChild(child) {
+  const teacher = teacherFor(child);
+  return speechStyle(teacher, VOICES.has(teacher.voice) ? teacher.voice : DEFAULT_VOICE);
 }
 
 // ───────────── POST /api/voice/stt-token ─────────────
@@ -148,6 +155,13 @@ async function ttsStream(req, res, body) {
   // ended lesson's goodbye is still spoken (it is stored before the client hears it).
   const tokenHash = sessionTokenHash(req);
   if (!tokenHash) throw unauthorized();
+  // Prewarmed by /turn for this same session (server/voice/prewarm.js): its sentences are already generating
+  // and its ownership was checked by that request, so no query here.
+  const warm = prewarmTake(lessonId, seq, tokenHash);
+  if (warm) {
+    if (!allowSpeech(warm.guardianId)) { warm.abort.abort(); throw new HttpError(429, "too many speech requests"); }
+    return streamParts(res, { parts: warm.parts, jobs: warm.jobs, startUpTo: (i) => warm.startUpTo(i), abort: warm.abort, t0, setupMs: Math.round(performance.now() - t0), prewarmed: Math.round(performance.now() - warm.at) });
+  }
   // Driven from the session, so an expired session is a 401 before anything about the turn is revealed.
   const row = await one(`select s.guardian_id as session_guardian, t.text as turn_text, t.seq as turn_seq, c.*
       from (select $3::text as h) k
@@ -164,18 +178,21 @@ async function ttsStream(req, res, body) {
   const text = String(turnText ?? "").trim();
   if (!text) throw notFound("no teacher turn to speak");
   if (text.length > MAX_TTS_CHARS) throw bad(`teacher turn is longer than ${MAX_TTS_CHARS} characters`);
-  const teacher = teacherFor(child);
-  const style = speechStyle(teacher, VOICES.has(teacher.voice) ? teacher.voice : DEFAULT_VOICE);
+  const style = styleForChild(child);
   const parts = splitSentences(text);
 
   const abort = new AbortController();
-  // The response's "close" (not the request's, which fires once the body is read) = the client went away.
-  const onClose = () => { if (!res.writableEnded) abort.abort(); };
-  res.on("close", onClose);
   const jobs = [];
   const startUpTo = (i) => { while (jobs.length <= Math.min(i, parts.length - 1)) jobs.push(speakChunk(parts[jobs.length], style, abort.signal)); };
   startUpTo(LOOKAHEAD);
-  const setupMs = Math.round(performance.now() - t0);
+  return streamParts(res, { parts, jobs, startUpTo, abort, t0, setupMs: Math.round(performance.now() - t0) });
+}
+
+/** Write a turn's sentence jobs to `res` in order, the next generating while this one plays. */
+async function streamParts(res, { parts, jobs, startUpTo, abort, t0, setupMs, prewarmed }) {
+  // The response's "close" (not the request's, which fires once the body is read) = the client went away.
+  const onClose = () => { if (!res.writableEnded) abort.abort(); };
+  res.on("close", onClose);
   let wrote = 0;
   try {
     for (let i = 0; i < parts.length; i++) {
@@ -190,6 +207,7 @@ async function ttsStream(req, res, body) {
             "x-tts-first-ms": String(Math.round(performance.now() - t0)),
             "x-tts-setup-ms": String(setupMs),
             "x-tts-cache": jobs[0].cached ? "hit" : "miss",
+            ...(prewarmed !== undefined ? { "x-tts-prewarmed-ms": String(prewarmed) } : {}),
             "cache-control": "no-store",
           });
           res.flushHeaders?.();

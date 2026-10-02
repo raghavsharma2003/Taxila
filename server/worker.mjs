@@ -16,6 +16,8 @@ import { configure, directUrl, q, sessionClient, closePool } from "./conductor/p
 import { step } from "./conductor/step.js";
 import { fireDue } from "./conductor/timers.js";
 import { claimJobs, runJob } from "./conductor/jobs.js";
+import { stepBackoff } from "./conductor/backoff.js";
+import { unappliedMigrations } from "./conductor/migrations.js";
 import "./conductor/handlers.js";
 
 const ONCE = process.argv.includes("--once");
@@ -35,6 +37,16 @@ if (!raw) { console.error("[worker] DATABASE_URL not set"); process.exit(1); }
 const URL_ = directUrl(raw);                            // never the pooler: it drops session advisory locks
 // statement_timeout on every pool connection and the session client: one hung query can never block a loop forever
 await configure({ url: URL_, max: Number(process.env.CONDUCTOR_POOL_MAX || 12), statementTimeoutMs: STATEMENT_TIMEOUT_MS });
+// A schema older than this code would make every commit that touches a missing column fail non-retryably and
+// wedge children one by one; refuse to run instead (ACA restarts it; the log line says which file to apply).
+{
+  const missing = await unappliedMigrations((text) => q(text));
+  if (missing.length) {
+    console.error(`[worker] REFUSING TO START: migrations not applied: ${missing.join(", ")} (node scripts/migrate.mjs)`);
+    await closePool();
+    process.exit(1);
+  }
+}
 
 const log = (msg, extra = {}) => console.log(JSON.stringify({ at: new Date().toISOString(), worker: ID, msg, ...extra }));
 let stopping = false;
@@ -100,17 +112,26 @@ async function tickerLoop() {
 }
 
 // ───────────── dirty-set step loop (every replica) ─────────────
+// A child whose step() keeps throwing is backed off (5 s doubling to 10 min) and paged every 5th consecutive
+// failure, so it can never pin the head of the scan and starve healthy children (backoff.js).
+const backoff = stepBackoff();
 async function dirtyOnce() {
   const rows = await q(`select child_id from child_seq where pending_since is not null and pending_since < now() - make_interval(secs => $1)
-    order by pending_since limit 50`, [DIRTY_GRACE_S]);
+      and not (child_id = any($2::uuid[]))
+    order by pending_since limit 50`, [DIRTY_GRACE_S, backoff.blocked()]);
   let i = 0;
   const workers = Array.from({ length: Math.min(STEP_CONC, rows.length) }, async () => {
     while (i < rows.length && !stopping) {
       const { child_id } = rows[i++];
       try {
         const r = await track(step(child_id));
+        backoff.ok(child_id);
         if (r.events) log("stepped", { child: child_id.slice(0, 8), events: r.events, retries: r.retries });
-      } catch (e) { log("step failed", { child: child_id.slice(0, 8), error: e.message, code: e.code }); }
+      } catch (e) {
+        const f = backoff.failed(child_id);
+        log("step failed", { child: child_id.slice(0, 8), error: e.message, code: e.code, failures: f.n, retryInMs: f.delayMs });
+        if (f.page) console.error(`[conductor] STEP POISON ${child_id.slice(0, 8)}: ${f.n} consecutive step failures (${e.code || ""} ${String(e.message).slice(0, 200)})`);
+      }
     }
   });
   await Promise.all(workers);

@@ -10,6 +10,12 @@
 // Isolation (§13.1): every input read here is a HELD input (episode, outcome, held flags, sessionStartAt,
 // params). The only clock is the session's start: an event's own wall-clock time is never read, so vibe
 // knobs that shift timestamps by seconds cannot move a byte (mutant VK6).
+//
+// ONE order for the cache and the log (TP2 on the real write path): events that carry a seq fold in seq
+// order; events that do not (an online turn, before the database assigned one) fold in ARRIVAL order, and
+// writer.ledgerStmts inserts them in exactly that order (foldOrder), so the database hands out seq in the
+// order the cached fold applied them and a replay of kt_evidence reproduces kt_skill_state byte for byte.
+// There is deliberately no id tiebreak: ids are opaque strings ("e10" < "e9"), not an order.
 import { formOf, fsrsGrade, isDelayedMiss, isDelayedSuccess, isGenerativePass, isUnaidedCorrect, ITEM_CLASSES, outcomeName, recentValue, EMISSIONS } from "./outcomes.js";
 import { dropReason, logEvidence, logit, sigmoid, spend, teachStep, temper, tEff, transition } from "./bktr.js";
 import { nextReviewAt, retrievability, review } from "./fsrs.js";
@@ -48,8 +54,10 @@ function newSession(ev) {
 }
 const sessSkill = (sess, k) => (sess.skills[k] ??= {
   budget: { sum: 0, byClass: {} }, episodes: [], oppEpisodes: [], teachGain: {}, memBefore: undefined, memEp: null,
-  attempted: false, taught: false,
+  attempted: false, taught: false, checkDone: false,
 });
+/** The classes a delayed check can be (PRODUCT-DESIGN §6.4.1: an item or solo round, a near transfer, an error-spot). */
+const CHECK_CLASSES = new Set([...ITEM_CLASSES, "probe.transfer.near", "probe.errorspot"]);
 
 /**
  * Validate the shape of an event (throws: a malformed event is a bug upstream, never silent evidence).
@@ -64,8 +72,18 @@ export function checkEvent(ev) {
 }
 
 /**
- * Fold events (any arrival order) into a COPY of the ledger: sorted by seq (id breaks ties for events
- * without one), duplicates skipped.
+ * The order a batch folds in: sequenced events by seq, then unsequenced ones in arrival order (a stable
+ * sort; no id tiebreak). writer.ledgerStmts stages kt_evidence inserts in this same order.
+ * @template {{ seq?: number | null }} E @param {E[]} events @returns {E[]}
+ */
+export const foldOrder = (events) => [...events].sort((a, b) => (a.seq ?? Infinity) - (b.seq ?? Infinity) || 0);
+
+/**
+ * Fold events into a COPY of the ledger, in foldOrder, duplicates skipped. Copy-on-write: only the skills,
+ * epochs and session an event touches are cloned (the input ledger is never mutated), so one online event
+ * costs O(touched state) plus one flat copy of `seen`. `seen` stays complete: it is the dedupe that keeps the
+ * cached fold equal to a replay under re-delivery (TP1; the database key dedupes inserts, not the cache), and
+ * comprehension/fuse.js reads it directly. Bounding it needs that reader moved onto a helper first.
  * @param {import("../../../shared/learner").Ledger} ledger
  * @param {import("../../../shared/learner").EvidenceEvent[]} events
  * @param {FoldCtx} [ctx]
@@ -73,16 +91,18 @@ export function checkEvent(ev) {
  *   eta?: number, confusion?: any, cohort?: string, paraEnabled?: boolean, onTheta?: (o: any) => void, onKt?: (evId: string, skillId: string) => void }} FoldCtx
  */
 export function fold(ledger, events, ctx = {}) {
-  const L = structuredClone(ledger);
-  const sorted = [...events].sort((a, b) => (a.seq ?? Infinity) - (b.seq ?? Infinity) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-  for (const ev of sorted) applyOne(L, ev, ctx);
+  const L = { ...ledger, skills: { ...ledger.skills }, mis: { ...ledger.mis }, ability: { ...ledger.ability }, seen: { ...ledger.seen },
+    session: ledger.session ? structuredClone(ledger.session) : null };
+  const owned = new Set();
+  const own = (bag, k) => { const x = bag[k]; if (x && !owned.has(x)) { bag[k] = structuredClone(x); owned.add(bag[k]); } return bag[k]; };
+  for (const ev of foldOrder(events)) applyOne(L, ev, ctx, own);
   return L;
 }
 /** One event, online. Throws on an event older than the ledger's last seq (re-fold from the log instead). */
 export const foldEvidence = (ledger, ev, ctx) => fold(ledger, [ev], ctx);
 
-function ensureEpoch(L, subject, sess, ctx) {
-  const cur = L.ability[subject];
+function ensureEpoch(L, subject, sess, ctx, own) {
+  const cur = own(L.ability, subject);
   const epochId = `${sess.sessionId}:${subject}`;
   if (!cur) {
     const strands = (ctx.strandsFor?.(subject) ?? [`${subject}:core`]).slice().sort();
@@ -93,7 +113,7 @@ function ensureEpoch(L, subject, sess, ctx) {
   return L.ability[subject];
 }
 
-function applyOne(L, ev, ctx) {
+function applyOne(L, ev, ctx, own) {
   if (L.seen[ev.id] !== undefined) return;
   checkEvent(ev);
   if (ev.seq != null && ev.seq <= L.lastSeq) throw new Error(`evidence ${ev.id}: seq ${ev.seq} ≤ ledger seq ${L.lastSeq} (re-fold from the log)`);
@@ -104,7 +124,8 @@ function applyOne(L, ev, ctx) {
   const drop = ev.teach ? null : dropReason(ev, ctx);
   if (drop) { sess.drops[drop] = (sess.drops[drop] ?? 0) + 1; markSeen(); return; }
 
-  for (const subject of [...new Set(ev.skillIds.map(subjectOfSkill))].sort()) ensureEpoch(L, subject, sess, ctx);
+  for (const subject of [...new Set(ev.skillIds.map(subjectOfSkill))].sort()) ensureEpoch(L, subject, sess, ctx, own);
+  for (const k of ev.skillIds) own(L.skills, k);
   // TH2: priors from θ_BASE only, materialised before the event is applied, then frozen.
   for (const k of ev.skillIds) {
     if (L.skills[k]) continue;
@@ -128,7 +149,7 @@ function applyOne(L, ev, ctx) {
       thetaWeight: (s) => sess.thetaW[s] ?? 0,
     });
     if (r.obs) {
-      const ep = L.ability[subjectOfStrand(r.obs.strand)];
+      const ep = own(L.ability, subjectOfStrand(r.obs.strand));
       if (ep?.ll[r.obs.strand]) {
         addObs(ep, r.obs);
         sess.thetaW[r.obs.strand] = (sess.thetaW[r.obs.strand] ?? 0) + r.obs.w;
@@ -193,6 +214,9 @@ function applyEvidence(L, ev, sess, ctx) {
     sk.nextReviewAt = rank(sk.display) >= rank("learned_today") ? reviewAt(sk) : null;
   });
   for (const eff of misconceptionEffects(ev)) {
+    // A correct answer on a discriminating item is evidence AGAINST a belief the child has shown; with no
+    // hit there is nothing to discount, so no row is created and no check is scheduled.
+    if (eff.kind === "discriminating_correct" && !(L.mis[eff.id]?.hits > 0)) continue;
     const m = L.mis[eff.id] ?? newMisconception(eff.id);
     L.mis[eff.id] = updateMisconception(m, eff.kind, sess.startAt);
   }
@@ -211,7 +235,6 @@ function reviewAt(sk) {
 function advanceDisplay(sk, ev, sess, ss, isTarget) {
   const produce = formOf(ev) === "produce";
   const clean = !ev.assisted && !ev.preAttemptHelp && !ev.gamingWindowKt && !ev.controllerEasy;
-  const firstAttempt = !ss.attempted;
   ss.attempted = true;
   if (rank(sk.display) < rank("practising")) sk.display = "practising";
 
@@ -226,12 +249,20 @@ function advanceDisplay(sk, ev, sess, ss, isTarget) {
   if (!isTarget) return;
 
   const start = new Date(sess.startAt).getTime();
-  // (c) the delayed check: the FIRST attempt on the skill in a later session ≥ 20 h after the anchor,
-  // before any re-teach of it in that session; produce-form only (a recognition item is never a check).
-  const isCheck = rank(sk.display) >= rank("learned_today") && firstAttempt && !ss.taught && produce
+  // (c) the delayed check: the first CHECK-CLASS attempt on the skill in a later session ≥ 20 h after the
+  // anchor, before any re-teach of it in that session; produce-form only (a recognition item is never a
+  // check, and spends it). Only an item / solo round, a near transfer or an error-spot can be the check: a why, predict or
+  // teach-back opening the session neither uses the check up nor re-anchors the clock. The 20 h is measured
+  // session start to session start (no intra-session clock, §13.1): decision learner-delayed-check-session-clock.
+  const due = CHECK_CLASSES.has(ev.cls) && rank(sk.display) >= rank("learned_today") && !ss.checkDone && !ss.taught
     && sk.anchorAt && sk.anchorSession !== sess.sessionId && start - new Date(sk.anchorAt).getTime() >= DELAY_MS;
+  // A recognition item (a tap on shown options) at the check's moment SPENDS the check without counting:
+  // the options cue the answer, so a produce attempt after it is no longer an unprompted retrieval.
+  if (due && !produce) ss.checkDone = true;
+  const isCheck = due && produce;
   if (isCheck) {
     if (clean && isDelayedSuccess(ev.cls, ev.outcome)) {
+      ss.checkDone = true;
       sk.flags.delayed = true;
       sk.delayedMisses = 0;
       sk.refresh = false;
@@ -245,13 +276,15 @@ function advanceDisplay(sk, ev, sess, ss, isTarget) {
       }
       reanchor(sk, sess);
     } else if (isDelayedMiss(ev.cls, ev.outcome)) {
+      ss.checkDone = true;
       sk.delayedMisses += 1;
       sk.refresh = true;
       if (sk.delayedMisses >= 2) demote(sk);
       reanchor(sk, sess);
-    } else {
-      reanchor(sk, sess);    // G = 2: neither a pass nor a miss
-    }
+    } else if (fsrsGrade(ev.cls, ev.outcome) === 2) {
+      ss.checkDone = true;
+      reanchor(sk, sess);    // C1 / C2 (G = 2): neither a pass nor a miss; only these re-anchor (§6.4.1)
+    }                        // anything else (an error-spot caught but not fixed, NA): not a check at all
   }
 
   if (produce && clean && isUnaidedCorrect(ev.cls, ev.outcome)) { sk.aDay = sess.day; sk.flags.unaided = true; }

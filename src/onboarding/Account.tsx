@@ -8,7 +8,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, ErrorNote, Field, HoldButton, Icon } from "../ui/index.ts";
 import { errText, loadMe, postJson, refreshMe, type Me } from "../app/api.ts";
 import { StepFrame } from "./Layout.tsx";
-import { useDraft } from "./draft.ts";
+import { clearDraftContact, useDraft } from "./draft.ts";
 
 function NoCallsPromise() {
   return <p className="promise-inline"><Icon name="noCall" size={20} /> We never call you to sell anything.</p>;
@@ -50,6 +50,7 @@ export function AccountStep() {
         await postJson("/api/auth/login", { email: d.email ?? "", password });
       }
       setPassword("");
+      clearDraftContact(); // the account now holds name, email and phone; the shared phone's storage does not need them
       after(await refreshMe());
     } catch (e2) {
       setErr(errText(e2));

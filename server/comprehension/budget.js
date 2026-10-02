@@ -1,0 +1,60 @@
+// The test-load budget (COMPREHENSION-ENGINE.md §3.4): "never feels like a test". Every child turn has a test
+// weight; a per-10-turn window and a per-session cap bound the sum by band. Pure session reducer: the Director
+// (or the simulator) calls recordTurn() once per child turn and reads the caps before any optional probe.
+import { BAND_BUDGET, PLAIN_ITEM_WEIGHT, TEST_LEXICON } from "./params.js";
+
+/**
+ * @param {{ sessionId: string, band?: 'B1'|'B2'|'B3'|'B4', lessonSeed?: string|number, surface?: { visual?: boolean },
+ *   yesterday?: Record<string, string[]>, targets?: string[] }} o
+ */
+export function newProbeSession({ sessionId, band = "B3", lessonSeed = sessionId, surface = { visual: true }, yesterday = {}, targets = [] }) {
+  return {
+    sessionId, band, seed: String(lessonSeed), surface, yesterday, targets: [...targets],
+    childTurns: 0, weights: [], lastTurnWasProbe: false, sinceProbe: 99, opp: 0,
+    shapeUses: {}, perSkill: {}, pending: [], engagement: "ok", safetyFired: false, probes: 0, mandatoryProbes: 0,
+  };
+}
+export const skillSess = (s, k) => s.perSkill[k] ?? { uFamilies: [], uShapes: [], t: 0, longForm: false, lowDone: { U: false, T: false },
+  lastFamily: null, classCounts: {}, firstCorrectHandled: false, practised: false, reteached: false };
+
+/**
+ * One child turn. kind: 'item' (a plain known-answer question, weight 1.0 unless a covert skin says otherwise),
+ * 'probe', 'teach' | 'chat' | 'play' (weight 0).
+ * @param {any} s @param {{ kind: string, weight?: number, shapeId?: string, skillId?: string, facet?: string, family?: string, cls?: string, longForm?: boolean }} t
+ */
+export function recordTurn(s, t) {
+  const w = t.weight ?? (t.kind === "item" ? PLAIN_ITEM_WEIGHT : 0);
+  const n = { ...s, childTurns: s.childTurns + 1, weights: [...s.weights, w], lastTurnWasProbe: t.kind === "probe",
+    sinceProbe: t.kind === "probe" ? 0 : s.sinceProbe + 1, opp: s.opp + (t.kind === "item" || t.kind === "probe" ? 1 : 0) };
+  if (t.skillId) {
+    const ps = { ...skillSess(s, t.skillId) };
+    if (t.kind === "item") ps.practised = true;
+    if (t.kind === "probe") {
+      if (t.facet === "U") { ps.uFamilies = [...ps.uFamilies, t.family]; ps.uShapes = [...ps.uShapes, t.shapeId]; }
+      if (t.facet === "T") ps.t += 1;
+      if (t.longForm) ps.longForm = true;
+      ps.lastFamily = t.family ?? ps.lastFamily;
+      if (t.cls) ps.classCounts = { ...ps.classCounts, [t.cls]: (ps.classCounts[t.cls] ?? 0) + 1 };
+    }
+    if (t.kind === "teach" && t.reteach) ps.reteached = true;
+    n.perSkill = { ...s.perSkill, [t.skillId]: ps };
+  }
+  if (t.shapeId) n.shapeUses = { ...s.shapeUses, [t.shapeId]: (s.shapeUses[t.shapeId] ?? 0) + 1 };
+  if (t.kind === "probe") { n.probes = s.probes + 1; if (t.mandatory) n.mandatoryProbes = s.mandatoryProbes + 1; }
+  return n;
+}
+
+export const windowWeight = (s, n = 10) => s.weights.slice(-n).reduce((a, b) => a + b, 0);
+export const sessionWeight = (s) => s.weights.reduce((a, b) => a + b, 0);
+export const capsFor = (band) => BAND_BUDGET[band] ?? BAND_BUDGET.B3;
+/** Would a turn of weight w stay inside both caps? */
+export function fits(s, w) {
+  const c = capsFor(s.band);
+  return windowWeight(s, 9) + w <= c.window10 + 1e-9 && sessionWeight(s) + w <= c.session + 1e-9;
+}
+/** Test load per 10 child turns over the whole session (CE-M5). */
+export const loadPer10 = (s) => (s.childTurns ? (10 * sessionWeight(s)) / s.childTurns : 0);
+
+const LEX_RE = new RegExp(`(^|[^\\p{L}])(${TEST_LEXICON.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})(?=$|[^\\p{L}])`, "iu");
+/** CEI7: a teacher probe line or parent row containing test/evaluation lexicon. Returns the matched word or null. */
+export const lexiconHit = (text) => { const m = LEX_RE.exec(String(text ?? "")); return m ? m[2].toLowerCase() : null; };

@@ -1,0 +1,757 @@
+{
+ "lrTable": {
+  "item.open": {
+   "code": {
+    "C0": 8.03,
+    "C1": 1,
+    "C2": 0.35,
+    "C3": 0.16,
+    "C4": 0.05,
+    "IDK": 0.5
+   },
+   "llm": {
+    "C0": 4.52,
+    "C1": 1,
+    "C2": 0.58,
+    "C3": 0.39,
+    "C4": 0.27,
+    "IDK": 0.74
+   }
+  },
+  "item.mcq2": {
+   "code": {
+    "first_correct": 1.8,
+    "wrong": 0.2
+   },
+   "llm": {
+    "first_correct": 1.32,
+    "wrong": 0.68
+   }
+  },
+  "item.mcq3": {
+   "code": {
+    "first_correct": 2.7,
+    "wrong": 0.15
+   },
+   "llm": {
+    "first_correct": 1.52,
+    "wrong": 0.6
+   }
+  },
+  "item.mcq4": {
+   "code": {
+    "first_correct": 3.6,
+    "wrong": 0.13
+   },
+   "llm": {
+    "first_correct": 1.65,
+    "wrong": 0.57
+   }
+  },
+  "probe.why": {
+   "code": {
+    "full": 7.5,
+    "partial": 1.14,
+    "none": 0.24,
+    "misconception": 0.15
+   },
+   "llm": {
+    "full": 3.11,
+    "partial": 1.08,
+    "none": 0.43,
+    "misconception": 0.54
+   }
+  },
+  "probe.teachback": {
+   "code": {
+    "high": 6.88,
+    "mid": 1.2,
+    "low": 0.26,
+    "misconception": 0.15
+   },
+   "llm": {
+    "high": 2.91,
+    "mid": 1.12,
+    "low": 0.45,
+    "misconception": 0.54
+   }
+  },
+  "probe.transfer.near": {
+   "code": {
+    "pass": 5.67,
+    "fail": 0.18
+   },
+   "llm": {
+    "pass": 1.78,
+    "fail": 0.56
+   }
+  },
+  "probe.transfer.far": {
+   "code": {
+    "pass": 8.13,
+    "fail": 0.38
+   },
+   "llm": {
+    "pass": 1.69,
+    "fail": 0.66
+   }
+  },
+  "probe.errorspot": {
+   "code": {
+    "caught_fixed": 5,
+    "caught": 1.15,
+    "missed": 0.33
+   },
+   "llm": {
+    "caught_fixed": 2.22,
+    "caught": 1.05,
+    "missed": 0.51
+   }
+  },
+  "probe.predict": {
+   "code": {
+    "right": 1.71,
+    "mapped_wrong": 0.43,
+    "other": 0.83
+   },
+   "llm": {
+    "right": 1.4,
+    "mapped_wrong": 0.68,
+    "other": 0.91
+   }
+  },
+  "solo": {
+   "code": {
+    "C0": 8,
+    "C1": 1,
+    "fail": 0.05
+   },
+   "llm": {
+    "C0": 3.01,
+    "C1": 1,
+    "fail": 0.29
+   }
+  },
+  "para": {
+   "code": {
+    "fluent": 1.2,
+    "hesitant": 0.8
+   },
+   "llm": {
+    "fluent": 1.08,
+    "hesitant": 0.92
+   }
+  }
+ },
+ "facet": {
+  "U0": 0.2,
+  "T0": 0.2,
+  "CAP": 2.995732273553991
+ },
+ "thresholds": {
+  "K_DO": 0.6,
+  "K_LEARNED": 0.95,
+  "U_FRAGILE": 0.6,
+  "U_UNDERSTOOD": 0.75,
+  "T_UNDERSTOOD": 0.6
+ },
+ "trajectories": {
+  "understander": [
+   "item.open:C0(code) -> K 0.802 U 0.200 T 0.200 shallow",
+   "item.open:C0(code) -> K 0.929 U 0.200 T 0.200 shallow",
+   "probe.why:full -> K 0.971 U 0.437 T 0.200 shallow",
+   "probe.errorspot:caught_fixed(code) -> K 0.974 U 0.795 T 0.200 fragile",
+   "probe.transfer.near:pass(code) -> K 0.977 U 0.795 T 0.586 fragile",
+   "item.open:C0(code) -> K 0.997 U 0.795 T 0.586 fragile",
+   "probe.transfer.far:pass(code) -> K 1.000 U 0.795 T 0.920 understood"
+  ],
+  "correct_answer_trap": [
+   "item.open:C0(code) -> K 0.802 U 0.200 T 0.200 shallow",
+   "item.open:C0(code) -> K 0.929 U 0.200 T 0.200 shallow",
+   "item.open:C0(code) -> K 0.968 U 0.200 T 0.200 shallow",
+   "probe.why:none -> K 0.937 U 0.097 T 0.200 shallow",
+   "probe.predict:mapped_wrong(code) -> K 0.880 U 0.044 T 0.200 shallow",
+   "item.open:C0(code) -> K 0.984 U 0.044 T 0.200 shallow"
+  ],
+  "game_only_8_predictions_w05": [
+   "probe.predict:right(code) -> K 0.436 U 0.247 T 0.200 not_yet",
+   "probe.predict:right(code) -> K 0.533 U 0.272 T 0.200 not_yet",
+   "probe.predict:right(code) -> K 0.609 U 0.291 T 0.200 shallow",
+   "probe.predict:right(code) -> K 0.670 U 0.305 T 0.200 shallow",
+   "probe.predict:right(code) -> K 0.720 U 0.316 T 0.200 shallow",
+   "probe.predict:right(code) -> K 0.761 U 0.326 T 0.200 shallow",
+   "probe.predict:right(code) -> K 0.796 U 0.335 T 0.200 shallow",
+   "probe.predict:right(code) -> K 0.825 U 0.342 T 0.200 shallow"
+  ],
+  "one_why_vs_two_llm_same_session": [
+   "probe.why:full -> K 0.623 U 0.437 T 0.200 shallow",
+   "probe.why:full -> K 0.775 U 0.578 T 0.200 shallow"
+  ]
+ },
+ "mc": {
+  "note": "matched-model MC, n=20000 per truth type, seed 7; answers drawn from the engine's own tables => upper bounds only",
+  "adaptive_3s": {
+   "policy": "adaptive mixed graders, 3 sessions",
+   "sessions": 3,
+   "summary": {
+    "macro_acc": 0.639,
+    "false_understood_max": 0.015,
+    "shallow_called_understood": 0.001,
+    "understood_detected": 0.407,
+    "probes_per_concept_session": 1.83,
+    "events_per_concept_session": 3.83
+   },
+   "by_type": {
+    "not_yet": {
+     "final": {
+      "fragile": 0.04,
+      "not_yet": 0.812,
+      "shallow": 0.148
+     },
+     "correct": 0.812,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 1.29
+    },
+    "shallow": {
+     "final": {
+      "fragile": 0.042,
+      "not_yet": 0.012,
+      "shallow": 0.946,
+      "understood": 0.001
+     },
+     "correct": 0.946,
+     "false_understood": 0.001,
+     "mean_sessions_to_detect_if_correct": 1.37
+    },
+    "fragile_bound": {
+     "final": {
+      "fragile": 0.704,
+      "not_yet": 0.002,
+      "shallow": 0.279,
+      "understood": 0.015
+     },
+     "correct": 0.704,
+     "false_understood": 0.015,
+     "mean_sessions_to_detect_if_correct": 1.81
+    },
+    "fragile_forgets": {
+     "final": {
+      "fragile": 0.324,
+      "not_yet": 0.445,
+      "shallow": 0.227,
+      "understood": 0.004
+     },
+     "correct": 0.324,
+     "false_understood": 0.004,
+     "mean_sessions_to_detect_if_correct": 1.28
+    },
+    "understood": {
+     "final": {
+      "fragile": 0.312,
+      "not_yet": 0.001,
+      "shallow": 0.281,
+      "understood": 0.407
+     },
+     "correct": 0.407,
+     "false_understood": null,
+     "mean_sessions_to_detect_if_correct": 2.55
+    }
+   }
+  },
+  "adaptive_5s": {
+   "policy": "adaptive mixed graders, 5 sessions",
+   "sessions": 5,
+   "summary": {
+    "macro_acc": 0.698,
+    "false_understood_max": 0.022,
+    "shallow_called_understood": 0.001,
+    "understood_detected": 0.595,
+    "probes_per_concept_session": 1.55,
+    "events_per_concept_session": 3.55
+   },
+   "by_type": {
+    "not_yet": {
+     "final": {
+      "fragile": 0.041,
+      "not_yet": 0.798,
+      "shallow": 0.161,
+      "understood": 0
+     },
+     "correct": 0.798,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 2
+    },
+    "shallow": {
+     "final": {
+      "fragile": 0.041,
+      "not_yet": 0.001,
+      "shallow": 0.957,
+      "understood": 0.001
+     },
+     "correct": 0.957,
+     "false_understood": 0.001,
+     "mean_sessions_to_detect_if_correct": 1.44
+    },
+    "fragile_bound": {
+     "final": {
+      "fragile": 0.825,
+      "not_yet": 0,
+      "shallow": 0.153,
+      "understood": 0.022
+     },
+     "correct": 0.825,
+     "false_understood": 0.022,
+     "mean_sessions_to_detect_if_correct": 2.27
+    },
+    "fragile_forgets": {
+     "final": {
+      "fragile": 0.316,
+      "not_yet": 0.543,
+      "shallow": 0.137,
+      "understood": 0.005
+     },
+     "correct": 0.316,
+     "false_understood": 0.005,
+     "mean_sessions_to_detect_if_correct": 1.58
+    },
+    "understood": {
+     "final": {
+      "fragile": 0.25,
+      "shallow": 0.155,
+      "understood": 0.595
+     },
+     "correct": 0.595,
+     "false_understood": null,
+     "mean_sessions_to_detect_if_correct": 3.48
+    }
+   }
+  },
+  "adaptive_3s_grader_worse": {
+   "policy": "adaptive, LLM grader true diagonal 0.55 vs assumed 0.7",
+   "sessions": 3,
+   "summary": {
+    "macro_acc": 0.612,
+    "false_understood_max": 0.014,
+    "shallow_called_understood": 0.001,
+    "understood_detected": 0.373,
+    "probes_per_concept_session": 1.85,
+    "events_per_concept_session": 3.85
+   },
+   "by_type": {
+    "not_yet": {
+     "final": {
+      "fragile": 0.05,
+      "not_yet": 0.794,
+      "shallow": 0.156,
+      "understood": 0
+     },
+     "correct": 0.794,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 1.29
+    },
+    "shallow": {
+     "final": {
+      "fragile": 0.048,
+      "not_yet": 0.011,
+      "shallow": 0.94,
+      "understood": 0.001
+     },
+     "correct": 0.94,
+     "false_understood": 0.001,
+     "mean_sessions_to_detect_if_correct": 1.36
+    },
+    "fragile_bound": {
+     "final": {
+      "fragile": 0.654,
+      "not_yet": 0.002,
+      "shallow": 0.331,
+      "understood": 0.014
+     },
+     "correct": 0.654,
+     "false_understood": 0.014,
+     "mean_sessions_to_detect_if_correct": 1.85
+    },
+    "fragile_forgets": {
+     "final": {
+      "fragile": 0.301,
+      "not_yet": 0.452,
+      "shallow": 0.242,
+      "understood": 0.005
+     },
+     "correct": 0.301,
+     "false_understood": 0.005,
+     "mean_sessions_to_detect_if_correct": 1.35
+    },
+    "understood": {
+     "final": {
+      "fragile": 0.3,
+      "not_yet": 0.002,
+      "shallow": 0.326,
+      "understood": 0.373
+     },
+     "correct": 0.373,
+     "false_understood": null,
+     "mean_sessions_to_detect_if_correct": 2.57
+    }
+   }
+  },
+  "adaptive_3s_llm_only_U": {
+   "policy": "adaptive, U evidence only from LLM-graded why/teach-back",
+   "sessions": 3,
+   "summary": {
+    "macro_acc": 0.525,
+    "false_understood_max": 0.009,
+    "shallow_called_understood": 0.001,
+    "understood_detected": 0.238,
+    "probes_per_concept_session": 2.06,
+    "events_per_concept_session": 4.06
+   },
+   "by_type": {
+    "not_yet": {
+     "final": {
+      "fragile": 0.03,
+      "not_yet": 0.795,
+      "shallow": 0.175,
+      "understood": 0
+     },
+     "correct": 0.795,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 1.29
+    },
+    "shallow": {
+     "final": {
+      "fragile": 0.03,
+      "not_yet": 0.01,
+      "shallow": 0.959,
+      "understood": 0.001
+     },
+     "correct": 0.959,
+     "false_understood": 0.001,
+     "mean_sessions_to_detect_if_correct": 1.3
+    },
+    "fragile_bound": {
+     "final": {
+      "fragile": 0.505,
+      "not_yet": 0.002,
+      "shallow": 0.485,
+      "understood": 0.009
+     },
+     "correct": 0.505,
+     "false_understood": 0.009,
+     "mean_sessions_to_detect_if_correct": 2.15
+    },
+    "fragile_forgets": {
+     "final": {
+      "fragile": 0.126,
+      "not_yet": 0.528,
+      "shallow": 0.345,
+      "understood": 0.001
+     },
+     "correct": 0.126,
+     "false_understood": 0.001,
+     "mean_sessions_to_detect_if_correct": 2.01
+    },
+    "understood": {
+     "final": {
+      "fragile": 0.272,
+      "not_yet": 0.001,
+      "shallow": 0.489,
+      "understood": 0.238
+     },
+     "correct": 0.238,
+     "false_understood": null,
+     "mean_sessions_to_detect_if_correct": 2.73
+    }
+   }
+  },
+  "adaptive_3s_one_U_probe": {
+   "policy": "adaptive, max 1 U probe per session",
+   "sessions": 3,
+   "summary": {
+    "macro_acc": 0.436,
+    "false_understood_max": 0.002,
+    "shallow_called_understood": 0,
+    "understood_detected": 0.067,
+    "probes_per_concept_session": 1.28,
+    "events_per_concept_session": 3.28
+   },
+   "by_type": {
+    "not_yet": {
+     "final": {
+      "fragile": 0.016,
+      "not_yet": 0.841,
+      "shallow": 0.142
+     },
+     "correct": 0.841,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 1.25
+    },
+    "shallow": {
+     "final": {
+      "fragile": 0.019,
+      "not_yet": 0.009,
+      "shallow": 0.972,
+      "understood": 0
+     },
+     "correct": 0.972,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 1.3
+    },
+    "fragile_bound": {
+     "final": {
+      "fragile": 0.253,
+      "not_yet": 0.004,
+      "shallow": 0.741,
+      "understood": 0.002
+     },
+     "correct": 0.253,
+     "false_understood": 0.002,
+     "mean_sessions_to_detect_if_correct": 2.42
+    },
+    "fragile_forgets": {
+     "final": {
+      "fragile": 0.048,
+      "not_yet": 0.589,
+      "shallow": 0.362,
+      "understood": 0
+     },
+     "correct": 0.048,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 2.46
+    },
+    "understood": {
+     "final": {
+      "fragile": 0.187,
+      "not_yet": 0.002,
+      "shallow": 0.744,
+      "understood": 0.067
+     },
+     "correct": 0.067,
+     "false_understood": null,
+     "mean_sessions_to_detect_if_correct": 3
+    }
+   }
+  },
+  "adaptive_3s_game_predict_w05": {
+   "policy": "adaptive, predictions are game commits at w=0.5",
+   "sessions": 3,
+   "summary": {
+    "macro_acc": 0.46,
+    "false_understood_max": 0.004,
+    "shallow_called_understood": 0,
+    "understood_detected": 0.122,
+    "probes_per_concept_session": 2.07,
+    "events_per_concept_session": 4.07
+   },
+   "by_type": {
+    "not_yet": {
+     "final": {
+      "fragile": 0.023,
+      "not_yet": 0.779,
+      "shallow": 0.198
+     },
+     "correct": 0.779,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 1.33
+    },
+    "shallow": {
+     "final": {
+      "fragile": 0.021,
+      "not_yet": 0.005,
+      "shallow": 0.974,
+      "understood": 0
+     },
+     "correct": 0.974,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 1.25
+    },
+    "fragile_bound": {
+     "final": {
+      "fragile": 0.356,
+      "not_yet": 0.002,
+      "shallow": 0.638,
+      "understood": 0.004
+     },
+     "correct": 0.356,
+     "false_understood": 0.004,
+     "mean_sessions_to_detect_if_correct": 2.52
+    },
+    "fragile_forgets": {
+     "final": {
+      "fragile": 0.067,
+      "not_yet": 0.508,
+      "shallow": 0.424,
+      "understood": 0
+     },
+     "correct": 0.067,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 2.49
+    },
+    "understood": {
+     "final": {
+      "fragile": 0.227,
+      "not_yet": 0.001,
+      "shallow": 0.649,
+      "understood": 0.122
+     },
+     "correct": 0.122,
+     "false_understood": null,
+     "mean_sessions_to_detect_if_correct": 2.78
+    }
+   }
+  },
+  "quiz_only_k_only_rule": {
+   "policy": "overt quiz: 4 items/session, no probes, K-only mastery rule",
+   "sessions": 3,
+   "summary": {
+    "macro_acc": 0.431,
+    "false_understood_max": 0.862,
+    "shallow_called_understood": 0.862,
+    "understood_detected": 0.861,
+    "probes_per_concept_session": 0,
+    "events_per_concept_session": 4
+   },
+   "by_type": {
+    "not_yet": {
+     "final": {
+      "fragile": 0.147,
+      "not_yet": 0.845,
+      "understood": 0.008
+     },
+     "correct": 0.845,
+     "false_understood": 0.008,
+     "mean_sessions_to_detect_if_correct": 1.34
+    },
+    "shallow": {
+     "final": {
+      "fragile": 0.138,
+      "not_yet": 0,
+      "understood": 0.862
+     },
+     "correct": 0,
+     "false_understood": 0.862,
+     "mean_sessions_to_detect_if_correct": null
+    },
+    "fragile_bound": {
+     "final": {
+      "fragile": 0.142,
+      "understood": 0.858
+     },
+     "correct": 0.142,
+     "false_understood": 0.858,
+     "mean_sessions_to_detect_if_correct": 2.16
+    },
+    "fragile_forgets": {
+     "final": {
+      "fragile": 0.308,
+      "not_yet": 0.654,
+      "understood": 0.038
+     },
+     "correct": 0.308,
+     "false_understood": 0.038,
+     "mean_sessions_to_detect_if_correct": 1.5
+    },
+    "understood": {
+     "final": {
+      "fragile": 0.139,
+      "understood": 0.861
+     },
+     "correct": 0.861,
+     "false_understood": null,
+     "mean_sessions_to_detect_if_correct": 2.22
+    }
+   }
+  },
+  "quiz_only_facet_rule": {
+   "policy": "overt quiz, facet ladder",
+   "sessions": 3,
+   "summary": {
+    "macro_acc": 0.369,
+    "false_understood_max": 0,
+    "shallow_called_understood": 0,
+    "understood_detected": 0,
+    "probes_per_concept_session": 0,
+    "events_per_concept_session": 4
+   },
+   "by_type": {
+    "not_yet": {
+     "final": {
+      "not_yet": 0.845,
+      "shallow": 0.155
+     },
+     "correct": 0.845,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 1.34
+    },
+    "shallow": {
+     "final": {
+      "not_yet": 0,
+      "shallow": 1
+     },
+     "correct": 1,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": 1.02
+    },
+    "fragile_bound": {
+     "final": {
+      "shallow": 1
+     },
+     "correct": 0,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": null
+    },
+    "fragile_forgets": {
+     "final": {
+      "not_yet": 0.654,
+      "shallow": 0.346
+     },
+     "correct": 0,
+     "false_understood": 0,
+     "mean_sessions_to_detect_if_correct": null
+    },
+    "understood": {
+     "final": {
+      "shallow": 1
+     },
+     "correct": 0,
+     "false_understood": null,
+     "mean_sessions_to_detect_if_correct": null
+    }
+   }
+  }
+ },
+ "budget": {
+  "B1": {
+   "minutes": 15,
+   "childTurns": 30,
+   "sessionTestWeight": 6,
+   "per10TurnWindow": 1.5,
+   "eg_short_probes_at_w05": 12,
+   "eg_overt_items_at_w1": 6
+  },
+  "B2": {
+   "minutes": 20,
+   "childTurns": 40,
+   "sessionTestWeight": 8,
+   "per10TurnWindow": 2,
+   "eg_short_probes_at_w05": 16,
+   "eg_overt_items_at_w1": 8
+  },
+  "B3": {
+   "minutes": 25,
+   "childTurns": 50,
+   "sessionTestWeight": 12.5,
+   "per10TurnWindow": 2.5,
+   "eg_short_probes_at_w05": 25,
+   "eg_overt_items_at_w1": 12
+  },
+  "B4": {
+   "minutes": 30,
+   "childTurns": 60,
+   "sessionTestWeight": 15,
+   "per10TurnWindow": 2.5,
+   "eg_short_probes_at_w05": 30,
+   "eg_overt_items_at_w1": 15
+  }
+ }
+}

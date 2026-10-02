@@ -24,7 +24,7 @@ import { geometryOf, nextPhase, phaseWord, type ArcPhase } from "./geometry.ts";
 import { openMicAllowed, useHeadset } from "./headset.ts";
 import { playTurnEarcon, useContainerSize, useMountedModules, useStall, useTapToTalk, useYourTurn } from "./hooks.ts";
 import { solveLayout } from "./layout.ts";
-import { ledgeChipFits } from "./ledge.ts";
+import { isHelpline, ledgeChipFits } from "./ledge.ts";
 import { CaptionLine, ChalkLedge, ChoiceTiles, ConnectionChip, LeaveGuard, PauseSheet, StatusGlyph, type LedgeChip } from "./parts.tsx";
 import { ringTarget } from "./ring.ts";
 import "./lesson.css";
@@ -46,6 +46,12 @@ const OLDER_REQUESTS = {
   slower: ["Thoda dheere boliye", "थोड़ा धीरे बोलिए", "A bit slower please"],
   skip: ["Isse abhi chhod dete hain", "इसे अभी छोड़ देते हैं", "Skip this for now"],
 } as const;
+
+/** A field the child types into: focus never moves off it, and laptop keys never act while it is focused. */
+function isEditable(el: Element | null): boolean {
+  if (!el || !(el instanceof HTMLElement)) return false;
+  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable;
+}
 
 export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps) {
   const { cid, child, me, band, family, lang, prefs, setPrefs, reducedMotion } = useChild();
@@ -81,11 +87,14 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const [chips, setChips] = useState<LedgeChip[]>([]);
   const made = useRef<string[]>([]);
   const wb = state.ui.whiteboard;
+  const safeguardMove = state.move?.kind === "safeguard";
   useEffect(() => {
-    if (!wb?.value || !ledgeChipFits(wb, family)) return; // Young: no sentence-length chips (§3.7)
+    // Young: no sentence-length chips (§3.7) — except the safeguarding helplines, which always pass.
+    if (!wb?.value || !ledgeChipFits(wb, family, { safeguard: safeguardMove })) return;
     setChips((cs) => (cs.at(-1)?.value === wb.value ? cs : [...cs.filter((c) => c.value !== wb.value), { id: `${Date.now()}`, kind: wb.kind, value: wb.value }].slice(-3)));
-    if (wb.kind !== "image" && !made.current.includes(wb.value)) made.current = [...made.current, wb.value].slice(-4);
-  }, [wb?.value, wb?.kind, family]);
+    // The helplines are not something "we made": they stay off the day's artefact.
+    if (wb.kind !== "image" && !safeguardMove && !isHelpline(wb.value) && !made.current.includes(wb.value)) made.current = [...made.current, wb.value].slice(-4);
+  }, [wb?.value, wb?.kind, family, safeguardMove]);
   const prevPhase = useRef(phase);
   useEffect(() => {
     const a = prevPhase.current;
@@ -149,6 +158,9 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const micTap = () => (ptt.talking ? ptt.toggle() : openTalk());
   const stall = useStall(status === "thinking", paused);
   const [inputOpen, setInputOpen] = useState(false);
+  const [text, setText] = useState("");
+  const textRef = useRef(text);
+  textRef.current = text;
   useEffect(() => {
     if (yt.tapOptions || stall.rung === "tap" || stall.rung === "weak") setInputOpen(true);
   }, [yt.tapOptions, stall.rung]);
@@ -168,7 +180,11 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     if (sounds) playTurnEarcon();
     if (prefs.haptics && "vibrate" in navigator) navigator.vibrate?.(20);
     setAnnounce(`${t("yourTurn", lang)}${chipsLive ? ` · ${uiChips.map((c) => c.label).join(", ")}` : ""}`);
-    if (target === "chips" || target === "mic") ringRef.current?.focus?.({ preventScroll: true });
+    // Never steal focus from a field the child is typing in (or has a draft in): her next keys would
+    // otherwise land on the chips / shortcuts and the typed text would be lost.
+    if ((target === "chips" || target === "mic") && !isEditable(document.activeElement) && !textRef.current.trim()) {
+      ringRef.current?.focus?.({ preventScroll: true });
+    }
     // Only on entry (changeKey covers a new set of chips).
   }, [yourTurn, changeKey, paused]);
 
@@ -223,7 +239,6 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     if (state.status === "speaking") bridge.quietStop();
     bridge.replay(slower);
   };
-  const [text, setText] = useState("");
   const send = yt.guard(() => {
     const v = text.trim();
     if (!v || !live) return;
@@ -279,7 +294,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     if (!prefs.shortcuts) return;
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null;
-      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+      if (isEditable(el) || isEditable(document.activeElement)) return;
       if (e.altKey || e.ctrlKey || e.metaKey) return;
       if (e.key === "Escape") {
         if (sheet === "help") return; // one key never dismisses the safeguarding hand-off
@@ -288,6 +303,13 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
         return live ? openPause() : undefined;
       }
       if (!live || paused) return;
+      // Command keys only while focus is on the lesson body itself or on the ringed target (and inside it):
+      // never while some other control (a menu, the more button, a link) holds focus.
+      const focus = document.activeElement;
+      const ring = ringRef.current;
+      const onBody = !focus || focus === document.body || focus === containerRef.current;
+      const onRing = !!ring && !!focus && (focus === ring || ring.contains(focus));
+      if (!onBody && !onRing) return;
       if (e.key === " " && tapToTalk) {
         // A focused button (the ringed mic at YOUR TURN) gets Space as its own click: never toggle twice.
         if (el?.closest?.("button, [role=button], a, [role=radio], [role=menuitem]")) return;
@@ -320,14 +342,19 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
 
   // ───────── pieces ─────────
   const floor = live ? status : null;
+  // NOT DELIVERED: delight keys on ui.affect, which no Director move sets yet (see UiDirectives.affect in
+  // shared/contracts.ts). Safe (never keyed to correctness), but dead until the Director produces it.
   const delightTag = useMemo(() => {
-    const affect = (state.ui as { affect?: string }).affect;
+    const affect = state.ui.affect;
     return affect === "insight" || affect === "effort" ? { turn: childTurns } : null;
   }, [state.ui, childTurns]);
   // One gate for the whole lesson (the stage remounts at every layout change); timed from her audio start.
   const delighting = useDelight(delightTag, state.status === "speaking" && !bs.replaying);
   const gaze = status === "speaking" && (hasModule || chips.length) ? "canvas" : "child";
-  const stage = (framing: "medium" | "close", extra?: string) => (
+  // A start / end cover owns the only visible stage: the body's (and PiP / face-chip) stages are not
+  // rendered under it, so one TeacherFace rAF loop runs, not two or three mostly hidden ones.
+  const covered = state.phase === "idle" || state.phase === "error" || state.phase === "starting" || ended || state.phase === "ending";
+  const stage = (framing: "medium" | "close", extra?: string, inCover = false) => (covered && !inCover ? null : (
     <TeacherStage
       floor={floor}
       delighting={delighting}
@@ -344,7 +371,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
       plainRoom={band === "b4"}
       className={`${extra ?? ""} ${split && prefs.mirror ? "tx-mirror" : ""}`}
     />
-  );
+  ));
 
   const topBar = (
     <header className="tx-ltop">
@@ -403,9 +430,21 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     </div>
   ) : null;
 
+  // Safety by predicate: while safeguarding holds (the move, or the helplines still on the whiteboard) the
+  // numbers stay on screen in EVERY geometry — L1 has no ledge row and no board, so the ledge alone is not
+  // enough. A strip over the canvas (no geometry change), real tel: links.
+  const helplinesOn = live && (safeguardMove || (!!wb?.value && isHelpline(wb.value)));
+  const helpStrip = helplinesOn ? (
+    <div className="tx-helpstrip" role="group" aria-label={t("help", lang)} data-testid="helpstrip">
+      <a className="tx-helpstrip-call" href="tel:1098">Childline <span className="tx-num">1098</span></a>
+      <a className="tx-helpstrip-call" href="tel:14416">Tele-MANAS <span className="tx-num">14416</span></a>
+    </div>
+  ) : null;
+
   const veil = stall.rung === "weak" || state.connection === "reconnecting";
   const canvas = (
     <div className={`tx-canvas ${chipsLive && young && hasModule ? "tx-canvas--choice" : ""}`} data-testid="canvas">
+      {helpStrip}
       <div className="tx-canvas-module" data-has-module={hasModule ? "1" : "0"}>
         <ModuleHost source={runtime.modules} onEvent={runtime.moduleEvent} lang={child.language_pref} ageBand={ageBandOf(band)} frameStyle={{ height: "100%" }} />
         {boardFallback}
@@ -533,7 +572,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   // ───────── frame ─────────
   let body: ReactNode;
   if (L.family === "tiny") {
-    body = <div className="tx-tiny">{stage("close")}</div>;
+    body = <div className="tx-tiny">{stage("close")}{helpStrip}</div>;
   } else if (split) {
     const cols = prefs.mirror ? `1fr ${L.teacherCol}px` : `${L.teacherCol}px 1fr`;
     body = (
@@ -589,7 +628,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
       {/* before the lesson: one big tile with her face (web audio unlock needs a tap) */}
       {(state.phase === "idle" || state.phase === "error" || state.phase === "starting") && (
         <div className="tx-cover">
-          <div className="tx-cover-stage">{stage("medium")}</div>
+          <div className="tx-cover-stage">{stage("medium", undefined, true)}</div>
           {state.phase === "starting" ? (
             <p className="tx-muted" aria-live="polite">…</p>
           ) : (
@@ -616,7 +655,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
       {/* end-of-lesson: L5 Close with the day's artefact and one finish tile */}
       {(ended || state.phase === "ending") && (
         <div className="tx-cover tx-close" data-testid="lesson-end">
-          <div className="tx-cover-stage">{stage("medium")}</div>
+          <div className="tx-cover-stage">{stage("medium", undefined, true)}</div>
           <section className="tx-card tx-artefact" aria-label={t("whatWeMade", lang)}>
             <h2>{t("whatWeMade", lang)}</h2>
             {state.topic && <p className="tx-artefact-topic">{state.topic.title}</p>}

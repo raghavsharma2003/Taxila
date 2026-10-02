@@ -4,7 +4,9 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button, ButtonLink, Card, Icon, Speaker, StateChip, readLang } from "../ui/index.ts";
-import { parentApi, speakUrl, type SkillLine } from "./api.ts";
+import { isGateError, parentApi, speakUrl, type SkillLine } from "./api.ts";
+import { useGate } from "./Gate.tsx";
+import { errText } from "../app/api.ts";
 import { EvidenceSheet } from "./EvidenceSheet.tsx";
 import { PageState, ParentShell, useChildren, useParentData } from "./Shell.tsx";
 import { fmtDay, fmtTime } from "./words.ts";
@@ -14,7 +16,7 @@ function SkillLink({ s, cid, lead }: { s: SkillLine; cid: string; lead: string }
   return (
     <div className="hafte-line">
       <p><span className="muted">{lead}</span> <strong>{s.title}</strong></p>
-      {s.misconception && <p className="t-meta">The mix-up: {s.misconception}</p>}
+      {s.misconception && <p className="t-note">The mix-up: {s.misconception}</p>}
       <div className="row">
         <StateChip state={s} lang={lang} nextReview={s.nextReview} />
         <span className="spacer" />
@@ -30,6 +32,18 @@ export default function ParentHome() {
   const { kids, current, err: kidsErr } = useChildren();
   const { data, err } = useParentData(current ? () => parentApi.overview(current.id) : null, [current?.id]);
   const [task, setTask] = useState<"done" | "skip" | null>(null);
+  const [taskErr, setTaskErr] = useState<string | null>(null);
+  const { relock } = useGate();
+  // "Noted" only after the server took it (a 403 after the 10-minute unlock re-shows the PIN pad).
+  const answerTask = async (lessonId: string, done: boolean) => {
+    setTaskErr(null);
+    try {
+      await parentApi.homeTask(cid, lessonId, done);
+      setTask(done ? "done" : "skip");
+    } catch (e) {
+      if (isGateError(e)) relock(); else setTaskErr(errText(e));
+    }
+  };
 
   if (kids && kids.length === 0) {
     return (
@@ -74,10 +88,11 @@ export default function ParentHome() {
                   <p className="row"><Icon name="tick" /> {task === "done" ? "Noted. Thank you." : "That is fine. It stays here."}</p>
                 ) : (
                   <div className="row home-task-btns">
-                    <Button small variant="secondary" onClick={async () => { await parentApi.homeTask(cid, data.homeTask!.lessonId, true).catch(() => {}); setTask("done"); }}>Ho gaya</Button>
-                    <Button small variant="secondary" onClick={async () => { await parentApi.homeTask(cid, data.homeTask!.lessonId, false).catch(() => {}); setTask("skip"); }}>Is hafte nahi</Button>
+                    <Button small variant="secondary" onClick={() => answerTask(data.homeTask!.lessonId, true)}>Ho gaya</Button>
+                    <Button small variant="secondary" onClick={() => answerTask(data.homeTask!.lessonId, false)}>Is hafte nahi</Button>
                   </div>
                 )}
+                {taskErr && <p className="field-msg" role="alert">{taskErr}</p>}
               </Card>
             )}
 

@@ -17,6 +17,8 @@ import {
   buildChildBrief, loadSkillStates, loadActiveMisconceptionIds, loadRecentOutcomes, loadDueSkills,
   skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt,
 } from "../learner/model.js";
+import { canWrite } from "../learner/mode.js";
+import { canWriteMemory, formatTrialStmt, memoryStmt, relSessionStmt } from "../learner/writer.js";
 import { classify, classifyFast, targetFor } from "../director/classify.js";
 import { scanSafety } from "../director/safety.js";
 import { initLessonState, step, evidenceFrom, snapshotSkill, upcomingItem, LIMITS } from "../director/state.js";
@@ -24,6 +26,8 @@ import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, norm
 import { TURN_WORDS } from "../compiler/compile.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
 import { teacherFor } from "../compiler/characters/index.js";
+import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
+import { styleForChild } from "./voice.js";
 
 /**
  * Debug payloads carry answer keys, so they go only to a loopback caller on a dev machine (never on a
@@ -349,6 +353,9 @@ async function start(req, res, body) {
     ...(rows.length ? [turnInsertStmt(lessonId, rows)] : []),
   ]);
   if (created.length !== 1) throw new Error("lesson insert did not land");
+  if (mode === "cascade" && teacherOpeningSeq) {
+    prewarm({ lessonId, seq: teacherOpeningSeq, text: teacherOpening, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child) });
+  }
   console.info(`[lesson] start ${lessonId} topic=${topic.id} kit=${kit.verified ? "verified" : "mini"} ${Math.round(performance.now() - t0)}ms`);
   /** @type {import("../../shared/contracts").LessonStartResponse} */
   const out = {
@@ -490,19 +497,27 @@ async function turn(req, res, body) {
 
   // Text lanes: when the classifier must ask the model, the reply for its likely outcomes starts NOW, in
   // parallel, and the one whose inputs turn out identical to the real plan's is used (speculate()).
+  // ONE clock for the turn: the speculative plans and the real one are stepped at the moment the turn
+  // arrived. Each used to read Date.now() when it ran, so a classifier call that crossed a 6 s boundary
+  // moved the compiled "minute" line and every speculation missed on that alone (2/8 turns,
+  // evals/cascade-latency.mjs 2026-10-02: "minute 0.7 || minute 0.8").
+  const now = Date.now();
   const fast = classified ? classifyFast(clsArgs) : null;
-  const specs = textLane && fast && !fast.result && !fast.lowAsr
-    ? speculate(state, target, fast.flags, planCtx, { said, historyOf })
+  // A low-confidence transcript is already decided (no evidence, source "asr"); only the model's distress
+  // backup is pending, so its one likely plan is speculated. A distress verdict changes the plan (safeguard),
+  // its key no longer matches, and the real reply is written as before.
+  const specs = textLane && fast && !fast.result
+    ? speculate(state, target, fast.flags, { ...planCtx, now }, { said, historyOf }, fast.lowAsr ? { outcomes: ["no_evidence"], source: "asr" } : {})
     : [];
   const cls = classified ? await classify(clsArgs) : null;
   mark("classified");
 
   // Evidence → learner model → Director step → compile, all staged as statements for the turn's one transaction.
-  const plan = await planTurn(state, cls, { ...planCtx, now: Date.now() });
+  const plan = await planTurn(state, cls, { ...planCtx, now });
   const { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
   mark("planned");
   const next = r.state;
-  let teacherReply, teacherReplySeq, guard, speculation;
+  let teacherReply, teacherReplySeq, guard, speculation, prewarmed = false;
   if (textLane && !r.hold) {
     const key = replyKey(next, kit, r, instructions, said, historyOf(next));
     const hit = await pickSpeculation(specs, key);
@@ -519,6 +534,11 @@ async function turn(req, res, body) {
     staged.push(row);
     teacherReplySeq = row.seq;
     mark("replied");
+    // Cascade: the guarded reply starts speaking now, while the transaction below runs (server/voice/prewarm.js);
+    // a turn that is not stored drops it.
+    if (state.mode === "cascade") {
+      prewarmed = prewarm({ lessonId: lesson.id, seq: teacherReplySeq, text: teacherReply, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child) });
+    }
   } else if (specs.length) {
     speculation = { tried: specs.length, hit: false };
   }
@@ -536,6 +556,7 @@ async function turn(req, res, body) {
       ...writes,
     ]);
   } catch (e) {
+    if (prewarmed) dropPrewarm(lesson.id, teacherReplySeq);
     // A disclosure is recorded even when its turn is not (without the turn it came from).
     if (incident) {
       await q("insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3) returning id",
@@ -565,7 +586,7 @@ async function turn(req, res, body) {
       phase: next.phase, turn: next.turn, teachIdx: next.teachIdx, hintLevel: next.hintLevel, unclear: next.unclear, moduleOnly, hold: !!r.hold,
       classification: cls ? { outcome: cls.outcome, misconceptionId: cls.misconceptionId, voiced: cls.voiced, confidence: cls.confidence, source: cls.source, flags: cls.flags } : null,
       evidence, skills: skillChanges, flagged: next.flagged, guard, spoiled: next.spoiled, ...(skipped ? { skipped } : {}),
-      ...(speculation ? { speculation } : {}),
+      ...(speculation ? { speculation } : {}), ...(prewarmed ? { ttsPrewarmed: true } : {}),
       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
       kitVerified: kit.verified, ms, timings: trace,
       ...(voice ? { voice: { reliable: voice.reliable, signals: voice.signals, z: voice.z } } : {}),
@@ -609,6 +630,9 @@ async function planTurn(base, cls, c) {
     : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer: c.answer });
   const evidence = cls ? evidenceFrom(state, cls, kit, { leaked: c.leaked, discount: gamingDiscount(affectNow) }) : [];
   const writes = [];
+  // Learner rows only where the child's legal_mode permits the layer (server/learner/mode.js): an M0 child's
+  // lesson runs on session state alone, and the writer itself throws on any forbidden layer.
+  const keep = (layer) => canWrite(child, layer);
   const skillChanges = {};
   const childSeq = state.seq; // the child's row, or a module-only turn's activity row (staged last)
   if (evidence.length) {
@@ -620,22 +644,22 @@ async function planTurn(base, cls, c) {
       const before = current[ev.skillId] ?? newSkillState(ev.skillId, topicType, now);
       const after = applyEvidence(before, ev, { topicType, now, lessonStartedAt: lesson.started_at });
       current[ev.skillId] = after;
-      writes.push(evidenceStmt(child.id, lesson.id, ev, { lessonId: lesson.id, seq: childSeq }));
-      if (ev.misconceptionId) writes.push(misconceptionFlagStmt(child.id, ev.misconceptionId));
+      if (keep("kt")) writes.push(evidenceStmt(child.id, lesson.id, ev, { lessonId: lesson.id, seq: childSeq }, child));
+      if (ev.misconceptionId && keep("mis")) writes.push(misconceptionFlagStmt(child.id, ev.misconceptionId, child));
       state.history[ev.skillId] = [...(state.history[ev.skillId] ?? []), ev.outcome].slice(-10);
       skillChanges[ev.skillId] ??= { before: Math.round(before.pKnown * 1000) / 1000 };
       Object.assign(skillChanges[ev.skillId], { after: Math.round(after.pKnown * 1000) / 1000, status: after.status });
     }
     for (const id of Object.keys(skillChanges)) {
-      writes.push(skillStateStmt(child.id, current[id]));
+      if (keep("kt")) writes.push(skillStateStmt(child.id, current[id], child));
       state.skills[id] = snapshotSkill(current[id]);
     }
     const resolved = activeItem?.targetsMisconception && cls.outcome === "correct" && cls.reason !== "misconception"
       && state.hintLevel === 0 && state.pendingWhy !== activeItem.id;
-    if (resolved) writes.push(misconceptionResolveStmt(child.id, activeItem.targetsMisconception));
+    if (resolved && keep("mis")) writes.push(misconceptionResolveStmt(child.id, activeItem.targetsMisconception, child));
   }
   // A belief voiced outside a keyed item counts on the misconception ledger, never as graded evidence.
-  if (cls?.voiced) writes.push(misconceptionFlagStmt(child.id, cls.voiced));
+  if (cls?.voiced && keep("mis")) writes.push(misconceptionFlagStmt(child.id, cls.voiced, child));
   const incident = cls?.flags.distress ? { source: cls.source === "predicate" ? "predicate" : "classifier", family: cls.flags.distressKind } : null;
   if (incident) writes.push(incidentStmt(child.id, lesson.id, childSeq, incident));
 
@@ -644,7 +668,7 @@ async function planTurn(base, cls, c) {
     : step(state, { event: "turn", kit, cls, chipId: c.chipId, answer: c.answer, now: c.now });
   if (stepped.move.kind === "explain" && stepped.move.skillId && !stepped.state.skills[stepped.move.skillId]) {
     const intro = markIntroduced(newSkillState(stepped.move.skillId, kit.topicType));
-    writes.push(skillStateStmt(child.id, intro));
+    if (keep("kt")) writes.push(skillStateStmt(child.id, intro, child));
     stepped.state.skills[stepped.move.skillId] = snapshotSkill(intro);
   }
   const { r, instructions, skipped } = instructionsAfter(stepped, kit, c.now);
@@ -675,12 +699,12 @@ const specFanout = () => {
   return Number.isFinite(n) ? Math.max(0, Math.min(4, Math.floor(n))) : 3;
 };
 
-function speculate(state, target, flags, planCtx, { said, historyOf }) {
-  const outcomes = (SPEC_OUTCOMES[target.mode] ?? []).slice(0, specFanout());
+function speculate(state, target, flags, planCtx, { said, historyOf }, { outcomes: only, source = "speculative" } = {}) {
+  const outcomes = (only ?? SPEC_OUTCOMES[target.mode] ?? []).slice(0, specFanout());
   return outcomes.map((outcome) => {
     const trace = [];
-    const cls = { outcome, confidence: 1, source: "speculative", flags: { ...flags } };
-    const p = planTurn(state, cls, { ...planCtx, now: Date.now() }).then((plan) => {
+    const cls = { outcome, confidence: 1, source, flags: { ...flags } };
+    const p = planTurn(state, cls, { ...planCtx, now: planCtx.now ?? Date.now() }).then((plan) => {
       if (plan.r.hold) return null;
       const next = plan.r.state;
       const history = historyOf(next);
@@ -824,34 +848,33 @@ async function end(req, res, body) {
     parentNote = `Today ${child.first_name} practised ${facts.topic}.`;
   }
 
+  // The writer's view of this child: its mode plus the memory consent (P3, personal details).
+  const writerChild = { ...child, consent: { ...(child.consent ?? {}), P3: !!memoryOk } };
   const saved = [];
   for (const m of memories.slice(0, 3)) {
     const t = citedTurn(m, childTurns);
     if (!t || SENSITIVE.test(m.text) || hasAbilityLabel(m.text) || words(m.text) > 14 || !MEMORY_KINDS.includes(m.kind)) continue;
-    saved.push([child.id, m.kind, m.text.trim(), t.id]);
+    saved.push({ kind: m.kind, text: m.text.trim(), sourceTurn: t.id });
   }
   const writes = [
     { text: "update lesson set summary = $2, parent_note = $3 where id = $1 returning id", params: [lesson.id, summary, parentNote] },
-    // Trust moves at most once a day (rate-limited, inherited rel-state law); sessions always count.
-    { text: `insert into rel_state(child_id, sessions, stage, last_trust_update) values ($1, 1, 'getting_to_know', current_date)
-       on conflict (child_id) do update set sessions = rel_state.sessions + 1,
-         stage = case when rel_state.sessions + 1 >= 20 then 'established' when rel_state.sessions + 1 >= 5 then 'familiar' else 'getting_to_know' end,
-         trust = case when rel_state.last_trust_update is distinct from current_date then least(0.9, rel_state.trust + 0.03) else rel_state.trust end,
-         last_trust_update = current_date, updated_at = now()
-       returning sessions`, params: [child.id] },
-    ...saved.map((m) => ({ text: "insert into memory(child_id, kind, text, source_turn) values ($1,$2,$3,$4) returning id", params: m })),
+    // The relationship stage is the session count only (trust is never persisted, NM-3); M1+ only.
+    ...(canWrite(child, "kt") ? [relSessionStmt(child)] : []),
+    // Memories by tier: M1 keeps tier A (wins) only; interests/preferences need M2+ and P3; tier C never.
+    ...saved.filter((m) => canWriteMemory(writerChild, m.kind)).map((m) => memoryStmt(writerChild, m)),
   ];
-  // Learning-profile rows only with that consent: one format trial per skill practised, immediate outcome only.
-  if (profileOk && kit) {
+  // Per-child format trials are the pz_child layer (M3 only), and need the learning-profile consent too.
+  if (profileOk && kit && canWrite(child, "pz_child")) {
     for (const s of new Set(evidence.map((e) => e.skill_id))) {
       const rows = evidence.filter((e) => e.skill_id === s);
-      writes.push({ text: "insert into format_trial(child_id, skill_id, topic_type, format, allocated_by, immediate) values ($1,$2,$3,$4,'prior',$5) returning id",
-        params: [child.id, s, kit.topicType, kit.formats.primary, rows.filter((e) => e.outcome === "correct" && e.hints_used === 0).length / rows.length] });
+      writes.push(formatTrialStmt(child, { skillId: s, topicType: kit.topicType, format: kit.formats.primary,
+        immediate: rows.filter((e) => e.outcome === "correct" && e.hints_used === 0).length / rows.length }));
     }
   }
   const results = await tx(writes);
   if (results.some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");
-  send(res, 200, { summary, parentNote, memoriesSaved: saved.length, sessions: results[1][0].sessions, ...(debugFor(req) ? { debug: { facts, timings: trace } } : {}) });
+  const relAt = canWrite(child, "kt") ? 1 : -1;
+  send(res, 200, { summary, parentNote, memoriesSaved: writes.filter((w) => /insert into memory/.test(w.text)).length, sessions: relAt > 0 ? results[relAt][0].sessions : null, ...(debugFor(req) ? { debug: { facts, timings: trace } } : {}) });
 }
 
 export const routes = {

@@ -2,7 +2,7 @@
 // rewritten; drop order is the table's; never-drop rows over the cap throw; no labels, ids or numbers.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { renderChildBrief, childBriefRows, fitByDropOrder, estimateTokens, BRIEF_TOKEN_CAP, BRIEF_ROWS, labelsChild, rowProblem, briefSkills, renderBrief, briefRows } from "../server/learner/brief.js";
+import { renderChildBrief, childBriefRows, fitByDropOrder, estimateTokens, BRIEF_TOKEN_CAP, BRIEF_ROWS, labelsChild, rowProblem, contentProblem, briefSkills, renderBrief, briefRows } from "../server/learner/brief.js";
 
 const full = () => ({
   child: { firstName: "Tara", classLevel: 4, band4: "B2", sessions: 14 },
@@ -104,4 +104,45 @@ test("the legacy brief renderer is unchanged (compile.js still reads briefRows)"
     vibe: { pace: "medium", verbosity: "brief", humour: "medium" }, relationshipStage: "first_meeting (0 sessions together)" };
   assert.equal(renderBrief(b).split("\n")[1], "- Asha · class 3 · age band 6-9 · prefers hinglish");
   assert.equal(briefRows(b)[0].drop, null);
+});
+
+test("floor 4 on real content: TODAY renders for EVERY curriculum title (no title is a label, an id or a number)", async () => {
+  const { readdirSync, readFileSync } = await import("fs");
+  const dir = new URL("../data/curriculum/", import.meta.url);
+  const titles = [];
+  for (const f of readdirSync(dir).filter((n) => /^c\d+-[a-z]+\.json$/.test(n))) {
+    for (const ch of JSON.parse(readFileSync(new URL(f, dir), "utf8")).chapters ?? []) {
+      for (const t of ch.topics ?? []) titles.push([t.id, t.title, ch.title]);
+    }
+  }
+  assert.ok(titles.length > 800, `${titles.length} titles`);
+  const missing = [];
+  for (const [id, title, chapter] of titles) {
+    const v = full();
+    v.today = { title };
+    v.need = { chapter };
+    const out = renderChildBrief(v);
+    if (!out.split("\n").includes(`TODAY ${title}`)) missing.push(`${id} TODAY "${title}"`);
+    // SKILLS rows may drop a long title on length (they are droppable); the fence itself must pass every title
+    if (contentProblem(title) || contentProblem(chapter)) missing.push(`${id} fence "${title}" / "${chapter}"`);
+    if (!out.includes(`NEED school ${chapter}`)) missing.push(`${id} NEED "${chapter}"`);
+  }
+  assert.deepEqual(missing, []);
+  // the titles the old prefix fence dropped (Natural…, Weighted averages…, Percentage…, The Smart Monkey) pass
+  for (const t of ["Natural Resources and Their Use", "Weighted averages and mixtures", "Percentage of a quantity", "The Smart Monkey", "Why think-of-a-number tricks work"]) {
+    assert.ok(renderChildBrief({ ...full(), today: { title: t } }).includes(`TODAY ${t}`), t);
+  }
+});
+
+test("a never-drop row that fails a check throws instead of vanishing", () => {
+  assert.throws(() => renderChildBrief({ ...full(), today: { title: "tum kamzor ho" } }), /TODAY: never-drop row failed/);
+  assert.throws(() => renderChildBrief({ ...full(), today: { title: "c4-maths-ch05-t01" } }), /TODAY/);
+});
+
+test("INTEREST is tier B: absent in M1 (and without P3), present only when the view's mode permits mem_B", () => {
+  const v = { ...full(), interests: ["cricket", "space"] };
+  assert.ok(!renderChildBrief(v).includes("INTEREST"), "no mode = M1 default");
+  assert.ok(!renderChildBrief({ ...v, mode: { legalMode: "M1", consent: { P3: true } } }).includes("INTEREST"), "M1 even with P3");
+  assert.ok(!renderChildBrief({ ...v, mode: { legalMode: "M2" } }).includes("INTEREST"), "M2 without P3");
+  assert.ok(renderChildBrief({ ...v, mode: { legalMode: "M2", consent: { P3: true } } }).includes("INTEREST cricket · space"));
 });

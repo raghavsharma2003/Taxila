@@ -70,11 +70,14 @@ export function decide(state0, ev, ctx) {
   };
 
   // ── day rollover: a missed `night` is caught up by the first event of a later learning day, once (§3.3) ──
-  if (s.learningDay && s.learningDay < today && s.adapt.foldedDay !== s.learningDay) foldNight(s, s.learningDay, H, { arm: true });
+  // The fold closes the OLD day but arms from TODAY: after days away every old-day wakeup is already past, so
+  // arming from s.learningDay would leave no day_start/night until the next app.opened.
+  if (s.learningDay && s.learningDay < today && s.adapt.foldedDay !== s.learningDay) foldNight(s, s.learningDay, H, { arm: true, armFrom: today });
   s.learningDay = today;
-  // an in_lesson that never ended (crashed client) is closed by the clock, not left to block the day
+  // an in_lesson that never ended (crashed client) is closed by the clock, not left to block the day; a pause the
+  // parent asked for mid-lesson takes effect exactly as lesson.ended would apply it (or lapses if already over)
   if (s.mode === "in_lesson" && s.lesson && nowMs - Date.parse(s.lesson.since) > LESSON_STALE_MS && ev.type !== "lesson.ended") {
-    s.mode = s.pendingPause ? "paused" : "free"; s.modeSince = iso; delete s.lesson; H.audit("lesson_timed_out");
+    endLessonMode(s, nowMs); s.modeSince = iso; delete s.lesson; H.audit("lesson_timed_out");
   }
   if (s.resumable && Date.parse(s.resumable.until) <= nowMs) delete s.resumable;
 
@@ -116,7 +119,14 @@ function replan(s, reason, pctx, H) {
 }
 
 /** Close a learning day (§3.3 night): once per day; trims, expires, recounts, re-arms if not dormant (X36). */
-function foldNight(s, day, H, { arm }) {
+/** Leave in_lesson: a pending pause still in the future becomes the pause; one already over lapses. */
+function endLessonMode(s, nowMs) {
+  if (s.pendingPause && Date.parse(s.pendingPause) > nowMs) { s.mode = "paused"; s.pauseUntil = s.pendingPause; }
+  else s.mode = "free";
+  delete s.pendingPause;
+}
+
+function foldNight(s, day, H, { arm, armFrom = day }) {
   const cut = addDays(day, -PLAN.closesMaxDays);
   s.adapt.closes = s.adapt.closes.filter((c) => c.day >= cut).slice(-PLAN.closesRing);
   s.counters.activeDays = s.counters.activeDays.filter((d) => d > addDays(day, -7)).sort();
@@ -128,7 +138,7 @@ function foldNight(s, day, H, { arm }) {
   H.rule("fold_night");
   const active = s.counters.lastActiveDay || s.counters.lastOpenDay;
   if (arm) {
-    if (active && daysBetween(active, day) <= PLAN.dormantDays) H.armAhead(day);
+    if (active && daysBetween(active, day) <= PLAN.dormantDays) H.armAhead(armFrom);
     else H.rule("dormant_not_rearmed");
   }
 }
@@ -184,11 +194,7 @@ const HANDLERS = {
   },
   "lesson.ended"(s, ev, H, t) {
     const slotId = s.lesson?.lessonId === ev.lessonId ? s.lesson.slotId : undefined;
-    if (s.mode === "in_lesson") {
-      if (s.pendingPause && Date.parse(s.pendingPause) > t.nowMs) { s.mode = "paused"; s.pauseUntil = s.pendingPause; }
-      else s.mode = "free";
-      delete s.pendingPause; s.modeSince = t.iso;
-    }
+    if (s.mode === "in_lesson") { endLessonMode(s, t.nowMs); s.modeSince = t.iso; }
     if (s.lesson?.lessonId === ev.lessonId) delete s.lesson;
     const p = todaysPlan(s);
     if (p && slotId) p.doneSlotIds = addId(p.doneSlotIds, slotId);

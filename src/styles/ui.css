@@ -55,13 +55,13 @@ button.chip { min-height: var(--hit-min); }
 button.chip[aria-pressed="true"] { border-color: var(--jamun); background: var(--jamun-soft); }
 /* Ledger state chips (§6.4): shape carries state and survives greyscale; colour second; never red (PX2). */
 .state { --c: var(--p-ink-3); display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 2px 12px 2px 8px;
-  border-radius: var(--radius-pill); font-weight: 600; font-size: 0.9375rem; line-height: 1.3; border: 2px solid var(--c); color: var(--p-ink); background: var(--surface); white-space: nowrap; }
+  border-radius: var(--radius-pill); font-weight: 600; font-size: 1rem; line-height: 1.3; border: 2px solid var(--c); color: var(--p-ink); background: var(--surface); white-space: nowrap; }
 .state-0 { --c: var(--p-ink-3); border-style: dashed; }
 .state-1 { --c: var(--p-learning); background: linear-gradient(90deg, color-mix(in srgb, var(--p-learning) 16%, var(--surface)) 50%, var(--surface) 50%); }
 .state-2 { --c: var(--p-learning); }
 .state-3 { --c: var(--p-pakka); background: var(--p-pakka); color: var(--surface); }
 .state-mark { width: 14px; height: 14px; flex: none; }
-.state-tag { font-weight: 400; color: var(--p-ink-2); font-size: 0.875rem; }
+.state-tag { font-weight: 400; color: var(--p-ink-2); font-size: 1rem; }   /* §4.3: dates and chips stay at body size */
 .state-3 .state-tag { color: var(--surface); }
 
 /* ── Field ── */
@@ -140,7 +140,7 @@ button.chip[aria-pressed="true"] { border-color: var(--jamun); background: var(-
 @keyframes tf-blink { 0%, 96%, 100% { transform: scaleY(1); } 98% { transform: scaleY(0.1); } }
 @keyframes tf-talk { from { transform: scaleY(0.35); } to { transform: scaleY(1); } }
 @media (prefers-reduced-motion: reduce) { .teacher-face .tf-eyes, .teacher-face .tf-talk { animation: none !important; } }
-:root[data-motion="reduce"] .teacher-face .tf-eyes, :root[data-motion="reduce"] .teacher-face .tf-talk { animation: none !important; }
+:is([data-motion="reduce"],[data-motion="reduced"]) .teacher-face :is(.tf-eyes,.tf-talk) { animation: none !important; }
 
 /* <details> summaries are targets too (A6) */
 .summary { cursor: pointer; font-weight: 600; min-height: 52px; display: flex; align-items: center; }

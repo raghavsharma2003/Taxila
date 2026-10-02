@@ -132,6 +132,8 @@ export interface Ledger {
 
 // ───────────────────────────── the CHILD brief (§9.1) ─────────────────────────────
 export interface BriefView {
+  /** The child's mode and consent: gates tier-B rows (INTEREST needs mem_B = M2+ and P3). Absent = M1, no P3. */
+  mode?: { legalMode: LegalMode; consent?: { P3?: boolean } };
   child: { firstName: string; classLevel: ClassLevel; band4: Band4; sessions?: number };
   address?: { childCallsTeacher: string; teacherCallsChild: "name" | "name+beta" };
   lang?: { matrix: "hi" | "en"; enInsertion: "low" | "mid" | "high"; terms: "en_labels" | "medium_terms" };

@@ -67,6 +67,8 @@
   font-size: var(--type-caption); line-height: 1.35;
 }
 .tx-caption-text { display: block; overflow-wrap: normal; word-break: keep-all; }
+/* at rest: her last full sentence, at most two lines */
+.tx-caption-text--rest { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
 .tx-caption--icons { gap: var(--space-5); }
 .tx-caption--pill {
   position: absolute; left: 50%; bottom: var(--space-2); transform: translateX(-50%); width: auto; max-width: calc(100% - 96px); min-height: 0;
@@ -90,6 +92,16 @@
   font-family: var(--font-display); font-size: calc(var(--type-board) * 1.6); font-weight: 700; text-align: center; padding: var(--space-3);
 }
 .tx-canvas-module[data-has-module="1"] .tx-board { display: none; }
+/* safeguarding: the helplines stay on screen while safeguarding holds (any geometry) */
+.tx-helpstrip {
+  display: flex; flex-wrap: nowrap; flex: 0 0 auto; gap: var(--space-2); justify-content: center; padding: var(--space-1) var(--space-2);
+  background: var(--surface); border: 1px solid var(--tile-border); border-radius: var(--radius-md); z-index: 3;
+}
+.tx-helpstrip-call {
+  display: inline-flex; align-items: center; gap: var(--space-1); min-height: 48px; padding: 0 var(--space-2); white-space: nowrap; font-size: 15px;
+  color: var(--ink); text-decoration: none; border: 1px solid var(--tile-border); border-radius: var(--radius-pill); background: var(--surface);
+}
+.tx-helpstrip-call .tx-num { font-weight: 700; }
 .tx-handoff { position: absolute; right: 8px; bottom: 8px; font-size: 20px; color: var(--ink-2); }
 .tx-pip {
   position: absolute; right: var(--space-2); top: var(--space-2); z-index: 3; border-radius: var(--radius-sm); overflow: hidden;

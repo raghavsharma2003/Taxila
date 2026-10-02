@@ -20,6 +20,7 @@
 // consent or a lowered limit can never stay a stale snapshot for longer than one app open.
 import { idemKeyFor, PURPOSES, SOURCE_OF, validateEvent } from "./events.js";
 import { ulid } from "./ids.js";
+import { latestConsent } from "./consent.js";
 import { one, q } from "./pg.js";
 import { ensureActor, step } from "./step.js";
 import { fireDue } from "./timers.js";
@@ -107,9 +108,7 @@ export async function syncParentFacts(childId) {
       floor(extract(epoch from cr.updated_at) * 1000)::bigint as cr_v
     from child c left join child_controls cc on cc.child_id = c.id left join child_routine cr on cr.child_id = c.id where c.id = $1`, [childId]);
   if (!c) return 0;
-  const consent = await q(`select distinct on (purpose) id, purpose, granted from consent
-      where guardian_id = $1 and (child_id = $2 or child_id is null) and purpose = any($3) order by purpose, created_at desc, id desc`,
-    [c.guardian_id, childId, PURPOSES]);
+  const consent = await latestConsent({ q }, c.guardian_id, childId, PURPOSES);
   const evs = [];
   for (const r of consent) {
     if (!!st.consent?.[r.purpose] !== !!r.granted) evs.push({ type: "parent.consent_changed", purpose: r.purpose, granted: !!r.granted, consentVersion: `c${r.id}` });

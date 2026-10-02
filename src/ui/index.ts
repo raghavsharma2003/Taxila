@@ -7,6 +7,7 @@ export { Hi } from "./Hi.tsx";
 export { HoldButton } from "./HoldButton.tsx";
 export { Icon, Mark, type IconName } from "./Icon.tsx";
 export { PinPad } from "./PinPad.tsx";
+export { ReauthField } from "./ReauthField.tsx";
 export { Sheet } from "./Sheet.tsx";
 export { Speaker, useClip } from "./Speaker.tsx";
 export { StatusGlyph, STATUS_NAME, type FloorState } from "./StatusGlyph.tsx";

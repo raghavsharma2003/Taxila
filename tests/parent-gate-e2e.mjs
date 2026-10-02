@@ -99,7 +99,9 @@ try {
   ok(cancel.unlocked && !cancel.pendingResetAt, "unlocking with the current PIN cancels the pending reset");
   await R("POST", "/api/parent/lock", {});
   const pend2 = await R("POST", "/api/parent/pin/reset", { pin: "4826", password: "gate-pw-aaaa1" });
-  await q(`update audit set detail = jsonb_set(detail, '{effectiveAt}', to_jsonb((now() - interval '1 minute')::text)) where guardian_id = $1 and action = 'pin_reset_pending'`, [gA.id]);
+  const leak = await one("select count(*)::int as n from audit where guardian_id = $1 and detail ? 'pinHash'", [gA.id]);
+  ok(leak.n === 0, "the pending PIN hash is not kept in the audit trail");
+  await q("update guardian_pin set pending_effective_at = now() - interval '1 minute' where guardian_id = $1", [gA.id]);
   const applied = await R("GET", "/api/parent/pin");
   ok(!!pend2.pendingResetAt && !applied.pendingResetAt, "after the delay the reset is applied");
   ok((await R("POST", "/api/parent/unlock", { pin: "4826" })).unlocked === true, "the reset PIN works after the delay");
@@ -108,6 +110,31 @@ try {
   const pwChecked = pwBurst.filter((r) => r.error === "account password is incorrect").length;
   ok(pwChecked <= PW_MAX_TRIES, `burst of 7 wrong passwords: ${pwChecked} checked (≤ ${PW_MAX_TRIES}), the rest wait`);
   ok((await R("POST", "/api/parent/pin/reset", { pin: "4826", password: "gate-pw-aaaa1" })).gate === "wait", "after the password limit even the right password waits");
+  // A correct current PIN is proof of the parent: it restarts the password-try window (a child cannot hold it shut).
+  const D = client(); // a fresh session (the in-process burst limiter is per session and route)
+  await D("POST", "/api/auth/login", { email: emails[0], password: "gate-pw-aaaa1" });
+  ok((await D("POST", "/api/parent/unlock", { pin: "4826" })).unlocked === true, "the parent unlocks with the current PIN");
+  ok((await D("POST", "/api/parent/pin/reset", { pin: "5937", password: "gate-pw-aaaa1" })).status === 200, "after a PIN unlock the password tries are open again");
+  await D("POST", "/api/parent/unlock", { pin: "4826" }); // cancels that reset
+
+  // ── consent-grade: erasure and core-tutoring withdrawal re-ask the password ──
+  ok((await D("POST", "/api/consent", { childId: c1.child.id, grants: { core_tutoring: false } })).status === 400, "withdrawing core tutoring without the password is refused");
+  ok((await D("DELETE", "/api/children", { childId: c1.child.id })).status === 400, "deleting a child without the password is refused, even unlocked");
+  ok((await D("DELETE", "/api/children", { childId: c1.child.id, password: "gate-pw-aaaa1" })).status === 200, "deleting with the password works");
+  await D("POST", "/api/parent/lock", {});
+  ok((await D("POST", "/api/children", { firstName: "Zoya", classLevel: 2 })).gate === "locked", "with zero children left, adding one still needs the unlock (a PIN exists)");
+
+  // ── login is bounded: after the free tries, one checked try per slow window; refused tries are not kept ──
+  const C = client();
+  const gC = await signup(C, "c", "gate-pw-cccc3");
+  const { LOGIN_FREE_TRIES } = await import("../server/routes/account.js");
+  const wrongs = [];
+  for (let i = 0; i < LOGIN_FREE_TRIES; i++) wrongs.push((await C("POST", "/api/auth/login", { email: gC.email, password: "bad-" + i })).status);
+  ok(wrongs.every((x) => x === 400), `${LOGIN_FREE_TRIES} wrong logins are checked`);
+  ok((await C("POST", "/api/auth/login", { email: gC.email, password: "bad-x" })).status === 429, "the next try straight away waits");
+  ok((await C("POST", "/api/auth/login", { email: gC.email, password: "gate-pw-cccc3" })).status === 429, "even the right password waits inside the slow window");
+  await q("update audit set at = at - interval '16 minutes' where guardian_id = $1 and action = 'login_attempt'", [gC.id]);
+  ok((await C("POST", "/api/auth/login", { email: gC.email, password: "gate-pw-cccc3" })).status === 200, "after the slow window the right password signs in");
 
   // ── first PIN outside onboarding needs the password ──
   const B = client();

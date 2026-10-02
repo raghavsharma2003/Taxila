@@ -1,0 +1,14 @@
+mint 200 ttl 10 
+ open before expiry: true 
+ 20 s after mint (expired), same session answers: completed
+ new connection with expired key: true 
+mint 200 ttl 10 
+ open before expiry: true 
+ 20 s after mint (expired), same session answers: completed
+ new connection with expired key: true 
+mint 200 ttl 10 
+ open before expiry: true 
+ 20 s after mint (expired), same session answers: completed
+ new connection with expired key: true 
+max ttl mint 200 7199
+over max 400 Invalid 'expires_after.seconds': integer above maximum value. Expected a value <= 7200, but got 7201 instead.

@@ -66,7 +66,9 @@ export default defineConfig({
   },
   build: {
     target: "es2022",
-    sourcemap: true,
+    // No public source maps in the shipped image (serve.mjs serves all of dist/). TX_SOURCEMAP=1 for a local
+    // debugging build: "hidden" writes the .map files without the sourceMappingURL comment.
+    sourcemap: process.env.TX_SOURCEMAP ? "hidden" : false,
     // Two pages: the app, and the sandboxed module frame.
     rolldownOptions: { input: { main: page("./index.html"), modules: page("./modules.html") } },
   },

@@ -15,6 +15,13 @@ const qCount = (n) => Math.max(0, Math.round(Number(n) || 0));
  * @param {import('./state.js').ConductorState} state
  * @param {{ now: Date, view: ReturnType<import('./view.js').recordingView>, cal: import('./clock.js').DayKindLookup }} ctx
  */
+/** The tier's monthly voice seconds minus what this month already used, per lane (V3's budget). A stale/fallback
+ *  read subtracts nothing (V25: a missing key never fires a rule). Rounded down to 60 s so the hash is stable. */
+function remainingVoice(tierSec, used) {
+  const u = used?.stale ? {} : (used?.value || {});
+  return Object.fromEntries(Object.entries(tierSec).map(([lane, sec]) => [lane, Math.max(0, Math.floor((sec - (Number(u[lane]) || 0)) / 60) * 60)]));
+}
+
 export function buildPlannerInputs(state, ctx) {
   const tz = state.tz;
   const day = state.learningDay;
@@ -53,7 +60,7 @@ export function buildPlannerInputs(state, ctx) {
     promises: [...state.promises].sort((a, b2) => (a.id < b2.id ? -1 : 1)),
     frozen: { slots: frozen, startedIds },              // no plan version: a re-plan of an unchanged day must hash equal
     usage: { usedMin: Math.floor(Number(used.value) || 0) },
-    voice: { budgetLow: !!state.budget.low, voiceBudgetSec: TIER[state.tier].voiceSecMonth },
+    voice: { budgetLow: !!state.budget.low, voiceBudgetSec: remainingVoice(TIER[state.tier].voiceSecMonth, ctx.view.get("usage.voiceSecMonth")) },
     adapt: { successFirst: !!state.adapt.successFirstNext, gapDays },
     view: { "kt.dueCount": { value: qCount(due.value), src: due.src, stale: due.stale },
             "usage.usedMin": { value: Math.floor(Number(used.value) || 0), src: used.src, stale: used.stale } },
@@ -128,6 +135,12 @@ export function planDay(inputs) {
       if (voice.budgetLow) {
         segments = segments.map((s) => (RT_LANES.has(s.laneWanted) ? { ...s, laneWanted: "cascade" } : s));
         fire("R10", "budget", "laneMix", "cascade", ["budget.low"]);
+      }
+      // the month's remaining realtime seconds (V3): a lesson that would overrun them steps down to cascade
+      const want = voiceOf(segments);
+      if ([...RT_LANES].some((l) => (want[l] || 0) > (voice.voiceBudgetSec?.[l] ?? 0))) {
+        segments = segments.map((s) => (RT_LANES.has(s.laneWanted) ? { ...s, laneWanted: "cascade" } : s));
+        fire("R10", "budget", "laneMix", "cascade", ["usage.voiceSecMonth"]);
       }
       const opener = adapt.gapDays !== null && adapt.gapDays >= PLAN.reanchorGapDays ? "reanchor_light" : "standard_retrieval";
       if (opener !== "standard_retrieval") fire("R8", "kt", "opener", opener, ["counters.lastActiveDay"]);

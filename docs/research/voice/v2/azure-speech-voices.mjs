@@ -39,12 +39,14 @@ const text = (p) => p.segs.map((s) => s.t).join(" ");
 
 // ---- arms ----
 const MAI_STYLED = ["Kavya", "Priya", "Dhruv", "Arjun"]; // StyleList present in voices/list (Harper, Grant: none)
+// Arjun's StyleList has no softvoice: sending it returns HTTP 502 (measured 2026-10-02), so his correction is unstyled.
+const maiStyles = (n) => (!MAI_STYLED.includes(n) ? null : n === "Arjun" ? { praise: "excited" } : { praise: "excited", correct: "softvoice" });
 const MAI = ["Kavya", "Priya", "Harper", "Arjun", "Dhruv", "Grant"];
 const DHD = ["Diya", "Lavanya", "Meera", "Aarti", "Arjun", "Neerja"];
 const OMNI = ["Swara", "Kavya", "Aarti", "Ananya", "Diya", "Madhur"]; // unlisted in voices/list, but resolve (probe 2026-10-02)
 const ARMS = [
-  ...MAI.map((n) => ({ arm: `mai-hd:${n}`, kind: "az", voice: `hi-IN-${n}:MAI-Voice-2.1`, loc: "hi-IN", styles: MAI_STYLED.includes(n) ? { praise: "excited", correct: "softvoice" } : null })),
-  ...MAI.map((n) => ({ arm: `mai-flash:${n}`, kind: "az", voice: `hi-IN-${n}:MAI-Voice-2.1-Flash`, loc: "hi-IN", styles: MAI_STYLED.includes(n) ? { praise: "excited", correct: "softvoice" } : null })),
+  ...MAI.map((n) => ({ arm: `mai-hd:${n}`, kind: "az", voice: `hi-IN-${n}:MAI-Voice-2.1`, loc: "hi-IN", styles: maiStyles(n) })),
+  ...MAI.map((n) => ({ arm: `mai-flash:${n}`, kind: "az", voice: `hi-IN-${n}:MAI-Voice-2.1-Flash`, loc: "hi-IN", styles: maiStyles(n) })),
   ...DHD.map((n) => ({ arm: `dhd-plain:${n}`, kind: "az", voice: `en-IN-${n}:DragonHDLatestNeural`, loc: "en-IN", styles: null })),
   ...DHD.map((n) => ({ arm: `dhd-lang:${n}`, kind: "az", voice: `en-IN-${n}:DragonHDLatestNeural`, loc: "en-IN", styles: null, langTag: true })),
   { arm: "swara-plain", kind: "az", voice: "hi-IN-SwaraNeural", loc: "hi-IN", styles: null },

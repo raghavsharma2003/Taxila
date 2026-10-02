@@ -83,6 +83,12 @@ export interface UiDirectives {
   caption?: string;
   /** The text the child is asked to read aloud right now (voice features measure WCPM against it). */
   readAloud?: string;
+  /**
+   * NEEDS A DIRECTOR PRODUCER (no move sets it yet): the child's effort or insight on the turn just closed,
+   * which lets the teacher's face play its one "delighted" beat (src/stage/useDelight). Never correctness:
+   * a right answer alone is not "insight". Until the Director sends it, the child UI's delight never fires.
+   */
+  affect?: "insight" | "effort";
 }
 
 /**

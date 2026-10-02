@@ -5,20 +5,20 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { ButtonVariant } from "./Button.tsx";
 
-export function HoldButton({ ms = 1200, onConfirm, children, variant = "primary", block, hint = "Press and hold" }:
-  { ms?: number; onConfirm: () => void; children: ReactNode; variant?: ButtonVariant; block?: boolean; hint?: string }) {
+export function HoldButton({ ms = 1200, onConfirm, children, variant = "primary", block, hint = "Press and hold", disabled }:
+  { ms?: number; onConfirm: () => void; children: ReactNode; variant?: ButtonVariant; block?: boolean; hint?: string; disabled?: boolean }) {
   const [holding, setHolding] = useState(false);
   const timer = useRef<number | null>(null);
   const cancel = () => { if (timer.current) window.clearTimeout(timer.current); timer.current = null; setHolding(false); };
   const start = () => {
-    if (timer.current) return;
+    if (timer.current || disabled) return;
     setHolding(true);
     timer.current = window.setTimeout(() => { timer.current = null; setHolding(false); onConfirm(); }, ms);
   };
   useEffect(() => cancel, []);
   return (
     <button type="button" className={["btn", `btn-${variant}`, "hold", block && "btn-block"].filter(Boolean).join(" ")}
-      data-holding={holding} style={{ ["--hold-ms" as string]: `${ms}ms` }}
+      data-holding={holding} disabled={disabled} style={{ ["--hold-ms" as string]: `${ms}ms` }}
       aria-describedby={undefined}
       onPointerDown={(e) => {
         // No pointer capture: touch pointers are implicitly captured, which would hide a slide-off. Release it,

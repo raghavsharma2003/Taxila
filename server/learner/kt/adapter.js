@@ -31,16 +31,20 @@ export function openOutcome({ correct, triesBefore = 0, rungs = 0, idk = false, 
 /**
  * @param {import("../../../shared/contracts").Evidence} ev legacy evidence row
  * @param {{ id: string, sessionId: string, sessionStartAt: string, at: string, episodeId: string, topicType?: string,
- *   options?: number, triesBefore?: number, idk?: boolean, episodeEnded?: boolean, grader?: 'code'|'llm'|'human', graderVersion?: string,
+ *   options?: number, triesBefore?: number, idk?: boolean, episodeEnded?: boolean, grader: 'code'|'llm'|'human', graderVersion?: string,
  *   asrConf?: number, kitVerified?: boolean, discriminates?: string, preAttemptHelp?: boolean, contaminated?: boolean,
  *   gamingWindowKt?: boolean, controllerEasy?: boolean, assisted?: 'parent'|'sibling'|null, safetyFired?: boolean, form?: 'produce'|'recognise' }} c
  * @returns {import("../../../shared/learner").EvidenceEvent | null} null when the answer is not (yet) an outcome
  */
 export function fromLegacyEvidence(ev, c) {
+  // The grader is a fact about THIS answer (classify.js graded it against a verified key = "code", a model
+  // call = "llm"), never a default: an "llm" default would fold every code-graded answer through the 0.7
+  // confusion matrix and keep θ frozen (thetaObs takes code-graded events only).
+  if (!["code", "llm", "human"].includes(c.grader)) throw new Error(`fromLegacyEvidence ${c.id}: grader ('code'|'llm'|'human') is required`);
   if (ev.outcome === "no_evidence") return null;
   const base = {
     id: c.id, sessionId: c.sessionId, sessionStartAt: c.sessionStartAt, at: c.at, episodeId: c.episodeId, skillIds: [ev.skillId],
-    itemKey: ev.itemId ?? `${ev.skillId}:${ev.probe}`, grader: c.grader ?? "llm", graderVersion: c.graderVersion ?? "classify-v1",
+    itemKey: ev.itemId ?? `${ev.skillId}:${ev.probe}`, grader: c.grader, graderVersion: c.graderVersion ?? "classify-v1",
     ...(c.topicType ? { topicType: c.topicType } : {}), ...(c.asrConf != null ? { asrConf: c.asrConf } : {}),
     ...(c.kitVerified === false ? { kitVerified: false } : {}), ...(c.discriminates ? { discriminates: c.discriminates } : {}),
     ...(ev.misconceptionId ? { misconceptionId: ev.misconceptionId } : {}), ...(c.preAttemptHelp ? { preAttemptHelp: true } : {}),

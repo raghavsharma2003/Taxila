@@ -181,7 +181,9 @@ test("malformed events throw (never silent evidence)", () => {
 
 test("adapter: legacy Director evidence maps onto BKT-R classes and the hint ladder", async () => {
   const { fromLegacyEvidence, openOutcome, teachEvent } = await import("../server/learner/kt/adapter.js");
-  const c = { id: "a1", sessionId: "L", sessionStartAt: T0, at: T0, episodeId: "L:i1:0" };
+  const c = { id: "a1", sessionId: "L", sessionStartAt: T0, at: T0, episodeId: "L:i1:0", grader: "code" };
+  assert.throws(() => fromLegacyEvidence({ skillId: SK, probe: "P15", outcome: "correct", hintsUsed: 0, weight: 1 }, { ...c, grader: undefined }), /grader/, "no grader default");
+  assert.equal(fromLegacyEvidence({ skillId: SK, probe: "P15", outcome: "correct", hintsUsed: 0, weight: 1 }, c).grader, "code");
   const legacy = (o) => ({ skillId: SK, itemId: "i1", probe: "P15", outcome: "correct", hintsUsed: 0, weight: 1, ...o });
   assert.equal(OUTCOMES["item.open"][fromLegacyEvidence(legacy(), c).outcome], "C0");
   assert.equal(OUTCOMES["item.open"][fromLegacyEvidence(legacy({ hintsUsed: 1 }), c).outcome], "C2");

@@ -32,7 +32,7 @@ export function StateChip({ state, lang, nextReview }: { state: LedgerState; lan
   return (
     <span className={`state state-${state.level}`} style={{ color: state.level === 3 ? undefined : "var(--p-ink)" }}>
       <span style={{ color: state.level === 3 ? "currentColor" : "var(--c)", display: "inline-flex" }}><Mark level={state.level} /></span>
-      <span lang={isHi ? "hi" : undefined} className={isHi ? "deva" : undefined} style={isHi ? { fontSize: "1.0625em" } : undefined}>{word}</span>
+      <span lang={isHi ? "hi" : undefined} className={isHi ? "deva" : undefined} style={isHi ? { fontSize: "1.125em" } : undefined}>{word}</span>
       {state.recheck && (
         <span className="state-tag"><span aria-hidden="true">↻ </span><span lang={isHi ? "hi" : undefined}>{RECHECK_TAG[lang]}</span></span>
       )}

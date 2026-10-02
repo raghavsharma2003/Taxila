@@ -42,13 +42,15 @@ export async function loadDueSkills(childId, limit = 3) {
 // child's legal_mode before building any of them; re-exported here so existing imports keep working.
 export { skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt } from "./writer.js";
 
-export async function saveSkillState(childId, s) {
-  const { text, params } = skillStateStmt(childId, s);
+/** @param {{ id: string, legal_mode: string }} child the child row (its mode gates the write) */
+export async function saveSkillState(child, s) {
+  const { text, params } = skillStateStmt(child.id, s, child);
   expectRows(await q(text, params), 1, "skill_state upsert");
 }
 
-export async function flagMisconception(childId, misconceptionId) {
-  const { text, params } = misconceptionFlagStmt(childId, misconceptionId);
+/** @param {{ id: string, legal_mode: string }} child the child row (its mode gates the write) */
+export async function flagMisconception(child, misconceptionId) {
+  const { text, params } = misconceptionFlagStmt(child.id, misconceptionId, child);
   return expectRows(await q(text, params), 1, "misconception_state upsert")[0].evidence_count;
 }
 

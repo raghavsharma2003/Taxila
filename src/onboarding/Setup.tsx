@@ -7,7 +7,7 @@ import { ApiError, errText, getJson, loadMe, lockBeacon, postJson, type ChildRow
 import { useGate } from "../parent/Gate.tsx";
 import { isGateError } from "../parent/api.ts";
 import { StepFrame } from "./Layout.tsx";
-import { clearDraftChild, useDraft } from "./draft.ts";
+import { clearDraft, useDraft } from "./draft.ts";
 
 interface Controls { dailyMinutes: number; hoursStart: string; hoursEnd: string }
 const defaultsFor = (cl: number): Controls => ({ dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "07:00", hoursEnd: "20:30" });
@@ -149,7 +149,7 @@ export function HandoverStep() {
     }, () => {});
   }, [d.childId, nav]);
   if (!child) return <StepFrame step="handover" title="All set"><div className="spinner" /></StepFrame>;
-  const done = (to: string) => { lockBeacon(); clearDraftChild(); nav(to); };
+  const done = (to: string) => { lockBeacon(); clearDraft(); nav(to); };
   return (
     <StepFrame step="handover" title={`${child.first_name} is ready to meet her`} back={false}>
       <div className="meet"><TeacherFace size={140} /></div>

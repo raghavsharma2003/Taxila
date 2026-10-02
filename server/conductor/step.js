@@ -10,6 +10,7 @@ import { jcs } from "./ids.js";
 import { RETRYABLE, one, q, withTx } from "./pg.js";
 import { initialState, upgradeState } from "./state.js";
 import { PURPOSES } from "./events.js";
+import { latestConsent } from "./consent.js";
 import { loadView, recordingView, replayView } from "./view.js";
 
 export class ChildNotFound extends Error {}
@@ -37,9 +38,7 @@ export async function ensureActor(childId, { now = new Date() } = {}) {
     from child c left join child_controls cc on cc.child_id = c.id left join child_routine cr on cr.child_id = c.id
     where c.id = $1`, [childId]);
   if (!c) throw new ChildNotFound(`no child ${childId}`);
-  const consentRows = await q(`select distinct on (purpose) purpose, granted from consent
-      where guardian_id = $1 and (child_id = $2 or child_id is null) and purpose = any($3) order by purpose, created_at desc`,
-    [c.guardian_id, childId, PURPOSES]);
+  const consentRows = await latestConsent({ q }, c.guardian_id, childId, PURPOSES);
   const state = initialState({
     childId, classLevel: c.class_level, now,
     controls: c.daily_minutes ? { dailyMinutes: c.daily_minutes, hoursStart: c.hours_start, hoursEnd: c.hours_end } : null,

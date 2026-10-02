@@ -13,7 +13,7 @@ def price(arm, chars, secs):
     if arm.startswith("omni"): return 22.0, "U (assumes Neural HD)"
     if arm == "diya-dragon": return 15.0, "U (assumes Neural)"
     if arm.startswith("swara"): return 15.0, "V (S1 Neural meter)"
-    if arm.startswith("4omtts"):
+    if arm.startswith("4omtts"):  # meters V: gpt-4o-mini-tts-aud-out-glbl $0.012/1K tok, txt-inp-glbl $0.0006/1K
         # $12/M audio-out tokens (global), ~1250 audio tok/min (OpenAI's $0.015/min estimate) + $0.6/M text in (~chars/3 tok)
         usd = secs / 60 * 1250 * 12e-6 + chars / 3 * 0.6e-6
         return usd / chars * 1e6, "I (tokens from audio length)"

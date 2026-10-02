@@ -14,17 +14,62 @@ export const WRITES = Object.freeze({
 });
 
 /**
- * Tables each persisted layer owns (the M0 ratchet and the per-mode deletes walk this). Legacy 001 tables
- * are listed with the layer whose data they hold.
+ * Tables each persisted layer owns (the per-mode deletes walk this). Legacy 001 tables are listed with the
+ * layer whose data they hold; rel_state is the session count (relationship stage = sessions only), part of
+ * the academic record.
  */
 export const LAYER_TABLES = Object.freeze({
-  kt: ["kt_evidence", "kt_skill_state", "evidence", "skill_state"],
+  kt: ["kt_evidence", "kt_skill_state", "evidence", "skill_state", "rel_state"],
   mis: ["kt_misconception", "misconception_state"],
   ability: ["kt_ability", "kt_ability_epoch"],
   eta: ["kt_child"],
   mem_A: ["memory"],
   pz_child: ["format_trial"],
 });
+
+/**
+ * Child-keyed tables that hold persisted session history or per-child derived state but no mode layer yet
+ * (transcripts, voice baselines, conductor folds, brief snapshots). M0 keeps nothing beyond the session, so
+ * the ratchet to M0 deletes them too; moving between M1-M3 leaves them. `lesson` cascades its turn
+ * (transcript), module_run and voice_feature rows.
+ */
+export const M0_HISTORY_TABLES = Object.freeze([
+  "lesson", "rel_event", "voice_feature", "voice_baseline",
+  "student_event", "conductor_state", "decision_log", "brief_snapshot", "day_plan",
+  // comprehension engine (007_comprehension.sql): academic record derived from answers
+  "comp_facet_state", "reteach_attempts", "rep_fluency", "weave_queue", "probe_log", "grade_audit",
+]);
+
+/**
+ * Child-keyed tables the ratchet KEEPS in every mode, each with its reason (consent, audit, safeguarding,
+ * identity and parent-entered facts, operational rows with no learner content).
+ */
+export const KEPT_TABLES = Object.freeze({
+  consent: "consent record (NM-1)",
+  learner_mode_audit: "audit of every mode change",
+  incident: "safeguarding record",
+  workspace: "child identity / lifecycle",
+  child_seq: "event counter only (no content)",
+  child_controls: "parent-entered controls",
+  child_routine: "parent-entered routine",
+  conductor_usage: "minutes used against the parent cap",
+  job: "operational queue (cancel-or-run)",
+  wakeup: "scheduler rows",
+  notification: "guardian messages (safety/account intents)",
+  notify_slot: "set-null tombstone (probe F3)",
+});
+
+/**
+ * Every table with a child_id column, classified: a layer's table, an M0 history table, or kept. A table
+ * missing here fails tests/learner-mode.test.mjs (migration scan) and tests/learner-db.test.mjs
+ * (information_schema), so a new child table cannot silently survive the M0 ratchet.
+ */
+export function classifyChildTable(t) {
+  if (Object.values(LAYER_TABLES).some((ts) => ts.includes(t))) return "layer";
+  if (M0_HISTORY_TABLES.includes(t)) return "m0_delete";
+  if (Object.hasOwn(KEPT_TABLES, t)) return "kept";
+  return null;
+}
 
 /** The mode of a child row ({ legal_mode } or { legalMode }); a missing value is the launch default. */
 export function legalModeOf(child) {
@@ -57,6 +102,8 @@ export const isRatchetDown = (from, to) => LEGAL_MODES.indexOf(legalModeOf(to)) 
 
 /** Every learner table whose rows must go when a child moves to `to` (layers not allowed there). */
 export function tablesForbiddenIn(to) {
-  const allowed = WRITES[legalModeOf(to)];
-  return [...new Set(Object.entries(LAYER_TABLES).filter(([layer]) => !allowed.has(layer)).flatMap(([, ts]) => ts))].sort();
+  const mode = legalModeOf(to);
+  const allowed = WRITES[mode];
+  const layered = Object.entries(LAYER_TABLES).filter(([layer]) => !allowed.has(layer)).flatMap(([, ts]) => ts);
+  return [...new Set([...layered, ...(mode === "M0" ? M0_HISTORY_TABLES : [])])].sort();
 }

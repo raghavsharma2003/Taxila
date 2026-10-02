@@ -41,26 +41,23 @@
   /* net + ptt (low-end 12) */
   --net-chip-bg:var(--surface-2); --net-chip-fg:var(--ink-2);
 }
-/* band tokens: written by the app as data-band on <html>; values in 4.2 */
-:root[data-band="b1"] { --hit-min:64px; --tile-min:112px; --gap:16px; --mic:96px; --radius-tile:24px; --dur-base:240ms; }
-:root[data-band="b2"] { --hit-min:64px; --tile-min:96px;  --gap:16px; --mic:88px; --radius-tile:20px; --dur-base:240ms; }
-:root[data-band="b3"] { --hit-min:48px; --tile-min:64px;  --gap:8px;  --mic:64px; --radius-tile:16px; --dur-base:160ms;
+/* band tokens: data-band on <html> (src/app/band.ts useSurface) OR on a screen's own root element (the child
+   shell, src/child/ChildShell.tsx): any element, so the single source here covers both; values in 4.2 */
+[data-band="b1"] { --hit-min:64px; --tile-min:112px; --gap:16px; --mic:96px; --radius-tile:24px; --dur-base:240ms; }
+[data-band="b2"] { --hit-min:64px; --tile-min:96px;  --gap:16px; --mic:88px; --radius-tile:20px; --dur-base:240ms; }
+[data-band="b3"] { --hit-min:48px; --tile-min:64px;  --gap:8px;  --mic:64px; --radius-tile:16px; --dur-base:160ms;
                         --font-display:"Mukta","Mukta-fb",sans-serif; --elev-press:none; }
-:root[data-band="b4"] { --hit-min:48px; --tile-min:64px;  --gap:8px;  --mic:56px; --radius-tile:10px; --dur-base:160ms;
+[data-band="b4"] { --hit-min:48px; --tile-min:64px;  --gap:8px;  --mic:56px; --radius-tile:10px; --dur-base:160ms;
                         --font-display:"Mukta","Mukta-fb",sans-serif; --elev-press:none; }
 /* dark: Older bands only, chrome only; default light; the in-app toggle writes data-theme (old WebViews ignore the media query) */
-@media (prefers-color-scheme: dark) { :root:is([data-band="b3"],[data-band="b4"]):not([data-theme="light"]) {
+@media (prefers-color-scheme: dark) { :is([data-band="b3"],[data-band="b4"]):not([data-theme="light"]) {
   color-scheme: dark; --bg:#16140F; --surface:#221F19; --surface-2:#2C2821; --ink:#F6F1E8; --ink-2:#BDB4A6;
   --done:#4CC38A; --listen:#7FB0FF; --think:#9AA3AF; --stop:#FF8A80; --jamun:#C3A6F5; --board:#22423A; --board-frame:#A07E5A;
   --elev-card:none; --elev-press:none; /* --dusk, diagram, skin, sky unchanged: modules and art stay on --dusk */ } }
-:root:is([data-band="b3"],[data-band="b4"])[data-theme="dark"] { /* same values as the block above */
+:is([data-band="b3"],[data-band="b4"])[data-theme="dark"] { /* same values as the block above */
   color-scheme: dark; --bg:#16140F; --surface:#221F19; --surface-2:#2C2821; --ink:#F6F1E8; --ink-2:#BDB4A6;
   --done:#4CC38A; --listen:#7FB0FF; --think:#9AA3AF; --stop:#FF8A80; --jamun:#C3A6F5; --board:#22423A; --board-frame:#A07E5A;
   --elev-card:none; --elev-press:none; }
-@media (prefers-reduced-motion: reduce) { :root { --dur-press:1ms; --dur-fast:1ms; --dur-base:1ms; --dur-layout:1ms;
-  --pointer-draw:1ms; /* the turn ring becomes a static 5px ring, no glow: the cue survives */ } }
-/* in-app "kam halchal" switch (4.4): same effect as the media query, written as data-motion on <html> */
-:root[data-motion="reduce"] { --dur-press:1ms; --dur-fast:1ms; --dur-base:1ms; --dur-layout:1ms; --pointer-draw:1ms; }
 @media (prefers-contrast: more) { :root { --tile-border:var(--ink); --surface:var(--bg); } }
 @media (forced-colors: active) { /* rings and ledges are outline/border, never box-shadow, so they survive */ }
 /* parent surface (parent-experience 13, ratios computed there); font switched to Mukta (R18) */
@@ -68,3 +65,16 @@
   --p-learning:#2F5DA8; --p-yourturn-text:#8A4B00; --p-yourturn-fill:#FFD27A; --p-alert:#B3261E; --font-text:"Mukta",sans-serif; }
 /* No band set (landing, onboarding, parent corner): adult sizes (A6: 48 dp targets, 8 dp spacing). */
 :root:not([data-band]) { --hit-min:48px; --tile-min:64px; --gap:8px; --mic:64px; --radius-tile:16px; --dur-base:160ms; }
+
+/* ── Reduced motion (4.4: all UI motion → 1 ms). LAST in the file and !important on purpose: the band blocks and
+   the adult default above also set --dur-base, at equal or higher specificity, and a custom property declared
+   on a band element beats the value inherited from <html>. So the rule names the band elements too.
+   The in-app "kam halchal" switch writes data-motion="reduce" (the child shell writes "reduced") on <html>
+   or on a screen root; it has the same effect as the media query. The turn ring becomes a static 5px ring,
+   no glow: the cue survives. */
+@media (prefers-reduced-motion: reduce) { :root, [data-band] {
+  --dur-press:1ms !important; --dur-fast:1ms !important; --dur-base:1ms !important; --dur-layout:1ms !important;
+  --pointer-draw:1ms !important; } }
+:is([data-motion="reduce"],[data-motion="reduced"]), :is([data-motion="reduce"],[data-motion="reduced"]) [data-band] {
+  --dur-press:1ms !important; --dur-fast:1ms !important; --dur-base:1ms !important; --dur-layout:1ms !important;
+  --pointer-draw:1ms !important; }

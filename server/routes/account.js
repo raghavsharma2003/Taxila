@@ -1,8 +1,8 @@
 // Guardian signup/login, consent, child profiles.
 import { q, one } from "../db.js";
-import { need, bad, send } from "../http.js";
-import { hashPassword, verifyPassword, createSession, destroySession, requireGuardian, requireChild } from "../auth.js";
-import { requireParentIfPinSet } from "./parent.js";
+import { need, bad, send, HttpError } from "../http.js";
+import { createSession, destroySession, requireGuardian, requireChild } from "../auth.js";
+import { requireParentIfPinSet, checkAccountPassword, verifySecret, hashSecret, rateLimit } from "./parent.js";
 
 export const CONSENT_VERSION = "2026-10-02.v1";
 // core_tutoring is required to use the product; the others are separately optional and revocable.
@@ -18,16 +18,45 @@ export async function signup(req, res, body) {
   const exists = await one("select 1 from guardian where lower(email) = lower($1)", [email]);
   if (exists) throw bad("an account with this email already exists");
   const g = await one("insert into guardian(email, pw_hash, name, phone) values (lower($1), $2, $3, $4) returning id, email, name",
-    [email, hashPassword(password), name, body.phone || null]);
+    [email, await hashSecret(password), name, body.phone || null]);
   await q("insert into audit(guardian_id, action, detail) values ($1, 'signup', $2)", [g.id, { adultAttested: true }]);
   await createSession(res, g.id, req.headers["user-agent"]);
   send(res, 201, { guardian: g });
 }
 
+/** Wrong logins per guardian before each further try must wait LOGIN_SLOW_MIN after the previous checked one. */
+export const LOGIN_FREE_TRIES = 5;
+export const LOGIN_SLOW_MIN = 15;
+// Unknown emails still pay one scrypt, so response time does not reveal which emails have accounts.
+const DUMMY_HASH = hashSecret("taxila-no-such-account");
+
+/**
+ * Login is bounded like the other password checks (review: an unlimited login let a child on the shared phone
+ * guess the password and then reset the PIN). Per guardian, insert-then-count: after LOGIN_FREE_TRIES wrong
+ * tries in 24 h, one checked try per LOGIN_SLOW_MIN. A refused try is not kept, so hammering cannot hold the
+ * real guardian out for longer than LOGIN_SLOW_MIN. Plus the per-session/IP burst limit. Async scrypt.
+ * INTERIM: this bounds a guesser to about 100 tries a day; an off-device factor (OTP) is the real fix.
+ */
 export async function login(req, res, body) {
   const { email, password } = need(body, "email", "password");
+  rateLimit(req, "login");
   const g = await one("select id, email, name, pw_hash from guardian where lower(email) = lower($1)", [email]);
-  if (!g || !verifyPassword(password, g.pw_hash)) throw bad("email or password is incorrect");
+  if (!g) {
+    await verifySecret(String(password), await DUMMY_HASH);
+    throw bad("email or password is incorrect");
+  }
+  const att = await one("insert into audit(guardian_id, action) values ($1, 'login_attempt') returning id", [g.id]);
+  const c = await one(`select count(*)::int as n,
+        (select max(at) from audit where guardian_id = $1 and action = 'login_attempt' and id < $2) as prev
+      from audit where guardian_id = $1 and action = 'login_attempt' and at > now() - interval '24 hours'
+        and id > coalesce((select max(id) from audit where guardian_id = $1 and action = 'login_ok'), 0)`, [g.id, att.id]);
+  if (c.n > LOGIN_FREE_TRIES && c.prev && Date.now() - new Date(c.prev).getTime() < LOGIN_SLOW_MIN * 60_000) {
+    await q("delete from audit where id = $1", [att.id]);
+    throw new HttpError(429, "too many tries; wait a few minutes",
+      { gate: "wait", lockedUntil: new Date(new Date(c.prev).getTime() + LOGIN_SLOW_MIN * 60_000).toISOString() });
+  }
+  if (!(await verifySecret(String(password), g.pw_hash))) throw bad("email or password is incorrect");
+  await q("insert into audit(guardian_id, action) values ($1, 'login_ok')", [g.id]);
   await createSession(res, g.id, req.headers["user-agent"]);
   send(res, 200, { guardian: { id: g.id, email: g.email, name: g.name } });
 }
@@ -53,6 +82,9 @@ export async function setConsent(req, res, body) {
   const childId = body.childId || null;
   if (childId) await requireChild(req, childId);
   const grants = body.grants || {};
+  // Withdrawing core tutoring ends lessons for the child: consent-grade, so the account password too (stand-in
+  // for the §6.2/§6.9 OTP), like erasure.
+  if (grants.core_tutoring === false) await checkAccountPassword(g.id, body.password, "consent_withdraw");
   for (const [purpose, granted] of Object.entries(grants)) {
     if (!PURPOSES.includes(purpose)) throw bad(`unknown purpose ${purpose}`);
     await q("insert into consent(guardian_id, child_id, purpose, version, granted, method) values ($1,$2,$3,$4,$5,'checkbox_v1')",
@@ -65,8 +97,8 @@ export async function setConsent(req, res, body) {
 const BOARDS = ["cbse", "ncert", "rbse", "icse", "other-state"];
 const MEDIUMS = ["english", "hindi", "other"];
 export async function createChild(req, res, body) {
-  let g = await requireGuardian(req);
-  if (await one("select 1 from child where guardian_id = $1 limit 1", [g.id])) g = await requireParentIfPinSet(req);
+  // Gate on "a PIN exists" (not "a child exists"): after the last child is deleted the PIN still guards adding one.
+  const g = await requireParentIfPinSet(req);
   const { firstName, classLevel } = need(body, "firstName", "classLevel");
   const cl = Number(classLevel);
   if (!(cl >= 1 && cl <= 9)) throw bad("class must be 1-9");
@@ -101,10 +133,14 @@ export async function updateChild(req, res, body) {
   send(res, 200, { child: c });
 }
 
-/** Erasure: deletes the child and every row that cascades from it. */
+/**
+ * Erasure: deletes the child and every row that cascades from it. The most destructive act, so beyond the
+ * unlocked corner it re-asks for the account password (counted; stand-in for the §6.2/§6.9 OTP), as PIN change does.
+ */
 export async function deleteChild(req, res, body) {
   const { guardian, child } = await requireChild(req, need(body, "childId").childId);
   await requireParentIfPinSet(req);
+  await checkAccountPassword(guardian.id, body.password, "child_erase");
   await q("delete from consent where child_id = $1", [child.id]);
   await q("delete from child where id = $1", [child.id]);
   await q("insert into audit(guardian_id, action, detail) values ($1, 'child_erase', $2)", [guardian.id, { childId: child.id }]);

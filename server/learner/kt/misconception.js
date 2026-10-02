@@ -26,12 +26,13 @@ export function misconceptionEffects(ev) {
   return out;
 }
 
-/** Apply one effect. `at` is the session start (no intra-session clock). */
+/** Apply one effect. `at` is the session start (no intra-session clock). A discriminating correct answer
+ * on a state with no hit only lowers the logit (the ledger does not even create such a row). */
 export function updateMisconception(m, kind, at) {
   const t = new Date(at).toISOString();
   if (kind === "hit") return { ...m, logit: m.logit + Math.log(LR_HIT), hits: m.hits + 1, lastAt: t, resolvedAt: null, checkScheduledAt: null };
   const next = { ...m, logit: m.logit + Math.log(LR_DISCRIMINATING_CORRECT), lastAt: t };
-  if (!m.resolvedAt && misP(next) <= RESOLVE_P) {
+  if (m.hits > 0 && !m.resolvedAt && misP(next) <= RESOLVE_P) {    // never resolve (or schedule) what was never seen
     next.resolvedAt = t;
     next.checkScheduledAt = new Date(new Date(at).getTime() + CHECK_DELAY_MS).toISOString();
   }

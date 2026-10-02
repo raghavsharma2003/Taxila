@@ -48,7 +48,7 @@ export function ConsentStep() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const across = d.learningAcrossDays ?? null;
-  const ready = across !== null && !!d.reportChannel;
+  const ready = across !== null && typeof d.likes === "boolean" && !!d.reportChannel;
 
   const save = async () => {
     setBusy(true);
@@ -79,7 +79,7 @@ export function ConsentStep() {
           options={[{ value: "yes", label: "Yes, remember" }, { value: "no", label: "Only this session" }]} />
       </Row>
       <Row speak="memory" title="Remember what your child says they like" body="Cricket, cooking, a pet's name. She uses it in examples. You can see and delete each one.">
-        <TileGroup label="Remember what your child likes" columns={2} value={d.likes ? "yes" : "no"} onChange={(v) => set({ likes: v === "yes" })}
+        <TileGroup label="Remember what your child likes" columns={2} value={typeof d.likes === "boolean" ? (d.likes ? "yes" : "no") : null} onChange={(v) => set({ likes: v === "yes" })}
           options={[{ value: "no", label: "No" }, { value: "yes", label: "Yes" }]} />
       </Row>
       <Row speak="research" title="Research" body="We do not use your child's data for research now. If that changes, we will ask you here first.">
@@ -89,7 +89,7 @@ export function ConsentStep() {
         <TileGroup label="Where reports go" columns={2} value={d.reportChannel ?? null} onChange={(v) => set({ reportChannel: v })}
           options={[{ value: "whatsapp", label: "WhatsApp" }, { value: "app", label: "Only in the app" }]} />
       </Row>
-      {!ready && <p className="t-note">Choose an answer for "Remember learning across days" and "Where reports go" to continue.</p>}
+      {!ready && <p className="t-note">Choose an answer for "Remember learning across days", "Remember what your child likes" and "Where reports go" to continue.</p>}
       <ErrorNote>{err}</ErrorNote>
     </StepFrame>
   );

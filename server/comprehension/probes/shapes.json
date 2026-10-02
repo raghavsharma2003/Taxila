@@ -1,0 +1,1269 @@
+{
+ "version": "shapes-2026-10-02",
+ "note": "Probe SHAPES, not lines: the voice model writes the words (conversation-probes C01-C36). Data only.",
+ "shapes": [
+  {
+   "id": "C01",
+   "name": "announced protege teach-back",
+   "family": "A",
+   "facets": [
+    "U"
+   ],
+   "emits": "probe.teachback",
+   "op": "R-EXP",
+   "testRisk": "low",
+   "costSec": 90,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": true,
+   "learningMove": true,
+   "planted": false,
+   "verifier": false,
+   "novice": true,
+   "via": "dialogue"
+  },
+  {
+   "id": "C02",
+   "name": "explain to a family member (voice note)",
+   "family": "A",
+   "facets": [
+    "U"
+   ],
+   "emits": "probe.teachback",
+   "op": "R-EXP",
+   "testRisk": "veryLow",
+   "costSec": 120,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": true,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": true,
+   "via": "dialogue",
+   "assisted": true,
+   "async": true
+  },
+  {
+   "id": "C03",
+   "name": "protege naive but-why",
+   "family": "A",
+   "facets": [
+    "U"
+   ],
+   "emits": "probe.why",
+   "op": "R-EXP",
+   "testRisk": "veryLow",
+   "costSec": 30,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "none",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": true,
+   "via": "dialogue"
+  },
+  {
+   "id": "C04",
+   "name": "protege holds the childs misconception",
+   "family": "A",
+   "facets": [
+    "U",
+    "M"
+   ],
+   "emits": "probe.errorspot",
+   "op": "R-CATCH",
+   "testRisk": "veryLow",
+   "costSec": 45,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "misconceptions"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": true,
+   "verifier": true,
+   "novice": true,
+   "via": "dialogue"
+  },
+  {
+   "id": "C05",
+   "name": "revoice with a twist",
+   "family": "A",
+   "facets": [
+    "U"
+   ],
+   "emits": "probe.errorspot",
+   "op": "R-CATCH",
+   "testRisk": "low",
+   "costSec": 30,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": true,
+   "verifier": false,
+   "novice": true,
+   "via": "dialogue"
+  },
+  {
+   "id": "C06",
+   "name": "say more on the childs own word",
+   "family": "A",
+   "facets": [
+    "U"
+   ],
+   "emits": "probe.why",
+   "op": "R-EXP",
+   "testRisk": "veryLow",
+   "costSec": 25,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "none",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": true,
+   "via": "dialogue"
+  },
+  {
+   "id": "C07",
+   "name": "help me check my work (teacher slip)",
+   "family": "B",
+   "facets": [
+    "U"
+   ],
+   "emits": "probe.errorspot",
+   "op": "R-CATCH",
+   "testRisk": "low",
+   "costSec": 40,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "items"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": true,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C08",
+   "name": "silly-puppet statement",
+   "family": "B",
+   "facets": [
+    "K",
+    "M"
+   ],
+   "emits": "item.mcq2",
+   "op": "R-OPT",
+   "testRisk": "veryLow",
+   "costSec": 15,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "misconceptions"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": true,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C09",
+   "name": "two friends disagree",
+   "family": "B",
+   "facets": [
+    "U",
+    "M"
+   ],
+   "emits": "probe.why",
+   "pre": "item.mcq3",
+   "op": "R-OPT+R-EXP",
+   "testRisk": "low",
+   "costSec": 50,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "misconceptions",
+    "characterView",
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": true,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C10",
+   "name": "would-you-rather where the concept decides",
+   "family": "B",
+   "facets": [
+    "K",
+    "U"
+   ],
+   "emits": "probe.why",
+   "pre": "item.mcq2",
+   "op": "R-OPT+R-EXP",
+   "testRisk": "veryLow",
+   "costSec": 35,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C11",
+   "name": "spot the fake",
+   "family": "B",
+   "facets": [
+    "K",
+    "M"
+   ],
+   "emits": "item.mcq3",
+   "op": "R-OPT",
+   "testRisk": "low",
+   "costSec": 30,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "misconceptions",
+    "myth"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": true,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C12",
+   "name": "odd one out with no single right answer",
+   "family": "B",
+   "facets": [
+    "U"
+   ],
+   "emits": "probe.why",
+   "op": "R-EXP",
+   "testRisk": "veryLow",
+   "costSec": 40,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C13",
+   "name": "sort by same trick inside",
+   "family": "C",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.near",
+   "op": "R-KEY",
+   "testRisk": "low",
+   "costSec": 60,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "items"
+   ],
+   "needsVisual": true,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C14",
+   "name": "which way would you do it",
+   "family": "C",
+   "facets": [
+    "U"
+   ],
+   "emits": "probe.why",
+   "pre": "item.mcq2",
+   "op": "R-OPT+R-EXP",
+   "testRisk": "low",
+   "costSec": 40,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C15",
+   "name": "which one would trick a friend",
+   "family": "C",
+   "facets": [
+    "U"
+   ],
+   "emits": "probe.errorspot",
+   "op": "R-CATCH",
+   "testRisk": "veryLow",
+   "costSec": 40,
+   "bands": [
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "misconceptions"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": true,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C16",
+   "name": "prediction bet before the reveal",
+   "family": "D",
+   "facets": [
+    "U",
+    "M"
+   ],
+   "emits": "probe.predict",
+   "op": "R-OPT",
+   "testRisk": "veryLow",
+   "costSec": 25,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "none",
+   "kitInputs": [
+    "diagnostic"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": true,
+   "planted": false,
+   "verifier": false,
+   "novice": true,
+   "via": "dialogue"
+  },
+  {
+   "id": "C17",
+   "name": "what would happen if",
+   "family": "D",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.far",
+   "op": "R-EXP",
+   "testRisk": "low",
+   "costSec": 60,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "counterfactual"
+   ],
+   "needsVisual": false,
+   "longForm": true,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C18",
+   "name": "make it happen (reverse design)",
+   "family": "D",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.far",
+   "op": "R-KEY",
+   "testRisk": "low",
+   "costSec": 60,
+   "bands": [
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "solver"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C19",
+   "name": "ballpark first",
+   "family": "D",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.near",
+   "op": "R-KEY",
+   "testRisk": "veryLow",
+   "costSec": 20,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T4"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "items"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C20",
+   "name": "story that stops where the concept decides",
+   "family": "E",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.near",
+   "op": "R-KEY",
+   "testRisk": "veryLow",
+   "costSec": 60,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "items"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C21",
+   "name": "role-play shop kitchen station match",
+   "family": "E",
+   "facets": [
+    "K"
+   ],
+   "emits": "item.open",
+   "op": "R-KEY",
+   "testRisk": "veryLow",
+   "costSec": 45,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T4"
+   ],
+   "gate": "none",
+   "kitInputs": [
+    "items"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue",
+   "practiceSkin": true
+  },
+  {
+   "id": "C22",
+   "name": "advice to a character in trouble",
+   "family": "E",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.far",
+   "op": "R-EXP",
+   "testRisk": "veryLow",
+   "costSec": 60,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C23",
+   "name": "choose-the-path adventure",
+   "family": "E",
+   "facets": [
+    "K",
+    "M"
+   ],
+   "emits": "item.mcq2",
+   "op": "R-OPT",
+   "testRisk": "veryLow",
+   "costSec": 30,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "misconceptions"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C24",
+   "name": "where have you seen this",
+   "family": "F",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.far",
+   "op": "R-INST",
+   "testRisk": "veryLow",
+   "costSec": 40,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "instances"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C25",
+   "name": "hunt in your house",
+   "family": "F",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.far",
+   "op": "R-INST",
+   "testRisk": "veryLow",
+   "costSec": 120,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "instances"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue",
+   "assisted": true,
+   "async": true
+  },
+  {
+   "id": "C26",
+   "name": "interest-context remix (deep)",
+   "family": "F",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.near",
+   "op": "R-KEY",
+   "testRisk": "veryLow",
+   "costSec": 45,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "interestContexts"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C27",
+   "name": "make a puzzle for me",
+   "family": "F",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.far",
+   "op": "R-KEY",
+   "testRisk": "veryLow",
+   "costSec": 90,
+   "bands": [
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T4"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "solver"
+   ],
+   "needsVisual": false,
+   "longForm": true,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue"
+  },
+  {
+   "id": "C28",
+   "name": "show me on the thing",
+   "family": "G",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.near",
+   "op": "R-KEY",
+   "testRisk": "low",
+   "costSec": 40,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "none",
+   "kitInputs": [
+    "representations"
+   ],
+   "needsVisual": true,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": true,
+   "via": "dialogue"
+  },
+  {
+   "id": "C29",
+   "name": "finish my drawing",
+   "family": "G",
+   "facets": [
+    "T"
+   ],
+   "emits": "probe.transfer.near",
+   "op": "R-KEY",
+   "testRisk": "low",
+   "costSec": 60,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "practising",
+   "kitInputs": [
+    "representations"
+   ],
+   "needsVisual": true,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": true,
+   "via": "dialogue"
+  },
+  {
+   "id": "C30",
+   "name": "act it out",
+   "family": "G",
+   "facets": [
+    "K"
+   ],
+   "emits": "item.mcq2",
+   "op": "R-OPT",
+   "testRisk": "veryLow",
+   "costSec": 20,
+   "bands": [
+    "B1",
+    "B2"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "none",
+   "kitInputs": [
+    "items"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": true,
+   "via": "dialogue"
+  },
+  {
+   "id": "C31",
+   "name": "callback in passing",
+   "family": "H",
+   "facets": [
+    "D"
+   ],
+   "emits": "item.open",
+   "op": "R-KEY",
+   "testRisk": "veryLow",
+   "costSec": 30,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "items"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "callback",
+   "delayed": true
+  },
+  {
+   "id": "C32",
+   "name": "woven sub-step 2-3 topics later",
+   "family": "H",
+   "facets": [
+    "D",
+    "K",
+    "T"
+   ],
+   "emits": "item.open",
+   "op": "R-KEY",
+   "testRisk": "veryLow",
+   "costSec": 40,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "weaveHosts"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "weave",
+   "delayed": true
+  },
+  {
+   "id": "C33",
+   "name": "headline for yesterdays episode",
+   "family": "H",
+   "facets": [
+    "U",
+    "D"
+   ],
+   "emits": "probe.teachback",
+   "op": "R-EXP",
+   "testRisk": "low",
+   "costSec": 40,
+   "bands": [
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue",
+   "delayed": true
+  },
+  {
+   "id": "C34",
+   "name": "new protege arrives",
+   "family": "H",
+   "facets": [
+    "U",
+    "D"
+   ],
+   "emits": "probe.teachback",
+   "op": "R-EXP",
+   "testRisk": "low",
+   "costSec": 90,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "learned_today",
+   "kitInputs": [
+    "expectations"
+   ],
+   "needsVisual": false,
+   "longForm": true,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": false,
+   "via": "dialogue",
+   "minDays": 3,
+   "delayed": true
+  },
+  {
+   "id": "C35",
+   "name": "misconception trap level",
+   "family": "I",
+   "facets": [
+    "K",
+    "M",
+    "U"
+   ],
+   "emits": "probe.predict",
+   "op": "R-OPT",
+   "testRisk": "veryLow",
+   "costSec": 60,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "none",
+   "kitInputs": [
+    "diagnostic"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": true,
+   "novice": true,
+   "via": "game"
+  },
+  {
+   "id": "C36",
+   "name": "graduated-prompt new item",
+   "family": "I",
+   "facets": [
+    "K"
+   ],
+   "emits": "item.open",
+   "op": "R-KEY",
+   "testRisk": "low",
+   "costSec": 45,
+   "bands": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "topicTypes": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "gate": "none",
+   "kitInputs": [
+    "items"
+   ],
+   "needsVisual": false,
+   "longForm": false,
+   "learningMove": false,
+   "planted": false,
+   "verifier": false,
+   "novice": true,
+   "via": "dialogue"
+  }
+ ]
+}

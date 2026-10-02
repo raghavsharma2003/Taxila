@@ -3,10 +3,11 @@
 // plan, saved lessons).
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Button, ButtonLink, ErrorNote, Field, HoldButton, Icon, PinPad } from "../ui/index.ts";
+import { Button, ButtonLink, ErrorNote, HoldButton, Icon, PinPad, ReauthField } from "../ui/index.ts";
 import { errText, postJson, refreshMe, request } from "../app/api.ts";
 import { Helplines } from "../app/Shell.tsx";
-import { parentApi } from "./api.ts";
+import { isGateError, parentApi } from "./api.ts";
+import { useGate } from "./Gate.tsx";
 import { ParentShell, useChildren } from "./Shell.tsx";
 
 export function More() {
@@ -41,18 +42,25 @@ export function More() {
 
 export function Data() {
   const nav = useNavigate();
+  const { relock } = useGate();
   const { kids, current } = useChildren();
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
   const del = async () => {
-    if (!current) return;
+    if (!current || !password) return;
+    setErr(null);
     try {
-      await request("DELETE", "/api/children", { childId: current.id });
+      // Erasure re-asks for the account password (server: checkAccountPassword, stand-in for the §6.9 OTP).
+      await request("DELETE", "/api/children", { childId: current.id, password });
       setDone(current.first_name);
       const me = await refreshMe();
       if (!me?.children.length) nav("/start/child?add=1", { replace: true });
     } catch (e) {
+      if (isGateError(e) && (e.body as { gate?: string }).gate !== "wait") { relock(); return; }
       setErr(errText(e));
+    } finally {
+      setPassword("");
     }
   };
   return (
@@ -64,7 +72,8 @@ export function Data() {
           <section className="card card-flat stack-sm">
             <h2 className="t-h3 row"><Icon name="trash" /> Delete {current.first_name}'s profile</h2>
             <p>This deletes {current.first_name}'s profile, every lesson, every answer and the evidence behind every skill, and the consent rows for this child. It cannot be undone.</p>
-            <HoldButton ms={2000} variant="danger" onConfirm={del} hint="Press and hold">Hold to delete {current.first_name}'s profile</HoldButton>
+            <ReauthField value={password} onChange={setPassword} hint="To delete, enter your account password first." />
+            <HoldButton ms={2000} variant="danger" onConfirm={del} hint="Press and hold" disabled={!password}>Hold to delete {current.first_name}'s profile</HoldButton>
             <p className="t-note">Hold for 2 seconds. Letting go early cancels.</p>
           </section>
         )}
@@ -111,6 +120,7 @@ export function PublicHelp() {
 
 export function ChangePin() {
   const nav = useNavigate();
+  const { relock } = useGate();
   const { kids, current } = useChildren();
   const [password, setPassword] = useState("");
   const [first, setFirst] = useState<string | null>(null);
@@ -134,10 +144,13 @@ export function ChangePin() {
         ) : (
           <form className="stack" onSubmit={async (e) => {
             e.preventDefault();
-            try { await parentApi.setPin(pin, password); setOk(true); } catch (e2) { setErr(errText(e2)); setPin(null); setFirst(null); setK((x) => x + 1); }
+            try { await parentApi.setPin(pin, password); setOk(true); } catch (e2) {
+              if (isGateError(e2) && (e2.body as { gate?: string }).gate === "locked") { relock(); return; }
+              setErr(errText(e2)); setPin(null); setFirst(null); setK((x) => x + 1);
+            }
             setPassword("");
           }}>
-            <Field label="Your account password" type="password" autoComplete="off" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <ReauthField label="Your account password" value={password} onChange={setPassword} autoFocus />
             <Button type="submit" disabled={!password}>Change PIN</Button>
           </form>
         )}

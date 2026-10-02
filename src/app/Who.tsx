@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Icon } from "../ui/index.ts";
 import { ErrorNote } from "../ui/index.ts";
-import { errText, loadMe, lockBeacon, type ChildRow } from "./api.ts";
+import { errText, getJson, loadMe, lockBeacon, type ChildRow } from "./api.ts";
 import { bandForClass, useSurface } from "./band.ts";
 import { Loading } from "./Shell.tsx";
 import { readStore, writeStore } from "./storage.ts";
@@ -22,12 +22,18 @@ export default function Who() {
   const [kids, setKids] = useState<ChildRow[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
+  const [pendingReset, setPendingReset] = useState<string | null>(null);
 
   const young = !!kids?.some((c) => c.class_level <= 4);
   useSurface({ band: kids ? (young ? "b1" : "b3") : null });
 
   // The picker is child mode: whatever brought the phone here (Lock, Back, the P8 handover), the corner is shut.
   useEffect(() => { lockBeacon(); }, []);
+  // A forgotten-PIN reset is waiting: shown here too, not only on the locked gate, because the WhatsApp notice
+  // of §6.2 is not wired yet and the grown-up may never open the Parent corner within the 24 h.
+  useEffect(() => {
+    getJson<{ pendingResetAt?: string | null }>("/api/parent/pin").then((g) => setPendingReset(g.pendingResetAt ?? null), () => {});
+  }, []);
 
   useEffect(() => {
     document.title = "Who is learning? · Taxila";
@@ -62,7 +68,7 @@ export default function Who() {
           {kids.map((c) => (
             <li key={c.id}>
               <button type="button" className="profile-tile" aria-pressed={c.id === picked} onClick={() => setPicked(c.id)}
-                data-band={bandForClass(c.class_level)}>
+                data-tile-band={bandForClass(c.class_level)}>
                 <Avatar c={c} />
                 <span className="profile-name">{c.first_name}</span>
               </button>
@@ -84,6 +90,13 @@ export default function Who() {
             </>
           )}
         </div>
+        {pendingReset && (
+          <p className="note who-reset t-note" role="status">
+            For grown-ups: someone asked to reset the parent PIN. It changes on{" "}
+            {new Date(pendingReset).toLocaleString("en-IN", { weekday: "short", hour: "numeric", minute: "2-digit" })}.
+            If that was not you, open the Parent corner and enter the current PIN: that cancels it.
+          </p>
+        )}
         {/* Behind the gate: /start/child?add=1 sits under GateIfPin, so a child tapping it meets the PIN pad. */}
         <Link to="/start/child?add=1" className="who-add t-note"><Icon name="lock" size={16} /> Add a child (parent)</Link>
       </div>

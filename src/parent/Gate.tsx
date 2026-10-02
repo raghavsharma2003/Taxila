@@ -4,7 +4,7 @@
 // 15 min (server-enforced). Never a maths puzzle.
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { Link, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Button, ErrorNote, Field, Icon, PinPad } from "../ui/index.ts";
+import { Button, ErrorNote, Field, Icon, PinPad, ReauthField } from "../ui/index.ts";
 import { ApiError, errText } from "../app/api.ts";
 import { Brand } from "../app/Shell.tsx";
 import { lockBeacon, parentApi, type GateState } from "./api.ts";
@@ -137,7 +137,7 @@ export function Gate({ children }: { children: ReactNode }) {
                 If that was not you, enter the current PIN now: that cancels the reset.
               </p>
             )}
-            <PinPad label="Parent PIN" onComplete={unlock} resetKey={resetKey} disabled={busy} />
+            <PinPad label="Parent PIN" onComplete={unlock} resetKey={resetKey} disabled={busy} autoFocus />
             <p className="field-msg" aria-live="assertive">{msg}</p>
             <Button variant="quiet" small onClick={() => { setMsg(null); setPhase({ k: "forgot" }); }}>Forgot the PIN?</Button>
           </>
@@ -147,7 +147,7 @@ export function Gate({ children }: { children: ReactNode }) {
             <h1 className="t-title">{first ? "Enter the same PIN again" : "Choose a parent PIN"}</h1>
             <p className="muted">First your account password, then 4 to 6 digits your child does not know. Not your phone's unlock code.</p>
             <div style={{ width: "100%", maxWidth: 360, textAlign: "left" }}>
-              <Field label="Account password" type="password" autoComplete="off" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <ReauthField value={password} onChange={setPassword} autoFocus={!first} />
             </div>
             <PinPad label={first ? "Repeat the PIN" : "New PIN"} onComplete={setPin} resetKey={resetKey} disabled={busy || !password} okLabel={first ? "OK" : "Next"} />
             <p className="field-msg" aria-live="assertive">{msg}</p>
@@ -200,8 +200,8 @@ function ForgotPin({ onDone, onCancel, onWait }: { onDone: (g: GateState) => voi
       <h1 className="t-title">Set a new PIN</h1>
       <p className="muted">Enter your account password, then a new PIN. For safety the new PIN starts working 24 hours later,
         and this screen shows that a reset is waiting. Entering the current PIN before then cancels it. Each try is recorded.</p>
-      <Field label="Account password" type="password" autoComplete="off" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <Field label="New PIN (4 to 6 digits)" type="password" inputMode="numeric" autoComplete="off" maxLength={6} value={pin}
+      <ReauthField value={password} onChange={setPassword} />
+      <Field label="New PIN (4 to 6 digits)" type="password" inputMode="numeric" name="tx-new-pin" autoComplete="new-password" maxLength={6} value={pin}
         onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} />
       <ErrorNote>{err}</ErrorNote>
       <div className="row">

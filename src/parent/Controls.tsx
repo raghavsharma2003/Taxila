@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { Button, Chip, ErrorNote, Icon, TileGroup } from "../ui/index.ts";
 import { errText, refreshMe, request } from "../app/api.ts";
 import { HoursFields, MinutesStepper } from "../onboarding/Setup.tsx";
-import { parentApi, type ControlsT } from "./api.ts";
+import { isGateError, parentApi, type ControlsT } from "./api.ts";
+import { useGate } from "./Gate.tsx";
 import { PageState, ParentShell, useChildren, useParentData } from "./Shell.tsx";
 
 export default function Controls() {
@@ -17,6 +18,7 @@ export default function Controls() {
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
   const [saveErr, setSaveErr] = useState<string | null>(null);
+  const { relock } = useGate();
   useEffect(() => { if (data) setC(data.controls); }, [data]);
   useEffect(() => { if (current) setLang(current.language_pref); }, [current]);
   const patch = (p: Partial<ControlsT>) => { setSaved(false); setC((x) => (x ? { ...x, ...p } : x)); };
@@ -32,6 +34,7 @@ export default function Controls() {
       if (lang && lang !== current.language_pref) { await request("PATCH", "/api/children", { childId: current.id, languagePref: lang }); await refreshMe(); }
       setSaved(true);
     } catch (e) {
+      if (isGateError(e)) { relock(); return; }
       setSaveErr(errText(e));
     } finally {
       setBusy(false);

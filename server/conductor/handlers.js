@@ -11,7 +11,7 @@ import { one } from "./pg.js";
 registerHandler("memory.consolidate", async (job) => {
   const r = await one(`select l.ended_at is not null as ended,
       (select granted from consent k where k.guardian_id = c.guardian_id and (k.child_id = c.id or k.child_id is null)
-        and k.purpose = 'memory' order by k.created_at desc limit 1) as memory_ok
+        and k.purpose = 'memory' order by k.created_at desc, k.id desc limit 1) as memory_ok
     from lesson l join child c on c.id = l.child_id where l.id::text = $1 and l.child_id = $2`, [job.input?.lessonId ?? "", job.child_id]);
   if (!r) return "skipped:no_lesson";
   if (!r.memory_ok) return "skipped:consent";

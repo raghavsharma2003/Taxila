@@ -170,7 +170,7 @@ export default function Landing() {
         <section className="page safety" aria-labelledby="safe-h">
           <div className="card stack-sm">
             <h2 id="safe-h" className="t-h3"><Icon name="shield" /> If a child is upset or unsafe</h2>
-            <p>She stops the lesson, gives the helpline numbers and asks your child to find a grown-up. You are told in the Parent corner.</p>
+            <p>She stops the lesson, gives the helpline numbers and asks your child to find a grown-up.</p>
             <Helplines compact />
           </div>
         </section>

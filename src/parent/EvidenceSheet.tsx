@@ -43,7 +43,7 @@ function EvidenceBody({ childId, skill, childName }: { childId: string; skill: s
               <span className="ev-what">{KIND_WORDS[r.kind] ?? KIND_WORDS.practice}</span>
               <span>{OUTCOME_WORDS[r.outcome]}{r.outcome !== "no_evidence" && <> · <span className="muted">{helpWords(r.hintsUsed)}</span></>}</span>
               {r.words && <q className="ev-quote">{r.words}</q>}
-              {r.misconception && <span className="t-meta">The mix-up: {r.misconception}. This is a common and sensible idea to have on the way.</span>}
+              {r.misconception && <span className="t-note">The mix-up: {r.misconception}. This is a common and sensible idea to have on the way.</span>}
             </li>
           ))}
         </ol>

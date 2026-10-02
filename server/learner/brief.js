@@ -1,6 +1,8 @@
 // The child brief the teacher sees: telegraphic rows, never sentences she could read out, never an
 // ability label, never an internal id (a key read aloud is gibberish). Rendered ≤ BRIEF_TOKEN_CAP.
 
+import { canWrite, DEFAULT_MODE } from "./mode.js";
+
 export const BRIEF_TOKEN_CAP = 600;
 export const estimateTokens = (s) => Math.ceil(String(s).length / 3.5);
 
@@ -79,19 +81,39 @@ const ROMAN_CHILD_LABELS = ["nirbhar", "sahare", "dependent", "lazy", "weak", "s
 const CHILD_REF = ["tum", "tu", "aap", "you", "your", "child", "bachch\\w*", "beta", "beti", "she", "he", "her", "his",
   "तुम", "तू", "आप", "बच्चा", "बच्ची", "बच्चे", "बेटा", "बेटी", "वह", "वो", "उसका", "उसकी"];
 const near = (labels) => new RegExp(`(^|[\\s,.;:])(${CHILD_REF.join("|")})[\\s,]+(\\S+[\\s,]+){0,2}(${labels.join("|")})|(${labels.join("|")})\\S*[\\s,]+(hai|ho|हो|है|hain|हैं)([\\s.,!?।]|$)`, "iu");
-const CHILD_LABEL_RE = near([...DEV_LABELS, ...ROMAN_CHILD_LABELS]);
-/** A label aimed at the child (Roman or Devanagari, child-referent patterns). */
+const CHILD_LABEL_RE = near([...DEV_LABELS, ...ROMAN_CHILD_LABELS, ...ABILITY_LABELS]);
+/** A label aimed at the child (Roman or Devanagari, the full ability lexicon, child-referent patterns only). */
 export const labelsChild = (s) => CHILD_LABEL_RE.test(String(s));
 /** Numbers the brief must never carry: day counts, levels, GE, gaps, percentages. */
 const FORBIDDEN_NUMBERS = /(\d\s*%|percent|\bGE\b|\blevel\s*\d|\b\d+\s*(days?|din|दिन)\b|\bclass(es)?\s*gap|\bgap\b|\bbehind\b|\bpeeche\b)/i;
 
-/** One brief row's checks (the same drop-not-rewrite contract as cleanRows). */
+/**
+ * The checks for text the CODE built (keys, closed values, numbers it chose): the full ability lexicon, id
+ * shapes and forbidden numbers. Content-sourced text (curriculum titles, kit beliefs) is checked with
+ * contentProblem instead: "Natural indicators", "Percentage of a quantity" and "weak acid" are titles, not
+ * labels (floor 4: child-referent patterns only).
+ */
 export function rowProblem(text) {
   if (hasAbilityLabel(text) || labelsChild(text)) return "label";
   if (ID_SHAPED.test(text)) return "id";
   if (FORBIDDEN_NUMBERS.test(text)) return "number";
   return null;
 }
+/** An internal id inside content: hyphen/dot segments with a digit somewhere ("c4-maths-ch05-t01"), so
+ * "think-of-a-number" (a title) passes. */
+const CONTENT_ID = /\b(?=[a-z0-9.-]*\d)[a-z]+\d*(?:[-.][a-z0-9]+){2,}\b/i;
+/** Numbers no content may carry into the brief (units only: "Percentage of a quantity" is a title). */
+const CONTENT_NUMBERS = /(\d\s*%|\blevel\s*\d|\b\d+\s*(days?|din|दिन)\b|\bclass(es)?\s*gap)/i;
+/** Content-sourced text: a label aimed at the child, a leaked id, or a day count / level / percentage. */
+export function contentProblem(text) {
+  if (labelsChild(text)) return "label";
+  if (CONTENT_ID.test(text)) return "id";
+  if (CONTENT_NUMBERS.test(text)) return "number";
+  return null;
+}
+
+/** Marks a slot value as content-sourced (checked by contentProblem, not rowProblem). */
+const content = (v, prefix = "") => (v == null || v === "" ? null : { content: String(v), prefix });
 
 /** Row spec: key, budget (tokens) and drop priority (lower drops first; null never), §9.1 table. */
 export const BRIEF_ROWS = Object.freeze([
@@ -106,22 +128,46 @@ const SPEC = Object.fromEntries(BRIEF_ROWS.map((r) => [r.key, r]));
 
 /**
  * Build one row. `fixed` values always render; `items` (a list) are cleaned one by one and trimmed from
- * the END until the row fits its budget. Returns null when the source is empty or the row fails a check.
+ * the END until the row fits its budget. A value wrapped by content() is content-sourced and gets only the
+ * child-referent label check; everything else is code-built and gets the full rowProblem check. Items are
+ * content unless `kind` is "code" or "memory" (memory text is ABOUT the child, so the full lexicon applies).
+ * Returns null when the source is empty or a droppable row fails a check; a NEVER-DROP row that fails one
+ * throws (a missing TODAY row is a silent hole in the teacher's brief, never an acceptable drop).
  */
-function row(key, fixed, items = null, { tail = [], maxWords = MAX_ROW_WORDS } = {}) {
+function row(key, fixed, items = null, { tail = [], maxWords = MAX_ROW_WORDS, kind = "content" } = {}) {
   const spec = SPEC[key];
-  const vals = fixed.filter((v) => v !== null && v !== undefined && v !== "").map(String);
-  let list = items ? cleanRows(items, maxWords).filter((i) => !labelsChild(i) && !FORBIDDEN_NUMBERS.test(i)) : null;
-  if (items && !list.length) return null;
-  if (!items && !vals.length) return null;
+  const fail = (why) => {
+    if (spec.drop === null) throw new Error(`CHILD-BRIEF ${key}: never-drop row failed its ${why} check`);
+    return null;
+  };
+  const present = fixed.filter((v) => v !== null && v !== undefined && v !== "");
+  const codeVals = present.map((v) => (typeof v === "object" ? v.prefix : String(v))).filter(Boolean);
+  const contentVals = present.filter((v) => typeof v === "object").map((v) => v.content);
+  let list = null;
+  if (items) {
+    const check = kind === "content" ? (i) => !contentProblem(i) : (i) => !rowProblem(i);
+    list = items.map((r) => String(r || "").trim()).filter((r) => r && r.split(/\s+/).length <= maxWords && check(r));
+    if (!list.length) return null;
+  }
+  if (!items && !present.length) return null;
+  const vals = present.map((v) => (typeof v !== "object" ? String(v) : v.prefix ? `${v.prefix} ${v.content}` : v.content));
   const render = () => `${key} ${[...vals, ...(list ?? []), ...tail].join(" · ")}`;
   while (list && list.length > 1 && estimateTokens(render()) > spec.budget) list = list.slice(0, -1);
   const text = render();
-  if (estimateTokens(text) > spec.budget || rowProblem(text)) return null;
+  if (estimateTokens(text) > spec.budget) return fail("budget");
+  const codePart = [key, ...codeVals, ...tail, ...(kind === "content" ? [] : list ?? [])].join(" · ");
+  if (rowProblem(codePart) || contentVals.some(contentProblem)) return fail("label/id/number");
   return { key, text, drop: spec.drop };
 }
 
 const FADE_WORDS = { 5: "model", 4: "share", 3: "guide", 2: "on-call", 1: "solo", 0: "own" };
+
+/**
+ * INTEREST is tier B (LEARNER-MODEL §9.1: absent in M1 unless P3): rendered only when the view's mode
+ * permits the mem_B layer. A view without a mode is the launch default (M1, no P3): no interests.
+ * @param {import("../../shared/learner").BriefView} v
+ */
+const interestsAllowed = (v) => canWrite({ legal_mode: v.mode?.legalMode ?? DEFAULT_MODE, consent: v.mode?.consent ?? {} }, "mem_B");
 
 /**
  * The rows, in §9.1 order, from a BriefView (shared/learner.ts). Pure.
@@ -132,25 +178,25 @@ export function childBriefRows(v) {
   const a = v.address;
   const b4 = c.band4;
   const rows = [
-    row("CHILD", [c.firstName, `class ${c.classLevel}`, b4, a && `calls you ${a.childCallsTeacher}`,
+    row("CHILD", [content(c.firstName), `class ${c.classLevel}`, b4, a && `calls you ${a.childCallsTeacher}`,
       a && `call ${a.teacherCallsChild === "name+beta" ? "name or beta" : "name"}`, `sessions ${c.sessions ?? 0}`]),
     v.lang && row("LANG", [`matrix ${v.lang.matrix}`, `english ${v.lang.enInsertion}`, v.lang.terms === "en_labels" ? "terms english" : "terms school-medium", "reply in child mix"]),
     v.read && row("READ", [`support ${v.read.support}`, `prompts aloud ${v.read.aloud ? "yes" : "no"}`]),
-    v.accommodations?.length ? row("ACCOM", [], v.accommodations.map((x) => x.replace(/_/g, " "))) : null,
-    v.today && row("TODAY", [v.today.title, v.today.foundation != null ? `foundation ${v.today.foundation} school ${v.today.school}` : null]),
+    v.accommodations?.length ? row("ACCOM", [], v.accommodations.map((x) => x.replace(/_/g, " ")), { kind: "code" }) : null,
+    v.today && row("TODAY", [content(v.today.title), v.today.foundation != null ? `foundation ${v.today.foundation} school ${v.today.school}` : null]),
     v.skills?.solid?.length ? row("SKILLS solid", [], v.skills.solid.map((s) => (s.refresh ? `${s.title} (refresh)` : s.title))) : null,
     v.skills?.learning?.length ? row("SKILLS learning", [], v.skills.learning.map((s) => `${s.title} (entry ${s.entry === "worked_step" ? "worked step" : "hint first"})`)) : null,
     v.prereq ? row("PREREQ", [], [v.prereq.title]) : null,
     v.watch?.length ? row("WATCH", [], v.watch.slice(0, 2).map((w) => `${w.belief}${w.seen ? ` · seen ${w.seen}` : ""}`), { tail: ["verify before naming"], maxWords: 28 }) : null,
     v.review?.length ? row("REVIEW", [], v.review.slice(0, 4), { tail: ["no warning"] }) : null,
-    v.need && (v.need.chapter || v.need.window) ? row("NEED", [v.need.chapter && `school ${v.need.chapter}`,
+    v.need && (v.need.chapter || v.need.window) ? row("NEED", [content(v.need.chapter, "school"),
       v.need.window && `window ${v.need.window.kind} ${v.need.window.bucket.replace(/_/g, " ")}`, v.need.scope && `scope ${v.need.scope}`]) : null,
     v.goal ? row("GOAL", [], [v.goal]) : null,
-    v.interests?.length ? row("INTEREST", [], v.interests.slice(0, 2)) : null,
+    v.interests?.length && interestsAllowed(v) ? row("INTEREST", [], v.interests.slice(0, 2), { kind: "memory" }) : null,
     v.support && row("SUPPORT", [FADE_WORDS[v.support.fade] ?? null, v.support.fade <= 2 ? "silent until asked" : null,
       v.support.soloRounds != null ? `solo rounds ${v.support.soloRounds}` : null, v.support.nudgeSec != null ? `nudge ${v.support.nudgeSec} s` : null]),
     v.notebook && (v.notebook.opener || v.notebook.items?.length) ? row("NOTEBOOK", [],
-      [...(v.notebook.opener ? [`opener: ${v.notebook.opener}`] : []), ...(v.notebook.items ?? []).slice(0, 2)], { tail: ["one callback at most"], maxWords: 20 }) : null,
+      [...(v.notebook.opener ? [`opener: ${v.notebook.opener}`] : []), ...(v.notebook.items ?? []).slice(0, 2)], { tail: ["one callback at most"], maxWords: 20, kind: "memory" }) : null,
     row("SESSION", [v.session?.capMin != null ? `cap ${v.session.capMin} min` : null, "stop on exit intent", v.session?.schoolMode ? "school mode" : null]),
   ];
   return rows.filter(Boolean);

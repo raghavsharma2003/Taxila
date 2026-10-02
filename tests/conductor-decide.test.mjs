@@ -343,3 +343,62 @@ test("replay: loads through a reader that a write-counting shim proves issues 0 
   for (const t of ["insert into job values (1)", "update conductor_state set x = 1", "select ingest_event($1)", "select * from job for update skip locked"]) await ctl.q(t);
   assert.equal(ctl.writes, 4);
 });
+
+test("crashed client + pending pause: the stale-lesson close applies the pause, and pause_end frees the child", () => {
+  // review conductor-m0 #1: the clock close used to set paused without pauseUntil, so pause_end no-oped forever
+  let s = run(fresh(), opened, ist("2026-10-05", "15:25")).state;
+  s = run(s, { type: "lesson.started", lessonId: "L-crash", topicId: "t", kind: "live", lanes: ["tap"] }, new Date("2026-10-05T10:01:00Z")).state;
+  const until = "2026-10-05T11:00:00.000Z";
+  s = run(s, { type: "parent.pause", until }, new Date("2026-10-05T10:05:00Z")).state;
+  assert.equal(s.mode, "in_lesson");
+  assert.equal(s.pendingPause, until);
+  // the client never sends lesson.ended; the next event arrives > 3 h later, after the pause is already over
+  const late = run(s, { type: "app.closed" }, new Date("2026-10-05T14:30:00Z"));
+  assert.equal(late.state.mode, "free", "a pause that already ended lapses");
+  assert.equal(late.state.pendingPause, undefined);
+  assert.equal(late.state.pauseUntil, undefined);
+  // and when the pause is still running at the clock close, it becomes the real pause that pause_end ends
+  const until2 = "2026-10-05T16:00:00.000Z";
+  s = run(s, { type: "parent.pause", until: until2 }, new Date("2026-10-05T10:06:00Z")).state;
+  const close = run(s, { type: "app.closed" }, new Date("2026-10-05T14:30:00Z"));
+  assert.equal(close.state.mode, "paused");
+  assert.equal(close.state.pauseUntil, until2);
+  assert.equal(close.state.pendingPause, undefined);
+  const fin = run(close.state, { type: "clock.wakeup", reason: "pause_end", wakeupId: `pause_end:${until2}` }, new Date(until2));
+  assert.equal(fin.state.mode, "free");
+  assert.ok(!fin.rulesFired.includes("pause_end_noop"));
+  // the next day is a normal day, not rest_day
+  const next = run(fin.state, { ...opened, bootId: "n1" }, ist("2026-10-06", "16:10"));
+  assert.notEqual(next.commands.find((c) => c.kind === "plan.adopt").plan.mode, "rest_day");
+});
+
+test("day rollover after days away re-arms today's clock even when the first event is not app.opened", () => {
+  let s = run(fresh(), opened, ist("2026-10-05", "16:10")).state;
+  s = run(s, { type: "lesson.ended", lessonId: "L-x", reason: "completed", minutes: 10 }, ist("2026-10-05", "16:40")).state;
+  // four days later the first event is a job result, not an open
+  const out = run(s, { type: "job.done", jobId: "1", kind: "memory.consolidate", idemKey: "memory.consolidate:L-x" }, ist("2026-10-09", "12:00"));
+  assert.ok(out.rulesFired.includes("fold_night"));
+  const wakes = out.commands.filter((c) => c.kind === "wakeup").map((c) => c.dedupe).sort();
+  assert.deepEqual(wakes, ["day_start:2026-10-10", "night:2026-10-09", "night:2026-10-10"]);
+});
+
+test("V3 uses the month's REMAINING realtime: near-exhausted → the lesson steps down to cascade, never rejected", () => {
+  const tier = 600 * 60;
+  const view = viewOf({ "usage.voiceSecMonth": { value: { realtime: tier - 30 }, asOf: "x", src: "conductor_usage", stale: false } });
+  const out = run(fresh(), opened, ist("2026-10-05", "16:10"), view);
+  const adopt = out.commands.find((c) => c.kind === "plan.adopt");
+  assert.ok(!out.commands.some((c) => c.kind === "audit" && String(c.code).startsWith("plan.rejected")));
+  assert.equal(adopt.plan.voiceBudgetSec.realtime, 0);
+  const lesson = adopt.plan.slots.find((x) => x.kind === "live_lesson");
+  assert.ok(lesson && lesson.segments.every((g) => g.laneWanted !== "realtime" && g.laneWanted !== "realtime_mini"));
+  assert.ok(out.rulesFired.some((r) => r.startsWith("R10")));
+  // a fresh month (nothing used) keeps the full tier budget
+  const full = run(fresh(), opened, ist("2026-10-05", "16:10"));
+  assert.equal(full.commands.find((c) => c.kind === "plan.adopt").plan.voiceBudgetSec.realtime, tier);
+});
+
+test("replay of a snapshot recorded before usage.voiceSecMonth existed serves its fallback; other misses still throw", () => {
+  const v = replayView({ "kt.dueCount": { value: 0 } });
+  assert.deepEqual(v.get("usage.voiceSecMonth").value, {});
+  assert.throws(() => v.get("cal.days"), ReplayMiss);
+});

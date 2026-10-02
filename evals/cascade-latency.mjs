@@ -52,7 +52,8 @@ const WD = fs.mkdtempSync(path.join(os.tmpdir(), "cascade-lat-"));
 // it says an on-topic engagement line. Inputs to the child-voice TTS, never to a prompt.
 const SCRIPT = {
   "c4-maths-ch01-t01": {
-    talk: ["Haan didi, main ready hoon.", "Achha, toh dabbe ki flat side ko face kehte hain?", "Haan, samajh gaya. Do faces jahan milte hain woh edge hai.",
+    // The opening hook asks for a guess about shapes: the first line answers it ("ready" alone read as off-topic).
+    talk: ["Haan didi, main ready hoon. Mujhe lagta hai dabbe mein zyada corners hote hain.", "Achha, toh dabbe ki flat side ko face kehte hain?", "Haan, samajh gaya. Do faces jahan milte hain woh edge hai.",
       "Achha, aur corner woh point hai na jahan edges milte hain?"],
     items: {
       "c4-maths-ch01-t01-i01": ["Mujhe lagta hai dice ke chhe faces hain.", "Teen faces hain didi."],
@@ -69,6 +70,8 @@ const SCRIPT = {
       "c4-maths-ch01-t01-i12": ["Chintu, peeche aur neeche wale faces bhi gino, jodi mein gino toh chhe hote hain.", "Chintu, teen hi hain."],
       "c4-maths-ch01-t01-i13": ["Chhe faces, baarah edges, aath corners.", "Chhe faces, aath edges, baarah corners."],
     },
+    // A "probe" move asks how they knew (pendingWhy): the child gives a reason, then a weak one.
+    why: ["Kyunki maine har taraf gina, upar neeche, aage peeche, daayen baayen.", "Bas aise hi pata tha."],
   },
 };
 const UNSURE = "Mujhe nahi pata, ek baar aur batao na.";
@@ -83,6 +86,10 @@ function diagLines(topic, itemId) {
 function childLine(topicId, topic, move, seen, turnIdx) {
   const s = SCRIPT[topicId];
   const itemId = move?.itemId;
+  if (move?.kind === "probe" && s?.why) {
+    const k = (seen[`why:${itemId}`] = (seen[`why:${itemId}`] ?? 0) + 1) - 1;
+    return s.why[(k + (turnIdx % 2)) % s.why.length];
+  }
   if (itemId) {
     const k = (seen[itemId] = (seen[itemId] ?? 0) + 1) - 1;
     let lines = s?.items[itemId] ?? diagLines(topic, itemId);
@@ -179,8 +186,16 @@ function speak(stt, pcm) {
       out.conf = confs.length ? confs.reduce((a, b) => a + b, 0) / confs.length : undefined;
       resolve(out);
     };
+    const partial = new Map();
     const off = stt.on((e, at) => {
       if (e.type === "input_audio_buffer.speech_stopped") out.vadAt = at;
+      // Partial transcripts (what a pre-run of the Director could start from): first delta, and when the
+      // deltas already spelled the final text.
+      if (e.type === "conversation.item.input_audio_transcription.delta") {
+        if (out.deltaFirstAt === undefined || out.deltaFirstAt < (out.vadAt ?? 0)) out.deltaFirstAt = at;
+        partial.set(e.item_id, (partial.get(e.item_id) ?? "") + (e.delta ?? ""));
+        out.deltaLastAt = at;
+      }
       if (e.type === "input_audio_buffer.committed") committed.push(e.item_id);
       if (e.type === "conversation.item.input_audio_transcription.completed" || e.type === "conversation.item.input_audio_transcription.failed") {
         out.finalAt = at;
@@ -219,7 +234,8 @@ async function firstByte(lessonId, seq) {
     bytes += value.length;
   }
   return { firstAt: first, t0, bytes, audioMs: Math.round(bytes / (BPS / 1000)), totalMs: Math.round(performance.now() - t0),
-    serverFirstMs: Number(res.headers.get("x-tts-first-ms")), serverSetupMs: Number(res.headers.get("x-tts-setup-ms")), sentences: Number(res.headers.get("x-tts-sentences")), cache: res.headers.get("x-tts-cache") };
+    serverFirstMs: Number(res.headers.get("x-tts-first-ms")), serverSetupMs: Number(res.headers.get("x-tts-setup-ms")), sentences: Number(res.headers.get("x-tts-sentences")), cache: res.headers.get("x-tts-cache"),
+    prewarmedMs: res.headers.get("x-tts-prewarmed-ms") === null ? null : Number(res.headers.get("x-tts-prewarmed-ms")) };
 }
 
 const rows = [];
@@ -259,16 +275,20 @@ try {
       said: line, asked, heard: heard.text, conf: heard.conf === undefined ? null : +heard.conf.toFixed(3), move: r.move?.kind,
       reply: r.teacherReply,
       endpoint: Math.round(heard.vadAt - heard.speechEndAt), stt: Math.round(heard.finalAt - heard.vadAt),
+      sttFirstDelta: heard.deltaFirstAt === undefined ? null : Math.round(heard.deltaFirstAt - heard.vadAt),
+      sttLastDelta: heard.deltaLastAt === undefined ? null : Math.round(heard.deltaLastAt - heard.vadAt),
       director: Math.round(replyAt - tTurn), tts: Math.round(tts.firstAt - replyAt), total: Math.round(tts.firstAt - heard.speechEndAt),
       sound: Math.round(tts.firstAt - heard.speechEndAt) + START_LEAD_MS + OUTPUT_LATENCY_MS,
       speculation: r.debug?.speculation ? (r.debug.speculation.hit ? "hit" : "miss") : "none", specDiffers: r.debug?.speculation?.differs,
       flags: r.debug?.classification?.flags ? Object.entries(r.debug.classification.flags).filter(([, v]) => v === true).map(([k]) => k).join(",") : "", cls: r.debug?.classification ? `${r.debug.classification.outcome}/${r.debug.classification.source}` : null,
       ttsServerFirst: tts.serverFirstMs, ttsServerSetup: tts.serverSetupMs, segments: heard.segments, sentences: tts.sentences, cache: tts.cache, replyAudioMs: tts.audioMs,
+      guard: r.debug?.guard ? [...r.debug.guard.caught, ...(r.debug.guard.rewritten ? ["rewritten"] : []), ...(r.debug.guard.afterRewrite?.length ? [`after:${r.debug.guard.afterRewrite}`] : []), ...(r.debug.guard.replaced ? ["replaced"] : [])].join(",") : null,
+      ttsPrewarmedMs: tts.prewarmedMs,
       directorServer: r.debug?.ms, directorTimings: r.debug?.timings?.map((t) => `${t.kind}:${t.ms}`).join(" "),
     };
     rows.push(row);
     console.log(`  turn ${i + 1}: endpoint ${row.endpoint} · stt ${row.stt} · director ${row.director} · tts ${row.tts} = ${row.total} ms  [${row.move}] "${row.heard}" (conf ${row.conf}) → "${row.reply}"`);
-    console.log(`           cls ${row.cls} · flags [${row.flags}] · speculation ${row.speculation}${row.specDiffers ? ` (${row.specDiffers.join(" | ")})` : ""} · director calls: ${row.directorTimings ?? "?"} · tts server: setup ${row.ttsServerSetup} first ${row.ttsServerFirst} (${row.sentences} sentences, cache ${row.cache}) · vad segments ${row.segments}`);
+    console.log(`           cls ${row.cls} · flags [${row.flags}] · speculation ${row.speculation}${row.specDiffers ? ` (${row.specDiffers.join(" | ")})` : ""} · director calls: ${row.directorTimings ?? "?"} · guard [${row.guard ?? ""}] · tts server: setup ${row.ttsServerSetup} first ${row.ttsServerFirst}${row.ttsPrewarmedMs !== null ? ` (prewarmed ${row.ttsPrewarmedMs} ms before)` : ""} (${row.sentences} sentences, cache ${row.cache}) · vad segments ${row.segments}`);
     if (r.end) break;
   }
   stt.ws.close();
@@ -287,9 +307,9 @@ const stat = (k) => {
   const q = (p) => v[Math.min(v.length - 1, Math.floor(p * (v.length - 1) + 0.5))];
   return { n: v.length, median: q(0.5), p90: q(0.9), min: v[0], max: v.at(-1) };
 };
-const summary = Object.fromEntries(["endpoint", "stt", "director", "tts", "total", "sound"].map((k) => [k, stat(k)]));
-console.log("\nstage      n  median   p90   min   max  (ms)");
-for (const [k, s] of Object.entries(summary)) if (s) console.log(`${k.padEnd(9)} ${String(s.n).padStart(2)} ${String(s.median).padStart(7)} ${String(s.p90).padStart(5)} ${String(s.min).padStart(5)} ${String(s.max).padStart(5)}`);
+const summary = Object.fromEntries(["endpoint", "stt", "sttFirstDelta", "sttLastDelta", "director", "tts", "total", "sound"].map((k) => [k, stat(k)]));
+console.log("\nstage          n  median   p90   min   max  (ms)");
+for (const [k, s] of Object.entries(summary)) if (s) console.log(`${k.padEnd(13)} ${String(s.n).padStart(2)} ${String(s.median).padStart(7)} ${String(s.p90).padStart(5)} ${String(s.min).padStart(5)} ${String(s.max).padStart(5)}`);
 const within = rows.filter((r) => r.total <= 2000).length;
 console.log(`budget ≤ 2000 ms (first byte): ${within}/${rows.length} turns`);
 const spec = rows.filter((r) => r.speculation !== "none");
@@ -297,5 +317,5 @@ console.log(`speculative replies: ${spec.filter((r) => r.speculation === "hit").
 const spoken = stored.filter((t) => t.meta?.typed === false && typeof t.asr_conf === "number");
 console.log(`stored child turns spoken (asr_conf set, typed:false): ${spoken.length}/${stored.length}`);
 summary.storedSpoken = { spoken: spoken.length, of: stored.length };
-if (OUT) fs.writeFileSync(OUT, JSON.stringify({ method: { date: new Date().toISOString().slice(0, 10), turns: rows.length, classLevel: CLASS, from: os.hostname(), note: `synthetic child speech; WebSocket transcription transport; in-process API (Neon HTTP from the eval host); lesson mode cascade; sound = first byte + ${START_LEAD_MS} ms lead + ${OUTPUT_LATENCY_MS} ms nominal output latency; TAXILA_SPECULATE=${process.env.TAXILA_SPECULATE ?? "3"}`, reply: process.env.DEPLOY_REPLY || process.env.DEPLOY_FAST || "taxila-fast", classify: process.env.DEPLOY_CLASSIFY || process.env.DEPLOY_FAST || "taxila-fast" }, summary, rows }, null, 1));
+if (OUT) fs.writeFileSync(OUT, JSON.stringify({ method: { date: new Date().toISOString().slice(0, 10), turns: rows.length, classLevel: CLASS, from: os.hostname(), note: `synthetic child speech; WebSocket transcription transport; in-process API (Neon HTTP from the eval host); lesson mode cascade; sound = first byte + ${START_LEAD_MS} ms lead + ${OUTPUT_LATENCY_MS} ms nominal output latency; TAXILA_SPECULATE=${process.env.TAXILA_SPECULATE ?? "3"}`, prewarm: process.env.TAXILA_TTS_PREWARM !== "0", reply: process.env.DEPLOY_REPLY || process.env.DEPLOY_FAST || "taxila-fast", classify: process.env.DEPLOY_CLASSIFY || process.env.DEPLOY_FAST || "taxila-fast" }, summary, rows }, null, 1));
 process.exit(rows.length && spoken.length === stored.length ? 0 : 1);
