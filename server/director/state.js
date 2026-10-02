@@ -9,13 +9,19 @@
 //   wrap     specific summary + plain preview → done
 // Cross-cutting: distress → safeguard (before anything else); "I want to stop" → wrap now;
 // frustration loops → break with choices.
+// Module-only turns (the child acted in an activity and said nothing): an answer on the active item is
+// machine truth and runs the normal answer path; goal_met / stuck get a reaction (celebrate / nudge) that
+// leaves the plan where it was — they were once graded as an unclear reply and walked the teach phase.
 //
-// step() is PURE: (state, input) → { state, move, moduleCommands, ui, end, item, next, content }.
+// step() is PURE: (state, input) → { state, move, moduleCommands, ui, end, item, content }.
 // The route classifies, updates the learner model, then calls step with the updated skill snapshot.
+// branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
+// lines are the director's own next moves, never a second guess at them.
 import * as SH from "./shapes.js";
-import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, selectNext, anchorOf, whyKey, PROBE_WEIGHT } from "./items.js";
+import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT } from "./items.js";
 import { planModule } from "./modules.js";
 import { frustrationLoop, initialAffect, nextAffect, wheelSpinning } from "../learner/affect.js";
+import { applyEvidence, newSkillState } from "../learner/bkt.js";
 
 export const LIMITS = {
   warmupMax: 3,            // rule 18: 2-4 retrieval items open each session
@@ -29,10 +35,11 @@ export const LIMITS = {
   breakGapTurns: 6,
   unclearTries: 2,
 };
-const RUNG = ["pump", "hint", "prompt", "assertion"];
 const LEARNED = new Set(["learned_today", "mastered", "due"]);
 const join = (...parts) => parts.filter(Boolean).join("; ");
 const round2 = (x) => Math.round(x * 100) / 100;
+/** On the whiteboard while safeguarding holds: on screen whatever the voice manages to say. */
+const HELPLINES = { kind: "text", value: "Childline 1098 · Tele-MANAS 14416" };
 
 /** Deterministic [0,1) from (seed, n) so the director stays a pure, replayable function. */
 export function rand(seed, n) {
@@ -68,7 +75,7 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, warmu
     queue: buildPracticeQueue(kit, { activeMisconceptionIds }),
     // Experienced learners attempt before any explanation, so their skills count as introduced.
     introduced: novice ? [] : kit.skills.map((sk) => sk.id),
-    retaught: [], changedApproach: [], flagged: {},
+    retaught: [], changedApproach: [], flagged: {}, misCorrect: {},
     nextItemId: undefined, verify: undefined, tries: 0, unclear: 0, practiced: 0, easier: false,
     skills: Object.fromEntries(Object.entries(skills).map(([id, st]) => [id, snapshotSkill(st)])), history,
     affect: initialAffect(), lastBreakTurn: -99, safeguard: null,
@@ -182,8 +189,9 @@ function poseNext(s, input, prefix, preferred) {
   const { kit } = input;
   s.activeItemId = undefined; s.hintLevel = 0; s.pendingWhy = undefined;
   if (leavePractice(s, kit)) return enterTeachback(s, prefix);
-  const queued = s.nextItemId ? findItem(s, kit, s.nextItemId) : null;
-  const verifying = s.verify ? findItem(s, kit, `diag:${s.verify}`) : null;
+  const skipped = new Set(s.skipped);
+  const queued = s.nextItemId && !skipped.has(s.nextItemId) ? findItem(s, kit, s.nextItemId) : null;
+  const verifying = s.verify && !skipped.has(`diag:${s.verify}`) ? findItem(s, kit, `diag:${s.verify}`) : null;
   const item = preferred ?? verifying ?? queued ?? selectNext(s, kit, { easier: s.easier });
   if (verifying && queued) s.queue = [queued.id, ...s.queue.filter((id) => id !== queued.id)];
   s.nextItemId = undefined; s.easier = false; s.verify = undefined;
@@ -196,7 +204,9 @@ function poseNext(s, input, prefix, preferred) {
   }
   activate(s, item);
   const attemptFirst = !s.novice && s.practiced === 0;
-  return plan(moveKindFor(item), SH.pose({ item, prefix }), { item, probe: probeFor(item), format: attemptFirst ? "F8" : undefined, chips: optionChips(item) });
+  return plan(moveKindFor(item), SH.pose({ item, prefix, verify: !preferred && item === verifying }), {
+    item, probe: probeFor(item), format: attemptFirst ? "F8" : undefined, chips: optionChips(item),
+  });
 }
 
 function practice(s, input, item) {
@@ -313,7 +323,7 @@ function decide(s, input, item) {
   const flags = cls?.flags ?? {};
   const labels = chipLabels(s.ctx.lang);
   // 1. Safety before anything else — the predicate or the classifier, either one.
-  if (flags.distress) { s.safeguard = { calm: 0, asked: false }; return plan("safeguard", SH.safeguard()); }
+  if (flags.distress) { s.safeguard = { calm: 0, asked: false }; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
   if (s.safeguard) {
     if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
     if (s.safeguard.asked || chipId === "safe:continue") {
@@ -321,7 +331,7 @@ function decide(s, input, item) {
       return item ? plan(moveKindFor(item), SH.pose({ item, prefix: "gently back to where you were" }), { item, probe: probeFor(item) }) : decide(s, { ...input, cls: null }, item);
     }
     s.safeguard.calm += 1;
-    if (s.safeguard.calm < 2) return plan("safeguard", SH.safeguardStay());
+    if (s.safeguard.calm < 2) return plan("safeguard", SH.safeguardStay(), { whiteboard: HELPLINES });
     s.safeguard.asked = true;
     return plan("repair", SH.resumeAfterSafeguard(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
   }
@@ -357,20 +367,44 @@ function decide(s, input, item) {
 }
 
 /**
+ * A module-only turn with no answer on the active item: goal_met → celebrate, stuck → a nudge, both on the
+ * step in progress (no teach step consumed, no unclear-reply count or hint rung spent). null = hold: nothing
+ * to react to, or safeguarding / a finished lesson, where an activity is never celebrated.
+ */
+function moduleReaction(s, input, item) {
+  if (s.safeguard || s.phase === "done") return null;
+  const last = (input.moduleEvents ?? []).filter((e) => e?.type === "goal_met" || e?.type === "stuck").at(-1);
+  if (!last) return null;
+  const chips = optionChips(item);
+  if (last.type === "stuck") return plan("hint", SH.moduleStuck(), { item, chips });
+  // The goal name comes from the client: interpolated into instructions only as a short plain label.
+  const goal = String(last.name ?? "").replace(/[^\p{L}\p{N} /.,-]/gu, "").trim().slice(0, 40);
+  return plan("celebrate", SH.moduleGoal({ goal }), { item, chips });
+}
+
+/**
  * One director step.
  * @param {any} prev  lesson state (not mutated)
- * @param {{ event: "start"|"turn", kit: any, cls?: any, chipId?: string, answer?: string, now?: number }} input
- *   answer: the child's normalized words (affect counters tell a held belief from option cycling)
+ * @param {{ event: "start"|"turn"|"module", kit: any, cls?: any, chipId?: string, answer?: string,
+ *   moduleEvents?: import("../../shared/contracts").ModuleEvent[], now?: number }} input
+ *   answer: the child's normalized words (affect counters tell a held belief from option cycling).
+ *   "module": a module-only turn; `cls` is set only for a machine-truth module answer on the active item.
+ * @returns the step; `hold: true` when a module-only turn changed nothing (the last move and UI stand).
  */
 export function step(prev, input) {
   const s = structuredClone(prev);
   const now = input.now ?? Date.now();
-  if (input.event !== "start") s.turn += 1;
+  if (input.event !== "start") s.turn += 1; // every call bumps the turn: the route's optimistic state check keys on it
   s.minutes = Math.round((now - s.startedAt) / 6000) / 10;
   if (input.event === "turn") {
     s.affect = nextAffect(s.affect, { read: input.cls?.flags ?? {}, outcome: input.cls?.outcome, itemId: s.activeItemId, answer: input.answer });
   }
-  const p = decide(s, input, findItem(s, input.kit, s.activeItemId));
+  const active = findItem(s, input.kit, s.activeItemId);
+  const reacting = input.event === "module" && !input.cls;
+  const p = reacting ? moduleReaction(s, input, active) : decide(s, input, active);
+  if (!p) {
+    return { state: s, move: s.lastMove, moduleCommands: [], ui: s.lastUi ?? { status: "your_turn" }, end: s.phase === "done", hold: true, ...describe(s, input.kit) };
+  }
 
   const item = p.item ?? null;
   const move = { kind: p.kind, shape: p.shape };
@@ -379,12 +413,15 @@ export function step(prev, input) {
   if (p.probe) move.probe = p.probe;
   if (p.format) move.format = p.format;
   s.lastMove = move;
-  s.lastContent = p.content ?? [];
-  const moduleCommands = planModule(s, { move, item, kit: input.kit, lang: s.ctx.lang, representation: p.representation });
+  // A reaction keeps the step's content (e.g. the worked example the teacher is in the middle of) and the
+  // activity on screen.
+  if (!reacting || p.content) s.lastContent = p.content ?? [];
+  const moduleCommands = reacting ? [] : planModule(s, { move, item, kit: input.kit, lang: s.ctx.lang, representation: p.representation });
   const ui = { status: "your_turn" };
   const board = p.whiteboard ?? (item ? anchorOf(item, s.ctx.lang) : null);
   if (board) ui.whiteboard = board;
   if (p.chips?.length) ui.chips = p.chips;
+  s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
   return { state: s, move, moduleCommands, ui, end: s.phase === "done", ...describe(s, input.kit) };
 }
 
@@ -394,26 +431,80 @@ export function step(prev, input) {
  */
 export function describe(s, kit) {
   const item = s.lastMove?.itemId ? findItem(s, kit, s.lastMove.itemId) : null;
-  return { item, content: s.lastContent ?? [], next: contingency(s, kit, item) };
+  return { item, content: s.lastContent ?? [] };
+}
+
+/** Fold evidence rows into the state's skill snapshot and outcome history (BKT with forgetting, pure). */
+export function foldEvidence(s, evidence, kit, now) {
+  for (const ev of evidence) {
+    const snap = s.skills[ev.skillId];
+    const before = snap
+      ? { skillId: ev.skillId, ...snap, delayedPass: false, lastSeen: new Date(now).toISOString() }
+      : newSkillState(ev.skillId, kit.topicType, now);
+    s.skills[ev.skillId] = snapshotSkill(applyEvidence(before, ev, { topicType: kit.topicType, now, lessonStartedAt: s.startedAt }));
+    s.history[ev.skillId] = [...(s.history[ev.skillId] ?? []), ev.outcome].slice(-10);
+  }
+}
+
+const NO_FLAGS = { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: false, distressKind: null, wantsToStop: false };
+const POSING = new Set(["practice", "probe", "retrieval", "greet"]);
+/** Gap the branches assume before the child's reply (it only moves the lesson clock). */
+const REPLY_MS = 20_000;
+
+/**
+ * The voice lane's branches for the reply now being answered: step() on a synthetic RIGHT and a synthetic
+ * WRONG reply to the current state, after the same evidence fold the route does — so why-sampling, the
+ * verify queue, teach-back entry, re-teach and the warm-up try limit are the director's own decisions.
+ * Measured before this (200 seeds, consolidating skill): a hand-written "if right" branch said "then this
+ * next question" while step() asked why in 77/200.
+ * @returns {{ cond: string|null, right: Branch, wrong: Branch|null, listenFor?: string[] } | null}
+ *   with Branch = { kind: string, text: string, ask: string|null, content: string[] }; `wrong` is null when
+ *   any reply leads to the same move.
+ */
+export function branchesFor(s, kit) {
+  if (!s.lastMove || s.phase === "done" || s.lastMove.kind === "safeguard" || s.safeguard) return null;
+  const now = s.startedAt + Math.round(s.minutes * 60_000) + REPLY_MS;
+  const lang = s.ctx.lang;
+  const item = findItem(s, kit, s.activeItemId);
+  const teachingBack = s.phase === "teachback" && s.teachbackAsked;
+  const sim = (outcome) => {
+    const pre = structuredClone(s);
+    const right = outcome === "correct";
+    const cls = { outcome, confidence: 1, source: "branch", flags: NO_FLAGS,
+      ...(teachingBack ? { covered: right ? kit.expectations : [], missing: right ? [] : kit.expectations } : {}) };
+    foldEvidence(pre, evidenceFrom(pre, cls, kit), kit, now);
+    return step(pre, { event: "turn", kit, cls, now });
+  };
+  const render = (r) => {
+    const asks = !!r.item && POSING.has(r.move.kind) && r.state.pendingWhy !== r.item.id;
+    return {
+      kind: r.move.kind.replace(/_/g, " "), text: r.move.shape,
+      ask: asks ? promptFor(r.item, lang) : null,
+      content: [...r.content, ...(asks && r.item.diagnostic ? [`choices for that question: ${optionsSpoken(r.item, lang)}`] : [])],
+    };
+  };
+  const right = render(sim("correct"));
+  const wrong = render(sim("incorrect"));
+  const cond = teachingBack ? "their explanation covers most of the key ideas"
+    : item && s.pendingWhy === item.id ? "their reason matches the key idea"
+      : item ? "it matches the key" : null;
+  const same = right.text === wrong.text && right.ask === wrong.ask;
+  return { cond, right, wrong: same || !cond ? null : wrong, ...(teachingBack ? { listenFor: kit.expectations } : {}) };
 }
 
 /**
- * What to do AFTER the child's next reply. The voice lane answers on the instructions it already has
- * (the director refreshes them between turns, off the critical path), so they carry both branches.
+ * A question whose pinned text cannot be compiled (BudgetError) is skipped and the lesson moves on: the
+ * item is marked skipped and the director steps once with no reply, which poses the next question.
+ * @returns {ReturnType<typeof step> | null} null when the current move does not hang on that item
  */
-export function contingency(s, kit, item) {
-  if (!item || s.phase === "done") return null;
-  if (s.pendingWhy === item.id) return { onRight: SH.CONFIRM.whyGood, onWrong: SH.CONFIRM.whyMissed };
-  const lvl = s.hintLevel;
-  if (lvl >= 4) return { onRight: "a similar question for them comes next", onWrong: "a similar question for them comes next" };
-  const why = !["why", "teachback", "retrieval"].includes(item.kind) && !s.skills[item.skillId]?.generativePass;
-  const peek = s.phase === "practice" ? selectNext({ ...s, itemsDone: [...s.itemsDone, item.id] }, kit) : null;
-  const then = why ? "then ask how they knew"
-    : peek && s.introduced.includes(peek.skillId) ? `then this next question: ${promptFor(peek, s.ctx.lang)}` : "then the next step";
-  return {
-    onRight: join(SH.CONFIRM.correct, then),
-    onWrong: `rung ${lvl + 1} of 4 (${RUNG[lvl]}): ${SH.rungText(item.hints[lvl])}${lvl === 3 ? " — only now may the key be said" : ""}`,
-  };
+export function skipItem(prev, kit, itemId, now) {
+  if (prev.lastMove?.itemId !== itemId) return null;
+  const s = structuredClone(prev);
+  if (!s.skipped.includes(itemId)) s.skipped.push(itemId);
+  if (s.activeItemId === itemId) { s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0; }
+  if (s.nextItemId === itemId) s.nextItemId = undefined;
+  if (s.verify && `diag:${s.verify}` === itemId) s.verify = undefined;
+  return step(s, { event: "skip", kit, now });
 }
 
 /**
@@ -428,9 +519,12 @@ export function evidenceFrom(s, cls, kit, { leaked = false, discount = 1 } = {})
   if (!cls || cls.outcome === "no_evidence" || s.safeguard) return [];
   const mis = cls.misconceptionId ? { misconceptionId: cls.misconceptionId } : {};
   if (s.phase === "teachback" && s.teachbackAsked) {
+    // One explanation is ONE observation: the skills it speaks for share its likelihood weight, so a single
+    // utterance cannot move every skill of the topic as if it were that many independent probes.
     const taught = kit.skills.filter((sk) => s.introduced.includes(sk.id));
-    const w = round2(PROBE_WEIGHT.P1 * (kit.verified ? 1 : 0.5) * discount);
-    return (taught.length ? taught : kit.skills).map((sk) => ({ skillId: sk.id, probe: "P1", outcome: cls.outcome, ...mis, hintsUsed: 0, weight: w }));
+    const skills = taught.length ? taught : kit.skills;
+    const w = round2(PROBE_WEIGHT.P1 * (kit.verified ? 1 : 0.5) * discount / skills.length);
+    return skills.map((sk) => ({ skillId: sk.id, probe: "P1", outcome: cls.outcome, ...mis, hintsUsed: 0, weight: w }));
   }
   const item = findItem(s, kit, s.activeItemId);
   if (!item || s.hintLevel >= 4) return [];

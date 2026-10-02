@@ -61,6 +61,8 @@
 | R21 | camera for doubts (lesson-arc critique: photo of a textbook problem) vs no camera in v1 (ui-teardown) | v1 doubts are typed, spoken, or picked from the NCERT exercise index; a parent-enabled notebook still photo is v2 | no child camera stream; DPDP §9(3) risk |
 | R22 | memory consent row preselected (onboarding P5) | explicit equal-weight choice, never preselected | the trust page has just promised the opposite of a dark pattern |
 | R23 | Class 5-9 transcripts "on request" vs "parents see all" | parents always see all learning evidence including ≤ 25-word quotes; only the verbatim full transcript sits behind a request for Class 5-9, and opening it is disclosed to the child | removes the contradiction while keeping teen candour |
+| R24 (gap-fill G1-ledger-entry-rule2) | how a skill enters Aa gaya and Pakka: kt-algorithms §2.6 `unaided` accepts a first-try `item.mcq3+`; kids-ux S3 and lesson-arc §5 make "I know this" a 1-2 item check; motivation §6 and v1 of this spec (§3.10, §8.5, §8.9) let any 2-item pass light Aa gaya; §6.4 and §8.8 defined Pakka only as "delayed re-check passed" | §6.4.1: Aa gaya = (a) an unaided correct **produce-form** answer + (b) a produce-form generative or near-transfer pass, on the same day, with the pL guard; Pakka = that, then (c) a produce-form delayed success ≥ 20 h later in a different session; "I know this" = 1 unaided produce item + 1 produce generative or near-transfer item; recognition (tap-among-options) passes, placement taps included, set Abhyaas mein at most and are tracked as `tapPass`, apart from `producePass` | learning-science rule 2 needs all three kinds of evidence; under v1, two taps today and one correct recall later reached Pakka with no explanation or transfer; recognition overstates production (onboarding critique F1); a first-try mcq3 carries about half the log-evidence of an open C0 (0.99 vs 2.08) [X `ledger-state-fixtures.py`] |
+| R25 (gap-fill G1-ledger-entry-rule2) | no exit state from Pakka in v1 of this spec; motivation §5 "re-check due" drawn from R < 0.9 (already moved to `recheck_scheduled` by R13) | one missed delayed check on a Pakka skill = "re-check due" on the parent side only, with an evidence row; the child's display does not change; two consecutive misses demote one level (fruit to flower, the ticked ring comes off) in the motivation §13 demotion shape, with a report row and no wilting | kt-algorithms §2.6 display rule; PX1; T2 and the monotone display; motivation critique C28 (the parent's word is the ledger word) |
 
 ---
 
@@ -74,7 +76,8 @@ CHILD MODE (APK default, web /who)            PARENT CORNER (PIN)              W
 /c/:cid  home ── lesson ── practice           ├─ child switcher (one at a time) milestone ≤ 1/week      printable monthly card (PDF)
         ├─ map (Bagiya | Aasmaan | list)       ├─ syllabus · evidence · lessons  safety / account /
         ├─ notes (notebook | explainer)        ├─ PTM · controls · family        payment (never off)
-        ├─ doubt (B3-B4)                       ├─ data · saved lessons · plan
+        ├─ doubt (B3-B4)                       ├─ how she teaches (§6.13, gap-fill G2)
+                                               ├─ data · saved lessons · plan
         └─ me (settings, what parents see)     └─ help, grievance, helplines
 PUBLIC (web): /  landing · /trust · /privacy · /leaving (bridge page)
 FIRST RUN: /start/*  parent onboarding (P0-P8) → handover → /c/:cid/hello (C1-C6) → /start/summary (R1-R2)
@@ -105,6 +108,7 @@ FIRST RUN: /start/*  parent onboarding (P0-P8) → handover → /c/:cid/hello (C
 | `/parent` | Parent Home (§6.3) | parent | guardian gate | last-good cache | deep links from WhatsApp land here |
 | `/parent/:cid/syllabus`, `/parent/:cid/skill/:skill` | Syllabus map, Kaise pata? (§6.4-6.5) | parent | gate | cache | evidence sheet is deep-linkable |
 | `/parent/:cid/lessons`, `.../lessons/:lid` | Lessons, per-lesson card (§6.6) | parent | gate | cache | spoken summary first |
+| `/parent/:cid/teaching`, `.../teaching/c/:comparisonId` | How she teaches {name}: rules, topic types, findings, choices, interests, reset (§6.13) (gap-fill G2-learning-profile-surface) | parent | gate; reset, turn off and export re-auth by OTP | last-good cache; tag edits queue | from Aur dekhein and the PTM agenda; never pushed; mode-gated (§6.13.3) |
 | `/parent/ptm` | Monthly PTM (§6.8) | parent | gate | no | live voice, AI-disclosed |
 | `/parent/controls`, `/parent/family`, `/parent/plan` | Controls, Family, Plan & billing (§6.9) | parent | gate; consent-grade rows re-auth | cache | |
 | `/parent/data` | View, export, delete (§6.9) | parent | gate + OTP re-auth | no | hold-to-confirm + OTP |
@@ -120,7 +124,7 @@ FIRST RUN: /start/*  parent onboarding (P0-P8) → handover → /c/:cid/hello (C
 - **WhatsApp deep link** → `/parent/...` behind the gate; on web it asks for OTP.
 
 ### 1.4 API seams per surface (extends ARCHITECTURE §2)
-`POST /api/auth/otp/start|verify` (replaces email + password) · `GET/POST /api/children` · `POST /api/lesson/start|turn|end` (`turn` carries the `ui` contract in §3.15) · `POST /api/realtime/token` (minted on `pointerdown` of the profile tile) · `WS /api/lesson/relay` (L1/L2) · `GET /api/packs/:chapter/manifest` (signed) · `POST /api/evidence/sync` (idempotent event ids) · `GET /api/parent/overview` (Home payload ≤ 100 KB) · `GET /api/parent/evidence/:skill` · `POST /api/parent/reaction` · `POST /api/parent/ptm/token` · `POST /api/whatsapp/webhook` (button replies, STOP).
+`POST /api/auth/otp/start|verify` (replaces email + password) · `GET/POST /api/children` · `POST /api/lesson/start|turn|end` (`turn` carries the `ui` contract in §3.15) · `POST /api/realtime/token` (minted on `pointerdown` of the profile tile) · `WS /api/lesson/relay` (L1/L2) · `GET /api/packs/:chapter/manifest` (signed) · `POST /api/evidence/sync` (idempotent event ids) · `GET /api/parent/overview` (Home payload ≤ 100 KB) · `GET /api/parent/evidence/:skill` · `GET /api/parent/profile/:cid` (≤ 24 KB) + `GET .../comparisons/:id` + `POST .../interests|disagree|reset|adapting` (§6.13.8; gap-fill G2-learning-profile-surface) · `GET /api/me/teaching` (B3-B4 child token, read-only, §6.13.6) · `POST /api/parent/reaction` · `POST /api/parent/ptm/token` · `POST /api/whatsapp/webhook` (button replies, STOP).
 
 ---
 
@@ -147,7 +151,7 @@ Order and timings follow `onboarding-flow.md` §4 and §7 (parent setup p50 ≈ 
 | P2 Number + OTP | identity for reports | **slide-and-hold "I am the parent" to enter** (stops a young child); +91 field; `NoCallsPromise` beside it; `OtpField` with **manual entry first**, WhatsApp auth template and SMS Retriever as autofill, resend at 20 s, voice call, **"send to another phone"** | number always editable; never clears typed digits; **state persisted per field, restored after process death** (G-ONB-6) |
 | P3 Trust page | the promises on record before effort | 3 icon + line promises (price and cancel, no sales calls, delete anything), full text one tap deeper, speaker | reachable from every later screen |
 | P4 Verify adult | DPDP Rule 10 slot | `VpcCard` | **off at launch** (`vpc.enabled=false`); G-ONB-1 runs in CI anyway |
-| P5 Consent rows | unbundled purposes | ≤ 5 `ConsentRow`s (sentence + speaker + toggle): lessons (required); remember learning across days (**equal-weight yes / only this session, nothing preselected**); remember things she says she likes (off); research (off); report channel (primary "WhatsApp", secondary "app only") | voice-clip retention lives in Controls, off |
+| P5 Consent rows | unbundled purposes | ≤ 5 `ConsentRow`s (sentence + speaker + toggle): lessons (required); remember learning across days (**equal-weight yes / only this session, nothing preselected**; its detail sheet lists what is kept, including, where the legal mode allows it, which ways of explaining held up on a later day; "only this session" is mode `off` in §6.13.3; gap-fill G2-learning-profile-surface); remember things she says she likes (off); research (off); report channel (primary "WhatsApp", secondary "app only") | voice-clip retention lives in Controls, off |
 | P6 Child profile | six taps, no free text | `NameSayer` (TTS preview, "sahi hai / badlo"); class 1-9 tiles (3 × 3, ≥ 48 dp); board; school medium; home language; *tum / aap* (**parent default *aap* for Class 5-9; the child may override from B3 up**); optional first subject; **optional one-tap "needs larger text or a calmer screen"** (sets comfort mode, never names a condition); **optional "hard to hear" → captions-always** | diagnostic pack (≤ 1.5 MB) downloads now; name greeting cached |
 | P7 Controls | safe defaults | one card: guardian PIN (default) or phone lock; daily time and hours prefilled by class; **first-day cap ≥ the length of the child path** | primary accept, secondary change |
 | P8 Handover | now or later, both first-class | `HandoverCard` "Abhi" / "Baad mein"; on cellular, a plain MB estimate for the first lesson | "Abhi" warms the realtime session; "Baad mein" leaves the profile on the picker with **no "ready" badge** |
@@ -175,6 +179,7 @@ Two skins on one rung engine (onboarding critique A1, D1).
 | C5 first win | worked → faded → solo on the first failed rung's smallest step; concept-shaped payoff | same engine, Class 6-9 contexts (money, speed, data) |
 | C6 show someone | an invitation to show a grown-up, with a graceful no; never recorded as "did not show" | optional, audience-free ("show whoever is around, or tell me"); the teach-back to her is the evidence |
 
+- **Ledger effect of C4 (gap-fill G1-ledger-entry-rule2):** every item records `tapPass` or `producePass` per skill (onboarding critique F1). A tap-recognition pass may set Abhyaas mein and nothing more. A first-try produce pass counts as (a) for that day. The same-skill retry pass counts as neither. Misses move only θ and the prior. Rules in §6.4.1.
 - **Feedback during C4:** her own varied, content-aware acknowledgement; no fixed chime after every answer (an operant cue). If a "received" earcon is kept for Young it is identical after right and wrong and is A/B tested against none (M-ONB-6).
 - **Banned in child copy:** test, exam, pariksha, score, marks for Young; Older strings must include the honest-purpose shape instead (G-ONB-2 split by band).
 
@@ -196,7 +201,8 @@ Two skins on one rung engine (onboarding critique A1, D1).
 
 ### 2.8 Child settings and "what your parent can see" (`/c/:cid/me`)
 - **Rows (big, spoken for Young; plain for Older):** captions (always / by reading level), sound effects (Young on, Older off by default), quiet mode (type or tap, earphones; Older), talk mode (tap / open mic when a headset is in; Older), look (2-4 pre-vetted themes and teacher choice, never unlocked: visual-identity critique C6), world (Bagiya / Aasmaan, one tap, ledger kept), face size (Older: face / small / voice and board only), my PIN (Older), comfort (larger text, calmer screen).
-- **"What your parent can see"** (Older; also shown at C2): skills and the evidence behind them, short quotes, what you got right and what you are still working on, time spent, and whether full transcripts are visible. Plain list; no secret monitoring.
+- **"What your parent can see"** (Older; also shown at C2): skills and the evidence behind them, short quotes, what you got right and what you are still working on, re-check notes (gap-fill G1-ledger-entry-rule2, §6.4.1), time spent, and whether full transcripts are visible. Plain list; no secret monitoring.
+  - **How she teaches you** (gap-fill G2-learning-profile-surface, §6.13). The list row says the parent sees four things: the rules she follows for each kind of topic; any later-day checks that changed how she starts a topic; what you picked when you were offered a choice; and your interests, which your parent can edit or delete. Older children can open the same rules and findings read-only (`MeTeachingSheet`, §6.13.6). In modes `off` and `narrow` the row says plainly that nothing about how she teaches is kept between lessons. Young children get no new row, because the C2 icon strip covers it. PX4-LS (§6.13.7) applies to this row and to the sheet.
 
 ### 2.9 System screens
 | screen | when | design |
@@ -426,7 +432,7 @@ At most two verbal re-entries. The 8 s vs 5-6 s disagreement between sibling doc
 
 ### 3.10 Choice offers and Older chips
 - **`ChoiceOffer` (P2 and elsewhere):** 2 (B1), 3 (B2), 3-4 (B3-B4) options, picture-first for Young, spoken; the ring sits on the **group frame** (one element); a spoken pick is accepted. Choices are cheap and real (context skin, protégé on first use, sub-goal order, pace, next topic of 3), 2-4 across a lesson, each logged as a preference, never evidence. Core content is never a choice ("skip review?" is banned).
-- **Older chip row (never ringed, ≥ 48 dp):** `Hint` (next ladder rung, child-initiated) · `Show me why` · `I know this` (starts a 2-item check, never a silent skip) · `⋯` (Explain differently · Slower · Skip for now; skipped items return through the scheduler). Max 4 visible chips.
+- **Older chip row (never ringed, ≥ 48 dp):** `Hint` (next ladder rung, child-initiated) · `Show me why` · `I know this` (starts the §6.4.1 check: 1 unaided produce-form item + 1 produce-form generative or near-transfer item; two correct taps leave the skill at Abhyaas mein; never a silent skip; gap-fill G1-ledger-entry-rule2) · `⋯` (Explain differently · Slower · Skip for now; skipped items return through the scheduler). Max 4 visible chips.
 - **Young:** no chip row; hints come from her after the timeout; a single "help" gesture is tapping her.
 
 ### 3.11 Phir se (say it again)
@@ -676,7 +682,7 @@ ui: {
 | address | parent sets *tum / aap* | parent sets | child owns it (parent default *aap*) | child owns it |
 
 ### 5.3 B4 is not B3 (kids-ux critique C1.2)
-B4 gets no mascot-style teacher motion (no bounce, no exaggerated acting), no default earcons, text-first tiles, a study-tool home, the flat strip ledge, 10 dp radii, the route-map skin offer, explainer notes only, an exam-week mode for Class 8-9 (retrieval-heavy lessons across the chapter list, shown as a window), and a "test me" path in one tap ("I know this" from the home sheet). Every B4 visual decision is checked by the embarrassment test M-VI-8 ("would you mind if a friend saw this over your shoulder?").
+B4 gets no mascot-style teacher motion (no bounce, no exaggerated acting), no default earcons, text-first tiles, a study-tool home, the flat strip ledge, 10 dp radii, the route-map skin offer, explainer notes only, an exam-week mode for Class 8-9 (retrieval-heavy lessons across the chapter list, shown as a window), and a "test me" path in one tap ("I know this" from the home sheet; the same §6.4.1 check of 1 unaided produce item + 1 generative or near-transfer item, never two taps; gap-fill G1-ledger-entry-rule2). Every B4 visual decision is checked by the embarrassment test M-VI-8 ("would you mind if a friend saw this over your shoulder?").
 
 ### 5.4 Band edges
 - The band comes from the class at setup; the age chip (optional) only settles edge cases. Re-evaluate at each class change.
@@ -712,7 +718,7 @@ B4 gets no mascot-style teacher motion (no bounce, no exaggerated acting), no de
 │ ▌one question · what a good answer sounds  │   doable without knowing the maths
 │ ▌[Ho gaya]        [Is hafte nahi]          │   both are fine answers; 48 dp, 8 dp apart
 ├───────────────────────────────────────────┤
-│ Aur dekhein >                              │   skills · syllabus · lessons · teacher's note · PTM
+│ Aur dekhein >                              │   skills · syllabus · lessons · how she teaches (§6.13) · teacher's note · PTM
 │ last updated 10:42 (if shown from cache)   │
 └───────────────────────────────────────────┘
 ```
@@ -728,9 +734,76 @@ B4 gets no mascot-style teacher motion (no bounce, no exaggerated acting), no de
 | unseen | अभी नहीं | Abhi nahi | Not yet | dashed outline | `--p-ink-3` |
 | practising | अभ्यास में | Abhyaas mein | Practising | half-filled | `--p-learning` |
 | learned today | आ गया | Aa gaya | Got it today | solid outline + the re-check date on the chip | `--p-learning` |
-| mastered (delayed re-check passed) | पक्का | Pakka | Secure | filled + tick | `--p-pakka` |
+| mastered ((a) + (b) on one day, then (c); §6.4.1) | पक्का | Pakka | Secure | filled + tick | `--p-pakka` |
+| re-check due (Pakka, one delayed check missed; gap-fill G1-ledger-entry-rule2) | पक्का · दोबारा जाँच | Pakka · dobara jaanch | Secure · re-check due | filled + tick, plus a `↻` glyph and the tag words in `--p-ink-2` | `--p-pakka` chip, `--p-ink-2` tag; never red |
 
-- **Pakka only after a delayed re-check in a later session** (parent-experience §0.4). "Aa gaya" always shows its re-check date so it is not read as finished (M6 tests the four words with ≥ 4 parents with ≤ Class 8 schooling).
+- **Pakka needs all three kinds of evidence from learning-science rule 2, the last in a later session** (parent-experience §0.4; the entry and exit rules are in §6.4.1). "Aa gaya" always shows its re-check date so it is not read as finished (M6 tests the four words and the re-check tag with ≥ 4 parents with ≤ Class 8 schooling; the tag words are [I] until then).
+
+#### 6.4.1 Ledger state machine: entry and exit (gap-fill G1-ledger-entry-rule2)
+
+The words above are what people see. This section is the rule that moves a skill between them. It implements learning-science rule 2 and the motivation §5 table: an unaided correct plus a generative pass on the same day gives Aa gaya, and a delayed success ≥ 20 h later in a different session gives Pakka. It supersedes the looser statements listed in R24 and adds the exit state in R25. The fold is a pure function of evidence events. The same-day and 20 h tests compare event timestamps when the event is written, never the clock at render, so PD-G19 (absence invariance) still holds. kt-algorithms' guards still apply on top: pL ≥ 0.95 is necessary and never sufficient.
+
+**Item form.** Every kit item and probe declares `form: 'produce' | 'recognise'`. A **recognise** item asks the child to pick among options shown on screen: mcqK, true/false, odd-one-out tiles, or a "because A or B?" choice. A **produce** item asks the child to construct the answer: spoken, typed, on a keypad, built with module manipulatives, drawn, or placed on a continuous line. Pack lint: a produce item's chance of a blind correct answer is ≤ 5% by construction [I threshold] (a 2-digit keypad answer has a 1% chance; a 3-option tile has 33%). Tap-only and no-mic children still get produce items (keypad, build, place, draw), so PD-G9 holds. Recognition passes are still evidence: they update pL and can set Abhyaas mein. Why (a) must be produce-form: recognition overstates production, and ASER measures production (onboarding critique F1). Under the kt-algorithms §1.2 priors, a first-try mcq3 carries log LR 0.99 against 2.08 for an open C0 [X `ledger-state-fixtures.py`].
+
+**The three kinds of evidence** (target skill only; the other skills on a conjunctive item get pL evidence only, kt §1.5):
+
+| | counts | never counts |
+|---|---|---|
+| **(a) unaided correct** | C0 (first try, no hint rung) on a produce-form item; a first-try produce pass in C4 placement | any recognition-form pass; C1-C3; the same-skill retry in C4; anything in a low-confidence window (§3.13 interruptions, the first 2 min before a profile mix-up opener passes, ASR below `ASR_MIN`) |
+| **(b) generative or near transfer** (produce-form, unaided) | a "why" after a correct answer, graded `full` against the item's expectation list; a teach-back or explainer note with coverage ≥ 0.8; a near-transfer variant passed (new context or representation, same skill, different template); an error-spot "caught + fixed" in which the child produces the fix | `partial`, `none` or `misconception` grades (a correct answer with a wrong why is a misconception flag, rule 3, and triggers kt §1.6's verifying probe); a choice-form why; a B1-B2 "choose" teach-back unless the child then says why or fixes the slip; a second item from the same template |
+| **(c) delayed success** | C0 on a produce-form item, or a produce-form near-transfer pass. It must be the **first** attempt on the skill in a session that starts ≥ 20 h after the anchor and is a different session from the anchor's, before any re-teaching of that skill in that session. The anchor is the Aa gaya entry, the latest delayed check, or the relearn day | a correct tap; a second session the same day (B1 micro-sessions are ≥ 2 h apart, so this case is real); a check after she re-taught the skill in that session; a hinted answer |
+
+Delayed checks are always served produce-form (lesson-arc P1 retrieval opener). A recognition item is never a delayed check. **Consequence for B1-B2:** lesson-arc §6 keeps its choice-form P2 why ("because A or B?") as good teaching and as pL evidence, but the day's (b) must come from the P3 near-transfer item or from P6 "picks and says why", "fixes the slip" or "completes the sentence". PD-G28's plan lint enforces this.
+
+**States, entry and exit** (`display` is the level; monotone except by the demotion path; the tag lives only on parent surfaces):
+
+| ledger state (`display`) | parent word | Bagiya (B1-B2) | Aasmaan (B3-B4) | entry | exit |
+|---|---|---|---|---|---|
+| unseen (0) | अभी नहीं · Abhi nahi · Not yet | empty plot with a seed packet | outline ring, 12 dp | the default | → Abhyaas mein on any evidence event on the skill, or a C4 pass (tap or produce). A C4 miss changes nothing visible; it moves only θ and the prior (kt D4) |
+| practising (1) | अभ्यास में · Abhyaas mein | two-leaf sprout | small filled dot, 14 dp | as above; a demotion from Aa gaya | → Aa gaya on (a) + (b) on the **same local day** (IST; allowed hours end 20:30, so no lesson crosses midnight), in either order, with pL ≥ 0.95. Never down: misses while practising lower pL, never the shape |
+| learned today (2) | आ गया · Aa gaya + re-check date | flower | filled 4-point star, 18 dp | (a) + (b) on the same day + the pL guard; or a demotion from Pakka | → Pakka on (c). One missed delayed check leaves it Aa gaya with the same shape; the parent sheet gains an evidence row and a new re-check date. Two consecutive misses take it to Abhyaas mein (flower to sprout, star to dot) by the demotion path below |
+| mastered (3) | पक्का · Pakka | fruit with a `done` ring | 4-point star in a ticked ring, 22 dp | (a) + (b) on one day, then (c). After a demotion, a fresh (a) + (b) day comes first, then (c) after that day | one missed delayed check → re-check due. A delayed pass only re-anchors the next check |
+| re-check due (3 + tag) | पक्का · दोबारा जाँच · Pakka · dobara jaanch · Secure · re-check due | **unchanged**: fruit with a `done` ring | **unchanged**: ticked ring | Pakka plus one missed delayed check (FSRS G = 1: C3, C4 or a failed transfer) | the next delayed pass → Pakka (tag cleared; evidence row in the "still right N days later" shape). A second **consecutive** miss → Aa gaya (fruit back to flower; the star loses its ticked ring) |
+
+- **Consecutive** means two G = 1 delayed checks with no delayed pass between them. A C1 or C2 at a delayed check (FSRS G = 2) is neither a pass nor a miss: it re-anchors the 20 h clock and neither raises nor resets the count.
+- **Birds and the thin re-check ring are unchanged (R13).** They render only from a server-written `recheck_scheduled` row, for any scheduled check: an Aa gaya skill's first delayed check, maintenance on Pakka, or the follow-up after a miss. A bird after a miss looks exactly like a routine one, so the miss shows nowhere on the child's surface.
+
+**One missed check on a Pakka skill (re-check due), surface by surface:**
+- **Child, every band:** nothing changes. The shape, the B3-B4 word, the counts ("4 of 6 pakka") and the star's own "Kaise pata?" list all stay as they were. That list shows the attempts that set the state, captioned "shows what you have shown so far" (motivation critique C28). In the lesson the miss is an ordinary wrong answer: the same wrong-answer ladder and the same `ReactionGate` program, with no mention of the skill's history.
+- **Parent:** the chip keeps its fill and tick and gains the `↻` tag (glyph plus words; never colour alone, never red, PX2). The evidence sheet gains one row (PX1): date · a "re-checked after N days, not right this time" shape · the child's own words (≤ 25) · help used · the next re-check date. It appears in the Parent corner only. It is never pushed, never in the WhatsApp body, and never a milestone.
+- **B3-B4 "what your parent can see"** (§2.8) names re-check notes as a category, so no kind of thing the parent reads is hidden from the teen.
+
+**Two consecutive misses (demotion), in the motivation §13 demotion shape:**
+- In the lesson where the second miss happens, she names it once with the shape [the skill] + [it slipped on two checks] + [the plan]. The plan is real: the re-teach starts in this lesson if the phase budget allows, otherwise it is the next lesson's P3 item. Never "lost", "forgot", "dropped" or "again?!".
+- The shape changes at P7 of that lesson by a static swap (crossfade ≤ 300 ms; instant under reduced motion). Fruit goes back to flower, and the ticked ring comes off the star. No wilting, no falling petals, no sad face or protégé reaction, no sound, no ceremony. The swap is never replayed or queued.
+- **Parent:** the chip moves to Aa gaya with its next re-check date, with one evidence row per miss and **a report row**: the per-lesson card's skill line (§6.6) and the weekly report's working-on line, both in the demotion shape (§6.7). Never a separate alert, never a milestone message.
+- **Re-entry:** a fresh (a) + (b) day, then (c) ≥ 20 h after it. Reaching Pakka again after ≥ 2 misses triggers the comeback milestone (§8.8).
+
+**"I know this" (B3-B4 lesson chip §3.10, Aasmaan star §8.5, B4 "test me" §5.3).**
+- **Item 1:** an unaided produce-form item on the target skill. **Item 2:** a produce-form generative or near-transfer probe: a why on item 1's answer, a near-transfer variant from a different template, or a two-line explainer note for a friend.
+- **Outcomes:**
+  - Both pass with pL ≥ 0.95: Aa gaya, with a re-check date.
+  - Both pass with pL < 0.95 (an above-grade prior): one more produce item, never a tap, at most 3 items in all. At prior 0.10 the pL trace is 0.534 → 0.883 → 0.986 [X].
+  - Item 1 passes and item 2 does not: Abhyaas mein, and the check turns into the lesson on the gap.
+  - Item 1 fails: Abhyaas mein; she carries on with the skill and never refers back to the claim.
+- **Delayed case:** on an Aa gaya star, in a later session ≥ 20 h after its anchor, item 1 is that skill's delayed check (c). The chip is not offered on Pakka stars.
+- **Two correct taps leave the skill at Abhyaas mein, whatever the prior.** At a diagnostic prior of 0.85, two first-try taps take pL to 0.986, which is why the threshold alone can never promote (fixture F1).
+- **Two weak spots in the numbers:** the why route clears 0.95 by only 0.0005 at prior 0.25 (folded LR 5.3) [X], so expect the third-item branch often until the LRs are fitted on Taxila data. The check is never a silent skip, and it is logged both as a preference and as evidence.
+- **Offer copy shape (Older):** [what the check is: two quick ones] + [what happens either way]. Never a dare, never "prove it".
+
+**Placement and offline.**
+- **Placement (C4, §2.4):** a tap pass is never (a), even when a teach-back passes the same day (F4).
+- **Fast-forward:** a first-try produce pass is (a) for that day. That is kt-algorithms' fast-forward path: diagnostic pL0 ≥ 0.85 → one generative probe → Aa gaya → a delayed check → Pakka (F4b). The parent sees placement-set chips with "found at the start" evidence rows; the child sees nothing (§2.4).
+- **Offline:** pack items carry the same `form` and count under the same rules once synced, through idempotent replay (PD-G26). Offline, (b) can come only from near-transfer items, because why and teach-back need the server grader.
+
+**Gate PD-G28 (§9).** `ledger-state-fixtures.py` holds a reference fold, 16 fixtures and four negative controls, and writes `ledger-state-fixtures-2026-10-02.json`. Current results [X, run 2026-10-02]:
+- The base rule passes all 16 fixtures.
+- Removing the (b) requirement fails F2 (two unaided C0s plus a delayed C0 reach Pakka).
+- Letting taps count as produce fails F1 and F4.
+- Demoting on a single miss fails F8-F11.
+- Dropping the 20 h rule fails F5.
+
+The reference fold leaves out the FSRS R gate and the ema guard (§11 open question 8). It is a specification aid, not the product module (`src/learner/kt/mastery.ts`).
 - **Misconceptions** in kitchen-table words with the child's reasoning, showing the mistake is sensible, never careless.
 
 ### 6.5 Syllabus map, level bridge, school sync
@@ -745,7 +818,7 @@ B4 gets no mascot-style teacher motion (no bounce, no exaggerated acting), no de
 ### 6.7 Weekly WhatsApp report (utility template)
 - **Category:** utility (₹0.1150 + GST vs ₹0.8631 marketing [S]); zero promotional content, ever; ≈ ₹1.2 per parent per month with the voice note [S].
 - **Lock-screen safe:** the notification's first line is neutral (a weekly-report-ready shape); no performance detail on line 1, because the child may hold the phone (parent-experience critique B21).
-- **Body carries the full facts** (≤ 5 short lines, ≤ 1,024 chars [V]): name and week facts · 1-2 can-now-do · 1 working-on · the home task · the AI-teacher footer. Language and script follow the parent's tile.
+- **Body carries the full facts** (≤ 5 short lines, ≤ 1,024 chars [V]): name and week facts · 1-2 can-now-do · 1 working-on (a demotion that week is this line, in the demotion shape; a single missed re-check never reaches the body; §6.4.1, gap-fill G1-ledger-entry-rule2) · the home task · the AI-teacher footer. Language and script follow the parent's tile.
 - **Header image optional:** 1080 × 1350, ≤ 300 KB, a forwardable convenience; never the only carrier.
 - **Buttons (3):** *Suno* (quick reply → the 60-90 s voice note as a service message in the 24 h window; audio is not a template header type [V]) · *Poori report* (URL → `/parent`) · *Ghar ka kaam ho gaya* (quick reply; logs nothing visible to the child; never a KPI or reminder trigger).
 - **Voice note:** opens with the AI disclosure; one concrete thing the child did → what is pakka → what is tricky in kitchen-table words → the home task with the exact question and what a good answer sounds like. Generated from ledger facts only and linted (PX4, PX5, PX9) before sending.
@@ -754,6 +827,7 @@ B4 gets no mascot-style teacher motion (no bounce, no exaggerated acting), no de
 ### 6.8 Monthly PTM (voice)
 - *PTM karo* any time or by booking; 5-8 min in the parent's language with the month's card on screen; disclosed as AI at the start.
 - Agenda shape: 3 can-do with evidence · 1-2 tricky bits · school chapter vs what is pakka · one home task · the parent's questions. Answers come **only from the ledger**. She declines predicted marks, rank, comparisons and "is my child intelligent", offering skills pakka out of total, the child's own past month, and the method that is helping. She never promises a human will follow up.
+- **How she teaches (gap-fill G2-learning-profile-surface):** one agenda line, rendered from `overview.teachingLine`. It is the banner shape for the mode, or the single admitted finding with its counts, and the card links to `/parent/:cid/teaching`. When a parent asks what type of learner the child is (in either script), she does not repeat or confirm the label. She answers with the content-fit and prior-knowledge rules and the later-day checks, then offers the page. That turn runs PX4-LS (§6.13.7) and the found gate (PD-G-LP1).
 - Ends with a utility summary on WhatsApp and a saved card. The printable monthly card (PDF) uses HPC-compatible competency rows, chapter counts and the teacher's note; no transcripts, no misconception detail.
 
 ### 6.9 Controls, data, family, plan, saved lessons
@@ -776,10 +850,11 @@ B4 gets no mascot-style teacher motion (no bounce, no exaggerated acting), no de
 | learning memory | from P5 | off = session only |
 | voice moments (keep child audio) | off | 30-day auto-delete [M: legal] |
 | notebook still photo | off (v2) | parent-enabled, a deliberate still, never a stream |
-| interest tags | learned in lessons | view, edit, delete; sensitive categories never stored |
+| interest tags | learned in lessons | view, edit, delete; sensitive categories never stored; edited on §6.13, where removed tags are never re-learned (gap-fill G2-learning-profile-surface) |
+| how she teaches (adapting the starting way from later-day checks) | follows P5 "remember learning across days" and the legal mode (§6.13.3) | view on §6.13; turn off = reset + withdraw `learning_profile` (consent-grade, OTP); turn on at equal weight; shown as unavailable, with the plain reason, in modes `narrow` and `retired` (gap-fill G2-learning-profile-surface) |
 | reports | weekly on, milestone on (≤ 1 / week), voice note on | day, time, language, channel |
 | family | owner only | co-parent (full) or viewer (weekly report only) by WhatsApp link |
-| data | | view all · export (PDF + JSON) · delete a lesson · delete transcripts · reset learning profile · delete child · delete account: plain statement, hold-to-confirm 2 s + OTP, synchronous revocation, async purge retried until done, content-free receipt |
+| data | | view all · export (PDF + JSON) · delete a lesson · delete transcripts · reset how she teaches (was "reset learning profile": clears format comparisons, choice history and findings; keeps skills, lessons and interests; the plain copy is in §6.13.5; gap-fill G2-learning-profile-surface) · delete child · delete account: plain statement, hold-to-confirm 2 s + OTP, synchronous revocation, async purge retried until done, content-free receipt |
 
 - **Plan & billing:** monthly rupee price, cancel in 2 taps, full refund policy, no EMI or loans, never an auto-renewal from a free period into paid without a fresh affirmative act.
 
@@ -802,6 +877,7 @@ B4 gets no mascot-style teacher motion (no bounce, no exaggerated acting), no de
 | | Class 1-4 (≈ 6-9) | Class 5-9 (≈ 10-15) |
 |---|---|---|
 | skills, evidence, ≤ 25-word quotes, summaries | always | always |
+| how she teaches (§6.13): rules per topic type, findings with Kaise pata?, choices (labelled as choices), interest tags, reset (gap-fill G2-learning-profile-surface) | always, in the mode's shape (§6.13.3) | always; the child can open the same rules and findings read-only from settings (§2.8, §6.13.6) |
 | full verbatim transcripts | visible; spoken summary first | on parent request; opening them that week is disclosed to the child [U: test effect on disclosure] |
 | what the child is told | at C2 and by a small "ghar ke bade can see" icon strip on their settings screen | once at C2, once in settings ("what your parent can see"); no persistent chip |
 | safety transcripts | shared on escalation unless suppressed (§6.10) | same |
@@ -810,6 +886,198 @@ B4 gets no mascot-style teacher motion (no bounce, no exaggerated acting), no de
 ### 6.12 Parent copy rules (PX1-PX11)
 PX1 evidence or silence (a ledger row behind every sentence) · PX2 the four words, never colour alone, never red · PX3 one your-turn per screen · PX4 no ability or style labels (bilingual lint: weak/kamzor, slow, tez, dimaag, nalayak, careless, lazy, "visual learner") · PX5 no affect claims, only behaviour · PX6 no comparison (no rank, percentile, sibling view) · PX7 no pressure (no absence alerts, fear copy, countdowns, streaks, offers) · PX8 written as if the child will read it · PX9 honest AI (no string implies a human reviewed or will call) · PX10 read-aloud first (every report spoken, every control with a speaker) · **PX11 child-visible text** on shared screens is spoken first and ≤ 6 words for ages 6-9.
 - **Register:** a respectful school teacher at a PTM, *aap*, concrete nouns over adjectives, uncertainty said plainly ("still checking", "re-check on Thursday"). Never "falling behind", "don't miss", "only N days left", "upgrade", exclamation-mark hype, emoji hearts, or dashes in UI strings.
+- **PX4 on the §6.13 surfaces** also runs the PX4-LS learning-style list (§6.13.7, gate PD-G-LP2), with no allow-list. (gap-fill G2-learning-profile-surface)
+
+### 6.13 "How she teaches {name}" (`/parent/:cid/teaching`) (gap-fill G2-learning-profile-surface)
+
+- **Purpose:** the screen for the format-efficacy layer (learning-science §8.4). It is what backs §8.1's promise that the parent can see the evidence behind every adjustment, and §8.6's view, export, correct and reset. Before this section, §6.9 offered "reset learning profile" for a profile the parent was never shown.
+- **The one rule of the page:** it describes **how she teaches**, never **what kind of learner the child is**. Rules come first and are the same for every child. A finding appears only once it passes the §8.4 threshold. Choices are shown as choices, and the page never names the learning-styles myth, not even to deny it.
+- **Why rules first, and why the empty-looking state must read as complete:**
+  - Parents and schoolteachers arrive believing in styles. 93% of UK and 96% of Dutch teachers endorsed the learning-styles neuromyth, and more general brain knowledge predicted *more* belief in it (β = 0.24; Dekker et al. 2012, n = 242) [V frontiersin.org]. 89% across surveys (Newton & Salvi 2020, via learning-science §2.1) [S].
+  - Matching studies average d = 0.04 (Hattie & O'Leary 2025) [S], and most children's u stays near 0 (§8.4). The honest steady state for most children is therefore rules plus "still learning" or "about the same either way". The layout has to make that look like a full answer.
+- **How much to show:** the default view shows *how the decision is made*, and the raw rows sit one tap deeper. Procedural transparency held trust when an algorithm's outcome surprised people, while a raw-data dump did not (Kizilcec 2016, CHI) [M: abstract not retrieved this pass].
+- **Controls precedent:** Google My Ad Center shows the topics used for personalisation and lets the person customise them, and turning personalisation off deletes the customised topics [V support.google.com]. This page copies the per-item edit and the "off clears it" behaviour, and adds what ad centres lack: the evidence.
+
+#### 6.13.1 Layout
+
+```
+┌───────────────────────────────────────────┐   desktop: left rail · rules + topic cards · choices, interests, data
+│ ‹  [Riya ▾]  Class 4 · CBSE          (🔊)  │   one child at a time (§6.3)
+│ shape: how {teacher} teaches {name}        │
+│ ⟨mode banner, one of §6.13.3⟩       (🔊)   │   speaker reads the banner and the rules
+│ last updated 10:42 (if from cache)         │
+├───────────────────────────────────────────┤
+│ SHE ALWAYS  (same for every child)         │   RuleList: 4 rows, each "why this rule?" >
+│ · words and a picture together             │
+│ · help follows what {name} already knows   │
+│ · rhythm only for things learned by heart  │
+│ · word problems use {name}'s interests     │
+├───────────────────────────────────────────┤
+│ BY KIND OF TOPIC                           │   5 TopicTypeCards, fixed order topic:T1..T5
+│ ▸ Learned by heart, in order  e.g. tables  │   collapsed: name · 1 example · status line
+│ ▾ Step-by-step methods  e.g. Ch 7 division │   expanded:
+│     ways used: [one solved, then together] │     FormatChips + L0 counts
+│     because division is [Abhyaas mein] >   │     PriorGateLine → skill sheet
+│     ⟨still learning what works best⟩       │     TopicStatus (or FindingLine + Kaise pata? >)
+├───────────────────────────────────────────┤
+│ CHOICES {name} MADE (not counted as        │   ChoicesPanel: neutral chips, hand glyph
+│ learning)  ⟨picked {A} {k} of {n} times⟩   │
+├───────────────────────────────────────────┤
+│ INTERESTS  [cricket ✎ ✕] [trains ✎ ✕] [+]  │   InterestTagEditor
+│ removed by you: [films · add back]         │
+├───────────────────────────────────────────┤
+│ Download · Reset how she teaches · Turn off│   ink, never red; hold 2 s + OTP
+└───────────────────────────────────────────┘
+```
+
+- **Entry points:** the Aur dekhein row (§6.3), the PTM agenda line (§6.8), the Controls "learning memory" row and the data row "reset how she teaches" (§6.9), and the monthly report's format section (parent-reports §6.2). The page is never pushed, and it is never the target of a weekly WhatsApp link.
+- **Tokens:** no `--p-yourturn-*` element on this page, because nothing is asked of the parent (PX3 holds at zero). Destructive actions use `--p-ink`, never `--p-alert` (alert is for safety). There are no new tokens, so the `product-design-contrast.py` pairs are unchanged. Text follows the parent type floors (§4.3) and survives 200% (§7.1).
+- **Offline:** the last good copy renders with "last updated". Tag edits queue offline with idempotent event ids. Reset, turn off and export need the network and an OTP.
+
+#### 6.13.2 Components and content (copy is shapes ⟨…⟩, never lines; Hindi and Hinglish shapes [U: native review, as §6.4])
+
+| component | shows | rules |
+|---|---|---|
+| `TeachingModeBanner` | one mode shape from §6.13.3 | always present; it is the only place the mode is explained |
+| `RuleList` | four rules with a "why this rule?" sheet each: words plus a relevant picture for everyone (Noetel 2022); help follows prior knowledge, so someone new to a topic sees one solved example first and then works together and alone, while someone who knows it well tries first and hears the explanation after (expertise reversal: Tetzlaff 2025, Kalyuga 2007); rhythm or chant only where the words themselves must be learned (Rey 2012, seductive details); word-problem contexts from interests (Walkington 2013) | every rule carries ⟨the same rule for every child⟩; rules are versioned copy ids, never generated |
+| `TopicTypeCard` ×5 | the topic type in kitchen words, up to 3 examples from {name}'s own chapters, `FormatChip`s, `PriorGateLine`, `TopicStatus` | fixed order; a type {name} has not met yet collapses to ⟨not in {name}'s lessons yet⟩ |
+| `FormatChip` | the plain-word name of a format family plus an L0 count ⟨used in {k} of the last {n} lessons of this kind⟩ | neutral outline `--p-ink-2`; never a state colour; never an F-code or a percentage |
+| `PriorGateLine` | ⟨because {skill} is [state chip], she {gate action}⟩, linked to `/parent/:cid/skill/:skill` | the four state words keep their §6.4 meaning only. **Correction:** ⟨{name} already knows this⟩ schedules one re-check item in the next lesson, and the chip and the gate change only from that check, because a parent's word is not evidence and a model never grades |
+| `TopicStatus` | one status shape (table below) | rendered only from server statuses; the client re-checks `found` (§6.13.8) |
+| `FindingLine` | the found or same-either-way shape plus *Kaise pata?* | at most one per topic type; page budget Σ(1 − Pᵢ) ≤ 0.3 (parent-reports PR-D5, monthly ε); a claim the budget excludes renders as `still_learning` |
+| `ComparisonSheet` | the matched delayed comparisons (§6.13.4) | deep-linkable `/parent/:cid/teaching/c/:comparisonId` |
+| `ChoicesPanel` | ⟨when offered {A} or {B}, {name} picked {A} {k} of {n} times⟩ and ⟨said they liked {A} more, on {date}⟩ (the P7 self-check, §8.11) | heading ⟨choices {name} made; Taxila does not count these as learning⟩; its own section, never inside a topic card; frequency words only by parent-reports §5.2 (n ≥ 10) |
+| `InterestTagEditor` | each tag with its source (⟨said in the lesson on {date}⟩ with the ≤ 25-word quote, or ⟨added by you⟩) and use (⟨used in {k} word problems this month⟩); edit, delete, add | detailed in §6.13.5 |
+| `ProfileDataActions` | Download · Reset how she teaches · Turn off adapting | §6.13.5 |
+
+**Topic types** (learning-science §8.4 ids). This spec writes them as `topic:T1`…`topic:T5` so they cannot be confused with T1 module engines (§3.6) or the motivation tests T1-T6 (§8.1).
+
+| id | kitchen words: en · Hinglish · हिन्दी | content-fit rule shown on the card |
+|---|---|---|
+| topic:T1 verbatim / sequence | learned by heart, in order · yaad karne wali cheezein, kram se · याद करने वाली बातें, क्रम से (tables, varnamala, months) | rhythm or chant allowed only here and in T2 word lists |
+| topic:T2 vocabulary, language | new words and language · naye shabd aur bhasha · नए शब्द और भाषा | the word on screen while she says it; spoken back and forth |
+| topic:T3 concepts, the science "why" | why things happen · cheezein kyun hoti hain · चीज़ें क्यों होती हैं | short explanation with a picture, then {name} explains it back |
+| topic:T4 procedures | step-by-step methods · step-by-step tareeke · क़दम-दर-क़दम तरीक़े | one solved, then together, then alone, while the method is new; a picture or number line first for fractions and geometry |
+| topic:T5 problem solving | word problems and thinking questions · sochne wale sawaal · सोचने वाले सवाल | contexts from interests; {name} tries first once the method is known |
+
+**Format families in plain words** (the F-codes never render): F1 short explanation with the key thing on screen · F2 one solved, then together, then alone · F3 a picture or number line first, then words · F4 a story or example from what {name} likes · F5 said in a rhythm, like a chant (T1/T2 only) · F6 as a game, with no points · F7 {name}'s turn to explain (समझाने की बारी {name} की) · F8 {name} tries first, then she explains. Hindi and Hinglish forms are noun phrases, so the child's gender never enters a verb (R11). The teacher's verb follows the chosen character (padhati / padhate).
+
+**Status shapes** (per topic type; mode `child` unless noted):
+
+| status | when | shape |
+|---|---|---|
+| `not_met` | no lesson of this type yet | ⟨not in {name}'s lessons yet⟩ |
+| `still_learning` | the default; no eligible claim | ⟨still learning what works best for {topic type}⟩ + ⟨she follows the rules above meanwhile⟩ |
+| `trying` | an active matched comparison | ⟨trying {A} and {B} for {topic type} until about {date}; {done} of at least {N} later-day checks so far⟩ + *Kaise pata?* (rows only, §6.13.4) |
+| `found` | gate passed (§6.13.8) | ⟨Taxila has found that, in Taxila lessons, {name}'s later-day checks on {topic type} went better after {A} than after {B}: {k₁} of {n₁} vs {k₂} of {n₂}, checked {d} days later⟩ + ⟨so she now starts {topic type} with {A}, and still uses {B} about 1 lesson in {m} to keep checking⟩ + *Kaise pata?* |
+| `same_either_way` | P(\|Δ\| < δ_min) ≥ 0.9 over ≥ N comparisons (δ_min 0.10 [U], parent-reports §4.2) | ⟨{A} and {B} held up about the same for {name} on {topic type}: {k₁} of {n₁} and {k₂} of {n₂}; so she mixes them and lets {name} choose⟩. This is a real result and the one the evidence predicts for most children (parent-reports §6.2) |
+
+- **Delay wording:** {d} is the median delay of the rows behind the claim. The fixed words "a week later" or "next week" render only when every row's delay is ≥ 7 days; otherwise the shape says {d} days. This tightens parent-reports §6.2, whose found shape fixes "a week later" even though §8.4 counts any later session.
+- **Exploration is disclosed:** the found shape names the 1-in-{m} use of the other way (the §8.4 floor of ≥ 10-20%), so a parent who notices it is not misled.
+
+#### 6.13.3 States (mode precedence: off > narrow > retired > population > child; derived server-side, never on the client)
+
+| mode | when | banner shape | topic cards | findings | choices | interests | reset / turn off |
+|---|---|---|---|---|---|---|---|
+| `off` | onboarding P5 "remember learning across days" = **only this session**, or `legal_mode = M0` | ⟨you chose "only this session" on {date}: every lesson starts fresh and nothing about {name}'s learning is kept between lessons⟩ + ⟨change in Controls⟩ (§6.9, OTP) | rules only; the prior-knowledge gate uses only what she finds within that lesson; no chips, counts or statuses | none | ⟨not kept⟩ | parent-added tags only; child-stated tags follow their own P5 row | hidden, plus ⟨nothing to reset⟩ |
+| `narrow` | `legal_mode = M1` (learning-science §8.6 narrowest mode; dpdp-deep NM-3: no format-preference posteriors persisted) | ⟨she adjusts during each lesson and keeps no record between lessons of which ways worked⟩ + ⟨she still uses what {name} knows (the skills) to decide how much help⟩ | rules, examples and `PriorGateLine` (the knowledge layer persists in M1); no FormatChip counts; no status | none | ⟨not kept between lessons⟩ | per NM-7 consent | reset hidden (⟨nothing kept to reset⟩); turn off not offered |
+| `retired` | the E-PROFILE kill criterion fired (§8.7): per-child formats dropped for everyone | ⟨Taxila adapts to what {name} knows and what {name} enjoys⟩ + ⟨for each kind of topic she uses the way that held up best across Taxila lessons, gives {name} choices and uses {name}'s interests⟩ + a one-time ⟨Taxila stopped adapting the starting way per child on {date}, because a comparison showed it did not help enough; nothing else changes⟩ | rules, examples, gate, FormatChip counts; **no** still-learning or trying lines (they would describe a search that has stopped) | none; earlier findings are withdrawn | as `child` | as `child` | reset hidden; the per-child comparison rows are purged within 30 days [I] (purpose limitation), and kept only de-identified in the research store with research consent |
+| `population` | the format knob is still at population scope (personalisation-2026 PZ9, HTE gate not passed), or E-PROFILE arm B, or the parent turned adapting off | ⟨still learning what works best for each kind of topic, for all children first; for now {name} gets the way that held up best across Taxila lessons⟩. Arm B adds ⟨{name} is part of this comparison until {date}⟩ [U: does arm disclosure change parent behaviour; preregistration notes it]. Parent off shows ⟨you turned this off on {date}⟩ + ⟨turn on⟩ | rules, gate, chips; `trying` rows visible (they feed the population estimate) | none: a found line needs `taxilaAction` = "starts {name} this way", which population scope cannot keep | as `child` | as `child` | reset available; turn off / turn on |
+| `child` | consent and legal mode allow cross-session format records (M2 or M3), and the knob is at child scope (HTE gate passed, or E-PROFILE arm A) | ⟨still learning what works best⟩ by default; once any card is `found` or `same_either_way`, ⟨{n} kinds of topic checked so far⟩ | everything in §6.13.2 | per the gate | yes | yes | yes |
+
+- **Not enough data yet** (mode `child` or `population`, in the first weeks): when every card is `not_met`, or `still_learning` with zero comparisons, the banner adds ⟨too early: {name} has had {k} lessons; comparing starts after a few lessons of each kind⟩. No placeholder findings, no "coming soon", no progress bar toward a finding (a goal-gradient meter, §0.9).
+- **Consent wording:** the onboarding P5 row "remember learning across days" opens a detail sheet that lists what is remembered. Where the legal mode allows it, this includes ⟨which ways of explaining held up on a later day⟩. The per-purpose consent row is `learning_profile` (db `consent.purpose`), written by turn off and turn on.
+
+#### 6.13.4 *Kaise pata?* for a format line: the matched delayed comparisons
+
+- **Header:** topic type · ⟨{A} vs {B}⟩ · window ⟨{from} to {to}⟩. Then, only for `found` or `same_either_way`: the counts k₁/n₁ and k₂/n₂; ⟨Taxila is fairly confident (about 9 in 10)⟩ [U: PRM6]; `reviseIf` ⟨if the next {r} later-day checks go the other way, she goes back to comparing⟩; and `taxilaAction`.
+- **Rows** (one per matched pair, newest first, at least N): taught on {date} · the skill in NCERT outcome words · the way used · the check item (its text from the pack, ≤ 60 chars) · checked again on {date} ({d} days later) · result: right without help, right with {h} hints, or not yet. The two arms of a pair sit on adjacent rows under a bracket ⟨a matched pair: about equally hard⟩.
+- **Fixed footer shapes:** ⟨answers during the lesson are not counted here, only checks on a later day⟩ (§8.4: immediate correctness is never the reward) · ⟨choices {name} made are not counted⟩.
+- **For `trying`:** the same rows under ⟨too few to tell yet: {done} of at least {N}⟩, with no counts summary and no confidence line. Parents see everything (rule 32), and the header keeps three rows from reading as a verdict.
+- **What counts:** only rows whose format was assigned at random (`allocated_by = explore`) or by the sampler (`thompson`, analysed with the batched estimator, learning-analytics-methods §4). `choice` and `prior` rows never enter a claim (self-selection and no comparison, respectively).
+- **Accessibility:** desktop uses a real `<table>` with row and column headers. Phone stacks cards with the same accessible names. The speaker reads the header only.
+
+#### 6.13.5 Correct, export, reset, turn off (learning-science §8.6; §6.9 data row)
+
+- **Interest tags** (`InterestTagEditor`):
+  - **Add:** from the vetted, gender-neutral C3 set, or as free text of ≤ 24 characters. Free text passes the sensitive-category filter (religion, caste, health, family situation, location: dpdp-deep NM-7) and the PX4-LS list. A refusal says plainly why (⟨Taxila doesn't keep this kind of detail⟩). Cap: 12 tags [I].
+  - **Edit and delete:** rename; delete is one tap with a 5 s undo.
+  - **Removed tags stay removed:** a deleted tag goes on the child's `removedInterests` list, is never re-learned from speech, and shows as ⟨removed by you · add back⟩. The list survives a reset because it is the parent's instruction.
+- **A finding:** ⟨this doesn't match what we see at home⟩ logs the parent's note (as a note, never as evidence). It withdraws the line from this page and from the reports, and reopens that topic type as `trying` at 50 / 50 for the next N comparisons, with ⟨she will check again until about {date}⟩.
+- **A gate input:** handled through `PriorGateLine` (§6.13.2).
+- **Download:** part of the `/parent/data` export (OTP), with two parts:
+  - PDF: the page as rendered.
+  - JSON: `format_trial` rows, posteriors per (F-code × topic type) as numbers, choice events, interests, `removedInterests` and `learning_profile` consent rows. JSON keys use F-codes and plain descriptions and are linted (PD-G-LP2).
+- **Reset how she teaches** (hold 2 s + OTP, §6.2):
+  - **Clears:** ⟨every comparison of ways of explaining for {name}, with their later-day checks⟩ · ⟨anything Taxila had found about how to start each kind of topic⟩ · ⟨the record of what {name} picked when offered a choice⟩.
+  - **Keeps:** ⟨skills, their checks and state words⟩ · ⟨lessons and transcripts⟩ · ⟨interests and removed interests⟩ · ⟨your settings⟩.
+  - **After:** ⟨she starts each kind of topic by the rules again; a new finding needs at least {N} new later-day checks⟩ · ⟨this cannot be undone · download first⟩.
+  - **Mechanics:** synchronous revocation (the next turn allocates from rules and population priors); an async purge of `format_trial`, choice events and derived posteriors, retried until done; a content-free receipt; an audit row. The child is not told and sees nothing change.
+- **Turn off adapting:** the same gate. It is a reset plus withdrawal of the `learning_profile` purpose; the mode becomes `population` with reason parent off, so there is no exploration either. ⟨Turn on⟩ is offered later from the same place, at equal weight.
+- **Erasure scope:** the profile is purged by "reset how she teaches", "delete child" and "delete account". Purging the knowledge layer itself is "delete child" (or a fresh placement), never a side effect of reset.
+
+#### 6.13.6 Child disclosure
+
+- **Older (B3-B4):** a row in the §2.8 "what your parent can see" list. A read-only `MeTeachingSheet` opens from `/c/:cid/me` with the rules, the topic cards, any finding with *Kaise pata?*, the child's own choices and their interest tags. It has no reset, export or edit. It is served by `GET /api/me/teaching` (child token, a smaller payload). The shared presentational components live in `src/shared/teaching/`, so the PD-G20 import boundary holds. Shapes address the child as *tum* or *aap* per their choice. PX4-LS applies.
+- **Young (B1-B2):** no new surface; the C2 "ghar ke bade can see" strip covers it.
+- **In lessons, for every band:** she never tells the child how they "learn best". The PX4-LS list joins the §8.12 lexicon for teacher turns, P7 close turns and protégé lines.
+
+#### 6.13.7 PX4-LS: the learning-style and learner-type lint (extends PX4; gate PD-G-LP2)
+
+- **Scope:** every string on `/parent/:cid/teaching`, the `ComparisonSheet`, the `MeTeachingSheet`, the PTM "how she teaches" turn, the monthly report's format section, the export PDF's profile pages, the JSON export keys, and parent-entered interest tags. There is **no allow-list on these surfaces**.
+- **Matching:** NFC normalisation, nukta folding (विज़ुअल = विजुअल), case folding, and whole-word or phrase matching in Latin, Hinglish and Devanagari.
+- **Fails (families; label words from the main style models [V en.wikipedia.org/wiki/Learning_styles]; Hindi forms [M], [U: native review]):**
+  - **English:** learning style(s), style of learning, learner type, type of learner, kind of learner. Also {visual, auditory, aural, kinaesthetic, kinesthetic, tactile, verbal, musical, logical, hands-on, global, sequential, reflective, active} + {learner, type, child, student}, and the bare words visual / auditory / kinaesthetic / kinesthetic anywhere on these surfaces. Also VARK, Kolb, Honey and Mumford, Felder, Gregorc, multiple intelligences, left-brain / right-brain, "learns best by / with", "her / his / {name}'s style", learning personality, learning DNA, brain type, and {picture, story, game, song} + {person, type, learner}.
+  - **Hinglish:** seekhne ka style, seekhne ki shaili, seekhne ka tareeka (use *padhane ka tareeka*, her way of teaching), padhne ka style, visual type, dekh ke / sun ke / kar ke seekhne wala / wali / wale, is type ka / kis type ka bachcha, dimaag ka type, {tasveer, picture, kahani, story, khel, game, gaana} + {wala bachcha, wali bachchi, type}.
+  - **हिन्दी:** सीखने की शैली, अधिगम शैली, सीखने का स्टाइल, लर्निंग स्टाइल, लर्नर, दृश्य / श्रव्य / गतिक / गतिसंवेदी + {अधिगमकर्ता, शिक्षार्थी}, विज़ुअल, ऑडिटरी, काइनेस्थेटिक, बहु-बुद्धि, बायाँ / दायाँ दिमाग, देखकर / सुनकर सीखने वाला / वाली / वाले, किस तरह का बच्चा.
+- **Negative controls:**
+  - **Must fail:** "visual learner", "विज़ुअल", "विजुअल", "learns best with pictures", "uska seekhne ka style", "सीखने की शैली", "अधिगम शैली", "kinesthetic", "VARK", "right-brain", "picture wali bachchi", "type of learner", and a parent tag "visual learner".
+  - **Must pass:** "pehle tasveer, phir shabd", "number line", "diagram", "padhane ka tareeka", "story wala sawaal", "चित्र पहले", "a picture or number line first".
+
+#### 6.13.8 Payload: a new endpoint, plus a declared 1 KB slice of the overview
+
+- **Decision:** `GET /api/parent/profile/:cid`. It is **not** part of the 100 KB `GET /api/parent/overview`.
+  - The page is pull depth, one level below Home. Its size grows with comparisons. It is consent- and mode-gated, and it caches on its own ETag.
+  - The overview carries only `teachingLine: { mode, reason, claimId | null }` (≤ 1 KB), for the Aur dekhein row and the PTM agenda card. Its size is declared in the overview budget.
+- **Size and access:** ≤ 24 KB JSON [I]. The comparison rows are lazy-loaded by `GET /api/parent/profile/:cid/comparisons/:comparisonId` (≤ 16 KB [I]). Guardian token only: a child token gets 403, and the child sheet uses `GET /api/me/teaching`.
+- **Writes:**
+  - `POST /api/parent/profile/:cid/interests` with `{op: add | rename | delete | restore, tag, eventId}`; queues offline.
+  - `POST …/disagree` with `{claimId}`.
+  - `POST …/reset` and `POST …/adapting` with `{on}`; both need OTP re-auth.
+
+```ts
+// shared/contracts.ts (proposed): one constant shared by server gate, client guard and gate fixtures
+export const PROFILE_FOUND = { p: 0.9, n: 10 /* [I] until M-PROF-1 sets N (§8.4: likely ≥ 8-10) */, eps: 0.3 } as const;
+type TopicType = 'T1'|'T2'|'T3'|'T4'|'T5';   type FormatFamily = 'F1'|'F2'|'F3'|'F4'|'F5'|'F6'|'F7'|'F8';
+interface TeachingProfile {
+  childId: string; asOf: string; lexiconVersion: string;
+  mode: 'off'|'narrow'|'retired'|'population'|'child';
+  reason: 'session_only'|'legal_M0'|'legal_M1'|'eprofile_killed'|'hte_not_passed'|'eprofile_arm_b'|'parent_off'|null;
+  modeSince: string;                            // the date shown in the banner shapes
+  rules: { ruleId: string; copyVersion: string }[];          // fixed copy ids, never generated text
+  topicTypes: {                                 // always 5, fixed order
+    topicType: TopicType; examples: { skillId: string; chapter: string }[];   // ≤ 3, from this child's syllabus
+    formats: { family: FormatFamily; used: { k: number; n: number } }[];      // omitted in off / narrow
+    priorGate: { skillId: string; state: 'unseen'|'practising'|'learned_today'|'mastered'; action: 'F2'|'F8' } | null;
+    status: 'not_met'|'still_learning'|'trying'|'found'|'same_either_way'|null;   // null in off / narrow / retired
+    trying?: { a: FormatFamily; b: FormatFamily; until: string; done: number; comparisonId: string };
+    claim?: Claim & { arms: { a: FormatFamily; k1: number; n1: number; b: FormatFamily; k2: number; n2: number };
+                      comparisons: number; medianDelayDays: number; budgetAdmitted: boolean; exploreOneIn: number };
+  }[];
+  choices: { a: FormatFamily; b: FormatFamily; pickedA: number; offered: number }[] | null;  // null = not kept
+  stated: { liked: FormatFamily; on: string }[] | null;
+  interests: { tag: string; source: 'child_said'|'parent_added'; factId?: string; usedThisMonth: number }[];
+  removedInterests: string[];
+  actions: { reset: boolean; turnOff: boolean; turnOn: boolean };
+}
+// Claim = parent-reports §4.1 (construct 'ls.formatFit', level 'L2_pattern', posterior, window, scope.topicType,
+// taxilaAction, reviseIf, factIds = format_trial ids). The client's renderFinding() re-checks
+// mode === 'child' && posterior >= p && comparisons >= n && budgetAdmitted && every fact row delayed ≥ 1 day;
+// on failure it renders still_learning and posts an incident. It never trusts the status field alone.
+```
+
+- **Server gate:** the found and same-either-way claims are computed by the parent-reports §4.2 gate, using the §8.4 thresholds and only `explore` and `thompson` rows. The page budget is ε = 0.3. The LLM never writes these lines; they are slot fills of the shapes above.
+- **Gates:** PD-G-LP1, PD-G-LP2 and PD-G-LP3 (§9). **Measurements:** M-PROF-1 and M-PROF-2 (§10).
 
 ---
 
@@ -955,7 +1223,7 @@ No stepping stones, no fill, no counts. Young children hear where they are from 
 └────────────────────────────────────┘
 ```
 - **State by silhouette** (never colour alone): empty plot with a seed packet (Abhi nahi) · two-leaf sprout (practising) · flower (got it today) · fruit with a `done` ring (Pakka). The word appears only in the parent view.
-- **Monotone and absence-invariant:** the plant shows the highest stage reached; only two consecutive delayed misses demote, told plainly in the lesson, with no wilting animation.
+- **Monotone and absence-invariant:** the plant shows the highest stage reached; only two consecutive delayed misses demote, told plainly in the lesson, with no wilting animation. One miss changes nothing on the child's screen. Flower needs (a) + (b) on the same day, and fruit then needs (c) in a later session ≥ 20 h on; the full entry and exit table is §6.4.1 (gap-fill G1-ledger-entry-rule2).
 - **The bird** (a silhouette, not a hue) appears only when the server has written a `recheck_scheduled` row (R13): it means she will check this one next time. Never pushed, never counted, never framed as the child's chore. If MW-M2 interviews show "I have to feed it" readings, the cue moves to her side ("she has a question saved").
 - **Visible beds:** the current chapter, finished ones, and one seed-packet bed ahead; no count of empty plots, no "x of y beds".
 - **Plant kind per bed:** a cheap picture choice (2 for B1, 3 for B2: flower, vegetable, fruit tree); never marigold, never sacred plants.
@@ -982,7 +1250,7 @@ No stepping stones, no fill, no counts. Young children hear where they are from 
 └────────────────────────────────────┘
 ```
 - Real numbers, own-referenced; never percentile, rank or time as a virtue. Older skins may show plain words and a ticked ring instead of a glowing halo (motivation critique C10). Exam proximity appears only as a window in the parent view.
-- **"Your class is here"** marks the chapter the school is on; a child placed below sees the path of stars leading to it (the level bridge as a route). "I know this" on an unlit star runs a 2-item check; a pass lights it to Aa gaya; Pakka still needs a later session.
+- **"Your class is here"** marks the chapter the school is on; a child placed below sees the path of stars leading to it (the level bridge as a route). "I know this" on an unlit star runs the §6.4.1 check: 1 unaided produce-form item + 1 produce-form generative or near-transfer item. Only that pair, with the pL guard, lights the star to Aa gaya; two correct taps leave it a dot (Abhyaas mein). Pakka still needs (c), a delayed success in a later session ≥ 20 h on. After two consecutive missed re-checks a Pakka star loses its ticked ring, with no other effect; one miss changes nothing on the map (gap-fill G1-ledger-entry-rule2).
 - **Skins** (chosen, never earned): sky (default), metro route map, workshop blueprint (B3, motivation critique C8).
 - **Goal card (HPC vocabulary, Aug 2025 [V via motivation]):** pick 1 of 3 suggested goals or "my own"; "important to me because"; first steps picked from a list, **undated**; one active goal; closes only on a ledger condition; a missed goal is re-set, never failed.
 - Optional "stretch" items framed as puzzles with no reward (challenge as motivation for B3).
@@ -999,7 +1267,7 @@ Every map has a built-in list: chapter → skill → state (shape + word for Old
 
 | milestone | trigger (ledger) | child surface | parent surface |
 |---|---|---|---|
-| Pakka | a delayed re-check passed in a later session | the plant fruits / the star gains its ring **during the warm-up item that proved it**; her spoken capability line | weekly report row; optional milestone message (≤ 1 / week) |
+| Pakka | (a) + (b) on one day, then (c) a produce-form delayed success ≥ 20 h later in a different session (§6.4.1; gap-fill G1-ledger-entry-rule2) | the plant fruits / the star gains its ring **during the warm-up item that proved it**; her spoken capability line | weekly report row; optional milestone message (≤ 1 / week) |
 | first Pakka ever | first mastered state | she explains once what the fruit or ring means | milestone message |
 | comeback | a skill with ≥ 2 earlier misses reaches Pakka | then vs now (two pictures Young; ThenNowCard Older) | report row with both dates |
 | bridge crossed | the placement gap closes | the garden path reaches the gate to "the chapter your class is on" / the "your class" marker is reached | the level bridge line |
@@ -1016,7 +1284,7 @@ Every map has a built-in list: chapter → skill → state (shape + word for Old
 | protégé design and name | 3 | 3 | opt-in |
 | which due item first | 2 | 2-3 | 3 |
 | next topic | she picks | 2 | 3 |
-| "I know this" | no | no | 2-item check |
+| "I know this" | no | no | 1 unaided produce item + 1 generative or near-transfer item (§6.4.1; gap-fill G1-ledger-entry-rule2) |
 | goal | no | a picture goal | goal card |
 | look (teacher, theme, garden decor) | all available | all available | all available |
 | world (Bagiya / Aasmaan) | switchable | switchable | switchable |
@@ -1068,6 +1336,10 @@ The bilingual banned list (streak, din lagataar, XP, coins as reward, level up, 
 | PD-G25 | Onboarding: no child field before a VPC row when the flag is on; no `POST_NOTIFICATIONS`; first-audio asset in the APK and timed; process-kill resume at every step | kill at P6, lose the class tile | G-ONB-1, 3, 4, 6 |
 | PD-G26 | Resilience: renderer recovery; build target = WebView floor; pinned scheme; offline e2e with idempotent replay and alternating checkpoints; LinkSupervisor traces (no switch while SPEAKING); EchoGuard fixtures; pack signature; render-loop bans; holdover guard | a tampered pack file | G-LE-2…10, kids-ux G10 |
 | PD-G27 | No camera in v1: no `getUserMedia({video})` under `src/lesson/`, no CAMERA permission | add a camera call | G-UT-5 |
+| PD-G28 (gap-fill G1-ledger-entry-rule2) | Ledger entry and exit (§6.4.1). The real fold (`src/learner/kt/mastery.ts`) is replayed over fixture event logs (`tests/fixtures/ledger/pd-g28/`, seeded from `ledger-state-fixtures-2026-10-02.json`) and must give: **"I know this" with two correct taps → Abhyaas mein, never Aa gaya**, even at prior 0.85 (F1); **a delayed success without a generative pass → never Pakka** (F2); placement taps plus a same-day teach-back → Abhyaas mein (F4); a second session < 20 h later → still Aa gaya (F5); a choice-form why is not (b) (F6); one missed delayed check on Pakka → child render byte-identical and parent tag "re-check due" plus an evidence row (F8); two consecutive misses → Aa gaya plus a report row (F9); a pass between misses resets the count (F10). Positive controls F3, F4b and F7 stop the gate passing by never promoting. A plan lint is included: every lesson that introduces a skill schedules ≥ 1 produce-form (b) opportunity for it | **remove the (b) requirement: F2 must fail** (it reaches Pakka). Also: let taps count as produce (F1 and F4 fail); demote on one miss (F8-F11 fail); drop the 20 h rule (F5 fails); a B1 plan whose only why is choice-form fails the plan lint | kt-algorithms §5.2 invariant 8 (extended to all three kinds of evidence); MW-G2 for the re-check-due render |
+| PD-G-LP1 (gap-fill G2-learning-profile-surface) | **No "Taxila found" below the threshold.** `renderFinding()` and the server gate share `PROFILE_FOUND` (§6.13.8). The fixtures are: (a) p = 0.89, n = N; (b) p = 0.95, n = N − 1; (c) p = 0.95, n = N with one row checked the same day; (d) p = 0.99 from `choice` rows only; (e) an eligible-looking claim in each mode `population`, `narrow`, `off` and `retired`; (f) four claims at 0.9, so Σ(1 − P) = 0.4 > ε. Each fixture is rendered on `/parent/:cid/teaching`, the `ComparisonSheet`, the `MeTeachingSheet`, the PTM teaching turn, the monthly format section and the export PDF, in all three languages. The test asserts **zero** found-family strings (en "Taxila has found", "found that", "went better after", "held up better"; Hinglish "Taxila ne paaya", "pata chala ki"; हिन्दी "टैक्सिला ने पाया", "पता चला कि") and that the `still_learning` shape renders. A property test over random (p, n, mode, ε) checks found ⇔ p ≥ 0.9 ∧ n ≥ N ∧ mode = child ∧ budget admitted ∧ every row delayed ≥ 1 day. The words "a week later" render only when every row's delay is ≥ 7 days | send a forged payload with `status: 'found'` for fixture (a) with the client re-check removed: the gate must fail. Also drop the `budgetAdmitted` check, so (f) must fail | parent-reports PRI8 (extended to every profile surface) |
+| PD-G-LP2 (gap-fill G2-learning-profile-surface) | **PX4-LS lexicon** (§6.13.7) over every §6.13 surface, the JSON export keys and parent-entered tags. NFC normalisation, nukta folding, case folding, whole word or phrase, both scripts plus Hinglish, no allow-list. The list also joins the §8.12 lexicon for teacher turns, P7 close turns and protégé lines | the §6.13.7 must-fail strings fail and the must-pass strings pass; a parent tag "visual learner" is refused | PX4's single "visual learner" entry |
+| PD-G-LP3 (gap-fill G2-learning-profile-surface) | **Mode honesty** (§6.13.3). Five modes × five statuses render only their allowed shapes: `still_learning` and `trying` never in `off`, `narrow` or `retired` (they would describe a search that is not running); reset hidden in `off` and `narrow`; no FormatChip counts in `off` or `narrow`; choices never inside a `TopicTypeCard` or a claim slot; no `choice` or `prior` row in any claim's `factIds`; in `narrow` no format or choice row outlives the lesson (dpdp-deep NM-3, schema and consolidation test); a removed interest is never re-learned | render `still_learning` in `retired`; let a `format_trial` row survive lesson close under `legal_mode = M1`; re-add a removed tag from a transcript | new |
 
 Plus the inherited audio floor: port Meera's echosim approach before any change to the audio path (inherited law; low-end §6).
 
@@ -1098,16 +1370,25 @@ Plus the inherited audio floor: port Meera's echosim approach before any change 
 | 1 | M-LE-13 | tier A vs tier C teacher reads as the same person (10-15 raters) | 20 | flipbook art |
 | 1 | M-UT-1 | chalk pointer + gaze lead vs none | 40 per band family | deixis |
 | 1 (launch gate) | MW-M1, MW-M7 | does the progress layer change free-choice persistence; does learning (Pakka rate, delayed transfer) hold when engagement moves | as designed in motivation §14 | keep or strip the worlds; stop rule if delayed retention drops vs a minimal end card |
-| 1 (parents) | M6 + state words | after the voice note, can the parent state one thing the child can do and the home task; do the four words read correctly | 12 (≥ 4 with ≤ Class 8 schooling), Hindi and English | PX2 words, report shape |
+| 1 (parents) | M6 + state words | after the voice note, can the parent state one thing the child can do and the home task; do the four words read correctly; does the "re-check due" tag on a Pakka chip read as "will be checked again" rather than "lost it" (gap-fill G1-ledger-entry-rule2) | 12 (≥ 4 with ≤ Class 8 schooling), Hindi and English | PX2 words, the re-check tag words, report shape |
 | 1 (parents) | M-ONB-2, M-ONB-9 | OTP success by channel and by device-has-SIM; placement shock | 500 sends; 15 parents | OTP order; R1 copy |
 | 1 (parents) | M-UX-9 | child entries into the parent corner on shared phones | 20 families, 1 week | PIN-default decision |
 | 2 (scale) | M-ARC-6, MW-M3, MW-M4, M3 | wrapper vs plain items; notebook read as a collection; reaction relay rate; home task vs none on delayed retention | per sibling docs | the matching decisions |
+| 0 (simulation, no children) | M-PROF-1 (gap-fill G2-learning-profile-surface) | **Sets N for `PROFILE_FOUND`.** Simulate children under the learning-science §8.4 hierarchical model, with u = 0 and with τ ∈ {0.1, 0.3, 0.5} logits. Use Thompson allocation with a 20% uniform floor, decay, matched pairs, and lesson rates per band. Report P(≥ 1 false found per child-term \| u = 0), the time to a true found, and the same-either-way rate | 10,000 simulated children per cell | `PROFILE_FOUND.n` (target false-found ≤ 5% per child-term [I]); the trying-line {until} estimate |
+| 1 (parents) | M-PROF-2 (gap-fill G2-learning-profile-surface) | **Read-the-page test.** A fixture page (mostly `still_learning`, one found line, choices, interests) is shown in Hindi and in English. After 2 min, ask: "how does {name} learn?", "what will Taxila do next?", "what does reset clear?". Fail if ≥ 2 of 12 parents produce a type or style label, read a choice as evidence, or think reset clears skills. Then run the parent-reports PR-D14 anti-Barnum test on the found line | 12 (≥ 4 with ≤ Class 8 schooling) | rules-first vs cards-first order; whether choices stay on the page or move one level down; the reset copy |
 
 ---
 
 ## 11. Decisions, open questions and risks
 
-**Proposed `context/` entries** are in `context/inbox/design.json` (decisions `ds-layout-dp-budget`, `ds-mic-tap-default`, `ds-status-carriers`, `ds-captions-by-reading-level`, `ds-band-fork-older`, `ds-progress-no-meters`, `ds-parent-gate-pin-default`; rejections `ds-rejected-percentage-layout`, `ds-rejected-chalk-mark-gold`; measurement `design-token-contrast-2026-10-02`). The sibling docs' own proposed decisions (D-ARC-*, D-VI-*, `mw-*`, `px-*`, `onb-*`, `le-*`, ui-teardown §12) stand where §0.2 does not change them, and should be merged with the R-numbers above as `supersedes` edges where they do.
+**Proposed `context/` entries** are in `context/inbox/design.json` (decisions `ds-layout-dp-budget`, `ds-mic-tap-default`, `ds-status-carriers`, `ds-captions-by-reading-level`, `ds-band-fork-older`, `ds-progress-no-meters`, `ds-parent-gate-pin-default`; rejections `ds-rejected-percentage-layout`, `ds-rejected-chalk-mark-gold`; measurement `design-token-contrast-2026-10-02`). **Gap-fill G1-ledger-entry-rule2 adds the following, for the main loop to merge:**
+- decision `ds-ledger-entry-rule2` (§6.4.1; supersedes kt-algorithms §2.6 `unaided` accepting `item.mcq3+`, and the 1-2 item "I know this" in kids-ux S3 and lesson-arc §5). Reverse if, on ≥ 2,000 delayed checks, skills whose (a) was a first-try mcq4 tap show a delayed-success rate within 3 points of skills whose (a) was produce-form; then allow mcq4+ as (a).
+- decision `ds-recheck-due-parent-only`. Reverse if M6 or MW-M4 parents read a tagged Pakka as dishonest, or if B3-B4 interviews read the parent-only tag as surveillance.
+- **Gap-fill G2-learning-profile-surface adds, for the main loop to merge:** decision `ds-teaching-page-rules-not-findings` (§6.13: rules first, the same for every child; a finding only past `PROFILE_FOUND`; the myth never named). Reverse if M-PROF-2 parents come away with *fewer* style labels from a findings-first layout than from rules-first. · Decision `ds-profile-payload-own-endpoint` (§6.13.8: `GET /api/parent/profile/:cid` ≤ 24 KB plus a ≤ 1 KB `teachingLine` in the overview). Reverse if field data show > 50% of Home opens go on to the page within 10 s, in which case the slice moves into the overview. · Decision `ds-reset-keeps-knowledge` (reset clears formats and choices only; knowledge is purged only by delete child). Reverse if M-PROF-2 parents expect reset to clear skills and want that. · Open: whether E-PROFILE arm disclosure on the page changes parent behaviour (record in the preregistration). No rejection entry: nothing here was tried and failed.
+- rejection `ds-rejected-iknow-two-tap-check`. What was tried: a 2-item check whose pass lit Aa gaya. What broke: by construction it let two taps plus one later recall reach Pakka with no explanation or transfer, against rule 2. This was found in review, not in data.
+- measurement `ledger-state-fixtures-2026-10-02`: n = 16 fixtures × 5 configurations; method: reference fold; base all pass, and each of the 4 negative controls fails ≥ 1 named fixture.
+
+The sibling docs' own proposed decisions (D-ARC-*, D-VI-*, `mw-*`, `px-*`, `onb-*`, `le-*`, ui-teardown §12) stand where §0.2 does not change them, and should be merged with the R-numbers above as `supersedes` edges where they do.
 
 **Open questions (owner or measurement):**
 1. **"Exactly human" vs the uncanny valley.** The owner's goal is an exactly human teacher; the evidence predicts a near-human face creeps out children from about age 9. This spec makes her human in voice, timing and memory and keeps the face illustrated until M-UX-6 says otherwise, with a stop rule. If the owner overrides, the `StageFrame` and tier A already hold a realistic head; the disclosure rules and the ReactionGate apply unchanged.
@@ -1117,6 +1398,7 @@ Plus the inherited audio floor: port Meera's echosim approach before any change 
 5. **Azure-only vs messaging:** check Azure Communication Services coverage for Indian SMS and WhatsApp before choosing a BSP; the owner rules on any exception (onboarding §13.6).
 6. **Shared-device safety alerts:** whether WhatsApp carries safety alerts at all on households where the child holds the parent's phone is a safeguarding-expert decision.
 7. **Android 8/9 share** in the target families: measured in beta, decides how much the PWA lite path must carry.
+8. **The ema shadow guard (learner workstream; gap-fill G1-ledger-entry-rule2).** kt-algorithms §2.6 makes `ema ≥ 0.7` a learned-today condition but does not give ema's initial value. From ema = 0 with α = 0.9, reaching 0.7 takes 12 consecutive C0 [X `ledger-state-fixtures.py`], which would block every "I know this" pass and most single-lesson Aa gaya entries. §6.4.1 keeps ema as kt's hold-and-log disagreement signal and leaves it out of the PD-G28 reference fold. The learner workstream should set the initial value, or exempt the check path, before mastery.ts ships.
 
 **Risks:** the spec's numbers are starting values, and the biggest unknowns sit in the first minute (connect time, ASR on real children, echo on loudspeakers). The device lab and the first pilot (§10 priority 0-1) come before any visual polish.
 
@@ -1124,7 +1406,7 @@ Plus the inherited audio floor: port Meera's echosim approach before any change 
 
 ## 12. Sources
 
-**Sibling design docs (this folder), each with its own source list:** `kids-ux-ages.md` · `lesson-arc.md` · `ui-teardown.md` · `visual-identity.md` · `motivation-without-rewards.md` · `parent-experience.md` · `onboarding-flow.md` · `low-end-offline.md`. Scripts and data: `kids-ux-contrast.py`, `visual-identity-contrast.py`, `visual-identity-critique-probe.py`, `visual-identity-fonts.py` (+ JSON), `motivation-contrast.py`, `low-end-cascade-probe.mjs` (+ JSON), `low-end-data-budget.py`, `onboarding_reviews.py`, `onboarding_login_themes.py`, `ui_teardown_reviews.py` (+ JSON), and **`product-design-contrast.py`** (this pass; 0 failures).
+**Sibling design docs (this folder), each with its own source list:** `kids-ux-ages.md` · `lesson-arc.md` · `ui-teardown.md` · `visual-identity.md` · `motivation-without-rewards.md` · `parent-experience.md` · `onboarding-flow.md` · `low-end-offline.md`. Scripts and data: `kids-ux-contrast.py`, `visual-identity-contrast.py`, `visual-identity-critique-probe.py`, `visual-identity-fonts.py` (+ JSON), `motivation-contrast.py`, `low-end-cascade-probe.mjs` (+ JSON), `low-end-data-budget.py`, `onboarding_reviews.py`, `onboarding_login_themes.py`, `ui_teardown_reviews.py` (+ JSON), and **`product-design-contrast.py`** (this pass; 0 failures). **`ledger-state-fixtures.py`** (+ `ledger-state-fixtures-2026-10-02.json`; gap-fill G1-ledger-entry-rule2) holds the §6.4.1 reference fold and the PD-G28 fixtures: base 16/16 pass, and 4/4 negative controls fail. Upstream for §6.4.1: `../learning-science.md` §6 rules 2-4, `../learner/kt-algorithms.md` §1.2-1.3, §2.2, §2.6 and §5.2, `motivation-without-rewards.md` §5, §6, §13 and critique C28, `onboarding-flow.md` critique F1, and `lesson-arc.md` §6 (P2 and P6 forms by band).
 
 **Upstream repo docs:** `docs/research/learning-science.md` · `docs/harvest/gurukul.md` §4.7, §6 · `docs/ARCHITECTURE.md` §1-§2 · `context/decisions.md` (`voice-realtime-model`, `voice-turn-config`, `azure-only-compute`) · `context/measurements.md` (`infra-smoke-2026-10-02`, `realtime-audio-in-2026-10-02`) · `src/lesson/status.ts`.
 
@@ -1135,3 +1417,10 @@ Plus the inherited audio floor: port Meera's echosim approach before any change 
 - Android 14 features, non-linear font scaling to 200%: https://developer.android.com/about/versions/14/features#non-linear-font-scaling
 - Android, make apps more accessible (48 dp touch targets, content descriptions): https://developer.android.com/guide/topics/ui/accessibility/apps
 - Meta, WhatsApp message template components (header types, body and button limits): https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/components
+
+**Gap-fill G2-learning-profile-surface (§6.13), fetched 2026-10-02:**
+- [V] Dekker, Lee, Howard-Jones & Jolles 2012, "Neuromyths in education: prevalence and predictors of misconceptions among teachers", *Frontiers in Psychology* 3:429. 93% (UK) and 96% (NL) of teachers endorsed the learning-styles myth; n = 242; general brain knowledge predicted more myth belief (β = 0.24). https://www.frontiersin.org/articles/10.3389/fpsyg.2012.00429/full
+- [V] Google, My Ad Center help: customised topics personalise ads, and turning personalisation off deletes the customised topics. https://support.google.com/My-Ad-Center-Help/answer/12155656 ; "About this ad" / stop seeing this ad: https://support.google.com/My-Ad-Center-Help/answer/12155764
+- [V] Wikipedia, "Learning styles": category labels of VARK, Kolb, Honey and Mumford, Gregorc, Felder-Silverman and Grasha-Riechmann, used for the PX4-LS lexicon. https://en.wikipedia.org/wiki/Learning_styles
+- [M] Kizilcec 2016, "How much information? Effects of transparency on trust in an algorithmic interface", CHI '16, doi:10.1145/2858036.2858402. Metadata confirmed via api.semanticscholar.org; the abstract was elided by the publisher, so the finding as used is from prior knowledge.
+- Repo, read this pass: `../learning-science.md` §2.1-2.8, §6 C (rules 22-27), rules 32 and 34, §8.1-8.7 · `../psychology/parent-reports.md` §0 (PR-D5, PR-D7, PR-D13, PR-D14), §4.1-4.2, §5.1-5.4, §6.2 · `../safety/dpdp-deep.md` §5.2, §6.1-6.2 (M0-M3, NM-3, NM-4, NM-7, NM-10) · `../learner/personalisation-2026.md` PZ1, PZ9, §3.9 · `db/migrations/001_core.sql` (`format_trial`, `consent.purpose = 'learning_profile'`).

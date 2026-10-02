@@ -1,0 +1,607 @@
+{
+ "date": "2026-10-02",
+ "source": "PRODUCT-DESIGN.md §6.4.1, gate PD-G28 (gap-fill G1-ledger-entry-rule2)",
+ "rule": {
+  "delay_h": 20.0,
+  "pL_guard": 0.95,
+  "T": 0.12,
+  "demote_after": 2
+ },
+ "controls": {
+  "NC1 drop (b) requirement": {
+   "require_generative": false,
+   "recognition_counts": false,
+   "demote_after": 2,
+   "delay_h": 20.0
+  },
+  "NC2 taps count as produce": {
+   "require_generative": true,
+   "recognition_counts": true,
+   "demote_after": 2,
+   "delay_h": 20.0
+  },
+  "NC3 demote on first miss": {
+   "require_generative": true,
+   "recognition_counts": false,
+   "demote_after": 1,
+   "delay_h": 20.0
+  },
+  "NC4 no 20 h delay": {
+   "require_generative": true,
+   "recognition_counts": false,
+   "demote_after": 2,
+   "delay_h": 0.0
+  }
+ },
+ "fixtures": [
+  {
+   "id": "F1",
+   "name": "'I know this' with two correct taps, diagnostic prior 0.85",
+   "must": "never Aa gaya",
+   "prior": 0.85,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.mcq3",
+     "o": "correct",
+     "check": "iknow"
+    },
+    {
+     "t": 10.1,
+     "s": "s1",
+     "cls": "item.mcq4",
+     "o": "correct",
+     "check": "iknow"
+    }
+   ],
+   "expect": {
+    "level": 1,
+    "max_level": 1,
+    "tap_pass": true,
+    "produce_pass": false
+   }
+  },
+  {
+   "id": "F2",
+   "name": "two unaided C0 today, delayed C0 tomorrow, no generative pass",
+   "must": "never Pakka (nor Aa gaya)",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 10.1,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 34.0,
+     "s": "s2",
+     "cls": "item.open",
+     "o": "C0"
+    }
+   ],
+   "expect": {
+    "level": 1,
+    "max_level": 1
+   }
+  },
+  {
+   "id": "F3",
+   "name": "positive control: (a)+(b) same day, (c) 24 h later",
+   "must": "Aa gaya then Pakka",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 10.2,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass"
+    },
+    {
+     "t": 34.0,
+     "s": "s2",
+     "cls": "item.open",
+     "o": "C0"
+    }
+   ],
+   "expect": {
+    "level": 3,
+    "max_level": 3,
+    "rows_include": [
+     "aa gaya",
+     "pakka"
+    ]
+   }
+  },
+  {
+   "id": "F4",
+   "name": "placement taps 2 of 2 + same-day teach-back pass, diagnostic prior 0.85",
+   "must": "Abhyaas mein only",
+   "prior": 0.85,
+   "events": [
+    {
+     "t": 9.0,
+     "s": "p1",
+     "cls": "placement",
+     "o": "pass",
+     "form": "recognise"
+    },
+    {
+     "t": 9.1,
+     "s": "p1",
+     "cls": "placement",
+     "o": "pass",
+     "form": "recognise"
+    },
+    {
+     "t": 9.5,
+     "s": "p1",
+     "cls": "probe.teachback",
+     "o": "hi"
+    }
+   ],
+   "expect": {
+    "level": 1,
+    "max_level": 1,
+    "tap_pass": true,
+    "produce_pass": false
+   }
+  },
+  {
+   "id": "F4b",
+   "name": "placement PRODUCE pass + same-day teach-back pass, prior 0.85 (kt fast-forward)",
+   "must": "Aa gaya",
+   "prior": 0.85,
+   "events": [
+    {
+     "t": 9.0,
+     "s": "p1",
+     "cls": "placement",
+     "o": "pass",
+     "form": "produce"
+    },
+    {
+     "t": 9.5,
+     "s": "p1",
+     "cls": "probe.teachback",
+     "o": "hi"
+    }
+   ],
+   "expect": {
+    "level": 2,
+    "max_level": 2,
+    "tap_pass": false,
+    "produce_pass": true
+   }
+  },
+  {
+   "id": "F5",
+   "name": "B1 second micro-session 4 h later",
+   "must": "stays Aa gaya (< 20 h)",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 9.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 9.1,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass"
+    },
+    {
+     "t": 13.0,
+     "s": "s2",
+     "cls": "item.open",
+     "o": "C0"
+    }
+   ],
+   "expect": {
+    "level": 2,
+    "max_level": 2
+   }
+  },
+  {
+   "id": "F6",
+   "name": "choice-form why ('because A or B?') after a correct answer",
+   "must": "not (b)",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 10.1,
+     "s": "s1",
+     "cls": "probe.why.choice",
+     "o": "correct"
+    }
+   ],
+   "expect": {
+    "level": 1,
+    "max_level": 1
+   }
+  },
+  {
+   "id": "F7",
+   "name": "'I know this' produce item + near transfer, on-grade prior 0.25",
+   "must": "Aa gaya",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0",
+     "check": "iknow"
+    },
+    {
+     "t": 10.1,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass",
+     "check": "iknow"
+    }
+   ],
+   "expect": {
+    "level": 2,
+    "max_level": 2
+   }
+  },
+  {
+   "id": "F7b",
+   "name": "'I know this' at above-grade prior 0.10: two passes, then the third produce item",
+   "must": "Aa gaya only after item 3",
+   "prior": 0.1,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0",
+     "check": "iknow"
+    },
+    {
+     "t": 10.1,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass",
+     "check": "iknow"
+    },
+    {
+     "t": 10.2,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0",
+     "check": "iknow"
+    }
+   ],
+   "expect": {
+    "level": 2,
+    "level_after": [
+     [
+      1,
+      1
+     ],
+     [
+      2,
+      2
+     ]
+    ]
+   }
+  },
+  {
+   "id": "F8",
+   "name": "Pakka, one missed delayed re-check",
+   "must": "child view unchanged; parent re-check due",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 10.2,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass"
+    },
+    {
+     "t": 34.0,
+     "s": "s2",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 200.0,
+     "s": "s3",
+     "cls": "item.open",
+     "o": "C4"
+    }
+   ],
+   "expect": {
+    "level": 3,
+    "recheck_due": true,
+    "child_unchanged_at": 3,
+    "rows_include": [
+     "re-check due"
+    ]
+   }
+  },
+  {
+   "id": "F9",
+   "name": "Pakka, two consecutive missed re-checks",
+   "must": "fruit to flower, ring off, report row",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 10.2,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass"
+    },
+    {
+     "t": 34.0,
+     "s": "s2",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 200.0,
+     "s": "s3",
+     "cls": "item.open",
+     "o": "C4"
+    },
+    {
+     "t": 250.0,
+     "s": "s4",
+     "cls": "item.open",
+     "o": "C3"
+    }
+   ],
+   "expect": {
+    "level": 2,
+    "max_level": 3,
+    "recheck_due": false,
+    "rows_include": [
+     "demotion"
+    ]
+   }
+  },
+  {
+   "id": "F10",
+   "name": "miss, pass, miss (not consecutive)",
+   "must": "no demotion",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 10.2,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass"
+    },
+    {
+     "t": 34.0,
+     "s": "s2",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 200.0,
+     "s": "s3",
+     "cls": "item.open",
+     "o": "C4"
+    },
+    {
+     "t": 250.0,
+     "s": "s4",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 300.0,
+     "s": "s5",
+     "cls": "item.open",
+     "o": "C4"
+    }
+   ],
+   "expect": {
+    "level": 3,
+    "recheck_due": true
+   }
+  },
+  {
+   "id": "F11",
+   "name": "after demotion, a delayed pass without fresh (a)+(b)",
+   "must": "stays Aa gaya; Pakka only after relearn + (c)",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 10.2,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass"
+    },
+    {
+     "t": 34.0,
+     "s": "s2",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 200.0,
+     "s": "s3",
+     "cls": "item.open",
+     "o": "C4"
+    },
+    {
+     "t": 250.0,
+     "s": "s4",
+     "cls": "item.open",
+     "o": "C4"
+    },
+    {
+     "t": 300.0,
+     "s": "s5",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 300.5,
+     "s": "s5",
+     "cls": "probe.why",
+     "o": "full"
+    },
+    {
+     "t": 330.0,
+     "s": "s6",
+     "cls": "item.open",
+     "o": "C0"
+    }
+   ],
+   "expect": {
+    "level": 3,
+    "level_after": [
+     [
+      5,
+      2
+     ],
+     [
+      6,
+      2
+     ]
+    ],
+    "rows_include": [
+     "demotion",
+     "relearned"
+    ]
+   }
+  },
+  {
+   "id": "F12",
+   "name": "conjunctive word problem: why pass on target X",
+   "must": "non-target Y stays Abhyaas mein",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0",
+     "skills": [
+      "X",
+      "Y"
+     ],
+     "target": "X"
+    },
+    {
+     "t": 10.1,
+     "s": "s1",
+     "cls": "probe.why",
+     "o": "full",
+     "skill": "X"
+    },
+    {
+     "t": 10.2,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass",
+     "skill": "X"
+    }
+   ],
+   "expect": {
+    "skill": "Y",
+    "level": 1,
+    "max_level": 1
+   }
+  },
+  {
+   "id": "F13",
+   "name": "(b) in a low-confidence window",
+   "must": "not (b)",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C0"
+    },
+    {
+     "t": 10.1,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass",
+     "low": true
+    }
+   ],
+   "expect": {
+    "level": 1,
+    "max_level": 1
+   }
+  },
+  {
+   "id": "F14",
+   "name": "hinted correct (C2) + transfer pass",
+   "must": "no (a), so no Aa gaya",
+   "prior": 0.25,
+   "events": [
+    {
+     "t": 10.0,
+     "s": "s1",
+     "cls": "item.open",
+     "o": "C2"
+    },
+    {
+     "t": 10.1,
+     "s": "s1",
+     "cls": "probe.transfer.near",
+     "o": "pass"
+    }
+   ],
+   "expect": {
+    "level": 1,
+    "max_level": 1
+   }
+  }
+ ]
+}

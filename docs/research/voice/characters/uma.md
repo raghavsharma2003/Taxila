@@ -229,6 +229,10 @@ shaant aur dheere; pehle yaad karwao, phir samjhao; structure, cheer kam
 
 ## 13. Open questions and reversal conditions
 
+- **Probe (method doc §6).**
+  - Her notes removed the model's stock "dar normal hai" (0/9, against 15/24 on the other sheets).
+  - Her v1 ladder came out *narrated* ("your claim is…", 2/3).
+  - The ladder should move into a director `comfort` move, one step per turn. Keep only the order note here.
 - **Is a separate anxiety-register character right, or should every character switch to a calm mode?** Hypothesis:
   a stable calm *person* is more trustworthy to an anxious teen than a bright character dimming itself. Reverse if a
   within-child A/B (Arjun-calm vs Uma) shows no preference or no difference in session continuation in test windows.

@@ -14,7 +14,7 @@ export const greet = ({ firstName, teacherName, firstMeeting, hasCallback, warmu
     : `one line on today's topic (${topicTitle}); then one easy question about them`,
 );
 
-export const retrievalNext = () => "confirm the last answer in a few words — name what was right; then pose the next warm-up question (LESSON NOW)";
+export const retrievalNext = () => "confirm the last answer in a few words — name what was right; then the next warm-up question";
 export const warmupMoveOn = () => "no verdict speech on that one; it comes back later; move on";
 
 export const hook = ({ interest, contexts, protege }) => join(
@@ -46,10 +46,15 @@ const KIND_NOTE = {
   retrieval: "a quick look back; no hints inside the asking",
 };
 
-export const pose = ({ item, prefix }) => join(
+/**
+ * `verify`: this question checks a belief the child just voiced — the question decides it, so no verdict
+ * before it (in the measured sim the teacher stated the rule, then posed the diagnostic that tests it).
+ */
+export const pose = ({ item, prefix, verify = false }) => join(
   prefix,
-  "pose the question in LESSON NOW as written, in their language; then wait",
-  item.diagnostic ? "say the options plainly; no lean in your voice toward either" : KIND_NOTE[item.kind],
+  verify && "no verdict, correction or rule about what they just said — the question decides",
+  "pose the question as written, in their language; then wait",
+  item.diagnostic ? "read its choices plainly; no lean in your voice toward any of them" : KIND_NOTE[item.kind],
 );
 
 export const why = ({ ageBand, contrast }) => join(
@@ -84,6 +89,16 @@ export const changeApproach = () => join(
 
 export const repairUnclear = () => "you did not catch it clearly: ask them to say it once more, or to tap a choice";
 export const repairOffTopic = () => "one warm line about what they said; then back to the question";
+
+/** Module-only turns: the child acted in the activity and said nothing; the lesson stays where it was. */
+export const moduleGoal = ({ goal }) => join(
+  `they just did it on the activity${goal ? ` (${goal})` : ""}: name exactly what they did, in a few words — the method, never ability`,
+  "then carry on with the step you were on",
+);
+export const moduleStuck = () => join(
+  "they seem stuck on the activity: one small nudge about what to try next on it",
+  "the key stays unsaid; no new question",
+);
 
 export const takeBreak = () => join(
   "pause the work; struggling is a normal part of learning (about the work, never about them)",

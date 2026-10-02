@@ -720,3 +720,179 @@ Dignath C, Büttner G 2008, *Metacogn Learn*, ERIC EJ817558 [V] · Dignath C, B�
 
 **Parents and dashboards.**
 Pomerantz EM, Moorman EA, Litwack SD 2007, *Rev Educ Res*, ERIC EJ782048 [V] · Moorman EA, Pomerantz EM 2010, *Dev Psychol*, ERIC EJ897242 [V] · Patall EA, Cooper H, Robinson JC 2008, *Rev Educ Res*, ERIC EJ896560 [V] · Molenaar I, Knoop-van Campen CAN 2019, *IEEE TLT*, ERIC EJ1247133 [V] · Knoop-van Campen CAN et al. 2024, *J Comput Assist Learn*, ERIC EJ1424190 [V-abstract partial] · Dizon-Ross R 2019, *AER*, doi:10.1257/aer.20171172 [V, sib: need-goals] · Hamaker EL et al. 2015 (RI-CLPM) [V, sib: motivation-habits]
+
+
+---
+
+## Methodologist review
+
+**Reviewer stance:** an adversarial developmental psychologist and psychometrician. **Date:** 2026-10-02.
+
+**Method.**
+- Re-pulled 40 primary abstracts this session from the Europe PMC REST API and the ERIC API. Three full texts were read: Rahnev 2025, Guggenmos 2021, and Rinne & Mazzocco 2014.
+  - Europe PMC: Rahnev 2025, Guggenmos 2021, Bayard 2021, Bastani 2025, Rinne & Mazzocco 2014, Kolloff 2025, Buehler 2025, Wan 2025, Fyfe 2022, Moses-Payne 2021, Greene 2024, Lyons & Ghetti 2011, Grenell 2022, Grenell 2024, West 2025, van Loon & Laninga-Wijnen 2025, Serko 2025, Vo 2014, Markovich 2026, Zhao et al. 2022, Double, Birney & Walker 2018, Double & Birney 2019a/b, Deslauriers 2019.
+  - ERIC: Metcalfe & Finn 2012 and 2013, Roll 2014, Marchand & Skinner 2007, Ryan & Shim 2012, Dignath 2023, Koriat 2009, van der Stel & Veenman 2014, Schneider 2008, Dignath & Büttner 2008, Veenman & van Cleef 2019, Craig 2020, Zhou & Winne 2012, de Bruin 2011, Chevalier 2018, Richardson 2012, Wan & Beck 2015, Huang 2022, Fan 2025, Destan & Roebers 2015, Hoffmann-Biencourt 2010, Dent & Koenka 2016 and Lipko et al. 2009 (*JEP: Applied*).
+- Web search was not available (the session budget was exhausted). Lipko et al. 2009 (*JECP*) timed out and was not re-checked.
+- Ran five checks in `metacognition-srl-reviewsim.py`, saved in this folder (numpy, seed 7). Its generative assumptions are [U]. The arithmetic is reproducible.
+
+**Overall verdict.** This document is unusually careful, and its main structure is right:
+- traces over questionnaires
+- no per-child efficiency estimate
+- help never costs anything
+- the scheduler keeps control
+- no labels.
+
+Most citations are read correctly. The serious problems are of four kinds:
+- (a) The headline psychometric results come from a simulation whose generator *builds in* the properties being claimed. Under a standard signal-detection generator, "resolution" ψ is mostly type-1 knowledge, not monitoring (P1).
+- (b) One branch of the growth rule produces false "then → now" rows for almost every child every year (P2).
+- (c) Several evidence anchors use the very raw-bias index the document bans, or are adult, self-report or peer-help studies used to justify child-trace decisions (R1).
+- (d) Three parent- and child-facing outputs reintroduce costs and labels that the document's own decisions forbid (E1-E3).
+
+None of this needs a redesign. Several items must change before the spec workstream copies §6-§7.
+
+### R1. Citation checks
+
+| claim in doc | what the source says | verdict |
+|---|---|---|
+| Rahnev 2025: M-Ratio ICC .16/.23/.29/.42; ΔConf .39/.53/.65/.75; mean confidence > .86 | Exact match [V-full]. Two further points from the same paper. First, the five non-normalised measures, ΔConf included, "are strongly dependent on task performance". Second, test-retest came from **one** adult perceptual dataset (Haddara, n = 70), which Rahnev says "should be interpreted with caution". | Numbers correct. **Material omission.** The doc picks ΔConf for resolution *because* it is the most reliable, without saying that its reliability is partly borrowed from type-1 performance. That is the confound MS-D1 exists to avoid. See P1. |
+| Guggenmos 2021: "test-retest"; "≥ 400 trials" | 400 is the "minimum recommended trial number" [V-full]. Rahnev 2025 notes that Guggenmos "computes split-half reliability but … calls it test-retest". Guggenmos also shows that **accuracy level dominates**: M-Ratio r ≈ .4 at ≤ 60% correct versus ≈ .8 at 80%, for 400-600 trials. | Relabel it as split-half. The accuracy dependence matters for Taxila. See P3. |
+| Rinne & Mazzocco 2014 is the predictive anchor for κ̂/ψ̂ (MS2, H4, §6.2) | [V-full] N = 190 at grade 5, from one Baltimore County longitudinal cohort (86% of one ethnic group). The task was rapid **verification** (true/false judgements on arithmetic expressions), not answer production. The "calibration score" is a per-item 0-2 *absolute-accuracy* score. The authors note that high overall confidence "produce[s] a natural association between high accuracy and good calibration". Year-to-year ICC of mean calibration was .59. | **Construct mismatch.** The anchor is an accuracy-confounded absolute index, not an offset or a resolution. Controlling grade-5 accuracy, which is itself measured with error, leaves residual ability confounding. It supports "calibration-type indices predict gains". It does not support "κ or ψ predicts gains". |
+| Markovich 2026: fluent grade-5 readers more overconfident | [V] N = 104, exploratory SEM. Overconfidence was indexed as **"confidence minus performance"**, the raw bias MSI2 bans. | Downgrade to "exploratory, raw-bias index". Do not use it as evidence for cue-driven overconfidence. |
+| Destan & Roebers 2015: under-estimators out-monitor over-estimators | [V] N = 93 six-year-olds, grouped by *global performance-estimation accuracy*, which is a raw-bias-type grouping. | Read correctly, but it is the same artefact-prone index. Group differences may partly be ability differences. Note it wherever this study is cited (§0 MS-D9, §4.1, §4.3). |
+| Wan 2025: "reliable performance monitoring appears by about 6" | [V] US sample, N = 148. Monitoring was reliable by 6 **"only on self-generated measures"**. Experimenter-elicited judgements did not show it. | **Omitted qualifier with direct design consequences.** Taxila's bet *is* an experimenter-elicited judgement. B1 bets may under-read monitoring. See E2. |
+| Bayard 2021 (exec. summary item 2: "monitoring is not the bottleneck … turning it into action is") | [V] "Control remained suboptimal, **seemingly a consequence of overoptimistic monitoring**." The task was paired associates. | **Internal contradiction.** Bayard says monitoring *is* a bottleneck at 7-10. Metcalfe & Finn 2013 (delayed JOLs, target absent) say it is not. Rewrite item 2: the answer is paradigm-dependent. Delayed, target-absent judgements are accurate by grade 3. Immediate or retrospective ones stay optimistic. |
+| Koriat 2009: memorising-effort cue "from grade 3; not grades 1-2" | [V] Correct: grades 3-6 (9-12 years) versus grades 1-2 (7-8 years). **Hoffmann-Biencourt 2010** (n = 160, grades 1-8, picture pairs) [V] found the inverse JOL-study-time relation even in young children, only *weaker*. | It is a gradient, not a step. In §4.1 the cue belongs from B2 (grade 3 ≈ age 8-9), not B3. |
+| Marchand & Skinner 2007: "help-seeking declines across grades 3-6" | [V] N = 765, fall and spring of **one** school year. "Help-seeking generally declines across early adolescence" is the paper's *premise*. Its own finding is that age differences in motivational resources *paralleled* age differences in help-seeking. All measures are self- and teacher-reported coping. | Weaken it to "age differences, cross-sectional, reported". The doc's developmental help-seeking story rests on **questionnaire** data, which MS-D10 rules out as evidence for children. It is fine as a population prior. Say so. |
+| Ryan & Shim 2012: "grades 6-7"; expedient help "predicted" decline | [V] **Peer** help-seeking, self-report, N = 655 (US, African American and European American), three waves at 6-month intervals across the elementary-to-middle-school transition. Expedient increases "were associated with" achievement declines. | Use "associated with", not "predicted", and name the transition, not grades. Asking an AI tutor for the answer is not shown to be the same construct as expedient peer help [U]. H8 is the test. |
+| Roll 2014 for MS-D5 (protect try-first until ≥ 2 failures) | [V] **38 high-school students**, Geometry Cognitive Tutor, within-student and correlational. | Read correctly, but the doc uses it as a shipping threshold for 6-year-olds. Hays 2013 is adult word pairs. Keep MS-D5 as a *default*, but make the failure count band-specific: ≤ 1 failure for B1 with frustration markers [U]. Mark the rule [U for children] until H3. |
+| Dignath 2023, d = .42, as evidence that **bets** are reactive (MS-D2, §3.5) | [V] The "tools" are learning journals, portfolios and rubrics: 32 studies, 3,492 participants, largest effects in *shorter* studies. | **Construct leap.** Use the direct evidence instead (all [V]): **Zhao et al. 2022, *Child Dev*** (190 Chinese children, grades 1/3/5): making JOLs raised retention, d = 0.40-1.33, with a larger effect in grade 5. **Double, Birney & Walker 2018** (meta-analysis): overall g = .054, n.s.; positive for related pairs and lists. **Double & Birney 2019, *PBR***: reactivity to confidence ratings was driven by the *word* "confident", and rephrasing removed it. That last finding bears directly on "pakka" wording, so add it to MS1. §4.2 "JOLs are reactive [U, adult literature]" is now [V] *in children*. |
+| Fan 2025: ChatGPT "produced 'metacognitive laziness' signs" (MS-D7) | [V] 117 **university** students, a writing task. The abstract says ChatGPT "may promote dependence … and potentially trigger" metacognitive laziness. That is an interpretation, not a measured outcome. | **Overclaimed.** Keep Bastani 2025 as the evidence for MS-D7. Its figures (48% / 127% / −17%, nearly 1,000 Turkish high-school students) are correct [V]. Cite Fan as speculation from adults. |
+| Wan & Beck 2015: "wheel-spinning is mostly a prerequisite problem" (§4.6) | [V] There is a strong gradient (50% versus 10%). But adding prerequisite performance moved detection only from AUC .884 to .888 (R² .264 → .268). | "Strongly associated with weak prerequisites" is supported. "Mostly a prerequisite problem" is not. MS-D13's action (probe prerequisites first) is still a reasonable default. |
+| Craig 2020 | [V] The doc omits the second half of the conclusion: "subscales strongly correlate across self-reports and metacognitive tasks". | Add it for balance. MS-D10 stands, because the evidence for it rests mainly on Veenman & van Cleef (n = 30), Zhou & Winne (undergraduates) and Rovers. Note that these samples are small or adult. |
+| Metcalfe & Finn 2012 and 2013; Kolloff 2025; Buehler 2025; Fyfe 2022; Lyons & Ghetti 2011; Greene 2024; Grenell 2022/2024; West 2025; van Loon & Laninga-Wijnen 2025; Serko 2025; Vo 2014; Moses-Payne 2021; Schneider 2008; van der Stel & Veenman 2014; Dignath & Büttner 2008; Dent & Koenka 2016; de Bruin 2011; Chevalier 2018; Huang 2022; Lipko 2009 (*JEP: Applied*); Veenman & van Cleef 2019; Zhou & Winne 2012; Deslauriers 2019 | All [V] and read correctly. Ns and ages match. | Two nuances. Lipko's standard *reduced* overconfidence but did not remove it: commission errors given credit fell from 73% to 44%. Greene 2024 adds that "individuals with generally weaker memories are less adept at … calibration", which is the performance confound again. |
+| H4 "first longitudinal calibration-learning evidence outside the US/Europe"; H1 "first in-tutor test of confidence-bet reactivity in children" | Chen 2026 (China, N = 3,946) is cited in this doc, and Zhao 2022 (China) tested reactivity in children. | **"First" is unsafe** for both. Narrow the claims (H4: Indian, 6-15, trace-based, intensive-longitudinal; H1: in-product, randomised frequency), and run a systematic search before submission. |
+
+### R2. Psychometric problems (ranked by consequence)
+
+**P1. "Resolution" ψ is mostly knowledge, and the doc's own simulation cannot see it.**
+- `calibsim` generates confidence as y = κ + ψ(2o − 1) + ε, with ψ drawn independent of θ. Resolution is then performance-free *by assumption*.
+- `reviewsim` R2 uses a standard type-1 signal-detection generator instead: evidence e ~ N(±d′/2, 1), confidence driven by |e|, metacognitive sensitivity *fixed* across children, κ independent of d′.
+  - r(ΔConf, d′) = **+.85**, and r(ΔConf, true κ) = .02.
+  - κ̂_mid behaves well (r = .96 with κ, .12 with d′).
+  - Raw bias correlates only −.11 with d′ under this generator, not −.53 to −.74.
+- **Consequences:**
+  - (i) The *size* of the unskilled-and-unaware artefact quoted in §3.2 is a property of the chosen generator. Say "can be large; the size is model-dependent". MS-D1 still stands.
+  - (ii) ΔConf, γ and AUROC2 between children largely rank **knowledge**. A parent sentence such as "she can tell when to double-check" (§7.2, S2) would mostly restate θ as a metacognitive capability. That is a construct-validity failure and an implicit trait claim.
+  - **Fix:** ψ is reportable only as *resolution beyond type-1 performance*. Use a model with θ_c − b_k as a covariate of y*, or a meta-d′-style constraint pooled hierarchically, and validate it in MS2 *net of θ*. Until then, no resolution sentence for any band. The conditional table (S1) already shows parents the same information without the inference.
+- **Related:** the §4.1 confidence model has **no item-difficulty term**. With bets stratified by *predicted* P(correct) terciles, which are child-relative, ψ mixes two things: using item-difficulty cues, and monitoring within an item. The sampling design also changes the estimand from child to child. Add b_k (or the predicted logit) to y* and define ψ as within-difficulty separation.
+
+**P2. The raw-count growth route produces false "then → now" rows almost every year.**
+- §6.3 rule 2 accepts "posterior ≥ .9 **or** raw counts change consistently over ≥ 3 consecutive windows".
+- `reviewsim` R1: with no true change and binomial counts (n = 30, p = .7):
+  - a monotone rise over 3 windows occurs with probability .12 per row, or .21 if ties are allowed
+  - over 12 monthly windows and 4 rows, **99% of children receive at least one false growth row a year (mean 2.9)**.
+- The transfer check removes some of these, but not most: transfer is checked on counts that are just as noisy.
+- **Fix:**
+  - Delete the raw-count branch.
+  - Require the posterior rule with a *pre-declared* direction per row.
+  - Cap looks: one growth evaluation per construct per term, not monthly.
+  - Report the expected false-row rate per child-year as a release metric (target < 0.1).
+  - The posterior P ≥ .9 bar itself admits about 1 wrong-direction claim in 10. With four rows a month that still needs the cap.
+
+**P3. Error scarcity, not bet count, limits everything; the thresholds are set in the wrong unit.**
+- `calibsim` targets ~60% first-try accuracy. Mastery-paced practice will run nearer 80-85% [U: KT logs].
+- `reviewsim` R4 (calibsim's own model, B3, ~82% accuracy):
+  - ΔConf test-retest falls from .57 to **.38 at 30 bets**, and from .85 to .70 at 120
+  - **31% of children have fewer than 3 wrong-answer bets after 30 bets**.
+- At that point the S1 parent table's "andaaza … right {a3}" and "pakka … wrong" cells rest on 0-3 events.
+- Guggenmos shows the same accuracy dependence in adults.
+- **Fix:**
+  - Set thresholds on **errors with bets**: say ≥ 10 for any offset statement and ≥ 30 for any research resolution estimate [U, to be set by MS3].
+  - Suppress table cells with n < 5.
+  - MS-D2's stratified sampling should *over-sample* the lowest predicted-P tercile, and record the oversampling weights.
+
+**P4. The offset κ̂_mid is not separable from ψ near the ceiling.**
+- `reviewsim` R3 holds κ fixed at the B1 mean of 1.0 under calibsim's own model. Raising ψ from 0 to 1.2 lowers mean κ̂_mid from .80 to .70, because conf | correct saturates at "pakka".
+- So the §6.3 growth criterion "κ moves toward 0 without resolution falling" will register *rising* resolution as *falling* bias in young, confident children.
+- **Fix:** growth claims about κ use only the model-based κ from the ordered-probit model, never κ̂_mid. κ̂_mid stays a dashboard check.
+
+**P5. Comparisons across band boundaries are not identified.**
+- τ is "fixed per band for identification". B1 uses faces and B2+ uses words. μ_κ[band(c,t)] is a step prior (§4.1), whereas §6.2 says the prior is interpolated by age.
+- So a child's κ̂ can jump on their 8th birthday from a change of instrument and prior alone.
+- **Fix:**
+  - One age-continuous prior.
+  - Treat a change of response format as a new instrument: reset the familiarity term and block any change statement that spans the switch.
+  - Add threshold-invariance testing across bands and languages to H2 *before* any κ trajectory is published.
+  - Shrinkage plus growing information also manufactures change (sibling CD review P2). §6.3 rule 5 ("the hierarchical model does this by construction") is not correct. Compare windows of matched information.
+
+**P6. The help-need slope λ is mechanically biased if pL is read after the help event.**
+- `reviewsim` R5: true λ = 0, and KT lowers pL after a logged hint (KT §1.4 treats an aided step as not-C0).
+- The mean slope is −.001 when pL is read before the step and **+.33** when it is read after.
+- **Fix:** `help.pL` in §6.1 must be the KT snapshot *at step onset*, before any update from this step. Add it to MSI6.
+- `β_4·band` in §4.4 double-counts `μ_η[band]`. Drop one.
+
+**P7. Self-correction and rapid-guess indices repeat the raw-bias mistake.**
+- **W→R self-corrections.** Their rate rises with knowledge: you can only fix what you know.
+  - A per-answer π_c (§4.3) is therefore ability-confounded, like raw bias.
+  - Model W→R per *wrong first response*, with pL as a covariate.
+  - The §7.2 denominator ("answers that needed it") requires grading partial utterances. Under the inherited law, that grading must be against keys, not by a model.
+- **Rapid guessing.** §4.6 applies the time cut "only to incorrect … answers".
+  - That is selection on the outcome: it removes fast wrong answers, keeps fast right ones, and inflates accuracy and pL.
+  - Wise's procedure classifies by time alone. It then *validates* the cut by showing that rapid responses are at chance.
+  - Use time alone, with item-type thresholds and a validity check.
+
+**P8. Simulated reliabilities are design guesses printed as findings.**
+- Every reliability in §0, §2, §3.3 and §4.4 is fixed by the assumed variance ratios: SD(κ) .6 against state .5, and ε = 1.
+- Two decimals and band-by-band ranges imply an empirical precision that does not exist.
+- **Fix:** label MS-D3 and MS-D4 "provisional, simulation-set", round to one decimal, and replace the numbers with MS3/MS4 values as soon as they exist.
+- Plan rubric (S7): LLM rubric scoring is grading. Keep it research-only until H7 reports human-LLM agreement (κ ≥ .7 [U]) per band and language.
+
+### R3. Developmental accuracy
+
+- **Monitoring is paradigm-dependent, not age-staged.** Delayed, target-absent JOLs are accurate by grade 3 (Metcalfe & Finn 2013). Retrospective confidence improves from 7 to 10 (Bayard 2021). Immediate judgements stay optimistic. Self-generated judgements show monitoring at 6 when elicited ones do not (Wan 2025). The §4.1 band table should be organised by *paradigm × age*, not by age alone.
+- **B1 evidence base.** The 6-7 band rests on N = 93 (Destan & Roebers, a raw-bias grouping), a 12-session null (Kolloff, N = 214), a 6-session positive at 7.45 years (Buehler, N = 127), a conference paper (van Loon 2017, AERA; not peer-reviewed, so tag it [S]), and preschool studies. That is a thin base for any B1 parent output.
+- **Population.** The verified child samples are Swiss, US, Chinese and Israeli. The doc says so. Note also that Zhao 2022 (China) found reactivity *increasing* with grade, so the reactivity confound H1 must handle is age-dependent.
+- **"Help-seeking declines with age"** is self-report and peer-directed (R1). Whether a voice tutor shows the same decline is an open question, not a prior to bake into band means of η.
+
+### R4. Ethically risky outputs (each contradicts a decision in this doc)
+
+- **E1. Showing parents "asked for the answer {y} times" puts a cost on help.**
+  - MS-D6 says asking never costs anything. A parent who reads 14 answer requests can scold the child, and that is a cost delivered at home.
+  - Concealment follows felt incompetence (Marchand & Skinner 2007) [V].
+  - **Fix:** in v1, parents see only what Taxila did ("answer requests went through hints first"). Per-kind counts wait until MS10/H9 shows no rise in concealment, or in parent-pressure items.
+- **E2. B1 calibration tables for parents.**
+  - Overconfidence is normative at 6-7. B1 bets are elicited judgements, which under-read monitoring at this age (Wan 2025). The tables invite parents to "correct" a child's optimism.
+  - **Fix:** no S1 table for B1 parents. B1 bets feed the system and research only.
+- **E3. A child-facing "pakka-meter" by default for B2.**
+  - The only B2-age evidence is a monitoring gain with no memory gain (Buehler 2025). Nothing is known about its effect on motivation or anxiety.
+  - **Fix:** make it a randomised arm inside H5 with anxiety markers as outcomes, not a default (§7.5).
+- **Inferring anxiety from "andaaza" on correct answers** (§8) depends on wording, politeness and ASR, which MS1 has not yet validated.
+  - **Fix:** use it only as a trigger for supportive moves. Never use it as a flag, a route into MH §7 or a parent statement until MS1 and MS9 report.
+- **Parent presence** (open question 3) should be a **gate**, not a question. No SRL statement for B1-B2 is built from sessions flagged as parent-assisted.
+- **Sentence-shaped slots.** "She can tell when to double-check" and the hard-coded "she/her" in §7.2 break the inherited law (write shapes, not lines) and make an inference.
+  - **Fix:** use pronoun slots and descriptive fixed readings only.
+
+### R5. Required changes (for the main loop)
+
+1. §1 item 2 and §4.1 table: rewrite as paradigm × age, and resolve the contradiction with Bayard.
+2. MS-D1 and §3.2: say that the artefact's size depends on the generator. Add ΔConf's dependence on performance (Rahnev). Mark Markovich 2026 and Destan & Roebers 2015 as raw-bias-indexed.
+3. S2 resolution: no parent sentence at any band until a θ-adjusted ψ passes MS2 net of θ. Add an item-difficulty term to the §4.1 model.
+4. §6.3: delete the raw-count route, pre-declare the direction of each row, evaluate at most once a term, and make the false-row rate a release metric. Add an invariant `MSI10`: simulated null false-row rate < 0.1 per child-year.
+5. MS-D3 and §7.2: thresholds counted in wrong-answer bets, cells with n < 5 suppressed, and over-sampling of the low-P tercile with weights logged.
+6. Growth uses model-based κ only, never κ̂_mid. Compare windows of matched information. Use one age-continuous prior. Block change statements across a response-format switch.
+7. `help.pL` = snapshot at step onset (MSI6). Drop `β_4·band`.
+8. Model self-correction per wrong first response, adjusted for pL. Classify rapid guesses by time alone, then validate.
+9. MS-D2 and §3.5: replace Dignath 2023 with Zhao 2022, Double et al. 2018 and Double & Birney 2019 as the reactivity evidence. Add "confidence-word priming" to MS1.
+10. MS-D7: cite Fan 2025 as adult speculation. MS-D5: make the failure threshold band-specific, [U for children].
+11. E1-E3 above. Make parent presence a gate.
+12. H1 and H4: drop "first" until a systematic search has been done.
+13. Rinne & Mazzocco: describe it as an absolute-accuracy calibration index (N = 190, verification task). Do not present it as evidence for κ or ψ.
+
+**Proposed `context/` entries.**
+- **rejected** `raw-count-growth-route`: 99% of children get ≥ 1 false growth row per year under the null (`reviewsim` R1).
+- **measurement** `metacog-review-sim-2026-10-02`, n = 4,000 simulated children per condition, seed 7:
+  - R2: r(ΔConf, d′) = .85 under SDT
+  - R3: κ̂_mid falls .80 → .70 as ψ rises 0 → 1.2
+  - R4: ΔConf test-retest .38 at 30 bets and 82% accuracy; 31% of children have < 3 errors
+  - R5: spurious λ = +.33 if pL is read after help.
+- **decision** `resolution-must-be-theta-adjusted`. Reversal condition: MS2 shows that raw ΔConf predicts delayed gains net of θ as well as the θ-adjusted ψ does.

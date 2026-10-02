@@ -108,7 +108,7 @@ const OFF_SCRIPT = { hinglish: /[^\p{Script=Latin}\p{Script=Common}\p{M}]/gu, en
  * rung 4, a posing turn that does not pose the item (drift), or an over-long turn gets one rewrite; a leak
  * or drift that survives is replaced by the question itself (content), never shipped.
  */
-async function textReply({ instructions, state, kit, childText, trace }) {
+async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1) }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
   const lang = state.ctx.lang;
   // A diagnostic's options are content read aloud, so they do not count against the turn length.
@@ -127,7 +127,8 @@ async function textReply({ instructions, state, kit, childText, trace }) {
   ].filter(Boolean);
   const messages = [
     { role: "system", content: instructions },
-    ...state.recent.slice(0, -1).map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: t.text })),
+    // The turn being answered is the last message (childText); by default it is the newest recent row.
+    ...history.map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: t.text })),
     { role: "user", content: childText || "(the child has joined the lesson and is listening)" },
   ];
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
@@ -215,10 +216,10 @@ async function start(req, res, body) {
   const lesson = await one("insert into lesson(child_id, topic_id, kind, state) values ($1,$2,'live',$3) returning id", [child.id, topic.id, state]);
   if (!lesson) throw new Error("lesson insert did not land");
 
-  let teacherOpening;
+  let teacherOpening, teacherOpeningSeq;
   if (mode === "text") {
     teacherOpening = (await textReply({ instructions, state, kit, childText: "", trace })).reply;
-    await insertTurns(lesson.id, state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind } }]);
+    [{ seq: teacherOpeningSeq }] = await insertTurns(lesson.id, state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind } }]);
     await q("update lesson set state = $2 where id = $1", [lesson.id, state]);
   }
   console.info(`[lesson] start ${lesson.id} topic=${topic.id} kit=${kit.verified ? "verified" : "mini"} ${Math.round(performance.now() - t0)}ms`);
@@ -226,7 +227,7 @@ async function start(req, res, body) {
   const out = {
     lessonId: lesson.id, topic: { id: topic.id, title: topic.title, chapter: topic.chapter.title }, instructions,
     teacher: { id: teacher.id, name: teacher.name, voice: teacher.voice }, moduleCommands: r.moduleCommands, ui: r.ui,
-    ...(teacherOpening ? { teacherOpening } : {}),
+    ...(teacherOpening ? { teacherOpening, teacherOpeningSeq } : {}),
   };
   send(res, 201, debugFor(req) ? { ...out, debug: { move: r.move, kitVerified: kit.verified, timings: trace } } : out);
 }
@@ -237,6 +238,10 @@ async function start(req, res, body) {
 export function realtimeSession({ instructions, voice }) {
   return {
     type: "realtime", model: DEPLOY.realtime, instructions, output_modalities: ["audio"],
+    // Transcription logprobs → TurnRequest.asrConfidence (src/lesson/realtime.ts), which feeds classify's
+    // "low ASR ⇒ no evidence" gate; without them every misheard transcript was graded. Azure validates the
+    // value (a bogus one is refused at mint), so it is not silently ignored.
+    include: ["item.input_audio_transcription.logprobs"],
     audio: {
       input: {
         noise_reduction: { type: "near_field" },
@@ -263,6 +268,14 @@ async function realtimeToken(req, res, body) {
 
 // ───────────────────────────── POST /api/lesson/turn ─────────────────────────────
 
+/** What a module-only turn carried, in a few words: its milestones, and how many plain events. */
+function activitySummary(events, dropped) {
+  const milestones = events.filter((e) => ["goal_met", "stuck", "answer"].includes(e?.type)).map((e) =>
+    e.type === "answer" ? `answer${typeof e.data?.correct === "boolean" ? (e.data.correct ? " (right)" : " (wrong)") : ""}` : `${e.type} ${String(e.name ?? "").slice(0, 40)}`.trim());
+  const other = events.length - milestones.length + dropped;
+  return [...milestones, ...(other ? [`${other} other event${other === 1 ? "" : "s"}`] : [])].join("; ");
+}
+
 /** @type {(req: any, res: any, body: import("../../shared/contracts").TurnRequest) => Promise<void>} */
 async function turn(req, res, body) {
   const t0 = performance.now();
@@ -272,32 +285,55 @@ async function turn(req, res, body) {
   const prev = lesson.state;
   const state = structuredClone(prev);
   const [kit, core] = await Promise.all([kitFor(lesson.topic_id, state, trace), hasConsent(guardian.id, child.id, "core_tutoring")]);
-  const typed = !!body.typed || state.mode === "text";
+  // The lane is the lesson's mode. `typed` only says there was no ASR: a typed or tapped turn in a voice
+  // lesson is still voice-lane (a text reply for it was never heard, yet was stored as a teacher turn).
+  const textLane = state.mode === "text";
+  const typed = !!body.typed || textLane;
   const childText = String(body.childText || "").slice(0, 2000).trim();
+  const moduleEvents = Array.isArray(body.moduleEvents) ? body.moduleEvents : [];
+  const dropped = Number.isInteger(body.droppedEvents) && body.droppedEvents > 0 ? body.droppedEvents : 0;
+  // contracts.ts TurnRequest: the child acted in an activity and said nothing. Never graded as a reply —
+  // it was once stored as "[no speech]", classified unclear, and walked the lesson plan.
+  const moduleOnly = !childText && !body.chipId && body.asrConfidence !== 0 && moduleEvents.length > 0;
 
-  // The teacher's last turn as heard (voice lane), then the child's turn.
+  // The teacher's last turn as heard (voice lane only: in the text lane the server wrote and stored every
+  // teacher line, and an echo of it stored each one twice), then the child's turn.
   const activeItem = findItem(state, kit, state.activeItemId);
-  const heard = body.teacherText ?? state.recent.findLast((t) => t.who === "teacher")?.text;
-  const leaked = !!body.teacherText && !!activeItem && state.hintLevel < 4 && state.pendingWhy !== activeItem.id && revealsAnswer(body.teacherText, activeItem);
+  const teacherText = textLane ? "" : String(body.teacherText || "").slice(0, 2000);
+  const heard = teacherText || state.recent.findLast((t) => t.who === "teacher")?.text;
+  const leaked = !!teacherText && !!activeItem && state.hintLevel < 4 && state.pendingWhy !== activeItem.id && revealsAnswer(teacherText, activeItem);
   const turnRows = [];
-  if (body.teacherText) turnRows.push({ speaker: "teacher", text: String(body.teacherText).slice(0, 2000), meta: { interrupted: !!body.teacherInterrupted, ...(leaked ? { answerLeak: true } : {}) } });
-  turnRows.push({
-    speaker: "child", text: childText || (body.chipId ? `[tap ${body.chipId}]` : "[no speech]"),
-    asrConf: typed ? null : body.asrConfidence, meta: { typed, ...(body.chipId ? { chipId: body.chipId } : {}) },
-  });
-  const inserted = await insertTurns(lesson.id, state, turnRows);
-  const childTurnId = inserted.at(-1).id;
+  if (teacherText) turnRows.push({ speaker: "teacher", text: teacherText, meta: { interrupted: !!body.teacherInterrupted, ...(leaked ? { answerLeak: true } : {}) } });
+  const extra = dropped ? { droppedEvents: dropped } : {};
+  turnRows.push(moduleOnly
+    ? { speaker: "system", text: `[activity: ${activitySummary(moduleEvents, dropped)}]`, meta: { module: true, ...extra } }
+    : {
+      speaker: "child", text: childText || (body.chipId ? `[tap ${body.chipId}]` : "[no speech]"),
+      asrConf: typed ? null : body.asrConfidence, meta: { typed, ...(body.chipId ? { chipId: body.chipId } : {}), ...extra },
+    });
+  const [inserted] = await Promise.all([
+    insertTurns(lesson.id, state, turnRows),
+    // Text lane: the child cut off the latest stored teacher line; mark that row rather than storing it again.
+    textLane && body.teacherInterrupted
+      ? q(`update turn set meta = meta || '{"interrupted": true}'::jsonb
+           where id = (select id from turn where lesson_id = $1 and speaker = 'teacher' order by seq desc limit 1) returning id`, [lesson.id])
+      : null,
+  ]);
+  const childTurnId = inserted.at(-1).id; // the child's row, or a module-only turn's activity row
 
-  // Classify against the active item's key (never free grading).
-  const moduleAnswer = (body.moduleEvents || [])
+  // Classify against the active item's key (never free grading). A module answer on the active item's own
+  // module is machine truth; a module-only turn has nothing else to classify.
+  const target = targetFor(state, kit, activeItem);
+  const moduleAnswer = moduleEvents
     .filter((e) => e?.type === "answer" && state.module && e.moduleId === state.module.id && state.module.itemId === state.activeItemId).at(-1)?.data ?? null;
-  const cls = await classify({
-    target: targetFor(state, kit, activeItem), childText, heard, asrConfidence: body.asrConfidence, typed, chipId: body.chipId,
+  const machineAnswer = typeof moduleAnswer?.correct === "boolean" && target.mode === "item";
+  const cls = moduleOnly && !machineAnswer ? null : await classify({
+    target, childText, heard, asrConfidence: body.asrConfidence, typed, chipId: body.chipId,
     moduleAnswer, classLevel: child.class_level, trace,
   });
 
   // Evidence → learner model (only with core_tutoring consent).
-  const evidence = evidenceFrom(state, cls, kit, { leaked, discount: gamingDiscount(state.affect) });
+  const evidence = cls ? evidenceFrom(state, cls, kit, { leaked, discount: gamingDiscount(state.affect) }) : [];
   const skillChanges = {};
   if (core && evidence.length) {
     const current = await loadSkillStates(child.id, [...new Set(evidence.map((e) => e.skillId))]);
@@ -325,14 +361,16 @@ async function turn(req, res, body) {
     await Promise.all(writes);
   }
   // A belief voiced outside a keyed item counts on the misconception ledger, never as graded evidence.
-  if (core && cls.voiced) await flagMisconception(child.id, cls.voiced);
-  if (cls.flags.distress) {
+  if (core && cls?.voiced) await flagMisconception(child.id, cls.voiced);
+  if (cls?.flags.distress) {
     await q("insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3)",
       [child.id, lesson.id, { turnId: childTurnId, source: cls.source === "predicate" ? "predicate" : "classifier", family: cls.flags.distressKind }]);
   }
 
-  // Director step → compile → (text mode) reply from the same instructions.
-  const r = step(state, { event: "turn", kit, cls, chipId: body.chipId, answer: normAnswer(childText), now: Date.now() });
+  // Director step → compile → (text lane) reply from the same instructions.
+  const r = moduleOnly
+    ? step(state, { event: "module", kit, cls: cls ?? undefined, moduleEvents, now: Date.now() })
+    : step(state, { event: "turn", kit, cls, chipId: body.chipId, answer: normAnswer(childText), now: Date.now() });
   const next = r.state;
   if (core && r.move.kind === "explain" && r.move.skillId && !next.skills[r.move.skillId]) {
     const intro = markIntroduced(newSkillState(r.move.skillId, kit.topicType));
@@ -340,24 +378,37 @@ async function turn(req, res, body) {
     next.skills[r.move.skillId] = snapshotSkill(intro);
   }
   const instructions = instructionsFor(next, kit);
-  let teacherReply, guard;
-  if (typed) {
+  let teacherReply, teacherReplySeq, guard;
+  if (textLane && !r.hold) {
     const tapped = body.chipId?.startsWith("opt:") ? activeItem?.options?.[Number(body.chipId.slice(4))]?.text : body.chipId?.split(":")[1];
-    ({ reply: teacherReply, guard } = await textReply({ instructions, state: next, kit, childText: childText || `(tapped: ${tapped ?? "nothing"})`, trace }));
-    await insertTurns(lesson.id, next, [{ speaker: "teacher", text: teacherReply, meta: { move: r.move.kind, ...(guard.caught.length ? { guard: guard.caught } : {}) } }]);
+    const said = childText || (moduleOnly ? `(no words; in the activity: ${activitySummary(moduleEvents, 0)})` : `(tapped: ${tapped ?? "nothing"})`);
+    // A module-only turn stored no child row, so the whole recent transcript is history.
+    ({ reply: teacherReply, guard } = await textReply({ instructions, state: next, kit, childText: said, trace, ...(moduleOnly ? { history: next.recent } : {}) }));
+    [{ seq: teacherReplySeq }] = await insertTurns(lesson.id, next, [{ speaker: "teacher", text: teacherReply, meta: { move: r.move.kind, ...(guard.caught.length ? { guard: guard.caught } : {}) } }]);
   }
-  const saved = await q("update lesson set state = $2 where id = $1 and (state->>'turn')::int = $3 returning id", [lesson.id, next, prev.turn]);
-  if (saved.length !== 1) throw new HttpError(409, "another turn for this lesson landed first; retry");
+  // `and ended_at is null`: a turn still in flight when the lesson ends must not rewrite its state.
+  const saved = await q("update lesson set state = $2 where id = $1 and ended_at is null and (state->>'turn')::int = $3 returning id", [lesson.id, next, prev.turn]);
+  if (saved.length !== 1) {
+    const ended = (await one("select ended_at from lesson where id = $1", [lesson.id]))?.ended_at;
+    throw new HttpError(409, ended ? "lesson has ended" : "another turn for this lesson landed first; retry");
+  }
 
+  // Voice lane: what must be heard now rather than on the child's next turn (contracts.ts TurnResponse).
+  const speakNow = textLane ? undefined
+    : r.move.kind === "safeguard" && !prev.safeguard ? "interrupt"
+      : moduleOnly && !r.hold ? "when_free" : undefined;
   const ms = Math.round(performance.now() - t0);
-  console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind} cls=${cls.outcome}/${cls.source} ${ms}ms`);
+  console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${r.hold ? " (hold)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"} ${ms}ms`);
   /** @type {import("../../shared/contracts").TurnResponse} */
-  const out = { instructions, move: r.move, moduleCommands: r.moduleCommands, ui: r.ui, ...(teacherReply ? { teacherReply } : {}), ...(r.end ? { end: true } : {}) };
+  const out = {
+    instructions, move: r.move, moduleCommands: r.moduleCommands, ui: r.ui,
+    ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
+  };
   if (debugFor(req)) {
     const item = r.item;
     out.debug = {
-      phase: next.phase, turn: next.turn, hintLevel: next.hintLevel,
-      classification: { outcome: cls.outcome, misconceptionId: cls.misconceptionId, voiced: cls.voiced, confidence: cls.confidence, source: cls.source, flags: cls.flags },
+      phase: next.phase, turn: next.turn, teachIdx: next.teachIdx, hintLevel: next.hintLevel, unclear: next.unclear, moduleOnly, hold: !!r.hold,
+      classification: cls ? { outcome: cls.outcome, misconceptionId: cls.misconceptionId, voiced: cls.voiced, confidence: cls.confidence, source: cls.source, flags: cls.flags } : null,
       evidence, skills: skillChanges, flagged: next.flagged, guard,
       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
       kitVerified: kit.verified, ms, timings: trace,

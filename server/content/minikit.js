@@ -1,18 +1,24 @@
 // On-the-fly MINI-KIT for a topic that has no usable verified kit yet: taxila-fast writes skills,
-// 2 misconceptions and 8 items from the curriculum entry, an independent blind solve drops items whose
-// key it can prove wrong, and the result is cached in asset_cache. It is always `verified: false`, which
-// halves the evidence weight of everything learned from it (a model-written key is not a verified key).
+// 2 misconceptions and 8 items from the curriculum entry; a blind solve by a DIFFERENT deployment
+// (taxila-brain, more reasoning) keeps only items whose key it reproduces (the same answer, or a provably
+// equal value); the result is cached in asset_cache. Writer and checker on one deployment made correlated
+// errors, and an "unclear" comparison used to keep the item — a model-written key the checker never
+// confirmed is not a key a child may be graded against (inherited law: classify only against verified
+// keys). Open why/teach-back items have no single value to check and are kept. The kit stays
+// `verified: false`, which halves the evidence weight of everything learned from it.
+// Policy and reversal condition: context/inbox/ws2-director-minikit-keys.json.
 import { one, q } from "../db.js";
 import { chat, DEPLOY } from "../azure.js";
 import { normalizeKit } from "./kits.js";
+import { norm } from "../director/items.js";
 
-/** Bump when the prompt or schema changes: the version is part of the cache key. */
-export const MINIKIT_VERSION = 1;
+/** Bump when the prompt, schema, id scheme or check changes: the version is part of the cache key. */
+export const MINIKIT_VERSION = 2;
 const KINDS = ["practice", "near_transfer", "far_transfer", "predict", "contrast", "why", "teachback", "retrieval", "error_spot", "translate_rep"];
 /** Kinds whose answer is an idea rather than a value: the blind solver cannot check them. */
 const OPEN_KINDS = new Set(["why", "teachback"]);
 
-export const cacheKey = (topicId) => `kit:mini:v${MINIKIT_VERSION}:${DEPLOY.fast}:${topicId}`;
+export const cacheKey = (topicId) => `kit:mini:v${MINIKIT_VERSION}:${DEPLOY.fast}+${DEPLOY.brain}:${topicId}`;
 
 const S = (description) => ({ type: "string", description });
 const A = (items, description) => ({ type: "array", items, description });
@@ -78,42 +84,54 @@ function valueOf(s) {
   if (/^-?\d+(\.\d+)?$/.test(t)) return +t;
   return WORD_VALUES[t] ?? null;
 }
-/** "same" | "different" | "unclear" — only a provable numeric disagreement counts as "different". */
+/**
+ * "same" | "different" | "unclear". Same: the solver's answer IS the key or an accepted form (fractions
+ * and number words canonicalized), contains one as a whole phrase, or has the same value. Different: a
+ * provable numeric disagreement. Anything else is unclear — and toRawKit drops unclear checkable items.
+ */
 export function compareAnswers(key, acceptable, solver) {
-  const norm = (s) => String(s).toLowerCase().replace(/\s+/g, " ").trim();
-  const forms = [key, ...acceptable];
-  if (forms.some((f) => norm(f) === norm(solver))) return "same";
-  const sv = valueOf(solver), kv = valueOf(key);
-  if (sv === null || kv === null) return "unclear";
-  return Math.abs(sv - kv) < 1e-9 ? "same" : "different";
+  const forms = [key, ...acceptable].map(norm).filter(Boolean);
+  const sv = norm(solver);
+  const phrase = (f) => new RegExp(`(^|[^\\p{L}\\p{N}/])${f.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}($|[^\\p{L}\\p{N}/])`, "u").test(sv);
+  if (forms.some((f) => f === sv || phrase(f))) return "same";
+  const svValue = valueOf(solver);
+  const values = [key, ...acceptable].map(valueOf).filter((v) => v !== null);
+  if (svValue === null || !values.length) return "unclear";
+  return values.some((v) => Math.abs(v - svValue) < 1e-9) ? "same" : "different";
 }
 
 async function blindSolve(topic, items, trace) {
   const checkable = items.map((it, i) => ({ i, it })).filter(({ it }) => !OPEN_KINDS.has(it.kind));
-  const { json } = await chat(DEPLOY.fast, [
+  const { json } = await chat(DEPLOY.brain, [
     { role: "system", content: `You are solving questions from a class ${topic.classLevel} ${topic.subject} lesson on "${topic.title}". Give only the final answer to each, as short as possible (a number, fraction or a few words).` },
     { role: "user", content: checkable.map(({ i, it }) => `${i}. ${it.prompt_en}`).join("\n") },
   ], {
     schema: O({ answers: A(O({ i: { type: "integer" }, answer: { type: "string" } }), "one per question") }),
-    schemaName: "solutions", effort: "low", maxTokens: 2500, timeoutMs: 45_000, trace,
+    schemaName: "solutions", effort: "medium", maxTokens: 6000, timeoutMs: 60_000, trace,
   });
   return new Map((json.answers || []).map((a) => [a.i, a.answer]));
 }
 
-/** Turn the model's keyed output into a raw kit (ids are derived from the topic id, never invented). */
-function toRawKit(topic, g, solved) {
-  const sid = (k) => `${topic.id}-${k}`;
+/**
+ * Turn the model's keyed output into a raw kit. Ids are derived from the topic id, never invented, and
+ * carry a `-mk-` namespace: file kits name skills `<topicId>-s1…`, and a mini-kit skill under the same id
+ * would write its evidence into the skill_state row the verified kit later reads as a different skill.
+ */
+export function toRawKit(topic, g, solved) {
+  const sid = (k) => `${topic.id}-mk-${k}`;
   const items = [];
   g.items.forEach((it, i) => {
     const raw = {
-      id: `${topic.id}-mk${i + 1}`, skillId: sid(it.skill), kind: it.kind, difficulty: it.difficulty,
+      id: `${topic.id}-mk-i${i + 1}`, skillId: sid(it.skill), kind: it.kind, difficulty: it.difficulty,
       prompt_en: it.prompt_en, prompt_hi: it.prompt_hi, answer: it.answer, acceptable: it.acceptable, hints: it.hints,
       ...(it.targetsMisconception !== "none" ? { targetsMisconception: sid(it.targetsMisconception) } : {}),
     };
-    const solverAnswer = solved.get(i);
-    if (solverAnswer !== undefined) {
-      const verdict = compareAnswers(it.answer, it.acceptable, solverAnswer);
-      if (verdict !== "unclear") raw.verified = { solverAnswer, agrees: verdict === "same", note: "mini-kit blind solve" };
+    if (!OPEN_KINDS.has(it.kind)) {
+      // A checkable item survives only when the independent solver reproduced its key.
+      const solverAnswer = solved.get(i);
+      const verdict = solverAnswer === undefined ? "unclear" : compareAnswers(it.answer, it.acceptable, solverAnswer);
+      if (verdict !== "same") return;
+      raw.verified = { solverAnswer, agrees: true, note: `mini-kit blind solve (${DEPLOY.brain})` };
     }
     items.push(raw);
   });

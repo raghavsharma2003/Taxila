@@ -38,8 +38,7 @@ for (const f of files) {
     if (KINSHIP_RE.test(n)) r.push(`kinship/role word: ${n.match(KINSHIP_RE)[0]}`);
     if (r.length) v.push(`"${n}" → ${r.join(", ")}`);
   }
-  const cue = readCue(path.join(DIR, f));
-  if (cue) {
+  for (const cue of [readCue(path.join(DIR, f)), readCue(path.join(DIR, f), "hinglish")]) if (cue) {
     const w = cue.split(/\s+/).length;
     if (w > 12) v.push(`cue ${w} words (cap 12)`);
     if (KINSHIP_RE.test(cue) || /\b(Asha|Arjun|Uma)\b/.test(cue)) v.push("cue carries a name or address word");

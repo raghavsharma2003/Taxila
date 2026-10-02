@@ -533,3 +533,181 @@ All of DA-M1..M7 reuse pilot transcripts that are already parent-visible (LS §4
 - Majumder, B., & Sen, A. (2026). LLMs vs fine-tuned models for sarcasm in code-mixed Hinglish. arXiv:2602.21933 [V]
 - Zhang, J., Borchers, C., Aleven, V., & Baker, R. S. (2024). Using LLMs to detect SRL in think-aloud protocols. EDM. ERIC ED675562 [V]; Borchers, C., et al. (2025). LLMs generalize SRL prediction to new languages within but not between domains. *JEDM*. ERIC EJ1483240 [V]
 - Meng, X., & Lin, J. (2026). Simulating disengaged students to evaluate LLM-based tutors (DAS2). arXiv:2609.12331 [V]
+
+---
+
+## Review
+
+**Reviewer stance:** skeptical learning scientist plus engineer, 2026-10-02. This review checked the file against its own text, its cited numbers and the stated stack (Azure Container Apps, gpt-realtime-2.1, Neon). No new literature search was run. Legal points are tagged [S] (from memory of the DPDP Act 2023 and Rules 2025, **not re-fetched**) and need counsel. The file's strongest idea, verify-before-act with a no-regret move, survives. Its numbers, its legal posture (DA8), several rules promoted to hard invariants, and the arbiter code do not survive as written. Corrections are numbered R1-R30 and each says what to change.
+
+### A. Child safety and DPDP 9(3): blocking
+
+**R1. DA8 ("never stored, recomputed on replay") is neither legally protective nor technically true.**
+- [S] DPDP s.9(3) bars "tracking or behavioural monitoring" of children. The act is the *processing*, and in-memory inference of boredom, frustration or "gaming" per turn is processing whether or not a row is written. s.9(3) is not lifted by parental consent. Only a Rules exemption lifts it. The Fourth Schedule exemption I recall is for *educational institutions* and only to the extent needed for educational activity or safety. Whether a private edtech app qualifies is **unresolved**.
+- Technically, the LLM labeller is not a pure function. It uses temperature 0.7 and two samples. Replay therefore cannot reproduce acts unless the labels are cached. §9 then keeps a `turnId → acts` cache (including `AFFECT_SELF`) for 30 days. So affect labels ARE stored, which contradicts DA8 and the §2 line "nothing to the right of TurnEvent is written".
+- Fix:
+  - Reword DA8 to: "affect inference is ephemeral in production; a consented, time-boxed calibration store exists and is deleted at day 30".
+  - Remove the claim that non-storage resolves 9(3).
+  - Add an **`affect_layer` kill switch** per cohort and a parent-visible toggle. Reuse VT's `explicit_only` mode as the fallback: the child's explicit acts and KT outcomes only, with no timing, `ECHO` or `shortExplain` inference.
+  - Add a one-page counsel question to the file: "is adaptive pedagogy from turn-level engagement inference 'behavioural monitoring' for a non-institution?"
+
+**R2. The affect state has to live somewhere between turns.** `AffectSession` (window, baselines, clock, arbiter) is per-session mutable state. On Azure Container Apps with scale-out and restarts, in-memory state is lost or split across replicas. Persisting it in Neon contradicts DA8. Decide explicitly: either sticky-session in-memory with a defined "cold-restart means explicit-only for 3 turns" behaviour, or an encrypted session-TTL store (for example 1 hour) described as such. The doc currently assumes both.
+
+**R3. No distress or safeguarding path from the affect layer.**
+- `AFFECT_SELF` ("mujhse nahi hoga", "main bekaar hoon"), repeated negative self-talk, fear of punishment after a wrong answer ("mummy maarengi", "papa daantenge") and crying or shouting all appear only as frustration indicators.
+- CLAUDE.md makes the child-safety floor (1098, 14416, safeguarding hand-off) product, not compliance. Safety is covered only by a regex "safety terms" fast path with no listed contents.
+- Add:
+  - A **DISTRESS** suspicion: `AFFECT_SELF` negative ≥ 2 in 6 turns, or any fear-of-adult or harm-to-self lexicon hit.
+  - It routes to the safeguarding module and **bypasses the arbiter**: no budget, no verification, no cooldown.
+  - Eval invariant **DA-I7**: any distress hit produces a supportive, non-instructional move that same turn, and no menu or choice move.
+
+**R4. The verify budget throttles relief for a distressed child.** `turn < 3`, "1 per 4 turns", "never two in a row" and `cooldown 6` all apply to FRUS, so a child who is upset in turn 2 gets nothing. Cheap, non-costly soothing moves (NAME-DIFF, SHRINK) must be unbudgeted. Only *questions* (menus, explain-it) count against the budget. The code in `arbitrate()` makes no such distinction.
+
+**R5. Child requests are not all honoured same-turn.** DA-I1 exempts only `EXIT_INTENT` and an "explicit child pick". `META` ("ruk jao", "wait", "slow") and a break request are not named, and §6.2 puts a break at τ = .70 "needs confirmed". Add: any child-initiated break, stop, slow or repeat request is honoured in the same turn with no confirmation. A request is never a suspicion.
+
+**R6. DA-I2 is overbroad and untestable.** A lexicon ban on teacher output (*bore ho, frustrated*) also blocks acknowledging a feeling the child **stated** ("boring hai" gets a ban on any boredom word). It also fails on Devanagari, Roman and code-mixed variants. Replace with the predicate: the teacher may not assert an *inferred, unstated* state about the child. Reflecting the child's own words is allowed and in fact required. Test with paired fixtures (stated vs inferred), using an LLM judge validated on ≥ 100 Hinglish fixtures, not a lexicon.
+
+**R7. Engagement-maximisation risk (DPDP 9(2) "detrimental effect on well-being") [S].**
+- VM-PRESENCE (a light re-entry that "never names the silence"), the close-win "open thread for next time", and DA-M7's outcome "voluntary continuation / session completion" optimise *retention*, not learning.
+- For a tired or distressed child, this is a dark-pattern shape and conflicts with the sister product's NEVER MANIPULATE invariant.
+- Changes:
+  - Change DA-M7's primary outcome to delayed retention and child-reported ease (end-of-session sticker choice), with continuation as a guardrail only.
+  - A second silence in VM-PRESENCE ends the session gracefully. It does not re-engage again.
+
+**R8. The gaming response can be harmful to the helpless child.**
+- §7 "MAKE-THINKING-PAY" includes a *short hint delay* (Vanacore 2024, a study of children aged ~11-14 in a maths app).
+- The file's own Baker 2004 evidence says helplessness explains gaming. DA-M9 tests this only after the fact.
+- Rule: no hint delay or try-first on any child with `AFFECT_SELF`, F1-F3 or `deepFail` in the last 6 turns, and never in band A until DA-M9 reports. Use open-response items first (no withholding).
+
+**R9. Roll 2014 (n = 38) cannot carry TRY-FIRST for a 6-year-old.** It is correlational, from a secondary-school/college tutor, and shows avoiding help on *low-prior* steps went with better learning. Downgrade the "just tell me" row to [U] and gate it to bands B-C. In band A, give a rung-1 hint on the first request.
+
+### B. Evidence overreach
+
+**R10. The detector accuracy assumed in §6.1 contradicts DA2's own evidence.**
+- DA2 cites Hutt 2019 (ρ 0.08-0.34, n = 69k) and Mills 2015 (κ 0.21). §6.1 then assumes sens/spec = .70/.85 for boredom and frustration, which implies AUC ≈ .85.
+- Paquette 2019 transfer κ of 0.23-0.26 is "better than ML" only in relative terms and is near-chance in absolute terms.
+- Recompute §6.1 with sens/spec of .60/.70 (AUC ≈ .65-.70). At π = .05, boredom PPV is ≈ .10, and after a verify with LR+ 4 it is ≈ .31, below every τ in §6.2.
+- State plainly: **verification alone does not unlock a costly move for boredom or frustration.** It needs a child pick AND a second indicator, or no costly move at all.
+
+**R11. The LR+ 4 for "child's reply to a verifying move" is assumed, not argued.**
+- Child replies are confounded by deference. Indian children often pick the "teacher's pick" or the first option because the teacher offered it, and `teacherPick` is already given LR 1.0.
+- Randomised order only fixes position bias, not authority deference or demand characteristics (the doc invokes Waterman & Blades for exactly this in DA6).
+- Treat every VM LR as ≤ 2 until DA-M4. Log reply class by option position for the position-bias check.
+
+**R12. VM-EXPLAIN confounds gaming with explanation ability and language.**
+- "Minimal / off-target" gets LR 3.0 for gaming. But rote-trained children (discourse doc §1.5) rarely practise explaining. ASR on a 6-year-old's Hinglish explanation frequently fails. A shy child answers minimally.
+- Condition on band, item language and ASR confidence: a minimal reply when `asrConf` is low or `unusable` is LR 1 (the doc does this only for outright ASR failure). Never use VM-EXPLAIN in band A.
+- Allow a non-verbal explain path (tap the step that is wrong, or choose the explanation card) so non-verbal children can disconfirm.
+
+**R13. The "no-regret" rule (§6.2) is undefined.** `U(m, s)` and ε are never specified, so "min over hypotheses of U ≥ −ε" cannot be checked or tested. Either define U as expected next-turn recovery and engagement with a table of values per (move, state), fitted from DA-M4, or delete the formalism and keep the list of allowed moves with a written justification per move. Note that a prerequisite item (VM-PREREQ) is *not* no-regret for a frustrated child.
+
+**R14. DA5 and DA-I3 promote undergraduate observational evidence to a hard invariant.**
+- The Ahtisham figures (AOR 0.873; 28.1% vs 39.8% recovery) are from undergraduate chemistry and are correlational. The tutor chose when to address the error, so item difficulty and selection confound it.
+- OQ6 admits this, yet DA-I3 is gated as "your change is wrong".
+- Demote DA-I3 to a configurable default (`maxQuestionsOnImpasse = 2`) with a "directional" tag until DA-M6 reports on children. Generation-effect literature also says telling too early costs retention on conceptual items. Keep Socratic depth 3 for conceptual items where the child is progressing (rising coverage).
+
+**R15. The productive-confusion clock has no child evidence.** D'Mello's confusion benefit comes from adult *induced* confusion (contradictory information), not naturally arising confusion. "No intervention while the clock runs", 60 s in band A, can leave a 6-year-old stuck and silent. Set a maximum of 30 s for band A, and make the cheap moves (wait, name the difficulty, hint ladder) active from the start rather than "except MI's cheap moves". Mark DA-M6-like measurement for the clock.
+
+**R16. Citations tagged [V] at abstract level carry design thresholds.** Only four papers were read in full text. Everything else is [V] from abstracts or APIs. Re-tag the rest as [V-abs] and do not use any effect size seen only in an abstract (the 12.7%, 18.5% vs 71.8%, 38%, 8-27% figures) as a threshold. Also note where a cited study is an assessment (Wise 2024 RTE across the school day, grades 2-8) and not tutoring.
+
+**R17. DA3's Chen 2021 validation is partly circular.** If the AutoTutor disengagement tracker flags items using an accuracy residual, "flagged items had 18.5% accuracy" is built into the detector. Taxila's D1 copies the same construct, so DA-M2 ground truth **must not** use accuracy as a coding cue (see R22).
+
+### C. Code and spec defects (implementation)
+
+**R18. Spec and code disagree on gaming weights.**
+
+| item | §5.1 table | §8 code |
+|---|---|---|
+| G4 | 1.0 per fire | 0.5 |
+| G6 | 0.75 | 0.375 |
+| G2 | needs ≥ 2 completed items on the skill, or ≥ 3 hint requests within 20 s | neither condition implemented; uses `attemptOnStep === 1` and `pSuccessPrior ≥ 0.6` only |
+| G1 | includes MCQ option cycling (≥ 2 options within 6 s) | not implemented |
+
+Make the table the single source of truth and generate the code constants from it, or fix one side. A unit test must assert table and code parity.
+
+**R19. The gaming threshold is too low.** "Each pattern counted at most twice" and S ≥ 2.0 means G1 twice (2.0) or G3 twice (3.0) alone raises a suspicion. G3 (same answer string on different items) has the highest weight, 1.5, but the weakest evidence. For a 4-option MCQ the chance of the same letter twice is 25%, and "haan", "2", "0" and "10" repeat often. Make G3 item-key aware, with expected-repeat probability taken from the option count and answer-space size, and cap each pattern at once. Calibrate S on simulated sessions plus the pilot, targeting ≤ 1 false suspicion per 3 sessions.
+
+**R20. Arbiter bugs (`arbitrate` / `resolve`).**
+1. `pending` is never cleared on timeout. `arbitrate` returns early while `a.pending` is set, and `resolve` is only called on a usable reply. The text says "or after 2 turns with no usable reply", but nothing implements it. One ignored question disables verification for the rest of the session.
+2. `confirmed[kind]` is "expires after 8 turns" in a comment only. The `live` filter `!a.confirmed[s.kind]` mutes that kind **forever**.
+3. `find` over `PRIORITY` can pick `IMPASSE` (move is null) and return, starving every lower-priority suspicion for as long as the impasse lasts. Filter out null-move kinds before the priority pick.
+4. `Suspicion.strength` is computed (and DRIFT strength 2 uses time-of-day) but the arbiter never reads it. Either use it (strength 2 may shorten the cooldown) or drop it. Time-of-day must not escalate on its own.
+5. `lastVerifyTurn` has no initial value; `resolve` records no disconfirmation (LR < 0.5 should clear the suspicion and lengthen the cooldown).
+
+Patch sketch:
+```ts
+const expired = (t?: number, turn = 0) => t !== undefined && turn - t > 8;
+const live = sus.filter(s => VM_FOR[s.kind] && (a.cooldown[s.kind] ?? -1) < turn
+                          && !(a.confirmed[s.kind] !== undefined && !expired(a.confirmed[s.kind], turn)));
+if (a.pending && turn - a.pending.askedTurn >= 2) a = resolve(a, 'unusable', turn);   // timeout
+```
+
+**R21. Two decision systems disagree.** The arbiter's `confirmed` flag (LR ≥ 2.5, prior ignored) and MI's posterior both consume the same verify evidence. DA-I1 forbids a costly move without `confirmed`, but §6.1 keeps "MI's route as fallback" ("2 consecutive confident turns"), which can act without it. Pick one authority. Recommended: `confirmed` = posterior odds (detector-PPV prior odds × product of independent LRs) ≥ τ_move odds, computed in MI's own units, and delete the fallback. At the §6.1 numbers (even odds after one verify), a single verify can never reach τ .60 or .70, and the code must reflect that (R10).
+
+**R22. DA-M2 ground truth leaks the detector's inputs.** Coders see "transcript + event replay" (latency, outcomes, hint use), the same signals the detectors use, so agreement is inflated. Baker's BROMP used field observation independent of logs. Use at least one independent channel: live or video observer for a subsample, or end-of-session child self-report (emoji or sticker), or delayed retention. Report detector-vs-coder κ separately for each channel.
+
+**R23. Voice timing is far noisier than the ITS logs it borrows thresholds from.**
+- Baker's GH5 thresholds are keyboard-click seconds. In voice, `speech_started` comes from server VAD, which is affected by TV or family noise, speakerphone echo (the teacher's own audio can trigger it), Bluetooth latency, and `semantic_vad` hysteresis.
+- The `rapid` floor of 400 ms is inside that error (VAD onset error is commonly 100-300 ms), so it will almost always equal the floor.
+- Reduce the weight of **all voice-timing features** (G1 `zChild < -1`, G6, D3) by half until DA-M3 shows they beat noise. Gaming evidence in voice should come from act and outcome patterns, not onset. Specify the client-to-server field for "last played frame" with clock-sync error, because it is currently assumed.
+
+**R24. `asrConf` may not exist.** Gate 2 (`asrConf < ASR_MIN`) depends on a per-turn ASR confidence that the realtime transcription path may not expose (logprobs depend on the transcription model chosen). Tag [U]. Fall back: transcript length vs audio duration (words per second), repeated-token ratio and a script-mix check as a proxy for a bad transcript.
+
+**R25. The labeller cannot run "in parallel" with the realtime response.** With server VAD auto-response the model begins answering at end of turn, before the labeller returns. The Director's appended-last move shape then reaches turn t+2, after the child's state changed. Design it: set `create_response: false`, wait for a **fast path** (regex plus a single cheap labeller call with a hard 250-300 ms timeout), then `response.create` with the move shape; on timeout, respond with the previous move shape (no new inference) and apply the late label for the next turn. Two gpt-5.6 calls per child turn also doubles the data sent to the processor and the cost: add a cost and p90 budget per child-hour and a DPA/no-training/India-region note.
+
+**R26. D7 in the skeleton is a regex on `answerText`** (`/bor/i`), which misses Devanagari, "बोर" and "bore ho gaya", and fires on "border" and "before". The note says it is "for brevity", but §8 is the code that will be copied. Replace with the labeller's `AFFECT_TASK` plus `polarity` and a sub-label field `taskValence ∈ boring|hard|easy|fine`, which the label set (§4) does not currently contain.
+
+### D. Testability and measurement
+
+**R27. DA-M1 is underpowered by an order of magnitude.** The label set has 16 acts across 3 bands and several language mixes. The gate asks for ≥ 30 positives per label × band × mix: 16 × 3 × ≥ 3 = 144 cells × 30 = **≥ 4,300 positive turns**, versus 900 turns total. Rare acts (`EXIT_INTENT`, `SELF_CORRECT`, `AFFECT_SELF`) will be dropped by the rule, so the detectors that need them never fire. A point κ with 30 positives has a CI of roughly ±0.2. Changes:
+- Gate on the **lower 95% bound** of κ (or per-label F1 with a bootstrap CI), not the point estimate.
+- κ is prevalence-sensitive: also report per-label precision, recall and a confusion matrix.
+- Merge to ≤ 8 acts for launch and give a minimum-n for each cell.
+- The two raters' "consensus" is not an independent gold standard. Use a third adjudicator on disagreements.
+
+**R28. DA-M4 and DA-M2 cannot identify the parameter count.** 100 sessions × ~10 windows at 4-6% base rates gives about 50 positive boredom/frustration windows. The proposal fits 6 detector thresholds, ~25 LRs in §6.4 and a 11 × 11 emission matrix (§6.5). That is unidentifiable. Fit only 2-3 shared parameters (a global gain per detector), fix the rest at literature or neutral values, and run a power calculation. "PPV after verify ≥ 0.6" with 50 positives has a CI of ±0.14 and cannot be asserted.
+
+**R29. DA-M8 (simulated students) is circular for validity.** Simulators are written by the same team and LLM with the same assumptions about what gaming or boredom looks like in Hinglish, so "verify choice matches simulated state ≥ 80%" tests self-consistency. Use it **only** as a regression and invariant gate (DA-I1..I7), and say so. DAS2's κ 0.75 is rule labels vs human consensus on *simulated* students, not evidence for real children.
+
+**R30. A/B tests (M6, M7, M9) lack n, margins, ethics and interaction control.**
+- "Adopt if delayed retention ≥ control" (M9) is not a non-inferiority test (no margin, no n).
+- Several A/Bs run on the same children interact.
+- The arms deliberately delay help (M9, M6's third question) for minors. They need an ethics review and parental notice, and a stop rule.
+- Specify: n per arm from a pilot SD, a pre-registered primary outcome (delayed retention), one concurrent experiment per child, and a margin (for example −0.1 SD) for "no worse".
+
+### E. What is missing
+
+**R31. Fairness and subgroup audit (new DA-M10).** ASR error, accent and dialect (Bhojpuri, Tamil-accented Hindi, regional English), device quality, gender (Baker 2025 found boys game more on some steps, and the doc cites it but does not audit for it) and board all shift `ECHO`, `DONT_KNOW`, off-target and timing features. Require equal-opportunity gaps (false-suspicion rate by subgroup) ≤ a bound before enabling any costly move for that subgroup, and fall back to explicit-only mode where ASR quality is poor.
+
+**R32. Confounds the doc names but does not design for.**
+- *Who is at the phone* is flagged (OQ4) but is the dominant Indian confound: a parent coaching or shouting "jaldi bolo", siblings, tuition-style prompting. Until diarisation exists, treat any turn with a second voice or sustained background speech as `multiSpeaker` and freeze detectors. Add a cheap heuristic (overlapping speech or a sudden speaker-embedding change) as a first pass.
+- Neurodivergence, stammering, selective mutism, hearing loss, and a child tired after school all look like drift or `DONT_KNOW`. The detectors must never produce a parent-visible label or a persistent trait, and the parent report must stay at "what changed in the lesson".
+- Choral echo (OQ3) must be decided before `ECHO` weights ship in band A/B. Default `ECHO` weight to 1.0 (neutral) in A/B until coded.
+
+**R33. Missing detectors and outcomes.**
+- No anxiety or shame detector (MI has an `anx` state with no detector), no positive-affect or flow detector, and no detection of parent-induced pressure. At least `anx` needs a minimal rule: hedging plus long pre-answer latency plus `AFFECT_SELF`.
+- No measurement that the **affect layer improves learning**. M6 and M9 test two responses only. Add a holdout arm (affect layer off, explicit-only) on delayed retention (P10), which is the one number that justifies the layer's existence and its legal risk.
+- No definition of ownership between the arbiter and MI's move table, which both choose moves.
+
+**R34. Gaming may not exist in a voice-with-a-person-like-teacher the way it does in a GUI.** The detectors were validated on keyboard ITSs (Cognitive Tutor, ASSISTments). A social teacher voice changes the base rate. In the pilot, measure the gaming base rate first (DA-M2), and if it is below about 3% of items, ship GAME as **log-only** (no responses) instead of tuning for it.
+
+### F. Verdicts per decision
+
+| id | verdict | change |
+|---|---|---|
+| DA1 | keep | but state absolute performance is weak (κ .23-.26), so rules are a floor, not a success |
+| DA2 | keep, strengthen | verification alone does not unlock costly moves for boredom/frustration (R10, R21) |
+| DA3 | keep with test | DA-M3 must use accuracy-independent ground truth (R17, R22) |
+| DA4 | keep | G3 item-aware, caps (R19) |
+| DA5 | **demote** | configurable default, not an invariant, until DA-M6 on children (R14) |
+| DA6 | keep | absence is weightless; add stated-vs-inferred rule (R6) |
+| DA7 | keep with fixes | power, CI-bound gate, ≤ 8 acts at launch (R27); latency design (R25) |
+| DA8 | **rewrite** | not a legal shield; labels not replayable; state has to live somewhere (R1, R2) |
+| DA9 | keep as [U] prior | time-of-day must not escalate on its own (R20) |
+| DA10 | keep, exempt distress | soothing moves unbudgeted (R4); evidence is not Borchers 2026 |
+| DA-I1 | amend | honour child requests and distress at once (R3, R5) |
+| DA-I2 | **replace** | stated vs inferred predicate (R6) |
+| DA-I3 | demote | configurable until M6 (R14) |
+| new | add | DA-I7 distress path; DA-M10 fairness; holdout arm (R3, R31, R33) |
+
+**Corrections to apply before this file feeds `context/inbox/`:** do not file `affect-recompute-not-store` (DA8) as a decision until R1/R2 are resolved. File it as *rejected-by-review*: "affect inference not being stored does not avoid DPDP 9(3), and replay needs stored labels". Do file the arbiter bug list (R20) as a fix to §6.3 and the "no-regret needs a defined utility" note (R13).

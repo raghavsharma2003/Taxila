@@ -161,8 +161,6 @@ for r in rows:
 
 # Voice minutes affordable at a target gross margin (web monthly, mature, fixed+content included)
 def affordable(price, target_gm, lane, stage="mature"):
-    nr = net_rev(price)*(1-A_SUPPORT_REFUND)
-    budget = (nr - (1-target_gm)*0 ) # placeholder
     cogs_cap_inr = net_rev(price)*(1-A_SUPPORT_REFUND) - target_gm*net_rev(price)
     voice_usd = cogs_cap_inr/FX - sum(FIXED.values()) - CONTENT[stage]
     return max(0, voice_usd)/LANES[lane]

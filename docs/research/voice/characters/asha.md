@@ -258,6 +258,10 @@ transcript, with a negative control, the way `honesty.ts` families were built (`
 
 ## 14. Open questions and reversal conditions
 
+- **Probe (method doc §6.3): Asha was the least identifiable character.** On the teaching script the blind judge
+  identified her 1/6 with the core alone (4 of 6 taken for Uma). A late cue raised that to 2/6 in English and 4/6 in
+  Hinglish. Her wonder and play show only when position carries them. Reverse the three-character plan for band A
+  if a fixed cue cannot lift her above 4/6.
 - **Name.** Parent panel may prefer another name; a name change is display-only (Meera `maya-rename-display-only`).
 - **Golu as continuity carrier** is untested. Reverse if children (band A) treat Golu as real *and* sad. Then Golu
   never refers to past sessions.

@@ -621,3 +621,141 @@ These are **priors, not measurements**. Run these in order before relying on the
 - Azure Sora 2 overview (image-to-video, audio, 1–5 min generation, no retirement date stated; updated 2026-06-05): https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/video-generation **[V]**
 - OpenAI Sora API shutdown on 2026-09-24: https://heydev.us/blog/openai-model-shutdowns-september-2026-audit-your-app and https://community.openai.com/t/release-sora-2-open-weights-before-shutdown/1388719 **[S]**
 - gpt-5.3-codex pricing: https://openrouter.ai/openai/gpt-5.3-codex **[S]**
+
+---
+
+## Principal review
+
+**Reviewer stance:** adversarial principal engineer, 2026-10-02. **The question:** will this produce fun, correct,
+bug-free games for a 9-year-old within minutes on Azure? **Short answer:** the *strategy* holds up: kit-first, G1 always
+delivered, G2 cached, a bot plays every level. Several mechanisms are wrong as written, though. Three would fail on
+the first real build: the CSP, the TPM budget and the egress claim. Two would quietly corrupt the learner model:
+telemetry the agent can author, and motor slips tagged as misconceptions. The fun design is under-specified.
+
+**New evidence gathered for this review.** Probe: `factory/llm-game-generation-review-probe.mjs` →
+`llm-game-generation-review-probe-2026-10-02.json`. All runs from the US build container, n is small, tag **[M]**.
+- `taxila-opus` on `…services.ai.azure.com/anthropic/v1/messages` returns **404 `DeploymentNotFound`** (n=1). The task
+  brief's "available deployments" list is stale. The doc's Azure-OpenAI-only constraint is correct and stays.
+- **`taxila-codex` rate limit headers:** `x-ratelimit-limit-tokens: 500000` and `x-ratelimit-limit-requests: 5000`
+  per 60 s. Region: East US 2.
+- **codex turn on a 10.9k-token prefix**, writing one ~40-line hook file:
+
+  | effort | wall | output tokens | reasoning tokens |
+  |---|---|---|---|
+  | low | 3.3 s | 300 | 109 |
+  | medium | 4.3–6.5 s | 386–453 | 195–265 |
+  | high | 10.9 s | 1,330 | 1,125 |
+
+  n=1 per cell.
+- **Prompt caching (identical 10.9k prefix):**
+  - Without `prompt_cache_key`: 1 of 3 warm calls hit.
+  - With `prompt_cache_key`: 5 of 5 warm calls hit, 10,624 of 10,804 tokens cached.
+  - The `remaining-tokens` header dropped by about the full prompt size on cached calls too. The rate limiter appears to
+    count cached tokens against TPM **[M, inference from headers, n=6]**.
+- **Phaser 3.90 loads images "via XHR as Blobs" by default** (`loader.imageLoadType` default `'XHR'`) **[V:
+  `src/core/Config.js`, `src/loader/filetypes/ImageFile.js` @ v3.90.0]**.
+- **Azure AI Content Safety harm models were "trained and tested on" 8 languages, and Hindi is not one of them**
+  **[V: Learn, region-availability/language section, 2026-09-18]**.
+- **Azure prompt caching** **[V: Learn prompt-caching, 2026-08-11]**:
+  - extended 24 h retention is available for `gpt-5.3-codex`;
+  - on the GPT-5.6 family, **cache writes are billed** and `prompt_cache_key` misses above about 15 requests/min per
+    key.
+- **GameASG-Bench claims re-checked against the HTML [V]:**
+  - L1 checks pass 97.7–99.6%;
+  - GPT-6-Astra + Codex CLI reach 26/47;
+  - Claude Code and Codex CLI each reach 18, with only 10 tasks in common;
+  - the turn-budget result (14.9% → 27.7% → 38.3% at 30/60/120 turns) is **DeepSeek-V4-Flash on Claude Code**, not a
+    general result.
+- **The ρ ≈ .37 source re-checked [V: arXiv 2510.16952 HTML]:** the raters were **6 human participants**, and they
+  rated *player-authored DSL behaviours* on "creative alignment". That is not game fun.
+
+### A. Corrections that change the design
+
+| # | claim in the doc | what is wrong | correction |
+|---|---|---|---|
+| P1 | §11: "CSP `connect-src 'none'`" | **This breaks every Phaser game at boot.** Phaser 3.90 fetches images (as blobs), JSON, atlases and audio by XHR. Also, Blob Storage cannot set response headers, so CSP can only be a `<meta>` tag, and `<meta>` CSP does not support `frame-ancestors` or `sandbox` | A kit-owned `<meta http-equiv="Content-Security-Policy">` as the **first** child of `<head>`: `default-src 'none'; script-src <artifactPrefix>; connect-src <artifactPrefix>; img-src <artifactPrefix> blob: data:; media-src <artifactPrefix> blob: data:; font-src <artifactPrefix>; style-src 'unsafe-inline'`. Here `<artifactPrefix>` is the **path-scoped** `https://<acct>.blob.core.windows.net/forge/<artifactId>/`, not the whole account origin. Add G2 asserts: zero CSP violations (`securitypolicyviolation` listener) and zero blocked requests |
+| P2 | §7.1: the sandbox has "no network except the Azure OpenAI endpoint and Blob" | Not implementable on `taxila-env`. It has no VNet, and `Microsoft.Network` is NotRegistered, so there is no egress filtering (**[V]** in `sandboxes-per-student.md` §2). Dynamic sessions offer only `EgressDisabled` or `EgressEnabled`, with no allowlist | **Brain outside, hands inside** (`coding-agent-harnesses.md` §5): the model loop and the keys stay in the orchestrator. The sandbox runs with egress disabled and node_modules baked into the image (no `npm install` at job time; the agent cannot add dependencies). Chromium gets `--host-resolver-rules` plus Playwright route-abort as defence in depth |
+| P3 | §8: the coder costs "about 600k in" over 40 turns | **About 5× low.** A realistic prefix is about 28k tokens: system, `template_api.md`, Base files and GDD. Context grows about 2.5k per turn from reads, logs and output. So Σ input ≈ 40×28k + 2.5k×780 ≈ **3.1M tokens** per build **[U, arithmetic]**. Dollars land close to the doc's anyway (about $1.0 input at 90% cached plus about $0.6 output ≈ **$1.6**), because cached input is cheap | Keep the $ estimate. **Fix the token estimate, because tokens set the next row** |
+| P4 | §8: cost is the binding constraint | **TPM is.** At 500k TPM, and with cached tokens apparently counted, one G2 build streaming about 3M tokens through a 5–8 min build needs **400–600k TPM**. **One build can saturate the whole `taxila-codex` deployment.** "Run two coder configs in parallel" halves capacity again. A class-time burst of 50 cache misses would queue for hours | (a) **Context discipline:** each stage (copy/config → hooks → repair) starts a *fresh* context from a handoff note, capped at about 35k tokens. That turns quadratic growth into linear and gets about 1M tokens per build. (b) Request a quota increase, and add a second codex deployment in another region behind the adapter. (c) **A G2 admission controller:** a token-bucket queue on measured TPM. A job whose expected start-to-ready time exceeds `deadlineMs` is never started live; it is queued for the off-peak catalogue build. (d) Set `prompt_cache_key = kit@version:family` and `prompt_cache_retention: "24h"` on codex. Without the key, warm hits were 1 of 3 |
+| P5 | §8: build 3–5 min; G2 P50 8 min, P90 15 min | Measured turns are 3–11 s on an 11k prefix, and more at 30k+. 40 turns ≈ 3–6 min of model time alone. Add 8–12 build/test tool calls (tsc 3–6 s, vite 5–10 s, a G3 run 20–60 s): **about 7–11 min for the build stage**. So **P50 is about 12–15 min and P90 is above 20 min**, which hits the 20 min wall clock. The doc's G2 numbers also disagree with `coding-agent-harnesses.md` (p50 6–10 min, $0.6–1.2) | Inner loop on esbuild incremental (< 1 s) with tsc only at `submit()`. Cap at **25 steps** (WebGameBench's best agents used 20–24 turns). Run effort `medium` for writes and `high` only for repair rounds. **State plainly to the owner: G2 cannot reliably land inside one lesson. It is a catalogue builder, and G1 refill is the live personalisation path.** Re-derive P50/P90 from M7, not from this table |
+| P6 | §8: the catalogue key is (objective × family × **skin**), ≈ 3,000 builds ≈ $7.5k | The doc itself says skins are data and never change the mechanic, so the skin does not belong in a *code* build key. The estimate also assumes every build passes | Key G2 by **(objective × family × mechanic-variant)**, about **600 builds**, with skins swapped by G1. At 60–75% pass and about 1.5 attempts per success: **≈ 900 attempts × $1.6 ≈ $1.5k [U]**. The real cost is **review**: a catalogue game is served to thousands of children, so it needs G3-grade human review (or at least a sampled review plus the M4-calibrated judge). That is about 600 × 10 min ≈ 100 reviewer-hours. Budget that, not tokens |
+| P7 | §5 G3 and §11: "correctness is computed by engine or family code"; "a model never grades" | **In G2, the family code that grades is agent-written.** `checkWinCondition`, `onCellClicked` and `onEntityEnteredCell` are hooks the agent implements. An agent bug that emits `answer{correct:true}` on a wrong landing passes G3 if the bot only plays the solver path. The learner model then records false mastery | Hooks emit **raw facts only**, `{itemId, value}`. `correct` and `misc` are computed by a **kit-owned pure `grade(itemId, value)`** compiled from `items` and `traps`. That function lives in KEEP files, and **the host recomputes it again** from the spec before the Director sees the event. G3 adds a **negative-path sweep**: for each item, inject every distractor and every trap and assert `correct=false` with the right `misc`. The host bridge validates `event.source === iframe.contentWindow` (the origin is `"null"` under sandbox), the zod schema, `itemId ∈ spec`, and a rate cap (≤ 5 answers/s). A runaway loop must not flood BKT |
+| P8 | §4: `track-jump`, `catch-lane` ("steer a basket", "dodge") | **A motor slip gets tagged as a misconception.** A 9-year-old who mis-steers the basket under 3/4 produces the same event as one who believes 6/8 ≠ 3/4. That poisons the misconception flags the whole product is built on | **Separate choice from execution.** Every family emits `intent` (what the child selected: a tapped target or a committed lane) apart from `outcome`. Only `intent` is graded. For ages 6–9, a mechanic must never need timing precision to express an answer: the child taps a point and the character jumps there, with physics as cosmetic animation. Where execution can fail (`catch-lane`), a miss is `interaction:game.miss`, never an `answer` |
+| P9 | §5: the test API is "stripped from prod bundle" | The shipped artifact is then not the artifact that was tested. Tree-shaking and dead-code differences are exactly where "passes CI, blank on device" bugs live | **Ship the bundle that was tested.** The test API stays in, inert until the host posts a one-time token from the validation harness. Hash the gated bundle; the published bundle must match it byte for byte |
+| P10 | §5: `reset(seed)` and `step(ms)` determinism | Agent code that uses `Math.random`, `Date.now`, `performance.now`, `setTimeout` or `requestAnimationFrame` silently breaks seeding and fixed stepping. Then G3 is flaky and its deadlock check fires false alarms | Add these to the G1 AST ban-list *for agent-authored files*. The kit exposes `this.rng` (seeded `Phaser.Math.RandomDataGenerator`) and drives the loop via `game.headlessStep(time, delta)` / `game.step` with `physics.arcade.fixedStep: true`. Run G3 twice with the same seed and require identical state-hash traces |
+| P11 | §5 G2: "FPS ≥ 45 median" in headless Chromium, 4× throttle | The container has no GPU. WebGL runs on SwiftShader, so FPS measures the CI box, not a ₹8k Android phone. The gate will flap | Gate on **frame-time regression versus the same family's template baseline** in the same container (≤ 1.3×). Add a **decoded-texture budget**: Σ w×h×4 ≤ 48 MB (gpt-image-2 1024² PNGs decode to 4 MB each; low-end WebViews die above about 100 MB). Add a **first-load payload budget** ≤ 2.5 MB, with sprites downscaled to 2× display size and packed to a WebP atlas. Real-device frame-time checks run on a reference low-end phone in the M7 pass |
+| P12 | §5 G1: an "acorn AST ban-list (fetch, eval, …)" | acorn does not parse TypeScript. Ban-lists are also trivially bypassed (`globalThis['fe'+'tch']`, `(()=>{}).constructor('…')`). And CSP does **not** cover WebRTC: `RTCPeerConnection` can beacon out of a sandboxed iframe | Run the scan on **esbuild output of agent-authored modules only**; scanning Phaser would false-alarm. Treat it as a lint. The security boundary is the opaque-origin sandbox (`sandbox="allow-scripts"` only), the path-scoped CSP (P1), no `allow=` permission delegation (the host page holds **microphone** permission for the voice teacher; never delegate it) and banned `RTCPeerConnection`/`WebTransport`. G2 asserts `typeof RTCPeerConnection` was never touched (via an instrumented getter) |
+| P13 | §7.1 and `forge-infra-azure`: Blob public read; path `forge/<childId?>/<artifactId>/` | (a) If the container's public access level is `container`, anyone can **list** every artifact, and "unguessable ids" means nothing. (b) Opening the URL top-level runs the game **unsandboxed** on the shared blob origin, with localStorage shared across all games. (c) A per-child path segment links artifacts to a child | Access level `blob`, never `container` (assert it in deploy). No child id in paths. The kit boot refuses to start unless `window.top !== window` **and** a host handshake nonce arrives within 2 s; it shows a "open this in Taxila" card otherwise. Move to API-minted short-TTL SAS URLs when `forge-infra-azure`'s reversal condition fires |
+| P14 | §5 G6: "child-facing strings + image prompts → Azure AI Content Safety" | (a) Moderating the *prompt* does not moderate the *image*. (b) Content Safety is not trained on Hindi **[V]**, and romanised Hinglish is weaker still. (c) Content Safety catches toxicity, not the risks that actually matter here: religious and caste imagery, skin-tone stereotypes, flags and maps (India's borders are a legal matter), brand logos, a wrong maths fact in a label | G6 becomes three checks. (1) Content Safety *Analyze image* on every generated image (≤ 4 MB, so downscale first). (2) Content Safety text **plus** a `taxila-brain` closed-rubric classifier for `hi`/`hi-Latn`, plus a curated Hindi/Hinglish blocklist. (3) A VLM cultural-safety rubric on skin-pack art (no deities, religious symbols, caste markers, political maps or real brands). Skin packs are human-reviewed anyway (§6); per-child hero art must pass (1) and (3) before it can swap in |
+| P15 | §6: Sora "no retirement date"; transparent background "Azure parity unverified" | Both are superseded by same-day [V] siblings. The Foundry schedule lists `sora-2 2025-12-08` **Preview, retiring 2026-10-15** with no replacement (`video-animation-gen.md` §1). Native `background:"transparent"` returned real RGBA 8/8 on `taxila-image` (`asset-pipeline.md` AP3) | Sora: remove it from Forge lanes (13 days left). Transparency: native first, with a colour-type check that falls back to an adaptive magenta key |
+| P16 | §0.5 and §10 M5: "LLM judges of fun correlate weakly (ρ ≈ .37)" | That source is n=6 adults rating DSL behaviours, not fun | Keep the conclusion (fun is measured on children). Downgrade the citation to "weak, indirect evidence". The stronger argument is the doc's own Habgood row plus the Emergence null result ("surprise is distinct from the judge's novelty") |
+| P17 | §5 G4: a GUI agent plays from screenshots in "1–3 min" | A vision agent at 3–10 s per step × about 8 rubric items × several steps each is **4–8 min**, and it is the flakiest gate (PlaytestArena: GUI agents fail on timing and low-contrast UI) | **Judge the G3 trace, do not re-play it.** G3 already drives every level through semantic inputs, so capture start, mid and end frames per level plus a frame after each graded input. G4 is then 1–2 VLM calls per level against the GDD rubric (the ArtifactsBench three-temporal-frames recipe) ≈ 30–60 s. A free-roaming GUI agent runs only offline (G3 tier, M4) |
+
+### B. Missing failure modes (add them to gates or the runtime)
+
+1. **G2 lands mid-play.** Never hot-swap a game the child is playing. The teacher offers G2 as "next round". The
+   Director owns the handover moment.
+2. **No in-game adaptivity.** The spec fixes 3–6 levels. A child who fails level 2 three times needs an easier
+   variant *now*, not at the next lesson.
+   - Ship the family level generator **client-side** (deterministic, seeded, kit-owned).
+   - The kit owns a `difficulty ± 1` rule and the hint ladder.
+   - G3 must exercise the *descend* branch as well as the solver path.
+3. **Offline and poor networks.**
+   - Pre-fetch the artifact into the Capacitor filesystem (or a service-worker cache) when `module_ready` fires.
+   - Telemetry buffers locally and flushes later (`ModuleEventBuffer` exists; make sure the iframe → host path queues
+     events while the host is backgrounded).
+4. **Devanagari rendering.**
+   - Phaser `BitmapText` does not shape Devanagari. Ban it for `hi` strings and use `Text` (canvas shaping) or a DOM
+     overlay.
+   - Await `document.fonts.load()` of the bundled Noto Sans Devanagari before the first frame.
+   - G5 checks matras and conjuncts on a fixed test string ("क्षत्रिय, श्रृंखला").
+5. **Young children cannot drag.** `sort-build` "drag-drop" contradicts "tap-first at 6–9". Make tap-select then
+   tap-target the default input, with drag optional at 8+.
+6. **Prompt injection from the child.** `interests` comes from a voice transcript. Only **closed-vocabulary ids**
+   (skin-pack ids, interest tags) may cross into the designer or coder prompts or into image prompts. Raw transcript
+   text never does. Add an assertion in the brief builder.
+7. **A stale catalogue after a kit upgrade.**
+   - Cache keys include `kit@version`.
+   - A kit bump re-runs G0–G3 (not the agent) on every cached game and quarantines failures.
+8. **A cache-write bill on GPT-5.6.** The designer and the judges run on `taxila-brain` (gpt-5.6-sol), where cache
+   writes are billed **[V]**.
+   - Use `prompt_cache_options.mode:"explicit"` with one breakpoint after the frozen rubric.
+   - Measure `cache_write_tokens` in M1.
+9. **Fun is unowned.** The rules strip coins, lives, timers and mascots from the play area. Nothing in the pipeline
+   then *adds* fun. "Juice" (game feel) is the one thing LLMs are worst at and humans tune by hand. Add a kit-owned,
+   human-tuned **feel layer** per family:
+   - landing squash and particles, combo feedback on consecutive correct intents;
+   - a **surprise beat slot** per level, chosen from a kit catalogue (the platform starts moving, a new hazard rule
+     that carries the concept);
+   - a finale or "boss" level that is the symbolic step (R1);
+   - **cosmetic rewards tied to mastery stages, not currency** (a sticker on the hero for "unlike denominators
+     mastered").
+
+   G7 checks that each slot is filled. M5 then tests whether G2's hook novelty beats a G1 game with the same feel
+   layer. If it does not, G2 is buying nothing (that sharpens the §10 reversal condition).
+
+### C. What survives review unchanged
+- Kit-filled live, kit-extended offline or near-live, free-form offline. The evidence table in §2–§3 supports it, and
+  the GameASG figures re-checked [V].
+- Solver-backed level generation, and the LLM never draws grids (ScriptDoctor).
+- A test API in the template (GameASG's `window.__gameTest` shape re-confirmed [V]), semantic inputs, and G3 before
+  any vision gate.
+- M1–M7 as the measurement plan. Add **M8: TPM per build and admission queue wait at a burst of 20 concurrent
+  misses**, and **M9: the negative-path grading sweep (P7) on 24 seeded-bug builds**: the share of builds where
+  agent hooks misreport `correct`.
+
+### D. Revised numbers (replace §0.7 and §8 headline)
+
+| tier | $ per game | wall clock | binding limit |
+|---|---|---|---|
+| G1 refill (cached G2 or kit) | $0.01–0.15 | 3–25 s | none at expected volume |
+| G2 build (catalogue miss) | ≈ $1.2–2.0 on codex **[U; tokens per P3, measured turn costs]** | P50 ≈ 12–15 min, P90 > 20 min **[U; from measured 3–11 s turns]** | **TPM: about 1 concurrent build per 500k-TPM deployment** until P4(a) is in |
+| G2 catalogue (≈ 600 keys) | ≈ $1.5k tokens + about 100 reviewer-hours | an off-peak batch | human review |
+
+**Context to log (proposed, `context/inbox/`):**
+- measurement `codex-turn-latency-cache-2026-10-02` (the numbers above, n as stated);
+- rejection `csp-connect-none-phaser` (breaks the XHR loader);
+- decision `forge-g2-admission-by-tpm` (reverse if the codex quota is ≥ 2M TPM or measured tokens per build are
+  ≤ 1M);
+- decision `forge-grade-in-kit-not-hooks` (reverse never; it is the "a model never grades" law applied to
+  agent-written code).

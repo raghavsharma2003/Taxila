@@ -582,3 +582,336 @@ Secondary sources, or recalled but not re-read:
 
 Taxila context: `audio-to-face-ml.md`, `../tech-and-market.md` §2, `../design/kids-ux-ages.md`,
 `../voice/human-likeness.md`, `../../harvest/companion-tech.md` §13.
+
+---
+
+## Graphics review
+
+Reviewer: adversarial real-time graphics pass, 2026-10-02. I read the whole document, its prototype results
+(`character-pipeline-proto/results/*.json` and the e2/e3 scripts), and the sibling docs it must agree with
+(`performance-android.md`, `web-3d-talking-heads.md`, `audio-to-face-ml.md`). I re-checked the load-bearing claims
+against primary sources: three.js `dev` (`REVISION = '187dev'`, so r186 is the current release),
+`WebGLMorphtargets.js` and `morphtarget_vertex.glsl.js`, TalkingHead `modules/talkinghead.mjs` (main, 4,895 lines),
+TalkingHead's `blender/MPFB/MPFB.md`, the glTF-Transform `quantize.ts` source, the MakeHuman asset-pack licence page,
+the Hunyuan3D-2.1 LICENSE, the TRELLIS.2 README and LICENSE, the nvdiffrast and nvdiffrec LICENSE files, the
+Reallusion content-licence page, the ICT-FaceKit README, Mitchell et al. 2011 (PMC full text), and the abstracts of
+Brink et al. 2019 and MacDorman et al. 2009 (both via Europe PMC). This session's WebSearch quota was exhausted, so
+every source here was fetched directly. Same tags as above: **[V]** read from the primary source, **[M]** measured
+(by me or a sibling, as named), **[U]** my estimate or recollection.
+
+### R-0. The corrections that change decisions
+
+1. **TRELLIS.2 is not clean for shipped assets.** The MIT label covers its own code and weights. Its stock
+   pipeline installs and runs **nvdiffrast** (rendering and mesh simplification) and **nvdiffrec** (the PBR split-sum
+   texture bake). Both are under NVIDIA licences that allow use **"non-commercially … for research or evaluation
+   purposes only and not for any direct or indirect monetary gain"** **[V, both LICENSE files]**. So making assets for a
+   paid app with the stock TRELLIS.2 pipeline is outside those licences, whatever the output's own status. Move it to
+   the same row as Hunyuan3D: concept and evaluation only. The only way back is a pipeline with nvdiffrast and nvdiffrec
+   removed, with geometry export and texture baking redone in Blender, and that pipeline must be audited first.
+2. **The Azure-only owner directive (2026-10-02, `Taxila/CLAUDE.md`) rules out several pipeline steps as written.**
+   Meshy, Tripo, Rodin/Hyper3D and Polywink are third-party AI services, and builds may not call them. The S1 concept
+   "image model" must be an Azure OpenAI image model on Foundry. Image→3D must run as self-hosted open weights on an
+   Azure GPU VM, and given item 1 that leaves almost nothing usable for shipped props. Rewrite the §4 verdicts and §5
+   S1/S6 to match. Faceit, a local Blender add-on, is unaffected.
+3. **The §7 budget is looser than the measured tier-B budget in `performance-android.md` §4.1. Defer to that one.**
+   Where they conflict, the sibling's numbers come from measured pipelines and this doc's do not:
+
+   | item | this doc §7 / G7 | performance-android §4.1 tier B | use |
+   |---|---|---|---|
+   | triangles | ≤ 25k | ≤ 15k (head ≤ 8k, hair ≤ 3k) | **15k** |
+   | draw calls | ≤ 6 | ≤ 4 | **4** (atlas brows, lashes and hair into one alpha-test material; eyes, teeth and tongue into one opaque material) |
+   | GLB | ≤ 2.5 MB | ≤ 1.5 MB (measured 0.87–1.44) | **1.5 MB** |
+   | face texture | UASTC | ETC1S only (UASTC+zstd ≈ 650 KB against ETC1S ≈ 105 KB per 1024²) **[M sibling]** | **ETC1S** |
+   | material | matcap or MeshStandard | MeshLambert or toon/matcap, no tone mapping, no IBL | **Lambert/matcap** |
+   | pixel ratio | ≤ 1.5 | ≤ 0.22 Mpx, DPR ≤ 1.25, MSAA off | **sibling** |
+   | fps while listening | **15** | **30** | **30** (see R-5.1) |
+   | morph set | 52 ARKit + 15 visemes = 67 | 52 ARKit; visemes mapped to ARKit at runtime | **decide once** (R-3.6) |
+
+4. **The ~4k-vertex MPFB head does not give a ~4k-vertex morph budget.** three.js sizes the morph texture per
+   *geometry*, as `position.count × vertexDataCount × 4 floats × targets` **[V, WebGLMorphtargets.js]**. MPFB's face
+   units and visemes are targets on the *whole basemesh*. TalkingHead's own CC0 `mpfb.glb` carries 1,519k
+   vertex-targets over 66 targets **[M, web-3d §3.1]**, so about 23k morphed vertices and 48.6 MB of morph texture. Its
+   78.2k triangles come from the guide's export step, which selects **"Bake subdiv modifiers"** **[V, MPFB.md]**.
+   Unless the pipeline (a) turns subdivision baking off, (b) splits the bust into a morphed head mesh and an
+   unmorphed torso mesh at a seam the collar hides, and (c) counts the eyebrow, eyelash, teeth and tongue proxies
+   (each carries its own full morph set after "Interpolate visemes and faceunits"), G7's "≤ 6k face GPU vertices"
+   fails on the first real character.
+5. **The prototype's lid-seal numbers rest on very few rays, and the E3 numbers rest on 6 and 1.** `e3.json` stores
+   `blink_visible_%: [10.7, 56]` and `[3.7, 27]`, where the second value is the **ray count**. So "10.7%" is 6 of 56
+   rays and "3.7%" is 1 of 27 rays. The decimated eyeballs also had fewer vertices, so the rows are not comparable, and
+   0.12 coming out "better" than 0.25 is an artefact of that. E2's 1.3/3.4/8.1% are 3, 8 and 19 of 236 rays. A gap
+   narrower than the ray spacing (about 0.5 mm at 236 rays over a cornea) reads as 0.0%, yet it shows as a 1 px
+   flicker at the 360 px framing. The qualitative conclusions stand (baking beats naive transfer, and decimation
+   breaks lids, as the open-eye drop to 82/78% also shows). The quoted percentages should not be reused. G4 needs a
+   dense, render-based test (R-8).
+6. **Warp-baking is exact only at weight 1 and for one key at a time. Production faces live at partial weights and
+   in combinations.** Any non-affine warp W (the Gaussian eye enlargement included) gives
+   `W(n + 0.5δ) ≠ ½·W(n) + ½·W(n + δ)`, and `W(n + δa + δb) ≠ W(n + δa) + W(n + δb) − W(n)`. Mid-blink, the baked lid
+   moves along a straight chord while the *enlarged* eyeball surface bulges further out, so a bigger eye means a
+   bigger mid-blink penetration. The same applies to `jawOpen + mouthClose` (PP) and `mouthSmile + jawOpen`. G4 and
+   G6 test only at weight 1. They must also run at 0.25, 0.5 and 0.75 and on the combinations the compositor actually
+   emits. Expect to author in-between correctives, which three.js does not support natively: the compositor must
+   drive them as extra morphs.
+7. **The eyeballs must not be warped.** A radial Gaussian enlargement makes the eyeball mesh non-spherical. A
+   non-spherical eyeball rotated by the eye bone for gaze pokes through the lids or opens a gap at the extremes. Scale
+   each eyeball uniformly about its pivot as a rigid object, warp only the lids and socket, and move the eye bones to
+   the new centres. G6 must test gaze **bone rotation plus `eyeLook*` plus blink at once**, not the shapes alone.
+
+### R-1. Verified as stated
+
+- three.js morph memory is `verts × slots × targets × 16 B` in a Float32 `DataArrayTexture`. It doubles with morph
+  normals (`vertexDataCount` 1 → 2), and the shader skips zero-influence targets
+  (`if ( morphTargetInfluences[ i ] != 0.0 )`) **[V, dev source]**. 6,000 × 67 × 16 B = 6.43 MB is correct.
+- Mitchell et al. 2011: n = 48, four looping 14 s videos, face × voice interaction F(1,47) = 36.51, p < 0.001,
+  η² = 0.44 **[V]**.
+- Brink, Gray & Wellman 2019: n = 240, ages 3–18, "children older than 9 judged the human-like robot as creepier"
+  **[V abstract]**.
+- Hunyuan3D 2.1: excludes the EU, UK and South Korea; outputs may not be used "to improve any other AI model"; a
+  licence is required above 1M MAU **[V]**.
+- ICT FaceKit Light is MIT. The *full* model "will be released under a different USC specific licence", so pin the
+  Light version **[V]**.
+- MakeHuman's "Faceunits 01", "Visemes 02" and system assets are CC0 **[V asset-pack page]**.
+- TalkingHead main now registers `MeshoptDecoder` (L29, L1242) **[V]**. The "development version only" caveat in S9
+  is out of date.
+
+### R-2. Wrong or overstated performance claims
+
+1. **"three.js keeps the Float32 source array in JS heap unless disposed" understates resident memory.** Per
+   character, three things stay resident:
+   - the GPU texture;
+   - its JS `Float32Array` copy, held by the texture entry for the geometry's lifetime, not just until dispose;
+   - `geometry.morphAttributes`, which is Int16 after meshopt quantisation (6k × 3 × 2 B × 67 ≈ 2.4 MB) or Float32
+     without it (≈ 4.8 MB).
+
+   So 67 targets on 6k vertices cost about **15–18 MB**, not 6.4 MB **[V source; arithmetic]**. Quantisation shrinks
+   the download, not the GPU texture, which three.js always builds as Float32.
+2. **"KTX2 … about 0.5–1 MB GPU each" is low.** Measured with mips: ETC1S→ETC1 is 0.70 MB, and ETC2 RGBA or ASTC 4×4
+   is **1.40 MB** **[M sibling §3.2]**. Every alpha texture (hair, lashes) and every UASTC texture lands at 1.40 MB.
+3. **"GLB ≤ 2.5 MB = 0.6–0.8 MB head geometry + textures" leaves out the rest of the bust.** The 0.82 MB measurement
+   was a bare 7.9k-vertex ICT head. Torso, hair, garments, eyes and mouth come on top, and a UASTC face texture alone
+   is about 650 KB. Under the sibling's ETC1S rule the 1.5 MB budget is reachable. Under this doc's texture plan
+   (three or four 1024² maps plus UASTC) it is not.
+4. **The "Lighting baked into the material response" rule needs to say what gets baked.** If a directional key
+   light is painted into the albedo, the lighting turns with the head on every nod and tilt, which reads as a sticker.
+   Bake only cavity, AO and colour variation (blush, lip colour). Take direction from Lambert or matcap evaluated on
+   the skinned normals.
+
+   Position-only morphs mean the normals do not follow expressions. The sibling accepts that for S2. But the
+   cheek-crease darkening that sells a Duchenne smile is then lost, so paint a subtle smile-crease AO and drive it
+   with `mouthSmile`, using one extra texture-blend uniform rather than morph normals **[U]**.
+5. **Hair cards cost fill rate, not triangles.** On Mali and PowerVR, `discard` (alpha-test) defeats early-Z /
+   Forward Pixel Kill for the draw **[U, vendor guidance recalled]**, so stacked card layers multiply fragment work
+   that a "≤ 5k tris" budget does not see. For S2, prefer a **solid sculpted hair shell with a few alpha-test fringe
+   cards** over "card clumps with painted strands". It is cheaper, and it is closer to the feature-animation look the
+   doc is targeting.
+6. **"Six live 3D models on the picker would OOM" is right, but "one live 3D preview at a time" still churns.**
+   Each tap costs a 1–1.5 MB fetch, a parse, a morph-texture build and a 0.5–1.8 s first-frame shader compile at 4×
+   throttle **[M sibling §3.4]**. Use the tier-C pre-rendered sprites (`performance-android.md` §0.8) as the picker
+   preview, and load exactly one GLB after the child confirms, with `compileAsync` during the confirm animation.
+7. **The M-AV-4 pass bars are underspecified.**
+   - "≥ 30 fps p95" under a 30 fps cap on a 60 Hz panel is binary. Specify **frame interval p95 ≤ 40 ms and < 1%
+     frames > 50 ms**.
+   - Measure at **minute 30** of a lesson, not minute 1. Thermal throttling on ₹10k SoCs arrives in 10–15 minutes of
+     sustained WebRTC + DSP + GPU work **[U]**.
+   - "≤ 150 MB tab memory" contradicts the sibling's renderer allowance of 300–450 MB, which includes the module
+     iframe. Gate the **avatar-attributable resident at ≤ 20 MB** instead.
+   - "≤ 3 s first face" should mean the 2D portrait, which is instant, with the 3D swap measured separately and shader
+     compile included.
+
+### R-3. Pipeline correctness bugs (each ships a broken character)
+
+1. **Shape keys that must be baked into the basis before export.** E5 shows the MPFB base carrying 10 macro
+   modelling shape keys (`$md-$as-$ma-$yn` …) **[M, e5.json]**. The doc's `identity` sculpt key is another one.
+   Blender's glTF exporter writes the reference key as `POSITION` and every other key as a morph target. If S9 runs
+   as written, the GLB gets 11+ unwanted targets, with `identity` at default weight 1, evaluated every frame. That
+   breaks G1 ("none extra") and the bake in S4.
+
+   Required step before S9: build a new mesh whose basis is `identity(neutral)` and whose keys are
+   `identity(neutral + δk)`, and delete everything else. This is what the TalkingHead guide's "Bake modelling
+   shapekeys" does; the agent script must do it explicitly.
+2. **Subdivision baking off** (R-0.4). Pin it in the export script and assert it in G7.
+3. **KTX2 breaks TalkingHead's loader.** `showAvatar` builds a `GLTFLoader` with Draco and meshopt and **no
+   `KTX2Loader`** (L1232–1242) **[V]**. glTF-Transform's `etc1s`/`uastc` marks `KHR_texture_basisu` as required, so
+   the GLB fails to load through TalkingHead. Either load the GLB ourselves in `avatarOnly` mode (which the sibling
+   already recommends) or patch the loader. Add it to G11.
+4. **Gates run on the wrong artefact.** G4, G5 and G6 run in Blender, but the shipped geometry is quantised by
+   `gltf-transform meshopt`. Morph POSITION deltas are quantised to the same 14 bits as the base, scaled by the node
+   **[V, quantize.ts L229–244]**. That is about 0.1–0.2 mm on a bust-sized volume, which is close to G5's 0.3 mm bar.
+   Run the seal and intersection gates on the **decoded final GLB**, and keep the quantisation volume at mesh level so
+   a prop cannot coarsen the face.
+5. **The QA contact sheet uses the wrong renderer.** S5 reviews Cycles renders (3 s per pose), but the child sees a
+   Lambert/matcap WebGL render with position-only morphs. Shading problems (glowing teeth in a dark mouth,
+   un-darkened smile creases, missing eye catch-lights) are invisible in Cycles. Render the review sheet with the
+   shipping three.js material in headless Chromium, which is faster too, and keep Cycles only for the picker portrait.
+6. **The 67-versus-52 morph contract is unresolved across the docs.** This doc authors 15 per-character visemes, and
+   G5 tests lip seal on `viseme_PP`. The sibling drops `viseme_*` from the GLB, and `audio-to-face-ml.md` §5.6 maps
+   visemes to ARKit through a fixed 15×26 matrix. If the matrix wins, the per-character viseme tuning in S5 is
+   discarded at runtime, and G5 must test the matrix's ARKit mix for PP instead. If authored visemes win, the morph
+   budget grows by 29%.
+
+   Recommendation: keep the visemes as **authoring targets**, solve per-character matrix coefficients from them (a
+   least-squares fit from 15 visemes to the 26 mouth channels), ship 52 morphs, and gate PP seal on the shipped mix
+   **[U, design]**.
+7. **G3 symmetry should compare mirrored deltas, not positions.** A deliberately asymmetric identity (side braid,
+   hair part, a natural slight facial asymmetry, which helps against the "CG-perfect" look) fails a position test.
+   Compare `mirror(δ_XLeft)` against `δ_XRight` on MPFB's symmetric topology.
+8. **G9 measures the wrong thing.**
+   - Albedo L* is not what the child sees. With baked AO, a matcap and wrap lighting, rendered skin L* moves by
+     several units. Measure the **rendered** cheek and forehead in the G11 runtime screenshot, decoded as sRGB, then
+     converted to CIELAB.
+   - Measuring linear-space texel values as if they were sRGB is a classic error worth tens of L* units, so assert
+     the colour space.
+   - The MST swatches recalled for reference are #f6ede4, #f3e7db, #f7ead0, #eadaba, #d7bd96, #a07e56, #825c43,
+     #604134, #3a312a and #292420 **[U, recalled; verify on skintone.google]**. Band edges should be the L* midpoints
+     between adjacent swatches.
+9. **G11's SSIM ≥ 0.97 is both too lax and too brittle.** A 1–2 px lid or lip gap changes whole-frame SSIM by less
+   than 0.01, while a Chromium or SwiftShader bump can move every pixel. Use region-masked pixel tests instead: eye
+   and mouth crops, with the eyeball rendered emissive red at blink to count red pixels. Keep SSIM as a coarse
+   regression check.
+10. **A cast-table conflict.** Wave-2 rows W2-a (Zoya) and W2-c (Siami) both name "female voice C". If both are
+    chosen they share one voice, which breaks §0.8's one-voice-per-face rule. Give each its own slot before concept
+    work starts.
+
+### R-4. Licence traps
+
+| item | what the doc says | what the source says | fix |
+|---|---|---|---|
+| TRELLIS.2 | MIT, ship props | stock pipeline depends on nvdiffrast/nvdiffrec, research/evaluation only **[V]** | concept only (R-0.1) |
+| MPFB clothes, hair, glasses | "MHCLO, CC0" | only system and "01" packs are CC0; **Hair 02/03, Glasses 02, Shirts 02/03, Dress 02/03, Hats, Shoes, Suits … are CC-BY** **[V asset-pack page]** | G10 records licence **per pack**; CC-BY items need attribution in the in-app notices (the GLB is client-downloadable) or are avoided. Kabir's and Arjun's glasses are the likely trip-wire |
+| Character Creator | "Extended needed for online interactive services" | Standard already covers export to "Games, XR & Interactive Online Services"; the Standard licence allows **one character output per project from CC Components**, and **a cast of 4–6 needs Extended** **[V Reallusion page]**; redistribution through any 3D-model marketplace is barred under both | correct the reason; the verdict ("encumbered") stands |
+| Meshy / Tripo / Rodin / Polywink | paid tiers OK | Azure-only directive: builds may not call third-party AI services | research-only (R-0.2) |
+| ICT FaceKit | MIT | Light is MIT; the Full model will carry a different USC licence **[V]** | pin Light; never mix Full-model data in |
+| MST scale | "open licensed tool" | licence text not captured in this session (the page fetch returned only a title) | read the licence before shipping the swatches or the scale name in UI copy |
+| TalkingHead sample avatars | n/a | `brunette.glb` is CC BY-NC **[V, web-3d §3]** | never let a sample GLB reach the CDN; add a G10 hash-blocklist |
+
+### R-5. Lip-sync latency and desync risks this doc introduces
+
+The WebRTC sync design lives in `audio-to-face-ml.md` §5.4 and its Graphics review G-3 (no added audio delay, a face
+delay line, a Bluetooth-offset estimate). This doc adds four risks of its own:
+
+1. **15 fps "idle-listening" is wrong on three counts.**
+   - TalkingHead's blink template closes in 50 ms, holds 100–300 ms and opens in 100 ms (`animTemplateBlink`, L414)
+     **[V]**. At 15 fps (66.7 ms frames) the closing phase disappears, so every blink pops shut, about 15 times a
+     minute.
+   - Listening is the state in which the child watches for back-channel nods and smiles.
+   - The fps cap must rise at **audio onset detected in the analysis worklet**, not on the Director's "speaking"
+     event. Data-channel events (for example `output_audio_buffer.started`) are emitted when the server *sends*
+     audio, which is roughly 100–300 ms of jitter buffer plus output path before the child *hears* it **[U, sibling
+     G-3]**. If the switch follows the event, the first syllable renders at 15 fps or the mouth starts early.
+
+   Use the sibling's 30/30/20 caps, where 20 applies only when there is no audio in either direction.
+2. **Expression programs keyed to Director events will lead the audio.** The per-character `faceStyle` gains (smile
+   0.55–0.8) scale programs such as the praise smile. Schedule them on the playout clock, at the event's audio
+   offset plus the measured output latency, or the smile lands before the praise. This affects every character
+   equally, so the fix belongs in one place: the compositor, not each `runtime.json`.
+3. **The M-AV-5 "±80 ms offset control" is asymmetric and half of it is undetectable.**
+   - ITU-R BT.1359 puts detectability at **+45 ms when audio leads** and **−125 ms when audio lags** **[S, as cited in
+     audio-to-face-ml.md]**.
+   - +80 ms (face late) sits between the +45 ms detectability and +90 ms acceptability thresholds. −80 ms (face early)
+     is below detectability.
+   - Raters who "miss" the −80 ms control are therefore *correct*, yet they would be rejected as invalid.
+   - Use **+120 ms and −200 ms** controls instead.
+   - Run M-AV-5 on the **real WebRTC path on tier-B phones**, with a **cheap Bluetooth earbud arm**. Offline clips at
+     "0 offset" hide the 50–100 ms HeadAudio lag **[V, audio-to-face §2.1]** and the 150–300 ms A2DP lead **[U]**,
+     which are the conditions children will actually see.
+4. **Per-character mouth art is capped by the driver's accuracy.** The sibling's Hindi bench measured HeadAudio at
+   mean r 0.43, 29% exact viseme, and bilabial closure caught in **55 of 84** p/b/m events **[M, bench-result.json]**.
+   About a third of closures are therefore missed, whatever the PP shape looks like.
+   - Budget art time accordingly.
+   - Review S5 sheets with poses **sampled from the real driver's output on Opus-degraded Hinglish audio**, not with
+     idealised viseme=1 poses.
+   - The "mouth believability" lesson the doc quotes from Duolingo is about the driver as much as the shapes.
+
+### R-6. Uncanny-valley risks for children
+
+1. **Both studies are narrower than the doc implies.**
+   - Brink et al. used two *robots* shown between subjects (each child saw one). Mitchell et al. tested *robot vs
+     human realism* in 48 adults. Neither tested stylised CG humans, and neither tested Indian children.
+   - Mitchell did **not** test age or gender congruence between face and voice; its authors note only that results
+     did not differ by participant age or gender **[V]**. So §0.8's "a mismatch [of apparent age/gender] is the
+     Mitchell effect" is a mis-citation. Voice–face age/gender fit is still a real requirement; it is what M-AV-2
+     tests.
+   - The boundary in Brink is "older than 9", which is roughly Class 4. Classes 5–9 are *past* it, not "right on" it
+     (§0.1 wording).
+2. **Enlarged eyes on believable anatomy are a measured eeriness trigger when the eye textures are realistic.**
+   MacDorman et al. 2009: "atypical facial proportions were shown to be more disturbing on photorealistic faces", and
+   "a mismatch in the size and texture of the eyes and face was especially prone to make a character eerie" **[V
+   abstract]**.
+   - S2 (eyes ×1.15–1.2 with "believable anatomy") is safe only if the **eye materials are stylised in step**: a
+     painted iris, simplified sclera and a painted or matcap catch-light.
+   - MPFB's default eyes use photographic iris textures **[U]**, so they must be repainted.
+   - S3 (eyes ×1.0–1.05, light normal map) should keep realistic eyes but carry **no** eye enlargement at all.
+3. **"Mainstream feature animation" is the wrong quality promise for tier B.** Feature films get that look from
+   offline SSS, simulated hair and hand-keyed performance. A Lambert/matcap bust on a Mali-G52 driven by an audio
+   classifier will read as a polished mobile-game character.
+   - The danger is a style sheet signed off from Cycles concept renders that the runtime cannot honour, which creates
+     the "motion quality below appearance quality" mismatch the doc itself warns about.
+   - **M-AV-1 stimuli must be tier-B real-time captures with the real driver, not Cycles renders.**
+4. **Gaze is the most likely creepiness source, and Arjun Sir's "long eye contact" is a risk.**
+   - Unbroken mutual gaze from an adult male face to a child reads as staring.
+   - Preferred mutual-gaze durations in adults cluster around 3 s **[U, recalled: Binetti et al. 2016, R. Soc. Open
+     Sci.]**.
+   - Cap continuous mutual gaze at about 3–4 s for **every** character. Express "steady" as shorter and fewer
+     aversions, never as a stare.
+   - Add a gate (G12): over a 60 s listening track, the longest mutual-gaze run is ≤ 4 s.
+5. **"Dead eyes" come from missing catch-lights and vergence, not from geometry.**
+   - A Lambert pipeline has no specular, so add a view-dependent catch-light (a matcap or one additive sprite) and
+     converge the eyes on the camera distance.
+   - Without these, the enlarged S2 eyes amplify the deadness.
+6. **The smile must involve the eyes.** A smile driven only by `mouthSmile` reads as fake to adults and older
+   children. Every smile program must carry `cheekSquint` and a lower-lid raise (the Duchenne marker), and the S5
+   sheet should check smile *with* `cheekSquint`.
+
+### R-7. Production effort is optimistic by about 2×
+
+The doc's estimate is 2–3 artist-weeks per character, 8–12 for four. Line items the estimate omits or understates
+**[U, reviewer estimate; get quotes]**:
+
+| item | doc | realistic | why |
+|---|---|---|---|
+| Pipeline shakedown on character 1 | none | +2–3 weeks | baking the basis, splitting head and torso, quantised-GLB gates, the in-between correctives of R-0.6, and the eyeball re-rig of R-0.7 are all new work |
+| Indian garments | "MPFB clothes as a fitting base" | 1–2 weeks per character | no saree, pallu, kurta or dupatta exists in the CC0 packs; a bust-framed saree with a pallu is a full custom model plus weights |
+| Expression correctives | 1–2 days | 1–2 weeks | 52 shapes, plus in-betweens and combination correctives (smile+jaw, blink+squint, PP under jaw), times the review loop |
+| Re-baking after test results | none | 1–2 weeks per character | M-AV-1 or community review can move the style level or a marker *after* sculpting |
+| Art director + concept | 1–2 days of iteration | 0.3–0.5 FTE across the build | unstaffed in the doc; it is the main taste gate |
+| ICT → MPFB expression transfer | "reference and donor" | 3–5 days once | needs a wrap/Surface-Deform fit between topologies; not free |
+
+Realistic total: **5–7 weeks for character 1 and 3–4 weeks for each later one**, about **15–20 artist-weeks for the
+launch four**, plus art direction **[U]**. Two sequencing fixes cut the risk:
+- **Build one character to S2 first.** Derive the S1 and S3 test arms from it with the warp-bake method (eye, head
+  and jaw warps), since warp-baking is exactly what E2 validated. Run M-AV-1 on that one character before sculpting
+  the other three.
+- The "S3 variant for classes 7–9" (§12) **doubles** texture and corrective work per character. Price it before
+  promising it.
+
+### R-8. Changes to gates and experiments
+
+| id | change |
+|---|---|
+| G4 | Replace 236-ray casting with a render test: eyeball emissive red, rendered at 4× the target resolution, at blink weights 0.25/0.5/0.75/1.0, combined with gaze-bone extremes. Pass: 0 red pixels at 1.0, and no lid-through-eyeball penetration (BVH) at any weight |
+| G5 | Run on the decoded quantised GLB; test the *shipped* PP mix (authored viseme or matrix); add `jawOpen ∈ {0.1, 0.3}` × `mouthClose` sweeps |
+| G6 | Gaze-bone rotation + `eyeLook*` + blink together; teeth vs lips at the driver's top 50 observed mouth poses |
+| G7 | Adopt the sibling's tier-B numbers (R-0.3); count every morphed mesh (head, teeth, tongue, brows, lashes); assert subdivision level 0 and exactly 52 (or 67) targets per morphed mesh |
+| G9 | Measure rendered sRGB → L* in the runtime screenshot, with the colour space asserted |
+| G10 | Licence per MakeHuman pack; hash-blocklist of TalkingHead sample GLBs; mark nvdiffrast/nvdiffrec-touched outputs as non-shippable |
+| G11 | Load through our own `GLTFLoader` + `KTX2Loader` + `MeshoptDecoder`; region-masked eye and mouth tests; SSIM as a coarse regression check only |
+| **G12 (new)** | Gaze: longest mutual-gaze run ≤ 4 s over a 60 s listening track; blink closing phase rendered in ≥ 1 frame at the active fps cap |
+| M-AV-1 | Stimuli are tier-B real-time captures with the real driver; S1/S3 arms derived from the S2 character by warp |
+| M-AV-4 | Frame interval p95 ≤ 40 ms and < 1% frames > 50 ms, measured at minute 30; avatar-attributable resident ≤ 20 MB |
+| M-AV-5 | +120 ms / −200 ms offset controls; real WebRTC path on tier-B phones, plus a Bluetooth-earbud arm |
+
+### R-9. Sources for this review
+
+- three.js dev: `src/renderers/webgl/WebGLMorphtargets.js`, `src/renderers/shaders/ShaderChunk/morphtarget_vertex.glsl.js`, `src/constants.js` (`REVISION = '187dev'`): https://github.com/mrdoob/three.js/tree/dev/src
+- TalkingHead `modules/talkinghead.mjs` (L29, L414, L1232–1242) and `blender/MPFB/MPFB.md`: https://github.com/met4citizen/TalkingHead
+- glTF-Transform `packages/functions/src/quantize.ts`: https://github.com/donmccurdy/glTF-Transform
+- MakeHuman asset-pack licences: https://static.makehumancommunity.org/assets/assetpacks.html
+- TRELLIS.2 README and LICENSE: https://github.com/microsoft/TRELLIS.2 · nvdiffrast LICENSE: https://github.com/NVlabs/nvdiffrast/blob/main/LICENSE.txt · nvdiffrec LICENSE: https://github.com/NVlabs/nvdiffrec/blob/main/LICENSE.txt
+- Hunyuan3D-2.1 LICENSE: https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE
+- Reallusion content licence: https://www.reallusion.com/license/content.html
+- ICT-FaceKit README: https://github.com/USC-ICT/ICT-FaceKit
+- Mitchell et al. 2011: https://pmc.ncbi.nlm.nih.gov/articles/PMC3485769/
+- Brink, Gray & Wellman 2019, doi:10.1111/cdev.12999 (abstract via Europe PMC REST)
+- MacDorman, Green, Ho & Koch 2009, "Too real for comfort?", *Computers in Human Behavior*, doi:10.1016/j.chb.2008.12.026, PMC4264966 (abstract via Europe PMC REST)
+- Sibling measurements: `performance-android.md` §3–4, `web-3d-talking-heads.md` §3.1, `bench/bench-result.json`, `character-pipeline-proto/results/e3.json`, `e5.json`
+- Recalled, not re-read: ITU-R BT.1359 thresholds (as cited in `audio-to-face-ml.md`), Binetti et al. 2016 on mutual-gaze duration, Mali/PowerVR `discard` and early-Z guidance, the MST hex values

@@ -906,3 +906,332 @@ Non-Azure:
 - Playwright Docker (`--ipc=host`, non-root, seccomp, image tags): https://playwright.dev/docs/docker
 - WebContainers licensing: https://webcontainers.io/enterprise ; browser support: https://webcontainers.io/guides/browser-support
 - Pyodide deployment: https://pyodide.org/en/stable/usage/downloading-and-deploying.html
+
+---
+
+## Principal review
+
+**Reviewer stance:** adversarial principal engineer, 2026-10-02. **Question attacked:** will this infrastructure get a
+fun, correct, bug-free game onto a 9-year-old's phone within minutes, on Azure, without a security hole?
+**Verdict:** the shape is right: a VM per build, a folder per student, an iframe per play. The cost thesis holds:
+compute is noise next to tokens. But four claims are wrong or unsafe as written:
+
+- the play-time CSP breaks the chosen game kit (R1);
+- the untrusted runner shares an environment, and the full storage-account key, with production (R2, R3);
+- the concurrency table is bounded by model TPM, not by cores (R6);
+- the speculative pre-start silently costs about 10× the infrastructure subtotal and, at scale, cannot fit the quota
+  (R7).
+
+The §12.2 SDK code would not compile against the real SDK (R12).
+
+Tags as in the header. **[V-R]** means the reviewer verified it today, by reading the published docs or by unpacking
+the package.
+
+### What was re-verified and holds
+
+| claim | check | status |
+|---|---|---|
+| Custom-container session pools run on Dedicated **E16** instances, billed by node count; code interpreter billed per allocated session in **1-hour increments** | Learn billing page, `ms.date` 2025-12-09 | **[V-R] correct.** The supersede of `coding-agent-harnesses` §5.1 stands |
+| Free grant: 180k vCPU-s + 360k GiB-s + 2M requests per subscription per month; jobs always at the active rate | same page | [V-R] correct, but see R7 for who actually consumes it |
+| Sandbox tiers XS–XL; data plane `management.<region>.azuredevcompute.io`; scope `https://dynamicsessions.io/.default`; api `2026-02-01-preview`; role *Container Apps SandboxGroup Data Owner* | `@azure/containerapps-sandbox@1.0.0-beta.1` (`api/sandboxGroupContext.js`: `DATA_PLANE_SCOPE`, `endpointForRegion`) plus the Learn overview (updated 2026-09-28) | [V-R] correct. The TS SDK **does** exist (published 2026-07-11) |
+| `mcr.microsoft.com/playwright:v1.63.0-noble` | npm `playwright` dist-tag `latest` = 1.63.0 | [V-R] current |
+| Pyodide `v314.0.7` | npm `pyodide` latest = 314.0.7 | [V-R] current |
+
+### Corrections
+
+**R1. The play CSP `connect-src 'none'` breaks Phaser asset loading. P0, product-breaking.**
+
+- **Evidence.** Phaser's `Config.js` has `loader.imageLoadType` defaulting to `'XHR'`. `ImageFile` loads through
+  `XMLHttpRequest`, then `createObjectURL`. JSON, atlases and WebAudio sounds also go through `XHRLoader`. Only
+  `data:` / base64 URLs skip the XHR [V-R, phaser master source].
+- Under `connect-src 'none'`, every non-inlined asset of the kit chosen in `game-kit-frameworks` fails to load.
+- **This is the same finding as `llm-game-generation` Principal review: rejection `csp-connect-none-phaser`.** This
+  doc's §7.1 still has the broken policy, so the two docs now contradict each other.
+- The G2 runner would not catch it either: it serves dist from `http://127.0.0.1` as a top-level page, not from an
+  opaque origin (see R5).
+- **Fix: `connect-src 'self'`, with the play origin hosting only immutable public builds.** The only extra reachable
+  host is our own storage host, where anonymous writes are impossible.
+  - Add to this: Blob CORS that allows `Origin: null` (`*` already does); `loader.imageLoadType: 'HTMLImageElement'`
+    as the kit default; and a G0 check that every URL the loader requests is under `forge/b/<sha>/` or
+    `forge/kit/<kitHash>/`.
+- **Do not inline all assets as base64.** It adds about 33% bytes and defeats the HTTP cache for kit assets that every
+  build shares.
+
+**R2. The untrusted lane shares `taxila-env` with `taxila-web`. P0, security.**
+
+- **Evidence.** Learn's environment page says to use separate environments when apps must "**never share the same
+  compute resources**". Apps in one environment "share the same virtual network" and the same log destination
+  [V-R].
+- So a container escape from a Chromium renderer running with `--no-sandbox` (R4) can land on a node that runs
+  `taxila-web`. That app holds the Azure OpenAI key, the Neon URL and the SP secret.
+- The runner can also reach every internal-ingress app, including `forge-validator`.
+- Its stdout goes to the same Log Analytics workspace as production. That opens log injection, and brief PII lands in
+  shared logs.
+- **Fix:**
+  - Put `forge-runner` in a **separate managed environment** (`taxila-forge-untrusted`, Consumption, eastus2). It
+    costs nothing while idle.
+  - Give it its own Log Analytics workspace, or `appLogsConfiguration: none` plus redacted structured logs over WSS.
+  - Learn auto-deletes an environment that stays idle for 90 days. Keep one scheduled no-op job execution per month.
+  - Keep the trusted validator in `taxila-env`.
+
+**R3. The IaC as written gives the untrusted runner the whole storage account. P0, security.**
+
+- §12.1 step 3 sets `QUEUE_CONN=secretref:queue-conn`, which is the **full account connection string**.
+- §12.1's closing paragraph names the right mitigation, but the runnable commands do not apply it.
+- With that key, a compromised runner can overwrite `forge/b/*` in the **public** container. That is a supply-chain
+  attack on every child who opens any game. It can also read `learner/`.
+- **Fix:**
+  - Rewrite step 3 so the container receives only a queue-scoped SAS (`rp` on `forge-jobs`). The full string lives
+    only in the KEDA `scale-rule-auth` secret.
+  - Better: move `learner/` and `forge-runs/` to a **second, private-only storage account**
+    (`allowBlobPublicAccess=false`), so no key that touches the public container ever sits next to child data.
+  - Set the `forge` container to `--public-access blob`, never `container`, so it cannot be listed.
+  - Replace the ACR **admin** password, which has push rights and is shared by `taxila-web`, the job and the
+    Sandboxes disk-image import, with a **pull-only scope-map token**. Basic supports 100 [V-R, ACR SKU page].
+
+**R4. Playwright launches Chromium unsandboxed by default. "Try sandboxed first" never happens unless you ask.**
+
+- `chromiumSandbox` "Enable Chromium sandboxing", default **`false`** [V-R, Playwright BrowserType docs].
+- §5.3 and the `Hello.chromium.sandboxed` field assume the sandbox is attempted.
+- **Fix:**
+  - Launch with `chromiumSandbox: true`, catch the failure, then relaunch without it and record which one ran.
+  - Expect failure on ACA Consumption. There is no custom seccomp profile, and Playwright's own Docker guide needs one
+    for the sandbox [S].
+  - So in Phase 0 the renderer is the only process boundary, and the container is the only wall. That makes R2 and R3
+    mandatory, not hygiene.
+
+**R5. Validation runs the game in a different environment from production, so "passes the gate, fails on the child".
+P0, correctness.**
+
+- §5.3 serves dist as a top-level `http://127.0.0.1` page. Production is an **opaque-origin**
+  `sandbox="allow-scripts"` iframe inside the host app, on a cross-origin URL.
+- Behaviours that differ between the two:
+  - `localStorage`, `indexedDB` and `caches` throw in production only;
+  - XHR is a CORS request with `Origin: null`;
+  - `postMessage` arrives with `e.origin === "null"`;
+  - what CSP `'self'` resolves to inside an opaque-origin document. Chrome uses the URL's origin [M]. Measure it and
+    do not assume it;
+  - autoplay and audio-unlock rules inside a frame;
+  - viewport and DPR.
+- **Fix.** G2 must load `host-harness.html` on `http://127.0.0.1:<p1>`. That page embeds the build from
+  `http://localhost:<p2>` (a different origin) with the **exact production iframe attributes, CSP and bridge host**,
+  and replays `init`.
+- Also add, as cheap and high-value checks:
+  - **Build for the device floor.** Set esbuild `target` to the measured Android System WebView floor of our users
+    (log `navigator.userAgent` today). Chromium 1.63 accepts syntax an older WebView rejects.
+  - Run each G2 check once at a **360×640, DPR 2, 4× CPU-throttled** profile.
+  - Make playtests deterministic with **`page.clock`**. It fakes `Date`, timers, `requestAnimationFrame`,
+    `performance` and `Event.timeStamp` [V-R, Playwright clock docs]. Step frames instead of sleeping.
+- Under SwiftShader on 2 shared vCPU, wall-clock playtests will flake. Each flake buys an LLM repair round of about
+  $0.1–0.3, chasing a bug that does not exist. **Keep perf (fps) and correctness in separate gates.** Never feed a
+  perf flake to the repair loop.
+
+**R6. The concurrency table (§10.1) is bounded by model TPM, not by sandbox cores.**
+
+- `llm-game-generation` Principal review P4 measured about **1 concurrent G2 build per 500k-TPM `taxila-codex`
+  deployment**. It also revised the G2 wall clock to **P50 12–15 min, P90 > 20 min**.
+- §10.1's "22 concurrent builds at 10k students" therefore needs about 22 deployments' worth of TPM. Core quota is
+  irrelevant at every N in the table.
+- **Fix:**
+  - Replace the "lane U cores" column with "codex TPM needed", plus an **admission controller** keyed on measured TPM
+    (`forge-g2-admission-by-tpm`).
+  - Sandbox and job quotas follow from admitted builds, not from lessons.
+  - Restate the product promise honestly. **The game ready "while the teacher teaches" is G1** (3–25 s). A G2 build
+    is next-session practice or catalogue backfill. A live G2 inside a 25-minute lesson is a P10 outcome at best.
+
+**R7. The speculative pre-start is the largest infrastructure cost and does not scale. §9.3 omits it.**
+
+- **Cost.** One idle 20-minute runner costs 1,200 s × (2 × 2.4e-5 + 4 × 3e-6) = **$0.072** [V arithmetic]. With 20
+  lessons a month and pre-start on about half of them (P(G2) ≥ 0.3 is common early), that is about **$0.72 per
+  student-month**, about **7×** the "$0.10 infrastructure subtotal".
+- **Quota.** At 100k students and 11k lessons per peak hour, about 1,800 idle runners × 2 vCPU ≈ **3,700 cores**,
+  against a 100-core environment quota.
+- **Timeout bug.** `replicaTimeout 1500` minus up to 20 minutes of idle leaves about 5 minutes for a build whose P90
+  is over 20 minutes. Builds started late in the idle window are killed mid-flight.
+- **Fix: a shared warm pool, not one runner per lesson.**
+  - Size it by Little's law: K ≈ admitted build arrival rate × cold start. At 10k students that is about 2 builds/min
+    × 1.5 min ≈ **3 warm runners**, roughly $0.65/h in total, against about 30 per-lesson runners.
+  - The runner `hello` must carry a **pool token** and receive a jobId later. The `Hello` type binds a jobId at boot,
+    which a speculative runner cannot know. Change it to `{t:"hello", poolToken}` then `{t:"assign", jobId, jobToken}`.
+  - A runner refuses assignment once `idleSec > replicaTimeout − (P99 build + 120 s)`.
+- **Free grant.** The always-on `forge-validator` and `taxila-web` consume the grant: 1 vCPU always-on is 2.63M
+  vCPU-s. So "about 25 build-hours free" (§3.3) is **zero in practice**. Delete the claim.
+
+**R8. The model loop lives in `taxila-web`. Every deploy or scale-in kills every in-flight build.**
+
+- ACA sends SIGTERM, then SIGKILL after **30 s** by default [S, Learn lifecycle; configurable, maximum not re-verified].
+  A G2 build runs 12–20+ minutes.
+- The runner is the only holder of the workspace. If either side dies, all edits are lost.
+- **Fix:**
+  - **The orchestrator holds authoritative file state.** Every `fs.write` and `apply_patch` passes through it, so
+    append it to `forge-runs/<jobId>/patches.jsonl`.
+  - Persist the loop state per turn (messages, cursor, budgets) in Postgres.
+  - A build is a **resumable state machine**:
+    - On orchestrator restart, it re-attaches to the runner (the job token is session-bound, re-usable on reconnect
+      within TTL, not strictly single-use).
+    - On runner death, it acquires a new lease and replays the patches.
+  - Move the loop to its own `forge-orchestrator` app (min 1). Do it in Phase 0, not "later".
+  - Send a WSS ping every 20 s. ACA ingress drops idle connections [M].
+
+**R9. The Phase 1 sandbox auto-suspends mid-build under the WSS design.**
+
+- Learn: a sandbox is idle when it has "**no ingress traffic, no code execution (via execute API), no interactive shell
+  sessions, and no file operations**" [V-R, overview].
+- A runner that **dials out** over WSS produces none of these. The SDK's default auto-suspend is 300 s [V, §3.1]. A
+  long codex reasoning turn, or a 23-second `gpt-image-2` asset wait chained with judges, can idle it past that.
+- **Fix:** create with `lifecycle: { autoSuspend: { enabled: false }, autoDelete: { enabled: true,
+  deleteIntervalSeconds: 600 } }`. Enforce the wall-clock cap from the orchestrator.
+- Add to M3 the question: does an outbound WebSocket survive the egress proxy under `trafficInspection: "Full"`?
+  - If not, the runner protocol needs an HTTPS long-poll fallback.
+  - Or flip the design: the orchestrator calls `sandboxes.exec` and `files.*` (data plane, 3,000 rpm), and the sandbox
+    has **no** egress at all.
+
+**R10. Memory-snapshot clones share RNG state.**
+
+- Cloning one warm Chromium + node memory image into N sandboxes gives every clone identical userspace RNG state:
+  OpenSSL/BoringSSL DRBG, V8 `Math.random` seeds, and any UUIDs generated after restore.
+- Firecracker's `docs/snapshotting/random-for-clones.md` says "there is no generic solution… recommend against their
+  use in pre-snapshot logic" [V-R].
+- With a TLS (WSS) handshake after restore, clones can derive correlated ephemeral keys.
+- **Fix:**
+  - The golden snapshot holds **Chromium only, no node runner and no open sockets**.
+  - After restore, start a fresh `node /runner/main.mjs`. It reseeds and takes about 100 ms. It reattaches to Chromium
+    over CDP.
+  - Deliver the job token via `files` (write `/run/forge/token`, mode 0600) after create. `ExecRequest` is
+    `{command, workingDirectory}` only; there is **no env field** [V-R, SDK `models.d.ts`]. `environment` at create
+    does not reach an already-running process restored from memory.
+
+**R11. Exfiltration paths the play-side stack misses. "No network" is not true for the child's iframe.**
+
+- CSP does not govern the following. The sandbox flags do not stop them either.
+  - **Self-navigation:** `location.href = 'https://x/?d=…'`. `navigate-to` was never shipped.
+  - **WebRTC/STUN** (`RTCPeerConnection` with an attacker STUN URL). No CSP directive covers it in Chromium.
+  - **`<link rel=dns-prefetch|preconnect>`**: a DNS leak.
+- **Fix:**
+  - Add `location`, `RTCPeerConnection`, `rel=` and `http-equiv=refresh` to the G0 ban list.
+  - In the host, treat a second `load` event on the game iframe as a navigation. Kill the frame, then quarantine the
+    `buildSha`.
+  - Runner side, Phase 0. `--host-resolver-rules` does not cover **IP literals**, and Playwright `route` sees neither
+    UDP nor WebRTC. Add `--proxy-server=http://127.0.0.1:9` (loopback is bypassed by default, so everything else
+    fails) and `--force-webrtc-ip-handling-policy=disable_non_proxied_udp`. Log CDP `Network.*` and
+    `page.on('websocket')`.
+- **Cross-doc bug.** `conductor/student-workspace.md` SW12 proposes the iframe **`csp` attribute** (CSP Embedded
+  Enforcement). For a cross-origin frame, the response must carry `Allow-CSP-From` or a subsuming CSP **header**, or
+  "the response will be blocked" [V-R, W3C CSPEE]. Blob cannot set headers, so that attribute would blank every game
+  in Chrome and Android WebView until the Phase 2 play origin exists. Remove it from Phase 0.
+
+**R12. The §12.2 code does not match `@azure/containerapps-sandbox@1.0.0-beta.1` [V-R, typings].**
+
+| doc writes | SDK actually has |
+|---|---|
+| `diskImages.beginCreate({ image, registryAuth, name })` | `diskImages.beginCreate(baseImage: string, { name, registryCredentials: { username, token } })` |
+| `sandboxes.snapshot(id, { name })` | `sandboxes.beginCreateSnapshot(id, { name }).pollUntilDone()` |
+| `egressPolicy: { defaultAction, rules: [{ match: { host }, action: "Allow" }] }` | `{ defaultAction: "Deny", hostRules: [{ pattern, action: "Allow" }], rules: [{ match: { host, path, methods }, action: { type: "Allow" } }], trafficInspection: "Full" }`. Both arrays are required |
+| exec with env | `exec(id, { command, workingDirectory })` only |
+| (not mentioned) | `CreateSandboxRequest.skipEgressProxy?: boolean` |
+
+- **`skipEgressProxy` is a one-flag escape hatch.** The `SandboxProvider` must hard-assert it is never set.
+- **`trafficInspection` must be `"Full"`.** Learn: `Partial` and `Legacy` **allow non-HTTP traffic** [V-R, egress
+  page]. Under `Partial`, a default-deny policy still lets raw TCP, UDP and DNS tunnels out.
+- **Allow a path, not just a host.** The single allowed host must be a dedicated `forge-orchestrator` FQDN, with
+  `match.path = "/forge/runner"`. As written, the rule allows the untrusted VM to reach every public route of
+  `taxila-web`.
+- The sandbox-group ARM body (`defaultCpu`, `maxSandboxCount`, `defaultTimeoutSeconds`) is unverified [U]. Check it
+  against the `Microsoft.App/sandboxGroups` REST spec.
+
+**R13. The privacy model leaks child data into shared, immutable, public builds.**
+
+- §6 says builds hold no child data, but the G2 builder is *given* the child's interests and misconceptions, and will
+  write them into strings ("Help Aarav's dog Bruno cross…").
+- A G6 "no PII strings" scan cannot work without the child's PII list. Once the strings leak:
+  - the build is public;
+  - it is cached for a year (`immutable`);
+  - it is shared by `buildSha`;
+  - so DPDP-style erasure would mean deleting a build other children use.
+- **Fix:** the brief to the builder is **de-identified by construction**.
+  - Interests are mapped to a closed taxonomy (`cricket`, `trains`, `pets:dog`).
+  - Every personal token is a slot (`{{hero.name}}`, `{{pet.name}}`) filled at runtime from `init.params`.
+  - G6 scans dist for the requesting child's actual name, pet, school and city strings, held server-side, plus a
+    generic Indian-name list.
+  - Add a **revocation list** checked at `PlayTicket` issuance. The host refuses a recalled `buildSha` even when the
+    browser still has it cached.
+
+**R14. Missing production failure modes.** The gates are pre-ship only, and children's devices are the real test.
+
+- **Post-ship circuit breaker.** The bridge reports `error` / `unhandledrejection` and a 5-second heartbeat. If the
+  first-play crash rate or no-`ready`-in-8-s rate of a `buildSha` exceeds 5% (n ≥ 20), quarantine it automatically
+  and serve the G1 fallback for the same objective. The teacher dashboard shows "game pulled" instead of a broken
+  game.
+- **WebGL context loss** on low-RAM Android, and backgrounding, which happens constantly with kids. The kit owns
+  `webglcontextlost` / `visibilitychange` → pause + save. G0 forbids game code from overriding it.
+- **Repair-loop failure is the common case.** Google's figure is 69% *after* 10 repair rounds (`tech-and-market`
+  §3), so about 30% of G2 builds end without a game. Budget compute and tokens for failed builds at the cap.
+  Guarantee every G2 request a G1 answer, so the child never sees "your game failed".
+- **Queue age.** A G2 job older than its `deadlineMs` is converted to catalogue backfill, not delivered to a lesson
+  that ended an hour ago.
+
+**R15. Smaller fixes.**
+
+- **Validator sizing.** 1 vCPU / 2 GiB at HTTP concurrency 4 means four SwiftShader Phaser contexts on one core.
+  M8's P95 ≤ 8 s will fail, and memory is about 4 × 250 MB plus the browser. Start at 2 vCPU / 4 GiB with
+  concurrency 2. Cost is about $79 → $158 per month at the active rate; the idle rate applies only below 0.01 vCPU.
+- **Runner image.** The full Playwright image (about 1.5–2 GB [M]) ships Firefox and WebKit. Build `FROM node:22`
+  plus `npx playwright install --with-deps --only-shell chromium` (headless shell). Expect roughly 3–4× smaller
+  [U, measure in M1]. Image pull is the dominant cold-start term on Consumption.
+- **KEDA queue counting.** The default `queueLengthStrategy` is `all`, which counts invisible (in-flight) messages
+  [V-R, KEDA azure-queue docs]. The runner must **delete on claim**; the orchestrator lease handles retries. Never
+  hold a message invisible for the length of a build.
+- **Model discrepancy (§1).** This review's brief lists `taxila-opus` / `taxila-sonnet` as available, while
+  `decisions.md` and `CLAUDE.md` (binding: no Anthropic-on-Foundry) say deleted. The sandbox design is neutral, with
+  one exception: if Claude returns, the Phase 0 `/forge/llm` gateway must also speak the **Anthropic Messages** wire
+  format (`/anthropic/v1/messages`, `x-api-key`), not only OpenAI Responses. In Phase 1, a `Transform` rule can inject
+  `x-api-key` for the public `claude` disk image. Owner decision; do not let research settle it.
+- **`script-src 'unsafe-inline'`.** It is unnecessary if the template's bootstrap is an external kit file. Drop it so
+  any DOM-injection bug in "words in DOM" cannot become script.
+
+### Measurements to add (append to §13)
+
+| id | what | pass bar |
+|---|---|---|
+| M9 | production-harness parity: the same 5 builds in top-level 127.0.0.1 vs the opaque-origin harness (R5); count divergent outcomes | 0 divergences after the fix; record the number *before* the fix, because that is the value of R5 |
+| M10 | exfiltration battery in the child's iframe on Android WebView: navigation, WebRTC STUN, dns-prefetch, `img` to an external host, XHR to `'self'` (R1, R11) | only `'self'` loads; host detects navigation |
+| M11 | Phase 1: outbound WSS under `trafficInspection: Full`, and whether auto-suspend fires during a 6-minute idle WSS (R9) | WSS survives; no suspend with auto-suspend disabled |
+| M12 | slim image vs full Playwright image, cold start to `hello` on a new node (R15) | slim P90 ≤ 0.6 × full |
+| M13 | crash and no-`ready` rate of the first 200 real child plays per `buildSha` (R14) | tune the breaker threshold from the observed base rate |
+
+### Re-ranked critical path
+
+1. R3 and R2: separate environment, SAS-only runner, private second account. About an hour of IaC. Nothing ships
+   without these.
+2. R1 and R5: CSP `connect-src 'self'` + production-parity harness + `page.clock`. Otherwise the gates are
+   measuring the wrong thing.
+3. R8: resumable builds with orchestrator-held file state, in a separate `forge-orchestrator` app.
+4. R6 and R7: a TPM admission controller and a shared warm pool, replacing per-lesson pre-start. Update §9.3 to
+   include the pool, about $0.65/h at 10k students.
+5. R13 and R14: de-identified briefs, a revocation list, and a post-ship circuit breaker.
+6. Phase 1 (R9, R10, R12) only after the owner's quota and role actions, with code written against the real SDK
+   typings.
+
+**Proposed `context/inbox/` entries:**
+
+- rejection `play-csp-iframe-attribute-on-blob` (R11: CSPEE blocks the frame without a header);
+- decision `forge-untrusted-env-separate` (R2; reverse only if Microsoft documents per-replica VM isolation on
+  Consumption);
+- rejection `per-lesson-runner-prestart` (R7: cost and quota arithmetic, not a trial);
+- measurement `aca-sandbox-sdk-typings-2026-10-02` (R12, n=1, package read).
+
+**Review sources:**
+
+- https://learn.microsoft.com/en-us/azure/container-apps/billing
+- https://learn.microsoft.com/en-us/azure/container-apps/environment
+- https://learn.microsoft.com/en-us/azure/container-apps/sandboxes-overview
+- https://learn.microsoft.com/en-us/azure/container-apps/sandboxes-egress-policies
+- https://learn.microsoft.com/en-us/azure/container-registry/container-registry-skus
+- https://keda.sh/docs/2.17/scalers/azure-storage-queue/
+- https://playwright.dev/docs/api/class-browsertype (`chromiumSandbox`)
+- https://playwright.dev/docs/clock
+- https://w3c.github.io/webappsec-cspee/
+- https://github.com/firecracker-microvm/firecracker/blob/main/docs/snapshotting/random-for-clones.md
+- Phaser source: https://raw.githubusercontent.com/phaserjs/phaser/master/src/core/Config.js,
+  `src/loader/filetypes/ImageFile.js`, `src/loader/XHRLoader.js`
+- npm: `@azure/containerapps-sandbox@1.0.0-beta.1` (unpacked typings), `playwright@1.63.0`, `pyodide@314.0.7`

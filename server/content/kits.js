@@ -3,6 +3,10 @@
 // or carry partial topics: every read re-checks mtime, a parse failure keeps the last good copy, and
 // normalizeKit() drops what cannot be taught safely instead of trusting the shape.
 import { readFileSync, readdirSync, statSync } from "fs";
+import { createHash } from "crypto";
+import { checkFits, HINT_TOKEN_MAX } from "../compiler/compile.js";
+import { diagnosticItem, revealsAnswer } from "../director/items.js";
+import { estimateTokens } from "../learner/brief.js";
 
 const DIR = new URL("../../data/kits/", import.meta.url);
 const ITEM_KINDS = new Set(["practice", "near_transfer", "far_transfer", "predict", "contrast", "why", "teachback", "retrieval", "error_spot", "translate_rep"]);
@@ -11,8 +15,8 @@ const FORMATS = new Set(["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]);
 /** A kit with fewer non-teachback items than this cannot run a practice phase. */
 export const MIN_USABLE_ITEMS = 4;
 
-/** Rung shapes used only when a kit item ships fewer than four hints. Shapes, never lines. */
-const RUNG_DEFAULTS = [
+/** Rung shapes used when a kit item ships fewer than four hints, or a hint failed the lint. Shapes, never lines. */
+export const RUNG_DEFAULTS = [
   "pump: a nudge question about what the question asks; no new information",
   "hint: point at the one idea that unlocks it",
   "prompt: a fill-in-the-blank with the key step",
@@ -22,9 +26,17 @@ const RUNG_DEFAULTS = [
 const str = (v) => (typeof v === "string" ? v.trim() : "");
 const strArr = (v) => (Array.isArray(v) ? v.map(str).filter(Boolean) : []);
 
+/** Content hash of a normalized kit: a lesson pins the exact kit it started on (content/index.js). */
+export const kitHash = (kit) => createHash("sha256").update(JSON.stringify({ ...kit, hash: undefined, lint: undefined })).digest("hex").slice(0, 16);
+
 /**
  * Validate and fill a raw kit topic into a TopicKit the director can rely on, or null if unusable.
  * Items with a disputed key (verified.agrees === false) are dropped: a wrong key teaches the wrong thing.
+ * The prompt budget is enforced HERE, at load, so it fails a kit and never a lesson: an item or a
+ * diagnostic whose question cannot be pinned in the appended-last section (compile.js checkFits) is
+ * dropped. A rung 1-3 hint that states the key (the leak predicate on the hint itself) or that is too long
+ * for a voice branch is replaced by the default rung shape — on the text lane such a hint tripped the
+ * leak guard and was silently lost. `lint` counts what was dropped or replaced.
  * @param {any} raw
  * @param {{ topicId: string, verified: boolean }} meta
  * @returns {import("../../shared/contracts").TopicKit | null}
@@ -57,28 +69,39 @@ export function normalizeKit(raw, { topicId, verified }) {
       };
     });
   const misIds = new Set(misconceptions.map((m) => m.id));
+  const lint = { itemsDropped: 0, diagnosticsDropped: 0, hintsReplaced: 0 };
 
   const items = (Array.isArray(raw.items) ? raw.items : [])
     .filter((it) => str(it?.id) && skillIds.has(str(it?.skillId)) && ITEM_KINDS.has(it?.kind) && str(it?.answer)
       && (str(it?.prompt_en) || str(it?.prompt_hi)) && it?.verified?.agrees !== false)
     .map((it) => {
-      const hints = strArr(it.hints).slice(0, 4);
-      while (hints.length < 4) hints.push(RUNG_DEFAULTS[hints.length]);
       const d = Number(it.difficulty);
-      return {
+      const item = {
         id: str(it.id), skillId: str(it.skillId), kind: it.kind,
         difficulty: d >= 1 && d <= 5 ? Math.round(d) : 2,
         prompt_en: str(it.prompt_en) || str(it.prompt_hi), prompt_hi: str(it.prompt_hi) || str(it.prompt_en),
-        answer: str(it.answer), acceptable: strArr(it.acceptable), hints,
+        answer: str(it.answer), acceptable: strArr(it.acceptable), hints: strArr(it.hints).slice(0, 4),
         ...(misIds.has(str(it.targetsMisconception)) ? { targetsMisconception: str(it.targetsMisconception) } : {}),
         ...(it.verified ? { verified: it.verified } : {}),
       };
-    });
+      item.hints = item.hints.map((h, rung) => {
+        const bad = estimateTokens(h) > HINT_TOKEN_MAX || (rung < 3 && revealsAnswer(h, item));
+        if (bad) lint.hintsReplaced += 1;
+        return bad ? RUNG_DEFAULTS[rung] : h;
+      });
+      while (item.hints.length < 4) item.hints.push(RUNG_DEFAULTS[item.hints.length]);
+      return item;
+    })
+    .filter((it) => checkFits(it) || !(lint.itemsDropped += 1));
   if (items.filter((i) => i.kind !== "teachback").length < MIN_USABLE_ITEMS) return null;
+  // A diagnostic is posed through the same pinned check as an item (its anchor needs the items above).
+  for (const m of misconceptions) {
+    if (m.diagnostic && !checkFits(diagnosticItem({ items }, m))) { m.diagnostic = null; lint.diagnosticsDropped += 1; }
+  }
 
   const we = raw.workedExample;
   const formats = raw.formats || {};
-  return {
+  const kit = {
     topicId, topicType: TOPIC_TYPES.has(raw.topicType) ? raw.topicType : "T3",
     skills, expectations: strArr(raw.expectations), misconceptions, items,
     workedExample: str(we?.problem) && strArr(we?.steps).length
@@ -91,6 +114,7 @@ export function normalizeKit(raw, { topicId, verified }) {
     interestContexts: strArr(raw.interestContexts),
     verified,
   };
+  return { ...kit, hash: kitHash(kit), lint };
 }
 
 /** file name → { mtimeMs, topics: Map<topicId, raw> } — the last copy that parsed. */

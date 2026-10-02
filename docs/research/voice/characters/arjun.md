@@ -235,6 +235,10 @@ evidence · praiseRate regular (B) / sparse (C) · choiceRate medium · openingR
 
 ## 13. Open questions and reversal conditions
 
+- **Probe (method doc §6): Arjun drifts to English most.** He was English-dominant in 12/18 safety turns with the
+  intro-name note, and 14/18 teaching turns with the Hinglish cue, against 2-3/18 in N2. His cue word *andaaza*
+  came back as praise of a wrong guess (3/3). Candidates: drop "urban" from the register note; no praisable noun in
+  his cue. Measure both against N2.
 - **Only maths/science?** Children in 5-9 need every subject. Either Arjun gains a scope note per subject or another
   sheet takes languages/social science. Owner decision.
 - **A didi option for 5-9** must be a *separate* sheet with its own personality, not a gender swap of this one. Two

@@ -760,3 +760,185 @@ Does the contingent-worth mechanism (Ng 2014) operate in Indian parents, and doe
 - Goldin AP, Sigman M, Braier G, Golombek DA, Leone MJ (2020). Interplay of chronotype and school timing predicts school performance. *Nat Hum Behav*. doi:10.1038/s41562-020-0820-2 [V]
 - Pope NG (2016). How the time of day affects productivity: evidence from school schedules. *Rev Econ Stat*. doi:10.1162/rest_a_00525 [S]
 - Sievertsen HH, Gino F, Piovesan M (2016). Cognitive fatigue influences students' performance on standardized tests. *PNAS*. doi:10.1073/pnas.1516947113 [V]
+
+---
+
+## Methodologist review
+
+**Reviewer stance:** an adversarial developmental psychologist and psychometrician, 2026-10-02. I re-fetched the key abstracts this session from the ERIC API, Europe PMC and Crossref (WebSearch budget exhausted). Simulations are in `parent-reports-methodsim.py` (deterministic seed) and every number quoted below comes from it. Tags have the same meaning as in the header.
+
+**Verdict.** The architecture is unusually careful: claim objects, a predicate gate, counts before words, ipsative framing, no labels, pressure-proof shapes. But the design has four defects that would let it say false things about individual children while reporting that it is calibrated:
+1. The false-claim budget assumes posteriors stay calibrated after screening, and they do not (R1).
+2. The reliability gate uses a formula that does not fit the claims it gates (R2).
+3. Two "pattern" sections make causal claims from policy-confounded observational data (R4, R5).
+4. The anti-Barnum validity test measures agreement with parents' existing beliefs, which the report is meant to correct (R7).
+
+There is also one citation that says the opposite of what the file uses it for (C1), and much of the parent-messaging dose evidence comes from parents of 4-5-year-olds or high-schoolers (C3). None of this undermines the "no labels, no pressure" floor, but several *L2 sections should not ship as specified*.
+
+### A. Citation checks (re-read this session)
+
+| # | citation as used | what the abstract says | verdict and correction |
+|---|---|---|---|
+| C1 | Kashikar et al. 2023: the "learning disability" label lowers teachers' expectations (PR-D11, §2.5, tagged [V] in §0 but [V-partial] in §16) | Prospective teachers in Germany, N = 276, vignette experiment: **"no main effect of the learning disability label was observed."** The paper is a failed replication of English-language findings [V] | **Misread.** Cite it as a null replication. The label ban stands on accuracy grounds (Taxila cannot diagnose) and as precaution [I], not on this study. Fix the tag inconsistency |
+| C2 | Gunderson et al. 2013 and 2018 *Dev Psych* presented as two lines of evidence (§1.3, §2.4) | 2018 follows "these same children (n = 53)" [V] | Count them as **one cohort, N = 53**, observational. Say so wherever they appear together |
+| C3 | Cortes 2021 (dose: 1 vs 3 vs 5 texts), Cortes 2019 (weekend timing), Doss 2017 (personalisation), Doss 2022 (math-only null) used to set the weekly cadence (PR-D9, §2.3) | All four are **early-childhood** programmes: preschool, pre-K or kindergarten parents [V, ERIC education-level fields and abstracts] | Label them "evidence from parents of 4-5-year-olds". The dose and timing rules for classes 1-9 are [U] extrapolations and need their own PRM |
+| C4 | Kraft & Rogers 2014/2015 (PR-D12, §2.3) | High-school students in a **summer credit-recovery programme**. The effect came "primarily from preventing drop-outs" [V, SSRN abstract] | State the population and mechanism. It is weak support for weekly cadence at ages 6-15 |
+| C5 | Rogers & Feller 2016 (PR-D3: peer comparison causes quitting) | A natural experiment in a **MOOC** (adults), N = 5,740, plus an online adult replication [V] | Keep, but label it as adult evidence. The child-specific support for banning ranks is the reference-norm literature, which is weaker than stated (C6) |
+| C6 | Lohbeck & Freund 2021: the individual reference norm helps, "especially for struggling learners" (PR-D3) | n = 850. In elementary school **both** the individual and the *social* reference norm were positively related to self-concept. There is no struggling-learner moderation in the abstract [V] | Remove "especially for struggling learners". The ban on ranks is a defensible design value, but not a finding this study supports |
+| C7 | Rhodes et al. 2019: identity framing lowered persistence (PR-D2) | N = 501, four experiments. Action framing raised **girls'** persistence [V] | Say "girls' persistence". The extrapolation from science-identity cues to parent-report wording is [I] |
+| C8 | Gunderson, Donnellan et al. 2018 *JECP*: perceived praise and criticism "predicted" mindset and goals | Re-analysis of existing **cross-sectional** datasets. Also: "the relation between theories of intelligence and learning goals was **nonsignificant**" [V] | Say "was associated with". The non-relation also undercuts any praise → mindset → goals chain in the report's rationale |
+| C9 | Mindset framing throughout (§1.3, §2.4) | Li & Bates 2019 closely replicated Mueller & Dweck 1998 in **624 Chinese children aged 9-13**. The classic manipulation had no effect on 8 motivation measures, and mindset was unrelated to grades [V]. The growth-mindset intervention meta-analysis found d̄ = 0.05, non-significant after bias correction (Macnamara & Burgoyne, preprint of the 2023 *Psych Bull* paper) [V-abstract, preprint] | Add both. Ground process-specific praise in *information value* (Hattie & Timperley; Fong 2019) and in Brummelman's inflation results, **not** in mindset change. The file's Bennett-Pierre caveat is right but too small |
+| C10 | Raudenbush 1984 used to argue that an AI report is "precisely the condition" for large expectancy effects (§2.5) | "The better teachers know their pupils at the time of expectancy induction, the smaller the treatment effect" [V] | **The inference runs backwards for parents**, who have known the child for years. Raudenbush predicts *small* effects on parents' global expectations. The risk is real only in domains the parent cannot observe or check (maths for a parent who cannot do the maths, the child's in-app behaviour). Narrow the claim to those domains |
+| C11 | Marsh 2023 and Yang & Wang 2025 presented as agreeing (§2.5) | Marsh: US Year-10 students, N = 16,197. Expectations positive, aspiration-expectation gap negative, and **non-linear (Goldilocks) effects "small and largely non-significant"** [V] | This conflicts with Yang & Wang's inverted U. Present the two as disagreeing |
+| C12 | Pinquart & Ebeling 2020 (r = .28; expectations → achievement) | Correct [V]. Also: achievement → expectation change (r = .09) and expectation → achievement change (r = .15). Behavioural involvement "such as checking homework" was less effective | Mention that the effect runs both ways. The homework finding *supports* PR-D9 and should be cited there |
+| C13 | Sakaki et al. 2026 (§0 PR-D10, §2.5) | Correctly cited [V]. The same-year association is the opposite: higher expectations went with more positive emotions. The sample is German, grades 5-10 | Add the same-year result and the population |
+| C14 | Silinskas & Kikas 2019 | Correct (n = 512, grades 3 and 6) [V]. Note that "control" is the **child's perception** of control | Fine |
+| C15 | arXiv 2602.15848 (§0 PR-D14, §2.5) | The sibling review (TV M10) found this cited selectively: N = 33 adults, with convergent validity r = .38-.58 omitted | Propagate the TV correction here. It is a preprint, so do not tag it [V] as if it were peer-reviewed |
+| C16 | §2.9 "mind-wandering begins around items 11-15" (via DA9) | DA cites Chen et al. 2018 for this, while DA9's 10-item / 12-minute threshold is itself [U] | Keep it as population evidence, and say the Taxila threshold is [U] |
+| C17 | Gigerenzer & Hoffrage 1995 for count display (PR-D6) | This is about Bayesian reasoning with natural frequencies, not about reading k/n behaviour counts [S] | Label it [I]: counts are plausibly easier to read. PRM6 must test it |
+| C18 | Forer 1949 "parents rate…" (PR-D1) | Forer's participants were college students [S] | Say "people" |
+
+### B. Measurement and inference defects
+
+**R1. The report-level false-claim budget (PR-D5) is not a false-discovery bound under screening.** Σ(1 − Pᵢ) equals the expected number of false claims only if each posterior is calibrated *conditional on being selected*. That holds under a correct hierarchical prior; it does not hold under the independent weak priors (a₀ + b₀ ≤ 4) the file specifies. In the simulation, each month screens 30 within-child contrasts (n = 12 per arm, Beta(1,1) priors, P ≥ .9 to be eligible):
+
+| real effects among the 30 | claims admitted per report | of which false | expected false, as the budget sees it |
+|---|---|---|---|
+| none | 2.5 | 2.5 | 0.11 |
+| 10% | 3.3 | 2.2 | 0.13 |
+| 30% | 4.9 | 1.7 | 0.18 |
+
+Under the null, the budget believes the report holds 0.1 false claims; the real figure is 2.5, and every admitted claim is false. **Fix:**
+- (a) Fit every candidate within-child contrast in one hierarchical model, so each child's deviation is partially pooled toward 0 and the between-child variance is learned from the population, as LS §8.4 does for `formatFit`. Compute Pᵢ from that model.
+- (b) Pre-register a small, fixed menu of candidate claims per section per month, and log the number screened.
+- (c) Validate with PRM5 on *simulated nulls* before launch: generate children with no true contrasts and require ≤ ε false claims per report.
+- (d) Note that ordering by "matches a parent worry" is a selection step and must happen *before* the posterior check, not after.
+
+**R2. The reliability gate uses the wrong formula and too low a bar for individual claims.**
+- Spearman-Brown on a mean applies to L0/L1-like levels. Almost every L2 claim in §6 is a **contrast or a slope**: p₁ − p₂ for teaching moves, γ_c for within-session decline, a format deviation u, a slot effect δ_c, a cross-domain relative strength. The reliability of a difference is ρ_D = (½(ρ_xx + ρ_yy) − ρ_xy)/(1 − ρ_xy). With component reliabilities of .80 it falls to .71, .60 and .33 at component correlations of .3, .5 and .7.
+- Reliability is a **between-person** property. A claim about one child needs that child's posterior precision, which the gate already has.
+- For decisions about individuals, the psychometric convention is ≥ .90, not .70 [S: Nunnally & Bernstein 1994].
+- **Fix:** drop the ρₙ ≥ .70 gate for L2. Gate on the posterior of the contrast itself from the hierarchical model (R1). Report the *test-retest stability* of each claim type, the share of "Found" claims that re-appear in the next independent window, as a PRM. A claim type with < 70% re-appearance is not shown.
+
+**R3. Ipsative "relative strength" (§4.2(b), §6.7, last shape) is the WISC subtest-profile problem.** Within-child strengths and weaknesses derived from profile scatter "replicated across test-retest occasions **at chance levels**" (Watkins & Canivez 2004, 579 students, 66 composites) [V]. Profile-type membership was likewise unstable over 3 years (Borsuk, Watkins & Canivez 2006) [V]. Comparing "her maths" with "her reading" also needs a common metric, which can only come from **population norms**. The section therefore smuggles in norm-referencing while presenting itself as self-comparison. **Fix:**
+- Remove the cross-domain relative-strength shape until a stability study (same child, two independent windows) shows agreement well above chance.
+- Strengths stay as L1 facts and counted actions, which already work.
+
+**R4. "What helped" and teaching-move contingencies (§6.4, §8.2 row 4) are policy-confounded.**
+- The Director picks the move (question vs explanation) *because* of the child's state. Explanations go to more confused moments, so retry after an explanation looks worse for reasons that have nothing to do with the explanation.
+- The monthly layout labels the row "what helped", a causal word that §5.1 rule 6 bans without manipulation.
+- **Fix:** allow this shape only for moves allocated by **micro-randomisation**, with logged propensities and inverse-propensity weighting (AIPW). Otherwise render it as a count with no comparison: "Taxila asked a question about the step {n} times; she retried {k}".
+
+**R5. Format effects (§6.2) inherit bandit and choice bias.** Thompson-sampled arms give biased mean estimates and invalid naive intervals (Hadad et al. 2021 *PNAS* [V]; Zhang, Janson & Murphy 2021 [V]; Rafferty et al. 2019, cited in LS). LS §8.4 rules 4-5 (the engagement constraint and the child's choice) also make some allocations non-random.
+- **Fix:** estimate formatFit only from the uniform-random exploration floor, or with adaptively weighted AIPW using logged propensities.
+- Exclude child-chosen trials from efficacy (they belong in the preference line).
+- Add PRI: "Found" format claims are computed only from randomised allocations.
+
+**R6. The within-session model (§6.3) is not "allowed from ordinary data" as written.**
+- (a) **Breaks are endogenous.** A child asks for a break after a bad run, so post-break accuracy regresses to the mean, and κ is biased toward "breaks help". Only *Taxila-offered breaks at randomised minutes* identify κ.
+- (b) **Item order is not exogenous.** The Conductor puts review first and new skills later, and KT raises difficulty after successes. The b_j adjustment fixes this only if b_j is calibrated, and within-session learning moves θ upward over minutes (the opposite sign).
+- (c) The ≥ 15-minute filter selects engaged days.
+- (d) With γ_c ~ N(γ_band, τ²) and a negative band mean (fatigue is typical), P(γ_c < −γ_min) ≥ .9 can be met by the **prior** with little child-specific evidence. That reports a population fact as a fact about this child, which is a Barnum statement by construction.
+- **Fix:** require the posterior of (γ_c − γ_band) to exclude 0, or render the claim as a population design note ("Taxila offers breaks after {t} minutes for all children in Class {c}"). Run randomised break timing as a product-wide micro-trial.
+- Developmentally, a decline after 15+ minutes in 6-8-year-olds is the expected norm (sustained attention is still developing), so per-child reporting adds little information.
+
+**R7. The n-of-1 time-of-day design (§6.3, PR-D8) is underpowered, and its decision rule fires on noise.** Simulation: 8 one-week blocks, 4 sessions a week, 20 items a session, week and session random effects, analysis at the randomised block level.
+
+| true slot effect (logits) | two-sided rule P(\|δ\| > δ_min) ≥ .9 fires | directional rule P(δ > δ_min) ≥ .9 fires |
+|---|---|---|
+| 0 | 0.19 | 0.05 |
+| 0.05 (≈ Sievertsen scale for a 4-hour gap) [I] | 0.18 | 0.07 |
+| 0.20 | 0.26 | 0.17 |
+| 0.50 | 0.65 | 0.49 |
+
+The two-sided magnitude rule is satisfied by an **imprecise** posterior, so in 19% of null families the report would name a "better" slot picked by the sign of noise. At realistic effect sizes the directional rule reaches about 7%.
+- Retention tests delivered in the other slot add further carry-over confounding.
+- **Fix:** rewrite the rule as directional with precision, P(δ > δ_min) ≥ .9 *and* the posterior SD below δ_min.
+- Pre-declare that the expected individual result is "no detectable difference".
+- Keep 11.4 only as a **population** study: the hierarchical τ_δ is the publishable quantity, not individual verdicts.
+- Expect PRM7 to kill individual claims, and plan the copy for that outcome now.
+
+**R8. The anti-Barnum test (PR-D14, §11.2) has the wrong criterion and an ethics problem.**
+- Parent recognition ("which sounds like {name}?") measures **agreement with the parent's prior belief**. The report's first job (§3) is to correct beliefs that are often wrong (Bergman 2015), so an accurate, belief-correcting section should *fail* this test, and a flattering echo should pass it.
+- Cross-context agreement about children's behaviour is low by nature: cross-informant correlations of about .2-.3 between different informant types (Achenbach, McConaughy & Howell 1987) [S: the abstract was not returned; the figures are from memory of the primary]. In-app behaviour need not match home behaviour, which is what TV PC7 says.
+- Showing a decoy built from **another real child's** data to a different family discloses that child's record.
+- **Fix:**
+  - Primary validity is **predictive**: does the child's section predict that child's own held-out behaviour (next window, out-of-sample) better than a matched decoy's section does? This is scored by machine.
+  - Parent recognition is secondary and is interpreted together with the parent's prior beliefs.
+  - Decoys are *synthetic*, generated from the population model, never another child's record.
+  - "Reduced to counts" is not a fallback that passes the test. State what the test means for counts.
+
+**R9. The parent Brier outcome (§11.1, PRM3) is gameable and partly circular.**
+- With f ∈ {1, 0, 0.5}, answering "not sure" earns a guaranteed 0.25. Committing beats that only when the parent's belief exceeds .75 (expected Brier 0.40, 0.30 and 0.20 at beliefs of .6, .7 and .8). Hedging is the rational strategy, and Brier will improve as parents learn to hedge.
+- The report *tells* the parent the skill states, so predicting checked skills measures **recall of the report**, not calibrated understanding.
+- o_j is a single delayed item with slip and guess noise.
+- **Fix:**
+  - Use a 4- or 5-point probability scale scored with a proper rule, and analyse resolution separately from reliability (Murphy decomposition).
+  - Predict skills that are **not stated** in recent reports (transfer, near-neighbour skills).
+  - Make o_j a ≥ 3-item check, or model its measurement error.
+  - Cap the frequency and frame it as a game ("guess with Taxila"), not a test of the parent.
+
+**R10. The §5.2 frequency vocabulary fails at its own minimum n.** At n = 10, *about half the time* can **never** fire under either prior (Beta(1,1) or Beta(2,2)); it needs n ≈ 20. *Usually* needs 9 of 10 at n = 10 but only 22 of 30 at n = 30, so the word means different observed rates at different n. That is acceptable only because the count is shown, so PRI2 is load-bearing. *About half* and *sometimes* overlap at n ≥ 40 (k = 17), so the gate needs a precedence rule. **Fix:**
+- Set min n = 20 for "about half".
+- Add precedence (most specific word wins, or count-only on a tie).
+- Have PRM6 test whether parents read "usually" as roughly 70% or roughly 90%.
+
+**R11. Misconception narration states an inference as fact (§6.8: "her reasoning, shown as sensible").** Error-pattern diagnoses of "bugs" are unstable from one test occasion to the next [S: VanLehn 1990; Payne & Squibb 1990]. A diagnosed misconception is a hypothesis about a 6-15-year-old's thinking, and parents will repeat it to the child. **Fix:**
+- Render it as ⟨answers like {k} of {n} fit a common way of thinking: …⟩.
+- Show it only when a diagnostic item set (items whose answers distinguish the misconception from a slip) reaches a stated threshold.
+- Otherwise state only the task feature.
+
+**R12. *Pakka* after a single delayed success is weak evidence.** For a constructed-response item it is plausible. For an item with 3-4 options the guess rate is .25-.33, and one delayed success leaves a large false-mastery rate. LOT invariant 3 also means the display never goes down through absence, which pushes parents' beliefs *upward*, the exact bias Bergman 2015 found and §3 sets out to correct. **Fix:**
+- *Pakka* requires ≥ 2 delayed successes on distinct items, or a KT posterior that includes slip and guess.
+- Show "last checked {date}" on every *pakka* row (already partly done in 6.1).
+- After > 60 days unchecked, mark the row "due for a check" [U].
+
+**R13. Calibration tables (§6.6) are confounded with targeted difficulty.** Over- and under-confidence depend on item difficulty: the hard-easy effect [S: Lichtenstein & Fischhoff 1977; Juslin 1994]. The adaptive engine sets that difficulty and changes it as the child progresses, so a "then → now" calibration change can be **the engine's difficulty drift**. **Fix:** compute calibration change on difficulty-matched items (the same b band in both windows), as MS-D8 requires for transfer, and state the matching in "Kaise pata?".
+
+**R14. Shapes and rules that bias reports systematically.**
+- "Never more growth edges than strengths" (PRI11) plus strength-first gives children with few secure skills *proportionally rosier* reports. That is report-level inflation for exactly the group where Brummelman found inflation harmful, and it miscalibrates their parents upward.
+  - **Fix:** cap growth edges at a fixed number (≤ 3), not at "≤ strengths". Use counted actions, which every child has, to fill the strengths block. Have PRM3 check calibration by attainment quartile.
+- Episode selection for the learning story (§14 Q4) favours talkative children. The audit is listed but has no metric.
+  - **Fix:** report the episode-type distribution by talk volume decile.
+- PR-D4's stated evidence (Pesu; Scherr) is about *the accuracy of parents' ability beliefs*, not the ordering of report sections. Strength-first is a [U] design choice and should be tagged that way.
+
+**R15. RCT power is understated (§11.3).** For 80% power at two-sided α = .05, n per arm is about 17,400 at d = .03 (the CHAMP scale), 6,300 at d = .05 and 1,600 at d = .10, before clustering by school or WhatsApp-group contamination and before attrition. "Thousands of families" should read **tens of thousands, or a pre-registered smallest effect size of interest ≥ .10 with an equivalence test**. Measure the primary outcome on **fixed scheduled assessments delivered to all arms**. If one arm raises usage, in-product retention items give that arm more practice, more opportunities and differential missingness.
+
+### C. Developmental and ethical points
+
+- **D1. Ages 13-15: monitoring vs autonomy.** Sections 6.3-6.6 make a parent-facing record of an adolescent's persistence, confidence and rhythms. The file's own Stattin & Kerr point is that *disclosure*, not surveillance, carries the benefit. Visibility to the child (PRI15) is not enough. **Fix:** for B4, the psychological sections 6.3-6.6 are shared with the parent only with the adolescent's opt-in, and the default is competency rows plus the home action. Assent for "her voice" quotes should be revocable at every age.
+- **D2. Parent-prediction prompts and n-of-1 alternation are burdens on the family.** Both turn the parent into a data source. Make them opt-in, rare, and free of any pressure framing. Log refusals as data, never as non-compliance.
+- **D3. Developmental norms used as individual findings.** Within-session decline (R6) and optimistic confidence at 6-7 (MS-D9) are *normative*. Presenting them as discoveries about this child invites Barnum reading. Use the fixed normalising copy ("this is typical at this age") rather than "Taxila has found".
+- **D4. Pronouns.** Every shape is written "she/her". The renderer must use the child's recorded pronoun, and PRI5 should include a pronoun-consistency check.
+- **D5. "This file adds no new child measure" (§6, line 1) is not true.** §6.3 introduces the within-session model and the n-of-1 slot effect. Either move them to their owning docs or drop the sentence.
+
+### D. What survives unchanged
+
+These are well supported and should be kept:
+- PR-D2 (situational, task-level wording; precautionary, but low-cost)
+- PR-D3 (no ranks)
+- PR-D9 (one non-controlling home action; Moroni, Silinskas & Kikas, Pinquart & Ebeling's homework finding)
+- PR-D10 (pressure-proof; Grolnick 2002 is experimental)
+- PR-D11 (no labels; now on corrected grounds)
+- PR-D13 ("Kaise pata?")
+- the counts-first principle
+- the exam shape
+- the safeguarding route.
+
+### E. Changes required before any L2/L3 section ships
+
+1. Hierarchical pooling for all within-child contrasts; budget validated on simulated nulls (R1).
+2. Replace the ρₙ ≥ .70 gate with a contrast posterior plus window-to-window re-appearance ≥ 70% (R2).
+3. Delete the cross-domain relative-strength shape (R3).
+4. Contingency and format claims computed only from randomised or propensity-logged allocations (R4, R5), with new PRIs.
+5. Within-session claims only as population design notes, unless child-specific evidence excludes the band mean; breaks randomised (R6).
+6. Directional n-of-1 rule; individual time-of-day verdicts are not expected (R7).
+7. Predictive anti-Barnum test with synthetic decoys (R8).
+8. Proper-scored, non-circular parent predictions (R9).
+9. §5.2 min n and precedence fixes (R10).
+10. Hedged misconception wording (R11).
+11. ≥ 2 delayed successes for *pakka* (R12).
+12. Difficulty-matched calibration change (R13).
+13. Fixed growth-edge cap (R14).
+14. Realistic power (R15).
+15. Citation fixes C1-C18.
