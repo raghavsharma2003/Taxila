@@ -1,0 +1,115 @@
+{
+ "nodes": [
+  {
+   "id": "cascade-latency-2026-10-02",
+   "kind": "measurement",
+   "title": "Cascade lane latency, child speech end → first TTS byte, n=8 per arm, synthetic child speech: baseline (lesson mode text, sequential Director) median 6365 ms / p90 8710; after (mode cascade, speculative reply x3, one-query auth) median 4230 / p90 5018; Director 4417 → 2405 ms; 0/8 within 2.0 s in every arm",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "cascade-speculative-reply",
+   "kind": "decision",
+   "title": "Text lanes start the teacher reply speculatively for the classifier's likely outcomes while its model call runs; a speculative reply is used only when its full reply input (instructions, history, said, guard state) is byte-identical to the real plan's; default fan-out 3 (TAXILA_SPECULATE)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "cascade-lane-spoken-turns",
+   "kind": "decision",
+   "title": "Lesson mode 'cascade' is a text lane on the server (Director writes and stores every reply, no instructions to the client) whose child turns are SPOKEN: asr_conf stored, classify's low-ASR gate applies, typed only when body.typed",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "cascade-barge-pause-decide",
+   "kind": "decision",
+   "title": "Cascade barge-in is pause-then-decide: local onset ducks (~90 ms), sustained local voice (~120 ms) or server speech_started pauses with the reply kept; the transcript decides: a real turn stops her (teacher_interrupted even while loading), nothing / lone backchannel with ≥1 s left / her own echo resumes from the last word gap",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "cascade-2s-budget-unreachable-at-900ms",
+   "kind": "measurement",
+   "title": "The 2.0 s speech-end→first-audio budget is not reachable with 900 ms server-VAD silence: endpoint alone measures 1046-1146 ms (n=24), STT +250-500, TTS first byte +160-480, leaving < 0.3 s for the Director (best measured 1.9 s)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "cascade-typed-lane-grading",
+   "kind": "rejection",
+   "title": "Rejected: starting cascade lessons as mode 'text' — every spoken turn was stored asr_conf=null and graded as typed; a conf 0.401 transcript went to the model and was graded (baseline eval turn 3); the repair turn was graded as an empty typed answer",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "cascade-barge-all-or-nothing",
+   "kind": "rejection",
+   "title": "Rejected: barge-in that discards the reply on any server speech_started — a cough, TV, 'hmm' or her own echo killed her question, the empty transcript then emitted child_silent and both sides waited; a reply cut while loading was never marked interrupted",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "cascade-local-bargein-2026-10-02",
+   "kind": "measurement",
+   "title": "Cascade local barge-in in Node with fake audio (20 ms MicVad polling): duck 83 ms, pause 104 ms after voice onset (budget 150 ms); not measured on a device",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "cascade-pcm-throttle-sim-2026-10-02",
+   "kind": "measurement",
+   "title": "PCM player throttle SIMULATION (1 Mbit/s, 150 ms RTT): no gaps unless a stall hits in the first ~0.1 s; then gaps 158/119/79 ms as the adaptive start lead grows 60→100→140 ms; no real-link measurement",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "cascade-latency-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "cascade-2s-budget-unreachable-at-900ms",
+   "rel": "constrains",
+   "dst": "voice-turn-config"
+  },
+  {
+   "src": "cascade-speculative-reply",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "cascade-lane-spoken-turns",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "cascade-barge-pause-decide",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "cascade-lane-spoken-turns",
+   "rel": "supersedes",
+   "dst": "cascade-typed-lane-grading"
+  },
+  {
+   "src": "cascade-barge-pause-decide",
+   "rel": "supersedes",
+   "dst": "cascade-barge-all-or-nothing"
+  },
+  {
+   "src": "cascade-latency-2026-10-02",
+   "rel": "measured_by",
+   "dst": "cascade-speculative-reply"
+  },
+  {
+   "src": "cascade-local-bargein-2026-10-02",
+   "rel": "measured_by",
+   "dst": "cascade-barge-pause-decide"
+  },
+  {
+   "src": "cascade-pcm-throttle-sim-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-lane-cascade-default"
+  }
+ ],
+ "md": {
+  "measurements": "## cascade-latency-2026-10-02\n**Cascade lane, child's speech end → first TTS byte (`evals/cascade-latency.mjs`, 2026-10-02, n=8 turns per arm, one lesson per arm, class 4, topic c4-maths-ch01-t01).**\nMethod: synthetic child speech (gpt-4o-mini-tts \"shy 9-year-old\" + ×1.2 pitch shift) streamed in real time into the same transcription session the browser gets (server VAD 0.6 / 900 ms / prefix 300, near_field, logprobs) over the **WebSocket** transport (the browser uses WebRTC); API in-process on the sandbox with Neon over HTTP (~0.3-0.4 s per query from the sandbox, far worse than an in-region pg pool); tts-stream over loopback (no mobile link). `sound` adds the player's 60 ms START_LEAD and a NOMINAL 50 ms output latency (not measured).\n\n| arm | endpoint | stt | director | tts | total (first byte) | sound | ≤2.0 s |\n|---|---|---|---|---|---|---|---|\n| baseline: mode text, sequential classify → reply | 1095 | 318 | 4417 (p90 6556) | 384 | 6365 (p90 8710) | — | 0/8 |\n| mode cascade, TAXILA_SPECULATE=0 | 1078 | 306 | 4244 (p90 5532) | 391 | 6066 (p90 7625) | 6176 | 0/8 |\n| cascade, speculation ×2 (correct/incorrect) | 1080 | 330 | 3584 (p90 4342) | 350 | 4945 (p90 6085) | 5055 | 0/8 — 5/8 hit |\n| cascade, speculation ×3 + one-query turn auth | 1076 | 292 | 2886 (p90 3809) | 629 | 4957 (p90 5596) | 5067 | 0/8 — 7/8 hit |\n| final: + one-query tts-stream auth | 1086 | 320 | **2405** (p90 3229) | 350 | **4230** (p90 5018) | 4340 | 0/8 — 6/7 hit |\n\nAll medians ms. Stored child rows in every cascade arm: 8/8 with asr_conf set and meta.typed=false (read back from Neon); in the final arm a conf 0.464 turn was gated (`no_evidence/asr`) instead of graded. Speculation misses: the classifier's model added `offTopic` or a hint-level change the speculated outcome did not have (debug.speculation.differs). Director remainder after speculation = the reply call (1.2-2.0 s, effort none) + an occasional guard rewrite (+1.3-1.8 s) + ~0.5 s of Neon round trips from the sandbox. Caveats: synthetic speech, one topic, n=8, sandbox network; not a child's phone in India.\n\n## cascade-2s-budget-unreachable-at-900ms\n**2.0 s from speech end to her first sound is not reachable at 900 ms silence.** Endpoint (true speech end → server VAD speech_stopped) measured 1032-1146 ms in 32/32 turns across the four arms; STT completion +225-504 ms; first TTS byte +56-765 ms (cache hits low). That leaves ≤ 0.3 s for the Director, whose best measured turn is 1.9 s (one reply call alone is 1.2-2.0 s). Either re-baseline the budget (≈ 3.5-4.5 s measured; children answer ~1.5x slower and a beat reads as patience — learning-science §1.10) or measure a shorter silence on real children (voice-turn-config's reversal condition) — not decided here. Not tried yet: streaming the reply's first sentence into tts-stream before the guards see the whole reply (the leak/drift/hand-back guards read the full turn, so this needs a per-sentence guard design), and a speculative Director start at speech_stopped from live-transcribe partials.\n\n## cascade-local-bargein-2026-10-02\nLocal barge-in timing, `tests/voice-cascade.test.mjs` (Node, fake AudioContext, MicVad polling a fake analyser every 20 ms, -20 dBFS step onset over a silent room; n=1 per run, timer-jitter bound): duck 83 ms, pause 104 ms after voice onset (budget 150 ms). EnergyVad frame math with defaults: onset ≤ 100 ms, sustain ≤ 140 ms; a 100 ms cough ducks but never pauses. NOT measured on a device: real AGC/AEC input, Android WebView, phone speaker echo — `bargeStats` on /dev/lesson (serverStartsWhilePlaying, localUnconfirmed, resumedEcho) is the counter to read on that device run, with and without the \"cascade via <audio>\" option.\n\n## cascade-pcm-throttle-sim-2026-10-02\nSimulation only (PcmStreamPlayer + fake clock, 4 s replies, 1 Mbit/s, 150 ms RTT + 300 ms server first byte, n=3 replies per profile): steady link and stalls after ≥0.4 s → 0 gaps (the stream arrives 2.6× faster than playback, buffer builds); a 250 ms stall 80 ms into the reply → gaps 158 / 119 / 79 ms as the adaptive start lead grows 60 → 100 → 140 ms. Not measured on a real 3G/4G link.\n",
+  "rejected": "## cascade-typed-lane-grading\n**Rejected: starting cascade lessons as mode \"text\".** What broke: the server forces typed=true for the text lane, so every spoken cascade turn was stored with asr_conf=null and classify got typed:true — the low-ASR \"no evidence\" gate never fired (baseline eval turn 3: conf 0.401 transcript sent to the model and graded), and the ASR-failed repair turn (\"\" + confidence 0) was graded as an empty typed answer. The client sent the confidence; the server threw it away. Fixed by lesson mode \"cascade\" (text lane for replies, spoken for grading) — `cascade-lane-spoken-turns`.\n\n## cascade-barge-all-or-nothing\n**Rejected: stopping and discarding the teacher's reply on any server speech_started.** What broke: a cough, the TV, a \"hmm\" backchannel or her own echo (the 9/9 browser check ran over push-to-talk, so hands-free echo was never exercised) killed the whole reply, including one still loading; the empty transcript then became child_silent, which the runtime does not answer, so her question was lost and both sides waited. A reply cut while loading was never marked interrupted, so the server believed it was heard. Replaced by pause-then-decide (`cascade-barge-pause-decide`).\n",
+  "decisions": "## cascade-lane-spoken-turns\n**Lesson mode \"cascade\" (2026-10-02): a text lane on the server whose child turns are spoken.** The Director writes and stores every reply and the client never gets instructions (answer key stays server-side); child rows keep asr_conf, `typed` only from body.typed, classify's low-ASR gate applies; compiled instructions are the text lane's. LessonRuntime.start(childId, \"cascade\") builds a text-lane link (CascadeLink via ctx.cascade).\n- Reverse if: a server sideband owns session.update for the realtime lane and the lanes are unified on one mode flag.\n\n## cascade-speculative-reply\n**While the classifier's model call runs, the turn route starts the reply for its likely outcomes (item: incorrect, no_evidence, correct; none: no_evidence; fan-out TAXILA_SPECULATE, default 3) through the same planTurn() code, and uses one only if its whole reply input key is identical to the real plan's** (instructions, said, history, lastMove, hint level, pendingWhy, lang, age band, spoiled, upcoming item, hold). A speculative reply that fell back (model failed) is a miss. Quality is unchanged by construction (same prompt, same guards); cost is up to 3 extra taxila-fast reply calls per model-classified turn. Measured: Director median 4244 → 2405 ms, 6/7 and 7/8 hits (cascade-latency-2026-10-02).\n- Reverse if: real-lesson hit rate < 50% for a week (then the extra calls buy little), or a single structured classify+reply call matches the classifier's labels on the classify eval at ≤ 1.5 s.\n\n## cascade-barge-pause-decide\n**Cascade barge-in pauses and lets the transcript decide (2026-10-02).** Local onset (~90 ms voiced) ducks to 0.2; sustained local voice (~120 ms, hands-free only) or server speech_started pauses with the reply kept (stream keeps buffering). Transcript: a real turn stops her (teacher_interrupted whenever she was cut, even while loading); empty, ASR-failed with ≥1 s left, a lone backchannel (\"hmm\", \"haan\", one word < 0.5 conf) with ≥1 s left, or her own echo (≥4 words, ≥70% matching her reply by consonant skeleton across Roman/Devanagari) resumes her from the last gap between words. Unconfirmed local pauses resume after 700 ms; 3 of them switch local pausing off for the lesson (echo self-calibration). Push-to-talk press or typing stops her outright.\n- Reverse if: the device test (bargeStats on Android Chrome/WebView, phone speaker) shows echo still interrupts her (then default output \"element\" and/or require local corroboration), or children's real answers are swallowed as echo/backchannel in > 2% of turns.\n"
+ }
+}

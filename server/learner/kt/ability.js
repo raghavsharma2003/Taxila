@@ -15,6 +15,7 @@ export const S_SLIP = 0.08, A_GE = 1.7, C_OPEN = 0.02, THETA_STRAND_CAP = 6;
 /** Glicko inflation per day (KT §3.2) and term-time drift (+0.08 GE / month on term days) [U]. */
 export const C_GLICKO = 0.077, DRIFT_GE_PER_DAY = 0.08 / 30, TERM_FRACTION = 0.75;
 export const BORROW_CAP = 0.5;
+const SITE_TAU_MIN = 1e-6;
 export const ENGINE_VERSION = "theta-grid-1";
 const DAY = 86_400_000;
 
@@ -45,8 +46,8 @@ export function bSkill(skillId) {
   return ge - Math.log((0.7 - C_OPEN) / (1 - C_OPEN - S_SLIP) / (1 - (0.7 - C_OPEN) / (1 - C_OPEN - S_SLIP))) / a;
 }
 /** ItemMeta for an item with no calibration: b from the skill (source 'skill'). */
-export function defaultItemMeta(ev) {
-  const strands = [...new Set(ev.skillIds.map(strandOfSkill))];
+export function defaultItemMeta(ev, strandOf = strandOfSkill) {
+  const strands = [...new Set(ev.skillIds.map(strandOf))];
   const b = bSkill(ev.skillIds[0]);
   return {
     itemKey: ev.itemKey, strand: strands.length === 1 && b != null ? strands[0] : null, skillIds: ev.skillIds,
@@ -223,8 +224,11 @@ export function combine(e) {
     if (e.nObs[s] === 0) return { tau: 0, h: 0 };
     const mu0 = base.m[i], v0 = base.S[i * n + i];
     const post = momentMatch(GRID.map((t, k) => normalLogPdf(t, mu0, v0) + e.ll[s][k]));
-    const tau = Math.max(0, 1 / post.v - 1 / v0);
-    return { tau, h: tau === 0 ? 0 : post.mu / post.v - mu0 / v0 };
+    // The 4PL (guess + slip) is not log-concave, so the grid posterior can be WIDER than the prior. The
+    // site precision is then floored at SITE_TAU_MIN and h is set so the strand's own-evidence mean is the
+    // exact grid mean (clipping the whole site to 0 would throw the evidence away and break TP8).
+    const tau = Math.max(SITE_TAU_MIN, 1 / post.v - 1 / v0);
+    return { tau, h: post.mu * (1 / v0 + tau) - mu0 / v0 };
   });
   return combineSites(base, sites);
 }

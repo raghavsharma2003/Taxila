@@ -150,7 +150,8 @@
      ],
      "verified": {
       "solverAnswer": "म",
-      "agrees": true
+      "agrees": true,
+      "note": "Summary flag (no defect). r2: nukta consistency applied — 'खत्म' → 'ख़त्म' in 16 strings."
      }
     },
     {
@@ -219,14 +220,14 @@
      ],
      "hints": [
       "न के बाद आ जोड़ो।",
-      "न + आ = ना। अब दो बार बोलो।",
+      "म पर ा लगाकर मा बना था — न के साथ भी वैसा ही करो।",
       "ना-ना = ___",
       "न + ा = ना, और ना-ना से नाना बनता है।"
      ],
      "verified": {
       "solverAnswer": "ना; नाना",
       "agrees": true,
-      "note": "Hint 2 ('न + आ = ना') already gives half the answer; consider moving it to hint 3."
+      "note": "Fixed r2: hint 2 models with म (म→मा) instead of giving न + आ = ना."
      }
     },
     {
@@ -264,24 +265,25 @@
      "skillId": "c1-hindi-ch01-t01-s3",
      "kind": "practice",
      "difficulty": 1,
-     "prompt_en": "Listen: 'Meena lives with Maa, Papa, Dadi and her little brother Monu.' What is Meena's brother's name?",
-     "prompt_hi": "सुनो: 'मीना के घर में माँ, पापा, दादी और छोटा भाई मोनू रहते हैं।' मीना के भाई का नाम क्या है?",
-     "answer": "मोनू",
+     "prompt_en": "Listen: 'Meena lives with Maa, Papa, Dadi and her little brother Divakar.' What is Meena's brother's name?",
+     "prompt_hi": "सुनो: 'मीना के घर में माँ, पापा, दादी और छोटा भाई दिवाकर रहते हैं।' मीना के भाई का नाम क्या है?",
+     "answer": "दिवाकर",
      "acceptable": [
-      "मोनू",
-      "monu",
-      "mono"
+      "दिवाकर",
+      "divakar",
+      "diwakar",
+      "divaakar"
      ],
      "hints": [
       "कहानी फिर से सुनो।",
       "'छोटा भाई…' के बाद कौन-सा नाम आया?",
       "मीना का छोटा भाई ___ है।",
-      "मीना के भाई का नाम मोनू है।"
+      "मीना के भाई का नाम दिवाकर है।"
      ],
      "verified": {
-      "solverAnswer": "मोनू",
+      "solverAnswer": "दिवाकर",
       "agrees": true,
-      "note": "Self-consistent with the inline story; note NCERT Sarangi ch1 names the brother दिवाकर (7-member family) — a child who knows the book may answer दिवाकर."
+      "note": "Fixed r2: brother renamed दिवाकर to match the NCERT chapter (story text still original)."
      }
     },
     {
@@ -707,7 +709,7 @@
       "तीनों का आख़िरी हिस्सा सुनो।",
       "गा-ना, खा-ना, दा-दा — किसका आख़िर 'ना' है?",
       "गाना और ___ का आख़िर एक जैसा है।",
-      "गाना और खाना में तुक है — दोनों '-ना' पर खत्म।"
+      "गाना और खाना में तुक है — दोनों '-ना' पर ख़त्म।"
      ],
      "verified": {
       "solverAnswer": "खाना",
@@ -733,7 +735,7 @@
       "तुक में शुरुआत नहीं, आख़िर देखते हैं।",
       "छड़ी और छत का आख़िर सुनो — एक जैसा?",
       "छ-ड़ी, घ-ड़ी — दोनों में '___'",
-      "छड़ी-घड़ी में तुक है, क्योंकि दोनों '-ड़ी' पर खत्म होते हैं।"
+      "छड़ी-घड़ी में तुक है, क्योंकि दोनों '-ड़ी' पर ख़त्म होते हैं।"
      ],
      "targetsMisconception": "c1-hindi-ch02-t01-mc-rhyme-start",
      "verified": {
@@ -747,7 +749,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "You be the poet! Think of one more word that ends in '-di' like chhadi and ghadi.",
-     "prompt_hi": "अब तुम कवि बनो! 'छड़ी' और 'घड़ी' जैसा एक और शब्द सोचो जो '-ड़ी' पर खत्म हो।",
+     "prompt_hi": "अब तुम कवि बनो! 'छड़ी' और 'घड़ी' जैसा एक और शब्द सोचो जो '-ड़ी' पर ख़त्म हो।",
      "answer": "e.g. गाड़ी, लकड़ी, पकौड़ी, साड़ी, झाड़ी, बड़ी",
      "acceptable": [
       "गाड़ी",
@@ -768,7 +770,7 @@
       "'-ड़ी' बोलकर देखो, उसके आगे कुछ लगाओ।",
       "जिस पर बैठकर सड़क पर जाते हैं…?",
       "गा + ड़ी = ___",
-      "गाड़ी, लकड़ी, साड़ी — सब '-ड़ी' पर खत्म होते हैं।"
+      "गाड़ी, लकड़ी, साड़ी — सब '-ड़ी' पर ख़त्म होते हैं।"
      ],
      "verified": {
       "solverAnswer": "बड़ी / लड़ी / कड़ी",
@@ -901,14 +903,14 @@
      ],
      "hints": [
       "दादा-दादी, नाना-…?",
-      "नाना के आख़िर का ा बदलकर ी करो।",
+      "दादा से दादी बनने में आख़िरी आवाज़ बदली — नाना में भी वैसा सोचो।",
       "नाना → ___",
       "नाना के साथ नानी होती हैं।"
      ],
      "verified": {
       "solverAnswer": "नानी",
       "agrees": true,
-      "note": "Hint 2 ('नाना के आख़िर का ा बदलकर ी करो') nearly states the answer at the second rung."
+      "note": "Fixed r2: hint 2 gives the pattern (दादा→दादी) instead of the spelling change that states नानी."
      }
     },
     {
@@ -985,7 +987,7 @@
      "hints": [
       "दोनों धीरे-धीरे बोलो।",
       "शुरू अलग है — आख़िर?",
-      "दोनों '___' पर खत्म होते हैं।",
+      "दोनों '___' पर ख़त्म होते हैं।",
       "छड़ी और घड़ी का आख़िर '-ड़ी' एक जैसा है, इसलिए तुक बनती है।"
      ],
      "verified": {
@@ -2158,7 +2160,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "Mithaaee ends in '-aaee'. Tell me another word that ends in '-aaee'.",
-     "prompt_hi": "'मिठाई' के आख़िर में '-आई' है। ऐसा ही कोई और शब्द बताओ जो '-आई' पर खत्म हो।",
+     "prompt_hi": "'मिठाई' के आख़िर में '-आई' है। ऐसा ही कोई और शब्द बताओ जो '-आई' पर ख़त्म हो।",
      "answer": "e.g. रज़ाई, दवाई, चटाई, मलाई, पढ़ाई, सफ़ाई, भाई",
      "acceptable": [
       "रज़ाई",
@@ -2180,7 +2182,7 @@
       "सर्दी में ओढ़ते हैं…?",
       "बीमार होने पर क्या लेते हैं?",
       "र-ज़ा-ई, द-वा-___",
-      "रज़ाई, दवाई, चटाई — सब '-आई' पर खत्म।"
+      "रज़ाई, दवाई, चटाई — सब '-आई' पर ख़त्म।"
      ],
      "verified": {
       "solverAnswer": "दवाई / चटाई / मलाई",
@@ -2192,7 +2194,7 @@
      "skillId": "c1-hindi-ch05-t01-s3",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Blend and say: ma… laa… ee. Which creamy thing did you make?",
+     "prompt_en": "Blend and say: ma… laa… ee. What thing did you make?",
      "prompt_hi": "जोड़कर बोलो: म…ला…ई। कौन-सी चीज़ बनी?",
      "answer": "मलाई",
      "acceptable": [
@@ -2209,7 +2211,7 @@
      "verified": {
       "solverAnswer": "मलाई",
       "agrees": true,
-      "note": "prompt_en adds 'creamy thing' which is not in prompt_hi (gloss adds a clue)."
+      "note": "Fixed r2: prompt_en now faithful to prompt_hi (no added 'creamy' clue)."
      }
     },
     {
@@ -2323,8 +2325,8 @@
      "skillId": "c1-hindi-ch05-t01-s2",
      "kind": "error_spot",
      "difficulty": 4,
-     "prompt_en": "Gudiya wrote मिठाी — she hung a ी on ठा. How should it be written?",
-     "prompt_hi": "गुड़िया ने लिखा 'मिठाी' — ठा के ऊपर फिर से ी लगा दी! सही कैसे लिखेंगे?",
+     "prompt_en": "Gudiya wrote मिठाी — after ठा she put another ी matra. How should it be written?",
+     "prompt_hi": "गुड़िया ने लिखा 'मिठाी' — ठा के बाद फिर से ी की मात्रा लगा दी! सही कैसे लिखेंगे?",
      "answer": "मिठाई — ठा के बाद पूरा अक्षर ई आएगा",
      "acceptable": [
       "मिठाई",
@@ -2343,7 +2345,7 @@
      "verified": {
       "solverAnswer": "मिठाई — ठा के बाद पूरा ई",
       "agrees": true,
-      "note": "Wording: 'ठा के ऊपर फिर से ी लगा दी' — ी is not written above; say 'ठा के बाद फिर से ी की मात्रा लगा दी'."
+      "note": "Fixed r2: wording no longer says ी is written above ठा."
      }
     },
     {
@@ -2495,7 +2497,7 @@
    "expectations": [
     "Says साथी with थ (puff), not 'साती'",
     "Hears the long ई at the end of साथी and नदी",
-    "Names the three friends and says the parrot could see the way because it flies",
+    "Names the three friends and says the चिड़िया could see the way because it flies",
     "Counts pictures and says the number word with the thing"
    ],
    "misconceptions": [
@@ -2687,28 +2689,28 @@
      "skillId": "c1-hindi-ch06-t01-s3",
      "kind": "practice",
      "difficulty": 1,
-     "prompt_en": "Listen: 'A parrot, a squirrel and a tortoise were close friends.' Who were the three friends?",
-     "prompt_hi": "सुनो: 'एक तोता, एक गिलहरी और एक कछुआ पक्के साथी थे।' तीनों साथी कौन थे?",
-     "answer": "तोता, गिलहरी और कछुआ",
+     "prompt_en": "Listen: 'An elephant, a goat and a little bird were close friends.' Who were the three friends?",
+     "prompt_hi": "सुनो: 'एक हाथी, एक बकरी और एक चिड़िया पक्के साथी थे।' तीनों साथी कौन थे?",
+     "answer": "हाथी, बकरी और चिड़िया",
      "acceptable": [
-      "तोता",
-      "गिलहरी",
-      "कछुआ",
-      "tota",
-      "gilahri",
-      "kachhua",
-      "kachua"
+      "हाथी, बकरी और चिड़िया",
+      "हाथी बकरी चिड़िया",
+      "हाथी, बकरी, चिड़िया",
+      "haathi bakri chidiya",
+      "hathi bakri chidiya",
+      "hathi, bakri aur chidiya",
+      "haathi bakri chiriya"
      ],
      "hints": [
       "वाक्य फिर से सुनो।",
-      "एक उड़ता है, एक पेड़ पर चढ़ता है, एक धीरे चलता है।",
-      "तोता, ___ और ___",
-      "तीनों साथी थे — तोता, गिलहरी और कछुआ।"
+      "एक बहुत बड़ा है, एक में-में करती है, एक उड़ती है।",
+      "हाथी, ___ और ___",
+      "तीनों साथी थे — हाथी, बकरी और चिड़िया।"
      ],
      "verified": {
-      "solverAnswer": "तोता, गिलहरी, कछुआ",
+      "solverAnswer": "हाथी, बकरी और चिड़िया",
       "agrees": true,
-      "note": "Accepts any single animal as correct for 'who were the three'; consider requiring all three. Story animals differ from NCERT (हाथी, बकरी, चिड़िया) — original retelling, no copying."
+      "note": "Fixed r2: story friends aligned with the NCERT chapter (हाथी, बकरी, चिड़िया; story text still original); acceptable now requires all three."
      }
     },
     {
@@ -2716,26 +2718,28 @@
      "skillId": "c1-hindi-ch06-t01-s3",
      "kind": "why",
      "difficulty": 3,
-     "prompt_en": "In the rain the tortoise got stuck. The parrot flew up and saw the way. Why could the parrot see the way, and not the tortoise?",
-     "prompt_hi": "बारिश में कछुआ फँस गया। तोते ने उड़कर ऊपर से रास्ता देखा। तोता ही रास्ता क्यों देख पाया, कछुआ क्यों नहीं?",
-     "answer": "क्योंकि तोता उड़ सकता है और ऊपर से दूर तक दिखता है; कछुआ नीचे ज़मीन पर धीरे चलता है",
+     "prompt_en": "In the rain the goat got stuck in the mud. The bird flew up and saw the way. Why could the bird see the way, and not the goat?",
+     "prompt_hi": "बारिश में बकरी कीचड़ में फँस गई। चिड़िया ने उड़कर ऊपर से रास्ता देखा। चिड़िया ही रास्ता क्यों देख पाई, बकरी क्यों नहीं?",
+     "answer": "क्योंकि चिड़िया उड़ सकती है और ऊपर से दूर तक दिखता है; बकरी नीचे कीचड़ में फँसी थी",
      "acceptable": [
-      "तोता उड़ता है",
-      "उड़ सकता है",
-      "ऊपर से",
-      "ud sakta hai",
-      "upar se",
+      "चिड़िया उड़ती है",
+      "उड़ सकती है",
+      "उड़कर ऊपर से देखा",
+      "ऊपर से दूर तक दिखता है",
+      "ud sakti hai",
+      "udkar upar se",
       "fly"
      ],
      "hints": [
-      "तोता क्या कर सकता है जो कछुआ नहीं कर सकता?",
+      "चिड़िया क्या कर सकती है जो बकरी नहीं कर सकती?",
       "ऊँचाई से देखो तो कितना दिखता है?",
-      "तोता ___ सकता है।",
-      "तोता उड़ सकता है, ऊपर से उसे दूर तक रास्ता दिखता है।"
+      "चिड़िया ___ सकती है।",
+      "चिड़िया उड़ सकती है, ऊपर से उसे दूर तक रास्ता दिखता है।"
      ],
      "verified": {
-      "solverAnswer": "तोता उड़कर ऊपर से देख सकता है; कछुआ नीचे धीमा",
-      "agrees": true
+      "solverAnswer": "चिड़िया उड़कर ऊपर से देख सकती है; बकरी नीचे फँसी",
+      "agrees": true,
+      "note": "Fixed r2: re-skinned to the NCERT friends (चिड़िया/बकरी) with feminine agreement (उड़ सकती है, देख पाई)."
      }
     },
     {
@@ -2743,26 +2747,28 @@
      "skillId": "c1-hindi-ch06-t01-s3",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "'The three friends reached the tortoise together.' What will happen now?",
-     "prompt_hi": "'तीनों साथी मिलकर कछुए के पास पहुँचे।' अब क्या होगा?",
-     "answer": "वे मिलकर कछुए की मदद करेंगे और उसे घर ले जाएँगे",
+     "prompt_en": "'The three friends reached the goat together.' What will happen now?",
+     "prompt_hi": "'तीनों साथी मिलकर बकरी के पास पहुँचे।' अब क्या होगा?",
+     "answer": "वे मिलकर बकरी की मदद करेंगे — हाथी उसे कीचड़ से निकालेगा और वे उसे घर ले जाएँगे",
      "acceptable": [
       "मदद करेंगे",
+      "कीचड़ से निकालेंगे",
       "घर ले जाएँगे",
       "बचाएँगे",
       "madad karenge",
       "bachayenge",
-      "ghar"
+      "nikalenge"
      ],
      "hints": [
       "दोस्त मुश्किल में हो तो साथी क्या करते हैं?",
-      "कछुआ फँसा है — उसे क्या चाहिए?",
-      "वे कछुए की ___ करेंगे।",
-      "तीनों मिलकर कछुए की मदद करेंगे और उसे घर ले जाएँगे।"
+      "बकरी फँसी है — उसे क्या चाहिए?",
+      "वे बकरी की ___ करेंगे।",
+      "तीनों मिलकर बकरी की मदद करेंगे — हाथी उसे कीचड़ से निकालेगा।"
      ],
      "verified": {
-      "solverAnswer": "मिलकर कछुए को बचाएँगे/बाहर निकालेंगे",
-      "agrees": true
+      "solverAnswer": "मदद करेंगे, बकरी को निकालेंगे",
+      "agrees": true,
+      "note": "Fixed r2: re-skinned to the NCERT friends; bare 'ghar' removed from acceptable."
      }
     },
     {
@@ -2875,7 +2881,7 @@
      "difficulty": 3,
      "prompt_en": "Tell Golu what a good saathi (friend) does. Give an example from the story.",
      "prompt_hi": "गोलू को बताओ — अच्छा साथी क्या करता है? कहानी से एक उदाहरण दो।",
-     "answer": "अच्छा साथी मुश्किल में मदद करता है और साथ रहता है — जैसे तोते और गिलहरी ने कछुए की मदद की",
+     "answer": "अच्छा साथी मुश्किल में मदद करता है और साथ रहता है — जैसे चिड़िया और हाथी ने बकरी की मदद की",
      "acceptable": [
       "मदद करता है",
       "साथ रहता है",
@@ -2884,14 +2890,15 @@
       "help"
      ],
      "hints": [
-      "कछुआ फँसा तो बाकी दोनों ने क्या किया?",
+      "बकरी फँसी तो बाकी दोनों ने क्या किया?",
       "क्या उन्होंने उसे छोड़ दिया?",
       "अच्छा साथी ___ करता है।",
-      "अच्छा साथी मुश्किल में मदद करता है — जैसे तोते ने रास्ता दिखाया।"
+      "अच्छा साथी मुश्किल में मदद करता है — जैसे चिड़िया ने रास्ता दिखाया।"
      ],
      "verified": {
-      "solverAnswer": "मुश्किल में मदद करता है — जैसे तोते ने रास्ता दिखाया",
-      "agrees": true
+      "solverAnswer": "मुश्किल में मदद करता है — जैसे चिड़िया ने रास्ता दिखाया",
+      "agrees": true,
+      "note": "Fixed r2: example re-skinned to the NCERT friends."
      }
     },
     {
@@ -2901,24 +2908,25 @@
      "difficulty": 2,
      "prompt_en": "Remember: how many friends were there, and which one could fly?",
      "prompt_hi": "याद करो — कहानी में कितने साथी थे, और उनमें से कौन उड़ सकता था?",
-     "answer": "तीन; तोता",
+     "answer": "तीन; चिड़िया",
      "acceptable": [
-      "तीन तोता",
-      "तीन",
-      "तोता",
-      "teen tota",
-      "tota"
+      "तीन, चिड़िया",
+      "तीन चिड़िया",
+      "तीन साथी, चिड़िया",
+      "teen chidiya",
+      "teen, chidiya",
+      "teen chiriya"
      ],
      "hints": [
       "कहानी का नाम याद करो।",
       "किसके पंख थे?",
       "___ साथी, उड़ने वाला ___",
-      "तीन साथी थे, और तोता उड़ सकता था।"
+      "तीन साथी थे, और चिड़िया उड़ सकती थी।"
      ],
      "verified": {
-      "solverAnswer": "तीन; तोता",
+      "solverAnswer": "तीन; चिड़िया",
       "agrees": true,
-      "note": "Acceptable list accepts half answers ('तीन' or 'तोता' alone) for a two-part question."
+      "note": "Fixed r2: both parts now required (half answers removed); flyer is चिड़िया per NCERT-aligned friends."
      }
     }
    ],
@@ -2970,7 +2978,7 @@
     },
     {
      "id": "c1-hindi-ch07-t01-s2",
-     "title": "Hears and makes rhyming pairs (घोड़े–थोड़े, जाए–भाए)",
+     "title": "Hears and makes rhyming pairs (घोड़े–दौड़े, घोड़े–थोड़े, जाए–भाए)",
      "prereqSkillIds": [
       "c1-hindi-ch07-t01-s1"
      ]
@@ -3108,24 +3116,28 @@
      "skillId": "c1-hindi-ch07-t01-s1",
      "kind": "retrieval",
      "difficulty": 2,
-     "prompt_en": "'Tik-tik, tak-tak, go on, horse; it's not far, just go on a …' What comes next?",
-     "prompt_hi": "'टिक-टिक, टक-टक, चल रे घोड़े, दूर नहीं, बस चल रे…' आगे क्या आता है?",
-     "answer": "थोड़े",
+     "prompt_en": "'Tik-tik, tak-tak, go on, horse; peechhe-peechhe hum bhi …' What comes next?",
+     "prompt_hi": "'टिक-टिक, टक-टक, चल रे घोड़े, पीछे-पीछे हम भी…' आगे क्या आता है?",
+     "answer": "दौड़े",
      "acceptable": [
-      "थोड़े",
-      "thode",
-      "thore"
+      "दौड़े",
+      "हम भी दौड़े",
+      "daude",
+      "daudey",
+      "daure",
+      "dode",
+      "dore"
      ],
      "hints": [
       "'घोड़े' से तुक मिलाने वाला शब्द।",
-      "थ से शुरू होता है।",
-      "चल रे ___",
-      "दूर नहीं, बस चल रे थोड़े।"
+      "द से शुरू होता है — घोड़ा जो करता है।",
+      "हम भी ___",
+      "पीछे-पीछे हम भी दौड़े।"
      ],
      "verified": {
-      "solverAnswer": "थोड़े",
+      "solverAnswer": "दौड़े",
       "agrees": true,
-      "note": "Original poem line 'दूर नहीं, बस चल रे थोड़े' is ungrammatical — 'थोड़े' does not fit 'चल रे' (would be 'थोड़ा'); forced rhyme teaches non-standard Hindi. Rewrite the line so the rhyme word is grammatical."
+      "note": "Fixed r2: poem line rewritten from ungrammatical 'दूर नहीं, बस चल रे थोड़े' to 'पीछे-पीछे हम भी दौड़े' (grammatical, keeps the -ड़े rhyme). Answer re-keyed to दौड़े; worked example and skill title updated."
      }
     },
     {
@@ -3157,7 +3169,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "jaaye and bhaaye rhyme. Tell me one more word that ends in '-aaye'.",
-     "prompt_hi": "'जाए' और 'भाए' में तुक है। एक और शब्द बताओ जो '-आए' पर खत्म हो।",
+     "prompt_hi": "'जाए' और 'भाए' में तुक है। एक और शब्द बताओ जो '-आए' पर ख़त्म हो।",
      "answer": "e.g. आए, खाए, गाए, लाए, नहाए, पाए",
      "acceptable": [
       "आए",
@@ -3175,7 +3187,7 @@
       "'-आए' बोलो और आगे कोई अक्षर लगाओ।",
       "जो हम भूख लगने पर करते हैं — खा…?",
       "खा + ए = ___",
-      "खाए, गाए, लाए — सब '-आए' पर खत्म।"
+      "खाए, गाए, लाए — सब '-आए' पर ख़त्म।"
      ],
      "verified": {
       "solverAnswer": "खाए / गाए / लाए",
@@ -3301,7 +3313,7 @@
       "बहुत सारे घोड़े"
      ],
      "hints": [
-      "कविता में भी यह शब्द आया था — 'चल रे…'",
+      "एक से ज़्यादा हों तो शब्द का आख़िर बदल जाता है।",
       "एक घोड़ा, दो…?",
       "चार ___",
       "बहुत सारे हों तो घोड़े।"
@@ -3309,7 +3321,7 @@
      "verified": {
       "solverAnswer": "घोड़े",
       "agrees": true,
-      "note": "Hint 1 quotes the poem line ('चल रे…') whose next word is the answer घोड़े — leaks at the first rung."
+      "note": "Fixed r2: hint 1 no longer quotes the poem line whose next word was the answer."
      }
     },
     {
@@ -3414,12 +3426,12 @@
     }
    ],
    "workedExample": {
-    "problem": "Original lines: 'टिक-टिक, टक-टक, चल रे घोड़े, दूर नहीं, बस चल रे थोड़े।' Find the rhyme.",
+    "problem": "Original lines: 'टिक-टिक, टक-टक, चल रे घोड़े, पीछे-पीछे हम भी दौड़े।' Find the rhyme.",
     "steps": [
      "पहली पंक्ति का आख़िरी शब्द: घोड़े।",
-     "दूसरी पंक्ति का आख़िरी शब्द: थोड़े।",
-     "आख़िरी हिस्सों पर ताली: घो-ड़े, थो-ड़े — दोनों '-ड़े'।",
-     "तो घोड़े और थोड़े में तुक है।"
+     "दूसरी पंक्ति का आख़िरी शब्द: दौड़े।",
+     "आख़िरी हिस्सों पर ताली: घो-ड़े, दौ-ड़े — दोनों '-ड़े'।",
+     "तो घोड़े और दौड़े में तुक है।"
     ],
     "fadedVersion": [
      "तीसरी पंक्ति: 'हवा से बातें, सरपट जाए' — आख़िरी शब्द ___।",
@@ -4122,7 +4134,7 @@
       "मिठाई की दुकान में गोल-गोल…?",
       "पीला, खट्टा, शरबत में डालते हैं…?",
       "लड्___",
-      "लड्डू, नींबू, काजू — सब लंबे ऊ पर खत्म।"
+      "लड्डू, नींबू, काजू — सब लंबे ऊ पर ख़त्म।"
      ],
      "verified": {
       "solverAnswer": "लड्डू / काजू / कद्दू",
@@ -4372,11 +4384,10 @@
      "prompt_hi": "गोलू ने कहानी नहीं सुनी। उसे 'आलू की सड़क' कहानी तीन वाक्यों में सुनाओ — पहले, फिर, आख़िर में।",
      "answer": "पहले खेत से आलू निकले, फिर भरी टोकरी से गिरकर सड़क पर बिखरे, आख़िर में सबने उठाए",
      "acceptable": [
-      "आलू",
-      "टोकरी",
-      "सड़क",
-      "उठाए",
-      "pehle phir aakhir"
+      "पहले आलू निकले, फिर सड़क पर गिरे, आख़िर में सबने उठाए",
+      "आलू निकले, सड़क पर गिरे, सबने उठाए",
+      "आलू टोकरी से सड़क पर गिरे और सबने उठाए",
+      "pehle aalu nikle phir sadak par gire aakhir mein sabne uthaye"
      ],
      "hints": [
       "कहानी कहाँ से शुरू हुई?",
@@ -4387,7 +4398,7 @@
      "verified": {
       "solverAnswer": "open: पहले आलू निकले, फिर सड़क पर गिरे, आख़िर में सबने उठाए",
       "agrees": true,
-      "note": "Acceptable list contains bare nouns (आलू, सड़क) that would pass a non-retell."
+      "note": "Fixed r2: acceptable now requires a sequenced retelling (start → spill → pick up), not bare nouns."
      }
     }
    ],
@@ -4713,7 +4724,7 @@
      "hints": [
       "तुक में शुरुआत नहीं, आख़िर सुनते हैं।",
       "झू-ला, झं-डा, फू-ला — आख़िर?",
-      "'-ला' पर खत्म: ___",
+      "'-ला' पर ख़त्म: ___",
       "झूला और फूला में तुक है — दोनों '-ूला'।"
      ],
      "targetsMisconception": "c1-hindi-ch10-t01-mc-rhyme-start",
@@ -4760,11 +4771,11 @@
      "answer": "दो बार बोलने से मतलब होता है 'बहुत ऊँचे', और कविता में ताल भी बनती है",
      "acceptable": [
       "बहुत ऊँचे",
-      "ज़्यादा",
-      "ताल",
-      "bahut",
-      "zyada",
-      "taal"
+      "बहुत-बहुत ऊँचे",
+      "ताल बनती है",
+      "bahut oonche",
+      "bahut unche",
+      "taal banti hai"
      ],
      "hints": [
       "'ऊँचे' और 'ऊँचे-ऊँचे' — कौन ज़्यादा ऊँचा लगता है?",
@@ -4775,7 +4786,7 @@
      "verified": {
       "solverAnswer": "दो बार = बहुत ऊँचे; ताल बनती है",
       "agrees": true,
-      "note": "Acceptable token 'ज़्यादा' also appears in hint 1; too permissive."
+      "note": "Fixed r2: removed 'ज़्यादा'/'zyada' (in hint 1, too permissive) and bare 'bahut'."
      }
     },
     {
@@ -4868,9 +4879,11 @@
      "answer": "झूला — हाँ, झ पर लंबा ऊ (ू)",
      "acceptable": [
       "झूला",
+      "हाँ, झूला",
+      "झूला, हाँ",
       "jhoola",
       "jhula",
-      "हाँ"
+      "jhoola haan"
      ],
      "hints": [
       "इस पर बैठकर आगे-पीछे जाते हैं…",
@@ -4882,7 +4895,7 @@
      "verified": {
       "solverAnswer": "झूला — हाँ",
       "agrees": true,
-      "note": "Acceptable 'हाँ' alone passes without naming झूला."
+      "note": "Fixed r2: bare 'हाँ' removed — the child must name झूला."
      }
     }
    ],
@@ -5160,7 +5173,7 @@
       "bhutta"
      ],
      "hints": [
-      "पहले ट को देखो — क्या उसकी पूँछ कटी है?",
+      "ट्ट को ध्यान से देखो — क्या एक ट के नीचे दूसरा ट जुड़ा है?",
       "आधा ट् अगले ट से चिपकता है।",
       "भुट्-___",
       "ट्ट जुड़ा है, तो भुट्-टा — दो हिस्सों में।"
@@ -5169,7 +5182,7 @@
      "verified": {
       "solverAnswer": "ट्ट जुड़ा है — भुट्-टा, दो हिस्से",
       "agrees": true,
-      "note": "Hint 1 'क्या उसकी पूँछ कटी है?' does not describe how half ट् appears in ट्ट (stacked / halant form); inaccurate shape cue."
+      "note": "Fixed r2: hint 1 now describes the stacked ट्ट accurately (no 'कटी पूँछ')."
      }
     },
     {
@@ -5264,15 +5277,15 @@
       "khatta namkeen"
      ],
      "hints": [
-      "नींबू का स्वाद कैसा? नमक का?",
+      "नींबू चखो तो कैसा लगता है? और नमक?",
       "दोनों लगाने से भुट्टा कैसा लगेगा?",
-      "स्वाद को ___ बनाने के लिए",
+      "भुट्टा खट्टा-नमकीन और ___ बनाने के लिए।",
       "नमक-नींबू से भुट्टा खट्टा-नमकीन और मज़ेदार बनता है।"
      ],
      "verified": {
       "solverAnswer": "स्वाद के लिए (खट्टा-नमकीन)",
       "agrees": true,
-      "note": "Hint 1 contains the key word 'स्वाद' that is itself an accepted answer."
+      "note": "Fixed r2: hint 1 (and hint 3) no longer contain the accepted answer 'स्वाद'."
      }
     },
     {
@@ -5488,16 +5501,16 @@
       "Cannot say which mark is on मोर"
      ],
      "diagnostic": {
-      "prompt_en": "Does roti have the one-stroke ो or the two-stroke ौ?",
-      "prompt_hi": "'रोटी' में एक डंडी वाली मात्रा (ो) है या दो डंडी वाली (ौ)?",
+      "prompt_en": "Does roti have ो with one stroke on top, or ौ with two strokes on top?",
+      "prompt_hi": "'रोटी' में ऊपर एक मात्रा वाली ो है या ऊपर दो मात्राओं वाली ौ?",
       "options": [
        {
-        "text": "एक डंडी वाली ो",
+        "text": "ऊपर एक मात्रा वाली ो",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "दो डंडी वाली ौ",
+        "text": "ऊपर दो मात्राओं वाली ौ",
         "misconceptionId": "c1-hindi-ch12-t01-mc-o-au",
         "correct": false
        }
@@ -5618,13 +5631,15 @@
      "skillId": "c1-hindi-ch12-t01-s2",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "mor (peacock): one-stroke ो or two-stroke ौ?",
-     "prompt_hi": "'मोर' में एक डंडी वाली ो है या दो डंडी वाली ौ?",
-     "answer": "ो (एक डंडी)",
+     "prompt_en": "mor (peacock): ो with one stroke on top, or ौ with two strokes on top?",
+     "prompt_hi": "'मोर' में ऊपर एक मात्रा वाली ो है या ऊपर दो मात्राओं वाली ौ?",
+     "answer": "ो (ऊपर एक मात्रा)",
      "acceptable": [
       "ो",
-      "एक डंडी",
+      "ऊपर एक मात्रा",
+      "एक मात्रा",
       "एक",
+      "ओ",
       "ek",
       "o"
      ],
@@ -5632,13 +5647,13 @@
       "'मोर' बोलो — मुँह छोटा गोल हुआ?",
       "ो की आवाज़ 'ओ', ौ की 'औ'।",
       "मोर में ___ की आवाज़",
-      "मोर में एक डंडी वाली ो है।"
+      "मोर में ऊपर एक मात्रा वाली ो है।"
      ],
      "targetsMisconception": "c1-hindi-ch12-t01-mc-o-au",
      "verified": {
       "solverAnswer": "ो",
       "agrees": true,
-      "note": "Shape description wrong: ो and ौ both have ONE डंडी (the ा stick); they differ in ONE vs TWO strokes on top. 'एक डंडी/दो डंडी' (also in mc o-au) misteaches; use 'ऊपर एक/दो मात्रा' (cf. ch13 uses 'पंख' for े/ै)."
+      "note": "Fixed r2: shape cue corrected — ो and ौ share one डंडी; they differ in one vs two strokes on top ('ऊपर एक/दो मात्रा'). Same fix in mc-o-au diagnostic and worked example."
      }
     },
     {
@@ -5717,15 +5732,15 @@
      ],
      "hints": [
       "गुब्बारा किससे फूलता है?",
-      "आग की गरमी से रोटी के अंदर क्या बनता है?",
+      "रोटी गरम हुई तो उसके अंदर का पानी क्या बन गया?",
       "अंदर ___ भर गई।",
       "आग की गरमी से रोटी के अंदर भाप भर गई, इसलिए वह फूली।"
      ],
      "targetsMisconception": "c1-hindi-ch12-t01-mc-cause-puff",
      "verified": {
-      "solverAnswer": "आग की गरमी से अंदर भाप/हवा भरी",
+      "solverAnswer": "आग की गरमी से अंदर भाप भरी",
       "agrees": true,
-      "note": "Hint 2 ('आग की गरमी से…') contains the accepted answer 'गरमी से'."
+      "note": "Fixed r2: hint 2 no longer contains the accepted answer 'गरमी से'."
      }
     },
     {
@@ -5889,7 +5904,7 @@
    "workedExample": {
     "problem": "Read रोटी.",
     "steps": [
-     "र पर ो (एक डंडी) — रो।",
+     "र पर ो (ऊपर एक मात्रा) — रो।",
      "ट पर ी — टी।",
      "जोड़ो: रो-टी।",
      "रोटी!"
@@ -5965,8 +5980,8 @@
       "Cannot tell one-stroke from two-stroke marks"
      ],
      "diagnostic": {
-      "prompt_en": "Which word means a fair: मेला or मैला?",
-      "prompt_hi": "त्योहार वाला 'fair' कौन-सा है — 'मेला' या 'मैला'?",
+      "prompt_en": "Which word is the place with rides and balloons (a fair): मेला or मैला?",
+      "prompt_hi": "झूलों-गुब्बारों वाली जगह कौन-सी है — 'मेला' या 'मैला'?",
       "options": [
        {
         "text": "मेला",
@@ -6158,7 +6173,7 @@
      ],
      "hints": [
       "'मे~ला' बोलो — 'ए' की आवाज़ या 'ऐ' की?",
-      "'ए' के लिए एक पंख।",
+      "दोनों मात्रा-कार्ड देखो — आवाज़ सुनकर पंख गिनो।",
       "मेला में ___",
       "मेला में एक पंख वाली े है।"
      ],
@@ -6166,7 +6181,7 @@
      "verified": {
       "solverAnswer": "े (एक पंख)",
       "agrees": true,
-      "note": "Hint 2 ('ए के लिए एक पंख') effectively gives the answer at rung 2."
+      "note": "Fixed r2: hint 2 no longer maps ए to one feather directly."
      }
     },
     {
@@ -6175,7 +6190,7 @@
      "kind": "contrast",
      "difficulty": 3,
      "prompt_en": "mela and maila — which one means a fair?",
-     "prompt_hi": "'मेला' और 'मैला' — इनमें से 'fair' (त्योहार वाला) कौन-सा है?",
+     "prompt_hi": "'मेला' और 'मैला' — इनमें से झूलों-गुब्बारों वाली जगह कौन-सी है?",
      "answer": "मेला",
      "acceptable": [
       "मेला",
@@ -6183,15 +6198,15 @@
      ],
      "hints": [
       "'मैला' कपड़ा मतलब गंदा कपड़ा।",
-      "झूले-गुब्बारे वाली जगह…?",
-      "fair = ___",
-      "मेला मतलब fair; मैला मतलब गंदा।"
+      "गंदे वाला शब्द हटा दो — कौन बचा?",
+      "झूलों वाली जगह = ___",
+      "मेला मतलब झूलों-गुब्बारों वाली जगह; मैला मतलब गंदा।"
      ],
      "targetsMisconception": "c1-hindi-ch13-t01-mc-e-ai",
      "verified": {
       "solverAnswer": "मेला",
       "agrees": true,
-      "note": "prompt_hi embeds English 'fair' and glosses मेला as 'त्योहार वाला' — a मेला is not a festival; use 'झूलों-गुब्बारों वाला मेला'. Same issue in i13 and mc e-ai."
+      "note": "Fixed r2: removed English 'fair' and the wrong gloss 'त्योहार वाला'; मेला described as झूलों-गुब्बारों वाली जगह (without saying मेला in the question)."
      }
     },
     {
@@ -6358,8 +6373,8 @@
      "skillId": "c1-hindi-ch13-t01-s3",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Teddy wrote मैला for the fair. Fix it.",
-     "prompt_hi": "टेडी ने fair के लिए लिखा 'मैला'। ठीक करो।",
+     "prompt_en": "Teddy wrote मैला for the place with rides and balloons. Fix it.",
+     "prompt_hi": "टेडी ने झूलों-गुब्बारों वाली जगह के लिए लिखा 'मैला'। ठीक करो।",
      "answer": "मेला — एक पंख वाली े",
      "acceptable": [
       "मेला",
@@ -6369,15 +6384,15 @@
      ],
      "hints": [
       "मैला का मतलब क्या है?",
-      "fair के लिए कितने पंख?",
+      "झूलों वाली जगह के लिए कितने पंख?",
       "सही: ___",
-      "fair = मेला — एक पंख वाली े।"
+      "झूलों-गुब्बारों वाली जगह = मेला — एक पंख वाली े।"
      ],
      "targetsMisconception": "c1-hindi-ch13-t01-mc-e-ai",
      "verified": {
       "solverAnswer": "मेला (े)",
       "agrees": true,
-      "note": "prompt_hi uses English 'fair'; class 1 Hindi-medium children may not know it."
+      "note": "Fixed r2: English 'fair' removed from prompt_hi and hints."
      }
     }
    ],
@@ -6439,7 +6454,7 @@
     },
     {
      "id": "c1-hindi-ch14-t01-s4",
-     "title": "Reads short dialogue lines with feeling and answers inference questions (why the sisters' names fit the rain story)",
+     "title": "Reads short dialogue lines with feeling and answers inference questions (why the two friends' names fit the rain story)",
      "prereqSkillIds": [
       "c1-hindi-ch14-t01-s3"
      ]
@@ -6668,8 +6683,8 @@
      "skillId": "c1-hindi-ch14-t01-s4",
      "kind": "why",
      "difficulty": 4,
-     "prompt_en": "Barkha means rain and Megha means cloud. Why are these good names for the sisters in a rain story?",
-     "prompt_hi": "'बरखा' मतलब बारिश और 'मेघा' मतलब बादल। बारिश वाली कहानी में बहनों के ये नाम क्यों अच्छे हैं?",
+     "prompt_en": "Barkha means rain and Megha means cloud. Why are these good names for the two friends in a rain story?",
+     "prompt_hi": "'बरखा' मतलब बारिश और 'मेघा' मतलब बादल। बारिश वाली कहानी में दोनों दोस्तों के ये नाम क्यों अच्छे हैं?",
      "answer": "क्योंकि दोनों नाम बारिश से जुड़े हैं — बादल (मेघा) आते हैं, फिर बारिश (बरखा) होती है",
      "acceptable": [
       "बारिश",
@@ -6688,7 +6703,7 @@
      "verified": {
       "solverAnswer": "दोनों नाम बारिश/बादल से जुड़े हैं",
       "agrees": true,
-      "note": "Self-consistent, but NCERT ch14 'बरखा और मेघा' are a duck and a hen (friends), not sisters; the item's premise conflicts with the textbook a child may hold."
+      "note": "Fixed r2: बरखा and मेघा are now two friends (as in the NCERT chapter), not sisters; ch14 i08/i11 and skill title updated."
      }
     },
     {
@@ -6696,7 +6711,7 @@
      "skillId": "c1-hindi-ch14-t01-s4",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "The sisters made a paper boat and put it in the water. What will happen?",
+     "prompt_en": "The two friends made a paper boat and put it in the water. What will happen?",
      "prompt_hi": "दोनों ने कागज़ की नाव बनाई और पानी में डाली। अब क्या होगा?",
      "answer": "नाव पानी में तैरेगी",
      "acceptable": [
@@ -6772,15 +6787,15 @@
      "skillId": "c1-hindi-ch14-t01-s3",
      "kind": "retrieval",
      "difficulty": 2,
-     "prompt_en": "Remember: which sister's name means rain?",
-     "prompt_hi": "याद करो — किस बहन के नाम का मतलब 'बारिश' है?",
+     "prompt_en": "Remember: which friend's name means rain?",
+     "prompt_hi": "याद करो — किस दोस्त के नाम का मतलब 'बारिश' है?",
      "answer": "बरखा",
      "acceptable": [
       "बरखा",
       "barkha"
      ],
      "hints": [
-      "दो बहनें थीं — बरखा और मेघा।",
+      "दो दोस्त थे — बरखा और मेघा।",
       "मेघा मतलब बादल, तो बारिश…?",
       "___",
       "बरखा मतलब बारिश।"
@@ -6879,7 +6894,7 @@
    "interestContexts": [
     "मानसून",
     "कागज़ की नाव",
-    "बहनें और भाई",
+    "दोस्तों का साथ",
     "स्कूल जाते हुए बारिश",
     "छत पर बादल देखना"
    ]
@@ -7033,7 +7048,7 @@
      "skillId": "c1-hindi-ch15-t01-s1",
      "kind": "retrieval",
      "difficulty": 2,
-     "prompt_en": "'The gang full of colours spoke (…)' — 'Rangon waali toli …?'",
+     "prompt_en": "'Rangon waali toli …?' (the gang full of colours …) What comes next?",
      "prompt_hi": "'रंगों वाली टोली…' आगे क्या आता है?",
      "answer": "बोली",
      "acceptable": [
@@ -7049,7 +7064,7 @@
      "verified": {
       "solverAnswer": "बोली",
       "agrees": true,
-      "note": "prompt_en gloss ('The gang full of colours spoke') gives away the answer बोली."
+      "note": "Fixed r2: prompt_en no longer translates the answer word."
      }
     },
     {
@@ -7082,7 +7097,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "rang and sang rhyme. Tell me another word that ends like them.",
-     "prompt_hi": "'रंग' और 'संग' में तुक है। एक और शब्द बताओ जो इनकी तरह खत्म हो।",
+     "prompt_hi": "'रंग' और 'संग' में तुक है। एक और शब्द बताओ जो इनकी तरह ख़त्म हो।",
      "answer": "e.g. पतंग, ढंग, तंग, उमंग",
      "acceptable": [
       "पतंग",
@@ -7344,7 +7359,7 @@
     "fadedVersion": [
      "स के ऊपर बिंदी — ___ (नाक से)।",
      "फिर ग — सं-___।",
-     "रंग और संग दोनों '___' पर खत्म।",
+     "रंग और संग दोनों '___' पर ख़त्म।",
      "एक और '-अंग' वाला: प-त-___।"
     ]
    },
@@ -7406,9 +7421,9 @@
    "misconceptions": [
     {
      "id": "c1-hindi-ch16-t01-mc-conjunct-nm",
-     "belief": "Reads the half न् in जन्म as a full न with its own vowel ('ज-ना-म')",
+     "belief": "Reads the half न् in जन्म as a full न with its own vowel ('ज-न-म')",
      "signs": [
-      "Reads जन्म as 'ज-ना-म' or 'जनाम'",
+      "Reads जन्म as 'ज-न-म' or 'जनम'",
       "Does not notice the missing standing line on न्"
      ],
      "diagnostic": {
@@ -7568,7 +7583,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "Tell me another word that ends in '-aao' like lagaao.",
-     "prompt_hi": "'लगाओ' जैसा एक और शब्द बताओ जो '-आओ' पर खत्म हो।",
+     "prompt_hi": "'लगाओ' जैसा एक और शब्द बताओ जो '-आओ' पर ख़त्म हो।",
      "answer": "e.g. आओ, खाओ, गाओ, जाओ, नहाओ, बचाओ",
      "acceptable": [
       "आओ",
@@ -7652,8 +7667,8 @@
      "skillId": "c1-hindi-ch16-t01-s3",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Teddy read the written word जन्म as 'ja-naa-ma', using a full न. What did he miss?",
-     "prompt_hi": "टेडी ने लिखा हुआ 'जन्म' पढ़ा 'ज-ना-म', जैसे पूरा न हो। उसने क्या नहीं देखा?",
+     "prompt_en": "Teddy read the written word जन्म as 'ja-na-ma', as if न were a full letter. What did he miss?",
+     "prompt_hi": "टेडी ने लिखा हुआ 'जन्म' पढ़ा 'ज-न-म', जैसे पूरा न हो। उसने क्या नहीं देखा?",
      "answer": "न आधा है (न्), सीधा म से जुड़ता है — जन्म",
      "acceptable": [
       "आधा न",
@@ -7672,7 +7687,7 @@
      "verified": {
       "solverAnswer": "न आधा है — जन्-म",
       "agrees": true,
-      "note": "Teddy's misreading is written 'ज-ना-म' / 'ja-naa-ma', which adds an ा; a full-न misreading is 'ज-न-म' (ja-na-ma). Fix both prompt_hi and prompt_en."
+      "note": "Fixed r2: Teddy's misreading now 'ज-न-म' / 'ja-na-ma' (no spurious ा); same fix in mc-conjunct-nm belief/signs."
      }
     },
     {
@@ -7719,7 +7734,7 @@
       "chhaanv"
      ],
      "hints": [
-      "कविता में 'छोटा पौधा बड़ा…'",
+      "बगीचे में सबसे ऊँचा, मोटे तने वाला कौन होता है?",
       "बड़ा होकर क्या देगा?",
       "पौधा बड़ा ___ बनेगा।",
       "छोटा पौधा बड़ा पेड़ बनेगा और ठंडी छाँव देगा।"
@@ -7727,7 +7742,7 @@
      "verified": {
       "solverAnswer": "बड़ा पेड़",
       "agrees": true,
-      "note": "Hint 1 quotes 'छोटा पौधा बड़ा…' — the answer पेड़ follows directly; leaks at rung 1."
+      "note": "Fixed r2: hint 1 no longer quotes 'छोटा पौधा बड़ा…'."
      }
     },
     {
@@ -7827,7 +7842,7 @@
       "podha"
      ],
      "hints": [
-      "कविता में 'छोटा पौधा बड़ा बनेगा'।",
+      "सोचो — कौन घुटने तक आता है, और कौन घर से भी ऊँचा?",
       "पहले छोटा, फिर बड़ा…",
       "छोटा = ___",
       "पौधा छोटा होता है, बड़ा होकर पेड़ बनता है।"
@@ -7835,7 +7850,7 @@
      "verified": {
       "solverAnswer": "पौधा",
       "agrees": true,
-      "note": "Hint 1 quotes 'छोटा पौधा बड़ा बनेगा' which states the answer (पौधा is small) at rung 1."
+      "note": "Fixed r2: hint 1 no longer states that the पौधा is the small one."
      }
     }
    ],
@@ -8264,7 +8279,7 @@
      "skillId": "c1-hindi-ch17-t01-s2",
      "kind": "translate_rep",
      "difficulty": 2,
-     "prompt_en": "Picture: a paper kite with a string. What is it called?",
+     "prompt_en": "Picture: a paper thing tied to a string that flies in the sky. What is it called?",
      "prompt_hi": "तस्वीर में कागज़ की चीज़ है, डोर बँधी है, आसमान में उड़ती है। इसे क्या कहते हैं?",
      "answer": "पतंग",
      "acceptable": [
@@ -8280,7 +8295,7 @@
      "verified": {
       "solverAnswer": "पतंग",
       "agrees": true,
-      "note": "prompt_en says 'a paper kite' — the gloss names the answer पतंग."
+      "note": "Fixed r2: prompt_en no longer names the answer (kite)."
      }
     },
     {
@@ -8347,7 +8362,7 @@
     "fadedVersion": [
      "पहली पंक्ति: 'सर-सर, सर-सर चली हवा' — आख़िरी शब्द ___।",
      "दूसरी पंक्ति: 'पेड़ों से कुछ बोली हवा' — आख़िरी शब्द ___।",
-     "दोनों पंक्तियाँ एक ही शब्द '___' पर खत्म।",
+     "दोनों पंक्तियाँ एक ही शब्द '___' पर ख़त्म।",
      "एक जैसा शब्द दोहराने से भी कविता में ___ बनती है।"
     ]
    },
@@ -8957,14 +8972,17 @@
      "skillId": "c1-hindi-ch19-t01-s1",
      "kind": "retrieval",
      "difficulty": 2,
-     "prompt_en": "'Twinkling, tim-tim, …?' — 'Tim-tim karta …?'",
-     "prompt_hi": "'टिम-टिम करता…' आगे क्या आता है?",
+     "prompt_en": "'Chaand ka bachcha, chhota taara, tim-tim karta …?' What comes next?",
+     "prompt_hi": "'चाँद का बच्चा, छोटा तारा, टिम-टिम करता…' आगे क्या आता है?",
      "answer": "प्यारा-प्यारा",
      "acceptable": [
       "प्यारा-प्यारा",
       "प्यारा प्यारा",
+      "प्यारा",
       "pyaara pyaara",
-      "pyara pyara"
+      "pyara pyara",
+      "pyaara",
+      "pyara"
      ],
      "hints": [
       "'तारा' से तुक मिलाओ।",
@@ -8973,9 +8991,9 @@
       "टिम-टिम करता प्यारा-प्यारा।"
      ],
      "verified": {
-      "solverAnswer": "प्यारा तारा",
-      "agrees": false,
-      "note": "Poem-dependent retrieval. Solver produced 'प्यारा तारा'; key is 'प्यारा-प्यारा'. Key is plausible but acceptable list lacks bare 'प्यारा' — a child saying 'प्यारा' (the rhyme word) would be marked wrong. Add 'प्यारा'."
+      "solverAnswer": "प्यारा-प्यारा",
+      "agrees": true,
+      "note": "Fixed r2: prompt now gives the preceding poem line (तारा) so the rhyme is recoverable; bare rhyme word 'प्यारा' added to acceptable."
      }
     },
     {
@@ -9308,7 +9326,7 @@
     "fadedVersion": [
      "पहली पंक्ति: 'चाँद का बच्चा, छोटा तारा' — आख़िर ___।",
      "दूसरी पंक्ति: 'टिम-टिम करता प्यारा-प्यारा' — आख़िर ___।",
-     "दोनों '___' पर खत्म, तो तुक है।",
+     "दोनों '___' पर ख़त्म, तो तुक है।",
      "चाँद: चा पर चाँद-बिंदी — ___ (नाक से), फिर द।"
     ]
    },

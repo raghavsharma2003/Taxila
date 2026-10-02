@@ -65,7 +65,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -85,14 +85,14 @@
             "prompt_hi": "कौन-सा ठीक लगता है — ‘दादी कहानी सुनाता है’ या ‘दादी कहानी सुनाती है’?",
             "options": [
               {
-                "text": "दादी कहानी सुनाती है",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "दादी कहानी सुनाता है",
                 "misconceptionId": "c2-hindi-ch01-t01-mc-gender-verb",
                 "correct": false
+              },
+              {
+                "text": "दादी कहानी सुनाती है",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -100,7 +100,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -120,14 +120,14 @@
             "prompt_hi": "कहानी में पहले क्या हुआ — सुबह दादी ने नीमा की चोटी बनाई, या रात को दादी ने कहानी सुनाई?",
             "options": [
               {
-                "text": "सुबह चोटी बनाई",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "रात को कहानी सुनाई",
                 "misconceptionId": "c2-hindi-ch01-t01-mc-order-free",
                 "correct": false
+              },
+              {
+                "text": "सुबह चोटी बनाई",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -135,7 +135,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Morning precedes night; one correct option. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Morning precedes night; one correct option. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -155,7 +155,7 @@
           "answer": "चोटी",
           "acceptable": [
             "choti",
-            "chhoti",
+            "chotii",
             "चोटी बनाती हैं",
             "बाल बनाती हैं",
             "baal",
@@ -170,7 +170,7 @@
           "verified": {
             "solverAnswer": "चोटी",
             "agrees": true,
-            "note": "Acceptable list includes 'chhoti' (= छोटी, 'small'), a different word; suggest removing it so a wrong-meaning answer is not credited."
+            "note": "Fixed 2026-10-02: removed 'chhoti' (= छोटी, 'small'), a different word. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -358,15 +358,15 @@
           ],
           "hints": [
             "What comes first in a day?",
-            "Morning, then evening, then night.",
-            "First ___, then evening, then night.",
+            "Which one happens when the sun comes up?",
+            "First the morning one, then ___, then ___.",
             "ख (morning) → क (evening) → ग (night)."
           ],
           "targetsMisconception": "c2-hindi-ch01-t01-mc-order-free",
           "verified": {
             "solverAnswer": "ख, क, ग",
             "agrees": true,
-            "note": "Hint 2 ('Morning, then evening, then night') states the full order at rung 2 — early leak; soften to a pump about the day's parts."
+            "note": "Fixed 2026-10-02: hint 2 stated the whole order; now it only asks which happens at sunrise. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -572,7 +572,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -592,14 +592,14 @@
             "prompt_hi": "‘हवा’ से तुक मिलाने वाला शब्द कौन-सा है — ‘दवा’ या ‘हाथी’?",
             "options": [
               {
-                "text": "दवा",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "हाथी, क्योंकि दोनों ‘ह’ से शुरू होते हैं",
                 "misconceptionId": "c2-hindi-ch02-t01-mc-rhyme-start",
                 "correct": false
+              },
+              {
+                "text": "दवा, क्योंकि दोनों के आख़िर में ‘वा’ है",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -607,7 +607,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "One correct. Distractor carries a reason clause ('क्योंकि दोनों ‘ह’ से…') the correct option lacks — length/shape cue; cosmetic. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: only the distractor carried a reason clause ('…क्योंकि दोनों ‘_’ से शुरू होते हैं'), so the longer option cued itself; the correct option now carries a matching reason (same ending). One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -646,8 +646,8 @@
           "skillId": "c2-hindi-ch02-t01-s1",
           "kind": "retrieval",
           "difficulty": 2,
-          "prompt_en": "Poem: 'Chhota-sa hai ghar mera, aangan mein hai dhoop ka dera.' What comes after 'Chhota-sa hai ghar mera'?",
-          "prompt_hi": "कविता — ‘छोटा-सा है घर मेरा, आँगन में है धूप का डेरा।’ बताओ, ‘छोटा-सा है घर मेरा’ के बाद कौन-सी पंक्ति आती है?",
+          "prompt_en": "Remember the poem: 'Chhota-sa hai ghar mera...' Which line comes next?",
+          "prompt_hi": "कविता याद करो — ‘छोटा-सा है घर मेरा...’ इसके बाद कौन-सी पंक्ति आती है?",
           "answer": "आँगन में है धूप का डेरा",
           "acceptable": [
             "aangan mein hai dhoop ka dera",
@@ -663,7 +663,7 @@
           "verified": {
             "solverAnswer": "आँगन में है धूप का डेरा",
             "agrees": true,
-            "note": "The prompt quotes the full couplet and then asks for the second line, so the answer is read out in the prompt — the retrieval item does not test recall. Quote only the first line."
+            "note": "Fixed 2026-10-02: the stem quoted the whole couplet before asking for line 2; it now quotes only line 1. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -864,7 +864,7 @@
           "skillId": "c2-hindi-ch02-t01-s4",
           "kind": "why",
           "difficulty": 3,
-          "prompt_en": "The poem says the house is small but full of love. Why can a small house still feel nice?",
+          "prompt_en": "In the poem the house is small, yet it feels nice. Why can a small house still feel nice?",
           "prompt_hi": "कविता में घर छोटा है, फिर भी अच्छा लगता है। छोटा घर भी अच्छा क्यों लग सकता है?",
           "answer": "क्योंकि घर में अपने लोग साथ रहते हैं और प्यार करते हैं",
           "acceptable": [
@@ -881,9 +881,9 @@
             "Because family lives together there with love."
           ],
           "verified": {
-            "solverAnswer": "क्योंकि घर में अपने लोग प्यार से साथ रहते हैं",
+            "solverAnswer": "क्योंकि घर में अपने लोग साथ रहते हैं और प्यार करते हैं",
             "agrees": true,
-            "note": "prompt_en adds 'but full of love', which is not in prompt_hi ('फिर भी अच्छा लगता है') and hands the English lane the answer; align EN to HI."
+            "note": "Fixed 2026-10-02: prompt_en dropped 'full of love' (the answer), matching HI 'फिर भी अच्छा लगता है'. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -1018,14 +1018,14 @@
             "prompt_hi": "सुनो — ‘चाँदी’। इसमें नाक से आने वाली आवाज़ है या नहीं? नाक पकड़कर बोलकर देखो।",
             "options": [
               {
-                "text": "हाँ, ‘चाँ’ में नाक की आवाज़ है",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "नहीं, ये ‘चादी’ जैसा है",
                 "misconceptionId": "c2-hindi-ch03-t01-mc-nasal-drop",
                 "correct": false
+              },
+              {
+                "text": "हाँ, ‘चाँ’ में नाक की आवाज़ है",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -1033,7 +1033,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -1053,14 +1053,14 @@
             "prompt_hi": "कौन-सा ठीक है — ‘पायल बजता है’ या ‘पायल बजती है’?",
             "options": [
               {
-                "text": "पायल बजती है",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "पायल बजता है",
                 "misconceptionId": "c2-hindi-ch03-t01-mc-payal-gender",
                 "correct": false
+              },
+              {
+                "text": "पायल बजती है",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -1068,7 +1068,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -1080,30 +1080,30 @@
           "id": "c2-hindi-ch03-t01-mc-a-matra-drop",
           "belief": "Thinks the आ matra (ा) can be left out because the word still looks the same",
           "signs": [
-            "Reads माला as मल",
+            "Reads माला as मला",
             "Writes पयल for पायल"
           ],
           "diagnostic": {
-            "prompt_en": "Meena wrote मल for Mala's name. Is that the same as माला?",
-            "prompt_hi": "मीना ने ‘माला’ की जगह ‘मल’ लिखा। क्या ‘मल’ और ‘माला’ एक ही हैं?",
+            "prompt_en": "Meena wrote मला for Mala's name. Is that the same as माला?",
+            "prompt_hi": "मीना ने ‘माला’ की जगह ‘मला’ लिखा। क्या ‘मला’ और ‘माला’ एक ही हैं?",
             "options": [
               {
-                "text": "नहीं, माला में दो बार ‘ा’ की मात्रा है",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
-                "text": "हाँ, दोनों एक ही हैं",
+                "text": "हाँ, दोनों एक ही हैं, मात्रा से कुछ नहीं बदलता",
                 "misconceptionId": "c2-hindi-ch03-t01-mc-a-matra-drop",
                 "correct": false
+              },
+              {
+                "text": "नहीं, ‘मला’ में पहले अक्षर की ‘ा’ मात्रा छूट गई",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
-              "solverAnswer": "नहीं — माला में ‘ा’ छूटा है",
+              "solverAnswer": "नहीं — ‘मला’ में पहले ‘ा’ छूटा है",
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "One correct. Note the mis-spelling chosen, ‘मल’, is a real word (excrement); a TTS voice will read it aloud. Prefer a non-word like ‘मल’→‘माल’/‘मला’ or use another name. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: the misspelling was ‘मल’, a real word (excrement) that the voice would read aloud; now the non-word ‘मला’ (first ा dropped). Options rebalanced so both carry a reason. One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -1333,25 +1333,26 @@
           "skillId": "c2-hindi-ch03-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Which is right: 'payal bajta hai' or 'payal bajti hai'?",
-          "prompt_hi": "कौन-सा ठीक है — ‘पायल बजता है’ या ‘पायल बजती है’?",
-          "answer": "पायल बजती है",
+          "prompt_en": "Which is right: 'payal chup ho gaya' or 'payal chup ho gayi'?",
+          "prompt_hi": "कौन-सा ठीक है — ‘पायल चुप हो गया’ या ‘पायल चुप हो गई’?",
+          "answer": "पायल चुप हो गई",
           "acceptable": [
-            "bajti hai",
-            "payal bajti hai",
-            "बजती है"
+            "payal chup ho gayi",
+            "chup ho gayi",
+            "हो गई",
+            "gayi"
           ],
           "hints": [
-            "Do we say 'mera payal' or 'meri payal'?",
-            "Match the verb to that ending.",
-            "Payal baj___ hai.",
-            "पायल बजती है."
+            "Do we say 'meri payal' or 'mera payal'?",
+            "A meri-word takes the ending we hear in बजती.",
+            "Payal chup ho ___.",
+            "पायल चुप हो गई."
           ],
           "targetsMisconception": "c2-hindi-ch03-t01-mc-payal-gender",
           "verified": {
-            "solverAnswer": "पायल बजती है",
+            "solverAnswer": "पायल चुप हो गई",
             "agrees": true,
-            "note": "Duplicates diagnostic mc-payal-gender verbatim; reword (e.g. पायल चमकती है/चमकता है) so the item is not the probe repeated."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-payal-gender word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -1363,6 +1364,9 @@
           "prompt_hi": "पायल कैसी दिखती है? उसके लिए एक बताने वाला शब्द बोलो — जैसे ‘चमकीली’।",
           "answer": "पायल के लिए विशेषता शब्द, जैसे सुंदर",
           "acceptable": [
+            "चमकीली",
+            "chamkeeli",
+            "chamkili",
             "सुंदर",
             "प्यारी",
             "छोटी",
@@ -1381,9 +1385,9 @@
             "सुंदर, छोटी, चमकदार — any fitting word."
           ],
           "verified": {
-            "solverAnswer": "चमकीली / सुंदर / छोटी",
+            "solverAnswer": "पायल के लिए विशेषता शब्द, जैसे सुंदर",
             "agrees": true,
-            "note": "The prompt's own example ‘चमकीली’ is missing from acceptable (it has चमकदार); add चमकीली/chamkeeli."
+            "note": "Fixed 2026-10-02: added the prompt's own example ‘चमकीली’ / chamkeeli. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -1535,7 +1539,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -1555,14 +1559,14 @@
             "prompt_hi": "‘प्यारी’ से तुक किसकी मिलती है — ‘बारी’ या ‘पानी’?",
             "options": [
               {
-                "text": "बारी",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "पानी, क्योंकि दोनों ‘प’ से शुरू होते हैं",
                 "misconceptionId": "c2-hindi-ch04-t01-mc-rhyme-start",
                 "correct": false
+              },
+              {
+                "text": "बारी, क्योंकि दोनों के आख़िर में ‘आरी’ है",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -1570,7 +1574,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Distractor carries a reason clause the correct option lacks (shape cue); cosmetic. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: only the distractor carried a reason clause ('…क्योंकि दोनों ‘_’ से शुरू होते हैं'), so the longer option cued itself; the correct option now carries a matching reason (same ending). One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -1605,7 +1609,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -1806,25 +1810,26 @@
           "skillId": "c2-hindi-ch04-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Which is right: 'Maa lori gaata hai' or 'Maa lori gaati hai'?",
-          "prompt_hi": "कौन-सा ठीक है — ‘माँ लोरी गाता है’ या ‘माँ लोरी गाती है’?",
-          "answer": "माँ लोरी गाती है",
+          "prompt_en": "Which is right: 'Maa mujhe subah jagaata hai' or 'Maa mujhe subah jagaati hai'?",
+          "prompt_hi": "कौन-सा ठीक है — ‘माँ मुझे सुबह जगाता है’ या ‘माँ मुझे सुबह जगाती है’?",
+          "answer": "माँ मुझे सुबह जगाती है",
           "acceptable": [
-            "gaati hai",
-            "maa lori gaati hai",
-            "गाती है"
+            "jagaati hai",
+            "jagati hai",
+            "maa mujhe jagaati hai",
+            "जगाती है"
           ],
           "hints": [
             "Is Maa a woman-word?",
             "Women-words take the ending in नानी.",
-            "Maa lori gaa___ hai.",
-            "माँ लोरी गाती है."
+            "Maa mujhe jagaa___ hai.",
+            "माँ मुझे सुबह जगाती है."
           ],
           "targetsMisconception": "c2-hindi-ch04-t01-mc-gender-verb",
           "verified": {
-            "solverAnswer": "माँ लोरी गाती है",
+            "solverAnswer": "माँ मुझे सुबह जगाती है",
             "agrees": true,
-            "note": "Duplicates diagnostic mc-gender-verb verbatim; reword so the item is not the probe repeated."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-gender-verb word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -1833,7 +1838,7 @@
           "kind": "far_transfer",
           "difficulty": 2,
           "prompt_en": "Tell me one thing your Maa (or someone who cares for you) does for you.",
-          "prompt_hi": "तुम्हारी माँ — या जो तुम्हारा ध्यान रखता है — तुम्हारे लिए क्या करती हैं? एक पूरा वाक्य बोलो।",
+          "prompt_hi": "तुम्हारी माँ — या जो भी तुम्हारा ध्यान रखते हैं — तुम्हारे लिए क्या करते हैं? एक पूरा वाक्य बोलो।",
           "answer": "देखभाल करने वाले का एक काम पूरे वाक्य में",
           "acceptable": [
             "माँ खाना बनाती है",
@@ -1847,9 +1852,9 @@
             "Any full sentence about what they do."
           ],
           "verified": {
-            "solverAnswer": "Open: 'मेरी माँ खाना बनाती है'",
+            "solverAnswer": "देखभाल करने वाले का एक काम पूरे वाक्य में",
             "agrees": true,
-            "note": "prompt_hi grammar: 'जो तुम्हारा ध्यान रखता है — तुम्हारे लिए क्या करती हैं' mixes masculine रखता with feminine करती हैं; use 'रखते हैं … करते हैं' or keep it feminine throughout."
+            "note": "Fixed 2026-10-02: prompt_hi gender agreement: now 'रखते हैं … करते हैं' throughout (was masculine रखता + feminine करती हैं). Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -2010,14 +2015,14 @@
             "prompt_hi": "सुनो — ‘थाथू’। ये ‘त’ से शुरू होता है या ‘थ’ से, जिसमें हवा निकलती है?",
             "options": [
               {
-                "text": "थ से",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "त से",
                 "misconceptionId": "c2-hindi-ch05-t01-mc-tha-ta",
                 "correct": false
+              },
+              {
+                "text": "थ से",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -2025,7 +2030,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -2041,16 +2046,21 @@
             "Cannot say which one means 'I'"
           ],
           "diagnostic": {
-            "prompt_en": "In 'Main park mein khelta hoon', which word means I — the first one or the second one?",
-            "prompt_hi": "‘मैं पार्क में खेलता हूँ’ — इसमें ‘अपने लिए’ वाला शब्द कौन-सा है, पहला ‘मैं’ या दूसरा ‘में’?",
+            "prompt_en": "'Main park mein khelta hoon' has both मैं and में. When you talk about yourself, which one do you use — the first one or the second one?",
+            "prompt_hi": "‘मैं पार्क में खेलता हूँ’ — इसमें ‘मैं’ और ‘में’ दोनों हैं। जब तुम अपने बारे में बोलते हो, तो कौन-सा लगाते हो — पहला या दूसरा?",
             "options": [
+              {
+                "text": "दूसरा — में",
+                "misconceptionId": "c2-hindi-ch05-t01-mc-main-mein",
+                "correct": false
+              },
               {
                 "text": "पहला — मैं",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "दोनों एक ही हैं",
+                "text": "दोनों एक ही हैं, कोई भी",
                 "misconceptionId": "c2-hindi-ch05-t01-mc-main-mein",
                 "correct": false
               }
@@ -2059,8 +2069,8 @@
               "solverAnswer": "पहला — मैं",
               "agrees": true,
               "oneCorrect": true,
-              "optionCount": 2,
-              "note": "One correct. prompt_hi asks for the ‘अपने लिए वाला शब्द’ — an adult paraphrase for 'I' that a class-2 child may not parse; plainer: ‘कौन-सा शब्द तुम ख़ुद के लिए बोलते हो?’ or point-to-self cue. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "optionCount": 3,
+              "note": "Fixed 2026-10-02: ‘अपने लिए वाला शब्द’ (an adult paraphrase for 'I') replaced by 'जब तुम अपने बारे में बोलते हो'; added the 'दूसरा — में' distractor so a child who mixes them up has an option to pick. One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -2236,25 +2246,25 @@
           "skillId": "c2-hindi-ch05-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "In 'Main park mein khelta hoon', which word means 'I'?",
-          "prompt_hi": "‘मैं पार्क में खेलता हूँ’ — इसमें ‘अपने लिए’ बोला गया शब्द कौन-सा है?",
+          "prompt_en": "Fill the blank: '___ ghar mein khaana khaata hoon.' Does मैं go here, or में?",
+          "prompt_hi": "ख़ाली जगह भरो — ‘___ घर में खाना खाता हूँ।’ यहाँ ‘मैं’ आएगा या ‘में’?",
           "answer": "मैं",
           "acceptable": [
             "main",
-            "पहला वाला",
-            "मैं वाला"
+            "mai",
+            "मैं घर में खाना खाता हूँ"
           ],
           "hints": [
-            "Point to yourself as you say the sentence.",
-            "Which word did you point at?",
-            "The word for I is ___.",
-            "मैं means I; में means in."
+            "Who is eating? Point to yourself.",
+            "The word for yourself has the ै matra.",
+            "___ ghar mein khaana khaata hoon.",
+            "मैं — it means I."
           ],
           "targetsMisconception": "c2-hindi-ch05-t01-mc-main-mein",
           "verified": {
             "solverAnswer": "मैं",
             "agrees": true,
-            "note": "Same ‘अपने लिए’ phrasing as the diagnostic; same plain-language suggestion."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-main-mein word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -2262,9 +2272,9 @@
           "skillId": "c2-hindi-ch05-t01-s3",
           "kind": "error_spot",
           "difficulty": 3,
-          "prompt_en": "Rahul said: 'Mein Thathu ke saath jaata hoon' and wrote में for I. What is wrong?",
+          "prompt_en": "While writing 'मैं थाथू के साथ जाता हूँ', Rahul wrote में instead of मैं. What is the mistake?",
           "prompt_hi": "राहुल ने ‘मैं थाथू के साथ जाता हूँ’ लिखते समय ‘मैं’ की जगह ‘में’ लिखा। क्या ग़लती है?",
-          "answer": "अपने लिए ‘मैं’ (ै की मात्रा) लिखते हैं, ‘में’ नहीं",
+          "answer": "‘मैं’ (मतलब I) में ै की मात्रा और ऊपर बिंदी लगती है; ‘में’ (अंदर) अलग शब्द है",
           "acceptable": [
             "मैं",
             "main",
@@ -2274,14 +2284,14 @@
           "hints": [
             "Which word means I?",
             "Does it have one line on top or two?",
-            "For I we write म + ___ + ँ.",
+            "For I we write म + ___ + ं (the dot).",
             "मैं, with the ै matra, means I."
           ],
           "targetsMisconception": "c2-hindi-ch05-t01-mc-main-mein",
           "verified": {
-            "solverAnswer": "‘में’ ग़लत, ‘मैं’ (ै) लिखना चाहिए",
+            "solverAnswer": "‘मैं’ (मतलब I) में ै की मात्रा और ऊपर बिंदी लगती है; ‘में’ (अंदर) अलग शब्द है",
             "agrees": true,
-            "note": "Hint 3 'For I we write म + ___ + ँ' is orthographically wrong: मैं is written with the anusvara-style bindu (ं), not chandrabindu (ँ), because ै sits above the line; a child following it writes मैँ. Change to 'म + ै + ं'. Also prompt_en says Rahul 'said' it, prompt_hi says he wrote it."
+            "note": "Fixed 2026-10-02: hint 3 now 'म + ___ + ं' (मैं takes the bindu ं because ै sits above the line; the old ँ hint produced मैँ); EN now says 'wrote', like HI; answer drops the adult 'अपने लिए' phrasing. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -2459,7 +2469,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -2494,7 +2504,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -2612,24 +2622,25 @@
           "skillId": "c2-hindi-ch06-t01-s2",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Listen: चीटा and चींटा. Which is the ant?",
-          "prompt_hi": "सुनो — ‘चीटा’ और ‘चींटा’। चींटी का भाई कौन-सा है?",
-          "answer": "चींटा",
+          "prompt_en": "Listen: गेद and गेंद. Which one is the ball we play with?",
+          "prompt_hi": "सुनो — ‘गेद’ और ‘गेंद’। जिससे हम खेलते हैं, वो कौन-सा है?",
+          "answer": "गेंद",
           "acceptable": [
-            "cheenta",
-            "नाक वाला"
+            "gend",
+            "नाक वाला",
+            "बिंदी वाला"
           ],
           "hints": [
             "Say both with a hand on your nose.",
-            "Which one buzzes?",
-            "The ant is ___.",
-            "चींटा, with the bindi nose sound."
+            "Which one hums in the middle?",
+            "The ball is ___.",
+            "गेंद, with the bindi nose sound."
           ],
           "targetsMisconception": "c2-hindi-ch06-t01-mc-nasal-drop",
           "verified": {
-            "solverAnswer": "चींटा",
+            "solverAnswer": "गेंद",
             "agrees": true,
-            "note": "Solved blind; matches key. Hindi, class-2 level, EN gloss and hint ladder OK."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-nasal-drop word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -2637,7 +2648,7 @@
           "skillId": "c2-hindi-ch06-t01-s2",
           "kind": "near_transfer",
           "difficulty": 2,
-          "prompt_en": "Tell me one more word with a nose-dot like चींटा — like चींटी or गेंद.",
+          "prompt_en": "Like चींटा, tell me one more word with the dot on top (the nose sound).",
           "prompt_hi": "‘चींटा’ की तरह बिंदी (नाक की आवाज़) वाला एक और शब्द बोलो।",
           "answer": "अनुस्वार वाला शब्द, जैसे गेंद",
           "acceptable": [
@@ -2647,10 +2658,21 @@
             "रंग",
             "बंदर",
             "ठंड",
+            "हिंदी",
+            "बिंदी",
+            "नींद",
+            "अंडा",
+            "ठंडा",
+            "कंघी",
             "gend",
             "patang",
             "rang",
-            "bandar"
+            "bandar",
+            "hindi",
+            "bindi",
+            "neend",
+            "anda",
+            "thanda"
           ],
           "hints": [
             "Think of something you throw and catch.",
@@ -2660,9 +2682,9 @@
           ],
           "targetsMisconception": "c2-hindi-ch06-t01-mc-nasal-drop",
           "verified": {
-            "solverAnswer": "चींटी / बिंदी / नींद",
+            "solverAnswer": "अनुस्वार वाला शब्द, जैसे गेंद",
             "agrees": true,
-            "note": "prompt_en supplies examples ('like चींटी or गेंद') that prompt_hi does not — the English lane is easier and the gloss is not faithful. Acceptable is a closed example list (no हिंदी/बिंदी/नींद/अंडा); grader should accept any anusvara word."
+            "note": "Fixed 2026-10-02: prompt_en dropped the examples 'like चींटी or गेंद' that HI does not give; acceptable widened (हिंदी, बिंदी, नींद, अंडा...). Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -2670,25 +2692,25 @@
           "skillId": "c2-hindi-ch06-t01-s3",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Look at the letters ट and ठ. Which one is in चींटा?",
-          "prompt_hi": "दो अक्षर देखो — ‘ट’ और ‘ठ’। ‘चींटा’ में कौन-सा अक्षर है?",
-          "answer": "ट",
+          "prompt_en": "The song has उठकर. Does उठकर have ट or ठ?",
+          "prompt_hi": "गीत में ‘उठकर’ आता है। ‘उठकर’ में ‘ट’ है या ‘ठ’?",
+          "answer": "ठ",
           "acceptable": [
-            "ta",
-            "टा",
-            "ट वाला"
+            "tha",
+            "ठ वाला",
+            "हवा वाला"
           ],
           "hints": [
-            "Say chee-n-taa slowly.",
-            "Does the middle sound puff air?",
-            "Chee-n-___-aa.",
-            "ट, the one without the puff."
+            "Palm in front of your mouth: u-th-kar.",
+            "Do you feel a puff of air?",
+            "U-___-kar.",
+            "ठ — the one with the puff."
           ],
           "targetsMisconception": "c2-hindi-ch06-t01-mc-ta-tha",
           "verified": {
-            "solverAnswer": "ट",
+            "solverAnswer": "ठ",
             "agrees": true,
-            "note": "Solved blind; matches key. Hindi, class-2 level, EN gloss and hint ladder OK."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-ta-tha word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -2879,14 +2901,14 @@
             "prompt_hi": "सुनो — ‘टिलू’ और ‘टिल्लू’। किसमें ‘ल’ की आवाज़ रुककर, दो बार जैसी आती है?",
             "options": [
               {
-                "text": "टिल्लू",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "दोनों में एक जैसी",
                 "misconceptionId": "c2-hindi-ch07-t01-mc-conj-single",
                 "correct": false
+              },
+              {
+                "text": "टिल्लू",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -2894,7 +2916,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -2929,7 +2951,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -3098,7 +3120,7 @@
           "skillId": "c2-hindi-ch07-t01-s2",
           "kind": "near_transfer",
           "difficulty": 3,
-          "prompt_en": "Tell me another word with a held, doubled sound — like बिल्ली or कुत्ता.",
+          "prompt_en": "Like टिल्लू, tell me another word with a joined letter — where the sound is held.",
           "prompt_hi": "‘टिल्लू’ की तरह जुड़े अक्षर वाला कोई और शब्द बोलो — जिसमें आवाज़ रुककर आती हो।",
           "answer": "संयुक्ताक्षर वाला शब्द, जैसे बिल्ली",
           "acceptable": [
@@ -3107,11 +3129,17 @@
             "पत्ता",
             "चप्पल",
             "गुल्लक",
+            "अच्छा",
+            "डिब्बा",
+            "गुड्डा",
+            "चम्मच",
             "billi",
             "kutta",
             "patta",
             "chappal",
-            "gullak"
+            "gullak",
+            "achha",
+            "dibba"
           ],
           "hints": [
             "Think of a pet that says meow.",
@@ -3121,9 +3149,9 @@
           ],
           "targetsMisconception": "c2-hindi-ch07-t01-mc-conj-single",
           "verified": {
-            "solverAnswer": "बिल्ली / कुत्ता / अच्छा",
+            "solverAnswer": "संयुक्ताक्षर वाला शब्द, जैसे बिल्ली",
             "agrees": true,
-            "note": "prompt_en gives examples ('like बिल्ली or कुत्ता') absent from prompt_hi, and those two are the first acceptable answers — English lane is easier; gloss not faithful."
+            "note": "Fixed 2026-10-02: prompt_en dropped the examples 'like बिल्ली or कुत्ता' (the first acceptable answers) that HI does not give. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -3131,8 +3159,8 @@
           "skillId": "c2-hindi-ch07-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "At the end of लड्डू, is it short उ (ु) or long ऊ (ू)?",
-          "prompt_hi": "‘लड्डू’ के आख़िर में छोटे ‘उ’ की मात्रा है या लंबे ‘ऊ’ की?",
+          "prompt_en": "At the end of टिल्लू, is it short उ (ु) or long ऊ (ू)?",
+          "prompt_hi": "गीत वाले ‘टिल्लू’ के आख़िर में छोटे ‘उ’ की मात्रा है या लंबे ‘ऊ’ की?",
           "answer": "लंबा ऊ (ू)",
           "acceptable": [
             "लंबा ऊ",
@@ -3141,16 +3169,16 @@
             "lamba oo"
           ],
           "hints": [
-            "Say laddoo and stretch the end.",
+            "Say Til-loo and stretch the end.",
             "Can you slide your hand while saying it?",
             "The end is the ___ sound.",
-            "Long ऊ (ू)."
+            "Long ऊ (ू): टिल्लू."
           ],
           "targetsMisconception": "c2-hindi-ch07-t01-mc-u-uu",
           "verified": {
             "solverAnswer": "लंबा ऊ (ू)",
             "agrees": true,
-            "note": "Near-verbatim repeat of diagnostic mc-u-uu; vary the word (e.g. आलू, भालू) so the item is not the probe repeated."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-u-uu word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -3322,14 +3350,14 @@
             "prompt_hi": "पीले रंग का नाम है ‘पीला’। इसके पहले अक्षर पर छोटी ‘इ’ है या लंबी ‘ई’?",
             "options": [
               {
-                "text": "लंबी ई (ी)",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "छोटी इ (ि)",
                 "misconceptionId": "c2-hindi-ch08-t01-mc-ii-matra",
                 "correct": false
+              },
+              {
+                "text": "लंबी ई (ी)",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -3337,7 +3365,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -3372,7 +3400,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -3392,14 +3420,14 @@
             "prompt_hi": "पीलू (पीला) और नीलू (नीला) ने हाथ मिलाया, तो कौन-सा नया रंग बना?",
             "options": [
               {
-                "text": "हरा",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "नीला ही रहा",
                 "misconceptionId": "c2-hindi-ch08-t01-mc-mix-nochange",
                 "correct": false
+              },
+              {
+                "text": "हरा",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -3407,7 +3435,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -3473,7 +3501,7 @@
           "skillId": "c2-hindi-ch08-t01-s2",
           "kind": "practice",
           "difficulty": 1,
-          "prompt_en": "Laali is red. What is red called in Hindi?",
+          "prompt_en": "Laali's colour is red. Now tell me, what colour is a tomato?",
           "prompt_hi": "लाली का रंग लाल है। बताओ, टमाटर किस रंग का होता है?",
           "answer": "लाल",
           "acceptable": [
@@ -3490,7 +3518,7 @@
           "verified": {
             "solverAnswer": "लाल",
             "agrees": true,
-            "note": "prompt_en ('What is red called in Hindi?') does not gloss prompt_hi ('टमाटर किस रंग का होता है?'); align EN to 'What colour is a tomato?'"
+            "note": "Fixed 2026-10-02: prompt_en now glosses HI ('टमाटर किस रंग का होता है?') instead of 'What is red called in Hindi?'. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -3498,25 +3526,28 @@
           "skillId": "c2-hindi-ch08-t01-s5",
           "kind": "predict",
           "difficulty": 2,
-          "prompt_en": "Peelu (yellow) and Neelu (blue) held hands. What new colour will they make?",
-          "prompt_hi": "पीलू (पीला) और नीलू (नीला) ने हाथ मिलाया। अब कौन-सा नया रंग बनेगा?",
-          "answer": "हरा",
+          "prompt_en": "Neelu (blue) and Laali (red) held hands. What new colour will they make?",
+          "prompt_hi": "नीलू (नीला) और लाली (लाल) ने हाथ मिलाया। अब कौन-सा नया रंग बनेगा?",
+          "answer": "बैंगनी",
           "acceptable": [
-            "hara",
-            "green",
-            "हरा रंग"
+            "baingani",
+            "bainganee",
+            "purple",
+            "जामुनी",
+            "jamuni",
+            "बैंगनी रंग"
           ],
           "hints": [
-            "Think of the colour of leaves.",
-            "It is not yellow or blue any more.",
-            "Peela + neela = ___.",
-            "हरा (green)."
+            "Will it stay red, stay blue, or become something new?",
+            "Think of a vegetable that has this colour.",
+            "Neela + laal = ___.",
+            "बैंगनी (purple)."
           ],
           "targetsMisconception": "c2-hindi-ch08-t01-mc-mix-nochange",
           "verified": {
-            "solverAnswer": "हरा",
+            "solverAnswer": "बैंगनी",
             "agrees": true,
-            "note": "Duplicates diagnostic mc-mix-nochange verbatim. Hint 1 ('Think of the colour of leaves') gives the answer at the pump rung — early leak."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-mix-nochange (also removes the rung-1 'colour of leaves' leak) word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -3535,8 +3566,8 @@
             "santri"
           ],
           "hints": [
-            "Think of a fruit that is red-yellow.",
-            "The colour of a ripe mango or a marigold.",
+            "Will it stay red, stay yellow, or become something new?",
+            "Think of the colour of a marigold flower.",
             "Laal + peela = ___.",
             "नारंगी (orange)."
           ],
@@ -3544,7 +3575,7 @@
           "verified": {
             "solverAnswer": "नारंगी",
             "agrees": true,
-            "note": "Hint 1 ('a fruit that is red-yellow') points straight at नारंगी/संतरा, whose fruit name IS the colour word — near-leak at rung 1."
+            "note": "Fixed 2026-10-02: hint 1 ('a fruit that is red-yellow') pointed straight at नारंगी; now a pump. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -3637,24 +3668,25 @@
           "skillId": "c2-hindi-ch08-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Which is right: 'teen kela' or 'teen kele'?",
-          "prompt_hi": "कौन-सा ठीक है — ‘तीन केला’ या ‘तीन केले’?",
-          "answer": "तीन केले",
+          "prompt_en": "Count and say — is 'chaar gubbaara' right, or 'chaar gubbaare'?",
+          "prompt_hi": "गिनकर बोलो — ‘चार गुब्बारा’ ठीक है या ‘चार गुब्बारे’?",
+          "answer": "चार गुब्बारे",
           "acceptable": [
-            "teen kele",
-            "केले"
+            "chaar gubbaare",
+            "char gubbare",
+            "गुब्बारे"
           ],
           "hints": [
-            "Say: ek kela, do ...?",
+            "Say: ek gubbaara, do ...?",
             "Listen to the end when there are more.",
-            "Teen kel___.",
-            "तीन केले — more than one, so -ा becomes -े."
+            "Chaar gubbaar___.",
+            "चार गुब्बारे — more than one, so -ा becomes -े."
           ],
           "targetsMisconception": "c2-hindi-ch08-t01-mc-plural-same",
           "verified": {
-            "solverAnswer": "तीन केले",
+            "solverAnswer": "चार गुब्बारे",
             "agrees": true,
-            "note": "Duplicates diagnostic mc-plural-same verbatim; i10 (डिब्बे) already gives a non-duplicate version."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-plural-same word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -3831,7 +3863,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -3851,14 +3883,14 @@
             "prompt_hi": "सुनो — ‘रग’ और ‘रंग’। ‘कलर’ वाला शब्द कौन-सा है?",
             "options": [
               {
-                "text": "रंग",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "रग",
                 "misconceptionId": "c2-hindi-ch09-t01-mc-nasal-drop",
                 "correct": false
+              },
+              {
+                "text": "रंग",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -3866,7 +3898,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -3886,7 +3918,7 @@
             "prompt_hi": "‘रात’ से तुक किसकी मिलती है — ‘बात’ या ‘रानी’?",
             "options": [
               {
-                "text": "बात",
+                "text": "बात, क्योंकि दोनों के आख़िर में ‘आत’ है",
                 "misconceptionId": null,
                 "correct": true
               },
@@ -3901,7 +3933,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Distractor carries a reason clause the correct option lacks (shape cue); cosmetic. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: only the distractor carried a reason clause ('…क्योंकि दोनों ‘_’ से शुरू होते हैं'), so the longer option cued itself; the correct option now carries a matching reason (same ending). One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -3993,24 +4025,24 @@
           "skillId": "c2-hindi-ch09-t01-s2",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Which rhymes with रात: बात or रानी?",
-          "prompt_hi": "‘रात’ से तुक किसकी मिलती है — ‘बात’ या ‘रानी’?",
-          "answer": "बात",
+          "prompt_en": "Which word ends the same way as लाल — गाल or लड्डू?",
+          "prompt_hi": "‘लाल’ और कौन-सा शब्द एक जैसे ख़त्म होते हैं — ‘गाल’ या ‘लड्डू’?",
+          "answer": "गाल",
           "acceptable": [
-            "baat",
-            "bat"
+            "gaal",
+            "gal"
           ],
           "hints": [
-            "Say only the -aat part.",
+            "Say only the -aal part.",
             "Which choice ends with it?",
-            "Raat and ___.",
-            "बात rhymes with रात."
+            "Laal and ___.",
+            "गाल rhymes with लाल."
           ],
           "targetsMisconception": "c2-hindi-ch09-t01-mc-rhyme-start",
           "verified": {
-            "solverAnswer": "बात",
+            "solverAnswer": "गाल",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-rhyme-start. This topic has three items (i04, i08, i10) that are word-for-word copies of its three diagnostics — the probe and the practice cannot be told apart in a session."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-rhyme-start word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -4043,8 +4075,8 @@
           "skillId": "c2-hindi-ch09-t01-s3",
           "kind": "near_transfer",
           "difficulty": 2,
-          "prompt_en": "Match: sarson (mustard flower) — which colour?",
-          "prompt_hi": "सरसों के फूल किस रंग के होते हैं? (कविता में ‘पीली सरसों’ है।) अब बताओ, केला किस रंग का होता है?",
+          "prompt_en": "What colour is a ripe banana?",
+          "prompt_hi": "पका हुआ केला किस रंग का होता है?",
           "answer": "पीला",
           "acceptable": [
             "peela",
@@ -4052,15 +4084,15 @@
             "yellow"
           ],
           "hints": [
-            "Same colour as sarson flowers.",
-            "Think of a ripe banana.",
+            "Picture a ripe banana's peel.",
+            "Same colour as the sarson flowers in the poem.",
             "Kela ___ hota hai.",
             "पीला (yellow)."
           ],
           "verified": {
             "solverAnswer": "पीला",
             "agrees": true,
-            "note": "prompt_hi asks the sarson question, answers it itself in brackets ('कविता में पीली सरसों है'), then asks a second question (केला); prompt_en asks only the sarson question. Key (पीला) fits both, but EN and HI are different items; make it one question in both."
+            "note": "Fixed 2026-10-02: HI asked the sarson question, answered it in brackets, then asked about the banana, while EN asked only the sarson question; both lanes now ask the one banana question. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -4096,24 +4128,24 @@
           "skillId": "c2-hindi-ch09-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Which is right: 'hara ghaas' or 'hari ghaas'?",
-          "prompt_hi": "कौन-सा ठीक है — ‘हरा घास’ या ‘हरी घास’?",
-          "answer": "हरी घास",
+          "prompt_en": "Tell me about a leaf's colour — do we say 'hari patta' or 'hara patta'?",
+          "prompt_hi": "पत्ते का रंग बताओ — ‘हरी पत्ता’ बोलेंगे या ‘हरा पत्ता’?",
+          "answer": "हरा पत्ता",
           "acceptable": [
-            "hari ghaas",
-            "हरी"
+            "hara patta",
+            "हरा"
           ],
           "hints": [
-            "Does the poem say hara or hari?",
-            "We say 'meri ghaas'.",
-            "Har___ ghaas.",
-            "हरी घास."
+            "Do we say 'mera patta' or 'meri patta'?",
+            "A mera-word takes the ending we hear in घोड़ा.",
+            "Har___ patta.",
+            "हरा पत्ता."
           ],
           "targetsMisconception": "c2-hindi-ch09-t01-mc-adj-agree",
           "verified": {
-            "solverAnswer": "हरी घास",
+            "solverAnswer": "हरा पत्ता",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-adj-agree; vary the noun (e.g. हरी/हरा पत्ती)."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-adj-agree word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -4146,24 +4178,25 @@
           "skillId": "c2-hindi-ch09-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Listen: रग and रंग. Which means colour?",
-          "prompt_hi": "सुनो — ‘रग’ और ‘रंग’। ‘कलर’ वाला शब्द कौन-सा है?",
-          "answer": "रंग",
+          "prompt_en": "Listen: अबर and अंबर. Which is the poem's word for the sky?",
+          "prompt_hi": "सुनो — ‘अबर’ और ‘अंबर’। कविता में आसमान वाला शब्द कौन-सा है?",
+          "answer": "अंबर",
           "acceptable": [
-            "rang",
-            "बिंदी वाला"
+            "ambar",
+            "बिंदी वाला",
+            "नाक वाला"
           ],
           "hints": [
             "Hum with your nose as you say both.",
             "Which one hums?",
-            "Colour is ___.",
-            "रंग, with the nose dot."
+            "The sky word is ___.",
+            "अंबर, with the nose dot."
           ],
           "targetsMisconception": "c2-hindi-ch09-t01-mc-nasal-drop",
           "verified": {
-            "solverAnswer": "रंग",
+            "solverAnswer": "अंबर",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-nasal-drop; vary the word pair (e.g. पतग/पतंग)."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-nasal-drop word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -4317,7 +4350,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -4352,7 +4385,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -4595,24 +4628,25 @@
           "skillId": "c2-hindi-ch10-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "To ask where someone lives, do we use kaun or kahaan?",
-          "prompt_hi": "किसी से पूछना हो कि वो किस जगह रहता है, तो ‘कौन’ बोलेंगे या ‘कहाँ’?",
+          "prompt_en": "The cat is hiding. To find it we ask 'Billi ___ hai?' — does kaun go here, or kahaan?",
+          "prompt_hi": "बिल्ली छिप गई है। उसे ढूँढने के लिए पूछना है — ‘बिल्ली ___ है?’ यहाँ ‘कौन’ आएगा या ‘कहाँ’?",
           "answer": "कहाँ",
           "acceptable": [
             "kahaan",
-            "kahan"
+            "kahan",
+            "बिल्ली कहाँ है"
           ],
           "hints": [
-            "Is the answer a person or a place?",
+            "Do we want a name, or a place?",
             "Which word asks about places?",
-            "Tum ___ rehte ho?",
+            "Billi ___ hai?",
             "कहाँ — it asks about place."
           ],
           "targetsMisconception": "c2-hindi-ch10-t01-mc-qword-mix",
           "verified": {
             "solverAnswer": "कहाँ",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-qword-mix; vary the question (e.g. 'तुम्हारा बस्ता ___ है?')."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-qword-mix word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -4620,8 +4654,8 @@
           "skillId": "c2-hindi-ch10-t01-s4",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Fill in: '___ aaya hai?' — asking which person has come.",
-          "prompt_hi": "ख़ाली जगह भरो — ‘दरवाज़े पर ___ आया है?’ (हमें आदमी का पता करना है।)",
+          "prompt_en": "Fill in: 'Darwaaze par ___ aaya hai?' (We want to know the name of the person who came.)",
+          "prompt_hi": "ख़ाली जगह भरो — ‘दरवाज़े पर ___ आया है?’ (हमें आने वाले का नाम जानना है।)",
           "answer": "कौन",
           "acceptable": [
             "kaun"
@@ -4636,7 +4670,7 @@
           "verified": {
             "solverAnswer": "कौन",
             "agrees": true,
-            "note": "The bracket cue '(हमें आदमी का पता करना है)' is ambiguous — 'आदमी का पता' also reads as 'the man's address', which would point to कहाँ. Use '(हमें जानना है कि कौन आया है)' or '(हमें आदमी का नाम जानना है)'."
+            "note": "Fixed 2026-10-02: bracket cue '(हमें आदमी का पता करना है)' could read as 'the man's address' (→ कहाँ); now '(हमें आने वाले का नाम जानना है)', which points only to कौन without saying it. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -4747,14 +4781,14 @@
             "prompt_hi": "‘बैंगन’ के पहले अक्षर पर एक डंडी (े) है या दो डंडी (ै)?",
             "options": [
               {
-                "text": "दो डंडी — ै",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "एक डंडी — े",
                 "misconceptionId": "c2-hindi-ch11-t01-mc-ai-e",
                 "correct": false
+              },
+              {
+                "text": "दो डंडी — ै",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -4762,7 +4796,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -4782,14 +4816,14 @@
             "prompt_hi": "इस रंग को ‘बैंगनी’ क्यों कहते हैं?",
             "options": [
               {
+                "text": "क्योंकि जोजो को ये रंग पसंद है",
+                "misconceptionId": "c2-hindi-ch11-t01-mc-colour-from-thing",
+                "correct": false
+              },
+              {
                 "text": "क्योंकि बैंगन इसी रंग का होता है",
                 "misconceptionId": null,
                 "correct": true
-              },
-              {
-                "text": "बस ऐसे ही, इसका कोई मतलब नहीं",
-                "misconceptionId": "c2-hindi-ch11-t01-mc-colour-from-thing",
-                "correct": false
               }
             ],
             "verified": {
@@ -4797,7 +4831,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "One correct; the distractor ('बस ऐसे ही') is weak — few children would pick it, so the probe rarely surfaces the misconception. A stronger distractor: 'क्योंकि जोजो को पसंद है'. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: the weak distractor 'बस ऐसे ही, इसका कोई मतलब नहीं' replaced by the plausible 'क्योंकि जोजो को ये रंग पसंद है' (the name has no link to the thing). One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -5193,7 +5227,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -5213,14 +5247,14 @@
             "prompt_hi": "‘सपना’ ‘स’ से शुरू होता है या ‘श’ से?",
             "options": [
               {
-                "text": "स से",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "श से",
                 "misconceptionId": "c2-hindi-ch12-t01-mc-sa-sha",
                 "correct": false
+              },
+              {
+                "text": "स से",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -5228,7 +5262,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -5321,8 +5355,8 @@
           "skillId": "c2-hindi-ch12-t01-s2",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Tosiya flew, then woke up in her bed. Did she really fly?",
-          "prompt_hi": "तोसिया तितली पर उड़ी, फिर आँख खुली तो बिस्तर पर थी। क्या वो सच में उड़ी थी?",
+          "prompt_en": "At night Tosiya saw herself sitting on a cloud eating ice cream. Then the alarm rang and she was in her bed. Did she really eat ice cream on a cloud?",
+          "prompt_hi": "रात को तोसिया ने देखा कि वो बादल पर बैठकर आइसक्रीम खा रही है। फिर अलार्म बजा, आँख खुली — वो अपने बिस्तर पर थी। क्या उसने सच में बादल पर आइसक्रीम खाई थी?",
           "answer": "नहीं, वो सपना था",
           "acceptable": [
             "सपना था",
@@ -5332,15 +5366,15 @@
           ],
           "hints": [
             "Where was she when she opened her eyes?",
-            "Can people really ride butterflies?",
+            "Can anyone really sit on a cloud?",
             "It was only a ___.",
             "No — it was a dream."
           ],
           "targetsMisconception": "c2-hindi-ch12-t01-mc-dream-real",
           "verified": {
-            "solverAnswer": "नहीं, सपना था",
+            "solverAnswer": "नहीं, वो सपना था",
             "agrees": true,
-            "note": "Near-verbatim duplicate of diagnostic mc-dream-real."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-dream-real word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -5402,8 +5436,8 @@
           "skillId": "c2-hindi-ch12-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Does सपना start with स or श?",
-          "prompt_hi": "‘सपना’ ‘स’ (साँप वाली स्स्स) से शुरू होता है या ‘श’ (चुप वाली श्श्श) से?",
+          "prompt_en": "The butterfly's wings were सतरंगी (seven-coloured). Is the first sound of सतरंगी the snake-sound स or the hush-sound श?",
+          "prompt_hi": "तितली के पंख ‘सतरंगी’ थे — सात रंगों वाले। ‘सतरंगी’ की पहली आवाज़ साँप वाली ‘स’ है या चुप वाली ‘श’?",
           "answer": "स",
           "acceptable": [
             "sa",
@@ -5412,15 +5446,15 @@
           ],
           "hints": [
             "Make the snake sound and the hush sound.",
-            "Which one is in sapna?",
-            "Sapna starts with ___.",
+            "Which one is at the start of sat-rangi?",
+            "Satrangi starts with ___.",
             "स — the snake sound."
           ],
           "targetsMisconception": "c2-hindi-ch12-t01-mc-sa-sha",
           "verified": {
             "solverAnswer": "स",
             "agrees": true,
-            "note": "Near-duplicate of diagnostic mc-sa-sha (adds sound cues)."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-sa-sha word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -5646,7 +5680,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -5681,7 +5715,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -5802,24 +5836,24 @@
           "skillId": "c2-hindi-ch13-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Does तालाब end with ब or व?",
-          "prompt_hi": "‘तालाब’ के आख़िर में ‘ब’ है या ‘व’?",
+          "prompt_en": "A heron (बगुला) stood at the edge of the pond. Does बगुला start with ब or व?",
+          "prompt_hi": "तालाब के किनारे एक ‘बगुला’ खड़ा था। ‘बगुला’ ‘ब’ से शुरू होता है या ‘व’ से?",
           "answer": "ब",
           "acceptable": [
             "ba",
             "ब से"
           ],
           "hints": [
-            "Say the last sound — do your lips pop?",
+            "Say it — do your lips pop at the start?",
             "Popping lips is the letter with a line inside.",
-            "Taala-___.",
+            "___-gula.",
             "ब — the lips pop."
           ],
           "targetsMisconception": "c2-hindi-ch13-t01-mc-ba-va",
           "verified": {
             "solverAnswer": "ब",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-ba-va."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-ba-va word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -5878,25 +5912,25 @@
           "skillId": "c2-hindi-ch13-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Many fish: 'bahut machhli' or 'bahut machhliyaan'?",
-          "prompt_hi": "बहुत सारी मछली हों तो क्या कहेंगे — ‘बहुत मछली’ या ‘बहुत मछलियाँ’?",
-          "answer": "बहुत मछलियाँ",
+          "prompt_en": "Lots of lotus leaves float on the pond: 'bahut patti' or 'bahut pattiyaan'?",
+          "prompt_hi": "तालाब पर कमल की ढेर सारी पत्ती तैर रही हों तो क्या कहेंगे — ‘बहुत पत्ती’ या ‘बहुत पत्तियाँ’?",
+          "answer": "बहुत पत्तियाँ",
           "acceptable": [
-            "machhliyaan",
-            "machliyan",
-            "मछलियाँ"
+            "pattiyaan",
+            "pattiyan",
+            "पत्तियाँ"
           ],
           "hints": [
-            "Count: ek machhli, do...?",
+            "Count: ek patti, do...?",
             "The end grows longer for many.",
-            "Bahut machhli___.",
-            "बहुत मछलियाँ."
+            "Bahut patti___.",
+            "बहुत पत्तियाँ."
           ],
           "targetsMisconception": "c2-hindi-ch13-t01-mc-plural-ii",
           "verified": {
-            "solverAnswer": "बहुत मछलियाँ",
+            "solverAnswer": "बहुत पत्तियाँ",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-plural-ii; i09 (चिड़ियाँ) is the non-duplicate version."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-plural-ii word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -6101,7 +6135,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -6121,14 +6155,14 @@
             "prompt_hi": "सुनो — ‘पेड़’। आख़िरी आवाज़ ‘ड’ (डमरू वाली) है या ‘ड़’ (सड़क वाली)?",
             "options": [
               {
-                "text": "ड़ — जीभ झटके से",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "ड — डमरू वाली",
                 "misconceptionId": "c2-hindi-ch14-t01-mc-da-dda",
                 "correct": false
+              },
+              {
+                "text": "ड़ — जीभ झटके से",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -6136,7 +6170,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -6361,8 +6395,8 @@
           "skillId": "c2-hindi-ch14-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Listen: पेड़. Is the last sound ड (like डमरू) or ड़ (like सड़क)?",
-          "prompt_hi": "सुनो — ‘पेड़’। आख़िरी आवाज़ ‘ड’ (डमरू वाली) है या ‘ड़’ (सड़क वाली)?",
+          "prompt_en": "Listen: झाड़ी (a small bushy plant). Is the middle sound ड (like डमरू) or ड़ (like सड़क)?",
+          "prompt_hi": "सुनो — ‘झाड़ी’ (छोटा घना पौधा)। बीच वाली आवाज़ ‘ड’ (डमरू वाली) है या ‘ड़’ (सड़क वाली)?",
           "answer": "ड़",
           "acceptable": [
             "दूसरी वाली",
@@ -6370,7 +6404,7 @@
             "neeche bindi wala"
           ],
           "hints": [
-            "Say the word and feel your tongue.",
+            "Say jhaa-ree slowly and feel your tongue.",
             "Does it flick or press?",
             "The tongue flicks, so it is ___.",
             "ड़ — the flicked one, with a dot below."
@@ -6379,7 +6413,7 @@
           "verified": {
             "solverAnswer": "ड़",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-da-dda; i10 (जड़) already covers it without repeating the probe."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-da-dda word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -6541,14 +6575,14 @@
             "prompt_hi": "‘किसान’ के पहले अक्षर पर छोटी ‘इ’ है या लंबी ‘ई’?",
             "options": [
               {
-                "text": "छोटी इ (ि)",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "लंबी ई (ी)",
                 "misconceptionId": "c2-hindi-ch15-t01-mc-i-ii",
                 "correct": false
+              },
+              {
+                "text": "छोटी इ (ि)",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -6556,7 +6590,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -6591,7 +6625,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -6611,14 +6645,14 @@
             "prompt_hi": "‘किसान’ से तुक किसकी मिलती है — ‘धान’ या ‘किताब’?",
             "options": [
               {
-                "text": "धान",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "किताब, क्योंकि दोनों ‘कि’ से शुरू होते हैं",
                 "misconceptionId": "c2-hindi-ch15-t01-mc-rhyme-start",
                 "correct": false
+              },
+              {
+                "text": "धान, क्योंकि दोनों के आख़िर में ‘आन’ है",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -6626,7 +6660,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Distractor carries a reason clause the correct option lacks (shape cue); cosmetic. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: only the distractor carried a reason clause ('…क्योंकि दोनों ‘_’ से शुरू होते हैं'), so the longer option cued itself; the correct option now carries a matching reason (same ending). One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -6831,25 +6865,26 @@
           "skillId": "c2-hindi-ch15-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "किसान — is the first matra short इ or long ई?",
-          "prompt_hi": "‘किसान’ के पहले अक्षर पर छोटी ‘इ’ है या लंबी ‘ई’?",
-          "answer": "छोटी इ (ि)",
+          "prompt_en": "The poem has बीज (seed). In बीज, is the matra short इ or long ई?",
+          "prompt_hi": "कविता में ‘बीज’ आता है। ‘बीज’ में छोटी ‘इ’ की मात्रा है या लंबी ‘ई’ की?",
+          "answer": "लंबी ई (ी)",
           "acceptable": [
-            "छोटी इ",
-            "ि",
-            "chhoti i"
+            "लंबी ई",
+            "ी",
+            "lambi ee",
+            "badi ee"
           ],
           "hints": [
-            "Clap the word: ki-saan.",
-            "Is the first beat quick or long?",
-            "The first matra is ___.",
-            "Short इ (ि): किसान."
+            "Say beej and stretch the middle.",
+            "Is the sound quick or long?",
+            "The matra is the ___ one.",
+            "Long ई (ी): बीज."
           ],
           "targetsMisconception": "c2-hindi-ch15-t01-mc-i-ii",
           "verified": {
-            "solverAnswer": "छोटी इ (ि)",
+            "solverAnswer": "लंबी ई (ी)",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-i-ii."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-i-ii word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -7027,7 +7062,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -7047,14 +7082,14 @@
             "prompt_hi": "मूली किसने निकाली — अकेले दादा ने, या सबने मिलकर?",
             "options": [
               {
-                "text": "सबने मिलकर",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "अकेले दादा ने, बाक़ी छोटे थे",
                 "misconceptionId": "c2-hindi-ch16-t01-mc-strongest-alone",
                 "correct": false
+              },
+              {
+                "text": "सबने मिलकर",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -7062,7 +7097,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -7082,14 +7117,14 @@
             "prompt_hi": "कौन-सा ठीक है — ‘बड़ी मूली’ या ‘बड़ा मूली’?",
             "options": [
               {
-                "text": "बड़ी मूली",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "बड़ा मूली",
                 "misconceptionId": "c2-hindi-ch16-t01-mc-muli-gender",
                 "correct": false
+              },
+              {
+                "text": "बड़ी मूली",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -7097,7 +7132,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -7148,14 +7183,14 @@
           ],
           "hints": [
             "Who did Dada call?",
-            "It is his wife.",
+            "Listen again: whom did Dada call?",
             "Pehle ___ aayi.",
             "दादी came first."
           ],
           "verified": {
             "solverAnswer": "दादी",
             "agrees": true,
-            "note": "Hint 2 ('It is his wife') names the answer at rung 2; the stem already says 'दादा ने दादी को बुलाया', so this is pure listening — fine at d1."
+            "note": "Fixed 2026-10-02: hint 2 ('It is his wife') named the answer. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -7163,8 +7198,8 @@
           "skillId": "c2-hindi-ch16-t01-s2",
           "kind": "retrieval",
           "difficulty": 3,
-          "prompt_en": "Say the helpers in order: Dada, Dadi, Bittu, the dog, the cat — who comes after Bittu?",
-          "prompt_hi": "मदद करने वाले क्रम से आए — दादा, दादी, बिट्टू, कुत्ता, बिल्ली। बिट्टू के बाद कौन आया?",
+          "prompt_en": "The helpers came one by one. Who came to help right after Bittu?",
+          "prompt_hi": "मदद करने वाले एक-एक करके आए। बिट्टू के ठीक बाद मदद करने कौन आया?",
           "answer": "कुत्ता",
           "acceptable": [
             "kutta",
@@ -7172,15 +7207,15 @@
             "मोती"
           ],
           "hints": [
-            "Count along the line of helpers.",
-            "Bittu, then...?",
-            "Bittu ke baad ___.",
+            "Who came after Dadi? And who after that?",
+            "It was an animal from the house.",
+            "Bittu ke baad ___ aaya.",
             "The dog (कुत्ता)."
           ],
           "verified": {
             "solverAnswer": "कुत्ता",
             "agrees": true,
-            "note": "The stem lists the full helper order and then asks who came after Bittu, so the answer is read out in the prompt — a d3 'retrieval' item that needs no recall. Ask it without listing the chain."
+            "note": "Fixed 2026-10-02: the stem listed the full helper chain before asking who came after Bittu; the chain is no longer given. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -7214,26 +7249,28 @@
           "skillId": "c2-hindi-ch16-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Who pulled the radish out: only Dada, or everyone together?",
-          "prompt_hi": "मूली किसने निकाली — अकेले दादा ने, या सबने मिलकर?",
-          "answer": "सबने मिलकर",
+          "prompt_en": "The radish came out when the cat joined. So did the cat pull the radish out all by itself?",
+          "prompt_hi": "बिल्ली के आने पर मूली निकली। तो क्या मूली अकेली बिल्ली ने निकाली?",
+          "answer": "नहीं, सबने मिलकर निकाली",
           "acceptable": [
-            "मिलकर",
+            "नहीं",
+            "nahin",
+            "सबने मिलकर",
             "milkar",
             "sabne milkar",
-            "सब ने"
+            "सब ने मिलकर"
           ],
           "hints": [
-            "Could Dada do it alone at the start?",
-            "When did it finally come out?",
-            "It came out when ___ pulled.",
-            "Everyone together."
+            "Who was pulling when it came out?",
+            "Could a small cat pull it alone?",
+            "It came out because ___ pulled together.",
+            "No — everyone pulled together."
           ],
           "targetsMisconception": "c2-hindi-ch16-t01-mc-strongest-alone",
           "verified": {
-            "solverAnswer": "सबने मिलकर",
+            "solverAnswer": "नहीं, सबने मिलकर निकाली",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-strongest-alone."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-strongest-alone word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -7268,25 +7305,25 @@
           "skillId": "c2-hindi-ch16-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "मूली — short उ or long ऊ?",
-          "prompt_hi": "‘मूली’ में छोटा ‘उ’ है या लंबा ‘ऊ’?",
-          "answer": "लंबा ऊ (ू)",
+          "prompt_en": "The dog (कुत्ता) came to help too. On the first letter of कुत्ता, is it short उ or long ऊ?",
+          "prompt_hi": "कहानी में ‘कुत्ता’ भी मदद करने आया। ‘कुत्ता’ के पहले अक्षर पर छोटा ‘उ’ है या लंबा ‘ऊ’?",
+          "answer": "छोटा उ (ु)",
           "acceptable": [
-            "लंबा ऊ",
-            "ू",
-            "lamba oo"
+            "छोटा उ",
+            "ु",
+            "chhota u"
           ],
           "hints": [
-            "Say it and slide your hand on the first part.",
-            "Is it a hop or a slide?",
+            "Say kut-taa and feel the first part.",
+            "Is it a quick hop or a long slide?",
             "It is the ___ sound.",
-            "Long ऊ (ू): मूली."
+            "Short उ (ु): कुत्ता."
           ],
           "targetsMisconception": "c2-hindi-ch16-t01-mc-u-uu",
           "verified": {
-            "solverAnswer": "लंबा ऊ (ू)",
+            "solverAnswer": "छोटा उ (ु)",
             "agrees": true,
-            "note": "Near-duplicate of diagnostic mc-u-uu."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-u-uu word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -7337,16 +7374,16 @@
             "aaloo"
           ],
           "hints": [
-            "Think of a flower or milk.",
+            "Think of things in the kitchen or the garden.",
             "Or a vegetable under the ground.",
             "Ph-___-l (flower).",
             "फूल, दूध, आलू, चूहा."
           ],
           "targetsMisconception": "c2-hindi-ch16-t01-mc-u-uu",
           "verified": {
-            "solverAnswer": "भालू / आलू / फूल",
+            "solverAnswer": "ू वाला शब्द, जैसे फूल",
             "agrees": true,
-            "note": "Hint 1 ('Think of a flower or milk') names two acceptable answers at the pump rung; open item so low stakes."
+            "note": "Fixed 2026-10-02: hint 1 named two accepted answers (flower, milk) at the pump rung. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -7525,7 +7562,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -7559,7 +7596,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -7594,7 +7631,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "One correct; science acceptable for class 2 (frogs need moisture; rain also brings breeding). Correct option is noticeably longer/more reasoned than the distractor; cosmetic. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "One correct; science acceptable for class 2 (frogs need moisture; rain also brings breeding). Correct option is noticeably longer/more reasoned than the distractor; cosmetic. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -7712,26 +7749,28 @@
           "skillId": "c2-hindi-ch17-t01-s4",
           "kind": "why",
           "difficulty": 3,
-          "prompt_en": "Why do frogs come out when it rains?",
-          "prompt_hi": "बारिश में मेंढक बाहर क्यों आ जाते हैं?",
-          "answer": "क्योंकि उन्हें पानी और गीली जगह अच्छी लगती है",
+          "prompt_en": "On hot, dry, sunny days we hardly see frogs. Why?",
+          "prompt_hi": "गर्मी के सूखे, धूप वाले दिनों में मेंढक कम क्यों दिखते हैं?",
+          "answer": "क्योंकि तब पानी और गीली जगह कम होती है; मेंढक ठंडी, गीली जगह में छिप जाते हैं",
           "acceptable": [
-            "पानी पसंद है",
-            "गीली जगह",
-            "paani pasand",
-            "water"
+            "पानी नहीं होता",
+            "पानी कम",
+            "सूखा",
+            "गीली जगह नहीं",
+            "paani nahi",
+            "chhip jaate hain"
           ],
           "hints": [
             "Where do frogs like to live?",
-            "What does rain bring everywhere?",
-            "Frogs like ___.",
-            "They love water and wet places, and rain makes puddles everywhere."
+            "What is missing on hot dry days?",
+            "Frogs need ___ places.",
+            "On dry days there is little water, so frogs hide in cool, wet places."
           ],
           "targetsMisconception": "c2-hindi-ch17-t01-mc-frog-why",
           "verified": {
-            "solverAnswer": "क्योंकि उन्हें पानी/गीली जगह पसंद है",
+            "solverAnswer": "क्योंकि तब पानी और गीली जगह कम होती है; मेंढक ठंडी, गीली जगह में छिप जाते हैं",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-frog-why. This topic has all three diagnostics copied word-for-word as items (i05, i07, i09)."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-frog-why word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -7765,24 +7804,25 @@
           "skillId": "c2-hindi-ch17-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Does मेंढक have ढ or ड?",
-          "prompt_hi": "‘मेंढक’ में ‘ढ’ (हवा वाली) है या ‘ड’?",
-          "answer": "ढ",
+          "prompt_en": "The paper boat sank (डूब गई) in the water. Does डूब start with ड or with the breathy ढ?",
+          "prompt_hi": "काग़ज़ की नाव पानी में ‘डूब’ गई। ‘डूब’ ‘ड’ से शुरू होता है या ‘ढ’ (हवा वाली) से?",
+          "answer": "ड",
           "acceptable": [
-            "dha",
-            "ढ वाला"
+            "da",
+            "ड से",
+            "बिना हवा वाला"
           ],
           "hints": [
-            "Put your palm near your mouth.",
-            "Do you feel air in the middle?",
-            "Men-___-ak.",
-            "ढ, the breathy one."
+            "Palm near your mouth: doob.",
+            "Do you feel a puff of air?",
+            "Doob starts with ___.",
+            "ड — no puff: डूब."
           ],
           "targetsMisconception": "c2-hindi-ch17-t01-mc-dha-da",
           "verified": {
-            "solverAnswer": "ढ",
+            "solverAnswer": "ड",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-dha-da."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-dha-da word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -7815,24 +7855,25 @@
           "skillId": "c2-hindi-ch17-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Listen: बूद and बूँद. Which one is a raindrop?",
-          "prompt_hi": "सुनो — ‘बूद’ और ‘बूँद’। बारिश वाली ‘ड्रॉप’ कौन-सी है?",
-          "answer": "बूँद",
+          "prompt_en": "Listen: मेढक and मेंढक. Which one is the frog that goes टर्र-टर्र?",
+          "prompt_hi": "सुनो — ‘मेढक’ और ‘मेंढक’। टर्र-टर्र करने वाला कौन-सा है?",
+          "answer": "मेंढक",
           "acceptable": [
-            "boond",
-            "नाक वाली"
+            "mendhak",
+            "नाक वाला",
+            "बिंदी वाला"
           ],
           "hints": [
             "Hold your nose as you say both.",
             "Which one hums?",
-            "A raindrop is ___.",
-            "बूँद, with the nose sound."
+            "The croaker is ___.",
+            "मेंढक, with the nose dot."
           ],
           "targetsMisconception": "c2-hindi-ch17-t01-mc-nasal-drop",
           "verified": {
-            "solverAnswer": "बूँद",
+            "solverAnswer": "मेंढक",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-nasal-drop."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-nasal-drop word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -7840,7 +7881,7 @@
           "skillId": "c2-hindi-ch17-t01-s3",
           "kind": "error_spot",
           "difficulty": 3,
-          "prompt_en": "Someone wrote कीचड without the dot. What is missing?",
+          "prompt_en": "Someone wrote कीचड़ (mud) as ‘कीचड’. What got left out?",
           "prompt_hi": "किसी ने ‘कीचड़’ को ‘कीचड’ लिखा। क्या छूट गया?",
           "answer": "ड़ के नीचे की बिंदी — सही है कीचड़",
           "acceptable": [
@@ -7856,9 +7897,9 @@
             "The dot below ड़ is missing: कीचड़."
           ],
           "verified": {
-            "solverAnswer": "नीचे की बिंदी — कीचड़ (ड़)",
+            "solverAnswer": "ड़ के नीचे की बिंदी — सही है कीचड़",
             "agrees": true,
-            "note": "prompt_en says 'wrote कीचड without the dot' — it states the answer in the English lane; prompt_hi correctly asks 'क्या छूट गया?'. Remove 'without the dot' from EN."
+            "note": "Fixed 2026-10-02: prompt_en no longer says 'without the dot' (it stated the answer); it now glosses HI 'क्या छूट गया?'. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -7891,7 +7932,7 @@
           "skillId": "c2-hindi-ch17-t01-s1",
           "kind": "teachback",
           "difficulty": 3,
-          "prompt_en": "Tell your toy what happens when the rain comes — clouds, drops, frogs, boats.",
+          "prompt_en": "Tell your toy: when the rain comes, what all happens?",
           "prompt_hi": "अपने खिलौने को बताओ — बरसात आती है तो क्या-क्या होता है?",
           "answer": "काले बादल, टप-टप बूँदें, मेंढक टर्र-टर्र करते हैं, बच्चे नाव चलाते हैं",
           "acceptable": [
@@ -7907,9 +7948,9 @@
             "Clouds, drops, frogs croaking, paper boats."
           ],
           "verified": {
-            "solverAnswer": "बादल, टप-टप बूँदें, मेंढक टर्र-टर्र, काग़ज़ की नाव",
+            "solverAnswer": "काले बादल, टप-टप बूँदें, मेंढक टर्र-टर्र करते हैं, बच्चे नाव चलाते हैं",
             "agrees": true,
-            "note": "prompt_en lists the expected content ('clouds, drops, frogs, boats') which prompt_hi does not — EN lane is cued; gloss not faithful."
+            "note": "Fixed 2026-10-02: prompt_en dropped the content list 'clouds, drops, frogs, boats' that HI does not give. Key checked by the fix pass (not an independent blind re-solve)."
           }
         }
       ],
@@ -7997,14 +8038,14 @@
             "prompt_hi": "‘शेर’ ‘श’ (चुप वाली श्श्श) से शुरू होता है या ‘स’ (साँप वाली स्स्स) से?",
             "options": [
               {
-                "text": "श",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "स",
                 "misconceptionId": "c2-hindi-ch18-t01-mc-sha-sa",
                 "correct": false
+              },
+              {
+                "text": "श",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -8012,7 +8053,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -8047,7 +8088,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Correct option carries the method, distractor a bare reason; option shape is a mild cue. Cosmetic. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Correct option carries the method, distractor a bare reason; option shape is a mild cue. Cosmetic. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -8081,7 +8122,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -8253,8 +8294,8 @@
           "skillId": "c2-hindi-ch18-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Does शेर start with श or स?",
-          "prompt_hi": "‘शेर’ ‘श’ (श्श्श) से शुरू होता है या ‘स’ (स्स्स) से?",
+          "prompt_en": "The lion was caught in a hunter's (शिकारी) net. Say शिकारी — is the first sound श (shhh) or स (sss)?",
+          "prompt_hi": "शेर एक ‘शिकारी’ के जाल में फँसा। ‘शिकारी’ बोलो — पहली आवाज़ ‘श’ (श्श्श) है या ‘स’ (स्स्स)?",
           "answer": "श",
           "acceptable": [
             "sha",
@@ -8263,15 +8304,15 @@
           ],
           "hints": [
             "Make the hush sound and the snake sound.",
-            "Which one starts lion's name?",
-            "Lion starts with ___.",
+            "Which one starts shi-kaa-ree?",
+            "Shikaari starts with ___.",
             "श — the hush sound."
           ],
           "targetsMisconception": "c2-hindi-ch18-t01-mc-sha-sa",
           "verified": {
             "solverAnswer": "श",
             "agrees": true,
-            "note": "Near-verbatim duplicate of diagnostic mc-sha-sa."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-sha-sa word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -8305,25 +8346,25 @@
           "skillId": "c2-hindi-ch18-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "चूहा — short उ or long ऊ?",
-          "prompt_hi": "‘चूहा’ में छोटा ‘उ’ है या लंबा ‘ऊ’?",
-          "answer": "लंबा ऊ (ू)",
+          "prompt_en": "The mouse nibbled through (कुतर दिया) the net. On the first letter of कुतर, is it short उ or long ऊ?",
+          "prompt_hi": "चूहे ने अपने दाँतों से जाल ‘कुतर’ दिया। ‘कुतर’ के पहले अक्षर पर छोटा ‘उ’ है या लंबा ‘ऊ’?",
+          "answer": "छोटा उ (ु)",
           "acceptable": [
-            "लंबा ऊ",
-            "ू",
-            "lamba oo"
+            "छोटा उ",
+            "ु",
+            "chhota u"
           ],
           "hints": [
-            "Slide your hand as you say the first part.",
-            "Is it a hop or a slide?",
-            "It is the ___ ऊ.",
-            "Long ऊ: चूहा."
+            "Say ku-tar and feel the first part.",
+            "Is it a quick hop or a long slide?",
+            "It is the ___ sound.",
+            "Short उ (ु): कुतर."
           ],
           "targetsMisconception": "c2-hindi-ch18-t01-mc-u-uu",
           "verified": {
-            "solverAnswer": "लंबा ऊ (ू)",
+            "solverAnswer": "छोटा उ (ु)",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-u-uu."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-u-uu word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -8346,16 +8387,16 @@
             "shakkar"
           ],
           "hints": [
-            "Think of evening time, or honey.",
-            "Start with the hush sound.",
+            "Say 'shhh' and think of words that start that way.",
+            "Think of the time when the sun goes down.",
             "Sh-___ (evening).",
             "शाम, शहद, शहर, शक्कर."
           ],
           "targetsMisconception": "c2-hindi-ch18-t01-mc-sha-sa",
           "verified": {
-            "solverAnswer": "शाम / शहर / शक्कर",
+            "solverAnswer": "श से शुरू होने वाला शब्द, जैसे शाम",
             "agrees": true,
-            "note": "Hint 1 ('evening time, or honey') names the answer at the pump rung; open item, low stakes."
+            "note": "Fixed 2026-10-02: hint 1 named the answers (evening, honey) at the pump rung. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -8493,14 +8534,14 @@
             "prompt_hi": "‘आउट’ ‘अ’ से शुरू होता है या ‘आ’ से?",
             "options": [
               {
-                "text": "आ",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "अ",
                 "misconceptionId": "c2-hindi-ch19-t01-mc-a-aa",
                 "correct": false
+              },
+              {
+                "text": "आ",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -8508,7 +8549,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -8528,14 +8569,14 @@
             "prompt_hi": "मीनू आउट हो गई। क्या इसका मतलब है कि वो ख़राब खिलाड़ी है?",
             "options": [
               {
-                "text": "नहीं, खेल में सब कभी-न-कभी आउट होते हैं; अगली बारी फिर खेलेगी",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
-                "text": "हाँ, अब उसे खेलना नहीं चाहिए",
+                "text": "हाँ, आउट होने वाला ख़राब खिलाड़ी है",
                 "misconceptionId": "c2-hindi-ch19-t01-mc-out-bad",
                 "correct": false
+              },
+              {
+                "text": "नहीं, सब कभी-न-कभी आउट होते हैं",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -8543,7 +8584,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "One correct, but the correct option is ~3x longer and carries the reasoning while the distractor is a bare 'हाँ…' — a test-wise child picks the long one. Even the lengths. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: the correct option was ~3x longer than the distractor; both are now the same length and shape. One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -8640,7 +8681,9 @@
           "acceptable": [
             "और खेलना चाहती थी",
             "आउट होना बुरा लगा",
-            "batting chahiye thi"
+            "batting chahiye thi",
+            "उसे लगा वो आउट नहीं थी",
+            "use laga wo out nahi thi"
           ],
           "hints": [
             "What did Meenu want to keep doing?",
@@ -8649,9 +8692,9 @@
             "She wanted to keep batting; being out felt bad."
           ],
           "verified": {
-            "solverAnswer": "उसे लगा वो आउट नहीं थी / आउट होना बुरा लगा, और खेलना था",
+            "solverAnswer": "क्योंकि वो और खेलना चाहती थी और आउट होना उसे अच्छा नहीं लगा",
             "agrees": true,
-            "note": "Key ('wanted to keep batting') is right, but i03's stem has Meenu shout 'मैं आउट नहीं हूँ!', so 'क्योंकि उसे लगा वो आउट नहीं थी' is an equally valid reading — add it to acceptable."
+            "note": "Fixed 2026-10-02: added 'उसे लगा वो आउट नहीं थी' — i03 has Meenu shout 'मैं आउट नहीं हूँ!', so it is an equally valid reading. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -8685,26 +8728,29 @@
           "skillId": "c2-hindi-ch19-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Meenu got out. Does that mean she is a bad player?",
-          "prompt_hi": "मीनू आउट हो गई। क्या इसका मतलब है कि वो ख़राब खिलाड़ी है?",
-          "answer": "नहीं, खेल में सब आउट होते हैं; उसकी फिर बारी आएगी",
+          "prompt_en": "Two sayings: (a) 'If you get out, never play again.' (b) 'If you get out, try again on your next turn.' Which one is right?",
+          "prompt_hi": "दो बातें सुनो — (क) ‘आउट हो गए तो अब कभी मत खेलो।’ (ख) ‘आउट हो गए तो अगली बारी में फिर कोशिश करो।’ कौन-सी बात ठीक है?",
+          "answer": "ख — अगली बारी में फिर कोशिश करो",
           "acceptable": [
-            "नहीं",
-            "nahin",
-            "सब आउट होते हैं",
-            "fir baari aayegi"
+            "ख",
+            "kha",
+            "दूसरी",
+            "दूसरी वाली",
+            "फिर कोशिश करो",
+            "phir koshish karo",
+            "b"
           ],
           "hints": [
-            "Has anyone else ever got out?",
-            "Will Meenu get another turn?",
-            "No — everyone gets out ___.",
-            "No — everyone gets out sometimes; she will bat again."
+            "Has any good player ever got out?",
+            "Does the game give another turn?",
+            "Out today, try ___ next turn.",
+            "ख — getting out is part of the game; try again next turn."
           ],
           "targetsMisconception": "c2-hindi-ch19-t01-mc-out-bad",
           "verified": {
-            "solverAnswer": "नहीं",
+            "solverAnswer": "ख — अगली बारी में फिर कोशिश करो",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-out-bad."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-out-bad word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -8740,25 +8786,25 @@
           "skillId": "c2-hindi-ch19-t01-s2",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Does आउट start with अ or आ?",
-          "prompt_hi": "‘आउट’ ‘अ’ से शुरू होता है या ‘आ’ से?",
-          "answer": "आ",
+          "prompt_en": "In cricket the person who decides is the अंपायर (umpire). Does अंपायर start with अ or आ?",
+          "prompt_hi": "क्रिकेट में फ़ैसला करने वाले को ‘अंपायर’ कहते हैं। ‘अंपायर’ ‘अ’ से शुरू होता है या ‘आ’ से?",
+          "answer": "अ",
           "acceptable": [
-            "aa",
-            "आ से",
-            "बड़ा आ"
+            "chhota a",
+            "अ से",
+            "छोटा अ"
           ],
           "hints": [
-            "Say the word with a long step.",
+            "Say um-pire, quick at the start.",
             "Is the first sound short or long?",
             "It starts with the ___ sound.",
-            "आ — the long one."
+            "अ — the short one: अंपायर."
           ],
           "targetsMisconception": "c2-hindi-ch19-t01-mc-a-aa",
           "verified": {
-            "solverAnswer": "आ",
+            "solverAnswer": "अ",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-a-aa."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-a-aa word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -8798,7 +8844,8 @@
             "आउट",
             "आ",
             "aaut",
-            "out"
+            "aa",
+            "आ से शुरू होगा"
           ],
           "hints": [
             "Is the first sound short or long?",
@@ -8808,9 +8855,9 @@
           ],
           "targetsMisconception": "c2-hindi-ch19-t01-mc-a-aa",
           "verified": {
-            "solverAnswer": "अ ग़लत — आउट (आ से)",
+            "solverAnswer": "पहला अक्षर ‘आ’ होगा, ‘अ’ नहीं — आउट",
             "agrees": true,
-            "note": "Acceptable includes the English word 'out', which does not answer a spelling-error question."
+            "note": "Fixed 2026-10-02: removed the English word 'out', which does not answer a spelling question. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -8962,7 +9009,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -8982,14 +9029,14 @@
             "prompt_hi": "गोलू दरवाज़े के पीछे छिपा है। पूरी बात कौन-सा वाक्य बताता है — ‘गोलू पीछे है’ या ‘गोलू दरवाज़े के पीछे है’?",
             "options": [
               {
-                "text": "गोलू दरवाज़े के पीछे है",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "गोलू पीछे है",
                 "misconceptionId": "c2-hindi-ch20-t01-mc-pos-ref",
                 "correct": false
+              },
+              {
+                "text": "गोलू दरवाज़े के पीछे है",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -8997,7 +9044,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -9041,9 +9088,10 @@
           "answer": "दरवाज़े के पीछे",
           "acceptable": [
             "darwaaze ke peeche",
-            "दरवाज़ा",
+            "darwaze ke peeche",
             "behind the door",
-            "पीछे"
+            "दरवाज़े के पीछे छिपा",
+            "दरवाजे के पीछे"
           ],
           "hints": [
             "Listen for the thing and the position.",
@@ -9054,7 +9102,7 @@
           "verified": {
             "solverAnswer": "दरवाज़े के पीछे",
             "agrees": true,
-            "note": "Acceptable includes bare 'पीछे' and bare 'दरवाज़ा' — 'पीछे' without the reference object is exactly the topic's misconception mc-pos-ref, so the key credits the error it is meant to catch. Remove both."
+            "note": "Fixed 2026-10-02: removed bare 'पीछे' and bare 'दरवाज़ा' from acceptable — bare 'पीछे' is the topic's misconception mc-pos-ref. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -9088,25 +9136,26 @@
           "skillId": "c2-hindi-ch20-t01-s2",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Which tells it fully: 'Golu peeche hai' or 'Golu darwaaze ke peeche hai'?",
-          "prompt_hi": "पूरी बात कौन-सा वाक्य बताता है — ‘गोलू पीछे है’ या ‘गोलू दरवाज़े के पीछे है’?",
-          "answer": "गोलू दरवाज़े के पीछे है",
+          "prompt_en": "Pinky asked, 'Where is Meena hiding?' Which answer will help Pinky find her — 'andar' or 'almaari ke andar'?",
+          "prompt_hi": "पिंकी ने पूछा — ‘मीना कहाँ छिपी है?’ किस जवाब से पिंकी मीना को ढूँढ पाएगी — ‘अंदर’ या ‘अलमारी के अंदर’?",
+          "answer": "अलमारी के अंदर",
           "acceptable": [
-            "darwaaze ke peeche",
+            "almaari ke andar",
+            "almari ke andar",
             "दूसरा वाला",
             "second"
           ],
           "hints": [
-            "If I only hear 'peeche', can I find Golu?",
-            "Behind what?",
-            "Golu ___ ke peeche hai.",
-            "The second one — it names the door."
+            "If I only hear 'andar', where do I look?",
+            "Inside what?",
+            "Almaari ke ___.",
+            "The second one — it names the cupboard."
           ],
           "targetsMisconception": "c2-hindi-ch20-t01-mc-pos-ref",
           "verified": {
-            "solverAnswer": "गोलू दरवाज़े के पीछे है",
+            "solverAnswer": "अलमारी के अंदर",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-pos-ref. Acceptable 'दूसरा वाला/second' depends on option order; breaks if the runtime reorders."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-pos-ref word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -9192,25 +9241,25 @@
           "skillId": "c2-hindi-ch20-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Does छुपन start with छ or च?",
-          "prompt_hi": "‘छुपन’ ‘छ’ (हवा वाली) से शुरू होता है या ‘च’ से?",
-          "answer": "छ",
+          "prompt_en": "Tinu pulled a sheet (चादर) over herself to hide. Does चादर start with the breathy छ or with च?",
+          "prompt_hi": "टीनू ने ‘चादर’ ओढ़कर छिपने की कोशिश की। ‘चादर’ ‘छ’ (हवा वाली) से शुरू होता है या ‘च’ से?",
+          "answer": "च",
           "acceptable": [
-            "chha",
-            "छ से",
-            "हवा वाला"
+            "cha",
+            "च से",
+            "बिना हवा वाला"
           ],
           "hints": [
-            "Palm near your mouth.",
-            "Do you feel air?",
-            "It starts with ___.",
-            "छ, the breathy one."
+            "Palm near your mouth: chaa-dar.",
+            "Do you feel a puff of air?",
+            "Chaadar starts with ___.",
+            "च — no puff: चादर."
           ],
           "targetsMisconception": "c2-hindi-ch20-t01-mc-chha-cha",
           "verified": {
-            "solverAnswer": "छ",
+            "solverAnswer": "च",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-chha-cha."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-chha-cha word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -9414,7 +9463,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "One correct. Stem bundles two questions (can it? / why write it?); options answer both, fine. i05+i06 split the same probe into items. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "One correct. Stem bundles two questions (can it? / why write it?); options answer both, fine. i05+i06 split the same probe into items. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -9434,14 +9483,14 @@
             "prompt_hi": "‘हाथी’ में ‘थ’ (हवा वाली) है या ‘त’?",
             "options": [
               {
-                "text": "थ",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "त",
                 "misconceptionId": "c2-hindi-ch21-t01-mc-tha-ta",
                 "correct": false
+              },
+              {
+                "text": "थ",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -9449,7 +9498,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -9668,24 +9717,25 @@
           "skillId": "c2-hindi-ch21-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Does हाथी have थ or त?",
-          "prompt_hi": "‘हाथी’ में ‘थ’ (हवा वाली) है या ‘त’?",
-          "answer": "थ",
+          "prompt_en": "The elephant rode the cycle very fast (तेज़). Does तेज़ start with the breathy थ or with त?",
+          "prompt_hi": "हाथी साइकिल पर बहुत ‘तेज़’ चला। ‘तेज़’ ‘थ’ (हवा वाली) से शुरू होता है या ‘त’ से?",
+          "answer": "त",
           "acceptable": [
-            "tha",
-            "थ वाला"
+            "ta",
+            "त से",
+            "बिना हवा वाला"
           ],
           "hints": [
-            "Palm in front of your mouth.",
-            "Do you feel air on the second part?",
-            "Haa-___-ee.",
-            "थ — हाथी."
+            "Palm in front of your mouth: tez.",
+            "Do you feel a puff of air?",
+            "Tez starts with ___.",
+            "त — no puff: तेज़."
           ],
           "targetsMisconception": "c2-hindi-ch21-t01-mc-tha-ta",
           "verified": {
-            "solverAnswer": "थ",
+            "solverAnswer": "त",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-tha-ta."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-tha-ta word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -9719,8 +9769,8 @@
           "skillId": "c2-hindi-ch21-t01-s4",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "साइकिल: say it in parts. Which vowel letter comes after सा?",
-          "prompt_hi": "‘साइकिल’ टुकड़ों में बोलो — सा... इ... किल। ‘सा’ के बाद कौन-सा स्वर आता है?",
+          "prompt_en": "Say साइकिल slowly, in parts. Which vowel letter comes right after सा?",
+          "prompt_hi": "‘साइकिल’ धीरे-धीरे, टुकड़ों में बोलो। ‘सा’ के ठीक बाद कौन-सा स्वर अक्षर आता है?",
           "answer": "इ",
           "acceptable": [
             "i",
@@ -9728,15 +9778,15 @@
             "इ अक्षर"
           ],
           "hints": [
-            "Clap each part.",
-            "The second clap is just a vowel.",
+            "Clap each part as you say it.",
+            "After saa comes a part that is only a vowel.",
             "Saa — ___ — kil.",
             "इ — the vowel letter, then किल."
           ],
           "verified": {
             "solverAnswer": "इ",
             "agrees": true,
-            "note": "The stem spells the answer out: 'सा... इ... किल। ‘सा’ के बाद कौन-सा स्वर आता है?' — the voice says इ before asking for it. Split as 'साइ...किल' or ask the child to split it."
+            "note": "Fixed 2026-10-02: the stem split the word as 'सा... इ... किल', saying the answer before asking for it; the child now splits it. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -9847,14 +9897,14 @@
             "prompt_hi": "सुबह सूरज किस दिशा से निकलता है?",
             "options": [
               {
-                "text": "पूरब",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "पश्चिम",
                 "misconceptionId": "c2-hindi-ch22-t01-mc-sun-west",
                 "correct": false
+              },
+              {
+                "text": "पूरब",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -9862,7 +9912,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -9897,7 +9947,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -9932,7 +9982,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -9971,8 +10021,8 @@
           "skillId": "c2-hindi-ch22-t01-s1",
           "kind": "retrieval",
           "difficulty": 2,
-          "prompt_en": "Poem: 'Paschim mein chhip jaaye.' Where does the sun hide in the evening?",
-          "prompt_hi": "कविता — ‘पश्चिम में छिप जाए।’ शाम को सूरज किस दिशा में छिपता है?",
+          "prompt_en": "In the poem the sun comes up in the east in the morning. In which direction does it hide in the evening?",
+          "prompt_hi": "कविता में सूरज सुबह पूरब से निकलता है। बताओ, शाम को सूरज किस दिशा में छिप जाता है?",
           "answer": "पश्चिम",
           "acceptable": [
             "paschim",
@@ -9981,7 +10031,7 @@
           ],
           "hints": [
             "The opposite side of the morning sun.",
-            "Listen to the line.",
+            "Think of the poem's line about the evening.",
             "Sooraj ___ mein chhipta hai.",
             "पश्चिम (west)."
           ],
@@ -9989,7 +10039,7 @@
           "verified": {
             "solverAnswer": "पश्चिम",
             "agrees": true,
-            "note": "The stem quotes 'पश्चिम में छिप जाए' and then asks where the sun hides — answer is in the prompt; does not test recall or the sun-west misconception it targets."
+            "note": "Fixed 2026-10-02: the stem quoted 'पश्चिम में छिप जाए' before asking where the sun hides; it now gives only the morning line. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -9997,27 +10047,28 @@
           "skillId": "c2-hindi-ch22-t01-s2",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "In the morning, from which direction does the sun rise?",
-          "prompt_hi": "सुबह सूरज किस दिशा से निकलता है — पूरब या पश्चिम?",
+          "prompt_en": "In the morning, on your way to school, the sun is right in front of you. Which direction are you walking towards — east or west?",
+          "prompt_hi": "सुबह स्कूल जाते समय सूरज ठीक तुम्हारे सामने है। तो तुम किस दिशा की ओर जा रहे हो — पूरब या पश्चिम?",
           "answer": "पूरब",
           "acceptable": [
             "poorab",
             "purab",
             "east",
             "पूर्व",
-            "poorv"
+            "poorv",
+            "पूरब की ओर"
           ],
           "hints": [
-            "Remember the first line of the poem.",
-            "Where is the sun at breakfast time?",
-            "Sooraj ___ se nikalta hai.",
-            "पूरब (east)."
+            "Where is the sun in the morning?",
+            "The poem says where the sun comes up.",
+            "I am walking towards ___.",
+            "पूरब (east) — the morning sun is in the east."
           ],
           "targetsMisconception": "c2-hindi-ch22-t01-mc-sun-west",
           "verified": {
             "solverAnswer": "पूरब",
             "agrees": true,
-            "note": "Near-verbatim duplicate of diagnostic mc-sun-west."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-sun-west word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -10100,27 +10151,29 @@
         {
           "id": "c2-hindi-ch22-t01-i07",
           "skillId": "c2-hindi-ch22-t01-s3",
-          "kind": "contrast",
+          "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Which is right: पशचिम or पश्चिम?",
-          "prompt_hi": "कौन-सा ठीक है — ‘पशचिम’ या ‘पश्चिम’?",
-          "answer": "पश्चिम",
+          "prompt_en": "Say पश्चिम slowly. One letter in it is half, and joins the next letter. Which one?",
+          "prompt_hi": "‘पश्चिम’ धीरे-धीरे बोलो। इसमें एक अक्षर आधा है, जो अगले अक्षर से जुड़ जाता है। वो कौन-सा है?",
+          "answer": "श् (आधा श)",
           "acceptable": [
-            "paschim",
-            "pashchim",
-            "आधा श वाला"
+            "आधा श",
+            "श",
+            "श्",
+            "aadha sha",
+            "half sha"
           ],
           "hints": [
-            "Say the direction fast.",
-            "Is the 'sh' a full sound or half?",
-            "Pa + ___ + chim.",
-            "पश्चिम, with half श् joined to च."
+            "Say pash-chim slowly.",
+            "Which sound has no vowel of its own?",
+            "Half ___ joins च.",
+            "आधा श् — श्च in पश्चिम."
           ],
           "targetsMisconception": "c2-hindi-ch22-t01-mc-conj-split",
           "verified": {
-            "solverAnswer": "पश्चिम",
+            "solverAnswer": "श् (आधा श)",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-conj-split."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-conj-split word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -10180,25 +10233,27 @@
           "skillId": "c2-hindi-ch22-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Four of them: 'chaar disha' or 'chaar dishaayen'?",
-          "prompt_hi": "चार हों तो — ‘चार दिशा’ या ‘चार दिशाएँ’?",
-          "answer": "चार दिशाएँ",
+          "prompt_en": "Which is right: 'Rani ne do kavita yaad keen' or 'Rani ne do kavitaayen yaad keen'?",
+          "prompt_hi": "कौन-सा ठीक है — ‘रानी ने दो कविता याद कीं’ या ‘रानी ने दो कविताएँ याद कीं’?",
+          "answer": "दो कविताएँ",
           "acceptable": [
-            "dishaayen",
-            "dishayen",
-            "दिशाएँ"
+            "do kavitaayen",
+            "kavitaayen",
+            "kavitayen",
+            "कविताएँ",
+            "रानी ने दो कविताएँ याद कीं"
           ],
           "hints": [
-            "Look at the poem's title.",
+            "Say: ek kavita, do...?",
             "Many of them take -एँ.",
-            "Chaar dish___.",
-            "चार दिशाएँ."
+            "Do kavit___.",
+            "दो कविताएँ."
           ],
           "targetsMisconception": "c2-hindi-ch22-t01-mc-plural-same",
           "verified": {
-            "solverAnswer": "चार दिशाएँ",
+            "solverAnswer": "दो कविताएँ",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-plural-same. Hint 1 ('Look at the poem's title') leaks the answer at rung 1 if the title is 'चार दिशाएँ'."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-plural-same (also removes the rung-1 'poem's title' leak) word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -10352,7 +10407,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "One correct; correct option is longer and carries the reason (shape cue); cosmetic. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "One correct; correct option is longer and carries the reason (shape cue); cosmetic. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -10387,7 +10442,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -10452,28 +10507,31 @@
         {
           "id": "c2-hindi-ch23-t01-i03",
           "skillId": "c2-hindi-ch23-t01-s3",
-          "kind": "contrast",
-          "difficulty": 2,
-          "prompt_en": "When Gudiya walked, the moon seemed to walk with her. Was it really following her?",
-          "prompt_hi": "गुड़िया चलती तो चाँद भी साथ चलता लगता। क्या चाँद सच में उसका पीछा कर रहा था?",
-          "answer": "नहीं, चाँद बहुत दूर है, इसलिए साथ चलता दिखता है",
+          "kind": "predict",
+          "difficulty": 3,
+          "prompt_en": "Gudiya felt the moon was walking with her. At the same time her friend was walking the other way down the road. Whom will the moon seem to walk with, for the friend?",
+          "prompt_hi": "गुड़िया को लगा कि चाँद उसके साथ-साथ चल रहा है। उसी समय उसका दोस्त सड़क पर उल्टी तरफ़ चल रहा था। दोस्त को चाँद किसके साथ चलता दिखेगा?",
+          "answer": "दोस्त को अपने ही साथ — चाँद बहुत दूर है, इसलिए हर चलने वाले को अपने साथ चलता दिखता है",
           "acceptable": [
-            "नहीं",
-            "nahin",
+            "दोस्त के साथ",
+            "अपने साथ",
+            "dost ke saath",
+            "सबके साथ",
+            "sabke saath",
             "बहुत दूर है",
             "bahut door"
           ],
           "hints": [
-            "Is the moon near or very far?",
-            "Far things look like they stay with us.",
-            "No, the moon is very ___.",
-            "No — it is very far away, so it only looks like it follows."
+            "Does the moon belong to one person?",
+            "Remember: it is very, very far away.",
+            "For the friend, it seems to walk with ___.",
+            "With the friend — the moon is so far that it seems to walk with everyone."
           ],
           "targetsMisconception": "c2-hindi-ch23-t01-mc-moon-follows",
           "verified": {
-            "solverAnswer": "नहीं, चाँद बहुत दूर है",
+            "solverAnswer": "दोस्त को अपने ही साथ — चाँद बहुत दूर है, इसलिए हर चलने वाले को अपने साथ चलता दिखता है",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-moon-follows."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-moon-follows word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -10583,26 +10641,28 @@
         {
           "id": "c2-hindi-ch23-t01-i08",
           "skillId": "c2-hindi-ch23-t01-s2",
-          "kind": "contrast",
+          "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Listen: चदा and चंदा. Which is the moon's name?",
-          "prompt_hi": "सुनो — ‘चदा’ और ‘चंदा’। चाँद का प्यारा नाम कौन-सा है?",
-          "answer": "चंदा",
+          "prompt_en": "When we write चंदा, which mark goes on top of च — the dot (ं) or the moon-and-dot (ँ)?",
+          "prompt_hi": "‘चंदा’ लिखते समय ‘च’ के ऊपर कौन-सा निशान लगता है — बिंदी (ं) या चंद्रबिंदु (ँ)?",
+          "answer": "बिंदी (ं)",
           "acceptable": [
-            "chanda",
-            "बिंदी वाला"
+            "बिंदी",
+            "ं",
+            "bindi",
+            "अनुस्वार"
           ],
           "hints": [
-            "Hum with your nose for both.",
-            "Which one hums?",
-            "The moon's name is ___.",
-            "चंदा, with the nose dot."
+            "Chaand and chanda are both moon words, but their nose marks are different.",
+            "Chanda's nose mark is the same one as in रंग.",
+            "Chanda gets a ___ on top.",
+            "बिंदी (ं): चंदा. चाँद gets ँ."
           ],
           "targetsMisconception": "c2-hindi-ch23-t01-mc-nasal-mix",
           "verified": {
-            "solverAnswer": "चंदा",
+            "solverAnswer": "बिंदी (ं)",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-nasal-mix."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-nasal-mix word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -10637,24 +10697,25 @@
           "skillId": "c2-hindi-ch23-t01-s4",
           "kind": "retrieval",
           "difficulty": 3,
-          "prompt_en": "Tell the walk in order: moon with her, cloud came, moon came out again, reached home.",
-          "prompt_hi": "गुड़िया की सैर क्रम से सुनाओ — चाँद साथ चला, बादल आया, चाँद फिर निकला, घर पहुँचे।",
-          "answer": "पहले चाँद साथ चलता दिखा, फिर बादल में छिपा, फिर निकल आया, फिर वे घर पहुँचे",
+          "prompt_en": "Tell Gudiya's walk in the right order: (a) they reached home (b) a cloud came (c) the moon seemed to walk along (d) the moon came out again.",
+          "prompt_hi": "गुड़िया की सैर सही क्रम में सुनाओ — (क) घर पहुँचे (ख) बादल आया (ग) चाँद साथ चलता दिखा (घ) चाँद फिर निकला।",
+          "answer": "ग, ख, घ, क",
           "acceptable": [
-            "पहले चाँद साथ",
-            "फिर बादल",
-            "फिर घर"
+            "ग ख घ क",
+            "ga kha gha ka",
+            "c b d a",
+            "पहले चाँद साथ चला, फिर बादल आया, फिर चाँद निकला, फिर घर पहुँचे"
           ],
           "hints": [
-            "What did the moon do first?",
-            "What came in between?",
-            "Pehle ___, phir ___, phir ___.",
-            "Moon along → hides in cloud → comes out → home."
+            "What did Gudiya see first in the sky?",
+            "What came in between and hid the moon?",
+            "Pehle ___, phir ___, phir ___, aakhir mein ___.",
+            "ग → ख → घ → क: moon along, cloud, moon out again, home."
           ],
           "verified": {
-            "solverAnswer": "चाँद साथ चला → बादल आया → चाँद फिर निकला → घर पहुँचे",
+            "solverAnswer": "ग, ख, घ, क",
             "agrees": true,
-            "note": "The stem lists the four events in order and then asks the child to tell them in order — the answer is read out in the prompt (d3 retrieval with no recall). Give them shuffled, as other topics do with (क)(ख)(ग)."
+            "note": "Fixed 2026-10-02: the stem listed the four events already in order; they are now shuffled as (क)-(घ). Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -10763,7 +10824,7 @@
         },
         {
           "id": "c2-hindi-ch24-t01-s3",
-          "title": "Understands that the moon in the pond is a reflection (परछाईं), not the real moon",
+          "title": "Understands that the moon in the pond is a reflection (प्रतिबिंब / अक्स), not the real moon",
           "prereqSkillIds": [
             "c2-hindi-ch24-t01-s1"
           ]
@@ -10793,7 +10854,7 @@
             "prompt_hi": "तालाब में चाँद दिख रहा था। क्या चाँद सच में तालाब में गिर गया था?",
             "options": [
               {
-                "text": "नहीं, वो पानी में चाँद की परछाईं थी; असली चाँद आसमान में था",
+                "text": "नहीं, वो पानी में चाँद का प्रतिबिंब (अक्स) था; असली चाँद आसमान में था",
                 "misconceptionId": null,
                 "correct": true
               },
@@ -10808,7 +10869,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "One correct. Word choice: ‘परछाईं’ strictly means shadow; for a reflection standard Hindi is ‘प्रतिबिंब’ / ‘अक्स’ / ‘पानी में चाँद की तस्वीर’. Colloquially tolerated, but it teaches shadow = reflection, which NCERT science later separates (class 6 light, shadows and reflections). Applies to the whole topic (skill s3, i05, i06, i07, i12). (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: ‘परछाईं’ (shadow) replaced by ‘प्रतिबिंब (अक्स)’ (reflection) across ch24 — skill s3, this option, i05, i06, i07, i12 and the worked example — since NCERT science later separates shadow from reflection. ‘परछाईं’ stays only in acceptable[] as the colloquial word a child may say. One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -10827,14 +10888,14 @@
             "prompt_hi": "‘मुसकाए’ से तुक किसकी मिलती है — ‘लहराए’ या ‘मछली’?",
             "options": [
               {
-                "text": "लहराए",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "मछली, क्योंकि दोनों ‘म’ से शुरू होते हैं",
                 "misconceptionId": "c2-hindi-ch24-t01-mc-rhyme-start",
                 "correct": false
+              },
+              {
+                "text": "लहराए, क्योंकि दोनों के आख़िर में ‘आए’ है",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -10842,7 +10903,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Distractor carries a reason clause the correct option lacks (shape cue); cosmetic. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: only the distractor carried a reason clause ('…क्योंकि दोनों ‘_’ से शुरू होते हैं'), so the longer option cued itself; the correct option now carries a matching reason (same ending). One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -10959,27 +11020,30 @@
           "skillId": "c2-hindi-ch24-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Did the moon really fall into the pond?",
-          "prompt_hi": "क्या चाँद सच में तालाब में गिर गया था?",
-          "answer": "नहीं, वो पानी में चाँद की परछाईं थी",
+          "prompt_en": "The pebble fell — the moon in the water broke into pieces. Did the real moon in the sky break too?",
+          "prompt_hi": "कंकर गिरा तो पानी वाला चाँद टुकड़े-टुकड़े हो गया। क्या आसमान वाला असली चाँद भी टूट गया?",
+          "answer": "नहीं, असली चाँद आसमान में पूरा था; पानी में सिर्फ़ उसका प्रतिबिंब हिला",
           "acceptable": [
             "नहीं",
-            "परछाईं",
             "nahin",
-            "parchhai",
+            "असली चाँद पूरा था",
+            "सिर्फ़ प्रतिबिंब",
+            "प्रतिबिंब हिला",
+            "अक्स",
+            "परछाईं",
             "reflection"
           ],
           "hints": [
-            "Look up — where is the real moon?",
-            "Water can show pictures like a mirror.",
-            "No — it was the moon's ___.",
-            "No — it was the moon's reflection; the real moon was in the sky."
+            "Look up — what does the real moon look like?",
+            "Did the pebble go up to the sky?",
+            "No — only the moon's ___ in the water broke.",
+            "No — the real moon stayed whole; only its reflection (प्रतिबिंब) in the water shook."
           ],
           "targetsMisconception": "c2-hindi-ch24-t01-mc-moon-fell",
           "verified": {
-            "solverAnswer": "नहीं, परछाईं/प्रतिबिंब था",
+            "solverAnswer": "नहीं, असली चाँद आसमान में पूरा था; पानी में सिर्फ़ उसका प्रतिबिंब हिला",
             "agrees": true,
-            "note": "Near-verbatim duplicate of diagnostic mc-moon-fell. See परछाईं-vs-प्रतिबिंब note on the diagnostic."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-moon-fell (also uses प्रतिबिंब instead of परछाईं) word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -10989,11 +11053,15 @@
           "difficulty": 3,
           "prompt_en": "When the water became still again, the moon came back whole. Why?",
           "prompt_hi": "पानी फिर शांत हुआ तो चाँद फिर पूरा दिखने लगा। क्यों?",
-          "answer": "क्योंकि वो परछाईं थी; पानी शांत होने पर परछाईं फिर पूरी दिखती है",
+          "answer": "क्योंकि वो चाँद का प्रतिबिंब था; पानी शांत होने पर प्रतिबिंब फिर पूरा दिखता है",
           "acceptable": [
-            "परछाईं",
+            "प्रतिबिंब",
+            "अक्स",
+            "pratibimb",
+            "aks",
             "पानी शांत",
             "shaant",
+            "परछाईं",
             "parchhai"
           ],
           "hints": [
@@ -11004,9 +11072,9 @@
           ],
           "targetsMisconception": "c2-hindi-ch24-t01-mc-moon-fell",
           "verified": {
-            "solverAnswer": "पानी शांत होने पर प्रतिबिंब फिर पूरा दिखता है",
+            "solverAnswer": "क्योंकि वो चाँद का प्रतिबिंब था; पानी शांत होने पर प्रतिबिंब फिर पूरा दिखता है",
             "agrees": true,
-            "note": "Solved blind; matches key. Hindi, class-2 level, EN gloss and hint ladder OK."
+            "note": "Fixed 2026-10-02: ‘परछाईं’ (shadow) replaced by ‘प्रतिबिंब’ (reflection) in the key; परछाईं kept only as an accepted colloquial answer. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -11014,8 +11082,8 @@
           "skillId": "c2-hindi-ch24-t01-s3",
           "kind": "far_transfer",
           "difficulty": 3,
-          "prompt_en": "Where else can you see your own reflection at home?",
-          "prompt_hi": "घर में और कहाँ तुम अपनी परछाईं (शीशे जैसी) देख सकते हो?",
+          "prompt_en": "Just as the moon showed up in the pond water, where else at home can you see your own reflection?",
+          "prompt_hi": "जैसे ताल के पानी में चाँद दिखा, वैसे ही घर में और कहाँ तुम अपना प्रतिबिंब (अक्स) देख सकते हो?",
           "answer": "शीशे में, स्टील की थाली में, बाल्टी के पानी में",
           "acceptable": [
             "शीशा",
@@ -11030,13 +11098,13 @@
           "hints": [
             "Where do you look while combing hair?",
             "Shiny steel things too.",
-            "Main apni parchhai ___ mein dekhta hoon.",
+            "Main apna pratibimb ___ mein dekhta hoon.",
             "Mirror, steel plate, a bucket of water."
           ],
           "verified": {
-            "solverAnswer": "शीशा, स्टील की थाली, बाल्टी का पानी",
+            "solverAnswer": "शीशे में, स्टील की थाली में, बाल्टी के पानी में",
             "agrees": true,
-            "note": "Stem glosses परछाईं as '(शीशे जैसी)' — a mirror image is a reflection, not a shadow; use प्रतिबिंब/अक्स here."
+            "note": "Fixed 2026-10-02: ‘परछाईं (शीशे जैसी)’ replaced by ‘प्रतिबिंब (अक्स)’ — a mirror image is a reflection, not a shadow. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -11070,24 +11138,24 @@
           "skillId": "c2-hindi-ch24-t01-s2",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Which rhymes with मुसकाए: लहराए or मछली?",
-          "prompt_hi": "‘मुसकाए’ से तुक किसकी मिलती है — ‘लहराए’ या ‘मछली’?",
-          "answer": "लहराए",
+          "prompt_en": "Which word sits in rhyme with लहराए — नहाए or लड्डू?",
+          "prompt_hi": "‘लहराए’ के साथ कौन-सा शब्द तुक में बैठता है — ‘नहाए’ या ‘लड्डू’?",
+          "answer": "नहाए",
           "acceptable": [
-            "lehraaye",
-            "lahraye"
+            "nahaaye",
+            "nahaye"
           ],
           "hints": [
             "Keep only the ending.",
             "Which choice ends in -aaye?",
-            "Muskaa-ye, lehraa-___.",
-            "लहराए."
+            "Lehraa-ye and ___.",
+            "नहाए."
           ],
           "targetsMisconception": "c2-hindi-ch24-t01-mc-rhyme-start",
           "verified": {
-            "solverAnswer": "लहराए",
+            "solverAnswer": "नहाए",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-rhyme-start."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-rhyme-start word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -11095,7 +11163,7 @@
           "skillId": "c2-hindi-ch24-t01-s2",
           "kind": "near_transfer",
           "difficulty": 3,
-          "prompt_en": "Make a new -आए word, like गाए or खाए.",
+          "prompt_en": "Tell me another word that ends in -आए.",
           "prompt_hi": "‘-आए’ पर ख़त्म होने वाला कोई और शब्द बोलो।",
           "answer": "-आए वाला शब्द, जैसे गाए",
           "acceptable": [
@@ -11117,9 +11185,9 @@
           ],
           "targetsMisconception": "c2-hindi-ch24-t01-mc-rhyme-start",
           "verified": {
-            "solverAnswer": "गाए / खाए / जाए",
+            "solverAnswer": "-आए वाला शब्द, जैसे गाए",
             "agrees": true,
-            "note": "prompt_en supplies the examples ('like गाए or खाए') that prompt_hi omits; those are the first acceptable answers — EN lane easier, gloss not faithful."
+            "note": "Fixed 2026-10-02: prompt_en dropped the examples 'like गाए or खाए' that HI does not give. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -11155,9 +11223,11 @@
           "difficulty": 3,
           "prompt_en": "Teach your toy the poem and explain where the moon really was.",
           "prompt_hi": "अपने खिलौने को कविता सुनाओ और बताओ कि असली चाँद कहाँ था।",
-          "answer": "कविता की पंक्तियाँ + असली चाँद आसमान में था, ताल में उसकी परछाईं थी",
+          "answer": "कविता की पंक्तियाँ + असली चाँद आसमान में था, ताल में उसका प्रतिबिंब था",
           "acceptable": [
             "आसमान में",
+            "प्रतिबिंब",
+            "अक्स",
             "परछाईं"
           ],
           "hints": [
@@ -11167,25 +11237,25 @@
             "Sky — and a reflection in the water."
           ],
           "verified": {
-            "solverAnswer": "असली चाँद आसमान में, ताल में उसका प्रतिबिंब",
+            "solverAnswer": "कविता की पंक्तियाँ + असली चाँद आसमान में था, ताल में उसका प्रतिबिंब था",
             "agrees": true,
-            "note": "Solved blind; matches key. Hindi, class-2 level, EN gloss and hint ladder OK."
+            "note": "Fixed 2026-10-02: ‘परछाईं’ replaced by ‘प्रतिबिंब’ in the key; परछाईं kept only as an accepted colloquial answer. Key checked by the fix pass (not an independent blind re-solve)."
           }
         }
       ],
       "workedExample": {
         "problem": "पानी की थाली में ऊपर का बल्ब दिख रहा है। उँगली से पानी हिलाओ — क्या होगा?",
         "steps": [
-          "थाली में बल्ब की परछाईं दिखी",
-          "उँगली से पानी हिलाया — परछाईं टुकड़े-टुकड़े होकर हिलने लगी",
+          "थाली के पानी में बल्ब का प्रतिबिंब दिखा",
+          "उँगली से पानी हिलाया — प्रतिबिंब टुकड़े-टुकड़े होकर हिलने लगा",
           "ऊपर देखो — असली बल्ब वैसा ही है",
-          "पानी शांत हुआ — परछाईं फिर पूरी; ताल में चाँद भी ऐसे ही दिखता है"
+          "पानी शांत हुआ — प्रतिबिंब फिर पूरा; ताल में चाँद भी ऐसे ही दिखता है"
         ],
         "fadedVersion": [
-          "थाली में बल्ब की ___ दिखी",
-          "पानी हिलाया — परछाईं ___ होकर हिलने लगी",
+          "थाली के पानी में बल्ब का ___ दिखा",
+          "पानी हिलाया — प्रतिबिंब ___ होकर हिलने लगा",
           "ऊपर देखो — असली बल्ब ___ है",
-          "पानी शांत हुआ — परछाईं फिर ___"
+          "पानी शांत हुआ — प्रतिबिंब फिर ___"
         ]
       },
       "formats": {
@@ -11258,14 +11328,14 @@
             "prompt_hi": "‘बड़ा’ में ‘ड’ (डमरू वाली) है या ‘ड़’ (सड़क वाली)?",
             "options": [
               {
-                "text": "ड़",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "ड",
                 "misconceptionId": "c2-hindi-ch25-t01-mc-da-dda",
                 "correct": false
+              },
+              {
+                "text": "ड़",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -11273,7 +11343,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -11293,12 +11363,12 @@
             "prompt_hi": "पत्ता, कुकुरमुत्ता, बरगद का पेड़ — इनमें सबसे बड़ा कौन है?",
             "options": [
               {
-                "text": "बरगद का पेड़",
+                "text": "बरगद का पेड़, क्योंकि वो बाक़ी दोनों से बड़ा है",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "तीनों सबसे बड़े हैं",
+                "text": "कुकुरमुत्ता, क्योंकि वो पत्ते से बड़ा है",
                 "misconceptionId": "c2-hindi-ch25-t01-mc-superlative",
                 "correct": false
               }
@@ -11308,7 +11378,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "One correct, but the distractor 'तीनों सबसे बड़े हैं' is implausible and does not encode the target error (using बड़ा/सबसे बड़ा without comparing); a stronger distractor is 'कुकुरमुत्ता, क्योंकि वो पत्ते से बड़ा है'. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: the implausible distractor 'तीनों सबसे बड़े हैं' replaced by 'कुकुरमुत्ता, क्योंकि वो पत्ते से बड़ा है' (bigger than one, not biggest of all — the target error); both options now carry a reason. One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -11328,14 +11398,14 @@
             "prompt_hi": "दो छाते हों तो — ‘दो छाता’ या ‘दो छाते’?",
             "options": [
               {
-                "text": "दो छाते",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "दो छाता",
                 "misconceptionId": "c2-hindi-ch25-t01-mc-plural-same",
                 "correct": false
+              },
+              {
+                "text": "दो छाते",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -11343,7 +11413,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -11433,26 +11503,25 @@
           "skillId": "c2-hindi-ch25-t01-s2",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Leaf, mushroom, banyan tree — which is the biggest of all?",
-          "prompt_hi": "पत्ता, कुकुरमुत्ता, बरगद का पेड़ — इनमें सबसे बड़ा कौन है?",
-          "answer": "बरगद का पेड़",
+          "prompt_en": "The leaf is smaller than the mushroom, and the mushroom is smaller than the banyan tree. So which is the smallest of all?",
+          "prompt_hi": "पत्ता कुकुरमुत्ते से छोटा है, और कुकुरमुत्ता बरगद से छोटा है। तो सबसे छोटा कौन है?",
+          "answer": "पत्ता",
           "acceptable": [
-            "बरगद",
-            "bargad",
-            "पेड़",
-            "tree"
+            "patta",
+            "leaf",
+            "पत्ता सबसे छोटा"
           ],
           "hints": [
             "Line them up from small to big.",
-            "Only one can be at the top.",
-            "Sabse bada ___ hai.",
-            "The banyan tree."
+            "Only one can be at the bottom.",
+            "Sabse chhota ___ hai.",
+            "The leaf (पत्ता)."
           ],
           "targetsMisconception": "c2-hindi-ch25-t01-mc-superlative",
           "verified": {
-            "solverAnswer": "बरगद का पेड़",
+            "solverAnswer": "पत्ता",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-superlative."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-superlative word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -11537,25 +11606,25 @@
           "skillId": "c2-hindi-ch25-t01-s3",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "बड़ा — ड (like डमरू) or ड़ (like सड़क)?",
-          "prompt_hi": "‘बड़ा’ में ‘ड’ (डमरू वाली) है या ‘ड़’ (सड़क वाली)?",
-          "answer": "ड़",
+          "prompt_en": "Lightning flashed and the rabbit got scared (डर गया). In डर, is it ड (like डमरू) or ड़ (like सड़क)?",
+          "prompt_hi": "बिजली कड़की तो खरगोश ‘डर’ गया। ‘डर’ में ‘ड’ (डमरू वाली) है या ‘ड़’ (सड़क वाली)?",
+          "answer": "ड",
           "acceptable": [
-            "सड़क वाली",
-            "neeche bindi wala",
-            "दूसरी वाली"
+            "डमरू वाली",
+            "पहली वाली",
+            "bina bindi wala"
           ],
           "hints": [
-            "Say the big-word and feel your tongue.",
-            "Does it flick?",
-            "It is the flicked ___.",
-            "ड़ — with the dot below."
+            "Say dar and feel your tongue at the start.",
+            "Does it press or flick?",
+            "The tongue presses, so it is ___.",
+            "ड — no dot below: डर."
           ],
           "targetsMisconception": "c2-hindi-ch25-t01-mc-da-dda",
           "verified": {
-            "solverAnswer": "ड़",
+            "solverAnswer": "ड",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-da-dda."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-da-dda word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -11563,7 +11632,7 @@
           "skillId": "c2-hindi-ch25-t01-s3",
           "kind": "error_spot",
           "difficulty": 3,
-          "prompt_en": "Someone wrote बडा without the dot. Fix it.",
+          "prompt_en": "Someone wrote बड़ा as ‘बडा’. Fix it.",
           "prompt_hi": "किसी ने ‘बड़ा’ को ‘बडा’ लिखा। ठीक करो।",
           "answer": "बड़ा — ड़ के नीचे बिंदी लगेगी",
           "acceptable": [
@@ -11580,9 +11649,9 @@
           ],
           "targetsMisconception": "c2-hindi-ch25-t01-mc-da-dda",
           "verified": {
-            "solverAnswer": "बड़ा (ड़ के नीचे बिंदी)",
+            "solverAnswer": "बड़ा — ड़ के नीचे बिंदी लगेगी",
             "agrees": true,
-            "note": "prompt_en 'wrote बडा without the dot' states the answer in the English lane; prompt_hi only says 'ठीक करो'. Remove 'without the dot'."
+            "note": "Fixed 2026-10-02: prompt_en no longer says 'without the dot'; it now glosses HI 'ठीक करो'. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -11590,24 +11659,26 @@
           "skillId": "c2-hindi-ch25-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Two umbrellas: 'do chhaata' or 'do chhaate'?",
-          "prompt_hi": "दो छाते हों तो — ‘दो छाता’ या ‘दो छाते’?",
-          "answer": "दो छाते",
+          "prompt_en": "Which is right: 'bargad par bahut saare patta hain' or 'bargad par bahut saare patte hain'?",
+          "prompt_hi": "कौन-सा ठीक है — ‘बरगद पर बहुत सारे पत्ता हैं’ या ‘बरगद पर बहुत सारे पत्ते हैं’?",
+          "answer": "बहुत सारे पत्ते",
           "acceptable": [
-            "do chhaate",
-            "छाते"
+            "patte",
+            "पत्ते",
+            "bahut saare patte",
+            "बरगद पर बहुत सारे पत्ते हैं"
           ],
           "hints": [
-            "Say: ek chhaata, do...?",
-            "Like kela → kele.",
-            "Do chhaat___.",
-            "दो छाते."
+            "Say: ek patta, do...?",
+            "Like chhaata → chhaate.",
+            "Bahut saare patt___.",
+            "बहुत सारे पत्ते."
           ],
           "targetsMisconception": "c2-hindi-ch25-t01-mc-plural-same",
           "verified": {
-            "solverAnswer": "दो छाते",
+            "solverAnswer": "बहुत सारे पत्ते",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-plural-same. All three diagnostics in this topic are copied as items (i04, i08, i10)."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-plural-same word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -11759,7 +11830,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Solved blind; exactly one correct option; distractor maps to this misconception; prompt_en faithful. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -11779,14 +11850,14 @@
             "prompt_hi": "बारिश कौन-से बादल लाते हैं — काले-काले घने बादल या छोटे सफ़ेद बादल?",
             "options": [
               {
-                "text": "काले-काले घने बादल",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "छोटे सफ़ेद बादल भी अभी बारिश लाएँगे",
                 "misconceptionId": "c2-hindi-ch26-t01-mc-white-rain",
                 "correct": false
+              },
+              {
+                "text": "काले-काले घने बादल",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -11794,7 +11865,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "One correct; acceptable simplification for class 2. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "One correct; acceptable simplification for class 2. (Stored option order varied 2026-10-02; server/director/items.js also shuffles per lesson.)"
             }
           },
           "remediation": {
@@ -11813,14 +11884,14 @@
             "prompt_hi": "‘बजाए’ से तुक किसकी मिलती है — ‘बरसाए’ या ‘बकरी’?",
             "options": [
               {
-                "text": "बरसाए",
-                "misconceptionId": null,
-                "correct": true
-              },
-              {
                 "text": "बकरी, क्योंकि दोनों ‘ब’ से शुरू होते हैं",
                 "misconceptionId": "c2-hindi-ch26-t01-mc-rhyme-start",
                 "correct": false
+              },
+              {
+                "text": "बरसाए, क्योंकि दोनों के आख़िर में ‘आए’ है",
+                "misconceptionId": null,
+                "correct": true
               }
             ],
             "verified": {
@@ -11828,7 +11899,7 @@
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
-              "note": "Distractor carries a reason clause the correct option lacks (shape cue); cosmetic. (Correct option stored at index 0 as in all 64 diagnostics; server/director/items.js shuffles per lesson.)"
+              "note": "Fixed 2026-10-02: only the distractor carried a reason clause ('…क्योंकि दोनों ‘_’ से शुरू होते हैं'), so the longer option cued itself; the correct option now carries a matching reason (same ending). One correct option. Key checked by the fix pass (not an independent blind re-solve)."
             }
           },
           "remediation": {
@@ -11938,27 +12009,29 @@
         {
           "id": "c2-hindi-ch26-t01-i05",
           "skillId": "c2-hindi-ch26-t01-s3",
-          "kind": "contrast",
+          "kind": "predict",
           "difficulty": 2,
-          "prompt_en": "Which clouds bring rain: dark black clouds or small white ones?",
-          "prompt_hi": "बारिश कौन-से बादल लाते हैं — काले घने बादल या छोटे सफ़ेद बादल?",
-          "answer": "काले घने बादल",
+          "prompt_en": "The sky has only small white clouds. Will heavy rain come right now?",
+          "prompt_hi": "आसमान में सिर्फ़ छोटे-छोटे सफ़ेद बादल हैं। क्या अभी झम-झम बारिश आएगी?",
+          "answer": "शायद नहीं — बारिश काले घने बादल लाते हैं",
           "acceptable": [
-            "काले बादल",
-            "kaale baadal",
-            "dark clouds"
+            "नहीं",
+            "nahin",
+            "शायद नहीं",
+            "काले बादल लाते हैं",
+            "kaale baadal"
           ],
           "hints": [
-            "Look at the poem's first words.",
             "What colour is the sky just before rain?",
-            "___ baadal baarish laate hain.",
-            "Dark black clouds."
+            "Are small white clouds heavy with water?",
+            "Rain comes from ___ clouds.",
+            "Probably not — dark, thick clouds bring rain."
           ],
           "targetsMisconception": "c2-hindi-ch26-t01-mc-white-rain",
           "verified": {
-            "solverAnswer": "काले घने बादल",
+            "solverAnswer": "शायद नहीं — बारिश काले घने बादल लाते हैं",
             "agrees": true,
-            "note": "Near-verbatim duplicate of diagnostic mc-white-rain. Hint 1 ('Look at the poem's first words' = 'काले-काले बादल') gives the answer at the pump rung."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-white-rain (also removes the rung-1 'poem's first words' leak) word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -12021,24 +12094,24 @@
           "skillId": "c2-hindi-ch26-t01-s2",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Which rhymes with बजाए: बरसाए or बकरी?",
-          "prompt_hi": "‘बजाए’ से तुक किसकी मिलती है — ‘बरसाए’ या ‘बकरी’?",
-          "answer": "बरसाए",
+          "prompt_en": "Like in the poem, the end of लाए sounds like which one — गाए or लड़की?",
+          "prompt_hi": "कविता की तरह, ‘लाए’ के आख़िर की आवाज़ किससे मिलती है — ‘गाए’ से या ‘लड़की’ से?",
+          "answer": "गाए",
           "acceptable": [
-            "barsaaye",
-            "barsaye"
+            "gaaye",
+            "gaye"
           ],
           "hints": [
             "Keep only the ending.",
-            "Which one ends in -aaye?",
-            "Bajaa-ye, barsaa-___.",
-            "बरसाए."
+            "Which choice ends in -aaye?",
+            "Laa-ye and ___.",
+            "गाए."
           ],
           "targetsMisconception": "c2-hindi-ch26-t01-mc-rhyme-start",
           "verified": {
-            "solverAnswer": "बरसाए",
+            "solverAnswer": "गाए",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-rhyme-start."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-rhyme-start word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {
@@ -12046,24 +12119,25 @@
           "skillId": "c2-hindi-ch26-t01-s4",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Does बादल start with ब or व?",
-          "prompt_hi": "‘बादल’ ‘ब’ से शुरू होता है या ‘व’ से?",
-          "answer": "ब",
+          "prompt_en": "वर्षा is another word for rain. Does वर्षा start with ब or व?",
+          "prompt_hi": "‘वर्षा’ बारिश का दूसरा नाम है। ‘वर्षा’ ‘ब’ से शुरू होता है या ‘व’ से?",
+          "answer": "व",
           "acceptable": [
-            "ba",
-            "ब से"
+            "va",
+            "wa",
+            "व से"
           ],
           "hints": [
-            "Do your lips pop at the start?",
-            "Popping lips is the letter with a line inside.",
-            "It starts with ___.",
-            "ब — बादल."
+            "Do your lips pop, or do your teeth touch your lip?",
+            "No pop means the letter without the line inside.",
+            "Varsha starts with ___.",
+            "व — वर्षा."
           ],
           "targetsMisconception": "c2-hindi-ch26-t01-mc-ba-va",
           "verified": {
-            "solverAnswer": "ब",
+            "solverAnswer": "व",
             "agrees": true,
-            "note": "Verbatim duplicate of diagnostic mc-ba-va. All three diagnostics in this topic are copied as items (i05, i08, i09)."
+            "note": "Fixed 2026-10-02: rewritten — it repeated diagnostic mc-ba-va word-for-word, so probe and practice looked identical; now a fresh variant on the same skill and misconception. Key checked by the fix pass (not an independent blind re-solve)."
           }
         },
         {

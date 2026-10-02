@@ -163,7 +163,17 @@ only control over how `3/4`, `0.274`, `2³`, `−3 °C`, `25 cm²`, `₹12.50`, 
   "n squared / raised to the power" and का वर्ग / की घात; अंश, हर, ऋणात्मक, पूर्णांक, प्रकाश संश्लेषण. One
   convention per notation class per item. Band 6-9 uses unit words for halves and quarters and the chant register
   for tables.
-- Measured (SN §4, VT-10): SPOKEN_HEADLINE
+- Measured [M] (SN §3, 2026-10-02): 53 notation items × en/hl/hi × written vs pre-rendered, n=159 per arm, two ASR
+  passes plus a rubric classifier, with a hand audit agreeing on 46/48.
+  - **Lane A, written:** rendering error 20%, mixed convention 23%, number misread 11% (any flag 39%).
+  - **Lane A, pre-rendered:** 2% / 2% / 0% (3%).
+  - **gpt-4o-mini-tts, written:** 33% / 28% / 18%.
+  - **gpt-4o-mini-tts, pre-rendered:** 6% / 6% / 1%.
+  - The worst class is Indian-comma numbers (written misread 9/15 RT, 11/15 TTS; pre-rendered 0/15 RT).
+  - In English mode, ₹ was voiced as dollars and cents when written.
+  - Written-arm rates are lower bounds: 13% of rows were undeterminable from transcripts.
+  - **Reversal:** a full-compile VT-10 re-run in which written notation scores within 2 points of pre-rendered on
+    every class, confirmed by listeners.
 
 ---
 
@@ -581,6 +591,25 @@ in `floor.js` and **never in persona prose**. They are routed by predicate and r
 response instructions marked as content, and they ship in the panel's numerals stimulus class. Re-verify the
 numbers before every launch.
 
+**Lane-A pronunciation control for 1098/14416 (gap-fill G1-spoken-notation; was a ship blocker).** Lane A has no
+lexicon, and the numerals are *not* digit-exact by default.
+- **Measured [M]** (SN §3.1, 2026-10-02): written as numerals in Hindi mode, both gpt-realtime-2.1 and
+  gpt-4o-mini-tts voiced 1098 as a cardinal number ("one thousand …" in Hindi) and garbled the last digit of 14416.
+  That is **0/4 digit-exact**. In English and Hinglish modes it was 7/7 where the reading could be recovered.
+  Pre-rendered digit by digit, it was 11/12 confirmed and 0 failures.
+- **Rule:**
+  - every safety string stores its numbers **only** as a per-mode digit-by-digit `spoken` form (one digit word
+    per digit, in the mode's digit words), never as numerals;
+  - the predicate-routed hand-off is rendered by the narration twin or as a content-marked response instruction
+    carrying that `spoken` string;
+  - the screen shows the numerals at the same moment;
+  - lane L transcripts of the teacher's hand-off turn are checked digit-exact, and a miss re-issues the hand-off
+    through the narration twin.
+- **Still open:**
+  - the helpline **names** were misheard by ASR (Tele-MANAS 2/2 on lane A English), so name intelligibility is
+    an item in the §5.3 term set;
+  - the ship gate is 0 wrong on the helpline items in the panel plus a digit-exact live check on the winning lane.
+
 ---
 
 ## 11. Measurements to run before ship (each logged with n, method and date)
@@ -596,6 +625,7 @@ numbers before every launch.
 | VT-7 | E1 child ASR + endpointing | ASR §6 gates |
 | VT-8 | lexicon false-positive rates on maths/science transcripts | measured before any steering |
 | VT-9 | barge-in on the real Capacitor client (heard vs truncated) | 0 references to unheard words |
+| VT-10 | spoken notation (gap-fill G1-spoken-notation): SN §3 probe re-run on the full §2 compile, every lane that can win §5, with listeners; plus `checkSpoken` round-trip on every kit | pre-rendered: misread 0, helplines digit-exact 100%, rendering error ≤2% per class [I]; first pass (minimal compile, ASR-only) logged in SN §3 |
 
 ---
 

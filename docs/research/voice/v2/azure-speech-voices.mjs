@@ -173,13 +173,15 @@ if (MODE === "synth" || MODE === "all") {
   const jobs = ARMS.flatMap((a) => P.map((p) => [a, p]));
   let k = 0;
   const worker = async () => { while (k < jobs.length) { const [a, p] = jobs[k++];
+    if (rows.some((r) => r.arm === a.arm && r.passage === p.id && r.code)) continue; // resume
     rows = rows.filter((r) => !(r.arm === a.arm && r.passage === p.id));
-    const r = await synth(a, p);
+    let r; for (let i = 0; i < 3; i++) { try { r = await synth(a, p); } catch (e) { r = { err: `EXC ${e.cause?.code || e.message}` }; }
+      if (!r.err || !/EXC|HTTP (429|5)/.test(r.err)) break; await new Promise((res) => setTimeout(res, 3000 * (i + 1))); }
     if (r.err) { rows.push({ arm: a.arm, voice: a.voice, passage: p.id, err: r.err }); console.log(`${a.arm} ${p.id} ERR ${r.err}`); continue; }
     const c = code(used); const f = join(OUT, `${c}.mp3`); writeFileSync(f, r.buf);
     key[c] = { arm: a.arm, voice: a.voice, passage: p.id, styles: a.styles || null, langTag: !!a.langTag };
     const row = { code: c, arm: a.arm, voice: a.voice, passage: p.id, chars: text(p).length, ttfb_ms: Math.round(r.ttfb), hdr_ms: Math.round(r.hdr), total_ms: Math.round(r.total), bytes: r.buf.length, audio_s: dur(f) };
-    rows.push(row); console.log(`${a.arm} ${p.id} ${c} ttfb=${row.ttfb_ms} total=${row.total_ms} dur=${row.audio_s}`);
+    rows.push(row); save(); console.log(`${a.arm} ${p.id} ${c} ttfb=${row.ttfb_ms} total=${row.total_ms} dur=${row.audio_s}`);
   } };
   await Promise.all([worker(), worker()]); save();
 }
@@ -187,7 +189,8 @@ if (MODE === "asr" || MODE === "all") {
   const todo = rows.filter((r) => r.code && (!FILTER || FILTER.test(r.arm)));
   let k = 0;
   const worker = async () => { while (k < todo.length) { const r = todo[k++]; const p = P.find((x) => x.id === r.passage);
-    const t = await asr(join(OUT, `${r.code}.mp3`));
+    if (r.wer !== undefined && MODE !== "asr") continue;
+    let t; try { t = await asr(join(OUT, `${r.code}.mp3`)); } catch (e) { t = { err: `EXC ${e.cause?.code || e.message}` }; }
     if (typeof t !== "string") { r.asr_err = t.err; continue; }
     const ref = refWords(text(p), p.numLang), hyp = words(t, p.numLang);
     Object.assign(r, { asr: t, wer: +wer(ref, hyp).toFixed(3), cer: +cer(ref, hyp).toFixed(3), asr_script: scripts(t) });

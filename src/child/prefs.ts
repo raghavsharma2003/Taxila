@@ -33,11 +33,14 @@ export interface ChildPrefs {
   picture: string | null;
   /** Older: tum / aap, the child's answer wins. */
   address: "tum" | "aap" | null;
+  /** Laptop keyboard shortcuts in the lesson (Space, 1-4, R, H, C, Esc); A9: can be turned off. */
+  shortcuts: boolean;
 }
 
 export const DEFAULT_PREFS: ChildPrefs = {
   captionsAlways: false, sounds: null, haptics: true, talk: "tap", face: "face", quiet: false, world: null,
   largeText: false, calm: false, bandUp: false, theme: "system", mirror: false, hello: false, picture: null, address: null,
+  shortcuts: true,
 };
 
 const key = (cid: string) => `taxila.child.${cid}.prefs`;

@@ -115,7 +115,9 @@ for (const arm of Object.keys(runs).sort()) {
       cached: med(w.map((t) => t.cached)), cachedShare: w.length ? +med(w.map((t) => (t.cached ?? 0) / (t.inTok || 1))).toFixed(3) : null,
       ttfa: med(w.filter((t) => !t.retried).map((t) => t.ttfa)), ttfaP90: (() => { const b = w.filter((t) => !t.retried).map((t) => t.ttfa).filter(Boolean).sort((x, y) => x - y); return b[Math.floor(b.length * 0.9)] ?? null; })(),
       words: med(w.map((t) => t.words)), over25: share((t) => t.words > 25), english: share((t) => t.matrix === "english"), mixed: share((t) => t.matrix === "mixed"),
-      costPerMin: +(perRun.reduce((a, b) => a + b, 0) / (perRun.length || 1)).toFixed(4) };
+      costPerMin: +(perRun.reduce((a, b) => a + b, 0) / (perRun.length || 1)).toFixed(4),
+      // tokens per LESSON minute (= per wall minute for a real child): what one session draws from the deployment TPM quota
+      tpm: Math.round([...new Set(w.map((t) => t.run))].map((r) => w.filter((t) => t.run === r).reduce((n, t) => n + (t.inTok ?? 0) + (t.outTok ?? 0), 0) / (Math.min(hi, A.perSession.find((p) => p.run === r)?.endMin ?? hi) - lo)).reduce((a, b) => a + b, 0) / (perRun.length || 1)) };
   }
   const all = (f) => +(allTurns.filter(f).length / allTurns.length).toFixed(3);
   A.overall = { turns: allTurns.length, words: med(allTurns.map((t) => t.words)), over25: all((t) => t.words > 25), english: all((t) => t.matrix === "english"),

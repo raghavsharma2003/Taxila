@@ -14,6 +14,8 @@ export interface ChildRow {
   teacher_id?: string | null;
   avatar?: string | null;
   interests?: string[];
+  /** A10 parent-set YOUR TURN timing multiplier (1 / 1.5 / 2) when the profile carries it. */
+  timing_multiplier?: number | null;
 }
 export interface MeResponse {
   guardian: { id: string; email: string; name: string };

@@ -879,6 +879,12 @@
    "kind": "decision",
    "title": "Research-level covert comprehension engine + vibe-adaptive tutor persona",
    "at": "2026-10-02"
+  },
+  {
+   "id": "cascade-latency-2026-10-02",
+   "kind": "measurement",
+   "title": "Cascade lane 4.2-5.7 s median vs 2.0 s target; Director's serial model calls dominate; DeepSeek swap doesn't fix it",
+   "at": "2026-10-02"
   }
  ],
  "edges": [
@@ -1641,6 +1647,11 @@
    "src": "azure-billed-open-models",
    "rel": "measured_by",
    "dst": "model-bakeoff-BC-2026-10-02"
+  },
+  {
+   "src": "voice-lane-cascade-default",
+   "rel": "measured_by",
+   "dst": "cascade-latency-2026-10-02"
   }
  ]
 }

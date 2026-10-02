@@ -175,7 +175,7 @@ const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required:
  */
 async function distressCheck(text, classLevel, trace) {
   try {
-    const { json } = await chat(DEPLOY.fast, [
+    const { json } = await chat(DEPLOY.classify, [
       { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.` },
       { role: "user", content: text },
     ], { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace });
@@ -247,7 +247,7 @@ export async function classify(args) {
   }
 
   try {
-    const { json } = await chat(DEPLOY.fast, [
+    const { json } = await chat(DEPLOY.classify, [
       { role: "system", content: systemPrompt(target, classLevel) },
       { role: "user", content: userPrompt(target, text, heard) },
     ], {

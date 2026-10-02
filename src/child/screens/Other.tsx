@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
 import { House, Send } from "../icons.tsx";
+import { useHeadset } from "../lesson/headset.ts";
 import { LessonScreen } from "../lesson/LessonScreen.tsx";
 import { readArtefacts, type ChildPrefs } from "../prefs.ts";
 import { Aasmaan, Bagiya, SkillList } from "../progress/worlds.tsx";
@@ -32,6 +33,12 @@ export function LessonRoute() {
   return <LessonScreen variant="lesson" key={lid} />;
 }
 
+/**
+ * INTERIM (not the §2.6 spec): Abhyaas runs a full Director lesson in text mode with the geometry pinned to
+ * P5, and the server logs it as a lesson. §2.6 wants a 4-8 item set graded locally against the pack key, no
+ * greeting, ending after the set. Needs from the server: a practice start (mode:'practice' or a practice flag
+ * on lesson/start) so the Director skips P0-P3, and a pack read for local grading.
+ */
 export function PracticeRoute() {
   const { sid } = useParams();
   return <LessonScreen variant="practice" key={sid ?? "practice"} topicId={sid && sid !== "new" ? sid : undefined} />;
@@ -126,10 +133,14 @@ export function Doubt() {
 export function Me() {
   const { family, lang, prefs, setPrefs } = useChild();
   const older = family === "older";
-  const row = (label: string, key: keyof ChildPrefs, on: boolean, set: (v: boolean) => void) => (
+  const headset = useHeadset();
+  const row = (label: string, key: keyof ChildPrefs, on: boolean, set: (v: boolean) => void, disabled = false, note?: string) => (
     <li className="tx-listrow tx-switch" key={key}>
-      <label htmlFor={`pref-${key}`} style={{ flex: 1 }}>{label}</label>
-      <input id={`pref-${key}`} type="checkbox" checked={on} onChange={(e) => set(e.target.checked)} />
+      <label htmlFor={`pref-${key}`} style={{ flex: 1 }}>
+        {label}
+        {note && <span className="tx-muted tx-small" style={{ display: "block" }}>{note}</span>}
+      </label>
+      <input id={`pref-${key}`} type="checkbox" checked={on} disabled={disabled} onChange={(e) => set(e.target.checked)} />
     </li>
   );
   return (
@@ -141,9 +152,12 @@ export function Me() {
         {row(lang === "english" ? "Larger text" : "Bade akshar", "largeText", prefs.largeText, (v) => setPrefs({ largeText: v }))}
         {row(lang === "english" ? "Calmer screen" : "Kam halchal", "calm", prefs.calm, (v) => setPrefs({ calm: v }))}
         {row(lang === "english" ? "Garden / sky" : "Bagiya / Aasmaan", "world", (prefs.world ?? (older ? "aasmaan" : "bagiya")) === "aasmaan", (v) => setPrefs({ world: v ? "aasmaan" : "bagiya" }))}
-        {older && row(lang === "english" ? "Open mic (headphones on)" : "Open mic (headphone lagaakar)", "talk", prefs.talk === "open", (v) => setPrefs({ talk: v ? "open" : "tap" }))}
+        {/* §3.9: open mic only with a headset (or a passed EchoProbe); otherwise tap-to-talk, whatever is stored */}
+        {older && row(lang === "english" ? "Open mic (headphones on)" : "Open mic (headphone lagaakar)", "talk", headset && prefs.talk === "open", (v) => setPrefs({ talk: v ? "open" : "tap" }), !headset,
+          headset ? undefined : lang === "english" ? "Plug in headphones to use this" : "Iske liye headphone lagaao")}
         {older && row(lang === "english" ? "Mirror layout" : "Ulta layout", "mirror", prefs.mirror, (v) => setPrefs({ mirror: v }))}
         {row(lang === "english" ? "Bigger kid look" : "Bade bachchon wala look", "bandUp", prefs.bandUp, (v) => setPrefs({ bandUp: v }))}
+        {row(lang === "english" ? "Keyboard shortcuts" : "Keyboard shortcuts", "shortcuts", prefs.shortcuts, (v) => setPrefs({ shortcuts: v }))}
       </ul>
       {older && (
         <div className="tx-card tx-stack">

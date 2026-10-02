@@ -1,0 +1,4576 @@
+{
+ "schema": "taxila-voice-judge/v1",
+ "created": "2026-10-02T19:15:34.319Z",
+ "note": "AI-judge PROXY (OpenRouter, experiments only). Not a human ear test; final decision needs human Indian listeners.",
+ "judges": [
+  "google/gemini-3.1-pro-preview",
+  "qwen/qwen3.8-omni-flash",
+  "openai/gpt-audio"
+ ],
+ "retest_judge": "google/gemini-3.1-pro-preview",
+ "ratings": {
+  "27182": {
+   "set": "azure",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "Slight script deviation: 'बताओ' was added, but overall natural, warm, and native-sounding.",
+     "_ms": 2638,
+     "_cost": 0.0119195
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice is exceptionally natural, warm, and native, though the speaker added the word 'बताओ' which was not in the original script.",
+     "_ms": 9612,
+     "_cost": 0.013186
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and appropriate pauses.",
+     "_ms": 19650,
+     "_cost": 0.00089099
+    }
+   }
+  },
+  "27575": {
+   "set": "azure",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 2496,
+     "_cost": 0.007439
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a native Indian human with a warm, natural, and engaging conversational tone perfect for a child.",
+     "_ms": 6227,
+     "_cost": 0.0083
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Hindi teacher with good pronunciation and a warm tone, but the delivery is slightly paced and deliberate, suggesting she is reading a script rather than speaking spontaneously.",
+     "_ms": 13611,
+     "_cost": 0.00061728
+    }
+   }
+  },
+  "ref-33EH": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Flawless native Hindi delivery with natural warmth and no accent leakage.",
+     "_ms": 2724,
+     "_cost": 0.0077195
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthetic generation.",
+     "_ms": 8718,
+     "_cost": 0.00034494
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is exceptionally natural, warm, and perfectly captures the nuances of a native Hindi-speaking teacher encouraging a child, with flawless pronunciation and conversational rhythm.",
+     "_ms": 9003,
+     "_cost": 0.010596
+    }
+   }
+  },
+  "ref-3AMQ": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 2397,
+     "_cost": 0.006511
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The pronunciation is native and accurate, but the prosody is slightly flat and lacks the dynamic warmth of a real human teacher, indicating a synthetic voice.",
+     "_ms": 9652,
+     "_cost": 0.012174
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "A warm, engaging teacher's voice with natural code-switching, though the slightly deliberate pacing suggests it might be read aloud rather than fully spontaneous.",
+     "_ms": 11529,
+     "_cost": 0.00048441
+    }
+   }
+  },
+  "ref-3HW9": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1992,
+     "_cost": 0.006319
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has excellent native Hindi pronunciation and a warm, engaging tone, though the perfectly uniform pacing and lack of natural breath sounds suggest a high-quality synthetic generation.",
+     "_ms": 13588,
+     "_cost": 0.013058
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "A native-sounding speaker with good pronunciation and warm tone, but the delivery is slightly paced and deliberate, lacking the full spontaneity of a natural conversation.",
+     "_ms": 44537,
+     "_cost": 0.00200616
+    }
+   }
+  },
+  "ref-3JFH": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is highly expressive, warm, and perfectly captures the tone of a native Hindi-speaking teacher encouraging a child, with flawless pronunciation and natural conversational flow.",
+     "_ms": 7025,
+     "_cost": 0.01032
+    },
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fully natural, warm, and had perfect native Hindi pronunciation with no signs of synthetic or foreign accent.",
+     "_ms": 1719,
+     "_cost": 0.0083035
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthetic speech.",
+     "_ms": 12853,
+     "_cost": 0.00057853
+    }
+   }
+  },
+  "ref-3QEA": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, natural, and warm, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 2359,
+     "_cost": 0.0124425
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher explaining a concept to a child, with perfect pronunciation and natural code-switching.",
+     "_ms": 14911,
+     "_cost": 0.00063323
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 1,
+     "naturalness": 3,
+     "hindi_pronunciation": 1,
+     "warmth_child": 3,
+     "english_accent_leakage": true,
+     "leakage_evidence": "chaar, kaato, aath, equivalent fractions",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "chaar",
+      "kaato",
+      "aath"
+     ],
+     "script_deviation": false,
+     "reason": "The voice has a heavy American accent with r-coloring on 'chaar' and alveolar consonants instead of Hindi dentals and retroflexes, making it sound like a non-native speaker.",
+     "_ms": 23229,
+     "_cost": 0.018752
+    }
+   }
+  },
+  "ref-3YTP": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 2361,
+     "_cost": 0.006735
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds incredibly natural and warm, with perfect native Hindi pronunciation and engaging intonation suitable for a child.",
+     "_ms": 8240,
+     "_cost": 0.011322
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, enthusiastic Indian teacher, with perfect pronunciation, natural intonation, and a very warm, engaging tone.",
+     "_ms": 13021,
+     "_cost": 0.00059356
+    }
+   }
+  },
+  "ref-4FKD": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 2360,
+     "_cost": 0.0090185
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 2,
+     "naturalness": 1,
+     "hindi_pronunciation": 3,
+     "warmth_child": 1,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is highly robotic and metallic with unnatural, choppy pacing and flat intonation, clearly indicating an older or lower-quality synthetic origin.",
+     "_ms": 12062,
+     "_cost": 0.016706
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 2,
+     "naturalness": 1,
+     "hindi_pronunciation": 2,
+     "warmth_child": 1,
+     "english_accent_leakage": true,
+     "leakage_evidence": "एक, दो, बराबर, हिस्सों, काटो, हुआ, यानी, अब, उसी, को, तो, भी, नहीं, है, इसलिए, अच्छा, तुम, बताओ, के, हों, कितने, आधे, होंगे",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "एक",
+      "दो",
+      "बराबर",
+      "हिस्सों",
+      "काटो",
+      "हुआ",
+      "यानी",
+      "अब",
+      "उसी",
+      "को",
+      "तो",
+      "भी",
+      "नहीं",
+      "है",
+      "इसलिए",
+      "अच्छा",
+      "तुम",
+      "बताओ",
+      "के",
+      "हों",
+      "कितने",
+      "आधे",
+      "होंगे"
+     ],
+     "script_deviation": false,
+     "reason": "The voice is clearly synthetic, with a robotic cadence and severe English accent leakage on almost all Hindi words.",
+     "_ms": 14818,
+     "_cost": 0.00074012
+    }
+   }
+  },
+  "ref-4PF4": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded unmistakably like a native Indian speaker with natural warmth, perfect pronunciation, and no signs of synthetic generation.",
+     "_ms": 1741,
+     "_cost": 0.007195
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker delivers a perfectly natural, warm, and authentic Indian English accent with excellent pacing and intonation for a teacher.",
+     "_ms": 11378,
+     "_cost": 0.014942
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker delivers the lines with a highly authentic Indian English accent, a perfect dental 't' on 'beta', and a genuinely warm, encouraging tone suitable for a teacher.",
+     "_ms": 11222,
+     "_cost": 0.015926
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine North Indian teacher, with perfect code-switching, natural prosody, and a very warm, encouraging tone.",
+     "_ms": 61239,
+     "_cost": 0.00250462
+    }
+   }
+  },
+  "ref-6N9V": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded like a native Hindi speaker with natural warmth, perfect pronunciation, and no accent leakage.",
+     "_ms": 1381,
+     "_cost": 0.006245
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "unsure",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker has a flawless Indian English accent with perfect intonation, pacing, and warmth, sounding exactly like an encouraging native teacher.",
+     "_ms": 14979,
+     "_cost": 0.016952
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Indian teacher, with a warm and encouraging tone, natural pacing, and authentic Indian-English pronunciation.",
+     "_ms": 33008,
+     "_cost": 0.00145583
+    }
+   }
+  },
+  "ref-6RMT": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural flow, perfect pronunciation, and warm tone suitable for a child, with no signs of synthetic voice or accent leakage.",
+     "_ms": 2162,
+     "_cost": 0.0113585
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds completely natural, with perfect native Hindi pronunciation and a warm, engaging tone suitable for a teacher.",
+     "_ms": 9024,
+     "_cost": 0.01331
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher explaining a concept to a child, with perfect pronunciation and natural code-mixing.",
+     "_ms": 12268,
+     "_cost": 0.00055289
+    }
+   }
+  },
+  "ref-6TRJ": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural, warm delivery, perfect pronunciation, and no signs of synthetic or foreign accent.",
+     "_ms": 1874,
+     "_cost": 0.0088655
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has excellent native Hindi pronunciation and a very warm, engaging tone suitable for a teacher, though the audio quality has a slightly synthetic polish.",
+     "_ms": 9636,
+     "_cost": 0.012602
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthetic generation.",
+     "_ms": 14300,
+     "_cost": 0.00064146
+    }
+   }
+  },
+  "ref-79EX": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 2624,
+     "_cost": 0.006895
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds completely natural with a genuine laugh, perfect native Hindi pronunciation, and a warm, engaging tone.",
+     "_ms": 8530,
+     "_cost": 0.012148
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm human teacher, with perfect native pronunciation, natural code-switching, and spontaneous elements like a light laugh.",
+     "_ms": 14466,
+     "_cost": 0.00065748
+    }
+   }
+  },
+  "ref-7ECH": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker from North India, with natural, warm delivery, perfect Hindi pronunciation, no English accent leakage, and no deviations from the script.",
+     "_ms": 2613,
+     "_cost": 0.0106645
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker delivers the text with perfect native Hindi pronunciation, a warm and engaging teacher-like tone, and highly natural pacing and intonation.",
+     "_ms": 10608,
+     "_cost": 0.015328
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "A clear, human female voice speaks in a warm, teacher-like manner, though the delivery is slightly paced like a read-aloud lesson rather than spontaneous conversation.",
+     "_ms": 15315,
+     "_cost": 0.0007073
+    }
+   }
+  },
+  "ref-7ENF": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 2,
+     "naturalness": 2,
+     "hindi_pronunciation": 2,
+     "warmth_child": 2,
+     "english_accent_leakage": true,
+     "leakage_evidence": "beta, learners, notice",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "beta"
+     ],
+     "script_deviation": false,
+     "reason": "The voice had a synthetic tone, with English-accented pronunciation of key words and lacked natural warmth.",
+     "_ms": 1879,
+     "_cost": 0.009367
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 1,
+     "naturalness": 1,
+     "hindi_pronunciation": 1,
+     "warmth_child": 2,
+     "english_accent_leakage": true,
+     "leakage_evidence": "beta",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "beta"
+     ],
+     "script_deviation": false,
+     "reason": "The audio features a clearly American synthetic voice with a severe double-track echo effect, mispronouncing 'beta' with an American flap-t.",
+     "_ms": 9041,
+     "_cost": 0.012982
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 2,
+     "naturalness": 1,
+     "hindi_pronunciation": 2,
+     "warmth_child": 1,
+     "english_accent_leakage": true,
+     "leakage_evidence": "beta",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "beta"
+     ],
+     "script_deviation": false,
+     "reason": "The voice is a heavily processed, slow, and robotic TTS with a generic American accent, making it sound completely unnatural and lacking any genuine warmth.",
+     "_ms": 11469,
+     "_cost": 0.0005234
+    }
+   }
+  },
+  "ref-7X4N": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded like a native Hindi speaker with natural flow, perfect pronunciation, and warm tone suitable for a child, with no signs of synthetic generation or accent leakage.",
+     "_ms": 2016,
+     "_cost": 0.0121585
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "unsure",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounds incredibly natural with perfect native Hindi pronunciation, warm intonation, and natural pacing, making it hard to tell if it is human or a high-quality synthetic voice.",
+     "_ms": 11852,
+     "_cost": 0.017386
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "A male teacher speaks with a clear, standard North Indian accent and a warm, engaging tone, though his delivery is slightly paced and deliberate, suggesting he is reading from a script.",
+     "_ms": 10966,
+     "_cost": 0.00059458
+    }
+   }
+  },
+  "ref-7YEX": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural flow, perfect pronunciation, warmth, and no signs of synthetic or foreign accent.",
+     "_ms": 2572,
+     "_cost": 0.006957
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 3,
+     "naturalness": 1,
+     "hindi_pronunciation": 3,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is clearly synthetic, characterized by unnatural pauses, robotic intonation, and a disjointed rhythm that lacks genuine warmth.",
+     "_ms": 11262,
+     "_cost": 0.016056
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm North Indian teacher, though the delivery is slightly performative.",
+     "_ms": 31560,
+     "_cost": 0.00093478
+    }
+   }
+  },
+  "ref-9RJJ": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fully natural, warm, and had perfect native Hindi pronunciation with no signs of English accent leakage or script deviation.",
+     "_ms": 1819,
+     "_cost": 0.0077675
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is exceptionally natural, warm, and perfectly captures the native Hindi pronunciation and engaging intonation of a teacher speaking to a child.",
+     "_ms": 14977,
+     "_cost": 0.015262
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with natural intonation, perfect pronunciation, and an engaging delivery.",
+     "_ms": 30552,
+     "_cost": 0.00136681
+    }
+   }
+  },
+  "ref-9XVV": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1976,
+     "_cost": 0.006767
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice exhibits perfect native Hindi pronunciation and a warm, engaging tone suitable for a child, though it appears to be a very high-quality synthetic generation.",
+     "_ms": 11114,
+     "_cost": 0.014986
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm human teacher from North India, with perfect pronunciation, natural intonation, and no signs of synthetic generation.",
+     "_ms": 15411,
+     "_cost": 0.00068991
+    }
+   }
+  },
+  "ref-A634": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker has a perfectly native Hindi accent, excellent natural intonation, and a very warm, engaging tone suitable for a child, sounding like a real human.",
+     "_ms": 7329,
+     "_cost": 0.01025
+    },
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1882,
+     "_cost": 0.006799
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthetic generation.",
+     "_ms": 17910,
+     "_cost": 0.00070448
+    }
+   }
+  },
+  "ref-A7KM": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent native Hindi speaker with natural warmth, perfect pronunciation, no accent leakage, and no deviations.",
+     "_ms": 2043,
+     "_cost": 0.0084655
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is highly expressive, warm, and encouraging with perfect native Hindi pronunciation, though it has a slight synthetic smoothness to its pacing.",
+     "_ms": 8299,
+     "_cost": 0.011634
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthetic speech.",
+     "_ms": 14469,
+     "_cost": 0.00069708
+    }
+   }
+  },
+  "ref-APD9": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent, natural Hindi with perfect pronunciation, warm tone, and no signs of synthetic or foreign accent.",
+     "_ms": 2065,
+     "_cost": 0.0078675
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is highly expressive, warm, and natural, with perfect native Hindi pronunciation and pacing suitable for a child.",
+     "_ms": 11982,
+     "_cost": 0.01046
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and clear code-mixing.",
+     "_ms": 15061,
+     "_cost": 0.00066819
+    }
+   }
+  },
+  "ref-AUHQ": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural, warm delivery, perfect pronunciation, and no signs of English accent leakage or script deviation.",
+     "_ms": 1906,
+     "_cost": 0.0085975
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthesis.",
+     "_ms": 11715,
+     "_cost": 0.00056145
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker delivers the lines with perfect native pronunciation, natural pacing, and a genuinely warm, engaging tone suitable for a teacher.",
+     "_ms": 13795,
+     "_cost": 0.014196
+    }
+   }
+  },
+  "ref-AY9C": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1647,
+     "_cost": 0.0077915
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthetic generation.",
+     "_ms": 14409,
+     "_cost": 0.00064469
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has correct Hindi phonemes but sounds noticeably synthetic with flat intonation and lacks the genuine warmth of a teacher.",
+     "_ms": 18867,
+     "_cost": 0.01114
+    }
+   }
+  },
+  "ref-C6VN": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fully natural, warm, and had perfect native Hindi pronunciation with no signs of synthetic or foreign accent.",
+     "_ms": 2046,
+     "_cost": 0.0076955
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The pronunciation is native and accurate, but the delivery is somewhat flat and lacks the dynamic enthusiasm of a real teacher, indicating a synthetic voice.",
+     "_ms": 7376,
+     "_cost": 0.009934
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with natural prosody and correct pronunciation throughout.",
+     "_ms": 11804,
+     "_cost": 0.00056844
+    }
+   }
+  },
+  "ref-CT6D": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "Minor deviation: 'जड़ों' intended but 'जड़ें' said; otherwise natural, fluent, and warm.",
+     "_ms": 1848,
+     "_cost": 0.0084935
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthesis.",
+     "_ms": 12615,
+     "_cost": 0.00060093
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 3,
+     "naturalness": 1,
+     "hindi_pronunciation": 2,
+     "warmth_child": 1,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "खींचती",
+      "जड़ें",
+      "पेड़"
+     ],
+     "script_deviation": false,
+     "reason": "The voice is highly synthetic and robotic, lacking any warmth for a child, and mispronounces 'खींचती' as 'खींच अती' while failing to produce proper retroflex flaps in 'जड़ें' and 'पेड़'.",
+     "_ms": 14057,
+     "_cost": 0.017346
+    }
+   }
+  },
+  "ref-CYVA": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, natural, warm, and had perfect Hindi pronunciation with no signs of synthetic or foreign accent.",
+     "_ms": 2999,
+     "_cost": 0.0116105
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds exactly like a native Indian teacher with flawless pronunciation, natural conversational prosody, and a genuinely warm, engaging tone.",
+     "_ms": 10788,
+     "_cost": 0.015706
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine North Indian teacher explaining a concept to a child, with natural code-mixing, correct pronunciation, and a warm, engaging tone.",
+     "_ms": 14023,
+     "_cost": 0.0006705
+    }
+   }
+  },
+  "ref-D6NK": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded like a native Hindi speaker with natural flow, perfect pronunciation, and genuine warmth toward the child, with no signs of synthetic or foreign accent.",
+     "_ms": 2262,
+     "_cost": 0.007327
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker delivers a perfectly natural, warm, and native Hindi performance with a genuine chuckle, sounding exactly like an engaging Indian teacher.",
+     "_ms": 10009,
+     "_cost": 0.013382
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and spontaneous elements like a light laugh.",
+     "_ms": 20981,
+     "_cost": 0.00067545
+    }
+   }
+  },
+  "ref-DDRC": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural, warm delivery, perfect pronunciation, and no signs of synthetic or foreign accent.",
+     "_ms": 1665,
+     "_cost": 0.0087375
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural prosody, and no signs of synthetic generation.",
+     "_ms": 9787,
+     "_cost": 0.00052678
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice delivers the script with perfect native Hindi pronunciation, excellent warmth, and highly natural conversational prosody suitable for a teacher.",
+     "_ms": 13257,
+     "_cost": 0.017442
+    }
+   }
+  },
+  "ref-DNDY": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded like a native Hindi speaker with natural flow, perfect pronunciation, warm tone, and no signs of synthetic generation or accent leakage.",
+     "_ms": 1701,
+     "_cost": 0.0106685
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is highly natural and native-sounding with appropriate warmth, though the slightly uniform pacing suggests a high-quality synthetic generation.",
+     "_ms": 10151,
+     "_cost": 0.013606
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Indian teacher, with natural intonation and clear pronunciation, though the delivery is slightly deliberate.",
+     "_ms": 15000,
+     "_cost": 0.00066876
+    }
+   }
+  },
+  "ref-DT9C": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1630,
+     "_cost": 0.006639
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is exceptionally natural, warm, and engaging with perfect native Hindi pronunciation and prosody, sounding exactly like a real teacher.",
+     "_ms": 10386,
+     "_cost": 0.010632
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect natural prosody, correct Hindi phonetics, and seamless code-switching.",
+     "_ms": 20650,
+     "_cost": 0.00088861
+    }
+   }
+  },
+  "ref-EDDD": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, natural, warm, and had perfect Hindi pronunciation with no signs of English accent leakage or script deviation, indicating a native Indian human speaker.",
+     "_ms": 1606,
+     "_cost": 0.0078055
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Indian teacher with good pronunciation and a warm tone, though the delivery is slightly paced and deliberate, typical of reading aloud to children.",
+     "_ms": 15893,
+     "_cost": 0.00064478
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has accurate Hindi pronunciation but sounds like a synthetic read-aloud with limited warmth and dynamic range.",
+     "_ms": 18319,
+     "_cost": 0.010168
+    }
+   }
+  },
+  "ref-F43E": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice had natural flow, perfect Hindi pronunciation, warm tone, and no signs of synthetic or foreign accent.",
+     "_ms": 1837,
+     "_cost": 0.0105125
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The Hindi pronunciation is accurate, but the overly smooth pacing, lack of natural breath, and distinctly American-sounding English phrases reveal it as a high-quality synthetic voice.",
+     "_ms": 13389,
+     "_cost": 0.017794
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "A clear, engaging recording of a native Hindi speaker teaching a concept to a child, with natural intonation and correct pronunciation.",
+     "_ms": 15570,
+     "_cost": 0.0006133
+    }
+   }
+  },
+  "ref-FC3H": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent, natural, warm delivery with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1697,
+     "_cost": 0.0080815
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker delivers a highly natural, warm, and perfectly pronounced Hindi performance with excellent conversational pacing and authentic intonation.",
+     "_ms": 10048,
+     "_cost": 0.01227
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher with perfect pronunciation, natural intonation, and clear emotional engagement.",
+     "_ms": 11587,
+     "_cost": 0.00056443
+    }
+   }
+  },
+  "ref-FEJ3": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent, warm, and natural delivery with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1970,
+     "_cost": 0.0082835
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is highly expressive, warm, and perfectly captures the natural intonation and pronunciation of a native Hindi-speaking teacher.",
+     "_ms": 7197,
+     "_cost": 0.009334
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker delivers a perfectly native, highly expressive, and warm performance with flawless Hindi pronunciation and natural conversational rhythm.",
+     "_ms": 9891,
+     "_cost": 0.010822
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, enthusiastic Indian teacher with perfect pronunciation, natural intonation, and warm engagement.",
+     "_ms": 18857,
+     "_cost": 0.00085113
+    }
+   }
+  },
+  "ref-FJU9": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent native Hindi speaker with natural warmth, perfect pronunciation, and no accent leakage.",
+     "_ms": 1781,
+     "_cost": 0.0097445
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 1,
+     "naturalness": 1,
+     "hindi_pronunciation": 1,
+     "warmth_child": 1,
+     "english_accent_leakage": true,
+     "leakage_evidence": "general intonation, aadha",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "आधा"
+     ],
+     "script_deviation": false,
+     "reason": "The voice is highly synthetic with a robotic, non-native rhythm and incorrect pronunciation of Hindi words.",
+     "_ms": 11626,
+     "_cost": 0.01645
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine North Indian teacher explaining a concept to a child, with natural code-mixing and a warm, engaging tone.",
+     "_ms": 13389,
+     "_cost": 0.00058593
+    }
+   }
+  },
+  "ref-FNDK": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 1,
+     "naturalness": 4,
+     "hindi_pronunciation": 1,
+     "warmth_child": 4,
+     "english_accent_leakage": true,
+     "leakage_evidence": "beta (Americanized vowel and alveolar t), learners, first (strong rhotic r)",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "beta"
+     ],
+     "script_deviation": false,
+     "reason": "The speaker has a clear North American accent, completely anglicizing the word 'beta' and lacking any Indian English phonetic features.",
+     "_ms": 10715,
+     "_cost": 0.014072
+    },
+    "openai/gpt-audio": {
+     "error": true
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Indian teacher, with a warm, encouraging tone and natural pacing.",
+     "_ms": 34383,
+     "_cost": 0.00137416
+    }
+   }
+  },
+  "ref-HCNH": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent, warm, and natural native Hindi speaker with no accent leakage or errors.",
+     "_ms": 1612,
+     "_cost": 0.0079735
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "वाह"
+     ],
+     "script_deviation": false,
+     "reason": "The audio is clearly synthetic with unnatural pauses, disjointed phrasing, and a robotic cadence.",
+     "_ms": 10789,
+     "_cost": 0.015874
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "A native-sounding female teacher speaks with clear pronunciation and encouraging warmth, though her delivery is slightly paced and deliberate.",
+     "_ms": 29059,
+     "_cost": 0.00136672
+    }
+   }
+  },
+  "ref-JCC6": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluid, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1701,
+     "_cost": 0.005711
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 2,
+     "naturalness": 1,
+     "hindi_pronunciation": 2,
+     "warmth_child": 1,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "Aarav",
+      "मज़ेदार"
+     ],
+     "script_deviation": false,
+     "reason": "The voice is highly robotic and metallic with unnatural, choppy pacing and noticeable mispronunciations.",
+     "_ms": 8715,
+     "_cost": 0.01236
+    }
+   }
+  },
+  "ref-JHAU": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 1,
+     "naturalness": 3,
+     "hindi_pronunciation": 1,
+     "warmth_child": 3,
+     "english_accent_leakage": true,
+     "leakage_evidence": "beta",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "beta"
+     ],
+     "script_deviation": false,
+     "reason": "The speaker has a distinct American accent, completely anglicizing the word 'beta' as 'bay-duh' and showing no Indian English phonetic traits.",
+     "_ms": 10886,
+     "_cost": 0.01504
+    },
+    "openai/gpt-audio": {
+     "error": true
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 2,
+     "naturalness": 2,
+     "hindi_pronunciation": 2,
+     "warmth_child": 4,
+     "english_accent_leakage": true,
+     "leakage_evidence": "beta",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "beta"
+     ],
+     "script_deviation": false,
+     "reason": "The voice is clearly synthetic with a generic American accent, making the Hindi word 'beta' sound unnatural.",
+     "_ms": 38578,
+     "_cost": 0.00172008
+    }
+   }
+  },
+  "ref-JHQC": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice features an authentic Indian English accent with a perfectly pronounced 'beta' and a highly encouraging, warm tone, though the pristine audio quality and slight lack of breath suggest it is synthetic.",
+     "_ms": 11388,
+     "_cost": 0.015694
+    },
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded unmistakably like a native Indian speaker with natural warmth, perfect pronunciation, and no signs of synthetic generation.",
+     "_ms": 1794,
+     "_cost": 0.007099
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine North Indian teacher, with perfect code-switching, natural warmth, and authentic pronunciation of 'beta'.",
+     "_ms": 12683,
+     "_cost": 0.00065611
+    }
+   }
+  },
+  "ref-K9EU": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, natural, warm, and had perfect Hindi pronunciation with no signs of English accent leakage or script deviation.",
+     "_ms": 2066,
+     "_cost": 0.0081515
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is exceptionally natural, warm, and perfectly pronounced with native Hindi intonation, sounding exactly like an engaging teacher.",
+     "_ms": 9428,
+     "_cost": 0.013942
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthesis.",
+     "_ms": 12660,
+     "_cost": 0.00058766
+    }
+   }
+  },
+  "ref-KVA9": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded unmistakably like a native Indian speaker with natural warmth, perfect pronunciation, and no signs of synthetic generation.",
+     "_ms": 1825,
+     "_cost": 0.006907
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker's voice is highly natural and warm, with authentic Indian English intonation and perfect pronunciation of the Hindi word 'beta'.",
+     "_ms": 12324,
+     "_cost": 0.00054555
+    }
+   }
+  },
+  "ref-ME7E": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker has a perfectly natural, warm, and engaging tone with flawless native Hindi pronunciation and natural breath sounds.",
+     "_ms": 6499,
+     "_cost": 0.01002
+    },
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural, warm delivery, perfect pronunciation, and no signs of synthetic or foreign accent.",
+     "_ms": 2071,
+     "_cost": 0.0084815
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker delivers the lines with perfect native pronunciation, natural pacing, and a genuinely warm, engaging tone ideal for a teacher.",
+     "_ms": 8538,
+     "_cost": 0.012214
+    }
+   }
+  },
+  "ref-MEFY": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1661,
+     "_cost": 0.007215
+    }
+   }
+  },
+  "ref-MHJQ": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {}
+  },
+  "ref-MNYH": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {}
+  },
+  "ref-MWTP": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {}
+  },
+  "ref-MWVN": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {}
+  },
+  "ref-NNXH": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-NP4J": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {}
+  },
+  "ref-NPE4": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-NXHX": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {}
+  },
+  "ref-PED7": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {}
+  },
+  "ref-PHUU": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {}
+  },
+  "ref-PRQ9": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {}
+  },
+  "ref-PW6K": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {}
+  },
+  "ref-PYVC": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-Q4CH": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-QUME": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {}
+  },
+  "ref-QWE3": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-RCC3": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {}
+  },
+  "ref-RN7Q": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {}
+  },
+  "ref-RNJT": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {}
+  },
+  "ref-RTUN": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {}
+  },
+  "ref-RTYN": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {}
+  },
+  "ref-RXUD": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {}
+  },
+  "ref-RYRE": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-TCVX": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {}
+  },
+  "ref-TMEN": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {}
+  },
+  "ref-TTFH": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {}
+  },
+  "ref-UDPH": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {}
+  },
+  "ref-UJYJ": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-UT3Q": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {}
+  },
+  "ref-V9WN": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {}
+  },
+  "ref-VFEJ": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {}
+  },
+  "ref-VHR9": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {}
+  },
+  "ref-VKCD": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {}
+  },
+  "ref-VVTE": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-VYYA": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-WHMQ": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {}
+  },
+  "ref-X3HP": {
+   "set": "openrouter-ref",
+   "passage": "c-hindi",
+   "by": {}
+  },
+  "ref-X4HF": {
+   "set": "openrouter-ref",
+   "passage": "e-praise-correct",
+   "by": {}
+  },
+  "ref-X9CR": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-XNH9": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {}
+  },
+  "ref-XVXH": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {}
+  },
+  "ref-XY64": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {}
+  },
+  "ref-Y4AM": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {}
+  },
+  "ref-Y9HV": {
+   "set": "openrouter-ref",
+   "passage": "b-fractions",
+   "by": {}
+  },
+  "ref-YVHU": {
+   "set": "openrouter-ref",
+   "passage": "d-english",
+   "by": {}
+  },
+  "ref-YVUV": {
+   "set": "openrouter-ref",
+   "passage": "a-greet",
+   "by": {}
+  },
+  "human-H1": {
+   "set": "human-anchor",
+   "passage": "human-anchor",
+   "by": {}
+  },
+  "human-H2": {
+   "set": "human-anchor",
+   "passage": "human-anchor",
+   "by": {}
+  },
+  "human-H3": {
+   "set": "human-anchor",
+   "passage": "human-anchor",
+   "by": {}
+  },
+  "human-H4": {
+   "set": "human-anchor",
+   "passage": "human-anchor",
+   "by": {}
+  },
+  "human-H5": {
+   "set": "human-anchor",
+   "passage": "human-anchor",
+   "by": {}
+  },
+  "00560": {
+   "set": "azure",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [
+      "हिस्सा (as 'हिस्सी')",
+      "बराबर (as 'बराबर' with slight elongation)"
+     ],
+     "script_deviation": true,
+     "reason": "Minor deviations in pronunciation and slight elongation of some words, but overall natural and native-sounding.",
+     "_ms": 4879,
+     "_cost": 0.0137585
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 3,
+     "naturalness": 1,
+     "hindi_pronunciation": 3,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The synthetic voice inserts random gibberish and hallucinations between sentences, completely ruining the naturalness.",
+     "_ms": 12666,
+     "_cost": 0.013576
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "While the core voice sounds like a native Indian speaker, the audio suffers from severe synthetic hallucinations, inserting random gibberish words between sentences.",
+     "_ms": 14174,
+     "_cost": 0.017236
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "A clear, human female voice speaks in a natural, teacher-like tone with good Hindi pronunciation and code-mixing, though the delivery is slightly paced like a reading.",
+     "_ms": 22879,
+     "_cost": 0.00093859
+    }
+   }
+  },
+  "024EC": {
+   "set": "azure",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural flow, correct pronunciation, and a warm tone suitable for a child. No English accent leakage or mispronunciations were detected, and the script was followed accurately.",
+     "_ms": 3962,
+     "_cost": 0.0138265
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 1,
+     "hindi_pronunciation": 4,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech is characterized by extremely long, unnatural pauses between sentences, clearly indicating a synthetic generation.",
+     "_ms": 10588,
+     "_cost": 0.013524
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Indian teacher with good pronunciation and a warm tone, though the delivery is slightly paced and deliberate.",
+     "_ms": 16914,
+     "_cost": 0.0006896
+    }
+   }
+  },
+  "07A36": {
+   "set": "azure",
+   "passage": "d-english",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded unmistakably like a native Indian speaker with natural warmth, perfect pronunciation, and no signs of synthetic generation.",
+     "_ms": 3740,
+     "_cost": 0.006779
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": true,
+     "leakage_evidence": "beta",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has a warm, encouraging tone with a convincing urban Indian English accent, though slight synthetic smoothness and a slightly diphthongized 'e' in 'beta' are noticeable.",
+     "_ms": 16058,
+     "_cost": 0.019458
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker's voice is highly authentic, with natural prosody, perfect code-switching, and a genuinely warm, encouraging tone typical of an Indian teacher.",
+     "_ms": 39070,
+     "_cost": 0.00170316
+    }
+   }
+  },
+  "0FC55": {
+   "set": "azure",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, natural, warm, and had perfect Hindi pronunciation with no signs of English accent leakage or errors.",
+     "_ms": 2333,
+     "_cost": 0.0133165
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice sounds like a native Indian teacher with good warmth, but there is a slight synthetic cadence and an extra word 'सच' was hallucinated before 'अच्छा'.",
+     "_ms": 9182,
+     "_cost": 0.012554
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice has a native Indian accent and a warm tone, but unnatural pauses and an added word ('सच') reveal its synthetic nature.",
+     "_ms": 11977,
+     "_cost": 0.013574
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a native Hindi teacher with good pronunciation and a warm tone, but the delivery is slightly measured and read-aloud, lacking the full spontaneity of a natural conversation.",
+     "_ms": 15412,
+     "_cost": 0.00067069
+    }
+   }
+  },
+  "1FAF5": {
+   "set": "azure",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1693,
+     "_cost": 0.007183
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The pronunciation and accent are natively Indian, but the flat intonation and even pacing indicate a synthetic voice.",
+     "_ms": 9818,
+     "_cost": 0.014668
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm North Indian teacher, with perfect pronunciation, natural code-mixing, and spontaneous intonation.",
+     "_ms": 11814,
+     "_cost": 0.00054526
+    }
+   }
+  },
+  "2AD03": {
+   "set": "azure",
+   "passage": "d-english",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded unmistakably like a native Indian speaker, with natural warmth and perfect pronunciation, and no signs of synthetic or foreign accent.",
+     "_ms": 1763,
+     "_cost": 0.006489
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has a consistent Indian English accent and pronounces 'beta' correctly, but the delivery is slightly flat and synthetic.",
+     "_ms": 8099,
+     "_cost": 0.011396
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine North Indian teacher, with perfect code-switching, natural prosody, and a warm, encouraging tone.",
+     "_ms": 13459,
+     "_cost": 0.00057552
+    }
+   }
+  },
+  "2D96E": {
+   "set": "azure",
+   "passage": "d-english",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded unmistakably like a native Indian speaker with natural warmth, perfect pronunciation, and no signs of synthetic generation.",
+     "_ms": 2171,
+     "_cost": 0.007355
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice delivers a warm, authentic Indian English accent with perfect pronunciation of 'beta', though slight acoustic artifacts suggest it is high-quality TTS.",
+     "_ms": 9929,
+     "_cost": 0.013918
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine North Indian teacher, using authentic warmth and natural pacing, with correct Indian-English pronunciation throughout.",
+     "_ms": 52215,
+     "_cost": 0.00213813
+    }
+   }
+  },
+  "32AF6": {
+   "set": "azure",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent, natural Hindi speech with perfect pronunciation, warm tone, and no signs of synthetic generation.",
+     "_ms": 2267,
+     "_cost": 0.0084015
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthetic generation.",
+     "_ms": 9603,
+     "_cost": 0.00046819
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 2,
+     "hindi_pronunciation": 5,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The Hindi pronunciation is natively accurate, but the unnatural pauses and disjointed prosody clearly indicate a synthetic voice.",
+     "_ms": 12043,
+     "_cost": 0.016758
+    }
+   }
+  },
+  "3BF74": {
+   "set": "azure",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural flow, perfect pronunciation, and genuine warmth toward the child, with no signs of synthetic or foreign accent.",
+     "_ms": 2473,
+     "_cost": 0.008447
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine North Indian teacher, with natural conversational flow, correct pronunciation, and a warm, engaging tone.",
+     "_ms": 8893,
+     "_cost": 0.0004517
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounds synthetic with flat intonation, unnatural pauses, and lacks the warmth and engagement expected of a teacher speaking to a child.",
+     "_ms": 10832,
+     "_cost": 0.015596
+    }
+   }
+  },
+  "3EAC9": {
+   "set": "azure",
+   "passage": "d-english",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The accent is authentically Indian with correct dental pronunciation of 'beta', but the voice has a slightly flat, metallic quality typical of synthetic speech.",
+     "_ms": 10039,
+     "_cost": 0.012908
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with natural prosody and correct pronunciation of the Hindi word 'beta'.",
+     "_ms": 41472,
+     "_cost": 0.00180916
+    },
+    "openai/gpt-audio": {
+     "error": true
+    }
+   }
+  },
+  "42ED4": {
+   "set": "azure",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural, warm delivery, perfect pronunciation, and no signs of English accent leakage or script deviation.",
+     "_ms": 1792,
+     "_cost": 0.0101655
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The pronunciation is flawlessly native and the tone is gentle, but the unnaturally long and uniform pauses between sentences strongly indicate a high-quality synthetic voice.",
+     "_ms": 8409,
+     "_cost": 0.011874
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Indian teacher, but the delivery is slightly paced and deliberate, characteristic of reading aloud rather than spontaneous conversation.",
+     "_ms": 14540,
+     "_cost": 0.00065036
+    }
+   }
+  },
+  "4BD56": {
+   "set": "azure",
+   "passage": "d-english",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 3,
+     "naturalness": 3,
+     "hindi_pronunciation": 2,
+     "warmth_child": 3,
+     "english_accent_leakage": true,
+     "leakage_evidence": "beta",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "beta"
+     ],
+     "script_deviation": false,
+     "reason": "The voice has an Indian English accent but sounds synthetic with unnatural pacing and an Americanized flap-T on the word 'beta'.",
+     "_ms": 13528,
+     "_cost": 0.014774
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Indian teacher with a warm, encouraging tone, though the delivery is slightly paced and deliberate.",
+     "_ms": 15008,
+     "_cost": 0.00067137
+    },
+    "openai/gpt-audio": {
+     "error": true
+    }
+   }
+  },
+  "4D4F6": {
+   "set": "azure",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent, natural Hindi with perfect pronunciation, warm tone, and no accent leakage.",
+     "_ms": 1809,
+     "_cost": 0.0108035
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker delivers the lines with genuine warmth, perfect native Hindi pronunciation, and highly natural intonation, sounding exactly like an encouraging teacher.",
+     "_ms": 9202,
+     "_cost": 0.012746
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine native Hindi-speaking teacher with a warm, encouraging tone and perfect pronunciation.",
+     "_ms": 5520,
+     "_cost": 0.008762
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthetic generation.",
+     "_ms": 13218,
+     "_cost": 0.00066401
+    }
+   }
+  },
+  "53FBB": {
+   "set": "azure",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 2841,
+     "_cost": 0.007599
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker delivers a perfectly natural, warm, and engaging performance with flawless native Hindi pronunciation and appropriate Indian-English code-mixing.",
+     "_ms": 12373,
+     "_cost": 0.014362
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural code-mixing, and spontaneous intonation.",
+     "_ms": 69874,
+     "_cost": 0.00300347
+    }
+   }
+  },
+  "622A5": {
+   "set": "azure",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural, warm delivery, perfect pronunciation, and no signs of English accent leakage or script deviation.",
+     "_ms": 2721,
+     "_cost": 0.0106775
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a native Hindi-speaking teacher with a warm, natural, and engaging tone, perfectly matching the script.",
+     "_ms": 8136,
+     "_cost": 0.011078
+    }
+   }
+  },
+  "625AF": {
+   "set": "azure",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural flow, perfect pronunciation, and warm tone suitable for a child, with no signs of synthetic voice or accent leakage.",
+     "_ms": 1986,
+     "_cost": 0.0136945
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine native Hindi-speaking teacher with natural pacing, warmth, and authentic pronunciation.",
+     "_ms": 7799,
+     "_cost": 0.011828
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm North Indian teacher explaining a concept to a child, with perfect pronunciation and natural, spontaneous pacing.",
+     "_ms": 17950,
+     "_cost": 0.00081133
+    }
+   }
+  },
+  "6448F": {
+   "set": "azure",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural, warm delivery and no signs of synthetic or foreign accent.",
+     "_ms": 1791,
+     "_cost": 0.0098815
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice sounds like a native Hindi speaker with a warm, engaging tone, but an extra phrase ('ध्यान से सुनना') was added and there is a slight synthetic quality to the pacing.",
+     "_ms": 7997,
+     "_cost": 0.010722
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice sounds like a native Hindi speaker with a warm, engaging tone, but an extra phrase ('ध्यान से सुनना') was added and there is a slight synthetic quality to the pacing.",
+     "_ms": 8541,
+     "_cost": 0.010722
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthesis.",
+     "_ms": 12661,
+     "_cost": 0.00065166
+    }
+   }
+  },
+  "65CBA": {
+   "set": "azure",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural, warm delivery and no accent leakage or mispronunciations.",
+     "_ms": 2541,
+     "_cost": 0.0107555
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has excellent native Hindi pronunciation and a warm tone, but slight unnaturalness in pacing and transitions reveals it as a high-quality synthetic voice.",
+     "_ms": 7516,
+     "_cost": 0.011112
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with natural prosody and correct pronunciation throughout.",
+     "_ms": 35385,
+     "_cost": 0.00185237
+    }
+   }
+  },
+  "681FD": {
+   "set": "azure",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, natural, warm, and had perfect Hindi pronunciation with no signs of English accent leakage or synthetic qualities.",
+     "_ms": 2126,
+     "_cost": 0.0128145
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The pronunciation is perfectly native with appropriate Indian-English code-mixing, and the pacing is natural for a teacher, though slight audio artifacts suggest it is a high-quality synthetic voice.",
+     "_ms": 10839,
+     "_cost": 0.015818
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher explaining a concept to a child, with perfect pronunciation and natural code-switching.",
+     "_ms": 11638,
+     "_cost": 0.00060232
+    }
+   }
+  },
+  "7B8F2": {
+   "set": "azure",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 3,
+     "naturalness": 2,
+     "hindi_pronunciation": 3,
+     "warmth_child": 2,
+     "english_accent_leakage": true,
+     "leakage_evidence": "pizza, equivalent, fractions",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "आधा",
+      "equivalent",
+      "fractions"
+     ],
+     "script_deviation": true,
+     "reason": "There were unnatural pauses, mispronunciations, and extra or altered words indicating a synthetic voice with some English accent leakage.",
+     "_ms": 1971,
+     "_cost": 0.0139865
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 1,
+     "hindi_pronunciation": 4,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The audio contains severe synthetic hallucinations and extra nonsensical words not present in the script, making it clearly AI-generated.",
+     "_ms": 9409,
+     "_cost": 0.014248
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 4,
+     "naturalness": 1,
+     "hindi_pronunciation": 4,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The audio contains severe synthetic hallucinations and extra nonsensical words not present in the script, making it clearly AI-generated.",
+     "_ms": 9102,
+     "_cost": 0.014248
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, but there is a clear, unrelated vocalization ('a, a za, okka') inserted into the speech.",
+     "_ms": 16249,
+     "_cost": 0.00067785
+    }
+   }
+  },
+  "813DF": {
+   "set": "azure",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice sounded fully natural, warm, and native, but there was a small extra word 'तब' at the end, causing a script deviation.",
+     "_ms": 1949,
+     "_cost": 0.006815
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice has a warm, native Indian accent with good pronunciation, but a synthetic glitch or extra sound at the very end reveals it is TTS.",
+     "_ms": 11350,
+     "_cost": 0.01324
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The speaker sounds like a real, warm teacher, but the delivery is slightly paced and she adds 'तब बन' at the end, which deviates from the script.",
+     "_ms": 19604,
+     "_cost": 0.00086898
+    }
+   }
+  },
+  "878EF": {
+   "set": "azure",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent, natural Hindi speech with warmth and no accent leakage.",
+     "_ms": 2276,
+     "_cost": 0.0111155
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The pronunciation is native and the tone is warm, but the long, unnatural pauses between phrases make the flow feel disjointed and synthetic.",
+     "_ms": 8169,
+     "_cost": 0.011312
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 4,
+     "naturalness": 1,
+     "hindi_pronunciation": 4,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "While the individual word pronunciation is native, the speech suffers from extremely long, unnatural pauses between phrases, making it sound highly robotic and disjointed.",
+     "_ms": 9192,
+     "_cost": 0.011828
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and clear code-mixing.",
+     "_ms": 14064,
+     "_cost": 0.00066553
+    }
+   }
+  },
+  "8D413": {
+   "set": "azure",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [
+      "चीबाचार"
+     ],
+     "script_deviation": true,
+     "reason": "Mostly natural and warm, with one mispronounced word and a slight deviation from the script.",
+     "_ms": 1950,
+     "_cost": 0.0128585
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice is clearly synthetic with disjointed pacing and a bizarre hallucinated phrase inserted after the first sentence.",
+     "_ms": 10104,
+     "_cost": 0.014926
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher explaining a concept to a child, with perfect pronunciation and natural code-mixing.",
+     "_ms": 15766,
+     "_cost": 0.00072969
+    }
+   }
+  },
+  "96D4A": {
+   "set": "azure",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 2297,
+     "_cost": 0.007151
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural code-mixing, and spontaneous intonation.",
+     "_ms": 10273,
+     "_cost": 0.00044844
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a native Hindi speaker with excellent naturalness, warmth, and perfect pronunciation.",
+     "_ms": 7453,
+     "_cost": 0.010774
+    }
+   }
+  },
+  "A3C57": {
+   "set": "azure",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural flow, perfect pronunciation, and warm tone suitable for a child.",
+     "_ms": 2051,
+     "_cost": 0.0098595
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice has a slightly robotic cadence, an unnatural filler sound, and lacks the engaging warmth of a real teacher.",
+     "_ms": 9398,
+     "_cost": 0.013226
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, but there is a clear hesitation ('and') that deviates from the script.",
+     "_ms": 13063,
+     "_cost": 0.00058868
+    }
+   }
+  },
+  "A7B9F": {
+   "set": "azure",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 2123,
+     "_cost": 0.007439
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is warm, engaging, and sounds like a native Hindi speaker, though slight pacing and breath artifacts suggest it is a high-quality synthetic voice.",
+     "_ms": 8062,
+     "_cost": 0.01029
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is highly expressive and native-sounding with excellent Hindi pronunciation, though slight prosodic uniformities suggest it is a high-quality synthetic voice.",
+     "_ms": 10486,
+     "_cost": 0.01461
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and spontaneous-sounding pauses.",
+     "_ms": 18694,
+     "_cost": 0.00082784
+    }
+   }
+  },
+  "AE6C8": {
+   "set": "azure",
+   "passage": "b-fractions",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 1,
+     "hindi_pronunciation": 4,
+     "warmth_child": 2,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The audio is clearly synthetic with severe, unnatural glitches and random syllables inserted between sentences.",
+     "_ms": 8389,
+     "_cost": 0.012422
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine North Indian teacher, but the delivery is slightly paced and includes filler words ('ta', 'poysh') not in the script, making it feel a bit less spontaneous.",
+     "_ms": 16461,
+     "_cost": 0.0006546
+    },
+    "openai/gpt-audio": {
+     "error": true
+    }
+   }
+  },
+  "AE934": {
+   "set": "azure",
+   "passage": "d-english",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 2,
+     "naturalness": 3,
+     "hindi_pronunciation": 1,
+     "warmth_child": 3,
+     "english_accent_leakage": true,
+     "leakage_evidence": "beta",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "beta"
+     ],
+     "script_deviation": false,
+     "reason": "The voice has a strong American twang with rhotic 'r's and pronounces 'beta' with an American flap 't' instead of a native dental 't'.",
+     "_ms": 10443,
+     "_cost": 0.013862
+    },
+    "openai/gpt-audio": {
+     "error": true
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Indian teacher with a warm tone, though the delivery is slightly paced and deliberate, characteristic of reading aloud.",
+     "_ms": 42684,
+     "_cost": 0.00179774
+    }
+   }
+  },
+  "B421C": {
+   "set": "azure",
+   "passage": "b-fractions",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "There was a slight deviation with an extra filler word 'तो' before 'अच्छा', but the voice sounded like a native Indian speaker with natural Hindi pronunciation and warmth.",
+     "_ms": 1846,
+     "_cost": 0.0137785
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 1,
+     "hindi_pronunciation": 4,
+     "warmth_child": 1,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [
+      "डॉट"
+     ],
+     "script_deviation": true,
+     "reason": "The speech is highly robotic with unnatural, disjointed pauses and literally reads out the punctuation mark 'dot'.",
+     "_ms": 9329,
+     "_cost": 0.013792
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "A male teacher speaks with a clear North Indian accent and good pronunciation, though his delivery is slightly deliberate and paced like reading aloud.",
+     "_ms": 14422,
+     "_cost": 0.00065012
+    }
+   }
+  },
+  "BBCF9": {
+   "set": "azure",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural, warm delivery, no accent leakage, and no deviations from the script.",
+     "_ms": 1732,
+     "_cost": 0.0120995
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and spontaneous delivery.",
+     "_ms": 15089,
+     "_cost": 0.00065411
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 2,
+     "hindi_pronunciation": 5,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "unsure",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice is native and pronunciation is accurate, but extremely long, unnatural pauses between sentences severely disrupt the flow and naturalness.",
+     "_ms": 20675,
+     "_cost": 0.014798
+    }
+   }
+  },
+  "BE177": {
+   "set": "azure",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, natural, warm, and had perfect native Hindi pronunciation with no signs of English accent leakage or script deviation.",
+     "_ms": 1639,
+     "_cost": 0.007341
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The pronunciation is native Indian, but the unnatural pauses and slightly robotic prosody clearly indicate a synthetic voice.",
+     "_ms": 10554,
+     "_cost": 0.014496
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Indian teacher, but the delivery is slightly paced and deliberate, suggesting they are reading from a script rather than speaking spontaneously.",
+     "_ms": 17714,
+     "_cost": 0.00076851
+    }
+   }
+  },
+  "C0715": {
+   "set": "azure",
+   "passage": "d-english",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice has a noticeable synthetic, slightly metallic quality to its pacing and adds an extra word ('you') near the end.",
+     "_ms": 11251,
+     "_cost": 0.014454
+    },
+    "openai/gpt-audio": {
+     "error": true
+    }
+   }
+  },
+  "C2C5B": {
+   "set": "azure",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural flow, perfect pronunciation, and warm tone suitable for a child.",
+     "_ms": 1792,
+     "_cost": 0.0086115
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has excellent native Hindi pronunciation and a warm, engaging tone suitable for a teacher, though it exhibits a slight synthetic texture.",
+     "_ms": 10052,
+     "_cost": 0.015122
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The pronunciation is perfectly native, but the slightly unnatural pauses and repetitive intonation reveal it as a high-quality synthetic voice.",
+     "_ms": 9715,
+     "_cost": 0.01085
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with natural prosody and correct Hindi pronunciation throughout.",
+     "_ms": 14488,
+     "_cost": 0.00066955
+    }
+   }
+  },
+  "C493E": {
+   "set": "azure",
+   "passage": "d-english",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 3,
+     "naturalness": 2,
+     "hindi_pronunciation": 3,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has an Indian accent but suffers from very long, unnatural pauses and a slightly robotic cadence, indicating it is synthetic.",
+     "_ms": 9587,
+     "_cost": 0.01341
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine North Indian teacher, with perfect pronunciation of 'beta' and a warm, encouraging tone.",
+     "_ms": 11438,
+     "_cost": 0.00047405
+    },
+    "openai/gpt-audio": {
+     "error": true
+    }
+   }
+  },
+  "CBD2A": {
+   "set": "azure",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent, natural Hindi speech with perfect pronunciation, warm tone, and no accent leakage.",
+     "_ms": 2272,
+     "_cost": 0.0114855
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice has a synthetic cadence and includes extra, unintended words at the very end of the recording.",
+     "_ms": 8488,
+     "_cost": 0.012336
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, but she adds an extra sentence at the end that was not in the provided script.",
+     "_ms": 28845,
+     "_cost": 0.00138239
+    }
+   }
+  },
+  "CD944": {
+   "set": "azure",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "There was a hesitation and an extra sound ('अर्स') not in the original script.",
+     "_ms": 1713,
+     "_cost": 0.0096815
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice has a native Hindi accent and decent pronunciation, but a clear synthetic hallucination (an extra 'a-ra-sa' sound) before the last sentence reveals it is AI.",
+     "_ms": 9730,
+     "_cost": 0.013828
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 4,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "A male teacher speaks with a clear, standard North Indian accent and a warm, engaging tone suitable for children, though his delivery is slightly paced like a reading.",
+     "_ms": 12743,
+     "_cost": 0.0005915
+    }
+   }
+  },
+  "CF9F8": {
+   "set": "azure",
+   "passage": "e-praise-correct",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "Fluent, natural Hindi speech with native pronunciation, warm tone, and no signs of synthetic generation or accent leakage.",
+     "_ms": 1879,
+     "_cost": 0.0075675
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has excellent native Hindi pronunciation and a highly engaging, warm teacher-like tone, though the pristine resonance suggests a high-quality synthetic generation.",
+     "_ms": 11270,
+     "_cost": 0.014642
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, with perfect pronunciation, natural intonation, and no signs of synthetic generation.",
+     "_ms": 12691,
+     "_cost": 0.00063753
+    }
+   }
+  },
+  "D141F": {
+   "set": "azure",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, warm, and natural, with perfect Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 2608,
+     "_cost": 0.007407
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The pronunciation and accent are authentically Indian, but the uniform pacing and slightly flat intonation reveal it as a synthetic voice.",
+     "_ms": 14230,
+     "_cost": 0.018902
+    }
+   }
+  },
+  "D69BC": {
+   "set": "azure",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fully natural, with perfect Hindi pronunciation, native rhythm, and a warm, engaging tone suitable for a child. No deviations or mispronunciations were detected.",
+     "_ms": 1868,
+     "_cost": 0.0097555
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker has a perfectly native Hindi accent with natural intonation, warmth, and pacing suitable for a teacher.",
+     "_ms": 7719,
+     "_cost": 0.011872
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine, warm North Indian teacher, with perfect pronunciation, natural prosody, and no signs of synthetic generation.",
+     "_ms": 19483,
+     "_cost": 0.00078315
+    }
+   }
+  },
+  "DE2B2": {
+   "set": "azure",
+   "passage": "d-english",
+   "by": {
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 2,
+     "hindi_pronunciation": 4,
+     "warmth_child": 3,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has a recognizable Indian English accent, but the extremely long, unnatural pauses between sentences and slightly robotic cadence clearly indicate it is synthetic.",
+     "_ms": 10326,
+     "_cost": 0.01185
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 4,
+     "naturalness": 4,
+     "hindi_pronunciation": 4,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine Indian teacher, using a warm and encouraging tone with natural pacing and clear Indian-English pronunciation.",
+     "_ms": 13646,
+     "_cost": 0.0005918
+    }
+   }
+  },
+  "E534E": {
+   "set": "azure",
+   "passage": "d-english",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded unmistakably like a native Indian speaker, with natural flow, warm tone, and no signs of synthetic generation or accent leakage.",
+     "_ms": 1912,
+     "_cost": 0.006467
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a genuine North Indian teacher, with perfect code-switching, natural pacing, and a very warm, encouraging tone.",
+     "_ms": 12090,
+     "_cost": 0.00052617
+    }
+   }
+  },
+  "E5A59": {
+   "set": "azure",
+   "passage": "a-greet",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice sounded fully natural, warm, and spontaneous, with perfect native Hindi pronunciation and no signs of synthetic or foreign accent.",
+     "_ms": 1970,
+     "_cost": 0.007043
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 4,
+     "naturalness": 3,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The voice has good Indian pronunciation and a warm tone, but an unnatural glitch or extra sound at the very end reveals it is synthetic.",
+     "_ms": 12012,
+     "_cost": 0.016178
+    },
+    "qwen/qwen3.8-omni-flash": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": true,
+     "reason": "The speaker sounds like a genuine, warm Indian teacher, but adds the word 'Todd' at the end which was not in the script.",
+     "_ms": 18104,
+     "_cost": 0.00083373
+    }
+   }
+  },
+  "E5DC2": {
+   "set": "azure",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounded like a native Hindi speaker with natural flow, perfect pronunciation, and warm tone suitable for addressing a child.",
+     "_ms": 1961,
+     "_cost": 0.0093575
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 4,
+     "hindi_pronunciation": 5,
+     "warmth_child": 4,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "synthetic",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The voice has excellent native Hindi pronunciation and a warm, engaging tone, though slight unnatural pauses and pacing suggest it is a high-quality synthetic voice.",
+     "_ms": 9623,
+     "_cost": 0.0101
+    }
+   }
+  },
+  "ED26D": {
+   "set": "azure",
+   "passage": "c-hindi",
+   "by": {
+    "openai/gpt-audio": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speech was fluent, natural, warm, and had perfect Hindi pronunciation with no signs of English accent leakage or script deviation.",
+     "_ms": 1808,
+     "_cost": 0.0100395
+    },
+    "google/gemini-3.1-pro-preview": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a native Hindi speaker with excellent pronunciation, natural pauses, and a warm, engaging tone suitable for a teacher.",
+     "_ms": 7236,
+     "_cost": 0.010288
+    },
+    "google/gemini-3.1-pro-preview#retest": {
+     "native_indian": 5,
+     "naturalness": 5,
+     "hindi_pronunciation": 5,
+     "warmth_child": 5,
+     "english_accent_leakage": false,
+     "leakage_evidence": "",
+     "human_or_synthetic": "human",
+     "mispronounced": [],
+     "script_deviation": false,
+     "reason": "The speaker sounds like a native Hindi speaker with a warm, natural, and engaging tone, perfectly suited for a teacher talking to a child.",
+     "_ms": 7604,
+     "_cost": 0.00982
+    }
+   }
+  },
+  "F1178": {
+   "set": "azure",
+   "passage": "e-praise-correct",
+   "by": {}
+  },
+  "F41C5": {
+   "set": "azure",
+   "passage": "b-fractions",
+   "by": {}
+  }
+ }
+}

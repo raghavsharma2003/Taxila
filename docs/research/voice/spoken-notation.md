@@ -10,7 +10,7 @@ that choice. The same gap covers the digit-exact 1098/14416 rule in §10.4.
 **The decision in one line.** Every kit item, key and safety string carries a `spoken` field: data, rendered once
 per language mode × school medium × band by a deterministic renderer and verified at kit-load. Lane A is handed
 the pre-rendered form (in the voice compile only), the narration twin reads it, and lane L/G normalisers and
-`lessonKeywords()` are built from the same table. The probe below measured how much this matters (§4).
+`lessonKeywords()` are built from the same table. The probe below (§3) measured how much this matters.
 
 Evidence tags as in VOICE-TEACHER: [M] measured here (n given), [S] published source, [H] inherited,
 [I] invented starting value, [U] unverified.
@@ -115,8 +115,8 @@ interface KitItem {  // existing fields unchanged
 
 | consumer | gets | why |
 |---|---|---|
-| lane A LESSON NOW (gpt-realtime-2.1) | the resolved `spoken` form **instead of** the written item; the written item goes to the screen | measured: written notation is where lane A errs and mixes conventions (§4) |
-| narration twin (gpt-4o-mini-tts) and lane E cascade | the resolved `spoken` form | same, and TTS reads Hinglish-romanised notation in Hindi number words (§4) |
+| lane A LESSON NOW (gpt-realtime-2.1) | the resolved `spoken` form **instead of** the written item; the written item goes to the screen | measured: written notation is where lane A errs and mixes conventions (§3) |
+| narration twin (gpt-4o-mini-tts) and lane E cascade | the resolved `spoken` form | same, and TTS reads Hinglish-romanised notation in Hindi number words (§3) |
 | lane B (Azure TTS) | the `spoken` form, plus the shared lexicon for term phonemes | the lexicon fixes phonemes, not notation choice |
 | screen / module | the written item and the NCERT term in the child's school medium | DL2: the screen follows the school medium |
 | `lessonKeywords(kit)` (lane L `keywords`, conditional on O1) | the current item's `terms` in the child's medium, plus the key's **value words**, from `answerSpoken.variants` | keywords must be the words the child will say, not the notation. Never a free-text prompt list (§9.1) |
@@ -147,7 +147,7 @@ prompt text.
 
 **Never mix inside one item.** The renderer chooses one convention per class per item. `checkSpoken` rejects a form
 that contains readings from two families of the same class (e.g. upon + quarters, Hindi + English number words,
-lakh + million). This is the "mixed-convention" metric in §4, enforced at load.
+lakh + million). This is the "mixed-convention" metric in §3, enforced at load.
 
 ### 2.4 Authoring and cost
 
@@ -180,4 +180,135 @@ law. A rubric classifier (`taxila-brain`, JSON, one call per clip) labelled each
 is a research measurement, not child grading. A hand audit of a random sample is in §3.2.
 Scripts: `probe.mjs`, `score.mjs`; data: `raw.json`, `scored.json`, `tables.md`, `clips/`.
 
-RESULTS_PLACEHOLDER
+A second ASR pass (`asr2.mjs`: same deployment, **no** language hint) was added after the first pass. The reason:
+with `language=hi`, the first pass was seen translating spoken English number words into Hindi ones. A flag about
+the *voice* counts only when both transcripts support it, or one transcript plus the engine's own transcript.
+Otherwise it is marked asr-suspect and shown separately. 636 clips, 0 engine errors after one resumable retry
+pass (40 realtime `status failed` responses on the first pass, all under rate pressure). Date 2026-10-02. All n
+are small: these numbers show direction and do not set bars.
+
+### 3.1 Results [M] (n = 53 items per cell; excl. = asr-suspect flags removed)
+
+| engine · arm | n | rendering error (excl.) | mixed convention (excl.) | number misread (excl.) | any flag |
+|---|---|---|---|---|---|
+| **RT written** | 159 | 32 (29) = **20%** (18%) | 36 (30) = **23%** (19%) | 17 (15) = **11%** (9%) | 62 = **39%** |
+| **RT pre-rendered** | 159 | 3 (2) = 2% (1%) | 3 (2) = 2% (1%) | 0 = **0%** | 5 = **3%** |
+| **TTS written** | 159 | 53 (52) = **33%** | 44 (43) = **28%** | 29 (29) = **18%** | 76 = **48%** |
+| **TTS pre-rendered** | 159 | 10 (9) = 6% | 10 (7) = 6% (4%) | 2 (2) = 1% | 18 = **11%** |
+
+| engine · arm · mode | rendering error | mixed convention | number misread |
+|---|---|---|---|
+| RT W en / hl / hi | 17% / 19% / 25% | 0% / 36% / 32% | 8% / 11% / 13% |
+| RT P en / hl / hi | 0% / 2% / 4% | 0% / 6% / 0% | 0% / 0% / 0% |
+| TTS W en / hl / hi | 11% / 40% / 49% | 0% / 45% / 38% | 6% / 21% / 28% |
+| TTS P en / hl / hi | 2% / 8% / 9% | 0% / 19% / 0% | 0% / 2% / 2% |
+
+Per-class counts (render/mixed/misread) are in `notation-probe-2026-10-02/tables.md`. The worst classes when
+written:
+
+| class (n per arm) | RT W | RT P | TTS W | TTS P |
+|---|---|---|---|---|
+| large numbers, Indian commas (15) | 9 err / **9 misread** | 0 / 0 | 11 / **11 misread** | 1 / 1 |
+| exponents (12) | 6 / 2 | 1 / 0 | 7 / 4 | 0 / 0 |
+| currency ₹ (9) | 4 / 0 | 0 / 0 | 5 / 2 | 2 / 0 |
+| units (21) | 4 err, 8 mixed | 0, 2 | 6, 7 | 0, 3 |
+| roots (6) | 2 / 0 | 0 / 0 | 4 / 2 | 0 / 0 |
+| helplines (6) | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 |
+
+**Helpline digit-exactness** (hand-tallied from both transcripts):
+- **Written, English or Hinglish mode:** digit-exact wherever the reading could be recovered (7/7). One more row
+  was undetermined, because both transcripts wrote digits.
+- **Written, Hindi mode:** digit-exact **0/4**. Both engines voiced 1098 as a cardinal number ("एक हज़ार …"; the
+  ASR heard 1980 and 1028). 14416 came back with a wrong final digit (RT) or an extra digit (TTS).
+- **Pre-rendered digit by digit:** 11/12 confirmed digit-exact, 1 undetermined, 0 failures.
+
+So the §10.4 rule ("digit-exact") is **false today on lane A in Hindi mode** unless the string is pre-rendered.
+
+### 3.2 Hand audit of the classifier [M]
+
+A seeded random 48 of 636 rows were reread against the input, the engine transcript and both ASR transcripts
+(`audit.json`). The audit agreed with the classifier on 46/48. One disagreement was strictness ("ml" voiced as
+letters is ordinary Indian English); the other was an unflagged ASR doubt. Nobody listened to the clips. **6/48
+(13%) rows had digits in both transcripts for the notation span**, so their reading convention cannot be recovered.
+The classifier leaves these unflagged, which makes every written-arm rate above a **lower bound**.
+
+### 3.3 What broke, by shape (observations, not lines; never copy into a prompt)
+
+1. **The Indian comma system is the worst class and the most dangerous.** Written, both engines lost place value:
+   - English mode: the commas were read literally ("comma zero zero"), or the digits were read in groups with no
+     lakh/crore.
+   - Hindi mode: 12 crore became a twelve-lakh number, and 10,000,000 became "ten thousand crore".
+   - Pre-rendered, RT made 0/15 misreads.
+   This is the NCERT ch.1 skill itself (c7-maths-ch01): a teacher who misreads the item teaches the misconception
+   (`c7-maths-ch01-t01-m-crore-million`).
+2. **The rupee became a dollar.** In English mode, written ₹ amounts were voiced with dollars and cents by RT (2/3
+   items), and TTS said cents for paise. Pre-rendered: 0.
+3. **Superscripts, carets and root signs drop out.** Written exponents lost the power (a base and a bare number;
+   "a squared b" plus a bare 3; in Hindi a product word instead of the power). Written roots lost "root of" in
+   Hinglish. Pre-rendered: 1 residual exponent error, in which ASR read the variable *a* as the Hindi word एक.
+4. **Mixed numbers fuse.** Written "2 1/3" was voiced as whole-number digits followed by a fraction with no joiner
+   (RT hi), or as three bare numbers (TTS hl/hi).
+5. **The language mode bends the notation.** Given romanised Hinglish with notation, TTS voiced the numbers in Hindi
+   number words. That is 43% foreign-to-medium for an English-medium child, and it happened again on 4 pre-rendered
+   items where the text said the English word. In Hindi mode, written signs and operators came out as English
+   loanwords (minus/plus/equals/root/point). Some of those (माइनस) are common in Hindi-medium speech [U], but none
+   is the NCERT reading. In English mode, written notation was clean on convention (0% mixed), and its errors were
+   misreads.
+6. **Residual errors after pre-rendering are pronunciation, not notation.** gpt-4o-mini-tts voiced ऋण unclearly in
+   3/3 Hindi negative items (both ASRs heard रूण / रेन / garble), and प्रकाश संश्लेषण drifted (संक्षलेषण). The
+   **Tele-MANAS name** was heard as something else on 2/2 RT English clips and on several Hindi clips. These belong
+   in the §5 term-pronunciation set (VOICE-TEACHER §5.3). The pre-rendered form cannot fix a phoneme on lane A;
+   only the ear panel can say whether it is wrong.
+
+### 3.4 Limits
+
+- ASR-only measurement with one ASR model (two configurations), so the transcripts are not independent. No listener.
+- Rubric by a model; the hand audit is transcript-level.
+- One voice (marin), one item per class per mode, text-in (no child audio), a minimal compile rather than the full
+  §2 prompt, a fresh session per item, so no carry-over is measured.
+- Hinglish was run only for English-medium children; Hindi mode only for Hindi-medium children.
+- "Mixed convention" depends on the medium rules in `score.mjs`. Hindi numbers in Hinglish and माइनस in Hindi are
+  convention calls, not errors, for some children. That is exactly why the `spoken` field, and not the voice, makes
+  that call per medium.
+- Re-run with the full compile, on the lane B/C winners, and with listeners: VT-10 in VOICE-TEACHER §11.
+
+---
+
+## 4. Decision
+
+1. **Ship the `spoken` field (§2) before any lane-A lesson poses a notation item.** Measured effect on lane A:
+   any-flag rate falls from 39% to 3%, and number misreads from 11% to 0% (n=159 per arm).
+2. **Lane A never sees written notation in LESSON NOW.** The written form goes to the screen only.
+3. **Helplines are pre-rendered digit strings in `floor.js`** (per mode), never numerals, on every lane. The voice
+   lane also shows the digits on screen. This closes the lane-A gap in §10.4. It does **not** prove the name is
+   intelligible: the panel must check that.
+4. **Kits with Indian-comma numbers, ₹, exponents or roots must not run on voice** until their items carry a
+   verified `spoken` form (`checkSpoken` drops them, §2.1).
+5. **What would reverse this:** a full-compile re-run (VT-10) in which written notation on the shipped lane scores
+   within 2 points of pre-rendered on every class, with listener confirmation. In that case the field stays as the
+   grading/keyword source, but the voice could take the written form.
+
+## 5. Term-pronunciation item set for the §5 panel
+
+Defined in VOICE-TEACHER §5.3: 12 terms in both media, 16 notation items (one per class above), and the two
+helplines with their names. All are pre-rendered in the arm's mode × medium, and lane A also gets the written form
+as a contrast. Listeners mark each clip *right / understandable but wrong for my medium / wrong or unclear*.
+Results are stratified by school medium. Seed items: `notation-probe-2026-10-02/items.mjs` (K1-K6 and S1-S2 plus
+one item per class). Add ऋण, Tele-MANAS and प्रकाश संश्लेषण as named watch items, because each failed by ASR here.
+
+## Sources
+
+- NCERT Ganita Prakash, Class 6, ch.7 *Fractions* (English `https://ncert.nic.in/textbook/pdf/fegp107.pdf`;
+  Hindi *भिन्न* `https://ncert.nic.in/textbook/pdf/fhgp107.pdf`): "Reading Fractions" / "भिन्नों को पढ़ना".
+- NCERT Ganita Prakash, Class 6, ch.10 *The Other Side of Zero* (`fegp110.pdf`, `fhgp110.pdf`).
+- NCERT Ganita Prakash, Class 7, ch.1 *Large Numbers Around Us* (`gegp101.pdf`, `ghgp101.pdf`) and ch.3 *A Peek
+  Beyond the Point* (`gegp103.pdf`, `ghgp103.pdf`).
+- NCERT Ganita Prakash, Class 8, ch.1 *A Square and a Cube* (`hegp101.pdf`, `hhgp101.pdf`) and ch.2 *Power Play*
+  (`hegp102.pdf`, `hhgp102.pdf`).
+- NCERT Curiosity / जिज्ञासा, Class 7, ch.7 and ch.10 (`gecu107.pdf`, `ghcu107.pdf`, `ghcu110.pdf`).
+- Indian numbering system, Wikipedia, `https://en.wikipedia.org/wiki/Indian_numbering_system` (RBI usage, grouping).
+- भिन्न, Hindi Wikipedia, `https://hi.wikipedia.org/wiki/भिन्न` (अंश, हर).
+- Inherited: `docs/harvest/gurukul.md` Block B (IndicF5 symbols/numerals, normaliser with negative controls),
+  `docs/harvest/companion-tech.md` (recitation law; pronunciation is not accent identity).
+- Not found in this pass (web search budget exhausted; marked [U]): a textbook source for "three by four" as
+  Indian classroom practice, and spoken conventions for chemical formulae in Hindi-medium classrooms.

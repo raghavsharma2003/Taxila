@@ -3,12 +3,15 @@
 // The `done` variant (after the finish tile) has NO ring: the lesson slot becomes the day's artefact card,
 // and another lesson is reached only by the child's own tap on her (Young) or the next row (Older), with
 // equal-weight tiles. No counts, dates, greetings about time away, or "ready" badges.
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+// homeState comes from the server (src/child/day.ts), never from navigation state; a child request for
+// another lesson goes to the server check, and a refusal shows the calm resting shape once.
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { TeacherStage } from "../../stage/TeacherStage.tsx";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
 import { Book, Face, MapIcon, ParentDoor, Play, Practice, Question } from "../icons.tsx";
+import { getChildPlan, markerPlan, markRefused, readMarker, requestLesson, type ChildPlan } from "../day.ts";
 import { readArtefacts } from "../prefs.ts";
 import { Aasmaan, Bagiya } from "../progress/worlds.tsx";
 import { useChildMap } from "../useChildMap.ts";
@@ -17,14 +20,36 @@ const silent = { value: 0 };
 
 export function Home() {
   const { cid, child, band, family, lang, prefs, reducedMotion } = useChild();
-  const location = useLocation();
   const navigate = useNavigate();
-  const done = !!(location.state as { done?: boolean } | null)?.done;
+  // First paint from today's marker (no flash of a ring after the finish tile), then the server's answer.
+  const [plan, setPlan] = useState<ChildPlan>(() => markerPlan(cid));
+  useEffect(() => {
+    const ac = new AbortController();
+    getChildPlan(cid, ac.signal).then((p) => !ac.signal.aborted && setPlan(p), () => {});
+    return () => ac.abort();
+  }, [cid]);
+  const done = plan.homeState !== "default";
   const { map } = useChildMap(cid);
+  const skills = map?.skills ?? [];
   const [asking, setAsking] = useState(false);
+  const [resting, setResting] = useState(false);
+  const [requesting, setRequesting] = useState(false);
+  const refusedToday = !!readMarker(cid)?.refused;
+  // Abhyaas only when the server says a pack is ready and the cap allows (until the plan read exists: shown).
+  const practiceOk = plan.source !== "server" || ((plan.capRemaining ?? 1) > 0 && plan.packReady !== false);
+  const ask = async () => {
+    if (requesting) return;
+    setRequesting(true);
+    const r = await requestLesson(cid);
+    setRequesting(false);
+    setAsking(false);
+    if (r.granted && r.lid) return navigate(`/c/${cid}/lesson/${encodeURIComponent(r.lid)}`);
+    markRefused(cid);
+    setResting(true);
+  };
+  const classOn = skills.find((s) => s.status === "practising" || s.status === "introduced" || s.status === "due") ?? null;
   const artefact = readArtefacts(cid).at(-1) ?? null;
   const world = prefs.world ?? (family === "young" ? "bagiya" : "aasmaan");
-  const skills = map?.skills ?? [];
   const lessonPath = `/c/${cid}/lesson/new`;
 
   const her = (
@@ -36,7 +61,7 @@ export function Home() {
       reducedMotion={reducedMotion}
       badge={family === "young"}
       plainRoom={band === "b4"}
-      onTap={done ? () => setAsking(true) : undefined}
+      onTap={done && !refusedToday && !resting ? () => setAsking(true) : undefined}
       tapLabel={child.teacher_id ?? "teacher"}
     />
   );
@@ -53,6 +78,10 @@ export function Home() {
     </div>
   );
 
+  const restingShape = resting ? (
+    <p className="tx-card tx-muted" role="status" data-testid="resting">{t("resting", lang)}</p>
+  ) : null;
+
   if (family === "young") {
     return (
       <main className="tx-screen" data-testid="home" data-home={done ? "done" : "default"}>
@@ -62,15 +91,17 @@ export function Home() {
           <div className="tx-sheet-pair" role="group">
             {/* ⟨that's all⟩ first in reading and focus order; both equal and unringed */}
             <button type="button" className="tx-tile" onClick={() => setAsking(false)}>{t("thatsAll", lang)}</button>
-            <button type="button" className="tx-tile" onClick={() => navigate(lessonPath)}>{t("another", lang)}</button>
+            <button type="button" className="tx-tile" onClick={() => void ask()} disabled={requesting} data-testid="request-lesson">{t("another", lang)}</button>
           </div>
         )}
+        {restingShape}
         <div className="tx-home-tiles">
           {done ? (
-            <button type="button" className="tx-artefact-card" aria-label={t("whatWeMade", lang)}>
-              <span className="tx-num">{artefact?.chips.slice(-2).join("  ") || "✎"}</span>
-              <span>{t("whatWeMade", lang)}</span>
-            </button>
+            // Not a button until her re-voice clip exists (§2.5.1: a tap plays it).
+            <div className="tx-artefact-card" role="img" aria-label={t("whatWeMade", lang)} data-testid="artefact-card">
+              <span className="tx-num" aria-hidden="true">{artefact?.chips.slice(-2).join("  ") || "✎"}</span>
+              <span aria-hidden="true">{t("whatWeMade", lang)}</span>
+            </div>
           ) : (
             <Link className="tx-tile tx-lessontile tx-ring" to={lessonPath} data-testid="start-lesson">
               <Play /> {t("todayLesson", lang)}
@@ -82,10 +113,12 @@ export function Home() {
             </span>
             {t(world === "bagiya" ? "garden" : "sky", lang)}
           </Link>
-          <Link className="tx-tile" to={`/c/${cid}/practice`}>
-            <Practice />
-            {t("practice", lang)}
-          </Link>
+          {practiceOk && (
+            <Link className="tx-tile" to={`/c/${cid}/practice`}>
+              <Practice />
+              {t("practice", lang)}
+            </Link>
+          )}
         </div>
       </main>
     );
@@ -97,12 +130,19 @@ export function Home() {
       <div className="tx-older-grid">
         <div className="tx-stack" style={{ width: "100%" }}>
           <div className="tx-older-head">
-            {artefact?.topic && <span className="tx-muted">{artefact.topic}</span>}
+            {/* subject and the chapter "your class is on" (from the ledger read; nothing when it is absent) */}
+            {classOn && (
+              <span className="tx-muted">
+                {[classOn.subject, classOn.chapter ?? classOn.title].filter(Boolean).join(" · ")}
+              </span>
+            )}
           </div>
           {done ? (
-            <button type="button" className="tx-listrow" onClick={() => setAsking(true)}>
-              {t("nextTopic", lang)}…
-            </button>
+            refusedToday || resting ? null : (
+              <button type="button" className="tx-listrow" onClick={() => setAsking(true)}>
+                {t("nextTopic", lang)}…
+              </button>
+            )
           ) : (
             <Link className="tx-tile tx-primary tx-ring" to={lessonPath} data-testid="start-lesson">
               <Play /> {t("continue", lang)}
@@ -111,12 +151,13 @@ export function Home() {
           {asking && (
             <div className="tx-sheet-pair" role="group" style={{ width: "100%" }}>
               <button type="button" className="tx-tile" onClick={() => setAsking(false)}>{t("no", lang)}</button>
-              <button type="button" className="tx-tile" onClick={() => navigate(lessonPath)}>{t("startLesson", lang)}</button>
+              <button type="button" className="tx-tile" onClick={() => void ask()} disabled={requesting} data-testid="request-lesson">{t("startLesson", lang)}</button>
             </div>
           )}
+          {restingShape}
           <ul className="tx-list" style={{ width: "100%" }}>
             <li><Link className="tx-listrow" to={`/c/${cid}/doubt`}><Question /> {t("doubt", lang)}</Link></li>
-            <li><Link className="tx-listrow" to={`/c/${cid}/practice`}><Practice /> {t("practice", lang)}</Link></li>
+            {practiceOk && <li><Link className="tx-listrow" to={`/c/${cid}/practice`}><Practice /> {t("practice", lang)}</Link></li>}
             <li><Link className="tx-listrow" to={`/c/${cid}/map`}><MapIcon /> {t("myMap", lang)}</Link></li>
             <li><Link className="tx-listrow" to={`/c/${cid}/notes`}><Book /> {t("myNotes", lang)}</Link></li>
           </ul>

@@ -302,3 +302,18 @@ quality; quality judging is in the voice-and-model-routing workflow.
 No model leaked the answer in B. Reading: DeepSeek-V4.1-Flash is the strongest live-reply candidate on shape+speed
 (1.2 s vs 2.0 s for the current taxila-fast); DeepSeek-V4-Pro / Mistral-Large-3 top classification. n is small
 (6/12); treat as direction, confirm with quality judging before switching the router.
+
+## cascade-latency-2026-10-02
+**Cascade voice lane latency (child speech end → teacher first byte), evals/cascade-latency.mjs, 2026-10-02.** n=6-8 turns
+per run, synthetic child speech (gpt-4o-mini-tts), WebSocket STT, API in the US sandbox against Neon over HTTP.
+
+| run | endpoint | STT | Director | TTS 1st byte | total median (p90) |
+|---|---|---|---|---|---|
+| first build | 1095 | 318 | 4417 | 384 | 6365 (8710) |
+| after fixes + speculative replies (taxila-fast) | 1063-1086 | 320-339 | 2405-3341 | 350 | 4230-5193 |
+| DEPLOY_REPLY=taxila-ds41, DEPLOY_CLASSIFY=DeepSeek-V4-Pro | 1096 | 310 | 3813 (6108) | 485 | 5682 (7966) |
+
+0 turns met the 2.0 s budget in any run. The Director stage makes 2-3 sequential model calls (classify → reply →
+guard rewrite); swapping to faster open models does NOT fix it (each call ~1.0-1.6 s, still serial). Structural fix
+needed (single combined call / streamed guarded reply / parallel classify+reply). Endpointing (900 ms silence) is
+the second-largest cost and is a deliberate child-pause choice (`voice-turn-config`).

@@ -11,6 +11,9 @@ export const DEPLOY = {
   get realtime() { return process.env.DEPLOY_REALTIME || "taxila-realtime"; },
   get brain() { return process.env.DEPLOY_BRAIN || "taxila-brain"; },
   get fast() { return process.env.DEPLOY_FAST || "taxila-fast"; },
+  // Role-based routing (MODEL-ROUTER): each role can move to the bake-off winner without touching call sites.
+  get reply() { return process.env.DEPLOY_REPLY || this.fast; },        // live teacher reply (text + cascade lanes)
+  get classify() { return process.env.DEPLOY_CLASSIFY || this.fast; },  // answer vs verified key (JSON)
   get transcribe() { return process.env.DEPLOY_TRANSCRIBE || "taxila-transcribe"; },
   get tts() { return process.env.DEPLOY_TTS || "gpt-4o-mini-tts"; },
 };
@@ -95,9 +98,15 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
  * @param {{ schema?: object, schemaName?: string, maxTokens?: number, effort?: string, timeoutMs?: number, retries?: number, trace?: object[] }} [opts]
  * @returns {Promise<{ text: string, json?: any, finishReason?: string, usage?: object }>}
  */
+// OpenAI reasoning-family deployments take max_completion_tokens + reasoning_effort; the Direct-from-Azure open
+// models (DeepSeek, Mistral, Grok, Kimi, gpt-oss, Llama) take max_tokens and reject reasoning_effort.
+const REASONING_FAMILY = /^(taxila-(fast|brain|codex)|gpt-5|o\d)/i;
+export const isReasoningFamily = (deployment) => REASONING_FAMILY.test(deployment);
+
 export async function chat(deployment, messages, opts = {}) {
-  const body = { model: deployment, messages, max_completion_tokens: opts.maxTokens ?? 400 };
-  if (opts.effort) body.reasoning_effort = opts.effort;
+  const reasoning = isReasoningFamily(deployment);
+  const body = { model: deployment, messages, [reasoning ? "max_completion_tokens" : "max_tokens"]: opts.maxTokens ?? 400 };
+  if (opts.effort && reasoning) body.reasoning_effort = opts.effort;
   if (opts.schema) {
     body.response_format = { type: "json_schema", json_schema: { name: opts.schemaName || "result", strict: true, schema: opts.schema } };
   }

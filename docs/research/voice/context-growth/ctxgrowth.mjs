@@ -12,6 +12,7 @@
 //      and fold them into a rolling text recap rendered as one row of the CHILD brief (notes, never lines).
 //   C  audio→text: keep the last 8-16 exchanges as audio; when 16 are held, replace the oldest 8 audio items
 //      with text items carrying the HEARD transcript (conversation.item.create previous_item_id + delete).
+//   F  tail placement (as D) + B's pruning; the recap row is appended to the CHILD block of the session prefix.
 //   E  (control) the tail placement of D with NO pruning or replacement: separates placement from replacement.
 //   D  (cache arm) as C, but the per-turn sections (LESSON..TURN SHAPE) ride in a system item appended at the
 //      end of the conversation and the stable CORE+CHILD sits in session instructions.
@@ -35,7 +36,7 @@ const { CHARACTERS } = await import(R + "compiler/characters/index.js");
 const arg = (n, d) => { const i = process.argv.indexOf(`--${n}`); return i > 0 ? process.argv[i + 1] : d; };
 const ARM = arg("arm", "A"), RUN = arg("run", "1"), MINUTES = +arg("minutes", 30);
 // D and E put the per-turn sections in a system item at the conversation tail (stable session prefix).
-const TAIL = ARM === "D" || ARM === "E";
+const TAIL = ARM === "D" || ARM === "E" || ARM === "F";
 const HERE = new URL(".", import.meta.url).pathname;
 const OUT = `${HERE}runs/${ARM}-${RUN}.jsonl`;
 fs.mkdirSync(`${HERE}runs`, { recursive: true }); fs.mkdirSync(`${HERE}clips`, { recursive: true });
@@ -203,13 +204,17 @@ async function makeRecap(dropped) {
 
 async function manageContext() {
   const live = ex.filter((x) => x.mode === "audio");
-  if (ARM === "B" && ex.length >= KEEP_MAX) {
+  if ((ARM === "B" || ARM === "F") && ex.length >= KEEP_MAX) {
     const drop = ex.splice(0, ex.length - KEEP_MIN);
     for (const x of drop) for (const id of [x.userId, x.asstId]) if (id) {
       send({ type: "conversation.item.delete", item_id: id });
       await waitFor((e) => (e.type === "conversation.item.deleted" && e.item_id === id) || (e.type === "error"), 15_000).catch(() => {});
     }
     recap = await makeRecap(drop);
+    if (ARM === "F") { // the recap row joins the CHILD block of the stable session prefix; the prune has just busted the item cache anyway
+      send({ type: "session.update", session: { type: "realtime", instructions: `${splitIns(ins0)[0]}\n- earlier this lesson (notes for you, not words to say): ${recap}` } });
+      await waitFor((e) => e.type === "session.updated" || e.type === "error", 15_000).catch(() => {});
+    }
     rec({ kind: "prune", turn, clockMin: clockMs / 60000, dropped: drop.length, recap, recapTok: Math.ceil(recap.length / 3.5) });
   }
   if ((ARM === "C" || ARM === "D") && live.length >= KEEP_MAX) {

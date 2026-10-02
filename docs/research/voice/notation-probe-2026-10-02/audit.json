@@ -1,0 +1,12 @@
+{
+ "date": "2026-10-02",
+ "method": "Seeded random sample (seed 20261002, audit-sample.mjs logic) of 48 of the 636 scored rows. One human-in-the-loop reviewer (the research agent) reread the input, engine transcript and both ASR transcripts and agreed or disagreed with each rubric label (render_error / number_misread / mixed_convention). Nobody listened to the clips; this audits the classifier against the transcripts, not against the ear.",
+ "n": 48,
+ "agree": 46,
+ "disagree": [
+  {"i": 21, "row": "rt|W|en|U6", "judge": "R", "audit": "'ml' voiced as letters is common Indian English; judge is stricter than the rubric intends"},
+  {"i": 44, "row": "tts|P|hi|N1", "judge": "R", "audit": "uncertain: A='रूण', B='रु. 7'; could be the voice or ASR, should have been asr_suspect"}
+ ],
+ "undetermined_in_sample": 6,
+ "undetermined_note": "6/48 rows (13%) had digits in BOTH transcripts for the notation span (e.g. 0.274, 3.75, 2.5, H2O), so the reading convention cannot be recovered from text; the classifier left them unflagged. Every rate in tables.md is therefore a LOWER bound on the written arm, where digits are the input."
+}

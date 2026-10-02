@@ -69,7 +69,7 @@ export function checkEvent(ev) {
  * @param {import("../../../shared/learner").Ledger} ledger
  * @param {import("../../../shared/learner").EvidenceEvent[]} events
  * @param {FoldCtx} [ctx]
- * @typedef {{ itemMeta?: (ev: any) => any, prereqsOf?: (skillId: string) => string[], strandsFor?: (subject: string) => string[],
+ * @typedef {{ itemMeta?: (ev: any) => any, strandOf?: (skillId: string) => string, prereqsOf?: (skillId: string) => string[], strandsFor?: (subject: string) => string[],
  *   eta?: number, confusion?: any, cohort?: string, paraEnabled?: boolean, onTheta?: (o: any) => void, onKt?: (evId: string, skillId: string) => void }} FoldCtx
  */
 export function fold(ledger, events, ctx = {}) {
@@ -110,7 +110,7 @@ function applyOne(L, ev, ctx) {
     if (L.skills[k]) continue;
     const ep = L.ability[subjectOfSkill(k)];
     const prereqPLs = (ctx.prereqsOf?.(k) ?? []).map((p) => L.skills[p]?.pL).filter((p) => p != null);
-    L.skills[k] = newSkill(k, priorFromTheta(ep.base, k, { topicType: ev.topicType, prereqPLs }), ev.topicType ?? "T3", ep.base.epochId, ev.seq ?? null, L.paramsVersion);
+    L.skills[k] = newSkill(k, priorFromTheta(ep.base, k, { topicType: ev.topicType, prereqPLs, strand: (ctx.strandOf ?? strandOfSkill)(k) }), ev.topicType ?? "T3", ep.base.epochId, ev.seq ?? null, L.paramsVersion);
   }
   const firstOfEpisode = !sess.episodes.includes(ev.episodeId);
 
@@ -119,7 +119,7 @@ function applyOne(L, ev, ctx) {
 
   // θ: the only path in (TH1).
   if (!ev.teach) {
-    const item = ctx.itemMeta?.(ev) ?? defaultItemMeta(ev);
+    const item = ctx.itemMeta?.(ev) ?? defaultItemMeta(ev, ctx.strandOf);
     const key = [...item.skillIds].sort().join("|");
     const r = thetaObs(ev, item, {
       firstOfEpisode, cohort: ctx.cohort,

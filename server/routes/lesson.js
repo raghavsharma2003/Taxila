@@ -199,7 +199,7 @@ async function textReply({ instructions, state, kit, childText, trace, history =
     { role: "user", content: childText || "(the child has joined the lesson and is listening)" },
   ];
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
-  const ask = (msgs) => chat(DEPLOY.fast, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace }).then((r) => r.text.trim());
+  const ask = (msgs) => chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace }).then((r) => r.text.trim());
   let reply;
   try {
     reply = await ask(messages);

@@ -178,3 +178,24 @@ test("malformed events throw (never silent evidence)", () => {
   const L = fold(L0(), [ev({ id: "late", seq: 50 })]);
   assert.throws(() => fold(L, [ev({ id: "older", seq: 10 })]), /re-fold/);
 });
+
+test("adapter: legacy Director evidence maps onto BKT-R classes and the hint ladder", async () => {
+  const { fromLegacyEvidence, openOutcome, teachEvent } = await import("../server/learner/kt/adapter.js");
+  const c = { id: "a1", sessionId: "L", sessionStartAt: T0, at: T0, episodeId: "L:i1:0" };
+  const legacy = (o) => ({ skillId: SK, itemId: "i1", probe: "P15", outcome: "correct", hintsUsed: 0, weight: 1, ...o });
+  assert.equal(OUTCOMES["item.open"][fromLegacyEvidence(legacy(), c).outcome], "C0");
+  assert.equal(OUTCOMES["item.open"][fromLegacyEvidence(legacy({ hintsUsed: 1 }), c).outcome], "C2");
+  assert.equal(OUTCOMES["item.open"][fromLegacyEvidence(legacy(), { ...c, triesBefore: 1 }).outcome], "C1");
+  assert.equal(fromLegacyEvidence(legacy({ outcome: "incorrect" }), c), null, "the ladder continues");
+  assert.equal(OUTCOMES["item.open"][fromLegacyEvidence(legacy({ outcome: "incorrect" }), { ...c, episodeEnded: true }).outcome], "C4");
+  assert.equal(fromLegacyEvidence(legacy({ outcome: "no_evidence" }), c), null);
+  const why = fromLegacyEvidence(legacy({ probe: "P2", outcome: "misconception", misconceptionId: "m" }), c);
+  assert.equal(why.cls, "probe.why");
+  assert.equal(OUTCOMES["probe.why"][why.outcome], "misconception");
+  const mcq = fromLegacyEvidence(legacy({ probe: "P7", outcome: "incorrect" }), { ...c, options: 3 });
+  assert.equal(mcq.cls, "item.mcq3");
+  assert.equal(fromLegacyEvidence(legacy({ probe: "P7" }), { ...c, options: 3, triesBefore: 1 }), null);
+  assert.equal(openOutcome({ correct: false, idk: true }), "IDK");
+  const L = fold(L0(), [teachEvent({ id: "t", sessionId: "L", sessionStartAt: T0, at: T0, episodeId: "x", skillId: SK }), { ...fromLegacyEvidence(legacy(), c), seq: undefined }]);
+  assert.equal(L.skills[SK].n, 1);
+});
