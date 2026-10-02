@@ -35,6 +35,10 @@ grades — classify against verified keys; identity is an authenticated child id
 - `docs/research/**` research; `docs/harvest/**` what was inherited from earlier products
 - `db/migrations/` (apply with `node scripts/migrate.mjs`), `evals/` measured harnesses
 
+## Deploy
+`git push` first (ACR builds from GitHub), then `node scripts/deploy-azure.mjs` → Azure Container Apps `taxila-web`.
+The Vercel project `taxila` is paused (Azure-only directive); `api/[...route].js` is kept only as a shim.
+
 ## Gates
 `npx tsc -b && npx vite build && npm test` must pass before any commit that touches code. Secrets live only in
 gitignored `.env.local` (and the hosting provider's secret store) — never commit or print them.

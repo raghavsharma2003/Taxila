@@ -27,7 +27,7 @@ export async function createSession(res, guardianId, userAgent) {
   const token = randomBytes(32).toString("base64url");
   await q("insert into auth_session(token_hash, guardian_id, expires_at, user_agent) values ($1,$2, now() + ($3 || ' days')::interval, $4)",
     [sha(token), guardianId, String(TTL_DAYS), (userAgent || "").slice(0, 200)]);
-  const secure = process.env.VERCEL ? "; Secure" : "";
+  const secure = process.env.VERCEL || process.env.NODE_ENV === "production" ? "; Secure" : "";
   res.setHeader("set-cookie", `${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${TTL_DAYS * 86400}${secure}`);
 }
 export async function destroySession(req, res) {

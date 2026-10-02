@@ -107,6 +107,19 @@
    "kind": "constraint",
    "title": "Owner directive: only Azure-grant AI/compute (first-party Foundry + Azure services); Neon allowed",
    "at": "2026-10-02"
+  },
+  {
+   "id": "hosting-azure-container-apps",
+   "kind": "decision",
+   "title": "Web+API on Azure Container Apps taxila-web, ACR builds from GitHub; Vercel paused",
+   "at": "2026-10-02",
+   "status": "live"
+  },
+  {
+   "id": "open-db-region",
+   "kind": "open",
+   "title": "App in eastus2 but Neon in Singapore: cross-Pacific DB latency unmeasured",
+   "at": "2026-10-02"
   }
  ],
  "edges": [
@@ -189,6 +202,21 @@
    "src": "forge-infra-azure",
    "rel": "constrains",
    "dst": "azure-only-compute"
+  },
+  {
+   "src": "hosting-azure-container-apps",
+   "rel": "supersedes",
+   "dst": "deploy-vercel-single-function"
+  },
+  {
+   "src": "hosting-azure-container-apps",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "open-db-region",
+   "rel": "caused_by",
+   "dst": "hosting-azure-container-apps"
   }
  ]
 }

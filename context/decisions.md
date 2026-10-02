@@ -93,3 +93,18 @@ Azure AI Foundry first-party (Azure OpenAI) models and Azure services only.** Ne
   (Basic, eastus2). Vercel stays only until the Azure deployment is verified, then the Vercel project is removed.
 - Reverse if: the owner adds another grant/budget, or a required capability has no Azure-native option (escalate
   to the owner instead of silently adding a vendor).
+
+## hosting-azure-container-apps
+**Web + API run on Azure Container Apps `taxila-web` (env `taxila-env`, eastus2, 0.5 vCPU / 1 GiB, min 1 / max 5
+replicas, HTTP scale at 50 concurrent) at https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io — image built by ACR `taxilacr` from the GitHub branch.**
+(2026-10-02) Supersedes `deploy-vercel-single-function`; the Vercel project is PAUSED (reversible).
+- Verified: ACR run ch1 built the Dockerfile from GitHub in 50 s; `/` 200, SPA fallback 200, `/api/health` 200,
+  guardian signup + `/api/me` round-trip through Neon from the Azure container.
+- Deploy: `git push` then `node scripts/deploy-azure.mjs` (refuses an unpushed HEAD; builds `taxila-web:<sha>`,
+  rolls the revision, waits for health). Secrets live in Container App secrets, never in the image.
+- Long-lived Node process: no 60 s function cap, so Forge status streams, WebSocket observers and multi-minute jobs
+  are possible on the same platform.
+- Region trade-off: eastus2 (next to Azure OpenAI) while Neon is in Singapore — every DB query crosses the Pacific
+  (~200 ms). Measure /api/lesson/turn; if DB latency dominates, move Neon to US East (aws-us-east-1/2 are offered).
+- Reverse if: latency from India is unacceptable (→ Central India region for the app + Azure Front Door), or
+  Container Apps cost exceeds the grant budget.
