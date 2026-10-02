@@ -3843,6 +3843,1302 @@
         "a Ladakh road trip",
         "a pen friend in Chennai"
       ]
+    },
+    {
+      "topicId": "c7-english-ch10-t01",
+      "topicType": "T3",
+      "skills": [
+        {
+          "id": "c7-english-ch10-t01-s1",
+          "title": "Explain how a writer builds suspense and make predictions from clues",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch10-t01-s2",
+          "title": "Identify sensory images and sound words (onomatopoeia) and say what they add",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch10-t01-s3",
+          "title": "Use articles correctly: a/an for first mention, the for something already known, an before a vowel sound",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch10-t01-s4",
+          "title": "Infer characters' feelings and the story's message about people and wild animals sharing the hills",
+          "prereqSkillIds": [
+            "c7-english-ch10-t01-s1"
+          ]
+        }
+      ],
+      "expectations": [
+        "Says the boy waits by the tunnel for the train and sees a leopard there",
+        "Explains how suspense is built (darkness, distant sounds, 'suddenly', eyes seen before the animal is named)",
+        "Names at least one sound word and what it makes the reader hear or feel",
+        "Infers that the leopard is not a villain; it shares the hills and avoids trouble",
+        "Uses a/an/the correctly in a sentence about the story"
+      ],
+      "misconceptions": [
+        {
+          "id": "c7-english-ch10-t01-m-article-omission",
+          "belief": "Articles are optional, as Hindi has no 'a' or 'the' ('I saw leopard near tunnel')",
+          "signs": [
+            "Says 'Ravi saw leopard'",
+            "Says 'Train came out of tunnel'",
+            "Drops a/the before singular nouns"
+          ],
+          "diagnostic": {
+            "prompt_en": "Which is correct: 'Ravi saw a leopard near the tunnel' or 'Ravi saw leopard near tunnel'?",
+            "prompt_hi": "Hindi mein 'a' ya 'the' nahi lagta, par English mein? Kaunsa sahi hai?",
+            "options": [
+              {
+                "text": "Ravi saw a leopard near the tunnel.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "Ravi saw leopard near tunnel.",
+                "misconceptionId": "c7-english-ch10-t01-m-article-omission",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A spotlight picture: 'a' is a torch beam on something new; 'the' is the beam returning to something we already know; every singular naming word needs one of them",
+            "moveShape": "Child reads a sentence with gaps, shines the 'a' torch on the first mention and the 'the' torch on the second; then fixes two sentences"
+          }
+        },
+        {
+          "id": "c7-english-ch10-t01-m-an-by-letter",
+          "belief": "'An' goes before words that start with a vowel letter, and 'a' before all others ('a hour', 'an uniform')",
+          "signs": [
+            "Says 'a hour'",
+            "Says 'an uniform'",
+            "Says 'a honest man'"
+          ],
+          "diagnostic": {
+            "prompt_en": "Which is correct: 'Ravi waited for an hour' or 'Ravi waited for a hour'?",
+            "prompt_hi": "'hour' bolo — pehli awaaz kaunsi aati hai? To 'a hour' ya 'an hour'?",
+            "options": [
+              {
+                "text": "Ravi waited for an hour.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "Ravi waited for a hour.",
+                "misconceptionId": "c7-english-ch10-t01-m-an-by-letter",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A sound gate: say the word aloud; if the first SOUND is a vowel sound (hour = 'our'), go through the 'an' gate, even when the letter is a consonant",
+            "moveShape": "Child says each word aloud before choosing, sorting hour, uniform, umbrella and honest by their first sound, not their first letter"
+          }
+        },
+        {
+          "id": "c7-english-ch10-t01-m-leopard-villain",
+          "belief": "A wild animal in a story is always the villain and must attack",
+          "signs": [
+            "Predicts the leopard will attack Ravi",
+            "Calls the leopard 'evil' or 'the bad one'",
+            "Says the leopard should be killed"
+          ],
+          "diagnostic": {
+            "prompt_en": "The leopard stared at Ravi, then slipped silently into the trees. What does this show?",
+            "prompt_hi": "Leopard ne Ravi ko dekha aur chupchaap jungle mein chala gaya. Isse kya pata chalta hai?",
+            "options": [
+              {
+                "text": "It was not looking for trouble; it lives in the hills too",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "It was planning to attack Ravi later",
+                "misconceptionId": "c7-english-ch10-t01-m-leopard-villain",
+                "correct": false
+              },
+              {
+                "text": "It was evil and wanted to scare him",
+                "misconceptionId": "c7-english-ch10-t01-m-leopard-villain",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A shared-hills map: the railway line, the village and the leopard's forest drawn overlapping, with arrows showing each one's path",
+            "moveShape": "Child traces the leopard's path and the train's path, says where they meet and why the leopard moves away; then retells the moment from the leopard's side"
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "c7-english-ch10-t01-i01",
+          "skillId": "c7-english-ch10-t01-s1",
+          "kind": "retrieval",
+          "difficulty": 1,
+          "prompt_en": "Read: 'Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistle shrieked. Suddenly, two yellow eyes glowed inside the tunnel. A leopard! It stared at Ravi, then slipped silently into the trees just as the engine roared out.' What was Ravi waiting for?",
+          "prompt_hi": "Kahani suno. Ravi kiska intezaar kar raha tha?",
+          "answer": "The evening train",
+          "acceptable": [
+            "the evening train",
+            "the train",
+            "a train"
+          ],
+          "hints": [
+            "Listen to the first sentence.",
+            "It comes through the tunnel.",
+            "He was waiting for the evening ___.",
+            "He was waiting for the evening train."
+          ]
+        },
+        {
+          "id": "c7-english-ch10-t01-i02",
+          "skillId": "c7-english-ch10-t01-s1",
+          "kind": "why",
+          "difficulty": 3,
+          "prompt_en": "Read: 'Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistle shrieked. Suddenly, two yellow eyes glowed inside the tunnel. A leopard! It stared at Ravi, then slipped silently into the trees just as the engine roared out.' How does the writer make this moment exciting and scary? Give two ways.",
+          "prompt_hi": "Lekhak ne is pal ko itna romanchak kaise banaya? Do tareeke batao.",
+          "answer": "The dark tunnel, the far-away whistle, the word 'suddenly' and the glowing eyes shown before we are told it is a leopard all build suspense",
+          "acceptable": [
+            "dark tunnel",
+            "the word suddenly",
+            "the eyes come before the leopard is named",
+            "the shrieking whistle",
+            "short sentence A leopard!"
+          ],
+          "hints": [
+            "Which words make it feel dark or tense?",
+            "What do we see before we know what it is?",
+            "The writer shows the ___ before naming the animal.",
+            "Darkness, a distant whistle, 'suddenly' and glowing eyes before the name build suspense."
+          ]
+        },
+        {
+          "id": "c7-english-ch10-t01-i03",
+          "skillId": "c7-english-ch10-t01-s1",
+          "kind": "predict",
+          "difficulty": 2,
+          "prompt_en": "A boy is sitting alone near a dark tunnel in the hills at dusk. He sees two yellow eyes glowing inside. What do you think they belong to, and which clue helps you?",
+          "prompt_hi": "Pahaadon mein shaam ko surang mein do peeli aankhein chamak rahi hain. Kiski hongi? Kaunsa clue madad karta hai?",
+          "answer": "A wild animal such as a leopard; glowing eyes in the dark in the hills are the clue",
+          "acceptable": [
+            "a leopard",
+            "a wild cat",
+            "a wild animal",
+            "a tiger"
+          ],
+          "hints": [
+            "Which animals' eyes shine in the dark?",
+            "Think of animals that live in the hills.",
+            "Glowing eyes in the hills could be a l___.",
+            "Probably a leopard: glowing eyes in a dark hill tunnel."
+          ],
+          "targetsMisconception": "c7-english-ch10-t01-m-leopard-villain"
+        },
+        {
+          "id": "c7-english-ch10-t01-i04",
+          "skillId": "c7-english-ch10-t01-s2",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Read: 'Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistle shrieked. Suddenly, two yellow eyes glowed inside the tunnel. A leopard! It stared at Ravi, then slipped silently into the trees just as the engine roared out.' Find two sound words the writer uses.",
+          "prompt_hi": "Passage mein do awaaz wale words dhoondho.",
+          "answer": "shrieked and roared",
+          "acceptable": [
+            "shrieked, roared",
+            "shrieked and roared",
+            "shrieked",
+            "roared"
+          ],
+          "hints": [
+            "What did the whistle do?",
+            "What did the engine do?",
+            "The whistle sh___, the engine r___.",
+            "Shrieked and roared."
+          ]
+        },
+        {
+          "id": "c7-english-ch10-t01-i05",
+          "skillId": "c7-english-ch10-t01-s2",
+          "kind": "contrast",
+          "difficulty": 2,
+          "prompt_en": "Which sentence paints a stronger picture: 'The train came out' or 'The engine roared out of the tunnel'? Why?",
+          "prompt_hi": "Kaunsa sentence zyada zabardast picture banata hai, aur kyun?",
+          "answer": "'The engine roared out of the tunnel', because 'roared' lets us hear its loud power",
+          "acceptable": [
+            "the second one",
+            "roared shows the loud sound",
+            "the engine roared out"
+          ],
+          "hints": [
+            "Which one can you hear?",
+            "Which verb has sound and power?",
+            "'Roared' makes us ___ the engine.",
+            "The second: 'roared' lets us hear its loud power."
+          ]
+        },
+        {
+          "id": "c7-english-ch10-t01-i06",
+          "skillId": "c7-english-ch10-t01-s3",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Fill in a/an/the: 'I saw ___ leopard near ___ tunnel. ___ leopard had yellow eyes.'",
+          "prompt_hi": "a, an ya the bharo: 'I saw ___ leopard near ___ tunnel. ___ leopard had yellow eyes.'",
+          "answer": "a, the, The",
+          "acceptable": [
+            "a, the, The",
+            "a the the"
+          ],
+          "hints": [
+            "Is the leopard new to the listener the first time?",
+            "The second time, we already know which leopard.",
+            "First mention '___', second mention '___'.",
+            "a leopard, the tunnel, The leopard."
+          ],
+          "targetsMisconception": "c7-english-ch10-t01-m-article-omission"
+        },
+        {
+          "id": "c7-english-ch10-t01-i07",
+          "skillId": "c7-english-ch10-t01-s3",
+          "kind": "error_spot",
+          "difficulty": 2,
+          "prompt_en": "Find the mistakes: 'Ravi saw leopard near tunnel.'",
+          "prompt_hi": "Galtiyaan dhoondho: 'Ravi saw leopard near tunnel.'",
+          "answer": "Ravi saw a leopard near the tunnel.",
+          "acceptable": [
+            "Ravi saw a leopard near the tunnel.",
+            "a leopard, the tunnel"
+          ],
+          "hints": [
+            "What small words are missing?",
+            "Each singular naming word needs a or the.",
+            "Ravi saw ___ leopard near ___ tunnel.",
+            "Ravi saw a leopard near the tunnel."
+          ],
+          "targetsMisconception": "c7-english-ch10-t01-m-article-omission"
+        },
+        {
+          "id": "c7-english-ch10-t01-i08",
+          "skillId": "c7-english-ch10-t01-s3",
+          "kind": "contrast",
+          "difficulty": 2,
+          "prompt_en": "Which is correct: 'a hour' or 'an hour'?",
+          "prompt_hi": "'hour' ki pehli awaaz suno. 'a hour' ya 'an hour'?",
+          "answer": "an hour",
+          "acceptable": [
+            "an hour",
+            "an"
+          ],
+          "hints": [
+            "Say 'hour' aloud. Do you hear the h?",
+            "The h is silent; it starts with a vowel sound.",
+            "___ hour",
+            "'An hour', because hour starts with a vowel sound."
+          ],
+          "targetsMisconception": "c7-english-ch10-t01-m-an-by-letter"
+        },
+        {
+          "id": "c7-english-ch10-t01-i09",
+          "skillId": "c7-english-ch10-t01-s3",
+          "kind": "near_transfer",
+          "difficulty": 3,
+          "prompt_en": "Fill in a or an: '___ umbrella, ___ uniform, ___ honest guard.'",
+          "prompt_hi": "a ya an? Pehli awaaz suno: umbrella, uniform, honest.",
+          "answer": "an umbrella, a uniform, an honest guard",
+          "acceptable": [
+            "an, a, an",
+            "an umbrella, a uniform, an honest guard"
+          ],
+          "hints": [
+            "Say each word aloud.",
+            "'Uniform' starts with a 'yoo' sound.",
+            "___ umbrella, ___ uniform, ___ honest.",
+            "An umbrella, a uniform, an honest guard."
+          ],
+          "targetsMisconception": "c7-english-ch10-t01-m-an-by-letter"
+        },
+        {
+          "id": "c7-english-ch10-t01-i10",
+          "skillId": "c7-english-ch10-t01-s4",
+          "kind": "why",
+          "difficulty": 3,
+          "prompt_en": "Read: 'Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistle shrieked. Suddenly, two yellow eyes glowed inside the tunnel. A leopard! It stared at Ravi, then slipped silently into the trees just as the engine roared out.' Why did the leopard slip away into the trees?",
+          "prompt_hi": "Leopard chupchaap ped ki taraf kyun chala gaya?",
+          "answer": "It did not want trouble with people; the noisy train was coming, and it went back to its home in the forest",
+          "acceptable": [
+            "it was scared of the train",
+            "it did not want to hurt Ravi",
+            "it wanted to be left alone",
+            "the train was coming",
+            "it lives in the forest"
+          ],
+          "hints": [
+            "What was coming out of the tunnel at that moment?",
+            "Did the leopard try to harm Ravi?",
+            "It did not want ___ with people.",
+            "It avoided trouble: the train was coming, so it went back to the forest."
+          ],
+          "targetsMisconception": "c7-english-ch10-t01-m-leopard-villain"
+        },
+        {
+          "id": "c7-english-ch10-t01-i11",
+          "skillId": "c7-english-ch10-t01-s2",
+          "kind": "translate_rep",
+          "difficulty": 2,
+          "prompt_en": "Say in English: 'Train seeti bajaate hue surang se nikli.'",
+          "prompt_hi": "English mein bolo: 'Train seeti bajaate hue surang se nikli.'",
+          "answer": "The train came out of the tunnel, whistling.",
+          "acceptable": [
+            "The train came out of the tunnel, whistling.",
+            "The train came out of the tunnel blowing its whistle.",
+            "The train whistled as it came out of the tunnel.",
+            "Whistling, the train came out of the tunnel."
+          ],
+          "hints": [
+            "What sound word means 'seeti bajaana'?",
+            "Remember: the train and the tunnel need 'the'.",
+            "The train came out of the tunnel, ___.",
+            "The train came out of the tunnel, whistling."
+          ]
+        },
+        {
+          "id": "c7-english-ch10-t01-i12",
+          "skillId": "c7-english-ch10-t01-s4",
+          "kind": "predict",
+          "difficulty": 3,
+          "prompt_en": "The next evening, Ravi goes back to the tunnel. What do you think he hopes to see, and why?",
+          "prompt_hi": "Agli shaam Ravi phir surang par gaya. Woh kya dekhna chahta hai, aur kyun?",
+          "answer": "He hopes to see the leopard again, because he is fascinated by it and no longer only afraid",
+          "acceptable": [
+            "the leopard again",
+            "he wants to see the leopard",
+            "he is curious about the leopard"
+          ],
+          "hints": [
+            "What surprised him the evening before?",
+            "Was he only scared, or also amazed?",
+            "He hopes to see the ___ again.",
+            "He hopes to see the leopard again because it fascinated him."
+          ]
+        },
+        {
+          "id": "c7-english-ch10-t01-i13",
+          "skillId": "c7-english-ch10-t01-s4",
+          "kind": "teachback",
+          "difficulty": 4,
+          "prompt_en": "Explain to your younger cousin what the story of the boy, the train and the leopard shows about people and wild animals in the hills.",
+          "prompt_hi": "Chhote cousin ko samjhao — ladke, train aur leopard ki kahani pahaadon ke insaanon aur jaanwaron ke baare mein kya batati hai?",
+          "answer": "People and wild animals share the hills; the leopard is not a villain and avoids trouble, so we should respect animals, keep a safe distance and enjoy the wonder of seeing them",
+          "acceptable": [
+            "people and animals share the hills",
+            "the leopard is not bad",
+            "respect wild animals and keep distance",
+            "animals avoid trouble if left alone"
+          ],
+          "hints": [
+            "Did the leopard hurt anyone?",
+            "Whose home are the hills?",
+            "People and animals ___ the hills.",
+            "They share the hills; respect animals, keep a safe distance and enjoy the wonder."
+          ],
+          "targetsMisconception": "c7-english-ch10-t01-m-leopard-villain"
+        }
+      ],
+      "workedExample": {
+        "problem": "Fill in articles: 'Ravi saw ___ owl and ___ leopard. ___ owl hooted at ___ leopard.'",
+        "steps": [
+          "'owl' is new and starts with a vowel sound, so 'an owl'.",
+          "'leopard' is new and starts with a consonant sound, so 'a leopard'.",
+          "In the second sentence both are already known, so use 'the'.",
+          "Answer: Ravi saw an owl and a leopard. The owl hooted at the leopard."
+        ],
+        "fadedVersion": [
+          "'owl' is new and starts with a vowel sound, so '___ owl'.",
+          "'leopard' is new and starts with a consonant sound, so '___ leopard'.",
+          "In the second sentence both are already known, so use '___'.",
+          "Answer: Ravi saw ___ owl and ___ leopard. ___ owl hooted at ___ leopard."
+        ]
+      },
+      "formats": {
+        "primary": "F4",
+        "secondary": [
+          "F1",
+          "F2",
+          "F7"
+        ],
+        "engineHints": [
+          "story-sequencing",
+          "read-along",
+          "sentence-scramble",
+          "picture-word-match"
+        ]
+      },
+      "interestContexts": [
+        "a toy train set",
+        "a hill-station holiday in Mussoorie",
+        "a jungle safari in Jim Corbett",
+        "a railway crossing near home",
+        "a night power cut in the village",
+        "a wildlife documentary"
+      ]
+    },
+    {
+      "topicId": "c7-english-ch11-t01",
+      "topicType": "T3",
+      "skills": [
+        {
+          "id": "c7-english-ch11-t01-s1",
+          "title": "Explain the central idea of a poem about the longing to travel",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch11-t01-s2",
+          "title": "Identify sound imagery and mood, and say how the setting (night, distance) creates it",
+          "prereqSkillIds": [
+            "c7-english-ch11-t01-s1"
+          ]
+        },
+        {
+          "id": "c7-english-ch11-t01-s3",
+          "title": "Express wishes about the present with 'I wish I could / I wish I were'",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch11-t01-s4",
+          "title": "Use contrast connectors (though, although, but) to show two feelings at once",
+          "prereqSkillIds": []
+        }
+      ],
+      "expectations": [
+        "States the central idea: the speaker longs to travel, called by the sound of a distant train",
+        "Explains that the speaker loves home and friends but still wants to go (both feelings at once)",
+        "Says how the night and the far-off whistle create a mood of longing",
+        "Uses 'I wish I could...' correctly about a place they long to visit",
+        "Joins two contrasting ideas with although/though"
+      ],
+      "misconceptions": [
+        {
+          "id": "c7-english-ch11-t01-m-wish-present",
+          "belief": "After 'I wish', the verb stays in the present as in Hindi 'kaash main jaa sakti' ('I wish I can go')",
+          "signs": [
+            "Says 'I wish I can travel'",
+            "Says 'I wish I am on that train'",
+            "Says 'I wish I will go'"
+          ],
+          "diagnostic": {
+            "prompt_en": "Which is correct: 'I wish I could travel by that train' or 'I wish I can travel by that train'?",
+            "prompt_hi": "Kaash wali baat — 'I wish I could travel' ya 'I wish I can travel'?",
+            "options": [
+              {
+                "text": "I wish I could travel by that train.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "I wish I can travel by that train.",
+                "misconceptionId": "c7-english-ch11-t01-m-wish-present",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A 'dream bubble': anything inside a wish bubble steps one step back in time (can becomes could, am becomes were), to show it is not real now",
+            "moveShape": "Child puts a present sentence into the wish bubble and changes the verb one step back; repeat with am, can and have"
+          }
+        },
+        {
+          "id": "c7-english-ch11-t01-m-though-means-because",
+          "belief": "'Though' joins two ideas that agree, like 'because' ('Though friends are kind' means the speaker leaves because of friends)",
+          "signs": [
+            "Says the speaker wants to leave because her friends are kind",
+            "Says the speaker hates home",
+            "Uses 'though' where 'because' fits"
+          ],
+          "diagnostic": {
+            "prompt_en": "'Though friends are kind and home is warm, I long to follow every spark.' How does the speaker feel about home?",
+            "prompt_hi": "'Though friends are kind and home is warm...' — speaker ko ghar kaisa lagta hai?",
+            "options": [
+              {
+                "text": "She likes home but still wants to travel",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "She hates home, so she wants to leave",
+                "misconceptionId": "c7-english-ch11-t01-m-though-means-because",
+                "correct": false
+              },
+              {
+                "text": "She wants to leave because her friends are kind",
+                "misconceptionId": "c7-english-ch11-t01-m-though-means-because",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A balance scale: home and friends on one side, the wish to travel on the other; 'though' is the hinge showing both are true at once",
+            "moveShape": "Child places each half of the sentence on the scale and says 'both are true'; then makes their own 'though' sentence with two opposite feelings"
+          }
+        },
+        {
+          "id": "c7-english-ch11-t01-m-poem-about-trains",
+          "belief": "A poem that mentions a train is a poem about trains",
+          "signs": [
+            "Says the poem is 'about a train'",
+            "Describes the train instead of the speaker's feeling",
+            "Cannot say what the speaker wants"
+          ],
+          "diagnostic": {
+            "prompt_en": "In the poem, the speaker hears a train whistle each night. What is the poem mainly about?",
+            "prompt_hi": "Kavita mein har raat train ki seeti sunaai deti hai. Kavita asal mein kis baare mein hai?",
+            "options": [
+              {
+                "text": "The speaker's strong wish to travel",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "How trains work at night",
+                "misconceptionId": "c7-english-ch11-t01-m-poem-about-trains",
+                "correct": false
+              },
+              {
+                "text": "A noisy train that disturbs her sleep",
+                "misconceptionId": "c7-english-ch11-t01-m-poem-about-trains",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A two-layer picture: the outer layer is the train and whistle; the inner layer, revealed by lifting a flap, is the speaker's heart pulled along a track",
+            "moveShape": "Child names what the speaker hears, then lifts the flap to say what she feels; teacher asks which layer the poem cares about"
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "c7-english-ch11-t01-i01",
+          "skillId": "c7-english-ch11-t01-s1",
+          "kind": "retrieval",
+          "difficulty": 1,
+          "prompt_en": "Read: 'Each night I hear the far train call, / Its whistle drifting through the dark; / Though friends are kind and home is warm, / I long to follow every spark.' What does the speaker hear each night?",
+          "prompt_hi": "Kavita suno. Speaker ko har raat kya sunaai deta hai?",
+          "answer": "The call or whistle of a faraway train",
+          "acceptable": [
+            "a train whistle",
+            "the far train call",
+            "a train's whistle",
+            "a faraway train"
+          ],
+          "hints": [
+            "Listen to line one.",
+            "It is a sound from a long way off.",
+            "I hear the far ___ call.",
+            "She hears a faraway train's whistle."
+          ]
+        },
+        {
+          "id": "c7-english-ch11-t01-i02",
+          "skillId": "c7-english-ch11-t01-s1",
+          "kind": "why",
+          "difficulty": 2,
+          "prompt_en": "Read: 'Each night I hear the far train call, / Its whistle drifting through the dark; / Though friends are kind and home is warm, / I long to follow every spark.' What does 'I long to follow every spark' tell us about the speaker?",
+          "prompt_hi": "'I long to follow every spark' se speaker ke baare mein kya pata chalta hai?",
+          "answer": "She has a strong wish to travel and see new places",
+          "acceptable": [
+            "she wants to travel",
+            "she longs to go away and explore",
+            "she wants to follow the train"
+          ],
+          "hints": [
+            "What does 'long to' mean?",
+            "Where do the sparks come from?",
+            "She ___ to travel.",
+            "She has a strong wish to travel."
+          ],
+          "targetsMisconception": "c7-english-ch11-t01-m-poem-about-trains"
+        },
+        {
+          "id": "c7-english-ch11-t01-i03",
+          "skillId": "c7-english-ch11-t01-s4",
+          "kind": "contrast",
+          "difficulty": 3,
+          "prompt_en": "Read: 'Each night I hear the far train call, / Its whistle drifting through the dark; / Though friends are kind and home is warm, / I long to follow every spark.' Does the speaker dislike her home and friends? How do you know?",
+          "prompt_hi": "Kya speaker ko apna ghar aur dost pasand nahi? Kaise pata?",
+          "answer": "No; she says friends are kind and home is warm, but 'though' shows that she still wants to travel",
+          "acceptable": [
+            "no, she likes home but still wants to go",
+            "no, though shows contrast",
+            "no, friends are kind and home is warm"
+          ],
+          "hints": [
+            "What does she say about friends and home?",
+            "What job does 'though' do?",
+            "'Though' shows two ___ feelings at once.",
+            "No: she likes home, but 'though' shows she still longs to travel."
+          ],
+          "targetsMisconception": "c7-english-ch11-t01-m-though-means-because"
+        },
+        {
+          "id": "c7-english-ch11-t01-i04",
+          "skillId": "c7-english-ch11-t01-s3",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Complete: 'I wish I ___ (can) travel to Ladakh.'",
+          "prompt_hi": "'I wish' ke baad 'can' ka roop kya hoga?",
+          "answer": "could",
+          "acceptable": [
+            "could",
+            "I wish I could travel to Ladakh."
+          ],
+          "hints": [
+            "Is it real now, or a wish?",
+            "In a wish, the verb steps back in time.",
+            "can steps back to ___.",
+            "I wish I could travel to Ladakh."
+          ],
+          "targetsMisconception": "c7-english-ch11-t01-m-wish-present"
+        },
+        {
+          "id": "c7-english-ch11-t01-i05",
+          "skillId": "c7-english-ch11-t01-s3",
+          "kind": "error_spot",
+          "difficulty": 2,
+          "prompt_en": "Find the mistake: 'I wish I am on that night train.'",
+          "prompt_hi": "Galti dhoondho: 'I wish I am on that night train.'",
+          "answer": "I wish I were on that night train.",
+          "acceptable": [
+            "I wish I were on that night train.",
+            "I wish I was on that night train.",
+            "am should be were"
+          ],
+          "hints": [
+            "Is she on the train now?",
+            "In a wish, 'am' steps back in time.",
+            "I wish I ___ on that night train.",
+            "'Am' should be 'were' (or 'was'): I wish I were on that train."
+          ],
+          "targetsMisconception": "c7-english-ch11-t01-m-wish-present"
+        },
+        {
+          "id": "c7-english-ch11-t01-i06",
+          "skillId": "c7-english-ch11-t01-s3",
+          "kind": "translate_rep",
+          "difficulty": 3,
+          "prompt_en": "Say in English: 'Kaash main us train mein hoti.'",
+          "prompt_hi": "English mein bolo: 'Kaash main us train mein hoti.'",
+          "answer": "I wish I were on that train.",
+          "acceptable": [
+            "I wish I were on that train.",
+            "I wish I was on that train.",
+            "I wish I were in that train."
+          ],
+          "hints": [
+            "'Kaash' is the wish word.",
+            "The verb must step back in time.",
+            "I wish I ___ on that train.",
+            "I wish I were on that train."
+          ],
+          "targetsMisconception": "c7-english-ch11-t01-m-wish-present"
+        },
+        {
+          "id": "c7-english-ch11-t01-i07",
+          "skillId": "c7-english-ch11-t01-s2",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Read: 'Each night I hear the far train call, / Its whistle drifting through the dark; / Though friends are kind and home is warm, / I long to follow every spark.' Which word best describes the mood: angry, longing or bored?",
+          "prompt_hi": "Kavita ka mood kaisa hai: angry, longing ya bored?",
+          "answer": "longing",
+          "acceptable": [
+            "longing",
+            "a longing mood",
+            "dreamy and longing"
+          ],
+          "hints": [
+            "What does the speaker want?",
+            "Is she upset or wishing?",
+            "The mood is l___.",
+            "The mood is longing."
+          ]
+        },
+        {
+          "id": "c7-english-ch11-t01-i08",
+          "skillId": "c7-english-ch11-t01-s2",
+          "kind": "why",
+          "difficulty": 3,
+          "prompt_en": "Why might the poet describe the train's whistle at night rather than in the daytime?",
+          "prompt_hi": "Kavi raat ki seeti ki baat kyun karte hain, din ki kyun nahi?",
+          "answer": "At night it is dark and quiet, so the distant whistle stands out and feels lonely and calling, which deepens the longing",
+          "acceptable": [
+            "night is quiet so the sound stands out",
+            "it feels lonely at night",
+            "the dark makes the wish stronger",
+            "you lie awake and dream at night"
+          ],
+          "hints": [
+            "What is the world like at night?",
+            "How does a faraway sound feel in the quiet?",
+            "In the quiet, the whistle ___ out.",
+            "At night it is quiet, so the far whistle stands out and deepens the longing."
+          ]
+        },
+        {
+          "id": "c7-english-ch11-t01-i09",
+          "skillId": "c7-english-ch11-t01-s4",
+          "kind": "near_transfer",
+          "difficulty": 3,
+          "prompt_en": "Join these into one sentence with 'although': 'I love my home. I want to see the world.'",
+          "prompt_hi": "'although' lagakar ek sentence banao: 'I love my home. I want to see the world.'",
+          "answer": "Although I love my home, I want to see the world.",
+          "acceptable": [
+            "Although I love my home, I want to see the world.",
+            "I want to see the world although I love my home."
+          ],
+          "hints": [
+            "Which idea is surprising after the other?",
+            "Start with 'Although' and the first idea.",
+            "Although I love my home, ___.",
+            "Although I love my home, I want to see the world."
+          ],
+          "targetsMisconception": "c7-english-ch11-t01-m-though-means-because"
+        },
+        {
+          "id": "c7-english-ch11-t01-i10",
+          "skillId": "c7-english-ch11-t01-s4",
+          "kind": "retrieval",
+          "difficulty": 1,
+          "prompt_en": "What does 'long to' mean in 'I long to travel'?",
+          "prompt_hi": "'long to' ka matlab kya hai?",
+          "answer": "To want something very much",
+          "acceptable": [
+            "want very much",
+            "to wish strongly",
+            "to really want"
+          ],
+          "hints": [
+            "It is not about length here.",
+            "Think of a deep wish.",
+            "To long to do something is to ___ it very much.",
+            "It means to want something very much."
+          ]
+        },
+        {
+          "id": "c7-english-ch11-t01-i11",
+          "skillId": "c7-english-ch11-t01-s1",
+          "kind": "predict",
+          "difficulty": 2,
+          "prompt_en": "One day, the speaker is offered a ticket on that train. What do you think she will do?",
+          "prompt_hi": "Ek din speaker ko us train ka ticket milta hai. Woh kya karegi?",
+          "answer": "She will happily take it and go, because she has longed to travel",
+          "acceptable": [
+            "she will go",
+            "she will take the ticket",
+            "she will travel happily",
+            "she will get on the train"
+          ],
+          "hints": [
+            "What has she wanted every night?",
+            "Would she say no?",
+            "She will happily ___.",
+            "She will take it and travel, as she has longed to."
+          ]
+        },
+        {
+          "id": "c7-english-ch11-t01-i12",
+          "skillId": "c7-english-ch11-t01-s3",
+          "kind": "near_transfer",
+          "difficulty": 3,
+          "prompt_en": "Make your own wish about a place you long to visit. Start with 'I wish I could...'",
+          "prompt_hi": "Apni wish banao — kahaan jaana chahte ho? 'I wish I could...' se shuru karo.",
+          "answer": "Any correct wish, for example: 'I wish I could visit the Andaman Islands.'",
+          "acceptable": [
+            "I wish I could visit Kashmir.",
+            "I wish I could see the Himalayas.",
+            "I wish I could go to Kerala.",
+            "I wish I could travel to Japan."
+          ],
+          "hints": [
+            "Which place do you dream of?",
+            "Use 'could' and the base verb.",
+            "I wish I could ___ ___.",
+            "For example: I wish I could visit the Andaman Islands."
+          ],
+          "targetsMisconception": "c7-english-ch11-t01-m-wish-present"
+        },
+        {
+          "id": "c7-english-ch11-t01-i13",
+          "skillId": "c7-english-ch11-t01-s1",
+          "kind": "teachback",
+          "difficulty": 4,
+          "prompt_en": "Explain the poem 'Travel' to your younger sibling: what does the speaker feel, and what sets off that feeling?",
+          "prompt_hi": "Chhote bhai-behen ko 'Travel' kavita samjhao — speaker kya mehsoos karti hai, aur yeh feeling kis se jaagti hai?",
+          "answer": "The speaker longs to travel to new places; the sound of a faraway train at night stirs that wish, even though she likes her home and friends",
+          "acceptable": [
+            "she wants to travel",
+            "the train whistle makes her want to go",
+            "she loves home but still dreams of travel"
+          ],
+          "hints": [
+            "What does she hear each night?",
+            "What does that sound make her want?",
+            "The whistle makes her ___ to travel.",
+            "A faraway train's whistle stirs her longing to travel, though she likes home."
+          ],
+          "targetsMisconception": "c7-english-ch11-t01-m-poem-about-trains"
+        }
+      ],
+      "workedExample": {
+        "problem": "Turn this into a wish: 'I can't see the mountains from my window.'",
+        "steps": [
+          "A wish is about something that is not true now.",
+          "Start with 'I wish I...'.",
+          "Make the sentence positive and step 'can' back to 'could'.",
+          "Answer: I wish I could see the mountains from my window."
+        ],
+        "fadedVersion": [
+          "A wish is about something that is ___ true now.",
+          "Start with 'I ___ I...'.",
+          "Make it positive and step 'can' back to '___'.",
+          "Answer: I wish I ___ see the mountains from my window."
+        ]
+      },
+      "formats": {
+        "primary": "F1",
+        "secondary": [
+          "F5",
+          "F4",
+          "F7"
+        ],
+        "engineHints": [
+          "poem-beat",
+          "read-along",
+          "sentence-scramble",
+          "word-builder"
+        ]
+      },
+      "interestContexts": [
+        "hearing trains from the railway colony",
+        "dreaming of a trip to the Himalayas",
+        "watching planes from the terrace",
+        "a bus journey to Nani's village",
+        "travel vlogs on TV",
+        "Bharat Darshan school map project"
+      ]
+    },
+    {
+      "topicId": "c7-english-ch12-t01",
+      "topicType": "T3",
+      "skills": [
+        {
+          "id": "c7-english-ch12-t01-s1",
+          "title": "Retell a person's life events in time order (biography timeline)",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch12-t01-s2",
+          "title": "Identify the values that guided the person (courage, determination, self-belief) with evidence",
+          "prereqSkillIds": [
+            "c7-english-ch12-t01-s1"
+          ]
+        },
+        {
+          "id": "c7-english-ch12-t01-s3",
+          "title": "Use simple-past forms, including irregular verbs, to tell a life story (lose - lost, fight - fought, fall - fell)",
+          "prereqSkillIds": []
+        },
+        {
+          "id": "c7-english-ch12-t01-s4",
+          "title": "Form opposites with prefixes un-, im-, dis- (able - unable, possible - impossible, agree - disagree)",
+          "prereqSkillIds": []
+        }
+      ],
+      "expectations": [
+        "Says Arunima Sinha lost a leg after being pushed off a train and later climbed Mount Everest",
+        "Puts the main events in the right order with years where known (2011, 2013)",
+        "Names a value (courage, determination) and backs it with an event",
+        "Explains that disability did not stop her; training and will made the 'impossible' possible",
+        "Uses irregular past verbs correctly in a sentence about her"
+      ],
+      "misconceptions": [
+        {
+          "id": "c7-english-ch12-t01-m-irregular-past",
+          "belief": "Every past tense is made by adding -ed ('fighted', 'losed', 'falled')",
+          "signs": [
+            "Says 'She fighted back'",
+            "Says 'She losed her leg'",
+            "Says 'He falled from the train'"
+          ],
+          "diagnostic": {
+            "prompt_en": "Which is correct: 'She fought back bravely' or 'She fighted back bravely'?",
+            "prompt_hi": "'fight' ka past kya hai? 'fought' ya 'fighted'?",
+            "options": [
+              {
+                "text": "She fought back bravely.",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "She fighted back bravely.",
+                "misconceptionId": "c7-english-ch12-t01-m-irregular-past",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A 'rule-breakers' wall: regular verbs march through the -ed gate; irregular verbs have their own badges (lose-lost, fight-fought, fall-fell, become-became)",
+            "moveShape": "Child sorts verb cards into the -ed gate or the rule-breakers wall, then says a sentence about Arunima with each rule-breaker"
+          }
+        },
+        {
+          "id": "c7-english-ch12-t01-m-prefix-choice",
+          "belief": "Any opposite can be made with 'un-' ('unpossible', 'unagree')",
+          "signs": [
+            "Says 'unpossible'",
+            "Says 'unagree'",
+            "Says 'inable'"
+          ],
+          "diagnostic": {
+            "prompt_en": "People said climbing Everest with an artificial leg was ___. Which word is correct: 'unpossible' or 'impossible'?",
+            "prompt_hi": "'possible' ka ulta kya hai — 'unpossible' ya 'impossible'?",
+            "options": [
+              {
+                "text": "impossible",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "unpossible",
+                "misconceptionId": "c7-english-ch12-t01-m-prefix-choice",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "Three prefix families shown as houses: un- (unable, unhappy), im- (impossible, impatient: before p, m, b), dis- (disagree, dislike)",
+            "moveShape": "Child says each base word aloud and tries it in each house, keeping only the one that is a real word; teacher reveals the family pattern"
+          }
+        },
+        {
+          "id": "c7-english-ch12-t01-m-disability-inability",
+          "belief": "A person with a disability cannot do difficult physical things and should not try",
+          "signs": [
+            "Says 'She was lucky' rather than determined",
+            "Says people with artificial legs cannot climb",
+            "Feels only pity in retelling"
+          ],
+          "diagnostic": {
+            "prompt_en": "Someone says, 'A person with an artificial leg cannot climb mountains.' What does Arunima's story show?",
+            "prompt_hi": "Koi kehta hai 'artificial leg wala insaan pahaad nahi chadh sakta.' Arunima ki kahani kya dikhaati hai?",
+            "options": [
+              {
+                "text": "With training and determination, she climbed Everest",
+                "misconceptionId": null,
+                "correct": true
+              },
+              {
+                "text": "That is true, so she should not have tried",
+                "misconceptionId": "c7-english-ch12-t01-m-disability-inability",
+                "correct": false
+              },
+              {
+                "text": "She reached the top only by luck",
+                "misconceptionId": "c7-english-ch12-t01-m-disability-inability",
+                "correct": false
+              }
+            ]
+          },
+          "remediation": {
+            "representation": "A timeline with two lines: what happened to her (the attack, the hospital) and what she chose (to train, to climb), showing choices after the event",
+            "moveShape": "Child places each event on the 'happened' or 'chose' line, then says which line shows her strength"
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "c7-english-ch12-t01-i01",
+          "skillId": "c7-english-ch12-t01-s1",
+          "kind": "retrieval",
+          "difficulty": 1,
+          "prompt_en": "Read: 'Arunima Sinha was a volleyball player. In 2011, robbers pushed her off a moving train, and she lost a leg. In hospital, she decided to climb Mount Everest. With an artificial leg and hard training, she reached the top in May 2013.' What sport did Arunima play before 2011?",
+          "prompt_hi": "Passage suno. 2011 se pehle Arunima kaunsa khel khelti thi?",
+          "answer": "Volleyball",
+          "acceptable": [
+            "volleyball",
+            "she played volleyball"
+          ],
+          "hints": [
+            "Listen to the first sentence.",
+            "It is played with a net and a ball.",
+            "She was a v___ player.",
+            "She played volleyball."
+          ]
+        },
+        {
+          "id": "c7-english-ch12-t01-i02",
+          "skillId": "c7-english-ch12-t01-s1",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Put these events in order: (a) She reached the top of Everest. (b) Robbers pushed her off a train. (c) She played volleyball. (d) In hospital, she decided to climb Everest.",
+          "prompt_hi": "Arunima ki zindagi ke events ko sahi kram mein lagao.",
+          "answer": "c, b, d, a",
+          "acceptable": [
+            "c b d a",
+            "c, b, d, a",
+            "cbda"
+          ],
+          "hints": [
+            "What was she doing before the accident?",
+            "Where did she make her big decision?",
+            "c, then ___, then ___, then a.",
+            "c, b, d, a."
+          ]
+        },
+        {
+          "id": "c7-english-ch12-t01-i03",
+          "skillId": "c7-english-ch12-t01-s2",
+          "kind": "why",
+          "difficulty": 3,
+          "prompt_en": "Read: 'Arunima Sinha was a volleyball player. In 2011, robbers pushed her off a moving train, and she lost a leg. In hospital, she decided to climb Mount Everest. With an artificial leg and hard training, she reached the top in May 2013.' Why is her decision in hospital so remarkable?",
+          "prompt_hi": "Hospital mein liya gaya uska faisla itna khaas kyun hai?",
+          "answer": "At her lowest moment, instead of giving up, she chose a huge goal and turned her pain into determination",
+          "acceptable": [
+            "she did not give up",
+            "she chose a big goal when things were worst",
+            "she turned pain into determination",
+            "she was still injured but dreamed big"
+          ],
+          "hints": [
+            "How was she feeling and where was she?",
+            "What do most people do at such a time?",
+            "Instead of giving up, she ___.",
+            "At her lowest point she chose a huge goal instead of giving up."
+          ],
+          "targetsMisconception": "c7-english-ch12-t01-m-disability-inability"
+        },
+        {
+          "id": "c7-english-ch12-t01-i04",
+          "skillId": "c7-english-ch12-t01-s2",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Name two values Arunima Sinha shows, and give an event for one of them.",
+          "prompt_hi": "Arunima ki do qualities batao, aur ek ke liye event bhi.",
+          "answer": "Courage and determination; for example, she trained hard with an artificial leg and climbed Everest",
+          "acceptable": [
+            "courage",
+            "determination",
+            "self-belief",
+            "perseverance",
+            "never giving up"
+          ],
+          "hints": [
+            "Think of how she acted after the attack.",
+            "What did training with an artificial leg need?",
+            "She showed c___ and d___.",
+            "Courage and determination: she trained and climbed Everest."
+          ]
+        },
+        {
+          "id": "c7-english-ch12-t01-i05",
+          "skillId": "c7-english-ch12-t01-s3",
+          "kind": "practice",
+          "difficulty": 2,
+          "prompt_en": "Complete: 'She ___ (lose) a leg, but she ___ (not lose) hope.'",
+          "prompt_hi": "Khaali jagah: 'She ___ (lose) a leg, but she ___ (not lose) hope.'",
+          "answer": "She lost a leg, but she did not lose hope.",
+          "acceptable": [
+            "lost, did not lose",
+            "lost, didn't lose",
+            "She lost a leg, but she did not lose hope."
+          ],
+          "hints": [
+            "Is 'lose' a regular -ed verb?",
+            "In the negative, 'did not' carries the past.",
+            "She ___ a leg, but she did not ___ hope.",
+            "She lost a leg, but she did not lose hope."
+          ],
+          "targetsMisconception": "c7-english-ch12-t01-m-irregular-past"
+        },
+        {
+          "id": "c7-english-ch12-t01-i06",
+          "skillId": "c7-english-ch12-t01-s3",
+          "kind": "error_spot",
+          "difficulty": 2,
+          "prompt_en": "Find the mistake: 'She fighted back and climbed the mountain.'",
+          "prompt_hi": "Galti dhoondho: 'She fighted back...'",
+          "answer": "She fought back and climbed the mountain.",
+          "acceptable": [
+            "She fought back and climbed the mountain.",
+            "fighted should be fought"
+          ],
+          "hints": [
+            "Which verb does not take -ed?",
+            "'Fight' has its own past form.",
+            "She f___ back.",
+            "'Fighted' should be 'fought'."
+          ],
+          "targetsMisconception": "c7-english-ch12-t01-m-irregular-past"
+        },
+        {
+          "id": "c7-english-ch12-t01-i07",
+          "skillId": "c7-english-ch12-t01-s3",
+          "kind": "near_transfer",
+          "difficulty": 3,
+          "prompt_en": "Give the past tense of: fall, become, begin.",
+          "prompt_hi": "In verbs ka past batao: fall, become, begin.",
+          "answer": "fell, became, began",
+          "acceptable": [
+            "fell, became, began",
+            "fell became began"
+          ],
+          "hints": [
+            "None of these take -ed.",
+            "Think: Humpty Dumpty had a great...",
+            "fall-f___, become-bec___, begin-beg___",
+            "Fell, became, began."
+          ],
+          "targetsMisconception": "c7-english-ch12-t01-m-irregular-past"
+        },
+        {
+          "id": "c7-english-ch12-t01-i08",
+          "skillId": "c7-english-ch12-t01-s4",
+          "kind": "contrast",
+          "difficulty": 1,
+          "prompt_en": "Which is a real word: 'unpossible' or 'impossible'?",
+          "prompt_hi": "Asli word kaunsa hai: 'unpossible' ya 'impossible'?",
+          "answer": "impossible",
+          "acceptable": [
+            "impossible"
+          ],
+          "hints": [
+            "Say both aloud. Which have you heard?",
+            "Words starting with p often take im-.",
+            "___-possible",
+            "'Impossible' is the real word."
+          ],
+          "targetsMisconception": "c7-english-ch12-t01-m-prefix-choice"
+        },
+        {
+          "id": "c7-english-ch12-t01-i09",
+          "skillId": "c7-english-ch12-t01-s4",
+          "kind": "near_transfer",
+          "difficulty": 3,
+          "prompt_en": "Make opposites with un-, im- or dis-: able, patient, agree.",
+          "prompt_hi": "un-, im- ya dis- lagakar opposite banao: able, patient, agree.",
+          "answer": "unable, impatient, disagree",
+          "acceptable": [
+            "unable, impatient, disagree"
+          ],
+          "hints": [
+            "Try each prefix and listen for a real word.",
+            "'Patient' starts with p.",
+            "___able, ___patient, ___agree",
+            "Unable, impatient, disagree."
+          ],
+          "targetsMisconception": "c7-english-ch12-t01-m-prefix-choice"
+        },
+        {
+          "id": "c7-english-ch12-t01-i10",
+          "skillId": "c7-english-ch12-t01-s2",
+          "kind": "translate_rep",
+          "difficulty": 2,
+          "prompt_en": "Say in English: 'Usne haar nahi maani.'",
+          "prompt_hi": "English mein bolo: 'Usne haar nahi maani.'",
+          "answer": "She did not give up.",
+          "acceptable": [
+            "She did not give up.",
+            "She didn't give up.",
+            "She never gave up.",
+            "She did not lose hope."
+          ],
+          "hints": [
+            "'Haar maanna' is a phrasal verb in English.",
+            "Use 'did not' plus the base verb.",
+            "She did not ___ up.",
+            "She did not give up."
+          ]
+        },
+        {
+          "id": "c7-english-ch12-t01-i11",
+          "skillId": "c7-english-ch12-t01-s2",
+          "kind": "predict",
+          "difficulty": 3,
+          "prompt_en": "After climbing Everest, what kind of work do you think Arunima might choose next? Why?",
+          "prompt_hi": "Everest ke baad Arunima aage kya karna chahegi? Kyun?",
+          "answer": "She might climb more great peaks and help or inspire others, especially people with disabilities, because she knows how much belief matters",
+          "acceptable": [
+            "climb more mountains",
+            "inspire others",
+            "help people with disabilities",
+            "train others to climb"
+          ],
+          "hints": [
+            "What kind of person keeps setting big goals?",
+            "Who might need her help and example?",
+            "She might help or ___ others.",
+            "She might climb more peaks and help or inspire others."
+          ]
+        },
+        {
+          "id": "c7-english-ch12-t01-i12",
+          "skillId": "c7-english-ch12-t01-s2",
+          "kind": "teachback",
+          "difficulty": 4,
+          "prompt_en": "Explain to a younger child why Arunima Sinha is called brave and what we can learn from her.",
+          "prompt_hi": "Chhote bachche ko samjhao — Arunima Sinha ko bahadur kyun kehte hain, aur hum unse kya seekh sakte hain?",
+          "answer": "After losing a leg in an attack, she refused to give up, trained hard with an artificial leg and climbed Mount Everest; we learn that determination and hard work can overcome huge difficulties",
+          "acceptable": [
+            "she never gave up",
+            "she climbed Everest after losing a leg",
+            "determination can beat difficulties",
+            "hard work makes the impossible possible"
+          ],
+          "hints": [
+            "What happened to her in 2011?",
+            "What did she do in 2013?",
+            "She did not give up; she ___ Everest.",
+            "She lost a leg yet climbed Everest; determination can overcome huge difficulties."
+          ],
+          "targetsMisconception": "c7-english-ch12-t01-m-disability-inability"
+        }
+      ],
+      "workedExample": {
+        "problem": "Retell in the past: 'Arunima (become) a climber. She (begin) training. She (reach) the top.'",
+        "steps": [
+          "Check each verb: is it regular (-ed) or a rule-breaker?",
+          "become is irregular: became.",
+          "begin is irregular: began; reach is regular: reached.",
+          "Answer: Arunima became a climber. She began training. She reached the top."
+        ],
+        "fadedVersion": [
+          "Check each verb: is it regular (-ed) or a ___?",
+          "become is irregular: ___.",
+          "begin is irregular: ___; reach is regular: ___.",
+          "Answer: Arunima ___ a climber. She ___ training. She ___ the top."
+        ]
+      },
+      "formats": {
+        "primary": "F4",
+        "secondary": [
+          "F1",
+          "F2",
+          "F7"
+        ],
+        "engineHints": [
+          "story-sequencing",
+          "word-builder",
+          "read-along",
+          "sentence-scramble"
+        ]
+      },
+      "interestContexts": [
+        "a Paralympic athlete on TV",
+        "a school trek to a nearby hill",
+        "a kabaddi team that lost and came back",
+        "a grandparent learning to walk after surgery",
+        "training for a school sports day race",
+        "a mountaineering club poster"
+      ]
     }
   ]
 }
