@@ -1,10 +1,9 @@
 // P0 language + her voice, P1 meet her, P1b taste (§2.2). First audio within a tap, before any field.
 // Web: no autoplay (a gesture unlocks audio). Tiles commit on pointer-up; feedback on pointer-down.
-import { useNavigate } from "react-router-dom";
 import { Button, ButtonLink, Icon, Speaker, TeacherFace, useClip, type Lang } from "../ui/index.ts";
 import { StepFrame } from "./Layout.tsx";
 import { setLangPref, useDraft } from "./draft.ts";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LANGS: { id: Lang; label: string; sub: string; hi?: boolean }[] = [
   { id: "hi", label: "हिन्दी", sub: "Hindi", hi: true },

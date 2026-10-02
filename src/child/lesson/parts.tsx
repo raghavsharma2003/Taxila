@@ -10,14 +10,20 @@ import { clauseAt, clauses, type CaptionMode } from "./captions.ts";
 const STATUS_KEY = { your_turn: "yourTurn", listening: "listening", thinking: "thinking", speaking: "speaking" } as const;
 
 /** The status glyph beside the mic (§3.9): glyph always; Older adds one word (hideable). Colour is last. */
-export function StatusGlyph({ status, lang, family, micLevel }: { status: TeacherStatus; lang: Lang; family: Family; micLevel?: number }) {
+export function StatusGlyph({ status, lang, family, mic }: { status: TeacherStatus; lang: Lang; family: Family; mic?: { subscribe(fn: (v: number) => void): () => void } }) {
   const Icon = status === "your_turn" ? OpenHand : status === "listening" ? Ear : status === "thinking" ? Dots : MouthSound;
+  const arc = useRef<HTMLSpanElement>(null);
+  // The level arc follows input level straight from the meter (no React render per frame).
+  useEffect(() => {
+    if (status !== "listening" || !mic) return;
+    return mic.subscribe((v) => {
+      if (arc.current) arc.current.style.transform = `scaleX(${(0.3 + Math.min(1, v) * 0.7).toFixed(3)})`;
+    });
+  }, [status, mic]);
   return (
     <span className="tx-status" data-status={status} role="status" aria-label={t(STATUS_KEY[status], lang)}>
       <Icon />
-      {status === "listening" && (
-        <span className="tx-status-arc" style={{ transform: `scaleX(${0.3 + Math.min(1, micLevel ?? 0) * 0.7})` }} aria-hidden="true" />
-      )}
+      {status === "listening" && <span ref={arc} className="tx-status-arc" aria-hidden="true" />}
       {family === "older" && <span className="tx-status-word" aria-hidden="true">{t(STATUS_KEY[status], lang)}</span>}
     </span>
   );

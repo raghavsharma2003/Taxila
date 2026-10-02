@@ -1,0 +1,416 @@
+{
+ "date": "2026-10-02",
+ "note": "prototype; MiscRules simplified; paramsSchema is a stand-in for agent code",
+ "arms": {
+  "box_primary_knobs_only": {
+   "s8": {
+    "failures": 0,
+    "reasons": {},
+    "specs": 2730,
+    "domain": {
+     "v": 1,
+     "generator": "nlj-frac-gen@1",
+     "mechanic": "frac-predict-jump@1",
+     "knobs": {
+      "den": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 12
+      },
+      "tickDen": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 24
+      },
+      "lineMax": {
+       "scope": "item",
+       "kind": "int",
+       "min": 1,
+       "max": 2
+      },
+      "padCount": {
+       "scope": "item",
+       "kind": "int",
+       "min": 3,
+       "max": 5
+      },
+      "op": {
+       "scope": "level",
+       "kind": "enum",
+       "values": [
+        "add",
+        "compare",
+        "equiv",
+        "place",
+        "sub"
+       ]
+      },
+      "itemsPerLevel": {
+       "scope": "level",
+       "kind": "int",
+       "min": 3,
+       "max": 4
+      }
+     },
+     "sampled": {
+      "fills": 200,
+      "specs": 2730
+     }
+    }
+   },
+   "mp5": {
+    "fills": 2400,
+    "kept_g1": 2400,
+    "fell_back_t1": 0,
+    "specs_checked_in_frame": 32652,
+    "in_frame_paramsSchema_rejections": 719,
+    "rejectReasons": {
+     "ticks>30 (view: 360dp line, ≥ 12dp per tick)": 719
+    },
+    "errorReplays_seen": 6540,
+    "errorReplays_dropped_out_of_domain": 2059,
+    "fills_with_replay_drop": 1194,
+    "kept_with_replay_drop": 1194,
+    "dropReasons": {
+     "not_line_renderable": 648,
+     "kt_target_clamped": 2933,
+     "unknown_item": 360,
+     "out_of_tested_domain:errorReplay:adv": 1705,
+     "out_of_tested_domain:itemId:adv": 1712,
+     "out_of_tested_domain:itemId:plain": 1731,
+     "out_of_tested_domain:errorReplay:plain": 354
+    },
+    "init_bytes": {
+     "p50": 33120,
+     "p95": 48088,
+     "max": 49330,
+     "six_level_p50": 41707,
+     "six_level_max": 49330,
+     "cap": 65536,
+     "n6": 618
+    },
+    "gradeTable_bytes": {
+     "p50": 8770,
+     "max": 13768
+    },
+    "expand_ms": {
+     "p50": 0.691,
+     "p95": 1.477,
+     "max": 4.221
+    }
+   }
+  },
+  "box_with_derived_tickCount": {
+   "s8": {
+    "failures": 0,
+    "reasons": {},
+    "specs": 2730,
+    "domain": {
+     "v": 1,
+     "generator": "nlj-frac-gen@1",
+     "mechanic": "frac-predict-jump@1",
+     "knobs": {
+      "den": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 12
+      },
+      "tickDen": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 24
+      },
+      "lineMax": {
+       "scope": "item",
+       "kind": "int",
+       "min": 1,
+       "max": 2
+      },
+      "tickCount": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 30
+      },
+      "padCount": {
+       "scope": "item",
+       "kind": "int",
+       "min": 3,
+       "max": 5
+      },
+      "op": {
+       "scope": "level",
+       "kind": "enum",
+       "values": [
+        "add",
+        "compare",
+        "equiv",
+        "place",
+        "sub"
+       ]
+      },
+      "itemsPerLevel": {
+       "scope": "level",
+       "kind": "int",
+       "min": 3,
+       "max": 4
+      }
+     },
+     "sampled": {
+      "fills": 200,
+      "specs": 2730
+     }
+    }
+   },
+   "mp5": {
+    "fills": 2400,
+    "kept_g1": 2400,
+    "fell_back_t1": 0,
+    "specs_checked_in_frame": 32652,
+    "in_frame_paramsSchema_rejections": 0,
+    "rejectReasons": {},
+    "errorReplays_seen": 6540,
+    "errorReplays_dropped_out_of_domain": 2059,
+    "fills_with_replay_drop": 1194,
+    "kept_with_replay_drop": 1194,
+    "dropReasons": {
+     "not_line_renderable": 648,
+     "kt_target_clamped": 2933,
+     "unknown_item": 360,
+     "out_of_tested_domain:errorReplay:adv": 1705,
+     "out_of_tested_domain:itemId:adv": 1712,
+     "out_of_tested_domain:itemId:plain": 1731,
+     "out_of_tested_domain:errorReplay:plain": 354
+    },
+    "init_bytes": {
+     "p50": 33120,
+     "p95": 48088,
+     "max": 49330,
+     "six_level_p50": 41706,
+     "six_level_max": 49330,
+     "cap": 65536,
+     "n6": 618
+    },
+    "gradeTable_bytes": {
+     "p50": 8770,
+     "max": 13768
+    },
+    "expand_ms": {
+     "p50": 0.675,
+     "p95": 1.351,
+     "max": 5.152
+    }
+   }
+  },
+  "no_inDomain_at_G1": {
+   "s8": {
+    "failures": 0,
+    "reasons": {},
+    "specs": 2730,
+    "domain": {
+     "v": 1,
+     "generator": "nlj-frac-gen@1",
+     "mechanic": "frac-predict-jump@1",
+     "knobs": {
+      "den": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 12
+      },
+      "tickDen": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 24
+      },
+      "lineMax": {
+       "scope": "item",
+       "kind": "int",
+       "min": 1,
+       "max": 2
+      },
+      "tickCount": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 30
+      },
+      "padCount": {
+       "scope": "item",
+       "kind": "int",
+       "min": 3,
+       "max": 5
+      },
+      "op": {
+       "scope": "level",
+       "kind": "enum",
+       "values": [
+        "add",
+        "compare",
+        "equiv",
+        "place",
+        "sub"
+       ]
+      },
+      "itemsPerLevel": {
+       "scope": "level",
+       "kind": "int",
+       "min": 3,
+       "max": 4
+      }
+     },
+     "sampled": {
+      "fills": 200,
+      "specs": 2730
+     }
+    }
+   },
+   "mp5": {
+    "fills": 2400,
+    "kept_g1": 2400,
+    "fell_back_t1": 0,
+    "specs_checked_in_frame": 32652,
+    "in_frame_paramsSchema_rejections": 3887,
+    "rejectReasons": {
+     "tickDen": 2008,
+     "line.max": 1879
+    },
+    "errorReplays_seen": 6540,
+    "errorReplays_dropped_out_of_domain": 0,
+    "fills_with_replay_drop": 0,
+    "kept_with_replay_drop": 0,
+    "dropReasons": {
+     "not_line_renderable": 648,
+     "kt_target_clamped": 2790,
+     "unknown_item": 360
+    },
+    "init_bytes": {
+     "p50": 33279,
+     "p95": 47981,
+     "max": 49417,
+     "six_level_p50": 41905,
+     "six_level_max": 49417,
+     "cap": 65536,
+     "n6": 618
+    },
+    "gradeTable_bytes": {
+     "p50": 8706,
+     "max": 13557
+    },
+    "expand_ms": {
+     "p50": 0.634,
+     "p95": 1.283,
+     "max": 3.987
+    }
+   }
+  },
+  "narrow_core_without_sub": {
+   "s8": {
+    "failures": 0,
+    "reasons": {},
+    "specs": 2730,
+    "domain": {
+     "v": 1,
+     "generator": "nlj-frac-gen@1",
+     "mechanic": "frac-predict-jump@1",
+     "knobs": {
+      "den": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 12
+      },
+      "tickDen": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 24
+      },
+      "lineMax": {
+       "scope": "item",
+       "kind": "int",
+       "min": 1,
+       "max": 2
+      },
+      "tickCount": {
+       "scope": "item",
+       "kind": "int",
+       "min": 2,
+       "max": 30
+      },
+      "padCount": {
+       "scope": "item",
+       "kind": "int",
+       "min": 3,
+       "max": 5
+      },
+      "op": {
+       "scope": "level",
+       "kind": "enum",
+       "values": [
+        "add",
+        "compare",
+        "equiv",
+        "place"
+       ]
+      },
+      "itemsPerLevel": {
+       "scope": "level",
+       "kind": "int",
+       "min": 3,
+       "max": 4
+      }
+     },
+     "sampled": {
+      "fills": 200,
+      "specs": 2730
+     }
+    }
+   },
+   "mp5": {
+    "fills": 400,
+    "kept_g1": 0,
+    "fell_back_t1": 400,
+    "specs_checked_in_frame": 0,
+    "in_frame_paramsSchema_rejections": 0,
+    "rejectReasons": {},
+    "errorReplays_seen": 1090,
+    "errorReplays_dropped_out_of_domain": 227,
+    "fills_with_replay_drop": 174,
+    "kept_with_replay_drop": 0,
+    "dropReasons": {
+     "out_of_tested_domain:level:plain": 406,
+     "level_underfilled": 812,
+     "out_of_tested_domain:itemId:plain": 292,
+     "out_of_tested_domain:itemId:adv": 264,
+     "out_of_tested_domain:level:adv": 406,
+     "not_line_renderable": 108,
+     "out_of_tested_domain:errorReplay:plain": 58,
+     "kt_target_clamped": 274,
+     "unknown_item": 60,
+     "out_of_tested_domain:errorReplay:adv": 169
+    },
+    "init_bytes": null,
+    "gradeTable_bytes": null,
+    "expand_ms": {
+     "p50": 0.569,
+     "p95": 1.366,
+     "max": 3.118
+    }
+   }
+  }
+ },
+ "worst_case_6x5_with_2_variants": {
+  "levels": 6,
+  "items": 66,
+  "init_bytes": 46529,
+  "init_bytes_gzip": 3698,
+  "gradeTable_bytes": 12148,
+  "cap": 65536
+ }
+}

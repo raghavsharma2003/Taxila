@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "kits-c5-hindi-authored",
+   "kind": "measurement",
+   "title": "c5-hindi kit authored: 12/12 topics, 158 items (13-14/topic, 10 kinds each), 36 misconceptions; normalizeKit lint 0 dropped / 0 hints replaced",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "norm-strips-devanagari-matras",
+   "rel": "constrains",
+   "dst": "kits-c5-hindi-authored"
+  }
+ ],
+ "md": {
+  "measurements": "## kits-c5-hindi-authored\n**data/kits/c5-hindi.json: 12 of 12 curriculum topics (वीणा, NCERT 2026-27), 158 items (13-14 per topic, 10 distinct kinds), 5 skills and 3 misconceptions per topic.** (2026-10-02)\n- n: 12 topics / 158 items. Method: build script ran normalizeKit() (server/content/kits.js) on every topic, revealsAnswer() on hint rungs 1-3, and kitFromFile() on the written file; tests/kit-budget.test.mjs passed. First pass: 9 items dropped by checkFits because their prompt carried the whole passage (370-544 Devanagari chars; about 340 is the ceiling measured by bisection on one item), and 6 hints leaked. Fix: each passage was split into excerpts quoted in the item that needs them. Final: 0 dropped, 0 diagnostics dropped, 0 hints replaced. All passages, poems and the play scene are original. The three-fish fable and the animal-walks-home test are folk motifs retold in new words. Facts in the yatra and atmakatha topics (Kaziranga, Ajanta/Ellora/Konark, the course of the Ganga, Sangken) were written from general knowledge and have not been checked against the chapter text. Answer keys are NOT yet blind-solver verified (no verified field).\n- Kavita topics are T1/F5. Kahani and ekanki topics are T3/F4. Sansmaran, yatra and atmakatha topics are T2: ch07 uses F4, and ch08, ch11 and ch12 use F3 (map or picture first).\n- The content of ch05 (सुंदरिया) and ch09 (न्याय) was written on the theme only, because the chapter plots were not available. The kit must not be presented as a retelling of either chapter."
+ }
+}

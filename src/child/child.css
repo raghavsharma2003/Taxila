@@ -1,0 +1,42 @@
+/* Child screens other than the lesson: home, maps, first run, notes, settings. */
+.tx-center { justify-content: center; align-items: center; }
+.tx-stack { display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
+.tx-home-hero { height: 200px; width: 100%; max-width: 360px; margin: 0 auto; }
+.tx-home-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+.tx-home-tiles .tx-lessontile { grid-column: 1 / -1; min-height: 112px; font-size: var(--type-title); flex-direction: row; gap: var(--space-3); }
+.tx-home-tiles .tx-tile { min-height: 112px; }
+@media (min-width: 720px) {
+  .tx-home-tiles { grid-template-columns: 2fr 1fr 1fr; }
+  .tx-home-tiles .tx-lessontile { grid-column: auto; }
+}
+.tx-artefact-card { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 3px solid var(--board-frame); background: var(--board); color: var(--chalk); border-radius: var(--radius-md); grid-column: 1 / -1; min-height: 112px; cursor: pointer; font-family: var(--font-display); font-size: var(--type-label); }
+.tx-older-head { display: flex; flex-direction: column; gap: 2px; }
+.tx-older-grid { display: grid; gap: var(--space-4); }
+@media (min-width: 720px) { .tx-older-grid { grid-template-columns: 1fr 1fr; } }
+.tx-primary { justify-content: flex-start; flex-direction: row; gap: var(--space-3); min-height: 64px; font-size: var(--type-title); width: 100%; }
+
+/* Bagiya */
+.tx-garden { position: relative; background: #EAF2DF; border: 2px solid var(--tile-border); border-radius: var(--radius-lg); padding: var(--space-4); overflow: hidden; }
+.tx-garden-beds { display: flex; gap: var(--space-4); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--space-2); }
+.tx-bed { flex: 0 0 100%; scroll-snap-align: start; display: flex; flex-direction: column; gap: var(--space-3); }
+.tx-bed-name { font-family: var(--font-display); font-size: var(--type-label); }
+.tx-plants { display: flex; flex-wrap: wrap; gap: var(--gap); }
+.tx-plant { width: 112px; height: 112px; border-radius: var(--radius-tile); background: #F7EBD3; border: 2px solid var(--tile-border); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; position: relative; }
+.tx-plant svg { width: 80px; height: 80px; }
+.tx-garden-nav { display: flex; justify-content: space-between; }
+/* Aasmaan */
+.tx-sky { background: var(--sky-panel); color: var(--sky-label); border-radius: var(--radius-md); padding: var(--space-3); }
+.tx-sky svg { width: 100%; height: auto; display: block; }
+.tx-sky-label { fill: var(--sky-label); font-size: 11px; font-family: var(--font-text); }
+.tx-skill-row { display: flex; align-items: center; gap: var(--space-3); }
+.tx-skill-row svg { width: 32px; height: 32px; flex: none; }
+.tx-word { margin-left: auto; font-size: 15px; color: var(--ink-2); white-space: nowrap; }
+
+/* first run */
+.tx-pictures { display: flex; gap: var(--gap); flex-wrap: wrap; justify-content: center; }
+.tx-picture { width: 112px; height: 112px; }
+.tx-picture svg { width: 72px; height: 72px; }
+.tx-picture[aria-pressed="true"] { border-width: 4px; border-color: var(--ink); }
+.tx-disclose { display: flex; align-items: center; gap: var(--space-4); }
+.tx-disclose svg { width: 56px; height: 56px; flex: none; }
+.tx-tiles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: var(--gap); }

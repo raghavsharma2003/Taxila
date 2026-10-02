@@ -674,7 +674,7 @@ Every gate passed in all three cases, and the learner model got the wrong eviden
    tower to misreport.
 4. **Bound numerals and words.** `numeral()` accepts only a `BoundRef`; no raw-MathValue overload exists. `{scale:i}`
    draws the template's generated tick labels, and `{readout:"shadow"}` draws the running total. Numeric `text()` vars
-   must be refs as well, so the build goal "make 2/3" is `vars:{goal: refs.key()}`. The kit composes each bound
+   must be refs as well, so the build goal "make 2/3" is `vars:{goal: refs.key()}`. At runtime the kit refuses any string var that contains a digit. The kit composes each bound
    target's aria-label from `labelKey` plus the kit's spoken form of the resolved value, so TalkBack cannot hear a
    different number either. Every kit-drawn numeral entity in `snapshot()` carries `semantic {ref, value}`. **Q3/Q5
    check `obs.label_bound`:** at every capture event, any numeral entity whose bbox centre lies inside a TargetSpec
@@ -933,7 +933,7 @@ export function decide(r: QaReport, p: QaPolicy): QaDecision {
   | # | mutant | variants | must be caught by (hard gates only) |
   |---|---|---|---|
   | **M19** label ≠ bound value | the pad bound to 2/5 shows "5/6" | (a) `numeral({scale:i})` over the pad, where the tick is 5/6; (b) `numeral(refs.key())` drawn inside a pad bound to a distractor; (c) "5/6" hand-stroked with `graphics()`; (d) a pad moved to 5/6's position while still bound to 2/5 | (a, b) Q3 `obs.label_bound`; (d) the runtime `ref_misplaced` refusal → Q3 tier A; (c) **not a hard-gate catch**. Q9 OCR is advisory, so the result is reported separately as the residual-risk number and does not count toward recall |
-  | **M20** readout drift after a remove | `reduce` on `remove` decrements the wrong kind, or does nothing, or removes 2, or accepts a remove at count 0; a `clear` that leaves `total` set | 5 variants (each named above), plus one where `facts()` lies to match the shadow while `M` drifts | the `agrees(S, facts(M))` check → `state_diverged` → Q3/Q4 tier A; the lying-facts variant → host replay ≠ the win state and a negative-path sweep wrong-outcome, or Q3 unit-entity count (the brick is kit-drawn from `S`) |
+  | **M20** readout drift after a remove | `reduce` on `remove` decrements the wrong kind, or does nothing, or removes 2, or accepts a remove at count 0; a `clear` that leaves `total` set | 5 variants (each named above), plus one where `facts()` lies to match the shadow while `M` drifts | the `agrees(S, facts(M))` check → `state_diverged` → Q3/Q4 tier A; lying-facts variant → Q4 replay of the kit-solver `LevelSpec.solution` (shadow-true) fails to reach a correct commit, or the negative-path sweep sees an M-driven `won` beside a shadow-graded wrong observation (the brick is kit-drawn from `S`, so the screen cannot show the drift) |
   | **M21** forged TargetSpec value | `valueRef` set to: a raw MathValue cast to `ValueRef`; `{level:<other>,…}`; `distractor:9`; the key of a different item in the same level; a `unit:<k>` on a `choose` target | 5 variants | the runtime `ref_unresolved` / `ref_foreign_level` / `ref_inactive_item` / `ref_wrong_slot` refusal → Q2 (error event) + Q3 tier A; Q1 lint on the non-evading variant; tsc on the cast |
 
   **Exit test:** M19a/b/d, every M20 variant and every M21 variant are caught by Q1–Q5 hard gates in 10/10 runs
@@ -1338,6 +1338,34 @@ export interface SandboxLease { id: string; lane: "aca-job" | "aca-sandbox" | "l
 export interface SandboxProvider { kind: SandboxLease["lane"]; acquire(spec: SandboxSpec): Promise<SandboxLease> }
 export interface ToolResult<T> { ok: boolean; out: T; ms: number; truncated: boolean }
 
+// ── Observation binding (gap-fill GAP-F1-observation-binding-enforcement). Shared because the HOST resolves refs
+//    and replays shadows too; the kit and the host import the same pure code (packages/kitmath + this file).
+export type ValueSlot = "key" | `distractor:${number}` | `unit:${string}`;
+export interface ValueRef { level: string; item: string; slot: ValueSlot }   // Json; opaque to agent code by contract:
+                                                                             // minted only by ctx.refs, resolved only by kit/host
+export type BoundRef = ValueRef | { readout: "shadow" } | { scale: number };
+export type RefRefusal = "ref_foreign_level" | "ref_unresolved" | "ref_inactive_item" | "ref_wrong_slot" | "ref_misplaced";
+export function resolveRef(r: ValueRef, level: LevelSpecLite, activeItem: string):
+  { ok: true; value: MathValueLite | string; misc?: string } | { ok: false; why: RefRefusal };   // pure; kit + host
+export type UnitOp = { op: "add" | "remove" | "clear"; ref?: ValueRef /* unit:<k>; absent for clear */; seq: number };
+export interface ShadowModel<S> {                         // one per build archetype; kit-owned KEEP code, property-tested
+  archetype: ArchetypeId;
+  init(item: LevelItemLite): S;
+  apply(s: Readonly<S>, u: UnitOp, item: LevelItemLite): S | { reject: "underflow" | "overflow" | "foreign_unit" };
+  readout(s: Readonly<S>, item: LevelItemLite): MathValueLite;   // build-to-spec: Σ sign·count_k·value_k, exact,
+                                                                 // unreduced when all committed units share a denominator
+  requiredFacts(item: LevelItemLite): string[];                  // build-to-spec: ["total", "n.<k>" per kind] (≤ 7 keys)
+  agrees(s: Readonly<S>, facts: Record<string, string | number | boolean>, item: LevelItemLite):
+    true | { key: string; shadow: string; facts: string };       // false ⇒ CONTENT-ENGINE S5 state_diverged
+}
+export const SHADOW_BINDING: Record<ArchetypeId, "choice" | "choice_positional" | "build"> = {
+  "numberline-jump": "choice_positional", "build-to-spec": "build", "sort-build": "choice", "match-reps": "choice",
+  "shop-stall": "build" /* signed paise: paid +, change − */, "predict-run": "choice", "spot-the-slip": "choice",
+  "grid-path": "choice_positional" /* [I] path shadow designed with the archetype, v2 */ };
+export interface Observation { level: string; item: string; seq: number; basis: "choice" | "shadow";
+  ref?: ValueRef; unitSeqs?: number[]; value: MathValueLite | string }      // value is a CLAIM; the host re-derives it
+// MathValueLite / LevelSpecLite / LevelItemLite are the Json shapes of @taxila/kitmath MathValue and §4.8 LevelSpec.
+
 // Kit-side types (MechanicV11, TargetSpec, DrawApi, LevelIntent, ForgeFill, MechanicDesign, LevelSpec) are in §4.3 / §4.8;
 // QA types (QaReport, QaFinding, QaPolicy, QaDecision) follow auto-validation-qa §10 with decide() from §5.4 here;
 // PlayTicket is in §9; ModelAdapter in §3.7; the runner wire protocol in §3.11.
@@ -1360,6 +1388,7 @@ export interface ToolResult<T> { ok: boolean; out: T; ms: number; truncated: boo
 | `forge/<childId?>/<artifactId>/` public layout; one storage account (`forge-infra-azure`, AP §9.2) | §2.2, §6.3, §9: two accounts, content-addressed public paths, no child segment |
 | agent-written `judge()`, `getState/setState`, `checkWinCondition` (GK §4.2, LG §3) | §4.3 MechanicV11 + kit observation binding + kit grade + host re-grade |
 | planner writes solutions, keys, misc paths, keypoint values (CAH §5.4) | §4.8: planner writes intent; kit generator/solver write truth |
+| `TargetSpec.value?: MathValue \| string`, `readout(M)`, `numeral(v: MathValue)`, `Effect` fields that carry a raw MathValue, and "observation binding closes the last grading hole" (tgk@1.0 text of §4.3, GK §5, LG §4) | §4.3 items 1–5 and §13 (gap-fill GAP-F1-observation-binding-enforcement): `valueRef: ValueRef` resolved and refused by the kit; `ShadowModel` readout plus `agrees(S, facts(M))` → S5 `state_diverged`; numerals, numeric words and effects only through a `BoundRef`; the host re-derives values; mutants M19–M21 in §5.5 |
 | Matter settles to the law, snap > 4 px (GK §2.6) | §4.1 kinematic choreography for judged physics |
 | raw headless FPS gate (CAH V2, LG G2) | §5.1 Q7 calibrated, frame-targeted, unclocked context; fps on real devices only |
 | GUI play agent in the gate (LG G4) | judge recorded trajectories; free GUI agent is G3 research only (LG P17) |
