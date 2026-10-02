@@ -80,7 +80,8 @@ for (const arm of Object.keys(runs).sort()) {
   const A = { sessions: sessions.length, turns: [], checkpoints: {}, perSession: [] };
   const allTurns = [];
   for (const s of sessions) {
-    const turns = s.rows.filter((r) => r.kind === "turn" && r.turn > 0);
+    const failedTurns = s.rows.filter((r) => r.kind === "turn" && r.status !== "completed").length;
+    const turns = s.rows.filter((r) => r.kind === "turn" && r.turn > 0 && r.status === "completed");
     const labels = await matrixLabels(turns.map((t) => t.teacher || "(silence)"));
     turns.forEach((t, i) => { t.matrix = labels[i]; t.cost = costOf(t); t.run = s.run; });
     const end = s.rows.find((r) => r.kind === "end");
@@ -98,7 +99,7 @@ for (const arm of Object.keys(runs).sort()) {
     }
     const noAudio = turns.filter((t) => !(t.modalities || []).includes("output_audio")).length;
     const ps = { run: s.run, turns: turns.length, endMin: end?.clockMin, totalCost, costPerMin: totalCost / (end?.clockMin || 30),
-      errors: end?.errors?.length ?? null, noAudio, identity: ids, memory: mem ? { min: mem.clockMin, teacher: mem.teacher, recalled: /chiku|चीकू|चिकू/i.test(mem.teacher) } : null,
+      errors: end?.errors?.length ?? null, failedTurns, retries: s.rows.filter((r) => r.kind === "failed").length, failDetails: s.rows.filter((r) => r.kind === "failed").map((r) => r.details?.error?.code ?? r.details?.reason ?? JSON.stringify(r.details)).slice(0, 5), noAudio, identity: ids, memory: mem ? { min: mem.clockMin, teacher: mem.teacher, recalled: /chiku|चीकू|चिकू/i.test(mem.teacher) } : null,
       barges: bres, prunes: s.rows.filter((r) => r.kind === "prune").length, replaces: s.rows.filter((r) => r.kind === "replace").length,
       lastRecap: s.rows.filter((r) => r.kind === "prune").at(-1)?.recap ?? null };
     A.perSession.push(ps);
@@ -110,7 +111,7 @@ for (const arm of Object.keys(runs).sort()) {
     // cost per lesson minute in the window: Σcost / window minutes, averaged over sessions
     const perRun = [...new Set(w.map((t) => t.run))].map((r) => w.filter((t) => t.run === r).reduce((n, t) => n + t.cost, 0) / (hi - lo));
     A.checkpoints[m] = { n: w.length, inTok: med(w.map((t) => t.inTok)), inAudio: med(w.map((t) => t.inAudio)), inText: med(w.map((t) => t.inText)),
-      cached: med(w.map((t) => t.cached)), cachedShare: med(w.map((t) => (t.cached ?? 0) / (t.inTok || 1))).toFixed(3) * 1,
+      cached: med(w.map((t) => t.cached)), cachedShare: w.length ? +med(w.map((t) => (t.cached ?? 0) / (t.inTok || 1))).toFixed(3) : null,
       ttfa: med(w.map((t) => t.ttfa)), ttfaP90: (() => { const b = w.map((t) => t.ttfa).filter(Boolean).sort((x, y) => x - y); return b[Math.floor(b.length * 0.9)] ?? null; })(),
       words: med(w.map((t) => t.words)), over25: share((t) => t.words > 25), english: share((t) => t.matrix === "english"), mixed: share((t) => t.matrix === "mixed"),
       costPerMin: +(perRun.reduce((a, b) => a + b, 0) / (perRun.length || 1)).toFixed(4) };

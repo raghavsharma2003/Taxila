@@ -13,16 +13,14 @@ export function allocate(inp) {
   const lanes = Array.from({ length: H.phones }, () => []);
   const out = [];
   const act = members.filter((m) => !m.leaving).slice().sort((a, b) => a.ref - b.ref);
-  for (const m of act) {                                  // 1. facts: started / ended sittings are fixed occupants
-    const s = m.sitting;
-    if (!s || s.state === 'void') continue;
+  for (const m of act) for (const [i, s] of m.sittings.entries()) {   // 1. facts: started / ended sittings are fixed
     const iv = s.state === 'started' ? [s.startedAt, Math.max(s.plannedEnd, now)] : [s.startedAt, s.endedAt];
     lanes[s.lane].push({ from: iv[0], to: iv[1], ref: m.ref });
-    out.push({ ref: m.ref, lane: s.lane, from: iv[0], to: iv[1], state: s.state === 'started' ? 'frozen' : 'done' });
+    out.push({ ref: m.ref, seq: i + 1, lane: s.lane, from: iv[0], to: iv[1], state: s.state === 'started' ? 'frozen' : 'done' });
   }
   const order = (a, b) => H.orderMode === 'parent_fixed' ? (a.fixedPos - b.fixedPos) || (a.ref - b.ref)
                                                          : (b.birthYear - a.birthYear) || (a.ref - b.ref);
-  const pending = act.filter((m) => !m.sitting || m.sitting.state === 'void').sort(order);
+  const pending = act.filter((m) => m.sittings.length === 0 && !m.doneForDay).sort(order);
   const cursor = lanes.map(() => H.anchor);
   const overlaps = (lane, f, t, g) => lanes[lane].some((iv) => f < iv.to + g && t + g > iv.from);
   const fitAfter = (lane, t, len) => {
@@ -42,18 +40,18 @@ export function allocate(inp) {
     const m = pending.splice(idx, 1)[0];
     const len = m.requestedMin;
     const from = fitAfter(lane, Math.max(t, m.earliest), len);
-    let w = { ref: m.ref, lane, from, to: Math.min(from + len, m.latestEnd), state: 'planned' };
-    if (w.to - w.from < cfg.minWindowMin) w = { ref: m.ref, lane, from: null, to: null, state: 'none' };
+    let w = { ref: m.ref, seq: 0, lane, from, to: Math.min(from + len, m.latestEnd), state: 'planned' };
+    if (w.to - w.from < cfg.minWindowMin) w = { ref: m.ref, seq: 0, lane, from: null, to: null, state: 'none' };
     const p = m.prev;                                      // hysteresis: keep the delivered window if it still fits
     if (p && p.state === 'planned' && w.state === 'planned' && p.lane === lane &&
         Math.abs(p.from - w.from) < cfg.hysteresisMin && Math.abs(p.to - w.to) < cfg.hysteresisMin &&
-        p.from >= m.earliest && p.to <= m.latestEnd && !overlaps(lane, p.from, p.to, 0)) w = { ...p, ref: m.ref };
+        p.from >= m.earliest && p.to <= m.latestEnd && !overlaps(lane, p.from, p.to, 0)) w = { ...p, ref: m.ref, seq: 0 };
     if (w.state === 'planned') { lanes[lane].push({ from: w.from, to: w.to, ref: m.ref }); cursor[lane] = Math.max(cursor[lane], w.to + gap); }
     else cursor[lane] = Math.max(cursor[lane], t);
     const changed = !p || p.state !== w.state || p.lane !== w.lane || p.from !== w.from || p.to !== w.to;
     out.push({ ...w, changed });
   }
-  return out.sort((a, b) => a.ref - b.ref);
+  return out.sort((a, b) => a.ref - b.ref || a.seq - b.seq);
 }
 
 // ---------- persona ----------
@@ -64,7 +62,7 @@ const PERSONA = [
   { ref: 2, name: 'Kabir', band: 'B2', birthYear: 2018, schoolEnd: hm(14, 0), rec: 60, bedtime: hm(21, 0), allowedTo: hm(20, 30), tuition: [2, 4] },
   { ref: 3, name: 'Meera', band: 'B4', birthYear: 2013, schoolEnd: hm(15, 0), rec: 45, bedtime: hm(22, 0), allowedTo: hm(21, 30) },
 ];
-const ERASE = { ref: 2, day: 22, at: hm(17, 10) };       // Kabir erased on week-4 Tuesday, mid-afternoon
+const ERASE = { ref: 2, day: 25, at: hm(17, 10) };       // Kabir erased on week-4 Friday, mid-afternoon
 const CFG = { handoverMin: 5, hysteresisMin: 10, minWindowMin: 3, debounceMin: 1, courierMin: 0.25, replanDebounceMin: 5 };
 
 function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a);

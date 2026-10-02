@@ -131,3 +131,13 @@ button.chip[aria-pressed="true"] { border-color: var(--jamun); background: var(-
 .spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--surface-2); border-top-color: var(--jamun); animation: tx-spin 0.9s linear infinite; }
 @keyframes tx-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } }
+
+/* ── Teacher face (src/ui/TeacherFace.tsx) ── */
+.teacher-face .tf-eyes { transform-origin: 100px 94px; animation: tf-blink 5.2s infinite; }
+.teacher-face .tf-talk { opacity: 0; transform-origin: 100px 127px; }
+.teacher-face[data-speaking="true"] .tf-smile { opacity: 0; }
+.teacher-face[data-speaking="true"] .tf-talk { opacity: 1; animation: tf-talk 0.32s ease-in-out infinite alternate; }
+@keyframes tf-blink { 0%, 96%, 100% { transform: scaleY(1); } 98% { transform: scaleY(0.1); } }
+@keyframes tf-talk { from { transform: scaleY(0.35); } to { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .teacher-face .tf-eyes, .teacher-face .tf-talk { animation: none !important; } }
+:root[data-motion="reduce"] .teacher-face .tf-eyes, :root[data-motion="reduce"] .teacher-face .tf-talk { animation: none !important; }

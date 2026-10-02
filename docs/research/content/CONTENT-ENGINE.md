@@ -182,11 +182,14 @@ interface ModalityInput {
   activeMisc: string[]; interests: string[];               // closed-enum interest tags
   device: { tier: "A" | "B" | "C" | "D" | "E"; reducedMotion: boolean; dataSaver: boolean };
   formatPosterior?: Record<"F1"|"F2"|"F3"|"F4"|"F5"|"F6"|"F7"|"F8", number>;   // delayed-success posterior (§8.4 there)
+  sensitive: SensitiveClass | null;                         // ★ from the topic record, never from the request (gap-fill GAP-3-reviewed-content-safety, §8.3.1)
+  liveConsent: "live" | "reviewed_only" | "skip" | null;    // ★ parent setting for this sensitive topic (§8.3.1 d); null when sensitive = null
 }
 ```
 
 | # | rule (code, evaluated in order) | evidence |
 |---|---|---|
+| M0 | **Sensitive-topic gate (gap-fill GAP-3-reviewed-content-safety).** `sensitive ≠ null` → run `sensitiveGate()` (§8.3.1 a) **before** M1–M14. It admits only `source ∈ {kit_preset, lib}` assets whose `review.keys ≥ 2` and whose `review.sensitiveClass` equals the topic's. It drops every generative candidate: T1 `ask`/fill strings from `taxila-fast`, T2a, T2b, T3 drafts, live explainer fills, `gpt-image-2` rasters and Sora. The terminal hop is `reviewed-lesson@1` (§8.3.1 e), **never `board_only`**. When no reviewed deck exists for the topic, the topic is not taught live; it never degrades to board + voice. `liveConsent = "skip"` → the topic is not planned at all; `"reviewed_only"` → the teacher plays the deck with scripted narration and no free talk about the content. A hit also raises the module-window disclosure predicate (§8.3.1 b) and, for `medical`, the claims guard (§8.3.1 c) | the CONTENT-ENGINE §2.2 S07 rule "reproduction and adolescence go only to human-reviewed content", turned into code; safety by predicate, not instruction (CLAUDE.md inherited law) |
 | M1 | Every spoken explanation carries an on-screen anchor (a `board@1` item, diagram or engine). There is no voice-only teaching of a concept | dual coding; transient-information effect (learning-science §2.4.3, rule 17) [S] |
 | M2 | `shape ∈ {quantity, geometry, phenomenon, map, time}` → an **engine** (T1). The number line is the hub for every number representation | content-format fit (Willingham) [M]; maths R6 |
 | M3 | `shape ∈ {process, hierarchy, parts, equation}` → a **diagram** (`flow`, `concept-map`, `label-diagram`, `formula`) or a static scene. An **explainer** only when *change over time is the concept* (germination, water cycle, merging groups) | Höffler & Leutner d ≈ 0.37 only for representational animation [K]; Tversky congruence |
@@ -200,7 +203,7 @@ interface ModalityInput {
 | M11 | Reality, mood or a hook ("a monsoon street") → `illustration@1` from the library, or a still with a pan. Never a raster for a quantity, geometry or procedure; never video for a fact | diagrams §3 bans; animation §0.1 |
 | M12 | `device.tier ≥ D` or `reducedMotion` → explainers jump to each beat's end state; the board appears without a wipe; one animating module at a time; T3 modules restricted to B3–B4 and tier ≤ B | sandbox E.4; animation §6.3 |
 | M13 | Among eligible formats within a small margin of expected delayed success, **offer the child 2–3 choices**; otherwise Thompson-sample on `formatPosterior` with a 10–20% uniform floor. Reward = delayed success, never engagement | learning-science §8.4 rules 1–5 |
-| M14 | No eligible engine, template or diagram within the deadline → `board_only` (board + voice + a kit picture), and log a **gap ticket** `{topic, mechanic, band, why}`. Gap tickets decide what T3 builds | genui §3.1 |
+| M14 | No eligible engine, template or diagram within the deadline → `board_only` (board + voice + a kit picture), and log a **gap ticket** `{topic, mechanic, band, why}`. Gap tickets decide what T3 builds. **Does not apply when `sensitive ≠ null`**: M0 has already fixed the chain, and its terminal is `reviewed-lesson@1` (gap-fill GAP-3-reviewed-content-safety) | genui §3.1 |
 
 ### 1.5 Where code runs
 
@@ -312,7 +315,8 @@ export interface FramePlan {
 export interface HostPlan {
   kind: "host";
   plan_id: PlanId;
-  runtime: "chant-track@1" | "pahada@1" | "read-along@1" | "word-chain@1";
+  runtime: "chant-track@1" | "pahada@1" | "read-along@1" | "word-chain@1"
+         | "reviewed-lesson@1";   // ★ the terminal for sensitive topics, in place of board_only (§8.3.1 e; gap-fill GAP-3-reviewed-content-safety)
   kitRef: string;                 // reviewed kit id, e.g. "pahada-hi-7"; host plans are always lib/T0
   key: CacheKey; source: PlanSource; validatedBy: ValidatorId[]; safety: "pass";
   basis: FramePlan["basis"]; sig: PlanSig;
@@ -459,7 +463,7 @@ Mechanics: the learner model increments `lm_seq` on every change above and the s
 | P9 | `set_module_param {"mid":"m_12","name":"denominator","value":24}`, engine clamps to 12 | `{ok:true, module:"clamped", applied:12}` |
 | P10 | `set_module_param` `name` not in `llmParams`, or `value` an array/object/`NaN`/string > 16 | `{ok:false, module:"unsupported", reason:"unknown_param"}` / `bad_args` |
 | P11 | `set_module_param` on a `mid` not mounted or `swapping` | `{ok:false, module:"rejected", reason:"not_mounted"}` |
-| P12 | `module_plan` with `fallback` depth 3, or a chain not ending in `board_only` | parse error `fallback_chain` |
+| P12 | `module_plan` with `fallback` depth 3, or a chain not ending in `board_only` (or, for a `sensitive` topic, not ending in `reviewed-lesson@1`; see P21–P26 in §8.3.1) | parse error `fallback_chain` |
 | P13 | `module_plan` with a T2b plan as a fallback hop | parse error `fallback_tier` |
 | P14 | `FramePlan` with both `spec` and `specRef` null, or both set, or inline `spec` > 5120 B | parse error `spec_ref` |
 | P15 | `sig.validatorVersion ≠ key.validatorVersion`, `sceneHash` not `sha256:` + 64 hex, `alg ≠ "Ed25519"` | parse error `sig_shape` (the S1 cryptographic check runs after parse) |
@@ -761,7 +765,7 @@ All science engines share the science §2 contract:
 - params: `{scene: digestion|respiration|circulation|musculoskeletal|levels; food: roti|rice|dal|ghee|apple; exercise 0–3; zoom: organism…cell; labels: show|quiz|off; joint}`
 - events: `token_stage` · `label_dropped` · `zoom_changed` · `breath_rate` · `joint_moved`
 - MC: `DIG.STRAIGHT_TO_STOMACH`, `RESP.BREATHING_EQ_RESPIRATION`, `BODY.BAG_OF_ORGANS`, `CIRC.BLUE_BLOOD`, `MUSC.PUSH`
-- probes: classify, sequence, POE. **Never model-generated anatomy**; reproduction and adolescence go only to human-reviewed content.
+- probes: classify, sequence, POE. **Never model-generated anatomy**; reproduction and adolescence go only to human-reviewed content. This is enforced by `sensitiveGate()` (§1.4 M0, §8.3.1). S07 never serves a flagged topic, even as a preset, unless the preset is a two-key reviewed `lib:` asset (gap-fill GAP-3-reviewed-content-safety).
 
 **S08 `sky@1`** · C4 ch10, C5 ch9, C6–C8, C9 ch13 · primary 14 · **v1** · L, 3–4 wk; **2D only** (three.js dropped: about 170 kB gz and Mali WebView risk)
 - params: `{scene: daynight|shadow-stick|seasons|phases|eclipse|stars|solarsystem|uneven-heating; dayOfYear; hour; observer: srinagar|delhi|chennai|kanyakumari|sydney; tilt_deg 0–90; ecc: true|exaggerated; view: space|ground|split|lamp-ball; timeSpeed; scale (with a "not to scale" chip)}`
@@ -906,7 +910,7 @@ By class, EVS + science coverage with the template layer is:
 
 **The other 241 topics** are served by fallbacks, never left without a surface:
 - the remaining engines' primary topics: `shape-lab` 19, `geo-construct` 17, `solids` 13, `symbol-lab` 13, `angles` 11, `coord-grid` 10, `clock-calendar` 10, `tape-diagram` 10, `circuits` 9, `mixtures-lab` 9 and others;
-- generic story 16, map 9, scenario 8 and reviewed-content 8.
+- generic story 16, map 9, scenario 8 and reviewed-content 8. The reviewed-content 8 are exactly the 8 `sensitive` topics. They are served by `reviewed-lesson@1` decks (§8.3.1 e), never by the fallbacks below (gap-fill GAP-3-reviewed-content-safety).
 
 Until each engine lands, the router serves these with explainer templates, `flow@1` and `label-diagram@1` diagrams, T2a templates, or board plus voice, and every such mount logs a gap ticket (§1.4 M14). The v1.1 wave (§9) raises T1 coverage most per day.
 
