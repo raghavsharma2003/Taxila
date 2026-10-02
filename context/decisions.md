@@ -32,3 +32,17 @@ Each decision carries its rationale AND what evidence would reverse it.
   it stays the fallback if a browser-audio test fails barge-in (<600 ms) or children's speech recognition.
 - Reverse if: a blind listening test with Indian children/parents prefers another voice; or real-audio
   barge-in/latency from India fails the bar; or mini closes the quality gap (cost is ~1/4).
+
+## voice-turn-config
+**v1 live-call turn config: server_vad threshold 0.6, silence 900 ms, prefix 300 ms, server auto-response,
+interrupt on, director refreshes `instructions` via `session.update` between turns.** (2026-10-02)
+- Rests on `realtime-audio-in-2026-10-02`: 600 ms silence and semantic_vad both split a child's mid-thought
+  pause (n=1 each, synthetic); 900 ms did not. Auto-response saves ~300 ms over client-issued response.create.
+- Supersedes the per-`response.create` mechanism in `voice-realtime-model`: brevity holds from the last-line
+  session rule alone, so per-turn instructions are unnecessary; the director's latest move is appended LAST to
+  the session instructions with `session.update` while the child is listening.
+- Known cost: ~2.1–2.4 s from a child's last word to the teacher's first sound (endpoint ~0.9 s + model
+  ~0.9–1.5 s). Human-adult gaps are ~0.2–0.5 s, but children answer ~1.5× slower and a teacher waiting a beat
+  reads as patience, not lag. Not yet measured from India or on real children.
+- Reverse if: real-child sessions show semantic_vad does NOT split pauses (it reacted ~500 ms sooner); or
+  measured latency from India exceeds ~3 s; or children report "she cuts me off".

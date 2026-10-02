@@ -55,6 +55,25 @@
    "kind": "rejection",
    "title": "Asking for short turns in the brief does not shorten realtime turns",
    "at": "2026-10-02"
+  },
+  {
+   "id": "realtime-audio-in-2026-10-02",
+   "kind": "measurement",
+   "title": "Audio-in realtime: barge-in 8/8, synthetic child ASR verbatim, 600 ms silence splits child pauses",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-turn-config",
+   "kind": "decision",
+   "title": "server_vad 0.6/900 ms + auto-response; director refreshes instructions between turns",
+   "at": "2026-10-02",
+   "status": "live"
+  },
+  {
+   "id": "open-real-child-audio",
+   "kind": "open",
+   "title": "No real-child audio yet: ASR WER, endpointing and latency from India unmeasured",
+   "at": "2026-10-02"
   }
  ],
  "edges": [
@@ -82,6 +101,21 @@
    "src": "brevity-by-instruction",
    "rel": "measured_by",
    "dst": "realtime-teacher-bakeoff-2026-10-02"
+  },
+  {
+   "src": "voice-turn-config",
+   "rel": "measured_by",
+   "dst": "realtime-audio-in-2026-10-02"
+  },
+  {
+   "src": "voice-turn-config",
+   "rel": "supersedes",
+   "dst": "voice-realtime-model"
+  },
+  {
+   "src": "voice-turn-config",
+   "rel": "blocks",
+   "dst": "open-real-child-audio"
   }
  ]
 }

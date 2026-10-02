@@ -43,3 +43,38 @@ both arms (common denominator 9/12 vs 8/12; "slices ka size same hona chahiye");
 zyada bada mana jata hai"), addressed itself as "Didi", and produced a muddled 4/8 vs 2/4 example.
 Replicates Meera's `realtime-azure` finding (mini: 41-53 words, monologues) and shows it is structurally
 fixable on the full model. n=6 — enough to pick a direction, not a final number.
+
+## realtime-audio-in-2026-10-02
+**Audio-in realtime (gpt-realtime-2.1 `taxila-realtime`), synthetic child, 2026-10-02.** n = 1 session per arm
+(2 child turns each, 8 arms). Method: `evals/realtime-audio-in.mjs` streams a 51 s 24 kHz PCM16 file over the
+WebSocket in real time (40 ms chunks). The "child" is gpt-4o-mini-tts voice `coral` instructed to sound like a
+shy 9-year-old Indian child (SYNTHETIC — real children will be harder). Clip 1 (10.25 s, ends at audio 12.25 s)
+contains a hesitation pause after "Didi…" (~7.6 s); clip 2 starts 3.2 s after clip 1 ends, i.e. while the teacher
+is still speaking (barge-in probe). Measured from the US build container.
+
+| arm | endpoint (speech_stopped − true end) | commit → first audio | split mid-thought pause? |
+|---|---|---|---|
+| server_vad 0.6 / 900 ms, client response.create | +870 ms | 1653–1740 ms | no |
+| server_vad 900, server auto-response | +870 ms | 1310–1472 ms | no |
+| server_vad 900, auto, effort minimal | +870 ms | 1376–1600 ms | no |
+| server_vad 600, auto, minimal | +550 ms | 1766–2232 ms | **yes** (pause at 7.6 s) |
+| semantic_vad low, client response.create | +360 ms | 2303–2373 ms | no (run 1) |
+| semantic_vad low, auto | +630 ms | 1184–1395 ms | **yes** |
+| semantic_vad low, auto, minimal | +710 ms | 893–1710 ms | **yes** |
+
+- **Barge-in:** every arm cancelled the teacher's response 7–260 ms after the child's speech_started
+  (`status=cancelled, reason=turn_detected`). n=8.
+- **Child transcription (`taxila-transcribe` = gpt-4o-transcribe):** both synthetic Hinglish clips transcribed
+  verbatim (Devanagari) in every arm. Synthetic speech — says nothing yet about real children's ASR (research
+  E1 is still the first real measurement to make).
+- **Language drift:** without a mirror rule the teacher answered a Hindi-speaking child mostly in English
+  ("Sweetie…", "Imagine 12 equal parts…"); with "Language: mirror the child …" placed just before the final
+  rule, all subsequent turns were Hinglish (one turn mixed Devanagari into the transcript).
+- **Turn length with session-level last-line brevity only (auto mode):** ~20–28 words — the per-response
+  instruction is not needed for brevity once the rule is last.
+- **Caching:** second response reported `cached_tokens=128` of ~350 input — Azure realtime does cache at least
+  part of the prefix, contradicting the "no caching" note in tech-and-market.md §1.9. n=1; re-measure on a long
+  session before trusting the cost model either way.
+- **Browser WebRTC (`evals/webrtc/`)**: from headless Chromium the ephemeral-key SDP POST to
+  `/openai/v1/realtime/calls` returned **201** and a remote track — the browser signalling path is proven. ICE
+  then failed because this sandbox cannot carry UDP/TURN (3478) — media must be verified on a real device.

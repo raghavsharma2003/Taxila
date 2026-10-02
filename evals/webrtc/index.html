@@ -1,0 +1,38 @@
+<!doctype html><html><body><script>
+const T0 = performance.now(); const log = []; window.__log = log;
+const L = (type, extra) => log.push({ t: Math.round(performance.now() - T0), type, ...extra });
+const INSTR = `You are Asha Didi, a warm Hinglish-speaking teacher for a 9-year-old in class 4. Live voice call. Topic: comparing fractions 3/4 and 2/3.
+LAST AND MOST IMPORTANT — turn shape: max 25 words per turn. One idea. Then stop and let the child talk.`;
+(async () => {
+  const { token, raw, base } = await fetch("/token").then(r => r.json());
+  if (!token) { L("token_error", { raw }); window.__done = true; return; }
+  const pc = new RTCPeerConnection();
+  const audio = document.createElement("audio"); audio.autoplay = true; document.body.appendChild(audio);
+  pc.ontrack = e => { audio.srcObject = e.streams[0]; L("track"); };
+  const mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+  L("mic");
+  pc.addTrack(mic.getAudioTracks()[0], mic);
+  const dc = pc.createDataChannel("oai-events");
+  const send = e => dc.send(JSON.stringify(e));
+  dc.onopen = () => { L("dc_open"); send({ type: "session.update", session: { type: "realtime", instructions: INSTR } }); };
+  dc.onmessage = m => {
+    const e = JSON.parse(m.data);
+    const keep = { "session.updated": () => ({ td: e.session?.audio?.input?.turn_detection }),
+      "input_audio_buffer.speech_started": () => ({ ms: e.audio_start_ms }), "input_audio_buffer.speech_stopped": () => ({ ms: e.audio_end_ms }),
+      "input_audio_buffer.committed": () => ({}), "output_audio_buffer.started": () => ({}), "output_audio_buffer.stopped": () => ({}),
+      "output_audio_buffer.cleared": () => ({}), "conversation.item.input_audio_transcription.completed": () => ({ text: e.transcript }),
+      "response.created": () => ({}), "error": () => ({ err: e.error }),
+      "response.done": () => ({ status: e.response?.status, reason: e.response?.status_details, usage: e.response?.usage,
+        text: (e.response?.output || []).flatMap(o => o.content || []).map(c => c.transcript).join(" ") }) };
+    if (keep[e.type]) L(e.type, keep[e.type]());
+    if (e.type === "input_audio_buffer.committed") send({ type: "response.create", response: { instructions: INSTR + "\nThis turn: respond to what the child just said, at most 25 words, end with a small question." } });
+  };
+  await pc.setLocalDescription(await pc.createOffer());
+  const ans = await fetch(`${base}/realtime/calls`, { method: "POST", body: pc.localDescription.sdp, headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/sdp" } });
+  L("sdp", { status: ans.status });
+  if (!ans.ok) { L("sdp_error", { body: await ans.text() }); window.__done = true; return; }
+  await pc.setRemoteDescription({ type: "answer", sdp: await ans.text() });
+  L("connected"); pc.oniceconnectionstatechange = () => L("ice", { s: pc.iceConnectionState }); pc.onconnectionstatechange = () => L("pc", { s: pc.connectionState });
+  setTimeout(() => { window.__done = true; pc.close(); }, 40000);
+})().catch(e => { L("fatal", { e: String(e) }); window.__done = true; });
+</script></body></html>

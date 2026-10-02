@@ -1,0 +1,68 @@
+{
+  "verifiedOn": "2026-10-02",
+  "note": "Which boards use the NCERT books this seed is built from. 'classes' lists the classes (1-9 scope) where the board's prescribed book for the core subjects is the CURRENT NCERT book in this seed. Anything not listed needs its own mapping.",
+  "boards": [
+    {
+      "id": "ncert",
+      "name": "NCERT (National Council of Educational Research and Training)",
+      "usesNcertBooks": {
+        "classes": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        "note": "NCERT publishes the books in this seed. Every class 1-9 has an NCF-SE 2023 book for 2026-27, checked against the ncert.nic.in textbook listing and each book's prelims PDF on 2026-10-02. Gaps: Class 9 Social Science Part II has not been published yet. Ganita Manjari Part II (Class 9 maths) came out in August 2026."
+      },
+      "sources": [
+        "https://ncert.nic.in/textbook.php"
+      ]
+    },
+    {
+      "id": "cbse",
+      "name": "Central Board of Secondary Education (CBSE)",
+      "usesNcertBooks": {
+        "classes": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        "note": "Class 9: the CBSE 2026-27 Secondary Curriculum (Part 1) prescribes NCERT books, and its content matches the NEW books. Examples: English names 'Kaveri' as the prescribed textbook; Maths lists 'Sequences and Progressions' and algorithm competencies (Ganita Manjari); Science has 'Earth as a system' (Exploration); Social Science prescribes 'Social Science-Part 1 & Part 2 (NCERT)'. CBSE 2026-27 also adds optional 'Advanced Level' Maths and Science for Class 9, which this seed does not cover. Classes 1-8: Affiliation Bye-Laws 2018 clause 2.4.7 says 'The School may prescribe NCERT text books in the classes and subjects in which these have been published by the NCERT'. The same clause also allows carefully chosen private publishers' books. So NCERT is the default but not mandatory in classes 1-8. Many CBSE schools use NCERT, some use private books; check the student's actual book."
+      },
+      "sources": [
+        "https://cbseacademic.nic.in/curriculum_2027.html",
+        "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Maths_SecP1IX_2026-27.pdf",
+        "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/ScienceSt_SecP1_2026-27.pdf",
+        "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/English_LL_SecP1IX_2026-27.pdf",
+        "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/SocialScience_SecP1IX_2026-27.pdf",
+        "https://www.cbse.gov.in/cbsenew/aff-bye-laws.html"
+      ]
+    },
+    {
+      "id": "rbse",
+      "name": "Board of Secondary Education, Rajasthan (RBSE), with RSCERT/SIERT Udaipur for classes 1-8",
+      "usesNcertBooks": {
+        "classes": [],
+        "note": "Class 9 uses NCERT books, but the OLD ones, so it does not match this seed. The RBSE 2026-27 Class 9 syllabus prescribes 'NCERT's Book published under copyright' for English, Maths, Science and Social Science. It names the PREVIOUS NCERT editions: Beehive + Moments (English); the old 'Mathematics – Text Book for class IX' (Euclid's geometry, Heron's formula, Statistics units); the old Science book (Gravitation, Improvement in Food Resources); and the four-book SST set (India and the Contemporary World-I, Contemporary India-1, Democratic Politics-1, Economics). It does NOT use Ganita Manjari, Exploration, Kaveri or Understanding Society. An RBSE Class 9 seed therefore needs the pre-2026 NCERT Class 9 books. Classes 1-8: RSCERT (SIERT) Udaipur develops the state's own books and the Rajasthan State Textbook Board prints them. Third-party sites report new state books for classes 1-5 in 2025-26 aligned to NCF-FS 2023. An RSCERT order (No. 11603, dated 23-05-2025) invited teachers to write new class 6-8 books under SCF-SE 2023 / NCF-SE. Some third-party sites say Class 6 government schools used NCERT's Malhar and Poorvi in 2025-26. That is NOT verified against an official order, so classes 1-8 are not listed as NCERT."
+      },
+      "sources": [
+        "https://rajeduboard.rajasthan.gov.in/anudeshika-etc/09_2027.pdf",
+        "https://rajeduboard.rajasthan.gov.in/anudeshika-etc/anudeshika-syllabus.htm",
+        "https://www.shivira.in/2025/05/rscert-udaipur-invites-voluntary.html"
+      ],
+      "verified": "partial: class 9 checked against the RBSE syllabus PDF; the classes 1-8 status comes from secondary sources"
+    },
+    {
+      "id": "icse",
+      "name": "Council for the Indian School Certificate Examinations (CISCE: ICSE/ISC)",
+      "usesNcertBooks": {
+        "classes": [],
+        "note": "CISCE publishes a syllabus but no textbooks. Its regulations say it does not recommend textbooks beyond the few named for some subjects (e.g. literature texts). Schools choose private publishers (e.g. Selina Concise, Frank, Oxford). Topics overlap with NCERT, but chapter order and titles do not, so map an ICSE student by topic (the topic ids here), not by chapter."
+      },
+      "sources": [
+        "https://cisce.org/wp-content/uploads/2026/04/ICSE-2027-Appendix-I-List-of-Prescribed-Books.pdf"
+      ],
+      "verified": "partial: the CISCE PDF returned HTTP 403 to our fetch; the policy wording comes from search-indexed CISCE regulation text"
+    },
+    {
+      "id": "other-state",
+      "name": "Other state boards",
+      "usesNcertBooks": {
+        "classes": [],
+        "note": "This varies by state, by class and sometimes by subject. Some states adopt or translate NCERT books, often at the secondary stage, and often with a lag of one or more editions, as RBSE does in Class 9. Others write their own books through their SCERT. Never assume a match. Add one entry per state, with that state's syllabus order as the source."
+      },
+      "sources": []
+    }
+  ]
+}
