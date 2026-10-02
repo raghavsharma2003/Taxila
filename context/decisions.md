@@ -904,3 +904,14 @@ OPEN for the owner: columns predating the learner model that the NM-3 list bans 
 
 ## learner-evidence-id-guard
 kt_evidence ids were unique across children and the insert silently dropped a collision the cached fold had counted. The insert is now `on conflict do nothing` plus a 1/0 guard in the same statement: a same-child re-delivery returns one row with seq null (explicit no-op), another child's id aborts the transaction. `commit` asserts one row per write. **Reverse to a (child_id, id) unique key** once the owner signs off on a production migration (then a cross-child id is simply a different event).
+
+
+<!-- merged from inbox/comprehension-build.json -->
+## grade-echo-guard
+After the closed-label R-EXP verdict, code checks whether a `present` span is at least 80% made of words from an echo text (the topic title, the question just asked). If so the verdict becomes `partial`, which never scores U (E5) and schedules a follow-up from another family. The echo texts are used by code only and never reach the model, so the request stays blind. Cause: in the LLM-played sim the grader labelled "because we recognise equivalent fractions as the same amount, that's why" as present. Effect: present given U=0 for fluent-shallow personas fell from 0.386 to 0.272 (about 70 turns per arm, one run each, so this is a direction). **Reverse if** M-GRADE human labels show the guard demotes real explanations on > 5% of true-present turns.
+
+## mis-saturation-guard
+`fuse.js` removes `misconceptionId` from an event when that misconception is already at p ≥ 0.95 before the event. The event's K evidence stays and family verification is still recorded. This is deterministic from the pre-event state, so replay = online. Cause: `misconception.js` adds log 6.9 per hit with no cap, so after a successful re-teach the ladder stayed `not_yet` (verified mix-up) for whole sessions. **Reverse when** the ledger caps misconception log-evidence per session (INTEGRATION.md §5.2).
+
+## conductor-openers-anchor-due
+The opener set for the session-open delayed checks = `ktView.due()` ∪ {display ≥ learned_today, no delayed flag, ≥ 20 h since anchorAt}. Without the second set the sim ran 0 callbacks: FSRS's first interval after a same-day learn is > 1 day, so the ledger's next-session delayed check never happened. **Reverse if** the ledger's `nextReviewAt` itself becomes min(FSRS, anchor + 20 h) for skills without a delayed pass.

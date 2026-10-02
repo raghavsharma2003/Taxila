@@ -483,3 +483,34 @@ n=2,688 items across c1-c9 Hindi (workflow wf_bc812b62-cb1, blind solve then fix
 <!-- merged from inbox/learner-upgrade-fix.json -->
 ## learner-fold-cost-2026-10-02
 **fold() cost per online event, 2026-10-02, scratchpad microbenchmark (n = 500 folds after 200 warm-up) on a generated 4,800-event ledger (makeLog seed 41, 120 sessions, 92 KB JSON).** Whole-ledger structuredClone (before): 6.7 ms (reviewer's figure on a 4,378-event ledger). Copy-on-write of touched skills/epochs/session (after): 1.8 ms, of which 1.6 ms is the flat copy of `seen` (4,800 keys; Map clone would be 0.5 ms). Pruning `seen` to the open session gave 0.13 ms but broke TP1 re-delivery dedupe and comprehension/fuse.js, so it was not kept. Regression guard: tests/learner-order.test.mjs (< 4 ms).
+
+
+<!-- merged from inbox/comprehension-build.json -->
+## comp-sim-2026-10-02
+**Comprehension engine simulator, 2026-10-02.** `node evals/comprehension-sim/run.mjs --seeds 30 --llm --llm-seeds 2` → `evals/comprehension-sim/results/comp-sim-2026-10-02.json` (code-played + first LLM leg) and `comp-sim-2026-10-02-llm-echo.json` (LLM leg with the echo guard). Method: 24 personas (personas.mjs) with hidden per-concept truth (K, U, T, keep, misconception) and behaviour (verbal, deference, shyness, guessing, game skill, answer-seeking, learning rates); 6 real kit topics (c5/c6 maths + science) over 5 sessions (days 0, 1, 2, 5, 6), 2-3 topics a session, weave hosting, openers, games, re-teach with truth flips. The REAL engine code runs; the child is a separate generative model, not the engine's emission tables, but its probabilities are author-set, so this gates **mechanics, not efficacy** (SIM6). n = 4,320 child-concepts per code-played policy.
+
+| policy | macro acc final (after 3) | understood found | false mastery (shallow) | verbal gap pp | probes / concept-session | load / 10 turns | over cap |
+|---|---|---|---|---|---|---|---|
+| **engine** | **0.650** (0.567) | 0.578 | **0.017** (0.001) | 7.2 | 4.37 | 2.25 | 0 |
+| no delayed probes | 0.567 (0.515) | 0 | 0 (0) | 29.5 | 3.62 | 2.34 | 0 |
+| no game evidence | 0.648 (0.602) | 0.610 | 0.022 (0.001) | 12.9 | 4.39 | 2.20 | 0 |
+| no voice features | 0.641 (0.571) | 0.580 | 0.021 (0.001) | 15.5 | 4.37 | 2.26 | 0 |
+| T threshold 0.7 (sensitivity only) | 0.634 | 0.565 | 0.016 (0.001) | 13.7 | 4.38 | 2.25 | 0 |
+| freeze-low (rejected control) | 0.646 | 0.595 | 0.020 | 11.4 | 4.35 | 2.25 | 0 |
+| quiz-bot, K-only rule | 0.369 | 0.890 | **0.593 (0.822)** | 0 | 0 | **4.30** | 0.017 |
+| samjha | 0.378 | 0.922 | 0.637 (0.916) | 0 | 0 | 2.55 | lexicon 8,640 hits |
+| lecture | 0.363 | 0 | 0 | 0 | 0 | 2.39 | 0 |
+| why-every-turn | 0.690 | 0 | 0 | 65.4 | n/a | **4.17** | **1.0** |
+| **LLM-played leg, engine** (n=288) | 0.708 → 0.731 with the echo guard | 0.724 → 0.798 | 0.011 → 0.015 | 5.7 | 4.43 | n/a | n/a |
+
+Engine by truth type (final): not_yet 0.723, shallow 0.801, fragile_bound 0.420 (0.308 read not_yet, 0.061 false understood), fragile_forgets 0.728, understood 0.578 (0.184 shallow, 0.238 fragile). Weakest archetypes: deferential understander 0.29 (the sim does not exercise the E9 deference discount), confident misconception 0.33 and correct-for-wrong-reasons 0.36 (both lag after a re-teach fixes the misconception), shy understander 0.48. Median time to detect understanding: 2 sessions of exposure, with 42% never detected within the window. **Bars:** CE-M1 ≥ 0.70 FAILS on the code-played sim (0.650) and passes on the small LLM leg (0.731). CE-M3 ≤ 0.05 / ≤ 0.02 shallow passes. CE-M4 ≤ 10 pp passes (7.2). CE-M5 ≤ cap passes, with 0 lexicon hits and 0 repeats. The controls land on the required side: quiz-bot fails M3 and M5, samjha fails M3 and the lexicon rule, lecture fails M1, why-every-turn fails M5, no-delay never certifies. Caveats: one sim family (bkt2-like bits, no cfrag); no ASR noise; the LLM child cannot convincingly play "not knowing" (it leaks the real reason), which flatters the LLM leg.
+
+
+<!-- merged from inbox/prod-smoke-32090f6.json -->
+## prod-smoke-32090f6 (2026-10-02)
+Method: `scripts/prod-smoke.mjs` from the sandbox (adds a US-east round trip from the sandbox), against https://taxila-web…eastus2 rev taxila-web--s32090f6-ni3g, driver pg. Child class 5 Hinglish, topic c5-maths-ch01-t01, teacher Arjun, 3 canned child lines. n=1 lesson per mode, 3 turns each.
+| mode | start | turns (ms) | end |
+|---|---|---|---|
+| text | 1,705 | 1,688 / 1,694 / 1,223 | 1,565 |
+| cascade | 947 | 1,218 / 1,307 / 1,345 | 1,540 |
+The cascade figure is the Director only: speech-to-text, the end-of-speech wait and TTS first byte add about 1.8 s, so the estimated end-to-end time is about 3.0-3.2 s against the 2.0 s target. Observed: replies carry numerals ('45,000', '62,314', 'one lakh seven thousand forty'), which notation-probe-2026-10-02 measured as misread 9-11/15 when sent to TTS as written. The spoken rendering is not built yet. Also observed: 'mujhe nahi pata' was answered with explain-then-new-question, not a reteach move; this needs a check against the Director's affect rules.

@@ -1507,6 +1507,76 @@
    "title": "One online fold() event on a 4,800-event ledger (92 KB): 6.7 ms with a whole-ledger structuredClone → ≈1.8 ms with copy-on-write; the remainder is the flat copy of the complete seen map (spec budget < 1 ms not yet met)",
    "at": "2026-10-02",
    "source": "inbox/learner-upgrade-fix.json"
+  },
+  {
+   "id": "comp-engine-build-2026-10-02",
+   "kind": "component",
+   "title": "server/comprehension (fusion facets U/T over the kt ledger, 5-state ladder, scheduler + test-load budget, weave queue, 36-shape probe library as JSON, code + closed-label grading with span/echo guards, re-teach selector + TS bandit, how-we-know rows, store) + server/persona (signals, bounded VIBE knobs); migration 007_comprehension applied",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-build.json"
+  },
+  {
+   "id": "comp-sim-2026-10-02",
+   "kind": "measurement",
+   "title": "Comprehension sim (24 personas x 30 seeds x 6 topics x 5 sessions, code-played, real engine): macro acc 0.650 final (bar 0.70: FAIL), understood found 0.578, median 2 sessions to detect, false mastery 0.017 (shallow 0.001), verbal gap 7.2 pp, 4.37 probes per concept-session, load 2.25/10 turns, 0 over cap; controls fail as required (quiz-bot false mastery 0.593 / shallow 0.822, load 4.30/10)",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-build.json"
+  },
+  {
+   "id": "comp-sim-ablation-2026-10-02",
+   "kind": "measurement",
+   "title": "Sim ablations (n=4320 child-concepts each): no delayed probes -> understood unreachable (0 of 1426), acc 0.567; no game evidence -> acc 0.648, false mastery 0.022, verbal gap 12.9 pp; no voice features -> acc 0.641, verbal gap 15.5 pp (vs 7.2); freeze-low -> acc 0.646 (no measurable harm, contra the matched-model MC); T threshold 0.7 -> acc 0.634",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-build.json"
+  },
+  {
+   "id": "comp-sim-llm-2026-10-02",
+   "kind": "measurement",
+   "title": "LLM-played leg (ds41 child, DeepSeek-V4-Pro closed-label grader, 24 personas x 2 seeds, n=288 child-concepts, 884 graded turns): acc 0.731, understood found 0.798, false mastery 0.015; grader present|U=1 0.88, present|U=0 0.146, present|U=0 fluent-shallow 0.386 -> 0.272 with the echo guard, contradicted|misconception 0.97, 0 span demotions",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-build.json"
+  },
+  {
+   "id": "grade-echo-guard",
+   "kind": "decision",
+   "title": "Code echo guard after the closed-label grader: a present span >=80% made of the topic title / the question just asked is demoted to partial (never scores U, schedules a follow-up); echo texts never reach the model",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-build.json"
+  },
+  {
+   "id": "mis-saturation-guard",
+   "kind": "decision",
+   "title": "fuse.js drops a misconception hit when that misconception is already p>=0.95 (its K evidence stays): the uncapped misconception logit otherwise needs 10+ discriminating corrects to recover after a successful re-teach",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-build.json"
+  },
+  {
+   "id": "ledger-game-full-weight",
+   "kind": "open",
+   "title": "kt ledger temper() ignores via: game/module commits move pL at full weight (spec x0.5 / x0.75); lucky game predictions push guessers over the does-it line (not_yet accuracy 0.62 with games vs 0.75 without, 20-seed sim). Diff in INTEGRATION.md section 5",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-build.json"
+  },
+  {
+   "id": "conductor-openers-anchor-due",
+   "kind": "decision",
+   "title": "Session openers must include learned_today skills with no delayed check and >=20 h since the anchor, not only ktView.due(): FSRS first intervals exceed a day, so the next-day delayed check otherwise never runs (sim: 0 callbacks before the fix)",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-build.json"
+  },
+  {
+   "id": "reteach-without-cooldown",
+   "kind": "rejection",
+   "title": "Re-teach fired on every graded turn while a trigger held: 21-32 re-teaches per misconception-holding child over 5 sessions; a 2-graded-item re-check cooldown is required before the next trigger",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-build.json"
+  },
+  {
+   "id": "prod-smoke-32090f6",
+   "kind": "measurement",
+   "title": "Prod smoke on Azure rev s32090f6: text turns 1.2-1.7 s, cascade Director turns 1.2-1.35 s server wall-clock (n=3 each)",
+   "at": "2026-10-02",
+   "source": "inbox/prod-smoke-32090f6.json"
   }
  ],
  "edges": [
@@ -2669,6 +2739,71 @@
    "src": "learner-fold-cost-2026-10-02",
    "rel": "measured_by",
    "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "comp-engine-build-2026-10-02",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-facet-belief",
+   "rel": "measured_by",
+   "dst": "comp-sim-2026-10-02"
+  },
+  {
+   "src": "comprehension-probe-budget-scheduler",
+   "rel": "measured_by",
+   "dst": "comp-sim-2026-10-02"
+  },
+  {
+   "src": "comprehension-weave-cross-topic",
+   "rel": "measured_by",
+   "dst": "comp-sim-ablation-2026-10-02"
+  },
+  {
+   "src": "comprehension-voice-zero-weight",
+   "rel": "measured_by",
+   "dst": "comp-sim-ablation-2026-10-02"
+  },
+  {
+   "src": "facet-stop-when-low",
+   "rel": "measured_by",
+   "dst": "comp-sim-ablation-2026-10-02"
+  },
+  {
+   "src": "comprehension-grading-closed-label",
+   "rel": "measured_by",
+   "dst": "comp-sim-llm-2026-10-02"
+  },
+  {
+   "src": "grade-echo-guard",
+   "rel": "caused_by",
+   "dst": "comp-sim-llm-2026-10-02"
+  },
+  {
+   "src": "grade-echo-guard",
+   "rel": "part_of",
+   "dst": "comprehension-grading-closed-label"
+  },
+  {
+   "src": "mis-saturation-guard",
+   "rel": "part_of",
+   "dst": "comprehension-facet-belief"
+  },
+  {
+   "src": "ledger-game-full-weight",
+   "rel": "caused_by",
+   "dst": "comp-sim-ablation-2026-10-02"
+  },
+  {
+   "src": "conductor-openers-anchor-due",
+   "rel": "part_of",
+   "dst": "comprehension-weave-cross-topic"
+  },
+  {
+   "src": "reteach-without-cooldown",
+   "rel": "part_of",
+   "dst": "reteach-randomise-from-second"
   }
  ]
 }

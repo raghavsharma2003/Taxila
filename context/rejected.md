@@ -284,3 +284,8 @@ Tried openai/gpt-audio as an audio judge of Indian-voice nativeness. Broke: gave
 
 ## learner-fold-id-tiebreak-diverged
 **Tried:** the online learner fold sorted not-yet-sequenced evidence events by id as strings, while `ledgerStmts` inserted them into kt_evidence in arrival order. **Broke:** 'e10' sorts before 'e9', so the cached kt_skill_state differed from a replay of kt_evidence: online pL 0.8999 vs replay 0.8371 on [e9 correct, e10 incorrect, e11 why-full]. That breaks the event-sourcing claim. Found by the wave-2 learner review on 2026-10-02; fixed by folding in arrival order with a stable sort on seq and no id tiebreak (see decisions.md, the foldOrder entry). Regression test: tests/learner-order.test.mjs.
+
+
+<!-- merged from inbox/comprehension-build.json -->
+## reteach-without-cooldown
+**Tried:** the selector called on every graded turn while `reteachTrigger` held. **Broke:** misconception holders received 21-32 re-teaches per child over 5 sessions, each one a teach event, until the session `park` rule stopped it. **Now:** after a re-teach, the next 2 graded items on the skill are the re-check (spec §5.4), and only then can a trigger fire again. The Director diff is in INTEGRATION.md §2.
