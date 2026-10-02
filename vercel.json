@@ -1,0 +1,9 @@
+{
+  "installCommand": "npm install --no-audit --no-fund",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "regions": ["sin1"],
+  "rewrites": [
+    { "source": "/((?!api/|assets/|modules/).*)", "destination": "/index.html" }
+  ]
+}

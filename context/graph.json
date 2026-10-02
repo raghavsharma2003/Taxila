@@ -1,0 +1,41 @@
+{
+ "note": "Taxila project memory as a graph. Detail lives in the .md files keyed by node id. Validate with `node scripts/context.mjs --check`.",
+ "kinds": {
+  "decision": "a choice made, with rationale and a reversal condition",
+  "measurement": "a number, with n and method",
+  "rejection": "something tried that did not work, and what broke",
+  "component": "a part of the system",
+  "constraint": "a rule that bounds future work",
+  "open": "a known gap, unresolved"
+ },
+ "relations": {
+  "supersedes": "this replaced that",
+  "measured_by": "this decision rests on that measurement",
+  "constrains": "that bounds this",
+  "part_of": "this belongs to that component",
+  "caused_by": "this exists because of that",
+  "blocks": "this is blocked on that",
+  "inherits": "carried over from a sibling product (html-portfolio branches)"
+ },
+ "nodes": [
+  {
+   "id": "infra-segment",
+   "kind": "decision",
+   "title": "Taxila gets its own Foundry project + Neon project",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "infra-smoke-2026-10-02",
+   "kind": "measurement",
+   "title": "Azure deployment smoke latencies (n=1)",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "infra-segment",
+   "rel": "measured_by",
+   "dst": "infra-smoke-2026-10-02"
+  }
+ ]
+}
