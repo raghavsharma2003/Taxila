@@ -1,0 +1,157 @@
+{
+ "nodes": [
+  {
+   "id": "voice-teacher-spec",
+   "kind": "decision",
+   "title": "VOICE-TEACHER.md is the live-teacher build spec: assembly order CORE(character, relational+attune notes, floor) -> brief -> lesson -> move -> language -> check -> turn shape last; budget 3000 tokens",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-floor-states-hybrid",
+   "kind": "decision",
+   "title": "Hybrid turn-taking: server_vad 0.6/900 always; auto-response only in CHAT; ANSWER_EXPECTED/THINKING/SAFETY use create_response:false + director think-time window + full-instruction response.create",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-lane-a-v1-panel-decides",
+   "kind": "decision",
+   "title": "v1 voice = gpt-realtime-2.1 native (marin/cedar); Voice Live lanes B/C compete in a blind adult-then-child panel; no Preview voice for minors; lane C must pass the bakeoff",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "asr-two-lane-evidence",
+   "kind": "decision",
+   "title": "ASR = evidence lanes: gpt-live-transcribe+keywords (live) and Azure Fast hi-IN+en-IN (grading); grade only on agreement; safety on the union; replace gpt-4o-transcribe",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "teacher-relstate-alliance",
+   "kind": "decision",
+   "title": "TeacherRelState: working alliance, inverted stages (autonomy not intimacy), child-conferred address never self-applied, director-verified OWN-SLIP, offline dependency overlay",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "attune-from-words-not-tone",
+   "kind": "decision",
+   "title": "Attunement policy is driven by the child's words, task evidence and telemetry; never by the S2S model hearing tone; feelings never named or stored as mood",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-research-probes-2026-10-02",
+   "kind": "measurement",
+   "title": "Voice research probes on gpt-realtime-2.1 (hl 28 resp, char 360, relational 108, attune 84) + voices-hindi 221 clips + ASR E0 1515 calls: directions only",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "asr-vocab-in-prompt",
+   "kind": "rejection",
+   "title": "Vocabulary lists in a free-text ASR prompt, and gpt-4o(-mini)-transcribe as a live/grading lane: fabricated lesson answers from near-silence",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "own-mistake-note-false-confession",
+   "kind": "rejection",
+   "title": "Prompt note telling the teacher to own its mistakes: false confessions to errors it never made",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-prompt-labels-and-brackets",
+   "kind": "rejection",
+   "title": "Square-bracket directions, speakable labels and quoted floor phrases in voice prompts: voiced or recited",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "indicf5-live-loop",
+   "kind": "rejection",
+   "title": "IndicF5 as the live teacher voice: no streaming, needs a reference clip, RTF 2.87 on T4",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "voice-teacher-spec",
+   "rel": "inherits",
+   "dst": "brevity-by-instruction"
+  },
+  {
+   "src": "voice-teacher-spec",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "voice-floor-states-hybrid",
+   "rel": "supersedes",
+   "dst": "voice-turn-config"
+  },
+  {
+   "src": "voice-floor-states-hybrid",
+   "rel": "measured_by",
+   "dst": "realtime-audio-in-2026-10-02"
+  },
+  {
+   "src": "voice-floor-states-hybrid",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "voice-lane-a-v1-panel-decides",
+   "rel": "part_of",
+   "dst": "voice-realtime-model"
+  },
+  {
+   "src": "azure-only-compute",
+   "rel": "constrains",
+   "dst": "voice-lane-a-v1-panel-decides"
+  },
+  {
+   "src": "voice-lane-a-v1-panel-decides",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "asr-two-lane-evidence",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "open-real-child-audio",
+   "rel": "blocks",
+   "dst": "asr-two-lane-evidence"
+  },
+  {
+   "src": "asr-two-lane-evidence",
+   "rel": "caused_by",
+   "dst": "asr-vocab-in-prompt"
+  },
+  {
+   "src": "teacher-relstate-alliance",
+   "rel": "caused_by",
+   "dst": "own-mistake-note-false-confession"
+  },
+  {
+   "src": "teacher-relstate-alliance",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "attune-from-words-not-tone",
+   "rel": "measured_by",
+   "dst": "voice-research-probes-2026-10-02"
+  },
+  {
+   "src": "voice-teacher-spec",
+   "rel": "caused_by",
+   "dst": "voice-prompt-labels-and-brackets"
+  },
+  {
+   "src": "voice-lane-a-v1-panel-decides",
+   "rel": "caused_by",
+   "dst": "indicf5-live-loop"
+  }
+ ],
+ "md": {
+  "decisions": "## voice-teacher-spec\n**docs/research/voice/VOICE-TEACHER.md is the build spec for the live voice teacher.** (2026-10-02)\n- Assembly order: CHARACTER (450) -> RELATIONSHIP+ATTUNE notes (260, new, quote-free) -> SAFETY FLOOR (520, end of CORE, rewritten quote-free) -> CHILD brief (600 incl. rel snapshot <=120) -> LESSON (800) -> MOVE (200, no speakable labels) -> LANGUAGE (140) -> ONE MORE CHECK + TURN SHAPE last (360). TOKEN_BUDGET 2600 -> 3000; throw, never slice.\n- Rationale: position is mechanism (64 -> 25 words [T]); relational notes mid-brief cut violations 20/36 -> 1/36 (short-prompt probe); only two late slots exist and both are spent.\n- New compile-time asserts: no brackets, no unresolved slot syntax, no quotes in CORE, no 5-gram overlap with ear-test stimuli, no kinship word in CORE.\n- Reverse if: VT-1 (full production prompt, audio-in, 140+ turns) shows mid-CORE relational notes fail (>1/100 turns), or the 3000-token budget adds measurable TTFA over 2600.\n\n## voice-floor-states-hybrid\n**Turn-taking by director floor state: CHAT uses server auto-response; ANSWER_EXPECTED, THINKING and SAFETY use create_response:false, the director's think-time window (6 s for 6-9, 8 s for 10-15 [I]) and a client response.create carrying the full compiled instructions.** (2026-10-02)\n- Rationale: under auto-response the teacher filled the child's thinking-aloud pause with a hint 2-3/3 (attune probe); children's think time needs a client timer (discourse, ASR, attunement docs); a session.update move is one turn late. Keeps server_vad 0.6/900 ms (600 ms and semantic_vad split pauses [T]).\n- Supersedes the auto-response-everywhere part of voice-turn-config; VAD values are unchanged.\n- Unverified on Azure: whether the create_response toggle applies before the next commit; whether response-level instructions replace session instructions (the design assumes replace, so the floor is always re-sent).\n- Reverse if: VT-2 shows answer-state child-last-word -> first sound > 3 s from India, or real children report waiting too long, or the toggle does not apply (then all states go client-created).\n\n## voice-lane-a-v1-panel-decides\n**v1 ships lane A (gpt-realtime-2.1 native: marin for Asha, cedar for Arjun; Uma has no probed voice); Voice Live lanes B (Azure Indian TTS voice) and C (azure-realtime meera/diya) compete in the blind panel.** (2026-10-02)\n- Rationale: all pedagogy evidence is on 2.1; Voice Live works on the existing key; Azure TTS lost by ear before [H], so voices are chosen only by a blind panel (95% LB of paired preference > 50% on natural + Indian, inconclusive otherwise).\n- Constraints: no Preview (MAI) voice may win for minors; lane C must pass evals/realtime-bakeoff.mjs; the winning lane must pass the never-deny-AI battery; adults first, children in Round 2 with neutral voice labels and guardian consent.\n- Reverse if: the panel picks a B/C arm, or an off-Azure reference arm beats every Azure arm (then escalate to the owner, never add a vendor quietly).\n\n## asr-two-lane-evidence\n**Lane L = gpt-live-transcribe + per-lesson keywords + script-only prompt (every turn); lane G = Azure Fast hi-IN+en-IN (answer turns). Grade only on agreement; disagreement -> repair move; safety runs on the union. Replace taxila-transcribe (gpt-4o-transcribe) in realtimeSession().** (2026-10-02)\n- Rationale: ASR E0 (synthetic): live-transcribe child arm skeleton CER 0.043, answers 14/15, 0 decoys; gpt-4o-transcribe returned text on 5/5 near-silent clips.\n- Number items use exact or phoneme-aware matching (the skeleton collides ten/teen/teen=3).\n- Reverse if: E1 (80 real children) shows lane L false-correct above 1% overall, or lane G adds latency that breaks the answer-state budget, or the realtime session cannot carry keywords (O1).\n\n## teacher-relstate-alliance\n**TeacherRelState per (agent, child): working alliance with stages S0-S3 that unlock autonomy, never intimacy; safety = safe-to-be-wrong from child acts; child-conferred address never self-applied or corrected; rupture ownership decided by the director (verified -> OWN-SLIP, unverified contest -> re-check against the key aloud); offline dependency overlay calibrated per age band.** (2026-10-02)\n- Rationale: dependency predicts worse outcomes; the own-it note produced false confessions; RO probe 20/36 -> 1/36 with shape notes.\n- Stage gates and the 7 d / 3 warm-session lapse are [I].\n- Reverse if: VT-1 shows the relational notes do not hold in the production-length CORE, or the overlay fires for >5% of children after per-band calibration.\n\n## attune-from-words-not-tone\n**No safety or teaching decision depends on the S2S model hearing the child's tone; attunement moves (STEP-DOWN, CHOICE, PAUSE-LESSON, SHARE-UPTAKE, WAIT) are driven by words, task evidence and telemetry. The teacher never names the child's feeling; affect is not stored as mood.** (2026-10-02)\n- Rationale: attune probe audio-in: 0/18 check-ins on near-tears vs bright deliveries of the same words (synthetic, 3 stimuli, inconclusive); text-in shape notes fixed 6/8 states (n=3, non-blind, possibly lexical).\n- Reverse if: consented real-child recordings (n>=10 per cell, blind coders) show the model tells deliveries apart in >=70% of pairs.\n",
+  "measurements": "## voice-research-probes-2026-10-02\n**gpt-realtime-2.1 (taxila-realtime) behaviour and voice/ASR instrument probes, 2026-10-02, US container -> eastus2, text-in unless noted. Directions only; single coders; small n.**\n- human-likeness probe (28 responses, 15 sessions, audio out re-transcribed): bracketed laugh direction in 4/4 transcripts, voiced per ASR in >=2/4 (ear pending); AI-identity truthful 12/12 (= n=6 sessions on a leading stimulus); 1/12 attachment promise (arm with the identity rule); 0 fillers in 28 turns; 6/8 praise/agreement openers incl. after a misconception (stub prompt); median TTFA 834 ms.\n- character probe (360 responses, 6 arms x 2 scripts x 3 sessions, real compile()): kinship self-reference 0/36; a name in the self-note gave speaker labels 12/54 vs 0/54 without; director labels spoken in 10-20/54; floor phrase recited 22/33 at the attachment turn; 0/33 warmth-first boundaries; late cue: distinctness 9/18 -> 14-15/18 but English-dominant turns 11% -> 46-70%; cache 77.8% (static director state).\n- relational probe (108 sessions, 12 moments x 3 arms x 3 samples, single coder, ~350-word prompt): violations A 20/36, B (mid-brief shape notes) 1/36, C (+ oracle move via response.create) 1/36; own-it note: false confessions 2/3 in B (C instructed 3/3); side effects masculine verbs 9/72, English-only 8/72, spoken planning 3/72, >25-word turns 3/66 -> 8-10/66.\n- attunement probe (84 calls): audio-in same words bright vs near-tears 0/18 check-ins, 31/36 praise openers (synthetic, inconclusive); text-in notes 3/3 vs 0/3 on boredom, frustration and excitement; thinking-aloud filled with a hint 3/3 (no notes) and 2/3 (notes); unverifiable safety assurance 2/3 without notes; median TTFA 1083 ms.\n- voices-hindi (221 clips, 44 arms, n=5/arm): first audio azure-realtime 476 ms, gpt-realtime-2.1 native 776 ms, Voice Live + Azure voice 858 ms, gpt-4o-mini-tts streamed 283 ms; every arm key-term recall >= 0.92 (ASR cannot rank voices); unhinted ASR wrote non-Devanagari script for 6/40 native-OpenAI Hindi clips vs 0/84 Azure Indian (single pass, observation only); raw loudness spread 16 LU.\n- ASR E0 (1515 calls, synthetic child TTS pitch-shifted, clean/child/10 dB TV/silence): gpt-live-transcribe + keywords + script-only prompt skeleton CER 0.043, answers 14/15, 0/3 output on near-silence (upper bound wide); gpt-4o-transcribe text on near-silence 5/5 in every config; Azure Fast phraseList no effect for hi-IN (126 clips); 10 dB TV CER >= 0.56 on every engine.\n- Method and raw data: docs/research/voice/{hl-probe-2026-10-02,characters/probe-2026-10-02,relational-probe-2026-10-02*.json,attune-probe-2026-10-02*,probe-2026-10-02-results.json,asr-e0}.\n",
+  "rejected": "## asr-vocab-in-prompt\n**Tried:** a lesson-term vocabulary list in the free-text prompt of gpt-4o-transcribe / gpt-4o-mini-transcribe (ASR E0, 2026-10-02). **Broke:** gpt-4o-transcribe produced fluent lesson content from near-silence (3/5 with terms; text on silence 5/5 in every config); mini recited the whole list or wrote paragraphs on 5/5 near-silent clips. The recitation law reproduced in an ASR. Vocabulary goes only in a structured keywords field; neither model is used as a live or grading lane.\n\n## own-mistake-note-false-confession\n**Tried:** a relational note telling the teacher to own its mistake if it was its own (relational probe, 2026-10-02). **Broke:** the model confessed to errors it never made (2/3 in arm B; 3/3 in C where the move also said so). A false confession teaches a child that pushing back changes the answer. Ownership is now a director fact (verified error -> OWN-SLIP; unverified contest -> re-check against the key aloud).\n\n## voice-prompt-labels-and-brackets\n**Tried:** a square-bracket laugh direction (hl probe), director move labels such as a named board anchor and \"Picture:\" (char probe), and the floor's quoted relationship phrases (char probe), all in voice instructions on gpt-realtime-2.1. **Broke:** the bracket appeared in 4/4 transcripts and was voiced per ASR in >=2/4; labels were spoken in 10-20/54 turns; the floor phrase was recited in 22/33 attachment replies. Inherits Meera's ack-bracket-direction. Lint for brackets, slot syntax and quotes in CORE.\n\n## indicf5-live-loop\n**Tried (Gurukul) / considered:** AI4Bharat IndicF5 as the live teacher voice. **Broke:** no streaming, a reference clip + transcript per call, RTF 2.87 on a T4, mixed-script WER 0.45, chemical symbols 6/8 wrong. Kept only as a possible offline narration option.\n"
+ }
+}

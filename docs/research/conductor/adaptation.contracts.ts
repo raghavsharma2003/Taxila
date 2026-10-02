@@ -5,6 +5,9 @@
 // (adaptation-policy.md §9) replaces.
 //
 // Reads with: CONDUCTOR.md §2-§4; adaptation-policy.md (rule table §4, precedence §5, events §6, sims §8).
+// Revision G1 (gap-fill G1-adaptation-policy, 2026-10-02): R0 added; CloseLite ring 8 → 16 (R2 needs it) behind a packed
+// codec; latches for R3 and R7; foldedDay; asymmetric R6; R2 thresholds re-picked from the multi-seed rerun; §8
+// PlannerInputs / planDay / inputsHash; §9 constraint registration (I-A2); RULES as data. The .md is authoritative.
 
 // Self-contained so it type-checks alone (`npx tsc --noEmit --strict --target es2022 adaptation.contracts.ts`).
 // These mirror CONDUCTOR §2.2/§4.2/§4.5 and shared/contracts.ts; on landing, import them instead.
@@ -113,19 +116,23 @@ export interface ViewReader {
 // ════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 export type VibeClose = 'fine' | 'strained' | 'tired';
-export interface CloseLite {                          // folded from lesson.ended; ring buffer, last 8; ≤ 14 days kept
+export interface CloseLite {                          // appended on lesson.ended; ring, last 16 (T.RING); ≤ 14 days kept
   day: string; localHour: number; vibeClose: VibeClose; endedBy: string; minutes: number; plannedMin: number;
   soloPlanned: number; soloDone: number; soloDeclined: number;
 }
 export interface RuleLatch { on: boolean; since?: string; fineRun: number }
 
-export interface AdaptMemory {                        // ConductorState.adapt; target < 1.5 KB
+export interface AdaptMemory {                        // ConductorState.adapt; < 1.5 KB PACKED (adaptation-state-size.py)
+  foldedDay?: string;                                 // last learningDay the night fold closed (idempotence, I-A6)
   closes: CloseLite[];
   shortSeg: RuleLatch;                                // R1
   lateSitting: RuleLatch;                             // R2
-  paceBudget: { value: 0 | 1 | 2; since?: string; agreeDays: number };     // R6
-  repSwitch: Record<string, { day: string; from: FormatFamily; to: FormatFamily }>;   // R4, per skill, 30 d TTL
-  prereqChecked: Record<string, { day: string; result: 'pass' | 'fail' }>;            // R5, 14 d TTL
+  reviewBacklog: RuleLatch;                           // R3
+  soloUp: RuleLatch;                                  // R7
+  paceBudget: { value: 0 | 1 | 2; since?: string; agreeDays: number; backRun: number };   // R6 (enter run / exit run)
+  repSwitch: Record<string, { day: string; from: FormatFamily; to: FormatFamily }>;   // R4, per skill, 30 d TTL, ≤ 8 (LRU)
+  prereqChecked: Record<string, { day: string; result: 'pass' | 'fail' }>;            // R5, 14 d TTL, ≤ 8 (LRU)
+  routineCardDay?: string;                            // R14: last day a routine card was shown to the parent
   choice?: ChoiceLite;                                // the latest unconsumed child choice for a plan slot
   goal?: ChildGoal;                                   // ≤ 1 active (V23)
   optIns: Partial<Record<OptInFeature, { on: boolean; version: number }>>;
@@ -318,20 +325,31 @@ export function resolveKnob(knob: KnobId, base: Domain, cons: Constraint[], pref
 // 6. Rule registry (the table in adaptation-policy.md §4, as data; thresholds [U] → CM-A*)
 // ════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
-export type RuleId = 'R1' | 'R2' | 'R3' | 'R4' | 'R5' | 'R6' | 'R7' | 'R8' | 'R9' | 'R10' | 'R11' | 'R12' | 'R13' | 'R14';
+export type RuleId = 'R0' | 'R1' | 'R2' | 'R3' | 'R4' | 'R5' | 'R6' | 'R7' | 'R8' | 'R9' | 'R10' | 'R11' | 'R12' | 'R13' | 'R14';
 export interface RuleSpec {
-  id: RuleId; knob: KnobId; layer: Layer; cls: 'L' | 'L?' | 'F';     // PZ2 evidence class of the knob change
+  id: RuleId; knob: KnobId; alsoKnobs?: KnobId[]; layer: Layer; cls: 'L' | 'L?' | 'F';  // PZ2 evidence class of the knob change
   reads: ViewKey[] | Array<ViewKey | `state.adapt.${string}`>;
   minN: string; hysteresis: string; bounds: string; reversal: string; // human-readable; the code is in rules/*.js
 }
-export const T = {                     // thresholds, one place, each with its measurement id
-  R1_ON_K: 3, R1_ON_M: 4, R1_OFF_FINE: 3,            // adaptation-hysteresis-sim.py: steady false-on 2.6%; CM-A1
-  R2_MIN_EACH: 4, R2_GAP: 0.30, R2_LATE_HOUR: 20,     // sim: false fire 2.1%, hit 93.9%; CM-A2
-  R4_COOLDOWN_D: 3, R5_RECHECK_D: 3, R5_PL_BELOW: 0.4, R5_MAX_DEPTH: 3,
-  R6_ETA_UP: 0.5, R6_ETA_DOWN: -0.5, R6_MIN_OPPS: 30, R6_MIN_SKILLS: 3, R6_AGREE_DAYS: 2,   // CM-A3
-  R7_MAX_EXTRA: 1,                                    // CM-A6
+export const T = {                     // thresholds, one place, each with its measurement id (policy §4, §8)
+  RING: 16, RING_MAX_DAYS: 14,
+  // R1: seeds 11-18, n = 8 × 2000 steady children: 2.5% of sittings ON, but 23.6% of children latch at least once in
+  // 8 weeks (the earlier "false-on 2.6%" was the sitting share, not the child share); flips 0.49/child/8 wk; CM-A1
+  R1_ON_K: 3, R1_ON_M: 4, R1_OFF_FINE: 3,
+  // R2: night fold over the ring. .30/.30 → 23.5% false latch; .40/.20 → 15.9% false, 91.3% hit; CM-A2
+  R2_MIN_EACH: 4, R2_GAP_ON: 0.40, R2_GAP_OFF: 0.20, R2_LATE_HOUR: 20,
+  R3_ON_OVERDUE: 6, R3_OFF_OVERDUE: 2, R3_OVERDUE_RATIO: 1.0, R3_SHARE_ON: 0.25, R3_SHARE_BASE: 0.15,
+  R4_COOLDOWN_D: 3, R4_TTL_D: 30, R5_RECHECK_D: 3, R5_PL_BELOW: 0.4, R5_MAX_DEPTH: 3, R5_TTL_D: 14,
+  // R6: enter at ±0.5 (1 prior sd, kt §2.5), exit inside ±0.25; up needs 2 agreeing refits, down 3 (costlier if wrong)
+  R6_ETA_UP: 0.5, R6_ETA_DOWN: -0.5, R6_ETA_EXIT: 0.25, R6_MIN_OPPS: 30, R6_MIN_SKILLS: 3,
+  R6_AGREE_DAYS: 2, R6_AGREE_DOWN: 3, R6_EXIT_RUN: 2,                                      // CM-A3
+  R7_MAX_EXTRA: 1, R7_ON_OK: 0.8, R7_ON_MIN_ATTEMPTS: 8, R7_OFF_DECLINE: 0.4,             // CM-A6
   R8_GAP_DAYS: 7,
   R9_BASE: 0.2, R9_SLOPE: 0.15, R9_MAX: 0.6, R9_EXAM_MULT: 0.5, R9_CATCHUP_FLOOR: 0.5,     // need §4.7 ∩ CONDUCTOR §4.4
+  R10_MIN_DAYS_LEFT: 1,
+  R13_MIN_AGE_MCII: 12,
+  R14_MIN_OF_LAST: [3, 5], R14_COOLDOWN_D: 14,
+  HASH_Q: { pL: 0.01, eta: 0.05, ratio: 0.1, voiceSec: 30, minutes: 1, localMin: 15 },     // inputsHash quantisation
 } as const;
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -355,3 +373,91 @@ export interface DayPersona {
   plantedBadRule?: PlantedRule;                        // the negative control: the gate MUST trip with it on
 }
 export interface PlantedRule { id: string; description: string; mustTrip: string[] }   // invariant / validator ids
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 8. The planner seam (G1): planDay is pure over PlannerInputs; inputsHash is sha256 over RFC 8785 JCS bytes
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+export type DayKind = 'school_day' | 'free_day' | 'holiday' | 'off';
+export interface TestWindowLite { subject: string; on: string; chapters: string[]; kind: 'unit' | 'periodic' | 'term'; daysLeft: number }
+export interface FrozenSlotRef { slotId: string; digest: string }      // shown/started slots, carried verbatim (V10)
+/** A recorded view value as it enters the hash: asOf is DROPPED (stale is already decided against the recorded now). */
+export interface ViewIn { value: unknown; src: string; stale: boolean }
+
+export interface PlannerInputs {
+  v: 1;
+  build: { plannerSha: string; cfgDigest: string; thresholdsV: string };          // code + config + T version
+  child: { band: Band; vibeBand: AgeBandVibe; ageYears: number; tier: string };
+  day: { learningDay: string; dayKind: DayKind; reason: 'first_open' | 'day_start' | 'replan' | 'resume' | 'parent_change';
+         anchor: { kind: 'window_start' | 'opened' | 'replan'; localHHMM: string } };   // floored to T.HASH_Q.localMin
+  window: { from: string; to: string; bedtimeMinus60: string; bedtimeMinus30: string };  // clockPhase bounds, local
+  limits: { capMin: number; hwSubCapMin: number; restDay: boolean; careEffect?: 'gentle_mode' };
+  mode: 'free' | 'paused' | 'safety_hold';                                        // in_lesson never plans
+  school: { testWindows: TestWindowLite[]; pointers: Record<string, string> };
+  homework: Array<{ taskId: string; dueDay: string; estMin: number }>;
+  promises: Array<{ id: string; kind: string; ref: string }>;
+  frozen: { planVersion?: number; slots: FrozenSlotRef[] };
+  usage: { usedMin: number; hwUsedMin: number };                                  // floored to whole minutes
+  voice: { leftSec: Partial<Record<Lane, number>>; activeDaysLeftEst: number };   // floored to 30 s
+  adapt: AdaptMemory;
+  view: Record<string, ViewIn>;          // EXACTLY the keys planKeys() named, read through the recording ViewReader
+  arms: Record<string, string>;          // experiment → arm (pure hash assignment, obs O10)
+}
+export type PlannerBase = Omit<PlannerInputs, 'view'>;
+/** Pure: which view keys (with sub-keys, e.g. 'kt.skill.m1.ch4.add') this plan may read. Deterministic in `base`. */
+export type PlanKeys = (base: PlannerBase) => string[];
+/** Pure: no clock, no I/O, no randomness, no reader. Reads only `inputs`. */
+export type PlanDay = (inputs: PlannerInputs) => { plan: unknown /* DayPlan & DayPlanAdd */; firings: RuleFiring[] };
+/** inputsHash = 'pi1:' + lowercase hex sha256(JCS(quantise(inputs))). JCS = RFC 8785. Quantise BEFORE hashing. */
+export const quantise = (x: number, q: number) => Math.round(x / q) * q;
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 9. Constraint registration (I-A2): a constraint resolveKnob could drop as `empties_domain` must never get there
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+export function registerConstraint(c: Constraint): Constraint {
+  if (!(['safety', 'limits', 'budget'] as Layer[]).includes(c.layer)) throw new Error(`I-A2: ${c.layer} may not constrain`);
+  if (c.layer === 'budget' && c.knob !== 'laneMix') throw new Error('I-A2: budget constrains laneMix only');
+  if (c.knob === 'laneMix' && !(c.domain.kind === 'set' && c.domain.values.includes('tap')))
+    throw new Error('I-A2: a laneMix constraint must keep the zero-cost floor lane tap');
+  if (c.domain.kind === 'range' ? c.domain.lo > c.domain.hi : c.domain.values.length === 0)
+    throw new Error('I-A2: empty constraint domain');
+  return c;
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 10. RULES as data (adaptation-policy.md §4 is the human-readable table; order = tie-break order in resolveKnob)
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+export const RULES: RuleSpec[] = [
+  { id: 'R0', knob: 'segmentMinutes', alsoKnobs: ['laneMix', 'topic', 'pace', 'reviewShare'], layer: 'kt', cls: 'L',
+    reads: ['kt.due', 'kt.skill', 'need.gapGrades'], minN: '-', hysteresis: '-', bounds: 'band template §4.3', reversal: 'CONDUCTOR §4.4' },
+  { id: 'R1', knob: 'segmentMinutes', alsoKnobs: ['successFirst'], layer: 'vibe', cls: 'F', reads: ['state.adapt.closes'],
+    minN: '4 closes', hysteresis: 'on 3/4 bad, off 3 fine', bounds: '≥ band minimum set', reversal: 'CM-A1' },
+  { id: 'R2', knob: 'segmentMinutes', layer: 'vibe', cls: 'F', reads: ['state.adapt.closes'],
+    minN: '4 late + 4 early', hysteresis: 'on gap ≥ .40, off < .20', bounds: 'late sittings only', reversal: 'CM-A2' },
+  { id: 'R3', knob: 'reviewShare', layer: 'kt', cls: 'L', reads: ['kt.due'],
+    minN: '-', hysteresis: 'on ≥ 6 overdue, off ≤ 2', bounds: '.15-.25 of lesson min', reversal: 'CM-A4' },
+  { id: 'R4', knob: 'representation', layer: 'kt', cls: 'L', reads: ['kt.skill', 'fmt.best'],
+    minN: '10 opps (wheel-spin)', hysteresis: '3 d cooldown per skill', bounds: 'never the same family', reversal: 'CM-A4' },
+  { id: 'R5', knob: 'prereqCheck', layer: 'kt', cls: 'L', reads: ['kt.skill'],
+    minN: '10 opps (wheel-spin)', hysteresis: '3 d recheck', bounds: 'depth ≤ 3, 1 per lesson', reversal: 'CM-A4' },
+  { id: 'R6', knob: 'pace', layer: 'kt', cls: 'L', reads: ['kt.eta'],
+    minN: '30 opps, 3 skills', hysteresis: 'enter ±.5 (2 up / 3 down refits), exit inside ±.25 (2)', bounds: '0-2, B1 ≤ 1', reversal: 'CM-A3' },
+  { id: 'R7', knob: 'soloRounds', layer: 'srl', cls: 'L?', reads: ['srl.solo28', 'srl.dep'],
+    minN: '8 solo attempts', hysteresis: 'on ok ≥ .8 or dep flag; off decline ≥ .4', bounds: 'base … base + 1', reversal: 'CM-A6' },
+  { id: 'R8', knob: 'opener', alsoKnobs: ['successFirst'], layer: 'kt', cls: 'L?', reads: ['tm.opener', 'mi.thread'],
+    minN: '-', hysteresis: '-', bounds: '≥ 2 due retrieval items always (V5)', reversal: 'CM-A7' },
+  { id: 'R9', knob: 'foundationShare', layer: 'kt', cls: 'L', reads: ['need.gapGrades', 'need.parentGoals'],
+    minN: 'placement done', hysteresis: 'weekly recompute', bounds: '0-.6; × .5 in a test window', reversal: 'CM-A5' },
+  { id: 'R10', knob: 'laneMix', layer: 'budget', cls: 'F', reads: ['gov.voiceLeftSec'],
+    minN: '-', hysteresis: 'lane fixed per lesson (I-R7)', bounds: 'always keeps tap', reversal: 'CM6' },
+  { id: 'R11', knob: 'topic', layer: 'interest', cls: 'F', reads: ['state.adapt.choice', 'mi.choices28'],
+    minN: '-', hysteresis: 'one choice per slot, consumed', bounds: 'inside the KT domain only', reversal: 'CM-A7' },
+  { id: 'R12', knob: 'homeLoop', layer: 'srl', cls: 'L?', reads: ['srl.dep', 'mi.interest'],
+    minN: '-', hysteresis: 'weekly; no repeat kind 2 weeks running', bounds: '≤ 1 activity/week (PLI)', reversal: 'PLM' },
+  { id: 'R13', knob: 'goalCard', layer: 'srl', cls: 'L?', reads: ['id.ageYears', 'mi.choices28'],
+    minN: '-', hysteresis: '≤ 1 active goal; weekly', bounds: 'MCII ≥ 12 y and opt-in', reversal: 'CM-A7' },
+  { id: 'R14', knob: 'routineCard', layer: 'kt', cls: 'F', reads: ['state.adapt.closes'],
+    minN: '5 closes', hysteresis: '3 of last 5 cut short; 14 d cooldown', bounds: 'parent in-app only; endedBy facts only', reversal: 'DC-M1' },
+];

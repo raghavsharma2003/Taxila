@@ -5,7 +5,7 @@
 // Child: B1 (age 6, Class 1). Unit test (Maths ch. 4-5) on day 3 of its 5-day window. Last four closes: strained,
 // strained, fine, tired → R1 latched ON at last night's fold. Realtime budget: 600 s left, 8 expected active days.
 // R0 = the band template and the §4.4 priority stack (always present, KT tier). Yesterday the child picked "shapes" (ch. 6) as the next topic (child.choice_made, context next_topic).
-import { resolveKnob, MAY_PROPOSE } from './adaptation.contracts.ts';
+import { resolveKnob, MAY_PROPOSE, registerConstraint } from './adaptation.contracts.ts';
 
 const LANES = ['realtime', 'realtime_mini', 'cascade', 'tap'];         // preference order; `tap` is the zero-cost floor
 let failures = 0;
@@ -87,8 +87,11 @@ console.log('negative controls');
     [{ knob: 'laneMix', layer: 'budget', domain: { kind: 'set', values: [] }, reason: 'malformed' }],
     [{ knob: 'laneMix', layer: 'kt', rule: 'R0', value: 'realtime', evidence: [] }]);
   expect('I-A2 unguarded empty budget leaks realtime (why registration must refuse it)', r.value, 'realtime');
-  const registrationOk = (c) => c.layer !== 'budget' || (c.knob === 'laneMix' && c.domain.kind === 'set' && c.domain.values.includes('tap'));
-  expect('I-A2 registration refuses it', registrationOk({ knob: 'laneMix', layer: 'budget', domain: { kind: 'set', values: [] } }), false);
+  const refuses = (c) => { try { registerConstraint(c); return false; } catch { return true; } };
+  expect('I-A2 registerConstraint refuses an empty budget domain', refuses({ knob: 'laneMix', layer: 'budget', domain: { kind: 'set', values: [] }, reason: 'x' }), true);
+  expect('I-A2 registerConstraint refuses a budget bound on minutes', refuses({ knob: 'segmentMinutes', layer: 'budget', domain: { kind: 'range', lo: 0, hi: 8 }, reason: 'x' }), true);
+  expect('I-A2 registerConstraint refuses a vibe constraint', refuses({ knob: 'segmentMinutes', layer: 'vibe', domain: { kind: 'range', lo: 0, hi: 8 }, reason: 'x' }), true);
+  expect('I-A2 registerConstraint accepts the worked-example budget domain', refuses({ knob: 'laneMix', layer: 'budget', domain: { kind: 'set', values: ['cascade', 'tap'] }, reason: 'x' }), false);
 }
 expect('MAY_PROPOSE.reviewShare', MAY_PROPOSE.reviewShare, ['kt']);
 console.log(failures ? `${failures} FAILED` : 'all expectations met');

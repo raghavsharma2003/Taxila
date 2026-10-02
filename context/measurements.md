@@ -107,3 +107,11 @@ Method: `python3 docs/research/design/product-design-contrast.py`, reusing the W
 - Method: `docs/research/learner/onboarding-cat-sim.mjs`, seeded, about 45 s, byte-identical output across runs; 1,500-3,000 simulated children per row; item parameters misspecified (b +/- 0.4 GE, a x e^N(0, 0.25)); mixed oral/tap; ASR miss 15-25% and per-item times are model inputs [U].
 - Results: mean posterior SD after 12 items 0.52-0.63 (SD < 0.35 unreachable); success-first targeting cut runs of 3+ wrong answers from 44% to 8% at +0.13 GE RMSE; a single class-based prior placed 28% of far-behind children > 1 GE too high vs 7% with the 0.6/0.4 mixture (2% when the prior matches the population); within 1 GE of truth: 78% at 8 items, 91% at 16, 96% at 24.
 - Limits: the generating model shares the estimator's family and is unimodal, so every 'within 1 GE' rate is an upper bound; the ASER-ladder arm was scored with the grid posterior mean, not the bracket rung, so its '40% too high' figure measures prior shrinkage and is NOT evidence against ASER's rule (onboarding review R1). Re-run with a bracket-rung arm and 15-20% non-monotone responders before any further entry.
+
+## prod-lesson-e2e-2026-10-02
+**First production lesson on Azure (`taxila-web`, image 91c104c), text mode, n=1 lesson, 3 turns, 2026-10-02.**
+Method: curl from the US build sandbox: signup → consent → class-4 child → `/api/lesson/start` → 3 typed turns →
+`/api/realtime/token`. start 2467 ms (topic c4-maths-ch01-t01 chosen by nextTopicFor; Hinglish opening by Asha);
+turns 3124 / 2443 / 4014 ms (moves hook → explain → worked_example; teacher set up teach-back to protégé "Golu");
+realtime ephemeral token minted for the lesson. Text-mode turn latency is dominated by the taxila-fast reply
+call + guards; voice lane does not wait on it (director runs off the critical path).

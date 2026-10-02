@@ -33,7 +33,7 @@
   {
    "id": "realtime-teacher-bakeoff-2026-10-02",
    "kind": "measurement",
-   "title": "Realtime 2.1 vs mini with teacher prompt: 64→25 words/turn when brevity is structural",
+   "title": "Realtime 2.1 vs mini with teacher prompt: 64\u219225 words/turn when brevity is structural",
    "at": "2026-10-02"
   },
   {
@@ -125,7 +125,7 @@
   {
    "id": "db-driver-latency-2026-10-02",
    "kind": "measurement",
-   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 → Neon us-east-1",
+   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 \u2192 Neon us-east-1",
    "at": "2026-10-02"
   },
   {
@@ -300,6 +300,12 @@
    "title": "No parent-facing mastery words until K7: delayed accuracy of 'mastered' >= 0.9 at 1 and 4 weeks, ECE <= 0.05, n >= 200 children; until then 'answers observed'",
    "at": "2026-10-02",
    "source": "inbox/learner.json"
+  },
+  {
+   "id": "prod-lesson-e2e-2026-10-02",
+   "kind": "measurement",
+   "title": "First prod lesson on Azure: start 2.5 s, text turns 2.4-4.0 s, realtime token OK",
+   "at": "2026-10-02"
   }
  ],
  "edges": [
@@ -532,6 +538,11 @@
    "src": "open-real-child-audio",
    "rel": "blocks",
    "dst": "learner-one-engagement-machine"
+  },
+  {
+   "src": "hosting-azure-container-apps",
+   "rel": "measured_by",
+   "dst": "prod-lesson-e2e-2026-10-02"
   }
  ]
 }
