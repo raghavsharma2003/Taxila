@@ -3,7 +3,7 @@
 // listed option the reply matches; code turns that into an outcome). Deterministic paths run first
 // (chips, module answers, exact key match, low ASR, lexical don't-know), so the model is only asked
 // when the bytes cannot decide.
-import { chat, DEPLOY } from "../azure.js";
+import { chat, DEPLOY, isReasoningFamily } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
 import { scanSafety, wantsToStop } from "./safety.js";
 import { whyKey, norm as normAnswer } from "./items.js";
@@ -166,6 +166,39 @@ export function parseClassification(json, target) {
   return { ...mapped, confidence, modelFlags };
 }
 
+/**
+ * When a classifier call has not answered after this long, a second identical request goes out and the first
+ * answer wins (the other is ignored). The classifier is on the reply path of every model-classified turn,
+ * and a fast non-reasoning model's tail is not its median: grok-4-1-fast-non-reasoning answered in ~0.6 s
+ * p50 but 2 of ~60 calls hung to the 4 s / 7 s timeouts (evals/cascade-latency.mjs, 2026-10-02).
+ * TAXILA_CLASSIFY_HEDGE_MS overrides; 0 = off. Off by default for reasoning-family deployments, whose normal
+ * spread (taxila-fast 0.9-2.9 s) would duplicate a third of the calls.
+ */
+export const classifyHedgeMs = (deployment = DEPLOY.classify) => {
+  const v = process.env.TAXILA_CLASSIFY_HEDGE_MS;
+  if (v !== undefined && v !== "") return Math.max(0, Number(v) || 0);
+  return isReasoningFamily(deployment) ? 0 : 1500;
+};
+
+/**
+ * `fn()` now, and once more after `ms` if it has not settled; the first to fulfil wins. A first call that
+ * fails before the hedge fires fails the whole (its own retry has already run, in azure.js); once both are
+ * out, it fails only when both have. Exported for tests.
+ */
+export function hedged(fn, ms) {
+  if (!(ms > 0)) return fn();
+  return new Promise((resolve, reject) => {
+    let pending = 0, settled = false;
+    const finish = (ok, v) => { if (settled) return; settled = true; clearTimeout(timer); (ok ? resolve : reject)(v); };
+    const run = () => {
+      pending += 1;
+      fn().then((v) => finish(true, v), (e) => { pending -= 1; if (!pending) finish(false, e); });
+    };
+    const timer = setTimeout(() => { if (!settled) run(); }, ms);
+    run();
+  });
+}
+
 const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required: ["distress"], properties: { distress: { type: "boolean" } } };
 
 /**
@@ -175,10 +208,10 @@ const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required:
  */
 async function distressCheck(text, classLevel, trace) {
   try {
-    const { json } = await chat(DEPLOY.classify, [
+    const { json } = await hedged(() => chat(DEPLOY.classify, [
       { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.` },
       { role: "user", content: text },
-    ], { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace });
+    ], { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace }), classifyHedgeMs());
     return !!json?.distress;
   } catch (e) {
     console.warn("[classify] distress check unavailable:", e.message);
@@ -247,13 +280,13 @@ export async function classify(args) {
   }
 
   try {
-    const { json } = await chat(DEPLOY.classify, [
+    const { json } = await hedged(() => chat(DEPLOY.classify, [
       { role: "system", content: systemPrompt(target, classLevel) },
       { role: "user", content: userPrompt(target, text, heard) },
     ], {
       schema: schemaFor(target), schemaName: `classify_${target.mode}`,
       effort: target.mode === "none" ? "none" : "low", maxTokens: target.mode === "none" ? 120 : 900, timeoutMs: 7000, trace,
-    });
+    }), classifyHedgeMs());
     const { modelFlags, ...label } = parseClassification(json, target);
     for (const k of Object.keys(modelFlags)) flags[k] = flags[k] || modelFlags[k];
     return { ...label, source: "model", flags };

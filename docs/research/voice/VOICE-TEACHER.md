@@ -8,7 +8,8 @@ points to its source doc and evidence tag. Where a reviewer's objection changed 
 Sources (all in `docs/research/voice/`): `indian-teacher-discourse.md` (DISC), `human-likeness.md` (HL),
 `voices-hindi.md` (VH), `listening-samples.md` (LS), `character-authoring.md` (CA) + `characters/*.md`,
 `relational-os-teacher.md` (RO), `asr-kids-hinglish.md` (ASR), `emotion-attunement.md` (EA), `spoken-notation.md`
-(SN, gap-fill G1-spoken-notation), `network-resilience.md` (NR, gap-fill G3-network-degradation). Inherited laws
+(SN, gap-fill G1-spoken-notation), `network-resilience.md` (NR, gap-fill G3-network-degradation), `context-growth.md` (CG, gap-fill
+G2-in-session-context-growth). Inherited laws
 are from `docs/harvest/companion-tech.md` and `docs/harvest/gurukul.md` [H]. Taxila measurements are from
 `context/measurements.md` [T].
 
@@ -28,7 +29,7 @@ and never in this doc. The one exception, safety hand-off wording, is handled in
 |---|---|---|
 | 1 | **Live lane = gpt-realtime-2.1 (`taxila-realtime`) native voice (lane A) for v1.** Lanes B (Voice Live + Azure Indian TTS voice) and C (Voice Live `azure-realtime`) compete in the blind panel. | All pedagogy evidence is on 2.1 [T]. Voice Live works on the existing key [M VH]. Accent must be won by ear [H]. |
 | 2 | **Turn-taking is hybrid.** Server VAD 0.6 / 900 ms always detects speech. Auto-response stays on only in chat states. In answer-expected states the client turns auto-response off, and the director issues `response.create` once its think-time window closes. | 900 ms does not split pauses, but 600 ms and semantic_vad do [T]. Children's think time needs a client timer [DISC, ASR, EA]. Thinking-aloud gets filled with hints 2-3/3 under auto-response [M EA]. |
-| 3 | **Assembly order (§2):** CORE (character → relational + attunement notes → floor) → CHILD brief → LESSON step → MOVE → LANGUAGE → ONE MORE CHECK → TURN SHAPE (last line). Budget 3,000 estimated tokens, with a throw and never a slice. | Position is mechanism [H][T]. The relational floor holds from mid-brief CORE notes: 20/36 violations fell to 1/36 [M RO, short prompt]. |
+| 3 | **Assembly order (§2):** CORE (character → relational + attunement notes → floor) → CHILD brief → LESSON step → MOVE → LANGUAGE → ONE MORE CHECK → TURN SHAPE (last line). Budget 3,000 estimated tokens, with a throw and never a slice. CORE + CHILD go in session instructions; LESSON → TURN SHAPE go in a tail system item, so they are last in the model's input; history is pruned in blocks with a heard-only recap (§1.4, gap-fill G2-in-session-context-growth). | Position is mechanism [H][T]. Over 30-min lessons tail placement cut English-matrix turns 0.77 → 0.19 and cost $0.53 → $0.07 per minute at min 30 [M CG]. The relational floor holds from mid-brief CORE notes: 20/36 violations fell to 1/36 [M RO, short prompt]. |
 | 4 | **Characters:** Asha (classes 1-4), Arjun (5-9 maths/science), Uma (8-9, all subjects, exam-anxious; selectable from class 7). The **N2 cores** replace the current `asha.js`/`arjun.js` notes. The late cue stays behind a flag. | CA §6 [M]. The cue raised distinctness but pushed English to 46-70% of turns. |
 | 5 | **TeacherRelState is a working alliance, not a friendship.** Stages unlock the child's autonomy, never intimacy. Address is conferred by the child. A teacher-owned rupture is decided by the director, never by the model. | RO-1..12. The note asking the model to "own your mistake" produced false confessions in 2/3 clean B trials [M RO]. |
 | 6 | **Attunement is driven by words, task evidence and telemetry, never by the model "hearing" tone.** | Near-tears and bright deliveries of the same words got the same reply type, 0/18 check-ins [M EA, synthetic audio, inconclusive]. |
@@ -93,14 +94,19 @@ Brevity is set **only** by the appended-last TURN SHAPE line (64 words mid-brief
 - Switching state means a `session.update` that changes only `turn_detection.create_response`. **[U] Verify on Azure
   that the toggle takes effect before the next commit.** If it does not, run every state with `create_response:false`
   and measure the latency cost.
-- **Per-response instructions.** `response.create` carries `instructions` = the **full** compile() output, never a
-  delta. The design assumes response-level instructions *replace* session instructions, so the floor is always
-  re-sent. **[U] Verify replace vs append on Azure** (EA, RO reviews). The stable CORE prefix keeps the cache warm.
-  Measure the cache hit rate with a per-turn changing MOVE (CA review: the 77.8% hit was measured with a static
-  director state).
+- ~~**Per-response instructions.** `response.create` carries `instructions` = the full compile() output.~~
+  **Superseded by §1.4 P2 (gap-fill G2-in-session-context-growth).** CORE + CHILD (+ recap) go in session
+  `instructions`. The per-turn sections (LESSON NOW → TURN SHAPE) go in one tail `system` item, appended before each
+  `response.create` and deleted after it. `response.create` carries no `instructions`. Reason, measured over 30-minute
+  audio-in lessons (n=3-4 sessions per arm): with the per-turn sections *before* the history, cache hit fell to 5-8%
+  by minute 30 (flat 576 cached tokens, so no history was ever cached) and English-matrix turns ran at 66-77%. With
+  them at the tail, the figures were 73-92% and 19-20% [M `context-growth.md` §2.1]. That answers the "cache hit with
+  a changing MOVE" part of VT-3. Replace vs append is moot under P2.
 - **Barge-in:** `interrupt_response:true`. WebRTC truncates unplayed audio itself. On WebSocket the client sends
   `conversation.item.truncate` with the played `audio_end_ms`. The director never refers back to words the child
-  did not hear [HL L2]. **Test E10 on the real Capacitor/WebView client**, since barge-in at 7-260 ms is server
+  did not hear [HL L2]. If the cut lands before the current item's pose completed, the director marks the pose as
+  unheard and re-poses it. The measured leaks in 30-minute runs (1-4 per arm) came from LESSON NOW, not from the
+  history (§1.4 P7, gap-fill G2-in-session-context-growth). **Test E10 on the real Capacitor/WebView client**, since barge-in at 7-260 ms is server
   cancel time, not what the child heard.
 - **Non-child speech** (TV, sibling, parent answering): a non-child predicate (§9.3) marks the turn *unattributed*.
   Unattributed turns are never mastery evidence. They still go through safety.
@@ -117,6 +123,31 @@ Brevity is set **only** by the appended-last TURN SHAPE line (64 words mid-brief
   response measured +2.1 s median TTFA over auto-response (4.79 s vs 2.65 s, n=5/7) [M NR §6.2], far above the +300-500 ms
   measured without added RTT [T]. VT-2 must decide this state's mechanism from India-measured data (NR §7 lists the
   three options).
+
+### 1.4 In-session context policy (gap-fill G2-in-session-context-growth)
+
+Full evidence is in `context-growth.md` (CG). That covers the GA docs, two Azure probes, and 17 scripted 30-minute
+audio-in lessons on `taxila-realtime` across 5 arms with 3-4 sessions each, 2026-10-02 [M, small n, one synthetic
+child]. The 60-minute rotation recap is unchanged and reuses P4's recap.
+
+| # | rule | evidence |
+|---|---|---|
+| P1 | **`truncation` is not a lever on Azure 2.x.** Leave it unset (it echoes `auto`). `disabled`, `retention_ratio` and `token_limits.post_instructions` are all accepted and echoed, but input stayed at 9,134 tokens under every value, so the setting does nothing. The 256k window never overflows in a lesson. All policy is client/director `conversation.item.delete` / `create`. Re-run `truncact.mjs` on every model or API upgrade. | MS Learn GPT Realtime 2.x "known limitations" [S]; CG §1 [M n=1/cell] |
+| P2 | **Stable prefix, tail delta.** Session `instructions` = CORE + CHILD + recap row, rewritten only at start, prune and rotation. The per-turn sections (LESSON NOW → TURN SHAPE, §2 order unchanged) go in one `system` item appended at the conversation tail before each `response.create` and deleted after it. "Appended last" now means last in the model's input. The CHAT auto-response ordering is [U]. | cache at min 30: 0.92/0.75 tail vs 0.05-0.08; English-matrix share 0.19-0.20 vs 0.66-0.77; same-hour TTFA pairs split 2-2 [M CG §2.1] |
+| P3 | **Prune in blocks:** when 16 exchanges are held, delete the oldest 8 [I]. Never prune every turn. This replaces the shipped keep-6-messages policy, which has no recap. Exempt: the newest 8, open safety items, and the identity pin (P5). | input flat at about 2.4k vs 10.7k at min 30; $0.069 vs $0.533 per lesson minute; about 8k vs 33k TPM per child [M] |
+| P4 | **Rolling recap:** ≤ 70 words of third-person note fragments, built by `taxila-fast` from the **heard** transcript only (cut at `audio_end_ms`). It is the last row of CHILD, shed before interests. It is never shown verbatim to anyone. | recall 3/3 with the recap [M B] |
+| P5 | **Identity pin:** the first what-are-you exchange is converted to text in place and never pruned. The recap notes the self-noun used. A child-transcript identity predicate makes the next move answer the question first. | pruned arms used 2-3 self-nouns per session; kept-as-text used 1 in 3/3 sessions; 2/32 evasions in unpruned arms, 0 denials in 68 [M]; the pin itself is [U] |
+| P6 | **Fix before P2 ships:** under tail placement the teacher refused to recall a pet's name in 7/7 sessions, saying it doesn't keep personal details, even with the name in the recap. Child-shared non-identifying facts become in-session callback ids in the tail block. `floor.js`'s do-not-repeat note is scoped to the identifying-data list (a shape edit, quote-free). | 0/7 tail vs 3/3 B [M]; cause [U] |
+| P7 | **Heard-only invariants.** Prune, replace and recap only remove or summarise heard content. A truncated item is never rebuilt from its full transcript. Pruning showed no unheard-word effect: 2/6 and 2/9 vs 3/8 unpruned. | [M] |
+| P8 | **Budgets and telemetry:** session prefix ≤ 1,800 estimated tokens (throw). Log input, cached, text/audio, TTFA, words, held count and prune events per response, against lesson minute. Alert if cached < 50% after min 5 or input > 4k [I]. | — |
+
+The other two asks:
+
+- **TURN SHAPE adherence:** context growth does not erode it. Median words were 21-25 at minutes 1/10/20/30 in every
+  arm. The over-cap share was about 22-26% in every arm, a standing issue and not caused by growth.
+- **TTFA growth:** unpruned history adds about +80 ms per 1k input tokens (r=0.22). That is +465 to +782 ms from
+  minute 1 to minute 30 across 3 sessions. Hour-of-day congestion (1.1-1.5 s vs 2.4-3.2 s session medians) is a
+  bigger effect, so VT-2 must be measured at peak hours from India.
 
 ---
 
@@ -252,7 +283,7 @@ measures deception [HL]. Measure natural, clear, Indian-sounding, warm, listenin
 | fast yield + heard-only context | `interrupt_response`, truncate | 7-260 ms server cancel [T] (client unmeasured) |
 | gap shaping by preceding act | hybrid floor (§1.3), think-time timer, visible listening state | 600 ms splits pauses [T]; Rowe [S, secondary] |
 | language mirroring with Indian code-switch shape | LANGUAGE section, re-asserted every update | mirror rule fixed drift on audio-in [T]; text-in still drifted 3/8 [M HL, stub prompt] |
-| identity consistency | one voice per character in every cache key; one self-noun ("AI teacher") as a term; model version pinned; silent recap at the 60-min rotation | four self-nouns in 12 replies [M HL] |
+| identity consistency | one voice per character in every cache key; one self-noun ("AI teacher") as a term; model version pinned; silent recap at the 60-min rotation; in-session identity pin + recap self-noun note (§1.4 P5, gap-fill G2-in-session-context-growth) | four self-nouns in 12 replies [M HL]; pruning raised it to 2-3 self-nouns per session, kept-as-text gave 1 [M CG] |
 | uptake, no default affirmation opener | CORE note + director verdict; detector on affirmation-after-wrong (target 0) | 6/8 praise openers incl. after a misconception [M HL]; 31/36 audio-in praise openers [M EA] |
 | attachment/manipulation fence | output-transcript predicates PB1-PB12 (§10.3) | 1/12 promise under pressure [M HL] |
 | visual backchannel | presence ring driven by the child's mic level | audio backchannels rejected [H] |
@@ -644,6 +675,7 @@ lexicon, and the numerals are *not* digit-exact by default.
 | VT-7 | E1 child ASR + endpointing | ASR §6 gates |
 | VT-8 | lexicon false-positive rates on maths/science transcripts | measured before any steering |
 | VT-9 | barge-in on the real Capacitor client (heard vs truncated) | 0 references to unheard words |
+| VT-11 | in-session context policy (gap-fill G2-in-session-context-growth): `context-growth/ctxgrowth.mjs` with §1.4 P2-P7 as one arm against arm B, ≥3 sessions each at the same hour; plus 40-min (13-15) and 20-min (6-9, Asha) sessions; log at min 1/10/20/30 | English-matrix ≤0.25; cached ≥60% from min 10; min-30 TTFA within +200 ms of min 1; in-session fact recall ≥2/3; one self-noun per session in ≥2/3 sessions; 0 denials and 0 evasions; unheard refs no worse than B [I] |
 | VT-10 | spoken notation (gap-fill G1-spoken-notation): SN §3 probe re-run on the full §2 compile, every lane that can win §5, with listeners; plus `checkSpoken` round-trip on every kit | pre-rendered: misread 0, helplines digit-exact 100%, rendering error ≤2% per class [I]; first pass (minimal compile, ASR-only) logged in SN §3 |
 | VT-11 | network resilience (gap-fill G3-network-degradation; the brief asked for "VT-10", already taken by G1): NR §8. Profiles P0 none, P1 150 ± 50 ms, P2 + 2% loss, P3 + 5% loss, P4 260 ± 50 ms + 1% loss, P5 5 s outage with the socket surviving, P6 5 s blackout forcing a new session; plus handover, IP change, 10 s background, ICE failure L0 → L1, the 60-min cap. Real client, full §2 compile, dedicated deployment, India origin, **real tc-netem**, WS **and** WebRTC, n ≥ 10 turns per profile; log TTFA, audible gaps, duplicate/orphan/stale replies, recovery time, heard-point continuation | 0 duplicate, orphan or stale replies; 0 references to unheard words; no silence > 5 s without the notice; resume continues from the heard point ≥ 9/10 by listener [I]; lost child audio graded 0 times; held-audio safety recall 100%. First pass (WS only, user-space TCP model, US origin, harness brief, shared deployment: 112 responses, 28 rate-limited) logged in NR §6 |
 

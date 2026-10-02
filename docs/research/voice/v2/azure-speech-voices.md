@@ -189,3 +189,141 @@ set -a; . /home/user/Taxila/.env.local; set +a
 NODE_USE_ENV_PROXY=1 node docs/research/voice/v2/azure-speech-voices.mjs all [armRegex]   # resumes; skips done cells
 python3 docs/research/voice/v2/analyze-azure-speech-voices.py                              # table + summary.json
 ```
+
+## Review (adversarial, 2026-10-02)
+
+I recomputed every family number in §3 from `results.json`. All of them reproduce: 185/185 clips, 160 at WER 0,
+TTFB medians, p90s, total medians, chars/s, and the clip counts with WER > 0. The arithmetic is correct. The problems
+are in scope, method and framing. Tags: [V] = verified in this review, [M] = measured here, [U] = unverified.
+
+### R1. Missing models and voices: the sweep is not "every Azure-billed Hindi voice"
+- **The newest speech-out models were not tested.** These are deployed on our resource: `taxila-live` =
+  **gpt-live-1** (GA 2026-09-10), `taxila-realtime` = gpt-realtime-2.1, and gpt-realtime-2.1-mini. The model list
+  also shows gpt-audio-1.5 [V, `/openai/models`]. The brief named the realtime voices. The owner's goal is a voice
+  that is "indistinguishable", so the newest native-audio models must be in the same ear test, even at premium
+  cost. Without them, a cascade-TTS winner here does not answer the `voice-lane-cascade-default` reversal
+  condition.
+- **The gpt-4o-mini-tts snapshot is unknown.** Two snapshots exist: `gpt-4o-mini-tts-2025-03-20` (preview) and
+  `-2025-12-15` (GA, newer) [V]. The data-plane deployment record does not show which one is deployed. The report
+  must name the snapshot. If it is 03-20, the newest TTS model was not tested.
+- **hi-IN standard Neural voices were skipped.** Aarav, Ananya, Aarti, Arjun, Kavya, Kunal, Rehaan and Madhur are GA.
+  Only Swara was tested.
+- **en-IN Indic Neural voices were skipped.** AartiIndic, ArjunIndic, NeerjaIndic and PrabhatIndic are GA, and the
+  brief listed them explicitly [V voices/list]. They are the cheapest GA Indian voices at $15/M, and they are the
+  realistic fallback if MAI stays in Preview.
+- **Voice Live was not tested.** It is the Azure-managed route that pairs gpt-realtime with MAI or DragonHD voices
+  (voices-hindi §B). That route is a candidate for "native listening plus a Hindi-native voice", and neither its
+  latency nor its price ("Standard Speech Audio Output" $0.026-0.031/1K tokens [V]) is in this report.
+- **Professional (custom) voice is the strongest Azure route to "indistinguishable"** (`own-teacher-voice-record-once`:
+  CNV HD $48/M [V]). It cannot be swept, but §0 should point to it as the route if no stock voice passes.
+
+### R2. Persona trap: Grant and Harper are not Indian voices
+`hi-IN-Grant` and `hi-IN-Harper:MAI-Voice-2.1` also appear under cs-CZ, da-DK, de-DE and other locales [V
+voices/list]. They are cross-lingual stock personas with no StyleList. That is the "English speaker attempting Hindi"
+case the owner explicitly rejects. Do not count them as Hindi-native candidates. They correctly stay off the shortlist,
+but §1 should label them.
+
+### R3. Method problems
+1. **The ASR scorer is the wrong model, and it is lenient by design.** `taxila-transcribe` is gpt-4o-transcribe. The
+   project has already excluded it from grading lanes because it hallucinates (`stt-default-live-transcribe-kw`).
+   Its strong language-model prior "repairs" mispronounced words. On top of that, a near-match tolerance of 0.34 per
+   word means a WER of 0 says almost nothing about pronunciation. It may also favour gpt-4o-mini-tts, which is from
+   the same vendor family (unmeasured, [U]). Future floors should use `taxila-live-transcribe`, plus Azure Fast
+   Transcription hi-IN as a second scorer, with a strict and a lenient column.
+2. **"Same rate=0.95" is false for gpt-4o-mini-tts.** Its arms had no rate control. They received a prose
+   instruction ("slightly slower than conversational"). The §3 rate comparison mixes two different mechanisms.
+3. **The arms got unequal treatment.**
+   - gpt-4o-mini-tts received a detailed accent/persona description and per-passage mood notes.
+   - The styled Azure arms switched style inside passage (e). Unstyled Azure arms had nothing comparable.
+   - Passage (e) therefore compares styled voices with unstyled ones, so any expressiveness ranking from it is
+     confounded.
+4. **Loudness is not equalised** [M, EBU R128 integrated, all 185 clips]. Family medians:
+
+   | family | median loudness |
+   |---|---|
+   | MAI HD | -19.6 LUFS |
+   | MAI Flash | -20.0 LUFS |
+   | DragonHD | -22.2 LUFS |
+   | gpt-4o-mini-tts | -22.9 LUFS (one clip at -32.4) |
+   | Omni | -19.4 LUFS (one clip at -30.5) |
+
+   Listeners prefer louder clips. For the blind test, normalise every clip to one target (for example -20 LUFS), not
+   only the speaking rate.
+5. **n=1 render per cell.** HD, Dragon and gpt-4o-mini-tts output is stochastic, so the ear test would judge each
+   voice on a single draw. Render 2-3 takes per cell, or play listeners a random take. The MAI HD intelligibility
+   claim (10/30 clips with WER > 0 vs 2/30 for Flash) is suggestive: Fisher p = 0.021 on single draws, with a lenient
+   scorer. Call it "worse in this sample", not a family property.
+6. **TTFB was measured on 160-319-character paragraphs.** The cascade speaks sentence by sentence. MAI HD's TTFB is
+   flat across passage length (842-994 ms medians from 160 to 319 characters [M]). That is a fixed ~0.6 s start-up
+   cost relative to Flash, not "buffer, then send". It will dominate every sentence. Re-measure with the first
+   sentence of each passage.
+7. **"Indistinguishable" needs a human anchor.** The ear test must include real Indian teacher recordings of the
+   same five passages, randomly interleaved. Without them, "real person or AI?" has no base rate.
+8. **The AI-judge numbers should not appear in §0.4 at all.** The report already says the judge is uncalibrated: it
+   scored the human anchor at 3.3. Its arm ranking still sits next to the shortlist and will be read as support.
+   Drop it.
+
+### R4. Price corrections
+- **Neural HD is not "new since 2026-09-01".** That date is the eastus2 meter's effectiveStartDate. centralindia
+  bills the same **$22/M from 2026-03-01** [V retail API]. Nothing shows that a price changed.
+- **The gpt-4o-mini-tts meter is not in `prices-speech-eastus2.json`**, so the "V" tag had no saved evidence. I
+  verified it live:
+  - Global: $12/M audio-out, $0.60/M text-in.
+  - Data Zone and Regional in eastus2: **$13.20/M** audio-out, $0.66/M text-in.
+  - The 1215 snapshot: same prices.
+  - **There is no gpt-4o-mini-tts meter in centralindia**; southindia has Global only [V].
+  - If children's audio has to stay in-region later, the price is 10% higher and the deployment cannot be in India.
+- **MAI prices can be firmer than [U].** voices/list labels `MAI-Voice-2.1` as VoiceType **NeuralHD** and
+  `MAI-Voice-2.1-Flash` as **Neural** [V]. That supports the $22/M and $15/M assumptions, but it is still not a
+  billing meter. Confirm with one day of Cost Management data, as §5.2 says.
+- The commitment-tier table omits **4000M ($24,000/month, overage $6/M)** [V]. Minor.
+- **"Cost does not decide" is overstated against the lane budget.** The cascade budget is about Rs 28/hour, based on
+  Neural TTS with half the narration pre-rendered (`pricing-unit-econ.md`). Take 15 live TTS minutes per hour at
+  Rs 85/$:
+
+  | voice | cost per hour | vs Rs 28 budget |
+  |---|---|---|
+  | Neural / Flash ($0.0087/min) | about Rs 11 | within budget |
+  | DragonHD ($0.021/min) | about Rs 27 | about +57% |
+
+  Performance should still win, as the owner directs, but the report should state the cost delta against the Rs 28
+  budget and the ~$3.1/child-month revenue, not call it negligible.
+- **$/min is the wrong unit for comparing voices.** Lesson text is fixed, so $/1M characters is the comparable cost.
+  DragonHD looks dearer per minute partly because it speaks faster.
+
+### R5. Licence and production-rule traps
+- **MAI-Voice-2.1 (HD and Flash) and hi-IN Diya DragonLatest are Preview** [V voices/list Status]. Preview
+  supplemental terms mean no SLA, possible changes or withdrawal, and "not for production". 3 of the 6 shortlist
+  entries are Preview. The fallback must be a GA voice tested in the same ear test, for example DragonHD Diya (GA)
+  or an Indic Neural voice.
+- **DragonHDOmni is unlisted** (it resolves, but it is not in voices/list). Do not use it in production at all; this
+  goes beyond "until the tail is re-measured". An undocumented voice name can disappear without notice.
+- **Region availability is [U].** The key is an eastus2 resource. Nothing shows that MAI-Voice-2.1 or DragonHD
+  synthesise in centralindia. If they do not, Indian clients pay the India-US East round trip (~200-250 ms [U]) on
+  every sentence. §5.4 should first verify that the voices exist in centralindia, not assume it.
+- **The Azure-only rule is clean.** Every synthesis and ASR call is Azure-billed. The OpenRouter judge is
+  experiment-only and is never on a product path. The synthetic-voice disclosure terms (Azure TTS transparency note,
+  OpenAI usage policy) match the never-deny-being-an-AI floor.
+
+### R6. Factual corrections
+- **The Arjun `softvoice` error is not a stable 502.** A direct probe today returned **HTTP 400** with an empty body,
+  and the `sad` style returned 200 [M, n=1]. The report says 502 / UND_ERR_SOCKET after retries. The status code is
+  not reliable, so the adapter must validate styles against StyleList before sending, not catch an error code.
+- **The audio budget is nearly used up.** New audio this session totals **58.4 MB** (`v2/samples` 56.6 MB, of which
+  this sweep is 42.3 MB, plus `v2/stt/audio` 1.8 MB) against the 60 MB cap [M]. The equalised-rate and
+  loudness-normalised ear-test renders will not fit unless the non-shortlist arms are pruned. The candidates are the
+  30 DragonHDOmni clips, the 10 Harper/Grant HD clips and the duplicate dhd-plain/lang arms outside the A/B voice. Or
+  the ear-test files go outside the repo.
+
+### R7. Revised shortlist
+Performance first, GA fallback paired with each Preview entry:
+
+| role | voice |
+|---|---|
+| hi-native female | MAI-2.1-Flash Kavya and Priya (Preview), with **en-IN DragonHD Diya** (GA) as fallback |
+| hi-native male | MAI-2.1-Flash Dhruv (Preview), with **en-IN ArjunIndic** or DragonHD Arjun (GA) |
+| OpenAI cascade | gpt-4o-mini-tts marin, **naming the snapshot** (2025-12-15 if it is not already deployed) |
+| native-audio ceiling | **gpt-live-1** and **gpt-realtime-2.1** voices on the same five passages, new arms |
+| human anchor | real Indian teacher recordings of the same five passages |
+
+Ear-test conditions: loudness-normalised, rate-equalised, 2+ takes per cell, sentence-level TTFB.

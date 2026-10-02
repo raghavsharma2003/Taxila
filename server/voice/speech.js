@@ -108,6 +108,8 @@ function memPut(key, pcm) {
  */
 export async function speechStream(text, { voice, instructions, signal, timeoutMs = 15_000 }) {
   const t0 = performance.now();
+  // Already cancelled (a prewarm dropped, a barge-in) while a cache lookup ran: never start the request.
+  if (signal?.aborted) throw new AzureError(`tts_stream ${DEPLOY.tts} aborted`, 0, "aborted");
   const ctl = new AbortController();
   const onAbort = () => ctl.abort();
   signal?.addEventListener("abort", onAbort, { once: true });

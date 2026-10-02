@@ -326,3 +326,131 @@ On performance-first model choice, D4's accuracy lead over every cheaper option 
 ## 5. Proposed `context/` entries
 
 These are in `context/inbox/stt-hinglish-v2.json`, for the main loop to merge.
+
+---
+
+## Review (adversarial, 2026-10-02)
+
+I re-read `stt/stimuli.mjs`, `stt/score.mjs`, `stt/probe.mjs` and the price file, and recomputed from
+`stt/results-2026-10-02.json`. **The D4 default survives.** Several numbers and one recommendation need
+correcting before anyone builds on them.
+
+### R1. Survives: D4's accuracy lead holds when items, not clips, are the unit
+- The 6 clips per item are not independent (2 voices × 3 noise arms of one sentence), so 67-vs-14 overstates n.
+- Per item (n = 30), D4 has lower mean CER than R4 on 16 items and higher on 5. Mean ΔCER = 0.045,
+  bootstrap 95% CI [0.020, 0.074].
+- Against C1, D4 is lower on 14 items and higher on 6. ΔCER = 0.045, CI [0.010, 0.101].
+- Report these item-level figures alongside the clip counts.
+
+### R2. Must fix: the decision recommends a keyword config that was never tested and leaks the answer
+- §4 and `decisions.md#stt-default-live-transcribe-kw` set `keywords` = lesson terms **plus "the item's answer
+  numbers in both scripts"**.
+- The tested D4 list had **no answer numbers.** It had 16 lesson terms plus 6 decoys, and the only number in
+  it was the decoy सत्रह.
+- Putting the correct answer into the recogniser's bias list pushes a child's *wrong* number towards the
+  *right* one. That manufactures correct answers, which the law that a model never grades exists to prevent.
+- Fix: until a test with wrong-answer stimuli shows no pull towards the biased number, keep answer values out
+  of `keywords`. That test: the child says 8, `keywords` contains 7, measure how often the transcript says 7.
+- Amend the decision text accordingly.
+
+### R3. Must fix: the latency comparison is not like for like, and Azure is faster to the final transcript
+- Both engines received identical audio, including the same 600 ms trailing pad.
+- Measured from the last speech sample:
+  - D4 final = **1.32 s** (table §2.1);
+  - Azure real-time final = **0.82–0.88 s**.
+- Azure was about 0.45–0.5 s faster to the final transcript, and about 0.4 s faster to the first partial
+  (1.0 s vs 1.4 s, LID off).
+- The headline phrasing "657 ms after commit vs 820–880 ms after speech end" makes live-transcribe look faster.
+  It is not.
+- Under the performance-first rule, D4 still wins on accuracy. The cost is real, though: about 0.5 s of
+  turn-taking latency. Shrink it by trimming client VAD hangover, and record it as a reversal condition.
+
+### R4. Must fix: the scorer penalises Azure's inverse text normalisation, so some Azure "number misses" are scorer artefacts
+- C1 `d05-G-clean` = "8 7 56।". That is a correct rendering of "आठ सत्ते छप्पन", and it graded
+  `answer: true`. The numSeq miss comes from सत्ते not being in `NUM`.
+  - So the §0/§2.4 claim "19856 or nothing **on all 6 clips**" is wrong: 1 of the 6 clips is correct.
+- C1 `m09` ×3: "0.5 पिज़्ज़ा" for "half pizza" fails numSeq, because "half" is not a number in the reference.
+- R1/R2 `e04` ×6: "सेवन एट्स और 56" fails because Devanagari-transliterated English numerals are not in `NUM`.
+  The skeleton CER forgives this; the number extractor does not.
+- Corrected estimate:
+
+  | arm | report | corrected |
+  |---|---|---|
+  | C1 numbers | 78/96 | ≈ 82/96 |
+  | R1 numbers | 70/96 | ≈ 76/96 |
+
+- D4 still leads at 92/96, so the ranking stands. The gap is smaller.
+- These Azure misses are real errors, not scorer artefacts:
+  - "7/8 are fifty-six";
+  - "पाँच into 315";
+  - सात → साथ.
+- Scorer flaw: the skeleton maps th→t and drops vowels. So the सात/साथ homophone that the report highlights
+  costs **0** cerNorm, and only numSeq catches it.
+
+### R5. The gpt-4o-transcribe rejection is right, but the stated reason rests on a single noise condition
+- Over clean and pink audio only, A3 (gpt-4o-transcribe with `hi` and the script prompt) is **second-best**:
+
+  | arm | CER (clean + pink) | numbers (clean + pink) |
+  |---|---|---|
+  | D4 | 0.026 | 62/64 |
+  | A3 | 0.032 | 54/64 |
+  | C1 | 0.065 | 52/64 |
+  | R4 | 0.068 | 50/64 |
+
+- The overall "0.225" comes almost entirely from the synthetic white-noise arm. §2.2 itself calls that arm a
+  stress probe and not a home model.
+- What actually disqualifies these models is the fabrication of fluent text:
+  - on white noise;
+  - on non-speech when given any prompt.
+- Note that A0 with no prompt produced 0/3 on non-speech.
+- Restate the reason as "fabricates fluent text under broadband noise, and on silence when prompted", not
+  "CER 0.225–0.34".
+
+### R6. Wrong price: real-time with language detection costs more than $1.00/h
+- The price file has `S1 Speech to Text Enhanced Feature Audio = $0.30/h`. Continuous language ID is billed
+  under that enhanced add-on [V, retail API meter; mapping per Azure pricing page].
+- So R4 is **≈ $1.30/h**, not $1.00/h. Correct this in §3 and in `models/stt-routing.md`.
+- Fast Transcription at $0.36/h is confirmed in `prices-speech-eastus2.json`, so it is [V], not "harvested".
+  There is also a $0.10/h promo meter.
+- The $1.02/h for gpt-live-transcribe matches `tech-and-market.md`. E0, however, gave $1.02/h to
+  *gpt-realtime-whisper*. Re-pull the gpt-live-transcribe meter by name before quoting it.
+- The ≈ $0.30 per lesson-hour assumes 25–35% child talk time [U]. VAD hangover and pre-roll inflate the
+  streamed seconds, so budget about 0.4×.
+
+### R7. Methodology limits that the bottom line understates
+1. **Non-speech n = 3 per arm.** "0 hallucination" on 0/3 has a 95% upper bound of about 63%.
+2. **The TV-babble arm was not rerun.** Speech-on-speech is the realistic failure mode, and it broke every
+   engine in E0.
+3. **Stimulus voices.** These are adult TTS voices pitched up, or "told to sound like a child". Both read
+   the reference text verbatim and are perfectly articulated. A real child's speech differs:
+   mispronunciations, slower syllables, higher F0 from vocal-tract length, not pitch shift.
+   - Whether Ananya and Rehaan are child-persona voices is unverified; check the voices list.
+   - Expect absolute CER on real children to be several times higher. Rankings may reorder, and engines
+     trained with more Indian child audio could gain most.
+4. **The keyword list equals the stimulus vocabulary.** All 16 terms occur in the stimuli, so keyRecall for
+   the D4/R2–R4 arms is partly circular. A real per-lesson list will also be closer to the stimuli than a
+   cross-subject list.
+5. **D4 changes two factors at once (keywords + prompt).** There is no keywords-only or prompt-only
+   live-transcribe arm. The claim that a vocabulary-free prompt is safe on live-transcribe therefore rests on
+   n = 3 non-speech clips. Add arms D1 (keywords only) and D2 (prompt only).
+6. **Single region, single pass, US container.** India-to-eastus2 RTT is unmeasured. A Central India
+   deployment would cut Azure Speech RTT; check whether live-transcribe is available there.
+7. **Azure arms were not tuned.** For example, `SegmentationSilenceTimeoutMs` was not tuned, which affects R3's
+   latency conclusion, and C1 was given no phrase list.
+
+### R8. Missing candidates (the Azure-only rule allows open models self-hosted on Azure GPU)
+- These were not considered and should be on the rerun list:
+  - AI4Bharat IndicConformer (MIT; Hindi, child-heavy IndicVoices data);
+  - Whisper large-v3 / v3-turbo (MIT) and Indic fine-tunes;
+  - Meta Omnilingual ASR (Apache-2.0);
+  - Azure **Custom Speech** fine-tuned on E1 child audio (S1 $1.20/h, plus $0.054/h hosting per the price file).
+- **Licence trap:** several Indic training and eval corpora are CC BY-NC (HiACC is already flagged). Any
+  fine-tune must check its data licence, not just the model's.
+- The existing gaps (gpt-transcribe, gpt-realtime-whisper-2, MAI-Transcribe-2) are correctly flagged.
+
+### R9. Azure-only production compliance: passes
+- Every engine is Azure-billed on the Taxila AIServices resource.
+- `probe.mjs` makes no OpenRouter or third-party calls.
+- One note: `taxila-live-transcribe` is a **Global** deployment, so children's audio may be processed outside
+  the region. Compliance is deprioritised, but put this on the DPDP list. A Data Zone or regional deployment
+  is the fix if one becomes needed.

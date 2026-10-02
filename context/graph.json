@@ -1451,6 +1451,62 @@
    "title": "Hindi kits c1-c9: 2,688 items blind-checked, 145 disagreements, 141 fixed; 4 left as low-risk flags (still served)",
    "at": "2026-10-02",
    "source": "inbox/hindi-kits-open-flags.json"
+  },
+  {
+   "id": "learner-fold-arrival-order",
+   "kind": "decision",
+   "title": "One order for the KT cache and the log: unsequenced events fold in ARRIVAL order (stable sort, no id tiebreak) and writer.ledgerStmts inserts kt_evidence in that same foldOrder, so DB seq reproduces the cached fold",
+   "at": "2026-10-02",
+   "source": "inbox/learner-upgrade-fix.json"
+  },
+  {
+   "id": "learner-fold-id-tiebreak-diverged",
+   "kind": "rejection",
+   "title": "Sorting unsequenced events by id as strings in fold() while inserting in arrival order: 'e10' < 'e9', so kt_skill_state ≠ replay of kt_evidence (online pL 0.8999 vs replay 0.8371 on [e9 C4, e10 C0, e11 why-full])",
+   "at": "2026-10-02",
+   "source": "inbox/learner-upgrade-fix.json"
+  },
+  {
+   "id": "learner-delayed-check-session-clock",
+   "kind": "decision",
+   "title": "The 20 h delayed-check delay is measured session start → session start (no intra-session clock, isolation §13.1), not event → event as PRODUCT-DESIGN §6.4.1 says; a check can count ≈19 h after the real anchor event after a 45-min lesson. Only item/solo, near transfer and error-spot are check classes; C1/C2 re-anchor; a recognition item spends the check",
+   "at": "2026-10-02",
+   "source": "inbox/learner-upgrade-fix.json"
+  },
+  {
+   "id": "learner-no-kt-backfill",
+   "kind": "decision",
+   "title": "No backfill of legacy evidence/skill_state into kt_evidence: when the BKT-R ledger is wired every existing child cold-starts (loses learned_today / mastered). Accepted while children are test accounts",
+   "at": "2026-10-02",
+   "source": "inbox/learner-upgrade-fix.json"
+  },
+  {
+   "id": "learner-m0-deletes-every-child-table",
+   "kind": "decision",
+   "title": "Every child_id table is classified in server/learner/mode.js (layer table, M0 history table, or kept with a reason); the M0 ratchet deletes everything not kept, planned from information_schema, refusing while any live child table is unclassified; ratchet and turn writes share the advisory lock and commit re-checks legal_mode in the transaction",
+   "at": "2026-10-02",
+   "source": "inbox/learner-upgrade-fix.json"
+  },
+  {
+   "id": "learner-nm3-legacy-columns",
+   "kind": "open",
+   "title": "OPEN (owner): NM-3 columns that predate the learner model — rel_state.trust/last_trust_update (no longer written), rel_event.note, lesson.parent_note, turn.asr_conf, voice_feature.asr_conf/barge_in, voice_baseline rows — are listed in tests/learner-mode.test.mjs NM3_KNOWN and deleted on M0; drop vs M3-only split is the owner's call",
+   "at": "2026-10-02",
+   "source": "inbox/learner-upgrade-fix.json"
+  },
+  {
+   "id": "learner-evidence-id-guard",
+   "kind": "decision",
+   "title": "kt_evidence insert is ON CONFLICT DO NOTHING plus an in-statement 1/0 guard: same-child re-delivery = explicit no-op (one row, seq null), another child's id aborts the transaction. Replaces the finding's (child_id, id) key to avoid an unsigned production migration",
+   "at": "2026-10-02",
+   "source": "inbox/learner-upgrade-fix.json"
+  },
+  {
+   "id": "learner-fold-cost-2026-10-02",
+   "kind": "measurement",
+   "title": "One online fold() event on a 4,800-event ledger (92 KB): 6.7 ms with a whole-ledger structuredClone → ≈1.8 ms with copy-on-write; the remainder is the flat copy of the complete seen map (spec budget < 1 ms not yet met)",
+   "at": "2026-10-02",
+   "source": "inbox/learner-upgrade-fix.json"
   }
  ],
  "edges": [
@@ -2568,6 +2624,51 @@
    "src": "t4-cannot-serve-3b-codec-tts",
    "rel": "measured_by",
    "dst": "snac-82-tokens-per-audio-second"
+  },
+  {
+   "src": "learner-fold-arrival-order",
+   "rel": "supersedes",
+   "dst": "learner-fold-id-tiebreak-diverged"
+  },
+  {
+   "src": "learner-fold-arrival-order",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-delayed-check-session-clock",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-no-kt-backfill",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-m0-deletes-every-child-table",
+   "rel": "part_of",
+   "dst": "learner-legal-mode-ratchet"
+  },
+  {
+   "src": "learner-nm3-legacy-columns",
+   "rel": "part_of",
+   "dst": "learner-legal-mode-ratchet"
+  },
+  {
+   "src": "learner-nm3-legacy-columns",
+   "rel": "blocks",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "learner-evidence-id-guard",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-fold-cost-2026-10-02",
+   "rel": "measured_by",
+   "dst": "learner-bktr-ledger"
   }
  ]
 }

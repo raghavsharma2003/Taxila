@@ -2,7 +2,7 @@
 // span that CODE checks against the child's transcript (E6). BLIND: the request carries the child's own words and the
 // kit target only — never the teacher's turns, the child's name, confidence or earlier verdicts (EduFrameTrap
 // sycophancy). Schema / parse failure → NA, never wrong. Azure Foundry Direct models only, through server/azure.js.
-import { spanOk } from "./span.js";
+import { spanOk, tokens } from "./span.js";
 import { EXP_LABELS, INST_LABELS, MIS_LABELS_NONE } from "./ops.js";
 
 export const GRADER_VERSION = "closed-label-v1-2026-10-02";
@@ -53,14 +53,28 @@ export function parseReply(text) {
   try { return JSON.parse(s.slice(a, b + 1)); } catch { return null; }
 }
 
-/** Apply the contract to a parsed reply: closed labels, E6 span check on positives. */
-export function finalise(req, parsed, { model, ms }) {
+/**
+ * Echo guard [U] (code, after the grader): a positive span that is ≥ 80% made of words from an echo text (the topic's
+ * title, the question just asked) is the child restating the lesson's name, not giving a reason. It is demoted to
+ * `partial`, which never scores on U (E5) and schedules a follow-up from another family. Echo texts are used by code
+ * only and never sent to the model, so the request stays blind. Found in the LLM-played simulator: the grader
+ * labelled "because we recognise equivalent fractions as the same amount, that's why" as present.
+ */
+export function isEcho(span, echoTexts = []) {
+  const s = tokens(span ?? "");
+  if (s.length < 3) return false;
+  return echoTexts.some((e) => { const bag = new Set(tokens(e)); return s.filter((w) => bag.has(w)).length / s.length >= 0.8; });
+}
+
+/** Apply the contract to a parsed reply: closed labels, E6 span check on positives, the echo guard. */
+export function finalise(req, parsed, { model, ms, echo = [] }) {
   const base = { graderVersion: GRADER_VERSION, model, ms, op: req.op, targetId: req.target.id };
   if (!parsed || typeof parsed.label !== "string" || !req.labels.includes(parsed.label)) return { ...base, label: "NA", span: null, spanOk: false, raw: parsed?.label ?? null };
   const span = typeof parsed.span === "string" && parsed.span.trim() ? parsed.span.trim() : null;
   const ok = span ? spanOk(span, req.childSpan) : false;
   const positive = POSITIVE.has(parsed.label) || (req.op === "R-MIS" && parsed.label !== MIS_LABELS_NONE);
   if (positive && !ok) return { ...base, label: req.op === "R-INST" ? "irrelevant" : req.op === "R-MIS" ? MIS_LABELS_NONE : "absent", span, spanOk: false, demoted: parsed.label };
+  if (req.op === "R-EXP" && parsed.label === "present" && isEcho(span, echo)) return { ...base, label: "partial", span, spanOk: ok, demoted: "present:echo" };
   return { ...base, label: parsed.label, span, spanOk: ok };
 }
 
@@ -68,7 +82,7 @@ export function finalise(req, parsed, { model, ms }) {
  * Grade one request. `send(deployment, messages, opts) → { text }` defaults to server/azure.js chat (loaded lazily so
  * pure tests never touch the network). Tries the primary model, then the fallback; any failure → NA.
  */
-export async function gradeClosed(r, { send, models = [GRADE_MODELS.primary, GRADE_MODELS.fallback], timeoutMs = 15_000 } = {}) {
+export async function gradeClosed(r, { send, models = [GRADE_MODELS.primary, GRADE_MODELS.fallback], timeoutMs = 15_000, echo = [] } = {}) {
   const req = buildRequest(r);
   const msgs = messagesFor(req);
   const go = send ?? (async (d, m, o) => (await import("../../azure.js")).chat(d, m, o));
@@ -76,7 +90,7 @@ export async function gradeClosed(r, { send, models = [GRADE_MODELS.primary, GRA
     const t0 = Date.now();
     try {
       const out = await go(model, msgs, { maxTokens: 300, timeoutMs, retries: 0 });
-      return finalise(req, parseReply(out?.text), { model, ms: Date.now() - t0 });
+      return finalise(req, parseReply(out?.text), { model, ms: Date.now() - t0, echo });
     } catch { /* next model */ }
   }
   return { graderVersion: GRADER_VERSION, model: null, ms: 0, op: req.op, targetId: req.target.id, label: "NA", span: null, spanOk: false };

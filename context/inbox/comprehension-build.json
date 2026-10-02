@@ -1,0 +1,131 @@
+{
+ "nodes": [
+  {
+   "id": "comp-engine-build-2026-10-02",
+   "kind": "component",
+   "title": "server/comprehension (fusion facets U/T over the kt ledger, 5-state ladder, scheduler + test-load budget, weave queue, 36-shape probe library as JSON, code + closed-label grading with span/echo guards, re-teach selector + TS bandit, how-we-know rows, store) + server/persona (signals, bounded VIBE knobs); migration 007_comprehension applied",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "comp-sim-2026-10-02",
+   "kind": "measurement",
+   "title": "Comprehension sim (24 personas x 30 seeds x 6 topics x 5 sessions, code-played, real engine): macro acc 0.650 final (bar 0.70: FAIL), understood found 0.578, median 2 sessions to detect, false mastery 0.017 (shallow 0.001), verbal gap 7.2 pp, 4.37 probes per concept-session, load 2.25/10 turns, 0 over cap; controls fail as required (quiz-bot false mastery 0.593 / shallow 0.822, load 4.30/10)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "comp-sim-ablation-2026-10-02",
+   "kind": "measurement",
+   "title": "Sim ablations (n=4320 child-concepts each): no delayed probes -> understood unreachable (0 of 1426), acc 0.567; no game evidence -> acc 0.648, false mastery 0.022, verbal gap 12.9 pp; no voice features -> acc 0.641, verbal gap 15.5 pp (vs 7.2); freeze-low -> acc 0.646 (no measurable harm, contra the matched-model MC); T threshold 0.7 -> acc 0.634",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "comp-sim-llm-2026-10-02",
+   "kind": "measurement",
+   "title": "LLM-played leg (ds41 child, DeepSeek-V4-Pro closed-label grader, 24 personas x 2 seeds, n=288 child-concepts, 884 graded turns): acc 0.731, understood found 0.798, false mastery 0.015; grader present|U=1 0.88, present|U=0 0.146, present|U=0 fluent-shallow 0.386 -> 0.272 with the echo guard, contradicted|misconception 0.97, 0 span demotions",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "grade-echo-guard",
+   "kind": "decision",
+   "title": "Code echo guard after the closed-label grader: a present span >=80% made of the topic title / the question just asked is demoted to partial (never scores U, schedules a follow-up); echo texts never reach the model",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "mis-saturation-guard",
+   "kind": "decision",
+   "title": "fuse.js drops a misconception hit when that misconception is already p>=0.95 (its K evidence stays): the uncapped misconception logit otherwise needs 10+ discriminating corrects to recover after a successful re-teach",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "ledger-game-full-weight",
+   "kind": "open",
+   "title": "kt ledger temper() ignores via: game/module commits move pL at full weight (spec x0.5 / x0.75); lucky game predictions push guessers over the does-it line (not_yet accuracy 0.62 with games vs 0.75 without, 20-seed sim). Diff in INTEGRATION.md section 5",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "conductor-openers-anchor-due",
+   "kind": "decision",
+   "title": "Session openers must include learned_today skills with no delayed check and >=20 h since the anchor, not only ktView.due(): FSRS first intervals exceed a day, so the next-day delayed check otherwise never runs (sim: 0 callbacks before the fix)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "reteach-without-cooldown",
+   "kind": "rejection",
+   "title": "Re-teach fired on every graded turn while a trigger held: 21-32 re-teaches per misconception-holding child over 5 sessions; a 2-graded-item re-check cooldown is required before the next trigger",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "comp-engine-build-2026-10-02",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "comprehension-facet-belief",
+   "rel": "measured_by",
+   "dst": "comp-sim-2026-10-02"
+  },
+  {
+   "src": "comprehension-probe-budget-scheduler",
+   "rel": "measured_by",
+   "dst": "comp-sim-2026-10-02"
+  },
+  {
+   "src": "comprehension-weave-cross-topic",
+   "rel": "measured_by",
+   "dst": "comp-sim-ablation-2026-10-02"
+  },
+  {
+   "src": "comprehension-voice-zero-weight",
+   "rel": "measured_by",
+   "dst": "comp-sim-ablation-2026-10-02"
+  },
+  {
+   "src": "facet-stop-when-low",
+   "rel": "measured_by",
+   "dst": "comp-sim-ablation-2026-10-02"
+  },
+  {
+   "src": "comprehension-grading-closed-label",
+   "rel": "measured_by",
+   "dst": "comp-sim-llm-2026-10-02"
+  },
+  {
+   "src": "grade-echo-guard",
+   "rel": "caused_by",
+   "dst": "comp-sim-llm-2026-10-02"
+  },
+  {
+   "src": "grade-echo-guard",
+   "rel": "part_of",
+   "dst": "comprehension-grading-closed-label"
+  },
+  {
+   "src": "mis-saturation-guard",
+   "rel": "part_of",
+   "dst": "comprehension-facet-belief"
+  },
+  {
+   "src": "ledger-game-full-weight",
+   "rel": "caused_by",
+   "dst": "comp-sim-ablation-2026-10-02"
+  },
+  {
+   "src": "conductor-openers-anchor-due",
+   "rel": "part_of",
+   "dst": "comprehension-weave-cross-topic"
+  },
+  {
+   "src": "reteach-without-cooldown",
+   "rel": "part_of",
+   "dst": "reteach-randomise-from-second"
+  }
+ ],
+ "md": {
+  "decisions": "## grade-echo-guard\nAfter the closed-label R-EXP verdict, code checks whether a `present` span is at least 80% made of words from an echo text (the topic title, the question just asked). If so the verdict becomes `partial`, which never scores U (E5) and schedules a follow-up from another family. The echo texts are used by code only and never reach the model, so the request stays blind. Cause: in the LLM-played sim the grader labelled \"because we recognise equivalent fractions as the same amount, that's why\" as present. Effect: present given U=0 for fluent-shallow personas fell from 0.386 to 0.272 (about 70 turns per arm, one run each, so this is a direction). **Reverse if** M-GRADE human labels show the guard demotes real explanations on > 5% of true-present turns.\n\n## mis-saturation-guard\n`fuse.js` removes `misconceptionId` from an event when that misconception is already at p ≥ 0.95 before the event. The event's K evidence stays and family verification is still recorded. This is deterministic from the pre-event state, so replay = online. Cause: `misconception.js` adds log 6.9 per hit with no cap, so after a successful re-teach the ladder stayed `not_yet` (verified mix-up) for whole sessions. **Reverse when** the ledger caps misconception log-evidence per session (INTEGRATION.md §5.2).\n\n## conductor-openers-anchor-due\nThe opener set for the session-open delayed checks = `ktView.due()` ∪ {display ≥ learned_today, no delayed flag, ≥ 20 h since anchorAt}. Without the second set the sim ran 0 callbacks: FSRS's first interval after a same-day learn is > 1 day, so the ledger's next-session delayed check never happened. **Reverse if** the ledger's `nextReviewAt` itself becomes min(FSRS, anchor + 20 h) for skills without a delayed pass.",
+  "measurements": "## comp-sim-2026-10-02\n**Comprehension engine simulator, 2026-10-02.** `node evals/comprehension-sim/run.mjs --seeds 30 --llm --llm-seeds 2` → `evals/comprehension-sim/results/comp-sim-2026-10-02.json` (code-played + first LLM leg) and `comp-sim-2026-10-02-llm-echo.json` (LLM leg with the echo guard). Method: 24 personas (personas.mjs) with hidden per-concept truth (K, U, T, keep, misconception) and behaviour (verbal, deference, shyness, guessing, game skill, answer-seeking, learning rates); 6 real kit topics (c5/c6 maths + science) over 5 sessions (days 0, 1, 2, 5, 6), 2-3 topics a session, weave hosting, openers, games, re-teach with truth flips. The REAL engine code runs; the child is a separate generative model, not the engine's emission tables, but its probabilities are author-set, so this gates **mechanics, not efficacy** (SIM6). n = 4,320 child-concepts per code-played policy.\n\n| policy | macro acc final (after 3) | understood found | false mastery (shallow) | verbal gap pp | probes / concept-session | load / 10 turns | over cap |\n|---|---|---|---|---|---|---|---|\n| **engine** | **0.650** (0.567) | 0.578 | **0.017** (0.001) | 7.2 | 4.37 | 2.25 | 0 |\n| no delayed probes | 0.567 (0.515) | 0 | 0 (0) | 29.5 | 3.62 | 2.34 | 0 |\n| no game evidence | 0.648 (0.602) | 0.610 | 0.022 (0.001) | 12.9 | 4.39 | 2.20 | 0 |\n| no voice features | 0.641 (0.571) | 0.580 | 0.021 (0.001) | 15.5 | 4.37 | 2.26 | 0 |\n| T threshold 0.7 (sensitivity only) | 0.634 | 0.565 | 0.016 (0.001) | 13.7 | 4.38 | 2.25 | 0 |\n| freeze-low (rejected control) | 0.646 | 0.595 | 0.020 | 11.4 | 4.35 | 2.25 | 0 |\n| quiz-bot, K-only rule | 0.369 | 0.890 | **0.593 (0.822)** | 0 | 0 | **4.30** | 0.017 |\n| samjha | 0.378 | 0.922 | 0.637 (0.916) | 0 | 0 | 2.55 | lexicon 8,640 hits |\n| lecture | 0.363 | 0 | 0 | 0 | 0 | 2.39 | 0 |\n| why-every-turn | 0.690 | 0 | 0 | 65.4 | n/a | **4.17** | **1.0** |\n| **LLM-played leg, engine** (n=288) | 0.708 → 0.731 with the echo guard | 0.724 → 0.798 | 0.011 → 0.015 | 5.7 | 4.43 | n/a | n/a |\n\nEngine by truth type (final): not_yet 0.723, shallow 0.801, fragile_bound 0.420 (0.308 read not_yet, 0.061 false understood), fragile_forgets 0.728, understood 0.578 (0.184 shallow, 0.238 fragile). Weakest archetypes: deferential understander 0.29 (the sim does not exercise the E9 deference discount), confident misconception 0.33 and correct-for-wrong-reasons 0.36 (both lag after a re-teach fixes the misconception), shy understander 0.48. Median time to detect understanding: 2 sessions of exposure, with 42% never detected within the window. **Bars:** CE-M1 ≥ 0.70 FAILS on the code-played sim (0.650) and passes on the small LLM leg (0.731). CE-M3 ≤ 0.05 / ≤ 0.02 shallow passes. CE-M4 ≤ 10 pp passes (7.2). CE-M5 ≤ cap passes, with 0 lexicon hits and 0 repeats. The controls land on the required side: quiz-bot fails M3 and M5, samjha fails M3 and the lexicon rule, lecture fails M1, why-every-turn fails M5, no-delay never certifies. Caveats: one sim family (bkt2-like bits, no cfrag); no ASR noise; the LLM child cannot convincingly play \"not knowing\" (it leaks the real reason), which flatters the LLM leg.",
+  "rejected": "## reteach-without-cooldown\n**Tried:** the selector called on every graded turn while `reteachTrigger` held. **Broke:** misconception holders received 21-32 re-teaches per child over 5 sessions, each one a teach event, until the session `park` rule stopped it. **Now:** after a re-teach, the next 2 graded items on the skill are the re-check (spec §5.4), and only then can a trigger fire again. The Director diff is in INTEGRATION.md §2.",
+  "open": "## ledger-game-full-weight\n`server/learner/kt/bktr.js temper()` has no source weight, so game and Forge-module commits move pL at full LR. The spec (§1.1) says ×0.5 game and ×0.75 module, and `facets.js` already applies that to U and T. In the 20-seed sim, not_yet accuracy was 0.62 with game evidence and 0.75 without, because lucky game predictions carry guessers over pL 0.6. The one-line diff is in INTEGRATION.md §5.1. The learner workstream owns the file."
+ }
+}

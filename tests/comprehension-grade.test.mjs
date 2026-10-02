@@ -157,3 +157,13 @@ test("parent card: evidence rows only; banned lexicon throws; no state names or 
   assert.ok(parentLexiconHit("She is a bit weak in fractions"));
   assert.ok(parentLexiconHit("thoda kamzor hai"));
 });
+
+test("echo guard: a positive span that only restates the topic title is demoted to partial (code, request stays blind)", async () => {
+  const { gradeClosed: g, isEcho } = await import("../server/comprehension/grade/closed.js");
+  const title = "Recognise equivalent fractions as the same amount";
+  assert.ok(isEcho("we recognise equivalent fractions as the same amount", [title]));
+  assert.ok(!isEcho("both pieces have to come from the same roti", [title]));
+  const req = { op: "R-EXP", childSpan: "Because we recognise equivalent fractions as the same amount, that's why", target: { id: "e", textEn: "Equivalent fractions name the same part of a whole" } };
+  const res = await g(req, { send: async () => ({ text: '{"label":"present","span":"we recognise equivalent fractions as the same amount"}' }), models: ["m"], echo: [title] });
+  assert.equal(res.label, "partial");
+});

@@ -1,7 +1,7 @@
 // The learner ledger: one deterministic fold of evidence events into KT skill states, misconception
-// states and θ epochs (LEARNER-MODEL §6.1-§6.3.1, §7). Pure: no clock, no randomness, no I/O. Events are
-// ordered by the server-assigned seq and de-duplicated by id, so replay = online fold under any arrival
-// order or re-delivery (§5 "Ordering and concurrency"; TP1-TP2).
+// states and θ epochs (LEARNER-MODEL §6.1-§6.3.1, §7). Pure: no clock, no randomness, no I/O. Sequenced
+// events are ordered by the server-assigned seq and de-duplicated by id, so a replay is the same under any
+// arrival order or re-delivery (§5 "Ordering and concurrency"; TP1-TP2); unsequenced ones, see below.
 //
 // The order inside one event (§6.3.1c): dedupe → open the subject's epoch for this session (lazily) →
 // materialise priors from θ_BASE for skills with no state → KT update (the only path into pL) →

@@ -105,7 +105,7 @@ if (LLM) {
   const { chat } = await import("../../server/azure.js");
   const quiet = console.info; console.info = () => {};
   const llm = { chat, send: chat, childModel: process.env.SIM_CHILD_MODEL || "taxila-ds41", gradeModels: [process.env.DEPLOY_GRADE || "DeepSeek-V4-Pro", "taxila-ds41"],
-    calls: { child: 0, childFail: 0, grade: 0 }, log: [] };
+    calls: { child: 0, childFail: 0, grade: 0 }, log: [], echo: !opt("--no-echo", false) };
   const jobs = PERSONAS.flatMap((P) => Array.from({ length: LLM_SEEDS }, (_, s) => ({ P, s })));
   const runs = await pool(jobs, 12, ({ P, s }) => runChild({ persona: P, seed: 1000 + s, policy: "engine", llm }));
   console.info = quiet;
@@ -116,9 +116,10 @@ if (LLM) {
     why_present_given_U1: pos(g.filter((x) => x.truthU === 1)), why_present_given_U0: pos(g.filter((x) => x.truthU === 0)),
     why_present_given_U0_fluent: pos(g.filter((x) => x.truthU === 0 && ["p05", "p06", "p18"].includes(x.persona))),
     why_contradicted_given_mis: r3(mean(g.filter((x) => x.truthMis === 1).map((x) => +(x.label === "contradicted")))),
-    span_demotions: llm.log.filter((x) => x.demoted).length, n_why: g.length, n_all: llm.log.length,
+    span_demotions: llm.log.filter((x) => x.demoted && x.demoted !== "present:echo").length, echo_demotions: llm.log.filter((x) => x.demoted === "present:echo").length,
+    n_why: g.length, n_all: llm.log.length,
   };
-  result.llm_leg = { childModel: llm.childModel, gradeModels: llm.gradeModels, seeds: LLM_SEEDS, calls: llm.calls, metrics: m, grader_vs_hidden_truth: gradeVsTruth,
+  result.llm_leg = { echoGuard: llm.echo, childModel: llm.childModel, gradeModels: llm.gradeModels, seeds: LLM_SEEDS, calls: llm.calls, metrics: m, grader_vs_hidden_truth: gradeVsTruth,
     samples: llm.log.filter((_, i) => i % 25 === 0).slice(0, 24).map((x) => ({ persona: x.persona, truthU: x.truthU, op: x.op, words: x.words, label: x.label })) };
   console.log(`llm-engine      acc ${m.CE_M1_macro_acc_final} · understood found ${m.CE_M2_understood_detected_final} · false-mastery ${m.CE_M3_false_mastery} (shallow ${m.CE_M3_false_mastery_shallow}) · probes/cs ${m.probes_per_concept_session}`);
   console.log("grader vs hidden truth:", JSON.stringify(gradeVsTruth), "calls", JSON.stringify(llm.calls));

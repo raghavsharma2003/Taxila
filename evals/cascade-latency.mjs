@@ -239,11 +239,12 @@ async function firstByte(lessonId, seq) {
 }
 
 const rows = [];
-let child, lessonId;
+let child, lessonId, password;
 const stored = [];
 try {
   const st = Date.now();
-  await api("POST", "/api/auth/signup", { email: `lat+${st}@taxila.test`, password: `lat-pw-${st}`, name: "Latency", isGuardianAdult: true });
+  password = `lat-pw-${st}`;
+  await api("POST", "/api/auth/signup", { email: `lat+${st}@taxila.test`, password, name: "Latency", isGuardianAdult: true });
   ({ child } = await api("POST", "/api/children", { firstName: "Aarav", classLevel: CLASS, languagePref: "hinglish", interests: ["cricket"] }));
   await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
   const s = await api("POST", "/api/lesson/start", { childId: child.id, mode: "cascade" });
@@ -282,7 +283,7 @@ try {
       speculation: r.debug?.speculation ? (r.debug.speculation.hit ? "hit" : "miss") : "none", specDiffers: r.debug?.speculation?.differs,
       flags: r.debug?.classification?.flags ? Object.entries(r.debug.classification.flags).filter(([, v]) => v === true).map(([k]) => k).join(",") : "", cls: r.debug?.classification ? `${r.debug.classification.outcome}/${r.debug.classification.source}` : null,
       ttsServerFirst: tts.serverFirstMs, ttsServerSetup: tts.serverSetupMs, segments: heard.segments, sentences: tts.sentences, cache: tts.cache, replyAudioMs: tts.audioMs,
-      guard: r.debug?.guard ? [...r.debug.guard.caught, ...(r.debug.guard.rewritten ? ["rewritten"] : []), ...(r.debug.guard.afterRewrite?.length ? [`after:${r.debug.guard.afterRewrite}`] : []), ...(r.debug.guard.replaced ? ["replaced"] : [])].join(",") : null,
+      guard: r.debug?.guard ? [...r.debug.guard.caught, ...(r.debug.guard.rewritten ? ["rewritten"] : []), ...(r.debug.guard.afterRewrite?.length ? [`after:${r.debug.guard.afterRewrite}`] : []), ...(r.debug.guard.replaced ? ["replaced"] : []), ...(r.debug.guard.repaired ? ["repaired"] : [])].join(",") : null,
       ttsPrewarmedMs: tts.prewarmedMs,
       directorServer: r.debug?.ms, directorTimings: r.debug?.timings?.map((t) => `${t.kind}:${t.ms}`).join(" "),
     };
@@ -296,7 +297,7 @@ try {
   const { q } = await import("../server/db.js");
   stored.push(...await q("select seq, asr_conf, meta from turn where lesson_id = $1 and speaker = 'child' order by seq", [lessonId]));
 } finally {
-  if (child) await api("DELETE", "/api/children", { childId: child.id }).catch((e) => console.log(`could not delete the test child: ${e.message}`));
+  if (child) await api("DELETE", "/api/children", { childId: child.id, password }).catch((e) => console.log(`could not delete the test child: ${e.message}`));
   server.close();
   fs.rmSync(WD, { recursive: true, force: true });
 }

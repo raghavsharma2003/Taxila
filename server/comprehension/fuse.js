@@ -2,7 +2,7 @@
 // (server/learner/kt/ledger.js, unchanged: K, D, M and θ) and then through facets.js (U, T) with the PRE-event
 // retrievability, in the same seq order and with the same de-duplication, so replay always equals the online fold
 // (TP1-TP2 extended to `comp`). Pure: no clock, no randomness, no I/O.
-import { fold as ktFold, newLedger, canonical, ledgerDigest } from "../learner/kt/ledger.js";
+import { fold as ktFold, foldOrder, newLedger, canonical, ledgerDigest } from "../learner/kt/ledger.js";
 import { retrievability, daysBetween } from "../learner/kt/fsrs.js";
 import { applyFacetEvent, applyFacetTeach, facetDrop, facetsOfClass, newFacet } from "./facets.js";
 import { COMP_PARAMS_VERSION, FACET } from "./params.js";
@@ -30,7 +30,6 @@ export const newComp = () => ({ v: 1, paramsVersion: COMP_PARAMS_VERSION, skills
 /** A fresh joint state (ledger + comprehension). */
 export const newLearnerState = ({ childId, classLevel }) => ({ ledger: newLedger({ childId, classLevel }), comp: newComp() });
 
-const order = (a, b) => (a.seq ?? Infinity) - (b.seq ?? Infinity) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 const MOVE_EPS = 0.02;
 
 /**
@@ -43,7 +42,7 @@ const MOVE_EPS = 0.02;
 export function fuseEvidence(state, events, ctx = {}) {
   let ledger = state.ledger;
   const comp = structuredClone(state.comp);
-  for (let ev of [...events].sort(order)) {
+  for (let ev of foldOrder(events)) {                      // the ledger's own order (seq; unsequenced in arrival order)
     if (ledger.seen[ev.id] !== undefined || comp.seen[ev.id]) continue;
     const pre = ledger;
     const startAt = pre.session?.sessionId === ev.sessionId ? pre.session.startAt : new Date(ev.sessionStartAt ?? ev.at).toISOString();

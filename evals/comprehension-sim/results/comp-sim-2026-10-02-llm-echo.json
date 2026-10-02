@@ -1,0 +1,513 @@
+{
+ "date": "2026-10-02",
+ "seeds": 1,
+ "personas": 24,
+ "concepts": 6,
+ "sessions": 5,
+ "method": "code-played children from hidden truth bits + behaviour params (personas.mjs), separate generative model from the engine's emission tables; real engine code; author-set response probabilities => gates mechanics, not efficacy",
+ "policies": {
+  "engine": {
+   "n_child_concepts": 144,
+   "CE_M1_macro_acc_final": 0.652,
+   "CE_M1_macro_acc_after3": 0.525,
+   "CE_M2_understood_detected_final": 0.592,
+   "CE_M2_median_sessions_to_detect_understood": 2,
+   "CE_M2_understood_never_detected": 0.408,
+   "CE_M3_false_mastery": 0.042,
+   "CE_M3_false_mastery_shallow": 0.024,
+   "CE_M4_missed_understanding_verbal_gap_pp": -13.288,
+   "probes_per_concept_session": 4.316,
+   "CE_M5_load_per10_mean": 2.257,
+   "CE_M5_session_weight_over_cap": 0,
+   "CE_M5_lexicon_hits": 0,
+   "CE_M5_repeat_questions": 0,
+   "reteaches_per_child": 9.667,
+   "woven_per_child": 2,
+   "callbacks_per_child": 5.667,
+   "by_type": {
+    "not_yet": {
+     "n": 16,
+     "acc_final": 0.875,
+     "acc_after3": 0.563,
+     "dist_final": {
+      "not_yet": 0.875,
+      "shallow": 0.125
+     }
+    },
+    "shallow": {
+     "n": 41,
+     "acc_final": 0.659,
+     "acc_after3": 0.732,
+     "dist_final": {
+      "not_yet": 0.341,
+      "shallow": 0.585,
+      "fragile": 0.049,
+      "understood": 0.024
+     }
+    },
+    "fragile_bound": {
+     "n": 25,
+     "acc_final": 0.44,
+     "acc_after3": 0.36,
+     "dist_final": {
+      "not_yet": 0.16,
+      "shallow": 0.32,
+      "fragile": 0.44,
+      "understood": 0.08
+     }
+    },
+    "fragile_forgets": {
+     "n": 13,
+     "acc_final": 0.692,
+     "acc_after3": 0.462,
+     "dist_final": {
+      "shallow": 0.231,
+      "fragile": 0.692,
+      "understood": 0.077
+     }
+    },
+    "understood": {
+     "n": 49,
+     "acc_final": 0.592,
+     "acc_after3": 0.51,
+     "dist_final": {
+      "shallow": 0.184,
+      "fragile": 0.224,
+      "understood": 0.592
+     }
+    }
+   },
+   "by_archetype": {
+    "understander": {
+     "acc_final": 0.833,
+     "false_mastery": null,
+     "certified": 0.833
+    },
+    "correct_wrong_reasons": {
+     "acc_final": 0.417,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "fluent_shallow": {
+     "acc_final": 0.5,
+     "false_mastery": 0.1,
+     "certified": 0.083
+    },
+    "shy_understands": {
+     "acc_final": 0.75,
+     "false_mastery": null,
+     "certified": 0.75
+    },
+    "guesser": {
+     "acc_final": 0.667,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "not_yet": {
+     "acc_final": 0.833,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "slow_learner": {
+     "acc_final": 0.333,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "forgetter": {
+     "acc_final": 0.75,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "bound_instance": {
+     "acc_final": 0.667,
+     "false_mastery": 0.25,
+     "certified": 0.333
+    },
+    "deferential_understander": {
+     "acc_final": 0.167,
+     "false_mastery": null,
+     "certified": 0.167
+    },
+    "confident_misconception": {
+     "acc_final": 0.5,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "gamer": {
+     "acc_final": 1,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "answer_seeker": {
+     "acc_final": 0.833,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "mixed": {
+     "acc_final": 0.583,
+     "false_mastery": 0.167,
+     "certified": 0.333
+    },
+    "late_bloomer": {
+     "acc_final": 0.333,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "hindi_medium_understander": {
+     "acc_final": 0.667,
+     "false_mastery": null,
+     "certified": 0.667
+    }
+   }
+  }
+ },
+ "llm_leg": {
+  "echoGuard": true,
+  "childModel": "taxila-ds41",
+  "gradeModels": [
+   "DeepSeek-V4-Pro",
+   "taxila-ds41"
+  ],
+  "seeds": 2,
+  "calls": {
+   "child": 884,
+   "childFail": 0,
+   "grade": 884
+  },
+  "metrics": {
+   "n_child_concepts": 288,
+   "CE_M1_macro_acc_final": 0.731,
+   "CE_M1_macro_acc_after3": 0.643,
+   "CE_M2_understood_detected_final": 0.798,
+   "CE_M2_median_sessions_to_detect_understood": 2,
+   "CE_M2_understood_never_detected": 0.202,
+   "CE_M3_false_mastery": 0.015,
+   "CE_M3_false_mastery_shallow": 0,
+   "CE_M4_missed_understanding_verbal_gap_pp": 1.19,
+   "probes_per_concept_session": 4.384,
+   "CE_M5_load_per10_mean": 2.243,
+   "CE_M5_session_weight_over_cap": 0,
+   "CE_M5_lexicon_hits": 0,
+   "CE_M5_repeat_questions": 0,
+   "reteaches_per_child": 10.604,
+   "woven_per_child": 2.25,
+   "callbacks_per_child": 6.208,
+   "by_type": {
+    "not_yet": {
+     "n": 27,
+     "acc_final": 0.778,
+     "acc_after3": 0.481,
+     "dist_final": {
+      "not_yet": 0.778,
+      "shallow": 0.185,
+      "fragile": 0.037
+     }
+    },
+    "shallow": {
+     "n": 101,
+     "acc_final": 0.743,
+     "acc_after3": 0.802,
+     "dist_final": {
+      "not_yet": 0.178,
+      "shallow": 0.723,
+      "fragile": 0.099
+     }
+    },
+    "fragile_bound": {
+     "n": 40,
+     "acc_final": 0.45,
+     "acc_after3": 0.5,
+     "dist_final": {
+      "not_yet": 0.3,
+      "shallow": 0.2,
+      "fragile": 0.45,
+      "understood": 0.05
+     }
+    },
+    "fragile_forgets": {
+     "n": 26,
+     "acc_final": 0.885,
+     "acc_after3": 0.731,
+     "dist_final": {
+      "shallow": 0.077,
+      "fragile": 0.885,
+      "understood": 0.038
+     }
+    },
+    "understood": {
+     "n": 94,
+     "acc_final": 0.798,
+     "acc_after3": 0.702,
+     "dist_final": {
+      "shallow": 0.074,
+      "fragile": 0.128,
+      "understood": 0.798
+     }
+    }
+   },
+   "by_archetype": {
+    "understander": {
+     "acc_final": 1,
+     "false_mastery": null,
+     "certified": 1
+    },
+    "correct_wrong_reasons": {
+     "acc_final": 0.333,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "fluent_shallow": {
+     "acc_final": 0.625,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "shy_understands": {
+     "acc_final": 0.75,
+     "false_mastery": null,
+     "certified": 0.75
+    },
+    "guesser": {
+     "acc_final": 0.708,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "not_yet": {
+     "acc_final": 0.75,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "slow_learner": {
+     "acc_final": 0.667,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "forgetter": {
+     "acc_final": 0.875,
+     "false_mastery": 0.042,
+     "certified": 0.042
+    },
+    "bound_instance": {
+     "acc_final": 0.708,
+     "false_mastery": 0,
+     "certified": 0.083
+    },
+    "deferential_understander": {
+     "acc_final": 0.667,
+     "false_mastery": null,
+     "certified": 0.667
+    },
+    "confident_misconception": {
+     "acc_final": 0.333,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "gamer": {
+     "acc_final": 0.833,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "answer_seeker": {
+     "acc_final": 1,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "mixed": {
+     "acc_final": 0.958,
+     "false_mastery": 0.083,
+     "certified": 0.542
+    },
+    "late_bloomer": {
+     "acc_final": 0.583,
+     "false_mastery": 0.091,
+     "certified": 0.083
+    },
+    "hindi_medium_understander": {
+     "acc_final": 0.917,
+     "false_mastery": null,
+     "certified": 0.917
+    }
+   }
+  },
+  "grader_vs_hidden_truth": {
+   "why_present_given_U1": 0.88,
+   "why_present_given_U0": 0.146,
+   "why_present_given_U0_fluent": 0.272,
+   "why_contradicted_given_mis": 0.971,
+   "span_demotions": 0,
+   "echo_demotions": 12,
+   "n_why": 882,
+   "n_all": 884
+  },
+  "samples": [
+   {
+    "persona": "p01",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Because each place is ten times the one on its right. Ten ones make ten, ten tens make hundred, and so on till lakhs.",
+    "label": "present"
+   },
+   {
+    "persona": "p03",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Because bigger number is always bigger, so one by eight is bigger than one by four.",
+    "label": "contradicted"
+   },
+   {
+    "persona": "p06",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Because we find area by counting the unit squares, that's why! Pehle grid, phir count, phir answer — bas isi tarah kaam karta hai.",
+    "label": "present"
+   },
+   {
+    "persona": "p04",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Dekho, jo bhi odd number hai na, wo prime hota hai. Even wale composite. Simple hai!",
+    "label": "contradicted"
+   },
+   {
+    "persona": "p05",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Because equivalent fractions are the same amount, ma'am. Like half and two-fourths, they show the same thing, so we recognise equivalent fractions as the same amount.",
+    "label": "partial"
+   },
+   {
+    "persona": "p04",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Dekho, magnet sab metals ko kheench leta hai, gold, copper, aluminium—sabko! Yeh trick mereko perfect aata hai.",
+    "label": "contradicted"
+   },
+   {
+    "persona": "p06",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Dekho, pehle 5-digit number likhte hain, phir 6-digit. Read and write 5- aur 6-digit numbers, bas isliye ki hume numbers padhna likhna aata hai.",
+    "label": "absent"
+   },
+   {
+    "persona": "p02",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Arey dekho, area matlab kitni jagah shape ne cover ki. Jaise floor pe kitne tiles fit honge, waise hi unit squares gin lo, bas!",
+    "label": "present"
+   },
+   {
+    "persona": "p05",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "It is like that because we test objects with a magnet and record attracted or not attracted, and that is how we know.",
+    "label": "absent"
+   },
+   {
+    "persona": "p03",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "I don't know, I just know 7 is prime because it comes in the prime numbers only.",
+    "label": "absent"
+   },
+   {
+    "persona": "p10",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Pata nahi, bas aisa hi hai.",
+    "label": "absent"
+   },
+   {
+    "persona": "p11",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Pata nahi, ma'am. I just know it is like that only.",
+    "label": "absent"
+   },
+   {
+    "persona": "p09",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "I just know it, ma'am.",
+    "label": "absent"
+   },
+   {
+    "persona": "p09",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "I just know it, didi.",
+    "label": "absent"
+   },
+   {
+    "persona": "p11",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Pata nahi, ma'am. I just know some things stick and some don't. I don't know why.",
+    "label": "absent"
+   },
+   {
+    "persona": "p10",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Pata nahi, bas aisa hi hai.",
+    "label": "absent"
+   },
+   {
+    "persona": "p08",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Same whole hona chahiye...",
+    "label": "present"
+   },
+   {
+    "persona": "p13",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Because... the square fits inside and we count how many fit. Like tiles on the floor, ma'am.",
+    "label": "present"
+   },
+   {
+    "persona": "p15",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Because the ones become tens, and the tens become hundreds, so every place is ten times bigger than the one on its right.",
+    "label": "present"
+   },
+   {
+    "persona": "p14",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Matlab area matlab kitna jagah ghairi hai, jaise square tiles se ginti karte hain.",
+    "label": "present"
+   },
+   {
+    "persona": "p13",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Because magnets only like iron things, like nails and clips. Plastic and wood don't stick.",
+    "label": "present"
+   },
+   {
+    "persona": "p14",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Dekho, jaise ek pizza ko aadha khaaya, ya do chhote pieces khaaye jo milke aadha bane... same hi hai na?",
+    "label": "present"
+   },
+   {
+    "persona": "p14",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Arre didi, dekho na — har jagah apne right wali se dus guna badi hai. Ones, tens, hundreds... toh lakhs tak pahunch jaate hain!",
+    "label": "present"
+   },
+   {
+    "persona": "p15",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Because the magnet has some pulling power inside it, and it only pulls things like iron.",
+    "label": "present"
+   }
+  ]
+ },
+ "ms": 238583
+}

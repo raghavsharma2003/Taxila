@@ -168,6 +168,17 @@ function fallbackReply(state, item) {
   return lines[kind] ?? lines.other;
 }
 
+/** The draft up to (not including) its first question, then the item's own question. Exported for tests. */
+export function repairDrift(draft, item, lang) {
+  const sentences = String(draft).match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const lead = [];
+  for (const x of sentences) {
+    if (/[?？]/.test(x)) break;
+    lead.push(x);
+  }
+  return `${lead.join("").trim()} ${promptFor(item, lang)}`.trim();
+}
+
 /** Sentences of `text` that do not state `item`'s key (what is left of a teaching turn after a leak survived). */
 const withoutLeaks = (text, item) => (String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !revealsAnswer(x, item)).join("").trim();
 
@@ -213,6 +224,19 @@ async function textReply({ instructions, state, kit, childText, trace, history =
   }
   let found = problems(reply);
   const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}) };
+  // Drift (a posing turn that asked some other question) is repaired without a model call when it is the
+  // only problem besides the hand-back the posed question supplies: what the draft said BEFORE its first
+  // question (the acknowledgement), then the verified question itself — what the rewrite produced in 9/9
+  // measured drift rewrites (5 the question alone, 4 acknowledgement + question; evals/cascade-latency.mjs,
+  // 2026-10-02), at ~1 s less. Every guard runs again on the result; anything left goes to the rewrite.
+  if (found.includes("drift") && found.every((p) => p === "drift" || p === "flat")) {
+    const repaired = repairDrift(reply, item, lang);
+    if (!problems(repaired).length) {
+      reply = repaired;
+      found = [];
+      guard.repaired = true;
+    }
+  }
   if (found.length) {
     const why = [found.includes("leak") && (ahead
       ? "it states the answer to the practice question that comes next — explain with different numbers or a different example, and do not answer that question"

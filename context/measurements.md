@@ -478,3 +478,8 @@ arXiv 2604.21481: 5,357 sentences, 10 Indian languages, 120k+ pairwise compariso
 <!-- merged from inbox/hindi-kits-open-flags.json -->
 ## hindi-kits-open-flags (2026-10-02)
 n=2,688 items across c1-c9 Hindi (workflow wf_bc812b62-cb1, blind solve then fix). Disagreements per class: c1 3, c2 1, c3 13, c4 59, c5 12, c6 9, c7 15, c8 5, c9 28; all fixed except c7 1, c9 3. The unfixed ones are NOT disputed keys (verified.agrees is true, so the loader serves them): loose acceptable answers (c5 गाय for बछिया, दर for द्वार), d1 recall hints that nearly give the answer (c8), an interviewer name unverifiable against the 2026-27 गंगा text (c9-hindi-ch04-t01-i01), and gloss drift between prompt_hi and prompt_en (c9 ch01 i10/i13). Correction: commit cee90ee says these items are dropped; they are not. Next: human check against the books.
+
+
+<!-- merged from inbox/learner-upgrade-fix.json -->
+## learner-fold-cost-2026-10-02
+**fold() cost per online event, 2026-10-02, scratchpad microbenchmark (n = 500 folds after 200 warm-up) on a generated 4,800-event ledger (makeLog seed 41, 120 sessions, 92 KB JSON).** Whole-ledger structuredClone (before): 6.7 ms (reviewer's figure on a 4,378-event ledger). Copy-on-write of touched skills/epochs/session (after): 1.8 ms, of which 1.6 ms is the flat copy of `seen` (4,800 keys; Map clone would be 0.5 ms). Pruning `seen` to the open session gave 0.13 ms but broke TP1 re-delivery dedupe and comprehension/fuse.js, so it was not kept. Regression guard: tests/learner-order.test.mjs (< 4 ms).

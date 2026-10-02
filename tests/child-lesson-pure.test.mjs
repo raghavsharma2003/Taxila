@@ -201,8 +201,10 @@ test("UiBridge: the pause hold delays teacher speech until released, and an abor
   const b = new UiBridge();
   const realFetch = globalThis.fetch;
   let fetched = 0;
-  globalThis.fetch = async () => {
-    fetched++;
+  // Count only this test's speech requests: under full-suite load a link built by an earlier test can
+  // still fire its own fetch inside the 10 ms held window (seen as fetched=1 at the first assert).
+  globalThis.fetch = async (url, init) => {
+    if (String(url) === "/api/tts" && JSON.parse(init?.body ?? "{}").lessonId === "L1") fetched++;
     return new Response(new Blob([new Uint8Array(10)]), { status: 200 });
   };
   try {

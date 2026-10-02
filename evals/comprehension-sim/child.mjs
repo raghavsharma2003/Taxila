@@ -101,7 +101,7 @@ export async function probeAnswer(P, t, c, shape, r, llm, { game = false } = {})
     const labels = [];
     for (const [i, e] of exps.entries()) {
       const g = await gradeClosed({ op: "R-EXP", childSpan: words, target: { id: `${c.topicId}:e${i}`, textEn: e }, lang: P.lang === "en" ? "en" : "hi-Latn+en" },
-        { send: llm.send, models: llm.gradeModels });
+        { send: llm.send, models: llm.gradeModels, echo: llm.echo === false ? [] : [c.title, PROMPT[cls] ?? ""] });
       llm.calls.grade++; llm.log.push({ persona: P.id, truthU: t.U, truthMis: t.mis, op, cls, words, label: g.label, spanOk: g.spanOk, demoted: g.demoted ?? null });
       labels.push(g.label);
     }

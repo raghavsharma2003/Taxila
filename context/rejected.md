@@ -281,3 +281,6 @@ Tried Azure Speech real-time PhraseListGrammar (22 terms) on hi-IN. Broke: ident
 <!-- merged from inbox/voice-v2-reference-judge.json -->
 ## gpt-audio-not-a-judge
 Tried openai/gpt-audio as an audio judge of Indian-voice nativeness. Broke: gave an American-accent negative control 5.0 native_indian with 0% leak, rated 89% of TTS naturalness 5 and 95% 'human'. Uninformative. See docs/research/models/audio-judge-models.md.
+
+## learner-fold-id-tiebreak-diverged
+**Tried:** the online learner fold sorted not-yet-sequenced evidence events by id as strings, while `ledgerStmts` inserted them into kt_evidence in arrival order. **Broke:** 'e10' sorts before 'e9', so the cached kt_skill_state differed from a replay of kt_evidence: online pL 0.8999 vs replay 0.8371 on [e9 correct, e10 incorrect, e11 why-full]. That breaks the event-sourcing claim. Found by the wave-2 learner review on 2026-10-02; fixed by folding in arrival order with a stable sort on seq and no id tiebreak (see decisions.md, the foldOrder entry). Regression test: tests/learner-order.test.mjs.

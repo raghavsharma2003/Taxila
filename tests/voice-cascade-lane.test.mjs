@@ -64,7 +64,7 @@ test("a cascade lesson compiles text-lane instructions (the Director writes the 
 });
 
 const planCtx = (s) => ({
-  kit: K, child: { id: "child-1" }, lesson: { id: "lesson-1", started_at: new Date(0) }, activeItem: findItem(s, K, s.activeItemId),
+  kit: K, child: { id: "child-1", legal_mode: "M1" }, lesson: { id: "lesson-1", started_at: new Date(0) }, activeItem: findItem(s, K, s.activeItemId),
   moduleOnly: false, moduleEvents: [], answer: "teen chauthai", leaked: false, loadSkills: async () => ({}), now: 200_000,
 });
 

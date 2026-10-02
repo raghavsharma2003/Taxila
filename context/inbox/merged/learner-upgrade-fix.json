@@ -1,0 +1,103 @@
+{
+ "nodes": [
+  {
+   "id": "learner-fold-arrival-order",
+   "kind": "decision",
+   "title": "One order for the KT cache and the log: unsequenced events fold in ARRIVAL order (stable sort, no id tiebreak) and writer.ledgerStmts inserts kt_evidence in that same foldOrder, so DB seq reproduces the cached fold",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-fold-id-tiebreak-diverged",
+   "kind": "rejection",
+   "title": "Sorting unsequenced events by id as strings in fold() while inserting in arrival order: 'e10' < 'e9', so kt_skill_state ≠ replay of kt_evidence (online pL 0.8999 vs replay 0.8371 on [e9 C4, e10 C0, e11 why-full])",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-delayed-check-session-clock",
+   "kind": "decision",
+   "title": "The 20 h delayed-check delay is measured session start → session start (no intra-session clock, isolation §13.1), not event → event as PRODUCT-DESIGN §6.4.1 says; a check can count ≈19 h after the real anchor event after a 45-min lesson. Only item/solo, near transfer and error-spot are check classes; C1/C2 re-anchor; a recognition item spends the check",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-no-kt-backfill",
+   "kind": "decision",
+   "title": "No backfill of legacy evidence/skill_state into kt_evidence: when the BKT-R ledger is wired every existing child cold-starts (loses learned_today / mastered). Accepted while children are test accounts",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-m0-deletes-every-child-table",
+   "kind": "decision",
+   "title": "Every child_id table is classified in server/learner/mode.js (layer table, M0 history table, or kept with a reason); the M0 ratchet deletes everything not kept, planned from information_schema, refusing while any live child table is unclassified; ratchet and turn writes share the advisory lock and commit re-checks legal_mode in the transaction",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-nm3-legacy-columns",
+   "kind": "open",
+   "title": "OPEN (owner): NM-3 columns that predate the learner model — rel_state.trust/last_trust_update (no longer written), rel_event.note, lesson.parent_note, turn.asr_conf, voice_feature.asr_conf/barge_in, voice_baseline rows — are listed in tests/learner-mode.test.mjs NM3_KNOWN and deleted on M0; drop vs M3-only split is the owner's call",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-evidence-id-guard",
+   "kind": "decision",
+   "title": "kt_evidence insert is ON CONFLICT DO NOTHING plus an in-statement 1/0 guard: same-child re-delivery = explicit no-op (one row, seq null), another child's id aborts the transaction. Replaces the finding's (child_id, id) key to avoid an unsigned production migration",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "learner-fold-cost-2026-10-02",
+   "kind": "measurement",
+   "title": "One online fold() event on a 4,800-event ledger (92 KB): 6.7 ms with a whole-ledger structuredClone → ≈1.8 ms with copy-on-write; the remainder is the flat copy of the complete seen map (spec budget < 1 ms not yet met)",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "learner-fold-arrival-order",
+   "rel": "supersedes",
+   "dst": "learner-fold-id-tiebreak-diverged"
+  },
+  {
+   "src": "learner-fold-arrival-order",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-delayed-check-session-clock",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-no-kt-backfill",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-m0-deletes-every-child-table",
+   "rel": "part_of",
+   "dst": "learner-legal-mode-ratchet"
+  },
+  {
+   "src": "learner-nm3-legacy-columns",
+   "rel": "part_of",
+   "dst": "learner-legal-mode-ratchet"
+  },
+  {
+   "src": "learner-nm3-legacy-columns",
+   "rel": "blocks",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "learner-evidence-id-guard",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "learner-fold-cost-2026-10-02",
+   "rel": "measured_by",
+   "dst": "learner-bktr-ledger"
+  }
+ ],
+ "md": {
+  "decisions": "## learner-fold-arrival-order\nUnsequenced events (an online turn, before the DB assigned seq) fold in arrival order — `foldOrder` is a stable sort by seq with no id tiebreak — and `ledgerStmts` stages kt_evidence inserts in exactly that order (deduplicated), so the seq the DB hands out reproduces the cached fold on replay. Regression: tests/learner-order.test.mjs (ids e9/e10/e100, batches 1/7/13, plus the reported 3-event case, which asserts the id order WOULD diverge). **Reverse if** the DB assigns seq before the fold (insert-then-fold under the lock), which makes arrival order moot.\n\n## learner-delayed-check-session-clock\nThe 20 h delayed-check delay is measured from one session's start to a later session's start (the ledger reads no intra-session clock: §13.1 isolation, mutant VK6), not between event timestamps as PRODUCT-DESIGN §6.4.1 states; after a 45-minute lesson a check can count ≈19 h after the real anchor. Check classes are item/solo, near transfer and error-spot only: a why/predict/teach-back neither uses the check nor re-anchors; C1/C2 (G=2) re-anchor; an error-spot \"caught\" is not a check; a recognition item spends the check without counting (options cue the answer). **Reverse if** a held per-event offset (session-relative, quantised to minutes) passes the isolation battery — then anchor at the last held event.\n\n## learner-no-kt-backfill\nMigration 005 has no re-fold of legacy `evidence`/`skill_state` into kt_evidence; when the BKT-R ledger is wired every existing child cold-starts and loses learned_today/mastered. Accepted because current children are test accounts. **Reverse (write a one-time backfill through kt/adapter.js with explicit grader) before** the first real family's data exists at wiring time.\n\n## learner-m0-deletes-every-child-table\n`server/learner/mode.js` classifies every table with a child_id column: a layer's table (LAYER_TABLES; rel_state = session count under kt), an M0 history table (lesson→turn/module_run/voice_feature, rel_event, voice_*, conductor folds, brief_snapshot, day_plan, the 007 comprehension tables) or KEPT with a reason (consent, audits, incident, workspace, child_seq, parent controls/routine, usage, job, wakeup, notification, notify_slot). `writer.ratchet` plans from information_schema and refuses while a live child table is unclassified; the migration scan in tests/learner-mode.test.mjs fails on an unclassified table. The ratchet takes the child's advisory lock first, and `commit` re-checks legal_mode inside the transaction, so a turn staged as M1 cannot land after a ratchet to M0. lesson.js writes (legacy evidence/skill_state/misconception_state, memory, format_trial, rel_state) all go through writer.js builders with the child row; memory by tier (M1 = wins only; interest/preference need M2+P3; joke/life_event never), format_trial is pz_child (M3), rel_state no longer moves trust. **Reverse** KEPT entries (job, wakeup, notification) if any carries learner content in its payload.\n\n## learner-nm3-legacy-columns\nOPEN for the owner: columns predating the learner model that the NM-3 list bans — rel_state.trust and last_trust_update (no longer written), rel_event.note, lesson.parent_note, turn.asr_conf, voice_feature.asr_conf / barge_in, and voice_baseline's per-child prosody statistics. All are deleted on M0; none is dropped (that needs a production migration with sign-off). They are listed in NM3_KNOWN in tests/learner-mode.test.mjs; the scan now covers EVERY migration and fails on anything new. Decide: drop, or move to M3-only tables created under LEARNER_M3_TABLES.\n\n## learner-evidence-id-guard\nkt_evidence ids were unique across children and the insert silently dropped a collision the cached fold had counted. The insert is now `on conflict do nothing` plus a 1/0 guard in the same statement: a same-child re-delivery returns one row with seq null (explicit no-op), another child's id aborts the transaction. `commit` asserts one row per write. **Reverse to a (child_id, id) unique key** once the owner signs off on a production migration (then a cross-child id is simply a different event).\n",
+  "measurements": "## learner-fold-cost-2026-10-02\n**fold() cost per online event, 2026-10-02, scratchpad microbenchmark (n = 500 folds after 200 warm-up) on a generated 4,800-event ledger (makeLog seed 41, 120 sessions, 92 KB JSON).** Whole-ledger structuredClone (before): 6.7 ms (reviewer's figure on a 4,378-event ledger). Copy-on-write of touched skills/epochs/session (after): 1.8 ms, of which 1.6 ms is the flat copy of `seen` (4,800 keys; Map clone would be 0.5 ms). Pruning `seen` to the open session gave 0.13 ms but broke TP1 re-delivery dedupe and comprehension/fuse.js, so it was not kept. Regression guard: tests/learner-order.test.mjs (< 4 ms).\n"
+ }
+}
