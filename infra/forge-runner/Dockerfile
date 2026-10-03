@@ -11,6 +11,7 @@ RUN npm install --omit=dev --no-audit --no-fund && npm cache clean --force
 COPY server/forge/g2 ./server/forge/g2
 COPY server/forge/kitmath.js ./server/forge/kitmath.js
 COPY server/director/items.js ./server/director/items.js
+COPY server/director/register.js ./server/director/register.js
 COPY server/azure.js ./server/azure.js
 COPY data/kits ./data/kits
 RUN chown -R pwuser:pwuser /app

@@ -516,16 +516,15 @@ function __tgkBoot(agentFactory, DESIGN) {
           Array.prototype.forEach.call(svg.querySelectorAll('[data-a="1"], text[data-k="w"]'), function (n) {
             var r = n.getBoundingClientRect(), x = (r.x - vb.x) * sx, y = (r.y - vb.y) * sy, w = r.width * sx, h = r.height * sy;
             if (w * h > 0.5 * W * H) return;                                       // backgrounds touch everything equally
-            var best = -1, bd = Infinity;
+            var near = [];
             opts.forEach(function (t, i) {
               var q = t.rect;
-              if (x > q.x + q.w + pad || x + w < q.x - pad || y > q.y + q.h + pad || y + h < q.y - pad) return;
-              var d = Math.pow(x + w / 2 - (q.x + q.w / 2), 2) + Math.pow(y + h / 2 - (q.y + q.h / 2), 2);
-              if (d < bd) { bd = d; best = i; }
+              if (!(x > q.x + q.w + pad || x + w < q.x - pad || y > q.y + q.h + pad || y + h < q.y - pad)) near.push(i);
             });
-            if (best >= 0) sig[best].push([n.tagName, n.getAttribute("fill"), n.getAttribute("stroke"), n.getAttribute("opacity"), Math.round(w / 4), Math.round(h / 4), n.textContent || ""].join("|"));
+            // only marks local to ONE option (shared scenery touches several and says nothing about any one)
+            if (near.length === 1) sig[near[0]].push([n.tagName, n.getAttribute("fill"), n.getAttribute("stroke"), n.getAttribute("opacity"), n.textContent || ""].join("|"));
           });
-          return opts.map(function (t, i) { return { slot: t.res.id, sig: sig[i].sort().join(";") }; });
+          return opts.map(function (t, i) { return { slot: t.res.id, marks: sig[i] }; });
         },
         prePromptText: function () { return (prompt.textContent || "") + "\n" + Array.prototype.map.call(svg.querySelectorAll('text[data-k="w"]'), function (n) { return n.textContent; }).join("\n"); },
       }));

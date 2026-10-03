@@ -26,7 +26,8 @@ export function QuestionCard({ ask, answer, young, onHear, onFix, goal }:
         {ask && (
           <button type="button" className="dk-hear" onClick={onHear} aria-label={t("card.hear")} data-testid="hear-question">
             <Glyph name="hear" size={24} />
-            {!young && <span className="dk-hear-word">{t("card.hear")}</span>}
+            {!young && <span className="dk-hear-word dk-hear-short" aria-hidden="true">Hear</span>}
+            {!young && <span className="dk-hear-word dk-hear-long" aria-hidden="true">{t("card.hear")}</span>}
           </button>
         )}
       </div>

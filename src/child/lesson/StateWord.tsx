@@ -21,7 +21,8 @@ export function stateWord(floor: Floor, o: { teacher: string; thinkingLabel: boo
     case "your_turn":
       return o.lastOne ? t("floor.last") : t("floor.your_turn");
     case "listening":
-      return o.tapToTalk ? t("floor.listening") : t("floor.listening_open");
+      // "Listening… tap when you're done" (§5.4), set as the word + its mode line so it never truncates.
+      return t("floor.listening_open");
     case "heard":
       return t("floor.heard");
     case "thinking":

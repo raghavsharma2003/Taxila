@@ -196,7 +196,9 @@ export function posesItem(text, item, lang) {
  * Does a turn hand the floor back (turn-shape rule)? A question, a blank to fill, or a try-this verb.
  * A turn that only states things leaves a child — especially a shy one — with nothing to do but "haan".
  */
-export const handsBack = (text) => /[?？]|_{2,}|\b(batao|bataao|bolo|socho|try|karke dekho|dikhao|tell me|show me|your turn)\b/i.test(String(text));
+export const handsBack = (text) => /[?？]|_{2,}|\b(batao|bataao|bolo|socho|try|karke dekho|dikhao|tell me|show me|your turn)\b/i.test(String(text))
+  // the same try-this in aap forms (director/register.js): "bataiye", "sochiye", "karke dekhiye" — "chahiye" (need) is not one
+  || /\b(?!chahiye\b)[a-z]{2,}iye\b|इए(?![\p{L}\p{M}])/iu.test(String(text));
 
 /** Does a why-probe turn actually ask for the reason (how / why, in Hindi or English)? */
 export const asksWhy = (text) => /\b(kaise|kaisay|kyun|kyon|kyu|kyoon|why|how|reason|wajah|vajah)\b|कैसे|क्यों/i.test(String(text));

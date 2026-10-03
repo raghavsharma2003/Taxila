@@ -1,28 +1,10 @@
-// Client-owned lesson behaviour (PRODUCT-DESIGN §3.15 "client owns"): tap-to-talk with the end-of-speech
-// ramp, YOUR TURN escalation and the holdover guard, the wait/stall ladder, the container size feed for the
-// layout solver, the module mount tracker, and the earcon. Timers only ESCALATE inside YOUR TURN; states
-// themselves come from events (src/lesson/status.ts).
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+// Client-owned lesson behaviour: tap-to-talk with the end-of-speech ramp, YOUR TURN escalation and the holdover
+// guard, and the module mount tracker. Timers only ESCALATE inside YOUR TURN; the states themselves come from
+// events (src/lesson/floor.ts). The earcon moved to src/ui/sound/earcons.ts (fired by src/lesson/signals.ts),
+// the stall ladder to src/lesson/latency.ts, the container feed into Desk.tsx.
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ModuleCommand } from "../../../shared/contracts.ts";
 import type { BandTokens } from "../band.ts";
-
-export function useContainerSize(ref: RefObject<HTMLElement | null>): { w: number; h: number } {
-  const [size, setSize] = useState({ w: 360, h: 640 });
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const set = () => setSize({ w: Math.round(el.clientWidth), h: Math.round(el.clientHeight) });
-    set();
-    if (typeof ResizeObserver === "undefined") {
-      window.addEventListener("resize", set);
-      return () => window.removeEventListener("resize", set);
-    }
-    const ro = new ResizeObserver(set);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [ref]);
-  return size;
-}
 
 /** Ids of mounted modules (the ModuleChannel replays its live log on subscribe). */
 export function useMountedModules(source: { subscribe(fn: (c: ModuleCommand) => void): () => void }): string[] {
@@ -139,46 +121,4 @@ export function useYourTurn(active: boolean, changeKey: string, tokens: BandToke
     [tokens.holdoverMs],
   );
   return { elapsed, glowStrong, tapOptions, guard };
-}
-
-export type StallRung = "none" | "thinking" | "moment" | "tap" | "weak";
-
-/** The wait ladder (§3.12): elapsed with no audio while THINKING → what the child sees. */
-export function useStall(thinking: boolean, paused: boolean): { rung: StallRung; seconds: number } {
-  const [s, setS] = useState(0);
-  useEffect(() => {
-    setS(0);
-    if (!thinking || paused) return;
-    const t0 = performance.now();
-    const id = setInterval(() => setS((performance.now() - t0) / 1000), 250);
-    return () => clearInterval(id);
-  }, [thinking, paused]);
-  const rung: StallRung = !thinking ? "none" : s < 1 ? "none" : s < 4 ? "thinking" : s < 8 ? "moment" : s < 20 ? "tap" : "weak";
-  return { rung, seconds: Math.floor(s) };
-}
-
-let earconCtx: AudioContext | null = null;
-/** The YOUR TURN earcon: two soft rising notes, identical every time (§4.5). Synthesised; no asset. */
-export function playTurnEarcon(): void {
-  try {
-    earconCtx ??= new AudioContext();
-    const ctx = earconCtx;
-    void ctx.resume().catch(() => {});
-    const now = ctx.currentTime;
-    [523.25, 659.25].forEach((f, i) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = "sine";
-      o.frequency.value = f;
-      const t = now + i * 0.13;
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.08, t + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
-      o.connect(g).connect(ctx.destination);
-      o.start(t);
-      o.stop(t + 0.25);
-    });
-  } catch {
-    /* no audio: the visual ring is the 100 ms path anyway */
-  }
 }

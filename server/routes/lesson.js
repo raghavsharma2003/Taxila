@@ -32,7 +32,7 @@ import { initLessonState, step, evidenceFrom, upcomingItem, LIMITS, shortTitleOf
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, whyKey, norm as normAnswer } from "../director/items.js";
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
 import { resolveAddress, registerBroken, toAap, ADDRESSES } from "../director/register.js";
-import { verdictFor, uiVerdict, praiseProblem, stripPraise, screenProblem, stripScreenRefs, askFromReply, askText, refersToScreen } from "../director/say.js";
+import { verdictFor, uiVerdict, praiseProblem, stripPraise, screenProblem, stripScreenRefs, askFromReply, askText, refersToScreen, leaksStage, stripStage } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
 import { teacherFor, teacherForLesson, teacherCard } from "../compiler/characters/index.js";
@@ -245,6 +245,7 @@ async function textReply({ instructions, state, kit, childText, trace, history =
     praiseOf(t) === "contradicts" && "deny",
     screenProblem(t, ui, module) && "screen",
     registerBroken(t, address) && "register",
+    leaksStage(t) && "stage",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
     mustPose && !posesItem(t, item, lang) && "drift",
@@ -301,6 +302,7 @@ async function textReply({ instructions, state, kit, childText, trace, history =
       found.includes("praise") && "it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; name what is sensible in it, then the next step",
       found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
       found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
+      found.includes("stage") && "it reads out a field name or markup (like 'Whiteboard:' or brackets) — plain spoken words only",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
     ].filter(Boolean).join("; and ");
     try {
@@ -332,6 +334,7 @@ async function textReply({ instructions, state, kit, childText, trace, history =
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
       if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
+      if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("long")) reply = trimToWords(reply, max);
     }
   }

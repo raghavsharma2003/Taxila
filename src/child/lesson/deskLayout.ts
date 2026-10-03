@@ -22,6 +22,9 @@ export interface DeskInput {
   fontScale?: number;
   /** R0 readers (B1) have no caption line: the card takes its height (§6.3.4: "R0: 0 → card +48"). */
   captionsOn?: boolean;
+  /** A trouble strip is up: its height (56, or 96 with two actions), taken directly above the dock from the elastic
+   *  zone (face / tray), so it never covers the face or the card (§4.7). */
+  strip?: number;
 }
 
 export interface PhoneZones {
@@ -31,6 +34,7 @@ export interface PhoneZones {
   caption: number;
   card: number;
   tray: number;
+  strip: number;
   dock: number;
   pad: number;
 }
@@ -42,9 +46,9 @@ export interface WideZones {
   leftW: number;
   rightW: number;
   /** Left column: window (square), gap, caption (3 lines), gap, "{T} · AI teacher" label row, bottom pad. */
-  left: { window: number; gapA: number; caption: number; gapB: number; label: number; pad: number };
+  left: { padTop: number; window: number; gapA: number; caption: number; gapB: number; label: number; pad: number };
   /** Right column: card, gap, tray (Work only), gap, dock, pad; Face centres card + dock vertically (padTop). */
-  right: { padTop: number; card: number; gapA: number; tray: number; gapB: number; dock: number; pad: number };
+  right: { padTop: number; card: number; gapA: number; tray: number; gapB: number; strip: number; dock: number; pad: number };
 }
 
 export interface DeskLayout {
@@ -78,7 +82,7 @@ export const COLUMNS: Record<Family, Record<Geometry, Column>> = {
   },
 };
 /** Keyboard layout (Older; ≈ 260 dp keyboard → 324 visible): top · SpeechRow · card · tray strip · input dock · pad. */
-export const KEYBOARD: PhoneZones = { top: 48, teacher: 56, caption: 0, card: 72, tray: 48, dock: 92, pad: 8 };
+export const KEYBOARD: PhoneZones = { top: 48, teacher: 56, caption: 0, card: 72, tray: 48, strip: 0, dock: 92, pad: 8 };
 
 export const FACE_MIN: Record<Family, number> = { older: 64, young: 96 };
 export const TRAY_MIN: Record<Family, number> = { older: 160, young: 184 };
@@ -87,7 +91,7 @@ export const WIDE_MIN_WIDTH = 840;
 
 const r4 = (n: number) => Math.round(n / 4) * 4;
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const sum = (z: PhoneZones) => z.top + z.teacher + z.caption + z.card + z.tray + z.dock + z.pad;
+const sum = (z: PhoneZones) => z.top + z.teacher + z.caption + z.card + z.tray + z.strip + z.dock + z.pad;
 
 export function solveDesk(i: DeskInput): DeskLayout {
   const fs = Math.max(1, i.fontScale ?? 1);
@@ -101,7 +105,7 @@ function solvePhone(i: DeskInput, fs: number): DeskLayout {
   const keyboard = !!i.keyboard && family === "older";
   let z: PhoneZones;
   if (keyboard) {
-    z = { ...KEYBOARD };
+    z = { ...KEYBOARD, strip: Math.max(0, i.strip ?? 0) };
     z.card = Math.round(z.card * fs);
     z.dock = Math.round(z.dock + 24 * (fs - 1));
     z.tray = Math.max(0, h - (sum(z) - z.tray)); // the strip takes what is left (≥ 0)
@@ -111,7 +115,7 @@ function solvePhone(i: DeskInput, fs: number): DeskLayout {
   const col = COLUMNS[family][geometry];
   const t = Math.min(1, Math.max(0, (h - FLOOR) / (COMFY - FLOOR)));
   const at = (p: Pair) => r4(lerp(p[0], p[1], t));
-  z = { top: at(col.top), teacher: at(col.teacher), caption: at(col.caption), card: at(col.card), tray: at(col.tray), dock: at(col.dock), pad: at(col.pad) };
+  z = { top: at(col.top), teacher: at(col.teacher), caption: at(col.caption), card: at(col.card), tray: at(col.tray), strip: Math.max(0, i.strip ?? 0), dock: at(col.dock), pad: at(col.pad) };
   if (i.captionsOn === false && geometry === "face") {
     z.card += z.caption;
     z.caption = 0;
@@ -171,20 +175,25 @@ function solveWide(i: DeskInput, fs: number): DeskLayout {
   if (geometry === "work") {
     const card = Math.round(128 * fs);
     const dock = Math.round(128 + 44 * (fs - 1));
-    const tray = H - card - 16 - 16 - dock - 16;
+    const strip = Math.max(0, i.strip ?? 0);
+    const tray = H - card - 16 - 16 - strip - dock - 16;
     overflow = tray < TRAY_MIN[i.family];
-    right = { padTop: 0, card, gapA: 16, tray: Math.max(0, tray), gapB: 16, dock, pad: 16 };
+    right = { padTop: 0, card, gapA: 16, tray: Math.max(0, tray), gapB: 16, strip, dock, pad: 16 };
   } else {
     const card = Math.round(240 * fs);
     const dock = Math.round(144 + 44 * (fs - 1));
-    const free = H - card - 16 - dock;
+    const strip = Math.max(0, i.strip ?? 0);
+    const free = H - card - 16 - strip - dock;
     overflow = free < 0;
     const padTop = Math.max(0, Math.floor(free / 2));
-    right = { padTop, card, gapA: 16, tray: 0, gapB: 0, dock, pad: Math.max(0, free - padTop) };
+    right = { padTop, card, gapA: 16, tray: 0, gapB: 0, strip, dock, pad: Math.max(0, free - padTop) };
   }
   if (leftPad < 0) overflow = true;
-  const wz: WideZones = { top, gutter, gap, leftW, rightW, left: { window, gapA: 16, caption, gapB: 16, label: 48, pad: Math.max(0, leftPad) }, right };
-  const rTotal = top + right.padTop + right.card + right.gapA + right.tray + right.gapB + right.dock + right.pad;
+  // Taller than the 720 reference: the spare height is split above and below, so the face sits level with the card.
+  const lp = Math.max(0, leftPad);
+  const padTop = Math.min(Math.floor(lp / 2), right.padTop || Math.floor(lp / 2));
+  const wz: WideZones = { top, gutter, gap, leftW, rightW, left: { padTop, window, gapA: 16, caption, gapB: 16, label: 48, pad: lp - padTop }, right };
+  const rTotal = top + right.padTop + right.card + right.gapA + right.tray + right.gapB + right.strip + right.dock + right.pad;
   return { kind: "wide", geometry, keyboard: false, phone: null, wide: wz, speechFace: 0, overflow, total: rTotal };
 }
 

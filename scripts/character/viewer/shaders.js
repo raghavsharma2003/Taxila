@@ -1,0 +1,352 @@
+// TaxilaSkin / TaxilaEye / TaxilaHair / TaxilaCloth / TaxilaLens: one custom shader family (TEACHER-VISUAL §5.4).
+// GLSL ES 3.0 through three's ShaderMaterial, so three still injects skinning, morph textures, tone mapping and the
+// output colour space. Lighting is ours (key directional + L1 SH ambient + rim), never three's light loop, so the cost
+// is fixed and the look does not depend on what else is in the scene.
+import * as THREE from "three";
+
+const LIGHT_PARS = /* glsl */ `
+uniform vec3 uKeyDir;      // world, towards the light
+uniform vec3 uKeyColor;    // linear radiance
+uniform vec3 uRimDir;
+uniform vec3 uRimColor;
+uniform vec3 uSH[4];       // L0, L1(y), L1(z), L1(x) irradiance coefficients (already convolved)
+vec3 shIrradiance(vec3 n) { return max(uSH[0] + uSH[1] * n.y + uSH[2] * n.z + uSH[3] * n.x, 0.0); }
+float D_GGX(float NoH, float a) { float a2 = a * a; float d = NoH * NoH * (a2 - 1.0) + 1.0; return a2 / (3.14159265 * d * d); }
+float V_SmithJointApprox(float NoV, float NoL, float a) {
+  float gv = NoL * (NoV * (1.0 - a) + a); float gl = NoV * (NoL * (1.0 - a) + a); return 0.5 / max(gv + gl, 1e-5); }
+float F_Schlick(float f0, float VoH) { return f0 + (1.0 - f0) * pow(1.0 - VoH, 5.0); }
+mat3 cotangentFrame(vec3 N, vec3 p, vec2 uv) {
+  vec3 dp1 = dFdx(p); vec3 dp2 = dFdy(p); vec2 duv1 = dFdx(uv); vec2 duv2 = dFdy(uv);
+  vec3 dp2perp = cross(dp2, N); vec3 dp1perp = cross(N, dp1);
+  vec3 T = dp2perp * duv1.x + dp1perp * duv2.x; vec3 B = dp2perp * duv1.y + dp1perp * duv2.y;
+  float invmax = inversesqrt(max(max(dot(T, T), dot(B, B)), 1e-20));
+  return mat3(T * invmax, B * invmax, N);
+}
+`;
+
+const SKINNED_VERT_HEAD = /* glsl */ `
+#include <common>
+#include <morphtarget_pars_vertex>
+#include <skinning_pars_vertex>
+varying vec2 vUv;
+varying vec3 vWorldPos;
+varying vec3 vNormalW;
+`;
+const SKINNED_VERT_BODY = /* glsl */ `
+  vUv = uv;
+  #include <beginnormal_vertex>
+  #include <morphnormal_vertex>
+  #include <skinbase_vertex>
+  #include <skinnormal_vertex>
+  #include <begin_vertex>
+  #include <morphtarget_vertex>
+  #include <skinning_vertex>
+  #include <project_vertex>
+  vWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;
+  vNormalW = normalize(mat3(modelMatrix) * objectNormal);
+`;
+
+// ------------------------------------------------------------------ skin
+const SKIN_VERT = SKINNED_VERT_HEAD + /* glsl */ `
+attribute float _region;
+varying float vRegion;
+void main() {
+  vRegion = _region;
+` + SKINNED_VERT_BODY + `}`;
+
+const SKIN_FRAG = /* glsl */ `
+precision highp float;
+${LIGHT_PARS}
+uniform sampler2D tAlbedo;
+uniform sampler2D tLUT;
+#ifdef HAS_NORMAL
+uniform sampler2D tNormal;
+uniform float uNormalScale;
+#endif
+#ifdef HAS_PACKED
+uniform sampler2D tPacked;
+#endif
+#ifdef HAS_WRINKLE
+uniform sampler2D tWrinkle; uniform sampler2D tMaskA; uniform sampler2D tMaskB;
+uniform vec4 uWrA; uniform vec4 uWrB;
+#endif
+#ifdef HAS_STRETCH
+uniform sampler2D tWrinkleS; uniform float uStretch;
+#endif
+uniform vec3 uTeeth; uniform vec3 uTongue; uniform vec3 uBag;
+uniform float uMouthOpen; uniform vec3 uMouthFront;
+uniform float uFlush; uniform vec3 uCheekL; uniform vec3 uCheekR;
+uniform float uSpec;
+varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormalW; varying float vRegion;
+
+void main() {
+  vec3 N = normalize(vNormalW);
+  vec3 V = normalize(cameraPosition - vWorldPos);
+  vec3 L = normalize(uKeyDir);
+  int region = int(vRegion + 0.5);
+  vec3 col;
+  if (region == 0) {
+    vec3 albedo = texture2D(tAlbedo, vUv).rgb;
+    float cav = 1.0, rough = 0.5, thick = 0.0, ao = 1.0;
+#ifdef HAS_PACKED
+    vec4 pk = texture2D(tPacked, vUv); cav = pk.r; rough = pk.g; thick = pk.b; ao = pk.a;
+#endif
+    vec3 Nn = N;
+#ifdef HAS_NORMAL
+    vec3 nts = texture2D(tNormal, vUv).xyz * 2.0 - 1.0;
+  #ifdef HAS_WRINKLE
+    float w = clamp(dot(texture2D(tMaskA, vUv), uWrA) + dot(texture2D(tMaskB, vUv), uWrB), 0.0, 1.0);
+    vec3 nw = texture2D(tWrinkle, vUv).xyz * 2.0 - 1.0;
+    nts = vec3(nts.xy + nw.xy * w * 1.6, nts.z);
+  #endif
+  #ifdef HAS_STRETCH
+    vec3 ns = texture2D(tWrinkleS, vUv).xyz * 2.0 - 1.0;
+    nts = mix(nts, ns, uStretch);
+  #endif
+    nts.xy *= uNormalScale;
+    Nn = normalize(cotangentFrame(N, vWorldPos, vUv) * normalize(nts));
+#endif
+    // emotion flush (delighted, H only): a small red bias on the cheeks
+    float ck = exp(-pow(length(vWorldPos - uCheekL) / 0.022, 2.0)) + exp(-pow(length(vWorldPos - uCheekR) / 0.022, 2.0));
+    albedo = mix(albedo, albedo * vec3(1.18, 0.86, 0.84), clamp(uFlush * ck, 0.0, 0.04) * 25.0 * 0.04);
+#ifdef TIER_LITE
+    float wrap = clamp((dot(Nn, L) + 0.3) / 1.3, 0.0, 1.0);
+    col = albedo * (uKeyColor * wrap + shIrradiance(Nn)) * ao;
+    col += uRimColor * pow(1.0 - max(dot(Nn, V), 0.0), 4.0) * max(dot(Nn, normalize(uRimDir)), 0.0) * 0.5;
+#else
+    // pre-integrated skin diffuse (Penner 2011): LUT(N.L, curvature), curvature from screen derivatives of the
+    // geometric normal (the bumped normal would alias)
+    float curv = clamp(length(fwidth(N)) / max(length(fwidth(vWorldPos)), 1e-6) * 0.012, 0.0, 1.0);
+    float NoL = dot(Nn, L);
+    vec3 diff = texture2D(tLUT, vec2(NoL * 0.5 + 0.5, curv)).rgb;
+    col = albedo * (uKeyColor * diff + shIrradiance(Nn) * ao);
+    // dual-lobe GGX, cavity-masked (roughness map scaled into the 0.35 / 0.6 lobes)
+    vec3 H = normalize(L + V);
+    float NoV = max(dot(Nn, V), 1e-4), NoH = max(dot(Nn, H), 0.0), VoH = max(dot(V, H), 0.0);
+    float nl = max(NoL, 0.0);
+    float r1 = clamp(rough * 0.7, 0.2, 0.9), r2 = clamp(rough * 1.2, 0.3, 1.0);
+    float a1 = r1 * r1, a2 = r2 * r2;
+    float spec = mix(D_GGX(NoH, a1) * V_SmithJointApprox(NoV, nl, a1), D_GGX(NoH, a2) * V_SmithJointApprox(NoV, nl, a2), 0.15);
+    col += uKeyColor * nl * spec * F_Schlick(0.028, VoH) * cav * uSpec;
+    // ambient specular sheen + rim (subtle)
+    col += shIrradiance(reflect(-V, Nn)) * F_Schlick(0.028, NoV) * 0.6 * ao * cav;
+    col += uRimColor * pow(1.0 - NoV, 3.0) * max(dot(Nn, normalize(uRimDir)), 0.0) * 0.45 * ao;
+  #ifdef TIER_H
+    // back-scatter through thin regions (ears, nostrils, lids)
+    float bs = pow(clamp(dot(V, -normalize(L + Nn * 0.3)), 0.0, 1.0), 3.0) * thick;
+    col += uKeyColor * bs * vec3(0.9, 0.25, 0.12) * 0.35;
+  #endif
+#endif
+  } else {
+    // mouth interior: teeth (1), tongue (2), bag (3); occluded by how far behind the lips and how open the jaw is
+    float depth = max(0.0, dot(uMouthFront - vWorldPos, normalize(vec3(0.0, 0.0, 1.0))));
+    float occ = mix(0.18, 0.75, clamp(uMouthOpen * 2.0, 0.0, 1.0)) * exp(-depth / 0.018);
+    vec3 alb = region == 1 ? uTeeth : (region == 2 ? uTongue : uBag);
+    float nl = clamp(dot(N, L) * 0.5 + 0.5, 0.0, 1.0);
+    col = alb * (uKeyColor * nl + shIrradiance(N)) * occ;
+    if (region == 1) {
+      vec3 H = normalize(L + V);
+      col += uKeyColor * pow(max(dot(N, H), 0.0), 60.0) * 0.25 * occ;
+    }
+    if (region == 3) col = uBag * 0.4 * (0.4 + 0.6 * occ);
+  }
+  gl_FragColor = vec4(col, 1.0);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}
+`;
+
+// ------------------------------------------------------------------ eye (sclera + iris under a cornea, one draw)
+const EYE_VERT = SKINNED_VERT_HEAD + /* glsl */ `
+uniform vec3 uEyeL; uniform vec3 uEyeR; uniform float uEyeRad;
+varying vec3 vLocal;     // bind-space position relative to this eye's centre, in eye radii
+varying vec3 vViewL;     // view direction in bind space
+varying mat3 vToWorld;
+void main() {
+  vec3 c = position.x > 0.0 ? uEyeL : uEyeR;
+  vLocal = (position - c) / uEyeRad;
+` + SKINNED_VERT_BODY + /* glsl */ `
+  mat3 R = mat3(modelMatrix);
+  #ifdef USE_SKINNING
+  R = R * mat3(skinMatrix);
+  #endif
+  vToWorld = R;
+  vViewL = transpose(R) * (cameraPosition - vWorldPos);
+}
+`;
+const EYE_FRAG = /* glsl */ `
+precision highp float;
+${LIGHT_PARS}
+uniform vec3 uIris; uniform float uPupil; uniform float uLidShadow; uniform float uIrisDetail;
+varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormalW;
+varying vec3 vLocal; varying vec3 vViewL; varying mat3 vToWorld;
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float vnoise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y); }
+void main() {
+  vec3 p = vLocal;
+  vec3 V = normalize(vViewL);
+  vec3 L = normalize(uKeyDir);
+  const float RC = 0.693;                      // cornea radius (eye radii), apex at z = 1.07 (build_look.py make_eyes)
+  vec3 cc = vec3(0.0, 0.0, 1.07 - RC);
+  const float ZI = 0.86;                       // iris plane depth (just behind the limbus at z = 0.878)
+  const float IR = 0.47;                       // iris radius (limbus radius 0.48)
+  vec3 Nw = normalize(vNormalW);
+  vec3 albedo;
+  bool cornea = p.z > 0.872;
+  vec3 q = p;
+  if (cornea) {
+    vec3 nc = normalize(p - cc);
+    vec3 r = refract(-V, nc, 1.0 / 1.376);
+    float t = (ZI - p.z) / min(r.z, -1e-3);
+    q = p + r * t;
+  }
+  float rr = length(q.xy) / IR;
+  if (p.z > 0.6 && rr < 1.0) {
+    float ang = atan(q.y, q.x);
+    float fib = vnoise(vec2(ang * 18.0, rr * 6.0)) * 0.6 + vnoise(vec2(ang * 45.0, rr * 14.0)) * 0.4;
+    // dark irises still show lighter radial fibres and a warmer collarette when lit
+    vec3 ir = uIris * (1.1 + 1.4 * fib * uIrisDetail) + vec3(0.05, 0.03, 0.012) * smoothstep(0.7, 0.35, rr) * uIrisDetail;
+    ir = mix(ir, uIris * 0.3, smoothstep(0.86, 1.0, rr));          // limbal ring
+    float pup = uPupil * IR;
+    albedo = mix(vec3(0.01), ir, smoothstep(pup - 0.02, pup + 0.015, rr * IR));
+  } else {
+    float ang = atan(p.y, p.x);
+    float veins = vnoise(vec2(ang * 30.0, p.z * 20.0)) * smoothstep(0.6, 0.0, p.z) * 0.1;
+    albedo = vec3(0.86, 0.82, 0.78) * (1.0 - veins * vec3(0.0, 1.0, 1.0));
+    albedo = mix(albedo, uIris * 0.3 + 0.55, smoothstep(1.02, 1.12, rr) * smoothstep(1.2, 1.0, rr) * 0.0);
+  }
+  // lid shadow + corner occlusion (the AO shell, analytically): darker towards the top and the corners
+  float ao = mix(1.0, 0.45, smoothstep(0.15, 0.75, p.y) * uLidShadow) * mix(1.0, 0.6, smoothstep(0.45, 0.85, abs(p.x)));
+  float nl = clamp(dot(Nw, L) * 0.5 + 0.5, 0.0, 1.0);
+  vec3 col = albedo * (uKeyColor * nl * 0.8 + shIrradiance(Nw)) * ao;
+  // cornea specular: the key light's real reflection (the catch-light) + a soft environment reflection
+  vec3 ncw = normalize(vToWorld * normalize(p - cc));
+  vec3 Vw = normalize(cameraPosition - vWorldPos);
+  vec3 H = normalize(L + Vw);
+  float NoH = max(dot(ncw, H), 0.0);
+  float spec = D_GGX(NoH, 0.012) * 0.25;
+  float fres = F_Schlick(0.025, max(dot(ncw, Vw), 0.0));
+  col += uKeyColor * spec * fres * float(cornea) * ao;
+  col += shIrradiance(reflect(-Vw, ncw)) * fres * 0.8 * float(p.z > 0.55);
+  gl_FragColor = vec4(col, 1.0);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}
+`;
+
+// ------------------------------------------------------------------ hair + cards (alpha-to-coverage, Kajiya-Kay)
+const HAIR_VERT = SKINNED_VERT_HEAD + `void main() {` + SKINNED_VERT_BODY + `}`;
+const HAIR_FRAG = /* glsl */ `
+precision highp float;
+${LIGHT_PARS}
+uniform sampler2D tAlbedo; uniform float uShift; uniform vec3 uSpecTint; uniform float uKK;
+varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormalW;
+float kk(vec3 T, vec3 H, float e) { float th = dot(T, H); return pow(sqrt(max(1.0 - th * th, 0.0)), e); }
+void main() {
+  vec4 a = texture2D(tAlbedo, vUv);
+  if (a.a < 0.08) discard;
+  vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);
+  vec3 V = normalize(cameraPosition - vWorldPos);
+  vec3 L = normalize(uKeyDir);
+  mat3 tbn = cotangentFrame(N, vWorldPos, vUv);
+  vec3 T = normalize(tbn[1]);                   // strands run along v
+  vec3 H = normalize(L + V);
+  float wrap = clamp((dot(N, L) + 0.5) / 1.5, 0.0, 1.0);
+  vec3 col = a.rgb * (uKeyColor * wrap * 0.9 + shIrradiance(N));
+  float s1 = kk(normalize(T + N * uShift), H, 90.0);
+  float s2 = kk(normalize(T + N * (uShift - 0.25)), H, 22.0);
+  col += uKeyColor * wrap * (s1 * 0.22 + s2 * 0.12 * uSpecTint * a.rgb * 4.0) * uKK;
+  col += uRimColor * pow(1.0 - max(dot(N, V), 0.0), 3.0) * 0.15;
+  gl_FragColor = vec4(col, a.a);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}
+`;
+
+// ------------------------------------------------------------------ cloth (wrap diffuse; roughness in albedo alpha)
+const CLOTH_FRAG = /* glsl */ `
+precision highp float;
+${LIGHT_PARS}
+uniform sampler2D tAlbedo;
+varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormalW;
+void main() {
+  vec4 a = texture2D(tAlbedo, vUv);
+  vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);
+  vec3 V = normalize(cameraPosition - vWorldPos);
+  vec3 L = normalize(uKeyDir);
+  float wrap = clamp((dot(N, L) + 0.35) / 1.35, 0.0, 1.0);
+  vec3 col = a.rgb * (uKeyColor * wrap + shIrradiance(N));
+  vec3 H = normalize(L + V);
+  float r = clamp(a.a, 0.2, 1.0); float al = r * r;
+  col += uKeyColor * max(dot(N, L), 0.0) * D_GGX(max(dot(N, H), 0.0), al) * V_SmithJointApprox(max(dot(N, V), 1e-4), max(dot(N, L), 0.0), al) * F_Schlick(0.04, max(dot(V, H), 0.0));
+  col += uRimColor * pow(1.0 - max(dot(N, V), 0.0), 3.0) * 0.25;
+  gl_FragColor = vec4(col, 1.0);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}
+`;
+const LENS_FRAG = /* glsl */ `
+precision highp float;
+${LIGHT_PARS}
+varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormalW;
+void main() {
+  vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);
+  vec3 V = normalize(cameraPosition - vWorldPos);
+  float f = F_Schlick(0.04, max(dot(N, V), 0.0));
+  vec3 H = normalize(normalize(uKeyDir) + V);
+  vec3 col = shIrradiance(reflect(-V, N)) * f * 1.5 + uKeyColor * D_GGX(max(dot(N, H), 0.0), 0.02) * f * 0.2;
+  gl_FragColor = vec4(col, clamp(f * 2.0 + 0.03, 0.0, 0.6));
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}
+`;
+
+// ------------------------------------------------------------------ the pre-integrated skin LUT (Penner 2011)
+// 128 x 64: x = N.L * 0.5 + 0.5, y = curvature (0 flat .. 1 = 1/r of ~ 1.2 cm). Diffusion profile: the six-Gaussian
+// skin fit of d'Eon & Luebke (GPU Gems 3, ch. 14), integrated around a ring of radius r.
+export function makeSkinLUT(W = 128, H = 64) {
+  const G = [[0.0064, [0.233, 0.455, 0.649]], [0.0484, [0.1, 0.336, 0.344]], [0.187, [0.118, 0.198, 0]],
+    [0.567, [0.113, 0.007, 0.007]], [1.99, [0.358, 0.004, 0]], [7.41, [0.078, 0, 0]]];
+  const data = new Uint8Array(W * H * 4);
+  const lin2s = (c) => (c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055);
+  for (let j = 0; j < H; j++) {
+    const curv = Math.max(j / (H - 1), 0.002);
+    const r = 12 / (curv * 10 + 0.12);           // mm
+    for (let i = 0; i < W; i++) {
+      const theta = Math.acos(Math.max(-1, Math.min(1, (i / (W - 1)) * 2 - 1)));
+      const tot = [0, 0, 0], norm = [0, 0, 0];
+      for (let x = -Math.PI / 2; x <= Math.PI / 2; x += Math.PI / 60) {
+        const d = Math.abs(2 * r * Math.sin(x / 2));
+        const diff = Math.max(0, Math.cos(theta + x));
+        for (let c = 0; c < 3; c++) {
+          let w = 0;
+          for (const [v, rgb] of G) w += rgb[c] * Math.exp(-(d * d) / (2 * v)) / (2 * Math.PI * v);
+          tot[c] += diff * w;
+          norm[c] += w;
+        }
+      }
+      for (let c = 0; c < 3; c++) data[(j * W + i) * 4 + c] = Math.round(255 * Math.min(1, lin2s(tot[c] / norm[c])));
+      data[(j * W + i) * 4 + 3] = 255;
+    }
+  }
+  const t = new THREE.DataTexture(data, W, H, THREE.RGBAFormat);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.magFilter = t.minFilter = THREE.LinearFilter;
+  t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+  t.needsUpdate = true;
+  return t;
+}
+
+export function lightUniforms() {
+  return {
+    uKeyDir: { value: new THREE.Vector3(-0.55, 0.62, 0.75).normalize() },
+    uKeyColor: { value: new THREE.Vector3(2.05, 2.0, 1.92) },
+    uRimDir: { value: new THREE.Vector3(0.7, 0.4, -0.6).normalize() },
+    uRimColor: { value: new THREE.Vector3(0.55, 0.6, 0.7) },
+    // L1 SH irradiance of a warm-grey room (top brighter, front slightly warm)
+    uSH: { value: [new THREE.Vector3(0.34, 0.34, 0.35), new THREE.Vector3(0.1, 0.1, 0.11), new THREE.Vector3(0.04, 0.04, 0.035), new THREE.Vector3(0.0, 0.0, 0.0)] },
+  };
+}
+
+export const SHADERS = { SKIN_VERT, SKIN_FRAG, EYE_VERT, EYE_FRAG, HAIR_VERT, HAIR_FRAG, CLOTH_FRAG, LENS_FRAG };

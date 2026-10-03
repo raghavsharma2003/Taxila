@@ -29,6 +29,9 @@ export const RESUME_HOURS = 6;
 const DEFAULT_TZ = "Asia/Kolkata";
 const query = (req) => new URL(req.url || "/", "http://x").searchParams;
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** The child id from the query or body, shape-checked before it reaches a query (a malformed id is a 400, not a 500). */
+const childIdOf = (v) => { if (!UUID.test(String(v ?? ""))) throw bad("childId must be a child id"); return String(v); };
 
 /** Lesson length shown on the card (V2 §3.4: Young 10-20 min, Older 20-30), never more than what is left today. */
 export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(Number(classLevel) <= 4 ? 15 : 25, capRemaining ?? Infinity));
@@ -63,7 +66,7 @@ async function controlsOf(child) {
 
 /** GET /api/child/plan */
 async function plan(req, res) {
-  const { guardian, child } = await requireChild(req, query(req).get("childId"));
+  const { guardian, child } = await requireChild(req, childIdOf(query(req).get("childId")));
   send(res, 200, await planFor(child, guardian));
 }
 
@@ -163,7 +166,7 @@ export function buildMap({ classLevel, rows, delayed, rechecks, hereTopicId = nu
 
 /** GET /api/child/map */
 async function map(req, res) {
-  const { guardian, child } = await requireChild(req, query(req).get("childId"));
+  const { guardian, child } = await requireChild(req, childIdOf(query(req).get("childId")));
   const mode = Number(child.class_level) <= 4 ? "garden" : "sky";
   if (!(await hasConsent(guardian.id, child.id, "learning_profile"))) {
     return send(res, 200, { mode, hidden: true, subjects: [], skills: [], empty: true });
@@ -192,7 +195,7 @@ async function map(req, res) {
 async function teacher(req, res) {
   const qs = query(req);
   if (qs.get("childId")) {
-    const { child } = await requireChild(req, qs.get("childId"));
+    const { child } = await requireChild(req, childIdOf(qs.get("childId")));
     return send(res, 200, { teacher: teacherCard(teacherFor(child)) });
   }
   const cl = Number(qs.get("classLevel"));
@@ -207,7 +210,7 @@ async function teacher(req, res) {
 
 /** POST /api/lesson/request { cid } — only the plan grants a lesson (start / first); never "one more" after done. */
 async function request(req, res, body) {
-  const { guardian, child } = await requireChild(req, need(body, "cid").cid);
+  const { guardian, child } = await requireChild(req, childIdOf(need(body, "cid").cid));
   const p = await planFor(child, guardian);
   if (["start", "first"].includes(p.state) && p.topic) return send(res, 200, { granted: true, topicId: p.topic.id });
   if (p.state === "resume") return send(res, 200, { granted: true, lid: p.plan.openLesson });

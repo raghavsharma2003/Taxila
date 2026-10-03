@@ -20,6 +20,8 @@ const DEV_ROUTES = import.meta.env.DEV || import.meta.env.VITE_DEV_ROUTES === "1
 // Behind the flag, so a production build drops the import (and the LessonDev chunk) entirely.
 const LessonDev = DEV_ROUTES ? lazy(() => import("../pages/LessonDev.tsx")) : null;
 const AvatarDev = DEV_ROUTES ? lazy(() => import("../pages/AvatarDev.tsx")) : null;
+// The Desk's fixtures and live harness (PRODUCT-DESIGN-V2 §13.2 `?fixture=`): dev routes only.
+const DeskDev = DEV_ROUTES ? lazy(() => import("../child/lesson/dev/DeskDev.tsx")) : null;
 
 /**
  * ui-b's contract: `export const childRoutes: RouteObject[]`. Absolute paths ("/c/:cid", ...) mount at the top
@@ -58,6 +60,7 @@ export const routes: RouteObject[] = [
       { path: "/parent/*", element: s(<ParentCorner />) },
       ...(LessonDev ? [{ path: "/dev/lesson", element: s(<LessonDev />) }] : []),
       ...(AvatarDev ? [{ path: "/dev/avatar", element: s(<AvatarDev />) }] : []),
+      ...(DeskDev ? [{ path: "/dev/desk", element: s(<DeskDev />) }] : []),
       { path: "*", element: <NotFound /> },
     ],
   },

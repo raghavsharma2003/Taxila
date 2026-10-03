@@ -1,0 +1,1730 @@
+{
+ "root": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/base",
+ "at": "2026-10-03T07:03:59.231Z",
+ "n": {
+  "tasks": 132,
+  "ok": 163,
+  "errors": 0
+ },
+ "ms": 70823,
+ "verdict": {
+  "wrongAnswers": 36,
+  "classifiedCorrect": 0,
+  "classifiedCorrectEcho": 0,
+  "praiseFinal": 0,
+  "praiseFirstDraft": 0,
+  "rightAnswers": 12,
+  "rightClassifiedCorrect": 12,
+  "rightDenied": 0
+ },
+ "drift": {
+  "n": 36,
+  "creditedCorrect": 36,
+  "praiseFinal": 6,
+  "praiseFirstDraft": 7
+ },
+ "hintKey": {
+  "n": 31,
+  "credited": 31,
+  "deny": 0
+ },
+ "screen": {
+  "n": 36,
+  "refFinal": 10,
+  "refFirstDraft": 13,
+  "refAnyArm": 11
+ },
+ "register": {
+  "n": 163,
+  "tumFinal": 152,
+  "tumFirstDraft": 155
+ },
+ "greet": {
+  "n": 12,
+  "interest": 12
+ },
+ "rewrites": 21,
+ "rows": [
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c5-maths-ch02-t03-i02",
+   "said": "6",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, denominator 3 se 6 hua—kitne se multiply kiya? Usi number se numerator 1 ko multiply karke try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch02-t03-i02",
+   "said": "2",
+   "heard": "Kabir, denominator 3 se 6 hua—kitne se multiply kiya? Usi number se numerator 1 ko multiply karke try karo.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Haan, denominator ko 2 se multiply kiya; ab numerator 1 ko bhi 2 se multiply karo. Chapati ko 2 mein, phir 4 mein modo. Ek aadha kitne chauthai ke barabar hai?",
+   "firstDraft": "Haan, denominator ko 2 se multiply kiya; ab numerator 1 ko bhi 2 se multiply karo. 1/3 = ?/6?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch02-t03-i02",
+   "said": "2",
+   "heard": "Ek second, pehle yeh batao: 2 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, reason tumne kaise jaana ki 1/3 ko 2/6 likh sakte hain? Apne words mein batao.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c5-maths-ch02-t03-i02",
+   "said": "2",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, answer 2 sahi hai. Tumne kaise jaana ki 1/3 ko 2/6 likh sakte hain?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch02-t03-i02",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, awaaz clear nahi aayi. Ek baar bolo: 1/3 = ?/6 mein khaali jagah par kya aayega?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c5-maths-ch06-t01-i02",
+   "said": "311",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 311 nahi. 24 ko 20 aur 4, 13 ko 10 aur 3 mein todo. Chaar parts kaunse milenge?",
+   "firstDraft": "Kabir, 311 nahi. Area model mein 24 ko 20 aur 4, 13 ko 10 aur 3 mein todo. Ab chaar parts likho.",
+   "caught": [
+    "flat"
+   ]
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch06-t01-i02",
+   "said": "312",
+   "heard": "Kabir, 311 nahi. 24 ko 20 aur 4, 13 ko 10 aur 3 mein todo. Chaar parts kaunse milenge?",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, 312 bhi nahi. 24 × 13 ko 24 × 10 aur 24 × 3 mein baanto; dono products jodo. Try karo. Doodh ke ek kanastar mein 40 litre aate hain. 23 kanastar mein kitne litre?",
+   "firstDraft": "Kabir, 312 bhi nahi. 24 × 13 ko 24 × 10 aur 24 × 3 mein baanto; dono products jodo. Try karo.",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch06-t01-i02",
+   "said": "312",
+   "heard": "Achha, pehle ek chhota sawaal: 312 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, sahi answer 312 hai. Tumne area model mein 24 ko 10 aur 3 se multiply karke total kaise joda?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch06-t01-i02",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, tumne clear nahi bola—ek baar phir kaho: area model se 24 × 13 kaise karoge?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c5-maths-ch06-t02-i04",
+   "said": "16",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 16 ko double karna aasaan lagega ya 25 ko half? Ek choose karke calculation try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch06-t02-i04",
+   "said": "400",
+   "heard": "Kabir, 16 ko double karna aasaan lagega ya 25 ko half? Ek choose karke calculation try karo.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, 16 ko double karke 32 hua; ab 25 ko 32 se multiply karke answer batao. 36 × 100 = ?",
+   "firstDraft": "Kabir, 16 ko double karke 32 hua; ab 25 ko 32 se multiply karke answer batao.",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch06-t02-i04",
+   "said": "400",
+   "heard": "Ek second, pehle yeh batao: 400 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 400 sahi hai. Tumne double aur half karke 25 × 16 ko kaise badla, aur answer same kyun raha?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch06-t02-i04",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, ek baar clearly bolo: 25 ko double karoge ya 16 ko half? Phir 25 × 16 nikaalo.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c5-maths-ch07-t02-i01",
+   "said": "16",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, har baar numbers kitne badh rahe hain, dekho: 3 se 6, 6 se 9. Ab 12 ke baad wahi badhotri lagao. Try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch07-t02-i01",
+   "said": "15",
+   "heard": "Kabir, har baar numbers kitne badh rahe hain, dekho: 3 se 6, 6 se 9. Ab 12 ke baad wahi badhotri lagao. Try karo.",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 3 se 6 aur 6 se 9: har baar 3 badh raha hai. Pattern: 5, 9, 13, ... Aage kya aayega?",
+   "firstDraft": "Kabir, 3 se 6 aur 6 se 9: har baar 3 badh raha hai. Ab batao: 12 ke baad kya aayega?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch07-t02-i01",
+   "said": "15",
+   "heard": "Achha, pehle ek chhota sawaal: 15 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 15 kaise jaana—numbers ke beech kya change dikh raha tha?",
+   "firstDraft": "Kabir, 15 ke baad tumne kya dekha—har baar number kitna badh raha tha?",
+   "caught": [
+    "nowhy"
+   ]
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c5-maths-ch07-t02-i01",
+   "said": "15",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Sahi, Kabir. Tumne kaise jaana ki 15 aayega?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch07-t02-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, ek baar phir bolo ya choice tap karo: 3, 6, 9, 12 ke baad kya aayega?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c5-maths-ch08-t02-i02",
+   "said": "2",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, pehle 1 litre ko millilitre mein badlo. 1 litre mein kitne millilitre hote hain?",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch08-t02-i02",
+   "said": "8",
+   "heard": "Kabir, pehle 1 litre ko millilitre mein badlo. 1 litre mein kitne millilitre hote hain?",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, tumne 250 ml ke glasson ki ginti ki; ab 1 litre ka conversion batao: 1 litre mein kitne ml hote hain?",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch08-t02-i02",
+   "said": "8",
+   "heard": "Ek second, pehle yeh batao: 8 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 8 tumhara answer tha; ab batao, tumne 2 litre ko millilitre mein kaise badla?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch08-t02-i02",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, question ek baar clearly bolo: 2 litre lassi se 250 ml ke kitne glass bharoge?",
+   "firstDraft": "Kabir, question ek baar phir bolo ya choice tap karo: 250 ml ke 4, 8, ya 10 glasses?",
+   "caught": [
+    "leak"
+   ]
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c5-maths-ch09-t01-i01",
+   "said": "22",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, tens se shuru karo: 8 tens ko 4 groups mein baanto. Har group mein kitne tens aayenge?",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch09-t01-i01",
+   "said": "21",
+   "heard": "Kabir, tens se shuru karo: 8 tens ko 4 groups mein baanto. Har group mein kitne tens aayenge?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 8 tens ko 4 groups mein baantne ki jagah 21 likha. 17 nariyal 5 boriyon mein barabar baante jaate hain. Jawab kya hai?",
+   "firstDraft": "Kabir, tumne 8 tens ko 4 groups mein baantne ki jagah 21 likha. 8 tens mein har group ko kitne tens milenge?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch09-t01-i01",
+   "said": "21",
+   "heard": "Achha, pehle ek chhota sawaal: 21 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 21 ke baad 22 aata hai—ab batao, 84 mein 4 ke groups kaise check karoge?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch09-t01-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, answer clear nahi suna. Ek baar phir bolo: 84 divided by 4 kitna? Try karke batao.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c5-maths-ch09-t02-i01",
+   "said": "4",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 4 bachchon ke groups banao: kitne poore groups banenge, aur kitne bachche bachenge? Ab dobara autos gino.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch09-t02-i01",
+   "said": "6",
+   "heard": "Kabir, 4 bachchon ke groups banao: kitne poore groups banenge, aur kitne bachche bachenge? Ab dobara autos gino.",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne bache hue bachchon ke liye ek extra auto joda—isi step se 6 aata hai. 23 bachche, har auto mein 4 baith sakte hain. Kitne auto chahiye?",
+   "firstDraft": "Kabir, tumne bache hue bachchon ke liye ek extra auto joda—isi step se 6 aata hai. Auto chahiye ya remainder?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch09-t02-i01",
+   "said": "6",
+   "heard": "Ek second, pehle yeh batao: 6 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 6 autos kyun chahiye—5 autos mein kitne bachche jaayenge, aur kaun bach jaayega?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c5-maths-ch09-t02-i01",
+   "said": "6",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 6 kaise decide kiya—5 autos lene par kya hota?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch09-t02-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, sawaal ek baar saaf bol do: 23 bachche, har auto mein 4. Kitne auto chahiye? Tum bolo.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c5-maths-ch10-t01-i03",
+   "said": "4",
+   "cls": "misconception/model",
+   "move": "reteach",
+   "reply": "Kabir, 4 nahi. Ek blade ko agle blade ki jagah pahunchne tak full turn ka kitna hissa lagta hai? Phir wahi question try karo.",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch10-t01-i03",
+   "said": "3",
+   "heard": "Achha, pehle ek chhota sawaal: 3 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, sahi—ab batao, tumne 3 kyun kaha: fan kis turn par pehle jaisa dikhta hai?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch10-t01-i03",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, meri baat clear nahi hui—question ek baar phir suno: fan poora ghoome, toh wahi shape kitni baar dikhegi? Tum bolo.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c5-maths-ch11-t01-i03",
+   "said": "5",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 5 lambi rows mein total 15 squares hain. Ek row mein kitne squares honge? Try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch11-t01-i03",
+   "said": "3",
+   "heard": "Kabir, 5 lambi rows mein total 15 squares hain. Ek row mein kitne squares honge? Try karo.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, tumne ek row ke 3 squares sahi gine. Ek godhadi ka tukda 4 square lamba aur 3 square chauda hai. Woh kitne square gherta hai?",
+   "firstDraft": "Kabir, tumne ek row ke 3 squares sahi gिने। Ab isi tarah: 4 lambi rows aur 3 chaudi rows mein kitne squares honge?",
+   "caught": [
+    "drift",
+    "script"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch11-t01-i03",
+   "said": "3",
+   "heard": "Ek second, pehle yeh batao: 3 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 3 se pehle 2 hota hai. Ab batao, 15 area mein 5 ki rows rakhne par 3 kyun bachta hai?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch11-t01-i03",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, sawaal ek baar phir bolo ya apni choice tap karke batao: 15 area aur 5 length se width kitni?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c5-maths-ch12-t01-i01",
+   "said": "59",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, seconds hand ek poora round dekho—minute khatam hone tak woh kitne one-second steps gin leti hai? Try again.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch12-t01-i01",
+   "said": "60",
+   "heard": "Kabir, seconds hand ek poora round dekho—minute khatam hone tak woh kitne one-second steps gin leti hai? Try again.",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Bilkul, 1 minute mein 60 seconds hote hain. Ab: Dedh ghanta kitna hota hai—1 hour 5 minutes, 1 hour 50 minutes, ya 1 hour 30 minutes?",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch12-t01-i01",
+   "said": "60",
+   "heard": "Achha, pehle ek chhota sawaal: 60 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 60 toh wahi hai; 60 minutes ke baad 1 hour kyun bolte hain, tum kaise jaante ho?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c5-maths-ch12-t01-i01",
+   "said": "60",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Bilkul, Kabir. Tumhe 60 seconds kaise pata chala—minute aur seconds ka kya connection hai?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch12-t01-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, awaaz clear nahi aayi—please ek baar phir bolo: 1 minute mein kitne second hote hain?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c5-maths-ch13-t01-i03",
+   "said": "0",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 0 se aage mendhak ke landing numbers 3, 6, 9… likho. Phir dekho khargosh ke numbers mein kaunsa pehla match hai. Try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch13-t01-i03",
+   "said": "12",
+   "heard": "Kabir, 0 se aage mendhak ke landing numbers 3, 6, 9… likho. Phir dekho khargosh ke numbers mein kaunsa pehla match hai. Try karo.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, 12 sahi hai: 3 ke jumps mein 9 ke baad 12 aata hai. Ab poora karo: 3-3 karke gino: 3, 6, 9, ___, ___",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch13-t01-i03",
+   "said": "12",
+   "heard": "Ek second, pehle yeh batao: 12 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 12 tak pahunchne ke liye tumne 3 aur 4 ke jumps kaise milaye?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch13-t01-i03",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, meri baat clear nahi hui? Wahi question ek baar phir bolo, ya apna number batao.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c5-maths-ch15-t01-i03",
+   "said": "39",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, ek tasveer ki value 10 bachche hai. Ab 4 tasveeron ke liye 10 ko 4 baar jodkar batao: kitne bachche?",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c5-maths-ch15-t01-i03",
+   "said": "40",
+   "heard": "Kabir, ek tasveer ki value 10 bachche hai. Ab 4 tasveeron ke liye 10 ko 4 baar jodkar batao: kitne bachche?",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, tumne 10 ko 4 baar jodkar 40 nikala—yeh step sahi hai. Har TV tasveer 2 ghante screen time ke barabar hai. Riya ki row mein 3 TV tasveerein hain. Kitne ghante hue?",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch15-t01-i03",
+   "said": "40",
+   "heard": "Achha, pehle ek chhota sawaal: 40 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 40 ke baad 50 aata hai. Tumne 4 tasveeron ko 10 se guna kaise kiya?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch15-t01-i03",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, question ek baar phir bolo, ya bas apna answer tap karke batao.",
+   "firstDraft": "Kabir, question ek baar phir bolo ya choice tap karo: 10, 40, ya 14?",
+   "caught": [
+    "leak"
+   ]
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c5-maths-ch15-t02-i01",
+   "said": "4",
+   "cls": "misconception/model",
+   "move": "reteach",
+   "reply": "Kabir, 4 lines tak bar hai; har line 10 bachche. Har line ko 10 se jodkar total batao. Try karo.",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c5-maths-ch15-t02-i01",
+   "said": "40",
+   "heard": "Ek second, pehle yeh batao: 40 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, sahi: 40. Tumne chauthi line ko 10 se kaise joda?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c5-maths-ch15-t02-i01",
+   "said": "40",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumhe 40 kaise mila—bar ki chauthi line ko scale ke 10 bachchon se kaise joda?",
+   "firstDraft": "Kabir, sahi—tumne chauthi line ko 10 se multiply kiya. Ab batao, 10 bachchon ki scale rakhne se har bar ki height ka kya matlab hota hai?",
+   "caught": [
+    "nowhy"
+   ]
+  },
+  {
+   "arm": "screen",
+   "itemId": "c5-maths-ch15-t02-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, meri baat shayad clear nahi hui. Main question phir bolun, ya tum apna answer try karoge?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c6-maths-ch01-t01-i07",
+   "said": "126",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, pehle ek layer socho: 5 by 5 mein kitne dabbe honge? Phir aisi kitni layers 5 by 5 by 5 cube mein hain?",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch01-t01-i07",
+   "said": "125",
+   "heard": "Kabir, pehle ek layer socho: 5 by 5 mein kitne dabbe honge? Phir aisi kitni layers 5 by 5 by 5 cube mein hain?",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, 5 by 5 ki ek layer 25 dabbon ki hoti hai; 5 layers mein 25 ko 5 se multiply karo. 11 ke baad agle do odd numbers kaun se hain?",
+   "firstDraft": "Kabir, 5 by 5 ki ek layer 25 dabbon ki hoti hai; 5 layers mein 25 ko 5 se multiply karo.",
+   "caught": [
+    "drift",
+    "flat"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch01-t01-i07",
+   "said": "125",
+   "heard": "Achha, pehle ek chhota sawaal: 125 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 125 sahi. Tumne 5 by 5 by 5 se 125 kaise nikala?",
+   "firstDraft": "Kabir, 125 sahi tha—tumne 5 ko teen baar multiply kiya. Ab batao, 2 by 2 by 2 mein kitne dabbe honge?",
+   "caught": [
+    "nowhy"
+   ]
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch01-t01-i07",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, tumne answer clearly nahi bola. Ek baar phir batao: 5 by 5 by 5 cube mein kitne chhote dabbe lagenge?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c6-maths-ch01-t02-i01",
+   "said": "6",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, ek row mein 6 dots. Ab 6 rows ke liye 6 ko kitni baar add karoge? Try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch01-t02-i01",
+   "said": "36",
+   "heard": "Kabir, ek row mein 6 dots. Ab 6 rows ke liye 6 ko kitni baar add karoge? Try karo.",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 6 rows ko 6 dots se jodkar 36 nikala. Meena 4 by 4 dots banati hai, phir 9 dots ka L-shape jodkar 5 by 5 bana deti hai. Uski picture humein kya batati hai?",
+   "firstDraft": "Kabir, tumne 6 rows ko 6 dots se jodkar 36 nikala. Ab 6 by 6 picture ka square number kya hoga?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch01-t02-i01",
+   "said": "36",
+   "heard": "Ek second, pehle yeh batao: 36 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 36 sahi tha. Ab batao, 6 rows aur 6 dots ko multiply kyun karte hain?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch01-t02-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, question ek baar clear bolun: 6 rows, har row mein 6 dots. Kul kitne dots honge? Apna answer bolo.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c6-maths-ch01-t03-i01",
+   "said": "26",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, ends se pairs banao: 1 plus 9, 3 plus 7, aur beech ka 5. Ab inhe jodkar dekho—kitna aata hai?",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch01-t03-i01",
+   "said": "25",
+   "heard": "Kabir, ends se pairs banao: 1 plus 9, 3 plus 7, aur beech ka 5. Ab inhe jodkar dekho—kitna aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 1 plus 9, 3 plus 7, aur 5 ko jodkar 25 nikala. Asha check karti hai: 1 + 3 = 4, 1 + 3 + 5 = 9, 1 + 3 + 5 + 7 = 16, aur kehti hai, 'Toh yeh sab odd numbers ke liye chalega.' Sabse achha agla kadam kya hai?",
+   "firstDraft": "Kabir, tumne 1 plus 9, 3 plus 7, aur 5 ko jodkar 25 nikala. Ab batao, isse kaunsa choice support hota hai?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch01-t03-i01",
+   "said": "25",
+   "heard": "Achha, pehle ek chhota sawaal: 25 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "25 sahi. Tumne 1, 3, 5, 7, 9 ko jodkar 25 kaise nikala?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c6-maths-ch01-t03-i01",
+   "said": "25",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Sahi answer, Kabir. Tumne 25 kaise jaana—kaunsa pattern ya method use kiya?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch01-t03-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, answer clear nahi suna—ek baar phir bolo: 1 + 3 + 5 + 7 + 9 kitna hota hai?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c6-maths-ch01-t04-i02",
+   "said": "4",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, pehle dost ke paas baaki kitne dost bachte hain jinse woh haath mila sakta hai? Sochkar batao.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch01-t04-i02",
+   "said": "6",
+   "heard": "Kabir, pehle dost ke paas baaki kitne dost bachte hain jinse woh haath mila sakta hai? Sochkar batao.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, 4 dost mein pehle dost ke liye baaki 3 dost hote hain. Ek regular hexagon ke kitne sides aur kitne corners hote hain?",
+   "firstDraft": "Kabir, 4 dost mein pehle dost ke liye baaki 3 dost hote hain. Ab doosre dost ke naye handshakes gino—kitne?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch01-t04-i02",
+   "said": "6",
+   "heard": "Ek second, pehle yeh batao: 6 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 6 kaise gina—har pair ko ek baar jodkar, ya kisi aur tareeke se?",
+   "firstDraft": "Kabir, 6 se ek pehle 5 hota hai. Ab batao, naya point purane kitne points se judega?",
+   "caught": [
+    "nowhy"
+   ]
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch01-t04-i02",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, clear nahi suna—please apna answer dobara bolo, ya sirf apni choice batao.",
+   "firstDraft": "Kabir, awaaz clear nahi aayi—please question ka answer ek baar phir bolo, ya choice tap karo: 4, 6, ya 8?",
+   "caught": [
+    "leak"
+   ]
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c6-maths-ch03-t01-i01",
+   "said": "1",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 135 cm wale bachche ke bilkul bagal mein kaun-kaun khada hai? Unki heights line se batao.",
+   "firstDraft": "Kabir, 135 cm wala beech mein hai. Uske bilkul bagal mein kaunse do bachche hain, aur unki heights kya hain? Try karo.",
+   "caught": [
+    "leak"
+   ]
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch03-t01-i01",
+   "said": "2",
+   "heard": "Kabir, 135 cm wale bachche ke bilkul bagal mein kaun-kaun khada hai? Unki heights line se batao.",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 135 cm wale bachche ke dono neighbours 152 cm aur 148 cm hain; dono lambe hain, isliye uska number 2 hoga. 5 numbers ki ek row banao jisme theek 2 supercells hon. Ravi ne likha 1, 5, 2, 6, 3. Sita ne likha 9, 1, 2, 8, 3. Kaun sahi hai?",
+   "firstDraft": "Kabir, 135 cm wale bachche ke dono neighbours 152 cm aur 148 cm hain; dono lambe hain, isliye uska number 2 hoga.",
+   "caught": [
+    "drift",
+    "flat"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch03-t01-i01",
+   "said": "2",
+   "heard": "Achha, pehle ek chhota sawaal: 2 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 2 kaise jaana? Apna reason batao.",
+   "firstDraft": "Kabir, tumne 2 bataya tha. Ab batao, 135 cm wale ke dono neighbours mein kaun-kaun usse lambe hain?",
+   "caught": [
+    "nowhy"
+   ]
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch03-t01-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, 135 cm wale ke bilkul bagal mein kaun-kaun khade hain? Unki heights dobara bolo.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c6-maths-ch03-t02-i01",
+   "said": "4752",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 4752 ke digits 4, 7, 5 aur 2 hain. In chaaron ko jodkar digit sum batao?",
+   "firstDraft": "Kabir, 4752 ke chaar digits alag-alag likho: 4, 7, 5, aur 2. Ab inhe jodne ki koshish karo.",
+   "caught": [
+    "flat"
+   ]
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch03-t02-i01",
+   "said": "18",
+   "heard": "Kabir, 4752 ke digits 4, 7, 5 aur 2 hain. In chaaron ko jodkar digit sum batao?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Haan, 4 + 7 + 5 + 2 = 18. 11, 22, 33 aur 121 palindromes hain aur sab 11 se divide hote hain. Ravi kehta hai har palindrome 11 se divide hota hai. Kya woh sahi hai?",
+   "firstDraft": "Haan, 4 + 7 + 5 + 2 = 18. Ab check karo: 4752 ko 9 se divide karne par remainder kya aata hai?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch03-t02-i01",
+   "said": "18",
+   "heard": "Ek second, pehle yeh batao: 18 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, sahi—18 hi aaya. Tumne digit sum nikalne ke liye kaunse digits jode, aur kyun?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c6-maths-ch03-t02-i01",
+   "said": "18",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Sahi, Kabir—tumne 4, 7, 5 aur 2 ko add karke 18 paaya. Yeh kaise pata chala ki sab digits add karne hain?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch03-t02-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, awaaz clear nahi aayi—ek baar phir bolo: 4752 ka digit sum kya hai?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c6-maths-ch03-t03-i06",
+   "said": "81",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 27 odd hai, isliye odd rule lagao: 27 ko 3 se multiply karke 1 jodo. Ab result batao.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch03-t03-i06",
+   "said": "82",
+   "heard": "Kabir, 27 odd hai, isliye odd rule lagao: 27 ko 3 se multiply karke 1 jodo. Ab result batao.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, 82 sahi hai: 27 ko 3 se multiply karke 1 joda. Ab 82 even hai—next number bolo. 6 se Collatz game khelo aur 1 tak pahunchne tak numbers bolo.",
+   "firstDraft": "Kabir, 82 sahi hai: 27 ko 3 se multiply karke 1 joda. Ab 82 even hai—next number bolo.",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch03-t03-i06",
+   "said": "82",
+   "heard": "Achha, pehle ek chhota sawaal: 82 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 82 ke baad 41 kaise pata chala—tumne kaunsa rule use kiya?",
+   "firstDraft": "Kabir, 82 ke baad 41 aata hai. Tumne 82 kaunsa rule lagaakar badla—half kiya ya 3n plus 1?",
+   "caught": [
+    "nowhy"
+   ]
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch03-t03-i06",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, awaaz clear nahi aayi—ek baar phir bolo: 27 ke baad kya aata hai?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c6-maths-ch03-t04-i01",
+   "said": "487",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 487 kin do hundreds ke beech aata hai? Un dono hundreds ke naam batao.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch03-t04-i01",
+   "said": "500",
+   "heard": "Kabir, 487 kin do hundreds ke beech aata hai? Un dono hundreds ke naam batao.",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 487, 400 aur 500 ke beech hai. Mummy ko jaanna hai ki ₹98, ₹149 aur ₹203 ki cheezon ke liye ₹500 kaafi hain ya nahi. Sabse achha tareeka kya hai?",
+   "firstDraft": "Kabir, 487, 400 aur 500 ke beech hai. Ab batao, nearest hundred 400 hoga ya 500?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch03-t04-i01",
+   "said": "500",
+   "heard": "Ek second, pehle yeh batao: 500 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 500 se ek pehle 499 hota hai. 487 ko 500 kyun round karte hain—apna reason batao.",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch03-t04-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, awaaz clear nahi aayi—please ek baar phir bolo: 487 ko nearest hundred tak round karoge?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c6-maths-ch04-t01-i03",
+   "said": "4",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, table mein mango aur apple ki sankhya dobara dekho: 5 aur 2. In dono ka difference nikaal kar batao.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch04-t01-i03",
+   "said": "3",
+   "heard": "Kabir, table mein mango aur apple ki sankhya dobara dekho: 5 aur 2. In dono ka difference nikaal kar batao.",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 5 aur 2 ka difference sahi nikala: 3. Do survey sawaal: 'Tumhara favourite sport kaunsa hai?' aur 'Kya tumhe sports pasand hain?' Sports day plan karne ke liye kaunsa zyada kaam ka data dega, aur kyon?",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch04-t01-i03",
+   "said": "3",
+   "heard": "Achha, pehle ek chhota sawaal: 3 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 3 bataya—ab batao, mango ka count apple se compare karke 3 kaise mila?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c6-maths-ch04-t01-i03",
+   "said": "3",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 5 mein se 2 ghataaya—yeh difference (antar) kyun nikalta hai?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch04-t01-i03",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, question ek baar phir bolo ya choice tap karo: mango aur apple ke numbers dekhkar difference kitna hai?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c6-maths-ch04-t02-i01",
+   "said": "4",
+   "cls": "misconception/model",
+   "move": "reteach",
+   "reply": "Kabir, ek picture ko 10 ped mein “open” karke dekho; phir 4 pictures mein kul kitne ped honge? Try karo.",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch04-t02-i01",
+   "said": "40",
+   "heard": "Ek second, pehle yeh batao: 40 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 40 bataya—ab batao, 4 pictures ko 10 se kyun multiply kiya?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch04-t02-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, question ek baar phir bolun? Tum bas batao: 4 pictures mein har picture kitne ped dikhati hai?",
+   "firstDraft": "Kabir, question ek baar phir bolo ya choice tap karo: 10, 20, 30, ya 40 ped?",
+   "caught": [
+    "leak"
+   ]
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c6-maths-ch04-t03-i01",
+   "said": "69",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, pehle batao: 1 unit ki value kitni hai? Us value ko 7 units ke liye repeat karne ka try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch04-t03-i01",
+   "said": "70",
+   "heard": "Kabir, pehle batao: 1 unit ki value kitni hai? Us value ko 7 units ke liye repeat karne ka try karo.",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 7 units ko 10 runs per unit se multiply karke 70 runs milte hain. Ab bar graph ka rule dekho: Mona ne mango ka bar zyada chauda banaya kyunki mango favourite hai. Kya yeh theek hai?",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch04-t03-i01",
+   "said": "70",
+   "heard": "Achha, pehle ek chhota sawaal: 70 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 70 sahi tha. Tumne 7 units ko 10 runs se kaise joda?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch04-t03-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, answer clearly bolo: 7 units ko 10 runs se multiply karoge—kitne runs?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c6-maths-ch07-t01-i13",
+   "said": "1",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 1/4 sirf ek hissa hai; poore mein kitne barabar hisse hote hain? Phir try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch07-t01-i13",
+   "said": "4",
+   "heard": "Kabir, 1/4 sirf ek hissa hai; poore mein kitne barabar hisse hote hain? Phir try karo.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, tumne sahi pehchana: poori roti 4 barabar hisse hain. Ek tukda kitna fraction hai?",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch07-t01-i13",
+   "said": "4",
+   "heard": "Ek second, pehle yeh batao: 4 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 4 bataya—ab samjhao, chaar 1/4 tukde milkar poora kyun banate hain?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c6-maths-ch07-t01-i13",
+   "said": "4",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Sahi, Kabir. Tumne 4 kaise jaana—poore ko barabar parts mein sochkar, ya kuch aur tareeke se?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch07-t01-i13",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, awaaz clear nahi aayi—ek baar phir bolo: kitne 1/4 tukde milkar ek poora banate hain?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c6-maths-ch07-t03-i01",
+   "said": "3",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, denominator 2 se 8 hua—2 ko kis number se multiply kiya? Usi number se numerator 1 ko bhi multiply karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch07-t03-i01",
+   "said": "4",
+   "heard": "Kabir, denominator 2 se 8 hua—2 ko kis number se multiply kiya? Usi number se numerator 1 ko bhi multiply karo.",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Sahi, 2 ko 4 se multiply kiya. Aadhi chapati aur usi chapati ka 2/4. Guess karo: kya zyada hai?",
+   "firstDraft": "Sahi, 2 ko 4 se multiply kiya. Ab numerator 1 ko bhi 4 se multiply karke batao: ?/8 mein upar kya aayega?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch07-t03-i01",
+   "said": "4",
+   "heard": "Achha, pehle ek chhota sawaal: 4 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 4 bataya—ab batao, 1/2 ko 8 parts mein badalne par numerator 4 kyun hua?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch07-t03-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, question ek baar phir bolo ya khaali jagah mein apna number tap karke batao: 1/2 = ?/8.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c6-maths-ch09-t02-i07",
+   "said": "60",
+   "cls": "misconception/model",
+   "move": "reteach",
+   "reply": "Kabir, full turn 360° hota hai. Table mein dekho: 60° ke turns kitni baar milkar 360° banate hain? Try karo.",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch09-t02-i07",
+   "said": "6",
+   "heard": "Ek second, pehle yeh batao: 6 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 6 sahi hai; par 6 kyun aaya—poore 360° turn mein 60° kitni baar fit hota hai?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch09-t02-i07",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, sawaal ek baar phir bolo ya apna answer tap karke batao: order of rotational symmetry kya hai?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c6-maths-ch10-t02-i01",
+   "said": "1",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, number line par −3 aur 2 mein se kaunsa number right side mein hai? Wahi try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch10-t02-i01",
+   "said": "2",
+   "heard": "Kabir, number line par −3 aur 2 mein se kaunsa number right side mein hai? Wahi try karo.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Chhote se bade order mein lagao: 3, −4, 0, −1, 5.",
+   "firstDraft": "Kabir, sahi—2 number line par −3 ke right mein hai. Ab lagao: 3, −4, 0, −1, 5.",
+   "caught": [
+    "flat"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch10-t02-i01",
+   "said": "2",
+   "heard": "Achha, pehle ek chhota sawaal: 2 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 2 ko bada kaise jaana—number line par uski position se kya pata chalta hai?",
+   "firstDraft": "Kabir, sahi—ab batao, number line par 2, −3 ke left hai ya right?",
+   "caught": [
+    "nowhy"
+   ]
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c6-maths-ch10-t02-i01",
+   "said": "2",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumhe kaise pata chala ki 2, −3 se bada hai?",
+   "firstDraft": "Sahi, Kabir—tumne number line par kya dekhkar 2 ko bada maana?",
+   "caught": [
+    "nowhy"
+   ]
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch10-t02-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, choice ek baar clearly bolo: −3 ya 2? Number line par right waala bada hota hai.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c6-maths-ch10-t03-i01",
+   "said": "3",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 5 positive tokens aur 3 negative tokens banao; opposite pairs cancel karo. Kitne positive tokens bachenge?",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c6-maths-ch10-t03-i01",
+   "said": "2",
+   "heard": "Kabir, 5 positive tokens aur 3 negative tokens banao; opposite pairs cancel karo. Kitne positive tokens bachenge?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 3 − (−2) mein negative 2 hatane ka matlab opposite direction jaana hai. Ab choices: 5, 1, ya −5?",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c6-maths-ch10-t03-i01",
+   "said": "2",
+   "heard": "Ek second, pehle yeh batao: 2 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 5 plus negative 3 ka answer 2 kaise nikala—tokens mein kya kiya tha?",
+   "firstDraft": "Kabir, 2 se ek pehle 1 hota hai—ab batao, 2 ke baad wala number kya hai?",
+   "caught": [
+    "nowhy"
+   ]
+  },
+  {
+   "arm": "screen",
+   "itemId": "c6-maths-ch10-t03-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, ek baar saaf bol do: Tokens se 5 + (−3) kitne honge?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c7-maths-ch02-t02-i02",
+   "said": "24",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, har term ki value alag nikaalo: pehle multiplication aur division, phir addition-subtraction. Ab expression dobara try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c7-maths-ch02-t02-i02",
+   "said": "23",
+   "heard": "Kabir, har term ki value alag nikaalo: pehle multiplication aur division, phir addition-subtraction. Ab expression dobara try karo.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, pehle multiplication aur division karo: 3 × 5 aur 8 ÷ 2. In dono values ke baad bache numbers se final calculation karo. 12 + 3 × 5 − 8 ÷ 2 mein kitne terms hain? Unke naam batao.",
+   "firstDraft": "Kabir, pehle multiplication aur division karo: 3 × 5 aur 8 ÷ 2. In dono values ke baad bache numbers se final calculation karo.",
+   "caught": [
+    "drift",
+    "flat"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c7-maths-ch02-t02-i02",
+   "said": "23",
+   "heard": "Achha, pehle ek chhota sawaal: 23 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 23 ke baad 24 aata hai—ab batao, is question mein 2 times 10 ko pehle kyun karte hain?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c7-maths-ch02-t02-i02",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, question ek baar phir bolo ya apna pehla step batao: 12 + 3 × 5 − 8 ÷ 2.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c7-maths-ch04-t02-i01",
+   "said": "2",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 3x ka matlab 3 ko x se multiply karna hai. Ab x ki jagah 4 rakhkar 3x + 2 dobara try karo.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c7-maths-ch04-t02-i01",
+   "said": "14",
+   "heard": "Kabir, 3x ka matlab 3 ko x se multiply karna hai. Ab x ki jagah 4 rakhkar 3x + 2 dobara try karo.",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne x ki jagah 4 rakhkar 3x ko 12 kiya; ab 12 mein 2 jodo. Agar x = 3 hai, toh 2x kitna hai?",
+   "firstDraft": "Kabir, tumne x ki jagah 4 rakhkar 3x ko 12 kiya; ab 12 mein 2 jodo. 3x + 2 kitna hua?",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c7-maths-ch04-t02-i01",
+   "said": "14",
+   "heard": "Ek second, pehle yeh batao: 14 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, sahi—tumne 14 bataya. Ab batao, 3x mein x ki jagah 4 rakhkar calculation kaise ki?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c7-maths-ch04-t02-i01",
+   "said": "14",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Sahi—tumhe 3x ko 3 times x kyun samajhna chahiye, digits ko saath-saath likhna kyun nahi?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c7-maths-ch04-t02-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, question ek baar aur bolo ya choice tap karo: x ki jagah 4 rakhkar 3x + 2 kaise likhoge?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c7-maths-ch04-t03-i03",
+   "said": "52",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, n ki jagah 25 rakho: 2 times 25, phir 1 jodo. Ab dobara calculate karke batao.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c7-maths-ch04-t03-i03",
+   "said": "51",
+   "heard": "Kabir, n ki jagah 25 rakho: 2 times 25, phir 1 jodo. Ab dobara calculate karke batao.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Teeliyon ke triangle ek line mein: 1 triangle mein 3 teeliyan, 2 mein 5, 3 mein 7. Har naya triangle kitni teeliyan jodta hai?",
+   "firstDraft": "Kabir, 2 times 25 equals 50; uske baad 1 jodne par 51 aata hai. Ab diye pattern mein har naya triangle kitni teeliyan jodta hai?",
+   "caught": [
+    "leak"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c7-maths-ch04-t03-i03",
+   "said": "51",
+   "heard": "Achha, pehle ek chhota sawaal: 51 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 51 sahi hai. Tumne rule 2n plus 1 ko 25 se multiply karke nahi, n ki jagah 25 rakhkar kaise use kiya?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c7-maths-ch04-t03-i03",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, sawaal ek baar phir bolo ya choice tap karo: 25 triangles mein teeliyan nikaalni hain, ya rule samjhana hai?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c7-maths-ch06-t02-i13",
+   "said": "5",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, line ka total 15 hona chahiye. 9 aur 5 ko jodkar dekho; teesre number se kitna poora hoga?",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c7-maths-ch06-t02-i13",
+   "said": "1",
+   "heard": "Kabir, line ka total 15 hona chahiye. 9 aur 5 ko jodkar dekho; teesre number se kitna poora hoga?",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Yeh grid check karo. Rows: 2 7 6 / 9 5 1 / 4 3 8. Kya yeh magic square hai? Magic sum kya hai?",
+   "firstDraft": "Kabir, 9 plus 5 plus 1 equals 15. Ab batao: Kya yeh magic square hai? Magic sum kya hai?",
+   "caught": [
+    "leak",
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c7-maths-ch06-t02-i13",
+   "said": "1",
+   "heard": "Ek second, pehle yeh batao: 1 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 1 answer diya—par reason kya tha? 9, 5 aur teesre number ka sum 15 kaise bana?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c7-maths-ch06-t02-i13",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, question ek baar clearly bol do, ya bas apna possible number tap karke batao: teesra number kya hoga?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c7-maths-ch08-t01-i01",
+   "said": "6",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, 1/4 ka matlab 20 ko 4 equal parts mein baantna. Har part kitna hoga?",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c7-maths-ch08-t01-i01",
+   "said": "5",
+   "heard": "Kabir, 1/4 ka matlab 20 ko 4 equal parts mein baantna. Har part kitna hoga?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, tumne 20 ko 4 se baantkar 5 nikala. Ab batao: 12 × 1/3, 12 se bada hai ya chhota?",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c7-maths-ch08-t01-i01",
+   "said": "5",
+   "heard": "Achha, pehle ek chhota sawaal: 5 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 5 sahi hai. Tumne kaise jaana ki 20 ka one-fourth 5 hota hai?",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "key",
+   "itemId": "c7-maths-ch08-t01-i01",
+   "said": "5",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, sahi answer. Tumne 20 ko 4 equal parts mein kaise socha?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c7-maths-ch08-t01-i01",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, ek baar clearly bolo: 20 ka 1/4 kitna hoga? Chaaho toh bas number tap karke batao.",
+   "caught": []
+  },
+  {
+   "arm": "verdict",
+   "kind": "echo",
+   "itemId": "c7-maths-ch08-t02-i02",
+   "said": "3",
+   "cls": "misconception/model",
+   "move": "reteach",
+   "reply": "Kabir, number line par 0 se 5 tak one-third ke jumps ginो. Kitne jumps lagenge? Ab 5 ÷ 1/3 nikaalo.",
+   "caught": []
+  },
+  {
+   "arm": "drift",
+   "itemId": "c7-maths-ch08-t02-i02",
+   "said": "15",
+   "heard": "Ek second, pehle yeh batao: 15 se ek pehle kaunsa number hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, sahi reason tumhara tha—ab batao, 5 mein kitne one-third ke groups ban sakte hain?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c7-maths-ch08-t02-i02",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, clear nahi aaya—answer ek baar phir bolo, ya apna method batao: tumne fraction ko kaise handle kiya?",
+   "firstDraft": "Kabir, awaaz clear nahi aayi—answer ek baar phir bolo, ya choice batao: 5, 15, ya 1/15?",
+   "caught": [
+    "leak"
+   ]
+  },
+  {
+   "arm": "verdict",
+   "kind": "off",
+   "itemId": "c7-maths-ch10-t01-i06",
+   "said": "55",
+   "cls": "incorrect/model",
+   "move": "hint",
+   "reply": "Kabir, pehle size alag multiply karo: 7 × 8. Phir dono negative signs ka sign decide karke poora answer batao.",
+   "caught": []
+  },
+  {
+   "arm": "hintKey",
+   "itemId": "c7-maths-ch10-t01-i06",
+   "said": "56",
+   "heard": "Kabir, pehle size alag multiply karo: 7 × 8. Phir dono negative signs ka sign decide karke poora answer batao.",
+   "cls": "correct/exact",
+   "move": "practice",
+   "reply": "Kabir, 7 × 8 ko 56 likhna sahi step hai. Ab dono negative signs ka result sign batao. 3 × (−5) kitna hai?",
+   "firstDraft": "Kabir, 7 × 8 ko 56 likhna sahi step hai. Ab dono negative signs ka result sign batao.",
+   "caught": [
+    "drift"
+   ]
+  },
+  {
+   "arm": "drift",
+   "itemId": "c7-maths-ch10-t01-i06",
+   "said": "56",
+   "heard": "Achha, pehle ek chhota sawaal: 56 ke baad kaunsa number aata hai?",
+   "cls": "correct/exact",
+   "move": "probe",
+   "reply": "Kabir, 56 sahi hai—ab batao, dono negative hone par answer positive kyun hua?",
+   "caught": []
+  },
+  {
+   "arm": "screen",
+   "itemId": "c7-maths-ch10-t01-i06",
+   "said": "hmm… woh… haan",
+   "cls": "no_evidence/eval",
+   "move": "repair",
+   "reply": "Kabir, answer ek baar clearly bolo: (−7) × (−8) kitna hai? Try karo—negative aur negative ka sign kya banta hai?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch02-t03",
+   "move": "greet",
+   "reply": "Namaste Kabir, main Arjun, tumhara AI teacher hoon. Aaj Equivalent fractions seekhenge. Tumhe cricket pasand hai ya space?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch06-t01",
+   "move": "greet",
+   "reply": "Namaste Kabir, main Arjun, tumhara AI teacher. Aaj hum larger numbers ko multiply karenge. Tumhe cricket ya space mein zyada interest hai?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch06-t02",
+   "move": "greet",
+   "reply": "Namaste Kabir! Main Arjun, tumhara AI teacher. Aaj multiplication patterns aur estimation karenge. Maths mein tumhe cricket pasand hai ya space?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch07-t02",
+   "move": "greet",
+   "reply": "Namaste Kabir, main Arjun, tumhara AI teacher. Aaj Growing shape patterns dekhenge. Tumhe shapes banana zyada pasand hai ya cricket khelna?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch08-t02",
+   "move": "greet",
+   "reply": "Namaste Kabir, main Arjun, tumhara AI teacher. Aaj hum litres aur millilitres convert karenge. Tumhe cricket ya space mein kya zyada pasand hai?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch09-t01",
+   "move": "greet",
+   "reply": "Namaste Kabir! Main Arjun, tumhara AI teacher. Aaj hum bade numbers ko divide karna seekhenge. Tumhe cricket ya space mein kya zyada pasand hai?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch09-t02",
+   "move": "greet",
+   "reply": "Namaste Kabir! Main Arjun, tumhara AI teacher. Aaj remainders (shesh) ko samjhenge. Tumhe cricket ya space—kis par baat karna pasand hai?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch10-t01",
+   "move": "greet",
+   "reply": "Hi Kabir, main Arjun, tumhara AI teacher hoon. Aaj hum Turn symmetry, yani ghoomne par same dikhna, seekhenge. Cricket ya space—kismein zyada interest hai?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch11-t01",
+   "move": "greet",
+   "reply": "Hi Kabir, main Arjun, tumhara AI teacher hoon. Aaj hum squares gin kar area nikaalenge. Tumhe cricket ya space mein kya zyada pasand hai?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch12-t01",
+   "move": "greet",
+   "reply": "Hello Kabir, main Arjun, tumhara AI teacher hoon. Aaj Seconds, minutes aur hours dekhenge. Tumhe cricket ya space mein kya zyada pasand hai?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch13-t01",
+   "move": "greet",
+   "reply": "Namaste Kabir, main Arjun, tumhara AI teacher hoon. Aaj multiples aur common multiples dekhenge. Tumhe cricket ya space—kya zyada pasand hai?",
+   "caught": []
+  },
+  {
+   "arm": "greet",
+   "itemId": "c5-maths-ch15-t01",
+   "move": "greet",
+   "reply": "Namaste Kabir! Main Arjun, tumhara AI teacher. Aaj hum scale wale pictographs seekhenge. Tumhe cricket pasand hai ya space?",
+   "caught": []
+  }
+ ],
+ "errors": []
+}

@@ -16,7 +16,9 @@
 //                misconception id must be the kit's
 //   Q6  geometry targets on screen, ≥ the band's hit size in CSS px, font ≥ 14 px, no horizontal overflow
 //   leak         pre-commit text (kit prompt + every agent-drawn word) never reveals the key (director revealsAnswer),
-//                and the key's position in the option row is not constant across items
+//                and the key's position in the option row is not constant across items, and the key is not DECORATED
+//                differently from every distractor in the same way on every item (leak.key_styled: agent-drawn marks
+//                nearest each option, position-free; with opaque refs this is defence in depth)
 // Q8 (strings) runs in safety.js; Q7 perf and Q9 judged quality are NOT in this gate (open items in the inbox).
 import { chromium } from "playwright-core";
 import { lintMechanic } from "./lint.js";
@@ -26,7 +28,7 @@ import { revealsAnswer } from "../../director/items.js";
 import { sameV, fold, kitTruth, regrade, rederive, solveUnits } from "./truth.js";
 export { kitTruth, rederive, solveUnits };
 
-export const QA_VERSION = "g2-qa@1";
+export const QA_VERSION = "g2-qa@2";
 const HOST = "http://forge-host.test/";
 const PLAY = "http://forge-play.test/b/index.html";
 const MODULE_ID = "g2m";
@@ -116,7 +118,7 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
     const st = () => seam(() => window.__forgeSeam.state());
     const geometry = [];
     const textIssues = new Set();
-    const keyPositions = [];
+    const keyPositions = [], keyMarks = [];
     let level = -1, guard = 0;
     if (capture) frames.intro = await page.screenshot({ type: "png" });
     while (guard++ < 40) {
@@ -154,6 +156,9 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
       if (spec.mode !== "build") {
         const opts = ts.filter((t) => t.slot);
         keyPositions.push(opts.findIndex((t) => t.slot === "key"));
+        const marks = await seam(() => window.__forgeSeam.optionMarks());
+        const km = marks.find((x) => x.slot === "key");
+        if (km) { const others = new Set(marks.filter((x) => x.slot !== "key").flatMap((x) => x.marks)); keyMarks.push(new Set(km.marks.filter((mk) => !others.has(mk)))); }
       }
       const first = s.li !== level;
       level = s.li;
@@ -195,7 +200,8 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
         await waitAnswer(n1).catch(() => {});
       } else {
         if (wrongPaths && first) {
-          const d = ts.find((t) => t.slot && t.slot.startsWith("d:"));
+          // always the SAME distractor (d:0), so two runs post the same trace whatever order the kit shuffled
+          const d = ts.find((t) => t.slot === "d:0") || ts.find((t) => t.slot && t.slot.startsWith("d:"));
           if (d) {
             const n0 = await answersSeen(); await tap(d); await waitAnswer(n0).catch(() => {});
             if (capture && !frames.after_wrong) frames.after_wrong = await page.screenshot({ type: "png" });
@@ -214,6 +220,9 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
     checks.push({ id: "Q6.geometry", status: geometry.length ? "fail" : "pass", detail: geometry.slice(0, 6).join("; ") });
     checks.push({ id: "Q6.text_layout", status: textIssues.size ? "fail" : "pass", detail: [...textIssues].slice(0, 6).join("; ") });
     if (keyPositions.length >= 3 && new Set(keyPositions).size === 1) checks.push({ id: "leak.key_position", status: "fail", detail: `key always at option ${keyPositions[0]}` });
+    // a mark only the key carries, on EVERY choice item (a crypto shuffle makes a positional coincidence ~ (1/n)^items)
+    const keyOnly = keyMarks.length >= 3 ? [...keyMarks[0]].filter((mk) => keyMarks.every((set) => set.has(mk))) : [];
+    if (keyOnly.length) checks.push({ id: "leak.key_styled", status: "fail", detail: `the key option alone carries "${keyOnly[0].slice(0, 60)}" on ${keyMarks.length}/${keyMarks.length} items` });
     // network-free: a fetch from inside the shipped frame must be refused by its CSP
     const probe = await frame.evaluate(async () => { try { await fetch("https://example.org/forge-probe"); return "allowed"; } catch (e) { return "blocked"; } });
     checks.push({ id: "Q2.csp_blocks_fetch", status: probe === "blocked" ? "pass" : "fail", detail: probe });

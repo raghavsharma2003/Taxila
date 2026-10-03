@@ -12,6 +12,13 @@
 //            the key: the audit's "25" to "what comes after 25?") or the key ± 1 — and, for a control, the key itself.
 //            Scored: the classifier's label, and whether the reply praises/agrees (praiseProblem against the TRUE
 //            verdict: not_yet for a wrong answer, correct for the key).
+//   drift    the audit's mechanism ("25" to "what comes after 25?", graded right, "Bilkul"): the teacher's last turn
+//            asked ANOTHER question ("<key> ke baad kaunsa number aata hai?"), and the child's reply — an echo, wrong for
+//            that question — is the item's key.
+//            Scored: credited as correct (the parent corner would show "Right · On their own"), and praise in the reply.
+//   hintKey  the control for drift: after a real hint turn (the wrong-answer turn's reply, often a scaffold
+//            sub-question), the child gives the item's key. Scored: credited correct (with help) — a gate that is too
+//            eager would throw this evidence away.
 //   screen   the child's reply was not heard clearly (no evidence) on an item with no chips and no module: the repair
 //            turn. Scored: does the reply send the child to the screen (tap / the choices below…) with nothing there.
 //   register every reply above, for an aap child: any tum mark in the teacher's words.
@@ -89,10 +96,10 @@ const wrongAnswers = (item) => {
   return { echo: nums.length ? String(nums[nums.length - 1]) : String(key + 1), off: String(key + (key % 2 ? 1 : -1) || key + 1) };
 };
 
-async function runTurn(ps, { childText, kit, forced }) {
+async function runTurn(ps, { childText, kit, forced, heardOverride }) {
   const state = structuredClone(ps.state);
   const item = findItem(state, kit, state.activeItemId);
-  const heard = promptFor(item, "hinglish");
+  const heard = heardOverride ?? promptFor(item, "hinglish");
   // the child's row, as the route stages it
   state.seq += 1;
   state.recent = [...state.recent, { who: "teacher", text: heard }, { who: "child", text: childText }].slice(-8);
@@ -105,7 +112,9 @@ async function runTurn(ps, { childText, kit, forced }) {
   const verdictNow = cls.outcome === "correct" ? "correct" : ["incorrect", "misconception"].includes(cls.outcome) ? "not_yet" : cls.outcome === "partial" ? "partial" : "unverified";
   const out = await L.textReply({ instructions: plan.instructions, state: next, kit, childText, trace, history: next.recent.slice(0, -1),
     verdict: target.mode === "item" ? verdictNow : "ungraded", ui: plan.r.ui, module: next.module });
-  return { cls, move: plan.r.move.kind, chips: !!plan.r.ui?.chips?.length, module: !!next.module, reply: out.reply, guard: out.guard, ms: trace.reduce((a, x) => a + (x.ms || 0), 0) };
+  const after = { ...next, recent: [...next.recent, { who: "teacher", text: out.reply }].slice(-8) };
+  return { cls, move: plan.r.move.kind, chips: !!plan.r.ui?.chips?.length, module: !!next.module, reply: out.reply, guard: out.guard, ms: trace.reduce((a, x) => a + (x.ms || 0), 0),
+    next: after, itemNow: next.activeItemId };
 }
 
 async function pool(tasks, n) {
@@ -123,7 +132,20 @@ const tasks = [];
 posed.forEach((x, i) => {
   const w = wrongAnswers(x.item);
   const kind = i % 2 ? "off" : "echo";
-  tasks.push(async () => ({ arm: "verdict", kind, itemId: x.item.id, said: w[kind], truth: "not_yet", ...(await runTurn(x.ps, { childText: w[kind], kit: x.kit })) }));
+  tasks.push(async () => {
+    const first = await runTurn(x.ps, { childText: w[kind], kit: x.kit });
+    const row = { arm: "verdict", kind, itemId: x.item.id, said: w[kind], truth: "not_yet", ...first };
+    if (first.move !== "hint" || first.itemNow !== x.item.id) return row;
+    const second = await runTurn({ state: first.next }, { childText: String(x.item.answer), kit: x.kit, heardOverride: first.reply });
+    return [row, { arm: "hintKey", itemId: x.item.id, said: String(x.item.answer), heard: first.reply, truth: "correct", ...second }];
+  });
+  {
+    // the audit's shape: "what comes after 25?" → "25" — the reply echoes the side question's number, which is the key
+    const key = String(x.item.answer).trim();
+    const heardOverride = i % 2 ? `Achha, pehle ek chhota sawaal: ${key} ke baad kaunsa number aata hai?` : `Ek second, pehle yeh batao: ${key} se ek pehle kaunsa number hai?`;
+    tasks.push(async () => ({ arm: "drift", itemId: x.item.id, said: String(x.item.answer), truth: "not_yet", heard: heardOverride,
+      ...(await runTurn(x.ps, { childText: String(x.item.answer), kit: x.kit, heardOverride })) }));
+  }
   if (i % 3 === 0) tasks.push(async () => ({ arm: "verdict", kind: "key", itemId: x.item.id, said: String(x.item.answer), truth: "correct", ...(await runTurn(x.ps, { childText: `${x.item.answer}`, kit: x.kit })) }));
   if (!x.ps.ui?.chips?.length) {
     tasks.push(async () => ({ arm: "screen", itemId: x.item.id, said: "hmm… woh… haan", ...(await runTurn(x.ps, { childText: "hmm… woh… haan", kit: x.kit,
@@ -143,7 +165,7 @@ for (const x of posed.slice(0, 12)) {
 }
 
 const t0 = Date.now();
-const rows = await pool(tasks, CONC);
+const rows = (await pool(tasks, CONC)).flat();
 const ok = rows.filter((r) => !r.error);
 const pct = (a, b) => (b ? `${a}/${b} (${Math.round((100 * a) / b)}%)` : "0/0");
 const V = ok.filter((r) => r.arm === "verdict");
@@ -161,6 +183,17 @@ const report = {
     rightClassifiedCorrect: right.filter((r) => r.cls.outcome === "correct").length,
     rightDenied: right.filter((r) => praiseProblem(r.reply, "correct") === "contradicts").length,
   },
+  drift: {
+    n: ok.filter((r) => r.arm === "drift").length,
+    creditedCorrect: ok.filter((r) => r.arm === "drift" && r.cls.outcome === "correct").length,
+    praiseFinal: ok.filter((r) => r.arm === "drift" && praiseProblem(r.reply, "not_yet") === "praise").length,
+    praiseFirstDraft: ok.filter((r) => r.arm === "drift" && praiseProblem(r.guard?.firstDraft ?? r.reply, "not_yet") === "praise").length,
+  },
+  hintKey: {
+    n: ok.filter((r) => r.arm === "hintKey").length,
+    credited: ok.filter((r) => r.arm === "hintKey" && r.cls.outcome === "correct").length,
+    deny: ok.filter((r) => r.arm === "hintKey" && praiseProblem(r.reply, "correct") === "contradicts").length,
+  },
   screen: {
     n: ok.filter((r) => r.arm === "screen").length,
     refFinal: ok.filter((r) => r.arm === "screen" && refersToScreen(r.reply) && !r.chips && !r.module).length,
@@ -177,7 +210,7 @@ const report = {
     interest: ok.filter((r) => r.arm === "greet" && /cricket|space|antriksh|taare|rocket|planet/i.test(r.reply)).length,
   },
   rewrites: ok.filter((r) => r.guard?.rewritten).length,
-  rows: ok.map((r) => ({ arm: r.arm, kind: r.kind, itemId: r.itemId, said: r.said, cls: r.cls ? `${r.cls.outcome}/${r.cls.source}` : undefined, move: r.move,
+  rows: ok.map((r) => ({ arm: r.arm, kind: r.kind, itemId: r.itemId, said: r.said, heard: r.heard, cls: r.cls ? `${r.cls.outcome}/${r.cls.source}` : undefined, move: r.move,
     reply: r.reply, firstDraft: r.guard?.firstDraft, caught: r.guard?.caught, final: r.guard?.final })),
   errors: rows.filter((r) => r.error).map((r) => r.error),
 };
@@ -185,6 +218,9 @@ const v = report.verdict, sc = report.screen, rg = report.register, g = report.g
 console.log(`\nverdict  wrong answers ${v.wrongAnswers}: classified correct ${pct(v.classifiedCorrect, v.wrongAnswers)} (echo ${v.classifiedCorrectEcho})`);
 console.log(`         praise/agreement in the reply: final ${pct(v.praiseFinal, v.wrongAnswers)} · first draft ${pct(v.praiseFirstDraft, v.wrongAnswers)}`);
 console.log(`         key answers ${v.rightAnswers}: classified correct ${pct(v.rightClassifiedCorrect, v.rightAnswers)} · 'wrong' opening ${pct(v.rightDenied, v.rightAnswers)}`);
+const d = report.drift, hk = report.hintKey;
+console.log(`drift    the key, said to a DIFFERENT question ${d.n}: credited correct ${pct(d.creditedCorrect, d.n)} · praise/agreement final ${pct(d.praiseFinal, d.n)} · first draft ${pct(d.praiseFirstDraft, d.n)}`);
+console.log(`hintKey  the key after a real hint turn ${hk.n}: credited correct ${pct(hk.credited, hk.n)} · 'wrong' opening ${pct(hk.deny, hk.n)}`);
 console.log(`screen   repair turns with nothing on screen ${sc.n}: screen reference final ${pct(sc.refFinal, sc.n)} · first draft ${pct(sc.refFirstDraft, sc.n)} · any arm final ${sc.refAnyArm}`);
 console.log(`register aap child, replies ${rg.n}: a tum mark final ${pct(rg.tumFinal, rg.n)} · first draft ${pct(rg.tumFirstDraft, rg.n)}`);
 console.log(`greet    first-lesson greetings ${g.n}: touches the parent's interest ${pct(g.interest, g.n)}`);

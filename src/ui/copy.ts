@@ -20,6 +20,7 @@ export const EN = {
   "floor.mode.draw": "Draw it above",
   "floor.mode.read": "Read it out loud",
   "floor.mode.pad": "Use the numbers above",
+  "floor.mode.done": "tap when you're done",
   "floor.listening": "Listening… tap when you're done",
   "floor.listening_open": "Listening…",
   "floor.heard": "Got it",

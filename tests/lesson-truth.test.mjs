@@ -272,3 +272,13 @@ test("map: chapters → skills in the four shapes from the ledger projection; a 
   assert.ok(garden.skills.every((s) => s.state === "not_started" && !s.recheckScheduled));
 });
 
+
+test("G-LEAK-1: field names and markup never reach the child; a blank to fill is not markup", async () => {
+  const { leaksStage, stripStage } = await import("../server/director/say.js");
+  assert.ok(leaksStage("Whiteboard: 45,000 ko dekho. Kitna hai?"));
+  assert.equal(stripStage("Whiteboard: 45,000 ko dekho. Kitna hai?"), "45,000 ko dekho. Kitna hai?");
+  assert.ok(leaksStage("[smiles] Ab batao?"));
+  assert.equal(stripStage("*Great* — [smiles] ab batao?"), "Great — ab batao?");
+  assert.ok(!leaksStage("Fill the blank: 3 + __ = 7"));
+  assert.ok(!leaksStage("Sawaal yeh hai: 3 aur 4 kitna?"));
+});

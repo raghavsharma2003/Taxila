@@ -1,10 +1,13 @@
 {
- "date": "2026-10-03T05:55:30.031Z",
- "mutants": 43,
- "caught": 43,
+ "date": "2026-10-03T07:13:37.118Z",
+ "kit": "tgk-lite@2",
+ "mutants": 53,
+ "caught": 51,
+ "inert": 2,
  "recall": 1,
  "runtimeCaught": 41,
- "staticOnly": 2,
+ "staticOnly": 10,
+ "leakyKitBrowserCaught": "8/10",
  "clean": 6,
  "falseAlarms": 0,
  "missed": [],
@@ -32,31 +35,26 @@
    "name": "S01 forged literal ref (all pads = key)",
    "cls": "binding",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": true,
    "browserCaught": true,
    "failed": [
     "Q1.lint",
-    "leak.key_position",
-    "Q4.wrong_path_seen"
-   ]
+    "Q3.binding",
+    "Q3.no_error_events",
+    "Q4.goal_met_once",
+    "Q4.all_items_correct",
+    "Q4.wrong_path_seen",
+    "Q5.answer_key"
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S01e forged ref via Object.fromEntries",
    "cls": "binding",
    "topicId": "c1-maths-ch04-t01",
-   "staticCaught": false,
-   "browserCaught": true,
-   "failed": [
-    "leak.key_position",
-    "Q4.wrong_path_seen"
-   ]
-  },
-  {
-   "kind": "mutant",
-   "name": "S02e out-of-range distractor ref",
-   "cls": "binding",
-   "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -66,13 +64,33 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
+  },
+  {
+   "kind": "mutant",
+   "name": "S02e out-of-range distractor ref",
+   "cls": "binding",
+   "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
+   "staticCaught": false,
+   "browserCaught": true,
+   "failed": [
+    "Q3.binding",
+    "Q3.no_error_events",
+    "Q4.goal_met_once",
+    "Q4.all_items_correct",
+    "Q4.wrong_path_seen",
+    "Q5.answer_key"
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S03 never commits",
    "cls": "play",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -81,13 +99,15 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S04 Math.random in init",
    "cls": "determinism",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": true,
    "browserCaught": true,
    "failed": [
@@ -98,13 +118,15 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S05 28-unit targets",
    "cls": "geometry",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -114,13 +136,15 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S06 overlapping targets",
    "cls": "geometry",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -130,54 +154,76 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S07 key always first",
    "cls": "leak",
    "topicId": "c1-maths-ch04-t01",
-   "staticCaught": false,
-   "browserCaught": true,
+   "outcome": "caught",
+   "staticCaught": true,
+   "browserCaught": false,
    "failed": [
-    "leak.key_position"
-   ]
+    "Q1.lint"
+   ],
+   "leakyKit": {
+    "browserCaught": true,
+    "failed": [
+     "Q1.lint",
+     "leak.key_position"
+    ]
+   }
   },
   {
    "kind": "mutant",
    "name": "S08 key numeral drawn alone",
    "cls": "leak",
    "topicId": "c1-maths-ch04-t01",
-   "staticCaught": false,
+   "outcome": "caught",
+   "staticCaught": true,
    "browserCaught": true,
    "failed": [
-    "Q3.binding",
-    "Q3.no_error_events",
-    "Q4.goal_met_once",
-    "Q4.all_items_correct",
-    "Q4.wrong_path_seen",
-    "Q5.answer_key"
-   ]
+    "Q1.lint",
+    "Q3.binding"
+   ],
+   "leakyKit": {
+    "browserCaught": true,
+    "failed": [
+     "Q1.lint",
+     "Q3.binding",
+     "Q3.no_error_events",
+     "Q4.goal_met_once",
+     "Q4.all_items_correct",
+     "Q4.wrong_path_seen",
+     "Q5.answer_key"
+    ]
+   }
   },
   {
    "kind": "mutant",
    "name": "S09 clipped word",
    "cls": "geometry",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
     "Q6.text_layout"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S10e Function-constructor beacon",
    "cls": "network",
    "topicId": "c1-maths-ch04-t01",
-   "staticCaught": false,
+   "outcome": "caught",
+   "staticCaught": true,
    "browserCaught": true,
    "failed": [
+    "Q1.lint",
     "Q2.csp_violations",
     "Q3.binding",
     "Q3.no_error_events",
@@ -185,47 +231,55 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S11 throws on item 2",
    "cls": "crash",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
     "Q3.binding"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S12 unknown string key",
    "cls": "safety",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": true,
    "browserCaught": true,
    "failed": [
     "Q1.lint",
     "Q3.binding"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S12e unknown string key, computed",
    "cls": "safety",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
     "Q3.binding"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S13 off-screen target",
    "cls": "geometry",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -235,13 +289,94 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S14 key target dropped",
    "cls": "play",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
+   "staticCaught": true,
+   "browserCaught": false,
+   "failed": [
+    "Q1.lint"
+   ],
+   "leakyKit": null
+  },
+  {
+   "kind": "mutant",
+   "name": "S15 points machine",
+   "cls": "fun-ban",
+   "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
+   "staticCaught": true,
+   "browserCaught": false,
+   "failed": [
+    "Q1.lint"
+   ],
+   "leakyKit": null
+  },
+  {
+   "kind": "mutant",
+   "name": "S17 key glows (reads .slot)",
+   "cls": "leak",
+   "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
+   "staticCaught": true,
+   "browserCaught": false,
+   "failed": [
+    "Q1.lint"
+   ],
+   "leakyKit": {
+    "browserCaught": true,
+    "failed": [
+     "Q1.lint",
+     "leak.key_styled"
+    ]
+   }
+  },
+  {
+   "kind": "mutant",
+   "name": "S17e key glows (computed slot read)",
+   "cls": "leak",
+   "topicId": "c1-maths-ch04-t01",
+   "outcome": "inert",
+   "staticCaught": false,
+   "browserCaught": false,
+   "failed": [],
+   "leakyKit": {
+    "browserCaught": true,
+    "failed": [
+     "leak.key_styled"
+    ]
+   }
+  },
+  {
+   "kind": "mutant",
+   "name": "S18e key styled via fx glow after any tap",
+   "cls": "leak",
+   "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
+   "staticCaught": true,
+   "browserCaught": false,
+   "failed": [
+    "Q1.lint"
+   ],
+   "leakyKit": {
+    "browserCaught": false,
+    "failed": [
+     "Q1.lint"
+    ]
+   }
+  },
+  {
+   "kind": "mutant",
+   "name": "S19e Array.prototype.some patched via computed __proto__",
+   "cls": "realm",
+   "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -251,29 +386,40 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
-   "name": "S15 points machine",
-   "cls": "fun-ban",
+   "name": "S20e Object alias defineProperty on String.prototype",
+   "cls": "realm",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": true,
-   "browserCaught": false,
+   "browserCaught": true,
    "failed": [
-    "Q1.lint"
-   ]
+    "Q1.lint",
+    "Q3.binding",
+    "Q3.no_error_events",
+    "Q4.goal_met_once",
+    "Q4.all_items_correct",
+    "Q4.wrong_path_seen",
+    "Q5.answer_key"
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S16 80 ms busy loop in render",
    "cls": "perf",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
     "Q3.binding"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "clean",
@@ -298,6 +444,7 @@
    "name": "T01 facts lie (+1)",
    "cls": "binding",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -307,26 +454,30 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "T02 remove hits the wrong kind",
    "cls": "binding",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
     "Q4.remove_sweep",
     "Q4.goal_met_once",
     "Q4.all_items_correct"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "T03 remove at 0 accepted",
    "cls": "binding",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -336,13 +487,15 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "T04 clear keeps counts",
    "cls": "binding",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -350,13 +503,15 @@
     "Q3.no_error_events",
     "Q4.goal_met_once",
     "Q4.all_items_correct"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "T05 no confirm control",
    "cls": "play",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -366,13 +521,15 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "T06 confirm does not commit",
    "cls": "play",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -381,13 +538,15 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "T07 add counts double",
    "cls": "binding",
    "topicId": "c1-maths-ch04-t01",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -397,7 +556,8 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "clean",
@@ -422,31 +582,26 @@
    "name": "S01 forged literal ref (all pads = key)",
    "cls": "binding",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": true,
    "browserCaught": true,
    "failed": [
     "Q1.lint",
-    "leak.key_position",
-    "Q4.wrong_path_seen"
-   ]
+    "Q3.binding",
+    "Q3.no_error_events",
+    "Q4.goal_met_once",
+    "Q4.all_items_correct",
+    "Q4.wrong_path_seen",
+    "Q5.answer_key"
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S01e forged ref via Object.fromEntries",
    "cls": "binding",
    "topicId": "c6-maths-ch07-t05",
-   "staticCaught": false,
-   "browserCaught": true,
-   "failed": [
-    "leak.key_position",
-    "Q4.wrong_path_seen"
-   ]
-  },
-  {
-   "kind": "mutant",
-   "name": "S02e out-of-range distractor ref",
-   "cls": "binding",
-   "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -456,13 +611,33 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
+  },
+  {
+   "kind": "mutant",
+   "name": "S02e out-of-range distractor ref",
+   "cls": "binding",
+   "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
+   "staticCaught": false,
+   "browserCaught": true,
+   "failed": [
+    "Q3.binding",
+    "Q3.no_error_events",
+    "Q4.goal_met_once",
+    "Q4.all_items_correct",
+    "Q4.wrong_path_seen",
+    "Q5.answer_key"
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S03 never commits",
    "cls": "play",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -471,13 +646,15 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S04 Math.random in init",
    "cls": "determinism",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": true,
    "browserCaught": true,
    "failed": [
@@ -488,13 +665,15 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S05 28-unit targets",
    "cls": "geometry",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -504,13 +683,15 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S06 overlapping targets",
    "cls": "geometry",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -520,54 +701,76 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S07 key always first",
    "cls": "leak",
    "topicId": "c6-maths-ch07-t05",
-   "staticCaught": false,
-   "browserCaught": true,
+   "outcome": "caught",
+   "staticCaught": true,
+   "browserCaught": false,
    "failed": [
-    "leak.key_position"
-   ]
+    "Q1.lint"
+   ],
+   "leakyKit": {
+    "browserCaught": true,
+    "failed": [
+     "Q1.lint",
+     "leak.key_position"
+    ]
+   }
   },
   {
    "kind": "mutant",
    "name": "S08 key numeral drawn alone",
    "cls": "leak",
    "topicId": "c6-maths-ch07-t05",
-   "staticCaught": false,
+   "outcome": "caught",
+   "staticCaught": true,
    "browserCaught": true,
    "failed": [
-    "Q3.binding",
-    "Q3.no_error_events",
-    "Q4.goal_met_once",
-    "Q4.all_items_correct",
-    "Q4.wrong_path_seen",
-    "Q5.answer_key"
-   ]
+    "Q1.lint",
+    "Q3.binding"
+   ],
+   "leakyKit": {
+    "browserCaught": true,
+    "failed": [
+     "Q1.lint",
+     "Q3.binding",
+     "Q3.no_error_events",
+     "Q4.goal_met_once",
+     "Q4.all_items_correct",
+     "Q4.wrong_path_seen",
+     "Q5.answer_key"
+    ]
+   }
   },
   {
    "kind": "mutant",
    "name": "S09 clipped word",
    "cls": "geometry",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
     "Q6.text_layout"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S10e Function-constructor beacon",
    "cls": "network",
    "topicId": "c6-maths-ch07-t05",
-   "staticCaught": false,
+   "outcome": "caught",
+   "staticCaught": true,
    "browserCaught": true,
    "failed": [
+    "Q1.lint",
     "Q2.csp_violations",
     "Q3.binding",
     "Q3.no_error_events",
@@ -575,47 +778,55 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S11 throws on item 2",
    "cls": "crash",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
     "Q3.binding"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S12 unknown string key",
    "cls": "safety",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": true,
    "browserCaught": true,
    "failed": [
     "Q1.lint",
     "Q3.binding"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S12e unknown string key, computed",
    "cls": "safety",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
     "Q3.binding"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S13 off-screen target",
    "cls": "geometry",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -625,13 +836,94 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S14 key target dropped",
    "cls": "play",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
+   "staticCaught": true,
+   "browserCaught": false,
+   "failed": [
+    "Q1.lint"
+   ],
+   "leakyKit": null
+  },
+  {
+   "kind": "mutant",
+   "name": "S15 points machine",
+   "cls": "fun-ban",
+   "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
+   "staticCaught": true,
+   "browserCaught": false,
+   "failed": [
+    "Q1.lint"
+   ],
+   "leakyKit": null
+  },
+  {
+   "kind": "mutant",
+   "name": "S17 key glows (reads .slot)",
+   "cls": "leak",
+   "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
+   "staticCaught": true,
+   "browserCaught": false,
+   "failed": [
+    "Q1.lint"
+   ],
+   "leakyKit": {
+    "browserCaught": true,
+    "failed": [
+     "Q1.lint",
+     "leak.key_styled"
+    ]
+   }
+  },
+  {
+   "kind": "mutant",
+   "name": "S17e key glows (computed slot read)",
+   "cls": "leak",
+   "topicId": "c6-maths-ch07-t05",
+   "outcome": "inert",
+   "staticCaught": false,
+   "browserCaught": false,
+   "failed": [],
+   "leakyKit": {
+    "browserCaught": true,
+    "failed": [
+     "leak.key_styled"
+    ]
+   }
+  },
+  {
+   "kind": "mutant",
+   "name": "S18e key styled via fx glow after any tap",
+   "cls": "leak",
+   "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
+   "staticCaught": true,
+   "browserCaught": false,
+   "failed": [
+    "Q1.lint"
+   ],
+   "leakyKit": {
+    "browserCaught": false,
+    "failed": [
+     "Q1.lint"
+    ]
+   }
+  },
+  {
+   "kind": "mutant",
+   "name": "S19e Array.prototype.some patched via computed __proto__",
+   "cls": "realm",
+   "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
@@ -641,29 +933,40 @@
     "Q4.all_items_correct",
     "Q4.wrong_path_seen",
     "Q5.answer_key"
-   ]
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
-   "name": "S15 points machine",
-   "cls": "fun-ban",
+   "name": "S20e Object alias defineProperty on String.prototype",
+   "cls": "realm",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": true,
-   "browserCaught": false,
+   "browserCaught": true,
    "failed": [
-    "Q1.lint"
-   ]
+    "Q1.lint",
+    "Q3.binding",
+    "Q3.no_error_events",
+    "Q4.goal_met_once",
+    "Q4.all_items_correct",
+    "Q4.wrong_path_seen",
+    "Q5.answer_key"
+   ],
+   "leakyKit": null
   },
   {
    "kind": "mutant",
    "name": "S16 80 ms busy loop in render",
    "cls": "perf",
    "topicId": "c6-maths-ch07-t05",
+   "outcome": "caught",
    "staticCaught": false,
    "browserCaught": true,
    "failed": [
     "Q3.binding"
-   ]
+   ],
+   "leakyKit": null
   }
  ]
 }

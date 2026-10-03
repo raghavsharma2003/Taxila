@@ -12,7 +12,7 @@
 //      stop that silences her without reporting a child barge-in to the Director;
 //   5. the cascade link's push-to-talk state and transport (the runtime only reports pushToTalk for the
 //      realtime lane), and an EchoGuard counter: her own voice heard back as a child turn (§3.9).
-import type { LessonStartRequest, RealtimeTokenResponse, TtsRequest, TurnRequest } from "../../shared/contracts.ts";
+import type { LessonStartRequest, LessonSummary, RealtimeTokenResponse, TtsRequest, TurnRequest } from "../../shared/contracts.ts";
 import { fetchSpeech, httpLessonApi, type LessonApi } from "./api.ts";
 import { createLevelAnalyser, LevelMeter } from "./level.ts";
 import { CascadeLink, isEcho, type CascadeTransport } from "./cascadeLink.ts";
@@ -34,6 +34,8 @@ export interface EndResult {
   homeState?: HomeState;
   plan?: { openLesson: string | null; window?: unknown } | null;
   capRemaining?: number;
+  /** "What you did today" (PRODUCT-DESIGN-V2 §6.3.5), from the lesson's own graded turns (server lessonSummary). */
+  did?: LessonSummary;
 }
 
 export interface UiBridgeState {
@@ -104,7 +106,7 @@ export class UiBridge {
         this.store.set({
           ended: {
             lessonId, summary: res?.summary ?? null, parentNote: res?.parentNote ?? null, alreadyEnded: res?.alreadyEnded,
-            homeState: res?.homeState, plan: res?.plan, capRemaining: res?.capRemaining,
+            homeState: res?.homeState, plan: res?.plan, capRemaining: res?.capRemaining, did: res?.did,
           },
         });
         return res;

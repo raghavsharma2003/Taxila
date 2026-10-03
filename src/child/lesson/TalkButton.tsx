@@ -28,9 +28,9 @@ export function TalkButton({ floor, talking, drain, onTap, mic, disabled, small 
       <span className="dk-mic-disc">
         {talking && <span ref={arc} className="dk-mic-arc" aria-hidden="true" />}
         {talking && drain > 0 && <span className="dk-mic-drain" aria-hidden="true" />}
-        <Glyph name={talking ? "listening" : "mic"} size={small ? 24 : 32} />
+        <Glyph name={talking ? "listening" : "mic"} size={small ? 20 : 28} />
+        <span className="dk-mic-word">{label}</span>
       </span>
-      <span className="dk-mic-word">{label}</span>
     </button>
   );
 }

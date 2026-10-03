@@ -39,6 +39,14 @@ export function stripRow(id: StripId, o: { noPack: boolean; young: boolean }): R
   }
 }
 
+/** 56 dp for one short sentence and ≤ 1 action; 96 dp when it needs a second line (two actions, or a long one). */
+export function stripHeight(id: StripId, o: { noPack: boolean; young: boolean; width: number }): number {
+  const row = stripRow(id, o);
+  // A width estimate (Atkinson at body size ≈ 8.2 px per character incl. the action pills); no DOM measuring.
+  const chars = t(row.text, { T: "Teacher" }).length + row.actions.reduce((n, x) => n + t(x.label).length + 6, 0);
+  return chars * 8.2 + 64 > o.width ? 96 : 56;
+}
+
 export function TroubleStrip({ id, noPack, young, teacher, onAction }: { id: StripId; noPack: boolean; young: boolean; teacher: string; onAction: DeskActions["troubleAction"] }) {
   const row = stripRow(id, { noPack, young });
   return (

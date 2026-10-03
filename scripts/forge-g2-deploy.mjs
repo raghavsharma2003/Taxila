@@ -6,7 +6,8 @@
 //      environment from taxila-env, so runner replicas never share a network/env boundary with taxila-web;
 //   3) creates/updates the ACA Job `forge-g2-runner`: manual trigger, 2 vCPU / 4 GiB, replicaTimeout 1800,
 //      replicaRetryLimit 0, parallelism 1. Secrets: the AOAI key only (the storage key is NOT given: every execution
-//      gets a 2-hour SAS for the private container in its start override, server/forge/g2/azure-job.js).
+//      gets a 2-hour SAS for ITS OWN run container g2run-<buildId> in its start override, server/forge/g2/azure-job.js;
+//      the private queue/catalogue container is never reachable from a runner).
 // Needs AZURE_SP_* + AZURE_SUBSCRIPTION_ID + AZURE_RESOURCE_GROUP (+ .env.local). Flags: --from-github, --dry-run.
 import { execFileSync, execSync } from "child_process";
 import { readFileSync, mkdtempSync, statSync } from "fs";
@@ -23,7 +24,30 @@ const DRY = process.argv.includes("--dry-run"), GH = process.argv.includes("--fr
 const IMAGE_TAG = process.argv.includes("--image") ? process.argv[process.argv.indexOf("--image") + 1] : null;   // reuse a built tag
 const API = "api-version=2024-03-01", ACR = "taxilacr", IMAGE = "forge-g2-runner";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const CONTEXT = ["infra/forge-runner", "server/forge/g2", "server/forge/kitmath.js", "server/director/items.js", "server/azure.js", "data/kits"];
+const CONTEXT = ["infra/forge-runner", "server/forge/g2", "server/forge/kitmath.js", "server/director/items.js", "server/director/register.js", "server/azure.js", "data/kits"];
+
+// The image carries only CONTEXT: walk the runner's relative-import closure and refuse to build an image that would
+// crash at boot (measured: items.js gained ./register.js from another workstream and two Azure builds died on it).
+{
+  const { dirname, resolve, relative } = await import("path");
+  const { existsSync } = await import("fs");
+  const seen = new Set(), missing = [];
+  const walk = (file) => {
+    if (seen.has(file)) return; seen.add(file);
+    const src = readFileSync(file, "utf8").replace(/^\s*\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");   // JSDoc type imports are not loads
+    for (const m of src.matchAll(/(?:import|export)\s[^"'`]*?from\s*["'](\.[^"']+)["']|import\(\s*["'](\.[^"']+)["']\s*\)/g)) {
+      const dep = resolve(dirname(file), m[1] || m[2]);
+      const rel = relative(ROOT, dep);
+      if (rel.startsWith("server/conductor/")) continue;                  // conductor-job.js only: never loaded in the runner
+      if (!existsSync(dep)) { missing.push(`${relative(ROOT, file)} → ${rel} (no such file)`); continue; }
+      if (!CONTEXT.some((c) => rel === c || rel.startsWith(c + "/"))) missing.push(`${relative(ROOT, file)} → ${rel} (not in the image context)`);
+      else if (dep.endsWith(".js")) walk(dep);
+    }
+  };
+  for (const entry of ["server/forge/g2/job-entry.js", "server/forge/g2/run-build.js"]) walk(resolve(ROOT, entry));
+  if (missing.length) { console.error("runner import closure is not in the image:\n  " + missing.join("\n  ")); process.exit(1); }
+  console.log(`import closure ok: ${seen.size} files`);
+}
 
 // ── 1. image ──
 let tag, sourceLocation;

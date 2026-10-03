@@ -134,3 +134,12 @@ export function askFromReply(reply) {
   const q = [...sentences].reverse().find((s) => /[?？]/.test(s)) ?? sentences.at(-1);
   return q ? askText(q) : null;
 }
+
+// ── G-LEAK-1 (audit §4.4: "Whiteboard: 45,000 ko…") ──
+const STAGE = /(?:^|[\s(—-])(?:whiteboard|board|ask|shape|move|note|key|ladder|rung|lesson now|one more check|turn shape|your move)\s*:|[\[\]*#_]{1,}|\bTURN SHAPE\b|\bLESSON NOW\b/i;
+/** Does a spoken line carry a stage direction, a prompt field name or markup? */
+export const leaksStage = (text) => STAGE.test(String(text ?? "").replace(/_{2,}/g, " "));
+/** The line without field labels and markup (the words after a label stay: they were meant to be said). */
+export const stripStage = (text) => String(text ?? "")
+  .replace(/(^|[\s(—-])(?:whiteboard|board|ask|shape|move|note|key|ladder|rung|lesson now|one more check|turn shape|your move)\s*:\s*/gi, "$1")
+  .replace(/\[[^\]]*\]/g, " ").replace(/[\[\]*#]+/g, "").replace(/\s{2,}/g, " ").replace(/\s+([,.!?])/g, "$1").trim();

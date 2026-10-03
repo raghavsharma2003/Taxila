@@ -263,7 +263,16 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   if (!text) return done("no_evidence", "empty");
   if (safety.distress) return done("no_evidence", "predicate");
   if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) return { result: null, flags, text, lowAsr: true };
-  if (target.mode === "item" && !askedOther(heard, target.item, lang)) {
+  const other = target.mode === "item" && askedOther(heard, target.item, lang);
+  // An echo: the reply is only a number the teacher's OTHER question itself stated ("25" to "what comes after 25?").
+  // It answers neither question, so it is no evidence — never the item's key matched by accident (audit #13).
+  if (other && /^\s*[-−]?[\d,]+(?:[./]\d+)?\s*[.!?]?\s*$/.test(text)) {
+    const lastQ = (String(heard).match(/[^.!?।]*[?？]/g) ?? []).at(-1) ?? "";
+    const nums = (t) => (String(t).match(/\d[\d,]*(?:[./]\d+)?/g) ?? []).map((x) => x.replace(/,/g, ""));
+    const [n] = nums(text);
+    if (n && nums(lastQ).includes(n)) return done("no_evidence", "echo");
+  }
+  if (target.mode === "item" && !other) {
     const t = norm(text);
     if ([target.key, ...(target.also || [])].some((k) => k && norm(k) === t)) return done("correct", "exact");
     const opt = target.options?.find((o) => norm(o.text) === t);

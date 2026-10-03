@@ -4,14 +4,12 @@
 // a visible one-word label (audit 17); the text field never shrinks below 160 dp.
 // The lamp is never lit under a sheet or a trouble strip (§4.2 rule 3): the strip takes the header's place.
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { Floor } from "../../lesson/floor.ts";
 import type { StripId } from "../../lesson/trouble.ts";
 import { t, type CopyKey } from "../../ui/copy.ts";
 import { Glyph, type StateGlyphName } from "../../ui/icons/state.tsx";
 import type { DeskActions, DeskModel } from "./model.ts";
 import { StateWord, stateWord } from "./StateWord.tsx";
 import { TalkButton } from "./TalkButton.tsx";
-import { TroubleStrip } from "./TroubleStrip.tsx";
 
 interface Meter { subscribe(fn: (v: number) => void): () => void }
 
@@ -40,7 +38,7 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
   const young = m.family === "young";
   const yourTurn = m.floor === "your_turn" || m.floor === "yielding";
   const word = stateWord(m.floor, { teacher: m.teacher.name, thinkingLabel: m.thinkingLabel, seconds: m.thinkingSeconds, lastOne: m.lastOne, tapToTalk: m.mic.tapToTalk });
-  const mode = yourTurn && !stripId ? modeOf(m) : null;
+  const mode = yourTurn && !stripId ? modeOf(m) : m.floor === "listening" && m.mic.tapToTalk ? { key: "floor.mode.done" as CopyKey, glyph: null } : null;
   const [momentNote, setMomentNote] = useState(false);
   useEffect(() => {
     if (m.floor !== "thinking") setMomentNote(false);
@@ -85,7 +83,11 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
       </div>
     );
   } else {
-    const typeBtn = m.answerForm === "number" ? side("dock.numbers", "numbers", () => a.setTyping(true), "type") : side("dock.type", "keyboard", () => a.setTyping(true), "type");
+    const typeBtn = m.answerForm === "number" ? (
+      <button type="button" className="dk-side" onClick={() => a.setTyping(true)} data-testid="type" aria-label="Type a number">
+        <span className="dk-side-num" aria-hidden="true">{t("dock.numbers")}</span>
+      </button>
+    ) : side("dock.type", "keyboard", () => a.setTyping(true), "type");
     body = (
       <div className="dk-dock-row">
         {side("dock.hint", "lightbulb", a.openHint, "hint")}
@@ -101,21 +103,17 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
       className="dk-dock"
       data-floor={m.floor}
       data-lamp={lit ? "" : undefined}
-      data-strip={stripId ?? undefined}
+      data-trouble={stripId ?? undefined}
       data-breath={m.lampBreath || undefined}
       aria-label="Answer"
       data-testid="dock"
     >
-      {stripId ? (
-        <TroubleStrip id={stripId} noPack={m.noPack} young={young} teacher={m.teacher.name} onAction={a.troubleAction} />
-      ) : (
-        <header className="dk-dock-head">
-          <StateWord floor={m.floor} word={word} mode={mode?.key} modeGlyph={mode?.glyph} />
-          {!young && !m.typing && m.gate === null && (yourTurn || m.floor === "listening") && (
-            <button type="button" className="dk-wait" onClick={a.wait} data-testid="wait">{t("dock.wait")}</button>
-          )}
-        </header>
-      )}
+      <header className="dk-dock-head">
+        <StateWord floor={m.floor} word={word} mode={mode?.key} modeGlyph={mode?.glyph} />
+        {!young && !m.typing && m.gate === null && !stripId && (yourTurn || m.floor === "listening") && (
+          <button type="button" className="dk-wait" onClick={a.wait} data-testid="wait">{t("dock.wait")}</button>
+        )}
+      </header>
       {momentNote && <p className="dk-dock-note" role="status">{t("floor.moment", { T: m.teacher.name })}</p>}
       <div className="dk-dock-body">{body}</div>
     </section>
