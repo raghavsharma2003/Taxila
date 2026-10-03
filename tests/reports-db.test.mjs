@@ -1,5 +1,5 @@
 // Parent reports against a REAL Neon database: the TEST branch only (CONDUCTOR_TEST_DATABASE_URL, never the production
-// endpoint; skips otherwise, and skips while sql/009_parent_report.sql is not applied there). Seeds one child's day,
+// endpoint; skips otherwise, and skips while db/migrations/010_parent_report.sql is not applied there). Seeds one child's day,
 // generates the daily note (Lane B stubbed), stores it once (idempotent), has the independent checker re-derive every
 // claim from the cited rows, and checks the job handler's budget accounting on a real job row.
 import { after, before, describe, test } from "node:test";
@@ -60,7 +60,7 @@ describe("parent reports on Neon (test branch)", { skip: SKIP, concurrency: fals
   });
 
   test("daily note: generated, stored once, every claim re-derived by the independent checker", async (t) => {
-    if (!ready) return t.skip("parent_report is not migrated on the test branch (server/reports/sql/009_parent_report.sql)");
+    if (!ready) return t.skip("parent_report is not migrated on the test branch (db/migrations/010_parent_report.sql)");
     let calls = 0;
     const llm = { chat: async (_dep, msgs) => { calls++; const segs = JSON.parse(msgs[1].content).segments; return { json: { order: segs.map((x) => ({ kind: "segment", id: x.id })) }, usage: { prompt_tokens: 800, completion_tokens: 120 } }; } };
     const out = await generateReport(kid, { cadence: "daily", period: "2026-09-15" }, { db, llm });

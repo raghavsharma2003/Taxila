@@ -3851,6 +3851,62 @@
    "title": "Character pipeline traps, iteration 2: vertex-pair lip seal (cannot converge), alpha canvas with alpha-to-coverage cards (pale brows), brow/lash cards sharing the whole atlas, strand tangent from the derivative frame (and Blender exports custom vectors without the Y-up swap), cylindrical UVs on the diagonal pallu (border bleed), MST hex as raw albedo, undamped G9 solve, holes_fill on the arm cut",
    "at": "2026-10-03",
    "source": "inbox/teacher-character.json"
+  },
+  {
+   "id": "b2-home-no-lying-signal",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "The child home never shows a signal the next screen breaks (§3.4, §6.3.3): (1) while GET /api/child/plan is in flight the PrimaryCard is a neutral busy card ('Getting today ready', aria-busy, NO Start, no Practice tile) instead of a provisional 'start' card with a live Start; (2) server state `resume` is shown as `start` (\"Today's lesson\" · Start) while src/child/plan.ts RESUME_BY_ID is false, because /c/:cid/lesson/:lid cannot reopen a lesson by id and 'Continue' would start a new one; the server state is kept as plan.serverState; (3) offline says 'Practice works offline.' and offers Quick practice ONLY when plan.packReady, else 'Lessons need the internet.' + Try again, and the Practice / Ask tiles are not offered offline. Reversal: (2) the lesson route resumes by id (flip RESUME_BY_ID); (3) an offline pack ships (packReady true); (1) the plan read becomes local-first (then the cached state may render, still without a Start until confirmed)",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-child-type-rem",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Child screens outside the lesson (.cs, .cs-gate) re-declare the band type tokens in rem (px/16, so 100 % renders identically) times one factor --cs-k (Me → Bigger text = 1.18): text follows the browser/OS font size to 200 % (§11.7) and Bigger text grows it. The lesson (no .cs) keeps the px tokens (it yields per §6.3.4, lesson workstream). Layout follows: grids use minmax(0,1fr), tiles reflow with auto-fit minmax(min(100%, n rem)), the top bar wraps only when one row no longer fits. Reversal: tokens.css itself moves the band scale to rem (then the re-declaration in src/child/child.css goes)",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-rejected-custom-property-cycle",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Bigger text as `.tx-child[data-comfort=large] { --t-body: calc(var(--t-body) + 3px) }` on the same element: a custom-property cycle, so every token in the rule became invalid at computed time and text fell back to the inherited 16 px; Older body text (17 px) got SMALLER when the child turned Bigger text on. Found by the fixer review in Chromium, not by the battery (it never toggled the setting). Fixed with a separate factor variable; the battery now asserts the computed size grows",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-garden-raised-beds",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Garden layout: each bed is a raised bed (brick edge + soil) that fills the panel from its signboard to the bottom, one bed per phone width (100cqw − gutters, max 340), so no hollow paper band sits above the plants and the seal is never clipped by the panel edge; a code-drawn courtyard ground (sky + clouds band holding the 64 dp arrows, hedge, soil) stands in for the failed bg/garden-panorama; each bed's signboard has its own token colour plus the topic picture (code-drawn subject emblem until topic art lands); the class's current chapter carries a flag picture whose accessible name is 'Your class is here'. Beds carry NO visible chapter name: §10 'Garden: plants, no words, no numbers' (R0/R1 readers), and a spoken label needs her voice for arbitrary text, which has no route. Reversal: MW-M2 / a child test shows Young children cannot tell beds apart, or a 'speak this chapter name' route exists",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-notebook-device-source",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Notebook pages come from the lesson ids THIS device recorded (no server endpoint lists a child's lessons): the empty line only says 'after your first lesson' when the server plan says `first`; otherwise 'Your next lesson will add a page here.' (true on any device). Lesson summaries are immutable once ended, so each is fetched once and cached per child on the device, at most 3 in flight (was up to 12 parallel requests on every open). Reversal: GET /api/child/notebook (or recent lesson ids on the plan) exists; then the server list is the source and the device cache only a speed-up",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-battery-fix-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "B2 battery after the fixer pass, tests/e2e-design-b2.mjs: 1116/1116 checks (n = 1 run, headless Chromium SwiftShader, production build via server/serve.mjs, /api/* mocked; 360x640 DPR 2 touch + 1280x800; light + dark for Older). New since the 942-check run: V-TGT at the spec bars (48 Older/adult, 64 Young, the 48 dp Grown-ups door excepted) with negative controls (46 px and 60 px buttons trip); V-PLAN loading (plan delayed 3 s; capped/resting/done: 0 Start links and 0 Practice tiles at 1.2 s; control trips); resume shown as start; offline makes no offline-practice promise and offers no Practice/Ask; card region named by its own heading; Bigger text grows computed sizes (Older home title 24 → 28.3 px); text follows a 200 % root font size on home, map, notebook, me (Young + Older) with no off-screen clipping and no top-bar overlap (new off-screen check + control); V-CON text contrast against the composited pixels under it, 30 screen states, ≥ 4.5 / 3 (control trips); V-MOTION reduced motion leaves nothing looping (6 routes); Garden bed fills the panel, class flag present and in view, sheet shows the visible '{T} · AI teacher' label; Notebook summaries fetched once (3 on first open, 0 on reopen); V-ABS now varies the last-visit device state (plan cache day, day marker, artefact date) as well as the clock, compares text and primary-card pixels, with a control. V-SHOT-B2 image diff implemented (in-browser OffscreenCanvas YIQ, ΔE 0.1, ≤ 0.5 %) but SKIPPED for all 141 shots: no human-approved baselines exist in tests/visual/baselines/b2/. V-PERF-1 max 66 KB art per child route. Not a device, child or parent measurement",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-gen-assets-run-2-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "gen-assets re-run after more of the Codex pack landed: 150 images shipped (was 22), 0 passthrough; 87 ids still pending in INDEX.json; 4 failed/skipped by the Codex run (bg/who-wide, bg/who-phone, bg/garden-panorama, topics/bead-pattern); 18 teacher stills missing; 1 lamp-hue lint failure (picto/notebook 2.16 % > 1.5 %, not shipped: its drawn fallback renders). OCR still not run (no AZURE_VISION_*). n = 1 run, ImageMagick 6 + libwebp",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "open-b2-fixer-followups",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "Left open by the B2 fixer: (1) server owner: GET /api/child/notebook (lesson ids + best card + her one line) so the Notebook is not device-bound, plus no-cache for /assets/gen/manifest.json in server/serve.mjs; (2) lesson owner: resume a lesson by id (then flip RESUME_BY_ID), send LessonStartRequest.purpose, honour prefs.face / largeText on the Desk; (3) parent owner: server-held speech text for the four onboarding promise rows (§6.2 step 3 '▶'), reachable before an account exists; the consent rows' CONSENT_SPEECH still says 'she'; (4) B1 owner: src/ui/Art.tsx and src/child/art.tsx each fetch the manifest; make one delegate to the other (one table); <Teacher> loads the stage background when not shown; (5) human: approve the first V-SHOT-B2 baselines (`--update-baselines`), the B2-A2 review sheet; (6) not built: the Young 1280 painted beds as tap targets (the Garden tile is in the panel instead), her greeting line, Hear {T} / How I know / the child's made thing in the map sheet, Your teacher preview clips (stills shown), onboarding step 8 (counter says 'of 8'), the sky SVG labels stay px (the List view is the scalable source of truth), re-run gen-assets after picto/notebook is regenerated",
+   "source": "inbox/b2-home-progress-assets.json"
   }
  ],
  "edges": [
@@ -6828,6 +6884,51 @@
    "src": "teacher-character-dead-ends-it2",
    "rel": "part_of",
    "dst": "teacher-character-pipeline"
+  },
+  {
+   "src": "b2-battery-fix-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b2-battery-2026-10-03"
+  },
+  {
+   "src": "b2-home-no-lying-signal",
+   "rel": "supersedes",
+   "dst": "b2-home-plan-fallback"
+  },
+  {
+   "src": "b2-home-no-lying-signal",
+   "rel": "measured_by",
+   "dst": "b2-battery-fix-2026-10-03"
+  },
+  {
+   "src": "b2-child-type-rem",
+   "rel": "caused_by",
+   "dst": "b2-rejected-custom-property-cycle"
+  },
+  {
+   "src": "b2-child-type-rem",
+   "rel": "measured_by",
+   "dst": "b2-battery-fix-2026-10-03"
+  },
+  {
+   "src": "b2-garden-raised-beds",
+   "rel": "measured_by",
+   "dst": "b2-battery-fix-2026-10-03"
+  },
+  {
+   "src": "b2-garden-raised-beds",
+   "rel": "supersedes",
+   "dst": "b2-garden-started-beds"
+  },
+  {
+   "src": "b2-notebook-device-source",
+   "rel": "measured_by",
+   "dst": "b2-battery-fix-2026-10-03"
+  },
+  {
+   "src": "b2-gen-assets-run-2-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b2-gen-assets-run-2026-10-03"
   }
  ]
 }

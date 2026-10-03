@@ -1060,3 +1060,11 @@ Method: the iteration-2 scripts on 4 vCPU. Gates are from `art/character/reports
 - Garment poke-through, inner vertices outside the outer layer: 21 / 49 / 88 (bar 0, not met).
 - Budgets: H 5.93 / 5.93 / 5.53 MB, 23.8k / 22.6k / 20.1k tris, 5 / 6 / 5 draws; B+ 1.92 / 1.85 / 1.75 MB, 17.0k / 16.7k / 15.5k, 5 draws; B-lite 0.77 / 0.73 / 0.73 MB; D plates 16-27 KB.
 - SwiftShader p50 (ms): H 195 / 179 / 179, B+ 101 / 97 / 95, B-lite 31 / 29 / 29. Unchanged from iteration 1 within noise.
+
+
+<!-- merged from inbox/b2-home-progress-assets.json -->
+## b2-battery-fix-2026-10-03
+Command: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b2.mjs` (add `--update-baselines` only when a human approves). Log docs/design/build/b2/run-fix-2026-10-03.log; checks docs/design/build/b2/checks.json (shotBaselines.skippedNoBaseline = 141); before-fix shots kept in docs/design/build/b2/before-fix/.
+
+## b2-gen-assets-run-2-2026-10-03
+Command: `node scripts/gen-assets.mjs`. Output public/assets/art/** + public/assets/gen/manifest.json (both must be committed: the Docker build has no encoder).

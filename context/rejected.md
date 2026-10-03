@@ -627,3 +627,8 @@ Traps hit in iteration 2 (2026-10-03):
    - Instead: a centroid fan on the visible layer.
 
 **Reverse if**: none of these are preferences; each is a measured break.
+
+
+<!-- merged from inbox/b2-home-progress-assets.json -->
+## b2-rejected-custom-property-cycle
+Reproduced in Chromium: computed --t-body was the guaranteed-invalid value, font-size resolved to the inherited 16 px. Also found: the old V-TGT used 44 px against its own 48 px header, which hid 44 px segmented controls (Me, Sky subject switcher); the old V-PLAN waited 900 ms, so it never saw the pre-answer Start card; the old 200 % check did not exist and an overflow-hidden page clips instead of scrolling, so a scroll check alone cannot see it (now an off-screen box check against the emulated width, because a mobile page that overflows zooms out and innerWidth grows with it).

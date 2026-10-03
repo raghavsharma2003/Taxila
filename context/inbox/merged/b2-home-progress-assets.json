@@ -1,89 +1,104 @@
 {
  "nodes": [
   {
-   "id": "b2-art-pipeline",
+   "id": "b2-home-no-lying-signal",
    "kind": "decision",
-   "title": "Image pack build step: Codex masters stay in public/assets/gen/** (where the prompt writes them); scripts/gen-assets.mjs converts each landed master to content-hashed 1x/2x WebP under public/assets/art/** (q 80 first, stepping down to fit the §12 budgets; an image that cannot fit, fails the lamp-hue lint or carries OCR text is NOT shipped and its designed fallback renders) and writes public/assets/gen/manifest.json (urls, CSS size, bytes, LQIP for scenes, lint share, OCR result, MANIFEST.topicMap). The vite plugin taxila:art-masters deletes dist/assets/gen/** except manifest.json, so masters never ship. Encoder: sharp if installed, else ImageMagick (libwebp). Reversal: the Codex prompt writes masters outside public/ (then the plugin goes), or the Docker build gets an encoder and runs gen-assets itself (then public/assets/art need not be committed)",
-   "at": "2026-10-03"
+   "at": "2026-10-03",
+   "title": "The child home never shows a signal the next screen breaks (§3.4, §6.3.3): (1) while GET /api/child/plan is in flight the PrimaryCard is a neutral busy card ('Getting today ready', aria-busy, NO Start, no Practice tile) instead of a provisional 'start' card with a live Start; (2) server state `resume` is shown as `start` (\"Today's lesson\" · Start) while src/child/plan.ts RESUME_BY_ID is false, because /c/:cid/lesson/:lid cannot reopen a lesson by id and 'Continue' would start a new one; the server state is kept as plan.serverState; (3) offline says 'Practice works offline.' and offers Quick practice ONLY when plan.packReady, else 'Lessons need the internet.' + Try again, and the Practice / Ask tiles are not offered offline. Reversal: (2) the lesson route resumes by id (flip RESUME_BY_ID); (3) an offline pack ships (packReady true); (1) the plan read becomes local-first (then the cached state may render, still without a Start until confirmed)"
   },
   {
-   "id": "b2-gen-assets-run-2026-10-03",
-   "kind": "measurement",
-   "title": "gen-assets over the landed pack (B00-B02, 26 masters, 6.7 MB): 22 shipped + 0 passthrough, every one within budget at the first quality (q 80); 1x 1.6-63 KB (phone backgrounds 10-16 KB of the 60 KB budget, wide 38-63 KB of 120 KB), 2x max 159 KB; 0 lamp-hue failures (max share 1.25 %, bg/stage-young; bar 1.5 %); public/assets/art 2.2 MB; 23 s wall with ImageMagick 6 + libwebp 1.3.2 (n = 1 run). OCR NOT run: no AZURE_VISION_ENDPOINT / AZURE_VISION_KEY in .env.local. 217 ids pending in INDEX.json; bg/who-wide and bg/garden-panorama failed, bg/who-phone skipped (their flat fallbacks render)",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b2-home-plan-fallback",
+   "id": "b2-child-type-rem",
    "kind": "decision",
-   "title": "The child home is never an empty card (audit #9): the server plan state is shown as-is; when GET /api/child/plan fails (404 / 5xx / wrong shape / 6 s timeout) the home shows `start` with the last topic the plan returned on this device (else \"Start a lesson\" with no topic) and Start goes to /lesson/new (the server resolves the next planned topic; a failure there is the lesson's T9); today's finished-lesson marker turns the fallback into `done`, so an outage after a lesson never offers a second one; offline (navigator.onLine false or the `offline` event) shows the designed offline card with Try again. Reversal: the plan read becomes part of the offline pack (packReady), so the fallback can show the true state offline",
-   "at": "2026-10-03"
+   "at": "2026-10-03",
+   "title": "Child screens outside the lesson (.cs, .cs-gate) re-declare the band type tokens in rem (px/16, so 100 % renders identically) times one factor --cs-k (Me → Bigger text = 1.18): text follows the browser/OS font size to 200 % (§11.7) and Bigger text grows it. The lesson (no .cs) keeps the px tokens (it yields per §6.3.4, lesson workstream). Layout follows: grids use minmax(0,1fr), tiles reflow with auto-fit minmax(min(100%, n rem)), the top bar wraps only when one row no longer fits. Reversal: tokens.css itself moves the band scale to rem (then the re-declaration in src/child/child.css goes)"
   },
   {
-   "id": "b2-garden-started-beds",
-   "kind": "decision",
-   "title": "The Garden draws only the beds the child has started plus the class's current chapter (server `here`), never a bed per syllabus chapter: a class 3 garden would otherwise open on ~25 beds of bare seed packets, which is the banned 'empty-plot count' (§4.8). Not-started skills inside a drawn bed show as plots. Reversal: MW-M2 shows children cannot find where the next lesson grows without the empty beds",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b2-sky-edges-syllabus",
-   "kind": "decision",
-   "title": "Sky map edges are the real topic prerequisites from data/curriculum/c<class>-<subject>.json (lazy 10-20 KB chunk on the map route), drawn only between two topics both on the visible map; a prerequisite in an earlier class draws nothing; cross-chapter edges are faint and dashed so the sky stays readable (class 6 maths: 24 same-class links). The map response carries no edges, and invented 'constellation lines' would be decoration posing as structure. Reversal: GET /api/child/map returns the prerequisite edges itself (then the client stops loading the syllabus files)",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b2-clip-own-teacher-only",
-   "kind": "decision",
-   "title": "A pre-rendered clip (Hello greeting, onboarding Meet ▶) plays only under the face of the teacher who recorded it (src/child/voice.ts registry). Today only Asha's greeting exists (public/audio/hello-*.mp3), so Asha's Hello and Meet speak and Arjun's / Uma's show her words and face without sound. The old onboarding played Asha's 'Main Asha didi hoon' under every class, the audit #4 identity break in audio form. Reversal: per-teacher no-name greeting clips rendered in each live voice (then every Hello speaks)",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b2-onboarding-order",
-   "kind": "decision",
-   "title": "Onboarding order (§3.2) built in B2: 1 class + board → 2 meet the class's actual teacher (GET /api/child/teacher?classLevel=) and pick her language once → 3 our promises + Hold to continue (the grown-up hold gate moved here from the account step; typed 'parent' alternative) → 4 account → 5 consent → 6 about the child (name, Casual / Respectful, the 12 interest pictures Hello shows, captions) → 7 PIN + limit → 9 hand over (Now → Hello, Later → the Parent corner). Every step opens at scrollY 0 with focus on its h1, the <title> follows the step, the primary action is in the flow (never sticky). /start/lang, /trust, /taste redirect. Step 8 (sound and mic check) is NOT built (B3). Reversal: V2-M8 shows the class-first order slows hand-over beyond 6 min",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b2-rejected-generic-class-names",
+   "id": "b2-rejected-custom-property-cycle",
    "kind": "rejection",
-   "title": "Generic CSS class names on child screens: `.avatar` (src/styles/app.css paints it a jamun disc) and `.pc` (src/styles/parent.css) collided, so every Older avatar sat in a navy ring and the home card would have taken parent-corner grid rules once the parent chunk had loaded. Found only in a screenshot (computed styles looked right on the button). Now `.cs-avatar` / `.hpc`; the battery's class list was grepped against every global stylesheet",
-   "at": "2026-10-03"
+   "at": "2026-10-03",
+   "title": "Bigger text as `.tx-child[data-comfort=large] { --t-body: calc(var(--t-body) + 3px) }` on the same element: a custom-property cycle, so every token in the rule became invalid at computed time and text fell back to the inherited 16 px; Older body text (17 px) got SMALLER when the child turned Bigger text on. Found by the fixer review in Chromium, not by the battery (it never toggled the setting). Fixed with a separate factor variable; the battery now asserts the computed size grows"
   },
   {
-   "id": "b2-rejected-offline-before-load",
-   "kind": "rejection",
-   "title": "Testing the offline home with the browser offline BEFORE the first load: there is no service worker / cached shell, so the SPA never loads and nothing can render (all 4 offline cases failed with an empty page). The offline home is tested by dropping the link after load (the home re-reads on the `offline` event). The cached-shell half of §6.1.1 'offline → the cached shell' does not exist yet",
-   "at": "2026-10-03"
+   "id": "b2-garden-raised-beds",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Garden layout: each bed is a raised bed (brick edge + soil) that fills the panel from its signboard to the bottom, one bed per phone width (100cqw − gutters, max 340), so no hollow paper band sits above the plants and the seal is never clipped by the panel edge; a code-drawn courtyard ground (sky + clouds band holding the 64 dp arrows, hedge, soil) stands in for the failed bg/garden-panorama; each bed's signboard has its own token colour plus the topic picture (code-drawn subject emblem until topic art lands); the class's current chapter carries a flag picture whose accessible name is 'Your class is here'. Beds carry NO visible chapter name: §10 'Garden: plants, no words, no numbers' (R0/R1 readers), and a spoken label needs her voice for arbitrary text, which has no route. Reversal: MW-M2 / a child test shows Young children cannot tell beds apart, or a 'speak this chapter name' route exists"
   },
   {
-   "id": "b2-battery-2026-10-03",
+   "id": "b2-notebook-device-source",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Notebook pages come from the lesson ids THIS device recorded (no server endpoint lists a child's lessons): the empty line only says 'after your first lesson' when the server plan says `first`; otherwise 'Your next lesson will add a page here.' (true on any device). Lesson summaries are immutable once ended, so each is fetched once and cached per child on the device, at most 3 in flight (was up to 12 parallel requests on every open). Reversal: GET /api/child/notebook (or recent lesson ids on the plan) exists; then the server list is the source and the device cache only a speed-up"
+  },
+  {
+   "id": "b2-battery-fix-2026-10-03",
    "kind": "measurement",
-   "title": "B2 battery tests/e2e-design-b2.mjs: 942/942 checks (n = 1 run, headless Chromium SwiftShader, the production build served by server/serve.mjs, every /api/* mocked with page.route; 360x640 DPR 2 touch + 1280x800; light + dark for Older): V-PLAN one primary card in all 9 home states incl. plan 404 / 500 / offline; V-LAYOUT-2, V-EN-1, V-NAME-1, V-SIG-2 (0 lamps), V-TGT over home, map, list, sheet, notebook, ask, me, your teacher, Hello cards 1-5 and onboarding 1-3; V-PERF-1 max 95 KB art per child route (bar 350 KB); tier D requested 0 backgrounds; V-ID-1 on home, map sheet, Hello, Your teacher, Meet; masters not served from the build; home text identical after 1 vs 30 days away; 5 negative controls trip. Not a device, child or parent measurement",
-   "at": "2026-10-03"
+   "at": "2026-10-03",
+   "title": "B2 battery after the fixer pass, tests/e2e-design-b2.mjs: 1116/1116 checks (n = 1 run, headless Chromium SwiftShader, production build via server/serve.mjs, /api/* mocked; 360x640 DPR 2 touch + 1280x800; light + dark for Older). New since the 942-check run: V-TGT at the spec bars (48 Older/adult, 64 Young, the 48 dp Grown-ups door excepted) with negative controls (46 px and 60 px buttons trip); V-PLAN loading (plan delayed 3 s; capped/resting/done: 0 Start links and 0 Practice tiles at 1.2 s; control trips); resume shown as start; offline makes no offline-practice promise and offers no Practice/Ask; card region named by its own heading; Bigger text grows computed sizes (Older home title 24 → 28.3 px); text follows a 200 % root font size on home, map, notebook, me (Young + Older) with no off-screen clipping and no top-bar overlap (new off-screen check + control); V-CON text contrast against the composited pixels under it, 30 screen states, ≥ 4.5 / 3 (control trips); V-MOTION reduced motion leaves nothing looping (6 routes); Garden bed fills the panel, class flag present and in view, sheet shows the visible '{T} · AI teacher' label; Notebook summaries fetched once (3 on first open, 0 on reopen); V-ABS now varies the last-visit device state (plan cache day, day marker, artefact date) as well as the clock, compares text and primary-card pixels, with a control. V-SHOT-B2 image diff implemented (in-browser OffscreenCanvas YIQ, ΔE 0.1, ≤ 0.5 %) but SKIPPED for all 141 shots: no human-approved baselines exist in tests/visual/baselines/b2/. V-PERF-1 max 66 KB art per child route. Not a device, child or parent measurement"
   },
   {
-   "id": "open-b2-lesson-wiring",
-   "kind": "open",
-   "title": "For the lesson workstream (src/lesson/**, src/child/lesson/**): (1) LessonStartRequest.purpose is never sent: Practice and Ask after a done lesson are refused 409 by the plan gate (lt-start-gate); send purpose 'practice' / 'doubt' from the LessonScreen variant and show the 409 as the plan state; (2) /c/:cid/lesson/<lid> from 'Continue your lesson' starts a NEW lesson (no resume by lid); (3) prefs.face 'small' (Still picture) and 'voice' (Voice only) and prefs.largeText are set on Me but not honoured on the Desk",
-   "at": "2026-10-03"
+   "id": "b2-gen-assets-run-2-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "gen-assets re-run after more of the Codex pack landed: 150 images shipped (was 22), 0 passthrough; 87 ids still pending in INDEX.json; 4 failed/skipped by the Codex run (bg/who-wide, bg/who-phone, bg/garden-panorama, topics/bead-pattern); 18 teacher stills missing; 1 lamp-hue lint failure (picto/notebook 2.16 % > 1.5 %, not shipped: its drawn fallback renders). OCR still not run (no AZURE_VISION_*). n = 1 run, ImageMagick 6 + libwebp"
   },
   {
-   "id": "open-b2-not-built",
+   "id": "open-b2-fixer-followups",
    "kind": "open",
-   "title": "Not built in B2, listed so coverage is not implied: per-teacher greeting clips (Arjun, Uma Hello is silent); her once-a-day home greeting line (no endpoint); Young labels spoken on tap; Ask 'Say it' and 'Photo of the question' (no route; hidden, not dead buttons); the Garden/Sky sheet 'Hear {T}' line and Older 'How I know' evidence rows (no child evidence read); Notebook per-page explanation line and tray still, Older 'Notes for a friend'; Your teacher 10 s preview clips; protégé teach-back art and milestone ceremonies (lesson-side); Who avatars (src/app/Who.tsx, not this workstream); onboarding step 8 sound and mic check and field-level errors (B3); OCR no-text check (needs AZURE_VISION_*); the 18 rig stills (scripts/teacher-stills.mjs not run: every still renders the plate fallback); the human review sheet (B2-A2)",
-   "at": "2026-10-03"
+   "at": "2026-10-03",
+   "title": "Left open by the B2 fixer: (1) server owner: GET /api/child/notebook (lesson ids + best card + her one line) so the Notebook is not device-bound, plus no-cache for /assets/gen/manifest.json in server/serve.mjs; (2) lesson owner: resume a lesson by id (then flip RESUME_BY_ID), send LessonStartRequest.purpose, honour prefs.face / largeText on the Desk; (3) parent owner: server-held speech text for the four onboarding promise rows (§6.2 step 3 '▶'), reachable before an account exists; the consent rows' CONSENT_SPEECH still says 'she'; (4) B1 owner: src/ui/Art.tsx and src/child/art.tsx each fetch the manifest; make one delegate to the other (one table); <Teacher> loads the stage background when not shown; (5) human: approve the first V-SHOT-B2 baselines (`--update-baselines`), the B2-A2 review sheet; (6) not built: the Young 1280 painted beds as tap targets (the Garden tile is in the panel instead), her greeting line, Hear {T} / How I know / the child's made thing in the map sheet, Your teacher preview clips (stills shown), onboarding step 8 (counter says 'of 8'), the sky SVG labels stay px (the List view is the scalable source of truth), re-run gen-assets after picto/notebook is regenerated"
   }
  ],
  "edges": [
-  { "src": "b2-art-pipeline", "rel": "measured_by", "dst": "b2-gen-assets-run-2026-10-03" },
-  { "src": "b2-home-plan-fallback", "rel": "measured_by", "dst": "b2-battery-2026-10-03" },
-  { "src": "b2-home-plan-fallback", "rel": "caused_by", "dst": "b2-rejected-offline-before-load" },
-  { "src": "b2-onboarding-order", "rel": "measured_by", "dst": "b2-battery-2026-10-03" },
-  { "src": "b2-sky-edges-syllabus", "rel": "measured_by", "dst": "b2-battery-2026-10-03" },
-  { "src": "b2-garden-started-beds", "rel": "measured_by", "dst": "b2-battery-2026-10-03" }
+  {
+   "src": "b2-battery-fix-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b2-battery-2026-10-03"
+  },
+  {
+   "src": "b2-home-no-lying-signal",
+   "rel": "supersedes",
+   "dst": "b2-home-plan-fallback"
+  },
+  {
+   "src": "b2-home-no-lying-signal",
+   "rel": "measured_by",
+   "dst": "b2-battery-fix-2026-10-03"
+  },
+  {
+   "src": "b2-child-type-rem",
+   "rel": "caused_by",
+   "dst": "b2-rejected-custom-property-cycle"
+  },
+  {
+   "src": "b2-child-type-rem",
+   "rel": "measured_by",
+   "dst": "b2-battery-fix-2026-10-03"
+  },
+  {
+   "src": "b2-garden-raised-beds",
+   "rel": "measured_by",
+   "dst": "b2-battery-fix-2026-10-03"
+  },
+  {
+   "src": "b2-garden-raised-beds",
+   "rel": "supersedes",
+   "dst": "b2-garden-started-beds"
+  },
+  {
+   "src": "b2-notebook-device-source",
+   "rel": "measured_by",
+   "dst": "b2-battery-fix-2026-10-03"
+  },
+  {
+   "src": "b2-gen-assets-run-2-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b2-gen-assets-run-2026-10-03"
+  }
  ],
  "md": {
-  "decisions": "## b2-art-pipeline\nscripts/gen-assets.mjs (`--strict` is the B2-A2 acceptance run: every shipped id present, 0 pending, budgets, lint, provenance, OCR). Budgets [I]: backgrounds 120 KB at 1x, phone 60 KB, spots/states/tiles 40 KB, avatars/pictograms 16 KB; 2x provisional at 3x the 1x budget. 1x CSS widths per category are in `shipPlan` (bg wide 1280, phone 360, stage 480, sky-panel 800 + a 360x640 crop, picto 64, avatars 112, states 240, garden plants 112). Brand icons and the OG card pass through unchanged. Client: src/child/art.tsx (`<Scene id=\"home-young\">` picks -phone / -wide with srcset 1x/2x and the LQIP; `<Spot id=… size=…>`), compatible with B1's src/ui/Art.tsx which reads the same manifest's `url`. Tier D (`?tier=D`, Save-Data, deviceMemory ≤ 1, prefers-reduced-data) loads no background. Known issue for the server owner: server/serve.mjs serves all of /assets/* as immutable for a year, which includes /assets/gen/manifest.json; a new deploy's manifest can be shadowed by a cached old one. Hashed image names are safe; the manifest needs no-cache (or a hashed name).\n\n## b2-home-plan-fallback\nsrc/child/plan.ts (`fromServer`, `fallbackPlan`, `usePlan`; unit-tested in tests/ui-v2-b2.test.mjs). The home exposes data-plan-state / data-plan-source.\n\n## b2-garden-started-beds\nsrc/child/progress/layout.ts `gardenBeds`.\n\n## b2-sky-edges-syllabus\nsrc/child/progress/prereqs.ts (`loadPrereqs`, `visibleEdges`); star hit targets are 48 px HTML buttons over the SVG (layout keeps ≥ 48 px between centres at 360).\n\n## b2-clip-own-teacher-only\nsrc/child/voice.ts `helloClip(teacherId, lang)`.\n\n## b2-onboarding-order\nsrc/onboarding/index.tsx, Layout.tsx (STEPS / ADD_STEPS, scroll + focus + title), steps/Class.tsx, steps/Meet.tsx, Consent.tsx (PromisesStep), Account.tsx (no hold gate), ChildProfile.tsx, Setup.tsx (PIN + handover). The consent rows' ▶ still read the server-held CONSENT_SPEECH text (server/routes/parent.js), which was written for the old gendered copy: the parent workstream should re-align it with the on-screen rows.\n",
-  "measurements": "## b2-gen-assets-run-2026-10-03\nCommand: `node scripts/gen-assets.mjs` (ImageMagick 6 `convert`, libwebp 1.3.2). Output public/assets/art/** + public/assets/gen/manifest.json.\n\n## b2-battery-2026-10-03\nRun log: docs/design/build/b2/run-2026-10-03.log; checks: docs/design/build/b2/checks.json; 129 screenshots in docs/design/build/b2/ named <screen>__<state>__<band>__<width>__<theme>.png. Command: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b2.mjs`.\n",
-  "rejected": "## b2-rejected-generic-class-names\nSeen in the 360 Older home shot: a 4 px navy ring around the avatar disc. elementFromPoint at the ring returned the avatar span with background rgb(36,52,110) from app.css `.avatar`.\n\n## b2-rejected-offline-before-load\n`context.setOffline(true)` before `page.goto`: Chromium could not fetch the document; the 4 offline home cases rendered nothing.\n"
+  "decisions": "## b2-home-no-lying-signal\nsrc/child/plan.ts (`RESUME_BY_ID`, `practiceOffered`, `serverState`, `packReady`, LOADING), src/child/screens/Home.tsx (loading card, offline by packReady, aria-labelledby on the card). Unit-tested in tests/ui-v2-b2.test.mjs. This keeps b2-home-plan-fallback's fallback rules (404/5xx/timeout → start with cached topic; done marker; offline) and adds the three no-lie rules.\n\n## b2-child-type-rem\nsrc/child/child.css top block. The rule `.tx-child :is(.cs, .cs-gate)` scopes it; ChildScreen and Hello both render `.cs`.\n\n## b2-garden-raised-beds\nsrc/child/progress/Garden.tsx (GardenGround, BedSign, SubjectEmblem, HereFlag). Still only started beds + the class's chapter (gardenBeds, unchanged); this node supersedes b2-garden-started-beds only in layout, the bed-selection rule stands.\n\n## b2-notebook-device-source\nsrc/child/screens/Notebook.tsx (`SUMMARY_CONCURRENCY`, localStorage key taxila.child.<cid>.nbsum).\n",
+  "measurements": "## b2-battery-fix-2026-10-03\nCommand: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b2.mjs` (add `--update-baselines` only when a human approves). Log docs/design/build/b2/run-fix-2026-10-03.log; checks docs/design/build/b2/checks.json (shotBaselines.skippedNoBaseline = 141); before-fix shots kept in docs/design/build/b2/before-fix/.\n\n## b2-gen-assets-run-2-2026-10-03\nCommand: `node scripts/gen-assets.mjs`. Output public/assets/art/** + public/assets/gen/manifest.json (both must be committed: the Docker build has no encoder).\n",
+  "rejected": "## b2-rejected-custom-property-cycle\nReproduced in Chromium: computed --t-body was the guaranteed-invalid value, font-size resolved to the inherited 16 px. Also found: the old V-TGT used 44 px against its own 48 px header, which hid 44 px segmented controls (Me, Sky subject switcher); the old V-PLAN waited 900 ms, so it never saw the pre-answer Start card; the old 200 % check did not exist and an overflow-hidden page clips instead of scrolling, so a scroll check alone cannot see it (now an off-screen box check against the emulated width, because a mobile page that overflows zooms out and innerWidth grows with it).\n"
  }
 }

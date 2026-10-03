@@ -1,6 +1,4 @@
--- 009: stored parent reports (server/reports/**; PARENT-REPORT.md §10.1 stages 1-9, CONDUCTOR.md §7.3 X8/X11).
--- PROPOSED for db/migrations/009_parent_report.sql (the main loop moves it there and applies it; this workstream
--- applied it only to the CONDUCTOR_TEST_DATABASE_URL branch). Additive, re-runnable.
+-- 010: stored parent reports (server/reports/**; PARENT-REPORT.md §10.1 stages 1-9, CONDUCTOR.md §7.3 X8/X11). Additive, re-runnable.
 -- One row per (child, cadence, period, render_version): the job is idempotent on that key, and an operator re-render
 -- under a new template version is a new row, never an overwrite. `claims` holds every admitted claim with its slots
 -- and the ledger rows behind it (factIds) — the "Kaise pata?" tap-through reads them; `renders` holds the Lane A

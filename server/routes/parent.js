@@ -676,7 +676,7 @@ export function hafteSpeech(name, d) {
 // ───────────────────────────── reports (server/reports/**) ─────────────────────────────
 
 const REPORT_ID = /^\d{1,18}$/;
-const missingTable = (e) => e?.code === "42P01";          // parent_report not migrated yet (sql/009_parent_report.sql)
+const missingTable = (e) => e?.code === "42P01";          // parent_report not migrated yet (db/migrations/010_parent_report.sql)
 /** The stored report as the client reads it: lines per language, never factIds (the drawer resolves those server-side). */
 const reportOut = (r) => ({
   id: String(r.id), cadence: r.cadence, period: r.period, window: { from: r.window_from ?? r.window?.from, to: r.window_to ?? r.window?.to },

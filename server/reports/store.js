@@ -1,4 +1,4 @@
-// parent_report persistence (sql/009_parent_report.sql). `db` is any { q(text, params) → rows } (the Conductor pool in
+// parent_report persistence (db/migrations/010_parent_report.sql). `db` is any { q(text, params) → rows } (the Conductor pool in
 // the worker, server/db.js in the web app, a fake in tests).
 import { RENDER_VERSION } from "./config.js";
 

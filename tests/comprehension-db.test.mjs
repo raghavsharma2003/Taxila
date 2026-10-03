@@ -12,18 +12,19 @@ import { beliefFor } from "../server/comprehension/state.js";
 import { enqueue } from "../server/comprehension/weave.js";
 
 const envFile = new URL("../.env.local", import.meta.url);
-const URL_ = process.env.DATABASE_URL
-  || (existsSync(envFile) ? (readFileSync(envFile, "utf8").split("\n").find((l) => l.startsWith("DATABASE_URL=")) || "").slice(13).replace(/^"(.*)"$/, "$1") : "");
+// A dedicated Neon test branch only (TEST_DATABASE_URL, else the Conductor's test branch): never production.
+const fromEnvFile = (name) => (existsSync(envFile) ? (readFileSync(envFile, "utf8").split("\n").find((l) => l.startsWith(name + "=")) || "").slice(name.length + 1).replace(/^"(.*)"$/, "$1") : "");
+const URL_ = process.env.TEST_DATABASE_URL || fromEnvFile("TEST_DATABASE_URL") || process.env.CONDUCTOR_TEST_DATABASE_URL || fromEnvFile("CONDUCTOR_TEST_DATABASE_URL");
 const sql = URL_ ? neon(URL_) : null;
-const nativeFetch = globalThis.fetch;
+const nativeFetch = globalThis.__taxilaNativeFetch ?? globalThis.fetch;   // tests/index.js stashes the real one before any file loads
 let prevFetchFn, reachable = false;
 
-describe("comprehension store on Neon", { skip: !sql && "no DATABASE_URL", concurrency: false, timeout: 60_000 }, () => {
+describe("comprehension store on Neon", { skip: !sql && "no TEST_DATABASE_URL (a Neon branch; never production)", concurrency: false, timeout: 60_000 }, () => {
   let guardian, kid;
   const run = (stmts) => sql.transaction((t) => stmts.map((s) => t.query(s.text, s.params)));
   before(async () => {
     prevFetchFn = neonConfig.fetchFunction; neonConfig.fetchFunction = nativeFetch;
-    reachable = await Promise.race([sql.query("select 1 from comp_facet_state limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 15_000))]);
+    reachable = await Promise.race([sql.query("select 1 from comp_facet_state limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 45_000))]);
     if (!reachable) return;
     guardian = (await sql.query("insert into guardian (email, pw_hash, name) values ($1, 'x', 'comp-test') returning id", [`comp-test+${randomUUID()}@test.invalid`]))[0].id;
     kid = (await sql.query("insert into child (guardian_id, first_name, class_level) values ($1, 'Test', 5) returning id, legal_mode", [guardian]))[0];

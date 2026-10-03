@@ -56,7 +56,7 @@
 .cs-reason { color: var(--ink-2); font-size: var(--t-meta); }
 .cs-input { width: 100%; min-height: var(--hit-min); padding: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm);
   background: var(--surface); color: var(--ink); font-size: var(--t-body); resize: vertical; }
-.cs-chipbtn { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--hit-min); padding: 0 var(--space-3);
+.cs-chipbtn { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--hit-min); padding: 0 var(--space-3) 0 var(--space-2);
   border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); color: var(--ink); font-weight: 700;
   font-size: var(--t-meta); cursor: pointer; }
 .cs-chipbtn[aria-pressed="true"] { border-color: var(--nib); color: var(--nib); }
@@ -95,7 +95,8 @@
 .cs-main { position: relative; z-index: 1; display: flex; flex-direction: column; gap: var(--space-2); min-height: 100dvh;
   max-width: 1040px; margin: 0 auto; padding: 0 var(--space-4) var(--space-4); }
 .cs--older .cs-main { padding-bottom: calc(64px + var(--space-4) + env(safe-area-inset-bottom, 0px)); }
-.cs-top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); min-height: 48px; flex: none; }
+/* wraps only when large text no longer fits one row (§11.7); at 100 % a Young top bar (Home · title · List) fits 328 */
+.cs-top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); min-height: 48px; flex: none; }
 [data-family="young"] .cs-top { min-height: 56px; }
 .cs-top-gap, .cs-top-fill { flex: 1; }
 .cs-top-gap { flex: 0 0 0; }
@@ -105,7 +106,7 @@
 .cs-grownups { display: inline-flex; align-items: center; min-height: 48px; padding: 0 var(--space-3); color: var(--ink-2); font-size: var(--t-meta);
   font-weight: 600; text-decoration: none; border-radius: var(--radius-pill); background: var(--surface);
   background: color-mix(in srgb, var(--surface) 80%, transparent); }
-.cs-homebtn { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 64px; min-width: 64px; padding: 0 var(--space-4) 0 var(--space-2);
+.cs-homebtn { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 64px; min-width: 64px; padding: 0 var(--space-3) 0 var(--space-2);
   border-radius: var(--radius-tile); background: var(--surface); border: 1px solid var(--line); color: var(--ink); text-decoration: none;
   font-weight: 700; font-size: var(--t-label); }
 .cs-mebtn { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%;
@@ -178,7 +179,7 @@
 .hpc-skel-bar { display: block; width: 70%; height: 14px; margin-top: var(--space-2); border-radius: 7px; background: var(--tray); }
 .hpc--loading .hpc-head { color: var(--ink-2); }
 .home-panel { display: contents; }
-.home-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+.home-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.4rem), 1fr)); gap: var(--space-2); }
 .ptile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); min-height: 136px;
   padding: var(--space-2); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-tile); color: var(--ink);
   text-decoration: none; font-weight: 700; font-size: var(--t-label); text-align: center; transition: transform var(--m-press) var(--ease-standard); }

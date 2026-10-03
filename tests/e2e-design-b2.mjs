@@ -157,7 +157,9 @@ const HINGLISH = ["ghar", "ruko", "bolo", "bas", "bhejo", "phir", "shuru", "chal
   "pata", "hafte", "kaam", "dekhein", "chhoo"];
 
 async function audit(page, { young }) {
-  return page.evaluate(({ HINGLISH, young }) => {
+  // the emulated device width (a mobile page that overflows zooms out, so innerWidth itself can grow to fit the overflow)
+  const vw = page.viewportSize()?.width ?? 0;
+  return page.evaluate(({ HINGLISH, young, vw }) => {
     const out = { en: [], names: [], dead: [], lamps: 0, tgt: [], hscroll: false };
     const visible = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== "hidden" && cs.display !== "none" && cs.opacity !== "0"; };
     // V-EN-1: text nodes outside [data-speech]
@@ -222,12 +224,12 @@ async function audit(page, { young }) {
       for (; sc && sc !== document.body; sc = sc.parentElement) { const o = getComputedStyle(sc).overflowX; if (o === "auto" || o === "scroll") { inScroller = true; break; } }
       if (inScroller) continue;
       const r = el.getBoundingClientRect();
-      if (r.right > window.innerWidth + 1 || r.left < -1) out.dead.push(`offscreen ${el.tagName.toLowerCase()}.${el.className} ${Math.round(r.left)}..${Math.round(r.right)}`.slice(0, 90));
+      if (r.right > Math.min(window.innerWidth, vw || window.innerWidth) + 1 || r.left < -1) out.dead.push(`offscreen ${el.tagName.toLowerCase()}.${el.className} ${Math.round(r.left)}..${Math.round(r.right)}`.slice(0, 90));
     }
     out.lamps = document.querySelectorAll("[data-lamp]").length;
-    out.hscroll = document.scrollingElement.scrollWidth > window.innerWidth + 1;
+    out.hscroll = document.scrollingElement.scrollWidth > Math.min(window.innerWidth, vw || window.innerWidth) + 1;
     return out;
-  }, { HINGLISH, young });
+  }, { HINGLISH, young, vw });
 }
 
 function report(tag, a) {
@@ -596,6 +598,7 @@ for (const who of ["riya", "kabir"]) {
       check(`V-MAP prerequisite edges drawn ${tag}`, (await page.locator(".sky-svg line").count()) > 0);
     }
     report(tag, await audit(page, { young }));
+    check(`top bar on one row at 100 % text ${tag}`, await page.evaluate(() => { const t = [...document.querySelectorAll(".cs-top > *")].map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0); return Math.max(...t.map((r) => r.top)) - Math.min(...t.map((r) => r.top)) < 24; }));
     if (kind === "mid") { const bad = await contrast(page); check(`V-CON ${tag}`, bad.length === 0, bad.slice(0, 3).join(" | ")); }
     await shot(page, `map__${kind}__${young ? "b2" : "b3"}__${v.w}__${theme}`);
     if (young && kind === "mid" && v.w === 360) {

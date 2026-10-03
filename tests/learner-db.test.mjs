@@ -29,7 +29,7 @@ const run = (stmts) => sql.transaction((t) => stmts.map((s) => t.query(s.text, s
 let reachable = false;
 // Other files stub global fetch inside their tests (Azure calls); pin this suite's Neon HTTP calls to the
 // fetch that existed at import, for the suite's duration only.
-const nativeFetch = globalThis.fetch;
+const nativeFetch = globalThis.__taxilaNativeFetch ?? globalThis.fetch;   // tests/index.js stashes the real one before any file loads
 let prevFetchFn;
 
 describe("learner writer on Neon", { skip: !sql && "no TEST_DATABASE_URL (a Neon branch; never production)", concurrency: false, timeout: 120_000 }, () => {
@@ -37,7 +37,7 @@ describe("learner writer on Neon", { skip: !sql && "no TEST_DATABASE_URL (a Neon
   before(async () => {
     prevFetchFn = neonConfig.fetchFunction;
     neonConfig.fetchFunction = nativeFetch;
-    reachable = await Promise.race([sql.query("select 1 from kt_evidence limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 15_000))]);
+    reachable = await Promise.race([sql.query("select 1 from kt_evidence limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 45_000))]);
     if (!reachable) return;
     guardian = (await sql.query("insert into guardian (email, pw_hash, name) values ($1, 'x', 'learner-test') returning id", [`learner-test+${randomUUID()}@test.invalid`]))[0].id;
     kid = (await sql.query("insert into child (guardian_id, first_name, class_level) values ($1, 'Test', 5) returning id, legal_mode, class_level", [guardian]))[0];

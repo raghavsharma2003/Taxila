@@ -40,6 +40,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "comp_facet_state", "reteach_attempts", "rep_fluency", "weave_queue", "probe_log", "grade_audit",
   // 008_tutor_choice.sql: the child's tutor-switch analytics (choice history + time to choose) — history, not a layer
   "tutor_switch",
+  // 010_parent_report.sql: rendered parent reports, derived from the academic evidence (claims cite ledger rows)
+  "parent_report",
 ]);
 
 /**

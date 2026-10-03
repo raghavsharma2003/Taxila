@@ -1638,3 +1638,17 @@ The teacher skin albedo is the Monk Skin Tone hex of the look's band, multiplied
 
 ## teacher-canvas-opaque (2026-10-03)
 The teacher's WebGL2 context is created by hand with `alpha: false` and passed to three (`{ canvas, context }`). Why: hair, brow and lash cards use alpha-to-coverage, which writes the fragment alpha into the drawing buffer. three r180 always requests an alpha context (it only emulates `alpha: false`), so the page composited every card edge. That produced iteration 1's tan, patchy brows and bright card edges. `src/avatar/three/stage3d.ts` (`alpha: true`) must change before the factory GLBs ship. **Reverse if** the stage needs a transparent canvas; then add a final alpha-to-1 pass, and never alpha-blend the cards (Mali Early-Z).
+
+
+<!-- merged from inbox/b2-home-progress-assets.json -->
+## b2-home-no-lying-signal
+src/child/plan.ts (`RESUME_BY_ID`, `practiceOffered`, `serverState`, `packReady`, LOADING), src/child/screens/Home.tsx (loading card, offline by packReady, aria-labelledby on the card). Unit-tested in tests/ui-v2-b2.test.mjs. This keeps b2-home-plan-fallback's fallback rules (404/5xx/timeout → start with cached topic; done marker; offline) and adds the three no-lie rules.
+
+## b2-child-type-rem
+src/child/child.css top block. The rule `.tx-child :is(.cs, .cs-gate)` scopes it; ChildScreen and Hello both render `.cs`.
+
+## b2-garden-raised-beds
+src/child/progress/Garden.tsx (GardenGround, BedSign, SubjectEmblem, HereFlag). Still only started beds + the class's chapter (gardenBeds, unchanged); this node supersedes b2-garden-started-beds only in layout, the bed-selection rule stands.
+
+## b2-notebook-device-source
+src/child/screens/Notebook.tsx (`SUMMARY_CONCURRENCY`, localStorage key taxila.child.<cid>.nbsum).

@@ -3,7 +3,7 @@
 // test branch, which must never leak into, or be overridden by, another suite).
 // Parent report ROUTES under a Conductor safety hold, against the real API in-process and a REAL Neon database: the
 // TEST branch only (CONDUCTOR_TEST_DATABASE_URL; skips otherwise, refuses the production endpoint, and skips while
-// sql/009_parent_report.sql is not applied there). Review finding: the hold was enforced only on the job path, so
+// db/migrations/010_parent_report.sql is not applied there). Review finding: the hold was enforced only on the job path, so
 // GET /api/parent/report still computed a live preview and stored scripts stayed playable during a safety incident.
 // Decision reports-safety-hold-read-side: during a hold → no preview, no Listen, no note stored after the hold began;
 // notes stored before it stay readable as text.
