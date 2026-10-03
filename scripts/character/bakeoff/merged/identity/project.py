@@ -98,7 +98,7 @@ def apply(G):
         z10 = L3[idx.index(10)][2]
         hs = np.maximum(hs, np.clip((Pt[:, 2] - (z10 - 0.006)) / 0.008, 0, 1))
     mir = np.array([-1.0, 1.0, 1.0])
-    acc = np.zeros((N, 3)); wacc = np.zeros(N); hacc = np.zeros(N); views_used = {}
+    acc = np.zeros((N, 3)); wacc = np.zeros(N); hacc = np.zeros(N); hwacc = np.zeros(N); views_used = {}
     hfuns = []
     # G9 patch texels (Blender axes; g9.mjs offsets are glTF (x, y up, z fwd) -> Blender (x, -z, y))
     eL, eR = eyeC["L"], eyeC["R"]; midp = (eL + eR) / 2
@@ -170,6 +170,12 @@ def apply(G):
         bg = ((Y > 0.45) & ((mx - mn) / np.maximum(mx, 1e-4) < 0.22)) | (np.linalg.norm(img - np.median(border, 0), axis=-1) < 0.08)
         bg = ndimage.binary_dilation(ndimage.binary_opening(bg, iterations=2), iterations=3)
         okh = ndimage.gaussian_filter((~bg & ~eyes & (np.arange(H_)[:, None] < lm_all[152, 1])).astype(np.float32), 1.5)
+        # merged: HAIR evidence per pixel (dark, not skin-like, not backdrop, above the eyes): where the portrait shows
+        # hair but v3's designed hairline still says skin (the temple corners: the portrait's hairline sits lower), the
+        # texel was left to the procedural skin, a flat light triangle (the wedge). texture.py extends the hairline there.
+        eye_row = min(lm_all[33, 1], lm_all[263, 1])
+        hairpix = (~bg & ~eyes & ~skinlike & (Y < 0.55 * Ysk) & (np.arange(H_)[:, None] < eye_row)).astype(np.float32)
+        hairpix = ndimage.gaussian_filter(hairpix, 2.0)
 
         # ---- visibility: z-buffer of our skin triangles in this camera
         Pp = proj(P); Pp = Pp + warp(Pp)
@@ -191,9 +197,12 @@ def apply(G):
             facing = np.clip((Nq @ vd - 0.15) / 0.6, 0, 1) ** 2
             inside = (q[:, 0] > 1) & (q[:, 1] > 1) & (q[:, 0] < W_ - 2) & (q[:, 1] < H_ - 2)
             w = vis * facing * inside * ((1 - hs) * _bilinear(okf, q) + hs * _bilinear(okh, q))
-            return _bilinear(D, q), w, q
-        col, w, q = sample(Pt, Nt)
-        colm, wm, qm = sample(Pt * mir, Nt * mir)
+            hw = vis * facing * inside
+            return _bilinear(D, q), w, q, hw * _bilinear(hairpix, q), hw
+        col, w, q, hp_, hw_ = sample(Pt, Nt)
+        hacc += hp_ * vw; hwacc += hw_ * vw
+        colm, wm, qm, hpm_, hwm_ = sample(Pt * mir, Nt * mir)
+        hacc += 0.5 * hpm_ * vw; hwacc += 0.5 * hwm_ * vw
         w = w * vw; wm = wm * vw * 0.5
         acc += col * w[:, None] + colm * wm[:, None]
         wacc += w + wm
@@ -234,6 +243,7 @@ def apply(G):
     a_n = alpha * float(spec.get("detailNormal", 1.0))
     Nb2 = Nb + np.stack([Nd[:, 0], Nd[:, 1], np.zeros(len(Nd))], 1) * a_n[:, None]
     Nb2 /= np.linalg.norm(Nb2, axis=1, keepdims=True)
+    G["PJ_HAIR"] = hacc / np.maximum(hwacc, 1e-6) * (hwacc > 0.05)
     rep = {"views": views_used, "g9AnchorScale": np.round(k, 4).tolist(), "coveredTexelPct": round(100 * float((alpha > 0.5).mean()), 1),
            "patchTexels": int(len(pt_))}
     json.dump(rep, open(os.path.join(G["args"].build, "projection.json"), "w"), indent=1)

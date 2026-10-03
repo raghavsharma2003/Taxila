@@ -53,5 +53,6 @@ try {
 } catch (err) {
   ok(false, err.message);
 } finally {
-  if (child) await A("DELETE", "/api/children", { childId: child.id, password: PW }).then(() => console.log("cleanup: child deleted"), (e) => console.log(`could not delete the smoke child: ${e.message}`));
+  // Delete the whole smoke account (every child with it), not only the child: test guardians otherwise pile up.
+  await A("DELETE", "/api/account", { password: PW, confirm: true }).then(() => console.log("cleanup: account deleted"), (e) => console.log(`could not delete the smoke account: ${e.message}`));
 }

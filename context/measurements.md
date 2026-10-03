@@ -1151,3 +1151,8 @@ tests/e2e-design-b3-parent.mjs: 418/418 (n = 1, headless Chromium, production bu
 <!-- merged from inbox/release-160bcb5.json -->
 ## release-160bcb5 (2026-10-03)
 Revision taxila-web--s160bcb5-z8m7. Static gates 11/11; npm test 1104/1107 with 3 known browser-mic skips. The first live smoke failed with 409 'outside today's lesson hours' (IST night, default 07:00-21:00): the new day-plan gate working as designed. scripts/prod-smoke.mjs now opens 00:00-23:59 for its own child through /api/parent/controls. Re-run, cascade, n=1 lesson: start 2,089 ms; turns 1,241 / 2,799 / 1,496 ms; end 1,739 ms. All 4 teacher lines passed the floor predicate; the smoke child was deleted.
+
+
+<!-- merged from inbox/leak-not-echo.json -->
+## test-accounts-cleanup (2026-10-03)
+Production Neon held 175 guardians on the @taxila.test domain, left by smoke, e2e and audit runs that deleted only their child. All were deleted (they cascade). scripts/prod-smoke.mjs and tests/lesson-api-e2e.mjs now call DELETE /api/account. Afterwards: 0 left (one smoke run plus one e2e run checked). The e2e also opens lesson hours for its child and makes its second start a practice visit, since the day plan now refuses a second lesson: 40/40 after.

@@ -6,7 +6,7 @@
 import { chat, DEPLOY, isReasoningFamily, isContentFilter } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
 import { scanSafety, wantsToStop, scrubPii } from "./safety.js";
-import { whyKey, norm as normAnswer, posesItem } from "./items.js";
+import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
 
 /** Below this ASR confidence a transcript is not evidence (signal-fusion rule 3: never score it wrong). */
 export const ASR_MIN = 0.5;
@@ -239,6 +239,9 @@ async function distressCheck(text, classLevel, trace) {
  */
 export function askedOther(heard, item, lang) {
   if (!heard || !item || !/[?？]/.test(heard)) return false;
+  // A line that gives away THIS item's key is a leak about this item, not a different question: the reply is graded
+  // against the item and lesson.js marks it hintsUsed 4 (worth nothing), never dropped as an echo of "another" question.
+  if (revealsAnswer(heard, item)) return false;
   const lastQ = (String(heard).match(/[^.!?।]*[?？]/g) ?? []).at(-1) ?? "";
   return !posesItem(heard, item, lang) && !posesItem(lastQ, item, lang);
 }

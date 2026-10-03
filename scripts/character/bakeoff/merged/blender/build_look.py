@@ -129,10 +129,18 @@ if look.get("wrap"):
     # the eye helper (the cage our eyeball is fitted to) moves RIGIDLY with the field's mean over it: the free field
     # shrank it to 0.87 of its radius (measured, this build and ai-portrait-wrap's: eyeR 12.9 vs 14.8 mm), which is the
     # 'iris looks small' / CG-eye read; the lids follow the field, the ball keeps its size
+    # Rendered at full size (ratio 1.0) the ball read as a doll eye: v3's 14.8 mm ball carries a 14.2 mm iris (a human
+    # iris is ~11.7 mm), so the ball takes a UNIFORM scale (wrap.eyeScale; "auto" = the field's own mean radius change)
+    # and stays a sphere.
     if look["wrap"].get("rigidEyes", True):
         for g_ in ("helper-l-eye", "helper-r-eye"):
             ix_ = group_idx(h, g_)
-            B[ix_] = _Bpre[ix_] + (B[ix_] - _Bpre[ix_]).mean(0)
+            c0_, c1_ = _Bpre[ix_].mean(0), B[ix_].mean(0)
+            es_ = look["wrap"].get("eyeScale", "auto")
+            if es_ == "auto":
+                es_ = float(np.linalg.norm(B[ix_] - c1_, axis=1).mean() / np.linalg.norm(_Bpre[ix_] - c0_, axis=1).mean())
+            B[ix_] = c1_ + (_Bpre[ix_] - c0_) * float(es_)
+            report.setdefault("eyeScale", {})[g_] = round(float(es_), 4)
     # ... and the lids, which the field drew in around a smaller opening, are conformed OUT onto the full-size ball:
     # skin vertices on the front cap of each eye closer than 1.015 r to its centre are pushed radially to it, the push
     # spread smoothly over the neighbourhood (Gaussian, 3 mm) so the lid keeps its shape (rest: 160 lid vertices per eye
@@ -168,6 +176,14 @@ if look.get("wrap"):
 # helper grew the lids around an unscaled ball and G4 still passed). Ratio to the pre-edit helper radius per side.
 _eyeR_post = _eye_radius(B)
 report["gates"]["eyeballRadiusRatio"] = {s_: round(_eyeR_post[s_] / _eyeR_pre[s_], 4) for s_ in _eyeR_pre}
+# pass = the ball is a sphere at the INTENDED scale (no field distortion of the helper): radius spread / mean < 2%
+_sph = {s_: float(np.linalg.norm(B[group_idx(h, g_)] - B[group_idx(h, g_)].mean(0), axis=1).std() /
+                  np.linalg.norm(B[group_idx(h, g_)] - B[group_idx(h, g_)].mean(0), axis=1).mean()) for s_, g_ in (("L", "helper-l-eye"), ("R", "helper-r-eye"))}
+_sph0 = {s_: float(np.linalg.norm(_B0sym[group_idx(h, g_)] - _B0sym[group_idx(h, g_)].mean(0), axis=1).std() /
+                   np.linalg.norm(_B0sym[group_idx(h, g_)] - _B0sym[group_idx(h, g_)].mean(0), axis=1).mean()) for s_, g_ in (("L", "helper-l-eye"), ("R", "helper-r-eye"))}
+report["gates"]["eyeballShape"] = {"radiusSpreadPct": {k: round(100 * v, 2) for k, v in _sph.items()},
+                                   "baseSpreadPct": {k: round(100 * v, 2) for k, v in _sph0.items()},
+                                   "pass": bool(all(abs(_sph[k] - _sph0[k]) < 0.02 for k in _sph))}
 
 # 2. S3h head scale (~3%), baked into the basis so every proxy fits the scaled head.
 s = float(look.get("headScale", 1.0))

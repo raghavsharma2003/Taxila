@@ -227,10 +227,30 @@
       "references": [
         "bg/home-young-wide"
       ],
-      "status": "failed",
-      "date": "2026-10-03T07:00:07Z",
-      "notes": "Gate remained too large: lower two-thirds not sufficiently clear for avatar tiles; earlier attempts omitted or clipped the arch. Best attempt retained in scratch, not shipped.",
-      "attempts": 3
+      "status": "done",
+      "date": "2026-10-03T16:14:47Z",
+      "notes": "Regenerated 2026-10-03 on taxila-image. 4 rounds (8 candidates): every candidate put the wall foot near 47% of the height. Picked the cleanest one: small complete arch, bare forecourt, no objects. The camera was then pulled back by script, with no regeneration: a rooftop water tank behind the wall was painted out with plain sky from the same image, plain-wall columns from the same image were inserted beside the gate (2x215 px left, 2x137 px right), and the bare paving was extended 290 px downward. Every join is a minimum-error seam (mean |diff| on seams 0.04-6.1 of 255). Cropped 2240x1260 at y=36, then Lanczos to 2560x1440 (x1.14). Arch top at 6.5% and wall foot at 34.4% of the height, so the lower two-thirds are empty paving.",
+      "attempts": 4,
+      "model": "taxila-image (gpt-image-2)",
+      "ocr": "visual",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 445800,
+      "sha256": "52b3dc537664b6dbc965f017b46c9b6d2b2884d7cf21a4e0d83c19d0e255ffb1",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          2560,
+          1440
+        ],
+        "mode": "RGB",
+        "bytes": 445800,
+        "lampHueShare": 0.0,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "bg/who-phone": {
       "path": "public/assets/gen/bg/who-phone.webp",
@@ -9132,16 +9152,15 @@
       "sha256": "f8ed7ea3c619599529d71132506aef01a4280dd40743e0a994f47c14b8b4f94d"
     }
   },
-  "updatedAt": "2026-10-03T16:00:43Z",
+  "updatedAt": "2026-10-03T16:14:47Z",
   "summary": {
     "pending": 0,
-    "done": 396,
+    "done": 397,
     "skipped": 1,
-    "failed": 2
+    "failed": 1
   },
   "skipped": [
     "bg/garden-panorama",
-    "bg/who-phone",
-    "bg/who-wide"
+    "bg/who-phone"
   ]
 }

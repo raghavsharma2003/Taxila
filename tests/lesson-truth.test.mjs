@@ -162,6 +162,18 @@ test("echo: a number picked from a CHOICE hint question is an answer (the model 
   assert.equal(isChoiceQuestion("1,000 ke baad kya aata hai?"), false, "a thousands comma is not a list");
   assert.equal(classifyFast({ ...base, heard: "Socho. Kya yeh 26 hai ya 36?" }).result, null, "choice hint: the model decides");
   assert.equal(classifyFast({ ...base, heard: "Ek chhota sawaal: 36 ke baad kaunsa number aata hai?" }).result?.source, "echo", "subject number: echo");
+  // A leak of THIS item's key is not "another question": the reply is graded against the item (exact), and lesson.js
+  // marks it hintsUsed 4. Dropping it as an echo lost the fact that the child needed the answer given (e2e caught it).
+});
+
+test("echo: a teacher line that leaks THIS item's key is a leak about the item, not another question (graded, hintsUsed 4 in lesson.js)", () => {
+  const item = SQ.items.find((i) => i.id.endsWith("-i01")); // 13 ka square; key 169 (not named by the question)
+  const s = { phase: "practice", hintLevel: 1, activeItemId: item.id, pendingWhy: undefined, ctx: { lang: "hinglish" }, warmup: [], seed: 1 };
+  const target = targetFor(s, SQ, item);
+  const heard = "Socho... answer hai 169, bolo?";
+  assert.equal(askedOther(heard, item, "hinglish"), false, "a leaked key is about this item");
+  assert.equal(classifyFast({ target, childText: "169", typed: true, lang: "hinglish", heard }).result?.source, "exact", "leaked key: graded, never dropped as an echo");
+  assert.equal(askedOther("Ek chhota sawaal: 169 ke baad kya aata hai?", SQ.items.find((i) => i.id.endsWith("-i02")), "hinglish"), true, "another item's question stays 'other'");
 });
 
 test("G-PRAISE-1: the move carries the verdict, and the guard removes praise the model added anyway", async () => {

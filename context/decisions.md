@@ -1809,3 +1809,8 @@ One parent name per skill: /api/parent/evidence, /api/parent/lesson and /api/par
 ## b3-signup-next-consent-first (2026-10-03)
 src/onboarding/Account.tsx: ?next= is honoured only for a returning parent (login, or already signed in). A fresh signup with ?next= goes to /start/consent, never straight into the corner with no consent and no child. Reverse if: a signup entry point needs to resume somewhere other than consent (then it must pass through consent first).
 (Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+<!-- merged from inbox/leak-not-echo.json -->
+## leak-not-echo (2026-10-03)
+lesson-truth's echo rule (classifyFast: a bare number the teacher's OTHER question stated is no evidence) also swallowed the case where the teacher blurted this item's key ('Socho... answer hai 169, bolo?'). The child's repeat was dropped, so the learner model never saw that the child needed the answer given, and the inherited rule 'a key said aloud on the lane = hintsUsed 4' stopped firing. Caught by tests/lesson-api-e2e.mjs (2 FAILs: hintsUsed 4, evidence rows 0). askedOther() now returns false when revealsAnswer(heard, item) holds; a regression test is in tests/lesson-truth.test.mjs. **Reverse if** leaked-key turns are shown to teach the model something wrong when counted at hintsUsed 4 (then record no_evidence with an explicit 'leaked' source instead of silently).

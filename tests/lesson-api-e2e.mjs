@@ -38,6 +38,8 @@ try {
   const noConsent = await A("POST", "/api/lesson/start", { childId: child.id, mode: "text" }, [403]);
   ok(noConsent.status === 403, "start without core_tutoring consent → 403");
   await A("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: false, memory: true } });
+  // Lessons start only inside the child's allowed hours (default 07:00-21:00 IST): open the whole day so the run works at any clock time.
+  await A("POST", "/api/parent/controls", { childId: child.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
   // next topic placement (no topicId) → first class-2 maths topic, verified file kit, voice mode
   const s1 = await A("POST", "/api/lesson/start", { childId: child.id, mode: "voice" });
   ok(s1.topic.id === "c2-maths-ch01-t01", `nextTopicFor picks the first class-2 maths topic (${s1.topic.id})`);
@@ -121,7 +123,8 @@ try {
   ok(turnAfterEnd.status === 409, "turn after end → 409");
   // consent withdrawal mid-lesson: the turn is refused, nothing of the child's is stored or classified
   await A("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true } });
-  const s2 = await A("POST", "/api/lesson/start", { childId: child.id, topicId: "c2-maths-ch01-t01", mode: "text" });
+  // Today's lesson (s1) is done, so a second start is a Practice visit (the plan refuses a second lesson).
+  const s2 = await A("POST", "/api/lesson/start", { childId: child.id, topicId: "c2-maths-ch01-t01", mode: "text", purpose: "practice" });
   ok(typeof s2.teacherOpening === "string" && s2.teacherOpening.length > 0, `text opening: "${s2.teacherOpening}"`);
   ok(s2.instructions === undefined, "a text-lane start does not send the instructions (they carry the key)");
   let t = await A("POST", "/api/lesson/turn", { lessonId: s2.lessonId, childText: "acha didi", typed: true });
@@ -148,6 +151,8 @@ try {
 } catch (e) {
   ok(false, `run aborted: ${e.message}`);
 } finally {
-  if (child) await A("DELETE", "/api/children", { childId: child.id, password: "integration-pw-1" }).catch((e) => console.log(`could not delete the test child: ${e.message}`));
+  // Both test accounts go, with every child: deleting only the child left a guardian row per run in the DB.
+  await A("DELETE", "/api/account", { password: "integration-pw-1", confirm: true }).catch((e) => console.log(`could not delete test account A: ${e.message}`));
+  await B("DELETE", "/api/account", { password: "integration-pw-2", confirm: true }).catch((e) => console.log(`could not delete test account B: ${e.message}`));
   server.close();
 }

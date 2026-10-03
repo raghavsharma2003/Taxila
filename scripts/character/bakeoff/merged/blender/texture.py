@@ -476,6 +476,14 @@ if look.get("projection"):
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "identity"))
     import project as PJ
     A, A_H, Nb = PJ.apply(globals())
+    # extend v3's designed hairline where the portraits show hair (project.py PJ_HAIR): those texels take the same
+    # hair-coloured scalp as the rest of the hairline (above the brows only, never the lips)
+    _hx = smoothstep(0.35, 0.65, PJ_HAIR) * smoothstep(browZ + 0.012, browZ + 0.03, Pt[:, 2]) * (1 - lt)
+    _ext = np.clip(_hx - hl, 0, 1) * (0.8 + 0.2 * flow)
+    A = A * (1 - _ext[:, None]) + _hl * _ext[:, None]
+    A_H = A_H * (1 - _ext[:, None]) + _hl * _ext[:, None]
+    hl = np.maximum(hl, _hx)
+    log(f"hairline extended from the portraits on {int((_ext > 0.5).sum())} texels")
 # merged gate (VERDICT item 1, the parting wedge): texels INSIDE the hairline mask (designed hairline weight > 0.5, off
 # the lips) whose final H albedo is nearer the skin colour than the hair colour. Bar 0.
 _inmask = (hl > 0.5)
