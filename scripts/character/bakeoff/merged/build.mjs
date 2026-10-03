@@ -49,7 +49,7 @@ for (const look of LOOKS) {
   sh("node", [path.join(HERE, "finish.mjs"), bd, look, path.join(OUTA, look)]);
   const rep = JSON.parse(fs.readFileSync(path.join(bd, "report.json")));
   rep.tiers = JSON.parse(fs.readFileSync(path.join(bd, "finish.json")));
-  try { rep.texture = { wedge: JSON.parse(fs.readFileSync(path.join(bd, "tex/tex.json"))).wedge }; } catch {}
+  try { const tj = JSON.parse(fs.readFileSync(path.join(bd, "tex/tex.json"))); rep.texture = { wedge: tj.wedge, lipRegistration: tj.lipRegistration }; } catch {}
   for (const t of ["H", "Bplus"]) rep.tiers[t].raw = JSON.parse(fs.readFileSync(path.join(bd, `${t}.stats.json`)));
   fs.writeFileSync(path.join(REP, `${look}.json`), JSON.stringify(rep, null, 1));
 }
@@ -84,6 +84,9 @@ for (const look of LOOKS) {
   // merged: the parting wedge (VERDICT item 1): 0 skin-albedo texels inside the hairline mask, 0 uncovered gap texels
   let W = null; try { W = JSON.parse(fs.readFileSync(path.join(BUILD, look, "tex/tex.json"))).wedge; } catch {}
   if (W && (W.skinAlbedoTexels > 0 || W.uncoveredGapTexels > 0)) fails.push(`${look} wedge skin ${W.skinAlbedoTexels} gap ${W.uncoveredGapTexels}`);
+  // merged iteration 3: the painted lips sit on the geometric lips (unlit albedo, IoU >= 0.8; AD review item 1)
+  let LR = null; try { LR = JSON.parse(fs.readFileSync(path.join(BUILD, look, "tex/tex.json"))).lipRegistration; } catch {}
+  if (LR && LR.iou < 0.8) fails.push(`${look} lip registration IoU ${LR.iou} < 0.8`);
   for (const [k, v] of Object.entries(G.G4_lid_seal_escaped_pct)) if (k !== "open" && (v.L > 0 || v.R > 0)) fails.push(`${look} G4 ${k}`);
   if (!G.G5_pass) fails.push(`${look} G5 sd0`);
   if (G.G5_H && !G.G5_H.pass) fails.push(`${look} G5 H (subdivided)`);

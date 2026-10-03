@@ -92,7 +92,8 @@ def albedo_v3(A, Pt, NZ, Z, lipT, base, shade, lip_col, sk):
     m = NZ.fbm(Pt * 22.0 + 4.4, 3) * 0.6 + NZ.fbm(Pt * 160.0 + 1.7, 2) * 0.3 + NZ(Pt * 700.0) * 0.1
     A = A * (1 + 0.07 * m[:, None] * np.array([1.0, 1.05, 1.12]))
     # periorbital and perioral hyperpigmentation: darker, slightly cooler/mauve (common on MST 6-8 faces)
-    dark = np.clip(0.55 * Z["under"] + 0.4 * Z["lid"] + 0.45 * Z["perioral"] + 0.15 * Z["upl"], 0, 1) * k
+    # merged iteration 3 (AD review item 5): under-eye and lid pigment halved (the projected portrait carries its own)
+    dark = np.clip(0.27 * Z["under"] + 0.2 * Z["lid"] + 0.25 * Z["perioral"] + 0.15 * Z["upl"], 0, 1) * k
     A = A * (1 - dark[:, None] * np.array([0.22, 0.26, 0.24]))
     # forehead edge and temples a touch darker (sun), the T-zone slightly lighter
     A = A * (1 + 0.04 * Z["nose"][:, None] - 0.04 * Z["forehead"][:, None] * (1 - Z["nose"][:, None]))

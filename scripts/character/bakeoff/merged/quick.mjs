@@ -19,7 +19,8 @@ try {
   for (const s of shots) {
     const f = path.join(out, `${s.replace(/[:/]/g, "_")}.png`);
     await hx.page.evaluate(([s, ex]) => {
-      let cam = "face", yaw = 0, pose = { bs: {} };
+      let cam = "face", yaw = 0, pose = { bs: {} }, alb = false;
+      if (s.startsWith("alb_")) { alb = true; s = s.slice(4); }
       if (ex[s]) { pose = ex[s]; cam = ex[s].cam || "face"; yaw = ex[s].yaw || 0; }
       else if (/^yaw-?\d+/.test(s)) { yaw = +s.slice(3); }
       else if (/^byaw-?\d+/.test(s)) { yaw = +s.slice(4); cam = "bust"; }
@@ -31,6 +32,7 @@ try {
       else pose = TX.emotion(s, 1);
       const hide = (pose.hide || []);
       for (const [n, m] of Object.entries(TX.rig.meshes)) m.visible = !hide.includes(n);
+      TX.debugAlbedo(alb);
       TX.frame(cam, yaw); TX.pose(pose); TX.render();
     }, [s, extra]);
     await hx.shot(f);

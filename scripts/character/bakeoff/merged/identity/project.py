@@ -64,6 +64,10 @@ def _ordered_loop(idx_edges):
     return loop
 
 
+def inside_(q, W_, H_):
+    return ((q[:, 0] > 1) & (q[:, 1] > 1) & (q[:, 0] < W_ - 2) & (q[:, 1] < H_ - 2)).astype(np.float64)
+
+
 def apply(G):
     look, log, R = G["look"], G["log"], G["R"]
     spec = look["projection"]
@@ -200,12 +204,25 @@ def apply(G):
             # merged: down-facing skin (under the chin and jaw) sits in the portrait's CAST shadow, which de-lighting cannot
             # remove: it painted a grey-violet patch with per-triangle edges under the jaw. No projection there; those texels
             # take the diffused projected tone (below)
-            facing = facing * np.clip((Nq[:, 2] + 0.45) / 0.3, 0, 1)
+            # merged iteration 3 (AD review item 6): the same zero point (Nz -0.45; deeper let the portrait's jaw shadow back in,
+            # measured: a grey-violet band) but a 2x wider, eased ramp up to Nz +0.15 (was -0.15: a hard seam under the
+            # nose and the jaw, the "grey plate"); the fill below is the projected tone diffused, so the blend has no edge
+            facing = facing * np.clip((Nq[:, 2] + 0.45) / 0.6, 0, 1) ** 1.5
             inside = (q[:, 0] > 1) & (q[:, 1] > 1) & (q[:, 0] < W_ - 2) & (q[:, 1] < H_ - 2)
             w = vis * facing * inside * ((1 - hs) * _bilinear(okf, q) + hs * _bilinear(okh, q))
             hw = vis * facing * inside
             return _bilinear(D, q), w, q, hw * _bilinear(hairpix, q), hw
         col, w, q, hp_, hw_ = sample(Pt, Nt)
+        if vname == "front":
+            # merged iteration 3 (AD review item 5): texels whose front-view position falls INSIDE the portrait's eye
+            # opening are the lid margins (the lid's thickness rolling in to the ball). They were excluded from projection
+            # and fell back to light procedural skin: a pale rim round each eye with no lash line. texture.py paints them.
+            _eo = np.zeros_like(ovm)
+            for lp in (eyeL_loop, eyeR_loop):
+                if lp:
+                    _eo |= _poly_mask(H_, W_, lm_all[lp, :2], dil=0)
+            _eo = ndimage.gaussian_filter(_eo.astype(np.float32), 1.0)
+            G["PJ_LIDIN"] = _bilinear(_eo, q) * (Nt @ vd > 0.0) * inside_(q, W_, H_)
         hacc += hp_ * vw; hwacc += hw_ * vw
         colm, wm, qm, hpm_, hwm_ = sample(Pt * mir, Nt * mir)
         hacc += 0.5 * hpm_ * vw; hwacc += 0.5 * hwm_ * vw
@@ -239,11 +256,36 @@ def apply(G):
         # "cast" = less red than the median (grey, olive, blue); clamp its magnitude
         _cast = np.clip(-_d[:, 0], 0, None)
         _k = np.where(_cast > _tol, _tol / np.maximum(_cast, 1e-9), 1.0)
+        # merged iteration 3 (AD review item 1): the lips are EXEMPT. The reference's upper lip is a dusky mauve-brown,
+        # which is "less red than the skin" in rg chromaticity, so the clamp bleached the upper vermilion to skin beige
+        # and left only its dark border: the missing upper lip / brownish ring. (lipT: the lip vertex group, feathered)
+        _lipx = np.clip(G["lipT"] / 0.35, 0, 1)
+        _k = _k + (1 - _k) * _lipx
         _c2 = _m + _d * _k[:, None]
         _Ap2 = _c2 * (_Y / np.maximum(_c2 @ np.array([0.2126, 0.7152, 0.0722]), 1e-6))[:, None]
         G["PJ_CHROMA"] = {"tol": _tol, "clampedPct": round(100 * float((_k < 1)[_ref].mean()), 1), "medianChroma": np.round(_m, 4).tolist()}
         Ap = np.where(have[:, None], _Ap2, Ap)
+    # merged iteration 3 (AD review items 1, 3): ONE lip colour. Upper and lower vermilion take the reference's median
+    # lip chromaticity (the dusky mauve-brown), keeping each texel's luminance detail; the lower lip's extra brightness
+    # (the portrait's own lit, protruding lower lip that de-lighting leaves) is pulled 45% toward the lip median, so
+    # the shader's light makes the lower lip read as volume, not as a bubblegum-pink second lip
+    _lw = np.clip((G["lipT"] - 0.15) / 0.5, 0, 1) * have
+    if (_lw > 0.9).sum() > 100:
+        _Yl = Ap @ np.array([0.2126, 0.7152, 0.0722])
+        _core = _lw > 0.9
+        _cm = np.median(Ap[_core] / np.maximum(Ap[_core].sum(1, keepdims=True), 1e-6), axis=0)
+        _Ym = float(np.median(_Yl[_core]))
+        _c = Ap / np.maximum(Ap.sum(1, keepdims=True), 1e-6)
+        _cu = float(spec.get("lipUnify", 0.75))
+        _c2 = _c * (1 - _cu * _lw[:, None]) + _cm[None, :] * (_cu * _lw[:, None])
+        _Y2 = np.where(_Yl > _Ym, _Yl - 0.45 * _lw * (_Yl - _Ym), _Yl)
+        Ap = _c2 * (_Y2 / np.maximum(_c2 @ np.array([0.2126, 0.7152, 0.0722]), 1e-6))[:, None]
+        G["PJ_LIP"] = {"medianChroma": np.round(_cm, 4).tolist(), "medianY": round(_Ym, 4), "texels": int(_core.sum())}
     alpha = np.clip(wacc / float(spec.get("fullWeight", 0.35)), 0, 1)
+    # merged iteration 3 (AD review item 12): no projection on the ears (the portrait's ears are small, turned and
+    # partly hidden by hair: their pixels smeared across our ear); the ears take the procedural ear with the
+    # projected tone (the tone transfer below)
+    alpha = alpha * (1 - np.clip((G["earT"] - 0.15) / 0.3, 0, 1))
     alpha = alpha * float(spec.get("strength", 1.0))
     # merged: the scalp is v3's (its designed per-texel hairline, hair-coloured, under the curve-generated cards); the
     # portrait is never projected onto hair-bearing texels. Projecting the portrait's own hair there brought its centre
@@ -300,7 +342,7 @@ def apply(G):
     Nb2 = Nb + np.stack([Nd[:, 0], Nd[:, 1], np.zeros(len(Nd))], 1) * a_n[:, None]
     Nb2 /= np.linalg.norm(Nb2, axis=1, keepdims=True)
     G["PJ_HAIR"] = hacc / np.maximum(hwacc, 1e-6) * (hwacc > 0.05)
-    rep = {"views": views_used, "chroma": G.get("PJ_CHROMA"), "tone": G.get("PJ_TONE"), "g9AnchorScale": np.round(k, 4).tolist(), "coveredTexelPct": round(100 * float((alpha > 0.5).mean()), 1),
+    rep = {"views": views_used, "chroma": G.get("PJ_CHROMA"), "lip": G.get("PJ_LIP"), "tone": G.get("PJ_TONE"), "g9AnchorScale": np.round(k, 4).tolist(), "coveredTexelPct": round(100 * float((alpha > 0.5).mean()), 1),
            "patchTexels": int(len(pt_))}
     json.dump(rep, open(os.path.join(G["args"].build, "projection.json"), "w"), indent=1)
     log(f"projection: {rep['coveredTexelPct']}% of skin texels at alpha > 0.5; G9 anchor scale {rep['g9AnchorScale']}")

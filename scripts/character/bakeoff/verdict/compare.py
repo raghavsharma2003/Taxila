@@ -6,6 +6,10 @@ rows=[('baseline (it. 2)',f'{R}/renders/teal',f'{R}/bakeoff/ai-portrait-wrap/ren
 ('procedural-v3',f'{R}/bakeoff/procedural-v3/renders/teal',f'{R}/bakeoff/procedural-v3/renders/emotion-check.json'),
 ('ai-portrait-wrap',f'{R}/bakeoff/ai-portrait-wrap/renders/teal',f'{R}/bakeoff/ai-portrait-wrap/renders/emotion-check.json'),
 ('stylised-premium',f'{R}/bakeoff/stylised-premium/renders/teal',f'{R}/bakeoff/stylised-premium/renders/emotion-check-main.json')]
+# gnm (E-GNM1, 2026-10-03): Google GNM Head v3.0 base; judged by the merged-style emotion-check (judges A + C pooled,
+# n = 12 per judge per emotion, encouraging on the 6-frame nod clip), so its cells read correct/24
+if os.path.exists(f'{R}/bakeoff/gnm/renders/emotion-check.json'):
+  rows.append(('gnm (GNM Head v3.0)',f'{R}/bakeoff/gnm/renders/teal',f'{R}/bakeoff/gnm/renders/emotion-check.json'))
 W,H=240,300; LW=210; TOP=56; HDR=26
 extra=[('3/4 turn (yaw090)','turntable/yaw090.png'),('B+ tier','tier_Bplus.png')]
 cols=len(E)+len(extra)
@@ -21,6 +25,7 @@ for i,(n,_) in enumerate([(e,0) for e in E]+extra):
 for r,(name,dirp,ck) in enumerate(rows):
   y=TOP+HDR+r*(H+24)
   per=json.load(open(ck))['per']; ov=json.load(open(ck))['overallPct']
+  if 'pooled' in per: per=per['pooled']; ov=ov['pooled']   # merged-style two-judge file
   d.text((10,y+10),name,fill=(240,240,240),font=fb); d.text((10,y+36),f'overall {ov}%',fill=(200,200,200),font=f)
   for i,e in enumerate(E):
     im=Image.open(f'{dirp}/emotions/{e}.png').convert('RGB').resize((W,H))

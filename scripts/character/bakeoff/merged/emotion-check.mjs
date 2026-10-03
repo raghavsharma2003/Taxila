@@ -23,9 +23,9 @@ const argv = process.argv.slice(2);
 const opt = (f, d) => (argv.includes(f) ? argv[argv.indexOf(f) + 1] : d);
 const LOOKS = opt("--looks", "teal").split(",");
 const REPS = +opt("--reps", "12");
-const JUDGES = opt("--judges", "A,B").split(",");
+const JUDGES = opt("--judges", "A,B,C").split(",");
 const ROOT = opt("--root", "docs/design/teacher/bakeoff/merged/renders/{look}/emotions");
-const CLIP = new Set(opt("--clip", "encouraging").split(",").filter(Boolean));
+const CLIP = new Set(opt("--clip", "encouraging,listening").split(",").filter(Boolean));
 const E = ["warm", "encouraging", "curious", "thinking", "listening", "concerned", "delighted", "playful", "surprised"];
 const ONLY = opt("--only") ? opt("--only").split(",") : E;
 const DESC = {
@@ -55,6 +55,10 @@ const J = {
         { type: "image_url", image_url: { url: `data:image/png;base64,${img}` } }] }],
   },
 };
+// merged: judge C = the STRONG model with the held-out prompt. taxila-fast (judge B) answered "warm" for nearly every
+// subtle still (12/12 on encouraging and thinking), so B alone cannot separate a weak design from a weak judge; C holds
+// the prompt out while keeping the model, A and C together are the two-prompt check, B is reported as a third model.
+J.C = { model: DEPLOY.brain, msgs: J.B.msgs };
 const rows = [];
 const jobs = [];
 for (const j of JUDGES) for (const look of LOOKS) for (const e of ONLY) {
@@ -94,7 +98,7 @@ const bar = +opt("--gate", "70");
 const passes = Object.fromEntries(Object.entries(per).map(([j, p]) => [j, Object.values(p).filter((v) => v.pct >= bar).length]));
 const out = {
   date: new Date().toISOString(),
-  judges: Object.fromEntries(JUDGES.map((j) => [j, { model: J[j].model, prompt: j === "A" ? "QA-sheet framing, 9 labels with short glosses (the bake-off prompt)" : "student-facing framing, 9 bare labels (held-out prompt, never used to choose a pose)" }])),
+  judges: Object.fromEntries(JUDGES.map((j) => [j, { model: J[j].model, prompt: j === "A" ? "QA-sheet framing, 9 labels with short glosses (the bake-off prompt)" : "student-facing framing, 9 bare labels (held-out prompt, never used to choose a pose)" + (j === "C" ? "; strong model" : "; fast model") }])),
   method: `blind forced choice of 1 of 9 labels, shuffled per call; ${LOOKS.length} look x ${REPS} reps per emotion per judge; ${[...CLIP].join(", ") || "none"} judged on a 6-frame strip of a 2 s clip; bar >= ${bar}% per emotion on 8 of 9 (proxy for E-T4)`,
   overallPct: Object.fromEntries([...JUDGES, "pooled"].map((j) => { const rr = rows.filter((x) => x.said && (j === "pooled" || x.judge === j)); return [j, Math.round((100 * rr.filter((x) => x.said === x.truth).length) / Math.max(1, rr.length))]; })),
   passing: passes, per, rows,

@@ -174,6 +174,12 @@ if look.get("wrap"):
         import profilefit as PFIT
         B, report["profileFit"] = PFIT.apply(B, look["wrap"]["profileCorrection"], head_weight(B), _body, scale=float(look.get("headScale", 1.0)),
                                             log=lambda m: print(f"[build:{look['id']}] {m}", flush=True))
+    # merged iteration 3: region-level proportion corrections the landmark wrap cannot make (identity/proportion.py:
+    # chin down + forward, upper vermilion up, lower lip back; measured on the neutral render vs the front reference)
+    if look["wrap"].get("proportion"):
+        import proportion as PROP
+        B, report["proportion"] = PROP.apply(B, look["wrap"]["proportion"], head_weight(B), _body.astype(float), look["wrap"]["corr"], mir=MIR,
+                                             log=lambda m: print(f"[build:{look['id']}] {m}", flush=True))
     h.data.vertices.foreach_set("co", B.ravel())
     h.data.update()
     _eyeC0 = {s_: B[group_idx(h, g_)].mean(0) for s_, g_ in (("L", "helper-l-eye"), ("R", "helper-r-eye"))}
@@ -710,6 +716,53 @@ def _apply_all(f):
         set_key_co(kb, key_co(kb) + f)
 
 
+# merged iteration 3 (AD review item 2): a FLOOR on the visible upper vermilion. The CC0 viseme / roll units curl the
+# upper lip in behind the lower one (viseme_PP showed only the lower lip; aa thinned the upper lip to a line). Metric:
+# the frontal height of the upper-lip vertices that face the camera in the key's own pose (|x| < 10 mm), over the same at
+# rest. Keys below `upperLipFloor` (0.6) get their upper-lip deltas scaled back (the least scale that reaches the floor,
+# spread 3 mm into the lip) BEFORE the seals, which then close PP / mouthClose on the less-curled lip.
+def _vnorm(Pq):
+    fn = np.cross(Pq[F_all[:, 1]] - Pq[F_all[:, 0]], Pq[F_all[:, 2]] - Pq[F_all[:, 0]])
+    vn = np.zeros_like(Pq)
+    for j in range(3):
+        np.add.at(vn, F_all[:, j], fn)
+    return vn / np.maximum(np.linalg.norm(vn, axis=1, keepdims=True), 1e-12)
+_B0 = key_co(kbs[0])
+_upc = upper[np.abs(_B0[upper, 0]) < 0.010]
+_loc = lowerl[np.abs(_B0[lowerl, 0]) < 0.010]
+def _vis_h(Pq):
+    # occlusion-aware: the lower lip, where it sits IN FRONT of the upper lip, hides the upper vermilion below its top
+    nn_ = _vnorm(Pq)
+    f_ = _upc[nn_[_upc, 1] < -0.25]
+    if len(f_) < 3:
+        return 0.0
+    top, bot = float(Pq[f_, 2].max()), float(Pq[f_, 2].min())
+    lf = _loc[(nn_[_loc, 1] < -0.25) & (Pq[_loc, 1] < Pq[f_, 1].mean() + 0.0005)]
+    if len(lf):
+        bot = max(bot, float(Pq[lf, 2].max()))
+    return max(top - bot, 0.0)
+_h0 = max(_vis_h(_B0), 1e-6)
+_floor = float(look.get("mouth", {}).get("upperLipFloor", 0.6))
+_wup = np.zeros(len(_B0)); _wup[upper] = 1.0
+_wup = np.maximum(_wup, K._spread(_B0, np.stack([_wup] * 3, 1), upper, reg["lips"] if "lips" in reg else np.clip(lipsW * skin, 0, 1), radius=0.003)[:, 0])
+report["upperLipVisible"] = {}
+for _k in [kb.name for kb in kbs][1:]:
+    # mouthClose is only ever played WITH jawOpen (it closes the lips over an open jaw): alone it passes the lips
+    # through each other by design, so it is not a pose to floor (measured 0.0 at any scale)
+    if not (_k.startswith("viseme_") or _k.startswith("mouth") or _k == "jawOpen") or _k == "mouthClose":
+        continue
+    _P = key_co(kbs[_k]); _r0 = _vis_h(_P) / _h0
+    _rec = {"before": round(_r0, 2)}
+    if _r0 < _floor:
+        _D = _P - _B0
+        for _sc in (0.85, 0.7, 0.55, 0.4, 0.25, 0.1):
+            _P2 = _B0 + _D * (1 - (1 - _sc) * _wup[:, None])
+            if _vis_h(_P2) / _h0 >= _floor:
+                break
+        set_key_co(kbs[_k], _P2)
+        _rec.update({"scale": _sc, "after": round(_vis_h(_P2) / _h0, 2)})
+    report["upperLipVisible"][_k] = _rec
+print(f"[build:{look['id']}] upper-lip floor: " + ", ".join(f"{k} {v['before']}->{v.get('after', v['before'])}" for k, v in report["upperLipVisible"].items() if "after" in v), flush=True)
 fix0 = seal_iter(lambda: key_co(kbs[0]), _apply_all, "rest")
 fb, FD = deltas(face)
 # viseme_PP must close the lips (the bilabial closure bar): seal its own pose the same way.

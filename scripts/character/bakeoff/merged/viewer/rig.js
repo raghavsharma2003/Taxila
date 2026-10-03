@@ -52,11 +52,11 @@ export async function loadTeacher(renderer, url, opts = {}) {
     const defs = {};
     const u = {
       tAlbedo: { value: s.map }, tLUT: { value: LUT },
-      uTeeth: { value: new THREE.Vector3(0.64, 0.58, 0.47) }, uGum: { value: new THREE.Vector3(0.30, 0.10, 0.09) },
+      uTeeth: { value: new THREE.Vector3(0.86, 0.78, 0.64) }, uGum: { value: new THREE.Vector3(0.30, 0.10, 0.09) },
       uTongue: { value: new THREE.Vector3(0.46, 0.16, 0.14) }, uBag: { value: new THREE.Vector3(0.16, 0.045, 0.04) },   // merged: a warm dark red, not near-black
       uAlbedoGain: { value: new THREE.Vector3(1, 1, 1) },
       uMouthOpen: { value: 0 }, uMouthFront: { value: new THREE.Vector3() },
-      uFlush: { value: 0 }, uCheekL: { value: new THREE.Vector3() }, uCheekR: { value: new THREE.Vector3() }, uSpec: { value: 0.42 },
+      uFlush: { value: 0 }, uCheekL: { value: new THREE.Vector3() }, uCheekR: { value: new THREE.Vector3() }, uSpec: { value: 0.42 }, uDebugAlbedo: { value: 0 },
     };
     if (s.normalMap && !lite) { defs.HAS_NORMAL = ""; u.tNormal = { value: s.normalMap }; u.uNormalScale = { value: 1.0 }; }
     if (s.aoMap) { defs.HAS_PACKED = ""; u.tPacked = { value: s.aoMap }; }
@@ -92,7 +92,7 @@ export async function loadTeacher(renderer, url, opts = {}) {
     const iris = new THREE.Color(look.iris || "#3A2416").convertSRGBToLinear();
     eyes.material = mk(eyes, SHADERS.EYE_VERT, SHADERS.EYE_FRAG, {
       uEyeL: { value: L }, uEyeR: { value: R }, uEyeRad: { value: rad }, uIris: { value: new THREE.Vector3(iris.r, iris.g, iris.b) },
-      uPupil: { value: 0.42 }, uLidShadow: { value: 0.8 }, uIrisDetail: { value: tier === "H" ? 1 : 0.6 },
+      uPupil: { value: 0.33 }, uLidShadow: { value: 0.65 }, uIrisDetail: { value: tier === "H" ? 1 : 0.6 },
       // merged eye pass: sclera albedo from the look (tuned to the reference's sclera / skin ratio), lid-following shadow
       uSclera: { value: new THREE.Vector3(...(look.sclera || [0.78, 0.74, 0.70])) }, uLidClose: { value: new THREE.Vector2(look.restLid ?? 0.35, look.restLid ?? 0.35) } }, {});
   }

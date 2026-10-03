@@ -381,7 +381,9 @@ A = base[None, :] * (1 + 0.08 * mel[:, None])
 peri = sum(gauss(Pt, eyeC[s] + np.array([0, -0.004, -eyeR * 0.9]), 0.011) for s in "LR")
 lidc = sum(gauss(Pt, eyeC[s] + np.array([0, -0.006, eyeR * 0.55]), 0.008) for s in "LR")
 neckd = smoothstep(0.0, 0.03, chin[2] - Pt[:, 2])
-sh = np.clip(0.55 * peri + 0.45 * lidc + 0.35 * neckd, 0, 1)
+# merged iteration 3 (AD review item 5): periorbital and lid-crease shade HALVED (0.55 / 0.45): the projected portrait
+# already carries the under-eye tone, and both stacked read as a raccoon mask
+sh = np.clip(0.27 * peri + 0.22 * lidc + 0.35 * neckd, 0, 1)
 A = A * (1 - sh[:, None]) + (shade[None, :] * 0.92) * sh[:, None]
 # haemoglobin zones: cheeks, nose tip, ears, chin (subtle for MST 6-8)
 red = np.array([0.62, 0.22, 0.18])
@@ -419,7 +421,7 @@ flow = np.clip(NZ(np.stack([Pt[:, 0] * 1400, Pt[:, 1] * 80, Pt[:, 2] * 80], 1)) 
 # procedural-v3: the designed hairline evaluated per TEXEL (the scalp vertices are 2-3 cm apart, so a per-vertex weight
 # blurs the hairline into a smear); a seeded irregular edge, plus sparse streaks just outside it (fine baby hair)
 import hair_v3
-_hwT = hair_v3.hair_weight(Pt, rep["joints"], earT, np.zeros(len(Pt)), seed=look["seed"], soft=1.1, hv=look["hair"].get("v3"))
+_hwT = hair_v3.hair_weight(Pt, rep["joints"], earT, np.zeros(len(Pt)), seed=look["seed"], soft=2.2, hv=look["hair"].get("v3"))   # merged it3: 1.1 -> 2.2 deg (softer edge)
 _hwS = hair_v3.hair_weight(Pt, rep["joints"], earT, np.zeros(len(Pt)), seed=look["seed"], soft=4.0, hv=look["hair"].get("v3"))
 _streak = np.clip(NZ(np.stack([Pt[:, 0] * 2600, Pt[:, 1] * 300, Pt[:, 2] * 300], 1)) * 2.2 - 0.3, 0, 1)
 scalpT = np.clip(_hwT + 0.45 * _streak * np.clip(_hwS - _hwT, 0, 1) * 2.0, 0, 1)
@@ -479,29 +481,101 @@ if look.get("projection"):
     # extend v3's designed hairline where the portraits show hair (project.py PJ_HAIR): those texels take the same
     # hair-coloured scalp as the rest of the hairline (above the brows only, never the lips)
     _hx = smoothstep(0.35, 0.65, PJ_HAIR) * smoothstep(browZ + 0.012, browZ + 0.03, Pt[:, 2]) * (1 - lt)
-    _ext = np.clip(_hx - hl, 0, 1) * (0.8 + 0.2 * flow)
-    A = A * (1 - _ext[:, None]) + _hl * _ext[:, None]
-    A_H = A_H * (1 - _ext[:, None]) + _hl * _ext[:, None]
-    hl = np.maximum(hl, _hx)
-    log(f"hairline extended from the portraits on {int((_ext > 0.5).sum())} texels")
-    # merged (fix 2): re-paint v3's designed hairline OVER the projection, so the scalp colour starts exactly where the
-    # curve-generated cards root (hair_v3.hairline_el). Without it the portrait's own higher, centre-parted hairline
-    # showed as a skin V between the cards at the crown (the parting wedge, VERDICT item 1)
-    # inside the mask (hl > 0.5) the paint is full strength, so the bar "0 skin texels inside the hairline" is real
-    _hl2 = np.clip(2.0 * hl, 0, 1) * (0.9 + 0.1 * flow)
-    A = A * (1 - _hl2[:, None]) + _hl * _hl2[:, None]
-    A_H = A_H * (1 - _hl2[:, None]) + _hl * _hl2[:, None]
+    _hm = np.maximum(hl, _hx)
     # the temple band: above the brows, off the ears, where NEITHER the portrait projection (alpha < 0.5) NOR the
     # painted hairline (hl < 0.5) covers the texel, the bare procedural skin showed as a light flap between the
     # portrait's own temple hair and v3's hairline (in the turntable at both temples). Those texels take the scalp.
     _pja_ = globals().get("PJ_ALPHA")
     if _pja_ is not None:
-        _band = smoothstep(browZ + 0.012, browZ + 0.03, Pt[:, 2]) * (earT < 0.3) * (1 - lt)
-        _fill = np.clip(_band * np.clip(1 - _pja_ / 0.5, 0, 1) * np.clip(1 - 2 * hl, 0, 1), 0, 1) * (0.9 + 0.1 * flow)
-        A = A * (1 - _fill[:, None]) + _hl * _fill[:, None]
-        A_H = A_H * (1 - _fill[:, None]) + _hl * _fill[:, None]
-        hl = np.maximum(hl, _fill)
-        log(f"temple band filled on {int((_fill > 0.5).sum())} texels")
+        _tb = smoothstep(browZ + 0.012, browZ + 0.03, Pt[:, 2]) * (earT < 0.3) * (1 - lt)
+        _tfill = np.clip(_tb * np.clip(1 - _pja_ / 0.5, 0, 1) * np.clip(1 - 2 * hl, 0, 1), 0, 1)
+        _hm = np.maximum(_hm, _tfill)
+    else:
+        _tfill = np.zeros(len(Pt))
+    # merged iteration 3 (AD review item 7): ONE paint of the hairline from a 3D-BLURRED mask (sigma 3 mm), so the edge is a
+    # soft density fade, not a cut-out. The designed hairline, the extension where the portraits show hair, and the
+    # temple fill each used to be painted with its own hard threshold (the portrait extension followed the portrait's
+    # own wisps): a jagged decal edge, the wig-cap read in every chin-down frame. Below the blurred edge, sparse fine
+    # strands along the hair flow thin out into skin. Inside the mask (hl > 0.5) the paint stays hair-dominant, so the
+    # wedge bar ("0 skin texels inside the hairline") is still real.
+    _vh = 0.0015
+    _lo3 = Pt.min(0); _ix3 = np.floor((Pt - _lo3) / _vh).astype(int); _sh3 = tuple(_ix3.max(0) + 1)
+    _fl3 = np.ravel_multi_index(_ix3.T, _sh3)
+    _S3 = ndimage.gaussian_filter(np.bincount(_fl3, _hm, minlength=int(np.prod(_sh3))).reshape(_sh3), 2.0)
+    _C3 = ndimage.gaussian_filter(np.bincount(_fl3, np.ones(len(Pt)), minlength=int(np.prod(_sh3))).reshape(_sh3), 2.0)
+    _hb = (_S3 / np.maximum(_C3, 1e-9)).ravel()[_fl3]
+    _hb = np.maximum(_hb, np.clip((_hm - 0.85) / 0.15, 0, 1))          # the deep scalp stays fully covered
+    # where the portrait projection does NOT cover the texel (alpha < 0.5) there is no portrait skin to fade into, only
+    # bare procedural skin: the temple fill keeps its unblurred strength there (the gap bar stays 0)
+    _hb = np.maximum(_hb, _tfill)
+    if _pja_ is not None:                                                # the gap bar's own region, fully covered
+        _hb = np.maximum(_hb, 0.6 * ((_pja_ < 0.5) & (Pt[:, 2] > browZ + 0.03) & (earT < 0.3) & (lt < 0.5)))
+    _bandf = np.clip(_hwS * 1.15 - _hb, 0, 1) * (1 - lt) * (_hb > 0.02)
+    _fine = np.clip(NZ(np.stack([Pt[:, 0] * 4200, Pt[:, 1] * 260, Pt[:, 2] * 260], 1)) * 2.6 - 0.2, 0, 1)
+    _hl2 = np.clip(smoothstep(0.1, 0.55, _hb) + 0.5 * _bandf * _fine, 0, 1) * (0.9 + 0.1 * flow)
+    A = A * (1 - _hl2[:, None]) + _hl * _hl2[:, None]
+    A_H = A_H * (1 - _hl2[:, None]) + _hl * _hl2[:, None]
+    log(f"hairline: blurred single paint; {int((_hx > 0.5).sum())} texels from the portraits, mask {int((_hb > 0.5).sum())}")
+    hl = _hb
+# merged iteration 3 (AD review item 5): the LID MARGINS (texels inside the portrait's eye opening, project.py PJ_LIDIN)
+# take a dark lash line on the upper lid and a muted rose-brown waterline on the lower lid, instead of the light
+# procedural skin that drew a pale rim round each eye
+_lid = globals().get("PJ_LIDIN")
+if _lid is not None:
+    _li = np.clip((_lid - 0.15) / 0.5, 0, 1)
+    _upper = np.zeros(len(Pt)); _below = np.zeros(len(Pt))
+    for _s in ("L", "R"):
+        _near = np.linalg.norm(Pt - eyeC[_s], axis=1) < eyeR * 1.7
+        _upper += _near * smoothstep(-0.25 * eyeR, 0.05 * eyeR, Pt[:, 2] - eyeC[_s][2])
+        _below += _near * (1 - smoothstep(-0.25 * eyeR, 0.05 * eyeR, Pt[:, 2] - eyeC[_s][2]))
+    _lash = hex_lin("#2A1A12")
+    _skinmed = np.median(A_H[(front > 0.5) & (lt < 0.05) & (hl < 0.05)], axis=0)
+    _water = _skinmed * np.array([0.62, 0.42, 0.42])
+    _wl = (_li * _upper * 0.9)[:, None]
+    _ww = (_li * _below * 0.75)[:, None]
+    for _AA in (A, A_H):
+        _AA *= 1 - _wl - _ww
+        _AA += _lash * _wl + _water * _ww
+    log(f"lid margins painted: {int((_li * _upper > 0.5).sum())} upper / {int((_li * _below > 0.5).sum())} lower texels")
+# merged iteration 3 (AD review items 1, 10): the INNER vermilion (the lip surface rolling into the mouth, which no portrait
+# sees, so it fell back to the light procedural lip) drew a pale rim along the lip seam in every open viseme; it takes the
+# projected lip colour, darker and redder (wet mucosa)
+_pja2 = globals().get("PJ_ALPHA")
+if _pja2 is not None:
+    _lipcore = (lt > 0.8) & (_pja2 > 0.8)
+    if _lipcore.sum() > 50:
+        _lm = np.median(A_H[_lipcore], axis=0)
+        _inn = (smoothstep(0.35, 0.75, lipT) * np.clip(1 - _pja2 / 0.5, 0, 1))[:, None]
+        _mc = _lm * np.array([0.72, 0.56, 0.58])
+        A = A * (1 - _inn) + _mc * _inn; A_H = A_H * (1 - _inn) + _mc * _inn
+        log(f"inner vermilion recoloured on {int((_inn[:, 0] > 0.5).sum())} texels")
+# merged iteration 3 (AD review item 5): a light under-eye "concealer": the portrait's under-eye darkness, once lit by
+# the stage rig and the socket's own AO, read as a raccoon mask; the under-eye zone's luminance is lifted 35% of the way
+# to the cheek median (lifting only), chroma kept
+_ue = ZONES["under"] * (1 - lt)
+_Yc = A_H @ np.array([0.2126, 0.7152, 0.0722])
+_cheekY = float(np.median(_Yc[ZONES["cheek"] > 0.5])) if (ZONES["cheek"] > 0.5).sum() > 50 else float(np.median(_Yc))
+_lift = 1 + 0.35 * _ue * np.clip(_cheekY / np.maximum(_Yc, 1e-6) - 1, 0, 0.6)
+A *= _lift[:, None]; A_H *= _lift[:, None]
+# merged iteration 3 (AD review item 1, "the brownish ring"): the perioral band (0-8 mm outside the vermilion) carries
+# the portrait's perioral darkening, which the lip-registration gate measured as "painted lip" outside the geometric lip
+# (IoU 0.65: painted 12.5k vs geometric 9.2k texels). Its luminance is lifted 45% of the way to the cheek median (lifting
+# only) and its chroma pulled half-way to the skin median, so the lip edge is the vermilion border again
+_lipv = lipT > 0.5
+if _lipv.sum() > 100:
+    _dl, _ = cKDTree(Pt[_lipv]).query(Pt, distance_upper_bound=0.02)
+    _dl = np.where(np.isfinite(_dl), _dl, 0.02)
+    _pw = (1 - smoothstep(0.0015, 0.008, _dl)) * (1 - smoothstep(0.05, 0.3, lipT)) * (front > 0.5)
+    _Yp = A_H @ np.array([0.2126, 0.7152, 0.0722])
+    _ck = ZONES["cheek"] > 0.5
+    _skc = np.median(A_H[_ck] / np.maximum(A_H[_ck].sum(1, keepdims=True), 1e-6), axis=0)
+    for _AA in (A, A_H):
+        _Ya = _AA @ np.array([0.2126, 0.7152, 0.0722])
+        _c = _AA / np.maximum(_AA.sum(1, keepdims=True), 1e-6)
+        _c2 = _c + (_skc - _c) * (0.5 * _pw)[:, None]
+        _Y2 = _Ya * (1 + 0.45 * _pw * np.clip(_cheekY / np.maximum(_Ya, 1e-6) - 1, 0, 0.8))
+        _AA[:] = _c2 * (_Y2 / np.maximum(_c2 @ np.array([0.2126, 0.7152, 0.0722]), 1e-6))[:, None]
+    log(f"perioral band lifted on {int((_pw > 0.5).sum())} texels")
 # merged gate (VERDICT item 1, the parting wedge): texels INSIDE the hairline mask (designed hairline weight > 0.5, off
 # the lips) whose final H albedo is nearer the skin colour than the hair colour. Bar 0.
 _inmask = (hl > 0.5)
@@ -515,6 +589,24 @@ _gap = int(((hl < 0.5) & (_pja < 0.5) & (Pt[:, 2] > browZ + 0.03) & (earT < 0.3)
 WEDGE = {"maskTexels": int(_inmask.sum()), "skinAlbedoTexels": int((_dS < _dHc).sum()), "uncoveredGapTexels": _gap,
          "skinRefLin": np.round(_skin_ref, 4).tolist(), "hairLin": np.round(hairc, 4).tolist()}
 log(f"wedge check: {WEDGE['skinAlbedoTexels']} skin-albedo texels of {WEDGE['maskTexels']} inside the hairline mask; {_gap} uncovered gap texels")
+# merged iteration 3 (AD review items 1, 14): LIP REGISTRATION gate. In the final H albedo, around the mouth on the
+# front-visible face, a texel is "painted lip" when its colour is nearer the lip median than the perioral skin median
+# (rg chromaticity + log luminance); the geometric lip is the lip vertex group (lipT > 0.5). Bar: IoU >= 0.8. The
+# iteration-2 build had the upper vermilion bleached to skin (chroma clamp), which no earlier gate saw.
+LIPREG = None
+_pja3 = globals().get("PJ_ALPHA")
+if _pja3 is not None:
+    _roi = (np.linalg.norm(Pt - lipC, axis=1) < 0.03) & (Nt[:, 1] < -0.3) & (_pja3 > 0.5)
+    _f = lambda X: np.c_[X[:, :2] / np.maximum(X.sum(1, keepdims=True), 1e-6) * 10, np.log(np.maximum(X @ np.array([0.2126, 0.7152, 0.0722]), 1e-4))]
+    _geo = _roi & (lipT > 0.5)
+    _skn = _roi & (lipT < 0.05) & (np.linalg.norm(Pt - lipC, axis=1) > 0.012)
+    if _geo.sum() > 50 and _skn.sum() > 50:
+        _F = _f(A_H)
+        _ml, _ms = np.median(_F[_geo], 0), np.median(_F[_skn], 0)
+        _paint = _roi & (np.linalg.norm(_F - _ml, axis=1) < np.linalg.norm(_F - _ms, axis=1))
+        _iou = float((_paint & _geo).sum() / max((_paint | _geo).sum(), 1))
+        LIPREG = {"iou": round(_iou, 3), "paintedTexels": int(_paint.sum()), "geometricTexels": int(_geo.sum()), "bar": 0.8}
+        log(f"lip registration IoU {_iou:.3f} (painted {int(_paint.sum())}, geometric {int(_geo.sum())})")
 # ------------------------------------------------------------------ write skin maps
 def img(vals, ch):
     out = np.zeros((R, R, ch), np.float32)
@@ -628,6 +720,12 @@ for i in range(len(GP)):
             d = d - 2 * (d @ n) * n
         hits += bvh.ray_cast(Vector(GP[i] + n * 0.0008), Vector(d), 0.04)[0] is not None
     gao[i] = 1 - hits / len(dirs)
+# merged iteration 3 (AD review item 13): the arm-cut caps (a triangle fan to a centre vertex INSIDE the sleeve,
+# parts._cap_arm_holes) got near-zero AO at that centre, interpolated over the fan: the dark grey triangle on both sleeves
+# at yaw 90 / 270. Cap vertices (facing +-x beyond the shoulder joint) take an AO floor.
+_xs = abs(rep["joints"]["joint-l-shoulder"][0]) - 0.01
+_cap = (np.abs(Gn[:, 0]) > 0.8) & (np.abs(GP[:, 0]) > _xs)
+gao[_cap] = np.maximum(gao[_cap], 0.72)
 col *= np.clip(0.45 + 0.55 * gi(gao), 0, 1)[:, None]
 gA = np.zeros((GR, GR, 4), np.float32)
 gA[cov2, :3] = lin2srgb(col)
@@ -638,8 +736,9 @@ from parts import ACC_PATCH
 for nm, (u_, v_) in ACC_PATCH.items():
     x, y = int(u_ * GR), int(v_ * GR)
     c = {"metal": lin2srgb(hex_lin("#2B2B2E")), "gold": lin2srgb(hex_lin("#D4AF37")), "lens": np.array([0.9, 0.95, 1.0]),
-         "copper": lin2srgb(hex_lin("#8C5A32")), "piping": lin2srgb(hex_lin(gk.get("piping", "#C2410C")))}[nm]
-    r = {"metal": 0.35, "gold": 0.3, "lens": 0.05, "copper": 0.32, "piping": 0.8}[nm]
+         "copper": lin2srgb(hex_lin("#8C5A32")), "piping": lin2srgb(hex_lin(gk.get("piping", "#C2410C"))),
+         "denimCap": lin2srgb(hex_lin(gk.get("jacket", gk.get("base", "#3B5677"))) * 0.62)}[nm]
+    r = {"metal": 0.35, "gold": 0.3, "lens": 0.05, "copper": 0.32, "piping": 0.8, "denimCap": 0.9}[nm]
     gA[y - 20:y + 20, x - 20:x + 20, :3] = c
     gA[y - 20:y + 20, x - 20:x + 20, 3] = r
 save("garment_albedo.png", gA, "RGBA")
@@ -671,10 +770,12 @@ _bcA = float(look.get("browCards", {}).get("alpha", 1.6))
 _bcG = float(look.get("browCards", {}).get("alphaGamma", 1.0))
 C[:, :1024, 3] = np.clip((Cb[:, :, 3] ** _bcG) * _bcA, 0, 1)
 C[:, 1024:, :3] = lin2srgb(np.array([0.012, 0.010, 0.009]))
-C[:, 1024:, 3] = Cl[:, :, 3]
+# merged iteration 3 (AD review item 5): denser, darker lashes: the strands' alpha is lifted (gamma 0.75, x1.3) so the
+# fine tips do not average with the skin into light-brown "insect legs"
+C[:, 1024:, 3] = np.clip(Cl[:, :, 3] ** 0.85 * 1.12, 0, 1)
 Image.fromarray(to8(C), "RGBA").save(os.path.join(OUT, "cards_atlas.png"), optimize=True)
 log("hair + cards written")
-json.dump({"res": R, "texels": int(cov.sum()), "wedge": WEDGE if "WEDGE" in globals() else None, "landmarks": {"noseTip": noseTip.tolist(), "chin": chin.tolist(),
+json.dump({"res": R, "texels": int(cov.sum()), "wedge": WEDGE if "WEDGE" in globals() else None, "lipRegistration": LIPREG, "landmarks": {"noseTip": noseTip.tolist(), "chin": chin.tolist(),
            "lipC": lipC.tolist(), "mcL": mcL.tolist(), "mcR": mcR.tolist(), "browZ": float(browZ)}},
           open(os.path.join(OUT, "tex.json"), "w"), indent=1)
 log("done")

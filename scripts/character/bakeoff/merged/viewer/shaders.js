@@ -10,6 +10,7 @@ uniform vec3 uKeyColor;    // linear radiance
 uniform vec3 uRimDir;
 uniform vec3 uRimColor;
 uniform vec3 uSH[4];       // L0, L1(y), L1(z), L1(x) irradiance coefficients (already convolved)
+uniform vec3 uBounce;      // merged iteration 3: warm bounce from below (the chest / garment), down-facing skin only
 vec3 shIrradiance(vec3 n) { return max(uSH[0] + uSH[1] * n.y + uSH[2] * n.z + uSH[3] * n.x, 0.0); }
 float D_GGX(float NoH, float a) { float a2 = a * a; float d = NoH * NoH * (a2 - 1.0) + 1.0; return a2 / (3.14159265 * d * d); }
 float V_SmithJointApprox(float NoV, float NoL, float a) {
@@ -85,6 +86,7 @@ uniform vec3 uTeeth; uniform vec3 uGum; uniform vec3 uTongue; uniform vec3 uBag;
 uniform float uMouthOpen; uniform vec3 uMouthFront;
 uniform float uFlush; uniform vec3 uCheekL; uniform vec3 uCheekR;
 uniform float uSpec;
+uniform float uDebugAlbedo;  // merged: evidence-only unlit albedo view (contact sheet item "albedo close-up"); 0 at runtime
 varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormalW; varying float vRegion;
 
 void main() {
@@ -130,7 +132,7 @@ void main() {
     albedo = mix(albedo, albedo * vec3(1.18, 0.86, 0.84), clamp(uFlush * ck, 0.0, 0.04) * 25.0 * 0.04);
 #ifdef TIER_LITE
     float wrap = clamp((dot(Nn, L) + 0.3) / 1.3, 0.0, 1.0);
-    col = albedo * (uKeyColor * wrap + shIrradiance(Nn)) * ao;
+    col = albedo * (uKeyColor * wrap + shIrradiance(Nn) + uBounce * smoothstep(-0.15, 0.85, -Nn.y)) * ao;
     col += uRimColor * pow(1.0 - max(dot(Nn, V), 0.0), 4.0) * max(dot(Nn, normalize(uRimDir)), 0.0) * 0.5;
 #else
     // pre-integrated skin diffuse (Penner 2011): LUT(N.L, curvature), curvature from screen derivatives of the
@@ -144,7 +146,9 @@ void main() {
     float NoV = max(dot(Nn, V), 1e-4), NoH = max(dot(Nn, H), 0.0), VoH = max(dot(V, H), 0.0);
     float nl = max(NoL, 0.0);
 #ifdef HAS_DETAIL
-    rough = mix(rough, 0.2, dt.b * uWet);
+    // merged (AD review item 3): squared, so the lid margins (moisture 0.9) stay wet and the lips (0.35) read matte-satin,
+    // not the glossy bubblegum lower lip
+    rough = mix(rough, 0.28, dt.b * dt.b * uWet);
 #endif
     float r1 = clamp(rough * 0.7, 0.12, 0.9), r2 = clamp(rough * 1.2, 0.3, 1.0);
     float a1 = r1 * r1, a2 = r2 * r2;
@@ -153,7 +157,7 @@ void main() {
 #ifdef HAS_DETAIL
     // moisture: a sharp wet glint on the lips and lid margins
     float aw = 0.05 * 0.05;
-    col += uKeyColor * nl * D_GGX(NoH, aw) * V_SmithJointApprox(NoV, nl, aw) * F_Schlick(0.03, VoH) * dt.b * uWet * 0.6;
+    col += uKeyColor * nl * D_GGX(NoH, aw) * V_SmithJointApprox(NoV, nl, aw) * F_Schlick(0.03, VoH) * dt.b * dt.b * uWet * 0.6;
     // subsurface tint: blood-red light bleeding past the terminator and into the shadow side (thin, vascular zones)
     float term = clamp(1.0 - abs(NoL - 0.05) * 2.4, 0.0, 1.0);
     col += albedo * uSSSTint * (uKeyColor * term * 0.22 + shIrradiance(Nn) * 0.10) * dt.g * uSSS;
@@ -162,6 +166,11 @@ void main() {
     col += dt.r * uFuzz * fz * (uKeyColor * clamp(NoL * 0.6 + 0.4, 0.0, 1.0) * 0.10 + uRimColor * 0.30 + shIrradiance(Nn) * 0.25)
          * mix(vec3(1.0), albedo * 2.2, 0.5);
 #endif
+    // merged iteration 3 (AD review item 6): a warm bounce from below. Down-facing skin (under the chin and jaw, under
+    // the nose) got only the cool SH ambient, so the jaw underside read as a hard grey plate cut at the terminator
+    float dnw = smoothstep(-0.15, 0.85, -Nn.y);
+    col += albedo * uBounce * dnw * mix(0.6, 1.0, ao);
+    col += albedo * uKeyColor * 0.10 * clamp(NoL + 0.35, 0.0, 0.35) * dnw;   // a softer terminator there
     // ambient specular sheen + rim (subtle)
     col += shIrradiance(reflect(-V, Nn)) * F_Schlick(0.028, NoV) * 0.35 * ao * cav;
     col += uRimColor * pow(1.0 - NoV, 3.0) * max(dot(Nn, normalize(uRimDir)), 0.0) * 0.45 * ao;
@@ -179,6 +188,8 @@ void main() {
     float open = clamp(uMouthOpen * 2.2, 0.0, 1.0);
     float occ = mix(0.16, 0.62, open) * exp(-depth / mix(0.008, 0.016, open));
     if (region == 1) occ = mix(0.34, 0.95, open) * exp(-depth / mix(0.011, 0.022, open));   // procedural-v3
+    // merged (AD review item 10): the front incisors catch light even in a small opening (grey-green "decayed" teeth)
+    if (region == 1) occ = max(occ, mix(0.62, 0.95, open) * exp(-depth / 0.008));
     // merged: an open smile reads as a mouth, not a void: the tongue and the back of the mouth keep a floor of soft,
     // warm light (a black interior behind gappy teeth read as a grimace, VERDICT), still darker with depth
     if (region == 2) occ = max(occ, mix(0.22, 0.55, open) * exp(-depth / 0.03));
@@ -190,8 +201,11 @@ void main() {
       vec3 H = normalize(L + V);
       col += uKeyColor * pow(max(dot(N, H), 0.0), 60.0) * 0.12 * occ * (1.0 - gum);
     }
-    if (region == 3) col = uBag * (0.15 + 0.5 * occ) + uBag * 1.6 * open * exp(-depth / 0.025);
+    // merged (AD review item 10): the mouth bag falls off toward the throat (it was a flat maroon)
+    if (region == 3) col = uBag * (0.06 + 0.5 * occ) + uBag * 1.8 * open * exp(-depth / 0.016);
+    if (region == 2) col *= mix(1.0, 0.45, smoothstep(0.012, 0.035, depth));
   }
+  if (uDebugAlbedo > 0.5 && region == 0) { gl_FragColor = vec4(pow(clamp(texture2D(tAlbedo, vUv).rgb * uAlbedoGain * 0.75, 0.0, 1.0), vec3(1.0 / 2.2)), 1.0); return; }
   gl_FragColor = vec4(col, 1.0);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
@@ -230,6 +244,7 @@ varying vec3 vLocal; varying vec3 vViewL; varying mat3 vToWorld; varying float v
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float vnoise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y); }
+vec3 Nb0(vec3 p, mat3 R) { return normalize(R * normalize(p)); }
 void main() {
   vec3 p = vLocal;
   vec3 V = normalize(vViewL);
@@ -253,8 +268,14 @@ void main() {
     float ang = atan(q.y, q.x);
     float fib = vnoise(vec2(ang * 18.0, rr * 6.0)) * 0.6 + vnoise(vec2(ang * 45.0, rr * 14.0)) * 0.4;
     // dark irises still show lighter radial fibres and a warmer collarette when lit
-    vec3 ir = uIris * (1.1 + 1.4 * fib * uIrisDetail) + vec3(0.05, 0.03, 0.012) * smoothstep(0.7, 0.35, rr) * uIrisDetail;
-    ir = mix(ir, uIris * 0.3, smoothstep(0.86, 1.0, rr));          // limbal ring
+    // merged (AD review item 4): a readable mid-brown with radial fibres and a lighter amber collarette; the old iris was
+    // uIris x 1.1-2.5 with a 0.3 limbal ring from 0.86: a uniformly dark bead with a heavy black outline
+    float fib2 = vnoise(vec2(ang * 70.0, rr * 3.0));
+    vec3 ir = uIris * (1.3 + 1.25 * fib * uIrisDetail + 0.4 * fib2 * uIrisDetail)
+            + vec3(0.045, 0.03, 0.016) * smoothstep(0.75, 0.38, rr) * smoothstep(0.2, 0.42, rr) * uIrisDetail;
+    ir = mix(ir, vec3(dot(ir, vec3(0.3, 0.5, 0.2))), 0.25);        // less saturated: amber read as a yellow cat-eye
+    ir *= mix(1.0, 0.82, smoothstep(0.55, 0.9, rr));              // darker toward the outer iris, as in a real brown eye
+    ir = mix(ir, uIris * 0.55, smoothstep(0.92, 1.0, rr));         // limbal ring: narrower and lighter
     float pup = uPupil * IR;
     albedo = mix(vec3(0.01), ir, smoothstep(pup - 0.02, pup + 0.015, rr * IR));
   } else {
@@ -274,8 +295,11 @@ void main() {
   float lc = vSide > 0.5 ? uLidClose.x : uLidClose.y;
   float lidY = mix(0.62, -0.2, lc);                     // ball-local height of the upper lid margin
   float under = smoothstep(lidY - 0.42, lidY + 0.02, p.y);
-  float ao = mix(1.0, 0.22, under * uLidShadow) * mix(1.0, 0.5, smoothstep(0.35, 0.85, abs(p.x)))
-           * mix(1.0, 0.62, smoothstep(-0.40, -0.68, p.y) * uLidShadow) * 0.86;
+  // merged (AD review item 4): the contact shadow is a NARROW band under the lid margin (it covered 0.42 r and went to
+  // 0.22: the eyes read as dark slits); the corners keep their occlusion
+  float under2 = smoothstep(lidY - 0.22, lidY + 0.02, p.y);
+  float ao = mix(1.0, 0.45, under2 * uLidShadow) * mix(1.0, 0.6, smoothstep(0.4, 0.9, abs(p.x)))
+           * mix(1.0, 0.75, smoothstep(-0.45, -0.7, p.y) * uLidShadow) * 0.95;
   float nl = clamp(dot(Nw, L) * 0.5 + 0.5, 0.0, 1.0);
   vec3 col = albedo * (uKeyColor * nl * 0.8 + shIrradiance(Nw)) * ao;
   // cornea specular: the key light's real reflection (the catch-light) + a soft environment reflection
@@ -285,8 +309,18 @@ void main() {
   float NoH = max(dot(ncw, H), 0.0);
   float spec = D_GGX(NoH, 0.012) * 0.25;
   float fres = F_Schlick(0.025, max(dot(ncw, Vw), 0.0));
-  col += uKeyColor * spec * fres * float(cornea) * mix(1.0, ao, 0.6);
+  // merged (AD review item 4): the catch-light is NOT occluded by the lid-shadow term (it is a reflection of the light,
+  // in front of the shadowed iris); only a closing lid (lc) hides it. Plus a fixed environment catch-light: a soft
+  // window up and to the key side, defined relative to the view, so every framing has a live glint
+  float lidHide = 1.0 - smoothstep(lidY - 0.05, lidY + 0.02, p.y);
+  col += uKeyColor * spec * fres * float(cornea) * 1.6 * lidHide;
+  vec3 envDir = normalize(Vw + normalize(uKeyDir) * 0.55 + vec3(0.0, 0.25, 0.0));
+  float NoHe = max(dot(ncw, normalize(envDir + Vw)), 0.0);
+  col += vec3(1.0, 0.98, 0.95) * D_GGX(NoHe, 0.03) * 0.05 * float(cornea) * lidHide;
   col += shIrradiance(reflect(-Vw, ncw)) * fres * 0.8 * float(p.z > 0.55) * mix(1.0, ao, 0.5);
+  // tear meniscus: a thin wet highlight along the lower lid margin
+  float men = smoothstep(-0.62, -0.55, p.y) * (1.0 - smoothstep(-0.55, -0.48, p.y)) * (1.0 - smoothstep(0.55, 0.85, abs(p.x)));
+  col += uKeyColor * men * 0.10 * pow(max(dot(Nb0(p, vToWorld), normalize(L + Vw)), 0.0), 8.0);
   // wetness: the tear film is a sharp, low-roughness lobe over the whole visible ball (not only the cornea), dimmed under
   // the lid; it is what makes an eye read wet rather than painted
   vec3 Nb = normalize(vToWorld * normalize(p));
@@ -326,6 +360,9 @@ float kk(vec3 T, vec3 H, float e) { float th = dot(T, H); return pow(sqrt(max(1.
 void main() {
   vec4 a = texture2D(tAlbedo, vUv);
   if (a.a < 0.08) discard;
+  // merged iteration 3 (AD review item 7): sharpened coverage. Mip-averaged fibre alpha at the tail's fringe gave a wide
+  // band of ~30% coverage, which alpha-to-coverage dithers into a grey, stair-stepped veil against the light backdrop
+  a.a = smoothstep(0.12, 0.55, a.a);
   vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);
   vec3 V = normalize(cameraPosition - vWorldPos);
   vec3 L = normalize(uKeyDir);
@@ -344,7 +381,9 @@ void main() {
   float s2 = kk(normalize(T + N * (uShift - 0.25)), H, 22.0);
   // no highlight on the card fringe: at alpha < 0.5 the edge texels lit as bright lines in profile
   col += uKeyColor * wrap * (s1 * 0.22 + s2 * 0.12 * uSpecTint * a.rgb * 4.0) * uKK * smoothstep(0.35, 0.6, a.a);
-  col += uRimColor * pow(1.0 - max(dot(N, V), 0.0), 3.0) * 0.15;
+  // merged iteration 3 (AD review item 7): the rim is tinted by the fibre colour and faded with coverage. Cards seen
+  // edge-on at the silhouette have N.V ~ 0, so a flat blue-grey rim lit every edge card: the grey halo round the tail
+  col += uRimColor * pow(1.0 - max(dot(N, V), 0.0), 3.0) * 0.15 * a.rgb * 3.0 * smoothstep(0.4, 0.9, a.a);
   gl_FragColor = vec4(col, a.a);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
@@ -434,6 +473,7 @@ export const LIGHTING = {
   keyDir: [-0.62, 0.55, 0.62], keyColor: [1.27, 1.24, 1.19],
   rimDir: [0.7, 0.4, -0.6], rimColor: [0.34, 0.37, 0.43],
   sh: [[0.167, 0.167, 0.177], [0.056, 0.056, 0.062], [0.025, 0.025, 0.022], [0, 0, 0]],
+  bounceColor: [0.11, 0.075, 0.055],
 };
 export function lightUniforms(L = LIGHTING) {
   const v = (a) => new THREE.Vector3(...a);
@@ -443,6 +483,7 @@ export function lightUniforms(L = LIGHTING) {
     uRimDir: { value: v(L.rimDir).normalize() },
     uRimColor: { value: v(L.rimColor) },
     uSH: { value: L.sh.map(v) },
+    uBounce: { value: v(L.bounceColor || [0, 0, 0]) },
   };
 }
 

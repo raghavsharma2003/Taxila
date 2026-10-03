@@ -1,0 +1,438 @@
+{
+ "model": "OpenCV Zoo SFace 2021dec (Apache-2.0) + YuNet 2023mar (MIT), cosine similarity",
+ "threshold": 0.363,
+ "gallery": {
+  "faces": 1454,
+  "skippedNoFace": 7,
+  "india": 1149,
+  "world": 305
+ },
+ "calibration": {
+  "galleryNearestOtherPerson": {
+   "p50": 0.4381,
+   "p95": 0.5083,
+   "p99": 0.5391,
+   "max": 0.5972,
+   "shareAboveThreshold": 0.936
+  },
+  "probeVsProbe": {
+   "warm.png | delighted.png": 0.8118,
+   "warm.png | concerned.png": 0.6952,
+   "warm.png | tier_H.png": 0.9366,
+   "warm.png | tier_Bplus.png": 0.9267,
+   "warm.png | idle.png": 0.9206,
+   "warm.png | teal_yaw0.png": 0.8616,
+   "warm.png | front.png": 0.3325,
+   "warm.png | front_smile.png": 0.3682,
+   "warm.png | q3_left.png": 0.3032,
+   "warm.png | q45_right.png": 0.3406,
+   "delighted.png | concerned.png": 0.6145,
+   "delighted.png | tier_H.png": 0.8376,
+   "delighted.png | tier_Bplus.png": 0.8295,
+   "delighted.png | idle.png": 0.7313,
+   "delighted.png | teal_yaw0.png": 0.6397,
+   "delighted.png | front.png": 0.2403,
+   "delighted.png | front_smile.png": 0.2766,
+   "delighted.png | q3_left.png": 0.2097,
+   "delighted.png | q45_right.png": 0.2558,
+   "concerned.png | tier_H.png": 0.7159,
+   "concerned.png | tier_Bplus.png": 0.6974,
+   "concerned.png | idle.png": 0.7522,
+   "concerned.png | teal_yaw0.png": 0.7463,
+   "concerned.png | front.png": 0.2534,
+   "concerned.png | front_smile.png": 0.2784,
+   "concerned.png | q3_left.png": 0.3109,
+   "concerned.png | q45_right.png": 0.3206,
+   "tier_H.png | tier_Bplus.png": 0.9852,
+   "tier_H.png | idle.png": 0.9061,
+   "tier_H.png | teal_yaw0.png": 0.8226,
+   "tier_H.png | front.png": 0.3203,
+   "tier_H.png | front_smile.png": 0.343,
+   "tier_H.png | q3_left.png": 0.2886,
+   "tier_H.png | q45_right.png": 0.3214,
+   "tier_Bplus.png | idle.png": 0.8898,
+   "tier_Bplus.png | teal_yaw0.png": 0.8107,
+   "tier_Bplus.png | front.png": 0.343,
+   "tier_Bplus.png | front_smile.png": 0.3692,
+   "tier_Bplus.png | q3_left.png": 0.3177,
+   "tier_Bplus.png | q45_right.png": 0.335,
+   "idle.png | teal_yaw0.png": 0.9058,
+   "idle.png | front.png": 0.3816,
+   "idle.png | front_smile.png": 0.4237,
+   "idle.png | q3_left.png": 0.3747,
+   "idle.png | q45_right.png": 0.3934,
+   "teal_yaw0.png | front.png": 0.3313,
+   "teal_yaw0.png | front_smile.png": 0.3663,
+   "teal_yaw0.png | q3_left.png": 0.3691,
+   "teal_yaw0.png | q45_right.png": 0.3512,
+   "front.png | front_smile.png": 0.9286,
+   "front.png | q3_left.png": 0.8819,
+   "front.png | q45_right.png": 0.8395,
+   "front_smile.png | q3_left.png": 0.8999,
+   "front_smile.png | q45_right.png": 0.8253,
+   "q3_left.png | q45_right.png": 0.8596
+  }
+ },
+ "probes": [
+  {
+   "probe": "docs/design/teacher/bakeoff/merged/renders/teal/emotions/warm.png",
+   "maxCos": 0.39,
+   "top5": [
+    {
+     "wikidata": "Q4794148",
+     "set": "india",
+     "cos": 0.39
+    },
+    {
+     "wikidata": "Q27922132",
+     "set": "india",
+     "cos": 0.3456
+    },
+    {
+     "wikidata": "Q7368842",
+     "set": "india",
+     "cos": 0.3326
+    },
+    {
+     "wikidata": "Q42018",
+     "set": "india",
+     "cos": 0.3255
+    },
+    {
+     "wikidata": "Q2050788",
+     "set": "india",
+     "cos": 0.3244
+    }
+   ],
+   "pass": true
+  },
+  {
+   "probe": "docs/design/teacher/bakeoff/merged/renders/teal/emotions/delighted.png",
+   "maxCos": 0.3301,
+   "top5": [
+    {
+     "wikidata": "Q2050788",
+     "set": "india",
+     "cos": 0.3301
+    },
+    {
+     "wikidata": "Q27922132",
+     "set": "india",
+     "cos": 0.3265
+    },
+    {
+     "wikidata": "Q4794148",
+     "set": "india",
+     "cos": 0.3237
+    },
+    {
+     "wikidata": "Q3429995",
+     "set": "india",
+     "cos": 0.3141
+    },
+    {
+     "wikidata": "Q3595812",
+     "set": "india",
+     "cos": 0.3077
+    }
+   ],
+   "pass": true
+  },
+  {
+   "probe": "docs/design/teacher/bakeoff/merged/renders/teal/emotions/concerned.png",
+   "maxCos": 0.3504,
+   "top5": [
+    {
+     "wikidata": "Q16218779",
+     "set": "india",
+     "cos": 0.3504
+    },
+    {
+     "wikidata": "Q264896",
+     "set": "india",
+     "cos": 0.3393
+    },
+    {
+     "wikidata": "Q42018",
+     "set": "india",
+     "cos": 0.3357
+    },
+    {
+     "wikidata": "Q3595500",
+     "set": "india",
+     "cos": 0.3197
+    },
+    {
+     "wikidata": "Q102513",
+     "set": "world",
+     "cos": 0.3192
+    }
+   ],
+   "pass": true
+  },
+  {
+   "probe": "docs/design/teacher/bakeoff/merged/renders/teal/tier_H.png",
+   "maxCos": 0.3495,
+   "top5": [
+    {
+     "wikidata": "Q27922132",
+     "set": "india",
+     "cos": 0.3495
+    },
+    {
+     "wikidata": "Q277996",
+     "set": "india",
+     "cos": 0.3423
+    },
+    {
+     "wikidata": "Q4794148",
+     "set": "india",
+     "cos": 0.3412
+    },
+    {
+     "wikidata": "Q5266447",
+     "set": "india",
+     "cos": 0.3198
+    },
+    {
+     "wikidata": "Q5282198",
+     "set": "india",
+     "cos": 0.3083
+    }
+   ],
+   "pass": true
+  },
+  {
+   "probe": "docs/design/teacher/bakeoff/merged/renders/teal/tier_Bplus.png",
+   "maxCos": 0.3658,
+   "top5": [
+    {
+     "wikidata": "Q27922132",
+     "set": "india",
+     "cos": 0.3658
+    },
+    {
+     "wikidata": "Q4794148",
+     "set": "india",
+     "cos": 0.3351
+    },
+    {
+     "wikidata": "Q5266447",
+     "set": "india",
+     "cos": 0.3242
+    },
+    {
+     "wikidata": "Q42018",
+     "set": "india",
+     "cos": 0.323
+    },
+    {
+     "wikidata": "Q277996",
+     "set": "india",
+     "cos": 0.3144
+    }
+   ],
+   "pass": true
+  },
+  {
+   "probe": "docs/design/teacher/bakeoff/merged/renders/teal/states/idle.png",
+   "maxCos": 0.4005,
+   "top5": [
+    {
+     "wikidata": "Q27922132",
+     "set": "india",
+     "cos": 0.4005
+    },
+    {
+     "wikidata": "Q5266447",
+     "set": "india",
+     "cos": 0.3751
+    },
+    {
+     "wikidata": "Q104759946",
+     "set": "india",
+     "cos": 0.3741
+    },
+    {
+     "wikidata": "Q4794148",
+     "set": "india",
+     "cos": 0.3702
+    },
+    {
+     "wikidata": "Q42018",
+     "set": "india",
+     "cos": 0.3626
+    }
+   ],
+   "pass": true
+  },
+  {
+   "probe": "/tmp/claude-0/char/bakeoff-merged/lkf/teal_yaw0.png",
+   "maxCos": 0.3677,
+   "top5": [
+    {
+     "wikidata": "Q4794148",
+     "set": "india",
+     "cos": 0.3677
+    },
+    {
+     "wikidata": "Q27922132",
+     "set": "india",
+     "cos": 0.3505
+    },
+    {
+     "wikidata": "Q42018",
+     "set": "india",
+     "cos": 0.3313
+    },
+    {
+     "wikidata": "Q3632740",
+     "set": "india",
+     "cos": 0.3229
+    },
+    {
+     "wikidata": "Q5266447",
+     "set": "india",
+     "cos": 0.3184
+    }
+   ],
+   "pass": true
+  },
+  {
+   "probe": "art/character/bakeoff/merged/refs/teal/front.png",
+   "maxCos": 0.5074,
+   "top5": [
+    {
+     "wikidata": "Q11050320",
+     "set": "india",
+     "cos": 0.5074
+    },
+    {
+     "wikidata": "Q6167421",
+     "set": "india",
+     "cos": 0.5071
+    },
+    {
+     "wikidata": "Q2003940",
+     "set": "india",
+     "cos": 0.493
+    },
+    {
+     "wikidata": "Q3521226",
+     "set": "india",
+     "cos": 0.4882
+    },
+    {
+     "wikidata": "Q277671",
+     "set": "india",
+     "cos": 0.4869
+    }
+   ],
+   "pass": true
+  },
+  {
+   "probe": "art/character/bakeoff/merged/refs/teal/front_smile.png",
+   "maxCos": 0.5602,
+   "top5": [
+    {
+     "wikidata": "Q6167421",
+     "set": "india",
+     "cos": 0.5602
+    },
+    {
+     "wikidata": "Q64011098",
+     "set": "india",
+     "cos": 0.5183
+    },
+    {
+     "wikidata": "Q277671",
+     "set": "india",
+     "cos": 0.4908
+    },
+    {
+     "wikidata": "Q2003940",
+     "set": "india",
+     "cos": 0.4809
+    },
+    {
+     "wikidata": "Q3629983",
+     "set": "india",
+     "cos": 0.4673
+    }
+   ],
+   "pass": false
+  },
+  {
+   "probe": "art/character/bakeoff/merged/refs/teal/q3_left.png",
+   "maxCos": 0.54,
+   "top5": [
+    {
+     "wikidata": "Q6167421",
+     "set": "india",
+     "cos": 0.54
+    },
+    {
+     "wikidata": "Q11050320",
+     "set": "india",
+     "cos": 0.4873
+    },
+    {
+     "wikidata": "Q3520429",
+     "set": "india",
+     "cos": 0.4851
+    },
+    {
+     "wikidata": "Q10841404",
+     "set": "india",
+     "cos": 0.4701
+    },
+    {
+     "wikidata": "Q6437492",
+     "set": "india",
+     "cos": 0.4598
+    }
+   ],
+   "pass": false
+  },
+  {
+   "probe": "art/character/bakeoff/merged/refs/teal/q45_right.png",
+   "maxCos": 0.4908,
+   "top5": [
+    {
+     "wikidata": "Q467231",
+     "set": "india",
+     "cos": 0.4908
+    },
+    {
+     "wikidata": "Q2003940",
+     "set": "india",
+     "cos": 0.4907
+    },
+    {
+     "wikidata": "Q17579776",
+     "set": "india",
+     "cos": 0.4755
+    },
+    {
+     "wikidata": "Q6167421",
+     "set": "india",
+     "cos": 0.4714
+    },
+    {
+     "wikidata": "Q64011098",
+     "set": "india",
+     "cos": 0.4644
+    }
+   ],
+   "pass": true
+  }
+ ],
+ "maxOverProbes": 0.5602,
+ "bar": {
+  "rule": "max cosine to any gallery face < p95 of gallery nearest-different-person cosine",
+  "p95": 0.5083,
+  "openCvOperatingPoint": 0.363
+ },
+ "passShipped": true,
+ "passReferences": false
+}

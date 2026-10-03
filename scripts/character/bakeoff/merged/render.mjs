@@ -70,6 +70,15 @@ for (const look of LOOKS) {
       for (const [k, j] of T) await still(path.join(dir, "visemes", `${k}.png`), ([n, jw]) => { TX.frame("mouth", 0); TX.pose({ bs: { [n]: 1, jawOpen: jw } }); TX.render(); }, [k, j]);
       log(`${look} visemes`);
     }
+    // merged iteration 3 (AD review item 14): UNLIT albedo close-ups of the mouth, the eyes and the face, so a texture vs
+    // geometry misregistration (the painted lip landing on skin) shows at a glance on every contact sheet
+    if (only.includes("albedo") || only.includes("visemes")) {
+      for (const [nm, cam] of [["albedo_face", "face"], ["albedo_mouth", "mouth"], ["albedo_eyes", "eyes"]]) {
+        await still(path.join(dir, `${nm}.png`), (c) => { TX.debugAlbedo(true); TX.frame(c, 0); TX.pose({ bs: {} }); TX.render(); }, cam);
+      }
+      await P.evaluate(() => TX.debugAlbedo(false));
+      log(`${look} albedo close-ups`);
+    }
   } finally { if (hx.errors.length) console.log(hx.errors.slice(0, 5).join("\n")); await hx.close(); }
 
   // ---------------- tiers side by side (same pose), each at its own runtime

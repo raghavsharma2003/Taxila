@@ -1,6 +1,7 @@
 """COMPARE.png with the merged row (fork of scripts/character/bakeoff/verdict/compare.py; the four bake-off rows are
 unchanged, from their own renders and their own judge files). The merged row's scores are the merged emotion check
-(two judges, n = 12 each): the cell shows judge A / judge B correct out of 12, red if EITHER is below 70%; encouraging is
+(three judges, n = 12 each): the cell shows judges A | C | B correct out of 12, red if A or C (the two prompts on the
+strong model) is below 70%; B (the fast model, held-out prompt) is shown for reference; encouraging is
 judged on its 2 s nod clip (the cell shows the clip's middle frame). Same renderer, same stage light, teal only.
     python3 scripts/character/bakeoff/merged/compare.py"""
 import json
@@ -22,7 +23,7 @@ try:
 except Exception:
     f = fb = ImageFont.load_default()
 d.text((10, 8), 'Teacher bake-off, look teal, H tier, same renderer + stage light. Rows 1-4: blind 9-way vision judge, correct/6 (bar 70%).', fill=(230, 230, 230), font=f)
-d.text((10, 30), 'MERGED row: judge A (taxila-brain, bake-off prompt) / judge B (taxila-fast, held-out prompt), correct/12 each; red if either < 70%; encouraging on its 2 s nod clip.', fill=(160, 160, 170), font=f)
+d.text((10, 30), 'MERGED row: A = taxila-brain + bake-off prompt | C = taxila-brain + held-out prompt | B = taxila-fast + held-out prompt; correct/12 each; red if A or C < 70%; encouraging on its 2 s nod clip.', fill=(160, 160, 170), font=f)
 for i, n in enumerate(E + [x[0] for x in extra]):
     d.text((LW + i * W + 6, TOP), n, fill=(200, 200, 120), font=fb)
 for r, (name, dirp, ck, kind) in enumerate(rows):
@@ -31,8 +32,8 @@ for r, (name, dirp, ck, kind) in enumerate(rows):
     d.text((10, y + 10), name, fill=(240, 240, 240), font=fb)
     if kind == 'merged':
         ov = J['overallPct']
-        d.text((10, y + 36), f"A {ov.get('A')}%  B {ov.get('B')}%", fill=(200, 200, 200), font=f)
-        d.text((10, y + 58), f"pooled {ov.get('pooled')}%", fill=(200, 200, 200), font=f)
+        d.text((10, y + 36), f"A {ov.get('A')}%  C {ov.get('C')}%", fill=(200, 200, 200), font=f)
+        d.text((10, y + 58), f"B {ov.get('B')}%  pooled {ov.get('pooled')}%", fill=(200, 200, 200), font=f)
     else:
         d.text((10, y + 36), f"overall {J['overallPct']}%", fill=(200, 200, 200), font=f)
     for i, e in enumerate(E):
@@ -45,9 +46,9 @@ for r, (name, dirp, ck, kind) in enumerate(rows):
             im = Image.open(p).convert('RGB').resize((W, H))
         img.paste(im, (LW + i * W, y))
         if kind == 'merged':
-            a_, b_ = J['per']['A'][e], J['per']['B'][e]
-            ok = a_['pct'] >= 70 and b_['pct'] >= 70
-            lab = f"{a_['correct']}/{a_['n']} | {b_['correct']}/{b_['n']}" + (' clip' if e == 'encouraging' else '') + ('' if ok else ' FAIL')
+            a_, b_, c_ = J['per']['A'][e], J['per']['B'][e], J['per']['C'][e]
+            ok = a_['pct'] >= 70 and c_['pct'] >= 70
+            lab = f"{a_['correct']}|{c_['correct']}|{b_['correct']} /12" + (' clip' if e == 'encouraging' else '') + ('' if ok else ' FAIL')
         else:
             c, nn = J['per'][e]['correct'], J['per'][e]['n']; ok = c / nn >= 0.7
             lab = f'{c}/{nn}' + ('' if ok else '  FAIL')

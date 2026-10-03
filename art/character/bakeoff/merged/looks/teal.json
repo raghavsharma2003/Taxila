@@ -51,9 +51,9 @@
     "mst": 6,
     "flush": 0.04,
     "albedoGain": [
-      1.2822,
-      1.2075,
-      1.813
+      1.3548,
+      1.2933,
+      1.9196
     ],
     "lipCoverage": 0.4,
     "lipDesat": 0.2,
@@ -78,7 +78,7 @@
   },
   "brows": "eyebrow001",
   "browColor": "#1A120C",
-  "lashes": "eyelashes01",
+  "lashes": "eyelashes02",
   "hair": {
     "asset": "ponytail01",
     "color": "#1E140F",
@@ -349,7 +349,17 @@
     "fall1Mm": 35,
     "gain": 1,
     "correction": "/home/user/Taxila/art/character/bakeoff/merged/refs/teal/fit_correction.json",
-    "profileCorrection": "/home/user/Taxila/art/character/bakeoff/merged/refs/teal/profile_correction.json"
+    "profileCorrection": "/home/user/Taxila/art/character/bakeoff/merged/refs/teal/profile_correction.json",
+    "proportion": {
+      "chinDownMm": 4.5,
+      "chinFwdMm": 3,
+      "chinSigmaXMm": 38,
+      "underFadeMm": 30,
+      "depthMm": 45,
+      "upperLipMm": 1,
+      "lowerLipBackMm": 0.6,
+      "_note": "merged iteration 3 (identity/proportion.py): measured on the neutral H render vs the front reference (MediaPipe, % IOD): lip-chin 33.3 vs 38.6, upper vermilion 6.7 vs 8.0; true-profile render: chin ~4 mm behind the reference"
+    }
   },
   "projection": {
     "dir": "art/character/bakeoff/merged/refs/teal",
@@ -379,5 +389,7 @@
     "_note": "merged: teeth set back behind the thinner wrapped lips (G6); the arch narrowed to the wrapped mouth (teethWidth)",
     "teethWidth": 0.94,
     "molarTaper": 0.12
-  }
+  },
+  "lowerLashes": true,
+  "_lashNote": "merged iteration 3 (AD review item 5): eyelashes02 (CC0, same card topology as eyelashes01, ~2x denser strands) and the lower lashes kept; texture.py darkens and densifies the alpha"
 }

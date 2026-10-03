@@ -45,7 +45,13 @@ const med = (a) => { const s = [...a].sort((x, y) => x - y); return s[Math.floor
 const pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(s.length * p))]; };
 
 async function sample(P, gain) {
-  return P.evaluate((g) => { TX.setAlbedoGain(g); TX.frame("face", 0); TX.pose(TX.emotion("warm", 1)); return TX.samplePatches("skin"); }, gain);
+  // merged: the warm FACE with a neutral head, gaze and lean: the patches are fixed points from the rest landmarks, so a
+  // head pose (or one left by an earlier stage) moved them on the face and the same build read L* 52.6 / 54.7 / 58.7
+  return P.evaluate((g) => {
+    TX.setAlbedoGain(g); TX.frame("face", 0);
+    const p = TX.emotion("warm", 1); p.head = [0, 0, 0]; p.gaze = [0, 0]; p.lean = 0; p.breath = 0;
+    TX.pose(p); return TX.samplePatches("skin");
+  }, gain);
 }
 function summarise(patches) {
   // a patch whose L* is > 15 from the patches' median is off the skin (background, hair, deep shadow): reported, not used

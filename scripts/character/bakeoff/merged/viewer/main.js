@@ -72,6 +72,8 @@ window.TX = {
     return { loadMs: rig.loadMs, ...rig.stats() };
   },
   frame,
+  // merged: evidence-only unlit albedo (skin) view, so a texture/geometry misregistration shows at a glance
+  debugAlbedo(on) { rig.meshes.face.material.uniforms.uDebugAlbedo.value = on ? 1 : 0; },
   pose(p) { rig.apply(p.bs || {}, p.head || [0, 0, 0], p.gaze || [0, 0], p.lean || 0, p.breath || 0, { flush: p.flush || 0 }); },
   clip(name, t) { return clipPose(name, t, look.faceStyle.asym); },
   clips: () => Object.keys(CLIPS),

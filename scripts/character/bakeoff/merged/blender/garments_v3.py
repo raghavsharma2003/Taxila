@@ -28,6 +28,7 @@ import parts as P0
 ACC_PATCH = dict(P0.ACC_PATCH)
 ACC_PATCH["copper"] = (0.955, 0.905)
 ACC_PATCH["piping"] = (0.905, 0.855)
+ACC_PATCH["denimCap"] = (0.855, 0.855)   # merged iteration 3: the arm-cut caps (one flat denim colour)
 P0.ACC_PATCH.update(ACC_PATCH)          # texture.py reads parts.ACC_PATCH
 
 
@@ -513,6 +514,19 @@ def make(skin, look, J, report):
     zs = (zmin, z_clav + 0.09)
     _cyl_uv(kur, ctr, 0.02, 0.30, *zs)
     _cyl_uv(jac, ctr, 0.32, 0.70, *zs)
+    # merged iteration 3 (AD review item 13): the arm-cut caps (parts._cap_arm_holes: triangle fans facing +-x) took the
+    # cylindrical UV, a sliver of the atlas stretched across the fan (the pale chevron) with near-black AO at the fan's
+    # centre (the dark grey triangle on both sleeves at yaw 90 / 270). They take one flat denim patch instead.
+    _me = jac.data
+    _uvl = _me.uv_layers.active
+    _xc = abs(J["joint-l-shoulder"][0]) - 0.01
+    _ncap = 0
+    for _f in _me.polygons:
+        if abs(_f.normal.x) > 0.8 and all(abs(_me.vertices[v].co.x) > _xc for v in _f.vertices):
+            for _li in _f.loop_indices:
+                _uvl.data[_li].uv = ACC_PATCH["denimCap"]
+            _ncap += 1
+    report.setdefault("garmentV3", {})["armCapFacesPatched"] = _ncap
     parts_ = [(kur, 0, 0), (jac, 1, 0)]
     if collar is not None:
         parts_.append((collar, 1, 2))

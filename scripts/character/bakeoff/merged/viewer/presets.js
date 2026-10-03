@@ -29,20 +29,38 @@
 //              wink is carried by the squint and the cheek instead;
 //   curious    raised OUTER brows (left higher), eyes wide, lips just parted in a soft 'oh', a 6 deg tilt and a small
 //              turn: the inner-brow raise and the pucker read as concerned / playful on this face (judge A screen, n=6)
-//   thinking   v3's averted gaze kept, plus a one-sided brow knit and the lips pressed and pulled to one side
-//   listening  no smile and no squint (both read as warm / thinking): open attentive brows, eyes a little wide, the
-//              gaze held on the child, chin down 5 deg, a 12 deg head tilt and a full lean in; still yaw 0
+//   thinking   v3's averted gaze kept (up and to the side), chin up 6 deg, a symmetric brow knit with the inner brows up,
+//              the lips pressed firmly with the lower lip pushed up; no head roll and no one-sided mouth pull (both read as
+//              a smirk / playful: 0/10 for the one-sided design vs 10/10, judge A, n = 10)
+//   warm       the 4 deg head roll removed (8/10 -> 10/10 warm, the roll pulled it toward playful; judge A, n = 10)
+//   listening  the resting smile cancelled (it read as warm: 11/12 under judge C): a light concentration knit, the
+//              lips pressed, the gaze held on the child, chin down 5 deg, a 12 deg head tilt and a full lean in; yaw 0
 //   (these three were chosen with judge A only, n = 5-6 per variant; judge B never saw a candidate)
 //   delighted  a believable open smile: jaw 0.32 -> 0.2, lower lip barely down (0.25 -> 0.08), upper lip up 0.55, so the
 //              upper teeth show and the lower row and the mouth's back stay hidden (the grimace, VERDICT).
+// merged iteration 3 (art-director review items 8-9; chosen against judge A only, n = 8-10 per variant, so A is NOT
+// independent on these; judge C (held-out prompt) and B score the final set):
+//   warm       Duchenne: a SMALLER smile (0.5 -> 0.28) with the cheeks and lower lids carrying it (cheekSquint 0.65,
+//              eyeSquint 0.33), a little upper lip (0.12) and stretch (0.1) so the mouth widens instead of curling into a
+//              U; 8/8 (a 0.42 smile with no tilt read playful 0/8)
+//   encouraging the same Duchenne base with raised brows, judged on its nod clip
+//   curious    no pout and no smile (every smile read warm/playful): both brows up, the left higher, eyes wide, lips just
+//              parted, a 12 deg tilt, a small turn, gaze a touch up, full lean; 8/10 (iteration 2's pout 0/8 here)
+//   thinking   iteration 2's averted gaze with a light pucker and pressed lips ("hmm"), chin up only 4 deg (was 7: the
+//              under-chin), no lid squint (with the upward gaze it read sleepy), 8/8 with the squint
+//   listening  no smile (a smile read warm), the inner brows up, the left brow a little higher, eyes slightly wide, lips
+//              lightly pressed, 11 deg tilt, facing the camera (yaw 2), full lean; on a still it sits at 5/10, so it is
+//              judged on its "mm-hm" nod clip (CLIPS.listening), like encouraging (proposed decision, context inbox)
+//   delighted  a wider, flatter open smile: smile 0.45 (was 0.85), upper lip 0.55, stretch 0.25, cheeks 0.9, lids 0.42,
+//              jaw 0.26: 7/8, no U-shaped grimace
 export const EMOTIONS = {
-  warm: { bs: { mouthSmileLeft: 0.5, mouthSmileRight: 0.5, cheekSquintLeft: 0.38, cheekSquintRight: 0.38, eyeSquintLeft: 0.16, eyeSquintRight: 0.16, mouthDimpleLeft: 0.08, mouthDimpleRight: 0.08, browInnerUp: 0.06 }, head: [1, 0, 4], env: [600, 1500, 900] },
-  encouraging: { bs: { mouthSmileLeft: 0.35, mouthSmileRight: 0.35, mouthPressLeft: 0.3, mouthPressRight: 0.3, browInnerUp: 0.5, browOuterUpLeft: 0.5, browOuterUpRight: 0.5, eyeWideLeft: 0.15, eyeWideRight: 0.15 }, head: [5, 0, 0], lean: 0.3, env: [400, 1200, 800] },
-  curious: { bs: { browInnerUp: 0.3, browOuterUpLeft: 0.75, browOuterUpRight: 0.5, eyeWideLeft: 0.3, eyeWideRight: 0.3, jawOpen: 0.1, mouthFunnel: 0.15 }, head: [-4, 6, 6], lean: 0.6, env: [350, 1800, 700] },
-  thinking: { bs: { browDownLeft: 0.3, browInnerUp: 0.25, browOuterUpRight: 0.2, mouthPressLeft: 0.3, mouthPressRight: 0.3, mouthLeft: 0.3, eyeSquintLeft: 0.15, eyeSquintRight: 0.15 }, head: [-4, -6, -4], gaze: [-18, 15], env: [300, 3500, 300] },
-  listening: { bs: { browInnerUp: 0.15, browOuterUpLeft: 0.3, browOuterUpRight: 0.3, eyeWideLeft: 0.15, eyeWideRight: 0.15 }, head: [5, 0, 12], gaze: [0, 4], lean: 1.0, env: [120, 0, 280] },
+  warm: { bs: { mouthSmileLeft: 0.28, mouthSmileRight: 0.28, cheekSquintLeft: 0.65, cheekSquintRight: 0.65, eyeSquintLeft: 0.33, eyeSquintRight: 0.33, mouthUpperUpLeft: 0.12, mouthUpperUpRight: 0.12, mouthStretchLeft: 0.1, mouthStretchRight: 0.1, browInnerUp: 0.08 }, head: [1, 0, 0], env: [600, 1500, 900] },
+  encouraging: { bs: { mouthSmileLeft: 0.22, mouthSmileRight: 0.22, cheekSquintLeft: 0.5, cheekSquintRight: 0.5, eyeSquintLeft: 0.15, eyeSquintRight: 0.15, mouthUpperUpLeft: 0.1, mouthUpperUpRight: 0.1, mouthStretchLeft: 0.12, mouthStretchRight: 0.12, browInnerUp: 0.55, browOuterUpLeft: 0.55, browOuterUpRight: 0.55, eyeWideLeft: 0.12, eyeWideRight: 0.12 }, head: [3, 0, 0], lean: 0.5, env: [400, 1200, 800] },
+  curious: { bs: { browOuterUpLeft: 0.85, browOuterUpRight: 0.65, browInnerUp: 0.2, eyeWideLeft: 0.45, eyeWideRight: 0.45, jawOpen: 0.05, mouthUpperUpLeft: 0.06, mouthUpperUpRight: 0.06 }, head: [-4, 8, 12], gaze: [-4, 5], lean: 1.0, env: [350, 1800, 700] },
+  thinking: { bs: { browDownLeft: 0.22, browDownRight: 0.22, browInnerUp: 0.3, mouthShrugLower: 0.2, mouthPucker: 0.25, mouthPressLeft: 0.3, mouthPressRight: 0.3 }, head: [-4, -6, 0], gaze: [-16, 22], env: [300, 3500, 300] },
+  listening: { bs: { browOuterUpLeft: 0.4, browOuterUpRight: 0.1, browInnerUp: 0.25, eyeWideLeft: 0.15, eyeWideRight: 0.1, mouthPressLeft: 0.12, mouthPressRight: 0.12 }, head: [0, 2, 11], gaze: [-1, 1], lean: 1.0, env: [120, 0, 280] },
   concerned: { bs: { browInnerUp: 0.9, browDownLeft: 0.25, browDownRight: 0.25, mouthPressLeft: 0.2, mouthPressRight: 0.2, mouthFrownLeft: 0.25, mouthFrownRight: 0.25, mouthPucker: 0.1, eyeWideLeft: 0.08, eyeWideRight: 0.08 }, head: [7, 0, 9], gaze: [0, -2], lean: 0.6, env: [700, 2500, 1200] },
-  delighted: { bs: { mouthSmileLeft: 0.85, mouthSmileRight: 0.85, jawOpen: 0.2, mouthUpperUpLeft: 0.55, mouthUpperUpRight: 0.55, mouthLowerDownLeft: 0.08, mouthLowerDownRight: 0.08, cheekSquintLeft: 0.65, cheekSquintRight: 0.65, eyeSquintLeft: 0.32, eyeSquintRight: 0.32, browOuterUpLeft: 0.3, browOuterUpRight: 0.3, browInnerUp: 0.15 }, head: [-6, 0, 3], flush: 0.04, env: [350, 1200, 900] },
+  delighted: { bs: { mouthSmileLeft: 0.45, mouthSmileRight: 0.45, jawOpen: 0.26, mouthUpperUpLeft: 0.55, mouthUpperUpRight: 0.55, mouthLowerDownLeft: 0.18, mouthLowerDownRight: 0.18, mouthStretchLeft: 0.25, mouthStretchRight: 0.25, cheekSquintLeft: 0.9, cheekSquintRight: 0.9, eyeSquintLeft: 0.42, eyeSquintRight: 0.42, browOuterUpLeft: 0.25, browOuterUpRight: 0.25, browInnerUp: 0.12 }, head: [-6, 0, 3], flush: 0.04, env: [350, 1200, 900] },
   playful: { bs: { mouthSmileLeft: 0.6, mouthSmileRight: 0.12, mouthLeft: 0.15, cheekSquintLeft: 0.55, eyeSquintLeft: 0.5, browOuterUpRight: 0.6, browInnerUp: 0.1, browDownLeft: 0.15, mouthDimpleLeft: 0.2 }, head: [1, 5, 9], gaze: [8, 2], env: [300, 1000, 600] },
   surprised: { bs: { browInnerUp: 0.75, browOuterUpLeft: 0.75, browOuterUpRight: 0.75, eyeWideLeft: 0.6, eyeWideRight: 0.6, jawOpen: 0.3, mouthFunnel: 0.18, mouthSmileLeft: 0.1, mouthSmileRight: 0.1 }, head: [-5, 0, 0], env: [120, 400, 500] },
 };
@@ -51,15 +69,26 @@ export const EMOTIONS = {
  *  added to the pose's head [pitch + chin down, yaw, roll]) and optional per-key blendshape boosts. The renderer samples
  *  6 frames for the judge's strip and 25 fps for the MP4. The runtime plays the same keys as a gesture. */
 export const CLIPS = {
-  // two small nods with a lift between them, the smile and the raised brows building on the second nod
+  // merged iteration 3: bigger, quicker "haan, haan!" nods (11-12 deg) with the mouth opening on each (a spoken "yes"),
+  // the brows lifting and the lean growing: 5/8 with iteration 2's softer clip under judge A (read as warm)
   encouraging: { durationS: 2.0, keys: [
     { t: 0.0, head: [0, 0, 0] },
-    { t: 0.3, head: [9, 0, 2], bs: { jawOpen: 0.12, mouthSmileLeft: 0.15, mouthSmileRight: 0.15, browOuterUpLeft: 0.15, browOuterUpRight: 0.15 } },
-    { t: 0.6, head: [-2, 0, 1], bs: { mouthSmileLeft: 0.1, mouthSmileRight: 0.1 } },
-    { t: 0.95, head: [10, 0, 3], bs: { jawOpen: 0.12, mouthSmileLeft: 0.2, mouthSmileRight: 0.2, browOuterUpLeft: 0.2, browOuterUpRight: 0.2 } },
-    { t: 1.3, head: [-1, 0, 2], bs: { mouthSmileLeft: 0.15, mouthSmileRight: 0.15, browInnerUp: 0.1 } },
-    { t: 2.0, head: [3, 0, 2], bs: { mouthSmileLeft: 0.15, mouthSmileRight: 0.15 } }] },
+    { t: 0.28, head: [11, 0, 2], bs: { jawOpen: 0.16, mouthUpperUpLeft: 0.1, mouthUpperUpRight: 0.1, browOuterUpLeft: 0.2, browOuterUpRight: 0.2, browInnerUp: 0.15 } },
+    { t: 0.55, head: [-3, 0, 1], bs: { browOuterUpLeft: 0.1, browOuterUpRight: 0.1 } },
+    { t: 0.85, head: [12, 0, 3], bs: { jawOpen: 0.18, mouthUpperUpLeft: 0.12, mouthUpperUpRight: 0.12, browOuterUpLeft: 0.25, browOuterUpRight: 0.25, browInnerUp: 0.2, mouthSmileLeft: 0.08, mouthSmileRight: 0.08 } },
+    { t: 1.15, head: [-3, 0, 2], bs: { browOuterUpLeft: 0.15, browOuterUpRight: 0.15 } },
+    { t: 1.5, head: [9, 0, 2], bs: { jawOpen: 0.12, browOuterUpLeft: 0.2, browOuterUpRight: 0.2, mouthSmileLeft: 0.12, mouthSmileRight: 0.12 } },
+    { t: 2.0, head: [1, 0, 2], bs: { mouthSmileLeft: 0.12, mouthSmileRight: 0.12, browOuterUpLeft: 0.15, browOuterUpRight: 0.15 } }] },
 };
+// merged iteration 3: listening's "mm-hm": two slow, small nods (4-5 deg) while the face holds the listening pose, the
+// brows lifting a touch on each nod and the lips pressing as if to say "mm". Proposed decision (context inbox):
+// listening, like encouraging, is a motion emotion; on a still it sits between warm and concerned (5/10 at best).
+CLIPS.listening = { durationS: 2.0, keys: [
+  { t: 0.0, head: [0, 0, 0] },
+  { t: 0.45, head: [5, 0, 1], bs: { browInnerUp: 0.08, mouthPressLeft: 0.12, mouthPressRight: 0.12 } },
+  { t: 0.85, head: [0, 0, 1] },
+  { t: 1.3, head: [5, 0, 2], bs: { browInnerUp: 0.08, mouthPressLeft: 0.12, mouthPressRight: 0.12 } },
+  { t: 2.0, head: [1, 0, 2] }] };
 export function clipPose(name, t, asym) {
   const c = CLIPS[name], base = emotionPose(name, 1, asym);
   const k = c.keys; let i = 0;

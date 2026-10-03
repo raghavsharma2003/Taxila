@@ -94,3 +94,44 @@ applies unchanged. New inputs: **none from third parties.**
 
 Evidence-only, as above: Azure `taxila-brain` for the emotion check and variant scoring (`variants.mjs`), and the
 existing Azure TTS clip and its alignment, re-used unchanged.
+
+## Bake-off `merged` (2026-10-03; outputs under `public/assets/teacher-bakeoff/merged/**`)
+
+The merged teal combines `ai-portrait-wrap` (identity: the generated reference set, wrap, fit loop, projected skin) with
+`procedural-v3` (expression units, generated hair, relaxed garments). Every row of both sections applies unchanged; the
+reference portraits are the same `taxila-image` outputs (Azure, customer-owned), copied to `art/character/bakeoff/merged/refs/teal`.
+New shipped inputs: **none from third parties** (the chroma clamp, tone transfer, lid and teeth fixes, temple fill and
+hairline table are ours, procedural).
+
+Build-time only, nothing shipped or committed (the lookalike check, `identity/realperson.py`):
+
+| input | used for | source | licence |
+|---|---|---|---|
+| OpenCV Zoo `face_recognition_sface_2021dec.onnx` (SFace, MobileFaceNet) | 128-d face embeddings for the lookalike check | github.com/opencv/opencv_zoo | **Apache-2.0** (commercial use allowed) |
+| OpenCV Zoo `face_detection_yunet_2023mar.onnx` (YuNet) | face detection + 5-point alignment for the same | github.com/opencv/opencv_zoo | **MIT** |
+| public-figure face set: 1,461 Wikimedia Commons thumbnails of 1,810 Wikidata people (Indian women public figures + the most-linked women worldwide), `identity/faceset.py` | the gallery the renders and references are compared against | Wikidata (CC0 metadata) + Wikimedia Commons (each image under its own Commons licence) | used only to compute embeddings at build time; kept in `$CHAR_HOME`, never redistributed or committed |
+
+Evidence-only: Azure `taxila-brain` and `taxila-fast` for the three-judge emotion check and variant scoring, and the
+existing Azure TTS clip and its alignment, re-used unchanged.
+
+## Bake-off `gnm` (E-GNM1, 2026-10-03; outputs under `public/assets/teacher-bakeoff/gnm/**` only)
+
+Not shipped to `public/assets/teacher/**`. The face geometry (skin, teeth, gums, tongue, mouth lining) and every key
+shape of the gnm row are **derived from Google's GNM Head v3.0 weights** (identity and expression coefficients applied
+to its bases), so the GLBs are a derivative work of an Apache-2.0 model. Checked 2026-10-03 against the licence text in
+each source:
+
+| input | used for | source | licence | evidence |
+|---|---|---|---|---|
+| GNM Head v3.0 code (`gnm/shape`, NumPy backend read as reference; our loader is `scripts/character/bakeoff/gnm/gnm_model.py`) | the forward model semantics (template + identity + expression bases, joints) | github.com/google/GNM @ `940c36b8` (2026-10-02) | **Apache-2.0** | repo `LICENSE` (Apache License 2.0 full text), source headers "Copyright 2026 Google LLC / Licensed under the Apache License, Version 2.0"; README: "suitable for both non-commercial and commercial applications". No NOTICE file in the repo |
+| GNM Head v3.0 weights `v3_0/gnm_head.npz` (53,328,601 B, sha256 `61d78bbfb4ad8e0b38495804a4caef3214d3df00f8c3f68761e63b41ce3747eb`, matches the repo's `checksums.sha256`) | the teal face mesh (17,821-vertex topology, UVs, skinning weights), its identity fit and the 82 key shapes | huggingface.co/google/gnm-v3 (revision `c01e90d2`) | **Apache-2.0** | model card front matter `license: apache-2.0` and text "released under the Apache 2.0 permissive license, suitable for both academic research and commercial applications". Not committed (fetched by `gnm_model.py`, pinned by sha256) |
+| MediaPipe <-> GNM landmark correspondence (473 landmark -> vertex pairs, the "differential" reference cloud, 166 skull-fixed flags) | the identity fit (`fit.py`) and the v3 correspondence (`corr.py`); cached as `art/character/bakeoff/gnm/mp_gnm_corr.json` | github.com/google/xrblocks `samples/avatar_lab/gnm/FaceCorrespondence.js` @ `863004ac`, generated from github.com/edualvarado/gnm-webcam-puppet | **Apache-2.0** (both repos) | xrblocks `LICENSE` and the puppet repo's `LICENSE` (Apache License 2.0) + its README "License: Apache 2.0" |
+| procedural-v3's hair cards, brow/lash cards, kurti, studs, eye mesh, hair/cards/garment atlases and its 82 key shapes (as solve TARGETS only) | carried onto the GNM head | `public/assets/teacher-bakeoff/procedural-v3` build outputs | CC0 + ours (see the v3 section above) | — |
+| reference portraits (front, q45_left, q45_right, profile90_left, profile90_right; the q3 views are held out and never projected) | identity landmarks and silhouettes, projected skin albedo and fine normal detail | `art/character/bakeoff/merged/refs/teal/` (taxila-image, prompts in `refs.json`) | as the ai-portrait-wrap row: Azure OpenAI output, customer-owned | **a likeness review is owed before any child sees this face** (VERDICT); the gnm albedo is as photographic as ai-portrait-wrap's |
+
+Obligations if this row is ever shipped (Apache-2.0 §4): ship a copy of the licence with the app's notices
+(`art/character/bakeoff/gnm/third_party/GNM-LICENSE.txt` is the verbatim copy), state that the face geometry was
+modified from GNM Head v3.0 (Google LLC), and keep this attribution: "Face geometry derived from GNM Head v3.0,
+Copyright 2026 Google LLC, Apache License 2.0." No trademark use. Not used: the third-party GNM ear-landmark model
+(research-only licence), GNM's semantic sampler `.h5` decoders (Apache-2.0 too, but not needed), Mitsuba/pyrender.
+Build-time tools added by this row: mediapipe 0.10.14 (Apache-2.0, apw venv), scipy 1.17.1, numpy 2.4.6 (BSD-3).

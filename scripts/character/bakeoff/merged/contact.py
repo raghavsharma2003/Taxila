@@ -29,6 +29,7 @@ S = ["idle", "listening", "thinking", "speaking", "your_turn", "celebrating", "c
 sec.append(("7 owner states (H)", tile([os.path.join(d, "states", s + ".png") for s in S], S, 250, 312, 7)))
 V = ["viseme_" + v for v in "sil PP FF TH DD kk CH SS nn RR aa E I O U".split()] + ["tongueTipUp", "tongueCurl", "tongueWide"]
 sec.append(("15 visemes + Hindi tongue keys (H)", tile([os.path.join(d, "visemes", v + ".png") for v in V], [v.replace("viseme_", "") for v in V], 196, 245, 9)))
+sec.append(("unlit albedo close-ups (rest): face / mouth / eyes; the painted lips and lid margins must sit on the geometry", tile([os.path.join(d, f"albedo_{t}.png") for t in ("face", "mouth", "eyes")], ["face", "mouth", "eyes"], 300, 375, 3)))
 sec.append(("tiers: H / B+ / B-lite (same pose)", tile([os.path.join(d, f"tier_{t}.png") for t in ("H", "Bplus", "Blite")], ["H", "B+", "B-lite"], 300, 375, 3)))
 lp = [os.path.join(d, f"lip_{i}.png") for i in range(8)]
 meta = json.load(open(os.path.join(d, "render.json"))) if os.path.exists(os.path.join(d, "render.json")) else {}
