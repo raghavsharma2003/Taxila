@@ -21,7 +21,7 @@ try:
     f = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 16); fb = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', 18)
 except Exception:
     f = fb = ImageFont.load_default()
-d.text((10, 8), 'Teacher bake-off, look teal (Asha design), H tier, same renderer + stage light. Rows 1-4: blind 9-way vision judge, correct/6 (bar 70%).', fill=(230, 230, 230), font=f)
+d.text((10, 8), 'Teacher bake-off, look teal, H tier, same renderer + stage light. Rows 1-4: blind 9-way vision judge, correct/6 (bar 70%).', fill=(230, 230, 230), font=f)
 d.text((10, 30), 'MERGED row: judge A (taxila-brain, bake-off prompt) / judge B (taxila-fast, held-out prompt), correct/12 each; red if either < 70%; encouraging on its 2 s nod clip.', fill=(160, 160, 170), font=f)
 for i, n in enumerate(E + [x[0] for x in extra]):
     d.text((LW + i * W + 6, TOP), n, fill=(200, 200, 120), font=fb)

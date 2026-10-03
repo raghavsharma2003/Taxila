@@ -477,7 +477,7 @@ _upper = np.linalg.norm(_tD["jawOpen"], axis=1) < 1e-4
 # jaw key, its lower-row delta is replaced by a * jawOpen's lower-row delta, a = the key's jaw component measured on the
 # chin (least-squares projection of the chin's delta onto jawOpen's chin delta), so the visemes keep their jaw drop.
 _hb, _hD = deltas(h)
-_lw = group_w(h, "lips")
+_lw = attr(h, "lipsW").astype(float)
 _lc = (_hb * _lw[:, None]).sum(0) / max(_lw.sum(), 1e-9)
 _chin = (np.abs(_hb[:, 0]) < 0.014) & (_hb[:, 2] < _lc[2] - 0.022) & (_hb[:, 2] > _lc[2] - 0.042) & (_hb[:, 1] < _lc[1] + 0.012) & (_lw < 0.05)
 _jc = _hD["jawOpen"][_chin].ravel()
@@ -756,20 +756,115 @@ _lc_rep = {}
 _pb = _spread_push(fb, _conform(fb))
 _lc_rep["basis"] = int((np.linalg.norm(_pb, axis=1) > 1e-6).sum())
 fb2 = fb + _pb
-for kb in _kbs_f:
-    if kb.name == _kbs_f[0].name:
-        continue
+_PK = {}
+for kb in _kbs_f[1:]:
     st = fb2 + FD[kb.name]
-    pk = _spread_push(st, _conform(st))
+    _PK[kb.name] = _spread_push(st, _conform(st))
+# Left/Right pairs: the face is asymmetric, so the two pushes differ; each pair takes, per vertex, the larger of its
+# own push and the mirrored twin's (topological mirror), then the Right key is the exact mirror of the Left. Both
+# sides stay clear of the eye and G3 (key mirror <= 0.5 mm) holds.
+_vidf = np.zeros(len(face.data.vertices), np.int32)
+face.data.attributes["vid"].data.foreach_get("value", _vidf)
+_curf = {int(v): i for i, v in enumerate(_vidf) if v >= 0}
+_mf = np.array([_curf.get(int(MIR[v]), -1) if v >= 0 else -1 for v in _vidf])
+_ok = _mf >= 0
+_flip = np.array([-1.0, 1.0, 1.0])
+for kL in list(_PK):
+    if not kL.endswith("Left") or kL[:-4] + "Right" not in _PK:
+        continue
+    kR = kL[:-4] + "Right"
+    pL, pR = _PK[kL], _PK[kR]
+    mR = np.zeros_like(pR); mR[_ok] = pR[_mf[_ok]] * _flip      # the Right push seen on the Left vertices
+    use = np.linalg.norm(mR, axis=1) > np.linalg.norm(pL, axis=1)
+    pL2 = np.where(use[:, None], mR, pL)
+    pR2 = pR.copy(); pR2[_mf[_ok]] = pL2[_ok] * _flip
+    _PK[kL], _PK[kR] = pL2, pR2
+for kb in _kbs_f[1:]:
+    pk = _PK[kb.name]
     if np.abs(pk).max() > 1e-7:
         _lc_rep[kb.name] = round(float(np.linalg.norm(pk, axis=1).max() * 1000), 2)
-    set_key_co(kb, st + pk)
+    set_key_co(kb, fb2 + FD[kb.name] + pk)
 set_key_co(_kbs_f[0], fb2)
 face.data.vertices.foreach_set("co", fb2.ravel())   # the mesh follows the Basis key (the rest-smile lesson)
 face.data.update()
 report["lidSurfaceConform"] = {"marginMm": _LID_M * 1000, "basisVerts": _lc_rep.pop("basis"), "keysPushedMaxMm": _lc_rep}
 fb, FD = deltas(face)
 stage("lid conform")
+
+# merged (fix 5, lips over a rigid dental arch): with the teeth rigid (fix 3), mouthSmile's retraction pulled the lip
+# and corner skin THROUGH the static rows (G6 at the emotion presets: warm 14, delighted 98 of 300; a white tooth
+# streak on the cheek in profile). Skin in the mouth zone is kept >= 0.5 mm outside the labial (forward-facing) surface
+# of the teeth, in the basis and in every key's own pose (the lower row at that key's jaw component), spread over 2.5 mm
+# and symmetrised on the topological mirror like the lid conform.
+_TM = 0.0005
+_reg_f = np.round(attr(face, "region"))
+_tv = np.nonzero(_reg_f == 1)[0]
+_me = face.data
+_me.calc_loop_triangles()
+_tri = np.empty(len(_me.loop_triangles) * 3, np.int64)
+_me.loop_triangles.foreach_get("vertices", _tri)
+_tri = _tri.reshape(-1, 3)
+_tt = _tri[np.all(_reg_f[_tri] == 1, axis=1)]
+_tc = fb[_tv].mean(0)
+_low = np.zeros(len(fb), bool); _low[_tv] = np.linalg.norm(FD["jawOpen"][_tv], axis=1) > 1e-4
+_rowc = {True: fb[_tv[_low[_tv]]].mean(0), False: fb[_tv[~_low[_tv]]].mean(0)}
+_mz = np.nonzero((_reg_f == 0) & (np.linalg.norm(fb - _tc, axis=1) < 0.036) & (fb[:, 1] < _tc[1] + 0.004))[0]
+
+
+def _teeth_push(state):
+    bvh_ = BVHTree.FromPolygons([Vector(p_) for p_ in state], _tt.tolist())
+    push = np.zeros_like(state)
+    for i_ in _mz:
+        hit_ = bvh_.find_nearest(Vector(state[i_]), 0.012)
+        if hit_[0] is None:
+            continue
+        loc_ = np.array(hit_[0]); n_ = np.array(hit_[1])
+        vtx_ = _tt[hit_[2]][0]
+        if n_ @ (loc_ - _rowc[bool(_low[vtx_])]) < 0:
+            n_ = -n_
+        if -n_[1] < 0.15:          # only the labial, forward-facing side
+            continue
+        sd_ = (state[i_] - loc_) @ n_
+        if -0.006 < sd_ < _TM:
+            push[i_] = n_ * (_TM - sd_)
+    src = np.nonzero(np.linalg.norm(push, axis=1) > 1e-7)[0]
+    if not len(src):
+        return push
+    dd = np.linalg.norm(state[_mz][:, None, :] - state[src][None, :, :], axis=2)
+    w_ = np.exp(-(dd / 0.0025) ** 2)
+    sm = (w_ @ push[src]) / np.maximum(w_.sum(1), 1e-9)[:, None] * np.clip(w_.sum(1), 0, 1)[:, None]
+    out = push.copy()
+    keep = np.linalg.norm(sm, axis=1) > np.linalg.norm(push[_mz], axis=1)
+    out[_mz[keep]] = sm[keep]
+    return out
+
+
+_tp_rep = {}
+_pb = _teeth_push(fb)
+_tp_rep["basisVerts"] = int((np.linalg.norm(_pb, axis=1) > 1e-6).sum())
+fb2 = fb + _pb
+_PK = {kb.name: _teeth_push(fb2 + FD[kb.name]) for kb in _kbs_f[1:]}
+for kL in list(_PK):
+    if not kL.endswith("Left") or kL[:-4] + "Right" not in _PK:
+        continue
+    kR = kL[:-4] + "Right"
+    pL, pR = _PK[kL], _PK[kR]
+    mR = np.zeros_like(pR); mR[_ok] = pR[_mf[_ok]] * _flip
+    use = np.linalg.norm(mR, axis=1) > np.linalg.norm(pL, axis=1)
+    pL2 = np.where(use[:, None], mR, pL)
+    pR2 = pR.copy(); pR2[_mf[_ok]] = pL2[_ok] * _flip
+    _PK[kL], _PK[kR] = pL2, pR2
+for kb in _kbs_f[1:]:
+    pk = _PK[kb.name]
+    if np.abs(pk).max() > 1e-7:
+        _tp_rep[kb.name] = round(float(np.linalg.norm(pk, axis=1).max() * 1000), 2)
+    set_key_co(kb, fb2 + FD[kb.name] + pk)
+set_key_co(_kbs_f[0], fb2)
+face.data.vertices.foreach_set("co", fb2.ravel())
+face.data.update()
+report["lipTeethConform"] = {"marginMm": _TM * 1000, "zoneVerts": int(len(_mz)), "pushMaxMm": _tp_rep}
+fb, FD = deltas(face)
+stage("lip-teeth conform")
 
 # ------------------------------------------------------------------ our eyes (sclera/iris ball + cornea bulge)
 def make_eyes(nu, nv, name):

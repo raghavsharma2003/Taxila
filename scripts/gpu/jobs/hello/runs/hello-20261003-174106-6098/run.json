@@ -1,0 +1,65 @@
+{
+ "jobId": "hello-20261003-174106-6098",
+ "jobDir": "scripts/gpu/jobs/hello",
+ "ami": "ami-062944a84867f2386",
+ "amiName": "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-20261001",
+ "amiSsm": "/aws/service/canonical/ubuntu/server/22.04/stable/current/amd64/hvm/ebs-gp2/ami-id",
+ "types": [
+  "t3.small"
+ ],
+ "maxMinutes": 15,
+ "diskGb": 10,
+ "packedBytes": 855,
+ "s3": "s3://taxila-build-780899467240/jobs/hello-20261003-174106-6098/",
+ "t": {
+  "launchCallS": 2.2,
+  "toRunningS": 0.2,
+  "bootToStartS": 1,
+  "jobS": 62,
+  "uploadS": 0,
+  "runningToBootedS": 0.0,
+  "downloadS": 0.1,
+  "terminateWaitS": 16.2,
+  "instanceLifeS": 105.4,
+  "wallS": 110.7
+ },
+ "launchAttempts": [
+  {
+   "lifecycle": "spot",
+   "type": "t3.small",
+   "az": "us-east-1a",
+   "ok": true
+  }
+ ],
+ "instanceId": "i-0866dc5aa0b27c9fd",
+ "lifecycle": "spot",
+ "instanceType": "t3.small",
+ "az": "us-east-1a",
+ "backstop": "taxila-reap-i-0866dc5aa0b27c9fd",
+ "status": {
+  "phase": "done",
+  "rc": 0,
+  "bootEpoch": 1791049292,
+  "startEpoch": 1791049293,
+  "endEpoch": 1791049355,
+  "uploadedEpoch": 1791049355,
+  "outBytes": 370
+ },
+ "outputsBytes": 370,
+ "outputs": [
+  "input.sha256",
+  "result.json",
+  "sub/nested.txt"
+ ],
+ "result": "ok",
+ "finalState": "terminated",
+ "stateReason": "Client.UserInitiatedShutdown: User initiated shutdown",
+ "cost": {
+  "usdPerHour": 0.0066,
+  "billedSeconds": 105.4,
+  "ec2Usd": 0.00019,
+  "ebsUsd": 3e-05,
+  "totalUsd": 0.00023,
+  "priceSource": "spot price history"
+ }
+}
