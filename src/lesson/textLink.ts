@@ -150,7 +150,7 @@ export class TextLink implements TeacherLink {
     } catch (err) {
       if (signal.aborted || this.current?.id !== id) return;
       // Speech is an enhancement here: the reply is already on screen, so the turn still completes.
-      this.events.emit({ type: "error", message: "the teacher's voice is unavailable; showing text only", fatal: false });
+      this.events.emit({ type: "error", message: "the teacher's voice is unavailable; showing text only", fatal: false, code: "tts_failed" });
       console.warn("text link: speech failed", err);
       this.stop("failed", false);
     }

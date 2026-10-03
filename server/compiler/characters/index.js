@@ -59,3 +59,15 @@ export function teacherForLesson(child, pinnedId) {
   if (!c) return teacherFor(child);
   return { ...c, voice: process.env[`TAXILA_VOICE_${c.id.toUpperCase()}`] || c.voice };
 }
+
+/**
+ * The teacher as every surface shows them (PRODUCT-DESIGN-V2 §0.8, P5: one character record): id, name, the role the
+ * child calls them by, pronouns, the live voice, and the look revision the client renders. The server is the one
+ * source; a client never hard-codes a teacher name or pronoun (audit #4: three faces, two names, two genders).
+ * @param {{ id: string, name: string, addressedAs: string, pronouns: { subject: string, object: string, possessive: string }, voice: string }} c
+ */
+export function teacherCard(c) {
+  const t = tutorById(c.id);
+  return { id: c.id, name: c.name, addressedAs: c.addressedAs, pronouns: { ...c.pronouns }, voice: c.voice, role: "AI teacher",
+    lookRev: t?.look?.rev ?? null, signatureColor: t?.look?.signatureColor ?? null };
+}

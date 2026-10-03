@@ -1,16 +1,21 @@
-// Shared UI components (workstream ui-a). Styles: src/styles/ui.css; tokens: src/styles/tokens.css.
+// Shared UI components. Styles: src/styles/ui.css; tokens: src/styles/tokens.css.
+export { Art, useArt } from "./Art.tsx";
 export { Button, ButtonLink, type ButtonVariant } from "./Button.tsx";
 export { Card } from "./Card.tsx";
 export { Chip, StateChip } from "./Chip.tsx";
+export { EN, t as copy, type CopyKey } from "./copy.ts";
 export { Field, ErrorNote } from "./Field.tsx";
+export { haptic } from "./haptics.ts";
 export { Hi } from "./Hi.tsx";
 export { HoldButton } from "./HoldButton.tsx";
 export { Icon, Mark, type IconName } from "./Icon.tsx";
+export { Glyph, type StateGlyphName } from "./icons/state.tsx";
 export { PinPad } from "./PinPad.tsx";
 export { ReauthField } from "./ReauthField.tsx";
 export { Sheet } from "./Sheet.tsx";
 export { Speaker, useClip } from "./Speaker.tsx";
 export { StatusGlyph, STATUS_NAME, type FloorState } from "./StatusGlyph.tsx";
+export { Teacher, type TeacherFloor } from "./teacher/Teacher.tsx";
 export { TeacherFace } from "./TeacherFace.tsx";
 export { TileGroup, type TileOption } from "./Tile.tsx";
 export { STATE_WORDS, STATE_MEANING, RECHECK_TAG, readLang, type Lang, type LedgerState, type StateKey } from "./stateWords.ts";

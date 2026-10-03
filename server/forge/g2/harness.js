@@ -5,7 +5,7 @@
 // a handoff (C14); budgets per §3.6 with a footer on every observation; binding rules LAST in the prompt.
 import { readFileSync } from "fs";
 import { respond, usd } from "./model.js";
-import { buildBundle } from "./bundle.js";
+import { buildBundle, KIT_VERSION } from "./bundle.js";
 import { lintMechanic } from "./lint.js";
 import { staticGate, browserGate, summarise } from "./qa.js";
 
@@ -37,7 +37,7 @@ const TOOLS = [
 function systemPrompt(design) {
   const golden = GOLDEN[design.archetype];
   return [
-    `Role: implement ONE mechanic for the tgk-lite@1 kit: archetype ${design.archetype}, file src/mechanic.js.`,
+    `Role: implement ONE mechanic for the ${KIT_VERSION} kit: archetype ${design.archetype}, file src/mechanic.js.`,
     "Environment: six tools (read_file, write_mechanic, edit_mechanic, run_check, note, submit). No shell, no network, no other files. Every tool result ends with a budget footer.",
     "", "=== KIT.md ===", KIT_MD,
     "", `=== golden.js (a working ${design.archetype} mechanic; same API, different idea) ===`, golden,

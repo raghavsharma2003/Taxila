@@ -1,80 +1,183 @@
-/* Taxila design tokens. Single source (PRODUCT-DESIGN §4.1, PD-G13): raw hex lives ONLY in this file.
-   Mirrored to Android resources by a build step (not built yet). Band tokens are written by the app as
-   data-band on <html> (src/app/band.ts); the parent surface sets data-surface="parent". */
-:root {
+@import "./fonts.css";
+/* Taxila design tokens v2 (docs/design/PRODUCT-DESIGN-V2.md §7). Raw hex lives ONLY in this file (PD-G13).
+   Contrast and lamp-hue lint: docs/design/v2/tokens-check.py (0 failures, 2026-10-03).
+   <html> carries data-band (b1..b4, absent for adult surfaces), data-theme (light|dark, absent = follow system;
+   ALWAYS "light" for b1/b2), data-surface="parent" in the parent corner, data-motion="reduce" from the in-app switch.
+
+   [data-v2] marks a v2 screen root (the lesson Desk). It re-declares the tokens on that element, so a legacy
+   ancestor that still defines the old names (src/child/tokens.css on .tx-child) cannot leak old values into it.
+   Every selector below that names :root also names [data-v2] for that reason; the values are the spec's. */
+
+:root, [data-v2] {
   color-scheme: light;
-  /* neutrals (kids-ux 4.3) + a light surface-2 (new, 6.39:1 for ink-2 [X]) */
-  --bg:#FFF8EE; --surface:#FFFFFF; --surface-2:#F1E8D9; --ink:#1F1A14; --ink-2:#5A5148;
-  --tile-border:#8C8478; --dusk:#E9E1D2;
-  /* status: the only colours that carry meaning, always with a glyph (3.9) */
-  --turn:#FFB21E; --turn-ring:#7A4800;            /* ring darkened from #9A5B00: 4.23 vs fill, 7.23 vs bg [X] */
-  --listen:#2563C9; --think:#5B6470; --done:#1F7A4D; --stop:#B3261E;   /* stop = system errors only */
-  /* brand + material (chalk-mark removed, R17) */
-  --jamun:#5B2E91; --jamun-soft:#EFE6FA; --board:#1F3B30; --board-frame:#8C6B4A; --chalk:#F5F2E8; --chalk-2:#BFD3C6;
-  /* diagram: ModuleHost only; every category also has a label, shape or pattern */
-  --d1-neel:#2A72C6; --d2-matka:#C2410C; --d3-neem:#0B5E50; --d4-baingan:#3F2272; --d5-haldi:#946B0E; --d6-kajal:#3A3631;
-  --int-pos:var(--d3-neem); --int-neg:var(--d2-matka);          /* always with the + / - glyph */
-  /* skin ramp: illustration only, never themed, never filtered */
+
+  /* ── ground and ink ── */
+  --paper:#F6F3EC; --surface:#FFFFFF; --tray:#ECE6DA;
+  --ink:#1A1C22; --ink-2:#4C505A; --line:#868A94;
+  --veil:rgba(26,28,34,.40);
+
+  /* ── brand: primary buttons, links, selected state, parent accent ── */
+  --nib:#24346E; --nib-soft:#E4E8F4; --on-nib:#FFFFFF;
+
+  /* ── THE LAMP: AnswerDock[data-floor="your_turn"] only (G-LAMP-1). Never on buttons, parent, onboarding, art ── */
+  --lamp:#FFB21E; --lamp-wash:#FFF3DB; --lamp-ring:#7A4800; --lamp-ink:#5C3600;
+  --lamp-ring-w:3px;
+
+  /* ── state carriers (always with a glyph and a word; colour is the last carrier) ── */
+  --listen:#0B7285; --on-listen:#FFFFFF;
+  --think:#5B6470;
+  --got:#2E7D32; --got-soft:#E6F2E7;          /* the verified tick only */
+  --trouble:#A3341F;                          /* system trouble only: strip rule + glyph; never on child work, never a fill */
+
+  /* ── the lesson stage (TeacherWindow ground; identical in both themes) ── */
+  --stage:#26304A; --stage-ink:#F5F2E8; --stage-ink-2:#C3C9D9;
+  --stage-pool:radial-gradient(60% 55% at 50% 38%, rgba(245,236,220,.20), rgba(38,48,74,0) 70%);
+
+  /* ── chalkboard tray kind + module ground ── */
+  --board:#1F3B30; --board-frame:#8C6B4A; --chalk:#F5F2E8; --chalk-2:#BFD3C6;
+  --dusk:#E9E1D2;
+
+  /* ── diagram categories (ModuleHost + Board only; every category also has a label, shape or pattern).
+        d5 was haldi #946B0E: 2.2 deg from the lamp (FAIL) -> rose. ── */
+  --d1:#2A72C6; --d2:#C2410C; --d3:#0B5E50; --d4:#3F2272; --d5:#B4466A; --d6:#3A3631;
+  --int-pos:var(--d3); --int-neg:var(--d2);   /* always with the + / - glyph */
+
+  /* ── skin ramp: illustration and rig only; never themed, never filtered ── */
   --skin-1:#F3D2B3; --skin-2:#E2B48C; --skin-3:#C99366; --skin-4:#A9744A; --skin-5:#8A5634; --skin-6:#5F3A22;
-  /* progress worlds (motivation 12): shape carries state, colour second */
-  --grow-plot:#8C8478; --grow-leaf:#2F7A3E; --grow-flower:#A8326E; --grow-fruit:#5B2E91; --grow-ring:#1F7A4D; --grow-visitor:#2563C9;
+
+  /* ── progress worlds: shape carries state, colour second ── */
+  --grow-plot:#8C8478; --grow-leaf:#2F7A3E; --grow-flower:#A8326E; --grow-fruit:#5B2E91; --grow-ring:#1F7A4D;
+  --grow-visitor:#2563C9;
   --sky-panel:#0F1A33; --sky-star-0:#7383A6; --sky-star-1:#8FA6D6; --sky-star-2:#C9D8FF; --sky-star-3:#FFFFFF;
   --sky-edge:#6276A3; --sky-label:#F6F1E8;
-  /* focus: two-tone ring, best tone >= 3:1 on every ground tested [X] */
-  --focus-inner:#1F1A14; --focus-outer:#FFFFFF; --focus-w:2px; --focus-offset:2px;
-  /* pointer deixis */
-  --pointer-w:5px; --pointer-halo:2px; --pointer-draw:240ms; --pointer-fade:300ms; --gaze-lead:200ms;
-  /* families (4.3) */
-  --font-display:"Baloo 2","Mukta","Mukta-fb",sans-serif;  /* Young */
-  --font-text:"Mukta","Mukta-fb",sans-serif;
-  --font-reader:"Andika","Mukta",sans-serif;
-  /* space: 4 dp base */
-  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:32px; --space-7:48px; --space-8:64px;
-  /* radii */
-  --radius-xs:6px; --radius-sm:10px; --radius-md:16px; --radius-lg:24px; --radius-pill:999px;
-  /* elevation: blur-free */
-  --ledge-surface:#E6DCCB; --elev-press:0 4px 0 var(--ledge-surface);      /* Young tiles only; decorative */
-  --elev-card:0 1px 2px rgba(31,26,20,.10), 0 2px 8px rgba(31,26,20,.08); /* tier A-B only; C-D use a 1px border */
-  /* motion */
-  --dur-press:100ms; --dur-fast:150ms; --dur-base:240ms; --dur-layout:300ms; --turn-pulse:1.6s; --milestone-max:1500ms;
-  --ease-standard:cubic-bezier(.2,0,0,1); --ease-enter:cubic-bezier(0,0,0,1); --ease-exit:cubic-bezier(.3,0,1,1);
-  /* net + ptt (low-end 12) */
-  --net-chip-bg:var(--surface-2); --net-chip-fg:var(--ink-2);
-}
-/* band tokens: data-band on <html> (src/app/band.ts useSurface) OR on a screen's own root element (the child
-   shell, src/child/ChildShell.tsx): any element, so the single source here covers both; values in 4.2 */
-[data-band="b1"] { --hit-min:64px; --tile-min:112px; --gap:16px; --mic:96px; --radius-tile:24px; --dur-base:240ms; }
-[data-band="b2"] { --hit-min:64px; --tile-min:96px;  --gap:16px; --mic:88px; --radius-tile:20px; --dur-base:240ms; }
-[data-band="b3"] { --hit-min:48px; --tile-min:64px;  --gap:8px;  --mic:64px; --radius-tile:16px; --dur-base:160ms;
-                        --font-display:"Mukta","Mukta-fb",sans-serif; --elev-press:none; }
-[data-band="b4"] { --hit-min:48px; --tile-min:64px;  --gap:8px;  --mic:56px; --radius-tile:10px; --dur-base:160ms;
-                        --font-display:"Mukta","Mukta-fb",sans-serif; --elev-press:none; }
-/* dark: Older bands only, chrome only; default light; the in-app toggle writes data-theme (old WebViews ignore the media query) */
-@media (prefers-color-scheme: dark) { :is([data-band="b3"],[data-band="b4"]):not([data-theme="light"]) {
-  color-scheme: dark; --bg:#16140F; --surface:#221F19; --surface-2:#2C2821; --ink:#F6F1E8; --ink-2:#BDB4A6;
-  --done:#4CC38A; --listen:#7FB0FF; --think:#9AA3AF; --stop:#FF8A80; --jamun:#C3A6F5; --board:#22423A; --board-frame:#A07E5A;
-  --elev-card:none; --elev-press:none; /* --dusk, diagram, skin, sky unchanged: modules and art stay on --dusk */ } }
-:is([data-band="b3"],[data-band="b4"])[data-theme="dark"] { /* same values as the block above */
-  color-scheme: dark; --bg:#16140F; --surface:#221F19; --surface-2:#2C2821; --ink:#F6F1E8; --ink-2:#BDB4A6;
-  --done:#4CC38A; --listen:#7FB0FF; --think:#9AA3AF; --stop:#FF8A80; --jamun:#C3A6F5; --board:#22423A; --board-frame:#A07E5A;
-  --elev-card:none; --elev-press:none; }
-@media (prefers-contrast: more) { :root { --tile-border:var(--ink); --surface:var(--bg); } }
-@media (forced-colors: active) { /* rings and ledges are outline/border, never box-shadow, so they survive */ }
-/* parent surface (parent-experience 13, ratios computed there); font switched to Mukta (R18) */
-[data-surface="parent"] { --p-bg:#FFFBF5; --p-ink:#1F1B16; --p-ink-2:#5A5148; --p-ink-3:#6B6158; --p-pakka:#1E6B47;
-  --p-learning:#2F5DA8; --p-yourturn-text:#8A4B00; --p-yourturn-fill:#FFD27A; --p-alert:#B3261E; --font-text:"Mukta",sans-serif; }
-/* No band set (landing, onboarding, parent corner): adult sizes (A6: 48 dp targets, 8 dp spacing). */
-:root:not([data-band]) { --hit-min:48px; --tile-min:64px; --gap:8px; --mic:64px; --radius-tile:16px; --dur-base:160ms; }
 
-/* ── Reduced motion (4.4: all UI motion → 1 ms). LAST in the file and !important on purpose: the band blocks and
-   the adult default above also set --dur-base, at equal or higher specificity, and a custom property declared
-   on a band element beats the value inherited from <html>. So the rule names the band elements too.
-   The in-app "kam halchal" switch writes data-motion="reduce" (the child shell writes "reduced") on <html>
-   or on a screen root; it has the same effect as the media query. The turn ring becomes a static 5px ring,
-   no glow: the cue survives. */
-@media (prefers-reduced-motion: reduce) { :root, [data-band] {
-  --dur-press:1ms !important; --dur-fast:1ms !important; --dur-base:1ms !important; --dur-layout:1ms !important;
-  --pointer-draw:1ms !important; } }
-:is([data-motion="reduce"],[data-motion="reduced"]), :is([data-motion="reduce"],[data-motion="reduced"]) [data-band] {
-  --dur-press:1ms !important; --dur-fast:1ms !important; --dur-base:1ms !important; --dur-layout:1ms !important;
-  --pointer-draw:1ms !important; }
+  /* ── art placeholder tints (the designed flat fallback while public/assets/gen/** is empty; the §7.5 disc
+        tints: teal, rose, leaf, sky, terracotta, stone. Stone replaced CM's "sand", 1.1 deg from the lamp) ── */
+  --art-teal:#3E7C74; --art-rose:#B4466A; --art-leaf:#2F7A3E; --art-sky:#5D86B8; --art-terracotta:#B5603F; --art-stone:#C9C6BE;
+
+  /* ── focus: 2 px ring + 2 px halo, >= 3:1 on every ground ── */
+  --focus:#1A1C22; --focus-halo:#FFFFFF; --focus-w:2px; --focus-offset:2px;
+
+  /* ── pointer deixis (her chalk marks) ── */
+  --pointer-w:5px; --pointer-halo:2px; --gaze-lead:200ms;
+
+  /* ── families ── */
+  --font-ui:"Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --font-title:"Literata", Georgia, serif;
+  --font-deva:"Mukta", "Atkinson Hyperlegible Next", sans-serif;   /* :lang(hi) spans only */
+  --font-reader:"Andika", "Atkinson Hyperlegible Next", sans-serif;
+
+  /* ── type scale: adult default (landing, onboarding, parent); bands override below ── */
+  --t-display:32px; --t-title:22px; --t-ask:20px; --t-caption:18px; --t-numeral:32px;
+  --t-body:16px; --t-label:16px; --t-state:18px; --t-meta:14px;
+  --font-heading:var(--font-title);
+
+  /* ── space (4 dp base) ── */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:32px; --space-7:48px; --space-8:64px;
+
+  /* ── radii ── */
+  --radius-xs:6px; --radius-sm:10px; --radius-md:16px; --radius-lg:24px; --radius-pill:999px;
+  --radius-card:16px; --radius-window:24px;
+
+  /* ── elevation: blur-free; tier C-D use the 1 px border instead ── */
+  --elev-card:0 1px 2px rgba(26,28,34,.10), 0 2px 8px rgba(26,28,34,.08);
+  --elev-sheet:0 -2px 12px rgba(26,28,34,.14);
+
+  /* ── targets (adult default) ── */
+  --hit-min:48px; --tile-min:64px; --gap:8px; --mic:64px; --radius-tile:16px; --face-min:64px;
+
+  /* ── motion: settle, never bounce; transform + opacity only ── */
+  --m-press:90ms; --m-enter:160ms; --m-exit:150ms; --m-layout:300ms;
+  --m-lamp-in:120ms; --m-lamp-breath:600ms; --m-receipt:240ms; --m-verdict:280ms; --m-think:900ms;
+  --m-chalk:400ms; --m-lights:300ms; --m-caption:150ms; --m-seal:1500ms; --m-pointer:240ms; --m-pointer-fade:300ms;
+  --press-scale:.97;
+  --ease-standard:cubic-bezier(.2,0,0,1); --ease-enter:cubic-bezier(0,0,0,1); --ease-exit:cubic-bezier(.3,0,1,1);
+}
+
+/* ── bands (values: §7.2 scale, §4.9 targets) ── */
+[data-band="b1"] { --hit-min:64px; --tile-min:112px; --gap:16px; --mic:96px; --radius-tile:24px; --radius-card:20px;
+  --face-min:96px; --m-enter:240ms; --press-scale:.95; --font-heading:var(--font-ui);
+  --t-display:34px; --t-title:26px; --t-ask:24px; --t-caption:22px; --t-numeral:40px; --t-body:20px; --t-label:20px; --t-state:22px; --t-meta:16px; }
+[data-band="b2"] { --hit-min:64px; --tile-min:96px; --gap:16px; --mic:88px; --radius-tile:20px; --radius-card:20px;
+  --face-min:96px; --m-enter:240ms; --press-scale:.95; --font-heading:var(--font-ui);
+  --t-display:30px; --t-title:24px; --t-ask:22px; --t-caption:20px; --t-numeral:36px; --t-body:19px; --t-label:18px; --t-state:20px; --t-meta:16px; }
+[data-band="b3"] { --hit-min:48px; --tile-min:64px; --gap:8px; --mic:64px; --radius-tile:16px; --face-min:64px;
+  --m-enter:160ms; --font-heading:var(--font-title);
+  --t-display:28px; --t-title:24px; --t-ask:20px; --t-caption:18px; --t-numeral:32px; --t-body:17px; --t-label:16px; --t-state:18px; --t-meta:14px; }
+[data-band="b4"] { --hit-min:48px; --tile-min:64px; --gap:8px; --mic:56px; --radius-tile:10px; --radius-card:12px;
+  --face-min:64px; --m-enter:160ms; --font-heading:var(--font-title);
+  --t-display:26px; --t-title:22px; --t-ask:19px; --t-caption:17px; --t-numeral:28px; --t-body:16px; --t-label:16px; --t-state:17px; --t-meta:14px; }
+
+/* ── dark: Older bands, parent, landing. Never Young (the Desk and ChildShell pin data-theme="light" for b1/b2).
+      Defined twice on purpose: old Android WebViews ignore the media query but honour the attribute. ── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]), :root:not([data-theme="light"]) [data-v2]:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper:#121418; --surface:#1C1F26; --tray:#262A33; --ink:#F1EEE7; --ink-2:#B4B0A8; --line:#7C808A;
+    --veil:rgba(0,0,0,.55);
+    --nib:#AFC0FF; --nib-soft:#2A3354; --on-nib:#121418;
+    --lamp-wash:#3D2C08; --lamp-ring:#FFB21E; --lamp-ink:#FFD27A;
+    --listen:#5CC8D9; --on-listen:#121418; --think:#9AA3AF; --got:#6CCB70; --got-soft:#1E3321; --trouble:#FF8F7A;
+    --focus:#F1EEE7; --focus-halo:#121418;
+    --board:#22423A; --board-frame:#A07E5A;
+    --elev-card:none; --elev-sheet:none;
+    /* unchanged in dark: --lamp, --stage*, --dusk, diagram, skin, grow, sky (modules and art keep their ground) */
+  }
+}
+:root[data-theme="dark"], :root[data-theme="dark"] [data-v2]:not([data-theme="light"]) {
+  color-scheme: dark;
+  --paper:#121418; --surface:#1C1F26; --tray:#262A33; --ink:#F1EEE7; --ink-2:#B4B0A8; --line:#7C808A;
+  --veil:rgba(0,0,0,.55);
+  --nib:#AFC0FF; --nib-soft:#2A3354; --on-nib:#121418;
+  --lamp-wash:#3D2C08; --lamp-ring:#FFB21E; --lamp-ink:#FFD27A;
+  --listen:#5CC8D9; --on-listen:#121418; --think:#9AA3AF; --got:#6CCB70; --got-soft:#1E3321; --trouble:#FF8F7A;
+  --focus:#F1EEE7; --focus-halo:#121418;
+  --board:#22423A; --board-frame:#A07E5A;
+  --elev-card:none; --elev-sheet:none;
+}
+
+/* ── parent corner: adult scale, Literata headings; the lamp family is not used here (G-LAMP-1 lint, not CSS) ── */
+[data-surface="parent"] { --font-heading:var(--font-title); }
+
+/* ── more contrast ── */
+@media (prefers-contrast: more) { :root, [data-v2] { --line:var(--ink); --ink-2:var(--ink); --tray:var(--surface); } }
+
+/* ── forced colours: the lamp is an outline (never a box-shadow), so it survives ── */
+@media (forced-colors: active) {
+  [data-lamp] { outline:var(--lamp-ring-w) solid CanvasText; outline-offset:2px; }
+  :focus-visible { outline:var(--focus-w) solid Highlight; }
+}
+
+/* ── LEGACY ALIASES (B1 bridge, no raw hex). Surfaces not yet migrated to v2 names (onboarding, parent corner,
+      landing; owned by B3) keep rendering through these. Delete each alias when its last reader migrates.
+      Deliberately NOT aliased: --turn, --turn-ring, --p-yourturn-* (the lamp is the dock's alone, G-LAMP-1)
+      and --d5-haldi (2.2 deg from the lamp). ── */
+:root {
+  --bg:var(--paper); --surface-2:var(--tray); --tile-border:var(--line);
+  --jamun:var(--nib); --jamun-soft:var(--nib-soft);
+  --stop:var(--trouble); --done:var(--got);
+  --font-text:var(--font-ui); --font-display:var(--font-heading);
+  --focus-inner:var(--focus); --focus-outer:var(--focus-halo);
+  --dur-press:var(--m-press); --dur-fast:var(--m-exit); --dur-base:var(--m-enter); --dur-layout:var(--m-layout);
+  --pointer-draw:var(--m-pointer); --pointer-fade:var(--m-pointer-fade); --milestone-max:var(--m-seal);
+  --ledge-surface:var(--tray); --elev-press:none;
+  --d1-neel:var(--d1); --d2-matka:var(--d2); --d3-neem:var(--d3); --d4-baingan:var(--d4); --d6-kajal:var(--d6);
+  --p-bg:var(--paper); --p-ink:var(--ink); --p-ink-2:var(--ink-2); --p-ink-3:var(--ink-2);
+  --p-pakka:var(--got); --p-learning:var(--nib); --p-alert:var(--trouble);
+  --net-chip-bg:var(--tray); --net-chip-fg:var(--ink-2);
+}
+
+/* ── reduced motion: all UI motion -> 1 ms cross-fades. LAST in the file and !important on purpose: band blocks
+      set --m-enter on <html> at equal specificity. Her lips and blinks are not CSS and are unaffected. ── */
+@media (prefers-reduced-motion: reduce) {
+  :root, [data-band], [data-v2] {
+    --m-press:1ms !important; --m-enter:1ms !important; --m-exit:1ms !important; --m-layout:1ms !important;
+    --m-lamp-in:1ms !important; --m-lamp-breath:1ms !important; --m-receipt:1ms !important; --m-verdict:1ms !important;
+    --m-chalk:1ms !important; --m-lights:1ms !important; --m-caption:1ms !important; --m-seal:150ms !important;
+    --m-pointer:1ms !important; --m-pointer-fade:1ms !important; --press-scale:1 !important; }
+}
+[data-motion="reduce"], [data-motion="reduce"] [data-band], [data-motion="reduce"] [data-v2] {
+  --m-press:1ms !important; --m-enter:1ms !important; --m-exit:1ms !important; --m-layout:1ms !important;
+  --m-lamp-in:1ms !important; --m-lamp-breath:1ms !important; --m-receipt:1ms !important; --m-verdict:1ms !important;
+  --m-chalk:1ms !important; --m-lights:1ms !important; --m-caption:1ms !important; --m-seal:150ms !important;
+  --m-pointer:1ms !important; --m-pointer-fade:1ms !important; --press-scale:1 !important; }

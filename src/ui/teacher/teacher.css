@@ -1,0 +1,31 @@
+/* The one teacher (PRODUCT-DESIGN-V2 §8, §6.3.4 TeacherWindow). Flat --stage ground + the warm --stage-pool;
+   the painted backdrop (when present) sits under the pool. Low-end rule: no blur, no backdrop-filter, no blend
+   modes; lights down/up is an opacity cross-fade of two flat layers (transform + opacity only, §9.1). */
+.teacher { margin: 0; display: flex; flex-direction: column; min-height: 0; min-width: 0; height: 100%; }
+.teacher-window { position: relative; flex: 1 1 auto; min-height: 0; border-radius: var(--radius-window); overflow: hidden; isolation: isolate; }
+.teacher-window--bare { border-radius: 50%; }
+.teacher-ground, .teacher-ground > * { position: absolute; inset: 0; display: block; }
+.teacher-ground-paper { background: var(--paper); }
+.teacher-ground-stage { background: var(--stage); opacity: 0; transition: opacity var(--m-lights) var(--ease-standard); }
+.teacher-ground-art { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity var(--m-lights) var(--ease-standard); }
+.teacher-ground-pool { background: var(--stage-pool); opacity: 0; transition: opacity var(--m-lights) var(--ease-standard) 150ms; }
+.teacher[data-lights="down"] .teacher-ground-stage,
+.teacher[data-lights="down"] .teacher-ground-art,
+.teacher[data-lights="down"] .teacher-ground-pool { opacity: 1; }
+.teacher-face-host { position: absolute !important; inset: 0; min-height: 0 !important; }
+.teacher-window--bare .teacher-face-host { background: var(--stage); }
+
+/* "{T} · AI teacher": plain text, not a pill, not a border, not tappable (audit 17). */
+.teacher-label { flex: none; padding-top: var(--space-2); font-family: var(--font-ui); font-size: var(--t-meta); font-weight: 600;
+  color: var(--ink-2); text-align: center; line-height: 1.3; }
+/* The "AI" tag on the small face (SpeechRow / Keyboard): Atkinson 700 16 sp, surface fill, 1 dp line, radius 6. */
+.teacher-aitag { position: absolute; left: 0; bottom: 0; z-index: 2; font-family: var(--font-ui); font-weight: 700; font-size: 16px;
+  line-height: 1; padding: 3px 5px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-xs); }
+/* Young: the computer-teacher picto in the window corner. */
+.teacher-aipicto { position: absolute; right: var(--space-2); top: var(--space-2); width: 40px; height: 40px; z-index: 2;
+  background: var(--surface); border-radius: var(--radius-sm); padding: 4px; border: 1px solid var(--line); }
+.teacher-aipicto > * { width: 100%; height: 100%; }
+
+/* Art placeholders (src/ui/Art.tsx): a calm token-coloured shape, never text. */
+.art-fallback { display: block; position: relative; overflow: hidden; }
+.art-fallback-shape { position: absolute; inset: 12%; border-radius: 50% 46% 52% 48%; opacity: .55; }

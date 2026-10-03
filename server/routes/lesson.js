@@ -27,13 +27,15 @@ import {
 import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt, weaveStmts } from "../comprehension/store.js";
 import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade } from "../comprehension/later.js";
 import { classify, classifyFast, targetFor } from "../director/classify.js";
-import { scanSafety } from "../director/safety.js";
-import { initLessonState, step, evidenceFrom, upcomingItem, LIMITS } from "../director/state.js";
+import { scanSafety, floorViolations } from "../director/safety.js";
+import { initLessonState, step, evidenceFrom, upcomingItem, LIMITS, shortTitleOf } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, whyKey, norm as normAnswer } from "../director/items.js";
-import { TURN_WORDS } from "../compiler/compile.js";
+import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
+import { resolveAddress, registerBroken, toAap, ADDRESSES } from "../director/register.js";
+import { verdictFor, uiVerdict, praiseProblem, stripPraise, screenProblem, stripScreenRefs, askFromReply, askText, refersToScreen } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
-import { teacherFor, teacherForLesson } from "../compiler/characters/index.js";
+import { teacherFor, teacherForLesson, teacherCard } from "../compiler/characters/index.js";
 import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
 import { styleForChild } from "./voice.js";
 
@@ -126,6 +128,9 @@ function incidentStmt(childId, lessonId, turnSeq, detail) {
   };
 }
 
+/** The reply model call, injectable for tests of the guards (tests/lesson-truth.test.mjs); production uses azure.js. */
+export const replyDeps = { chat };
+
 /** Keep whole sentences up to `max` words (last-resort guard after one rewrite failed). */
 function trimToWords(text, max) {
   const sentences = String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? [text];
@@ -135,6 +140,22 @@ function trimToWords(text, max) {
     out += s;
   }
   return (out || String(text).split(/\s+/).slice(0, max).join(" ") + "…").trim();
+}
+
+/** Interests as they may be interpolated into a move shape: short plain labels only (they come from a profile). */
+export const lessonInterests = (list) => (list ?? []).map((x) => String(x ?? "").trim()).filter((x) => /^[\p{L}][\p{L} '&-]{1,23}$/u.test(x)).slice(0, 3);
+
+/**
+ * The response's UiDirectives: the Director's, plus — on a text-lane turn with no kit item on the table — the question
+ * the teacher actually handed back, for the Question card (G-ASK-1; parity with the words by construction).
+ */
+function withAsk(ui, reply, extra = {}) {
+  const out = { ...ui, ...extra };
+  if (!out.ask && reply && ["answer", "choice"].includes(out.handover)) {
+    const text = askFromReply(reply);
+    if (text) out.ask = { text };
+  }
+  return out;
 }
 
 /** Moves whose turn must put the active item's question to the child (at rung 0, before any nudge). */
@@ -173,7 +194,9 @@ function fallbackReply(state, item) {
   const kind = state.lastMove?.kind;
   if (item && !CLOSING_MOVES.has(kind)) return promptFor(item, lang);
   const lines = FALLBACK[lang === "english" ? "english" : "hinglish"];
-  return lines[kind] ?? lines.other;
+  const line = lines[kind] ?? lines.other;
+  // The fixed lines are written in tum forms; an "aap" child hears them in aap forms (G-REG-1).
+  return state.ctx.address === "aap" && lang !== "english" ? toAap(line) : line;
 }
 
 /** The draft up to (not including) its first question, then the item's own question. Exported for tests. */
@@ -197,7 +220,7 @@ const withoutLeaks = (text, item) => (String(text).match(/[^.!?।]+[.!?।]*\s*
  * replaced by the question itself (content), or the leaking sentences are dropped, never shipped. A model
  * failure falls back (fallbackReply) instead of throwing.
  */
-async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1) }) {
+async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
   const ahead = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
   const lang = state.ctx.lang;
@@ -210,7 +233,18 @@ async function textReply({ instructions, state, kit, childText, trace, history =
   // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
   // question is verified content and is not judged here.
   const own = (t) => (item ? String(t).split(promptFor(item, lang)).join(" ") : String(t));
+  const address = state.ctx.address;
+  const kindNow = state.lastMove?.kind;
+  // The floor's NEVER rules on the teacher's own words (director/safety.js; verified kit content is not judged).
+  const floorContent = [item?.prompt_en, item?.prompt_hi, ...(item?.options ?? []).map((o) => o.text)].filter(Boolean);
+  const floorOf = (t) => floorViolations(t, { content: floorContent, requireHelpline: kindNow === "safeguard", goodbye: kindNow === "wrap" });
+  const praiseOf = (t) => praiseProblem(t, verdict);
   const problems = (t) => [
+    floorOf(t).length && "floor",
+    praiseOf(t) === "praise" && "praise",
+    praiseOf(t) === "contradicts" && "deny",
+    screenProblem(t, ui, module) && "screen",
+    registerBroken(t, address) && "register",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
     mustPose && !posesItem(t, item, lang) && "drift",
@@ -226,7 +260,7 @@ async function textReply({ instructions, state, kit, childText, trace, history =
     { role: "user", content: childText || "(the child has joined the lesson and is listening)" },
   ];
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
-  const ask = (msgs) => chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace }).then((r) => r.text.trim());
+  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace }).then((r) => r.text.trim());
   let reply;
   // The content filter blocking the reply call (the child's words are in it) is a safety signal, not an
   // outage: the caller fails CLOSED to the safeguarding protocol (turn(): `filtered`).
@@ -262,7 +296,13 @@ async function textReply({ instructions, state, kit, childText, trace, history =
       found.includes("flat") && !found.includes("nowhy") && "it never hands the floor back — end with one question for the child about the same thing (and do not answer it yourself)",
       found.includes("script") && (lang === "hindi" ? "write it in Roman or Devanagari only" : "write it in Roman script only — no Devanagari or any other script"),
       found.includes("long") && `it is too long — at most ${TURN_WORDS[state.ctx.ageBand]} words`,
-      found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)"].filter(Boolean).join("; and ");
+      found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)",
+      found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
+      found.includes("praise") && "it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; name what is sensible in it, then the next step",
+      found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
+      found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
+      found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
+    ].filter(Boolean).join("; and ");
     try {
       reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: `Rewrite that turn: ${why}. Same move, same language, one idea, end by handing the floor back.` }]);
       guard.rewritten = true;
@@ -272,7 +312,11 @@ async function textReply({ instructions, state, kit, childText, trace, history =
       console.warn("[lesson] rewrite unavailable, guarding the draft:", e.message); // the draft's problems stand
     }
     guard.afterRewrite = found;
-    if (found.includes("leak") && ahead) {
+    if (found.includes("floor")) {
+      // A teacher line that still breaks the floor is never sent: the fixed line for the move (or the question).
+      reply = fallbackReply(state, item);
+      guard.replaced = true;
+    } else if (found.includes("leak") && ahead) {
       reply = withoutLeaks(reply, ahead) || fallbackReply(state, null);
       guard.replaced = true;
     } else if (found.includes("leak") || found.includes("drift")) {
@@ -281,9 +325,19 @@ async function textReply({ instructions, state, kit, childText, trace, history =
     } else {
       if (found.includes("units")) { reply = withoutMixedUnits(reply) || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("script")) reply = reply.replace(OFF_SCRIPT[lang] ?? OFF_SCRIPT.english, "").replace(/\s{2,}/g, " ").trim();
+      // What is left of a turn whose words contradicted the verdict or the screen: those sentences go; if nothing
+      // that hands the floor back is left, the item's question (or the move's fixed line) is the turn.
+      const keepOr = (t) => (t && handsBack(t) ? t : item && !CLOSING_MOVES.has(kindNow) && state.pendingWhy !== item.id
+        ? `${t ?? ""} ${promptFor(item, lang)}`.trim() : t || fallbackReply(state, item));
+      if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
+      if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
+      if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
       if (found.includes("long")) reply = trimToWords(reply, max);
     }
   }
+  // The final words, checked once more (debug and the evals read it): what reached the child.
+  const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
+  if (final.length) guard.final = final;
   return { reply, guard };
 }
 
@@ -366,8 +420,9 @@ async function start(req, res, body) {
   const t0 = performance.now();
   const trace = [];
   const { guardian, child } = await requireChild(req, need(body, "childId").childId);
-  const [core, memory] = await Promise.all([
+  const [core, memory, controls] = await Promise.all([
     hasConsent(guardian.id, child.id, "core_tutoring"), hasConsent(guardian.id, child.id, "memory"),
+    one("select address from child_controls where child_id = $1", [child.id]).catch(() => null),
   ]);
   if (!core) throw forbidden("core_tutoring consent is required before a lesson");
   const mode = body.mode === "text" || body.mode === "cascade" ? body.mode : "voice";
@@ -392,7 +447,14 @@ async function start(req, res, body) {
   forgeSeam.wovenSubStep(hosted[0] ?? null);
   const warmupItems = await warmupItemsFor(checks.openers);
   const skillIds = [...new Set([...kit.skills.map((s) => s.id), ...warmupItems.map((w) => w.skillId)])];
-  const [history, brief] = await Promise.all([loadRecentOutcomes(child.id, kit.skills.map((s) => s.id)), buildChildBrief(child, { memory })]);
+  const [history, brief0] = await Promise.all([loadRecentOutcomes(child.id, kit.skills.map((s) => s.id)), buildChildBrief(child, { memory })]);
+  // The interests the parent picked reach the teacher only under "Remember what {child} likes" (the memory consent;
+  // V2 §3.2 step 5: "No" → no interests in examples), and only as short plain labels (they are interpolated).
+  const interests = memory ? lessonInterests(brief0.interests) : [];
+  const brief = { ...brief0, interests };
+  // aap / tum: the child's own pick (Hello, classes 5+), the parent's controls, then the class default (G-REG-1).
+  const address = resolveAddress({ classLevel: child.class_level, lang: child.language_pref, parent: controls?.address ?? null,
+    child: ADDRESSES.includes(body.address) ? body.address : null });
   // The Director's skill snapshot and misconceptions come from the ledger (the legacy fold is gone).
   const skills = Object.fromEntries(skillIds.filter((id) => ledger.skills[id]).map((id) => [id, { skillId: id, ...snapshotFromKt(ledger.skills[id], now) }]));
   const activeMisconceptionIds = misconceptionView(ledger.mis).slice(0, 5).map((m) => m.id);
@@ -407,7 +469,7 @@ async function start(req, res, body) {
     ctx: {
       sessionId: lessonId, classLevel: child.class_level, schoolMedium: child.school_medium ?? undefined,
       firstName: child.first_name, teacherName: teacher.name, teacherId: teacher.id, protege: teacher.protege,
-      ageBand: brief.ageBand, lang: child.language_pref, interests: brief.interests,
+      ageBand: brief.ageBand, lang: child.language_pref, interests, address,
       firstMeeting: brief.relationshipStage.startsWith("first_meeting"), hasCallback: brief.memoryCallbacks.length > 0,
       topicTitle: topic.title, nextTitle: nextTopic?.title,
     },
@@ -418,7 +480,7 @@ async function start(req, res, body) {
 
   let teacherOpening, teacherOpeningSeq, rows = [];
   if (mode !== "voice") {
-    teacherOpening = (await textReply({ instructions, state, kit, childText: "", trace })).reply;
+    teacherOpening = (await textReply({ instructions, state, kit, childText: "", trace, ui: r.ui, module: state.module })).reply;
     rows = stageTurns(state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind } }]);
     teacherOpeningSeq = rows[0].seq;
   }
@@ -437,7 +499,8 @@ async function start(req, res, body) {
   /** @type {import("../../shared/contracts").LessonStartResponse} */
   const out = {
     lessonId, topic: { id: topic.id, title: topic.title, chapter: topic.chapter.title },
-    ...clientInstructions(mode, instructions), teacher: { id: teacher.id, name: teacher.name, voice: teacher.voice }, moduleCommands: r.moduleCommands, ui: r.ui,
+    ...clientInstructions(mode, instructions), teacher: teacherCard(teacher), moduleCommands: r.moduleCommands,
+    ui: withAsk(r.ui, teacherOpening), address,
     ...(teacherOpening ? { teacherOpening, teacherOpeningSeq } : {}),
   };
   send(res, 201, debugFor(req) ? { ...out, debug: { move: r.move, kitVerified: kit.verified, timings: trace } } : out);
@@ -550,11 +613,18 @@ async function turn(req, res, body) {
   const spoils = teacherText ? spoiledBy(teacherText, state, kit, activeItem) : null;
   if (spoils) state.spoiled = [...(state.spoiled ?? []), spoils];
   const turnRows = [];
+  // Voice lane: the realtime model wrote and spoke this turn itself, so its words are checked after the fact. A floor
+  // break becomes state.correction (compile.js renders the fix first in the next instructions); a register or
+  // screen mismatch is flagged on the row for review (it cannot be unsaid).
+  const voiceFloor = teacherText ? floorViolations(teacherText, { content: [activeItem?.prompt_en, activeItem?.prompt_hi].filter(Boolean) }) : [];
   if (teacherText) {
     turnRows.push({ speaker: "teacher", text: teacherText,
       meta: { interrupted: !!body.teacherInterrupted, ...(leaked ? { answerLeak: true } : {}), ...(spoils ? { spoils } : {}),
         // the realtime model wrote this turn itself: a mixed-unit comparison is flagged for review (it cannot be unsaid)
-        ...(mixedUnitComparison(teacherText) ? { unitMix: true } : {}) } });
+        ...(mixedUnitComparison(teacherText) ? { unitMix: true } : {}),
+        ...(voiceFloor.length ? { floor: voiceFloor } : {}),
+        ...(registerBroken(teacherText, state.ctx?.address) ? { register: true } : {}),
+        ...(refersToScreen(teacherText) && !(state.lastUi?.chips?.length || state.module) ? { screenRef: true } : {}) } });
   }
   const extra = dropped ? { droppedEvents: dropped } : {};
   turnRows.push(moduleOnly
@@ -568,7 +638,7 @@ async function turn(req, res, body) {
   const moduleAnswer = moduleEvents
     .filter((e) => e?.type === "answer" && state.module && e.moduleId === state.module.id && state.module.itemId === state.activeItemId).at(-1)?.data ?? null;
   const machineAnswer = typeof moduleAnswer?.correct === "boolean" && target.mode === "item";
-  const clsArgs = { target, childText, heard, asrConfidence: body.asrConfidence, typed, chipId: body.chipId, moduleAnswer, classLevel: child.class_level, trace };
+  const clsArgs = { target, childText, heard, lang: state.ctx?.lang, asrConfidence: body.asrConfidence, typed, chipId: body.chipId, moduleAnswer, classLevel: child.class_level, trace };
   const classified = !(moduleOnly && !machineAnswer);
   const answer = normAnswer(childText);
   const tapped = body.chipId?.startsWith("opt:") ? activeItem?.options?.[Number(body.chipId.slice(4))]?.text : body.chipId?.split(":")[1];
@@ -606,7 +676,13 @@ async function turn(req, res, body) {
   let { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
   mark("planned");
   let next = r.state;
+  // What the child did on this turn, for the lesson summary (DidCards): graded answers only, from the classifier.
+  noteDid(next, { cls, target, activeItem, kit, childText, tapped, hintLevel: state.hintLevel, seq: childRowSeq(staged), leaked });
+  // Voice lane: the floor families the heard teacher turn broke → the next compile's correction (cleared when clean).
+  if (!textLane) next.correction = voiceFloor.length ? voiceFloor : undefined;
   let teacherReply, teacherReplySeq, guard, speculation, prewarmed = false;
+  // The verdict the teacher's words must agree with (G-PRAISE-1; planTurn: only a kit item graded against its key has one).
+  const verdict = next.lastVerdict ?? "ungraded";
   if (textLane && !r.hold) {
     const key = replyKey(next, kit, r, instructions, said, historyOf(next));
     const hit = await pickSpeculation(specs, key);
@@ -615,7 +691,7 @@ async function turn(req, res, body) {
     let filtered;
     ({ reply: teacherReply, guard, filtered } = hit
       ? hit.result
-      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next) }));
+      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: r.ui, module: next.module }));
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
     // further model call on the same words.
@@ -625,6 +701,7 @@ async function turn(req, res, body) {
       plan = await planTurn(state, blockedCls, { ...planCtx, now });
       ({ evidence, writes, skillChanges, incident, r, instructions, skipped } = plan);
       next = r.state;
+      noteDid(next, { cls: blockedCls, target, activeItem, kit, childText, tapped, hintLevel: state.hintLevel, seq: childRowSeq(staged), leaked });
       teacherReply = fallbackReply(next, null);
       guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "content_filter"])], replaced: true };
     }
@@ -686,7 +763,8 @@ async function turn(req, res, body) {
   console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${r.hold ? " (hold)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"}${speculation ? ` spec=${speculation.hit ? "hit" : "miss"}/${speculation.tried}` : ""} ${ms}ms`);
   /** @type {import("../../shared/contracts").TurnResponse} */
   const out = {
-    ...clientInstructions(state.mode, instructions), move: r.move, moduleCommands: r.moduleCommands, ui: r.ui,
+    ...clientInstructions(state.mode, instructions), move: r.move, moduleCommands: r.moduleCommands,
+    ui: withAsk(r.ui, teacherReply, uiVerdictOf(cls, target, state)),
     ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
     // Pace knobs from the vibe persona (wait before a nudge, end-of-speech silence): session config, never the prompt.
     ...(next.vibe ? { pace: { waitNudgeSec: next.vibe.waitNudgeSec, endpointSilenceMs: next.vibe.endpointSilenceMs } } : {}),
@@ -699,7 +777,7 @@ async function turn(req, res, body) {
       evidence, kt: plan.events.map((e) => ({ id: e.id, cls: e.cls, outcome: e.outcome, skillIds: e.skillIds, grader: e.grader, ...(e.teach ? { teach: true } : {}),
         ...(e.shapeId ? { shapeId: e.shapeId } : {}), ...(typeof e.spanOk === "boolean" ? { spanOk: e.spanOk } : {}), ...(e.misconceptionId ? { misconceptionId: e.misconceptionId } : {}) })),
       probe: next.pendingProbe ?? null, vibe: next.vibe ?? null, held: (next.kt?.deferred ?? []).map((d) => d.event.id), carried: carried.map((x) => ({ id: x.event.id, graded: !!x.results?.length })),
-      skills: skillChanges, flagged: next.flagged, guard, spoiled: next.spoiled, ...(skipped ? { skipped } : {}),
+      skills: skillChanges, flagged: next.flagged, guard, verdict, spoiled: next.spoiled, ...(skipped ? { skipped } : {}),
       ...(speculation ? { speculation } : {}), ...(prewarmed ? { ttsPrewarmed: true } : {}),
       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
       kitVerified: kit.verified, ms, timings: trace,
@@ -707,6 +785,40 @@ async function turn(req, res, body) {
     };
   }
   send(res, 200, out);
+}
+
+/** The child row's seq among this turn's staged rows (the DidCard cites it). */
+const childRowSeq = (staged) => staged.find((x) => x.speaker === "child")?.seq ?? null;
+
+/**
+ * The verdict marks for the response (V2 §4.6): `verdict` only from the verified-key classifier on a kit item
+ * (absent = ungraded: a covert why or teach-back, an unclear reply); `withHelp` when it came after a hint rung.
+ */
+function uiVerdictOf(cls, target, prev) {
+  const verdict = uiVerdict(cls, target);
+  if (!verdict) return {};
+  return { verdict, ...(verdict === "correct" && prev.hintLevel > 0 ? { withHelp: true } : {}) };
+}
+
+const DID_MAX = 12;
+/**
+ * Append what the child just did to the lesson state (state.did): a graded answer on a kit item, or a teach-back
+ * explanation. Session state only (no learner layer), so it exists in every legal mode; the summary reads it.
+ * `verified`: the kit's key is verified and the key was not heard before the answer (a leak makes it worthless).
+ */
+function noteDid(next, { cls, target, activeItem, kit, childText, tapped, hintLevel, seq, leaked }) {
+  if (!cls) return;
+  const lang = next.ctx?.lang;
+  const answer = String(childText || tapped || "").replace(/\s+/g, " ").trim().slice(0, 80);
+  let entry = null;
+  if (target.mode === "item" && activeItem && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome)) {
+    entry = { kind: "item", itemId: activeItem.id, ask: askText(promptFor(activeItem, lang)), answer, verdict: uiVerdict(cls, target),
+      withHelp: hintLevel > 0, verified: (activeItem.kitVerified ?? kit.verified) !== false && !leaked && !next.spoiled?.includes(activeItem.id), seq, turn: next.turn };
+  } else if (target.mode === "teachback" && answer && cls.outcome !== "no_evidence") {
+    entry = { kind: "teachback", itemId: null, ask: null, answer, verdict: cls.outcome === "correct" ? "correct" : undefined, withHelp: false,
+      verified: kit.verified !== false, seq, turn: next.turn };
+  }
+  if (entry) next.did = [...(next.did ?? []), entry].slice(-DID_MAX);
 }
 
 /**
@@ -765,6 +877,8 @@ async function planTurn(base, cls, c) {
     : step(state, { ...stepIn, event: "turn" });
   const { r, instructions, skipped } = instructionsAfter(stepped, kit, now);
   const next = r.state;
+  // The verdict this turn's words must agree with (G-PRAISE-1): a kit item graded against its key, or "ungraded".
+  next.lastVerdict = verdictFor(cls, targetFor(state, kit, activeItem));
   // 3. the episode that just closed without a correct answer, and a teaching move's teach event
   const b2 = closeEvents({ ...ev0, next, hold: !!r.hold }, a);
   const after = b2.events.length ? fuseEvidence(fused, b2.events, LIVE_FOLD_CTX) : fused;
@@ -866,7 +980,7 @@ async function runTurnTx(child, stmts) {
  */
 function replyKey(next, kit, r, instructions, said, history) {
   return JSON.stringify([instructions, said, history, next.lastMove, next.hintLevel, next.pendingWhy, next.ctx?.lang,
-    next.ctx?.ageBand, next.spoiled ?? [], upcomingItem(next, kit)?.id ?? null, !!r.hold]);
+    next.ctx?.ageBand, next.spoiled ?? [], upcomingItem(next, kit)?.id ?? null, !!r.hold, next.lastVerdict ?? "ungraded", r.ui?.chips ?? null, next.module?.id ?? null]);
 }
 
 /**
@@ -896,7 +1010,7 @@ function speculate(state, target, flags, planCtx, { said, historyOf }, { outcome
       return {
         key: replyKey(next, planCtx.kit, plan.r, plan.instructions, said, history), trace,
         result: (() => {
-          const r = textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history });
+          const r = textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history, ui: plan.r.ui, module: next.module });
           r.catch(() => {});
           return r;
         })(),
@@ -992,17 +1106,49 @@ function lessonFacts(state, evidence, kit) {
   };
 }
 
+/**
+ * The child's summary screen (V2 §6.3.5 "What you did today"), from the lesson's own record of graded turns
+ * (state.did, written by the turn route from the verified-key classifier) — never from a model's account of the
+ * lesson. Up to 3 cards: verified right answers first (newest first), then a teach-back; when nothing was verified,
+ * what the child tried, with `tried` (the only count the screen may show). The face is verdict-neutral (ReactionGate):
+ * the same "warm" program whatever happened. No score, minutes or comparison is ever in it.
+ * @returns {import("../../shared/contracts").LessonSummary}
+ */
+export function lessonSummary(state, { topic, teacher }) {
+  const did = Array.isArray(state?.did) ? state.did : [];
+  const latest = new Map();
+  for (const d of did.filter((x) => x.kind === "item")) latest.set(d.itemId, d);
+  const attempts = [...latest.values()].sort((a, b) => (b.turn ?? 0) - (a.turn ?? 0));
+  const ticks = attempts.filter((d) => d.verdict === "correct" && d.verified);
+  const taught = [...did].reverse().find((d) => d.kind === "teachback" && d.verdict === "correct");
+  const card = (d, tick) => ({ kind: d.kind, ask: d.ask ?? null, answer: d.answer, tick, withHelp: !!(tick && d.withHelp), turnSeq: d.seq ?? null });
+  let cards = [...ticks.sort((a, b) => Number(a.withHelp) - Number(b.withHelp) || (b.turn ?? 0) - (a.turn ?? 0)).map((d) => card(d, true))];
+  if (taught) cards.splice(Math.min(cards.length, 2), 0, card(taught, true));
+  const anyVerified = cards.length > 0;
+  if (!anyVerified) cards = attempts.map((d) => card(d, false));
+  cards = cards.slice(0, 3);
+  return {
+    title: topic?.title ?? null, shortTitle: topic ? shortTitleOf(topic.title) : null, cards,
+    ...(anyVerified ? {} : { tried: attempts.length }),
+    nextTitle: state?.ctx?.nextTitle ?? null, face: "warm", ...(teacher ? { teacher: teacherCard(teacher) } : {}),
+    revoiceSeq: cards.find((c) => c.turnSeq != null)?.turnSeq ?? null,
+  };
+}
+
 async function end(req, res, body) {
   const trace = [];
   const { lesson, guardian, child } = await loadLessonFor(req, need(body, "lessonId").lessonId);
-  const already = (row) => send(res, 200, { summary: row?.summary ?? null, parentNote: row?.parent_note ?? null, alreadyEnded: true });
+  const teacher = teacherForLesson(child, lesson.state?.ctx?.teacherId);
+  const topicRow = getTopic(lesson.topic_id);
+  const did = (st) => lessonSummary(st, { topic: topicRow, teacher });
+  const already = (row) => send(res, 200, { summary: row?.summary ?? null, parentNote: row?.parent_note ?? null, alreadyEnded: true, did: did(row?.state ?? lesson.state) });
   if (lesson.ended_at) return already(lesson);
   // Claim the lesson BEFORE the slow summary: of two overlapping ends (a double tap, a retry on timeout) only
   // one gets the row back; the other writes nothing (sessions were once counted twice, memories duplicated).
   // The claim also closes the lesson to turns, so the facts below are final.
   const claimed = await one(`update lesson set ended_at = now(), state = jsonb_set(state, '{phase}', '"done"')
     where id = $1 and ended_at is null returning state`, [lesson.id]);
-  if (!claimed) return already(await one("select summary, parent_note from lesson where id = $1", [lesson.id]));
+  if (!claimed) return already(await one("select summary, parent_note, state from lesson where id = $1", [lesson.id]));
   const state = claimed.state;
   // The last why / teach-back of the lesson is still held (its verdict lands "on the next turn", and there is none):
   // wait for the blind grader while the summary is written, then fold and store it like a turn would.
@@ -1021,6 +1167,7 @@ async function end(req, res, body) {
     const { json } = await chat(DEPLOY.fast, [
       { role: "system", content: [
         `You write the record of one tutoring lesson with ${child.first_name} (class ${child.class_level}).`,
+        `The teacher is ${teacher.name}, an AI teacher (${teacher.pronouns?.subject ?? "they"}/${teacher.pronouns?.object ?? "them"}): name ${teacher.pronouns?.object ?? "them"} by name or with these pronouns only. Refer to the child by first name or "they".`,
         "Write ONLY from the FACTS and the child's numbered turns. summary: short factual lines. parentNote: plain, warm, specific — what was practised, what went well (the method, not ability), any mix-up and whether it was corrected later in the lesson (correctAfterLastSeen), one way to help at home. Never use ability words (smart, weak, slow, intelligent, topper…), never compare with other children, never predict marks.",
         "memories: at most 3 harmless things the child SAID about themself (interests, preferences, a win, a joke, a happy event). Cite the number of the child turn it came from. Never anything about religion, caste, health, family problems, money, location, school name or other people's names. Empty if nothing fits.",
       ].join("\n") },
@@ -1033,7 +1180,7 @@ async function end(req, res, body) {
   } catch (e) {
     console.warn("[lesson] end summary unavailable:", e.message);
     summary = `Practised ${facts.topic}. ${(facts.skills || []).map((s) => `${s.skill}: ${s.unaidedCorrect}/${s.attempts} on their own`).join("; ")}`;
-    parentNote = `Today ${child.first_name} practised ${facts.topic}.`;
+    parentNote = `Today ${child.first_name} practised ${facts.topic} with ${teacher.name}.`;
   }
 
   // The writer's view of this child: its mode plus the memory consent (P3, personal details).
@@ -1063,7 +1210,16 @@ async function end(req, res, body) {
   if (results.some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");
   await heldP;
   const relAt = canWrite(child, "kt") ? 1 : -1;
-  send(res, 200, { summary, parentNote, memoriesSaved: writes.filter((w) => /insert into memory/.test(w.text)).length, sessions: relAt > 0 ? results[relAt][0].sessions : null, ...(debugFor(req) ? { debug: { facts, timings: trace } } : {}) });
+  send(res, 200, { summary, parentNote, memoriesSaved: writes.filter((w) => /insert into memory/.test(w.text)).length, sessions: relAt > 0 ? results[relAt][0].sessions : null,
+    did: did(state), ...(debugFor(req) ? { debug: { facts, timings: trace } } : {}) });
+}
+
+/** GET /api/lesson/summary?lessonId= — the summary screen's data again (a reload, the "Show a grown-up" view). */
+async function summaryRead(req, res) {
+  const id = new URL(req.url || "/", "http://x").searchParams.get("lessonId");
+  const { lesson, child } = await loadLessonFor(req, id);
+  const teacher = teacherForLesson(child, lesson.state?.ctx?.teacherId);
+  send(res, 200, { lessonId: lesson.id, ended: !!lesson.ended_at, did: lessonSummary(lesson.state, { topic: getTopic(lesson.topic_id), teacher }) });
 }
 
 /**
@@ -1099,9 +1255,10 @@ export const routes = {
   "POST /api/realtime/token": realtimeToken,
   "POST /api/lesson/turn": turn,
   "POST /api/lesson/end": end,
+  "GET /api/lesson/summary": summaryRead,
 };
 
-const KEY_PARTS = ["instructions", "said", "history", "lastMove", "hintLevel", "pendingWhy", "lang", "ageBand", "spoiled", "upcoming", "hold"];
+const KEY_PARTS = ["instructions", "said", "history", "lastMove", "hintLevel", "pendingWhy", "lang", "ageBand", "spoiled", "upcoming", "hold", "verdict", "chips", "module"];
 /** Debug only: which reply input differed for each speculative plan ("unavailable": its reply failed). */
 async function missReason(specs, key) {
   const real = JSON.parse(key);
@@ -1120,4 +1277,4 @@ async function missReason(specs, key) {
 }
 
 /** Internals for tests (the turn's planning and speculation, which need no database or model). */
-export const __test = { planTurn, replyKey, speculate, specFanout, textReply };
+export const __test = { planTurn, replyKey, speculate, specFanout, textReply, noteDid, withAsk, uiVerdictOf };

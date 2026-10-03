@@ -3,6 +3,8 @@ export default {
   id: "arjun",
   name: "Arjun",
   addressedAs: "Arjun bhaiya",
+  // Pronouns for every surface that talks ABOUT the teacher (parent notes, the summary, the child UI): one record.
+  pronouns: { subject: "he", object: "him", possessive: "his" },
   voice: "cedar",
   classes: [5, 9],
   protege: { name: "Bittu", what: "a pretend new student who missed this class" },

@@ -19,6 +19,9 @@
 // lines are the director's own next moves, never a second guess at them.
 import * as SH from "./shapes.js";
 import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT } from "./items.js";
+import { registerNote } from "./register.js";
+import { askText } from "./say.js";
+import { getTopic } from "../content/curriculum.js";
 import { planModule } from "./modules.js";
 import { frustrationLoop, initialAffect, nextAffect, wheelSpinning } from "../learner/affect.js";
 import {
@@ -154,10 +157,9 @@ function verdict(cls) {
 const plan = (kind, shape, extra = {}) => ({ kind, shape, ...extra });
 const moveKindFor = (item) => (item.kind === "practice" ? "practice" : item.kind === "retrieval" ? "retrieval" : "probe");
 
-function chipLabels(lang) {
-  return lang === "english"
-    ? { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today" }
-    : { easier: "Ek aasaan wala", rest: "Thoda break", go: "Chalo, karte hain", cont: "Aage chalein", stop: "Aaj ke liye bas" };
+/** Chip labels are UI chrome: English in every lesson language (owner directive; PRODUCT-DESIGN-V2 §0.10, §5.3). */
+function chipLabels() {
+  return { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today" };
 }
 const optionChips = (item) => (item?.diagnostic && item.options.length <= 4
   ? item.options.map((o, i) => ({ id: `opt:${i}`, label: o.text.slice(0, 40) })) : undefined);
@@ -184,7 +186,7 @@ function warmup(s, input, item) {
   if (input.event === "start") {
     const first = s.warmup[0];
     if (first) activate(s, first);
-    return plan("greet", SH.greet({ ...s.ctx, warmup: !!first }), first ? { item: first, probe: "P10" } : {});
+    return plan("greet", SH.greet({ ...s.ctx, warmup: !!first, interest: s.ctx.interests?.[0] }), first ? { item: first, probe: "P10" } : {});
   }
   if (!item) { s.phase = "teach"; return teach(s, input); }
   const v = verdict(input.cls);
@@ -214,13 +216,15 @@ function teach(s, input, prefix) {
     const stepName = s.teachPlan[s.teachIdx];
     if (stepName === "hook") {
       s.teachIdx += 1;
-      return plan("hook", join(prefix, SH.hook({ interest: s.ctx.interests[0], contexts: kit.interestContexts, protege: s.ctx.protege })), { format: "F4" });
+      return plan("hook", join(prefix, SH.hook({ interest: s.ctx.interests?.[0], contexts: kit.interestContexts, protege: s.ctx.protege })), { format: "F4" });
     }
     if (stepName === "explain") {
       s.teachIdx += 1;
       const sk = kit.skills[0];
       if (!s.introduced.includes(sk.id)) s.introduced.push(sk.id);
-      return plan("explain", SH.explain({ skillTitle: sk.title, prefix }), { skillId: sk.id, format: kit.formats.primary, whiteboard: { kind: "text", value: sk.title } });
+      // No whiteboard: the skill title is syllabus objective text, never something to put in front of a child
+      // (G-OBJ-1; audit #6, the "Read and write 5- and 6-digit numbers…" ledge chip).
+      return plan("explain", SH.explain({ skillTitle: sk.title, prefix, interest: s.ctx.interests?.[1] ?? s.ctx.interests?.[0] }), { skillId: sk.id, format: kit.formats.primary });
     }
     // worked_example — spread over at most LIMITS.workedParts turns, one step handed to the child each time
     const we = kit.workedExample;
@@ -256,7 +260,7 @@ function poseNext(s, input, prefix, preferred) {
   if (!s.introduced.includes(item.skillId)) {
     s.introduced.push(item.skillId); s.nextItemId = item.id;
     const sk = kit.skills.find((x) => x.id === item.skillId);
-    return plan("explain", SH.explain({ skillTitle: sk?.title ?? "", prefix }), { skillId: item.skillId, format: kit.formats.primary });
+    return plan("explain", SH.explain({ skillTitle: sk?.title ?? "", prefix, interest: s.ctx.interests?.[1] ?? s.ctx.interests?.[0] }), { skillId: item.skillId, format: kit.formats.primary });
   }
   activate(s, item);
   const attemptFirst = !s.novice && s.practiced === 0;
@@ -412,7 +416,8 @@ function unclear(s, input, item, v, giveUp) {
   if (v === "off") return plan("repair", SH.repairOffTopic(), { item });
   s.unclear += 1;
   if (s.unclear > LIMITS.unclearTries) { s.unclear = 0; return giveUp(); }
-  return plan("repair", SH.repairUnclear(), { item, chips: optionChips(item) });
+  const chips = optionChips(item);
+  return plan("repair", SH.repairUnclear({ chips: !!chips }), { item, chips });
 }
 
 function enterTeachback(s, prefix) {
@@ -443,7 +448,7 @@ function toWrap(s, { prefix, stopping = false }) {
 function decide(s, input, item) {
   const { cls, chipId } = input;
   const flags = cls?.flags ?? {};
-  const labels = chipLabels(s.ctx.lang);
+  const labels = chipLabels();
   // 1. Safety before anything else — the predicate or the classifier, either one.
   if (flags.distress) { s.safeguard = { calm: 0, asked: false }; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
   if (s.safeguard) {
@@ -525,6 +530,9 @@ export function step(prev, input) {
   const active = findItem(s, input.kit, s.activeItemId);
   const reacting = input.event === "module" && !input.cls;
   const childTurn = input.event === "turn" || (input.event === "module" && !!input.cls);
+  // The answer just given was graded against a kit item's key (not a covert why / teach-back, not past the
+  // assertion): its verdict is noted on the move so the teacher's words cannot contradict it (G-PRAISE-1).
+  const gradedItem = childTurn && !!active && s.pendingWhy !== active.id && s.hintLevel < 4 && !(s.phase === "teachback" && s.teachbackAsked);
   const asked = s.pendingProbe;
   if (childTurn && s.probeSess) {
     // Every child turn spends its test weight (budget.js): the answer to a probe at the probe's weight, a plain
@@ -561,8 +569,12 @@ export function step(prev, input) {
     return { state: s, move: s.lastMove, moduleCommands: [], ui: s.lastUi ?? { status: "your_turn" }, end: s.phase === "done", hold: true, ...describe(s, input.kit) };
   }
 
-  const item = p.item ?? null;
-  const move = { kind: p.kind, shape: p.shape };
+  // The item as this child is asked it (findItem: the address register), whichever path chose it.
+  const item = p.item ? (findItem(s, input.kit, p.item.id) ?? p.item) : null;
+  // Notes on the real move only: a voice branch (branchesFor, input.branch) is rendered into the appended-last
+  // section, whose budget the kit load gate measured without them (compile.js checkFits).
+  const notes = input.branch ? [] : [gradedItem && !NO_VERDICT_MOVES.has(p.kind) ? SH.VERDICT_NOTE[verdictKey(input.cls)] : null, registerNote(s.ctx.address)];
+  const move = { kind: p.kind, shape: join(p.shape, ...notes) };
   if (item) Object.assign(move, { itemId: item.id, skillId: item.skillId, hintLevel: s.hintLevel });
   if (p.skillId) move.skillId = p.skillId;
   if (p.probe) move.probe = p.probe;
@@ -577,12 +589,62 @@ export function step(prev, input) {
   // activity on screen.
   if (!reacting || p.content) s.lastContent = p.content ?? [];
   const moduleCommands = reacting ? [] : planModule(s, { move, item, kit: input.kit, lang: s.ctx.lang, representation: p.representation });
-  const ui = { status: "your_turn" };
-  const board = p.whiteboard ?? (item ? anchorOf(item, s.ctx.lang) : null);
-  if (board) ui.whiteboard = board;
-  if (p.chips?.length) ui.chips = p.chips;
+  const ui = uiFor(s, p, move, item, input.kit);
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
   return { state: s, move, moduleCommands, ui, end: s.phase === "done", ...describe(s, input.kit) };
+}
+
+/** Moves that carry no verdict note: care, goodbye and a break are never about the answer. */
+const NO_VERDICT_MOVES = new Set(["safeguard", "wrap", "break"]);
+/** classification → VERDICT_NOTE key (null: correct, which the confirm shapes already state). */
+const verdictKey = (cls) => (cls?.outcome === "correct" ? null : cls?.outcome === "partial" ? "partial"
+  : cls?.outcome === "incorrect" || cls?.outcome === "misconception" ? "not_yet" : "unverified");
+
+const normText = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+/** G-OBJ-1: a syllabus objective (a kit skill title or the topic's outcomes) is never put on screen for a child. */
+export function isObjective(text, kit, topic) {
+  const t = normText(text);
+  if (!t) return false;
+  return (kit?.skills ?? []).some((sk) => normText(sk.title) === t) || (topic?.outcomes ?? []).some((o) => normText(o) === t);
+}
+
+/** ≤ 24 characters on a word boundary, never a CSS cut (V2 §4.10 shortTitle); a dangling joiner word is dropped. */
+export function shortTitleOf(title, max = 24) {
+  const t = String(title ?? "").replace(/\s+/g, " ").trim();
+  if (t.length <= max) return t;
+  const out = [];
+  for (const w of t.split(" ")) { if ([...out, w].join(" ").length > max) break; out.push(w); }
+  while (out.length > 1 && /^(and|of|the|in|on|to|a|an|for|with|aur|ka|ki|ke|mein|&|:|-|–|—)$/i.test(out.at(-1))) out.pop();
+  return (out.join(" ") || t.slice(0, max)).replace(/[,:;–—-]+$/, "");
+}
+
+const NUMERIC_KEY = /^[-−]?[\d,]+(?:[./]\d+)?$/;
+/**
+ * The turn's UiDirectives (V2 §4.10), derived from the same move that wrote the shape, so screen and voice agree:
+ * the board anchor and chips as before, plus who holds the floor next (handover), the pinned question (ask, for a
+ * kit item; a text-lane turn with no item gets it from the words actually said, routes/lesson.js), how the child
+ * is expected to answer, what the tray holds, the phase and a ≤ 24-character title.
+ */
+function uiFor(s, p, move, item, kit) {
+  const ui = { status: "your_turn" };
+  const topic = getTopic(s.topicId);
+  const board = p.whiteboard ?? (item ? anchorOf(item, s.ctx.lang) : null);
+  if (board && !isObjective(board.value, kit, topic)) ui.whiteboard = board;
+  if (p.chips?.length) ui.chips = p.chips;
+  ui.phase = move.kind === "wrap" || s.phase === "done" ? "wrap" : s.phase;
+  ui.handover = move.kind === "wrap" ? "finish" : ui.chips ? "choice" : "answer";
+  const asking = item && s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(move.kind);
+  if (asking) {
+    const text = askText(promptFor(item, s.ctx.lang));
+    if (!isObjective(text, kit, topic)) ui.ask = { text, itemId: item.id };
+  }
+  ui.answerForm = ui.chips ? "choice"
+    : asking && s.module?.awaitingReveal && s.module.itemId === item.id ? "tap_in_tray"
+      : asking && NUMERIC_KEY.test(String(item.answer).trim()) ? "number" : "words";
+  ui.tray = s.module ? "module" : ui.chips ? "tiles" : "none";
+  const short = shortTitleOf(s.ctx.topicTitle);
+  if (short && !isObjective(short, kit, topic)) ui.shortTitle = short;
+  return ui;
 }
 
 /**
@@ -649,7 +711,7 @@ export function branchesFor(s, kit) {
     const cls = { outcome, confidence: 1, source: "branch", flags: NO_FLAGS,
       ...(teachingBack ? { covered: right ? kit.expectations : [], missing: right ? [] : kit.expectations } : {}) };
     foldEvidence(pre, evidenceFrom(pre, cls, kit));
-    return step(pre, { event: "turn", kit, cls, now });
+    return step(pre, { event: "turn", kit, cls, now, branch: true });
   };
   const render = (r) => {
     const asks = !!r.item && POSING.has(r.move.kind) && r.state.pendingWhy !== r.item.id;

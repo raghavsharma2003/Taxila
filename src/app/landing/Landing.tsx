@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import "../../styles/landing.css";
 import { Link } from "react-router-dom";
-import { ButtonLink, Hi, Icon, StateChip, TeacherFace, useClip } from "../../ui/index.ts";
+import { ButtonLink, Icon, StateChip, TeacherFace, useClip } from "../../ui/index.ts";
 import { loadMe } from "../api.ts";
 import { useSurface } from "../band.ts";
 import { PROMISES } from "../Public.tsx";
@@ -13,7 +13,7 @@ import { Footer, Helplines, TopBar } from "../Shell.tsx";
 import { StillTeach, StillTeachBack, StillWarmup } from "./Stills.tsx";
 
 const VOICES = [
-  { id: "hi", label: "हिन्दी", lang: "hi", src: "/audio/hello-hi.mp3", name: "Hear her in Hindi" },
+  { id: "hi", label: "Hindi", lang: "hi", src: "/audio/hello-hi.mp3", name: "Hear her in Hindi" },
   { id: "hinglish", label: "Hinglish", lang: undefined, src: "/audio/hello-hinglish.mp3", name: "Hear her in Hinglish" },
   { id: "en", label: "English", lang: undefined, src: "/audio/hello-en.mp3", name: "Hear her in English" },
 ] as const;
@@ -97,7 +97,7 @@ export default function Landing() {
             <h1 id="hero-h" className="t-display">A teacher who talks with your child, and shows you what they really understood.</h1>
             <p className="t-lead">
               Taxila is an AI voice teacher. She teaches one child at a time, from their own school book, in
-              <Hi> हिन्दी</Hi>, Hinglish or English. She is a computer program, and she tells your child so.
+              Hindi, Hinglish or English. She is a computer program, and she tells your child so.
             </p>
             <div className="stack-sm">
               <p className="label-strong" id="hear-h">Hear her (about 10 seconds)</p>

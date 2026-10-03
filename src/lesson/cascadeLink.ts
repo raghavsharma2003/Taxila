@@ -442,7 +442,7 @@ export class CascadeLink implements TeacherLink {
     void playback.ended.then((status) => {
       if (this.current !== cur) return;
       if (status === "failed") {
-        this.events.emit({ type: "error", message: "the teacher's voice is unavailable; showing text only", fatal: false });
+        this.events.emit({ type: "error", message: "the teacher's voice is unavailable; showing text only", fatal: false, code: "tts_failed" });
       }
       this.stopReply(status === "stopped" ? "cancelled" : status, false);
     });

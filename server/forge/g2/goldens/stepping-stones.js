@@ -8,7 +8,7 @@ defineMechanic({
   },
   reduce(m, action, ctx) {
     if (action.type !== "hop") return { reject: "invalid" };
-    const i = m.opts.findIndex((o) => o.slot === action.ref.slot);
+    const i = m.opts.findIndex((o) => ctx.refs.same(o, action.ref));
     if (i < 0) return { reject: "invalid" };
     return { model: { at: i, hops: m.hops + 1, opts: m.opts }, commit: true, fx: [{ kind: "pop", target: "stone" + i }] };
   },

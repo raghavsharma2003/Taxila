@@ -1,23 +1,24 @@
-// The four ledger words (R11, §6.4): gender-neutral, Devanagari-first by the parent's language tile.
-// One table for every surface that shows them (parent corner; Older children's own map per R12).
+// The four ledger words (PRODUCT-DESIGN-V2 §5.3): English chrome on every surface, whatever the family's spoken
+// language (G-EN-1: no Devanagari, no Hinglish chrome words). The Lang key is kept so callers compile; every
+// language maps to the same English word. One table for every surface (parent corner; Older children's map).
 export type Lang = "hi" | "hinglish" | "en";
 export type StateKey = "unseen" | "practising" | "learned_today" | "mastered";
 export interface LedgerState { level: 0 | 1 | 2 | 3; key: StateKey; recheck?: boolean }
 
 export const STATE_WORDS: Record<StateKey, Record<Lang, string>> = {
-  unseen: { hi: "अभी नहीं", hinglish: "Abhi nahi", en: "Not yet" },
-  practising: { hi: "अभ्यास में", hinglish: "Abhyaas mein", en: "Practising" },
-  learned_today: { hi: "आ गया", hinglish: "Aa gaya", en: "Got it today" },
-  mastered: { hi: "पक्का", hinglish: "Pakka", en: "Secure" },
+  unseen: { hi: "Not started", hinglish: "Not started", en: "Not started" },
+  practising: { hi: "Practising", hinglish: "Practising", en: "Practising" },
+  learned_today: { hi: "Got it", hinglish: "Got it", en: "Got it" },
+  mastered: { hi: "Secure", hinglish: "Secure", en: "Secure" },
 };
-export const RECHECK_TAG: Record<Lang, string> = { hi: "दोबारा जाँच", hinglish: "dobara jaanch", en: "re-check due" };
-export const RECHECK_ON: Record<Lang, string> = { hi: "जाँच", hinglish: "jaanch", en: "re-check" };
+export const RECHECK_TAG: Record<Lang, string> = { hi: "check due", hinglish: "check due", en: "check due" };
+export const RECHECK_ON: Record<Lang, string> = { hi: "check on", hinglish: "check on", en: "check on" };
 
 /** What each word means, in one plain line (the sheet's legend). */
 export const STATE_MEANING: Record<StateKey, string> = {
   unseen: "Not started yet.",
   practising: "Working on it. Some answers right, not yet on their own every time.",
-  learned_today: "Got it on their own and explained it, on the same day. She checks again on a later day before it counts as secure.",
+  learned_today: "Got it on their own and explained it, on the same day. It is checked again on a later day before it counts as secure.",
   mastered: "Got it on their own, explained it, and was still right on a later day.",
 };
 

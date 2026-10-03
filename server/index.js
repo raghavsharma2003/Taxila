@@ -10,6 +10,7 @@ import { routes as modules } from "./routes/modules.js";
 import { routes as voice } from "./routes/voice.js";
 import { routes as tutor } from "./routes/tutor.js";
 import { routes as forge } from "./routes/forge.js";
+import { routes as child } from "./routes/child.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child });
 export { handle, register };

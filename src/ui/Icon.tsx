@@ -49,14 +49,13 @@ export function Icon({ name, size = 24, ...rest }: { name: IconName; size?: numb
   );
 }
 
-/** The Taxila mark: an open book whose pages form a speech bubble (jamun). */
+/** The Taxila mark: an open book on nib (no lamp dot: marigold is the dock's alone, G-LAMP-1). */
 export function Mark({ size = 32 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-      <rect x="1" y="1" width="30" height="30" rx="9" fill="var(--jamun)" />
-      <path d="M8 10.5c3-1.2 5.5-1 8 .8 2.5-1.8 5-2 8-.8v11c-3-1.2-5.5-1-8 .8-2.5-1.8-5-2-8-.8z" fill="var(--surface)" />
-      <path d="M16 11.3v11" stroke="var(--jamun)" strokeWidth="1.6" />
-      <circle cx="24.5" cy="8" r="2.4" fill="var(--turn)" />
+      <rect x="1" y="1" width="30" height="30" rx="9" fill="var(--nib)" />
+      <path d="M8 10.5c3-1.2 5.5-1 8 .8 2.5-1.8 5-2 8-.8v11c-3-1.2-5.5-1-8 .8-2.5-1.8-5-2-8-.8z" fill="var(--on-nib)" />
+      <path d="M16 11.3v11" stroke="var(--nib)" strokeWidth="1.6" />
     </svg>
   );
 }

@@ -89,6 +89,37 @@ export interface UiDirectives {
    * a right answer alone is not "insight". Until the Director sends it, the child UI's delight never fires.
    */
   affect?: "insight" | "effort";
+  // ── PRODUCT-DESIGN-V2 §4.10 (server: director/state.js uiFor, routes/lesson.js withAsk / uiVerdictOf) ──
+  /**
+   * The question as displayed on the Question card, pinned until the item resolves. Set on every turn that hands a
+   * kit item to the child (its text in the lesson language, in the child's aap/tum register, ≤ 120 chars); on a
+   * text-lane turn with no item, the question the teacher's reply actually handed back. Absent on the voice lane
+   * when no item is on the table (the realtime model writes its own words).
+   */
+  ask?: { text: string; spoken?: string; picture?: string; itemId?: string };
+  /** What the turn hands to the child. "chain" (she keeps the floor) is not produced yet: every turn hands back. */
+  handover?: "chain" | "answer" | "choice" | "judge" | "ready" | "finish";
+  /** How the child is expected to answer: it drives the dock body. */
+  answerForm?: "words" | "number" | "choice" | "draw" | "read_aloud" | "tap_in_tray";
+  /** Only from the verified-key classifier on a kit item. Absent = ungraded (a covert why / teach-back, an unclear reply). */
+  verdict?: "correct" | "not_yet" | "partial";
+  /** A correct verdict that came after a hint rung (the tick in outline, §4.6 "With help"). */
+  withHelp?: boolean;
+  /** The phase line (Older) and the geometry decision. */
+  phase?: LessonPhase;
+  /** What the tray holds this turn: none → Face layout (no empty box, audit #5). */
+  tray?: "none" | "module" | "board" | "tiles" | "pad";
+  /** ≤ 24 chars on a word boundary, for the top bar. Never a syllabus objective (G-OBJ-1). */
+  shortTitle?: string;
+  /** Demonstration cue → floor SHOWING (not produced yet). */
+  cues?: { program?: "demo" | "point"; target?: string };
+}
+
+/** The teacher as every surface shows them: the server is the one source (compiler/characters teacherCard). */
+export interface TeacherCard {
+  id: string; name: string; addressedAs: string; role: "AI teacher";
+  pronouns: { subject: string; object: string; possessive: string };
+  voice: string; lookRev: number | null; signatureColor: string | null;
 }
 
 /**
@@ -150,16 +181,87 @@ export interface TurnResponse {
   debug?: Record<string, unknown>;
 }
 
-/** "cascade": the default voice lane — spoken child turns (ASR-gated), Director-written replies, streamed TTS. */
-export interface LessonStartRequest { childId: string; topicId?: string; mode?: "voice" | "text" | "cascade" }
+/**
+ * "cascade": the default voice lane — spoken child turns (ASR-gated), Director-written replies, streamed TTS.
+ * `address`: the child's own aap / tum pick at Hello (honoured from class 5 up); the parent's controls and the class
+ * default decide otherwise (server/director/register.js resolveAddress).
+ */
+export interface LessonStartRequest { childId: string; topicId?: string; mode?: "voice" | "text" | "cascade"; address?: "tum" | "aap" }
 export interface LessonStartResponse {
   lessonId: string; topic: { id: string; title: string; chapter: string };
   /** Voice lane only (see TurnResponse.instructions). */
-  instructions?: string; teacher: { id: string; name: string; voice: string };
+  instructions?: string; teacher: TeacherCard;
+  /** The register the teacher uses with this child (null: an English lesson). */
+  address?: "tum" | "aap" | null;
   moduleCommands: ModuleCommand[]; ui: UiDirectives;
   /** Text lane: the teacher's opening line, stored as teacher turn `teacherOpeningSeq`. */
   teacherOpening?: string; teacherOpeningSeq?: number;
 }
+/** One "What you did today" card (V2 §6.3.5): the child's own answer, with a tick only if the key verified it. */
+export interface DidCard {
+  kind: "item" | "teachback";
+  /** The question as it was asked (null for a teach-back). */
+  ask: string | null;
+  /** The child's own words (or the option they tapped). */
+  answer: string;
+  tick: boolean; withHelp: boolean;
+  /** The child turn it came from (evidence row turn_id / the transcript). */
+  turnSeq: number | null;
+}
+/** POST /api/lesson/end `did` and GET /api/lesson/summary?lessonId= `did`. */
+export interface LessonSummary {
+  title: string | null; shortTitle: string | null; cards: DidCard[];
+  /** Only when nothing was verified: how many questions the child tried. */
+  tried?: number;
+  nextTitle: string | null;
+  /** Verdict-neutral (ReactionGate): always "warm". */
+  face: "warm";
+  teacher?: TeacherCard;
+  /** The child turn the teacher re-voices on the summary. */
+  revoiceSeq: number | null;
+}
+
+// ───────────────────────────── child surfaces (server/routes/child.js) ─────────────────────────────
+/** GET /api/child/plan?childId= → the child home's one primary card (V2 §6.3.3). */
+export type ChildHomeState = "start" | "first" | "resume" | "done" | "capped" | "resting";
+export interface ChildPlanResponse {
+  state: ChildHomeState;
+  /** Legacy shape for src/child/day.ts: start/first/resume → "default", done/capped → "done", resting → "resting". */
+  homeState: "default" | "done" | "resting";
+  plan: { openLesson: string | null; window: { from: string; to: string } };
+  topic: { id: string; title: string; shortTitle: string; chapter: string; subject: string; minutes: number } | null;
+  /** The open lesson to resume (< 6 h, at least one child turn): its pinned question for the thumbnail. */
+  resume: { lessonId: string; ask: string | null; topicTitle: string } | null;
+  /** Today's finished lesson (state done/capped). */
+  today: { lessonId: string; summary: LessonSummary } | null;
+  capRemaining: number | null; capMin: number; usedMin: number;
+  /** "resting": when lessons open again (local time, HH:MM). */
+  opensAt: string | null;
+  packReady: null; day: string; tz: string;
+  teacher: TeacherCard;
+  /** Surfaces hidden by the parent's "Only this session" choice (learning_profile consent off). */
+  surfaces: { map: boolean; notebook: boolean; resume: boolean };
+  source: { dayPlan: number | null };
+}
+/** Spec state shapes (V2 §4.8): plot/dot → sprout/ring → bloom/star → fruit/ticked star. */
+export type MapState = "not_started" | "practising" | "got_it" | "secure";
+export interface ChildMapSkill {
+  skillId: string; title: string; topicId: string; chapter: string; subject: string;
+  /** Legacy status for src/child/api.ts normaliseSkills. */
+  status: SkillStatus;
+  state: MapState;
+  /** A re-check the server scheduled (weave queue / a missed delayed check): the sunbird / return arrow. Never from time alone. */
+  recheckScheduled: boolean;
+}
+export interface ChildMapResponse {
+  mode: "garden" | "sky"; hidden: boolean;
+  subjects: { subject: string; book: string; chapters: { id: string; number: number; title: string; sealed: boolean; here: boolean;
+    secure: number; total: number; topics: { id: string; title: string; skills: ChildMapSkill[] }[] }[] }[];
+  /** Flat list (src/child/api.ts reads `skills`). */
+  skills: ChildMapSkill[];
+  empty: boolean;
+}
+
 /** POST /api/tts: speak a stored teacher turn of the caller's lesson (never free text). */
 export interface TtsRequest { lessonId: string; seq: number }
 /** `session` is the minted session config WITHOUT its instructions (the secret already carries them). */

@@ -4,6 +4,8 @@ export default {
   id: "asha",
   name: "Asha",
   addressedAs: "Asha didi",
+  // Pronouns for every surface that talks ABOUT the teacher (parent notes, the summary, the child UI): one record.
+  pronouns: { subject: "she", object: "her", possessive: "her" },
   voice: "marin",
   classes: [1, 4],
   // Care-receiving protégé for teach-back: 6-9-year-olds explain better to someone smaller than them.

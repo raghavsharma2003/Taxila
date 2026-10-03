@@ -6,12 +6,17 @@
 const RUNG = ["pump", "hint", "prompt", "assertion"];
 const join = (...parts) => parts.filter(Boolean).join("; ");
 
-export const greet = ({ firstName, teacherName, firstMeeting, hasCallback, warmup, topicTitle }) => join(
+/**
+ * `interest`: an interest the parent picked at onboarding (child.interests, under the memory consent), never a guess. It used to reach the
+ * teacher only through the brief row that sheds first under the prompt budget (compile.js drop 3), and the greeting
+ * then asked about a topic of its own (audit #7).
+ */
+export const greet = ({ firstName, teacherName, firstMeeting, hasCallback, warmup, topicTitle, interest }) => join(
   `greet ${firstName} by name, warm and unhurried`,
   firstMeeting && `first meeting: name yourself — ${teacherName}, their AI teacher`,
   hasCallback && "at most one callback from the child brief, only if it fits",
   warmup ? "then pose the warm-up question (LESSON NOW) — a quick look back at something learned before"
-    : `one line on today's topic (${topicTitle}); then one easy question about them`,
+    : `one line on today's topic (${topicTitle})${interest ? `, tied to their interest (${interest}) if it fits` : ""}; then one easy question about them`,
 );
 
 export const retrievalNext = () => "confirm the last answer in a few words — name what was right; then the next warm-up question";
@@ -24,9 +29,10 @@ export const hook = ({ interest, contexts, protege }) => join(
   `mention once: at the end they will teach this to ${protege.name} (${protege.what})`,
 );
 
-export const explain = ({ skillTitle, prefix }) => join(
+export const explain = ({ skillTitle, prefix, interest }) => join(
   prefix,
   `one idea only: ${skillTitle}`,
+  interest && `an example from their interest (${interest}) if it fits naturally`,
   "objects first, then a picture, then the symbol; point at the whiteboard anchor",
   "end with one small question that makes them USE the idea — never 'samjha?'",
 );
@@ -105,7 +111,10 @@ export const changeApproach = () => join(
   "then the same question again",
 );
 
-export const repairUnclear = () => "you did not catch it clearly: ask them to say it once more, or to tap a choice";
+/** `chips`: choices are on screen THIS turn (UiDirectives.chips). Without them the shape never mentions tapping (G-SAY-1). */
+export const repairUnclear = ({ chips = false } = {}) => (chips
+  ? "you did not catch it clearly: ask them to say it once more, or to tap one of the choices on screen"
+  : "you did not catch it clearly: ask them to say it once more, slowly");
 export const repairOffTopic = () => "one warm line about what they said; then back to the question";
 
 /** Module-only turns: the child acted in the activity and said nothing; the lesson stays where it was. */
@@ -152,6 +161,17 @@ export const wrap = ({ prefix, nextTitle, stopping }) => stopping
     nextTitle && `one plain line on what comes next time (${nextTitle})`,
     "warm goodbye; no pressure to come back, no cliffhanger",
   );
+
+/**
+ * Verdict notes, appended to the move by step() (never inside a voice branch): the classifier's verdict on the answer
+ * just given, so the words cannot agree with an answer the key did not (G-PRAISE-1; audit #13 "Bilkul" after a wrong
+ * answer). The correct case needs none: CONFIRM / retrievalNext already confirm it.
+ */
+export const VERDICT_NOTE = {
+  not_yet: "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step",
+  partial: "their answer was partly right: name the right part, no full agreement",
+  unverified: "no verdict on their reply: neither praise nor 'wrong'",
+};
 
 /** Prefixes that confirm a just-finished answer before the next thing. */
 export const CONFIRM = {

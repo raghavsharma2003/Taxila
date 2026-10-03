@@ -11,7 +11,7 @@ defineMechanic({
   reduce(m, action, ctx) {
     if (action.control === "confirm") return { model: m, commit: true };
     if (action.control === "clear") return { model: { n: m.n.map(() => 0), units: m.units } };
-    const k = m.units.findIndex((u) => u.slot === action.ref.slot);
+    const k = m.units.findIndex((u) => ctx.refs.same(u, action.ref));
     if (k < 0) return { reject: "invalid" };
     const n = m.n.slice();
     if (action.type === "add") { if (n[k] >= 9) return { reject: "locked" }; n[k] += 1; }

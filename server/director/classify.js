@@ -6,7 +6,7 @@
 import { chat, DEPLOY, isReasoningFamily, isContentFilter } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
 import { scanSafety, wantsToStop } from "./safety.js";
-import { whyKey, norm as normAnswer } from "./items.js";
+import { whyKey, norm as normAnswer, posesItem } from "./items.js";
 
 /** Below this ASR confidence a transcript is not evidence (signal-fusion rule 3: never score it wrong). */
 export const ASR_MIN = 0.5;
@@ -230,7 +230,19 @@ async function distressCheck(text, classLevel, trace) {
  * the teacher's reply speculatively alongside that model call (server/routes/lesson.js).
  * @returns {{ result: Awaited<ReturnType<typeof classify>> | null, flags: object, text: string }}
  */
-export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer }) {
+/**
+ * Did the teacher's last turn ask some OTHER question than the item's? Only then can an exact key match be an answer
+ * to that other question: "36" to an improvised "5 ka square?" matched the key of "26 or 36, which is a square?",
+ * and "25" to "what comes after 25?" was taken as right (audit #13, "Bilkul"). Such a turn goes to the model, whose
+ * rule labels a reply to a different question no_attempt. A turn that poses the item, or asks nothing, is unchanged.
+ */
+export function askedOther(heard, item, lang) {
+  if (!heard || !item || !/[?？]/.test(heard)) return false;
+  const lastQ = (String(heard).match(/[^.!?।]*[?？]/g) ?? []).at(-1) ?? "";
+  return !posesItem(heard, item, lang) && !posesItem(lastQ, item, lang);
+}
+
+export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang }) {
   const text = String(childText || "").trim();
   const read = readUtterance(text);
   const safety = scanSafety(text);
@@ -251,7 +263,7 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   if (!text) return done("no_evidence", "empty");
   if (safety.distress) return done("no_evidence", "predicate");
   if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) return { result: null, flags, text, lowAsr: true };
-  if (target.mode === "item") {
+  if (target.mode === "item" && !askedOther(heard, target.item, lang)) {
     const t = norm(text);
     if ([target.key, ...(target.also || [])].some((k) => k && norm(k) === t)) return done("correct", "exact");
     const opt = target.options?.find((o) => norm(o.text) === t);

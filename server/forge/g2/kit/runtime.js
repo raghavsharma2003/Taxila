@@ -1,24 +1,32 @@
-// tgk-lite@1 — the TRUSTED Forge G2 frame kit (browser code; inlined into every G2 bundle by ../bundle.js).
+// tgk-lite@2 — the TRUSTED Forge G2 frame kit (browser code; inlined into every G2 bundle by ../bundle.js).
 // FACTORY.md §4.2-4.4 in the smallest form that keeps the laws: agent code is one `defineMechanic({...})` call that
 // owns only the mechanic (pure init/reduce, targets, render, facts). The KIT owns everything a grade depends on:
 //   - the bridge (ModuleToHost / HostToModule, shared/contracts.ts): page-level "ready", then init + MessagePort;
-//   - values: agent code never holds a value, only refs from ctx.refs ({item, slot}); the kit resolves them, draws
+//   - values: agent code never holds a value, only OPAQUE refs from ctx.refs ({item, slot: "o:<per-mount nonce>"}); the
+//     token → slot map (key / d:N / u:K) lives in this closure only, and the option order is shuffled with
+//     crypto randomness per mount, so neither a ref nor a position says which option is the key; the kit resolves refs, draws
 //     every numeral and every bound target label itself (label ≡ bound value by construction, §4.3 item 4);
 //   - the observation: choice = the last accepted `choose` ref; build = a kit-owned shadow of unit counts that must
 //     agree with facts(model) after every accepted action (§4.3 item 3, else state_diverged);
 //   - grading against the item key the server expanded from the verified kit (a model never grades);
 //   - the item cursor, goal_met (once), stuck, reveal/highlight, feel (CSS) and the 30-ish ms call budget.
-// Runtime refusals (ForgeContract) are the boundary; the Q1 lint (../lint.js) is only a first net.
+// Runtime refusals (ForgeContract) are the boundary; the Q1 lint (../lint.js) is only a first net. Before agent code runs
+// the kit FREEZES the shared intrinsics (Object/Array/String/… and their prototypes, iterator prototypes, MessagePort):
+// agent code runs in the kit's realm, so a patched Array.prototype.filter could otherwise change what the kit posts.
 // The QA seam: if the harness defined `__forgeSeamInstall` before this script ran (page.addInitScript), the kit
 // hands it a frozen read-only view. Production never defines it, and agent code cannot name it (lint + shadowing).
 /* eslint-disable no-var */
 function __tgkBoot(agentFactory, DESIGN) {
   "use strict";
-  var KIT_VERSION = "tgk-lite@1";
+  var KIT_VERSION = "tgk-lite@2";
   var W = 360, H = 400;
   var seamInstall = typeof window.__forgeSeamInstall === "function" ? window.__forgeSeamInstall : null;
   var post0 = window.parent.postMessage.bind(window.parent);
   var jsonStr = JSON.stringify, now = performance.now.bind(performance);
+  var cryptoFill = crypto.getRandomValues.bind(crypto);
+  /** A fresh opaque token (never derived from the slot). Mutation probes in scripts/forge-g2-mutants.mjs anchor on this line. */
+  function tokenFor(internal) { var a = new Uint32Array(2); cryptoFill(a); return "o:" + a[0].toString(36) + a[1].toString(36); }
+  function randBelow(n) { var a = new Uint32Array(1); cryptoFill(a); return a[0] % n; }
   try { delete window.RTCPeerConnection; delete window.webkitRTCPeerConnection; delete window.RTCDataChannel; delete window.WebTransport; } catch (e) { /* non-configurable */ }
   var MODULE_ID = decodeURIComponent(location.hash.slice(1));
   var port = null, initMsg = null, announced = false;
@@ -68,6 +76,17 @@ function __tgkBoot(agentFactory, DESIGN) {
     o.random = function () { throw new Error("Math.random is not available: use ctx.rng()"); };
     return o;
   })()));
+  (function hardenIntrinsics() {
+    function fz(o) { if (o && (typeof o === "object" || typeof o === "function") && !Object.isFrozen(o)) Object.freeze(o); }
+    ["Object", "Array", "Function", "String", "Number", "Boolean", "Symbol", "BigInt", "JSON", "Math", "Map", "Set", "WeakMap", "WeakSet",
+      "Promise", "RegExp", "Error", "TypeError", "RangeError", "SyntaxError", "ReferenceError", "EvalError", "URIError", "Reflect",
+      "ArrayBuffer", "DataView", "Uint8Array", "Uint32Array", "Float64Array", "MessagePort", "EventTarget", "Iterator"].forEach(function (n) {
+      var c = window[n]; if (!c) return; fz(c); if (c.prototype) fz(c.prototype);
+    });
+    var ai = Object.getPrototypeOf([][Symbol.iterator]()); fz(ai); fz(Object.getPrototypeOf(ai));
+    fz(Object.getPrototypeOf(new Map()[Symbol.iterator]())); fz(Object.getPrototypeOf(new Set()[Symbol.iterator]()));
+    fz(Object.getPrototypeOf(""[Symbol.iterator]())); fz(Object.getPrototypeOf(Uint8Array)); fz(Object.getPrototypeOf(Uint8Array.prototype));
+  })();
   try {
     agentFactory(function defineMechanic(m) { if (mechanic) throw new Error("defineMechanic called twice"); mechanic = m; }, SAFE_MATH);
   } catch (e) { finding("Agent.define_threw", e && e.message); }
@@ -88,7 +107,7 @@ function __tgkBoot(agentFactory, DESIGN) {
 
   // ───── state ─────
   var state = { lang: "hinglish", ageBand: "10-15", levels: [], li: 0, ii: 0, model: null, selection: null, shadow: null,
-    wrong: {}, stuckSent: {}, won: false, failed: false, revealed: false, rng: rngOf(1), fx: [], goal: "complete", busy: false };
+    wrong: Object.create(null), stuckSent: Object.create(null), attempts: Object.create(null), tokens: Object.create(null), optRefs: [], unitRefs: [], won: false, failed: false, revealed: false, rng: rngOf(1), fx: [], goal: "complete", busy: false };
   function levelNow() { return state.levels[state.li]; }
   function itemNow() { var l = levelNow(); return l && l.items[state.ii]; }
   function minTarget() { return state.ageBand === "6-9" ? 56 : 44; }
@@ -97,27 +116,39 @@ function __tgkBoot(agentFactory, DESIGN) {
   function resolve(ref) {
     if (!ref || typeof ref !== "object") return null;
     var it = itemNow();
-    if (!it || ref.item !== it.id) return null;
-    var s = String(ref.slot || "");
-    if (s === "key") return { slot: "key", v: it.key.v, label: it.key.label };
+    if (!it || ref.item !== it.id || typeof ref.slot !== "string") return null;
+    var s = state.tokens[ref.slot];
+    if (!s) return null;
+    if (s === "key") return { slot: "key", id: "key", v: it.key.v, label: it.key.label };
     var m = s.match(/^d:(\d{1,2})$/);
-    if (m) { var d = it.distractors[+m[1]]; return d ? { slot: "d", v: d.v, label: d.label, misc: d.misc || null } : null; }
+    if (m) { var d = it.distractors[+m[1]]; return d ? { slot: "d", id: s, v: d.v, label: d.label, misc: d.misc || null } : null; }
     m = s.match(/^u:(\d{1,2})$/);
-    if (m) { var u = (it.units || [])[+m[1]]; return u ? { slot: "u", k: +m[1], v: u.v, label: u.label } : null; }
+    if (m) { var u = (it.units || [])[+m[1]]; return u ? { slot: "u", id: s, k: +m[1], v: u.v, label: u.label } : null; }
     return null;
   }
+  /** New opaque refs for the active item (called once per item start): token → slot stays in this closure. */
+  function mintRefs() {
+    var it = itemNow(), id = it ? it.id : "";
+    state.tokens = Object.create(null);
+    var slots = ["key"].concat((it ? it.distractors : []).map(function (_, i) { return "d:" + i; }));
+    // crypto-shuffled per mount: the key's position carries nothing an agent (or a known seed) could reproduce
+    for (var i = slots.length - 1; i > 0; i--) { var j = randBelow(i + 1); var t = slots[i]; slots[i] = slots[j]; slots[j] = t; }
+    state.optRefs = it && it.mode !== "build" ? slots.map(function (sl) { var tk = tokenFor(sl); state.tokens[tk] = sl; return Object.freeze({ item: id, slot: tk }); }) : [];
+    state.unitRefs = ((it && it.units) || []).map(function (_, k) { var tk = tokenFor("u:" + k); state.tokens[tk] = "u:" + k; return Object.freeze({ item: id, slot: tk }); });
+  }
+  function sameRef(a, b) { return !!(a && b && typeof a === "object" && typeof b === "object" && a.item === b.item && a.slot === b.slot && typeof a.slot === "string"); }
   function makeRefs() {
     var it = itemNow();
     var id = it ? it.id : "";
-    var opts = [{ item: id, slot: "key" }].concat((it ? it.distractors : []).map(function (_, i) { return { item: id, slot: "d:" + i }; }));
-    // kit-shuffled (seeded per item): the key's position carries no meaning the agent could leak
-    var r = rngOf((state.seed + state.li * 131 + state.ii * 17) >>> 0);
-    for (var i = opts.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = opts[i]; opts[i] = opts[j]; opts[j] = t; }
+    var opts = state.optRefs, units = state.unitRefs;
     return Object.freeze({
       activeItem: function () { return id; },
-      options: function () { return opts.map(function (o) { return Object.freeze({ item: o.item, slot: o.slot }); }); },
-      units: function () { return ((it && it.units) || []).map(function (_, k) { return Object.freeze({ item: id, slot: "u:" + k }); }); },
+      options: function () { return opts.slice(); },
+      units: function () { return units.slice(); },
       count: function () { return opts.length; },
+      /** The only way to compare two refs (reading `.slot` is a lint error; tokens are meaningless anyway). */
+      same: function (a, b) { return sameRef(a, b); },
+      indexOf: function (ref) { for (var i = 0; i < opts.length; i++) if (sameRef(opts[i], ref)) return i; for (var k = 0; k < units.length; k++) if (sameRef(units[k], ref)) return k; return -1; },
     });
   }
   function ctx() {
@@ -144,6 +175,7 @@ function __tgkBoot(agentFactory, DESIGN) {
   function startItem() {
     var it = itemNow();
     state.selection = null;
+    mintRefs();
     state.shadow = it && it.mode === "build" ? (it.units || []).map(function () { return 0; }) : null;
     var r = call("init", [ctx()]);
     if (!r.ok) return contractError("init_failed", r.err);
@@ -180,9 +212,10 @@ function __tgkBoot(agentFactory, DESIGN) {
   function readTargets() {
     var r = call("targets", [state.model, ctx()]);
     if (!r.ok || !Array.isArray(r.out)) { contractError("targets_failed", r.err || "not an array"); return []; }
-    var it = itemNow(), seen = {}, out = [], min = minTarget();
+    var it = itemNow(), seen = Object.create(null), out = [], min = minTarget();
     for (var i = 0; i < r.out.length && i < 24; i++) {
       var t = r.out[i] || {};
+      if (typeof t !== "object") t = {};
       if (typeof t.id !== "string" || !/^[a-z0-9_:-]{1,32}$/i.test(t.id) || seen[t.id]) { contractError("target_id", String(t.id)); return []; }
       seen[t.id] = 1;
       var rc = t.rect || {};
@@ -204,7 +237,7 @@ function __tgkBoot(agentFactory, DESIGN) {
         if ((op === "choose") !== (res.slot !== "u") || ["choose", "add", "remove"].indexOf(op) < 0) { contractError("ref_wrong_slot", t.id + " " + op + " " + ref.slot); return []; }
         if (it.mode === "build" && op === "choose") { contractError("ref_wrong_slot", t.id + " choose in build"); return []; }
         if (it.mode !== "build" && op !== "choose") { contractError("ref_wrong_slot", t.id + " " + op + " in choice"); return []; }
-        spec.op = op; spec.ref = { item: ref.item, slot: String(ref.slot) }; spec.res = res;
+        spec.op = op; spec.ref = { item: ref.item, slot: ref.slot }; spec.res = res;
       }
       out.push(spec);
     }
@@ -256,11 +289,12 @@ function __tgkBoot(agentFactory, DESIGN) {
       if (!state.selection) return contractError("commit_without_selection", it.id);
       var res = resolve(state.selection);
       if (!res) return contractError("ref_unresolved", "selection");
-      value = res.v; ref = state.selection;
+      value = res.v; ref = { item: it.id, slot: res.id };       // the INTERNAL slot goes to the host; agent code never saw it
     }
     var correct = [it.key.v].concat(it.acceptable || []).some(function (k) { return same(k, value); });
     var d = correct ? null : it.distractors.filter(function (x) { return same(x.v, value); })[0];
-    var payload = { kind: "g2.commit", item: it.id, value: value };
+    state.attempts[it.id] = (state.attempts[it.id] || 0) + 1;
+    var payload = { kind: "g2.commit", item: it.id, value: value, attempt: state.attempts[it.id] };
     if (ref) payload.ref = { item: ref.item, slot: ref.slot };
     if (units) payload.units = units;
     if (d && d.misc) payload.misc = d.misc;
@@ -307,7 +341,7 @@ function __tgkBoot(agentFactory, DESIGN) {
   }
   var drawCount = 0;
   function makeDraw(layer) {
-    function add(tag, attrs, s) { if (++drawCount > 600) return; var n = document.createElementNS(SVGNS, tag); for (var k in attrs) n.setAttribute(k, String(attrs[k])); styleOf(n, s); layer.appendChild(n); }
+    function add(tag, attrs, s, agent) { if (++drawCount > 600) return; var n = document.createElementNS(SVGNS, tag); for (var k in attrs) n.setAttribute(k, String(attrs[k])); styleOf(n, s); if (agent) n.setAttribute("data-a", "1"); layer.appendChild(n); }
     function textNode(str, x, y, s, kind) {
       if (++drawCount > 600) return;
       s = s || {};
@@ -318,17 +352,17 @@ function __tgkBoot(agentFactory, DESIGN) {
       n.textContent = str; n.setAttribute("data-k", kind || "w"); layer.appendChild(n);
     }
     return Object.freeze({
-      rect: function (x, y, w, h, s) { add("rect", { x: num(x, -W, 2 * W), y: num(y, -H, 2 * H), width: num(w, 0, 2 * W), height: num(h, 0, 2 * H), rx: num((s || {}).r || 0, 0, 200) }, s); },
-      circle: function (cx, cy, r, s) { add("circle", { cx: num(cx, -W, 2 * W), cy: num(cy, -H, 2 * H), r: num(r, 0, 400) }, s); },
-      line: function (x1, y1, x2, y2, s) { s = Object.assign({ stroke: "ink", fill: "none" }, s || {}); add("line", { x1: num(x1, -W, 2 * W), y1: num(y1, -H, 2 * H), x2: num(x2, -W, 2 * W), y2: num(y2, -H, 2 * H) }, s); },
-      poly: function (pts, s) { if (!Array.isArray(pts) || pts.length > 64) return; add("polygon", { points: pts.map(function (p) { return num(p[0], -W, 2 * W) + "," + num(p[1], -H, 2 * H); }).join(" ") }, s); },
+      rect: function (x, y, w, h, s) { add("rect", { x: num(x, -W, 2 * W), y: num(y, -H, 2 * H), width: num(w, 0, 2 * W), height: num(h, 0, 2 * H), rx: num((s || {}).r || 0, 0, 200) }, s, 1); },
+      circle: function (cx, cy, r, s) { add("circle", { cx: num(cx, -W, 2 * W), cy: num(cy, -H, 2 * H), r: num(r, 0, 400) }, s, 1); },
+      line: function (x1, y1, x2, y2, s) { s = Object.assign({ stroke: "ink", fill: "none" }, s || {}); add("line", { x1: num(x1, -W, 2 * W), y1: num(y1, -H, 2 * H), x2: num(x2, -W, 2 * W), y2: num(y2, -H, 2 * H) }, s, 1); },
+      poly: function (pts, s) { if (!Array.isArray(pts) || pts.length > 64) return; add("polygon", { points: pts.map(function (p) { return num(p[0], -W, 2 * W) + "," + num(p[1], -H, 2 * H); }).join(" ") }, s, 1); },
       /** Words only by strings-table key; a missing key draws nothing (and is a finding). */
       text: function (key, x, y, s) { var t = sayKey(key); if (t == null) { finding("Agent.unknown_string", key); return; } textNode(t, x, y, s); },
       /** Numerals only through a ref (or the shadow readout), resolved and drawn by the kit. */
       numeral: function (ref, x, y, s) {
         if (ref && ref.readout === "shadow") { if (!state.shadow) return; var tot = shadowTotal(); if (tot) textNode(rstr(tot), x, y, s); return; }
         var res = resolve(ref); if (!res) { finding("ForgeContract.numeral_unresolved", jsonStr(ref)); return; }
-        drawnSlots[res.slot === "key" ? "key" : ref.slot] = 1;
+        drawnSlots[res.id] = 1;
         textNode(res.label, x, y, s, "n");
       },
       /** A picture of a value, drawn by the KIT from the resolved ref (fraction → bar or pie, whole number ≤ 20 → dots).
@@ -336,7 +370,7 @@ function __tgkBoot(agentFactory, DESIGN) {
       model: function (ref, x, y, w, h, o) {
         var res = resolve(ref); if (!res) { finding("ForgeContract.model_unresolved", jsonStr(ref)); return; }
         var v = parseNum(res.v); if (!v || v.n < 0) { finding("ForgeContract.model_not_numeric", res.label); return; }
-        drawnSlots[res.slot === "key" ? "key" : ref.slot] = 1;
+        drawnSlots[res.id] = 1;
         x = num(x, 0, W); y = num(y, 0, H); w = num(w, 8, W); h = num(h, 8, H);
         var kind = (o && o.kind) || (v.d > 1 ? "bar" : "dots");
         if (v.d > 1) {
@@ -437,7 +471,8 @@ function __tgkBoot(agentFactory, DESIGN) {
     state.lang = m.lang || "hinglish"; state.ageBand = m.ageBand || "10-15"; state.goal = m.goal || "complete";
     if (!mechanic) { state.failed = true; post({ type: "error", moduleId: MODULE_ID, message: "mechanic not defined" }); return renderFailed(); }
     if (!lv) { state.failed = true; post({ type: "error", moduleId: MODULE_ID, message: "bad levels" }); return renderFailed(); }
-    state.levels = lv; state.li = 0; state.ii = 0; state.won = false; state.failed = false; state.revealed = false; state.wrong = {}; state.stuckSent = {};
+    state.levels = lv; state.li = 0; state.ii = 0; state.won = false; state.failed = false; state.revealed = false;
+    state.wrong = Object.create(null); state.stuckSent = Object.create(null); state.attempts = Object.create(null);
     state.seed = (m.params.seed >>> 0) || 1; state.rng = rngOf(state.seed);
     startItem();
   }
@@ -454,11 +489,11 @@ function __tgkBoot(agentFactory, DESIGN) {
     try {
       seamInstall(Object.freeze({
         version: KIT_VERSION,
-        state: function () { var it = itemNow(); return clone({ li: state.li, ii: state.ii, item: it ? it.id : null, mode: it ? it.mode : null, won: state.won, failed: state.failed, shadow: state.shadow, selection: state.selection, model: state.model }); },
+        state: function () { var it = itemNow(); var sel = state.selection && resolve(state.selection); return clone({ li: state.li, ii: state.ii, item: it ? it.id : null, mode: it ? it.mode : null, won: state.won, failed: state.failed, shadow: state.shadow, selection: sel ? sel.id : null, model: state.model }); },
         targets: function () {
           return (targetsCache || []).map(function (t) {
             var b = hits.querySelector('[data-tgk-target="' + t.id + '"]'); var r = b ? b.getBoundingClientRect() : null;
-            return { id: t.id, kind: t.kind, op: t.op || null, control: t.control || null, slot: t.ref ? t.ref.slot : null, item: t.ref ? t.ref.item : null,
+            return { id: t.id, kind: t.kind, op: t.op || null, control: t.control || null, slot: t.res ? t.res.id : null, item: t.ref ? t.ref.item : null,
               value: t.res ? t.res.v : null, label: b ? b.textContent : null, bbox: r ? { x: r.x, y: r.y, w: r.width, h: r.height } : null,
               font: b ? parseFloat(getComputedStyle(b).fontSize) : null };
           });
@@ -472,6 +507,26 @@ function __tgkBoot(agentFactory, DESIGN) {
             return { text: n.textContent, k: n.getAttribute("data-k"), x: (r.x - vb.x) * sx, y: (r.y - vb.y) * sy, w: r.width * sx, h: r.height * sy }; });
         },
         targetRects: function () { return (targetsCache || []).map(function (t) { return { id: t.id, x: t.rect.x, y: t.rect.y, w: t.rect.w, h: t.rect.h }; }); },
+        /** Agent-drawn marks (primitives + words) nearest each option target, as a position-free signature. QA uses it
+         *  to find a key that is DECORATED differently from every distractor (leak.key_styled). */
+        optionMarks: function () {
+          var vb = svg.getBoundingClientRect(), sx = W / vb.width, sy = H / vb.height, pad = 16;
+          var opts = (targetsCache || []).filter(function (t) { return t.op === "choose"; });
+          var sig = opts.map(function () { return []; });
+          Array.prototype.forEach.call(svg.querySelectorAll('[data-a="1"], text[data-k="w"]'), function (n) {
+            var r = n.getBoundingClientRect(), x = (r.x - vb.x) * sx, y = (r.y - vb.y) * sy, w = r.width * sx, h = r.height * sy;
+            if (w * h > 0.5 * W * H) return;                                       // backgrounds touch everything equally
+            var best = -1, bd = Infinity;
+            opts.forEach(function (t, i) {
+              var q = t.rect;
+              if (x > q.x + q.w + pad || x + w < q.x - pad || y > q.y + q.h + pad || y + h < q.y - pad) return;
+              var d = Math.pow(x + w / 2 - (q.x + q.w / 2), 2) + Math.pow(y + h / 2 - (q.y + q.h / 2), 2);
+              if (d < bd) { bd = d; best = i; }
+            });
+            if (best >= 0) sig[best].push([n.tagName, n.getAttribute("fill"), n.getAttribute("stroke"), n.getAttribute("opacity"), Math.round(w / 4), Math.round(h / 4), n.textContent || ""].join("|"));
+          });
+          return opts.map(function (t, i) { return { slot: t.res.id, sig: sig[i].sort().join(";") }; });
+        },
         prePromptText: function () { return (prompt.textContent || "") + "\n" + Array.prototype.map.call(svg.querySelectorAll('text[data-k="w"]'), function (n) { return n.textContent; }).join("\n"); },
       }));
     } catch (e) { /* the seam is QA-only */ }

@@ -1,5 +1,6 @@
 // Item bookkeeping for the director: probe mapping, the practice queue, isomorphic items, the spoken
 // diagnostic (P7) built from a kit misconception, and the code-level answer-leak predicate.
+import { toAap } from "./register.js";
 
 /** Item kind → probe id from the catalogue (learning-science §7). Plain practice is P15, hint-ladder consumption. */
 export const PROBE_FOR_KIND = {
@@ -64,11 +65,27 @@ export function diagnosticItem(kit, m, seed = 0) {
 /** A diagnostic's options as they are said aloud: "1/2 ya 1/3" (Hinglish/Hindi) or "1/2 or 1/3". */
 export const optionsSpoken = (item, lang) => item.options.map((o) => o.text).join(lang === "english" ? " or " : " ya ");
 
+/**
+ * The item as THIS child is asked it: an "aap" child (state.ctx.address, director/register.js) gets the Hinglish /
+ * Hindi question in aap forms. Only the question changes (prompt_hi); keys, acceptable answers, hints and option
+ * texts are the kit's. Every reader of the posed question (compile, the reply guards, the classifier, the Question
+ * card) gets its item from findItem, so what is said, shown, guarded and graded is one text.
+ */
+const AAP = new WeakMap();
+export function addressed(item, address) {
+  if (!item || address !== "aap" || !item.prompt_hi) return item;
+  if (AAP.has(item)) return AAP.get(item);
+  const out = { ...item, prompt_hi: toAap(item.prompt_hi) };
+  AAP.set(item, out);
+  return out;
+}
+
 /** Resolve an item id against the kit, its diagnostics, and the warm-up snapshot in the lesson state. */
 export function findItem(s, kit, id) {
   if (!id) return null;
-  if (id.startsWith(DIAG_PREFIX)) return diagnosticItem(kit, kit.misconceptions.find((m) => m.id === id.slice(DIAG_PREFIX.length)), s.seed);
-  return kit.items.find((i) => i.id === id) ?? s.warmup?.find((w) => w.id === id) ?? null;
+  const address = s?.ctx?.address;
+  if (id.startsWith(DIAG_PREFIX)) return addressed(diagnosticItem(kit, kit.misconceptions.find((m) => m.id === id.slice(DIAG_PREFIX.length)), s.seed), address);
+  return addressed(kit.items.find((i) => i.id === id) ?? s.warmup?.find((w) => w.id === id) ?? null, address);
 }
 
 /**

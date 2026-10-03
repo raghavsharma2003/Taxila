@@ -11,24 +11,21 @@
 }
 .btn:active:not(:disabled) { transform: scale(0.97); }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
-.btn-primary { background: var(--jamun); color: var(--surface); }
+.btn-primary { background: var(--nib); color: var(--on-nib); }
 .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--tile-border); }
 .btn-quiet { background: transparent; color: var(--ink); border-color: transparent; text-decoration: underline; text-underline-offset: 3px; }
-.btn-danger { background: var(--surface); color: var(--ink); border-color: var(--ink); } /* exits use ink, never red (§2.9) */
+.btn-danger, .btn-destructive { background: var(--surface); color: var(--ink); border-color: var(--ink); } /* exits use ink, never red (V2 §6.4.2) */
 .btn-block { width: 100%; }
 .btn-sm { min-height: 48px; padding: var(--space-2) var(--space-4); font-size: 0.9375rem; }
-/* The one YOUR TURN element (§0.4): marigold fill + darkened ring drawn as outline (forced-colours safe). */
-.btn-turn { background: var(--turn); color: var(--ink); outline: 3px solid var(--turn-ring); outline-offset: 0; }
-[data-surface="parent"] .btn-turn { background: var(--p-yourturn-fill); outline-color: var(--p-yourturn-text); }
-[data-surface="parent"] .btn-primary { background: var(--jamun); }
+/* No button carries the lamp (V2 §7.1 G-LAMP-1): the old "turn" variant is gone; primary buttons are nib. */
 
 /* ── Card ── */
 .card { background: var(--surface); border-radius: var(--radius-md); padding: var(--space-4); border: 1px solid var(--surface-2); box-shadow: var(--elev-card); }
 .card-flat { box-shadow: none; border-color: var(--tile-border); }
 .card-title { font-family: var(--font-text); font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
 [data-surface="parent"] .card-title { color: var(--p-ink-2); }
-/* Parent "your turn" block: the only marigold block on a parent screen (PX3). Shape: a left bar + label. */
-.card-turn { border-left: 6px solid var(--p-yourturn-text); background: var(--surface); }
+/* Parent "Try at home" block: a nib left bar. The parent never uses turn language or the lamp (V2 §5.3). */
+.card-turn { border-left: 6px solid var(--nib); background: var(--surface); }
 
 /* ── Tile (choice) ── */
 .tile {
@@ -84,7 +81,8 @@ button.chip[aria-pressed="true"] { border-color: var(--jamun); background: var(-
 @keyframes tx-sheet { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
 .sheet-head { position: sticky; top: 0; display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4);
   background: var(--surface); border-bottom: 1px solid var(--surface-2); z-index: 1; }
-.sheet-head h2 { font-family: var(--font-text); font-size: 1.25rem; flex: 1; }
+.sheet-head h2 { font-family: var(--font-text); font-size: 1.25rem; flex: 1; outline: none; }
+.sheet { box-shadow: var(--elev-sheet); }
 .sheet-body { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-4); }
 @media (min-width: 720px) { .sheet { margin: auto; border-radius: var(--radius-lg); } }
 
@@ -102,16 +100,17 @@ button.chip[aria-pressed="true"] { border-color: var(--jamun); background: var(-
 /* ── HoldButton (press and hold; single pointer, no drag: 2.5.7) ── */
 .hold { position: relative; overflow: hidden; isolation: isolate; }
 .hold-fill { position: absolute; inset: 0; background: var(--jamun-soft); transform-origin: left center; transform: scaleX(0); z-index: -1; }
-.btn-primary .hold-fill { background: var(--d4-baingan); }
+.btn-primary .hold-fill { background: var(--d4); }
+.hold-ring { position: absolute; right: var(--space-3); width: 24px; height: 24px; }
 .hold[data-holding="true"] .hold-fill { transform: scaleX(1); transition: transform var(--hold-ms, 1200ms) linear; }
 
 /* ── Status glyph (§3.9) ── */
 .status { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; }
 .status svg { width: 24px; height: 24px; }
-.status[data-state="your_turn"] svg { color: var(--turn-ring); }
+.status[data-state="your_turn"] svg { color: var(--ink); }
 .status[data-state="listening"] svg { color: var(--listen); }
 .status[data-state="thinking"] svg { color: var(--think); }
-.status[data-state="speaking"] svg { color: var(--jamun); }
+.status[data-state="speaking"] svg { color: var(--nib); }
 
 /* ── Speaker ── */
 .speaker { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-width: 48px; min-height: 48px;
@@ -132,15 +131,8 @@ button.chip[aria-pressed="true"] { border-color: var(--jamun); background: var(-
 @keyframes tx-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } }
 
-/* ── Teacher face (src/ui/TeacherFace.tsx) ── */
-.teacher-face .tf-eyes { transform-origin: 100px 94px; animation: tf-blink 5.2s infinite; }
-.teacher-face .tf-talk { opacity: 0; transform-origin: 100px 127px; }
-.teacher-face[data-speaking="true"] .tf-smile { opacity: 0; }
-.teacher-face[data-speaking="true"] .tf-talk { opacity: 1; animation: tf-talk 0.32s ease-in-out infinite alternate; }
-@keyframes tf-blink { 0%, 96%, 100% { transform: scaleY(1); } 98% { transform: scaleY(0.1); } }
-@keyframes tf-talk { from { transform: scaleY(0.35); } to { transform: scaleY(1); } }
-@media (prefers-reduced-motion: reduce) { .teacher-face .tf-eyes, .teacher-face .tf-talk { animation: none !important; } }
-:is([data-motion="reduce"],[data-motion="reduced"]) .teacher-face :is(.tf-eyes,.tf-talk) { animation: none !important; }
+/* ── Teacher face (src/ui/TeacherFace.tsx → src/ui/teacher/Teacher.tsx: one teacher, the rig) ── */
+.teacher-face { position: relative; border-radius: 50%; overflow: hidden; background: var(--stage); flex: none; }
 
 /* <details> summaries are targets too (A6) */
 .summary { cursor: pointer; font-weight: 600; min-height: 52px; display: flex; align-items: center; }

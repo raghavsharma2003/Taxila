@@ -5,8 +5,11 @@
 //      POST /api/lesson/turn, strictly in order, carrying the teacher turn the child was answering,
 //   3. apply the Director's answer: instructions → link (verbatim), moduleCommands → ModuleHost, ui → store,
 //      and in text mode speak teacherReply,
-//   4. derive the four-state status from link events,
-//   5. close the lesson on the server on every way out (end, Director end, unmount, page hide, fatal error).
+//   4. derive the four-state status from link events, and re-emit every link event (plus its own ui / settle /
+//      reset signals) on `events`, which the eight-state floor (src/lesson/floor.ts) reduces,
+//   5. close the lesson on the server on every way out (end, Director end, unmount, page hide, fatal error),
+//   6. never lose a child's answer: every turn goes through the outbox (src/lesson/outbox.ts): written before it
+//      is sent, retried at 1/3/6 s, held on failure and flushed in order on reconnect (PRODUCT-DESIGN-V2 §4.7).
 // The Director runs off the voice critical path: the realtime teacher answers from her current
 // instructions while the turn call is in flight; its result shapes her NEXT turn — except where the
 // Director says it must be voiced now (TurnResponse.speakNow, and the goodbye after `end`).
@@ -18,8 +21,10 @@ import { LevelMeter } from "./level.ts";
 import type { LessonMode, LinkConnection, LinkEvent, LinkLevels, TeacherLink, TeacherReply, TeacherStatus } from "./link.ts";
 import { ModuleChannel } from "./moduleChannel.ts";
 import { ModuleEventBuffer } from "./moduleEvents.ts";
-import { INITIAL_FLAGS, reduceStatus, statusOf, type StatusFlags, type StatusInput } from "./status.ts";
-import { Store } from "./store.ts";
+import { MemoryOutboxStore, Outbox, OutboxHeld, openOutboxStore, type OutboxStore } from "./outbox.ts";
+import type { RuntimeSignal } from "./floor.ts";
+import { INITIAL_FLAGS, isFree, reduceStatus, statusOf, type StatusFlags, type StatusInput } from "./status.ts";
+import { Emitter, Store } from "./store.ts";
 import { TeacherTurns } from "./teacherTurns.ts";
 import { TextLink } from "./textLink.ts";
 import { realTimers, type Timers } from "./timers.ts";
@@ -50,6 +55,17 @@ export interface LessonState {
   /** Director calls in flight (the Director is never on the voice critical path; this is for dev UI). */
   pendingTurns: number;
   error: string | null;
+  /**
+   * Why the lesson cannot carry on as normal (drives the trouble states, never shown raw): an expired session
+   * (401/403), a start that failed, or an answer held in the outbox after its retries.
+   */
+  failure: null | { kind: "auth" | "start" | "send"; status?: number; retryable?: boolean; at: number };
+  /** Answers held in the outbox (written, not yet acknowledged by the server), by turnSeq. */
+  held: number[];
+  /** The last answer the server acknowledged after a retry or resend (RC: its chip flips to "Sent"). */
+  lastResent: number | null;
+  /** The outbox is memory-only (IndexedDB unavailable): the lesson card notes it. */
+  outboxVolatile: boolean;
   debug: Record<string, unknown> | null;
 }
 
@@ -91,6 +107,10 @@ export interface RuntimeDeps {
   createLink?: LinkFactory;
   timers?: Timers;
   voiceFeatures?: VoiceFeaturesFactory;
+  /** The answer outbox's store (default: IndexedDB when it opens, else memory). */
+  outboxStore?: OutboxStore | (() => Promise<OutboxStore>);
+  /** Retry schedule override (tests). */
+  retrySchedule?: readonly number[];
 }
 
 const MAX_CAPTIONS = 60;
@@ -123,6 +143,10 @@ const initialState = (mode: LessonMode = "voice"): LessonState => ({
   pendingTurns: 0,
   error: null,
   debug: null,
+  failure: null,
+  held: [],
+  lastResent: null,
+  outboxVolatile: false,
 });
 
 interface ChildInput {
@@ -144,6 +168,10 @@ type EndStage = "none" | "await_floor" | "goodbye_requested" | "goodbye" | "clos
 
 export class LessonRuntime {
   readonly store = new Store<LessonState>(initialState());
+  /** Every link event in order, plus the runtime's own ui / settle / reset signals: the floor's input. */
+  readonly events = new Emitter<RuntimeSignal>();
+  /** The answer outbox (PRODUCT-DESIGN-V2 §4.7). */
+  readonly outbox: Outbox;
   /** Module commands for <ModuleHost source={runtime.modules}>. */
   readonly modules = new ModuleChannel();
   /** Stable meters (the link attaches analysers to them), so UI can subscribe before a lesson starts. */
@@ -172,6 +200,9 @@ export class LessonRuntime {
   private readonly closed = new Set<string>();
   private generation = 0; // bumps on every start/teardown so stale async work is ignored
   private typedSeq = 0;
+  /** The last Director-written teacher line (text lanes): "Play again" after her audio failed (T5). */
+  private lastReply: TeacherReply | null = null;
+  private outboxReady: Promise<void> = Promise.resolve();
 
   constructor(deps: RuntimeDeps = {}) {
     this.api = deps.api ?? httpLessonApi;
@@ -179,6 +210,19 @@ export class LessonRuntime {
     this.timers = deps.timers ?? realTimers;
     this.vfFactory = deps.voiceFeatures ?? defaultVoiceFeatures;
     this.buffer = new ModuleEventBuffer(() => this.queueTurn(null));
+    const given = deps.outboxStore;
+    this.outbox = new Outbox({ store: typeof given === "object" ? given : new MemoryOutboxStore(true), timers: this.timers, schedule: deps.retrySchedule });
+    if (typeof given !== "object") {
+      // IndexedDB opens asynchronously; turns before it opens are held in memory and carried over.
+      this.outboxReady = (given ?? openOutboxStore)().then(
+        async (store) => {
+          await this.outbox.useStore(store, this.state.lessonId ? [this.state.lessonId] : []);
+          this.store.set({ outboxVolatile: !store.durable });
+        },
+        () => this.store.set({ outboxVolatile: true }),
+      );
+    }
+    if (typeof window !== "undefined") window.addEventListener("online", this.onOnline);
   }
 
   get state(): LessonState {
@@ -216,14 +260,19 @@ export class LessonRuntime {
       // The teacher opens: in voice the realtime model greets from the initial instructions; in text the
       // server may hand us her opening line.
       if (mode === "voice") link.promptTeacher();
-      else if (s.teacherOpening) link.promptTeacher({ text: s.teacherOpening, seq: s.teacherOpeningSeq });
+      else if (s.teacherOpening) {
+        this.lastReply = { text: s.teacherOpening, seq: s.teacherOpeningSeq };
+        link.promptTeacher(this.lastReply);
+      }
       else this.dispatch({ type: "settle" });
     } catch (err) {
       if (gen !== this.generation) return lessonId ? this.closeQuietly(lessonId) : undefined;
       this.teardown();
       // The server opened a lesson that never ran (e.g. the voice call could not connect): close it.
       if (lessonId) this.closeQuietly(lessonId);
-      this.store.set({ phase: "error", connection: "failed", error: messageOf(err) });
+      const status = err instanceof ApiError ? err.status : undefined;
+      const kind = status === 401 || status === 403 ? "auth" : "start";
+      this.store.set({ phase: "error", connection: "failed", error: messageOf(err), failure: { kind, status, at: Date.now() } });
       throw err;
     }
   }
@@ -261,6 +310,45 @@ export class LessonRuntime {
   }
 
   /**
+   * Send every answer still held in the outbox, oldest first, through the same ordered chain as new turns, and
+   * apply each answer as it lands. Used on reconnect ("online") and by the child's "Send again" / "Try again".
+   * Each resend is marked retried. Resolves true when nothing is left held.
+   */
+  resendHeld(): Promise<boolean> {
+    const gen = this.generation;
+    const lessonId = this.state.lessonId;
+    if (!lessonId || this.state.phase !== "live") return Promise.resolve(false);
+    const run = async () => {
+      const recs = await this.outbox.pending(lessonId);
+      for (const rec of recs) {
+        if (gen !== this.generation) return;
+        const res = await this.outbox.resend(rec.key, lessonId, (r) => this.api.turn(r));
+        if (gen !== this.generation) return;
+        this.store.set((s) => ({ held: s.held.filter((x) => x !== rec.turnSeq), lastResent: rec.turnSeq }));
+        this.applyTurn(res, false);
+      }
+      this.store.set((s) => ({ failure: s.failure?.kind === "send" ? null : s.failure }));
+    };
+    const p = this.chain.then(run);
+    this.chain = p.catch((err) => {
+      if (gen !== this.generation) return;
+      const cause = err instanceof OutboxHeld ? err.cause : err;
+      const status = cause instanceof ApiError ? cause.status : undefined;
+      this.store.set({ failure: { kind: status === 401 || status === 403 ? "auth" : "send", status, retryable: err instanceof OutboxHeld ? err.retryable : false, at: Date.now() } });
+    });
+    return p.then(() => true, () => false);
+  }
+
+  /** Her last line again (T5 "Play again": the speech failed; the stored turn is fetched and spoken again). */
+  replayTeacher(): void {
+    if (this.live() && this.lastReply && this.link?.mode === "text") this.link.promptTeacher(this.lastReply);
+  }
+
+  private onOnline = (): void => {
+    if (this.state.phase === "live" && (this.state.held.length || this.state.failure?.kind === "send")) void this.resendHeld();
+  };
+
+  /**
    * Close the lesson: drop the call at once, let the Director calls already made land (they may still
    * write evidence), then POST /api/lesson/end. Ending while starting leaves the server side to start().
    */
@@ -284,6 +372,7 @@ export class LessonRuntime {
 
   /** Component unmount: release the link and timers, and close a running lesson on the server. */
   dispose(): void {
+    if (typeof window !== "undefined") window.removeEventListener("online", this.onOnline);
     const { lessonId, phase } = this.state;
     if (phase !== "live" && phase !== "starting") return this.teardown();
     const pending = this.chain;
@@ -323,6 +412,7 @@ export class LessonRuntime {
   }
 
   private onLinkEvent(e: LinkEvent): void {
+    this.events.emit(e); // the floor sees every link event, in order, before anything below reacts to it
     // First, in order: a child_final's features must exist before its turn is queued (they ride on it).
     let voice: VoiceUtterance | null = null;
     try {
@@ -386,6 +476,7 @@ export class LessonRuntime {
   }
 
   private dispatch(e: StatusInput): void {
+    if (e.type === "settle" || e.type === "reset") this.events.emit({ type: e.type });
     this.flags = reduceStatus(this.flags, e);
     const status = statusOf(this.flags);
     if (status !== this.state.status) this.store.set({ status });
@@ -400,7 +491,7 @@ export class LessonRuntime {
       this.watchdog = null;
     }
     if (this.endStage !== "none") this.advanceEnd(e);
-    else if (this.deferred && status === "your_turn" && this.link) {
+    else if (this.deferred && isFree(this.flags) && this.link) {
       const { reply } = this.deferred;
       this.deferred = null;
       this.link.promptTeacher(reply);
@@ -415,10 +506,14 @@ export class LessonRuntime {
     this.store.set((s) => ({ pendingTurns: s.pendingTurns + 1 }));
     this.chain = this.chain
       .then(() => (gen === this.generation ? this.runTurn(input) : undefined))
-      .catch((err) => {
+      .catch(async (raw) => {
         if (gen !== this.generation) return;
+        // A child turn's failure arrives wrapped (OutboxHeld): the answer is still held in the outbox.
+        const held = raw instanceof OutboxHeld ? raw : null;
+        const err = held ? held.cause : raw;
         if (err instanceof ApiError && err.status === 409 && LESSON_ENDED.test(err.message)) {
           // Closed elsewhere (another tab, a page-hide beacon): nothing more can land on it.
+          if (held) await this.outbox.drop(held.rec.key);
           if (this.state.lessonId) this.closed.add(this.state.lessonId);
           this.teardown();
           this.modules.clear();
@@ -428,10 +523,18 @@ export class LessonRuntime {
         // A 409 "retry" is not retried: the server writes the turn's rows and evidence before its
         // optimistic state check, so a resend would count the same answer twice.
         this.store.set({ error: messageOf(err) });
-        if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+        const status = err instanceof ApiError ? err.status : undefined;
+        const auth = status === 401 || status === 403;
+        if (held) {
+          // The answer is held: T4 (T2 while offline), sent on reconnect or "Send again". Its module events go
+          // back to the buffer to ride with the next call, and come off the held copy, so they are sent once.
+          await this.outbox.withoutModuleEvents(held.rec);
+          this.store.set({ failure: { kind: auth ? "auth" : "send", status, retryable: held.retryable, at: Date.now() } });
+        }
+        if (auth) {
           this.teardown();
           this.modules.clear();
-          this.store.set({ phase: "error", pendingTurns: 0 });
+          this.store.set({ phase: "error", pendingTurns: 0, failure: { kind: "auth", status, at: Date.now() } });
         } else if (this.state.mode === "text" && input) {
           this.dispatch({ type: "settle" }); // no reply is coming (a milestone call never started a wait)
         }
@@ -471,7 +574,16 @@ export class LessonRuntime {
     if (batch.dropped) req.droppedEvents = batch.dropped;
     let res: TurnResponse;
     try {
-      res = await this.api.turn(req);
+      await this.outboxReady;
+      if (input) {
+        // A child turn goes through the outbox: written before it is sent, retried, held, never lost.
+        const turnSeq = this.outbox.nextSeq();
+        this.store.set((s) => ({ held: [...s.held, turnSeq] }));
+        res = await this.outbox.send(req, (r) => this.api.turn(r), { turnSeq });
+        this.store.set((s) => ({ held: s.held.filter((x) => x !== turnSeq) }));
+      } else {
+        res = await this.api.turn(req); // a module milestone: its events are re-buffered on failure
+      }
     } catch (err) {
       if (gen === this.generation) this.buffer.restore(batch); // the events ride with the next call
       throw err;
@@ -487,15 +599,16 @@ export class LessonRuntime {
     const dropped = this.modules.push(r.moduleCommands ?? []);
     if (dropped) console.warn(`lesson: dropped ${dropped} malformed module command(s)`);
     this.applyUi(r.ui ?? {});
-    this.store.set({ move: r.move ?? null, debug: r.debug ?? null, error: null });
+    this.store.set((s) => ({ move: r.move ?? null, debug: r.debug ?? null, error: null, failure: s.failure?.kind === "send" ? null : s.failure }));
     this.deferred = null; // a newer Director answer supersedes a reaction still waiting for the floor
 
     if (link.mode === "text") {
       const reply = r.teacherReply ? { text: r.teacherReply, seq: r.teacherReplySeq } : null;
+      if (reply) this.lastReply = reply;
       // A milestone's reply must not cut off the reply the child is hearing: it waits for the floor — unless
       // it is a safeguarding hand-off, which is never left where the child speaking next would drop it.
       const urgent = r.speakNow === "interrupt" || r.move?.kind === "safeguard";
-      if (reply && moduleOnly && !urgent && statusOf(this.flags) !== "your_turn" && !r.end) this.deferred = { reply };
+      if (reply && moduleOnly && !urgent && !isFree(this.flags) && !r.end) this.deferred = { reply };
       else if (reply) link.promptTeacher(reply);
       else if (!moduleOnly) this.dispatch({ type: "settle" });
     } else if (r.speakNow === "interrupt") {
@@ -504,7 +617,7 @@ export class LessonRuntime {
       link.interrupt();
       link.promptTeacher();
     } else if (r.speakNow === "when_free" && !r.end) {
-      if (statusOf(this.flags) === "your_turn") link.promptTeacher();
+      if (isFree(this.flags)) link.promptTeacher();
       else this.deferred = {};
     }
     if (r.end) this.scheduleEnd();
@@ -516,6 +629,11 @@ export class LessonRuntime {
    */
   private applyUi(ui: UiDirectives): void {
     this.store.set((s) => ({ ui: { ...ui, whiteboard: ui.whiteboard ?? s.ui.whiteboard } }));
+    // The floor reads the hand-over and cues of the turn about to be spoken (they arrive before her audio).
+    const handover = (ui as { handover?: unknown }).handover;
+    if (typeof handover === "string") this.dispatch({ type: "handover", open: handover !== "chain" });
+    else if (this.flags.handover !== null) this.dispatch({ type: "handover", open: false });
+    this.events.emit({ type: "ui", ui: ui as Record<string, unknown> });
     this.setReadAloudTarget(ui.readAloud ?? null);
   }
 
@@ -530,7 +648,7 @@ export class LessonRuntime {
   }
 
   private advanceEnd(e: StatusInput): void {
-    const free = statusOf(this.flags) === "your_turn";
+    const free = isFree(this.flags);
     if (this.endStage === "goodbye_requested" && e.type === "response_start") this.endStage = "goodbye";
     else if (this.endStage === "await_floor" && free) this.sayGoodbye();
     else if (this.endStage === "goodbye" && free) void this.finishEnd();

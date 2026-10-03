@@ -1,4 +1,4 @@
-# tgk-lite@1 — mechanic API
+# tgk-lite@2 — mechanic API
 
 File: `src/mechanic.js`. Plain JavaScript (no TypeScript, no imports, no exports). Exactly one top-level call:
 
@@ -22,12 +22,14 @@ defineMechanic({ id, archetype, init, reduce, feedback?, targets, render, facts 
 | `refs.options()` | choice: refs to every option (key + distractors), kit-shuffled. Use this order. |
 | `refs.units()` | build: refs to unit kinds (e.g. tens, ones), index k |
 | `refs.count()` | number of options |
+| `refs.same(a, b)` | true when two refs are the same ref (the ONLY way to compare refs) |
+| `refs.indexOf(ref)` | index of a ref in `options()` (choice) or `units()` (build), else -1 |
 | `rng()` | seeded number in [0, 1) |
 | `W`, `H` | 360, 400 |
 | `minTarget` | smallest allowed target side in world units (56 for ages 6-9, else 44) |
 | `band`, `lang` | age band, language |
 
-A ref is opaque: `{item, slot}` made by the kit. Copy refs from `ctx.refs.*` into your model and targets; never build one.
+A ref is opaque: `{item, slot}` made by the kit, where `slot` is a random token that means nothing (it is different on every mount). Copy refs from `ctx.refs.*` into your model and targets; never build one and never read `.slot` (a lint error): compare with `ctx.refs.same(a, b)` or find with `ctx.refs.indexOf(ref)`. `options()` order is random per mount; build units are in a fixed order (index k).
 
 ## Members
 - `init(ctx) → model` — called at the start of EVERY item. Model = plain JSON (refs are JSON). Pure.
@@ -63,4 +65,4 @@ A ref is opaque: `{item, slot}` made by the kit. Copy refs from `ctx.refs.*` int
 - ≤ 600 draw calls per render.
 
 ## Never
-`Math.random`, digits inside strings, words not in the strings table, points/coins/score/streak, reading or forging refs (`{slot: …}`), timers, loops without a bound.
+`Math.random`, digits inside strings, words not in the strings table, points/coins/score/streak, reading or forging refs (`.slot`, `{slot: …}`), changing built-ins (they are frozen: an assignment throws), timers, loops without a bound.

@@ -11,14 +11,15 @@ const DIR = new URL("./kit/", import.meta.url);
 export const KIT_JS = readFileSync(new URL("runtime.js", DIR), "utf8");
 export const KIT_CSS = readFileSync(new URL("kit.css", DIR), "utf8");
 export const KIT_HASH = createHash("sha256").update(KIT_JS).update("\0").update(KIT_CSS).digest("hex").slice(0, 16);
-export const KIT_VERSION = "tgk-lite@1";
+export const KIT_VERSION = "tgk-lite@2";
 
 /** Every ambient name agent code could use to reach outside the mechanic; all are `undefined` inside the wrapper. */
 export const SHADOWED = ["window", "self", "globalThis", "document", "parent", "top", "opener", "frames", "location", "navigator",
   "fetch", "XMLHttpRequest", "WebSocket", "EventSource", "Worker", "SharedWorker", "BroadcastChannel", "RTCPeerConnection",
   "WebTransport", "Function", "setTimeout", "setInterval", "requestAnimationFrame", "queueMicrotask", "Date", "performance",
   "crypto", "localStorage", "sessionStorage", "indexedDB", "caches", "postMessage", "Reflect", "Proxy", "Image", "open",
-  "__forgeSeamInstall", "__tgkBoot", "alert", "importScripts"];
+  "__forgeSeamInstall", "__tgkBoot", "alert", "importScripts", "MessagePort", "MessageChannel", "EventTarget", "Symbol", "Promise",
+  "WebAssembly", "SharedArrayBuffer", "Atomics", "structuredClone", "getComputedStyle", "customElements"];
 
 /** Budgets (FACTORY.md §4.11 [U] for this kit: measured sizes in context/measurements.md forge-g2-*). */
 export const SIZE_BUDGET = { agentBytes: 24 * 1024, bundleBytes: 96 * 1024 };
@@ -38,10 +39,10 @@ export function runtimeDesign(design) {
  * @param {object} design MechanicDesign (strings table is embedded)
  * @returns {{ html: string, sha: string, bytes: number, agentBytes: number, csp: string, kitHash: string }}
  */
-export function buildBundle(mechanicSrc, design, { title = "Taxila activity" } = {}) {
+export function buildBundle(mechanicSrc, design, { title = "Taxila activity", kitJs = KIT_JS } = {}) {
   const agent = String(mechanicSrc).replace(/<\/script/gi, "<\\/script");
   const designJson = JSON.stringify(runtimeDesign(design)).replace(/</g, "\\u003c");
-  const script = `${KIT_JS}\n;(function(){var DESIGN=${designJson};\n__tgkBoot(function(defineMechanic, Math, ${SHADOWED.join(", ")}){"use strict";\n${agent}\n}, DESIGN);})();\n`;
+  const script = `${kitJs}\n;(function(){var DESIGN=${designJson};\n__tgkBoot(function(defineMechanic, Math, ${SHADOWED.join(", ")}){"use strict";\n${agent}\n}, DESIGN);})();\n`;
   const csp = [`default-src 'none'`, `script-src 'sha256-${b64sha(script)}'`, `style-src 'sha256-${b64sha(KIT_CSS)}'`,
     `img-src data:`, `font-src 'none'`, `connect-src 'none'`, `media-src 'none'`, `frame-src 'none'`, `worker-src 'none'`,
     `base-uri 'none'`, `form-action 'none'`].join("; ");

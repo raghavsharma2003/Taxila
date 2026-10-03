@@ -22,8 +22,9 @@ const S = {
 } as const;
 
 export type PickKey = keyof typeof S;
-const IDX: Record<PickLang, number> = { hinglish: 0, hindi: 1, english: 2 };
-export const p = (k: PickKey, lang: string): string => S[k][IDX[(lang as PickLang)] ?? 0];
+/** English chrome on every surface (PRODUCT-DESIGN-V2 §5.3, G-EN-1): the family's language changes only what the
+ *  teacher says, never a label. The other columns stay as data until the B2 picker rewrite deletes them. */
+export const p = (k: PickKey, _lang: string): string => S[k][2];
 
 export const ROLE: Record<string, [string, string, string]> = {
   didi: ["didi", "दीदी", "didi"],
@@ -31,4 +32,4 @@ export const ROLE: Record<string, [string, string, string]> = {
   maam: ["ma'am", "मैम", "ma'am"],
   sir: ["sir", "सर", "sir"],
 };
-export const role = (r: string, lang: string) => ROLE[r]?.[IDX[lang as PickLang] ?? 0] ?? r;
+export const role = (r: string, _lang: string) => ROLE[r]?.[2] ?? r;
