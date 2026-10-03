@@ -496,6 +496,14 @@ for _kb in teeth.data.shape_keys.key_blocks[1:]:
         if _a > 0.01:
             _rig_fix["jawComponent"][_k] = round(_a, 3)
     set_key_co(_kb, _tb + _d)
+# the tongue is the same kind of proxy: it rides the jaw (and keeps its own tongueOut), never the lip units
+_gb, _gD = deltas(tongue) if tongue.data.shape_keys else (None, {})
+for _kb in (tongue.data.shape_keys.key_blocks[1:] if "jawOpen" in _gD else []):
+    _k = _kb.name
+    if _k in _jaw_keys or _k.startswith("tongue"):
+        continue
+    _a = float(np.clip(_hD[_k][_chin].ravel() @ _jc / max(_jc @ _jc, 1e-12), 0.0, 1.5)) if _k in _hD else 0.0
+    set_key_co(_kb, _gb + _a * _gD["jawOpen"])
 report["teethRigid"] = _rig_fix
 _tb, _tD = deltas(teeth)
 mt = look.get("mouth", {})
