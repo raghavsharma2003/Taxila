@@ -8,6 +8,7 @@ import { requireChild } from "../auth.js";
 import { AzureError, tts } from "../azure.js";
 import { bad, need, notFound, HttpError } from "../http.js";
 import { teacherFor } from "../compiler/characters/index.js";
+import { toSpoken, spokenOptsForChild } from "../voice/spoken.js";
 
 /** Teacher replies are a few sentences; anything longer is a bug upstream, not a reply. */
 export const MAX_TTS_CHARS = 1200;
@@ -47,7 +48,10 @@ export async function speak(req, res, body) {
   let audio;
   try {
     // No delivery `instructions`: the teacher's voice is chosen by blind ear, not by an unmeasured prompt.
-    audio = await tts(text, VOICES.has(voice) ? voice : DEFAULT_VOICE);
+    // The voice gets the SPOKEN form (numerals, notation, helplines digit by digit: server/voice/spoken.js);
+    // the stored turn and the caption keep the written text.
+    const said = process.env.TAXILA_TTS_SPOKEN === "0" ? text : toSpoken(text, spokenOptsForChild(child));
+    audio = await tts(said, VOICES.has(voice) ? voice : DEFAULT_VOICE);
   } catch (e) {
     if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
     throw e;

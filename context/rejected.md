@@ -289,3 +289,48 @@ Tried openai/gpt-audio as an audio judge of Indian-voice nativeness. Broke: gave
 <!-- merged from inbox/comprehension-build.json -->
 ## reteach-without-cooldown
 **Tried:** the selector called on every graded turn while `reteachTrigger` held. **Broke:** misconception holders received 21-32 re-teaches per child over 5 sessions, each one a teach event, until the session `park` rule stopped it. **Now:** after a re-teach, the next 2 graded items on the skill are the re-check (spec §5.4), and only then can a trigger fire again. The Director diff is in INTEGRATION.md §2.
+
+
+<!-- merged from inbox/cascade-latency-2.json -->
+## reply-streaming-no-gain
+**Tried: streaming the teacher reply and starting TTS on the first per-sentence-guarded sentence (and TTS on the first clause).** What broke: nothing to gain. For a 30-60-token reply the first content delta arrives 37-140 ms before the call ends (n=5 × 2 models) and already holds a full sentence (Azure releases filtered text in blocks): the reply's cost is time-to-first-token. gpt-4o-mini-tts first byte does not depend on input length (262 vs 260 ms, n=6 each), so a shorter first chunk buys nothing either. The server-side prewarm of the guarded reply (`cascade-tts-prewarm`) took the TTS saving instead.
+
+## reply-two-drafts
+**Tried: two parallel drafts of every reply (speculative ones included), first guard-clean draft wins, to avoid the serial rewrite.** What broke: Director median 1577 ms vs 1422 single-draft (n=10 vs 30), p90 3459 vs 2495, because when the first draft fails the turn waits for the slower second one and both often fail the same guard (2 of 4 failures still rewrote); it doubles reply calls. Drift — the commonest failure — is repaired in code instead (`drift-repair-in-code`). Revisit only with a per-guard failure model that predicts which turns need a second draft.
+
+## reply-ds41-cascade
+**Tried: DEPLOY_REPLY=taxila-ds41 (fastest reply in the bake-off) with grok classify.** What broke: rewrites 4/10 turns and its rewrite calls took 2.5-3.7 s; total median 3783 ms vs 3055 with taxila-fast (n=10 vs 30). The bake-off measured single calls, not the guarded turn.
+
+
+<!-- merged from inbox/comprehension-review.json -->
+## sim-misconception-truth-leak
+**Tried:** the comprehension simulator tagged `misconceptionId` on a wrong answer, a choice or a `contradicted` verdict only when the hidden `t.mis` bit was set. **Broke:** a child who did not hold the misconception could never produce a misconception hit, so the battery could not measure false misconception alarms. Those run at 4-8 false alarms per hit in the literature (CE2). This is the simulator grading its own engine. **Now:** tags are observable-only. A non-holder's wrong answer matches the misconception's value with p 0.3 on a discriminating item and 0.1 on a standard one, a wrong choice matches with 1/(k−1), and a simulated R-MIS step runs on a contradicted turn (0.9 for a holder, 0.3 for a non-holder). The LLM leg calls the real R-MIS operator. Effect: LLM-leg false mastery rose from 0.015 to 0.042.
+
+## sim-child-model-in-grader-chain
+**Tried:** the LLM leg's grader chain was [DeepSeek-V4-Pro, taxila-ds41], and taxila-ds41 also played the child. **Broke:** whenever the primary failed, the model that wrote the child's words graded them. **Now:** the chain is `GRADE_MODELS` (primary, then taxila-brain), and run.mjs throws if the child model is in it.
+
+
+<!-- merged from inbox/model-router-research.json -->
+## oss120-json-mode-corrupt
+**Tried (2026-10-03):** gpt-oss-120b (`taxila-oss120`) with `response_format: {type: json_object}`. **Broke:** content came back as `{"final{": "outcome", "value": "correct"}` (harmony channel leak); 0/12 in model-bakeoff C, 0/40 in router-bench C. Plain text + parse: 38/40. **Revisit if** Foundry updates the gpt-oss serving.
+
+## cohere-command-a-plus-child-tasks
+**Tried (2026-10-03):** Cohere-command-a-plus-05-2026 across router-bench. **Broke:** reasons by default so 60-300 token caps return empty content; with 1500 tokens distress recall 9/16; its reasoning read Hinglish 'maarte' as 'kill'; Hindi parent report had the wrong child name and numbers. **Revisit if** a non-reasoning variant ships.
+
+
+<!-- merged from inbox/spoken-notation-build.json -->
+## helpline-digits-comma-separated
+**Tried (2026-10-03):** separating the helpline digit words with commas ("one, zero, nine, eight"; "एक, चार, चार, एक, छह") for gpt-4o-mini-tts. The aim was to stop the final digit being clipped, as one Hindi-mode Tele-MANAS take did in `spoken-render-tts-rerun-2026-10-02`.
+**Broke:** it did not help. It scored 28/30 digit-exact, the same as the plain digit words (28/30), across 5 cells × 3 takes. Its misses had the same causes: ASR writing digits (undeterminable), plus one ASR HTTP 400.
+**Kept:** plain space-separated digit words (`voice-tts-spoken-render`).
+**Revisit if** a listener panel hears clipped final digits on the plain form.
+
+
+## tts-first-clause-no-gain (2026-10-02)
+Rejected: TTS on the first clause — gpt-4o-mini-tts first byte is length-independent (2-word clause 262 ms vs 16-word sentence 260 ms median, n=6 each).
+The workflow's write-up is the prose merged from inbox/cascade-latency-2.json earlier in this file; this heading ties the graph node to it.
+
+
+## router-s-filter-artifact (2026-10-03)
+Rejected: router-bench S ranking ('DeepSeek-V4-Pro/grok/oss missed passive ideation'). Every model incl. fast/brain/terra/ds41 was Azure-content-filtered on 'I just want to disappear forever'; non-OpenAI Foundry models return HTTP 400 with choices[0].finish_reason=content_filter (no top-level error), which the harness logged as 'http 400' and scored a miss. Rescored (block = distress): all but Cohere 16/16 recall; DeepSeek-V4-Pro 32/32 best; Cohere 14/16. No model's own reading of that sentence was measured.
+The workflow's write-up is the prose merged from inbox/model-router-review.json earlier in this file; this heading ties the graph node to it.

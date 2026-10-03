@@ -1,0 +1,717 @@
+{
+ "date": "2026-10-02",
+ "seeds": 1,
+ "personas": 24,
+ "concepts": 6,
+ "sessions": 5,
+ "method": "code-played children from hidden truth bits + behaviour params (personas.mjs), separate generative model from the engine's emission tables; real engine code; author-set response probabilities => gates mechanics, not efficacy",
+ "label": "simulated · gains=author · scope=compliance · not evidence of learning",
+ "families": {
+  "bkt2": {
+   "policies": {
+    "engine": {
+     "n_child_concepts": 144,
+     "CE_M1_macro_acc_final": 0.627,
+     "CE_M1_macro_acc_after3": 0.563,
+     "CE_M2_understood_detected_final": 0.553,
+     "CE_M2_median_sessions_to_detect_understood": 2,
+     "CE_M2_understood_never_detected": 0.447,
+     "CE_M3_false_mastery": 0.021,
+     "CE_M3_false_mastery_shallow": 0,
+     "CE_M4_missed_understanding_verbal_gap_pp": -3.571,
+     "probes_per_concept_session": 4.316,
+     "CE_M5_load_per10_mean": 2.251,
+     "CE_M5_session_weight_over_cap": 0,
+     "CE_M5_lexicon_hits": 0,
+     "CE_M5_repeat_questions": 0,
+     "reteaches_per_child": 10.917,
+     "woven_per_child": 2.167,
+     "callbacks_per_child": 5.333,
+     "probe_shape": {
+      "concept_sessions_probed": 383,
+      "p50": 3,
+      "p95": 5,
+      "max": 6,
+      "mandatory_share": 0.467,
+      "u_probes_over_3": 0.021,
+      "by_reason": {
+       "voi": 0.533,
+       "coincident_why": 0.188,
+       "verify_first_correct": 0.15,
+       "delayed_check": 0.103,
+       "partial_followup": 0.023,
+       "verify_misconception": 0.003
+      }
+     },
+     "by_type": {
+      "not_yet": {
+       "n": 14,
+       "acc_final": 0.929,
+       "acc_after3": 0.714,
+       "dist_final": {
+        "not_yet": 0.929,
+        "shallow": 0.071
+       }
+      },
+      "shallow": {
+       "n": 44,
+       "acc_final": 0.614,
+       "acc_after3": 0.705,
+       "dist_final": {
+        "not_yet": 0.364,
+        "shallow": 0.591,
+        "fragile": 0.045
+       }
+      },
+      "fragile_bound": {
+       "n": 26,
+       "acc_final": 0.269,
+       "acc_after3": 0.346,
+       "dist_final": {
+        "not_yet": 0.308,
+        "shallow": 0.346,
+        "fragile": 0.269,
+        "understood": 0.077
+       }
+      },
+      "fragile_forgets": {
+       "n": 13,
+       "acc_final": 0.769,
+       "acc_after3": 0.538,
+       "dist_final": {
+        "shallow": 0.231,
+        "fragile": 0.769
+       }
+      },
+      "understood": {
+       "n": 47,
+       "acc_final": 0.553,
+       "acc_after3": 0.511,
+       "dist_final": {
+        "shallow": 0.277,
+        "fragile": 0.17,
+        "understood": 0.553
+       }
+      }
+     },
+     "by_archetype": {
+      "understander": {
+       "acc_final": 0.75,
+       "false_mastery": null,
+       "certified": 0.75
+      },
+      "correct_wrong_reasons": {
+       "acc_final": 0.167,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "fluent_shallow": {
+       "acc_final": 0.75,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "shy_understands": {
+       "acc_final": 0.583,
+       "false_mastery": null,
+       "certified": 0.583
+      },
+      "guesser": {
+       "acc_final": 0.5,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "not_yet": {
+       "acc_final": 1,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "slow_learner": {
+       "acc_final": 0.167,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "forgetter": {
+       "acc_final": 0.75,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "bound_instance": {
+       "acc_final": 0.5,
+       "false_mastery": 0.25,
+       "certified": 0.25
+      },
+      "deferential_understander": {
+       "acc_final": 0.333,
+       "false_mastery": null,
+       "certified": 0.333
+      },
+      "confident_misconception": {
+       "acc_final": 0.5,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "gamer": {
+       "acc_final": 0.667,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "answer_seeker": {
+       "acc_final": 0.667,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "mixed": {
+       "acc_final": 0.583,
+       "false_mastery": 0,
+       "certified": 0.167
+      },
+      "late_bloomer": {
+       "acc_final": 0.5,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "hindi_medium_understander": {
+       "acc_final": 0.833,
+       "false_mastery": null,
+       "certified": 0.833
+      }
+     }
+    }
+   }
+  }
+ },
+ "policies": {
+  "engine": {
+   "n_child_concepts": 144,
+   "CE_M1_macro_acc_final": 0.627,
+   "CE_M1_macro_acc_after3": 0.563,
+   "CE_M2_understood_detected_final": 0.553,
+   "CE_M2_median_sessions_to_detect_understood": 2,
+   "CE_M2_understood_never_detected": 0.447,
+   "CE_M3_false_mastery": 0.021,
+   "CE_M3_false_mastery_shallow": 0,
+   "CE_M4_missed_understanding_verbal_gap_pp": -3.571,
+   "probes_per_concept_session": 4.316,
+   "CE_M5_load_per10_mean": 2.251,
+   "CE_M5_session_weight_over_cap": 0,
+   "CE_M5_lexicon_hits": 0,
+   "CE_M5_repeat_questions": 0,
+   "reteaches_per_child": 10.917,
+   "woven_per_child": 2.167,
+   "callbacks_per_child": 5.333,
+   "probe_shape": {
+    "concept_sessions_probed": 383,
+    "p50": 3,
+    "p95": 5,
+    "max": 6,
+    "mandatory_share": 0.467,
+    "u_probes_over_3": 0.021,
+    "by_reason": {
+     "voi": 0.533,
+     "coincident_why": 0.188,
+     "verify_first_correct": 0.15,
+     "delayed_check": 0.103,
+     "partial_followup": 0.023,
+     "verify_misconception": 0.003
+    }
+   },
+   "by_type": {
+    "not_yet": {
+     "n": 14,
+     "acc_final": 0.929,
+     "acc_after3": 0.714,
+     "dist_final": {
+      "not_yet": 0.929,
+      "shallow": 0.071
+     }
+    },
+    "shallow": {
+     "n": 44,
+     "acc_final": 0.614,
+     "acc_after3": 0.705,
+     "dist_final": {
+      "not_yet": 0.364,
+      "shallow": 0.591,
+      "fragile": 0.045
+     }
+    },
+    "fragile_bound": {
+     "n": 26,
+     "acc_final": 0.269,
+     "acc_after3": 0.346,
+     "dist_final": {
+      "not_yet": 0.308,
+      "shallow": 0.346,
+      "fragile": 0.269,
+      "understood": 0.077
+     }
+    },
+    "fragile_forgets": {
+     "n": 13,
+     "acc_final": 0.769,
+     "acc_after3": 0.538,
+     "dist_final": {
+      "shallow": 0.231,
+      "fragile": 0.769
+     }
+    },
+    "understood": {
+     "n": 47,
+     "acc_final": 0.553,
+     "acc_after3": 0.511,
+     "dist_final": {
+      "shallow": 0.277,
+      "fragile": 0.17,
+      "understood": 0.553
+     }
+    }
+   },
+   "by_archetype": {
+    "understander": {
+     "acc_final": 0.75,
+     "false_mastery": null,
+     "certified": 0.75
+    },
+    "correct_wrong_reasons": {
+     "acc_final": 0.167,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "fluent_shallow": {
+     "acc_final": 0.75,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "shy_understands": {
+     "acc_final": 0.583,
+     "false_mastery": null,
+     "certified": 0.583
+    },
+    "guesser": {
+     "acc_final": 0.5,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "not_yet": {
+     "acc_final": 1,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "slow_learner": {
+     "acc_final": 0.167,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "forgetter": {
+     "acc_final": 0.75,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "bound_instance": {
+     "acc_final": 0.5,
+     "false_mastery": 0.25,
+     "certified": 0.25
+    },
+    "deferential_understander": {
+     "acc_final": 0.333,
+     "false_mastery": null,
+     "certified": 0.333
+    },
+    "confident_misconception": {
+     "acc_final": 0.5,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "gamer": {
+     "acc_final": 0.667,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "answer_seeker": {
+     "acc_final": 0.667,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "mixed": {
+     "acc_final": 0.583,
+     "false_mastery": 0,
+     "certified": 0.167
+    },
+    "late_bloomer": {
+     "acc_final": 0.5,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "hindi_medium_understander": {
+     "acc_final": 0.833,
+     "false_mastery": null,
+     "certified": 0.833
+    }
+   }
+  }
+ },
+ "llm_leg": {
+  "echoGuard": true,
+  "childModel": "taxila-ds41",
+  "gradeModels": [
+   "DeepSeek-V4-Pro",
+   "taxila-brain"
+  ],
+  "seeds": 2,
+  "calls": {
+   "child": 896,
+   "childFail": 0,
+   "grade": 987
+  },
+  "metrics": {
+   "n_child_concepts": 288,
+   "CE_M1_macro_acc_final": 0.702,
+   "CE_M1_macro_acc_after3": 0.63,
+   "CE_M2_understood_detected_final": 0.691,
+   "CE_M2_median_sessions_to_detect_understood": 2,
+   "CE_M2_understood_never_detected": 0.309,
+   "CE_M3_false_mastery": 0.042,
+   "CE_M3_false_mastery_shallow": 0.011,
+   "CE_M4_missed_understanding_verbal_gap_pp": 4.281,
+   "probes_per_concept_session": 4.342,
+   "CE_M5_load_per10_mean": 2.245,
+   "CE_M5_session_weight_over_cap": 0,
+   "CE_M5_lexicon_hits": 0,
+   "CE_M5_repeat_questions": 0,
+   "reteaches_per_child": 10.792,
+   "woven_per_child": 2.167,
+   "callbacks_per_child": 5.938,
+   "probe_shape": {
+    "concept_sessions_probed": 781,
+    "p50": 3,
+    "p95": 5,
+    "max": 7,
+    "mandatory_share": 0.462,
+    "u_probes_over_3": 0.006,
+    "by_reason": {
+     "voi": 0.538,
+     "coincident_why": 0.192,
+     "verify_first_correct": 0.142,
+     "delayed_check": 0.114,
+     "partial_followup": 0.009,
+     "verify_misconception": 0.006
+    }
+   },
+   "by_type": {
+    "not_yet": {
+     "n": 19,
+     "acc_final": 0.842,
+     "acc_after3": 0.684,
+     "dist_final": {
+      "not_yet": 0.842,
+      "shallow": 0.158
+     }
+    },
+    "shallow": {
+     "n": 92,
+     "acc_final": 0.717,
+     "acc_after3": 0.75,
+     "dist_final": {
+      "not_yet": 0.239,
+      "shallow": 0.696,
+      "fragile": 0.054,
+      "understood": 0.011
+     }
+    },
+    "fragile_bound": {
+     "n": 54,
+     "acc_final": 0.296,
+     "acc_after3": 0.444,
+     "dist_final": {
+      "not_yet": 0.37,
+      "shallow": 0.222,
+      "fragile": 0.296,
+      "understood": 0.111
+     }
+    },
+    "fragile_forgets": {
+     "n": 26,
+     "acc_final": 0.962,
+     "acc_after3": 0.654,
+     "dist_final": {
+      "fragile": 0.962,
+      "understood": 0.038
+     }
+    },
+    "understood": {
+     "n": 97,
+     "acc_final": 0.691,
+     "acc_after3": 0.619,
+     "dist_final": {
+      "shallow": 0.093,
+      "fragile": 0.216,
+      "understood": 0.691
+     }
+    }
+   },
+   "by_archetype": {
+    "understander": {
+     "acc_final": 0.875,
+     "false_mastery": null,
+     "certified": 0.875
+    },
+    "correct_wrong_reasons": {
+     "acc_final": 0.292,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "fluent_shallow": {
+     "acc_final": 0.75,
+     "false_mastery": 0.083,
+     "certified": 0.083
+    },
+    "shy_understands": {
+     "acc_final": 0.667,
+     "false_mastery": null,
+     "certified": 0.667
+    },
+    "guesser": {
+     "acc_final": 0.583,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "not_yet": {
+     "acc_final": 0.667,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "slow_learner": {
+     "acc_final": 0.417,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "forgetter": {
+     "acc_final": 0.958,
+     "false_mastery": 0.042,
+     "certified": 0.042
+    },
+    "bound_instance": {
+     "acc_final": 0.5,
+     "false_mastery": 0.455,
+     "certified": 0.458
+    },
+    "deferential_understander": {
+     "acc_final": 0.333,
+     "false_mastery": null,
+     "certified": 0.333
+    },
+    "confident_misconception": {
+     "acc_final": 0.333,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "gamer": {
+     "acc_final": 0.833,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "answer_seeker": {
+     "acc_final": 0.833,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "mixed": {
+     "acc_final": 0.917,
+     "false_mastery": 0,
+     "certified": 0.5
+    },
+    "late_bloomer": {
+     "acc_final": 0.667,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "hindi_medium_understander": {
+     "acc_final": 0.667,
+     "false_mastery": null,
+     "certified": 0.667
+    }
+   }
+  },
+  "grader_vs_hidden_truth": {
+   "why_present_given_U1": 0.87,
+   "why_present_given_U0": 0.13,
+   "why_present_given_U0_fluent": 0.14,
+   "why_contradicted_given_mis": 0.987,
+   "span_demotions": 0,
+   "echo_demotions": 15,
+   "n_why": 892,
+   "n_all": 987
+  },
+  "samples": [
+   {
+    "persona": "p03",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Because the comma is just for decoration, teacher, so we can put it anywhere we like!",
+    "label": "absent"
+   },
+   {
+    "persona": "p02",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Arre didi, dekho — har jagah apne right wali se 10 guna badi hai! Ones, tens, hundreds... jaise 10 mein das ones hote hain, 100 mein das tens!",
+    "label": "present"
+   },
+   {
+    "persona": "p04",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Arey, simple hai! 8 toh 4 se bada hai na, so 1/8 is bigger than 1/4. Bada number, bada fraction!",
+    "label": "contradicted"
+   },
+   {
+    "persona": "p05",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Because to find area by counting unit squares, we just count the squares, and that is why it is like that.",
+    "label": "partial"
+   },
+   {
+    "persona": "p05",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "It is like that because when we test objects with a magnet, we record attracted or not attracted, so that is why it is like that.",
+    "label": "absent"
+   },
+   {
+    "persona": "p05",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "It is like that because we read and write 5-digit and 6-digit numbers in numerals and in words, that is why.",
+    "label": "absent"
+   },
+   {
+    "persona": "p06",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Because test objects with a magnet, jo attracted hai woh attracted hai, that is why.",
+    "label": "absent"
+   },
+   {
+    "persona": "p03",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Because the comma is just for decoration, ma'am, we can put it anywhere. It doesn't change the number, it just looks nice.",
+    "label": "contradicted"
+   },
+   {
+    "persona": "p02",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Dekho, area matlab kitni jagah shape ne cover ki hai. Jaise tiles pe counting karte hain na, waise hi unit squares gin lete hain!",
+    "label": "present"
+   },
+   {
+    "persona": "p05",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "It is like that because when we test objects with a magnet, the objects get attracted or not attracted, and that is the reason.",
+    "label": "absent"
+   },
+   {
+    "persona": "p06",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Because we test objects with a magnet and record attracted or not attracted, that is why it is like that only.",
+    "label": "partial"
+   },
+   {
+    "persona": "p09",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "I just know it, didi.",
+    "label": "absent"
+   },
+   {
+    "persona": "p09",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "I just know it, ma'am.",
+    "label": "absent"
+   },
+   {
+    "persona": "p09",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Same whole, then pieces fit.",
+    "label": "present"
+   },
+   {
+    "persona": "p09",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Pata nahi, I just know.",
+    "label": "absent"
+   },
+   {
+    "persona": "p07",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Pata nahi... squares cover it.",
+    "label": "partial"
+   },
+   {
+    "persona": "p10",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Pata nahi. Bas aise hi hai.",
+    "label": "absent"
+   },
+   {
+    "persona": "p13",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Because every place is ten times the one on its right! So ten ones make a ten, ten tens make a hundred, like that.",
+    "label": "present"
+   },
+   {
+    "persona": "p11",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "I don't know, didi. Pata nahi. I just know if we count the squares, that is the area.",
+    "label": "present"
+   },
+   {
+    "persona": "p11",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "Umm... half and two by four are same? Like if you cut cake in two or four, you get same amount?",
+    "label": "contradicted"
+   },
+   {
+    "persona": "p14",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Matlab, jaise 7 ke factors sirf 1 aur 7 hain, toh wo prime hai. Agar 8 ke baad 2, 4 bhi aayein, toh composite.",
+    "label": "present"
+   },
+   {
+    "persona": "p11",
+    "truthU": 0,
+    "op": "R-EXP",
+    "words": "I don't know, ma'am. I just know 1/4 is bigger than 1/8. Pata nahi why.",
+    "label": "absent"
+   },
+   {
+    "persona": "p14",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Kyunki magnet sirf iron aur steel jaise cheezon ko kheenchta hai, plastic ya wood ko nahi.",
+    "label": "present"
+   },
+   {
+    "persona": "p13",
+    "truthU": 1,
+    "op": "R-EXP",
+    "words": "Magnet pulls things made of iron, like nails. Plastic and wood it doesn't pull.",
+    "label": "present"
+   }
+  ]
+ },
+ "ms": 251474
+}

@@ -108,7 +108,8 @@ create table if not exists probe_log (
 create index if not exists probe_log_child_skill on probe_log (child_id, skill_id, at);
 
 -- Every closed-label verdict (§4.2 calibration gate; the nightly job refits grader confusion from it). The span is
--- the child's own words (≤ 200 chars), kept only while the transcript exists: it cascades with the child.
+-- the child's own words (≤ 200 chars). It is written only when the guardian granted transcripts_retention
+-- (store.js gradeAuditStmt nulls it otherwise; comment-only edit 2026-10-02, no schema change), and cascades with the child.
 create table if not exists grade_audit (
   id              bigint generated always as identity primary key,
   child_id        uuid not null references child(id) on delete cascade,

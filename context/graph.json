@@ -1584,6 +1584,244 @@
    "title": "Conductor DB race suite 14/14 pass on Neon branch conductor-test (rev3 lock order, child_seq last)",
    "at": "2026-10-02",
    "source": "inbox/conductor-db-race-run.json"
+  },
+  {
+   "id": "cascade-latency-v2-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-02",
+   "title": "Cascade lane after the latency pass (n=20-40 per config, synthetic speech): median speech end → first TTS byte 3977 ms (p90 4900, n=28) → 2966 ms (p90 3163, n=20) with classify=grok-4-1-fast-non-reasoning + hedge; Director 2044 → 1292 ms, TTS stage 362 → 216 ms; 0 turns ≤ 2.0 s in any config",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "cascade-tts-prewarm",
+   "kind": "decision",
+   "at": "2026-10-02",
+   "title": "Cascade /turn starts TTS on the final, fully guarded reply while its transaction runs (server/voice/prewarm.js), bound to (lesson, seq, session token hash); tts-stream takes it without a DB read; a turn not stored drops it; TAXILA_TTS_PREWARM=0 off",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "speculation-one-clock",
+   "kind": "decision",
+   "at": "2026-10-02",
+   "title": "A turn's speculative plans and its real plan are stepped at one `now` (turn arrival): a second clock read moved the compiled 'minute' line and missed speculation on 2/8 turns; low-ASR turns also speculate their one decided plan (no_evidence/asr) alongside the distress backup",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "drift-repair-in-code",
+   "kind": "decision",
+   "at": "2026-10-02",
+   "title": "A reply whose only guard failures are drift (+flat) is repaired in code — the draft up to its first question, then the item's verified question — and every guard re-runs; anything left goes to the model rewrite. Matches 9/9 measured drift rewrites, saves ~1 s",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "classify-hedge",
+   "kind": "decision",
+   "at": "2026-10-02",
+   "title": "Classifier and distress-backup calls send one hedged duplicate after 1.5 s for non-reasoning deployments (TAXILA_CLASSIFY_HEDGE_MS; off for the reasoning family): grok's p50 is ~0.6 s but 2/~60 calls hung to the 4 s / 7 s timeout",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "deploy-classify-grok",
+   "kind": "decision",
+   "at": "2026-10-02",
+   "title": "Recommend DEPLOY_CLASSIFY=grok-4-1-fast-non-reasoning, DEPLOY_REPLY=taxila-fast for the cascade lane: classify call ~0.35-0.77 s vs 0.9-2.9 s, 75/80 exact vs 72/80 for taxila-fast on the real classify() + kit, 0 graded-wrong, distress 10/10 (pending owner/main-loop adoption)",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "classify-accuracy-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-02",
+   "title": "Real classify() on kit c4-maths-ch01-t01, 20 hand-labelled model-reaching replies × 2 reps × 2 runs: taxila-fast 72/80 exact, grok-4-1-fast-non-reasoning 75/80, DeepSeek-V4-Pro 74/80; 0 graded-wrong for all; distress flag 10/10 each (n=10); p50 1.06 / 0.63 / 1.14-1.32 s",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "keepalive-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-02",
+   "title": "Outbound keep-alive (server/net.js, 30 s): a tiny taxila-fast call after 6 s idle 1302 ms → 698 ms median (n=5 each; warm-connection calls ~990 ms)",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "reply-streaming-no-gain",
+   "kind": "rejection",
+   "at": "2026-10-02",
+   "title": "Rejected: streaming the teacher reply to start TTS on the first guarded sentence — the first content delta (already a whole sentence; Azure releases filtered text in blocks) arrives 37-140 ms before the call ends (n=5 × 2 models); TTFT is the whole cost",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "tts-first-clause-no-gain",
+   "kind": "rejection",
+   "at": "2026-10-02",
+   "title": "Rejected: TTS on the first clause — gpt-4o-mini-tts first byte is length-independent (2-word clause 262 ms vs 16-word sentence 260 ms median, n=6 each)",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "reply-two-drafts",
+   "kind": "rejection",
+   "at": "2026-10-02",
+   "title": "Rejected (for now): two parallel reply drafts, first guard-clean wins — Director median 1577 vs 1422 ms single-draft (n=10 vs 30), p90 worse (waits on the slower draft when the first fails), and doubles reply calls",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "reply-ds41-cascade",
+   "kind": "rejection",
+   "at": "2026-10-02",
+   "title": "Rejected as cascade DEPLOY_REPLY: taxila-ds41 — guard rewrites 4/10 and its rewrites took 2.5-3.7 s; total median 3783 ms vs 3055 with taxila-fast (n=10 vs 30)",
+   "source": "inbox/cascade-latency-2.json"
+  },
+  {
+   "id": "comp-review-2026-10-02",
+   "kind": "measurement",
+   "title": "Adversarial review of the comprehension build, after fixes (24 personas x 30 seeds, n=4320 child-concepts per policy and family): bkt2 engine macro acc 0.627 (bar 0.70 FAIL), false mastery 0.025 / shallow 0.000 (pass), verbal gap 14.1 pp (bar 10: FAIL), understood found 0.553, 44.7% of understanders never detected; cfrag-lite engine acc 0.475, false mastery 0.043 / shallow 0.030 (shallow bar 0.02 FAIL), understood found 0.265; probes per probed concept-session p50 3 / p95 5 / max 8, 46% mandatory, load 2.25/10, 0 over cap, 0 cross-day repeats; LLM leg (n=288, real R-MIS, production grader chain) acc 0.702, false mastery 0.042 / shallow 0.011",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-review.json"
+  },
+  {
+   "id": "sim-misconception-truth-leak",
+   "kind": "rejection",
+   "title": "Simulator tagged misconception hits only when the hidden truth bit said the child held it (&& t.mis) — every hit was a true one; fixed to observable-only tags with a non-holder match rate",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-review.json"
+  },
+  {
+   "id": "sim-child-model-in-grader-chain",
+   "kind": "rejection",
+   "title": "LLM leg used the child-playing model (taxila-ds41) as the grader fallback, so on a primary failure the child graded its own words; now the production chain, asserted disjoint",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-review.json"
+  },
+  {
+   "id": "e6-span-fail-closed",
+   "kind": "decision",
+   "title": "facets.js scores a positive LLM verdict on U/T only when spanOk === true (was: only rejected spanOk === false, so a call site omitting the field certified unchecked verdicts)",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-review.json"
+  },
+  {
+   "id": "grade-audit-span-consent",
+   "kind": "decision",
+   "title": "grade_audit stores the child's verbatim span only with transcripts_retention consent (auditRow keepSpan + writer nulls it otherwise)",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-review.json"
+  },
+  {
+   "id": "e9-deference-derivation",
+   "kind": "decision",
+   "title": "budget.js deferenceDiscountOn(sess): session yes-rate on character true AND planted statements > 0.8 (>=1 true, >=2 planted) stamps deferenceDiscount on the next puppet-shape event",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-review.json"
+  },
+  {
+   "id": "sim-mutants-invisible-bkt2",
+   "kind": "measurement",
+   "title": "Mutants VC2 (partial scored as full) and VC4 (game at full weight, no E4) do NOT fail CE-M3 under bkt2 (false mastery 0.021 / 0.022); VC2 fails under cfrag-lite (0.056, shallow 0.040), VC4 does not (0.046) — the battery cannot see VC4",
+   "at": "2026-10-02",
+   "source": "inbox/comprehension-review.json"
+  },
+  {
+   "id": "model-router-v1",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "PROPOSED model router v1 (docs/research/models/MODEL-ROUTER.md): live reply gpt-5.6-terra → fallback taxila-ds41; classify/distress/director taxila-fast → fallbacks grok-4-20-nr / taxila-ds41 / oss120; writing taxila-brain → terra; diagram+game code taxila-codex → brain / DeepSeek-V4-Pro; images gpt-image-2 (text) + FLUX.2-pro (text-free art); OCR taxila-brain → grok-4-20-nr; ask owner to deploy gpt-6.1-sol, gpt-6-luna, text-embedding-3-large, Cohere-Embed-V5-Pro, gpt-image-2.5-flare/sunburst, MAI-Image-2.6, Kimi-K3 (after billing check), mistral-ocr-4-0",
+   "source": "inbox/model-router-research.json"
+  },
+  {
+   "id": "router-bench-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "router-bench T/C/S/D/W/V/M across 13 Azure + 3 OpenRouter-reference models: T judged overall (sol/grok judge) terra 4.20/3.70, ds41 3.50/3.80, fast 3.40/3.50, gpt-6.1-sol(ref) 4.90/3.20; TTFT p50 fast 0.98 s, terra 1.20 s, ds41 1.24 s; S distress recall 16/16 for all gpt-5.6 + ds41, DeepSeek-V4-Pro/grok/oss missed passive ideation; C and D at ceiling; W brain 5/5 both languages; embeddings text-embedding-3-small R@1 6/12 cross-lingual",
+   "source": "inbox/model-router-research.json"
+  },
+  {
+   "id": "image-bench-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "3 prompts × gpt-image-2 / FLUX.2-pro / FLUX.1-Kontext-pro, n=1, brain vision judge: gpt-image-2 25/25 on every prompt (37-47 s, $0.053); FLUX.2-pro labels on wrong parts, tutor character 5/5 in 6.2 s (~$0.03); Kontext gibberish caption",
+   "source": "inbox/model-router-research.json"
+  },
+  {
+   "id": "game-code-probe-models-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "Phaser 4 single-file probe (2 tasks × n=3) on 8 models: functional 6/6 codex, DeepSeek-V4-Pro (9.9 s), ds41 (5.7 s), brain, grok-4.3, oss120; 4/6 terra and kimi-code (95 s); tasks at ceiling",
+   "source": "inbox/model-router-research.json"
+  },
+  {
+   "id": "oss120-json-mode-corrupt",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "gpt-oss-120b with response_format json_object on Foundry returns corrupted JSON ({\"final{\": ...}) — explains model-bakeoff C 0/12; send plain text and parse",
+   "source": "inbox/model-router-research.json"
+  },
+  {
+   "id": "cohere-command-a-plus-child-tasks",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Cohere-command-a-plus-05-2026 rejected for child-facing tasks: reasons by default (empty content under small caps), read 'maarte' as 'kill', distress recall 9/16, wrong child name and numbers in Hindi parent report",
+   "source": "inbox/model-router-research.json"
+  },
+  {
+   "id": "router-s-filter-artifact",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: router-bench S ranking ('DeepSeek-V4-Pro/grok/oss missed passive ideation'). Every model incl. fast/brain/terra/ds41 was Azure-content-filtered on 'I just want to disappear forever'; non-OpenAI Foundry models return HTTP 400 with choices[0].finish_reason=content_filter (no top-level error), which the harness logged as 'http 400' and scored a miss. Rescored (block = distress): all but Cohere 16/16 recall; DeepSeek-V4-Pro 32/32 best; Cohere 14/16. No model's own reading of that sentence was measured",
+   "source": "inbox/model-router-review.json"
+  },
+  {
+   "id": "open-distress-check-fails-open-on-filter",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "server/director/classify.js distressCheck() returns false on any error; server/azure.js throws a generic AzureError on a 400 content_filter / content_safety_violation (SelfHarm label), so a filter block on a self-harm turn the predicate misses fails OPEN. Map filter blocks to distress=true and add an eval case",
+   "source": "inbox/model-router-review.json"
+  },
+  {
+   "id": "router-t-judge-split-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "Re-analysis of router-bench T (n=10 turns, 2 judges): judge agreement Spearman 0.43 on model means (p=0.10), 0.46 item-level; grok judge per-turn gpt-6.1-sol vs fast 3-6, gpt-6-luna vs fast 2-6; terra-fast combined +0.50 (bootstrap 95% CI 0.05-1.00, mostly sol judge), terra-ds41 +0.30 (CI -0.40-1.20); OpenRouter arms ran reasoning effort low vs Azure none; gpt-6.1-sol 3/20 leak flags; W: taxila-fast 5/5 overall both languages at ~$0.54/1k vs brain $16.6/1k",
+   "source": "inbox/model-router-review.json"
+  },
+  {
+   "id": "voice-tts-spoken-render",
+   "kind": "decision",
+   "at": "2026-10-02",
+   "title": "Every TTS input is rendered by server/voice/spoken.js toSpoken() (data-driven NCERT SpokenSet per mode × school medium × band; helplines from floor.js matched exactly first, always digit by digit); captions, stored turns and leak/safety guards keep the written text; the realtime (voice) compile carries the helplines as the mode's digit words, never numerals",
+   "source": "inbox/spoken-notation-build.json"
+  },
+  {
+   "id": "notation-probe-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-02",
+   "title": "G1 spoken-notation probe (53 items × en/hl/hi × written vs pre-rendered × RT/TTS, n=159/arm): TTS written 33% render / 28% mixed / 18% misread vs pre-rendered 6/6/1%; Indian-comma numbers misread 11/15 TTS, 9/15 RT written; helplines Hindi mode written 0/4 digit-exact, pre-rendered 11/12",
+   "source": "inbox/spoken-notation-build.json"
+  },
+  {
+   "id": "spoken-render-tts-rerun-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-02",
+   "title": "Reduced probe re-run with toSpoken() as the TTS input (gpt-4o-mini-tts marin, 30 items × en/hl/hi, n=90 + 4 helpline clips): any flag 13% vs written 57% and hand-authored 14% on the same items; misread 6% (3% excl. ASR-suspect) vs 24% / 2%; Indian-comma numbers misread 1/15 vs 11/15; en mode 0/30 flags",
+   "source": "inbox/spoken-notation-build.json"
+  },
+  {
+   "id": "spoken-helplines-repeat-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "Helplines through toSpoken() in all 5 mode × medium cells, 3 takes each (n=30): 28/30 judged digit-exact, 0 confirmed wrong digit (1 undeterminable, 1 single-ASR disagreement); with the first re-run's 10 clips, 37/40 exact, 0 confirmed wrong; one Hindi-mode Tele-MANAS take clipped the final छह",
+   "source": "inbox/spoken-notation-build.json"
+  },
+  {
+   "id": "helpline-digits-comma-separated",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: comma-separating helpline digit words (one, zero, nine, eight) for TTS: 28/30 digit-exact, identical to the plain digit words (28/30), so no gain for the extra punctuation",
+   "source": "inbox/spoken-notation-build.json"
+  },
+  {
+   "id": "open-realtime-lesson-now-notation",
+   "kind": "open",
+   "at": "2026-10-02",
+   "title": "Realtime lane LESSON NOW still poses kit items with written notation (director/items.js promptFor): only the helplines are pre-rendered there; the kit `spoken` field + checkSpoken at kit-load (spoken-notation §2.1) is unbuilt",
+   "source": "inbox/spoken-notation-build.json"
   }
  ],
  "edges": [
@@ -2811,6 +3049,181 @@
    "src": "reteach-without-cooldown",
    "rel": "part_of",
    "dst": "reteach-randomise-from-second"
+  },
+  {
+   "src": "cascade-latency-v2-2026-10-02",
+   "rel": "supersedes",
+   "dst": "cascade-latency-2026-10-02"
+  },
+  {
+   "src": "cascade-latency-v2-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "cascade-2s-budget-unreachable-at-900ms",
+   "rel": "measured_by",
+   "dst": "cascade-latency-v2-2026-10-02"
+  },
+  {
+   "src": "cascade-tts-prewarm",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "speculation-one-clock",
+   "rel": "part_of",
+   "dst": "cascade-speculative-reply"
+  },
+  {
+   "src": "drift-repair-in-code",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "classify-hedge",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "deploy-classify-grok",
+   "rel": "measured_by",
+   "dst": "classify-accuracy-2026-10-02"
+  },
+  {
+   "src": "deploy-classify-grok",
+   "rel": "measured_by",
+   "dst": "cascade-latency-v2-2026-10-02"
+  },
+  {
+   "src": "reply-streaming-no-gain",
+   "rel": "constrains",
+   "dst": "cascade-2s-budget-unreachable-at-900ms"
+  },
+  {
+   "src": "keepalive-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "comp-review-2026-10-02",
+   "rel": "supersedes",
+   "dst": "comp-sim-2026-10-02"
+  },
+  {
+   "src": "comp-review-2026-10-02",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "sim-misconception-truth-leak",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "sim-child-model-in-grader-chain",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "e6-span-fail-closed",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "grade-audit-span-consent",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "e9-deference-derivation",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "sim-mutants-invisible-bkt2",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "router-bench-2026-10-02",
+   "rel": "measured_by",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "image-bench-2026-10-02",
+   "rel": "measured_by",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "game-code-probe-models-2026-10-02",
+   "rel": "measured_by",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "router-s-filter-artifact",
+   "rel": "supersedes",
+   "dst": "router-bench-2026-10-02"
+  },
+  {
+   "src": "router-t-judge-split-2026-10-03",
+   "rel": "measured_by",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "open-distress-check-fails-open-on-filter",
+   "rel": "blocks",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "notation-probe-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "spoken-render-tts-rerun-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "spoken-helplines-repeat-2026-10-03",
+   "rel": "measured_by",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "helpline-digits-comma-separated",
+   "rel": "constrains",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "voice-tts-spoken-render",
+   "rel": "part_of",
+   "dst": "voice-teacher-spec"
+  },
+  {
+   "src": "voice-tts-spoken-render",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "voice-tts-spoken-render",
+   "rel": "inherits",
+   "dst": "voice-prompt-labels-and-brackets"
+  },
+  {
+   "src": "voice-tts-spoken-render",
+   "rel": "constrains",
+   "dst": "kit-fit-margin"
+  },
+  {
+   "src": "prod-smoke-32090f6",
+   "rel": "caused_by",
+   "dst": "notation-probe-2026-10-02"
+  },
+  {
+   "src": "open-realtime-lesson-now-notation",
+   "rel": "blocks",
+   "dst": "voice-tts-spoken-render"
   }
  ]
 }

@@ -5,7 +5,9 @@ import assert from "node:assert/strict";
 import { numbersIn, matchNumber } from "../server/comprehension/grade/numbers.js";
 import { spanOk } from "../server/comprehension/grade/span.js";
 import { rKey, rOpt, rCatch, teachbackOutcome, whyOutcome } from "../server/comprehension/grade/ops.js";
-import { buildRequest, gradeClosed, messagesFor } from "../server/comprehension/grade/closed.js";
+import { buildRequest, gradeClosed, messagesFor, auditRow } from "../server/comprehension/grade/closed.js";
+import { gradeAuditStmt } from "../server/comprehension/store.js";
+import { facetWeight } from "../server/comprehension/facets.js";
 import { selectReteach, reteachTrigger, armsFromKit, armReward } from "../server/comprehension/reteach.js";
 import { newPersonaState, personaStep, personaKnobs, vibeRow, checkVibeRow } from "../server/persona/adapter.js";
 import { turnSignals, INTERESTS } from "../server/persona/signals.js";
@@ -49,8 +51,38 @@ test("closed-label requests are blind: a teacher turn, name or confidence field 
   for (const extra of [{ teacherTurn: "what is 10,500?" }, { childName: "Riya" }, { confidence: 0.9 }, { previous: "present" }]) {
     assert.throws(() => buildRequest({ ...ok, ...extra }), /not allowed/);
   }
-  const text = JSON.stringify(messagesFor(buildRequest(ok)));
-  assert.ok(!/teacher/i.test(text.replace(/school child/g, "")) || true);
+  const msgs = messagesFor(buildRequest(ok));
+  assert.deepEqual(Object.keys(JSON.parse(msgs[1].content)).sort(), ["CHILD", "CHILD_LANG", "LABELS", "TARGET"], "the user message carries data fields only");
+  assert.ok(!/teacher/i.test(JSON.stringify(msgs)), "no teacher text anywhere in the grader request");
+});
+
+test("grade_audit keeps the child's verbatim words only with transcripts_retention consent", () => {
+  const res = { op: "R-EXP", graderVersion: "v", model: "m", targetId: "e1", label: "present", span: "zero jagah rakhta hai", spanOk: true, ms: 5 };
+  const ids = { childId: "c", sessionId: "s", skillId: "k", shapeId: "C03", lang: "en" };
+  assert.equal(auditRow(res, ids).span, null, "default: no span");
+  assert.equal(auditRow(res, { ...ids, keepSpan: "yes" }).span, null, "only a literal true keeps it");
+  assert.equal(auditRow(res, { ...ids, keepSpan: true }).span, "zero jagah rakhta hai");
+  const st = gradeAuditStmt({ id: "c", legal_mode: "M1" }, { ...auditRow(res, { ...ids, keepSpan: true }) });
+  assert.equal(st.params[9], null, "the writer nulls a span without keepSpan even when the row carries one");
+});
+
+test("E6 fails closed: a positive LLM verdict with no spanOk field carries no facet evidence", () => {
+  const base = { id: "x", sessionId: "s", cls: "probe.why", outcome: 0, grader: "llm" };
+  assert.equal(facetWeight({ ...base }), 0);
+  assert.equal(facetWeight({ ...base, spanOk: false }), 0);
+  assert.ok(facetWeight({ ...base, spanOk: true }) > 0);
+  assert.ok(facetWeight({ ...base, grader: "code" }) > 0, "code-graded positives need no span");
+});
+
+test("echo guard: restating the topic title is partial, a real reason stays present", async () => {
+  const title = "Equivalent fractions";
+  const req = { op: "R-EXP", childSpan: "because they are equivalent fractions that's why", target: { id: "e1", textEn: "Equivalent fractions name the same amount" } };
+  const send = (reply) => async () => ({ text: reply });
+  const echo = await gradeClosed(req, { send: send('{"label":"present","span":"they are equivalent fractions"}'), models: ["m"], echo: [title] });
+  assert.equal(echo.label, "partial");
+  const req2 = { ...req, childSpan: "if you cut the pizza into more pieces you get more pieces but the same pizza" };
+  const real = await gradeClosed(req2, { send: send('{"label":"present","span":"more pieces but the same pizza"}'), models: ["m"], echo: [title] });
+  assert.equal(real.label, "present");
 });
 
 test("closed-label: schema / parse failure → NA (never wrong); positive without a findable span → absent (E6, mutant VC6)", async () => {

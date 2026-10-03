@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { compile, compileWithReport, BudgetError, TURN_WORDS, TURN_SHAPE_PREFIX } from "../server/compiler/compile.js";
+import { compile, compileWithReport, BudgetError, TURN_WORDS, TURN_SHAPE_PREFIX, voiceSafe } from "../server/compiler/compile.js";
 import { FLOOR_HEADING } from "../server/compiler/floor.js";
 import { CHARACTERS } from "../server/compiler/characters/index.js";
 import * as SH from "../server/director/shapes.js";
@@ -67,9 +67,26 @@ test("lanes share every byte except the voice-only branch lines", () => {
   assert.ok(check.startsWith("ONE MORE CHECK: when they reply:"), check);
   assert.match(check, /it matches the key → /, "the branch for the active item is the voice lane's last check");
   assert.doesNotMatch(text, /when they reply/);
-  // The voice lane adds its branch check and the next turn's content lines; every other line is shared.
+  // The voice lane adds its branch check and the next turn's content lines, and says the helpline numbers as
+  // digit words (voiceSafe); every other byte is shared.
   const strip = (t) => t.split("\n").filter((l) => !l.startsWith("ONE MORE CHECK") && !l.startsWith("- for your next turn")).join("\n");
-  assert.equal(strip(voice), strip(text));
+  assert.equal(strip(voice), voiceSafe(strip(text), input.language));
+});
+
+test("voice lane: helplines are digit words in the mode, never numerals; the text lane keeps the numerals", () => {
+  const sg = (language) => {
+    const input = { ...inputAfter([cls("incorrect", { flags: { distress: true, distressKind: "abuse" } })]), language };
+    return { voice: compile({ ...input, lane: "voice" }), text: compile({ ...input, lane: "text" }) };
+  };
+  for (const [language, childline, telemanas] of [["english", "one zero nine eight", "one four four one six"],
+    ["hinglish", "one zero nine eight", "one four four one six"], ["hindi", "एक शून्य नौ आठ", "एक चार चार एक छह"]]) {
+    const { voice, text } = sg(language);
+    assert.doesNotMatch(voice, /1098|14416/, `${language}: no helpline numeral reaches the realtime model`);
+    assert.ok(voice.includes(`Childline ${childline}`), `${language}: Childline digit by digit`);
+    assert.ok(voice.includes(`Tele-MANAS ${telemanas}`), `${language}: Tele-MANAS digit by digit`);
+    assert.match(text, /Childline 1098/);
+    assert.match(text, /Tele-MANAS 14416/);
+  }
 });
 
 /** A lesson state as the routes store it (brief, lane), after `answers`. */

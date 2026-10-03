@@ -4,25 +4,30 @@
 import { newLearnerState, fuseEvidence } from "../../server/comprehension/fuse.js";
 import { beliefFor } from "../../server/comprehension/state.js";
 import { nextProbe, noteOutcome, markAsked, openSession } from "../../server/comprehension/schedule.js";
-import { newProbeSession, recordTurn, fits, sessionWeight, lexiconHit } from "../../server/comprehension/budget.js";
+import { newProbeSession, recordTurn, fits, sessionWeight, lexiconHit, deferenceDiscountOn } from "../../server/comprehension/budget.js";
 import { enqueue, onTopicPlanned, expire, planChecks, consumeExpired, markDone, wovenEvent } from "../../server/comprehension/weave.js";
 import { selectReteach, reteachTrigger, armsFromKit } from "../../server/comprehension/reteach.js";
 import { shapeById } from "../../server/comprehension/probes/shapes.js";
+import { isPartial } from "../../server/comprehension/facets.js";
 import { bandOf } from "../../server/comprehension/params.js";
 import { ktView, rank, DELAY_MS } from "../../server/learner/kt/ledger.js";
 import { outcomeIndex, outcomeName } from "../../server/learner/kt/outcomes.js";
 import { concepts as loadConcepts, SESSIONS, sessionStart, hostCandidates, KIT_INPUTS } from "./world.mjs";
 import { expectedState, truthType } from "./personas.mjs";
-import { rng, itemAnswer, probeAnswer, voiceCues, choiceAnswer } from "./child.mjs";
+import { rng, itemAnswer, probeAnswer, voiceCues, choiceAnswer, agreesWithTrue } from "./child.mjs";
 
 /** Policies: the spec engine, its ablations, and the controls that must fail (§8.3). */
 export const POLICIES = Object.freeze({
-  engine: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true },
-  no_delayed: { probes: true, delayed: false, games: true, voice: true, rule: "ladder", reteach: true },
-  no_game: { probes: true, delayed: true, games: false, voice: true, rule: "ladder", reteach: true },
-  no_voice: { probes: true, delayed: true, games: true, voice: false, rule: "ladder", reteach: true },
-  engine_T07: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, th: { T_UNDERSTOOD: 0.7 } },
-  freeze_low: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, freezeLow: true },
+  engine: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true },
+  engine_no_e9: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true },
+  no_delayed: { probes: true, delayed: false, games: true, voice: true, rule: "ladder", reteach: true, e9: true },
+  no_game: { probes: true, delayed: true, games: false, voice: true, rule: "ladder", reteach: true, e9: true },
+  no_voice: { probes: true, delayed: true, games: true, voice: false, rule: "ladder", reteach: true, e9: true },
+  engine_T07: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, th: { T_UNDERSTOOD: 0.7 }, e9: true },
+  freeze_low: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, freezeLow: true, e9: true },
+  // mutants (§8.3): each must FAIL CE-M3, or the battery cannot see the bug it stands for
+  mut_vc2_partial_as_full: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, vc2: true },
+  mut_vc4_game_full_weight: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, vc4: true },
   quiz_bot: { quiz: true, delayed: true, rule: "konly" },
   samjha: { samjha: true, delayed: true, rule: "konly" },
   lecture: { lecture: true, delayed: true, rule: "ladder" },
@@ -36,20 +41,42 @@ function kOnlyState(b, delayedOk) {
   return !does ? "not_yet" : b.pL >= 0.95 && delayedOk ? "understood" : "fragile";
 }
 
-export async function runChild({ persona: P, seed, policy: polName, llm = null }) {
+/**
+ * Truth families (STUDENT-SIM SIM2: a conclusion counts only if it holds under both).
+ * - `bkt2`: the hidden K/U/T bits are fixed per concept and every answer reads them (matched to the engine's two-state
+ *   view: an UPPER BOUND).
+ * - `cfrag` (cfrag-lite, the stress family): each facet is a continuous strength m ∈ [0, 1] (bit 1 → U[0.65, 0.95],
+ *   bit 0 → U[0.05, 0.40]); every answer samples its own realisation (strategy mixture: a child who "has it" still
+ *   uses the surface heuristic sometimes); forgetting is partial (m × 0.35 by the next session, not to zero); the
+ *   truth type uses m ≥ 0.6 (STUDENT-SIM R2b's "unknown" line); and a re-teach raises the child's WEAKEST facet by
+ *   (1 − m)·gain whatever trigger the engine named, so the child's gain never depends on the engine's own diagnosis
+ *   label (in bkt2 it does: U can only flip under u_low / misconception triggers). Not the full evals/sim cfrag
+ *   (no 4PL, no surface-novelty γ per item); labelled cfrag-lite in every result file.
+ */
+export const FAMILIES = Object.freeze(["bkt2", "cfrag"]);
+const STRENGTH = { hi: [0.65, 0.95], lo: [0.05, 0.40], cut: 0.6, forget: 0.35 };
+
+export async function runChild({ persona: P, seed, policy: polName, llm = null, family = "bkt2" }) {
+  if (!FAMILIES.includes(family)) throw new Error(`sim: unknown truth family ${family}`);
+  const cf = family === "cfrag";
   const pol = POLICIES[polName];
   const r = rng(`${P.id}:${seed}:${polName}`);
   const cs = loadConcepts();
   const bySkill = Object.fromEntries(cs.map((c) => [c.skillId, c]));
-  const truth = Object.fromEntries(cs.map((c, i) => [c.skillId, { ...P.truth(i) }]));
+  const rt = rng(`${P.id}:${seed}:truth`);                                // truth draws do not depend on the policy
+  const strength = (bit) => { const [a, b] = bit ? STRENGTH.hi : STRENGTH.lo; return a + (b - a) * rt(); };
+  const truth = Object.fromEntries(cs.map((c, i) => { const b = { ...P.truth(i) }; return [c.skillId, cf ? { ...b, mK: strength(b.K), mU: strength(b.U), mT: strength(b.T) } : b]; }));
+  /** The truth bits a metric scores against (cfrag: m ≥ 0.6). */
+  const bitsOf = (t) => (cf ? { ...t, K: +(t.mK >= STRENGTH.cut), U: +(t.mU >= STRENGTH.cut), T: +(t.mT >= STRENGTH.cut) } : t);
   const info = Object.fromEntries(cs.map((c) => [c.skillId, { cooldown: 0, learnedSession: null, refreshed: -1, delayedOk: false, uProbes: 0, nearFail: false, attempts: [], states: [], probes: 0, firstSeen: null }]));
   const childId = `${P.id}-${seed}`;
   let S = newLearnerState({ childId, classLevel: P.classLevel });
   let seq = 0, q = [];
   const band = bandOf(P.classLevel);
   const load = [];
-  const counters = { probeTurns: 0, mandatory: 0, lexicon: 0, repeats: 0, events: 0, reteach: 0, wovenHosted: 0, callbacks: 0 };
+  const counters = { probeTurns: 0, mandatory: 0, lexicon: 0, repeats: 0, events: 0, reteach: 0, wovenHosted: 0, callbacks: 0, perCS: {} };
   const posteriors = {};
+  const shapesBySession = [];                                              // [si][skillId] = shape ids asked
 
   for (let si = 0; si < SESSIONS.length; si++) {
     const plan = SESSIONS[si];
@@ -60,7 +87,9 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null }
     const base = () => ({ id: `${sessionId}-e${++seq}`, seq, sessionId, sessionStartAt: now, at: now, episodeId: `${sessionId}-ep${++ep}`, itemKey: `k${seq}`, graderVersion: "sim", topicType: "T3" });
     const eff = (k) => {                                                   // effective truth: forgetting by the next session
       const t = truth[k], inf = info[k];
-      if (!t.keep && inf.learnedSession !== null && inf.learnedSession < si && inf.refreshed < si) return { ...t, K: 0, U: 0, T: 0 };
+      const forgot = !t.keep && inf.learnedSession !== null && inf.learnedSession < si && inf.refreshed < si;
+      if (cf) { const f = forgot ? STRENGTH.forget : 1; return { ...t, K: +(r() < t.mK * f), U: +(r() < t.mU * f), T: +(r() < t.mT * f) }; }
+      if (forgot) return { ...t, K: 0, U: 0, T: 0 };
       return t;
     };
     const belief = (k) => beliefFor(k, { ...S, now, th: pol.th });
@@ -75,7 +104,9 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null }
       if (b && info[k].learnedSession === null && rank(b.display) >= rank("learned_today")) info[k].learnedSession = si;
       return b;
     };
-    let sess = newProbeSession({ sessionId, band, lessonSeed: `${seed}:${sessionId}`, targets: plan.topics.map((id) => cs.find((c) => c.id === id).skillId) });
+    // novelty across days (§3.4): yesterday's shapes per skill, when the previous session was the day before
+    const yesterday = si > 0 && SESSIONS[si].day - SESSIONS[si - 1].day === 1 ? shapesBySession[si - 1] ?? {} : {};
+    let sess = newProbeSession({ sessionId, band, lessonSeed: `${seed}:${sessionId}`, yesterday, targets: plan.topics.map((id) => cs.find((c) => c.id === id).skillId) });
     const turn = (t) => { sess = recordTurn(sess, t); };
     const teach = (k, reteach = false) => {
       fuse({ ...base(), skillIds: [k], cls: "item.open", outcome: 0, grader: "code", teach: true });
@@ -95,8 +126,11 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null }
     };
 
     // ---- serve one probe plan ----
+    let lastChar = null;                                                   // E9: the character statement this probe made
     const serve = async (pl) => {
       const shape = shapeById(pl.shapeId);
+      const puppet = !!shape.planted || shape.id === "C08";
+      const dd = puppet && !!pol.e9 && deferenceDiscountOn(sess);           // from held choice data BEFORE this event
       const k = pl.skillId, c = bySkill[k], t = eff(k);
       const mis = c.misconceptions[0]?.id;
       sessionSeen.add(k);
@@ -115,11 +149,21 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null }
         const a = choiceAnswer(P, t, k2, r);
         fuse({ ...base(), skillIds: [k], cls: shape.pre, outcome: outcomeIndex(shape.pre, a.o), grader: "code", shapeId: shape.id, ...(a.mis && mis ? { misconceptionId: mis } : {}), ...(mis ? { discriminates: mis } : {}) });
       }
-      const a = await probeAnswer(P, t, c, shape, r, llm, { game: shape.via === "game" });
+      let a;
+      if (shape.id === "C08" && pol.e9 && r() < 0.5) {
+        // half the puppet's statements are TRUE (E9 needs the yes-rate on both): agreeing is the right answer
+        const agreed = agreesWithTrue(P, t, r);
+        a = { outcome: outcomeIndex(shape.emits, agreed ? "first_correct" : "wrong"), grader: "code" };
+        lastChar = { planted: false, agreed };
+      } else {
+        a = await probeAnswer(P, t, c, shape, r, llm, { game: shape.via === "game" });
+        if (puppet && a.outcome != null && a.outcome >= 0) lastChar = { planted: true, agreed: ["missed", "wrong"].includes(outcomeName(shape.emits, a.outcome)) };
+      }
       if (a.outcome === null || a.outcome === undefined || a.outcome < 0) return null;                    // NA: no update
+      if (pol.vc2 && isPartial(shape.emits, a.outcome)) a = { ...a, outcome: 0 };   // VC2: partial scored as full (index 0 = full / high)
       const name = outcomeName(shape.emits, a.outcome);
       const misHit = a.mis && mis && ["misconception", "mapped_wrong", "wrong"].includes(name);
-      const ev = { ...base(), skillIds: [k], cls: shape.emits, outcome: a.outcome, grader: a.grader, shapeId: shape.id, via: shape.via, spanOk: a.spanOk,
+      const ev = { ...base(), skillIds: [k], cls: shape.emits, outcome: a.outcome, grader: a.grader, shapeId: shape.id, via: shape.via, spanOk: a.spanOk, ...(dd ? { deferenceDiscount: true } : {}),
         ...(misHit ? { misconceptionId: mis } : {}), ...(!misHit && mis && shape.verifier ? { discriminates: mis } : {}) };
       fuse(ev);
       if (shape.facets.includes("U")) info[k].uProbes++;
@@ -135,8 +179,12 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null }
       const ev = await serve(pl);
       const b = belief(pl.skillId);
       sess = markAsked(sess, pl, b);
-      turn({ kind: "probe", weight: pl.testWeight, shapeId: pl.shapeId, skillId: pl.skillId, facet: pl.facet, family: pl.family, cls: pl.cls, longForm: pl.longForm, mandatory: pl.mandatory });
+      turn({ kind: "probe", weight: pl.testWeight, shapeId: pl.shapeId, skillId: pl.skillId, facet: pl.facet, family: pl.family, cls: pl.cls, longForm: pl.longForm, mandatory: pl.mandatory, charStatement: lastChar });
+      lastChar = null;
+      if ((sess.yesterday?.[pl.skillId] ?? []).includes(pl.shapeId)) counters.repeats++;   // CE-M5: same shape, same skill, consecutive days
+      ((shapesBySession[si] ??= {})[pl.skillId] ??= []).push(pl.shapeId);
       counters.probeTurns++; if (pl.mandatory) counters.mandatory++;
+      { const key = `${si}:${pl.skillId}`; const pc = (counters.perCS[key] ??= { n: 0, u: 0, mand: 0, reasons: {} }); pc.n++; if (pl.facet === "U") pc.u++; if (pl.mandatory) pc.mand++; pc.reasons[pl.reason] = (pc.reasons[pl.reason] ?? 0) + 1; }
       if (ev) sess = noteOutcome(sess, ev, b);
       if (pl.reason === "delayed_check") q = q.map((e) => (e.skillId === pl.skillId && e.status === "expired" ? { ...e, status: "done" } : e));
       return true;
@@ -191,9 +239,14 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null }
       const t = truth[k];
       // the arm's effect on the hidden truth (a different representation can make the idea click)
       if (trig === "misconception_confirmed" && t.mis && r() < P.misFix) { t.mis = 0; }
+      if (cf) {
+        const f = [["mK", P.kLearn], ["mU", t.mis ? 0 : P.uLearn], ["mT", P.tLearn]].sort((a, b) => t[a[0]] - t[b[0]])[0];
+        t[f[0]] += (1 - t[f[0]]) * f[1];
+      } else {
       if (!t.K && r() < P.kLearn) t.K = 1;
       if (t.K && !t.U && !t.mis && (trig === "u_low_after_practice" || trig === "misconception_confirmed") && r() < P.uLearn) t.U = 1;
       if (t.U && !t.T && trig === "transfer_fail" && r() < P.tLearn) t.T = 1;
+      }
       inf.attempts.push({ skillId: k, misId: d.misId, armId: d.armId, repClass: d.repClass, session: si, at: now, outcome: null });
       inf.uProbes = 0; inf.nearFail = false; inf.cooldown = 2;
     };
@@ -260,7 +313,7 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null }
             const shape = shapeById(sid);
             const a = await probeAnswer(P, eff(k), c, shape, r, null, { game: true });
             const mis = c.misconceptions[0]?.id;
-            fuse({ ...base(), skillIds: [k], cls: shape.emits, outcome: a.outcome, grader: "code", shapeId: sid, via: "game", ...(a.mis && mis ? { misconceptionId: mis } : {}) });
+            fuse({ ...base(), skillIds: [k], cls: shape.emits, outcome: a.outcome, grader: "code", shapeId: sid, via: pol.vc4 ? "dialogue" : "game", ...(a.mis && mis ? { misconceptionId: mis } : {}) });
             turn({ kind: "play", weight: 0.25, skillId: k });
           }
         }
@@ -274,12 +327,12 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null }
       if (info[k].firstSeen === null) continue;
       const b = belief(k);
       const st = pol.rule === "konly" ? kOnlyState(b, info[k].delayedOk) : b?.state ?? "not_yet";
-      const t = truth[k];
+      const t = bitsOf(truth[k]);
       info[k].states.push({ session: si, state: st, expected: expectedState(t).exact, ok: expectedState(t).ok.includes(st), type: truthType(t) });
     }
     load.push({ session: si, childTurns: sess.childTurns, weight: sessionWeight(sess), per10: sess.childTurns ? (10 * sessionWeight(sess)) / sess.childTurns : 0,
       cap: { B1: 6, B2: 8, B3: 12.5, B4: 15 }[band], probeTurns: sess.probes });
   }
   return { persona: P.id, archetype: P.archetype, verbal: P.verbal, seed, policy: polName, band, load, counters,
-    concepts: cs.map((c) => ({ conceptId: c.id, skillId: c.skillId, finalTruth: truth[c.skillId], ...info[c.skillId], attempts: undefined })) };
+    family, concepts: cs.map((c) => ({ conceptId: c.id, skillId: c.skillId, finalTruth: bitsOf(truth[c.skillId]), ...info[c.skillId], attempts: undefined })) };
 }

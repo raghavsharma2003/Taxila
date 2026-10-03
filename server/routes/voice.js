@@ -15,6 +15,7 @@ import { ageBandOf, sttPrompt, sttSession } from "../voice/stt.js";
 import { PCM_RATE, speakChunk, speechStyle, transcribeClip } from "../voice/speech.js";
 import { splitSentences } from "../voice/sentences.js";
 import { take as prewarmTake } from "../voice/prewarm.js";
+import { spokenOptsForChild } from "../voice/spoken.js";
 import { routes as featureRoutes } from "../voice/features.js";
 
 const VOICES = new Set(["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"]);
@@ -65,10 +66,16 @@ function limiter(max) {
   };
 }
 
-/** The lesson teacher's speech style (voice + delivery notes) for a child row: one rule for tts-stream and /turn's prewarm. */
-export function styleForChild(child) {
+/**
+ * The lesson teacher's speech style (voice + delivery notes + the spoken-notation cell for the child's language
+ * mode, school medium and age band) for a child row: one rule for tts-stream and /turn's prewarm. Every chunk
+ * speakChunk() speaks with it is rendered by ttsInput(), so numerals and helplines reach the voice spoken.
+ * @param {any} child  child row
+ * @param {string} [ageBand]  the lesson's band (state.ctx.ageBand) when the caller has it; else from class_level
+ */
+export function styleForChild(child, ageBand) {
   const teacher = teacherFor(child);
-  return speechStyle(teacher, VOICES.has(teacher.voice) ? teacher.voice : DEFAULT_VOICE);
+  return speechStyle(teacher, VOICES.has(teacher.voice) ? teacher.voice : DEFAULT_VOICE, spokenOptsForChild(child, ageBand));
 }
 
 // ───────────── POST /api/voice/stt-token ─────────────

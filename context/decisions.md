@@ -915,3 +915,65 @@ After the closed-label R-EXP verdict, code checks whether a `present` span is at
 
 ## conductor-openers-anchor-due
 The opener set for the session-open delayed checks = `ktView.due()` ∪ {display ≥ learned_today, no delayed flag, ≥ 20 h since anchorAt}. Without the second set the sim ran 0 callbacks: FSRS's first interval after a same-day learn is > 1 day, so the ledger's next-session delayed check never happened. **Reverse if** the ledger's `nextReviewAt` itself becomes min(FSRS, anchor + 20 h) for skills without a delayed pass.
+
+
+<!-- merged from inbox/cascade-latency-2.json -->
+## cascade-tts-prewarm
+**Cascade `/turn` starts speaking the final, fully guarded reply on the server while the turn's transaction runs; `tts-stream` takes the in-flight sentences (same lesson, seq and session token hash) instead of re-reading the turn.** (2026-10-02)
+- Every byte guard has run before anything goes to the speech model, and audio is served only for the stored text, so no unguarded sentence is ever spoken. A failed transaction drops the entry (upstream request aborted); untaken entries die after 30 s; per process, so another replica just misses. The opening line is prewarmed too. `TAXILA_TTS_PREWARM=0` turns it off.
+- Measured: TTS stage 343 → 212 ms (n=10 vs 30); in production it also hides the child's phone → server round trip.
+- Reverse if: multi-replica routing makes the hit rate low enough that wasted prewarms cost more than they save (count x-tts-prewarmed-ms headers), or a session can be revoked faster than 30 s and that must cut audio.
+
+## speculation-one-clock
+**A turn's speculative plans and its real plan are stepped at one `now` (the turn's arrival); low-ASR turns speculate their one decided plan (no_evidence/asr) beside the distress backup.** (2026-10-02)
+- A second clock read after the classifier moved the compiled "minute" line across a 6 s boundary and missed 2/8 speculations on that alone. A distress verdict changes the plan, the reply key no longer matches, and the real reply is written as before.
+- Reverse if: a plan input must reflect time spent classifying (none does today).
+
+## drift-repair-in-code
+**A reply whose only guard failures are drift (it did not pose the item) and possibly flat is repaired in code: the draft up to its first question, then the item's verified question; every guard re-runs, and anything left goes to the model rewrite.** (2026-10-02)
+- Evidence: 9/9 measured drift rewrites ended with the kit question verbatim (5 the question alone, 4 acknowledgement + question); the rewrite cost +0.8-3.7 s. Drift was the commonest rewrite cause (9/22). 4 repairs in 40 final-config turns, no model call.
+- Reverse if: a quality judge or a child test finds repaired turns read worse than rewritten ones (acknowledgement that does not fit the question), or posesItem changes so drift means something else.
+
+## classify-hedge
+**Classifier and distress-backup calls send one duplicate request after 1.5 s for non-reasoning deployments; the first answer wins (`TAXILA_CLASSIFY_HEDGE_MS`, 0 = off; off for the reasoning family).** (2026-10-02)
+- grok-4-1-fast-non-reasoning: p50 ~0.6 s, but 2 of ~60 calls hung to the 4 s / 7 s timeouts (an 8.1 s and a 4.1 s Director turn). With the hedge, Director p90 1629 ms (n=20) vs 1872-2424 without.
+- Reverse if: duplicates exceed ~10% of classify calls (cost), or the deployment's p90 rises above 1.5 s (raise the delay).
+
+## deploy-classify-grok (proposed)
+**Recommend DEPLOY_CLASSIFY=grok-4-1-fast-non-reasoning with DEPLOY_REPLY=taxila-fast for the cascade lane.** (2026-10-02, needs adoption: set in the Container App env)
+- Latency: total median 2966 ms / p90 3163 (n=20) vs 3275 / 4422 for taxila-fast classify on the same code (n=20). Quality on the real classify(): 75/80 exact vs 72/80, 0 graded-wrong, distress 10/10 (`classify-accuracy-2026-10-02`). It is Direct-from-Azure (Azure-only directive holds). DEPLOY_REPLY stays taxila-fast: ds41 rewrote more and slower; V4-Pro classify was slower (3649 ms).
+- Reverse if: a larger multi-topic labelled set shows grok more graded-wrong than taxila-fast, or its distress flag misses a case the predicate does not catch.
+
+
+<!-- merged from inbox/comprehension-review.json -->
+## e6-span-fail-closed
+A positive `grader: "llm"` event moves U/T only when `spanOk === true`. Rationale: the INTEGRATION.md call site copied `spanOk` from an optional field, and the old check (`spanOk === false`) let an omitted field certify a verdict that no code had checked. **Reverse if** the closed-label grader is replaced by a code operator for that class.
+
+## grade-audit-span-consent
+`auditRow` and `gradeAuditStmt` keep the child's verbatim span only with `keepSpan: true`, which the caller sets from the `transcripts_retention` consent. Otherwise span is null, and label, span_ok, op and target are kept. Rationale: the span is the child's speech, and the old code stored it under M1 whatever the transcript consent. **Reverse if** M-GRADE shows the confusion refit needs spans, and then only under that consent.
+
+## e9-deference-derivation
+`deferenceDiscountOn(sess)` is on when the yes-rate on a character's true statements and on its planted statements are both > 0.8, with at least 1 true and 2 planted seen this session [U]. The Director stamps it on the next puppet-shape event, so replay stays exact. Measured effect in the sim is within noise (bkt2 0.640 vs 0.653), and the deferential persona stays at 0.28. **Reverse if** M-DEF shows the discount does not move deferential understanders, or it fires on more than 10% of non-deferential children.
+
+
+<!-- merged from inbox/spoken-notation-build.json -->
+## voice-tts-spoken-render
+2026-10-02. **What.** Everything a speech model is given goes through `toSpoken(text, { mode, schoolMedium, ageBand })` (`server/voice/spoken.js`; the conventions are DATA in `server/voice/spoken-lexicon.js`: word tables, units, templates and cells, so a regional language is one more `WORDS` entry plus its `CELLS`).
+- **Funnel.** `speakChunk()` (`server/voice/speech.js`) renders every chunk through `ttsInput(text, style)`, so `/api/voice/tts-stream` and the `/turn` prewarm are both covered without touching lesson.js. `styleForChild(child, ageBand?)` now carries the child's cell (`style.spoken`). `/api/tts` renders before `tts()`. The TTS cache is keyed by the RENDERED text.
+- **What does not change.** `splitSentences()` still splits the written text, and captions, stored `turn.text`, the answer-leak guard and the safety predicates all see the written text.
+- **Safety by predicate.** The floor's `HELPLINES` numbers are matched exactly, before any other rule, and always rendered digit by digit in the mode's digit words (1098 is never "one thousand ninety-eight", even inside a maths sentence). Phone-like numbers (mobile, +91, 1800 toll-free, a number after call/dial) also go digit by digit.
+- **Realtime lane.** `compile()` on the voice lane renders the helpline numbers as digit words wherever they appear (floor, safeguard move shape; `voiceSafe`). The appended-last escape and safeguard clauses name Childline WITHOUT the number: the digit words would cost the `last` section ~4 tokens, and `checkFits` keeps reserving the old 5 characters so the kit gate admits exactly the items it admitted before (108 dropped, unchanged). No reading-convention note was added to any prompt: the recitation law and spoken-notation §2.1 forbid one, and the safety string is the §10.4 data exception. The text lane keeps the numerals, because the child reads them on screen.
+- **Conventions (spoken-notation §2.3).** Indian place value by default; international (million) only when the number was written with international grouping and is at least 1,000,000. Decimals are read digit by digit after the point. Fractions use upon/बटा, but band 6-9 uses unit words for halves and quarters. Mixed numbers are joined with "and"/और. ₹ is said as rupees and paise. Times-table chant only for band 6-9. School medium "other" resolves to english. Hindi words are written in Devanagari even inside Roman Hinglish text [I: the probe's script choice, not separately measured].
+- **Rationale.** `notation-probe-2026-10-02` measured written notation misread by both voices, and `spoken-render-tts-rerun-2026-10-02` confirmed the shipped renderer reaches the hand-authored level.
+- **Reverse if** a re-run of the same probe (same items, judge and two ASR passes, plus listeners) shows written text within 2 points of rendered on every class for the shipped TTS voice, AND helplines digit-exact 100% written in every mode. Also revisit any single rule whose class shows a higher error rendered than written (none today). `TAXILA_TTS_SPOKEN=0` is the A/B switch; it turns the helpline guarantee off too.
+- **Not covered:** realtime LESSON NOW items (`open-realtime-lesson-now-notation`), parent-card speech (`/api/parent/speak`, which speaks untouched), and adjectival unit number ("500 millilitres bottles").
+
+
+## model-router-v1 (2026-10-03)
+PROPOSED model router v1 (docs/research/models/MODEL-ROUTER.md): live reply gpt-5.6-terra → fallback taxila-ds41; classify/distress/director taxila-fast → fallbacks grok-4-20-nr / taxila-ds41 / oss120; writing taxila-brain → terra; diagram+game code taxila-codex → brain / DeepSeek-V4-Pro; images gpt-image-2 (text) + FLUX.2-pro (text-free art); OCR taxila-brain → grok-4-20-nr; ask owner to deploy gpt-6.1-sol, gpt-6-luna, text-embedding-3-large, Cohere-Embed-V5-Pro, gpt-image-2.5-flare/sunburst, MAI-Image-2.6, Kimi-K3 (after billing check), mistral-ocr-4-0.
+The workflow's write-up is the prose merged from inbox/model-router-research.json earlier in this file; this heading ties the graph node to it.
+
+
+<!-- merged from inbox/deploy-classify-grok.json -->
+## deploy-classify-grok (2026-10-03)
+Set in scripts/deploy-azure.mjs: DEPLOY_CLASSIFY=grok-4-1-fast-non-reasoning, TAXILA_CLASSIFY_HEDGE_MS=1500; DEPLOY_REPLY stays at its default, taxila-fast. Evidence (cascade-latency-2): end-to-end median 2,966 ms (p90 3,163) vs 3,275 ms (p90 4,422) with taxila-fast for both, n=20 each; classifier labels 75/80 vs 72/80 (taxila-fast) and 74/80 (V4-Pro); distress 10/10 for all three. **Reverse if** classify accuracy on more than one topic (evals/classify-accuracy.mjs) puts grok below taxila-fast, if any distress miss appears, or if grok's hang rate pushes the p90 above taxila-fast's.

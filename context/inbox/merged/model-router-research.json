@@ -1,0 +1,61 @@
+{
+ "nodes": [
+  {
+   "id": "model-router-v1",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "PROPOSED model router v1 (docs/research/models/MODEL-ROUTER.md): live reply gpt-5.6-terra → fallback taxila-ds41; classify/distress/director taxila-fast → fallbacks grok-4-20-nr / taxila-ds41 / oss120; writing taxila-brain → terra; diagram+game code taxila-codex → brain / DeepSeek-V4-Pro; images gpt-image-2 (text) + FLUX.2-pro (text-free art); OCR taxila-brain → grok-4-20-nr; ask owner to deploy gpt-6.1-sol, gpt-6-luna, text-embedding-3-large, Cohere-Embed-V5-Pro, gpt-image-2.5-flare/sunburst, MAI-Image-2.6, Kimi-K3 (after billing check), mistral-ocr-4-0"
+  },
+  {
+   "id": "router-bench-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "router-bench T/C/S/D/W/V/M across 13 Azure + 3 OpenRouter-reference models: T judged overall (sol/grok judge) terra 4.20/3.70, ds41 3.50/3.80, fast 3.40/3.50, gpt-6.1-sol(ref) 4.90/3.20; TTFT p50 fast 0.98 s, terra 1.20 s, ds41 1.24 s; S distress recall 16/16 for all gpt-5.6 + ds41, DeepSeek-V4-Pro/grok/oss missed passive ideation; C and D at ceiling; W brain 5/5 both languages; embeddings text-embedding-3-small R@1 6/12 cross-lingual"
+  },
+  {
+   "id": "image-bench-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "3 prompts × gpt-image-2 / FLUX.2-pro / FLUX.1-Kontext-pro, n=1, brain vision judge: gpt-image-2 25/25 on every prompt (37-47 s, $0.053); FLUX.2-pro labels on wrong parts, tutor character 5/5 in 6.2 s (~$0.03); Kontext gibberish caption"
+  },
+  {
+   "id": "game-code-probe-models-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "Phaser 4 single-file probe (2 tasks × n=3) on 8 models: functional 6/6 codex, DeepSeek-V4-Pro (9.9 s), ds41 (5.7 s), brain, grok-4.3, oss120; 4/6 terra and kimi-code (95 s); tasks at ceiling"
+  },
+  {
+   "id": "oss120-json-mode-corrupt",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "gpt-oss-120b with response_format json_object on Foundry returns corrupted JSON ({\"final{\": ...}) — explains model-bakeoff C 0/12; send plain text and parse"
+  },
+  {
+   "id": "cohere-command-a-plus-child-tasks",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Cohere-command-a-plus-05-2026 rejected for child-facing tasks: reasons by default (empty content under small caps), read 'maarte' as 'kill', distress recall 9/16, wrong child name and numbers in Hindi parent report"
+  }
+ ],
+ "edges": [
+  {
+   "src": "router-bench-2026-10-02",
+   "rel": "measured_by",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "image-bench-2026-10-02",
+   "rel": "measured_by",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "game-code-probe-models-2026-10-02",
+   "rel": "measured_by",
+   "dst": "model-router-v1"
+  }
+ ],
+ "md": {
+  "measurements": "## router-bench-2026-10-02\n2026-10-02/03. `docs/research/models/router-bench.mjs` → `router-bench-2026-10-02.json`, tables `router-tables.md`, synthesis `MODEL-ROUTER.md`. T: 10 child turns (6 Hinglish, 3 English, 1 Devanagari) × 2 reps Azure / 1 rep OpenRouter-reference, production settings (effort none, streamed), two blind comparative judges (taxila-brain, grok-4-20-reasoning; self-preference visible). C 20 cases × 2; S production distress prompt 16 cases × 2; D 8 scenarios × 2; W 1 fact sheet × Hindi/English; V 4 synthetic handwriting-font images (CER); M 12 concepts cross-lingual. Key: see MODEL-ROUTER.md §1. Limits: small n, LLM judges, C/D at ceiling, synthetic OCR, US-side shared latency.\n",
+  "rejected": "## oss120-json-mode-corrupt\n**Tried (2026-10-03):** gpt-oss-120b (`taxila-oss120`) with `response_format: {type: json_object}`. **Broke:** content came back as `{\"final{\": \"outcome\", \"value\": \"correct\"}` (harmony channel leak); 0/12 in model-bakeoff C, 0/40 in router-bench C. Plain text + parse: 38/40. **Revisit if** Foundry updates the gpt-oss serving.\n\n## cohere-command-a-plus-child-tasks\n**Tried (2026-10-03):** Cohere-command-a-plus-05-2026 across router-bench. **Broke:** reasons by default so 60-300 token caps return empty content; with 1500 tokens distress recall 9/16; its reasoning read Hinglish 'maarte' as 'kill'; Hindi parent report had the wrong child name and numbers. **Revisit if** a non-reasoning variant ships.\n"
+ }
+}

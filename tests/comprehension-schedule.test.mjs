@@ -152,3 +152,17 @@ test("CEI5: a woven sub-step emits exactly one event on the earlier skill (item.
   assert.deepEqual(a.skillIds, ["a"]);
   assert.equal(a.via, "weave");
 });
+
+test("E9 deference discount: on only when the child agrees with a character's true AND planted statements (> 0.8 both)", async () => {
+  const { newProbeSession, recordTurn, deferenceDiscountOn } = await import("../server/comprehension/budget.js");
+  const say = (s, planted, agreed) => recordTurn(s, { kind: "probe", weight: 0.5, charStatement: { planted, agreed } });
+  let s = newProbeSession({ sessionId: "d", band: "B3" });
+  assert.equal(deferenceDiscountOn(s), false, "no data: off");
+  s = say(say(s, true, true), true, true);
+  assert.equal(deferenceDiscountOn(s), false, "planted only: off (needs a true statement too)");
+  s = say(s, false, true);
+  assert.equal(deferenceDiscountOn(s), true, "agrees with everything: on");
+  let u = newProbeSession({ sessionId: "u", band: "B3" });
+  u = say(say(say(u, true, false), true, true), false, true);
+  assert.equal(deferenceDiscountOn(u), false, "rejects a planted error: off");
+});

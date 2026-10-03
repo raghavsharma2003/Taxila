@@ -272,6 +272,23 @@ The classifier leaves these unflagged, which makes every written-arm rate above 
   that call per medium.
 - Re-run with the full compile, on the lane B/C winners, and with listeners: VT-10 in VOICE-TEACHER §11.
 
+### 3.5 Re-run with the shipped renderer [M] (2026-10-02/03)
+
+`server/voice/spoken.js` `toSpoken()` (data in `spoken-lexicon.js`, renderer `sp1-2026-10-02`) now renders every
+TTS input. It was re-measured with the probe's own TTS arm, both ASR passes and the probe's judge (stored system
+prompt). Scripts: `rerun-tospoken.mjs` and `rerun-helplines.mjs`. Data: `rerun-tospoken/`.
+
+| gpt-4o-mini-tts, 30 items × en/hl/hi (n=90 per arm) | rendering error | mixed | misread | any flag |
+|---|---|---|---|---|
+| written (probe W) | 40% | 32% | 24% | 57% |
+| hand-authored spoken (probe P) | 8% | 8% | 2% | 14% |
+| **toSpoken** | **4%** | **9%** | **6%** (3% excl. ASR-suspect) | **13%** |
+
+- **Indian-comma numbers misread:** 11/15 written, 1/15 rendered. The one miss was लाख heard as नाग (pronunciation).
+- **English mode:** 0/30 flags, and no dollars.
+- **Helplines:** 37/40 judged digit-exact across all five mode × medium cells (3 takes each in the repeat), with 0 confirmed wrong digits. The three misses were one undeterminable take, one single-ASR disagreement, and one clipped final छह. Comma-separated digits gave no gain (28/30 vs 28/30).
+- **Residuals are pronunciation, not notation:** ऋण, लाख, and the Tele-MANAS name. Also the TTS voicing a Hinglish sentence's English number words in Hindi (hl mixed 8/30; P 7/30).
+
 ---
 
 ## 4. Decision

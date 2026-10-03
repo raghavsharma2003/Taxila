@@ -9,7 +9,7 @@
 //   (LLM leg: NODE_USE_ENV_PROXY=1 in this sandbox; env from .env.local)
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { PERSONAS } from "./personas.mjs";
-import { runChild, POLICIES } from "./sim.mjs";
+import { runChild, POLICIES, FAMILIES } from "./sim.mjs";
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? (args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true) : d; };
@@ -17,6 +17,7 @@ const SEEDS = Number(opt("--seeds", 30));
 const LLM = !!opt("--llm", false);
 const LLM_SEEDS = Number(opt("--llm-seeds", 1));
 const POLS = String(opt("--policies", Object.keys(POLICIES).join(","))).split(",");
+const FAMS = String(opt("--families", FAMILIES.join(","))).split(",");
 const ROOT = new URL("../../", import.meta.url);
 
 const STATES = ["not_yet", "shallow", "fragile", "understood", "durable"];
@@ -24,6 +25,19 @@ const TYPES = ["not_yet", "shallow", "fragile_bound", "fragile_forgets", "unders
 const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
 const r3 = (x) => (x == null ? null : Math.round(x * 1000) / 1000);
 const median = (a) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
+
+/** How quiz-like the probing is: the distribution of probes per concept-session (every concept-session that got ≥ 1). */
+function probeShape(runs) {
+  const cs = runs.flatMap((r) => Object.values(r.counters.perCS ?? {}));
+  if (!cs.length) return null;
+  const ns = cs.map((c) => c.n).sort((a, b) => a - b);
+  const reasons = {};
+  for (const c of cs) for (const [k, v] of Object.entries(c.reasons)) reasons[k] = (reasons[k] ?? 0) + v;
+  const tot = ns.reduce((a, b) => a + b, 0);
+  return { concept_sessions_probed: cs.length, p50: ns[Math.floor(ns.length / 2)], p95: ns[Math.floor(ns.length * 0.95)], max: ns.at(-1),
+    mandatory_share: r3(cs.reduce((a, c) => a + c.mand, 0) / tot), u_probes_over_3: r3(mean(cs.map((c) => +(c.u > 3)))),
+    by_reason: Object.fromEntries(Object.entries(reasons).sort((a, b) => b[1] - a[1]).map(([k, v]) => [k, r3(v / tot)])) };
+}
 
 /** Metrics over one policy's runs. */
 export function metrics(runs) {
@@ -69,6 +83,7 @@ export function metrics(runs) {
     CE_M5_lexicon_hits: runs.reduce((a, r) => a + r.counters.lexicon, 0), CE_M5_repeat_questions: runs.reduce((a, r) => a + r.counters.repeats, 0),
     reteaches_per_child: r3(mean(runs.map((r) => r.counters.reteach))), woven_per_child: r3(mean(runs.map((r) => r.counters.wovenHosted))),
     callbacks_per_child: r3(mean(runs.map((r) => r.counters.callbacks))),
+    probe_shape: probeShape(runs),
     by_type: byType, by_archetype: byArch,
   };
 }
@@ -91,20 +106,31 @@ async function pool(items, n, fn) {
 const t0 = Date.now();
 const result = { date: new Date().toISOString().slice(0, 10), seeds: SEEDS, personas: PERSONAS.length, concepts: 6, sessions: 5,
   method: "code-played children from hidden truth bits + behaviour params (personas.mjs), separate generative model from the engine's emission tables; real engine code; author-set response probabilities => gates mechanics, not efficacy",
-  policies: {} };
-for (const pol of POLS) {
+  label: "simulated · gains=author · scope=compliance · not evidence of learning", families: {} };
+for (const fam of FAMS) {
+  console.log(`simulated · family=${fam}${fam === "cfrag" ? " (cfrag-lite)" : " (matched: upper bound)"} · gains=author · scope=compliance · not evidence of learning`);
+  const policies = (result.families[fam] = { policies: {} }).policies;
+  for (const pol of POLS) {
   const runs = [];
-  for (const P of PERSONAS) for (let s = 0; s < SEEDS; s++) runs.push(await runChild({ persona: P, seed: s, policy: pol }));
-  result.policies[pol] = metrics(runs);
-  const m = result.policies[pol];
-  console.log(`${pol.padEnd(15)} acc ${m.CE_M1_macro_acc_final} (after3 ${m.CE_M1_macro_acc_after3}) · understood found ${m.CE_M2_understood_detected_final} · ttd ${m.CE_M2_median_sessions_to_detect_understood} · false-mastery ${m.CE_M3_false_mastery} (shallow ${m.CE_M3_false_mastery_shallow}) · verbal gap ${m.CE_M4_missed_understanding_verbal_gap_pp}pp · probes/concept-session ${m.probes_per_concept_session} · load/10 ${m.CE_M5_load_per10_mean} · over-cap ${m.CE_M5_session_weight_over_cap} · lexicon ${m.CE_M5_lexicon_hits}`);
+  for (const P of PERSONAS) for (let s = 0; s < SEEDS; s++) runs.push(await runChild({ persona: P, seed: s, policy: pol, family: fam }));
+  policies[pol] = metrics(runs);
+  const m = policies[pol];
+  console.log(`${fam} ${pol.padEnd(15)} acc ${m.CE_M1_macro_acc_final} (after3 ${m.CE_M1_macro_acc_after3}) · understood found ${m.CE_M2_understood_detected_final} · ttd ${m.CE_M2_median_sessions_to_detect_understood} · false-mastery ${m.CE_M3_false_mastery} (shallow ${m.CE_M3_false_mastery_shallow}) · verbal gap ${m.CE_M4_missed_understanding_verbal_gap_pp}pp · probes/concept-session ${m.probes_per_concept_session} · load/10 ${m.CE_M5_load_per10_mean} · over-cap ${m.CE_M5_session_weight_over_cap} · lexicon ${m.CE_M5_lexicon_hits} · probes/concept-session p50 ${m.probe_shape?.p50 ?? "-"} p95 ${m.probe_shape?.p95 ?? "-"} max ${m.probe_shape?.max ?? "-"}`);
+  }
 }
+result.policies = result.families.bkt2?.policies;                          // back-compat: the bkt2 table at the old key
 
 if (LLM) {
   loadEnv();
   const { chat } = await import("../../server/azure.js");
   const quiet = console.info; console.info = () => {};
-  const llm = { chat, send: chat, childModel: process.env.SIM_CHILD_MODEL || "taxila-ds41", gradeModels: [process.env.DEPLOY_GRADE || "DeepSeek-V4-Pro", "taxila-ds41"],
+  const { GRADE_MODELS } = await import("../../server/comprehension/grade/closed.js");
+  const childModel = process.env.SIM_CHILD_MODEL || "taxila-ds41";
+  // The grader chain is the PRODUCTION chain. It must never contain the model that plays the child: the earlier
+  // fallback was taxila-ds41, so on a primary failure the child model graded its own words (review fix 2026-10-02).
+  const gradeModels = [GRADE_MODELS.primary, GRADE_MODELS.fallback];
+  if (gradeModels.includes(childModel)) throw new Error(`sim: the child model ${childModel} is in the grader chain ${gradeModels}`);
+  const llm = { chat, send: chat, childModel, gradeModels,
     calls: { child: 0, childFail: 0, grade: 0 }, log: [], echo: !opt("--no-echo", false) };
   const jobs = PERSONAS.flatMap((P) => Array.from({ length: LLM_SEEDS }, (_, s) => ({ P, s })));
   const runs = await pool(jobs, 12, ({ P, s }) => runChild({ persona: P, seed: 1000 + s, policy: "engine", llm }));

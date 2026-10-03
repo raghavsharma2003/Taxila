@@ -20,7 +20,14 @@
 // After the run the child turn rows are read back: every spoken turn must carry asr_conf and meta.typed=false.
 // SYNTHETIC speech: measures the pipeline, not real children. Caveats: WebSocket (not WebRTC) transcription
 // transport; the API runs in-process on the eval host (Neon over HTTP from the sandbox, not the Azure region);
-// loopback to tts-stream (no mobile link). TAXILA_SPECULATE=0 measures without speculative replies.
+// loopback to tts-stream (no mobile link). TAXILA_SPECULATE=0 measures without speculative replies;
+// TAXILA_TTS_PREWARM=0 without the server-side TTS prewarm (server/voice/prewarm.js: /turn starts speaking the
+// guarded reply while its transaction runs, and tts-stream takes it — `prewarmed N ms before` per turn).
+// sttFirstDelta / sttLastDelta: when the transcription's partial deltas arrived after speech_stopped (what a
+// Director pre-run on partials could start from). Per turn: which reply guards fired (guard [...]: rewritten
+// = a second model call, repaired = drift fixed in code, replaced = the item question / leak-free sentences).
+// Model routing: DEPLOY_REPLY / DEPLOY_CLASSIFY (server/azure.js); evals/classify-accuracy.mjs checks a
+// classifier swap against hand labels before it is used.
 import http from "http";
 import fs from "fs";
 import os from "os";

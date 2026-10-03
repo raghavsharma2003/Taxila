@@ -42,10 +42,16 @@ const ktEvents = evidence.map((ev, i) => ({ ...fromLegacyEvidence(ev, { id: `${l
   sessionStartAt: lesson.started_at, at: c.now, episodeId: `${lesson.id}:${state.activeItemId}`, topicType }),
   // CE contract additions (all held inputs; never timing / vibe / affect):
   shapeId: state.pendingProbe?.shapeId, via: c.moduleOnly ? "module" : "dialogue", coincident: !!activeItem?.coincidentFor?.length,
-  spanOk: cls?.spanOk }));
+  spanOk: verdict?.spanOk === true,                                          // from gradeClosed(); E6 fails CLOSED (below)
+  deferenceDiscount: isPuppetShape && deferenceDiscountOn(state.probeSess) }));
 state.comp = fuseEvidence(state.comp ?? loadedComp, ktEvents, ctx);         // loadedComp: replay of kt_evidence at lesson start
 for (const ev of ktEvents) state.probeSess = noteOutcome(state.probeSess, ev, beliefFor(ev.skillIds[0], { ...state.comp, now: c.now }));
 ```
+
+**E6 fails closed (review 2026-10-02).** `facets.js` now scores a positive `grader: "llm"` event on U/T only when
+`spanOk === true`. An event that omits the field carries K evidence but no facet evidence. Before the review, a
+missing field counted as a pass, so a call site that forgot to copy `spanOk` would have certified LLM verdicts no code
+had checked.
 
 ## 2. Director (`server/director/state.js`): replace the why sampling with the scheduler
 
@@ -55,7 +61,8 @@ for (const ev of ktEvents) state.probeSess = noteOutcome(state.probeSess, ev, be
 | every child turn (`step()` entry) | `probeSess = recordTurn(probeSess, { kind: item ? "item" : "teach", weight: fits(probeSess, 1) ? 1 : 0.25, skillId })`. The 0.25 branch is the covert role-play C21 form the spec moves practice into once the cap is near |
 | `shouldAskWhy()` | becomes `const plan = nextProbe(skillsMap, s.probeSess, { currentSkill: item.skillId, voice: s.voiceSignals, skin: s.vibe?.probeSkin })`. Keep `LIMITS.whyConsolidating` only as a fallback for kits with no expectations |
 | the move planner | if `plan` exists, the next move is `{ kind: "probe", shapeId: plan.shapeId, facet: plan.facet, kitRefs: plan.kitRefs }`, and the move shape comes from the shape record (`shapes.json` `name` + family). It must never be a written line |
-| after the probe is asked | `probeSess = markAsked(probeSess, plan, belief)` and `recordTurn(…, { kind: "probe", weight: plan.testWeight, … })` |
+| after the probe is asked | `probeSess = markAsked(probeSess, plan, belief)` and `recordTurn(…, { kind: "probe", weight: plan.testWeight, …, charStatement })`. `charStatement = { planted, agreed }` on every puppet / character statement (planted-error shapes C04/C05/C07/C15 and C08): `agreed` = errorspot `missed` or mcq2 `wrong` on a planted one, the child's yes on a true one |
+| E9 (deference discount) | about half of C08 puppet statements should be TRUE. Before grading a puppet-shape answer, stamp `deferenceDiscount: deferenceDiscountOn(probeSess)` (budget.js) on its event. It is on when the session's yes-rate is > 0.8 on both true and planted statements (≥ 1 true and ≥ 2 planted seen). It is derived from held choice data only |
 | re-teach | on each graded turn: `const trig = reteachTrigger(belief, { uProbes, wheelSpin: kt.wheelSpin(k), nearTransferFailed })`; if `trig`, call `selectReteach({...})` and map `move` to `reteach` / `recap` / `prereq_descent` / `park`. Apply a cooldown of 2 graded items on that skill before the next trigger (the re-check, §5.4). Without it the simulator fired up to 25 re-teaches per child |
 
 `skillsMap` = `{ [skillId]: { belief: beliefFor(skillId, …), topicType, kitInputs: kitInputsOf(kit, skillId), delayDays } }`
@@ -102,7 +109,7 @@ total budget and not just its own cap.
    from a successful re-teach needs more than 10 discriminating correct answers. `fuse.js` now drops hits on a
    misconception already at p ≥ 0.95 (`MIS_SATURATE`, deterministic, replay-safe). The cleaner fix is in the ledger:
    clamp the per-session misconception log-evidence at ±log 50, as K does.
-3. `mode.js LAYER_TABLES.kt` should list `comp_facet_state, probe_log, grade_audit, reteach_attempts, rep_fluency,
+3. (Already done in `mode.js M0_HISTORY_TABLES`, so the M0 ratchet deletes them.) `mode.js LAYER_TABLES.kt` could list `comp_facet_state, probe_log, grade_audit, reteach_attempts, rep_fluency,
    weave_queue` (= `store.js COMP_TABLES`) so the M0 ratchet deletes them. `store.ratchetStmts(childId)` does the
    same and is tested.
 
@@ -124,8 +131,16 @@ It returns `{ rows, chips }`. It throws if any string contains a banned word, so
 
 `gradeClosed()` routes to `DEPLOY_GRADE` (default `DeepSeek-V4-Pro`) and falls back to `DEPLOY_GRADE_FALLBACK`
 (default `taxila-brain`). Both are Azure Foundry Direct deployments. Run it off the reply path: the why's move goes out
-at once, and the verdict lands within the next turn. Write `gradeAuditStmt(child, auditRow(res, …))` for every
-verdict. Until M-GRADE κ ≥ 0.7, the facet fold keeps the 0.7-diagonal LLM confusion (the `grader: "llm"` default).
+at once, and the verdict lands within the next turn.
+
+- **Pass the echo texts:** `gradeClosed(req, { echo: [kitTopicTitle, theTeacherQuestionJustAsked] })`. Code uses them only
+  after the verdict and never sends them to the model. Without them the echo guard is off, and a child restating the
+  topic's name scores `present`.
+- **Spans are verbatim child speech.** Write `gradeAuditStmt(child, auditRow(res, { …, keepSpan }), { keepSpan })` with
+  `keepSpan = consent.transcripts_retention === true` (conductor `latestConsent`). Without that consent, both
+  `auditRow` and the writer store `span = null` and keep label, span_ok, op and target. That is enough for the
+  confusion refit's label counts, and the child's words do not outlive the transcript policy. This changed in the
+  2026-10-02 review: before it, every verdict stored up to 200 chars of the child's words whatever the consent. Until M-GRADE κ ≥ 0.7, the facet fold keeps the 0.7-diagonal LLM confusion (the `grader: "llm"` default).
 
 ## 9. Gates
 

@@ -54,15 +54,20 @@ export function parseReply(text) {
 }
 
 /**
- * Echo guard [U] (code, after the grader): a positive span that is ≥ 80% made of words from an echo text (the topic's
+ * Echo guard [U] (code, after the grader): a positive span whose CONTENT words (function words dropped, EN + Roman HI)
+ * are ≥ 80% words from an echo text (the topic's
  * title, the question just asked) is the child restating the lesson's name, not giving a reason. It is demoted to
  * `partial`, which never scores on U (E5) and schedules a follow-up from another family. Echo texts are used by code
  * only and never sent to the model, so the request stays blind. Found in the LLM-played simulator: the grader
  * labelled "because we recognise equivalent fractions as the same amount, that's why" as present.
  */
+const ECHO_STOP = new Set(tokens(`a an the is are was were be it its this that these those they them we you i he she my our
+  because so then and or but of to in on at for with as by do does did that's thats just like very also
+  hai hain tha thi to toh kyunki kyonki matlab ki ka ke ko se mein me main bhi aur yeh ye woh wo na haan nahi`));
 export function isEcho(span, echoTexts = []) {
-  const s = tokens(span ?? "");
-  if (s.length < 3) return false;
+  // content words only: "they are equivalent fractions" must not escape the guard on its filler words
+  const s = tokens(span ?? "").filter((w) => !ECHO_STOP.has(w));
+  if (s.length < 2) return false;
   return echoTexts.some((e) => { const bag = new Set(tokens(e)); return s.filter((w) => bag.has(w)).length / s.length >= 0.8; });
 }
 
@@ -96,7 +101,12 @@ export async function gradeClosed(r, { send, models = [GRADE_MODELS.primary, GRA
   return { graderVersion: GRADER_VERSION, model: null, ms: 0, op: req.op, targetId: req.target.id, label: "NA", span: null, spanOk: false };
 }
 
-/** The grade_audit row for a verdict (§4.2 calibration gate). */
-export const auditRow = (res, { childId, sessionId, skillId, shapeId, lang }) => ({ child_id: childId, session_id: sessionId, skill_id: skillId,
+/**
+ * The grade_audit row for a verdict (§4.2 calibration gate). The span is the child's VERBATIM words, so it is kept only
+ * when the guardian has granted `transcripts_retention` (pass `keepSpan: consent.transcripts_retention === true`).
+ * Without it the row keeps label, span_ok, op and target only: enough for the confusion refit's label counts, never the
+ * child's speech outliving the transcript policy. Default: no span.
+ */
+export const auditRow = (res, { childId, sessionId, skillId, shapeId, lang, keepSpan = false }) => ({ child_id: childId, session_id: sessionId, skill_id: skillId,
   shape_id: shapeId ?? null, op: res.op, grader_version: res.graderVersion, model: res.model, target_id: res.targetId, label: res.label,
-  span: res.span ? String(res.span).slice(0, 200) : null, span_ok: !!res.spanOk, lang: lang ?? null, ms: res.ms ?? null });
+  span: keepSpan === true && res.span ? String(res.span).slice(0, 200) : null, span_ok: !!res.spanOk, lang: lang ?? null, ms: res.ms ?? null });

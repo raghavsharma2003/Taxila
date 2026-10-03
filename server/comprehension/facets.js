@@ -35,7 +35,7 @@ export function facetWeight(ev) {
   const pos = isPositiveOutcome(ev.cls, ev.outcome);
   if (ev.coincident && pos) return 0;                                   // E3: a lucky-correct proves nothing
   if (isPartial(ev.cls, ev.outcome)) return 0;                          // E5: partial never scores on U/T
-  if (ev.grader === "llm" && pos && ev.spanOk === false) return 0;      // E6: span-less positive
+  if (ev.grader === "llm" && pos && ev.spanOk !== true) return 0;      // E6: a positive LLM verdict needs a CODE-checked span (fail closed: a caller that forgets spanOk scores nothing)
   if (ev.unfamiliarContext && isFail(ev.cls, ev.outcome)) x *= 0.5;     // E8
   if (ev.deferenceDiscount && (isMissed(ev.cls, ev.outcome) || (ev.cls === "item.mcq2" && outcomeName(ev.cls, ev.outcome) === "wrong"))) x *= 0.5; // E9
   if (ev.preAttemptHelp && pos) x *= 0.5;                               // E11: help-assisted success ≠ unaided

@@ -28,9 +28,14 @@ export const probeLogStmt = (child, sessionId, plan, evidenceId = null) => ({
   params: [child.id, sessionId, plan.skillId, plan.shapeId, plan.facet, !!plan.mandatory, plan.reason, plan.testWeight, evidenceId, gate(child)],
 });
 
-/** One closed-label verdict (closed.js auditRow) → grade_audit. */
-export function gradeAuditStmt(child, row) {
+/**
+ * One closed-label verdict (closed.js auditRow) → grade_audit. The verbatim span is written only with
+ * `keepSpan: true` (the guardian's `transcripts_retention` consent); otherwise it is nulled HERE as well as in
+ * auditRow, so a caller that builds its own row cannot persist the child's words by accident.
+ */
+export function gradeAuditStmt(child, row, { keepSpan = false } = {}) {
   const mode = gate(child);
+  if (keepSpan !== true) row = { ...row, span: null };
   return {
     text: `insert into grade_audit (child_id, session_id, skill_id, shape_id, op, grader_version, model, target_id, label, span, span_ok, lang, ms, legal_mode_at_write)
       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,

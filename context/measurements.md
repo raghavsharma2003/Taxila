@@ -519,3 +519,132 @@ The cascade figure is the Director only: speech-to-text, the end-of-speech wait 
 <!-- merged from inbox/conductor-db-race-run.json -->
 ## conductor-db-race-2026-10-02
 Method: `node --test tests/conductor-db.test.mjs` from the sandbox, against Neon branch `conductor-test` (br-nameless-snow-b7ldeg1h, branched from production at LSN 0/681DE58, so all migrations through 007 are present). CONDUCTOR_TEST_DATABASE_URL is in .env.local only. n=1 run: 14 pass, 0 fail, 0 skipped. Covers idempotent and concurrent ingest, exactly-once timers, job lock and fence, the step lease, has_more and replay. The suite had been skipped since wave 2 because no test branch existed. Reset the branch from its parent when it drifts.
+
+
+<!-- merged from inbox/cascade-latency-2.json -->
+## cascade-latency-v2-2026-10-02
+**Cascade lane latency pass (`evals/cascade-latency.mjs --turns 10`, 2026-10-02): child speech end → first TTS byte, pooled over 1-4 runs (one lesson each) per config, class 4, topic c4-maths-ch01-t01.** Same method and caveats as `cascade-latency-2026-10-02` (synthetic speech, WebSocket STT, API in-process in the US sandbox, Neon over HTTP, loopback tts-stream). Run-to-run spread of the SAME config is large (baseline medians 3449 / 3679 / 4499 ms), so configs are pooled; arms after the first few ran from a clean worktree (HEAD + this change only) because concurrent workstreams were editing the tree.
+
+| config | runs | n | endpoint | stt | director (p90) | tts | total median (p90) | ≤2.0 s | rewrites | spec hit |
+|---|---|---|---|---|---|---|---|---|---|---|
+| A baseline (pre-change code), classify=fast reply=fast | 3 | 28 | 1086 | 334 | 2044 (2783) | 362 | **3977** (4900) | 0/28 | — | 19/25 |
+| B +1-clock spec, +low-ASR spec, +TTS prewarm; fast/fast | 4 | 38 | 1080 | 358 | 1867 (4036) | 216 | **3594** (5744) | 0/38 | 13/38 | 30/36 |
+| C as B, classify=grok | 3 | 30 | 1076 | 334 | 1422 (2495) | 212 | **3055** (4054) | 0/30 | 8/30 | 29/30 |
+| C' as C, TAXILA_TTS_PREWARM=0 | 1 | 10 | 1067 | 312 | 1298 (2915) | 343 | **3030** (4676) | 0/10 | 1/10 | 9/10 |
+| D as C, reply=ds41 | 1 | 10 | 1079 | 334 | 2154 (4116) | 264 | **3783** (5484) | 0/10 | 4/10 | 9/10 |
+| E as B, classify=V4-Pro | 1 | 10 | 1078 | 321 | 1972 (2601) | 219 | **3649** (4274) | 0/10 | 3/10 | 7/10 |
+| F as C, 2 parallel reply drafts (rejected) | 1 | 10 | 1069 | 327 | 1577 (3459) | 239 | **3303** (5044) | 0/10 | 2/10 | 10/10 |
+| G final (B + drift repair + classify hedge), fast/fast | 2 | 20 | 1073 | 338 | 1524 (2776) | 219 | **3275** (4422) | 0/20 | 3/20 | 14/18 |
+| H final, classify=grok (drift repair; hedge in k-runs) | 4 | 40 | 1084 | 345 | 1301 (1872) | 217 | **3090** (4251) | 0/40 | 2/40 | 39/40 |
+| H2 final, classify=grok, hedge on | 2 | 20 | 1080 | 337 | 1292 (1629) | 216 | **2966** (3163) | 0/20 | 1/20 | 20/20 |
+
+All medians ms; "rewrites" = turns whose reply needed a second model call. C′ isolates the prewarm: TTS stage 343 → 212 ms (the rest of C′'s total is fewer rewrites in that run). 0 turns met 2.0 s in any config: endpoint + STT + TTS stage alone are ~1.63 s (1080 + 340 + 216), so 2.0 s needs a Director of ≤ 0.37 s; its floor is one reply call (TTFT ~0.6-1.3 s, taxila-fast) because speculation (20/20 hit in H2) already runs the reply beside the classifier. Partial transcripts (gpt-4o-transcribe) arrive only after speech_stopped: first delta +202-228 ms, last +304-363 ms vs completion +322-381 ms (n=10 per run) — a Director pre-run on them could start ≤ ~130 ms earlier, and only from a partial text.
+
+## classify-accuracy-2026-10-02
+`evals/classify-accuracy.mjs` (2026-10-02): the REAL classify() (prompt, strict schema, parse) on the verified kit c4-maths-ch01-t01, 20 hand-labelled replies that reach the model (Devanagari/Roman mixed, as ASR writes them: correct, misconception, other-wrong, no-attempt), 2 reps, run twice (n=80 per model), plus 5 distress / frustration lines × 2 (n=10).
+| model | exact | graded-wrong | distress flag | p50 / p90 |
+|---|---|---|---|---|
+| taxila-fast | 72/80 | 0 | 10/10 | 1053-1067 / 1229-1306 ms |
+| grok-4-1-fast-non-reasoning | 75/80 | 0 | 10/10 | 619-629 / 881-926 ms |
+| DeepSeek-V4-Pro | 74/80 | 0 | 10/10 | 1139-1322 / 1411-1661 ms |
+Misses are misconception-vs-incorrect splits ("बारह corners" → incorrect, all three models), never a wrong grade direction. One topic, n small; the distress lines may partly be caught by the predicate first.
+
+## keepalive-2026-10-02
+Outbound keep-alive (`server/net.js`, undici dispatcher keepAliveTimeout 30 s, no dependency): a tiny taxila-fast chat call after 6 s idle 1249/1562/1384/1019/1302 ms (median 1302) with Node's default 4 s → 638/862/678/698/787 (median 698) with net.js; after 1 s idle ~990 ms either way (n=5 each, sandbox via the egress proxy, 2026-10-02).
+
+## reply-stream-ttft-2026-10-02
+Streamed reply timing (~1.1k-token system prompt, 34-62 output tokens, n=5 per model, 2026-10-02): first content delta / call end — taxila-fast 1275/1320, 933/1031, 929/1003, 596/658, 855/907 ms; taxila-ds41 764/801, 760/857, 2993/3058, 613/707, 658/798 ms. The first delta already holds the first full sentence. TTS first byte vs input length: 2-word clause 732/248/300/259/273/251, 16-word sentence 659/256/254/261/259/270 ms (n=6 each).
+
+
+<!-- merged from inbox/comprehension-review.json -->
+## comp-review-2026-10-02
+**Comprehension sim after the adversarial review, 2026-10-02.** `node evals/comprehension-sim/run.mjs --seeds 30` → `evals/comprehension-sim/results/comp-sim-2026-10-02-review.json`. n = 4,320 child-concepts per policy per family. There are two truth families: `bkt2`, fixed bits, which is a matched upper bound, and `cfrag-lite`, with continuous strengths, per-answer sampling, partial forgetting and trigger-agnostic re-teach gains. The LLM leg (`--llm --llm-seeds 2`, n = 288, 987 graded turns) is in `comp-sim-2026-10-02-review-llm.json`. Changes since comp-sim-2026-10-02: misconception tags are observable-only, E9 is on, C08 statements are 50% true, cross-day novelty is passed through, the grader chain is production, and R-MIS is real in the LLM leg.
+
+| | bkt2 | cfrag-lite | bar |
+|---|---|---|---|
+| macro acc (final) | 0.627 | 0.475 | ≥ 0.70 both: FAIL |
+| false mastery / shallow | 0.025 / 0.000 | 0.043 / 0.030 | ≤ 0.05 / ≤ 0.02: pass / FAIL (cfrag shallow) |
+| verbal gap | 14.1 pp | 14.4 pp | ≤ 10: FAIL |
+| understood found / never detected | 0.553 / 0.447 | 0.265 / 0.735 | median ttd 2 / 3 sessions |
+| probes per probed concept-session | p50 3, p95 5, max 8 | p50 3, p95 5, max 8 | 46% mandatory (coincident_why 19%, first-correct 15%) |
+| load/10, over cap, lexicon, cross-day repeats | 2.25, 0, 0, 0 | 2.24, 0, 0, 0 | ≤ 2.5 |
+
+Controls fail where they should under both families: quiz-bot false mastery 0.595 / 0.456 and load 4.30; samjha 0.627 / 0.494 with 8,640 lexicon hits; why-every-turn over cap 100%; no-delay never certifies. E9 vs no-E9 (bkt2): 0.640 vs 0.653, inside seed noise. The deferential persona stays at 0.28. The 0.627 vs 0.640 spread between two 30-seed runs of the same engine policy (with and without the cross-day novelty pass-through) shows that run-to-run noise is about ±0.015. LLM leg: acc 0.702, false mastery 0.042 (shallow 0.011), present given U=1 0.87, given U=0 0.13, given fluent U=0 0.14, 15 echo demotions, 0 span demotions.
+
+
+<!-- merged from inbox/model-router-research.json -->
+## router-bench-2026-10-02
+2026-10-02/03. `docs/research/models/router-bench.mjs` → `router-bench-2026-10-02.json`, tables `router-tables.md`, synthesis `MODEL-ROUTER.md`. T: 10 child turns (6 Hinglish, 3 English, 1 Devanagari) × 2 reps Azure / 1 rep OpenRouter-reference, production settings (effort none, streamed), two blind comparative judges (taxila-brain, grok-4-20-reasoning; self-preference visible). C 20 cases × 2; S production distress prompt 16 cases × 2; D 8 scenarios × 2; W 1 fact sheet × Hindi/English; V 4 synthetic handwriting-font images (CER); M 12 concepts cross-lingual. Key: see MODEL-ROUTER.md §1. Limits: small n, LLM judges, C/D at ceiling, synthetic OCR, US-side shared latency.
+
+
+<!-- merged from inbox/spoken-notation-build.json -->
+## notation-probe-2026-10-02
+2026-10-02. G1 spoken-notation probe (`docs/research/voice/spoken-notation.md` §3; data in `docs/research/voice/notation-probe-2026-10-02/`).
+- **Design.** 53 items × en/hl/hi × written (W) vs pre-rendered (P) × gpt-realtime-2.1 (RT) and gpt-4o-mini-tts (TTS), voice marin; n=159 per arm; 636 clips.
+- **Method.** Two back-transcriptions with taxila-transcribe (language forced / no hint), a taxila-brain rubric judge, and a hand audit agreeing on 46/48.
+- **Results.**
+  - TTS: W 33% rendering error / 28% mixed convention / 18% misread; P 6 / 6 / 1%.
+  - RT: W 20 / 23 / 11%; P 2 / 2 / 0%.
+  - Indian-comma numbers misread written: TTS 11/15, RT 9/15. English-mode ₹ came out as dollars/cents.
+  - Helplines in Hindi mode written 0/4 digit-exact; pre-rendered 11/12 (1 undeterminable).
+- Written-arm rates are lower bounds (13% of rows undeterminable from transcripts).
+
+## spoken-render-tts-rerun-2026-10-02
+2026-10-02 (run crossed into 2026-10-03 UTC). The probe's own TTS arm re-run with arm **R** = the written item rendered by the shipped `toSpoken()` (renderer `sp1-2026-10-02`).
+- **Method.** gpt-4o-mini-tts on Azure, voice marin, the probe's per-mode voice notes; both ASR passes; the probe's judge with its stored system prompt and mode rules (`rerun-tospoken.mjs`; data `notation-probe-2026-10-02/rerun-tospoken/`).
+- **Sample.** 30 items (all 5 large-number, 3 currency, 4 exponent, 2 root, 3 negative, 3 unit, 2 fraction, 2 decimal, ratio, percent, time, formula, 2 helplines) × en/hl/hi = **n=90**, plus 4 helpline clips in hl·hindi and hi·english. 94 clips, 0 engine errors.
+- **Baselines.** The probe's TTS W and P rows on the same 30 items (n=90 each).
+
+| arm (same 30 items) | rendering error | mixed convention | number misread | any flag |
+|---|---|---|---|---|
+| probe W, written | 40% | 32% | 24% | 57% |
+| probe P, hand-authored spoken | 8% | 8% | 2% | 14% |
+| **R, toSpoken** | **4%** (3% excl. ASR-suspect) | **9%** (6%) | **6%** (3%) | **13%** |
+
+- **Per mode, R any-flag:** en 0/30, hl 8/30, hi 4/30.
+- **Indian-comma numbers misread:** W 11/15 → R 1/15. The one miss: Hindi लाख heard as नाग by both ASRs, which is pronunciation, not notation.
+- **Currency, exponents, roots, mixed numbers:** 0 misreads. No dollars in English mode.
+- **hl mixed convention** (8/30, P 7/30): the TTS voiced the English number words of a Hinglish sentence as Hindi words (spoken-notation §3.3 point 5). The input text was right; a renderer cannot fix this.
+- **Residual Hindi-mode errors are pronunciation:** ऋण heard as रेर (again, the known watch item), लाख heard as नाग, and a clipped final छह in 14416.
+- **Limits.** One voice, one take per cell, ASR-only plus a model judge; no listener.
+
+## spoken-helplines-repeat-2026-10-03
+2026-10-03. Childline 1098 and Tele-MANAS 14416 through `toSpoken()`.
+- **Sample.** All 5 cells (en·english, hl·english, hl·hindi, hi·hindi, hi·english) × 3 takes = n=30 per arm. Same TTS, ASR and judge as above (`rerun-helplines.mjs`, `rerun-tospoken/helplines/`).
+- **Plain digit words (shipped): 28/30 judged digit-exact, 0 confirmed wrong digits.**
+  - One take had digits in both ASR transcripts (1098), so the reading is undeterminable.
+  - One take had only one of the two ASR passes disagreeing (14486 vs एक चार चार एक छै).
+- **Combined with the first re-run's 10 helpline clips: 37/40 exact, 0 confirmed wrong.** The third non-exact take was a Hindi-mode Tele-MANAS whose final छह both ASRs heard clipped (छा / छ).
+- **Probe baselines:** written Hindi mode 0/4; hand-authored pre-rendered 11/12.
+- **Comma arm:** see `helpline-digits-comma-separated`.
+- Still unmeasured: the Tele-MANAS NAME, which ASR heard as Telly Savalas, Keli, Delhi, Dili Manas, and so on. It stays a §5.3 ear-panel item.
+
+
+## comp-sim-ablation-2026-10-02 (2026-10-02)
+Sim ablations (n=4320 child-concepts each): no delayed probes -> understood unreachable (0 of 1426), acc 0.567; no game evidence -> acc 0.648, false mastery 0.022, verbal gap 12.9 pp; no voice features -> acc 0.641, verbal gap 15.5 pp (vs 7.2); freeze-low -> acc 0.646 (no measurable harm, contra the matched-model MC); T threshold 0.7 -> acc 0.634.
+The workflow's write-up is the prose merged from inbox/comprehension-build.json earlier in this file; this heading ties the graph node to it.
+
+
+## comp-sim-llm-2026-10-02 (2026-10-02)
+LLM-played leg (ds41 child, DeepSeek-V4-Pro closed-label grader, 24 personas x 2 seeds, n=288 child-concepts, 884 graded turns): acc 0.731, understood found 0.798, false mastery 0.015; grader present|U=1 0.88, present|U=0 0.146, present|U=0 fluent-shallow 0.386 -> 0.272 with the echo guard, contradicted|misconception 0.97, 0 span demotions.
+The workflow's write-up is the prose merged from inbox/comprehension-build.json earlier in this file; this heading ties the graph node to it.
+
+
+## sim-mutants-invisible-bkt2 (2026-10-02)
+Mutants VC2 (partial scored as full) and VC4 (game at full weight, no E4) do NOT fail CE-M3 under bkt2 (false mastery 0.021 / 0.022); VC2 fails under cfrag-lite (0.056, shallow 0.040), VC4 does not (0.046) — the battery cannot see VC4.
+The workflow's write-up is the prose merged from inbox/comprehension-review.json earlier in this file; this heading ties the graph node to it.
+
+
+## image-bench-2026-10-02 (2026-10-03)
+3 prompts × gpt-image-2 / FLUX.2-pro / FLUX.1-Kontext-pro, n=1, brain vision judge: gpt-image-2 25/25 on every prompt (37-47 s, $0.053); FLUX.2-pro labels on wrong parts, tutor character 5/5 in 6.2 s (~$0.03); Kontext gibberish caption.
+The workflow's write-up is the prose merged from inbox/model-router-research.json earlier in this file; this heading ties the graph node to it.
+
+
+## game-code-probe-models-2026-10-02 (2026-10-03)
+Phaser 4 single-file probe (2 tasks × n=3) on 8 models: functional 6/6 codex, DeepSeek-V4-Pro (9.9 s), ds41 (5.7 s), brain, grok-4.3, oss120; 4/6 terra and kimi-code (95 s); tasks at ceiling.
+The workflow's write-up is the prose merged from inbox/model-router-research.json earlier in this file; this heading ties the graph node to it.
+
+
+## router-t-judge-split-2026-10-03 (2026-10-03)
+Re-analysis of router-bench T (n=10 turns, 2 judges): judge agreement Spearman 0.43 on model means (p=0.10), 0.46 item-level; grok judge per-turn gpt-6.1-sol vs fast 3-6, gpt-6-luna vs fast 2-6; terra-fast combined +0.50 (bootstrap 95% CI 0.05-1.00, mostly sol judge), terra-ds41 +0.30 (CI -0.40-1.20); OpenRouter arms ran reasoning effort low vs Azure none; gpt-6.1-sol 3/20 leak flags; W: taxila-fast 5/5 overall both languages at ~$0.54/1k vs brain $16.6/1k.
+The workflow's write-up is the prose merged from inbox/model-router-review.json earlier in this file; this heading ties the graph node to it.

@@ -5,6 +5,7 @@
 import { createHash } from "crypto";
 import { DEPLOY, AzureError, endpoint } from "../azure.js";
 import { q, one } from "../db.js";
+import { toSpoken } from "./spoken.js";
 
 export const PCM_RATE = 24_000;
 /** Bytes per second of PCM16 mono at PCM_RATE. */
@@ -44,11 +45,30 @@ const STYLE = {
   ],
 };
 
-/** { voice, instructions, version } for a teacher (characters/index.js teacherFor result). */
-export function speechStyle(teacher, voice) {
+/**
+ * { voice, instructions, version, spoken } for a teacher (characters/index.js teacherFor result). `spoken` is the
+ * toSpoken() cell (mode × school medium × age band, spoken.js spokenOptsForChild) every chunk is rendered with.
+ */
+export function speechStyle(teacher, voice, spoken) {
   const off = process.env.TAXILA_TTS_STYLE === "0";
   const notes = STYLE[teacher?.id];
-  return { voice, instructions: off || !notes ? "" : notes.join("\n"), version: off ? "none" : STYLE_VERSION };
+  return { voice, instructions: off || !notes ? "" : notes.join("\n"), version: off ? "none" : STYLE_VERSION, ...(spoken ? { spoken } : {}) };
+}
+
+// ───────────── what the voice is given ─────────────
+
+/**
+ * The text a speech model is given for written teacher text: numerals and notation rendered into the spoken
+ * form for the lesson's mode (server/voice/spoken.js; helplines always digit by digit). EVERY TTS call goes
+ * through this; captions, stored turns and the leak/safety guards keep the written text. Pass complete
+ * sentences (splitSentences output): a number cut mid-token ("12" | ",50") cannot be rendered right.
+ * TAXILA_TTS_SPOKEN=0 sends the written text (measurement A/B only; the helplines then lose digit-exactness).
+ * @param {string} text  written teacher text
+ * @param {{ spoken?: object }} [style]  speechStyle() result; without `spoken`, the default Hinglish cell
+ */
+export function ttsInput(text, style) {
+  if (process.env.TAXILA_TTS_SPOKEN === "0") return String(text);
+  return toSpoken(text, style?.spoken ?? {});
 }
 
 // ───────────── short-phrase cache ─────────────
@@ -194,8 +214,13 @@ export class Prefetch {
   }
 }
 
-/** Start speaking one chunk: memory/DB cache for short ones, else streamed from Azure (and cached). */
-export function speakChunk(text, style, signal) {
+/**
+ * Start speaking one chunk of WRITTEN teacher text: rendered by ttsInput(), then memory/DB cache for short
+ * ones, else streamed from Azure (and cached). The cache key is the rendered text, so a renderer change never
+ * replays audio of an old reading.
+ */
+export function speakChunk(written, style, signal) {
+  const text = ttsInput(written, style);
   const key = cacheable(text) ? cacheKey({ voice: style.voice, version: style.version, text }) : null;
   return new Prefetch(async (self) => {
     if (key) {

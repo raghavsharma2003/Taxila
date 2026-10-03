@@ -48,7 +48,8 @@ describe("comprehension store on Neon", { skip: !sql && "no DATABASE_URL", concu
     await run([
       ...facetStmts(kid, [b]),
       probeLogStmt(kid, "s1", { skillId: SK, shapeId: "C03", facet: "U", mandatory: true, reason: "verify_first_correct", testWeight: 0.25 }, "d3"),
-      gradeAuditStmt(kid, { session_id: "s1", skill_id: SK, shape_id: "C03", op: "R-EXP", grader_version: "v", model: "m", target_id: "e1", label: "present", span: "zero rakhta hai", span_ok: true, lang: "hi-Latn+en", ms: 800 }),
+      gradeAuditStmt(kid, { session_id: "s1", skill_id: SK, shape_id: "C03", op: "R-EXP", grader_version: "v", model: "m", target_id: "e1", label: "present", span: "zero rakhta hai", span_ok: true, lang: "hi-Latn+en", ms: 800 }, { keepSpan: true }),
+      gradeAuditStmt(kid, { session_id: "s1", skill_id: SK, shape_id: "C03", op: "R-EXP", grader_version: "v", model: "m", target_id: "e2", label: "present", span: "no consent words", span_ok: true, lang: "en", ms: 800 }),
       reteachStmt(kid, "s1", { skillId: SK, misId: null, armId: "gen:pictorial", repClass: "pictorial", representation: "diagram", trigger: "u_low_after_practice", move: "reteach", chosenBy: "thompson" }),
       ...weaveStmts(kid, enqueue([], { childId: kid.id, skillId: SK, anchorAt: T0, hostCandidates: ["h"] })),
       armPosteriorStmt(`test-arm-${randomUUID()}`, "maths:T3:B3:en", 0.6),
@@ -56,6 +57,8 @@ describe("comprehension store on Neon", { skip: !sql && "no DATABASE_URL", concu
     const [row] = await sql.query("select state, u_p from comp_facet_state where child_id = $1 and skill_id = $2", [kid.id, SK]);
     assert.equal(row.state, b.state);
     assert.ok(Math.abs(row.u_p - b.U) < 1e-12, "double precision round-trips the fold");
+    const spans = await sql.query("select target_id, span from grade_audit where child_id = $1 order by target_id", [kid.id]);
+    assert.deepEqual(spans.map((x) => [x.target_id, x.span]), [["e1", "zero rakhta hai"], ["e2", null]], "the child's words persist only with transcripts_retention consent");
     const [w] = await sql.query("select status, host_candidates from weave_queue where child_id = $1", [kid.id]);
     assert.deepEqual([w.status, w.host_candidates], ["queued", ["h"]]);
     // re-running the facet upsert is idempotent

@@ -45,7 +45,7 @@ tpl.revisionSuffix = `s${sha}-${Date.now().toString(36).slice(-4)}`;   // must b
 const c0 = tpl.containers[0];
 c0.image = `taxilacr.azurecr.io/taxila-web:${sha}`;
 // host-level env the image expects on Azure (idempotent)
-for (const [name, value] of Object.entries({ DB_DRIVER: "pg", NODE_ENV: "production", TAXILA_HOST: "azure" })) {
+for (const [name, value] of Object.entries({ DB_DRIVER: "pg", NODE_ENV: "production", TAXILA_HOST: "azure", DEPLOY_CLASSIFY: "grok-4-1-fast-non-reasoning", TAXILA_CLASSIFY_HEDGE_MS: "1500" })) {
   const e = c0.env.find((x) => x.name === name); if (e) { e.value = value; delete e.secretRef; } else c0.env.push({ name, value });
 }
 await arm("PATCH", "/providers/Microsoft.App/containerApps/taxila-web?api-version=2024-03-01", { properties: { template: tpl } });

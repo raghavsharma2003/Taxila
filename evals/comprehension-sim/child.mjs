@@ -15,21 +15,41 @@ export function rng(seed) {
 }
 const pick = (r, pairs) => { let u = r(), s = 0; for (const [v, p] of pairs) { s += p; if (u < s) return v; } return pairs.at(-1)[0]; };
 
+/**
+ * Misconception tagging is OBSERVABLE-ONLY (review fix 2026-10-02): a wrong answer is tagged with the kit misconception
+ * when the answer VALUE equals the misconception's predicted wrong answer, which a non-holder also produces by chance.
+ * The engine-facing tag must never be gated on the hidden truth bit (`t.mis`): that was a truth leak that made every
+ * misconception hit a true one. Rates [U]: a non-holder's wrong answer lands on the misconception's value with
+ * p = 0.3 on a discriminating item (it is built so the misconception's answer is the attractive distractor) and 0.1
+ * on a standard item; a holder's with p = 0.6 on a standard item.
+ */
+export const MIS_MATCH = Object.freeze({ holderStd: 0.6, nonHolderDisc: 0.3, nonHolderStd: 0.1, rmisHolder: 0.9, rmisNonHolder: 0.3 });
+const wrongTag = (t, kind, r) => r() < (t.mis ? (kind === "disc" ? 1 : MIS_MATCH.holderStd) : kind === "disc" ? MIS_MATCH.nonHolderDisc : MIS_MATCH.nonHolderStd);
+
 /** Plain practice item. kind: 'std' | 'disc' (discriminates the misconception) | 'coinc' (the misconception gives the right answer anyway). */
 export function itemAnswer(P, t, kind, r) {
   if (t.mis && kind === "disc") return { o: "C4", mis: true };
   if (t.mis && kind === "coinc") return { o: "C0" };
-  if (t.K) return { o: r() < P.slip ? (r() < 0.5 ? "C2" : "C4") : "C0" };
+  if (t.K) { if (r() >= P.slip) return { o: "C0" }; const o = r() < 0.5 ? "C2" : "C4"; return { o, mis: o === "C4" && wrongTag(t, kind, r) }; }
   if (r() < P.shy) return { o: "IDK" };
-  return { o: r() < P.guessOpen ? "C0" : r() < 0.3 ? "C3" : "C4", mis: t.mis && r() < 0.6 };
+  const o = r() < P.guessOpen ? "C0" : r() < 0.3 ? "C3" : "C4";
+  return { o, mis: o === "C4" && wrongTag(t, kind, r) };
 }
 
 /** Truth-value / choice item (C08 puppet statement, C11 spot the fake, C23 path, pre-choices). k = number of options. */
 export function choiceAnswer(P, t, k, r, { planted = false } = {}) {
+  // a wrong choice is the misconception's option with p = 1/(k-1) (k = 2: the one wrong option is the planted idea)
+  const wrong = () => ({ o: "wrong", mis: r() < 1 / Math.max(1, k - 1) });
   if (t.mis) return r() < 0.75 ? { o: "wrong", mis: true } : { o: "first_correct" };
-  if (t.K && t.U && planted && r() < P.deference) return { o: "wrong" };      // agrees with a confident wrong puppet
-  if (t.K) return { o: r() < 0.9 ? "first_correct" : "wrong" };
-  return { o: r() < 1 / k ? "first_correct" : "wrong" };
+  if (t.K && t.U && planted && r() < P.deference) return wrong();             // agrees with a confident wrong puppet
+  if (t.K) return r() < 0.9 ? { o: "first_correct" } : wrong();
+  return r() < 1 / k ? { o: "first_correct" } : wrong();
+}
+
+/** A character's TRUE statement (E9 bookkeeping): does the child agree? Deference raises agreement for everyone. */
+export function agreesWithTrue(P, t, r) {
+  const p = t.K && t.U ? 0.92 : t.K ? 0.75 : 0.5;
+  return r() < p + (1 - p) * P.deference;
 }
 
 /** True label (before grading noise) of an explanation turn. */
@@ -38,6 +58,8 @@ function trueWhyLabel(P, t, r) {
   if (t.mis) return pick(r, [["contradicted", 0.55], ["absent", 0.35], ["partial", 0.1]]);
   return pick(r, [["absent", 0.65 - 0.25 * P.fluent], ["partial", 0.3 + 0.2 * P.fluent], ["present", 0.05 + 0.05 * P.fluent]]);
 }
+/** Simulated R-MIS on a contradicted turn: maps it to the kit misconception (a non-holder's contradiction sometimes too). */
+const rmis = (t, r) => r() < (t.mis ? MIS_MATCH.rmisHolder : MIS_MATCH.rmisNonHolder);
 /** Simulated grader on the code-played path: 0.8 correct, adjacent-label errors, leniency towards fluent talk. */
 function noisyGrade(P, label, r) {
   const L = ["present", "partial", "absent", "contradicted"];
@@ -67,6 +89,15 @@ function hiddenFor(P, t, c, kind) {
 const PROMPT = { "probe.why": "The teacher's pretend friend asks you, curious: but why is it like that?", "probe.teachback": "Golu says: please teach me this, I missed it!",
   inst: "The teacher asks: where have you seen this in your own life or home?" };
 
+/** The REAL R-MIS operator on the child's words (no truth bit): is it the kit's first misconception? */
+async function rmisLLM(c, words, P, llm) {
+  const m = c.misconceptions[0];
+  if (!m) return false;
+  const g = await gradeClosed({ op: "R-MIS", childSpan: words, target: { id: m.id, textEn: m.belief }, lang: P.lang === "en" ? "en" : "hi-Latn+en" }, { send: llm.send, models: llm.gradeModels });
+  llm.calls.grade++; llm.log.push({ persona: P.id, op: "R-MIS", words, label: g.label, spanOk: g.spanOk });
+  return g.label === m.id;
+}
+
 /** Call the child model (taxila-ds41). Returns the child's words or null. */
 async function childSays(P, t, c, cls, kind, llm) {
   const msgs = [{ role: "system", content: CHILD_SYS(P, c, cls, hiddenFor(P, t, c, kind)) }, { role: "user", content: PROMPT[kind === "inst" ? "inst" : cls] ?? PROMPT["probe.why"] }];
@@ -95,7 +126,7 @@ export async function probeAnswer(P, t, c, shape, r, llm, { game = false } = {})
         { send: llm.send, models: llm.gradeModels });
       llm.calls.grade++; llm.log.push({ persona: P.id, truthT: t.T, truthU: t.U, op, words, label: g.label, spanOk: g.spanOk });
       if (g.label === "NA") return { outcome: null, grader: "llm" };
-      return { outcome: instOutcome(cls, g.label), grader: "llm", spanOk: g.spanOk, mis: g.label === "invalid_misc" && t.mis, transcript: words };
+      return { outcome: instOutcome(cls, g.label), grader: "llm", spanOk: g.spanOk, mis: g.label === "invalid_misc" && await rmisLLM(c, words, P, llm), transcript: words };
     }
     const exps = cls === "probe.teachback" ? c.expectations.slice(0, 3) : [c.expectations[0]];
     const labels = [];
@@ -108,16 +139,18 @@ export async function probeAnswer(P, t, c, shape, r, llm, { game = false } = {})
     const real = labels.filter((l) => l !== "NA");
     if (!real.length) return { outcome: null, grader: "llm" };
     const outcome = cls === "probe.teachback" ? teachbackOutcome(real) : cls === "probe.why" ? whyOutcome(real[0]) : outcomeIndex(cls, real[0] === "present" ? "pass" : "fail");
-    return { outcome, grader: "llm", spanOk: true, mis: real.includes("contradicted") && t.mis, transcript: words };
+    // spanOk: true here is honest: whyOutcome / teachbackOutcome only see labels that finalise() already span-checked
+    // (a positive without a findable span was demoted to absent there).
+    return { outcome, grader: "llm", spanOk: true, mis: real.includes("contradicted") && await rmisLLM(c, words, P, llm), transcript: words };
   }
   // ---- code-played ----
   if (cls === "probe.why" || cls === "probe.teachback") {
     if (cls === "probe.teachback") {
       const labels = [0, 1, 2].map(() => noisyGrade(P, trueWhyLabel(P, t, r), r));
-      return { outcome: teachbackOutcome(labels), grader: "llm", spanOk: true, mis: labels.includes("contradicted") && t.mis };
+      return { outcome: teachbackOutcome(labels), grader: "llm", spanOk: true, mis: labels.includes("contradicted") && rmis(t, r) };
     }
     const l = noisyGrade(P, trueWhyLabel(P, t, r), r);
-    return { outcome: whyOutcome(l), grader: "llm", spanOk: true, mis: l === "contradicted" && t.mis };
+    return { outcome: whyOutcome(l), grader: "llm", spanOk: true, mis: l === "contradicted" && rmis(t, r) };
   }
   if (cls === "probe.errorspot") {
     let o;

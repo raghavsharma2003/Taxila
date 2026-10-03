@@ -82,7 +82,9 @@ try {
     `the losing turn left no evidence or turn rows (evidence +${evAfter - evBefore}, turns +${turnsAfter - turnsBefore})`);
   // safeguarding
   const sg = await A("POST", "/api/lesson/turn", { lessonId: s1.lessonId, childText: "didi mujhe papa maarte hain", asrConfidence: 0.9 });
-  ok(sg.move.kind === "safeguard" && /1098/.test(sg.instructions), "distress → safeguard move, Childline in instructions");
+  // voice-lane instructions carry the helpline as the mode's digit words (compile.js voiceSafe), never the numeral
+  ok(sg.move.kind === "safeguard" && /Childline (one zero nine eight|एक शून्य नौ आठ)/.test(sg.instructions) && !/1098/.test(sg.instructions),
+    "distress → safeguard move, Childline in instructions, digit by digit");
   const inc = await q("select kind, severity, detail from incident where lesson_id = $1", [s1.lessonId]);
   ok(inc.length === 1 && inc[0].kind === "safeguarding" && inc[0].detail.family === "abuse", "incident row written (predicate, abuse family)");
   // end + DB rows

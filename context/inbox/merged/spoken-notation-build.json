@@ -1,0 +1,97 @@
+{
+ "nodes": [
+  {
+   "id": "voice-tts-spoken-render",
+   "kind": "decision",
+   "at": "2026-10-02",
+   "title": "Every TTS input is rendered by server/voice/spoken.js toSpoken() (data-driven NCERT SpokenSet per mode × school medium × band; helplines from floor.js matched exactly first, always digit by digit); captions, stored turns and leak/safety guards keep the written text; the realtime (voice) compile carries the helplines as the mode's digit words, never numerals"
+  },
+  {
+   "id": "notation-probe-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-02",
+   "title": "G1 spoken-notation probe (53 items × en/hl/hi × written vs pre-rendered × RT/TTS, n=159/arm): TTS written 33% render / 28% mixed / 18% misread vs pre-rendered 6/6/1%; Indian-comma numbers misread 11/15 TTS, 9/15 RT written; helplines Hindi mode written 0/4 digit-exact, pre-rendered 11/12"
+  },
+  {
+   "id": "spoken-render-tts-rerun-2026-10-02",
+   "kind": "measurement",
+   "at": "2026-10-02",
+   "title": "Reduced probe re-run with toSpoken() as the TTS input (gpt-4o-mini-tts marin, 30 items × en/hl/hi, n=90 + 4 helpline clips): any flag 13% vs written 57% and hand-authored 14% on the same items; misread 6% (3% excl. ASR-suspect) vs 24% / 2%; Indian-comma numbers misread 1/15 vs 11/15; en mode 0/30 flags"
+  },
+  {
+   "id": "spoken-helplines-repeat-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "Helplines through toSpoken() in all 5 mode × medium cells, 3 takes each (n=30): 28/30 judged digit-exact, 0 confirmed wrong digit (1 undeterminable, 1 single-ASR disagreement); with the first re-run's 10 clips, 37/40 exact, 0 confirmed wrong; one Hindi-mode Tele-MANAS take clipped the final छह"
+  },
+  {
+   "id": "helpline-digits-comma-separated",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: comma-separating helpline digit words (one, zero, nine, eight) for TTS: 28/30 digit-exact, identical to the plain digit words (28/30), so no gain for the extra punctuation"
+  },
+  {
+   "id": "open-realtime-lesson-now-notation",
+   "kind": "open",
+   "at": "2026-10-02",
+   "title": "Realtime lane LESSON NOW still poses kit items with written notation (director/items.js promptFor): only the helplines are pre-rendered there; the kit `spoken` field + checkSpoken at kit-load (spoken-notation §2.1) is unbuilt"
+  }
+ ],
+ "edges": [
+  {
+   "src": "notation-probe-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "spoken-render-tts-rerun-2026-10-02",
+   "rel": "measured_by",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "spoken-helplines-repeat-2026-10-03",
+   "rel": "measured_by",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "helpline-digits-comma-separated",
+   "rel": "constrains",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "voice-tts-spoken-render",
+   "rel": "part_of",
+   "dst": "voice-teacher-spec"
+  },
+  {
+   "src": "voice-tts-spoken-render",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "voice-tts-spoken-render",
+   "rel": "inherits",
+   "dst": "voice-prompt-labels-and-brackets"
+  },
+  {
+   "src": "voice-tts-spoken-render",
+   "rel": "constrains",
+   "dst": "kit-fit-margin"
+  },
+  {
+   "src": "prod-smoke-32090f6",
+   "rel": "caused_by",
+   "dst": "notation-probe-2026-10-02"
+  },
+  {
+   "src": "open-realtime-lesson-now-notation",
+   "rel": "blocks",
+   "dst": "voice-tts-spoken-render"
+  }
+ ],
+ "md": {
+  "decisions": "## voice-tts-spoken-render\n2026-10-02. **What.** Everything a speech model is given goes through `toSpoken(text, { mode, schoolMedium, ageBand })` (`server/voice/spoken.js`; the conventions are DATA in `server/voice/spoken-lexicon.js`: word tables, units, templates and cells, so a regional language is one more `WORDS` entry plus its `CELLS`).\n- **Funnel.** `speakChunk()` (`server/voice/speech.js`) renders every chunk through `ttsInput(text, style)`, so `/api/voice/tts-stream` and the `/turn` prewarm are both covered without touching lesson.js. `styleForChild(child, ageBand?)` now carries the child's cell (`style.spoken`). `/api/tts` renders before `tts()`. The TTS cache is keyed by the RENDERED text.\n- **What does not change.** `splitSentences()` still splits the written text, and captions, stored `turn.text`, the answer-leak guard and the safety predicates all see the written text.\n- **Safety by predicate.** The floor's `HELPLINES` numbers are matched exactly, before any other rule, and always rendered digit by digit in the mode's digit words (1098 is never \"one thousand ninety-eight\", even inside a maths sentence). Phone-like numbers (mobile, +91, 1800 toll-free, a number after call/dial) also go digit by digit.\n- **Realtime lane.** `compile()` on the voice lane renders the helpline numbers as digit words wherever they appear (floor, safeguard move shape; `voiceSafe`). The appended-last escape and safeguard clauses name Childline WITHOUT the number: the digit words would cost the `last` section ~4 tokens, and `checkFits` keeps reserving the old 5 characters so the kit gate admits exactly the items it admitted before (108 dropped, unchanged). No reading-convention note was added to any prompt: the recitation law and spoken-notation §2.1 forbid one, and the safety string is the §10.4 data exception. The text lane keeps the numerals, because the child reads them on screen.\n- **Conventions (spoken-notation §2.3).** Indian place value by default; international (million) only when the number was written with international grouping and is at least 1,000,000. Decimals are read digit by digit after the point. Fractions use upon/बटा, but band 6-9 uses unit words for halves and quarters. Mixed numbers are joined with \"and\"/और. ₹ is said as rupees and paise. Times-table chant only for band 6-9. School medium \"other\" resolves to english. Hindi words are written in Devanagari even inside Roman Hinglish text [I: the probe's script choice, not separately measured].\n- **Rationale.** `notation-probe-2026-10-02` measured written notation misread by both voices, and `spoken-render-tts-rerun-2026-10-02` confirmed the shipped renderer reaches the hand-authored level.\n- **Reverse if** a re-run of the same probe (same items, judge and two ASR passes, plus listeners) shows written text within 2 points of rendered on every class for the shipped TTS voice, AND helplines digit-exact 100% written in every mode. Also revisit any single rule whose class shows a higher error rendered than written (none today). `TAXILA_TTS_SPOKEN=0` is the A/B switch; it turns the helpline guarantee off too.\n- **Not covered:** realtime LESSON NOW items (`open-realtime-lesson-now-notation`), parent-card speech (`/api/parent/speak`, which speaks untouched), and adjectival unit number (\"500 millilitres bottles\").\n",
+  "measurements": "## notation-probe-2026-10-02\n2026-10-02. G1 spoken-notation probe (`docs/research/voice/spoken-notation.md` §3; data in `docs/research/voice/notation-probe-2026-10-02/`).\n- **Design.** 53 items × en/hl/hi × written (W) vs pre-rendered (P) × gpt-realtime-2.1 (RT) and gpt-4o-mini-tts (TTS), voice marin; n=159 per arm; 636 clips.\n- **Method.** Two back-transcriptions with taxila-transcribe (language forced / no hint), a taxila-brain rubric judge, and a hand audit agreeing on 46/48.\n- **Results.**\n  - TTS: W 33% rendering error / 28% mixed convention / 18% misread; P 6 / 6 / 1%.\n  - RT: W 20 / 23 / 11%; P 2 / 2 / 0%.\n  - Indian-comma numbers misread written: TTS 11/15, RT 9/15. English-mode ₹ came out as dollars/cents.\n  - Helplines in Hindi mode written 0/4 digit-exact; pre-rendered 11/12 (1 undeterminable).\n- Written-arm rates are lower bounds (13% of rows undeterminable from transcripts).\n\n## spoken-render-tts-rerun-2026-10-02\n2026-10-02 (run crossed into 2026-10-03 UTC). The probe's own TTS arm re-run with arm **R** = the written item rendered by the shipped `toSpoken()` (renderer `sp1-2026-10-02`).\n- **Method.** gpt-4o-mini-tts on Azure, voice marin, the probe's per-mode voice notes; both ASR passes; the probe's judge with its stored system prompt and mode rules (`rerun-tospoken.mjs`; data `notation-probe-2026-10-02/rerun-tospoken/`).\n- **Sample.** 30 items (all 5 large-number, 3 currency, 4 exponent, 2 root, 3 negative, 3 unit, 2 fraction, 2 decimal, ratio, percent, time, formula, 2 helplines) × en/hl/hi = **n=90**, plus 4 helpline clips in hl·hindi and hi·english. 94 clips, 0 engine errors.\n- **Baselines.** The probe's TTS W and P rows on the same 30 items (n=90 each).\n\n| arm (same 30 items) | rendering error | mixed convention | number misread | any flag |\n|---|---|---|---|---|\n| probe W, written | 40% | 32% | 24% | 57% |\n| probe P, hand-authored spoken | 8% | 8% | 2% | 14% |\n| **R, toSpoken** | **4%** (3% excl. ASR-suspect) | **9%** (6%) | **6%** (3%) | **13%** |\n\n- **Per mode, R any-flag:** en 0/30, hl 8/30, hi 4/30.\n- **Indian-comma numbers misread:** W 11/15 → R 1/15. The one miss: Hindi लाख heard as नाग by both ASRs, which is pronunciation, not notation.\n- **Currency, exponents, roots, mixed numbers:** 0 misreads. No dollars in English mode.\n- **hl mixed convention** (8/30, P 7/30): the TTS voiced the English number words of a Hinglish sentence as Hindi words (spoken-notation §3.3 point 5). The input text was right; a renderer cannot fix this.\n- **Residual Hindi-mode errors are pronunciation:** ऋण heard as रेर (again, the known watch item), लाख heard as नाग, and a clipped final छह in 14416.\n- **Limits.** One voice, one take per cell, ASR-only plus a model judge; no listener.\n\n## spoken-helplines-repeat-2026-10-03\n2026-10-03. Childline 1098 and Tele-MANAS 14416 through `toSpoken()`.\n- **Sample.** All 5 cells (en·english, hl·english, hl·hindi, hi·hindi, hi·english) × 3 takes = n=30 per arm. Same TTS, ASR and judge as above (`rerun-helplines.mjs`, `rerun-tospoken/helplines/`).\n- **Plain digit words (shipped): 28/30 judged digit-exact, 0 confirmed wrong digits.**\n  - One take had digits in both ASR transcripts (1098), so the reading is undeterminable.\n  - One take had only one of the two ASR passes disagreeing (14486 vs एक चार चार एक छै).\n- **Combined with the first re-run's 10 helpline clips: 37/40 exact, 0 confirmed wrong.** The third non-exact take was a Hindi-mode Tele-MANAS whose final छह both ASRs heard clipped (छा / छ).\n- **Probe baselines:** written Hindi mode 0/4; hand-authored pre-rendered 11/12.\n- **Comma arm:** see `helpline-digits-comma-separated`.\n- Still unmeasured: the Tele-MANAS NAME, which ASR heard as Telly Savalas, Keli, Delhi, Dili Manas, and so on. It stays a §5.3 ear-panel item.\n",
+  "rejected": "## helpline-digits-comma-separated\n**Tried (2026-10-03):** separating the helpline digit words with commas (\"one, zero, nine, eight\"; \"एक, चार, चार, एक, छह\") for gpt-4o-mini-tts. The aim was to stop the final digit being clipped, as one Hindi-mode Tele-MANAS take did in `spoken-render-tts-rerun-2026-10-02`.\n**Broke:** it did not help. It scored 28/30 digit-exact, the same as the plain digit words (28/30), across 5 cells × 3 takes. Its misses had the same causes: ASR writing digits (undeterminable), plus one ASR HTTP 400.\n**Kept:** plain space-separated digit words (`voice-tts-spoken-render`).\n**Revisit if** a listener panel hears clipped final digits on the plain form.\n"
+ }
+}

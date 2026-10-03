@@ -20,6 +20,7 @@
 //     answered — derived from step() itself (director/state.js branchesFor), with the safety escape first,
 //     because the safeguard move only reaches the instructions one turn later.
 import { floorText, FLOOR_HEADING } from "./floor.js";
+import { spokenSafetyNumbers } from "../voice/spoken.js";
 import { briefRows, estimateTokens, BRIEF_TOKEN_CAP } from "../learner/brief.js";
 import { promptFor, optionsSpoken } from "../director/items.js";
 import * as SH from "../director/shapes.js";
@@ -36,12 +37,31 @@ const FIX_MAX = 2;
 
 export class BudgetError extends Error {}
 
+/**
+ * Voice lane only: the floor's helpline numbers (floor.js HELPLINES) as the mode's digit-by-digit words, wherever
+ * they appear in the instructions (floor, safeguard move shape, the escape clause). The realtime model has no
+ * lexicon, and written as numerals it voiced 1098 as a cardinal number in Hindi mode, 0/4 digit-exact
+ * (spoken-notation §3.1); pre-rendered, 11/12 exact and 0 wrong. This is data (VOICE-TEACHER §10.4, the safety-string
+ * exception), not a reading convention: no other notation is touched and no "say X as Y" note is added. The text
+ * lane keeps the numerals (they are shown on screen), and its TTS renders them (server/voice/speech.js ttsInput).
+ */
+export const voiceSafe = (text, language) => spokenSafetyNumbers(text, { mode: language });
+
 const RUNG = ["pump", "hint", "prompt", "assertion"];
 const LANGS = ["hinglish", "hindi", "english"];
 const AGE_BANDS = ["6-9", "10-15"];
 
 /** The voice lane's first clause: a disclosure gets the floor at once, not one turn later. */
-const ESCAPE = "unsafe, hurt or scared → no lesson now: calm care, a trusted adult, Childline 1098";
+/**
+ * The voice lane's appended-last clauses name the helpline WITHOUT its number: the floor (and the safeguard move)
+ * carry it digit by digit (voiceSafe), and the digit words would cost the `last` section ~4 tokens it does not
+ * have (kit-budget: 8 more items dropped, one real compile over its cap). A numeral here is what was voiced as
+ * a cardinal in Hindi mode.
+ */
+const ESCAPE_VOICE = "unsafe, hurt or scared → no lesson now: calm care, a trusted adult, Childline";
+const ESCAPE_NUMBER_RESERVE = " 1098";
+const SAFEGUARD_CHECK = "care first: no lesson content this turn; a trusted adult and Childline 1098 if not said yet.";
+const SAFEGUARD_CHECK_VOICE = "care first: no lesson content this turn; a trusted adult and Childline if not said yet.";
 const STOP = "they want to stop → stop, short warm goodbye";
 /** Corrective shapes after the teacher's own words broke the floor (director/safety.js floorViolations), most severe first. */
 const FLOOR_FIX = {
@@ -160,10 +180,10 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
         : `the key stays unsaid (ladder rung ${lvl} of 4) — no answer, no giveaway; if they ask for it, nudge instead`;
   let check, shape;
   if (move.kind === "safeguard") {
-    check = "care first: no lesson content this turn; a trusted adult and Childline 1098 if not said yet.";
+    check = voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
     shape = "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
   } else if (voice) {
-    check = [`when they reply: ${ESCAPE}`, STOP, branchClause(branches), keyRule].filter(Boolean).join("; ");
+    check = [`when they reply: ${ESCAPE_VOICE}`, STOP, branchClause(branches), keyRule].filter(Boolean).join("; ");
     shape = move.kind === "wrap"
       ? `at most ${n + 8} words. End with a warm goodbye, then stop.`
       : `at most ${n} words. One idea. End by handing the floor back — one question or a try-this — then stop.`;
@@ -214,6 +234,7 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } = 
     { id: "language", parts: [{ text: languageRule(input.language, ageBand), drop: null }] },
     { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
   ];
+  if (lane === "voice") for (const sec of sections) sec.parts = sec.parts.map((p) => ({ ...p, text: voiceSafe(p.text, input.language) }));
   const dropped = [];
   const tokensOf = (sec) => estimateTokens(sec.parts.map((p) => p.text).join("\n"));
   const total = () => sections.reduce((n, sec) => n + tokensOf(sec), 0);
@@ -277,7 +298,11 @@ export function checkFits(item, { cap = SECTION_CAPS.last - FIT_MARGIN } = {}) {
         { lane: "voice", move: { kind: "hint" }, lessonState: { hintLevel: 3, correction }, branches },
       ];
       for (const v of variants) {
-        const text = lastParts({ ...v, item, ageBand, language, protegeName }).map((p) => p.text).join("\n");
+        let text = lastParts({ ...v, item, ageBand, language, protegeName }).map((p) => p.text).join("\n");
+        // The voice clauses gave their helpline number to the floor (ESCAPE_VOICE); the gate still reserves its
+        // bytes, so it admits exactly the items it admitted before. Admitting more exposed a real voice branch 6
+        // tokens over its simulation (c9-english-ch08-t01-i10, 2026-10-02): FIT_MARGIN is not that wide.
+        if (v.lane === "voice") text = voiceSafe(text, language) + ESCAPE_NUMBER_RESERVE;
         if (estimateTokens(text) > cap) return false;
       }
     }

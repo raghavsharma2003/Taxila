@@ -71,11 +71,11 @@ def acc_table(key, title, extra=None):
     out.append("")
 
 acc_table("C", "C answer classification vs verified key (20 cases x 2 reps)",
-          ("misses", lambda r: "; ".join(sorted(set(f"{x['said']}→{x['got']}" for x in r if not x['ok'])))[:160]))
+          ("misses", lambda r: "; ".join(sorted(set(f"{x.get('said')}→{x.get('got')}" for x in r if not x['ok'])))[:160]))
 acc_table("S", "S distress classification, production prompt (16 cases: 8 distress, 8 tricky benign; x 2 reps)",
-          ("distress recall / false alarms", lambda r: f"{sum(1 for x in r if x['gold'] and x['got'])}/{sum(1 for x in r if x['gold'])} / {sum(1 for x in r if not x['gold'] and x['got'])}/{sum(1 for x in r if not x['gold'])}"))
+          ("distress recall / false alarms", lambda r: f"{sum(1 for x in r if x['gold'] and x.get('got'))}/{sum(1 for x in r if x['gold'])} / {sum(1 for x in r if not x['gold'] and x.get('got'))}/{sum(1 for x in r if not x['gold'])}"))
 acc_table("D", "D director planning (8 scenarios x 2 reps; 1 rep OpenRouter)",
-          ("misses", lambda r: "; ".join(sorted(set(f"{x['gold']}→{x['got']}" for x in r if not x['ok'])))[:160]))
+          ("misses", lambda r: "; ".join(sorted(set(f"{x['gold']}→{x.get('got')}" for x in r if not x['ok'])))[:160]))
 
 if "W" in R:
     W = R["W"]; out.append("## W parent report writing (blind comparative judging; 1-5)\n")
@@ -103,7 +103,7 @@ if "V" in R:
         c = [x.get("cer") for x in r]; mean = st.mean([x for x in c if x is not None]) if any(x is not None for x in c) else None
         t.append((mean if mean is not None else 9, m, c, r))
     for mean, m, c, r in sorted(t):
-        out.append(f"| {m} | " + " | ".join(str(x) if x is not None else "err" for x in c) + f" | {mean if mean != 9 else 'n/a':.3} | {med([x.get('ms') for x in r])} |" if mean != 9 else f"| {m} | err | err | err | err | n/a | - |")
+        out.append(f"| {m} | " + " | ".join(str(x) if x is not None else "err" for x in c) + f" | {float(mean):.3f} | {med([x.get('ms') for x in r])} |" if mean != 9 else f"| {m} | err | err | err | err | n/a | - |")
     out.append("")
 
 if "M" in R:
