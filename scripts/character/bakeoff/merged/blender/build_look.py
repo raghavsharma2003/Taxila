@@ -15,6 +15,8 @@ What it does, in order (CHARACTER-PIPELINE.md §2):
 import argparse, json, math, os, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# shared, unchanged helpers (mpfb_env, identity_sculpt) come from the main pipeline
+sys.path.insert(1, os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../blender"))
 import numpy as np
 import bpy, bmesh
 from mathutils import Vector
@@ -23,6 +25,7 @@ from mpfb_env import (enable_mpfb, asset, co, key_co, set_key_co, deltas, tris_o
                       delete_verts, USER_DATA)
 import keys as K
 import parts
+import hair_v3
 import identity_sculpt as SC
 
 ap = argparse.ArgumentParser()
@@ -112,6 +115,24 @@ if look.get("sculpt"):
     h.data.update()
     report["sculptAnchors"] = {k: np.round(v, 4).tolist() for k, v in _A.items()}
 stage("sculpt")
+# ---- merged (ai-portrait-wrap hook): wrap the basis onto the portrait reconstruction (identity/wrap.py), after the
+# identity sculpt and BEFORE the head scale, face units, visemes, proxies, correctives and lip seal, so all 82 keys
+# (v3's MakeHuman expression units included) are built on the wrapped basis
+def _eye_radius(P_):
+    return {s_: float(np.linalg.norm(P_[group_idx(h, g_)] - P_[group_idx(h, g_)].mean(0), axis=1).mean()) for s_, g_ in (("L", "helper-l-eye"), ("R", "helper-r-eye"))}
+_eyeR_pre = _eye_radius(B)
+if look.get("wrap"):
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "identity"))
+    import wrap as WR
+    B, report["wrap"] = WR.apply(B, look["wrap"], head_weight(B), log=lambda m: print(f"[build:{look['id']}] {m}", flush=True), mir=MIR)
+    h.data.vertices.foreach_set("co", B.ravel())
+    h.data.update()
+    _eyeC0 = {s_: B[group_idx(h, g_)].mean(0) for s_, g_ in (("L", "helper-l-eye"), ("R", "helper-r-eye"))}
+    stage("wrap")
+# stylised-premium lesson: check the eyeball radius after ANY edit of the eye region (a field that skipped the eye
+# helper grew the lids around an unscaled ball and G4 still passed). Ratio to the pre-edit helper radius per side.
+_eyeR_post = _eye_radius(B)
+report["gates"]["eyeballRadiusRatio"] = {s_: round(_eyeR_post[s_] / _eyeR_pre[s_], 4) for s_ in _eyeR_pre}
 
 # 2. S3h head scale (~3%), baked into the basis so every proxy fits the scaled head.
 s = float(look.get("headScale", 1.0))
@@ -137,12 +158,66 @@ _names = K.ARKIT52 + K.VISEMES
 _D = {k: key_co(_kbs[k]) - _base for k in _names}
 _pre = max(float(np.linalg.norm(_D["mouthUpperUpLeft"] - K._M(_D["mouthUpperUpRight"], MIR), axis=1).max()), 0)
 _D = K.symmetrize(_D, MIR)
+# procedural-v3: blend the MakeHuman CC0 anatomical expression units (targets/expression/units, the muscles MakeHuman's
+# own expressions are built from: corner puller, upward retraction, elevation, slit, inner-up, ...) into the ARKit keys,
+# per the look's faceStyle.v3mix. They carry the cheek bunching and lip thinning that faceunits01 lacks.
+_mix = look.get("faceStyle", {}).get("v3mix", {})
+if _mix:
+    _udir = os.path.join(os.path.dirname(USER_DATA), "..", "..", "..", "user_default", "mpfb", "data", "targets", "expression", "units")
+    _udir = os.path.normpath(_udir) if os.path.isdir(os.path.normpath(_udir)) else os.path.expanduser("~/.config/blender/4.2/extensions/user_default/mpfb/data/targets/expression/units")
+    _race = look["macros"].get("race", {"caucasian": 1.0})
+    _rs = sum(_race.values())
+    _mhD = {}
+
+    def _mh_unit(name):
+        if name in _mhD:
+            return _mhD[name]
+        acc = np.zeros_like(_base)
+        for rc, w in _race.items():
+            p = os.path.join(_udir, rc, name + ".target.gz")
+            kb_ = TS.load_target(h, p, weight=0.0, name="ex_tmp")
+            kbs_ = h.data.shape_keys.key_blocks
+            acc += (w / _rs) * (key_co(kbs_["ex_tmp"]) - key_co(kbs_[0]))
+            h.shape_key_remove(kbs_["ex_tmp"])
+        _mhD[name] = K.symmetrize({"x": acc}, MIR)["x"] if "left" not in name and "right" not in name else acc
+        return _mhD[name]
+    _sideL = smoothstep(-0.004, 0.004, _base[:, 0])          # Blender +x = her left
+    for key, spec in _mix.items():
+        if key.startswith("_"):
+            continue
+        sided = spec.get("sided", False)
+        for S in (("Left", "Right") if sided else ("",)):
+            k = key + S
+            sgn = K.side_of(_D, k, _base) if sided else 0
+            wside = (_sideL if sgn > 0 else 1 - _sideL) if sided else 1.0
+            d = spec.get("cc0", 1.0) * _D[k]
+            for unit, w in spec.get("mh", []):
+                u = unit.replace("{side}", ("left" if sgn > 0 else "right") if sided else "")
+                du = _mh_unit(u)
+                d = d + w * (du * (wside[:, None] if sided and "{side}" not in unit else 1.0))
+            _D[k] = d
+    report["v3mix"] = {k: v for k, v in _mix.items() if not k.startswith("_")}
+    _D = K.symmetrize(_D, MIR)          # the MH sided units are not exact mirrors: re-symmetrise (G3)
 _hw = head_weight(_base) * _body
 _CORNER = K.mouth_corner_vids(_B0sym, group_w(h, "lips"), MIR)
-_D = K.expression_correctives(_base, _D, group_w(h, "lips") * _body, _eyeC0, _hw, corner_vids=_CORNER)
+_D = K.expression_correctives_v3(_base, _D, group_w(h, "lips") * _body, _eyeC0, _hw, look.get("faceStyle", {}).get("v3keys"), corner_vids=_CORNER)
 for k in _names:
     set_key_co(_kbs[k], _base + _D[k])
 report["symmetrize"] = {"mouthUpperUpBeforeMm": round(_pre * 1000, 2)}
+# ---- merged (ai-portrait-wrap hook): the resting lid. A fraction of eyeBlink baked into the basis AND every key, eyeBlink
+# itself shortened by the same fraction so blink = 1 still lands on the closed lid; skin only (moving the eye helper
+# moved the eyeball: G4 14% escape, measured); the mesh follows the Basis key (a Basis-only edit is undone later)
+rb_ = float(look.get("faceStyle", {}).get("restBlink", 0.0))
+if rb_ > 0:
+    for S_ in ("Left", "Right"):
+        dB_ = _D["eyeBlink" + S_] * _body[:, None]
+        for kb in _kbs:
+            set_key_co(kb, key_co(kb) + rb_ * dB_)
+        set_key_co(_kbs["eyeBlink" + S_], key_co(_kbs["eyeBlink" + S_]) - rb_ * dB_)
+        _D["eyeBlink" + S_] = _D["eyeBlink" + S_] - rb_ * dB_
+    h.data.vertices.foreach_set("co", key_co(_kbs[0]).ravel())
+    h.data.update()
+    report["restBlinkBaked"] = rb_
 rs = float(look.get("faceStyle", {}).get("restSmile", 0.0))
 if rs > 0:
     fix = rs * (_D["mouthSmileLeft"] + _D["mouthSmileRight"])
@@ -167,9 +242,8 @@ teeth = add("teeth", "teeth_base", "Teeth")
 tongue = add("tongue", "tongue01", "Tongue")
 brows = add("eyebrows", look["brows"], "Eyebrows")
 lashes = add("eyelashes", look["lashes"], "Eyelashes")
-hair = add("hair", look["hair"]["asset"], "Hair")
 FS.interpolate_targets(h)
-for o in (teeth, tongue, brows, lashes, hair):
+for o in (teeth, tongue, brows, lashes):
     for m in list(o.modifiers):
         o.modifiers.remove(m)
     o.parent = None
@@ -217,7 +291,11 @@ h.data.attributes["earsW"].data.foreach_get("value", _ew)
 for side, sg in (("L", 1), ("R", -1)):
     sel = np.nonzero((_ew > 0.5) & (np.sign(Pk[:, 0]) == sg))[0]
     earsP[side] = Pk[sel[np.argmin(Pk[sel, 2])]]
-garm = parts.make_garments(h, look, J, report)
+if look["garment"]["kind"] == "kurti-jacket":
+    import garments_v3
+    garm, _pen = garments_v3.make(h, look, J, report)
+else:
+    garm = parts.make_garments(h, look, J, report)
 acc = []
 lens = None
 if "glasses" in look.get("accessory", {}):
@@ -567,65 +645,14 @@ for side, sg in (("L", 1), ("R", -1)):
 if look.get("lowerLashes", False) is False and _low.any():
     delete_verts(lashes, _low)
     report["lowerLashesRemovedVerts"] = int(_low.sum())
-hair.shape_key_clear()
-hair.name = "hair"
-# ---- hair silhouette edits (review item 12): all scripted on the CC0 card hair, rigid to the head
-hP = co(hair.data)
-hcfg = look["hair"]
-skullBackY = float(co(h.data)[(attr(h, "scalpW") > 0.3), 1].max()) if "scalpW" in h.data.attributes else hP[:, 1].max() - 0.03
-hc = J["joint-head"] + np.array([0, 0.005, 0.06])
-if hcfg.get("crownVolume"):
-    # lift the hair off the skull above the ears, most at the crown: breaks the "helmet" profile
-    r_ = hP - hc
-    wv = smoothstep(J["joint-head"][2] + 0.02, J["joint-head"][2] + 0.12, hP[:, 2])
-    hP = hc + r_ * (1 + hcfg["crownVolume"] * wv)[:, None]
-if hcfg.get("raisePonytail"):
-    # the tail: hair behind the skull. Lift the tie and the tail by raise (m), carried smoothly into the cap near the tie
-    tail = smoothstep(skullBackY + 0.002, skullBackY + 0.02, hP[:, 1])
-    tieZ = float(np.percentile(hP[tail > 0.9, 2], 92)) if (tail > 0.9).any() else J["joint-head"][2]
-    tie = np.array([0.0, skullBackY + 0.01, tieZ])
-    near = np.exp(-(np.linalg.norm(hP - tie, axis=1) / 0.05) ** 2)
-    lift = hcfg["raisePonytail"]
-    w_ = np.maximum(tail, near * 0.8)
-    hP[:, 2] += lift * w_
-    # tilt the hanging tail out from the neck by ~12 deg about the (raised) tie, so it clears the collar
-    ang = np.radians(hcfg.get("tailTiltDeg", 12)) * tail * smoothstep(tieZ + lift, tieZ + lift - 0.08, hP[:, 2])
-    rel = hP - (tie + np.array([0, 0, lift]))
-    c_, s_ = np.cos(ang), np.sin(ang)
-    # rotation in the y-z plane: points below the tie move backwards (+y) as the angle grows
-    hP[:, 1] = tie[1] + rel[:, 1] * c_ - rel[:, 2] * s_
-    hP[:, 2] = tie[2] + lift + rel[:, 1] * s_ + rel[:, 2] * c_
-    report["ponytail"] = {"tieZ": round(tieZ, 4), "lift": lift}
-hair.data.vertices.foreach_set("co", hP.ravel())
-hair.data.update()
-if hcfg.get("clipFringe"):
-    # cards that hang in front of the forehead below the hairline read as black scratches across the face
-    eyeZ = 0.5 * (eyeC["L"][2] + eyeC["R"][2])
-    eyeY = 0.5 * (eyeC["L"][1] + eyeC["R"][1])
-    bad = (hP[:, 1] < eyeY - 0.006) & (hP[:, 2] < eyeZ + hcfg["clipFringe"]) & (np.abs(hP[:, 0]) < 0.06)
-    me_ = hair.data
-    kill = np.zeros(len(hP), bool)
-    for p_ in me_.polygons:
-        vs = list(p_.vertices)
-        if bad[vs].mean() > 0.5:
-            kill[vs] = True
-    if kill.any():
-        delete_verts(hair, kill)
-    report["fringeClippedVerts"] = int(kill.sum())
-# hair atlas: the MH card texture (CC0) fills u in [0, 0.74]; u in [0.76, 0.98] is our opaque strand column
-uvl = hair.data.uv_layers.active
-uv = np.empty(len(uvl.data) * 2)
-uvl.data.foreach_get("uv", uv)
-uv = uv.reshape(-1, 2)
-uv[:, 0] = uv[:, 0] * 0.74
-uvl.data.foreach_set("uv", uv.ravel())
-if look["hair"].get("style") == "bun":
-    hb = co(hair.data)
-    nape = np.array([0.0, hb[:, 1].max() - 0.012, J["joint-head"][2] + 0.012])
-    bun = parts.make_bun(look, J, nape)
-    select_only([hair, bun])
-    bpy.context.view_layer.objects.active = hair
-    bpy.ops.object.join()
+# ---- hair (procedural-v3): guide curves on our own scalp -> clumped strand cards (hair_v3.py); H and B+ LODs
+import hair_v3
+hair = hair_v3.build(face, look, J, eyeC, report, collide=(garment,), lod="H")
+hair_lo = hair_v3.build(face, look, J, eyeC, report, collide=(garment,), lod="B")
+_hw = hair_v3.hair_weight(co(face.data), J, attr(face, "earsW"), np.round(attr(face, "region")), seed=look["seed"])
+_a = face.data.attributes.new("hairW", "FLOAT", "POINT")
+_a.data.foreach_set("value", _hw.astype(np.float32))
+report["hairV3"]["hairBearingVerts"] = int((_hw > 0.5).sum())
 stage("parts")
 
 # ------------------------------------------------------------------ 6. validation
@@ -866,8 +893,9 @@ def unwrap_face(ob):
     P = co(me)
     eL = eyeC["L"]
     chin_z = P[(reg_ == 0) & (np.abs(P[:, 0]) < 0.01)][:, 2]
-    in_face = (reg_ == 0) & (P[:, 1] < eL[1] + 0.03) & (P[:, 2] > eL[2] - 0.11) & (P[:, 2] < eL[2] + 0.075) \
-        & (np.abs(P[:, 0]) < 0.068)
+    # procedural-v3: the chart runs up past the hairline (the forehead seam at +7.5 cm lit as a band on brow raises)
+    in_face = (reg_ == 0) & (P[:, 1] < eL[1] + 0.035) & (P[:, 2] > eL[2] - 0.11) & (P[:, 2] < eL[2] + 0.105) \
+        & (np.abs(P[:, 0]) < 0.072)
     sel_face = np.array([all(in_face[v] for v in p.vertices) for p in me.polygons])
     skin_f = np.array([all(reg_[v] == 0 for v in p.vertices) for p in me.polygons])
     select_only([ob])
@@ -891,6 +919,29 @@ face_sel, unwrap_res = unwrap_face(face)
 report["faceUV"] = pack_face_uvs(face, face_poly_mask=face_sel)
 report["faceUV"]["unwrap"] = [str(r) for r in unwrap_res]
 stage("uv")
+
+# ------------------------------------------------------------------ H face-mask subdivision (procedural-v3, §10.5)
+import subdiv
+import seal as SEAL
+_reg = np.round(attr(face, "region"))
+_Pf = co(face.data)
+_eL = eyeC["L"]
+_sdc = look.get("subdivH", {})
+_vm = (_reg == 0) & (_Pf[:, 1] < _eL[1] + _sdc.get("depth", 0.02)) & (_Pf[:, 2] > _eL[2] - _sdc.get("below", 0.085)) \
+    & (_Pf[:, 2] < _eL[2] + _sdc.get("above", 0.035)) & (np.abs(_Pf[:, 0]) < _sdc.get("halfWidth", 0.058))
+if _sdc.get("mode") == "rings":
+    # the contours that read: the lid rings and the mouth (lip silhouette, corners, philtrum), front-facing only
+    _lw = attr(face, "lipsW")
+    _lc = _Pf[(_lw > 0.3) & (_reg == 0)].mean(0)
+    _front = _Pf[:, 1] < _eL[1] + _sdc.get("depth", 0.012)
+    _eyes = sum(((_Pf - eyeC[s_]) ** 2).sum(1) < _sdc.get("eyeR", 0.022) ** 2 for s_ in ("L", "R")) > 0
+    _mouth = ((_Pf[:, 0] / _sdc.get("mouthX", 0.036)) ** 2 + ((_Pf[:, 2] - _lc[2]) / _sdc.get("mouthZ", 0.02)) ** 2) < 1
+    _vm = (_reg == 0) & _front & (_eyes | _mouth)
+_pm = np.array([all(_vm[v] for v in p.vertices) for p in face.data.polygons])
+face_sd1, report["subdivH"] = subdiv.subdivide_mask(face, _pm)
+report["gates"]["G5_H"] = SEAL.seal_and_gate(face_sd1, eyes, eyeC, eyeR)
+print(f"[build:{look['id']}] subdivH {report['subdivH']} G5_H pass={report['gates']['G5_H']['pass']}", flush=True)
+stage("subdivH")
 
 # ------------------------------------------------------------------ bookkeeping
 report["counts"] = {o.name: {"verts": len(o.data.vertices), "tris": int(sum(len(p.vertices) - 2 for p in o.data.polygons)),

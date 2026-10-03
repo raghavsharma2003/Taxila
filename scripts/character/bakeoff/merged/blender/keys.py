@@ -254,6 +254,57 @@ def expression_correctives(P, D, lips_w, eyeC, head_w, corner_vids=None):
     return out
 
 
+def expression_correctives_v3(P, D, lips_w, eyeC, head_w, cfg=None, corner_vids=None):
+    """procedural-v3: emotion legibility built into the face units (CHARACTER-PIPELINE §10.1). On top of the iteration-2
+    deltas (corner up and back, nasolabial bulge, lower-lid raise, brow x1.3), the muscles that make an expression READ
+    in a still are added as smooth fields, all scaled at unit weight 1 and bounded by G2:
+      mouthSmile  : the cheek 'apple' rides up and forward (zygomaticus major bunches the malar fat), the fold deepens
+                    (a bigger bulge lateral to it), the lower lid is pushed up (the smile's own Duchenne carry-over);
+      cheekSquint : a stronger lower-lid raise and cheek lift, and crow's-feet bunching (skin lateral to the outer
+                    canthus slides toward it), the Duchenne marker;
+      eyeSquint   : extra lower-lid raise (the focused 'listening' squint);
+      browDown    : corrugator: the inner brow heads pulled toward the midline (the knit), procerus at the nasal root;
+      browInnerUp : the inner third raised more than the middle (the oblique 'concern' brow)."""
+    c = dict(apple=0.0030, appleFwd=0.0016, fold=0.0019, smileLid=0.0009, lid=0.0016, pad=0.0024, crow=0.0010,
+             squintLid=0.0007, knit=0.0018, knitDown=0.0008, procerus=0.0009, innerUp=0.0016)
+    c.update(cfg or {})
+    out = expression_correctives(P, D, lips_w, eyeC, head_w, corner_vids=corner_vids)
+    g = lambda q, r: np.exp(-(np.linalg.norm(P - q, axis=1) / r) ** 2) * head_w
+    up, fwd = np.array([0, 0, 1.0]), np.array([0, -1.0, 0])
+    eR = abs(eyeC["L"][0] - eyeC["R"][0]) * 0.26          # ~ eye radius from the eye spacing
+    for S in ("Left", "Right"):
+        sg = side_of(D, "mouthSmile" + S, P)
+        e = eyeC["L"] if sg > 0 else eyeC["R"]
+        apple = g(e + np.array([sg * 0.012, -0.016, -0.031]), 0.015)
+        lid = g(e + np.array([sg * 0.002, -0.010, -0.010]), 0.006)
+        fold = g(e + np.array([sg * 0.020, -0.020, -0.052]), 0.010)
+        side_out = np.array([sg * 1.0, 0, 0])
+        out["mouthSmile" + S] = out["mouthSmile" + S] + apple[:, None] * (up * c["apple"] + fwd * c["appleFwd"] + side_out * 0.0004) \
+            + fold[:, None] * (fwd * c["fold"] * 0.8 + side_out * c["fold"] * 0.5) + lid[:, None] * up * c["smileLid"]
+        sq = side_of(D, "cheekSquint" + S, P)
+        e2 = eyeC["L"] if sq > 0 else eyeC["R"]
+        lowlid = g(e2 + np.array([0, -0.009, -0.009]), 0.007)
+        pad = g(e2 + np.array([sq * 0.008, -0.013, -0.026]), 0.014)
+        crow = g(e2 + np.array([sq * (eR + 0.009), -0.001, -0.001]), 0.008)
+        out["cheekSquint" + S] = out["cheekSquint" + S] + lowlid[:, None] * up * c["lid"] + pad[:, None] * (up * c["pad"] + fwd * 0.0008) \
+            + crow[:, None] * (np.array([-sq * c["crow"], 0, c["crow"] * 0.4]))
+        es = side_of(D, "eyeSquint" + S, P)
+        e3 = eyeC["L"] if es > 0 else eyeC["R"]
+        out["eyeSquint" + S] = out["eyeSquint" + S] + g(e3 + np.array([0, -0.009, -0.009]), 0.006)[:, None] * up * c["squintLid"]
+        bd = side_of(D, "browDown" + S, P)
+        e4 = eyeC["L"] if bd > 0 else eyeC["R"]
+        inner = g(e4 + np.array([-bd * 0.012, -0.019, 0.016]), 0.009)
+        mid = 0.5 * (eyeC["L"] + eyeC["R"])
+        proc = g(mid + np.array([0, -0.024, 0.006]), 0.008) * 0.5
+        out["browDown" + S] = out["browDown" + S] + inner[:, None] * np.array([-bd * c["knit"], 0, -c["knitDown"]]) \
+            + proc[:, None] * np.array([0, 0, -c["procerus"]])
+    mid = 0.5 * (eyeC["L"] + eyeC["R"])
+    innerL = g(eyeC["L"] + np.array([-0.011, -0.019, 0.018]), 0.008)
+    innerR = g(eyeC["R"] + np.array([0.011, -0.019, 0.018]), 0.008)
+    out["browInnerUp"] = out["browInnerUp"] + (innerL + innerR)[:, None] * up * c["innerUp"]
+    return out
+
+
 def mirror_error_topo(dL, dR, mir_idx, valid):
     """Max |L - mirror(R)| over vertices whose topological twin is known (mir_idx >= 0)."""
     sel = np.nonzero(valid & (mir_idx >= 0))[0]

@@ -1,0 +1,291 @@
+{
+  "id": "teal",
+  "design": "TEACHER-VISUAL 4.3 row 1 (F, MST 6). Bake-off MERGED (VERDICT.md): ai-portrait-wrap identity (wrap + fit loop to the generated reference set refs/teal, projected de-lit skin) on procedural-v3's expression build, curve hair and relaxed garments. Owner target mid-30s. The look carries no name; the child names the teacher.",
+  "seed": 11,
+  "macros": {
+    "gender": 0,
+    "age": 0.569,
+    "muscle": 0.5,
+    "weight": 0.45,
+    "proportions": 0.6,
+    "cupsize": 0.45,
+    "firmness": 0.5,
+    "race": {
+      "caucasian": 0.6,
+      "african": 0.18,
+      "asian": 0.22
+    }
+  },
+  "targets": {
+    "head-oval": 0.5,
+    "head-scale-horiz-decr": 0.15,
+    "chin-width-decr": 0.3,
+    "chin-prominent-incr": 0.1,
+    "chin-height-decr": 0.1,
+    "l-cheek-bones-incr": 0.25,
+    "r-cheek-bones-incr": 0.22,
+    "nose-nostrils-width-incr": 0.25,
+    "nose-point-width-incr": 0.2,
+    "nose-scale-horiz-incr": 0.1,
+    "nose-volume-incr": 0.1,
+    "mouth-cupidsbow-incr": 0.2,
+    "l-eye-scale-incr": 0.18,
+    "r-eye-scale-incr": 0.18,
+    "l-eye-height2-incr": 0.15,
+    "r-eye-height2-incr": 0.13,
+    "l-eye-epicanthus-out": 0.2,
+    "r-eye-epicanthus-out": 0.2,
+    "eyebrows-angle-up": 0.15,
+    "l-eye-trans-up": 0.04,
+    "r-cheek-volume-incr": 0.06,
+    "mouth-dimples-in": 0.15,
+    "l-cheek-inner-decr": 0.15,
+    "r-cheek-inner-decr": 0.15,
+    "mouth-lowerlip-volume-decr": 0.15
+  },
+  "headScale": 1.03,
+  "skin": {
+    "base": "#C99366",
+    "shade": "#B07E55",
+    "lip": "#9A4E44",
+    "mst": 6,
+    "flush": 0.04,
+    "albedoGain": [
+      1.1581,
+      1.2857,
+      1.5613
+    ],
+    "lipCoverage": 0.4,
+    "lipDesat": 0.2,
+    "_note": "albedo = MST hex x albedoGain (solved by scripts/character/g9.mjs --solve); base/shade/lip hex are design colours whose RATIOS are kept"
+  },
+  "eyes": {
+    "iris": "#4A2E1C"
+  },
+  "brows": "eyebrow001",
+  "browColor": "#1A120C",
+  "lashes": "eyelashes01",
+  "hair": {
+    "asset": "ponytail01",
+    "color": "#1E140F",
+    "style": "ponytail",
+    "raisePonytail": 0.04,
+    "tailTiltDeg": 12,
+    "crownVolume": 0.05,
+    "v3": {
+      "tieElevDeg": 46,
+      "volume": 0.0065,
+      "tailLength": 0.24,
+      "flyaways": 22,
+      "babyHairs": 46
+    }
+  },
+  "garment": {
+    "kind": "kurti-jacket",
+    "base": "#3E7C74",
+    "shade": "#32665F",
+    "piping": "#C2410C",
+    "jacket": "#3B5677",
+    "v3": {
+      "pocketDrop": 0.048,
+      "pocketThetaDeg": 40,
+      "openHalfDeg": 26,
+      "easeKurti": 0.0035,
+      "easeJacket": 0.009,
+      "scoop": 0.068,
+      "kurtiUnderlap": 0.3,
+      "relaxIters": 36,
+      "scoopExp": 1.2
+    }
+  },
+  "accessory": {
+    "studs": "#D4AF37"
+  },
+  "faceStyle": {
+    "smile": 0.8,
+    "headGain": 1.1,
+    "browGain": 1.1,
+    "asym": {
+      "smile": 0.05,
+      "brow": 0.04,
+      "squint": 0.03
+    },
+    "dimple": "left",
+    "restSmile": 0.03,
+    "v3mix": {
+      "_note": "procedural-v3: ARKit key = cc0 x faceunits01 unit + sum(w x MakeHuman CC0 expression unit), split by side for sided keys (build_look.py)",
+      "mouthSmile": {
+        "sided": true,
+        "cc0": 0.45,
+        "mh": [
+          [
+            "mouth-corner-puller",
+            0.75
+          ],
+          [
+            "mouth-retraction",
+            0.15
+          ]
+        ]
+      },
+      "mouthUpperUp": {
+        "sided": true,
+        "cc0": 0.6,
+        "mh": [
+          [
+            "mouth-upward-retraction",
+            0.55
+          ]
+        ]
+      },
+      "browInnerUp": {
+        "cc0": 0.6,
+        "mh": [
+          [
+            "eyebrows-left-inner-up",
+            0.6
+          ],
+          [
+            "eyebrows-right-inner-up",
+            0.6
+          ]
+        ]
+      },
+      "browDown": {
+        "sided": true,
+        "cc0": 0.6,
+        "mh": [
+          [
+            "eyebrows-{side}-down",
+            0.5
+          ]
+        ]
+      },
+      "browOuterUp": {
+        "sided": true,
+        "cc0": 0.7,
+        "mh": [
+          [
+            "eyebrows-{side}-extern-up",
+            0.5
+          ]
+        ]
+      },
+      "eyeSquint": {
+        "sided": true,
+        "cc0": 0.8,
+        "mh": [
+          [
+            "eye-{side}-slit",
+            0.2
+          ]
+        ]
+      }
+    },
+    "v3keys": {
+      "fold": 0.0012
+    },
+    "restBlink": 0.35
+  },
+  "ageYears": 34,
+  "jawCeiling": 0.55,
+  "sculpt": {
+    "_note": "mm, character axes (dx outward, dy forward, dz up); identity_sculpt.py",
+    "browRidge": [
+      0,
+      -0.6,
+      0.8
+    ],
+    "lidCrease": [
+      0,
+      -0.5,
+      0.3
+    ],
+    "noseBridge": [
+      0,
+      -0.3,
+      0
+    ],
+    "noseTip": [
+      0,
+      0,
+      0.8
+    ],
+    "alar": [
+      -0.8,
+      0,
+      0
+    ],
+    "upperLip": [
+      0,
+      0.5,
+      0.2
+    ],
+    "lowerLip": [
+      0,
+      -0.8,
+      0.3
+    ],
+    "mouthCorner": [
+      0,
+      -0.2,
+      0.5
+    ],
+    "cheekPad": [
+      0.4,
+      1,
+      0.6
+    ],
+    "jawAngle": [
+      -2,
+      0,
+      0.5
+    ],
+    "chin": [
+      0,
+      0.3,
+      0.6
+    ]
+  },
+  "subdivH": {
+    "mode": "rings",
+    "depth": 0.012,
+    "eyeR": 0.021,
+    "mouthX": 0.034,
+    "mouthZ": 0.019
+  },
+  "references": {
+    "used": true,
+    "set": "art/character/bakeoff/merged/refs/teal",
+    "landmarks": "art/character/bakeoff/merged/refs/teal/landmarks.json",
+    "from": "ai-portrait-wrap (copied; taxila-image)"
+  },
+  "wrap": {
+    "corr": "art/character/bakeoff/merged/corr.json",
+    "recon": "art/character/bakeoff/merged/refs/teal/recon.json",
+    "regions": "art/character/bakeoff/merged/mp_regions.json",
+    "iters": 2,
+    "maxMm": 12,
+    "smoothing": 0.01,
+    "fall0Mm": 8,
+    "fall1Mm": 35,
+    "gain": 1,
+    "correction": "art/character/bakeoff/merged/refs/teal/fit_correction.json"
+  },
+  "projection": {
+    "dir": "art/character/bakeoff/merged/refs/teal",
+    "landmarks": "art/character/bakeoff/merged/refs/teal/landmarks.json",
+    "corr": "art/character/bakeoff/merged/corr.json",
+    "regions": "art/character/bakeoff/merged/mp_regions.json",
+    "views": {
+      "front": 1,
+      "q3_left": 0.8,
+      "q3_right": 0.8,
+      "profile_left": 0.2
+    },
+    "fullWeight": 0.35,
+    "strength": 1,
+    "detailHeightM": 0.00035,
+    "detailNormal": 1
+  }
+}
