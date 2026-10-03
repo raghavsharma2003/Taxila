@@ -35,7 +35,7 @@ const FRAMES = {
   face: { dist: 0.62, dy: -0.025, fov: 20 },
   mouth: { dist: 0.42, dy: -0.06, fov: 16 },
   // merged: the profile camera (identity/profile.py silhouette landmarks): head to upper chest, the chin-neck line in frame
-  profile: { dist: 0.95, dy: -0.07, fov: 20 },
+  profile: { dist: 1.2, dy: -0.06, fov: 20 },
 };
 function frame(name = "bust", yawDeg = 0) {
   const f = FRAMES[name];

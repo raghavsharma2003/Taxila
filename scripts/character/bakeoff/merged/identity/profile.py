@@ -19,9 +19,22 @@ from PIL import Image, ImageDraw
 from scipy import ndimage
 
 
-def silhouette(img):
+def silhouette(img, bg_hex=None):
     a = np.asarray(img.convert("RGB")).astype(np.float32) / 255
     h, w = a.shape[:2]
+    if bg_hex:              # our renders: a known, flat backdrop colour
+        if bg_hex == "auto":   # the most common border colour (the flat backdrop after tone mapping)
+            bd = np.round(np.concatenate([a[:4].reshape(-1, 3), a[:, -4:].reshape(-1, 3), a[:, :4].reshape(-1, 3)]) * 255).astype(int)
+            u, c = np.unique(bd, axis=0, return_counts=True)
+            bgc = u[np.argmax(c)] / 255.0
+        else:
+            bgc = np.array([int(bg_hex[i:i + 2], 16) for i in (1, 3, 5)], np.float32) / 255
+        fg = np.linalg.norm(a - bgc, axis=-1) > 0.04
+        fg = ndimage.binary_opening(fg, iterations=2)
+        lab, n = ndimage.label(fg)
+        if n > 1:
+            fg = lab == (1 + int(np.argmax(ndimage.sum(fg, lab, range(1, n + 1)))))
+        return ndimage.binary_fill_holes(fg)
     # the backdrop has a soft gradient (a generated studio sweep): fit a robust quadratic in (x, y) per channel to the
     # frame's border band (left, right, top), trimming outliers (hair or cloth touching the border), and threshold the
     # residual; a single border-median colour put half the shaded backdrop into the foreground (measured on a profile)
@@ -47,8 +60,8 @@ def silhouette(img):
     return ndimage.binary_fill_holes(fg)
 
 
-def analyse(img, nose="right", sigma=2.0, top_frac=0.62):
-    fg = silhouette(img)
+def analyse(img, nose="right", sigma=2.0, top_frac=0.62, bg_hex=None):
+    fg = silhouette(img, bg_hex)
     h, w = fg.shape
     f = np.full(h, np.nan)
     for y in range(h):
@@ -125,10 +138,10 @@ def debug(img, R, fs, nose, path):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("img"); ap.add_argument("--nose", default="right"); ap.add_argument("--out"); ap.add_argument("--debug")
+    ap.add_argument("img"); ap.add_argument("--nose", default="right"); ap.add_argument("--out"); ap.add_argument("--debug"); ap.add_argument("--bg")
     a = ap.parse_args()
     img = Image.open(a.img)
-    R, fg, fs = analyse(img, a.nose)
+    R, fg, fs = analyse(img, a.nose, bg_hex=a.bg)
     if a.debug:
         debug(img, R, fs, a.nose, a.debug)
     if a.out:

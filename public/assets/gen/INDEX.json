@@ -344,10 +344,31 @@
       "references": [
         "bg/home-young-wide"
       ],
-      "status": "failed",
-      "date": "2026-10-03T07:12:57Z",
-      "notes": "Machine size, hue and wrap checks passed, but a visible leaf-shadow/floor discontinuity remained at the loop seam after three attempts. Best panorama retained in scratch, not shipped.",
-      "attempts": 3
+      "status": "done",
+      "date": "2026-10-03T16:19:20Z",
+      "notes": "Rebuilt 2026-10-03. The images API did not keep outpaint context (the kept region drifted by mean |diff| 15-31), so the seam was built in pixels instead. Three generated panels (1: neem end, 2: tap and bucket, 3: plain wall) were joined by quilting, with the loop seam cut through the neem trunk. Wrap check: column step across the loop 3.92 vs typical interior column step 3.15; assetkit edgeWrapDiff 3.8 (limit 18). Looked at rolled by half (seam at centre): no visible seam.",
+      "attempts": 4,
+      "model": "taxila-image (gpt-image-2)",
+      "ocr": "visual",
+      "width": 4800,
+      "height": 1200,
+      "bytes": 852846,
+      "sha256": "9ffac62c8bde64a7b399287605066a7b11e7126bfb39678810e1c5fd6799b4c1",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          4800,
+          1200
+        ],
+        "mode": "RGB",
+        "bytes": 852846,
+        "lampHueShare": 0.0,
+        "edgeWrapDiff": 3.8,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "bg/ask-wide": {
       "path": "public/assets/gen/bg/ask-wide.webp",
@@ -9152,15 +9173,14 @@
       "sha256": "f8ed7ea3c619599529d71132506aef01a4280dd40743e0a994f47c14b8b4f94d"
     }
   },
-  "updatedAt": "2026-10-03T16:14:47Z",
+  "updatedAt": "2026-10-03T16:19:20Z",
   "summary": {
     "pending": 0,
-    "done": 397,
+    "done": 398,
     "skipped": 1,
-    "failed": 1
+    "failed": 0
   },
   "skipped": [
-    "bg/garden-panorama",
     "bg/who-phone"
   ]
 }
