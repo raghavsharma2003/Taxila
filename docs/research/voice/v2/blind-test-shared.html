@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher Voice Blind Test</title>
+<style>
+:root{
+  --bg:#f7f6f3;--panel:#ffffff;--fg:#1d1c1a;--mut:#6b6862;--line:#e3e0da;--accent:#2f5d8a;--accent-fg:#ffffff;
+  --ok:#2e7d4f;--warn:#9a5b00;--chip:#efece6;--focus:#7aa7d6;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#161614;--panel:#201f1d;--fg:#ecebe7;--mut:#a3a09a;--line:#34322e;--accent:#7fb0e0;--accent-fg:#0d1a26;
+    --ok:#6cc596;--warn:#e0a24a;--chip:#2a2926;--focus:#7fb0e0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161614;--panel:#201f1d;--fg:#ecebe7;--mut:#a3a09a;--line:#34322e;--accent:#7fb0e0;--accent-fg:#0d1a26;
+  --ok:#6cc596;--warn:#e0a24a;--chip:#2a2926;--focus:#7fb0e0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;padding:16px}
+main{max-width:760px;margin:0 auto}
+h1{font-size:1.35rem;margin:.2rem 0 .4rem}
+h2{font-size:1rem;margin:0 0 .5rem}
+p,li{color:var(--mut)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--mut)}
+input[type=text],select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px;width:100%}
+button{font:inherit;border-radius:8px;border:1px solid var(--line);background:var(--chip);color:var(--fg);padding:7px 12px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.blocks button.on{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.bar{height:6px;background:var(--chip);border-radius:3px;overflow:hidden;flex:1;min-width:120px}
+.bar>i{display:block;height:100%;background:var(--ok);width:0}
+.clip{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+.clip.done{border-color:var(--ok)}
+.clip header{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:600;letter-spacing:.04em}
+.tag{font-size:.8rem;color:var(--mut)}
+.play{display:flex;gap:10px;align-items:center;margin:8px 0}
+.play button{min-width:84px}
+.prog{flex:1;height:6px;background:var(--chip);border-radius:3px;overflow:hidden}
+.prog>i{display:block;height:100%;background:var(--accent);width:0}
+.axes{display:grid;grid-template-columns:1fr;gap:6px;margin-top:6px}
+.ax{display:grid;grid-template-columns:minmax(120px,170px) 1fr 34px;gap:8px;align-items:center}
+.ax span.n{font-size:.88rem}
+.ax output{font-variant-numeric:tabular-nums;text-align:right;color:var(--mut)}
+.ax.set output{color:var(--fg);font-weight:600}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.ax:not(.set) input[type=range]{opacity:.55}
+.real{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.real button.on{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.locked{font-size:.82rem;color:var(--warn)}
+.note{margin-top:8px}
+.small{font-size:.82rem;color:var(--mut)}
+.warn{color:var(--warn)}
+@media (max-width:520px){.ax{grid-template-columns:1fr 34px}.ax span.n{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Teacher voice: blind listening test</h1>
+  <p>You will hear short clips of a teacher talking to a child, in Hinglish, Hindi and English. Every clip has a random
+  code, and the codes say nothing about where a clip came from. Listen to each clip to the end, then rate it.</p>
+
+  <section class="panel">
+    <h2>How to rate</h2>
+    <ul>
+      <li><b>Native Indian</b>: does this sound like someone who grew up speaking here, not a foreigner speaking Hindi? (1 = clearly foreign, 5 = clearly native)</li>
+      <li><b>Natural</b>: does the speech flow like a person talking, with natural rhythm and pauses? (1 = mechanical, 5 = fully natural)</li>
+      <li><b>Warmth</b>: would a child feel this teacher is kind and patient with them? (1 = cold, 5 = very warm)</li>
+      <li><b>Hindi pronunciation</b>: are the Hindi words (and Hindi-accented English words) pronounced the way people here say them? (1 = many errors, 5 = perfect)</li>
+      <li><b>Real person?</b>: your best guess. Clips come from different sources.</li>
+    </ul>
+    <p class="small">Use headphones in a quiet room. Do not replay a clip many times before rating; first impressions are what we need. Some clips are deliberately poor-quality checks; rate them honestly too.</p>
+  </section>
+
+  <section class="panel" id="who">
+    <h2>About you</h2>
+    <div class="grid">
+      <label class="f">Listener ID <input type="text" id="rid" autocomplete="off" placeholder="auto"></label>
+      <label class="f">You are
+        <select id="role"><option value="">choose</option><option>parent</option><option>teacher</option><option>other adult</option><option>team member</option></select></label>
+      <label class="f">Hindi is my first language
+        <select id="l1"><option value="">choose</option><option>yes</option><option>no, but fluent</option><option>no</option></select></label>
+      <label class="f">State or city <input type="text" id="region" autocomplete="off"></label>
+      <label class="f">Listening on
+        <select id="dev"><option value="">choose</option><option>headphones</option><option>laptop speakers</option><option>phone speaker</option></select></label>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Choose a block</h2>
+    <p class="small">Blocks 1-10 take about 15 minutes each and the shortlist about 30. Do one block per sitting. Your ratings save as you go, to this browser and (when signed in) to a private record only the study owner can read.</p>
+    <div class="row blocks" id="blocks"></div>
+    <div class="row" style="margin-top:10px">
+      <div class="bar"><i id="pbar"></i></div><span class="small" id="ptext"></span>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="next">Next unrated clip</button>
+      <button class="primary" id="exp" hidden>Export ratings (JSON)</button>
+      <button id="copy">Copy JSON</button>
+      <label class="small"><input type="file" id="imp" accept="application/json" style="display:none"><span style="text-decoration:underline;cursor:pointer">Import</span></label>
+      <button id="reset">Reset</button>
+    </div>
+    <p class="small" id="status"></p>
+  </section>
+
+  <section id="list" aria-live="polite"></section>
+  <p class="small" id="foot"></p>
+</main>
+
+<script>
+const M = {"v": "taxila-blind-v2", "audience": "external", "target_lufs": -26.0, "passages": {"a": "Hinglish greeting with a memory callback", "b": "Hinglish: equivalent fractions with a pizza, then a question", "c": "Pure Hindi for a class-3 child", "d": "Indian English with teacher warmth", "e": "Praise moment, then a gentle correction"}, "blocks": {"B1": 31, "B10": 30, "B2": 31, "B3": 30, "B4": 29, "B5": 28, "B6": 30, "B7": 30, "B8": 29, "B9": 30, "S": 59}, "clips": [{"c": "CAA9Y", "p": "d", "b": "B1", "g": -1.6}, {"c": "UWY7R", "p": "a", "b": "B1", "g": -5.6}, {"c": "WFKDC", "p": "d", "b": "B1", "g": -3.6}, {"c": "L4XPM", "p": "b", "b": "B1", "g": -1.5}, {"c": "EJPJP", "p": "e", "b": "B1", "g": -7.4}, {"c": "FVPVF", "p": "b", "b": "B1", "g": -9.5}, {"c": "RV7WE", "p": "e", "b": "B1", "g": -9.3}, {"c": "4F73D", "p": "c", "b": "B1", "g": -3.3}, {"c": "HV3TF", "p": "b", "b": "B1", "g": 5.0}, {"c": "MWNAA", "p": "d", "b": "B1", "g": -8.7}, {"c": "TUFYK", "p": "e", "b": "B1", "g": -1.9}, {"c": "CEJNY", "p": "b", "b": "B1", "g": -8.5}, {"c": "RAVTE", "p": "b", "b": "B1", "g": -2.3}, {"c": "VMV7Y", "p": "e", "b": "B1", "g": -5.7}, {"c": "T7P9H", "p": "a", "b": "B1", "g": -8.3}, {"c": "N7HCY", "p": "e", "b": "B1", "g": -1.7}, {"c": "CKTCV", "p": "a", "b": "B1", "g": -3.1}, {"c": "JDKDV", "p": "c", "b": "B1", "g": -4.5}, {"c": "APHC7", "p": "d", "b": "B1", "g": -1.9}, {"c": "7MYEX", "p": "d", "b": "B1", "g": -1.9}, {"c": "XDEYR", "p": "b", "b": "B1", "g": -1.9}, {"c": "3X74F", "p": "a", "b": "B1", "g": 5.3}, {"c": "7TEDH", "p": "c", "b": "B1", "g": -6.9}, {"c": "V4L33", "p": "c", "b": "B1", "g": -1.5}, {"c": "KY9EV", "p": "b", "b": "B1", "g": -5.6}, {"c": "HCDLP", "p": "e", "b": "B1", "g": -6.2}, {"c": "99RXV", "p": "c", "b": "B1", "g": -6.0}, {"c": "FLJDF", "p": "d", "b": "B1", "g": -1.8}, {"c": "VMUNH", "p": "a", "b": "B1", "g": -1.8}, {"c": "XM9HN", "p": "a", "b": "B1", "g": -4.9}, {"c": "WNLDD", "p": "b", "b": "B1", "g": -2.3}, {"c": "AMHCA", "p": "c", "b": "B10", "g": -1.7}, {"c": "PNVPE", "p": "e", "b": "B10", "g": -1.6}, {"c": "VENLE", "p": "a", "b": "B10", "g": -2.2}, {"c": "LDJDR", "p": "b", "b": "B10", "g": -5.3}, {"c": "UTYFK", "p": "a", "b": "B10", "g": -4.1}, {"c": "M93TE", "p": "c", "b": "B10", "g": -5.0}, {"c": "JTCPP", "p": "c", "b": "B10", "g": -9.0}, {"c": "4WYF3", "p": "a", "b": "B10", "g": -3.2}, {"c": "APCNP", "p": "b", "b": "B10", "g": -2.8}, {"c": "DWNHF", "p": "a", "b": "B10", "g": -1.6}, {"c": "UMNUN", "p": "d", "b": "B10", "g": -1.8}, {"c": "DPNCK", "p": "a", "b": "B10", "g": -6.0}, {"c": "YKCL7", "p": "c", "b": "B10", "g": -9.5}, {"c": "DM4PV", "p": "c", "b": "B10", "g": -1.7}, {"c": "9TPEC", "p": "d", "b": "B10", "g": -3.6}, {"c": "KP4X7", "p": "d", "b": "B10", "g": -6.0}, {"c": "WXE3H", "p": "e", "b": "B10", "g": -1.9}, {"c": "CUYNA", "p": "a", "b": "B10", "g": -6.1}, {"c": "YDTFY", "p": "c", "b": "B10", "g": -10.0}, {"c": "K99DU", "p": "a", "b": "B10", "g": -5.5}, {"c": "TAUW9", "p": "d", "b": "B10", "g": -1.5}, {"c": "VFAPE", "p": "c", "b": "B10", "g": -8.5}, {"c": "UJR7U", "p": "a", "b": "B10", "g": -3.2}, {"c": "MLWVY", "p": "a", "b": "B10", "g": -1.5}, {"c": "FXERL", "p": "e", "b": "B10", "g": -4.3}, {"c": "REDPM", "p": "b", "b": "B10", "g": -1.6}, {"c": "KV9XU", "p": "b", "b": "B10", "g": -1.7}, {"c": "4WPWY", "p": "a", "b": "B10", "g": -1.9}, {"c": "UD7AY", "p": "b", "b": "B10", "g": -2.7}, {"c": "9TPCC", "p": "a", "b": "B10", "g": -6.0}, {"c": "E9YUW", "p": "b", "b": "B2", "g": -5.4}, {"c": "EHK3T", "p": "e", "b": "B2", "g": -5.9}, {"c": "FDKYC", "p": "b", "b": "B2", "g": -3.9}, {"c": "DDWNW", "p": "b", "b": "B2", "g": -2.3}, {"c": "HD7LE", "p": "b", "b": "B2", "g": -7.8}, {"c": "TDWM4", "p": "a", "b": "B2", "g": -7.2}, {"c": "EYX99", "p": "b", "b": "B2", "g": -5.7}, {"c": "EECUN", "p": "a", "b": "B2", "g": -8.9}, {"c": "3FUME", "p": "b", "b": "B2", "g": -1.6}, {"c": "PHY44", "p": "e", "b": "B2", "g": -2.8}, {"c": "D4WTD", "p": "e", "b": "B2", "g": -1.8}, {"c": "EJPW4", "p": "e", "b": "B2", "g": -1.6}, {"c": "Y7UUU", "p": "b", "b": "B2", "g": -1.6}, {"c": "H3EPX", "p": "b", "b": "B2", "g": -5.3}, {"c": "JDP3R", "p": "e", "b": "B2", "g": -9.2}, {"c": "LVA7H", "p": "a", "b": "B2", "g": -1.9}, {"c": "KUY49", "p": "b", "b": "B2", "g": -7.1}, {"c": "DAC94", "p": "c", "b": "B2", "g": -1.5}, {"c": "JKH4P", "p": "d", "b": "B2", "g": -8.5}, {"c": "97VRC", "p": "a", "b": "B2", "g": -5.3}, {"c": "RJCRJ", "p": "d", "b": "B2", "g": -1.8}, {"c": "L7LDD", "p": "e", "b": "B2", "g": -6.9}, {"c": "7NUXJ", "p": "c", "b": "B2", "g": -7.6}, {"c": "CFUTL", "p": "e", "b": "B2", "g": -6.7}, {"c": "XCHRR", "p": "c", "b": "B2", "g": -2.5}, {"c": "TUFAC", "p": "c", "b": "B2", "g": 4.4}, {"c": "PKEDR", "p": "a", "b": "B2", "g": -4.1}, {"c": "4A3NP", "p": "d", "b": "B2", "g": 6.4}, {"c": "HAMWD", "p": "b", "b": "B2", "g": -1.6}, {"c": "PN3XV", "p": "c", "b": "B2", "g": -3.6}, {"c": "9FWNA", "p": "b", "b": "B2", "g": -1.6}, {"c": "FP7LT", "p": "a", "b": "B3", "g": -6.1}, {"c": "CMT34", "p": "e", "b": "B3", "g": -0.9}, {"c": "R4FDA", "p": "a", "b": "B3", "g": -1.6}, {"c": "P3N9M", "p": "c", "b": "B3", "g": -1.6}, {"c": "R3J9N", "p": "b", "b": "B3", "g": -9.4}, {"c": "TLUDU", "p": "d", "b": "B3", "g": 4.5}, {"c": "R9XER", "p": "c", "b": "B3", "g": -7.0}, {"c": "VAFYL", "p": "a", "b": "B3", "g": 3.2}, {"c": "CPF9A", "p": "a", "b": "B3", "g": -1.8}, {"c": "EEPYD", "p": "b", "b": "B3", "g": -5.9}, {"c": "HHJVW", "p": "e", "b": "B3", "g": -1.6}, {"c": "7XL4U", "p": "b", "b": "B3", "g": -3.9}, {"c": "D7V9X", "p": "a", "b": "B3", "g": -1.7}, {"c": "HMWDM", "p": "d", "b": "B3", "g": -6.8}, {"c": "WFHRC", "p": "d", "b": "B3", "g": -5.2}, {"c": "YKNFR", "p": "a", "b": "B3", "g": -6.1}, {"c": "RXJT3", "p": "c", "b": "B3", "g": -5.7}, {"c": "JLWNX", "p": "c", "b": "B3", "g": -7.1}, {"c": "RMAEW", "p": "c", "b": "B3", "g": -1.7}, {"c": "HTKC9", "p": "a", "b": "B3", "g": -1.8}, {"c": "JYTWY", "p": "e", "b": "B3", "g": -6.1}, {"c": "X3WR7", "p": "e", "b": "B3", "g": -2.3}, {"c": "XCNHC", "p": "e", "b": "B3", "g": -4.2}, {"c": "JR3A7", "p": "a", "b": "B3", "g": -1.8}, {"c": "AYNLK", "p": "c", "b": "B3", "g": -2.3}, {"c": "DJ7EV", "p": "d", "b": "B3", "g": -7.2}, {"c": "7T3DP", "p": "e", "b": "B3", "g": -1.4}, {"c": "4C9NH", "p": "b", "b": "B3", "g": -1.6}, {"c": "WY44P", "p": "d", "b": "B3", "g": 1.3}, {"c": "VEKKE", "p": "c", "b": "B3", "g": -2.3}, {"c": "LXNWP", "p": "a", "b": "B4", "g": -1.7}, {"c": "CFV3P", "p": "d", "b": "B4", "g": -1.8}, {"c": "4JM4T", "p": "a", "b": "B4", "g": -1.8}, {"c": "ANNLW", "p": "e", "b": "B4", "g": -1.6}, {"c": "LJJEE", "p": "b", "b": "B4", "g": -5.1}, {"c": "7PJRE", "p": "d", "b": "B4", "g": -1.8}, {"c": "EC9L9", "p": "d", "b": "B4", "g": -2.2}, {"c": "7ARYU", "p": "d", "b": "B4", "g": -3.1}, {"c": "JL7EA", "p": "b", "b": "B4", "g": -4.9}, {"c": "PADFT", "p": "a", "b": "B4", "g": -1.4}, {"c": "JAFYR", "p": "c", "b": "B4", "g": -6.2}, {"c": "TJDF7", "p": "b", "b": "B4", "g": -1.6}, {"c": "4ECNX", "p": "b", "b": "B4", "g": -6.3}, {"c": "T3PRE", "p": "a", "b": "B4", "g": -3.6}, {"c": "NRYUA", "p": "c", "b": "B4", "g": -4.3}, {"c": "PXYM9", "p": "e", "b": "B4", "g": -1.8}, {"c": "DLHKT", "p": "a", "b": "B4", "g": -9.4}, {"c": "4YATW", "p": "d", "b": "B4", "g": -5.1}, {"c": "KPJAE", "p": "d", "b": "B4", "g": -1.9}, {"c": "UM9J3", "p": "c", "b": "B4", "g": -7.6}, {"c": "97JRJ", "p": "d", "b": "B4", "g": -5.0}, {"c": "RNYML", "p": "d", "b": "B4", "g": -1.6}, {"c": "7MJNT", "p": "a", "b": "B4", "g": -8.5}, {"c": "DACKL", "p": "b", "b": "B4", "g": -11.4}, {"c": "77UAP", "p": "b", "b": "B4", "g": -9.7}, {"c": "LLAYM", "p": "a", "b": "B4", "g": -5.8}, {"c": "WY7K3", "p": "d", "b": "B4", "g": -2.8}, {"c": "MHJ7U", "p": "e", "b": "B4", "g": -5.8}, {"c": "DTRJR", "p": "d", "b": "B4", "g": -2.8}, {"c": "4FCJE", "p": "c", "b": "B5", "g": -8.6}, {"c": "E3D4U", "p": "e", "b": "B5", "g": -4.4}, {"c": "U7UW4", "p": "d", "b": "B5", "g": -9.6}, {"c": "JRWYH", "p": "e", "b": "B5", "g": -2.4}, {"c": "X4NMW", "p": "b", "b": "B5", "g": -6.2}, {"c": "NUF4U", "p": "d", "b": "B5", "g": -5.4}, {"c": "NJ3PD", "p": "e", "b": "B5", "g": -1.8}, {"c": "M4YAR", "p": "d", "b": "B5", "g": -2.6}, {"c": "ANYFT", "p": "a", "b": "B5", "g": -1.5}, {"c": "3RW7W", "p": "c", "b": "B5", "g": -5.2}, {"c": "MKJYE", "p": "c", "b": "B5", "g": -8.6}, {"c": "VJC3N", "p": "b", "b": "B5", "g": -2.3}, {"c": "CVYP3", "p": "d", "b": "B5", "g": -1.5}, {"c": "VKYHN", "p": "b", "b": "B5", "g": -5.4}, {"c": "49H97", "p": "c", "b": "B5", "g": -9.1}, {"c": "KKFH3", "p": "e", "b": "B5", "g": -1.6}, {"c": "APW7M", "p": "a", "b": "B5", "g": -6.1}, {"c": "EYAKD", "p": "a", "b": "B5", "g": -2.6}, {"c": "XML7D", "p": "d", "b": "B5", "g": -1.6}, {"c": "TCKT9", "p": "a", "b": "B5", "g": -10.6}, {"c": "ERDRW", "p": "a", "b": "B5", "g": -2.2}, {"c": "MA7RV", "p": "c", "b": "B5", "g": -5.4}, {"c": "XDRLH", "p": "d", "b": "B5", "g": -1.6}, {"c": "9FDKH", "p": "c", "b": "B5", "g": -1.7}, {"c": "N7TM3", "p": "d", "b": "B5", "g": -5.1}, {"c": "AUAXR", "p": "e", "b": "B5", "g": -1.7}, {"c": "UMA9R", "p": "a", "b": "B5", "g": -4.9}, {"c": "WHDLH", "p": "d", "b": "B5", "g": -5.1}, {"c": "PEFAD", "p": "b", "b": "B6", "g": -1.9}, {"c": "ANLNE", "p": "b", "b": "B6", "g": -9.2}, {"c": "3VUN9", "p": "c", "b": "B6", "g": -5.5}, {"c": "XXA7M", "p": "b", "b": "B6", "g": -7.0}, {"c": "4U9HT", "p": "b", "b": "B6", "g": -1.6}, {"c": "HXV3N", "p": "e", "b": "B6", "g": -10.3}, {"c": "4K7LM", "p": "a", "b": "B6", "g": -5.8}, {"c": "34A3L", "p": "d", "b": "B6", "g": -1.6}, {"c": "XF93N", "p": "e", "b": "B6", "g": -1.9}, {"c": "JNVLH", "p": "d", "b": "B6", "g": -4.8}, {"c": "3HNTY", "p": "e", "b": "B6", "g": -8.5}, {"c": "KWC7L", "p": "d", "b": "B6", "g": -1.7}, {"c": "CMFLT", "p": "e", "b": "B6", "g": -5.5}, {"c": "JFTYT", "p": "e", "b": "B6", "g": -5.3}, {"c": "4KK9U", "p": "b", "b": "B6", "g": -5.3}, {"c": "PDJ4M", "p": "e", "b": "B6", "g": -1.8}, {"c": "CUW7J", "p": "c", "b": "B6", "g": -1.6}, {"c": "AVKVX", "p": "c", "b": "B6", "g": -4.0}, {"c": "TDKAD", "p": "a", "b": "B6", "g": -5.4}, {"c": "JTP9C", "p": "d", "b": "B6", "g": -8.8}, {"c": "NMV7P", "p": "a", "b": "B6", "g": -4.7}, {"c": "7D9C7", "p": "c", "b": "B6", "g": -1.8}, {"c": "9FR7M", "p": "a", "b": "B6", "g": -5.8}, {"c": "VF9PW", "p": "c", "b": "B6", "g": -1.6}, {"c": "FMKWM", "p": "d", "b": "B6", "g": -1.5}, {"c": "XXXYX", "p": "d", "b": "B6", "g": -7.9}, {"c": "UAANA", "p": "c", "b": "B6", "g": -6.6}, {"c": "PUT7Y", "p": "d", "b": "B6", "g": -1.1}, {"c": "EV949", "p": "b", "b": "B6", "g": -2.7}, {"c": "MNEUD", "p": "d", "b": "B6", "g": -7.9}, {"c": "UNCM7", "p": "d", "b": "B7", "g": -7.5}, {"c": "APV3H", "p": "a", "b": "B7", "g": -1.8}, {"c": "7N3E4", "p": "b", "b": "B7", "g": -1.6}, {"c": "9C34A", "p": "c", "b": "B7", "g": -5.2}, {"c": "CCWCN", "p": "c", "b": "B7", "g": -1.6}, {"c": "VVJEA", "p": "e", "b": "B7", "g": -7.4}, {"c": "R3M3J", "p": "b", "b": "B7", "g": -4.2}, {"c": "9EPWV", "p": "a", "b": "B7", "g": -1.8}, {"c": "FXDYW", "p": "b", "b": "B7", "g": -7.2}, {"c": "H3MMA", "p": "c", "b": "B7", "g": -1.6}, {"c": "ND9F4", "p": "e", "b": "B7", "g": -5.5}, {"c": "EARLA", "p": "d", "b": "B7", "g": -7.1}, {"c": "LCW3M", "p": "c", "b": "B7", "g": -1.7}, {"c": "LHL79", "p": "a", "b": "B7", "g": -7.2}, {"c": "33KYN", "p": "c", "b": "B7", "g": -3.1}, {"c": "RUTUF", "p": "a", "b": "B7", "g": -1.6}, {"c": "RYUMP", "p": "b", "b": "B7", "g": -1.7}, {"c": "Y9AEL", "p": "c", "b": "B7", "g": -4.0}, {"c": "ADNND", "p": "e", "b": "B7", "g": -5.2}, {"c": "EA4ET", "p": "c", "b": "B7", "g": -5.4}, {"c": "CPHKU", "p": "b", "b": "B7", "g": 2.8}, {"c": "MT3P3", "p": "d", "b": "B7", "g": -6.8}, {"c": "HNJR9", "p": "e", "b": "B7", "g": 3.6}, {"c": "DJP3C", "p": "a", "b": "B7", "g": -5.4}, {"c": "V4DCV", "p": "d", "b": "B7", "g": -4.3}, {"c": "MMPLJ", "p": "d", "b": "B7", "g": -6.4}, {"c": "AL7FC", "p": "b", "b": "B7", "g": -2.7}, {"c": "YDHVE", "p": "e", "b": "B7", "g": -1.6}, {"c": "FEL4J", "p": "c", "b": "B7", "g": -3.6}, {"c": "CYJRJ", "p": "a", "b": "B7", "g": -1.8}, {"c": "4T4LJ", "p": "e", "b": "B8", "g": -8.3}, {"c": "JKX7W", "p": "e", "b": "B8", "g": -8.1}, {"c": "3HRVY", "p": "d", "b": "B8", "g": -1.8}, {"c": "MWNAL", "p": "c", "b": "B8", "g": -5.8}, {"c": "9LAPV", "p": "d", "b": "B8", "g": -8.1}, {"c": "JLTKT", "p": "b", "b": "B8", "g": -1.5}, {"c": "NJLNE", "p": "c", "b": "B8", "g": -4.3}, {"c": "XNJWR", "p": "b", "b": "B8", "g": -5.4}, {"c": "AD7JV", "p": "e", "b": "B8", "g": -7.2}, {"c": "NYU4E", "p": "c", "b": "B8", "g": -1.7}, {"c": "TTXLA", "p": "a", "b": "B8", "g": -1.9}, {"c": "KL337", "p": "c", "b": "B8", "g": -8.2}, {"c": "MFWPN", "p": "e", "b": "B8", "g": -7.8}, {"c": "UP9C3", "p": "a", "b": "B8", "g": -7.0}, {"c": "J7LRP", "p": "e", "b": "B8", "g": -7.0}, {"c": "U4PAD", "p": "d", "b": "B8", "g": -6.7}, {"c": "E7AUR", "p": "e", "b": "B8", "g": -1.8}, {"c": "YNDHH", "p": "e", "b": "B8", "g": 3.6}, {"c": "XAPFL", "p": "e", "b": "B8", "g": -1.7}, {"c": "RUVDR", "p": "a", "b": "B8", "g": -9.5}, {"c": "R4PUL", "p": "a", "b": "B8", "g": -7.6}, {"c": "DLN9E", "p": "c", "b": "B8", "g": -1.6}, {"c": "9KCJU", "p": "d", "b": "B8", "g": 3.2}, {"c": "JR4FR", "p": "b", "b": "B8", "g": -6.6}, {"c": "JJFJU", "p": "b", "b": "B8", "g": -5.7}, {"c": "RLF4L", "p": "b", "b": "B8", "g": -1.6}, {"c": "ATFAC", "p": "c", "b": "B8", "g": 3.3}, {"c": "MYFAH", "p": "d", "b": "B8", "g": 1.3}, {"c": "JDNXC", "p": "d", "b": "B8", "g": 3.2}, {"c": "MJRHJ", "p": "c", "b": "B9", "g": -1.6}, {"c": "UWD79", "p": "b", "b": "B9", "g": -1.6}, {"c": "UEAC4", "p": "c", "b": "B9", "g": -1.7}, {"c": "34KJR", "p": "b", "b": "B9", "g": -6.0}, {"c": "EDCRT", "p": "c", "b": "B9", "g": -1.9}, {"c": "LFTJX", "p": "e", "b": "B9", "g": -6.4}, {"c": "RENKC", "p": "d", "b": "B9", "g": -1.8}, {"c": "MLFXN", "p": "a", "b": "B9", "g": -5.0}, {"c": "R4UUN", "p": "b", "b": "B9", "g": 0.3}, {"c": "HKTNN", "p": "c", "b": "B9", "g": -5.1}, {"c": "MFY73", "p": "e", "b": "B9", "g": -1.7}, {"c": "X3VE7", "p": "e", "b": "B9", "g": -6.7}, {"c": "UELYF", "p": "a", "b": "B9", "g": 0.9}, {"c": "D34EA", "p": "d", "b": "B9", "g": -2.3}, {"c": "RY7V7", "p": "d", "b": "B9", "g": -3.9}, {"c": "UCU7J", "p": "b", "b": "B9", "g": -1.8}, {"c": "JMD3Y", "p": "e", "b": "B9", "g": -1.7}, {"c": "3E4NY", "p": "d", "b": "B9", "g": -2.8}, {"c": "4LVPM", "p": "e", "b": "B9", "g": -9.8}, {"c": "PTFDA", "p": "b", "b": "B9", "g": -1.6}, {"c": "4FMKX", "p": "b", "b": "B9", "g": -1.6}, {"c": "EK7P7", "p": "c", "b": "B9", "g": 1.6}, {"c": "YAEV9", "p": "d", "b": "B9", "g": -1.8}, {"c": "WP4NT", "p": "b", "b": "B9", "g": -8.8}, {"c": "HFCCT", "p": "b", "b": "B9", "g": -7.2}, {"c": "K9JYP", "p": "e", "b": "B9", "g": -4.7}, {"c": "FUNYK", "p": "d", "b": "B9", "g": -5.8}, {"c": "9MTK7", "p": "e", "b": "B9", "g": -4.0}, {"c": "DCCWY", "p": "e", "b": "B9", "g": -5.8}, {"c": "KDV9W", "p": "e", "b": "B9", "g": -1.7}, {"c": "YKRHM", "p": "a", "b": "S", "g": -6.1}, {"c": "T73EP", "p": "e", "b": "S", "g": -6.1}, {"c": "3X4AW", "p": "c", "b": "S", "g": -5.1}, {"c": "W73XW", "p": "c", "b": "S", "g": -4.5}, {"c": "FNRHJ", "p": "b", "b": "S", "g": -5.3}, {"c": "JD4XW", "p": "b", "b": "S", "g": -5.4}, {"c": "KTDJ4", "p": "e", "b": "S", "g": -4.7}, {"c": "FVJ4W", "p": "a", "b": "S", "g": -6.1}, {"c": "T9URA", "p": "e", "b": "S", "g": -5.9}, {"c": "XAVPU", "p": "d", "b": "S", "g": -7.5}, {"c": "UNANR", "p": "d", "b": "S", "g": -3.6}, {"c": "DPTMH", "p": "b", "b": "S", "g": -2.3}, {"c": "X9DMU", "p": "e", "b": "S", "g": -4.3}, {"c": "HU4KV", "p": "d", "b": "S", "g": -5.8}, {"c": "WT9MY", "p": "a", "b": "S", "g": -2.2}, {"c": "RMK3W", "p": "a", "b": "S", "g": -5.8}, {"c": "XWTFT", "p": "a", "b": "S", "g": -2.6}, {"c": "LVDCL", "p": "c", "b": "S", "g": -5.5}, {"c": "LNKH4", "p": "c", "b": "S", "g": -4.0}, {"c": "TJF4F", "p": "c", "b": "S", "g": -5.4}, {"c": "CVNJE", "p": "d", "b": "S", "g": -2.3}, {"c": "DTRJN", "p": "b", "b": "S", "g": -7.2}, {"c": "PYFEW", "p": "b", "b": "S", "g": -5.6}, {"c": "ETYM3", "p": "a", "b": "S", "g": -4.1}, {"c": "MJKNN", "p": "e", "b": "S", "g": -5.7}, {"c": "4P9XE", "p": "c", "b": "S", "g": -5.0}, {"c": "MFHJF", "p": "b", "b": "S", "g": -3.9}, {"c": "HUM9V", "p": "d", "b": "S", "g": -4.3}, {"c": "4JJWT", "p": "d", "b": "S", "g": -2.8}, {"c": "DCFAE", "p": "e", "b": "S", "g": -6.9}, {"c": "HYPJ9", "p": "c", "b": "S", "g": -4.3}, {"c": "N4AM7", "p": "c", "b": "S", "g": -2.3}, {"c": "CNDU7", "p": "d", "b": "S", "g": -1.5}, {"c": "3YWEC", "p": "a", "b": "S", "g": -5.8}, {"c": "KK4LN", "p": "e", "b": "S", "g": -0.9}, {"c": "3T4VW", "p": "e", "b": "S", "g": -1.8}, {"c": "MWLT7", "p": "a", "b": "S", "g": -3.2}, {"c": "KVD3D", "p": "c", "b": "S", "g": -2.5}, {"c": "R7TWP", "p": "e", "b": "S", "g": -2.4}, {"c": "XPWMF", "p": "b", "b": "S", "g": -2.8}, {"c": "MKCXK", "p": "d", "b": "S", "g": -4.8}, {"c": "9VNFN", "p": "b", "b": "S", "g": -2.3}, {"c": "PDPWD", "p": "d", "b": "S", "g": -3.9}, {"c": "MFEAE", "p": "d", "b": "S", "g": -1.1}, {"c": "AHAAR", "p": "c", "b": "S", "g": -7.6}, {"c": "R3UCT", "p": "b", "b": "S", "g": -4.2}, {"c": "YKWJ4", "p": "a", "b": "S", "g": -3.6}, {"c": "9PPFK", "p": "b", "b": "S", "g": -5.4}, {"c": "WXALF", "p": "e", "b": "S", "g": -2.8}, {"c": "JHR3K", "p": "a", "b": "S", "g": -5.0}, {"c": "WVYAH", "p": "b", "b": "S", "g": -9.7}, {"c": "YEWM7", "p": "b", "b": "S", "g": -4.9}, {"c": "KR3MW", "p": "d", "b": "S", "g": -1.8}, {"c": "LKETD", "p": "a", "b": "S", "g": -1.8}, {"c": "YFU4N", "p": "e", "b": "S", "g": -1.6}, {"c": "L3YWD", "p": "c", "b": "S", "g": -1.6}, {"c": "J4REP", "p": "b", "b": "S", "g": -1.5}, {"c": "LRFFU", "p": "a", "b": "S", "g": -4.9}, {"c": "ATU9C", "p": "d", "b": "S", "g": -1.8}]};
+const AXES = [["native","Native Indian"],["natural","Natural"],["warmth","Warmth"],["hindi","Hindi pronunciation"]];
+const SKEY = "taxila-blind-v2:" + M.audience;
+const $ = (id) => document.getElementById(id);
+
+let mem = null, storageOk = true;
+function load(){ try{ const s = localStorage.getItem(SKEY); return s ? JSON.parse(s) : null; }catch(e){ storageOk=false; return mem; } }
+function save(){ try{ localStorage.setItem(SKEY, JSON.stringify(st)); }catch(e){ storageOk=false; mem=st; } renderStatus(); queueSync(); }
+// Shared store: each listener's ratings live in their own doc ratings/<viewer id>, readable only by them and the
+// artifact owner (rules at publish). Browser storage stays as the offline copy; the export button still works.
+let sync = null, syncTimer = null, synced = "";
+function queueSync(){ if(!sync) return; clearTimeout(syncTimer); syncTimer = setTimeout(pushSync, 1200); }
+async function pushSync(){
+  if(!sync) return; const body = JSON.stringify(exportObj()); if(body===synced) return;
+  try{ await sync.ref.set({payload: body, rated: Object.values(st.ratings).filter(complete).length}); synced = body; sync.ok = true; }
+  catch(e){ sync.ok = false; } renderStatus();
+}
+(async ()=>{
+  try{
+    const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+    if(!db || !user) return;
+    const id = await user.id(); if(!id) return;
+    const ref = db.doc("ratings/" + id);
+    const snap = await ref.get().catch(()=>null);
+    const prev = snap && snap.exists ? JSON.parse((snap.data()||{}).payload || "null") : null;
+    if(prev && prev.ratings){ for(const [c,r] of Object.entries(prev.ratings)) if(!complete(st.ratings[c]) && r) st.ratings[c] = r;
+      if(prev.rater) st.rater = Object.assign({}, prev.rater, st.rater); }
+    sync = {ref, ok: null}; renderList(); pushSync();
+  }catch(e){}
+})();
+let st = load() || {rater:{}, block:null, ratings:{}};
+
+function rnd(seed){ let h=2166136261>>>0; for(const ch of seed){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0;}
+  return ()=>{ h^=h<<13; h>>>=0; h^=h>>>17; h^=h<<5; h>>>=0; return (h>>>0)/4294967296; }; }
+function shuffled(arr, seed){ const a=arr.slice(), r=rnd(seed); for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+if(!st.rater.id){ st.rater.id = "L" + Math.random().toString(36).slice(2,8).toUpperCase(); }
+const fields = {rid:"id", role:"role", l1:"hindi_l1", region:"region", dev:"device"};
+for(const [el,k] of Object.entries(fields)){ $(el).value = st.rater[k] || ""; $(el).addEventListener("change", ()=>{ st.rater[k] = $(el).value.trim(); if(k==="id"&&!st.rater.id) st.rater.id="L"+Math.random().toString(36).slice(2,8).toUpperCase(); $("rid").value=st.rater.id; save(); if(k==="id") renderList(); }); }
+
+// gain: WebAudio when served over http(s) (boost and cut), plain volume under file:// (cut only)
+const useWA = /^https?:$/.test(location.protocol) && (window.AudioContext||window.webkitAudioContext);
+let ctx = null; const gainMode = useWA ? "webaudio" : "volume";
+const audios = {};
+function audioFor(item){
+  if(audios[item.c]) return audios[item.c];
+  const a = new Audio(); a.preload = "none"; a.src = "blind/" + item.c + ".mp3";
+  const lin = Math.pow(10, item.g/20);
+  if(useWA){ try{ ctx = ctx || new (window.AudioContext||window.webkitAudioContext)(); const s = ctx.createMediaElementSource(a); const g = ctx.createGain(); g.gain.value = lin; s.connect(g).connect(ctx.destination); }catch(e){ a.volume = Math.min(1, lin); } }
+  else a.volume = Math.min(1, lin);
+  audios[item.c] = a; return a;
+}
+function stopAll(except){ for(const [c,a] of Object.entries(audios)) if(c!==except && !a.paused) a.pause(); }
+
+const blockIds = Object.keys(M.blocks).sort((a,b)=> (a==="S")-(b==="S") || a.localeCompare(b,undefined,{numeric:true}));
+function renderBlocks(){
+  const box = $("blocks"); box.innerHTML = "";
+  for(const b of blockIds){
+    const btn = document.createElement("button"); btn.textContent = (b==="S"?"Shortlist":"Block "+b.slice(1)) + " (" + M.blocks[b] + ")";
+    if(st.block===b) btn.classList.add("on");
+    btn.onclick = ()=>{ st.block=b; save(); renderBlocks(); renderList(); };
+    box.appendChild(btn);
+  }
+}
+function itemsOf(b){ return shuffled(M.clips.filter(x=>x.b===b), st.rater.id + "|" + b); }
+function complete(r){ return r && AXES.every(([k])=>r[k]>=1) && (r.real==="yes"||r.real==="no"); }
+
+function renderList(){
+  const list = $("list"); list.innerHTML = "";
+  if(!st.block){ list.innerHTML = '<p>Choose a block above to start.</p>'; renderStatus(); return; }
+  const items = itemsOf(st.block);
+  items.forEach((item, idx)=>{
+    const r = st.ratings[item.c] || (st.ratings[item.c] = {});
+    const card = document.createElement("article"); card.className = "clip" + (complete(r)?" done":""); card.id = "c-"+item.c;
+    card.innerHTML = `<header><span><span class="code">${item.c}</span> <span class="tag">clip ${idx+1} of ${items.length}</span></span>
+      <span class="tag">passage ${item.p}: ${M.passages[item.p]||""}</span></header>
+      <div class="play"><button class="pb">Play</button><div class="prog"><i></i></div><span class="small pc"></span></div>
+      <div class="locked">Play the clip first; rating opens once it has started.</div>
+      <div class="axes"></div>
+      <div class="real"><span class="small">Real person?</span><button data-v="yes">Yes</button><button data-v="no">No</button></div>
+      <div class="note"><input type="text" placeholder="Optional note (e.g. a word that sounded wrong)" aria-label="note"></div>`;
+    const axes = card.querySelector(".axes");
+    for(const [k,label] of AXES){
+      const row = document.createElement("div"); row.className = "ax" + (r[k]?" set":"");
+      row.innerHTML = `<span class="n">${label}</span><input type="range" min="1" max="5" step="1" value="${r[k]||3}" aria-label="${label}"><output>${r[k]||"–"}</output>`;
+      const inp = row.querySelector("input"), out = row.querySelector("output");
+      const set = ()=>{ r[k] = +inp.value; out.textContent = inp.value; row.classList.add("set"); stamp(); };
+      inp.addEventListener("input", set); inp.addEventListener("click", set); inp.addEventListener("keyup", set);
+      axes.appendChild(row);
+    }
+    const realBtns = card.querySelectorAll(".real button");
+    realBtns.forEach(b=>{ if(r.real===b.dataset.v) b.classList.add("on"); b.onclick = ()=>{ r.real=b.dataset.v; realBtns.forEach(x=>x.classList.toggle("on", x===b)); stamp(); }; });
+    const note = card.querySelector(".note input"); note.value = r.note || ""; note.onchange = ()=>{ r.note = note.value.slice(0,300); stamp(); };
+    const lockEls = card.querySelectorAll(".axes input, .real button, .note input");
+    const lockMsg = card.querySelector(".locked");
+    const setLock = (locked)=>{ lockEls.forEach(e=>e.disabled=locked); lockMsg.style.display = locked?"block":"none"; };
+    setLock(!(r.plays>0));
+    function stamp(){ r.rated_at = new Date().toISOString(); r.block = st.block; r.position = idx+1; card.classList.toggle("done", complete(r)); save(); }
+
+    const pb = card.querySelector(".pb"), bar = card.querySelector(".prog i"), pc = card.querySelector(".pc");
+    pb.onclick = ()=>{
+      const a = audioFor(item);
+      if(!a._wired){ a._wired = true;
+        a.addEventListener("timeupdate", ()=>{ if(a.duration){ const f=a.currentTime/a.duration; bar.style.width=(f*100)+"%"; r.listened_frac = Math.max(r.listened_frac||0, +f.toFixed(3)); } });
+        a.addEventListener("ended", ()=>{ pb.textContent="Play again"; r.listened_frac=1; save(); });
+        a.addEventListener("pause", ()=>{ if(!a.ended) pb.textContent="Resume"; save(); });
+        a.addEventListener("error", ()=>{ pc.textContent="could not load audio"; pc.classList.add("warn"); });
+      }
+      if(a.paused){ stopAll(item.c); if(ctx && ctx.state==="suspended") ctx.resume(); a.play().then(()=>{ pb.textContent="Pause"; if(a.currentTime<0.5){ r.plays=(r.plays||0)+1; pc.textContent = r.plays>1 ? r.plays+" plays":""; } setLock(false); save(); }).catch(()=>{ pc.textContent="playback blocked"; }); }
+      else a.pause();
+    };
+    if(r.plays>1) pc.textContent = r.plays + " plays";
+    list.appendChild(card);
+  });
+  renderStatus();
+}
+function renderStatus(){
+  const total = st.block ? M.clips.filter(x=>x.b===st.block).length : 0;
+  const done = st.block ? M.clips.filter(x=>x.b===st.block && complete(st.ratings[x.c])).length : 0;
+  $("pbar").style.width = total ? (100*done/total)+"%" : "0";
+  $("ptext").textContent = total ? `${done} / ${total} rated in this block` : "";
+  const all = Object.values(st.ratings).filter(complete).length;
+  $("status").innerHTML = `${all} clips rated in total. Listener ${st.rater.id}. Gain: ${gainMode}` + (gainMode==="volume" ? " (open the page from a local web server for full loudness matching)" : "") +
+    (storageOk ? "" : ' <span class="warn">This browser is not saving; use Copy JSON before closing.</span>') +
+    (sync ? (sync.ok===false ? ' <span class="warn">Could not save to the shared record; use Copy JSON and send it to the study owner.</span>' : sync.ok ? " Saved to the shared record." : "") : "");
+}
+function exportObj(){
+  const ratings = {}; for(const [c,r] of Object.entries(st.ratings)) if(r && (r.plays||AXES.some(([k])=>r[k])||r.real)) ratings[c]=r;
+  return {schema:"taxila-blind-test-ratings/v2", page:M.v, audience:M.audience, target_lufs:M.target_lufs, gain_mode:gainMode,
+          rater:st.rater, exported_at:new Date().toISOString(), user_agent:navigator.userAgent, ratings};
+}
+$("exp").onclick = ()=>{ const blob = new Blob([JSON.stringify(exportObj(),null,1)],{type:"application/json"}); const u = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href=u; a.download=`blind-v2-${st.rater.id}-${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),2000); };
+$("copy").onclick = async ()=>{ try{ await navigator.clipboard.writeText(JSON.stringify(exportObj())); $("status").textContent="Copied to clipboard."; }catch(e){ $("status").textContent="Copy failed; use Export."; } };
+$("imp").onchange = (ev)=>{ const f = ev.target.files[0]; if(!f) return; f.text().then(t=>{ try{ const o = JSON.parse(t); if(o.schema!=="taxila-blind-test-ratings/v2") throw 0; st.rater = o.rater||st.rater; Object.assign(st.ratings, o.ratings||{}); save(); for(const [el,k] of Object.entries(fields)) $(el).value=st.rater[k]||""; renderList(); }catch(e){ $("status").textContent="Not a v2 ratings file."; } }); };
+$("reset").onclick = ()=>{ if(confirm("Delete every rating saved in this browser for this page?")){ st = {rater:{id:"L"+Math.random().toString(36).slice(2,8).toUpperCase()}, block:null, ratings:{}}; save(); for(const [el,k] of Object.entries(fields)) $(el).value=st.rater[k]||""; renderBlocks(); renderList(); } };
+$("next").onclick = ()=>{ if(!st.block) return; const it = itemsOf(st.block).find(x=>!complete(st.ratings[x.c])); if(it){ const el=$("c-"+it.c); el.scrollIntoView({behavior:"smooth",block:"center"}); el.querySelector(".pb").focus(); } };
+$("rid").value = st.rater.id;
+$("foot").textContent = `${M.clips.length} clips in ${blockIds.length} blocks. Page ${M.v} (${M.audience}).`;
+renderBlocks(); renderList(); save();
+</script>
+</body>
+</html>

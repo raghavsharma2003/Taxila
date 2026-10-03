@@ -1183,3 +1183,8 @@ Hook shape (`director/shapes.js hook`) adds: "any bigger/more comparison: two qu
 
 ## tutor-switch-m0-history
 `tutor_switch` (008_tutor_choice.sql: from/to tutor, source, shown, ms_to_choose) is classified in learner/mode.js M0_HISTORY_TABLES, so the M0 ratchet deletes it; it was unclassified and failed tests/learner-mode.test.mjs. **Reverse if** the owner rules the tutor-choice history an account setting kept in every mode (then KEPT_TABLES with that reason).
+
+
+<!-- merged from inbox/blind-test-published.json -->
+## blind-test-v2-published (2026-10-03)
+https://claude.ai/artifact/WTiPAMzbiXscxKHodwbaHm hosts docs/research/voice/v2/blind-test-shared.html, which is the external page with db sync added: 357 clips, with the 4 non-consented clone clips excluded. Each listener's ratings go to ratings/<viewer id>. Rules: ratings read and write owner; ratings/{self} read and write interact. So only the owner and the listener can see a listener's ratings, and listeners need Contributor access. Scoring: pull with ArtifactData list ratings and feed score-blind-v2.py with blind-key.json, which is never published. The cascade TTS switch to DragonHD (VOICE-CHOICE.md) waits on this test. **Reverse if** fewer than 20 listeners and 800 ratings arrive, which is the VOICE-CHOICE gate; then run the same page with a recruited panel.
