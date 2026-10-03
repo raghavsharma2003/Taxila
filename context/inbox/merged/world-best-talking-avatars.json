@@ -1,0 +1,14 @@
+{
+ "source": "docs/research/world-best/talking-avatars.md",
+ "nodes": [
+  {"id": "open-gnm-identity-base", "kind": "open", "title": "Replace the MPFB head with Google GNM Head v3.0 (Apache-2.0 code+weights; 17,821 verts, eyes/teeth/tongue, 383 expr comps) as the realistic teacher's identity base; gate E-GNM1 (NME <= 1.2%, judge >= 70% on 8/9, owner eye test)", "at": "2026-10-03"},
+  {"id": "open-arkit-keys-in-gnm-space", "kind": "open", "title": "Solve the 52 ARKit keys + Hindi tongue keys by least squares inside GNM's regional-PCA expression space (not FACS-named); gate E-GNM2", "at": "2026-10-03"},
+  {"id": "open-splat-skin-tier", "kind": "open", "title": "H+ tier: one Gaussian per morphed vertex on our own rig (LAM's measured structure: 20,018 splats on a 51-morph mesh), trained offline with gsplat (Apache-2.0) on our own renders; Spark (MIT) or own shader; gate E-GS1 30 fps on reference phones", "at": "2026-10-03"},
+  {"id": "open-maai-nod-timing", "kind": "open", "title": "Model-timed listening nods and VAP floor hints from MaAI (MIT code; CPU RTF 0.57); n=60 study beat stochastic nods on 7/7 metrics; no Hindi model, gate E-NOD1", "at": "2026-10-03"},
+  {"id": "rj-lam-renderer-and-assets", "kind": "rejection", "title": "Shipping LAM's WebGL renderer or LAM avatars: npm 0.0.9-alpha.2 is 813 KB gz bundling three@0.173 (+webgpu/tsl), axios, jszip; FLAME edition unclear (issue #111 unanswered since 2026-09-15)", "at": "2026-10-03"},
+  {"id": "rj-metahuman-asset", "kind": "rejection", "title": "MetaHuman as a shipped asset or training source: licence forbids use to train/enhance AI models (our lip student trains on teacher renders); web export ~40 MB/char vs 1.5-6 MB tier budgets. Look-dev reference only", "at": "2026-10-03"},
+  {"id": "rj-seamless-interaction-training", "kind": "rejection", "title": "Training listening behaviour on Meta Seamless Interaction: dataset card is CC-BY-NC-4.0 (a press summary said CC-BY-SA)", "at": "2026-10-03"},
+  {"id": "rj-arc2avatar", "kind": "rejection", "title": "Arc2Avatar for one-shot heads: MIT code over an Inria diff-gaussian-rasterization fork (NC) and Arc2Face/InsightFace identity features (NC models)", "at": "2026-10-03"},
+  {"id": "corr-face3d-nc-deps", "kind": "correction", "title": "face3d-nc-deps-rejected said no face-specific model passes commercial use; GNM Head (Apache-2.0, 2026-07) does. Harvest ws-19's 'adult identities unusable' note is wrong: the tutor is an adult", "at": "2026-10-03"}
+ ]
+}

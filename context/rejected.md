@@ -721,3 +721,59 @@ What broke: front NME was worse on every seed (2.78 / 1.97 / no face found, agai
 
 ## rj-llm-item-discrimination
 **Tried (literature, Chen et al. 2026, arXiv 2606.18709):** 42 LLMs estimating item discrimination, both directly and through simulated proficiency-level responses. **Broke:** the CEFR-stratified rank correlation was 0.231. The gains came from differences between models, not from proficiency prompts. **Instead:** LLM simulated classrooms supply difficulty b priors only, with sd 1.0; discrimination stays at the population default until real responses arrive (understanding-detection.md S7). **Revisit if:** a method reaches rho >= 0.5 for discrimination on held-out real items.
+
+
+<!-- merged from inbox/world-best-hyper-personalisation.json -->
+## rj-blocked-warmup-before-interleave
+**Tried (literature, 2025): a blocked practice phase before interleaving problem types.** What broke: Scheitz et al. 2025 (PsyArXiv mqcnp, 238 German third graders, 3 subtraction strategies, 3x2 design, tests to 16 weeks): blocked-to-interleaved and pure interleaving both beat blocked practice on flexibility, adaptivity and conditional strategy knowledge, and initial blocking added nothing. Exception kept: graphical *representations* of fractions, blocked then increasingly interleaved, helped low-prior Grade 5-6 children (Rau, Aleven & Rummel 2010). Source: docs/research/world-best/hyper-personalisation.md section 1.4.
+
+## rj-interleave-judged-short-term
+**Tried (literature, 2023): interleaved maths problem sets for a full school year, judged on short-term retention.** What broke: van der Haar, Gray-Lobe, Kremer & de Laat (EdWorkingPaper 23-876; 62 classrooms, Nigeria): +0.29 SD on short-term retention, no average effect on the cumulative year-end assessment, large gains at the bottom offset by negative effects at the top. Instead: judge interleaving on delayed, cumulative outcomes broken out by baseline tercile.
+
+## rj-style-attribute-to-generator
+**Tried (literature, 2024-26): LLM content 'personalised to learning style'.** What broke: the profiles bundle style with interests and the learner's major (PAIGE, arXiv 2409.04645), so gains cannot be attributed to style; matching studies show d = 0.04 (LS section 2). Extends PZ7: no style label reaches any generator.
+
+
+<!-- merged from inbox/world-best-voice-ux.json -->
+## rj-symbolic-wait-indicator
+**Tried (literature, 2025):** symbolic latency indicators (an embedded badge-style progress bar, an external thinking bubble) for an embodied agent. **Broke:** participants looked away from the agent's face and neither perceived response time nor presence improved; a multimodal behavioural filler (verbal + gesture) improved perceived response time, humanlikeness and naturalness, preferred by 87.5% (Gonzales, Kalamkar, Jörg, Grubert, arXiv 2508.11781, n=24 within-subject, VR, adults). **Instead:** the teacher's face/body carries the 1-4 s wait; any glyph lives in the status strip, away from her face. **Revisit if** a child test (n>=20 per band) shows the dots glyph reduces re-speaking during THINKING more than the gesture. Source: docs/research/world-best/voice-ux-smoothness.md S3.
+
+## rj-static-filler-list
+**Tried (vendor default, considered for Taxila):** Voice Live `static_interim_response`, a random pick from fixed texts once latency passes 2000 ms (default). **Broke (by evidence, not trial):** 2 s is later than silence is noticed; a fixed list heard daily becomes a tic (the audio form of the recitation law); not supported on realtime audio models anyway. **Instead:** body-first waiting and, past ~1.2-1.5 s, an uptake fragment built in code from the child's own transcript with prosody identical for right and wrong. Source: voice-ux-smoothness.md §0.5, S3.
+
+
+<!-- merged from inbox/world-best.json -->
+## rj-mean-check-pass-as-quality
+**Tried (literature/licence check, 2024-26): Reporting mean check-pass rates (or unit-test pass) as the quality number for generated interactives.** What broke: GameASG-Bench: 93.2% mean check pass while only 55.3% of tasks pass every check [V]; InteractScience best model passes every test on 13.29% of tasks, widgets 'work' while violating the science [V]; EE-Eval: unit tests correlate -0.60 with human interactivity ratings [V]. Instead: Strict all-checks pass rate per archetype plus an ideal interaction-graph comparison (wb-strict-all-checks). Source: docs/research/world-best/STEAL-LIST.md.
+
+## rj-holistic-model-judge-gate
+**Tried (literature/licence check, 2024-26): A holistic 'rate this 1-10' VLM/LLM judge gating any Forge or content promotion.** What broke: ManimAgent holistic VLM vs human Pearson r = -0.17 [V]; SciDraw-Bench inter-judge r 0.58-0.63 [V]; WebDevJudge best judge 70.3% vs humans 84.6% [S]. Instead: Binary atomic checklist items with a code verdict and a cross-family second judge (KVBench kappa 0.745 [V]); judges advisory until calibrated (forge-qa-ladder). Source: docs/research/world-best/STEAL-LIST.md.
+
+## rj-schedule-shape-tuning
+**Tried (literature/licence check, 2024-26): Tuning the spacing schedule's shape (expanding vs equal intervals, longer in-class spacing) as a learning lever for classes 1-5.** What broke: Franzoi 2025 real Grade 5 classrooms: lengthening spacing did nothing while testing-with-feedback-until-correct beat re-reading [V abs]; Leonard 2024: expanding vs equal schedules ended equal for ages 4-5 [V abs]; benefit from testing grows with age 7-14 (Rodriguez-Gonzalo 2024) [V abs]. Instead: Retrieval with corrective feedback until correct for classes 1-3, FSRS left at defaults, effort spent on FIRe fractional credit and repetition compression instead. Source: docs/research/world-best/STEAL-LIST.md.
+
+## rj-nc-data-and-weights-in-product
+**Tried (literature/licence check, 2024-26): Training shipped Taxila models on, or shipping, non-commercial or academic-only data and weights: Bridge dataset (CC-BY-NC), EdNet (NC), CoMTA (eval-only), HiACC (NC), VAP pretrained weights (academic), Meta Seamless Interaction (NC per its card), Arc2Avatar's NC renderer/face-recognition deps, LAM FLAME assets (issue #111 unanswered), MetaHuman (no training use).** What broke: Licence checks in the six world-best sweeps [V where read]; a press summary claimed Seamless was commercial while its own card says non-commercial; LAM's renderer also bundles three 0.173 against our pinned 0.180 [M]. Instead: Taxonomies and methods only from these; train on MIT/Apache/CC-BY data (XES3G5M MIT, MathDial CC-BY 4.0 labelled as simulated students) and our own consented rows; every benchmark row labelled real vs simulated students. Source: docs/research/world-best/STEAL-LIST.md.
+
+## rj-prosody-rate-on-dragonhd
+**Tried (literature/licence check, 2024-26): Setting per-character pace with SSML <prosody rate> on DragonHD voices.** What broke: Microsoft HD-voices page marks <prosody> (incl. rate) unsupported on DragonHD and Omni [V, updated 2026-09-24]; our own 15.2-15.9 chars/s at rate 0.95 vs ~12 for real Hinglish speech fits 'ignored' [M]. Instead: Pace by voice choice, clause <break>, Voice Live voice.rate (probe on HD) or gpt-4o-mini-tts speed, recorded in a measured per-voice pace table (resolves open-dragonhd-prosody-unsupported once probed). Source: docs/research/world-best/STEAL-LIST.md.
+
+
+## rj-lam-renderer-and-assets (2026-10-03)
+Shipping LAM's WebGL renderer or LAM avatars: npm 0.0.9-alpha.2 is 813 KB gz bundling three@0.173 (+webgpu/tsl), axios, jszip; FLAME edition unclear (issue #111 unanswered since 2026-09-15)
+Full evidence and sources: docs/research/world-best/ (merged from inbox/world-best-talking-avatars.json).
+
+
+## rj-metahuman-asset (2026-10-03)
+MetaHuman as a shipped asset or training source: licence forbids use to train/enhance AI models (our lip student trains on teacher renders); web export ~40 MB/char vs 1.5-6 MB tier budgets. Look-dev reference only
+Full evidence and sources: docs/research/world-best/ (merged from inbox/world-best-talking-avatars.json).
+
+
+## rj-seamless-interaction-training (2026-10-03)
+Training listening behaviour on Meta Seamless Interaction: dataset card is CC-BY-NC-4.0 (a press summary said CC-BY-SA)
+Full evidence and sources: docs/research/world-best/ (merged from inbox/world-best-talking-avatars.json).
+
+
+## rj-arc2avatar (2026-10-03)
+Arc2Avatar for one-shot heads: MIT code over an Inria diff-gaussian-rasterization fork (NC) and Arc2Face/InsightFace identity features (NC models)
+Full evidence and sources: docs/research/world-best/ (merged from inbox/world-best-talking-avatars.json).

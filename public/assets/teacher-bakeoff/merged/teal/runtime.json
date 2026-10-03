@@ -6,7 +6,7 @@
  "tiers": {
   "H": {
    "file": "H.glb",
-   "bytes": 5103196,
+   "bytes": 5051084,
    "triangles": 31808,
    "draws": 5,
    "morphTargets": 82,
@@ -35,7 +35,7 @@
   },
   "Bplus": {
    "file": "Bplus.glb",
-   "bytes": 1811576,
+   "bytes": 1789348,
    "triangles": 16780,
    "draws": 5,
    "morphTargets": 58,
@@ -63,7 +63,7 @@
   },
   "Blite": {
    "file": "Blite.glb",
-   "bytes": 728516,
+   "bytes": 722600,
    "triangles": 16780,
    "draws": 5,
    "morphTargets": 58,
@@ -623,22 +623,20 @@
   },
   "curious": {
    "bs": {
-    "browInnerUp": 0.55,
-    "browOuterUpLeft": 0.42,
-    "browOuterUpRight": 0.3,
-    "eyeWideLeft": 0.22,
-    "eyeWideRight": 0.22,
-    "mouthPucker": 0.32,
-    "mouthFunnel": 0.08,
-    "mouthSmileLeft": 0.12,
-    "mouthSmileRight": 0.12,
-    "jawOpen": 0.03
+    "browInnerUp": 0.3,
+    "browOuterUpLeft": 0.75,
+    "browOuterUpRight": 0.5,
+    "eyeWideLeft": 0.3,
+    "eyeWideRight": 0.3,
+    "jawOpen": 0.1,
+    "mouthFunnel": 0.15
    },
    "head": [
-    -3,
-    4,
-    9
+    -4,
+    6,
+    6
    ],
+   "lean": 0.6,
    "env": [
     350,
     1800,
@@ -647,21 +645,23 @@
   },
   "thinking": {
    "bs": {
-    "browDownLeft": 0.06,
-    "browDownRight": 0.06,
-    "browInnerUp": 0.06,
-    "mouthPressLeft": 0.08,
-    "mouthPressRight": 0.08,
-    "mouthLeft": 0.04
+    "browDownLeft": 0.3,
+    "browInnerUp": 0.25,
+    "browOuterUpRight": 0.2,
+    "mouthPressLeft": 0.3,
+    "mouthPressRight": 0.3,
+    "mouthLeft": 0.3,
+    "eyeSquintLeft": 0.15,
+    "eyeSquintRight": 0.15
    },
    "head": [
-    -2,
-    -3,
-    0
+    -4,
+    -6,
+    -4
    ],
    "gaze": [
-    -14,
-    12
+    -18,
+    15
    ],
    "env": [
     300,
@@ -671,26 +671,22 @@
   },
   "listening": {
    "bs": {
-    "eyeSquintLeft": 0.22,
-    "eyeSquintRight": 0.22,
-    "browInnerUp": 0.18,
-    "browOuterUpLeft": 0.06,
-    "browOuterUpRight": 0.06,
-    "mouthPressLeft": 0.05,
-    "mouthPressRight": 0.05,
-    "mouthSmileLeft": 0.06,
-    "mouthSmileRight": 0.06
+    "browInnerUp": 0.15,
+    "browOuterUpLeft": 0.3,
+    "browOuterUpRight": 0.3,
+    "eyeWideLeft": 0.15,
+    "eyeWideRight": 0.15
    },
    "head": [
-    2,
+    5,
     0,
-    7
+    12
    ],
    "gaze": [
     0,
-    0
+    4
    ],
-   "lean": 0.6,
+   "lean": 1,
    "env": [
     120,
     0,
@@ -938,25 +934,24 @@
     {
      "t": 0.3,
      "head": [
-      8,
+      9,
       0,
-      1
-     ]
+      2
+     ],
+     "bs": {
+      "jawOpen": 0.12,
+      "mouthSmileLeft": 0.15,
+      "mouthSmileRight": 0.15,
+      "browOuterUpLeft": 0.15,
+      "browOuterUpRight": 0.15
+     }
     },
     {
      "t": 0.6,
      "head": [
       -2,
       0,
-      0
-     ]
-    },
-    {
-     "t": 0.95,
-     "head": [
-      9,
-      0,
-      2
+      1
      ],
      "bs": {
       "mouthSmileLeft": 0.1,
@@ -964,26 +959,74 @@
      }
     },
     {
+     "t": 0.95,
+     "head": [
+      10,
+      0,
+      3
+     ],
+     "bs": {
+      "jawOpen": 0.12,
+      "mouthSmileLeft": 0.2,
+      "mouthSmileRight": 0.2,
+      "browOuterUpLeft": 0.2,
+      "browOuterUpRight": 0.2
+     }
+    },
+    {
      "t": 1.3,
      "head": [
       -1,
       0,
-      1
+      2
      ],
      "bs": {
+      "mouthSmileLeft": 0.15,
+      "mouthSmileRight": 0.15,
       "browInnerUp": 0.1
      }
     },
     {
      "t": 2,
      "head": [
-      2,
+      3,
       0,
-      1
-     ]
+      2
+     ],
+     "bs": {
+      "mouthSmileLeft": 0.15,
+      "mouthSmileRight": 0.15
+     }
     }
    ]
   }
  },
- "plates": null
+ "plates": {
+  "plate": [
+   360,
+   450
+  ],
+  "mouthRect": [
+   102,
+   124,
+   265,
+   281
+  ],
+  "mouthCells": 5,
+  "mouthJaw": [
+   0,
+   0.15,
+   0.3,
+   0.45,
+   0.6
+  ],
+  "blinkRect": [
+   124,
+   120,
+   245,
+   160
+  ],
+  "bytes": 25178,
+  "source": "rendered from the B+ runtime (scripts/character/render.mjs)"
+ }
 }

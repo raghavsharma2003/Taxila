@@ -1842,3 +1842,83 @@ Everything is pinned: the git commit, hashed pip locks (167 + 129 pins, --requir
 - Texture default `raw`.
 
 **Reverse if** the merged build with the flag fails the yaw-24 or front-NME bars, or any gate (turn the flag off); or if a GPU landmark set wins the held-out reprojection test (switch to `=gpu`).
+
+
+<!-- merged from inbox/world-best.json -->
+## wb-steal-list-ranked (2026-10-03)
+**The 25-item world-best STEAL LIST (STEAL-LIST.md) is the ranked adoption backlog across tutoring, detection, personalisation, generation, avatar and voice; ranked by impact x evidence / effort with measured-harm guards (answer-mode displacement, equity gradient) promoted.**
+- Why: Six sweeps converged on overlapping mechanisms; one de-duplicated rank stops six parallel backlogs competing. Nothing on it is built or run on a child; every impact is a literature prediction.
+- Reverse or re-rank if: the first E1/cohort measurements contradict an item's predicted direction (re-rank that item by our own number), or a newer primary source overturns an item's evidence tag from [V] to refuted.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-error-type-first (2026-10-03)
+**Wrong answers get a code-assigned error type (careless, misread, right-idea, imprecise, guess, misconception, not-sure) in classify.js BEFORE help is chosen; state.js routes on it (slip -> check that step, misread -> re-pose, no hint rung spent); strategy and intention reach the voice as shape notes in shapes.js.**
+- Why: Bridge (NAACL 2024, arXiv 2310.10648) [V]: expert decisions +76% preferred, random decisions -67%; Tutor CoPilot v2 [V]: +4 pp mastery, +9 pp with weakest tutors. Bridge code MIT, dataset CC-BY-NC: taxonomy only, never trained on.
+- Reverse if: errType vs 200 human labels has kappa < 0.6 after two iterations (then route only misconception vs other), or a blind expert preference test on 60 recorded wrong-answer turns shows no preference for decision-conditioned replies, or the y_delay MRT factor is null at adequate power.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-guidance-ladder (2026-10-03)
+**isNovice() (one on/off switch per topic) is replaced by guidanceLevel(skill) in {worked, faded, attempt} from the ledger plus a one-turn first-step probe; new pure server/director/fading.js blanks a worked-example step only after the child explained it, finally reading the unused kit workedExample.fadedVersion; low prior -> completion items, high prior -> find-the-mistake.**
+- Why: Adaptive backward fading gave the best delayed transfer (Salden 2010, 6.67 vs 4.50 vs 4.66) [S]; expertise-reversal meta-analysis (Tetzlaff 2025) [S]; extra worked material hurt high-prior children (McGinn 2025, 58 classrooms) [V abs]. The asset already exists in every kit and nothing reads it [T].
+- Reverse if: F-FADE on y_delay is null or negative, or the high baseline tercile is worse on y_delay by > 0.05 (then keep fading for the low/middle terciles only).
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-predictive-endpoint (2026-10-03)
+**Child endpointing moves from a fixed 900 ms silence to commit-early/decide-late: ~450 ms silence is a candidate endpoint, on-device Pipecat Smart Turn v3.2 (BSD-2, int8 ONNX 8 MB, Hindi 93.4%) scores the last 8 s, Director sets the hold threshold per item type and child, 'not finished' merges the next fragment; a Next-Turn-style child fine-tune follows from E1 timestamps (consent clause required).**
+- Why: Child-adult silence separates SHIFT/HOLD at AUC 0.62; audio-before-silence models reach bAcc 94 on child-initiated turns (IWSDS 2026) [V]; prosody beats text for end-of-turn (arXiv 2609.11066) [V]. Excluded for shipped weights: HiACC (NC), VAP pretrained (academic), LiveKit turn detector (own licence), Ohio corpus (licence unread).
+- Reverse if: on E1 recordings the turn model's SHIFT/HOLD AUC is < 0.75, or cut-offs rise vs the 900 ms baseline, or p50 gap improves < 150 ms; or the low-end Android CPU cost of the ONNX worker breaks the avatar 30 fps cap.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-equity-release-gate (2026-10-03)
+**Equity floor is a RELEASE GATE: no pedagogy change ships unless the bottom baseline tercile's gain is >= 0.8 x the top tercile's on the same outcome; low-baseline children get worked example first on new skills and one next step, never a menu; problem-type interleaving gated by prior knowledge.**
+- Why: Every 2025-26 trial skews gains to stronger students (Sierra Leone [V], Nigeria [S], Kenya mentor -10% low performers [S], Maryland first-gen -0.50 vs -0.22 SD [V], Nigeria interleaving top-tercile losses [V]); Taxila's wedge is tier-2 families. Supersedes the open question open-equity-tercile-gate.
+- Reverse (relax the ratio) if: across two quarters the gate blocks every pedagogy change while Taxila's own tercile data shows the bottom tercile improving in absolute terms; re-derive the threshold from our data, never drop the tercile report.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-answer-floor-battery (2026-10-03)
+**No answer mode, toggle, parent setting or timed lockout ever exists; evals/never-rules.mjs gains a 30-variant 'just tell me' battery (hi/en/Hinglish, pressure, parent impersonation) scored by revealsAnswer() at each rung in director-sim; 0 reveals before rung 4, runs in npm test.**
+- Why: Maryland default direct-answer tutor -0.27 to -0.37 SD [V]; China panel closed-book -20% in six months [S]; unrestricted help beat a 10-minute lockout by 0.21 SD (IZA DP 18338) [V]. Codifies rj-default-answer-mode and rj-timed-help-lockout as a test, not a sentence.
+- Reverse only if: a child RCT shows a direct-answer default at equal or better delayed-test outcomes than ladder-first help; the battery itself is never relaxed to pass a model or persona upgrade.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-uncertain-state (2026-10-03)
+**Comprehension gets a computed 'uncertain' flag: when a skill's bootstrap error band (offline BKT-R refit) crosses a ladder boundary it cannot move up without one mandatory probe; parents see 'still checking'; never displays above the ledger.**
+- Why: Eedi KT team (Mitton et al., IRAISE 2026, arXiv 2509.21514) [V abs]: deferring the 20% most uncertain predictions +2.3-3.0 pp accuracy; deferred ones wrong 1.45-1.6x as often.
+- Reverse if: on Taxila's own delayed checks the deferral error ratio (abstained vs retained) is < 1.2, or the abstention rate exceeds 30% so that 'still checking' becomes the default parent message.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-idk-split (2026-10-03)
+**IDK splits into IDK (not known: 'pata nahi / nahi aata') and IDK_R (can't recall: 'yaad nahi aa raha / bhool gaya / zubaan pe hai'); IDK_R is an FSRS lapse that barely moves pL and triggers a same-episode recognition probe; text-only lexicon.**
+- Why: Smith & Clark 1993: wording tracks feeling of knowing [V abs]; text-only so outside the Microsoft Code of Conduct v4.0 restriction 12 on voice emotion inference.
+- Reverse if: WB-M1 shows recognition-probe success after IDK_R within 10 pp of after IDK across class bands (the split carries no information), or the lexicon's precision vs human labels is < 0.8.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-skeleton-first-fills (2026-10-03)
+**Off-plan live fills mount skeleton-first: code-computed truth fields and layout paint at once and freeze, language slots stream in and paint only after the per-string safety gate, every slot has a templated code value the model only upgrades (strings.js, templates.js, frame protocol streaming slot).**
+- Why: World convergence on 'models fill data, code renders' (A2UI Apache-2.0 data-only UI, MCP Apps sandbox) [V]; Taxila off-plan T1 1.88 s / T2a 3.08 s p50 with 1.29 s service overhead [T]. The planned path is already 0 ms (forge-g1-turn-path).
+- Reverse if: first paint p90 does not reach <= 600 ms after the build (then the skeleton is not the bottleneck), or children/parents in E1 rate the frozen skeleton plus late words as worse than a 2 s single paint.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-strict-all-checks (2026-10-03)
+**Forge reports only strict all-checks pass rates per archetype, never means; each template/archetype gets an ideal interaction graph compared to the solver's reachable graph; model judges are binary checklists with a code verdict and a cross-family second judge; holistic scores never gate; validated failure patterns go LAST in the builder brief as shapes.**
+- Why: GameASG 93.2% mean vs 55.3% all-checks [V]; EE-Eval FSM r 0.728 vs unit tests -0.60, VLM 0.53 [V]; ManimAgent holistic VLM vs human r -0.17 [V]; KVBench checklist kappa 0.745 [V]; negative memory halved repair rounds 12.2 -> 6.5 [V].
+- Reverse (for a given judge) if: a holistic judge reaches kappa >= 0.8 vs humans on our own Forge set; reverse the ideal-graph check if it rejects human-approved builds > 10% of the time.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-dose-by-schedule (2026-10-03)
+**Dose is fixed by an adult: parents pick weekly slots, the Conductor plans and nudges against slots (never mood, never streaks), the parent report shows minutes against plan, and cost-effectiveness is reported as LAYS per $100.**
+- Why: Sierra Leone 12-hour-target rooms 1.8-2.5 years vs 1.2-1.7 [V]; Nigeria gains per extra day [S]; classroom-integrated EIDU 4.6-5.5 LAYS/$100 vs standalone 1.4-1.7 (F1000Research 15-925) [V].
+- Reverse if: in the first cohort, minutes delivered do not predict y_delay (flat dose-response) or slot nudges reduce weekly minutes vs no slots.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-gnm-face-base (2026-10-03)
+**Run E-GNM1: Google GNM Head v3.0 (Apache-2.0 code and weights, 17,821 verts, teeth/gums/tongue/eyes in one mesh) as the identity base, with 52 ARKit + Hindi tongue keys fitted inside GNM's expression space and the offline lip teacher upgraded to Audio2Face-3D multi v3.2 (build time only, emotion from Director intent); adopt over the MPFB head if it passes the bake-off bars.**
+- Why: Measured unpack [M] in talking-avatars.md; overturns the premise of face3d-nc-deps-rejected that no commercially usable face model existed; likely fix for grimaces, gappy teeth and tongue poke-through (teacher-bakeoff-verdict).
+- Reverse if: E-GNM1 fails the G6 teeth/tongue gate or the Hindi lip bench (r below the current 0.537 hi), or the baked asset exceeds the 2.2 MB B-tier budget after meshopt/KTX2, or Google changes the weights licence.
+- Source: docs/research/world-best/STEAL-LIST.md.
+
+## wb-five-bets (2026-10-03)
+**Taxila's five lead bets: (1) Epistemic Speech Evidence, a calibrated per-child voice-native understanding detector clamped to [0.9,1.1]; (2) the gap-closing tutor (equity gate + adult dose + parent loop, LAYS/$100); (3) child-native Hinglish turn-taking trained label-free on consented children; (4) verified-instant generated content with a published all-checks correctness rate; (5) an NCERT misconception atlas harvested from real children. Photoreal face is a deliberate non-bet (match, not lead).**
+- Why: Each sits on inputs only Taxila combines (always-voice Hindi/English/Hinglish lessons, code-graded closed sets, delayed/woven check scheduler, daily parent loop); none is published or shipped elsewhere as of 2026-10-03 per the six sweeps.
+- Per bet (STEAL-LIST.md): (1) Microsoft confirms restriction 12 covers latency-based knowledge inference, or delta AUC < 0.03 after two fits; (2) gate blocks all change for two quarters; (3) fine-tune adds < 0.03 AUC over stock Smart Turn; (4) off-plan all-checks < 95% after the gates; (5) reviewer acceptance < 30% over 8 weekly cycles.
+- Source: docs/research/world-best/STEAL-LIST.md.

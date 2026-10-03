@@ -52,3 +52,17 @@ Build merged teal with TAXILA_IDENTITY_TARGET=scripts/gpu/jobs/face3d/runs/face3
 <!-- merged from inbox/world-best-understanding-detection.json -->
 ## wb-coc-epistemic-vs-emotional
 The Microsoft Enterprise AI Services Code of Conduct v4.0 (2026-05-01), restriction 12, bans attempts to 'infer people's emotional states from ... speech patterns', including 'other terms commonly used to describe a person's emotional state'. Confusion is commonly called an emotion, so prosodic confusion detection stays banned. Open: is P(answer reflects knowledge) from onset latency, self-repair and IDK-vs-cannot-recall a knowledge inference outside restriction 12? This blocks the Epistemic Speech Evidence research protocol, features 2(a) and 2(b) (understanding-detection.md section 4). The text-only features (the IDK_R lexicon and hedges) do not depend on the answer. Source: https://learn.microsoft.com/en-us/legal/ai-code-of-conduct
+
+
+<!-- merged from inbox/world-best-voice-ux.json -->
+## open-predictive-turn-model
+Replace the fixed 900 ms silence endpoint with commit-early-decide-late: candidate endpoint ~450 ms, Smart Turn v3.2 int8 ONNX (BSD-2, 8 MB, Hindi 93.44% n=1,295) on device scoring the last <=8 s, threshold set by the Director per item type and child priors, fragment merge on low P. Evidence: child-adult silence AUC 0.62 vs VAP bAcc 94.1 on child-initiated events (Brahimi et al., IWSDS 2026, OCSC 4-9 y, English); prosody beats text for EOT (arXiv 2609.11066). Decide on E1: SHIFT/HOLD AUC per band and item type; gate = cut-offs not worse than 900 ms and p50 gap >=300 ms better. Fine-tune on consented E1 audio with time-to-next-onset targets (Next-Turn) if Hindi children do not transfer. Source: docs/research/world-best/voice-ux-smoothness.md S1-S2.
+
+## open-dragonhd-prosody-unsupported
+Microsoft's HD voices page (updated 2026-09-24) marks `<prosody>` unsupported for DragonHD and Dragon HD Omni; `<break>`, `<lang>`, `<phoneme>`, `<say-as>`, `<sub>`, alias lexicon supported. VOICE-CHOICE §3 relies on `<prosody rate>`; measured 15.2-15.9 chars/s at rate 0.95 fits 'ignored'. Probe chars/s at 0.75 vs 1.0 (n>=5) before building; pace by voice, `<break>`, Voice Live `voice.rate`, or gpt-4o-mini-tts `speed`. Also test `enhancePronunciation=true` on the NCERT term set.
+
+## open-voicelive-word-timestamps
+Word boundary events exist only on Dragon HD Omni (not production). Voice Live returns `response.audio_timestamp.delta` word timestamps for Azure voices; probe with an en-IN DragonHD voice on lane B.
+
+## open-live-reference-aec
+Voice Live Live-Reference AEC (`reference_source: client`, `channels: 2`, API >= 2026-07-15). Default server AEC assumes immediate playback and degrades past 2 s delay, which pause-then-decide barge-in produces. Measure bargeStats.resumedEcho per 100 teacher turns on 3 low-end Android phones, speaker vs headset.
