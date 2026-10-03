@@ -1824,3 +1824,21 @@ Azure gives this sponsored subscription no self-serve GPU quota. In all 17 regio
 <!-- merged from inbox/owner-north-star.json -->
 ## owner-north-star-2026-10-03
 Owner: 'keep working until we have the full product ready that I can test thoroughly and which actually works with all the features'. The pillars: a properly thought-out product design with great UI/UX for students and parents; a real human-like teacher animation; on-the-go generation of content (animation, image generation, diagrams and games generated at that moment by code and deployed there) with an extremely smooth experience; a research-level breakthrough in knowing whether the child understood; knowing how each student learns best, and on that basis building hyper-personalised learning on the go with AI resources. 'We are defining the future of education.' The main loop owns all the specification. Execution: a per-pillar gap audit on production (wf_d4e232fc-274) feeds docs/design/gap-audit/BUILD-PLAN.md, then build waves. This decision does not expire; it is reversed only by the owner.
+
+
+<!-- merged from inbox/gpu-harness.json -->
+## face3d-models (2026-10-03)
+The build-time GPU face job uses:
+- **Hunyuan3D-2.1** (repo commit 82920d64, weights tencent/Hunyuan3D-2.1@0b946776) for the image-to-3D shape and the PBR paint. Tencent Hunyuan 3D 2.1 Community Licence, re-read this session (LICENSE sha256 b79ac5e11ce0...): the territory is worldwide minus the EU, UK and South Korea; a separate licence is needed only above 1 M MAU on the 2025-06-13 release date; Tencent claims no rights in outputs; outputs may not be used to improve other models.
+- **Marigold-IID appearance v1-1 and Marigold-Normals v1-1** (OpenRAIL++-M weights, Apache-2.0 code) per portrait.
+- **dinov2-giant** (Apache-2.0), **Real-ESRGAN x4plus** (BSD-3), **rembg/U-2-Net** (MIT/Apache).
+- **MediaPipe** landmarks, ray-cast onto the reconstructed surface.
+
+Everything is pinned: the git commit, hashed pip locks (167 + 129 pins, --require-hashes), and sha256 / git-oid per weight file. Details are in docs/design/teacher/GPU-JOBS.md §5.1. **Reverse if** the owner's group passes 1 M MAU, or the product needs EU/UK/KR distribution of assets built this way (Hunyuan's territory clause); or a commercial-OK face-specific model appears that beats MediaPipe + wrap on the held-out reprojection test.
+
+## gpu-identity-target-flag (2026-10-03)
+`TAXILA_IDENTITY_TARGET=<face3d run dir>` turns on the GPU identity target in the merged build. It lives in identity/gpu_target.py, with one hook each in wrap.py and project.py; unset, both hooks are no-ops (verified: max difference 0.0 m against the pre-hook wrap).
+- Default `TAXILA_GPU_LANDMARKS=cpu`: the CPU landmark recon stays, because it reprojected better on every view, held-out views included. The GPU mesh is aligned to it by a 468-landmark similarity and feeds a dense normal-shrink term: clamped to 3 mm, smoothed over 6 mm, cleared around the eyes and lips, mirror-symmetrised.
+- Texture default `raw`.
+
+**Reverse if** the merged build with the flag fails the yaw-24 or front-NME bars, or any gate (turn the flag off); or if a GPU landmark set wins the held-out reprojection test (switch to `=gpu`).

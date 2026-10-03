@@ -70,6 +70,17 @@ All runs on 2026-10-03 [M]. Costs are estimates: price × instance life (60 s mi
 | `selftest-backstop` | i-0fa19ee95125a01ab, t3.small spot | about 15.5 min life (deadline + 10 min grace) | ~$0.002 |
 | `face3d` smoke 1 | i-05102414c27e44f3e, c6i.2xlarge spot, us-east-1b (1a: InsufficientInstanceCapacity, so the harness fell back) | failed in 189 s: the hashed locks did not carry the PyTorch index (fixed) | ~$0.01 |
 | `face3d` smoke 2 (`FACE3D_SMOKE=1`) | i-0ccb11bea9114c3b7, c6i.2xlarge spot, us-east-1a | instance life 662 s; job 601 s: both venvs 4.5 min, Hunyuan clone + CUDA extensions, 61 weight files / ~25 GB verified in 500 s (from origin; 13 already in the S3 cache), imports 1.7 min | **$0.030** |
+| `face3d` GPU 1 | i-04a86a5be7d539232, g6.2xlarge spot, us-east-1a | job 1083 s: setup 6 min, 3 shapes, scoring done; then **failed at paint**: `torchvision_fix` was not on `sys.path` from `face3d.py`, so basicsr's import broke (fixed; the smoke now imports through `face3d.py` itself); instance life 1453 s | **$0.387** |
+| `face3d` GPU 2 (teal, complete) | i-0ddad9592b99d93e3, **g6.2xlarge on-demand**, us-east-1c. Spot was refused (MaxSpotInstanceCountExceeded: the previous spot instance, still shutting-down, held the spot quota); g6e.xlarge had no spot capacity in any AZ; on-demand g6.2xlarge had no capacity in 1a or 1b. 377 s of launch attempts | run.sh 1541 s (stages in §5.4); outputs 83 MB, 96 files; instance life 1909 s | **$0.530** |
+| `gpuproof` 1 | none: g6.xlarge spot had no capacity in 1a, 1b, 1c, 1d or 1f (1e unsupported), and on-demand was VcpuLimitExceeded while face3d held all 8 vCPU | `not-launched`, nothing billed | $0 |
+| `gpuproof` 2 (coordinator's GPU harness proof) | i-0aa341d204cfb05b2, **g6.xlarge spot**, us-east-1d (after capacity failures in 1a, 1b and 1c; 170 s of launch attempts) | user-data 41 s after launch; job 55 s: `nvidia-smi` showed an NVIDIA L4 (23.7 GB), DLAMI torch 2.7.0+cu128, fp16 8192² matmul **57.7 TFLOPS**, fp32 max error vs CPU 2.5e-5; `terminated` confirmed at 19:39 | **$0.069** |
+
+**Session total: est. $1.04, of which GPU $0.99** [M, `status.py` ledger]. All 6 launched instances are `terminated`,
+and the reaper removed the 3 leftover backstop schedules. **GPU instances stay `shutting-down` for 6-7 min** [M].
+EC2 does not bill in that state, so the ledger's lives (LaunchTime → the runner's last check) slightly overstate. `run.py`
+now waits up to 12 min for `terminated`, and keeps the backstop schedule if the instance never gets there.
+**Spot capacity for g6 in us-east-1 was scarce all evening** [M]. Each `InsufficientInstanceCapacity` takes 40-70 s to
+come back, so walking every AZ costs up to ~6 min before the on-demand fallback starts.
 
 Prices from the Pricing API and the spot history, us-east-1, 2026-10-03 [M], USD/h:
 
@@ -89,17 +100,17 @@ Hugging Face (about 8 min [M]).
 
 ## 4. Quota (us-east-1), at the end of this session
 
-`status.py`, 2026-10-03 [M]:
-- **Running On-Demand G and VT** (L-DB2E81BA): **0**, request to 8 **CASE_OPENED** (case 179104876200040)
-- **All G and VT Spot** (L-3819A6DF): **0**, request to 8 **CASE_OPENED** (case 179104876200173)
-- **Running On-Demand Standard** (L-1216C47A): **16** (was 5), request CASE_CLOSED, i.e. granted
+`status.py`, 19:39 UTC 2026-10-03 [M]. All four requests are CASE_CLOSED and granted:
+- **Running On-Demand G and VT** (L-DB2E81BA): **8** (was 0)
+- **All G and VT Spot** (L-3819A6DF): **8** (was 0). The API showed 0 for a while after the case closed, but a spot
+  launch already succeeded at 18:24
+- **Running On-Demand Standard** (L-1216C47A): **16** (was 5)
 - **All Standard Spot** (L-34B43A08): 32
 
-The face3d GPU job cannot launch until a G/VT request is granted. If it is tried anyway, the harness reports
-`VcpuLimitExceeded` / `MaxSpotInstanceCountExceeded` per type and launches nothing (`result: not-launched`). 8 vCPU
-allows one g6.2xlarge or g5.2xlarge, or two g6e.xlarge.
+8 vCPU of each allows one 8-vCPU GPU instance (g6.2xlarge / g5.2xlarge) or two 4-vCPU ones, per market. A
+shutting-down instance still counts against its market's quota [M: run 2's spot refusal].
 
-## 5. The face3d job (`scripts/gpu/jobs/face3d/`): ready, not yet run on a GPU
+## 5. The face3d job (`scripts/gpu/jobs/face3d/`): run for real on teal
 
 **Purpose.** Replace the CPU fallback's identity input. That fallback was an orthographic bundle adjustment of MediaPipe
 landmarks over 2D portraits. Its known weakness is depth: the 3/4 lower face reads too long, and the profile could not
@@ -168,27 +179,30 @@ not need it at inference: its pipeline is self-contained in `hunyuan3d-paintpbr-
   - the 3D landmarks come back in recon.json's frame. Against the CPU recon they give a proper rotation (det +1, 6.6°,
     matching the refined azimuth) and a depth correlation of 0.93;
   - this is a plumbing test, not a quality number.
-- **Not yet run on a GPU.** The shape, paint and Marigold stages have never executed. CUDA OOM, the paint remesh on
-  a 512³ mesh, and Hunyuan's head orientation are the open risks [U].
-- If the A10G (g5) build fails on arch: `TORCH_CUDA_ARCH_LIST` already includes 8.6.
+- **Run end to end on a GPU**: run `face3d-20261003-184935-92c5` on a g6.2xlarge (L4). Results are in §5.6.
+- The A10G (g5) path is untested. `TORCH_CUDA_ARCH_LIST` includes 8.6.
 
-### 5.4 GPU-hour estimate [U]
+### 5.4 GPU hours [M, run face3d-20261003-184935-92c5, g6.2xlarge L4, one run]
 
-| part | g6.2xlarge (L4) |
+| stage | seconds |
 |---|---|
-| setup: venvs 4.5 min [M] + Hunyuan build ~2 min, overlapped with weights (~8 min from HF [M], less from the S3 cache) | ~8-10 min |
-| matte + 3 shape seeds at octree 512 | ~6-10 min |
-| scoring and lift (CPU, 8 vCPU) | ~2-3 min |
-| paint (6 views, 512, needs ~21 GB VRAM per Hunyuan's README) | ~4-7 min |
-| Marigold on 8 views (ensemble 3) | ~3-5 min |
-| **total per look** | **~25-35 min ≈ 0.5 GPU-h ≈ $0.45-0.60** |
+| toolchain: uv, Python, both hashed venvs | 234 |
+| Hunyuan clone + CUDA extensions, waiting on the weights (343 s; 16 of 61 files from the S3 cache) | 116 |
+| matte (3 views, rembg) | 70 |
+| shape: 3 seeds at octree 512, 50 steps (190-200 s per seed; 0.8-1.4 M vertices) | 635 |
+| score: 4 candidates, Open3D + MediaPipe | 36 |
+| paint: PBR, 6 views at 512 (remesh to 40 k faces; peak VRAM 14.5 GB) | 226 |
+| Marigold IID + normals on 8 views (about 4 s per model per view after load) | 204 |
+| lift (recon.gpu.json, target.npz, views) | 19 |
+| **run.sh total** | **1541 (25.7 min)**; instance life 31.8 min, $0.53 on-demand |
 
-`maxMinutes` is 120, about 3.5× the estimate. Teal plus two re-runs, then slate and plum: about 3 GPU-h, under $5.
+Per look ≈ 0.5 GPU-h ≈ $0.50. Two seeds would save ~3 min. `maxMinutes` 120 leaves 4× headroom. Slate and plum,
+plus one re-run each: about 2 GPU-h, ~$2.
 
 ### 5.5 Running it and using the result
 
 ```
-python3 scripts/gpu/status.py                                   # wait for L-DB2E81BA or L-3819A6DF >= 8
+python3 scripts/gpu/status.py                                   # quota: G/VT 8 on-demand + 8 spot (granted)
 python3 scripts/gpu/run.py scripts/gpu/jobs/face3d              # teal; ~30 min
 TAXILA_IDENTITY_TARGET=scripts/gpu/jobs/face3d/runs/<job-id> node scripts/character/bakeoff/merged/build.mjs --looks teal
 ```
@@ -198,14 +212,18 @@ The flag lives in `scripts/character/bakeoff/merged/identity/gpu_target.py`, wit
 the pre-hook function (max difference 0.0 m).
 
 Set, the flag does four things:
-- `recon` becomes `recon.gpu.json`;
-- the fit-loop and profile corrections are dropped, because they were fitted to the old recon. Re-run fitloop.py and
-  profilefit.py on the new basis; `TAXILA_GPU_KEEP_CORRECTIONS=1` keeps them;
+- with `TAXILA_GPU_LANDMARKS=gpu` only: `recon` becomes `recon.gpu.json`, and the fit-loop and profile corrections are
+  dropped, because they were fitted to the old recon. Re-run fitloop.py and profilefit.py on the new basis;
+  `TAXILA_GPU_KEEP_CORRECTIONS=1` keeps them;
 - a dense shrink term moves each face vertex along its normal toward `target.npz`. It is clamped (3 mm), smoothed over
   6 mm, cleared around the eye and lip openings, and symmetrised on the topological mirror. A synthetic 2 mm offset
   test recovered +2.00 mm, mirror-exact. Turn it off with `TAXILA_GPU_DENSE=0`;
-- texture projection uses the Marigold albedo (`TAXILA_GPU_TEXTURE=delit`). `delit+views` also adds the GPU renders
-  at weight 0.3; `raw` goes back to the portraits.
+- `TAXILA_GPU_LANDMARKS=cpu` (**default**) keeps the CPU landmark recon and the corrections. The GPU surface is
+  brought into the CPU recon's frame by a 468-landmark similarity, and only the dense term uses it. `=gpu` swaps the
+  landmark target, with the consequences above. A synthetic test with the GPU frame rotated 20°, scaled 3× and
+  shifted recovered +2.00 mm in both modes;
+- texture: `TAXILA_GPU_TEXTURE=raw` (**default**: the portraits, unchanged). `delit` (Marigold albedo) and
+  `delit+views` (also the GPU renders at weight 0.3) are experimental; see §5.6.
 
 **Bars the result must clear** before it replaces the CPU recon (VERDICT.md):
 - front NME ≤ 1.2% (now 0.96%);
@@ -214,9 +232,49 @@ Set, the flag does four things:
 
 Reversal: if the GPU target fails the yaw-24 bar, or costs front likeness, the CPU recon stays and the flag stays off.
 
+### 5.6 What the first real teal run showed
+
+Run `face3d-20261003-184935-92c5`, one look, [M] unless marked.
+
+- **Shape: good.** The Hunyuan3D-2.1 bust from the front portrait is a recognisable likeness: front-facing, Y-up, with
+  ears, hair mass and the kurta neckline. Front interior NME of the untextured render against the portrait, by
+  likeness.py's metric:
+  - bust matte: seeds 0 / 1 / 2 = 2.56 / **1.52** / 2.23 %;
+  - head-crop matte: 2.78 / 1.97 / no face found.
+
+  So the **bust matte wins** and is the default (`FACE3D_CROP=none`). The unwrapped MakeHuman teal is at 2.03 %; the
+  CPU wrap, fitted to this view, reaches 0.96 %.
+- **Landmark target: the CPU recon is better at landmark level.** Each 3D landmark set was fitted with its best
+  orthographic camera to each portrait's MediaPipe landmarks (interior; visible half on turned views), and the mean
+  reprojection error taken in % IOD:
+
+  | view | CPU recon | GPU (bust s1) |
+  |---|---|---|
+  | front | 0.62 | 1.48 |
+  | q3 | 0.65-0.91 | 1.31-1.64 |
+  | **held out:** q45 L/R | 1.03 / 1.29 | 1.65 / 2.01 |
+  | **held out:** profile90 L/R | 1.86 / 2.43 | 2.50 / 2.66 |
+
+  The metric favours the CPU recon, which was solved from the same photo detections, and the GPU set also carries
+  MediaPipe-on-CG-render noise. But the GPU set wins **no** view, held-out views included. Hence
+  `TAXILA_GPU_LANDMARKS=cpu` by default: the GPU mesh feeds only the dense term (cheeks, jaw, forehead, silhouette:
+  what 468 landmarks do not constrain). Whether that dense term moves the yaw-24 NME bar is **not measured yet**. It
+  needs a merged build with the flag set.
+- The image generator's "q45" views measure 16-26° yaw, and its "profile90" views 56-63° [M, from the camera fits].
+  The references are less turned than their names say.
+- **Hunyuan paint: usable as a preview only** [U, by eye]. Recognisable, but the eyes and brows look painted on and the
+  under-eyes are too dark. Not used as a texture source.
+- **Marigold-IID albedo: not a drop-in projection source** [U, by eye, one look]. It flattens the skin to a uniform
+  pastel, loses the skin detail, and turns the lips purple. Its means are cool (profile90 RGB ≈ 163/174/175). Hence
+  `TAXILA_GPU_TEXTURE=raw` by default. Its normals and roughness maps are unexamined, and are the likelier use.
+
 ## 6. Open items
 
-- Once G/VT quota is granted: run face3d on teal and record the stage times. This turns §5.4 into [M].
+- Build merged teal with `TAXILA_IDENTITY_TARGET=scripts/gpu/jobs/face3d/runs/face3d-20261003-184935-92c5` (dense term,
+  CPU landmarks), then measure front NME, yaw-24 NME, G1-G6 and G9 against the current merged teal. This is the only
+  test of whether the GPU surface earns its place.
+- If the dense term does not help, try Hunyuan3D-2mv (same licence family) with the front and side references as
+  multi-view input, before giving up on GPU geometry.
 - `art/character/LICENSES.md` should gain the §5.1 rows when a GPU output is first used in a shipped asset. Not edited
   here: no GPU output is used in a shipped asset yet, and this change stays additive.
 - A likeness / reverse-image review per generated identity is still owed before any child sees her (VERDICT licence row).

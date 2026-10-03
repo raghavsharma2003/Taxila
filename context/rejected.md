@@ -683,3 +683,41 @@ The reviewer ran the real checkTeacherName (child Riya) over names they wrote th
 - **Rule:**
   - re-score the presets on every new face;
   - confirm judge-tuned poses with a held-out judge or a human panel.
+
+
+<!-- merged from inbox/gpu-harness.json -->
+## face3d-nc-deps-rejected (2026-10-03)
+- **TRELLIS (MIT)**: the textured GLB export (postprocessing_utils.to_glb) uses nvdiffrast (NVIDIA Source Code Licence §3.3: non-commercial, research or evaluation only) and Inria diff-gaussian-rasterization (commercial use forbidden).
+- **TRELLIS.2 (MIT)**: o_voxel.postprocess.to_glb and its texturing import nvdiffrast; its DINOv3 encoder is gated under Meta's licence.
+- **Face-specific reconstruction**: DECA, EMOCA, SMIRK, RingNet and Pixel3DMM need FLAME. Deep3DFaceRecon and 3DDFA need BFM (plus nvdiffrast). FaceLift's weights are under the Adobe Research Licence. VRN was trained on BFM-derived data. Sapiens is CC-BY-NC. CodeFormer is S-Lab non-commercial.
+
+What broke: none passes commercial use, so the face-specific part stays MediaPipe plus our own wrap.
+
+## marigold-albedo-as-projection-source (2026-10-03)
+Tried: Marigold-IID appearance v1-1 albedo per portrait, at the portrait's own pixel grid, as a drop-in for the raw portraits in project.py (TAXILA_GPU_TEXTURE=delit).
+
+What broke [by eye, teal, one look]: the skin went to a uniform pastel with the detail gone, the lips went purple, and the means came out cool (profile90 RGB ≈ 163/174/175). The default stays `raw`. Its normal and roughness outputs are unexamined.
+
+## head-crop-matte-for-hunyuan-shape (2026-10-03)
+Tried: cropping the portrait to the head (1.9 × the face oval) before Hunyuan3D-2.1, so the head fills the octree.
+
+What broke: front NME was worse on every seed (2.78 / 1.97 / no face found, against the bust's 2.56 / 1.52 / 2.23 %, n = 3 each). The bust matte stays the default.
+
+
+<!-- merged from inbox/world-best-tutoring.json -->
+## rj-default-answer-mode
+**Tried (literature, 2025-26): an AI tutor whose default is direct answers or explanations, added as an optional tool.** What broke: University of Maryland RCT (2,379 students, 30 instructors, GPT-4o RAG tutor, default 'direct instruction' mode that few instructors switched off): final grades -0.27 to -0.37 SD, participation in instructor-designed activities -0.90 SD, first-generation students -0.50 vs -0.22 SD; 15% uptake; 73.8% of requests sought information or solutions, 0.7% feedback on own work (EdWorkingPaper 26-1598, Oct 2026). Stromberg et al.'s 26,811-student panel: closed-book exams about -20% within six months of general AI use [S]. ChatGPT Study Mode, Claude learning mode and Gemini Guided Learning are all user-switchable. Instead: no answer mode, toggle or parent setting exists; key never spoken before rung 4 on any 'just tell me' (floor test in evals/never-rules.mjs via revealsAnswer()). Source: docs/research/world-best/tutoring-products-pedagogy.md S4.
+
+## rj-timed-help-lockout
+**Tried (literature): forcing independent work before help is available.** What broke: Fischer, Rau & Rilke 2025 (IZA DP 18338, n = 334, pre-registered): unrestricted AI tutor access beat 'read 10 minutes first' by 0.21 SD; the lockout caused intensive prompting bursts. University sample, so directional for children. Instead: help always reachable; productive struggle lives in the graded ladder content, never in timers (src/lesson/useLesson.ts, server/director/state.js). Source: world-best/tutoring-products-pedagogy.md S4.
+
+## rj-advice-menu-for-weak-learners
+**Tried (literature): giving learners several AI suggestions to choose from.** What broke: Otis et al. (Kenya, GPT-4 WhatsApp mentor, Management Science): no average effect; high performers about +15%, low performers about -10%, driven by which advice they chose to act on [S]. Gains in Nigeria and Sierra Leone also skewed to stronger-baseline students. Instead: the low-baseline tercile gets one concrete next step and forced worked-example entry on new skills (proposed S2). Source: world-best/tutoring-products-pedagogy.md S2.
+
+
+<!-- merged from inbox/world-best-understanding-detection.json -->
+## rj-llm-icap-as-learner-state
+**Tried (literature, Do, Jiang, Aeron & Thomas 2026, arXiv 2607.28651):** an LLM coding cognitive engagement on a 7-point extended ICAP scale over 42 group conversations. **Broke:** human-LLM (in-context learning) kappa was 0.593-0.655 against human-human 0.974, and framework refinement gave the LLM only modest gains. Disagreements concentrated in levels 3-5, the band that matters. **Instead:** ICAP is a design tag on teacher moves and a lesson-level code proxy (docs/research/world-best/understanding-detection.md S8), never a per-child state. **Revisit if:** an LLM coder reaches kappa >= 0.8 against two human coders on 300 Taxila child turns.
+
+## rj-llm-item-discrimination
+**Tried (literature, Chen et al. 2026, arXiv 2606.18709):** 42 LLMs estimating item discrimination, both directly and through simulated proficiency-level responses. **Broke:** the CEFR-stratified rank correlation was 0.231. The gains came from differences between models, not from proficiency prompts. **Instead:** LLM simulated classrooms supply difficulty b priors only, with sd 1.0; discrimination stays at the population default until real responses arrive (understanding-detection.md S7). **Revisit if:** a method reaches rho >= 0.5 for discrimination on held-out real items.

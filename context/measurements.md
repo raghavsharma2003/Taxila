@@ -1177,3 +1177,38 @@ The four Quota API requests filed 2026-10-03 ~16:53 UTC (eastus2 NCADS_A100_v4=2
 
 ## aws-quota-approved-2026-10-03
 Checked 19:03 UTC, us-east-1, Service Quotas: Running On-Demand G and VT = 8 vCPU, All G and VT Spot = 8 vCPU, On-Demand Standard = 16 vCPU. All three cases are closed. That is about 1.6 h from request (17:32) to all approved. Azure's Quota API requests are all still Failed. Build GPU runs on AWS (aws-build-gpu).
+
+
+<!-- merged from inbox/gpu-harness.json -->
+## gpu-harness-proof-2026-10-03
+All AWS us-east-1, run with scripts/gpu/run.py.
+- **hello**, i-0866dc5aa0b27c9fd, t3.small spot: launch call 2.2 s; user-data started 24 s after launch; job 62 s; outputs (3 files) back; the instance self-terminated (*Client.UserInitiatedShutdown*); life 105 s; $0.0002.
+- **selftest-hard**: the harness hung, and the runner was SIGKILLed 2 s after launch. The instance's own `shutdown -h +5` ended it: launched 17:43:49, seen shutting-down 17:49:28 (*InstanceInitiatedShutdown*).
+- **selftest-backstop**: the job cancelled its own shutdown, and the runner was SIGKILLed. The EventBridge Scheduler one-shot (due 17:58:46) terminated it, seen at 17:59:19, and deleted itself.
+- **face3d CPU smoke**, c6i.2xlarge spot on the real DLAMI: hashed locks installed, Hunyuan CUDA extensions built, 61 weight files / ~25 GB verified in 500 s; $0.030.
+- **gpuproof**, i-0aa341d204cfb05b2, g6.xlarge spot (us-east-1d, after no capacity in 1a-1c; 170 s of attempts): NVIDIA L4 23.7 GB, torch 2.7.0+cu128, fp16 8192^2 matmul 57.7 TFLOPS, fp32 max error vs CPU 2.5e-5; job 55 s; terminated; $0.069.
+- GPU instances stay shutting-down for 6-7 min (not billed).
+- A shutting-down spot instance still holds the spot vCPU quota: the next spot launch got MaxSpotInstanceCountExceeded.
+- Each InsufficientInstanceCapacity takes 40-70 s to come back; g6 spot capacity was scarce in every AZ that evening.
+- Ledger: 7 runs, est. $1.04 total, GPU $0.99. Quotas at 19:39 UTC: G/VT on-demand 8, G/VT spot 8, Standard 16.
+
+## face3d-teal-run-2026-10-03
+Run face3d-20261003-184935-92c5, i-0ddad9592b99d93e3, g6.2xlarge on-demand (L4), us-east-1c; instance life 1909 s; $0.53. The previous attempt, i-04a86a5be7d539232 ($0.39), failed at paint on a sys.path bug (fixed).
+
+Stage times (s): toolchain 234, Hunyuan build + weight wait 116 (weights 343 s, 16/61 files from the S3 cache), matte 70, shape 3 seeds 635 (190-200 per seed at octree 512, 0.8-1.4 M vertices), score 36, paint 226 (40 k faces, peak VRAM 14.5 GB), Marigold on 8 views 204, lift 19. run.sh total 1541.
+
+Front interior NME of untextured renders against the portrait (likeness.py metric):
+- bust matte, seeds 0 / 1 / 2: 2.56 / 1.52 / 2.23 %;
+- head-crop matte: 2.78 / 1.97 / no face found.
+So the bust matte is the default.
+
+Held-out reprojection, best orthographic camera per view, interior landmarks, % IOD:
+
+| view | CPU recon | GPU bust s1 |
+|---|---|---|
+| front | 0.62 | 1.48 |
+| q3 | 0.65-0.91 | 1.31-1.64 |
+| q45 L/R (held out) | 1.03 / 1.29 | 1.65 / 2.01 |
+| profile90 L/R (held out) | 1.86 / 2.43 | 2.50 / 2.66 |
+
+The metric favours the CPU recon, which was built from the same photo detections. The generated "q45" references measure 16-26° yaw, and "profile90" 56-63°.

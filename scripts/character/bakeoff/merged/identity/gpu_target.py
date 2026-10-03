@@ -16,11 +16,12 @@ build.mjs passes its environment to every Blender stage, so nothing else changes
       reconstructed surface (<run>/target.npz), clamped (TAXILA_GPU_DENSE_MAX_MM, default 3), smoothed over 6 mm,
       kept off the eye and lip openings, symmetrised on the topological mirror like the landmark field.
       TAXILA_GPU_DENSE=0 turns this term off (landmark target only); TAXILA_GPU_DENSE_WEIGHT (default 1.0) scales it.
-  texture (project.py hook), TAXILA_GPU_TEXTURE:
-    - `delit` (default): project <run>/refs_delit/<view>.png (Marigold-IID albedo, same pixel grid as the portrait, so
+  texture (project.py hook), TAXILA_GPU_TEXTURE (default `raw` = the portraits, unchanged: the first real run's
+    Marigold albedo flattened the skin to a uniform pastel and turned the lips purple, by eye, GPU-JOBS.md §5.6):
+    - `delit` (experimental): project <run>/refs_delit/<view>.png (Marigold-IID albedo, same pixel grid as the portrait, so
       the portraits' own landmarks.json still applies) instead of the raw portraits;
     - `delit+views` / `raw+views`: also add the GPU renders gpu_q45_* / gpu_profile90_* at TAXILA_GPU_VIEW_WEIGHT (0.3);
-    - `raw` or `off`: the portraits as before.
+    - `raw` (default) or `off`: the portraits as before.
 
 Nothing here runs when TAXILA_IDENTITY_TARGET is unset: both hooks return their input unchanged.
 """
@@ -154,7 +155,7 @@ def projection_spec(spec, log=print):
     """Called at the top of project.apply with look['projection']; returns a (copied) spec pointing at a merged view
     directory under the run, or `spec` unchanged when the flag is off."""
     d = active()
-    mode = os.environ.get("TAXILA_GPU_TEXTURE", "delit")
+    mode = os.environ.get("TAXILA_GPU_TEXTURE", "raw")
     if not d or mode in ("raw", "off"):
         return spec
     out = os.path.join(d, f"_proj_{mode.replace('+', '_')}")

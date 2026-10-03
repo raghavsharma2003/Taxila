@@ -42,3 +42,13 @@ The realtime lane answers before the Director runs, so praise / register / scree
 
 ## open-lt-evals-plan-gate
 Scripts that start lessons for one child repeatedly meet the plan gate: tests/lesson-api-e2e.mjs (its s2 after s1 ended), evals/cascade-latency.mjs, evals/director-sim.mjs and scripts/prod-smoke.mjs get 409 outside 07:00-20:30 IST or after a done lesson. They need the child's controls set to 00:00-23:59 (PATCH controls) or `purpose: "practice"`. Not in the lesson-truth paths.
+
+
+<!-- merged from inbox/gpu-harness.json -->
+## gpu-dense-target-unmeasured (2026-10-03)
+Build merged teal with TAXILA_IDENTITY_TARGET=scripts/gpu/jobs/face3d/runs/face3d-20261003-184935-92c5 (dense term, CPU landmarks). Measure front NME, yaw-24 NME, G1-G6 and G9 against the current merged teal. Until that is done, nothing says the GPU surface helps. If it does not, try Hunyuan3D-2mv (multi-view input from our front and side references) next.
+
+
+<!-- merged from inbox/world-best-understanding-detection.json -->
+## wb-coc-epistemic-vs-emotional
+The Microsoft Enterprise AI Services Code of Conduct v4.0 (2026-05-01), restriction 12, bans attempts to 'infer people's emotional states from ... speech patterns', including 'other terms commonly used to describe a person's emotional state'. Confusion is commonly called an emotion, so prosodic confusion detection stays banned. Open: is P(answer reflects knowledge) from onset latency, self-repair and IDK-vs-cannot-recall a knowledge inference outside restriction 12? This blocks the Epistemic Speech Evidence research protocol, features 2(a) and 2(b) (understanding-detection.md section 4). The text-only features (the IDK_R lexicon and hedges) do not depend on the answer. Source: https://learn.microsoft.com/en-us/legal/ai-code-of-conduct

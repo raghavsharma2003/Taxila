@@ -323,7 +323,7 @@ def main():
         if inst_id:
             tt = time.time()
             C.terminate(inst_id, "(run.py exit)")
-            for _ in range(60):
+            for _ in range(144):            # GPU instances sit in shutting-down for 6-7 min (measured); not billed there
                 d = ec2.describe_instances(InstanceIds=[inst_id])["Reservations"][0]["Instances"][0]
                 if d["State"]["Name"] == "terminated":
                     break

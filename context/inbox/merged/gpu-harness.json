@@ -1,0 +1,116 @@
+{
+ "nodes": [
+  {
+   "id": "gpu-harness",
+   "kind": "component",
+   "title": "scripts/gpu build-job harness: run.py (pack to S3, presigned user-data, spot then on-demand over types x AZs, poll, always terminate), reaper.py, status.py; 7 safety limits incl. instance self-shutdown and an EventBridge Scheduler backstop",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "gpu-harness-proof-2026-10-03",
+   "kind": "measurement",
+   "title": "Harness proven: t3.small job returned outputs and self-terminated ($0.0002); hard lifetime and Scheduler backstop each terminated an abandoned instance; g6.xlarge L4 nvidia-smi + 57.7 fp16 TFLOPS matmul, terminated ($0.069); session total est. $1.04",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "face3d-models",
+   "kind": "decision",
+   "title": "GPU face job = Hunyuan3D-2.1 (shape + PBR paint; Tencent community licence, India in territory, 1M-MAU-at-release clause) + Marigold v1-1 IID/normals (OpenRAIL++-M) + MediaPipe lift; TRELLIS / TRELLIS.2 and every face-specific recon rejected on licence",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "face3d-nc-deps-rejected",
+   "kind": "rejection",
+   "title": "TRELLIS and TRELLIS.2 textured export needs nvdiffrast (NVIDIA non-commercial) and, for TRELLIS, Inria diff-gaussian-rasterization; FLAME/BFM recon (DECA, EMOCA, SMIRK, Deep3DFaceRecon, 3DDFA), FaceLift weights (Adobe Research), Sapiens (CC-BY-NC), CodeFormer (S-Lab NC) all non-commercial",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "face3d-teal-run-2026-10-03",
+   "kind": "measurement",
+   "title": "face3d on teal, g6.2xlarge L4: run.sh 1541 s ($0.53); shape 190-200 s/seed at octree 512; bust seeds front NME 2.56/1.52/2.23% vs head-crop 2.78/1.97/no-face; GPU landmarks reproject worse than CPU recon on every view incl. held-out q45 (1.65-2.01 vs 1.03-1.29% IOD)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "gpu-identity-target-flag",
+   "kind": "decision",
+   "title": "TAXILA_IDENTITY_TARGET=<face3d run> enables the GPU target in the merged build: CPU landmarks kept by default, the GPU surface feeds only a dense normal-shrink term (<=3 mm); texture stays the raw portraits by default",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "marigold-albedo-as-projection-source",
+   "kind": "rejection",
+   "title": "Marigold-IID albedo as a drop-in projection source: flattened skin to uniform pastel, lost detail, purple lips, cool cast (by eye, teal, n=1 look); default texture mode stays raw",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "gpu-dense-target-unmeasured",
+   "kind": "open",
+   "title": "Does the GPU dense surface improve merged teal's yaw-24 NME (bar <= 1.5x front) without costing front NME <= 1.2% or G1-G9? Build with the flag and measure",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "head-crop-matte-for-hunyuan-shape",
+   "kind": "rejection",
+   "title": "Head-crop matte before Hunyuan3D-2.1 shape: front NME worse on every seed (2.78/1.97/no-face vs bust 2.56/1.52/2.23%, n=3 each)",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "gpu-harness",
+   "rel": "implements",
+   "dst": "aws-build-gpu"
+  },
+  {
+   "src": "gpu-harness",
+   "rel": "measured_by",
+   "dst": "gpu-harness-proof-2026-10-03"
+  },
+  {
+   "src": "face3d-models",
+   "rel": "part_of",
+   "dst": "teacher-bakeoff-verdict"
+  },
+  {
+   "src": "face3d-nc-deps-rejected",
+   "rel": "informs",
+   "dst": "face3d-models"
+  },
+  {
+   "src": "face3d-models",
+   "rel": "measured_by",
+   "dst": "face3d-teal-run-2026-10-03"
+  },
+  {
+   "src": "gpu-identity-target-flag",
+   "rel": "caused_by",
+   "dst": "face3d-teal-run-2026-10-03"
+  },
+  {
+   "src": "marigold-albedo-as-projection-source",
+   "rel": "informs",
+   "dst": "gpu-identity-target-flag"
+  },
+  {
+   "src": "gpu-dense-target-unmeasured",
+   "rel": "blocks",
+   "dst": "gpu-identity-target-flag"
+  },
+  {
+   "src": "gpu-harness-proof-2026-10-03",
+   "rel": "informs",
+   "dst": "aws-quota-approved-2026-10-03"
+  },
+  {
+   "src": "head-crop-matte-for-hunyuan-shape",
+   "rel": "informs",
+   "dst": "face3d-models"
+  }
+ ],
+ "md": {
+  "decisions": "## face3d-models (2026-10-03)\nThe build-time GPU face job uses:\n- **Hunyuan3D-2.1** (repo commit 82920d64, weights tencent/Hunyuan3D-2.1@0b946776) for the image-to-3D shape and the PBR paint. Tencent Hunyuan 3D 2.1 Community Licence, re-read this session (LICENSE sha256 b79ac5e11ce0...): the territory is worldwide minus the EU, UK and South Korea; a separate licence is needed only above 1 M MAU on the 2025-06-13 release date; Tencent claims no rights in outputs; outputs may not be used to improve other models.\n- **Marigold-IID appearance v1-1 and Marigold-Normals v1-1** (OpenRAIL++-M weights, Apache-2.0 code) per portrait.\n- **dinov2-giant** (Apache-2.0), **Real-ESRGAN x4plus** (BSD-3), **rembg/U-2-Net** (MIT/Apache).\n- **MediaPipe** landmarks, ray-cast onto the reconstructed surface.\n\nEverything is pinned: the git commit, hashed pip locks (167 + 129 pins, --require-hashes), and sha256 / git-oid per weight file. Details are in docs/design/teacher/GPU-JOBS.md \u00a75.1. **Reverse if** the owner's group passes 1 M MAU, or the product needs EU/UK/KR distribution of assets built this way (Hunyuan's territory clause); or a commercial-OK face-specific model appears that beats MediaPipe + wrap on the held-out reprojection test.\n\n## gpu-identity-target-flag (2026-10-03)\n`TAXILA_IDENTITY_TARGET=<face3d run dir>` turns on the GPU identity target in the merged build. It lives in identity/gpu_target.py, with one hook each in wrap.py and project.py; unset, both hooks are no-ops (verified: max difference 0.0 m against the pre-hook wrap).\n- Default `TAXILA_GPU_LANDMARKS=cpu`: the CPU landmark recon stays, because it reprojected better on every view, held-out views included. The GPU mesh is aligned to it by a 468-landmark similarity and feeds a dense normal-shrink term: clamped to 3 mm, smoothed over 6 mm, cleared around the eyes and lips, mirror-symmetrised.\n- Texture default `raw`.\n\n**Reverse if** the merged build with the flag fails the yaw-24 or front-NME bars, or any gate (turn the flag off); or if a GPU landmark set wins the held-out reprojection test (switch to `=gpu`).",
+  "measurements": "## gpu-harness-proof-2026-10-03\nAll AWS us-east-1, run with scripts/gpu/run.py.\n- **hello**, i-0866dc5aa0b27c9fd, t3.small spot: launch call 2.2 s; user-data started 24 s after launch; job 62 s; outputs (3 files) back; the instance self-terminated (*Client.UserInitiatedShutdown*); life 105 s; $0.0002.\n- **selftest-hard**: the harness hung, and the runner was SIGKILLed 2 s after launch. The instance's own `shutdown -h +5` ended it: launched 17:43:49, seen shutting-down 17:49:28 (*InstanceInitiatedShutdown*).\n- **selftest-backstop**: the job cancelled its own shutdown, and the runner was SIGKILLed. The EventBridge Scheduler one-shot (due 17:58:46) terminated it, seen at 17:59:19, and deleted itself.\n- **face3d CPU smoke**, c6i.2xlarge spot on the real DLAMI: hashed locks installed, Hunyuan CUDA extensions built, 61 weight files / ~25 GB verified in 500 s; $0.030.\n- **gpuproof**, i-0aa341d204cfb05b2, g6.xlarge spot (us-east-1d, after no capacity in 1a-1c; 170 s of attempts): NVIDIA L4 23.7 GB, torch 2.7.0+cu128, fp16 8192^2 matmul 57.7 TFLOPS, fp32 max error vs CPU 2.5e-5; job 55 s; terminated; $0.069.\n- GPU instances stay shutting-down for 6-7 min (not billed).\n- A shutting-down spot instance still holds the spot vCPU quota: the next spot launch got MaxSpotInstanceCountExceeded.\n- Each InsufficientInstanceCapacity takes 40-70 s to come back; g6 spot capacity was scarce in every AZ that evening.\n- Ledger: 7 runs, est. $1.04 total, GPU $0.99. Quotas at 19:39 UTC: G/VT on-demand 8, G/VT spot 8, Standard 16.\n\n## face3d-teal-run-2026-10-03\nRun face3d-20261003-184935-92c5, i-0ddad9592b99d93e3, g6.2xlarge on-demand (L4), us-east-1c; instance life 1909 s; $0.53. The previous attempt, i-04a86a5be7d539232 ($0.39), failed at paint on a sys.path bug (fixed).\n\nStage times (s): toolchain 234, Hunyuan build + weight wait 116 (weights 343 s, 16/61 files from the S3 cache), matte 70, shape 3 seeds 635 (190-200 per seed at octree 512, 0.8-1.4 M vertices), score 36, paint 226 (40 k faces, peak VRAM 14.5 GB), Marigold on 8 views 204, lift 19. run.sh total 1541.\n\nFront interior NME of untextured renders against the portrait (likeness.py metric):\n- bust matte, seeds 0 / 1 / 2: 2.56 / 1.52 / 2.23 %;\n- head-crop matte: 2.78 / 1.97 / no face found.\nSo the bust matte is the default.\n\nHeld-out reprojection, best orthographic camera per view, interior landmarks, % IOD:\n\n| view | CPU recon | GPU bust s1 |\n|---|---|---|\n| front | 0.62 | 1.48 |\n| q3 | 0.65-0.91 | 1.31-1.64 |\n| q45 L/R (held out) | 1.03 / 1.29 | 1.65 / 2.01 |\n| profile90 L/R (held out) | 1.86 / 2.43 | 2.50 / 2.66 |\n\nThe metric favours the CPU recon, which was built from the same photo detections. The generated \"q45\" references measure 16-26\u00b0 yaw, and \"profile90\" 56-63\u00b0.",
+  "rejected": "## face3d-nc-deps-rejected (2026-10-03)\n- **TRELLIS (MIT)**: the textured GLB export (postprocessing_utils.to_glb) uses nvdiffrast (NVIDIA Source Code Licence \u00a73.3: non-commercial, research or evaluation only) and Inria diff-gaussian-rasterization (commercial use forbidden).\n- **TRELLIS.2 (MIT)**: o_voxel.postprocess.to_glb and its texturing import nvdiffrast; its DINOv3 encoder is gated under Meta's licence.\n- **Face-specific reconstruction**: DECA, EMOCA, SMIRK, RingNet and Pixel3DMM need FLAME. Deep3DFaceRecon and 3DDFA need BFM (plus nvdiffrast). FaceLift's weights are under the Adobe Research Licence. VRN was trained on BFM-derived data. Sapiens is CC-BY-NC. CodeFormer is S-Lab non-commercial.\n\nWhat broke: none passes commercial use, so the face-specific part stays MediaPipe plus our own wrap.\n\n## marigold-albedo-as-projection-source (2026-10-03)\nTried: Marigold-IID appearance v1-1 albedo per portrait, at the portrait's own pixel grid, as a drop-in for the raw portraits in project.py (TAXILA_GPU_TEXTURE=delit).\n\nWhat broke [by eye, teal, one look]: the skin went to a uniform pastel with the detail gone, the lips went purple, and the means came out cool (profile90 RGB \u2248 163/174/175). The default stays `raw`. Its normal and roughness outputs are unexamined.\n\n## head-crop-matte-for-hunyuan-shape (2026-10-03)\nTried: cropping the portrait to the head (1.9 \u00d7 the face oval) before Hunyuan3D-2.1, so the head fills the octree.\n\nWhat broke: front NME was worse on every seed (2.78 / 1.97 / no face found, against the bust's 2.56 / 1.52 / 2.23 %, n = 3 each). The bust matte stays the default.",
+  "open": "## gpu-dense-target-unmeasured (2026-10-03)\nBuild merged teal with TAXILA_IDENTITY_TARGET=scripts/gpu/jobs/face3d/runs/face3d-20261003-184935-92c5 (dense term, CPU landmarks). Measure front NME, yaw-24 NME, G1-G6 and G9 against the current merged teal. Until that is done, nothing says the GPU surface helps. If it does not, try Hunyuan3D-2mv (multi-view input from our front and side references) next."
+ }
+}

@@ -197,6 +197,10 @@ def apply(G):
             gx = np.clip((q * sc).astype(int), 0, zres - 1)
             vis = dq >= zbuf[gx[:, 1], gx[:, 0]] - 0.0025
             facing = np.clip((Nq @ vd - 0.15) / 0.6, 0, 1) ** 2
+            # merged: down-facing skin (under the chin and jaw) sits in the portrait's CAST shadow, which de-lighting cannot
+            # remove: it painted a grey-violet patch with per-triangle edges under the jaw. No projection there; those texels
+            # take the diffused projected tone (below)
+            facing = facing * np.clip((Nq[:, 2] + 0.45) / 0.3, 0, 1)
             inside = (q[:, 0] > 1) & (q[:, 1] > 1) & (q[:, 0] < W_ - 2) & (q[:, 1] < H_ - 2)
             w = vis * facing * inside * ((1 - hs) * _bilinear(okf, q) + hs * _bilinear(okh, q))
             hw = vis * facing * inside

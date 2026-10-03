@@ -1,0 +1,31 @@
+{
+ "nodes": [
+  {
+   "id": "wb-coc-epistemic-vs-emotional",
+   "kind": "open",
+   "title": "Does Microsoft CoC v4.0 restriction 12 (no emotional-state inference from speech patterns) cover inferring knowledge reliability from response latency and self-repair? Ask Microsoft in writing before any latency feature enters an emission",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-llm-icap-as-learner-state",
+   "kind": "rejection",
+   "title": "(literature) LLM-coded ICAP level as a per-child learner state: LLM vs human kappa 0.59-0.66 vs human-human 0.97, errors concentrated in mid levels",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-llm-item-discrimination",
+   "kind": "rejection",
+   "title": "(literature) LLM-estimated item discrimination for Forge/CAT items: 42 LLMs reach stratified rank correlation 0.231; use LLM b priors only",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  { "src": "ct-no-voice-emotion-inference", "rel": "blocks", "dst": "wb-coc-epistemic-vs-emotional" },
+  { "src": "rj-llm-icap-as-learner-state", "rel": "constrains", "dst": "comprehension-engine-program" },
+  { "src": "rj-llm-item-discrimination", "rel": "constrains", "dst": "comprehension-engine-program" }
+ ],
+ "md": {
+  "rejected": "## rj-llm-icap-as-learner-state\n**Tried (literature, Do, Jiang, Aeron & Thomas 2026, arXiv 2607.28651):** an LLM coding cognitive engagement on a 7-point extended ICAP scale over 42 group conversations. **Broke:** human-LLM (in-context learning) kappa was 0.593-0.655 against human-human 0.974, and framework refinement gave the LLM only modest gains. Disagreements concentrated in levels 3-5, the band that matters. **Instead:** ICAP is a design tag on teacher moves and a lesson-level code proxy (docs/research/world-best/understanding-detection.md S8), never a per-child state. **Revisit if:** an LLM coder reaches kappa >= 0.8 against two human coders on 300 Taxila child turns.\n\n## rj-llm-item-discrimination\n**Tried (literature, Chen et al. 2026, arXiv 2606.18709):** 42 LLMs estimating item discrimination, both directly and through simulated proficiency-level responses. **Broke:** the CEFR-stratified rank correlation was 0.231. The gains came from differences between models, not from proficiency prompts. **Instead:** LLM simulated classrooms supply difficulty b priors only, with sd 1.0; discrimination stays at the population default until real responses arrive (understanding-detection.md S7). **Revisit if:** a method reaches rho >= 0.5 for discrimination on held-out real items.",
+  "open": "## wb-coc-epistemic-vs-emotional\nThe Microsoft Enterprise AI Services Code of Conduct v4.0 (2026-05-01), restriction 12, bans attempts to 'infer people's emotional states from ... speech patterns', including 'other terms commonly used to describe a person's emotional state'. Confusion is commonly called an emotion, so prosodic confusion detection stays banned. Open: is P(answer reflects knowledge) from onset latency, self-repair and IDK-vs-cannot-recall a knowledge inference outside restriction 12? This blocks the Epistemic Speech Evidence research protocol, features 2(a) and 2(b) (understanding-detection.md section 4). The text-only features (the IDK_R lexicon and hedges) do not depend on the answer. Source: https://learn.microsoft.com/en-us/legal/ai-code-of-conduct"
+ }
+}

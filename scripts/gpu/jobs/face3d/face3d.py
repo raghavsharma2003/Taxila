@@ -27,7 +27,7 @@ sys.path.insert(0, "./hy3dpaint")
 ap = argparse.ArgumentParser()
 ap.add_argument("stage", choices=["matte", "shape", "paint"])
 ap.add_argument("--refs"); ap.add_argument("--views", default="front")
-ap.add_argument("--crop", default="head", choices=["head", "none"], help="matte: crop to the head from the portrait's landmarks")
+ap.add_argument("--crop", default="none", choices=["head", "none"], help="matte: crop to the head from the portrait's landmarks")
 ap.add_argument("--lm", help="matte --crop head: landmarks.json of the portraits")
 ap.add_argument("--image"); ap.add_argument("--images")
 ap.add_argument("--mesh"); ap.add_argument("--out", required=True)
@@ -73,8 +73,8 @@ if a.stage == "matte":
         box = None
         if a.crop == "head" and LM.get(v):
             # a square around the face oval: 1.9 x its larger side, centre raised by 0.12 x its height for the hair, so
-            # the head (not the bust) fills the shape model's frame and its 512^3 octree [first GPU run: the bust matte
-            # spanned the full 1024 px width]
+            # the head (not the bust) fills the shape model's frame. MEASURED WORSE (run face3d-20261003-184935-92c5):
+            # head-crop seeds front interior NME 2.78 / 1.97 / no face found vs bust seed 1.52, so the default is none
             import numpy as np
             P = np.array(LM[v]["lm"])[:468, :2]
             x0, y0 = P.min(0); x1, y1 = P.max(0)

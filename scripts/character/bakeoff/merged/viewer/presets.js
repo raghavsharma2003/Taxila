@@ -21,19 +21,26 @@
 //   delighted   OPEN-mouth Duchenne: jaw 0.32, upper teeth showing (upperUp 0.7), big cheek raise, crinkled eyes, head back
 //   playful     a lopsided smile pulled to one side, the opposite brow raised, a half-wink, a sideways tilt + glance
 //   surprised   brows high, eyes wide, jaw dropped with a soft O, head back
-// merged (bake-off VERDICT): three presets changed on the merged face, every change for a stated defect, not for a score:
-//   listening  faces the camera (yaw 0, gaze held) with a slight 7 deg tilt: v3's 10 deg turn let the judge read the
+// merged (bake-off VERDICT): six presets changed on the merged face. listening (pose), playful and delighted for a stated
+// defect; curious, thinking and listening (face) for legibility, chosen against judge A only (an overfit risk, stated):
+//   listening  faces the camera (yaw 0, gaze held) with a 12 deg tilt (was 7, see below): v3's 10 deg turn let the judge read the
 //              turn, not the face (VERDICT "cheats");
 //   playful    the half-wink (eyeBlinkLeft 0.22) is gone: a partial blink over the squint showed a lid artefact; the
 //              wink is carried by the squint and the cheek instead;
+//   curious    raised OUTER brows (left higher), eyes wide, lips just parted in a soft 'oh', a 6 deg tilt and a small
+//              turn: the inner-brow raise and the pucker read as concerned / playful on this face (judge A screen, n=6)
+//   thinking   v3's averted gaze kept, plus a one-sided brow knit and the lips pressed and pulled to one side
+//   listening  no smile and no squint (both read as warm / thinking): open attentive brows, eyes a little wide, the
+//              gaze held on the child, chin down 5 deg, a 12 deg head tilt and a full lean in; still yaw 0
+//   (these three were chosen with judge A only, n = 5-6 per variant; judge B never saw a candidate)
 //   delighted  a believable open smile: jaw 0.32 -> 0.2, lower lip barely down (0.25 -> 0.08), upper lip up 0.55, so the
 //              upper teeth show and the lower row and the mouth's back stay hidden (the grimace, VERDICT).
 export const EMOTIONS = {
   warm: { bs: { mouthSmileLeft: 0.5, mouthSmileRight: 0.5, cheekSquintLeft: 0.38, cheekSquintRight: 0.38, eyeSquintLeft: 0.16, eyeSquintRight: 0.16, mouthDimpleLeft: 0.08, mouthDimpleRight: 0.08, browInnerUp: 0.06 }, head: [1, 0, 4], env: [600, 1500, 900] },
   encouraging: { bs: { mouthSmileLeft: 0.35, mouthSmileRight: 0.35, mouthPressLeft: 0.3, mouthPressRight: 0.3, browInnerUp: 0.5, browOuterUpLeft: 0.5, browOuterUpRight: 0.5, eyeWideLeft: 0.15, eyeWideRight: 0.15 }, head: [5, 0, 0], lean: 0.3, env: [400, 1200, 800] },
-  curious: { bs: { browInnerUp: 0.55, browOuterUpLeft: 0.42, browOuterUpRight: 0.3, eyeWideLeft: 0.22, eyeWideRight: 0.22, mouthPucker: 0.32, mouthFunnel: 0.08, mouthSmileLeft: 0.12, mouthSmileRight: 0.12, jawOpen: 0.03 }, head: [-3, 4, 9], env: [350, 1800, 700] },
-  thinking: { bs: { browDownLeft: 0.06, browDownRight: 0.06, browInnerUp: 0.06, mouthPressLeft: 0.08, mouthPressRight: 0.08, mouthLeft: 0.04 }, head: [-2, -3, 0], gaze: [-14, 12], env: [300, 3500, 300] },
-  listening: { bs: { eyeSquintLeft: 0.22, eyeSquintRight: 0.22, browInnerUp: 0.18, browOuterUpLeft: 0.06, browOuterUpRight: 0.06, mouthPressLeft: 0.05, mouthPressRight: 0.05, mouthSmileLeft: 0.06, mouthSmileRight: 0.06 }, head: [2, 0, 7], gaze: [0, 0], lean: 0.6, env: [120, 0, 280] },
+  curious: { bs: { browInnerUp: 0.3, browOuterUpLeft: 0.75, browOuterUpRight: 0.5, eyeWideLeft: 0.3, eyeWideRight: 0.3, jawOpen: 0.1, mouthFunnel: 0.15 }, head: [-4, 6, 6], lean: 0.6, env: [350, 1800, 700] },
+  thinking: { bs: { browDownLeft: 0.3, browInnerUp: 0.25, browOuterUpRight: 0.2, mouthPressLeft: 0.3, mouthPressRight: 0.3, mouthLeft: 0.3, eyeSquintLeft: 0.15, eyeSquintRight: 0.15 }, head: [-4, -6, -4], gaze: [-18, 15], env: [300, 3500, 300] },
+  listening: { bs: { browInnerUp: 0.15, browOuterUpLeft: 0.3, browOuterUpRight: 0.3, eyeWideLeft: 0.15, eyeWideRight: 0.15 }, head: [5, 0, 12], gaze: [0, 4], lean: 1.0, env: [120, 0, 280] },
   concerned: { bs: { browInnerUp: 0.9, browDownLeft: 0.25, browDownRight: 0.25, mouthPressLeft: 0.2, mouthPressRight: 0.2, mouthFrownLeft: 0.25, mouthFrownRight: 0.25, mouthPucker: 0.1, eyeWideLeft: 0.08, eyeWideRight: 0.08 }, head: [7, 0, 9], gaze: [0, -2], lean: 0.6, env: [700, 2500, 1200] },
   delighted: { bs: { mouthSmileLeft: 0.85, mouthSmileRight: 0.85, jawOpen: 0.2, mouthUpperUpLeft: 0.55, mouthUpperUpRight: 0.55, mouthLowerDownLeft: 0.08, mouthLowerDownRight: 0.08, cheekSquintLeft: 0.65, cheekSquintRight: 0.65, eyeSquintLeft: 0.32, eyeSquintRight: 0.32, browOuterUpLeft: 0.3, browOuterUpRight: 0.3, browInnerUp: 0.15 }, head: [-6, 0, 3], flush: 0.04, env: [350, 1200, 900] },
   playful: { bs: { mouthSmileLeft: 0.6, mouthSmileRight: 0.12, mouthLeft: 0.15, cheekSquintLeft: 0.55, eyeSquintLeft: 0.5, browOuterUpRight: 0.6, browInnerUp: 0.1, browDownLeft: 0.15, mouthDimpleLeft: 0.2 }, head: [1, 5, 9], gaze: [8, 2], env: [300, 1000, 600] },
@@ -46,9 +53,12 @@ export const EMOTIONS = {
 export const CLIPS = {
   // two small nods with a lift between them, the smile and the raised brows building on the second nod
   encouraging: { durationS: 2.0, keys: [
-    { t: 0.0, head: [0, 0, 0] }, { t: 0.3, head: [8, 0, 1] }, { t: 0.6, head: [-2, 0, 0] },
-    { t: 0.95, head: [9, 0, 2], bs: { mouthSmileLeft: 0.1, mouthSmileRight: 0.1 } }, { t: 1.3, head: [-1, 0, 1], bs: { browInnerUp: 0.1 } },
-    { t: 2.0, head: [2, 0, 1] }] },
+    { t: 0.0, head: [0, 0, 0] },
+    { t: 0.3, head: [9, 0, 2], bs: { jawOpen: 0.12, mouthSmileLeft: 0.15, mouthSmileRight: 0.15, browOuterUpLeft: 0.15, browOuterUpRight: 0.15 } },
+    { t: 0.6, head: [-2, 0, 1], bs: { mouthSmileLeft: 0.1, mouthSmileRight: 0.1 } },
+    { t: 0.95, head: [10, 0, 3], bs: { jawOpen: 0.12, mouthSmileLeft: 0.2, mouthSmileRight: 0.2, browOuterUpLeft: 0.2, browOuterUpRight: 0.2 } },
+    { t: 1.3, head: [-1, 0, 2], bs: { mouthSmileLeft: 0.15, mouthSmileRight: 0.15, browInnerUp: 0.1 } },
+    { t: 2.0, head: [3, 0, 2], bs: { mouthSmileLeft: 0.15, mouthSmileRight: 0.15 } }] },
 };
 export function clipPose(name, t, asym) {
   const c = CLIPS[name], base = emotionPose(name, 1, asym);
@@ -118,7 +128,8 @@ export function wrinkleWeights(w) {
       c((g("browDownLeft") + g("browDownRight")) * 1.2 + g("browInnerUp") * 0.35 * Math.min(1, (g("browDownLeft") + g("browDownRight")) * 4)),
       c(g("cheekSquintLeft") * 1.4 + g("eyeSquintLeft") * 0.8 + g("mouthSmileLeft") * 0.4),
       c(g("cheekSquintRight") * 1.4 + g("eyeSquintRight") * 0.8 + g("mouthSmileRight") * 0.4)],
-    B: [c(g("mouthSmileLeft") * 1.2 + g("noseSneerLeft")), c(g("mouthSmileRight") * 1.2 + g("noseSneerRight")),
+    // merged: nasolabial share halved (1.2 -> 0.6): at full drive the map drew a thin dark line at the smile corner
+    B: [c(g("mouthSmileLeft") * 0.6 + g("noseSneerLeft")), c(g("mouthSmileRight") * 0.6 + g("noseSneerRight")),
       c(g("mouthShrugLower") * 1.2 + (g("mouthPressLeft") + g("mouthPressRight")) * 0.8 + g("mouthRollLower") * 0.5), 0],
     // forehead share of the stretch map halved (0.25 -> 0.125): forehead lines on the 24-year-old (review item 5)
     stretch: c(g("jawOpen") * 0.6 + (g("browOuterUpLeft") + g("browOuterUpRight")) * 0.125),

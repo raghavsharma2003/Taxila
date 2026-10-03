@@ -4493,6 +4493,125 @@
    "title": "Owner north star: keep building until the full product is testable end to end: great UX for students and parents, human-like teacher, live code-generated content (animation, images, diagrams, games), breakthrough comprehension detection, learning-style discovery, hyper-personalisation",
    "at": "2026-10-03",
    "source": "inbox/owner-north-star.json"
+  },
+  {
+   "id": "gpu-harness",
+   "kind": "component",
+   "title": "scripts/gpu build-job harness: run.py (pack to S3, presigned user-data, spot then on-demand over types x AZs, poll, always terminate), reaper.py, status.py; 7 safety limits incl. instance self-shutdown and an EventBridge Scheduler backstop",
+   "at": "2026-10-03",
+   "source": "inbox/gpu-harness.json"
+  },
+  {
+   "id": "gpu-harness-proof-2026-10-03",
+   "kind": "measurement",
+   "title": "Harness proven: t3.small job returned outputs and self-terminated ($0.0002); hard lifetime and Scheduler backstop each terminated an abandoned instance; g6.xlarge L4 nvidia-smi + 57.7 fp16 TFLOPS matmul, terminated ($0.069); session total est. $1.04",
+   "at": "2026-10-03",
+   "source": "inbox/gpu-harness.json"
+  },
+  {
+   "id": "face3d-models",
+   "kind": "decision",
+   "title": "GPU face job = Hunyuan3D-2.1 (shape + PBR paint; Tencent community licence, India in territory, 1M-MAU-at-release clause) + Marigold v1-1 IID/normals (OpenRAIL++-M) + MediaPipe lift; TRELLIS / TRELLIS.2 and every face-specific recon rejected on licence",
+   "at": "2026-10-03",
+   "source": "inbox/gpu-harness.json"
+  },
+  {
+   "id": "face3d-nc-deps-rejected",
+   "kind": "rejection",
+   "title": "TRELLIS and TRELLIS.2 textured export needs nvdiffrast (NVIDIA non-commercial) and, for TRELLIS, Inria diff-gaussian-rasterization; FLAME/BFM recon (DECA, EMOCA, SMIRK, Deep3DFaceRecon, 3DDFA), FaceLift weights (Adobe Research), Sapiens (CC-BY-NC), CodeFormer (S-Lab NC) all non-commercial",
+   "at": "2026-10-03",
+   "source": "inbox/gpu-harness.json"
+  },
+  {
+   "id": "face3d-teal-run-2026-10-03",
+   "kind": "measurement",
+   "title": "face3d on teal, g6.2xlarge L4: run.sh 1541 s ($0.53); shape 190-200 s/seed at octree 512; bust seeds front NME 2.56/1.52/2.23% vs head-crop 2.78/1.97/no-face; GPU landmarks reproject worse than CPU recon on every view incl. held-out q45 (1.65-2.01 vs 1.03-1.29% IOD)",
+   "at": "2026-10-03",
+   "source": "inbox/gpu-harness.json"
+  },
+  {
+   "id": "gpu-identity-target-flag",
+   "kind": "decision",
+   "title": "TAXILA_IDENTITY_TARGET=<face3d run> enables the GPU target in the merged build: CPU landmarks kept by default, the GPU surface feeds only a dense normal-shrink term (<=3 mm); texture stays the raw portraits by default",
+   "at": "2026-10-03",
+   "source": "inbox/gpu-harness.json"
+  },
+  {
+   "id": "marigold-albedo-as-projection-source",
+   "kind": "rejection",
+   "title": "Marigold-IID albedo as a drop-in projection source: flattened skin to uniform pastel, lost detail, purple lips, cool cast (by eye, teal, n=1 look); default texture mode stays raw",
+   "at": "2026-10-03",
+   "source": "inbox/gpu-harness.json"
+  },
+  {
+   "id": "gpu-dense-target-unmeasured",
+   "kind": "open",
+   "title": "Does the GPU dense surface improve merged teal's yaw-24 NME (bar <= 1.5x front) without costing front NME <= 1.2% or G1-G9? Build with the flag and measure",
+   "at": "2026-10-03",
+   "source": "inbox/gpu-harness.json"
+  },
+  {
+   "id": "head-crop-matte-for-hunyuan-shape",
+   "kind": "rejection",
+   "title": "Head-crop matte before Hunyuan3D-2.1 shape: front NME worse on every seed (2.78/1.97/no-face vs bust 2.56/1.52/2.23%, n=3 each)",
+   "at": "2026-10-03",
+   "source": "inbox/gpu-harness.json"
+  },
+  {
+   "id": "rj-default-answer-mode",
+   "kind": "rejection",
+   "title": "Any mode, toggle or setting in which the tutor gives final answers by default (Maryland course tutor RCT: -0.27 to -0.37 SD, participation -0.90 SD; learning modes everywhere are switchable)",
+   "at": "2026-10-03",
+   "source": "inbox/world-best-tutoring.json"
+  },
+  {
+   "id": "rj-timed-help-lockout",
+   "kind": "rejection",
+   "title": "Timed lockouts on help to force productive struggle (Fischer et al. 2025: restricted access -0.21 SD vs unrestricted; prompting bursts)",
+   "at": "2026-10-03",
+   "source": "inbox/world-best-tutoring.json"
+  },
+  {
+   "id": "rj-advice-menu-for-weak-learners",
+   "kind": "rejection",
+   "title": "Offering menus of options or advice to low-baseline learners (Otis et al. Kenya: low performers about -10% with a GPT-4 mentor)",
+   "at": "2026-10-03",
+   "source": "inbox/world-best-tutoring.json"
+  },
+  {
+   "id": "open-adaptive-difficulty-reopened",
+   "kind": "open",
+   "title": "Adaptive difficulty sequencing: Chung et al. 2026 (+0.15 SD unassisted, 10 Taipei schools, 5 months) counters the Physics Playground null; test with a within-child randomised bandit on the delayed check",
+   "at": "2026-10-03",
+   "source": "inbox/world-best-tutoring.json"
+  },
+  {
+   "id": "open-equity-tercile-gate",
+   "kind": "open",
+   "title": "Proposed release gate: bottom-tercile gain >= 0.8 x top-tercile gain on next-item correctness and the delayed check (every 2025-26 LLM-tutor trial skewed gains to stronger students)",
+   "at": "2026-10-03",
+   "source": "inbox/world-best-tutoring.json"
+  },
+  {
+   "id": "wb-coc-epistemic-vs-emotional",
+   "kind": "open",
+   "title": "Does Microsoft CoC v4.0 restriction 12 (no emotional-state inference from speech patterns) cover inferring knowledge reliability from response latency and self-repair? Ask Microsoft in writing before any latency feature enters an emission",
+   "at": "2026-10-03",
+   "source": "inbox/world-best-understanding-detection.json"
+  },
+  {
+   "id": "rj-llm-icap-as-learner-state",
+   "kind": "rejection",
+   "title": "(literature) LLM-coded ICAP level as a per-child learner state: LLM vs human kappa 0.59-0.66 vs human-human 0.97, errors concentrated in mid levels",
+   "at": "2026-10-03",
+   "source": "inbox/world-best-understanding-detection.json"
+  },
+  {
+   "id": "rj-llm-item-discrimination",
+   "kind": "rejection",
+   "title": "(literature) LLM-estimated item discrimination for Forge/CAT items: 42 LLMs reach stratified rank correlation 0.231; use LLM b priors only",
+   "at": "2026-10-03",
+   "source": "inbox/world-best-understanding-detection.json"
   }
  ],
  "edges": [
@@ -7775,6 +7894,56 @@
    "src": "aws-quota-approved-2026-10-03",
    "rel": "part_of",
    "dst": "aws-build-gpu"
+  },
+  {
+   "src": "gpu-harness",
+   "rel": "measured_by",
+   "dst": "gpu-harness-proof-2026-10-03"
+  },
+  {
+   "src": "face3d-models",
+   "rel": "part_of",
+   "dst": "teacher-bakeoff-verdict"
+  },
+  {
+   "src": "face3d-models",
+   "rel": "measured_by",
+   "dst": "face3d-teal-run-2026-10-03"
+  },
+  {
+   "src": "gpu-identity-target-flag",
+   "rel": "caused_by",
+   "dst": "face3d-teal-run-2026-10-03"
+  },
+  {
+   "src": "gpu-dense-target-unmeasured",
+   "rel": "blocks",
+   "dst": "gpu-identity-target-flag"
+  },
+  {
+   "src": "rj-default-answer-mode",
+   "rel": "inherits",
+   "dst": "rj-passive-tutor"
+  },
+  {
+   "src": "open-adaptive-difficulty-reopened",
+   "rel": "constrains",
+   "dst": "adaptive-sequencing-as-the-lever"
+  },
+  {
+   "src": "ct-no-voice-emotion-inference",
+   "rel": "blocks",
+   "dst": "wb-coc-epistemic-vs-emotional"
+  },
+  {
+   "src": "rj-llm-icap-as-learner-state",
+   "rel": "constrains",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "rj-llm-item-discrimination",
+   "rel": "constrains",
+   "dst": "comprehension-engine-program"
   }
  ]
 }

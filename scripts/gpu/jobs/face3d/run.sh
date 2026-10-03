@@ -84,7 +84,7 @@ fi
 REFS=$JOB_DIR/inputs/refs
 W=$OUT/work
 STAGE "matte"
-( cd /opt/hy21 && /opt/venv-hy/bin/python "$JOB_DIR/face3d.py" matte --refs "$REFS" --views "front,q3_left,q3_right" --crop "${FACE3D_CROP:-head}" \
+( cd /opt/hy21 && /opt/venv-hy/bin/python "$JOB_DIR/face3d.py" matte --refs "$REFS" --views "front,q3_left,q3_right" --crop "${FACE3D_CROP:-none}" \
     --lm "$REFS/landmarks.json" --out "$W" )
 STAGE "shape seeds $SEEDS octree $OCTREE steps $STEPS"
 ( cd /opt/hy21 && /opt/venv-hy/bin/python "$JOB_DIR/face3d.py" shape --image "$W/front_rgba.png" --seeds "$SEEDS" --octree "$OCTREE" \
