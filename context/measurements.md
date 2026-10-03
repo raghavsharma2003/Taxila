@@ -653,3 +653,6 @@ The workflow's write-up is the prose merged from inbox/model-router-review.json 
 <!-- merged from inbox/prod-smoke-169d555.json -->
 ## prod-smoke-169d555 (2026-10-03)
 Method: scripts/prod-smoke.mjs cascade, from the sandbox; n=1 lesson, 3 turns. start 1,573 ms, turns 1,518 / 2,123 / 2,031 ms, end 1,663 ms. The previous deploy was 947 / 1,218-1,345 ms. With n=3 this can't tell noise from a real regression; the sandbox eval (n=20) said grok plus the hedge plus prewarm is faster. Next: a prod-side n≥20 run. Quality: the hook compared '45,000 fans' with '4,500 km' as 'which is bigger', across different units (fix assigned to the integration agent).
+
+## prod-cascade-director-169d555 (2026-10-03)
+scripts/prod-smoke.mjs cascade × 6 lessons from the sandbox against rev s169d555, so each figure includes the sandbox↔eastus2 round trip. n=18 Director turns: p50 1,214 ms, p90 1,605 ms, min 1,085, max 2,687; 0 FAIL. This supersedes the n=3 reading in prod-smoke-169d555, which was noise: no regression against s32090f6.
