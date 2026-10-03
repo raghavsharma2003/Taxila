@@ -95,7 +95,7 @@ try {
     q("select count(*)::int n from evidence where lesson_id = $1", [s1.lessonId]),
     q("select skill_id, status, p_known from skill_state where child_id = $1", [child.id]),
     q("select count(*)::int n from format_trial where child_id = $1", [child.id]),
-    q("select sessions, stage, trust from rel_state where child_id = $1", [child.id]),
+    q("select sessions, stage from rel_state where child_id = $1", [child.id]),
     q("select ended_at, summary, parent_note, state->>'phase' phase from lesson where id = $1", [s1.lessonId]),
   ]);
   ok(ev[0].n >= 1, `evidence rows written (${ev[0].n})`);

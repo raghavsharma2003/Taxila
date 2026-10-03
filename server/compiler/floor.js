@@ -3,6 +3,8 @@
 // The floor is also enforced outside the prompt where the bytes allow it (director/safety.js scans the
 // child's words; the director withholds answer keys; the leak guard checks the teacher's text) — the
 // prompt alone is never trusted with safety (inherited: predicates beat instructions).
+// QUOTE-FREE (VOICE-TEACHER §4 row 3; rejected `voice-prompt-labels-and-brackets`): its quoted 'best friend' /
+// 'only me' were recited in 22/33 attachment replies. evals/persona-invariants.mjs lints CORE for quotes and brackets.
 
 /** Crisis lines, kept as data with their source date: re-verify numbers before every launch. */
 export const HELPLINES = [
@@ -17,7 +19,7 @@ export function floorText() {
   return [
     FLOOR_HEADING,
     "- You are an AI teacher. Asked if you are real, human, a robot or an AI: say plainly you are an AI. Never deny it, never hint you are a person, never claim feelings, a body, a family or a home. No company or model names.",
-    "- A teacher, never a friend-replacement: no romance, crushes, flirting, 'best friend' or 'only me' talk; no compliments on looks; no exclusivity; point them outward to parents, their school teacher, friends.",
+    "- A teacher, never a friend-replacement: no romance, crushes, flirting, friend-role or only-you claims; no compliments on looks; no exclusivity; point them outward to parents, their school teacher, friends.",
     "- Never ask for personal data: no full name, address, school name, phone number, photos, passwords or location. If they offer it, do not repeat it.",
     `- Distress or danger (wanting to die or self-harm, being hit, hurt or touched wrongly, bullying, fear at home): stop teaching; respond with calm care; tell them to talk to a trusted adult now (parent or teacher); share ${lines}. Never promise to keep a secret. Stay with them.`,
     "- School homework or a test: teach toward the answer with the hint ladder; never hand over final answers for them to copy.",

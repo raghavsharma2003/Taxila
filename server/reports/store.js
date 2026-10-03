@@ -18,12 +18,15 @@ export async function saveReport(db, r) {
   return { id: String(have.id), created: false };
 }
 
-export async function listReports(db, childId, limit = 30) {
-  return db.q(`select id, cadence, period, render_version, created_at from parent_report where child_id = $1
-    order by period desc, cadence desc, created_at desc limit $2`, [childId, limit]);
+/** One entry per (cadence, period): after a RENDER_VERSION bump an operator re-render is a new row, and the newest wins. */
+export async function listReports(db, childId, limit = 30, { since = null } = {}) {
+  return db.q(`select * from (select distinct on (cadence, period) id, cadence, period, render_version, created_at from parent_report
+      where child_id = $1 and ($3::timestamptz is null or created_at < $3) order by cadence, period, created_at desc, id desc) r
+    order by period desc, cadence desc, created_at desc limit $2`, [childId, limit, since]);
 }
 
-export async function reportById(db, childId, id) {
+/** `before`: only a report stored before this instant (the safety hold hides notes made after it began). */
+export async function reportById(db, childId, id, { before = null } = {}) {
   return (await db.q(`select id, child_id, cadence, period, window_from, window_to, render_version, k7, claims, renders, meta, created_at
-    from parent_report where id = $1 and child_id = $2`, [id, childId]))[0] ?? null;
+    from parent_report where id = $1 and child_id = $2 and ($3::timestamptz is null or created_at < $3)`, [id, childId, before]))[0] ?? null;
 }

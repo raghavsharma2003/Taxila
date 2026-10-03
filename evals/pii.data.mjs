@@ -32,6 +32,18 @@ export const POSITIVES = [
   ["मकान नंबर 12 गली नंबर 4", ["address", "address"]],
   ["मैं जयपुर में रहती हूँ", ["address"]],
   ["main Kota mein rehta hoon", ["address"]],
+  // lower case after an explicit cue, and phones read in pairs or digit by digit (2026-10-03 review)
+  ["my name is riya sharma", ["name"]],
+  ["mera naam riya sharma hai", ["name"]],
+  ["i live in vaishali nagar jaipur", ["address"]],
+  ["My school is st marys convent", ["school"]],
+  ["meri mummy ka naam sunita hai", ["name"]],
+  ["mere papa ka naam ramesh kumar hai", ["name"]],
+  ["main kota mein rehta hoon", ["address"]],
+  ["mera number 98 29 47 31 65 hai", ["phone"]],
+  ["my number is 9 8 2 9 4 7 3 1 6 5", ["phone"]],
+  ["papa ka mobile 9-8-2-9-4-7-3-1-6-5", ["phone"]],
+  ["मेरा नंबर 98 29 47 31 65 है", ["phone"]],
 ];
 
 /** Answers and lesson talk that must survive untouched. */
@@ -43,4 +55,6 @@ export const NEGATIVES = [
   "add 4 for house 2", "Pie chart mein ek sector 90° ka hai.", "sector 25% hai", "1098", "14416", "Childline 1098 pe call karo",
   "मैं स्कूल गया", "मैं रोज़ स्कूल जाती हूँ", "बच्चे स्कूल देर से पहुँचे", "2023 mein", "₹1,250", "100000 + 20000",
   "The answer is 600000.", "6,00,000", "4 tens and 6 ones", "pata nahi didi", "main ready hoon",
+  "my name is riya", "mera naam riya hai", "i go to school by bus", "i live in a big house", "i live near the park",
+  "the number is 9 8 7 6 5 4 3 2 1 0", "number 6 3 10 5 16 8 4 2 1", "main school mein hoon", "my name is riya and i am 9",
 ];

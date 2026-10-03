@@ -124,8 +124,14 @@ export async function orderForVoice({ lines, lang, cadence }, { llm = { chat }, 
       attempts.push({ model: dep, ms: Math.round(performance.now() - t0), costMicroUsd: c, usage: out.usage ?? null, invalid: bad });
       if (!bad) return { order: out.json.order, lane: "B", model: dep, attempts, spentMicroUsd: spent };
     } catch (e) {
-      attempts.push({ model: dep, ms: Math.round(performance.now() - t0), error: String(e?.code || e?.message || e).slice(0, 120) });
       if (e?.code === "cancelled") throw e;
+      // A call that failed after it was sent (timeout, schema or parse error) may still have been billed: charge the
+      // usage if the error carries it, else the worst case, so spent_micro_usd never under-counts and the fallback's
+      // budget check sees the real room left.
+      const c = e?.usage ? costOf(dep, e.usage) : est;
+      spent += c;
+      if (onSpend && c) await onSpend(c);
+      attempts.push({ model: dep, ms: Math.round(performance.now() - t0), costMicroUsd: c, charged: e?.usage ? "usage" : "worst_case", error: String(e?.code || e?.message || e).slice(0, 120) });
     }
   }
   const a = laneAOrder(lines, lang, cadence);

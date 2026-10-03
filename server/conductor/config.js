@@ -55,6 +55,9 @@ export const JOB_KINDS = {
   // Not allowed in safety_hold (the protocol decides what reaches the family); allowed while paused or in a lesson.
   "report.daily": { lane: "fast", priority: 3, purpose: "core_tutoring", budgetMicroUsd: REPORT_BUDGET.daily, maxAttempts: 4, leaseSec: 120, allowedIn: ["paused", "in_lesson"] },
   "parent.letter": { lane: "fast", priority: 2, purpose: "core_tutoring", budgetMicroUsd: REPORT_BUDGET.weekly, maxAttempts: 4, leaseSec: 120, allowedIn: ["paused", "in_lesson"] },
+  // Forge G2 end-of-day (server/forge/g2/conductor-job.js; enqueued by the night fold): deliver approved agent-built
+  // mechanics for tomorrow, or start one reviewed-later build per gap. Slow lane; never in a lesson or safety_hold.
+  "forge.g2.nightly": { lane: "slow", priority: 4, purpose: "core_tutoring", budgetMicroUsd: 3_500_000, maxAttempts: 3, leaseSec: 120, allowedIn: ["paused"] },
 };
 /** A report job runs this long after its learning day closes (04:00 local), so the window's evidence is in [U]. */
 export const REPORT_GRACE_MIN = 10;

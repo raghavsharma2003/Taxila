@@ -67,23 +67,30 @@ const SAFEGUARD_CHECK_VOICE = "care first: no lesson content this turn; a truste
 const STOP = "they want to stop → stop, short warm goodbye";
 /**
  * Corrective shapes after the teacher's own words broke the floor (director/safety.js floorViolations, whose
- * NEVER_FAMILIES is this key order), most severe first. Keys added for the never-rules matcher are kept at
- * <= 25 characters so that no pair of them with `exclusivity` is longer than the pair checkFits measures
- * (FIX_LOAD_GATE): the load gate admits exactly what it admitted before they existed.
+ * NEVER_FAMILIES is this key order), most severe first; at most FIX_MAX render. The load gate (checkFits)
+ * renders the LONGEST FIX_MAX-key combination, computed below (FIX_LOAD_GATE), so no correction the director
+ * can produce is longer than what every loaded item was measured with. Keeping every key but `exclusivity` at
+ * <= 25 characters keeps that longest pair the original ai_denial + exclusivity (82 characters), so the gate
+ * admits exactly what it admitted before the never-rules keys existed (tests/gates.test.mjs pins both).
  */
 export const FLOOR_FIX = {
   ai_denial: "say plainly you are an AI",
   helpline: "helpline numbers exactly",
   romance: "no love or looks talk",
   exclusivity: "a teacher, not a friend; point them to family and friends",
-  personal_data: "take back the personal question",
+  personal_data: "no personal questions",
   guilt: "no guilt; let them go",
   shaming: "no blame; name the step",
-  ability: "no ability words, name the step",
+  ability: "name the step, no labels",
   feelings: "no feelings of your own",
 };
-/** The correction checkFits renders: the original two-key worst case, pinned so new keys cannot change what loads. */
-const FIX_LOAD_GATE = ["ai_denial", "exclusivity"];
+/** The correction checkFits renders: the longest combination of FIX_MAX keys, computed (never hard-coded). */
+export const FIX_LOAD_GATE = (() => {
+  const keys = Object.keys(FLOOR_FIX);
+  const combos = (from, n) => (n === 0 ? [[]] : keys.slice(from).flatMap((k, i) => combos(from + i + 1, n - 1).map((c) => [k, ...c])));
+  const len = (c) => c.reduce((a, k) => a + FLOOR_FIX[k].length + 2, 0);
+  return Object.freeze(combos(0, FIX_MAX).reduce((a, b) => (len(b) > len(a) ? b : a)));
+})();
 
 function characterParts(c) {
   return [
@@ -247,6 +254,8 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
 export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } = {}) {
   const cap = { ...SECTION_CAPS, ...caps };
   // The floor below is the MINOR floor for every child, whatever age claim travels with the brief (no adult branch).
+  // Structural documentation, not a runtime guard: gatesFor has one answer, so this cannot fail today. It is the
+  // tripwire for the day someone adds a branch to gatesFor (tests/gates.test.mjs drives that case).
   assertMinorGates(gatesFor(input.brief?.ageTier));
   const ageBand = input.brief.ageBand;
   const lane = input.lane === "voice" ? "voice" : "text";
@@ -317,7 +326,7 @@ export function checkFits(item, { cap = SECTION_CAPS.last - FIT_MARGIN } = {}) {
   const longHint = "x".repeat(HINT_TOKEN_MAX * 3.5);
   const prefixes = [...Object.values(SH.CONFIRM), SH.retrievalNext(), "now a similar one for them", "an easier one now"];
   const lead = prefixes.reduce((a, b) => (b.length > a.length ? b : a));
-  const correction = FIX_LOAD_GATE;
+  const correction = [...FIX_LOAD_GATE];
   const protegeName = "Bittu";
   for (const language of LANGS) {
     const ask = promptFor(item, language);

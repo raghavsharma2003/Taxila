@@ -22,12 +22,14 @@ export const kitLookup = {
 };
 
 /** Facts → the gated report body (pure apart from the injected writer). */
-async function compose(facts, { k7, writer }) {
-  const built = buildClaims(facts, { k7 });
+async function compose(facts, { k7, writer, now, preview = false }) {
+  const built = buildClaims(facts, { k7, now, preview });
   if (!built) return null;
   const cadence = facts.window.cadence;
   const renders = Object.fromEntries(LANGS.map((lang) => [lang, renderLang({ cadence, ...built }, facts.child, lang)]));
   const lang = LANG_OF_PREF[facts.child.languagePref] ?? "en";
+  // Lane A is gated BEFORE the writer is paid: a deterministic gate failure never costs a model call (jobs.js makes it final)
+  gateReport({ cadence, claims: built.claims, renders }, { k7, firstName: facts.child.firstName });
   // Lane B orders once, in the child's report language; the same id order is re-validated for every language
   // (word counts differ by language) and a language it does not fit gets the Lane A order.
   const ordered = writer ? await writer(renders[lang].lines, lang, cadence) : { ...laneAOrder(renders[lang].lines, lang, cadence), lane: "A", model: null, attempts: [], spentMicroUsd: 0 };
@@ -46,7 +48,7 @@ async function compose(facts, { k7, writer }) {
 /**
  * @param {string} childId
  * @param {{ cadence: 'daily'|'weekly', period: string }} p
- * @param {{ db: { q: Function }, llm?: { chat: Function }, k7?: boolean, budgetMicroUsd?: number, beforeCall?: () => Promise<void>,
+ * @param {{ db: { q: Function }, llm?: { chat: Function }, k7?: boolean, now?: Date, budgetMicroUsd?: number, beforeCall?: () => Promise<void>,
  *   onSpend?: (microUsd: number) => Promise<void>, lookup?: any, store?: boolean }} deps
  * @returns {Promise<{ skipped?: string, id?: string, created?: boolean, report?: any }>}
  */
@@ -62,7 +64,7 @@ export async function generateReport(childId, { cadence, period }, deps) {
   if (!facts.consent.core_tutoring) return { skipped: "consent" };
   const writer = deps.llm === null ? null : (lines, lang, cad) => orderForVoice({ lines, lang, cadence: cad },
     { llm: deps.llm, budgetMicroUsd: deps.budgetMicroUsd, beforeCall: deps.beforeCall, onSpend: deps.onSpend, deployments: deps.deployments });
-  const out = await compose(facts, { k7, writer });
+  const out = await compose(facts, { k7, writer, now: (deps.now ?? new Date()).toISOString() });
   if (!out) return { skipped: "no_activity" };
   const report = {
     childId, cadence, period, window: facts.window, renderVersion: RENDER_VERSION, k7, claims: out.body.claims, renders: out.body.renders,
@@ -77,11 +79,11 @@ export async function generateReport(childId, { cadence, period }, deps) {
 }
 
 /** Lane A only, never stored and never a model call: what a parent sees for today before the night job runs. */
-export async function previewReport(childId, { cadence, period }, { db, k7 = CALIBRATION.k7Passed, lookup } = {}) {
+export async function previewReport(childId, { cadence, period }, { db, k7 = CALIBRATION.k7Passed, lookup, now = new Date() } = {}) {
   const facts = await loadFacts(db, childId, { cadence, period }, lookup ?? kitLookup);
   if (!facts) return { skipped: "no_child" };
   if (!facts.consent.core_tutoring) return { skipped: "consent" };
-  const out = await compose(facts, { k7, writer: null });
+  const out = await compose(facts, { k7, writer: null, now: now.toISOString(), preview: true });
   if (!out) return { skipped: "no_activity" };
   return { report: { childId, cadence, period, window: facts.window, renderVersion: RENDER_VERSION, k7, claims: out.body.claims, renders: out.body.renders,
     meta: { preview: true, lang: out.lang, screened: out.built.screened } } };

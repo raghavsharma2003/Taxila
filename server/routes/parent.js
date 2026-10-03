@@ -26,6 +26,7 @@ import { beliefFor, conceptCard } from "../comprehension/index.js";
 import { CADENCES, LANGS, LANG_OF_PREF } from "../reports/config.js";
 import { learningDay, isoWeek } from "../conductor/clock.js";
 import { listReports, previewReport, reportById, windowOf } from "../reports/index.js";
+import { HOW } from "../reports/templates.js";
 import { outcomeName } from "../learner/kt/outcomes.js";
 
 export const PIN_RE = /^\d{4,6}$/;
@@ -679,6 +680,8 @@ const missingTable = (e) => e?.code === "42P01";          // parent_report not m
 /** The stored report as the client reads it: lines per language, never factIds (the drawer resolves those server-side). */
 const reportOut = (r) => ({
   id: String(r.id), cadence: r.cadence, period: r.period, window: { from: r.window_from ?? r.window?.from, to: r.window_to ?? r.window?.to },
+  // calendar learning days covered (tz-free strings): what the header shows, not the window instants
+  days: (({ firstDay, lastDay }) => ({ first: firstDay, last: lastDay }))(windowOf(r.cadence, r.period, "Asia/Kolkata")),
   k7: !!r.k7, preview: !r.id, createdAt: r.created_at ?? null,
   claims: r.claims.map((c) => ({ id: c.id, section: c.section, shapeId: c.shapeId, facts: c.factIds.length })),
   renders: Object.fromEntries(Object.entries(r.renders).map(([lang, R]) => [lang, { title: R.title.text,
@@ -687,15 +690,32 @@ const reportOut = (r) => ({
 });
 const tzOf = async (childId) => (await one("select tz from child_routine where child_id = $1", [childId]))?.tz || "Asia/Kolkata";
 
+/**
+ * The Conductor's safety hold (decide.js safety.incident → mode safety_hold; guards.js drops the report jobs: "the
+ * protocol decides what reaches the family"). The read side holds too (decision reports-safety-hold-read-side):
+ * while it lasts there is no live preview, no Listen, and no note stored after the hold began; notes stored BEFORE
+ * it stay readable as text (the family already had them; pulling them is the protocol's call, not this route's).
+ * → null, or { since } (ISO). No conductor_state row / table = no hold.
+ */
+export async function reportHold(childId, one_ = one) {
+  try {
+    const r = await one_("select mode, state->>'modeSince' as since from conductor_state where child_id = $1", [childId]);
+    return r?.mode === "safety_hold" ? { since: r.since || new Date(0).toISOString() } : null;
+  } catch (e) { if (missingTable(e)) return null; throw e; }
+}
+/** Evidence-drawer claim: the reviewed "how this line is counted" copy per language, never the internal rule string. */
+export const evidenceClaimOut = (c) => ({ id: c.id, section: c.section, shapeId: c.shapeId, how: HOW[c.shapeId] ?? null });
+
 /** GET /api/parent/reports?childId= → the stored daily notes and weekly letters, newest first. */
 async function reports(req, res) {
   const { child } = await requireParentChild(req, query(req).get("childId"));
+  const hold = await reportHold(child.id);
   let rows = [];
-  try { rows = await listReports({ q }, child.id); } catch (e) { if (!missingTable(e)) throw e; }
+  try { rows = await listReports({ q }, child.id, 30, { since: hold?.since ?? null }); } catch (e) { if (!missingTable(e)) throw e; }
   const tz = await tzOf(child.id);
   const today = learningDay(new Date(), tz);
   send(res, 200, { reports: rows.map((r) => ({ id: String(r.id), cadence: r.cadence, period: r.period, createdAt: r.created_at })),
-    today, thisWeek: isoWeek(today), lang: LANG_OF_PREF[child.language_pref] ?? "en", langs: LANGS });
+    today, thisWeek: isoWeek(today), lang: LANG_OF_PREF[child.language_pref] ?? "en", langs: LANGS, held: !!hold });
 }
 
 /**
@@ -707,15 +727,17 @@ async function report(req, res) {
   const sp = query(req);
   const { child } = await requireParentChild(req, sp.get("childId"));
   const id = sp.get("id");
+  const hold = await reportHold(child.id);
   if (id) {
     if (!REPORT_ID.test(id)) throw bad("invalid report id");
     let r = null;
-    try { r = await reportById({ q }, child.id, id); } catch (e) { if (!missingTable(e)) throw e; }
+    try { r = await reportById({ q }, child.id, id, { before: hold?.since ?? null }); } catch (e) { if (!missingTable(e)) throw e; }
     if (!r) throw new HttpError(404, "report not found");
-    return send(res, 200, { report: reportOut(r) });
+    return send(res, 200, { report: { ...reportOut(r), ...(hold ? { held: true, renders: noVoice(reportOut(r).renders) } : {}) } });
   }
   const cadence = sp.get("cadence");
   if (!CADENCES.includes(cadence)) throw bad("cadence must be daily or weekly");
+  if (hold) return send(res, 200, { report: null, skipped: "held", held: true });
   const tz = await tzOf(child.id);
   const today = learningDay(new Date(), tz);
   let period = sp.get("period") || (cadence === "daily" ? "today" : "thisweek");
@@ -726,6 +748,8 @@ async function report(req, res) {
   if (out.skipped) return send(res, 200, { report: null, skipped: out.skipped, period });
   send(res, 200, { report: reportOut(out.report) });
 }
+
+const noVoice = (renders) => Object.fromEntries(Object.entries(renders).map(([l, R]) => [l, { ...R, voice: null }]));
 
 /** What kind of evidence row a kt_evidence class is, for the drawer (client words it; PROBE_KIND's family). */
 const EV_KIND = { "item.open": "practice", "item.mcq2": "practice", "item.mcq3": "practice", "item.mcq4": "practice", solo: "practice", teach: "taught",
@@ -744,9 +768,12 @@ async function reportEvidence(req, res) {
   const claimId = sp.get("claimId") || "";
   if (!/^[a-z]+:[a-z._]+:[0-9a-f]{10}$/.test(claimId)) throw bad("invalid claimId");
   let r;
+  const hold = await reportHold(child.id);
   if (sp.get("id")) {
     if (!REPORT_ID.test(sp.get("id"))) throw bad("invalid report id");
-    try { r = await reportById({ q }, child.id, sp.get("id")); } catch (e) { if (!missingTable(e)) throw e; }
+    try { r = await reportById({ q }, child.id, sp.get("id"), { before: hold?.since ?? null }); } catch (e) { if (!missingTable(e)) throw e; }
+  } else if (hold) {
+    throw new HttpError(404, "line not found");
   } else {
     const cadence = sp.get("cadence"), period = sp.get("period");
     if (!CADENCES.includes(cadence)) throw bad("cadence must be daily or weekly");
@@ -756,28 +783,28 @@ async function reportEvidence(req, res) {
   const c = r?.claims.find((x) => x.id === claimId);
   if (!c) throw new HttpError(404, "line not found");
   const pick = (kind) => c.factIds.filter((f) => f.startsWith(kind + ":")).map((f) => f.slice(kind.length + 1));
-  const [ev, lessons, skills, mems] = await Promise.all([
+  const [ev, lessons, skills] = await Promise.all([
     pick("kt_evidence").length ? q(`select id, occurred_at, skill_ids, cls, outcome, grader, pre_attempt_help, entry_rung, misconception_id, via, session_id
         from kt_evidence where child_id = $1 and id = any($2::text[]) order by seq`, [child.id, pick("kt_evidence")]) : [],
     pick("lesson").length ? q("select id, topic_id, started_at, ended_at from lesson where child_id = $1 and id::text = any($2::text[]) order by started_at", [child.id, pick("lesson")]) : [],
     pick("kt_skill_state").length ? q("select skill_id, next_review_at from kt_skill_state where child_id = $1 and skill_id = any($2::text[])", [child.id, pick("kt_skill_state")]) : [],
-    pick("memory").length ? q("select id, kind, text, created_at from memory where child_id = $1 and id::text = any($2::text[])", [child.id, pick("memory")]) : [],
   ]);
   const titles = new Map();
   for (const e of ev) for (const sk of e.skill_ids) if (!titles.has(sk)) titles.set(sk, (await skillTitle(sk)) ?? sk);
   send(res, 200, {
-    claim: { id: c.id, section: c.section, shapeId: c.shapeId, rule: c.rule },
+    claim: evidenceClaimOut(c),
     window: { from: r.window_from ?? r.window?.from, to: r.window_to ?? r.window?.to },
     evidence: ev.map((e) => {
       const name = e.cls === "teach" ? "taught" : outcomeName(e.cls, Number(e.outcome)) ?? "?";
       return { id: e.id, at: e.occurred_at, skill: titles.get(e.skill_ids[0]) ?? e.skill_ids[0], kind: EV_KIND[e.cls] ?? "practice",
         result: e.cls === "teach" ? "taught" : RIGHT.has(name) ? "right" : PART.has(name) ? "partly" : name === "IDK" ? "not_sure" : "not_yet",
-        help: e.pre_attempt_help ? "asked_first" : Number(e.entry_rung) > 0 ? "hint" : "none", checkedBy: e.grader, game: e.via === "game", session: e.session_id };
+        help: e.pre_attempt_help ? "asked_first" : Number(e.entry_rung) > 0 ? "hint" : "none", checkedBy: e.grader, game: e.via === "game", session: e.session_id,
+        matchesMixup: !!c.ref?.misconceptionId && e.misconception_id === c.ref.misconceptionId };
     }),
     lessons: lessons.map((l) => { const t = getTopic(l.topic_id); return { id: l.id, topic: t?.title ?? l.topic_id, startedAt: l.started_at,
       minutes: l.ended_at ? Math.round((new Date(l.ended_at) - new Date(l.started_at)) / 60000) : null }; }),
-    schedule: skills.map((x) => ({ skill: x.skill_id, nextReview: x.next_review_at })),
-    memories: mems.map((m) => ({ id: String(m.id), kind: m.kind, text: m.text, at: m.created_at })),
+    // only a re-check still ahead is shown as "comes back on" (a past date is not a plan)
+    schedule: skills.filter((x) => x.next_review_at && new Date(x.next_review_at) > new Date()).map((x) => ({ skill: x.skill_id, nextReview: x.next_review_at })),
   });
 }
 
@@ -815,6 +842,8 @@ async function speakCard(req, res) {
     guardianId = guardian.id;
     const id = sp.get("id"), lang = sp.get("lang") || LANG_OF_PREF[child.language_pref] || "en";
     if (!id || !REPORT_ID.test(id) || !LANGS.includes(lang)) throw bad("invalid report or lang");
+    // no Listen during a safety hold (reportHold): nothing is spoken to the family while the protocol decides
+    if (await reportHold(child.id)) throw new HttpError(409, "report audio is not available right now", { held: true });
     let r = null;
     try { r = await reportById({ q }, child.id, id); } catch (e) { if (!missingTable(e)) throw e; }
     if (!r?.renders?.[lang]?.voice?.text) throw new HttpError(404, "report not found");

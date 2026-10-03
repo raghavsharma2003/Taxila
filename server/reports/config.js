@@ -3,7 +3,7 @@
 // change alters what a parent reads (stored reports are keyed by it, so an operator re-render is a new row).
 
 /** Stored with every report; a template or rule change that alters parent text must bump it. */
-export const RENDER_VERSION = "pr-1";
+export const RENDER_VERSION = "pr-2";   // pr-2: delayed-success copy, no interest line, no-lesson header, dated re-checks only in the future
 
 /**
  * The calibration gate (COMPREHENSION-ENGINE.md §7.1 K7: ≥ 0.9 delayed accuracy at 1 and 4 weeks, ECE ≤ 0.05,
@@ -23,7 +23,7 @@ export const LANG_OF_PREF = Object.freeze({ english: "en", hinglish: "hinglish",
  * Daily is pull-only in v1 (X11) and carries no home activity (PL6: at most one per week).
  */
 export const CAPS = Object.freeze({
-  daily: { strength: 1, row: 2, tricky: 1, interest: 1, home: 0, body: 5 },
+  daily: { strength: 1, row: 2, tricky: 1, interest: 0, home: 0, body: 5 },
   weekly: { strength: 1, row: 2, tricky: 1, interest: 0, home: 1, body: 5 },
 });
 
@@ -39,15 +39,25 @@ export const HISTORY_DAYS = 120;
 export const TRICKY_MIN_N = 3;
 /** Hedged misconception (PARENT-REPORT §4.5): a diagnostic item set — ≥ 3 discriminating answers, ≥ 2 matching [U]. */
 export const MIXUP_MIN_N = 3, MIXUP_MIN_K = 2;
-/** Interest lines quote memory text only when it is this short [U] (it is the child's own word for a liking). */
-export const INTEREST_MAX_WORDS = 4;
+/**
+ * No interest line (cap 0 above, no shape, no memory read): memory.text for kind=interest is free model paraphrase
+ * written at lesson end (server/routes/lesson.js), not a typed value, so it cannot ride in a reviewed template
+ * (decision reports-no-interest-line). Reverses when memory stores a typed interest id from a reviewed list with
+ * per-language labels.
+ */
 
 /**
  * Lane B routing (MODEL-ROUTER.md row "Parent reports": taxila-brain primary, taxila-fast fallback). Lane B only
  * orders Lane A segments and picks approved connective ids (PARENT-REPORT §10.2); it never writes a claim.
  */
-export const WRITER = Object.freeze({ effort: "low", maxTokens: 1200, timeoutMs: 30_000 });
+export const WRITER = Object.freeze({ effort: "low", maxTokens: 800, timeoutMs: 30_000 });
 /** $ per 1M tokens → µ$ per token (MODEL-ROUTER §2, Azure retail read 2026-10-02). */
 export const PRICE_MICRO_USD = Object.freeze({ "taxila-brain": { in: 4, out: 20 }, "taxila-fast": { in: 0.2, out: 1.2 } });
 /** Job budgets (µ$) for the Conductor job kinds (server/conductor/config.js reads these). */
-export const JOB_BUDGET = Object.freeze({ daily: 20_000, weekly: 40_000 });
+/**
+ * Room for one worst-case brain call: worstCase() in writer.js = (prompt chars / 3) × 4 + 800 × 20 µ$. Measured
+ * prompts (sim-week 2026-10-03 re-run, see context measurement reports-laneb-tokens) put a daily call well under
+ * 25k µ$ and a weekly one under 40k with room for the fast fallback; a failed call is charged its worst case.
+ * Cost per child-month ≈ per-report cost × (A active days + 4.3 letters); A is not measured on real families.
+ */
+export const JOB_BUDGET = Object.freeze({ daily: 25_000, weekly: 40_000 });

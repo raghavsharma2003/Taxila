@@ -5,28 +5,43 @@
 import { createHash } from "crypto";
 import { learningDay } from "../conductor/clock.js";
 import { subjectOfSkill } from "../learner/kt/ability.js";
-import { CAPS, CALIBRATION, INTEREST_MAX_WORDS, LANGS, MIXUP_MIN_K, MIXUP_MIN_N, TRICKY_MIN_N } from "./config.js";
+import { CAPS, CALIBRATION, LANGS, MIXUP_MIN_K, MIXUP_MIN_N, TRICKY_MIN_N } from "./config.js";
 import { bySkill, delayedSuccesses, inWindow, isAttempt, isErrorspotFixed, isExplained, isFirstTryUnaided, isTransferPass } from "./derive.js";
 import { dateParts } from "./facts.js";
 import { lineViolations } from "./gate.js";
 import { HOME_OBJECT, renderShape } from "./templates.js";
 
-export const F = { ev: (id) => `kt_evidence:${id}`, lesson: (id) => `lesson:${id}`, skill: (id) => `kt_skill_state:${id}`, memory: (id) => `memory:${id}` };
+export const F = { ev: (id) => `kt_evidence:${id}`, lesson: (id) => `lesson:${id}`, skill: (id) => `kt_skill_state:${id}` };
 const cid = (section, shapeId, slots, factIds) => `${section}:${shapeId}:${createHash("sha1").update(JSON.stringify([slots, [...factIds].sort()])).digest("hex").slice(0, 10)}`;
 /** `skillId` / `ref` are not rendered: the checker and the evidence drawer read them. */
 const claim = (section, shapeId, slots, factIds, rule, skillId = null, ref = undefined) =>
   ({ id: cid(section, shapeId, slots, factIds), section, shapeId, slots, factIds: [...new Set(factIds)], rule, skillId, ...(ref ? { ref } : {}) });
-const minutesOf = (lessons) => Math.round(lessons.filter((l) => l.endedAt).reduce((a, l) => a + (Date.parse(l.endedAt) - Date.parse(l.startedAt)), 0) / 60_000);
+/**
+ * Minutes of the window's lessons. An open lesson (ended_at null: crashed, or still running) counts up to its last
+ * evidence row in the window (kt_evidence.session_id = lesson id), else up to `openUntil` (the preview's "now"),
+ * else 0. The independent checker (check.js) re-derives the same written rule from rows.
+ */
+export const lessonEndMs = (l, events, openUntil) => {
+  if (l.endedAt) return Date.parse(l.endedAt);
+  const last = events.filter((e) => e.sessionId === l.id).map((e) => Date.parse(e.at)).reduce((a, b) => Math.max(a, b), -Infinity);
+  if (Number.isFinite(last)) return last;
+  return openUntil ? Math.max(Date.parse(l.startedAt), Date.parse(openUntil)) : Date.parse(l.startedAt);
+};
+const minutesOf = (lessons, events, openUntil) => Math.round(lessons.reduce((a, l) => a + (lessonEndMs(l, events, openUntil) - Date.parse(l.startedAt)), 0) / 60_000);
+/** Ledger displays under learned_today: next-topic.js treats such a topic as not done and teaches it (or its prerequisite) again. */
+const NOT_LEARNED = new Set(["unseen", "introduced", "practising"]);
 const sortSkills = (a, b) => b[1].length - a[1].length || (a[0] < b[0] ? -1 : 1);
 
 /**
  * @param {any} facts loadFacts() output
- * @param {{ k7?: boolean }} [o]
+ * @param {{ k7?: boolean, now?: string, preview?: boolean }} [o] `now` = when the report is made (default: the window end);
+ *   a re-check date is stated only when it is still ahead of max(window end, now). `preview` counts an open lesson up to now.
  * @returns {null | { claims: any[], screened: { shapeId: string, reason: string }[], candidates: number, fixedHome: boolean }}
  *   null = nothing to report (a daily window with no lesson and no evidence)
  */
-export function buildClaims(facts, { k7 = CALIBRATION.k7Passed } = {}) {
+export function buildClaims(facts, { k7 = CALIBRATION.k7Passed, now, preview = false } = {}) {
   const w = facts.window, cadence = w.cadence, caps = CAPS[cadence], tz = facts.child.tz;
+  const asOf = now && now > w.to ? now : w.to;
   const name = facts.child.firstName;
   const evIn = facts.events.filter((e) => inWindow(e, w));
   if (cadence === "daily" && !facts.lessons.length && !evIn.length) return null;
@@ -48,13 +63,18 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed } = {}) {
   const firstAdmitted = (list) => { for (const c of list) { const a = admit(c); if (a) return a; } return null; };
 
   // S1 header (L0): the lessons that started in the window
-  const lessonIds = facts.lessons.map((l) => F.lesson(l.id));
-  const header = cadence === "daily"
-    ? claim("header", "header.daily", { lessons: facts.lessons.length, min: minutesOf(facts.lessons) }, lessonIds, "lessons started in window; min = round(Σ(ended−started))")
-    : facts.lessons.length
-      ? claim("header", "header.weekly", { lessons: facts.lessons.length, days: new Set(facts.lessons.map((l) => learningDay(new Date(l.startedAt), tz))).size, min: minutesOf(facts.lessons) }, lessonIds,
-        "lessons started in window; days = distinct learning days; min = round(Σ(ended−started))")
-      : claim("header", "header.zero", {}, [], "no lesson started in window");
+  // An open lesson's minutes run to its last evidence row, so those rows are cited too (the checker re-reads them).
+  const openUntil = preview ? new Date(Math.min(Date.parse(w.to), Date.parse(now ?? new Date().toISOString()))).toISOString() : null;
+  const min = minutesOf(facts.lessons, evIn, openUntil);
+  const lessonIds = [...facts.lessons.map((l) => F.lesson(l.id)),
+    ...facts.lessons.filter((l) => !l.endedAt).flatMap((l) => { const es = evIn.filter((e) => e.sessionId === l.id); return es.length ? [F.ev(es.at(-1).id)] : []; })];
+  const header = !facts.lessons.length
+    ? (cadence === "daily" ? claim("header", "header.nolesson", {}, evIn.map((e) => F.ev(e.id)), "no lesson started in window; evidence rows exist in it")
+      : claim("header", "header.zero", {}, [], "no lesson started in window"))
+    : cadence === "daily"
+      ? claim("header", "header.daily", { lessons: facts.lessons.length, min }, lessonIds, "lessons started in window; min = round(Σ(end−started)), open lesson ends at its last evidence row")
+      : claim("header", "header.weekly", { lessons: facts.lessons.length, days: new Set(facts.lessons.map((l) => learningDay(new Date(l.startedAt), tz))).size, min }, lessonIds,
+        "lessons started in window; days = distinct learning days; min = round(Σ(end−started)), open lesson ends at its last evidence row");
   const claims = [admit(header)];
   if (!claims[0]) throw new Error("reports: the header failed its own predicates");
 
@@ -67,8 +87,15 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed } = {}) {
   for (const [s, list] of [...attempts].sort(sortSkills)) {
     const k = list.filter(isFirstTryUnaided).length, n = list.length;
     const next = facts.skills[s]?.nextReviewAt;
-    if (n < TRICKY_MIN_N || 2 * k >= n || !next || next < w.from) continue;
-    const date = dateParts(next, tz);
+    if (n < TRICKY_MIN_N || 2 * k >= n) continue;
+    // the action part: a scheduled re-check date, or (not learned yet, no date) the placement rule that brings it back
+    // a date is stated only while it is still ahead when the parent reads it: the job runs after the window closes
+    // (and a preview later still), so a re-check inside the window, or already past at generation, is never a promise
+    const dated = !!next && next >= asOf;
+    if (!dated && !NOT_LEARNED.has(facts.skills[s]?.display)) continue;
+    const date = dated ? dateParts(next, tz) : null;
+    const sfx = dated ? "" : "_next";
+    const withDate = (slots) => (dated ? { ...slots, date } : slots);
     // hedged misconception only past the diagnostic gate (§4.5): discriminating answers on this skill to date
     const hist = facts.events.filter((e) => e.skillIds.includes(s) && e.at < w.to);
     const mixes = [...new Set(hist.map((e) => e.misconceptionId).filter(Boolean))].map((m) => {
@@ -79,11 +106,12 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed } = {}) {
       .sort((a, b) => b.K.length - a.K.length || (a.m < b.m ? -1 : 1));
     if (mixes[0]) {
       const x = mixes[0];
-      trickyCands.push(claim("tricky", "tricky.mixup", { skill: facts.titles[s], belief: facts.beliefs[x.m], n: x.D.length, k: x.K.length, date },
-        [...x.D.map((e) => F.ev(e.id)), F.skill(s)], `diagnostic set for ${x.m}: n = answers discriminating it, k = answers matching it; date = kt_skill_state.next_review_at`, s, { misconceptionId: x.m }));
+      trickyCands.push(claim("tricky", `tricky.mixup${sfx}`, withDate({ skill: facts.titles[s], belief: facts.beliefs[x.m], n: x.D.length, k: x.K.length }),
+        [...x.D.map((e) => F.ev(e.id)), F.skill(s)], `diagnostic set for ${x.m}: n = answers discriminating it, k = answers matching it; ${dated ? "date = kt_skill_state.next_review_at" : "not learned (kt_skill_state.display), so placement (next-topic.js) brings it back"}`, s, { misconceptionId: x.m }));
     }
-    trickyCands.push(claim("tricky", "tricky.work", { skill: facts.titles[s], n, k, date }, [...list.map((e) => F.ev(e.id)), F.skill(s)],
-      "n = scored attempts in window; k = first-try unaided; 2k < n; date = kt_skill_state.next_review_at", s));
+    trickyCands.push(claim("tricky", `tricky.work${sfx}`, withDate({ skill: facts.titles[s], n, k }), [...list.map((e) => F.ev(e.id)), F.skill(s)],
+      dated ? "n = scored attempts in window; k = first-try unaided; 2k < n; date = kt_skill_state.next_review_at"
+        : "n = scored attempts in window; k = first-try unaided; 2k < n; not learned (kt_skill_state.display), so placement (next-topic.js) brings it back", s));
   }
   const tricky = caps.tricky ? firstAdmitted(trickyCands) : null;
   const trickySkill = tricky?.skillId ?? null;
@@ -134,13 +162,7 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed } = {}) {
   claims.push(...rows);
   if (tricky) claims.push(tricky);
 
-  // S7 interest (daily): the child's own word for a liking, short, memory consent only (facts.js)
-  if (caps.interest) {
-    const cands = facts.memories.filter((m) => m.kind === "interest" && /^[\p{L}\p{M} '-]+$/u.test(m.text.trim()) && m.text.trim().split(/\s+/).length <= INTEREST_MAX_WORDS)
-      .reverse().map((m) => claim("interest", "interest", { name, interest: m.text.trim() }, [F.memory(m.id)], "memory row kind=interest created in window"));
-    const it = firstAdmitted(cands);
-    if (it) claims.push(it);
-  }
+  // S7 interest: retired (config.js). memory.text is model paraphrase, not a typed value a reviewed template can carry.
 
   // S12 home activity (weekly, exactly one): from a skill with first-try successes, never the growth-edge skill
   let fixedHome = false;

@@ -150,9 +150,11 @@ function foldNight(s, day, H, { arm, armFrom = day }) {
  * its pull-only daily note (X11); the fold of a Sunday enqueues the ISO week's letter body (X8: one idem key per child
  * and week, whatever the lessons). Both run after the day's window closes (04:00 local + grace), never before.
  */
+const reportRunAfter = (s, day) => new Date(zonedToUtc(addDays(day, 1), "04:00", s.tz).getTime() + REPORT_GRACE_MIN * 60_000).toISOString();
+const enqueueDaily = (s, day, H) => H.enqueue("report.daily", `report.daily:${s.childId}:${day}`, { day }, { runAfter: reportRunAfter(s, day) });
 function enqueueReports(s, day, H, active) {
-  const runAfter = new Date(zonedToUtc(addDays(day, 1), "04:00", s.tz).getTime() + REPORT_GRACE_MIN * 60_000).toISOString();
-  if (active) { H.enqueue("report.daily", `report.daily:${s.childId}:${day}`, { day }, { runAfter }); H.rule("report_daily"); }
+  const runAfter = reportRunAfter(s, day);
+  if (active) { enqueueDaily(s, day, H); H.rule("report_daily"); }
   if (weekday(day) === 0) {
     const wk = isoWeek(day);
     H.enqueue("parent.letter", `parent.letter:${s.childId}:${wk}`, { isoWeek: wk }, { runAfter });
@@ -160,9 +162,12 @@ function enqueueReports(s, day, H, active) {
   }
 }
 
-const markActive = (s, day) => {
+const markActive = (s, day, H) => {
   s.counters.lastActiveDay = day;
   if (!s.counters.activeDays.includes(day)) s.counters.activeDays = [...s.counters.activeDays, day].sort().slice(-7);
+  // The night fold (≈ 02:00-03:00 local) runs before the learning day ends (04:00): activity after it still belongs
+  // to `day`, so a day the fold saw as quiet gets its daily note here (same idem key: asked for at most once).
+  if (H && s.adapt.foldedDay === day && !s.pending.jobs[`report.daily:${s.childId}:${day}`]) { enqueueDaily(s, day, H); H.rule("report_daily_late"); }
 };
 const todaysPlan = (s) => (s.plan?.day === s.learningDay ? s.plan : null);
 const addId = (arr, id) => (arr.includes(id) ? arr : [...arr, id]);
@@ -192,7 +197,7 @@ const HANDLERS = {
     if (p && p.slots.some((x) => x.id === ev.slotId)) {
       p.shownSlotIds = addId(p.shownSlotIds, ev.slotId); p.startedSlotIds = addId(p.startedSlotIds, ev.slotId); p.doneSlotIds = addId(p.doneSlotIds, ev.slotId);
     }
-    markActive(s, t.today);
+    markActive(s, t.today, H);
   },
   "slot.skipped"(s, ev) {
     const p = todaysPlan(s);
@@ -230,7 +235,7 @@ const HANDLERS = {
       s.adapt.successFirstNext = BAD_CLOSE.has(vibe);
       if (BAD_CLOSE.has(vibe)) H.rule("R1:successFirst");
     }
-    if (ev.minutes > 0) markActive(s, t.today);
+    if (ev.minutes > 0) markActive(s, t.today, H);
     H.replanSoon("lesson_ended");
   },
   "skill.milestone"(s, ev, H) {

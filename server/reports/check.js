@@ -37,22 +37,20 @@ export async function checkReport(db, report, lookup) {
   const out = [];
   for (const c of report.claims) {
     const why = [];
-    const ids = { ev: [], lesson: [], skill: [], memory: [] };
+    const ids = { ev: [], lesson: [], skill: [] };
     for (const f of c.factIds) {
       const [kind, ...rest] = String(f).split(":");
       const id = rest.join(":");
       if (kind === "kt_evidence") ids.ev.push(id); else if (kind === "lesson") ids.lesson.push(id);
-      else if (kind === "kt_skill_state") ids.skill.push(id); else if (kind === "memory") ids.memory.push(id);
+      else if (kind === "kt_skill_state") ids.skill.push(id);
       else why.push(`unknown fact kind ${kind}`);
     }
     const ev = ids.ev.length ? await db.q("select * from kt_evidence where child_id = $1 and id = any($2::text[]) order by seq", [report.child_id, ids.ev]) : [];
     const lessons = ids.lesson.length ? await db.q("select * from lesson where child_id = $1 and id::text = any($2::text[])", [report.child_id, ids.lesson]) : [];
     const sks = ids.skill.length ? await db.q("select * from kt_skill_state where child_id = $1 and skill_id = any($2::text[])", [report.child_id, ids.skill]) : [];
-    const mems = ids.memory.length ? await db.q("select * from memory where child_id = $1 and id::text = any($2::text[])", [report.child_id, ids.memory]) : [];
     if (ev.length !== ids.ev.length) why.push(`kt_evidence: ${ids.ev.length - ev.length} cited row(s) not this child's or missing`);
     if (lessons.length !== ids.lesson.length) why.push(`lesson: ${ids.lesson.length - lessons.length} cited row(s) missing`);
     if (sks.length !== ids.skill.length) why.push("kt_skill_state row missing");
-    if (mems.length !== ids.memory.length) why.push("memory row missing");
     const s = c.slots ?? {};
     if (s.name !== undefined && s.name !== child.first_name) why.push("name slot is not the child's name");
     const title = s.skill !== undefined && c.skillId ? await lookup.skillTitle(c.skillId) : null;
@@ -81,13 +79,31 @@ export async function checkReport(db, report, lookup) {
       if (inside !== inWin(e.occurred_at)) why.push(inside ? "success not in the window" : "success not before the window");
       if (!inside && !sameDate(s.date, dateSlot(e.occurred_at, child.tz))) why.push("date slot ≠ the success date");
     };
+    /** The growth edge's action part: a re-check date equal to the skill's next_review_at, or (no date) a skill not learned yet. */
+    const action = () => {
+      const sk = sks[0];
+      if (!sk) return why.push("growth edge cites no kt_skill_state row");
+      if (c.shapeId.endsWith("_next")) { if (!["unseen", "introduced", "practising"].includes(sk.display)) why.push("'comes back' without a date needs a skill not learned yet"); }
+      else if (!sk.next_review_at || !sameDate(s.date, dateSlot(sk.next_review_at, child.tz))) why.push("date slot ≠ kt_skill_state.next_review_at");
+      // "It comes back on <date>" is a promise: the date must still be ahead when the report was made (after the window)
+      else if (ms(sk.next_review_at) < Math.max(to, report.created_at ? ms(report.created_at) : to)) why.push("re-check date already past when the report was made");
+    };
     switch (c.shapeId) {
-      case "header.daily": case "header.weekly": case "header.zero": {
+      case "header.daily": case "header.weekly": case "header.zero": case "header.nolesson": {
         const win = await db.q("select id, started_at, ended_at from lesson where child_id = $1 and started_at >= $2 and started_at < $3", [report.child_id, report.window_from, report.window_to]);
         if (win.map((l) => String(l.id)).sort().join(",") !== lessons.map((l) => String(l.id)).sort().join(",")) why.push("header does not cite exactly the window's lessons");
         if (c.shapeId === "header.zero") { if (win.length) why.push("zero header but lessons exist"); break; }
+        if (c.shapeId === "header.nolesson") {
+          if (win.length) why.push("no-lesson header but lessons exist");
+          const inside = await db.q("select id from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3", [report.child_id, report.window_from, report.window_to]);
+          if (!inside.length || inside.map((r) => r.id).sort().join(",") !== ev.map((r) => r.id).sort().join(",")) why.push("no-lesson header does not cite exactly the window's evidence");
+          break;
+        }
         if (s.lessons !== win.length) why.push("lessons slot ≠ lesson rows");
-        const min = Math.round(win.filter((l) => l.ended_at).reduce((a, l) => a + ms(l.ended_at) - ms(l.started_at), 0) / 60_000);
+        // an open lesson (ended_at null) runs to its last evidence row in the window (session_id = lesson id), else 0 min
+        const winEv = await db.q("select id, session_id, occurred_at from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 order by seq", [report.child_id, report.window_from, report.window_to]);
+        const endOf = (l) => { if (l.ended_at) return ms(l.ended_at); const es = winEv.filter((r) => r.session_id === String(l.id)); return es.length ? Math.max(...es.map((r) => ms(r.occurred_at))) : ms(l.started_at); };
+        const min = Math.round(win.reduce((a, l) => a + endOf(l) - ms(l.started_at), 0) / 60_000);
         if (s.min !== min) why.push(`min slot ${s.min} ≠ ${min}`);
         if (c.shapeId === "header.weekly" && s.days !== new Set(win.map((l) => learningDate(l.started_at, child.tz))).size) why.push("days slot ≠ distinct learning days");
         break;
@@ -103,12 +119,12 @@ export async function checkReport(db, report, lookup) {
       case "st.explained": exact(explained, "explained"); if (ev.filter(explained).length !== s.k) why.push("k ≠ count"); break;
       case "st.transfer": exact(transfer, "transfer"); if (ev.filter(transfer).length !== s.k) why.push("k ≠ count"); break;
       case "st.errorspot": exact(fixedSpot, "error-spot"); if (ev.filter(fixedSpot).length !== s.k) why.push("k ≠ count"); break;
-      case "row.work": case "tricky.work": {
+      case "row.work": case "tricky.work": case "tricky.work_next": {
         exact(scored, "attempts");
         if (ev.length !== s.n || ev.filter(firstTry).length !== s.k) why.push(`n/k slots ${s.n}/${s.k} ≠ rows ${ev.length}/${ev.filter(firstTry).length}`);
-        if (c.shapeId === "tricky.work") {
+        if (c.shapeId !== "row.work") {
           if (!(s.n >= 3 && 2 * s.k < s.n)) why.push("tricky rule (n ≥ 3, 2k < n) not met");
-          if (!sks[0]?.next_review_at || !sameDate(s.date, dateSlot(sks[0].next_review_at, child.tz))) why.push("date slot ≠ kt_skill_state.next_review_at");
+          action();
         }
         break;
       }
@@ -117,7 +133,7 @@ export async function checkReport(db, report, lookup) {
         if (allIn.some(scored)) why.push("started, but a scored attempt exists in the window");
         break;
       }
-      case "tricky.mixup": {
+      case "tricky.mixup": case "tricky.mixup_next": {
         const m = c.ref?.misconceptionId;
         const disc = (r) => !r.teach && !r.contaminated && !r.assisted && (r.discriminates === m || r.misconception_id === m);
         const want = all.filter(disc).map((r) => r.id).sort().join(",");
@@ -126,15 +142,10 @@ export async function checkReport(db, report, lookup) {
         if (ev.length !== s.n || k !== s.k || s.n < 3 || s.k < 2) why.push("n/k slots ≠ the diagnostic set");
         if (!ev.some((r) => r.misconception_id === m && inWin(r.occurred_at))) why.push("no matching answer in the window");
         if (m && (await lookup.belief(m)) !== s.belief) why.push("belief slot ≠ the kit's belief text");
-        if (!sks[0]?.next_review_at || !sameDate(s.date, dateSlot(sks[0].next_review_at, child.tz))) why.push("date slot ≠ kt_skill_state.next_review_at");
+        action();
         break;
       }
-      case "interest": {
-        const r = mems[0];
-        if (!r || r.kind !== "interest" || String(r.text).trim() !== s.interest || !inWin(r.created_at)) why.push("interest slot ≠ a memory row of this window");
-        break;
-      }
-      case "home.skill": if (!ev.length || ev.some((r) => !firstTry(r) || !inWin(r.occurred_at))) why.push("home activity must rest on first-try successes in the window"); break;
+      case "home.skill": if (!ev.length) why.push("home activity cites no success"); exact(firstTry, "home activity: first-try successes"); break;
       default: why.push(`no check for shape ${c.shapeId}`);
     }
     out.push({ id: c.id, shapeId: c.shapeId, ok: !why.length, why });

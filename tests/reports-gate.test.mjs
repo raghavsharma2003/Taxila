@@ -88,7 +88,11 @@ test("numbers: a digit that is not a slot value is a violation; digits inside a 
   assert.ok(v.some((x) => x.rule === "number_not_in_slots") && v.some((x) => x.rule === "text_mismatch"));
 });
 
-test("numeric fidelity fuzz (E-R7): 2,000 random slot sets render with every digit traceable to a slot, in every language", () => {
+// TEMPLATE DIGIT HYGIENE only: each line is rendered from its own slots and its digits checked against those slots,
+// so this shows the templates add no stray digit. It is NOT numeric correctness (the digit check is set membership:
+// "4 of 3" with n and k swapped passes it). Numeric fidelity is check.js re-deriving every slot from the cited rows,
+// measured by the sim-week mutants (swap_n_k, slot±1, date+1).
+test("template digit hygiene: 2,000 random slot sets render with no digit outside the slots, in every language", () => {
   let seed = 7;
   const rnd = (m) => { seed = (seed * 1103515245 + 12345) % 2 ** 31; return seed % m; };
   const ids = Object.keys(SHAPES).filter((id) => !SHAPES[id].locked);
@@ -110,8 +114,10 @@ test("a template bug that renders a JS value is caught, not shown", () => {
 });
 
 test("pipeline: a day with lessons renders header → strength → rows → tricky in all three languages and passes the gate", () => {
-  const { built, body } = assembled(dayFacts({ memories: [{ id: "9", kind: "interest", text: "cricket", createdAt: "2026-10-06T11:40:00.000Z" }] }));
-  assert.deepEqual(built.claims.map((c) => c.section), ["header", "strength", "row", "tricky", "interest"]);
+  // a memory row shaped like the lesson-end writer's output (free model paraphrase): never quoted, no interest line
+  const { built, body } = assembled(dayFacts({ memories: [{ id: "9", kind: "interest", text: "loves cricket", createdAt: "2026-10-06T11:40:00.000Z" }] }));
+  assert.deepEqual(built.claims.map((c) => c.section), ["header", "strength", "row", "tricky"]);
+  for (const L of LANGS) assert.ok(!body.renders[L].lines.some((l) => /cricket/.test(l.text)), `${L}: memory text reached a parent line`);
   assert.equal(built.claims.find((c) => c.section === "strength").shapeId, "st.delayed");
   assert.equal(built.claims.find((c) => c.section === "tricky").shapeId, "tricky.mixup");
   assert.ok(gateReport(body, { firstName: "Riya" }));
@@ -210,4 +216,155 @@ test("Lane B: a valid order is used; invalid output twice falls back to Lane A; 
 test("lexicon normalisation is idempotent and strips the nukta", () => {
   assert.equal(norm("ज़रूर"), norm("जरूर"));
   assert.equal(norm(norm("ग़लती")), norm("ग़लती"));
+});
+
+test("growth edge with no re-check date: a not-learned skill reads 'comes back in the next lessons'; a learned one without a date gets no line", () => {
+  const f = dayFacts();
+  f.skills[SKILLS.B] = { display: "practising", nextReviewAt: null, refresh: false };
+  const t = buildClaims(f).claims.find((c) => c.section === "tricky");
+  assert.equal(t.shapeId, "tricky.mixup_next");
+  assert.equal(t.slots.date, undefined);
+  assert.ok(gateReport(assembled(f).body, { firstName: "Riya" }));
+  const g = dayFacts();
+  g.skills[SKILLS.B] = { display: "learned_today", nextReviewAt: null, refresh: false };
+  assert.equal(buildClaims(g).claims.find((c) => c.section === "tricky"), undefined);
+});
+
+test("Lane B: a cancel requested before the call stops the job; the model is never called", async () => {
+  const { body } = assembled(dayFacts());
+  const { JobCancelled } = await import("../server/reports/jobs.js");
+  await assert.rejects(orderForVoice({ lines: body.renders.en.lines, lang: "en", cadence: "daily" },
+    { llm: { chat: async () => assert.fail("called after cancel") }, beforeCall: async () => { throw new JobCancelled(); } }), (e) => e.code === "cancelled");
+});
+
+// ───────────── review fixes (fixer pass, 2026-10-03) ─────────────
+import { HOW } from "../server/reports/templates.js";
+import { lessonEndMs } from "../server/reports/claims.js";
+import { evidenceClaimOut, reportHold } from "../server/routes/parent.js";
+
+test("no interest line exists: no shape, no cap, and facts.js never reads the memory table", () => {
+  assert.equal(SHAPES.interest, undefined);
+  const src = readFileSync(new URL("../server/reports/facts.js", import.meta.url), "utf8").replace(/\/\/.*$/gm, "");
+  assert.ok(!/from memory\b/.test(src));
+});
+
+test("delayed success never claims the earlier time was right: the previous contact here was a C2 answer", () => {
+  const f = dayFacts();
+  const st = buildClaims(f).claims.find((c) => c.section === "strength");
+  assert.equal(st.shapeId, "st.delayed");
+  const prev = f.events.find((e) => `kt_evidence:${e.id}` === st.factIds[1]);
+  assert.equal(prev.outcome, 2, "fixture: the previous contact was partly right (C2), not a success");
+  const en = renderShape("st.delayed", "en", st.slots), hl = renderShape("st.delayed", "hinglish", st.slots), hi = renderShape("st.delayed", "hi", st.slots);
+  assert.ok(!/\bagain\b/i.test(en) && /after it last came up/.test(en), en);
+  assert.ok(!/\bbhi\b/.test(hl), hl);
+  assert.ok(!/भी/.test(hi), hi);
+  for (const id of ["st.delayed_before", "st.pakka"]) for (const L of LANGS) {
+    const t = renderShape(id, L, slotsFor(id));
+    assert.ok(!/\bagain\b|\bbhi\b|भी/i.test(t), `${id}/${L}: ${t}`);
+  }
+});
+
+test("growth-edge date: a re-check inside the closed window or already past at generation is never stated; a future one is", () => {
+  const f = dayFacts();                                                    // window 2026-10-06 04:00 → 10-07 04:00 IST
+  f.skills[SKILLS.B] = { display: "practising", nextReviewAt: "2026-10-06T09:30:00.000Z", refresh: false };   // 15:00 IST, same day
+  assert.equal(buildClaims(f, { now: "2026-10-06T22:40:00.000Z" }).claims.find((c) => c.section === "tricky").shapeId, "tricky.mixup_next");
+  f.skills[SKILLS.B].nextReviewAt = "2026-10-08T11:30:00.000Z";            // ahead of the window, but the letter is made later
+  assert.equal(buildClaims(f, { now: "2026-10-12T22:40:00.000Z" }).claims.find((c) => c.section === "tricky").shapeId, "tricky.mixup_next");
+  const ok = buildClaims(f, { now: "2026-10-06T22:40:00.000Z" }).claims.find((c) => c.section === "tricky");
+  assert.equal(ok.shapeId, "tricky.mixup");
+  assert.deepEqual(ok.slots.date, { y: 2026, m: 10, d: 8 });
+  f.skills[SKILLS.B] = { display: "learned_today", nextReviewAt: "2026-10-06T09:30:00.000Z", refresh: false };
+  assert.equal(buildClaims(f, { now: "2026-10-06T22:40:00.000Z" }).claims.find((c) => c.section === "tricky"), undefined, "learned + past date → no line, never a stale promise");
+});
+
+test("header: an open lesson counts to its last evidence row (cited); evidence without a lesson gets the no-lesson header", () => {
+  const open = dayFacts({ lessons: [{ id: "S2", topicId: "c5-maths-ch01-t01", startedAt: "2026-10-06T11:30:00.000Z", endedAt: null }] });
+  const h = buildClaims(open).claims[0];
+  assert.equal(h.shapeId, "header.daily");
+  assert.equal(h.slots.min, 10, "S2's last row is at +10 min");
+  assert.ok(h.factIds.includes("lesson:S2") && h.factIds.some((x) => x.startsWith("kt_evidence:")));
+  const noRows = dayFacts({ lessons: [{ id: "L9", topicId: "x", startedAt: "2026-10-06T12:30:00.000Z", endedAt: null }] });
+  assert.equal(lessonEndMs(noRows.lessons[0], [], null), Date.parse("2026-10-06T12:30:00.000Z"));
+  assert.equal(buildClaims(noRows, { preview: true, now: "2026-10-06T12:45:00.000Z" }).claims[0].slots.min, 15, "a preview counts a running lesson to now");
+  const none = dayFacts({ lessons: [] });
+  const { built, body } = assembled(none);
+  assert.equal(built.claims[0].shapeId, "header.nolesson");
+  assert.ok(gateReport(body, { firstName: "Riya" }));
+  assert.ok(!body.renders.en.lines.some((l) => /0 lessons|0 min/.test(l.text)));
+});
+
+test("'how this line is counted': reviewed copy for every shape in every language, lexicon- and lock-clean; the drawer never sends the internal rule", () => {
+  for (const id of Object.keys(SHAPES)) for (const L of LANGS) {
+    const t = HOW[id]?.[L];
+    assert.ok(t, `${id}/${L} has no HOW copy`);
+    assert.deepEqual([...bannedHits(t), ...lockedHits(t)], [], `${id}/${L}: "${t}"`);
+  }
+  const { built } = assembled(dayFacts());
+  for (const c of built.claims) {
+    const out = evidenceClaimOut(c);
+    assert.equal(out.rule, undefined);
+    assert.ok(!JSON.stringify(out).includes(c.rule));
+  }
+});
+
+test("every parent-visible string in the report screen (src/parent/Report.tsx label maps) passes the lexicon and the lock list", () => {
+  const src = readFileSync(new URL("../src/parent/Report.tsx", import.meta.url), "utf8");
+  const strings = [...src.matchAll(/\b(?:en|hinglish|hi): "([^"]+)"/g)].map((m) => m[1]);
+  assert.ok(strings.length > 50);
+  for (const t of strings) assert.deepEqual([...bannedHits(t), ...lockedHits(t)], [], t);
+});
+
+test("safety hold read side: reportHold reads the Conductor mode; no row or no table = no hold", async () => {
+  assert.deepEqual(await reportHold("c", async () => ({ mode: "safety_hold", since: "2026-10-06T10:00:00.000Z" })), { since: "2026-10-06T10:00:00.000Z" });
+  assert.equal(await reportHold("c", async () => ({ mode: "free", since: null })), null);
+  assert.equal(await reportHold("c", async () => null), null);
+  assert.equal(await reportHold("c", async () => { throw Object.assign(new Error("x"), { code: "42P01" }); }), null);
+  await assert.rejects(reportHold("c", async () => { throw Object.assign(new Error("down"), { code: "ECONNRESET" }); }), "a DB error is not read as 'no hold'");
+});
+
+test("Lane B: a call that fails after it was sent is charged (usage if present, else the worst case) and the fallback sees less room", async () => {
+  const { body } = assembled(dayFacts());
+  const lines = body.renders.en.lines;
+  const spends = [];
+  const timeout = { chat: async () => { throw Object.assign(new Error("timeout"), { code: "timeout" }); } };
+  const r = await orderForVoice({ lines, lang: "en", cadence: "daily" }, { llm: timeout, deployments: ["taxila-brain", "taxila-fast"], onSpend: async (c) => spends.push(c) });
+  assert.equal(r.lane, "A");
+  assert.equal(spends.length, 2);
+  assert.ok(spends[0] > 16_000, "brain worst case includes 800 out tokens × 20 µ$");
+  assert.equal(r.spentMicroUsd, spends[0] + spends[1]);
+  const withUsage = { chat: async () => { throw Object.assign(new Error("schema"), { usage: { prompt_tokens: 1000, completion_tokens: 50 } }); } };
+  const u = await orderForVoice({ lines, lang: "en", cadence: "daily" }, { llm: withUsage, deployments: ["taxila-brain"] });
+  assert.equal(u.spentMicroUsd, 1000 * 4 + 50 * 20);
+  // budget room: after a charged brain failure, the fast fallback is skipped when the job budget is spent
+  let calls = 0;
+  const once = { chat: async () => { calls++; throw new Error("boom"); } };
+  const b = await orderForVoice({ lines, lang: "en", cadence: "daily" }, { llm: once, deployments: ["taxila-brain", "taxila-fast"], budgetMicroUsd: spends[0] + 1 });
+  assert.equal(calls, 1);
+  assert.equal(b.attempts[1].skipped, "budget");
+});
+
+test("job: a deterministic gate failure is FINAL (no retry, no model call) and audited with rule names only", async () => {
+  const { runReportJob } = await import("../server/reports/jobs.js");
+  const f = dayFacts({ name: "Riya!" });                     // "!" in the disclosure line: the gate throws on every attempt
+  const audits = [];
+  const db = { q: async (text, params) => {
+    if (/from parent_report/.test(text)) return [];
+    if (/from child c left join child_routine/.test(text)) return [{ id: f.child.id, first_name: "Riya!", class_level: 5, language_pref: "hinglish", guardian_id: "g", tz: "Asia/Kolkata" }];
+    if (/from consent/.test(text)) return [{ purpose: "core_tutoring", granted: true }];
+    if (/from lesson/.test(text)) return f.lessons.map((l) => ({ id: l.id, topic_id: l.topicId, started_at: l.startedAt, ended_at: l.endedAt }));
+    if (/from kt_evidence/.test(text)) return f.events.map((e) => ({ id: e.id, seq: e.seq, session_id: e.sessionId, occurred_at: e.at, skill_ids: e.skillIds, cls: e.cls, outcome: e.outcome,
+      grader: e.grader, item_key: e.itemKey, teach: e.teach, pre_attempt_help: e.preAttemptHelp, entry_rung: e.entryRung, misconception_id: e.misconceptionId, discriminates: e.discriminates, via: e.via, contaminated: e.contaminated, assisted: e.assisted }));
+    if (/from kt_skill_state/.test(text)) return Object.entries(f.skills).map(([k, v]) => ({ skill_id: k, display: v.display, next_review_at: v.nextReviewAt, refresh: v.refresh }));
+    if (/from kt_misconception/.test(text)) return [];
+    if (/insert into audit/.test(text)) { audits.push(params[0]); return []; }
+    throw new Error(`unexpected sql ${text.slice(0, 60)}`);
+  } };
+  let calls = 0;
+  const llm = { chat: async () => { calls++; return { json: { order: [] }, usage: {} }; } };
+  const lookup = { skillTitle: async (id) => f.titles[id] ?? null, belief: async (id) => f.beliefs[id] ?? null };
+  await assert.rejects(runReportJob({ id: 7, kind: "report.daily", child_id: f.child.id, input: { day: "2026-10-06" }, attempts: 1, budget_micro_usd: 25_000, spent_micro_usd: 0 },
+    { heartbeat: async () => ({ alive: true, cancelRequested: false }) }, "daily", { db, llm, lookup }), (e) => e.final === true && /report gate/.test(e.message));
+  assert.equal(calls, 0, "Lane A is gated before the writer is paid");
+  assert.equal(audits.length, 1);
+  assert.ok(audits[0].rules.length && !JSON.stringify(audits[0]).includes("Riya"));
 });

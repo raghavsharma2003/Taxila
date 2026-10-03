@@ -9,6 +9,7 @@ import ParentHome from "./Home.tsx";
 import { LessonCard, LessonList } from "./Lessons.tsx";
 import { ChangePin, Data, Help, More, Pending } from "./Pages.tsx";
 import Syllabus from "./Syllabus.tsx";
+import Reports from "./Report.tsx";
 import "../styles/parent.css";
 
 export default function ParentCorner() {
@@ -23,6 +24,8 @@ export default function ParentCorner() {
         <Route path=":cid/lessons" element={<LessonList />} />
         <Route path=":cid/lessons/:lid" element={<LessonCard />} />
         <Route path=":cid/lessons/:lid/skill/:skill" element={<LessonCard />} />
+        <Route path=":cid/reports" element={<Reports />} />
+        <Route path=":cid/reports/:rid" element={<Reports />} />
         <Route path=":cid/teaching" element={<Pending which="teaching" />} />
         <Route path=":cid/teaching/c/:comparisonId" element={<Pending which="teaching" />} />
         <Route path="ptm" element={<Pending which="ptm" />} />

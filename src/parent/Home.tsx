@@ -100,6 +100,7 @@ export default function ParentHome() {
               <p className="t-note">This week: {data.week.lessons} {data.week.lessons === 1 ? "lesson" : "lessons"}, {data.week.minutes} minutes.</p>
               <ul className="link-list">
                 <li><Link to={`/parent/${cid}/syllabus`}>Skills and syllabus <Icon name="chevron" size={18} /></Link></li>
+                <li><Link to={`/parent/${cid}/reports`}>Daily and weekly notes <Icon name="chevron" size={18} /></Link></li>
                 <li><Link to={`/parent/${cid}/lessons`}>Lessons <Icon name="chevron" size={18} /></Link></li>
                 <li><Link to={`/parent/${cid}/teaching`}>How she teaches {name} <Icon name="chevron" size={18} /></Link></li>
                 <li><Link to="/parent/ptm">Talk to her about {name} (PTM) <Icon name="chevron" size={18} /></Link></li>

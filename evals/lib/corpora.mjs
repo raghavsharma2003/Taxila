@@ -67,3 +67,30 @@ export function teacherTurns() {
   }
   return out;
 }
+
+/**
+ * Every question a kit hands the teacher to POSE, with what the reply guard passes as `content` for it (the
+ * call-site recipe in context/inbox/harvest-ports.json): the prompt in each language, the answer, acceptable
+ * answers, hints and diagnostic options. Returns [{ where, prompts: string[], content: string[] }].
+ */
+export function kitPosed() {
+  const dir = new URL("data/kits/", ROOT);
+  const out = [];
+  const s = (x) => (typeof x === "string" && x.trim() ? [x] : []);
+  for (const f of readdirSync(dir).filter((n) => /^c\d+-[a-z]+\.json$/.test(n)).sort()) {
+    const d = read(`data/kits/${f}`);
+    for (const t of d?.topics ?? []) {
+      for (const it of t.items ?? []) {
+        const prompts = [...s(it.prompt_en), ...s(it.prompt_hi)];
+        out.push({ where: `${it.id}`, prompts, content: [...prompts, ...s(it.answer), ...(it.acceptable ?? []).flatMap(s), ...(it.hints ?? []).flatMap(s), ...(it.options ?? []).flatMap((o) => s(o?.text))] });
+      }
+      for (const m of t.misconceptions ?? []) {
+        const g = m.diagnostic;
+        if (!g) continue;
+        const prompts = [...s(g.prompt_en), ...s(g.prompt_hi)];
+        out.push({ where: `${m.id}.diag`, prompts, content: [...prompts, ...(g.options ?? []).flatMap((o) => s(o?.text))] });
+      }
+    }
+  }
+  return out;
+}

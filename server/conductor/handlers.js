@@ -2,6 +2,7 @@
 // themselves in server/reports/jobs.js, imported here so the worker's one handlers import loads them all.
 import { registerHandler } from "./jobs.js";
 import "../reports/jobs.js";
+import "../forge/g2/conductor-job.js";   // forge.g2.nightly (Forge G2 end-of-day delivery / build request)
 import { one } from "./pg.js";
 
 /**

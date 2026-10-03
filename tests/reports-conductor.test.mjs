@@ -105,3 +105,24 @@ test("handler: a bad period is final; an existing stored report short-circuits w
   assert.equal(llm, 0);
   assert.ok(!calls.some((t) => /update job set spent/.test(t)));
 });
+
+test("a lesson after the night fold but before 04:00 still gets the day's note (late activity, asked for once)", () => {
+  // quiet Tuesday: the fold at 02:20 Wed sees no activity and asks for no note
+  let s = activeOn("2026-10-05");
+  s = run(s, { type: "clock.wakeup", reason: "night", wakeupId: "night:2026-10-05" }, ist("2026-10-06", "02:10")).state;
+  const fold = run(s, { type: "clock.wakeup", reason: "night", wakeupId: "night:2026-10-06" }, ist("2026-10-07", "02:20"));
+  assert.ok(!enq(fold).some((j) => j.kind === "report.daily"));
+  s = fold.state;
+  // 03:10 Wed is still learning day 2026-10-06
+  s = run(s, { type: "lesson.started", lessonId: "L-late", topicId: "c5-maths-ch01-t01", kind: "live", lanes: ["cascade"] }, ist("2026-10-07", "03:10")).state;
+  const end = run(s, { type: "lesson.ended", lessonId: "L-late", reason: "completed", minutes: 15 }, ist("2026-10-07", "03:25"));
+  const d = enq(end).find((j) => j.kind === "report.daily");
+  assert.ok(d, "late activity enqueues the daily note");
+  assert.equal(d.idemKey, `report.daily:${CHILD}:2026-10-06`);
+  assert.equal(d.runAfter, ist("2026-10-07", "04:10").toISOString());
+  assert.ok(end.rulesFired.includes("report_daily_late"));
+  // a second late lesson the same night does not ask again
+  let t = run(end.state, { type: "lesson.started", lessonId: "L-late2", topicId: "c5-maths-ch01-t01", kind: "live", lanes: ["cascade"] }, ist("2026-10-07", "03:30")).state;
+  const again = run(t, { type: "lesson.ended", lessonId: "L-late2", reason: "completed", minutes: 10 }, ist("2026-10-07", "03:45"));
+  assert.ok(!enq(again).some((j) => j.kind === "report.daily"));
+});

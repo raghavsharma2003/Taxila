@@ -69,11 +69,14 @@ const DEVA_DIGITS = /[०-९]/g;
 const foldDeva = (s) => s.replace(/़/g, "").replace(/ँ/g, "ं");
 /**
  * Text → the form every rule is written against: NFKC, lower case, curly quotes straight, Devanagari digits
- * as ASCII, nukta/chandrabindu folded, any run of non-letters (except ' and ?) one space. \p{M} is KEPT.
+ * as ASCII, nukta/chandrabindu folded, a ' at a word edge dropped, any run of non-letters (except a
+ * word-internal ' and ?) one space. \p{M} is KEPT.
  */
 export function normForMatch(value) {
   return foldDeva(String(value ?? "").normalize("NFKC").toLowerCase())
     .replace(/[‘’ʼ]/g, "'")
+    // a ' at a word edge is a quote mark, not an apostrophe: "tumhari 'best friend'" must read as words
+    .replace(/(?<![\p{L}\p{M}\p{N}])'|'(?![\p{L}\p{M}\p{N}])/gu, " ")
     .replace(DEVA_DIGITS, (d) => String(d.charCodeAt(0) - 0x0966))
     .replace(/[^\p{L}\p{M}\p{N}'?]+/gu, " ").replace(/\s+/g, " ").trim();
 }
@@ -87,6 +90,12 @@ const MAIN = "(?:main|mai|mein)";
 const HOON = "(?:hoon|hun|hu|hoo|hoo?n)";
 const NAHI = "(?:nahi|nahin|nai|nhi)";
 const TUM = "(?:tum|aap|tu)";
+/** Negation right before a verb ("don't keep it a secret", "never share your address"): up to two words between. */
+const NOT_BEFORE = "(?<!(?:don'?t|dont|do not|never|not|no need to|shouldn'?t|should not|mustn'?t|must not|won'?t|will not|mat|nahi|nahin) (?:\\S+ ){0,2})";
+/** Negation within the next few words ("tumhara address nahi poochungi", "secret rakhna theek nahi"). */
+const NOT_AFTER = (lang = "hl") => `(?!(?: \\S+){0,3} (?:${lang === "hi" ? "नहीं|मत" : "nahi|nahin|nai|nhi|mat|na"})(?![\\p{L}\\p{M}\\p{N}]))`;
+/** Safety advice names what NOT to give: "don't tell anyone your password" is not a secret pact. */
+const DATA_WORDS = "(?:password|pin|otp|address|pata|phone|number|location|photos?|full name|surname)";
 
 /** Rule id → regex, per family. Rules are about the teacher's OWN claims and asks, so they are first person / second person. */
 const RULES = {
@@ -120,17 +129,17 @@ const RULES = {
   exclusivity: {
     en_friend: R(`${I_AM} (?:also )?(?:your|ur|an ai|a|an) (?:best |only |true |real |ai |voice )*(?:friend|bestie|buddy|bff)|we(?:'re| are) (?:best )?friends|be my (?:best )?friend`),
     en_only: R(`only (?:i|me) (?:can )?(?:understand|get|know|care|listen)|${I_AM} (?:always )?(?:here|there) for you(?: always)?|you (?:don'?t|do not) need (?:anyone|anybody|them|your friends|other people)|you (?:only )?need me|${I_AM} all you need`),
-    en_secret: R(`our (?:little )?secret|keep (?:it|this|that) (?:a |our )?secret|between (?:you and me|us two|just us)|i (?:won'?t|will not|will never|never) tell (?:anyone|anybody|your (?:mom|mum|mother|dad|father|parents|teacher|mummy|papa))|i promise not to tell|don'?t tell (?:your )?(?:mom|mum|mother|dad|father|parents|teacher|mummy|papa|anyone)`),
-    hl_friend: R(`(?:main|mai) (?:bhi )?(?:tumhari|tumhara|aapki|aapka|teri|tera) (?:best |sabse (?:achchi|acchi|achhi|achha|accha|pyaari) )?(?:friend|dost|saheli|bestie) ${HOON}|${MAIN} (?:ek )?(?:ai |voice |ai voice |robot )?(?:friend|dost|saheli) ${HOON}|(?:tumse|aapse) (?:bhi )?(?:pyaa?r aur )?dosti (?:hai|ho gayi)|hum (?:best )?(?:friends|dost) (?:hain|hai)|(?:meri|mera) (?:best )?(?:friend|dost) ban(?:o|ogi|oge|jao)?|best friend wali|best friend mode`),
-    hl_only: R(`sirf (?:main|mai) (?:hi )?(?:tumhari|tumhara|tumhe|samajh)|kisi aur ki (?:zaroorat|zarurat|jarurat) nahi|(?:main|mai) (?:hamesha|always) (?:tumhare|aapke) (?:saath|liye) ${HOON}`),
-    hl_secret: R(`(?:main|mai) (?:kisi ko|mummy ko|papa ko|mummy papa ko|ghar (?:pe|par|mein)(?: kisi ko)?) (?:bhi )?${NAHI} (?:bataungi|bataunga|bolungi|bolunga)|(?:kisi ko|mummy ko|papa ko|mummy papa ko|ghar (?:pe|par)(?: kisi ko)?) (?:bhi )?mat (?:batana|bolna)|(?:hamara|humara) (?:chhota sa )?(?:secret|raaz|raz)|(?:hamare|humare) (?:beech|bich) (?:ki baat|rahega)|secret rakh(?:ungi|unga|enge|na)`),
+    en_secret: R(`(?<!(?:not|isn'?t|is not) )our (?:little )?secret|${NOT_BEFORE}keep (?:it|this|that) (?:a |our )?secret|between (?:you and me|us two|just us)|i (?:won'?t|will not|will never|never) tell (?:anyone|anybody|your (?:mom|mum|mother|dad|father|parents|teacher|mummy|papa))|i promise not to tell|don'?t tell (?:your )?(?:mom|mum|mother|dad|father|parents|teacher|mummy|papa|anyone)(?! (?:\\S+ )?${DATA_WORDS})`),
+    hl_friend: R(`(?:main|mai) (?:bhi )?(?:tumhari|tumhara|aapki|aapka|teri|tera) (?:best |sabse (?:achchi|acchi|achhi|achha|accha|pyaari) )?(?:friend|dost|saheli|bestie) ${HOON}|${MAIN} (?:ek )?(?:ai |voice |ai voice |robot )?(?:friend|dost|saheli) ${HOON}|(?:tumse|aapse) (?:bhi )?(?:pyaa?r aur )?dosti (?:hai|ho gayi)|hum (?:toh |to |bhi |dono )?(?:best |pakke |achhe |acche )?(?:friends|dost) (?:hain|hai)|(?:meri|mera) (?:best )?(?:friend|dost) ban(?:o|ogi|oge|jao)?|best friend wali|best friend mode`),
+    hl_only: R(`(?<!(?:nahi|nahin|aisa nahi|aisa nahi hai) ki )sirf (?:main|mai) (?:hi )?(?:tumhari|tumhara|tumhe|samajh)|kisi aur ki (?:zaroorat|zarurat|jarurat) nahi|(?:main|mai) (?:hamesha|always) (?:tumhare|aapke) (?:saath|liye) ${HOON}`),
+    hl_secret: R(`(?:main|mai) (?:kisi ko|mummy ko|papa ko|mummy papa ko|ghar (?:pe|par|mein)(?: kisi ko)?) (?:bhi )?${NAHI} (?:bataungi|bataunga|bolungi|bolunga)|(?<!${DATA_WORDS} (?:\\S+ )?)(?:kisi ko|mummy ko|papa ko|mummy papa ko|ghar (?:pe|par)(?: kisi ko)?) (?:bhi )?mat (?:batana|bolna)|(?:hamara|humara) (?:chhota sa )?(?:secret|raaz|raz)${NOT_AFTER()}|(?:hamare|humare) (?:beech|bich) (?:ki baat|rahega)${NOT_AFTER()}|(?<!(?:mat|nahi|koi) )secret rakh(?:ungi|unga|enge|na)${NOT_AFTER()}`),
     hi_friend: R(`मैं (?:भी )?(?:तुम्हारी|तुम्हारा|आपकी|आपका) (?:बेस्ट |सबसे अच्छी |सबसे अच्छा )?(?:दोस्त|सहेली|फ्रेंड) (?:हूं|हू)|हम (?:पक्के )?दोस्त हैं`),
-    hi_secret: R(`मैं (?:किसी को|मम्मी को|पापा को) (?:भी )?नहीं (?:बताऊंगी|बताऊंगा)|(?:किसी को|मम्मी को|पापा को) (?:भी )?मत (?:बताना|बोलना)|(?:हमारा|अपना) (?:छोटा सा )?(?:राज|सीक्रेट)|हमारे बीच (?:की बात|रहेगा)`),
+    hi_secret: R(`मैं (?:किसी को|मम्मी को|पापा को) (?:भी )?नहीं (?:बताऊंगी|बताऊंगा)|(?<!(?:पासवर्ड|पिन|पता|नंबर|फोटो) (?:\\S+ )?)(?:किसी को|मम्मी को|पापा को) (?:भी )?मत (?:बताना|बोलना)|(?:हमारा|अपना) (?:छोटा सा )?(?:राज|सीक्रेट)${NOT_AFTER("hi")}|हमारे बीच (?:की बात|रहेगा)${NOT_AFTER("hi")}`),
   },
   personal_data: {
-    en_ask: R(`(?:what(?:'s| is)|tell me|give me|share) your (?:full name|surname|last name|address|home address|house number|school(?:'s)? name|phone(?: number)?|mobile(?: number)?|password|pin code|location|mother'?s name|father'?s name|parents'? names?|email)|(?:which|what) school (?:do you|are you|you)|where do you live|where(?:'s| is) your (?:house|home|school)|send (?:me )?(?:a |your )?(?:photo|picture|pic|selfie|video)`),
-    hl_ask: R(`(?:tumhara|tumhari|aapka|aapki|tera|teri) (?:pura naam|poora naam|full name|surname|address|pata|ghar ka pata|school ka naam|phone number|mobile number|phone|password|location|email)|${TUM} kah[aā]n (?:rehte|rehti|rahte|rahti) (?:ho|hain)|(?:kaunse|kaun se|kis) school (?:mein|me|jaate|jaati|padhte|padhti)|(?:apni|apna) (?:photo|selfie|pic|address|phone number|mobile number|password) (?:bhejo|bhej do|batao|bata do|share karo)`),
-    hi_ask: R(`(?:तुम्हारा|तुम्हारी|आपका|आपकी) (?:पूरा नाम|पता|घर का पता|स्कूल का नाम|फोन नंबर|मोबाइल नंबर|पासवर्ड)|(?:तुम|आप) कहां (?:रहते|रहती)|(?:कौन से|कौनसे|किस) स्कूल (?:में|जाते|जाती)|(?:अपनी|अपना) (?:फोटो|सेल्फी|पता) (?:भेजो|भेज दो|बताओ)`),
+    en_ask: R(`${NOT_BEFORE}(?:what(?:'s| is)|tell me|give me|share|send me|post) your (?:full name|surname|last name|address|home address|house number|school(?:'s)? name|phone(?: number)?|mobile(?: number)?|password|pin code|location|mother'?s name|father'?s name|parents'? names?|email)|(?:which|what) school (?:do you|are you|you)${NOT_AFTER("hl")}|where do you live|where(?:'s| is) your (?:house|home|school)|${NOT_BEFORE}send (?:me )?(?:a |your )?(?:photo|picture|pic|selfie|video)`),
+    hl_ask: R(`(?:tumhara|tumhari|aapka|aapki|tera|teri) (?:pura naam|poora naam|full name|surname|address|pata|ghar ka pata|school ka naam|phone number|mobile number|phone|password|location|email)${NOT_AFTER()}|${TUM} kah[aā]n (?:rehte|rehti|rahte|rahti) (?:ho|hain)|(?:kaunse|kaun se|kis) school (?:mein|me|jaate|jaati|padhte|padhti)|(?:apni|apna) (?:photo|selfie|pic|address|phone number|mobile number|password) (?:bhejo|bhej do|batao|bata do|share karo)`),
+    hi_ask: R(`(?:तुम्हारा|तुम्हारी|आपका|आपकी) (?:पूरा नाम|पता|घर का पता|स्कूल का नाम|फोन नंबर|मोबाइल नंबर|पासवर्ड)${NOT_AFTER("hi")}|(?:तुम|आप) कहां (?:रहते|रहती)|(?:कौन से|कौनसे|किस) स्कूल (?:में|जाते|जाती)|(?:अपनी|अपना) (?:फोटो|सेल्फी|पता) (?:भेजो|भेज दो|बताओ)`),
   },
   guilt: {
     en_leave: R(`(?:please )?don'?t (?:leave|go)(?: me| yet| now| so soon)|don'?t leave me|i(?:'ll| will)? (?:be )?(?:so |very |really )?(?:sad|lonely|upset|bored) (?:if|when|without) you|(?:you|u) (?:left|abandoned|forgot) me|promise (?:you(?:'ll| will)|me you(?:'ll| will)|to) come back`),
@@ -162,8 +171,22 @@ const RULES = {
  */
 const GOODBYE_TEASER = R(`(?:kal|next time|agli baar|phir kab|baad mein|match ke baad|tomorrow|later)(?: \\S+){0,6} (?:continue|karenge|kar lenge|revise|practice|bata dena|batana|try karna)|we(?:'ll| will) (?:continue|do|practise|practice|try)|(?:bata|bta) dena`);
 
-/** A clause that is a question or reports one ("if I'm a real person", "kya main insaan hoon?") is not a claim. */
-const QUESTION_LEAD = R(`if|whether|kya|क्या|asked|ask|pucha|puchha|poocha|पूछा|पूछ|wonder|think|thought|soch\\w*|सोच\\w*|lagta hai ki|मानते`);
+/**
+ * A question or report FRAME directly before a first-person claim ("you asked if I'm…", "kya main…", "tumne
+ * poocha ki…") makes it not a claim. Only a frame that ends right at the claim counts: a hedge earlier in the
+ * clause does not ("I think I'm a real human" is a claim; the 2026-10-03 review found `think` anywhere before
+ * the claim exempted it).
+ */
+const QUESTION_FRAME = new RegExp(`${B}(?:if|whether|kya|क्या|(?:you|u|tum|aap|tumne|aapne|he|she|they|someone|people|log|kids|bachche) (?:asked|ask|asks|asking|wonder|wondered|wondering|think|thought|might think|may think|poocha|pucha|puchha|pooch rahe|pooch rahi)(?: (?:me|mujhse))?(?: (?:if|whether|ki|that))?(?: kya)?|(?:tumhe|tumhein|aapko|tujhe) (?:lagta|laga) (?:hai|tha) ki|(?:तुमने|आपने) पूछा (?:कि )?(?:क्या )?|पूछा कि(?: क्या)?) $`, "u");
+
+/** Verified content shorter than this is never removed from the teacher's words before judging (see neverRuleHits). */
+export const CONTENT_MIN = 12;
+/** A quoted span (no capture groups: the replace callback reads offset and input). Edges are word edges. */
+const QUOTED = /(?<![\p{L}\p{N}])['"‘“][^'"‘’“”\n]+['"’”](?![\p{L}\p{N}])/gu;
+/** A modelling cue right before a quote: the quote is language the child is asked to say, write or read. */
+const MODEL_CUE = /(?<![\p{L}\p{M}])(?:say|bolo|bol ke dekho|kaho|repeat|likho|write|read|padho|copy|like this|is tarah|aise|jaise|for example|example|e\.g\.|sentence|vakya|वाक्य|बोलो|कहो|लिखो|पढ़ो|पढो|जैसे)(?![\p{L}\p{M}])[^.!?।'"‘’“”]{0,24}$/iu;
+/** Families judged inside a modelled quote: no lesson models romance or a friend-replacement claim. */
+const MODELLED_FAMILIES = ["romance", "exclusivity"];
 
 const HELPLINE_NAMES = [
   { re: R(`child ?line|चाइल्ड ?लाइन`), name: "Childline" },
@@ -197,10 +220,17 @@ function helplineHits(norm, helplines, requireHelpline) {
   for (const { re, name } of HELPLINE_NAMES) {
     const g = new RegExp(re.source, "gu");
     for (const m of t.matchAll(g)) {
-      const after = t.slice(m.index + m[0].length).split(" ").slice(0, 8).join(" ");
-      const num = /\d{2,}/.exec(after)?.[0];
+      // The number said for THIS name: the first one before another helpline name or the helpline word. An
+      // emergency number (112) is never attributed to a name, nor is another helpline's own number after "or/ya".
+      let after = t.slice(m.index + m[0].length).split(" ").slice(0, 8).join(" ");
+      const cut = [...HELPLINE_NAMES.map((h) => h.re), HELPLINE_WORD].map((r) => r.exec(after)?.index ?? Infinity).reduce((a, b) => Math.min(a, b), Infinity);
+      if (cut !== Infinity) after = after.slice(0, cut);
+      const nm = /(?<!\d)\d{2,}(?!\d)/.exec(after);
+      const num = nm?.[0];
       const want = helplines.find((h) => h.name === name)?.number;
-      if (num && want && num !== String(want)) hits.push({ family: "helpline", rule: `wrong_${name.toLowerCase().replace(/\W/g, "")}` });
+      if (!num || !want || num === String(want) || EMERGENCY.includes(num)) continue;
+      if (allowed.has(num) && /(?:^| )(?:or|ya|aur|and|या|और)(?: |$)/.test(after.slice(0, nm.index))) continue;
+      hits.push({ family: "helpline", rule: `wrong_${name.toLowerCase().replace(/\W/g, "")}` });
     }
   }
   for (const m of t.matchAll(new RegExp(HELPLINE_WORD.source, "gu"))) {
@@ -216,6 +246,25 @@ function helplineHits(norm, helplines, requireHelpline) {
 }
 
 /**
+ * A content string's matcher, or null when removing it could not change a verdict: it is shorter than
+ * CONTENT_MIN, or it carries no NEVER hit of its own. Removal therefore only ever takes away a hit the verified
+ * content itself carries — "किसी को नहीं" (a 12-character kit answer, "nobody") is never cut out of "मैं किसी को
+ * नहीं बताऊंगी" (2026-10-03, the short-content collapse eval). Cached: the posed item repeats across turns.
+ */
+const CONTENT_RE = new Map();
+function contentRe(s) {
+  if (CONTENT_RE.has(s)) { const re = CONTENT_RE.get(s); if (re) re.lastIndex = 0; return re; }
+  let re = null;
+  if (s.length >= CONTENT_MIN && neverRuleHits(s, { helplines: [] }).length) {
+    const src = s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+    re = new RegExp(`(?<![\\p{L}\\p{M}\\p{N}])${src}(?![\\p{L}\\p{M}\\p{N}])`, "giu");
+  }
+  if (CONTENT_RE.size >= 8192) CONTENT_RE.delete(CONTENT_RE.keys().next().value);
+  CONTENT_RE.set(s, re);
+  return re;
+}
+
+/**
  * Every NEVER-rule hit in a teacher turn. Content the teacher was GIVEN to say verbatim (the kit question, a
  * diagnostic's options) is removed first: it is verified content, judged at load, not the teacher's own claim.
  * @param {string} text  the teacher's words (text lane: the draft; voice lane: the transcript as heard)
@@ -227,28 +276,48 @@ function helplineHits(norm, helplines, requireHelpline) {
 export function neverRuleHits(text, opts = {}) {
   const gates = gatesFor(opts.tier);  // every tier gets the minor gates (no adult branch): the families below all apply
   let raw = String(text ?? "");
-  for (const c of opts.content ?? []) if (c) raw = raw.split(String(c)).join(" . ");
-  // A quoted sentence of two or more words is modelled language ("say: 'My papa drives the bus.'"), not a claim.
-  // An apostrophe inside a word (won't, don't) is not a quote mark: a quote opens and closes at a word edge.
-  raw = raw.replace(/(?<![\p{L}\p{N}])['"\u2018\u201C][^'"\u2018\u2019\u201C\u201D\n]*\s[^'"\u2018\u2019\u201C\u201D\n]*['"\u2019\u201D](?![\p{L}\p{N}])/gu, " . ");
+  // Verified content is removed only as a WHOLE, letter-bounded segment of at least CONTENT_MIN characters, and
+  // only when it carries a NEVER hit of its own (contentRe).
+  // A raw substring cut let content ['no'] turn "I am not a robot" into "I am t a robot" (2026-10-03 review):
+  // kits carry hundreds of answers like 'no', '8', 'do', 'A'; a string that short can neither hide a violation
+  // of its own nor be told apart from the teacher's words, so it is never removed.
+  for (const c of opts.content ?? []) {
+    const re = contentRe(String(c ?? "").trim());
+    if (re) raw = raw.replace(re, " . ");
+  }
+  // A quoted span is judged like any other text: the model recites quoted phrases (22/33, rejected
+  // `voice-prompt-labels-and-brackets`), so "Main tumhari 'best friend' hoon" is the likeliest shape of all.
+  // The one exemption: a quote led by a modelling cue ("say it like this: '…'", "bolo: '…'") is language the
+  // child is asked to produce; it is judged only for the families no lesson ever models (MODELLED_FAMILIES).
+  const modelled = [];
+  raw = raw.replace(QUOTED, (q, at, whole) => {
+    if (!MODEL_CUE.test(whole.slice(Math.max(0, at - 40), at))) return q;
+    modelled.push(q.slice(1, -1));
+    return " . ";
+  });
   const hits = [];
-  const clauses = raw.match(/[^.!?।;\n]+[.!?।;\n]*/g) ?? [];
-  for (const clause of clauses) {
-    const isQ = /\?\s*$/.test(clause);
-    const norm = normForMatch(clause.replace(/\?/g, " "));
-    for (const family of NEVER_FAMILIES) {
-      if (family === "helpline") continue;
-      if (!gates.neverRules.includes(family)) continue;
-      for (const [rule, re] of Object.entries(RULES[family])) {
-        const m = re.exec(norm);
-        if (!m) continue;
-        // first-person claims inside a question or a reported question are not claims (ai_denial, feelings)
-        if ((family === "ai_denial" || family === "feelings") && (isQ || QUESTION_LEAD.test(norm.slice(0, m.index)))) continue;
-        hits.push({ family, rule: `${family}.${rule}` });
+  const judge = (body, families) => {
+    const clauses = body.match(/[^.!?।;\n]+[.!?।;\n]*/g) ?? [];
+    for (const clause of clauses) {
+      const isQ = /\?\s*$/.test(clause);
+      const norm = normForMatch(clause.replace(/\?/g, " "));
+      for (const family of families) {
+        if (family === "helpline") continue;
+        if (!gates.neverRules.includes(family)) continue;
+        for (const [rule, re] of Object.entries(RULES[family])) {
+          const m = re.exec(norm);
+          if (!m) continue;
+          // a first-person claim inside a question, or right after a question / report frame, is not a claim
+          if ((family === "ai_denial" || family === "feelings") && (isQ || QUESTION_FRAME.test(norm.slice(0, m.index)))) continue;
+          hits.push({ family, rule: `${family}.${rule}` });
+        }
       }
     }
-  }
-  hits.push(...helplineHits(normForMatch(raw), opts.helplines ?? HELPLINE_DATA, !!opts.requireHelpline));
+  };
+  judge(raw, NEVER_FAMILIES);
+  for (const q of modelled) judge(q, MODELLED_FAMILIES);
+  // helplines are judged over everything said, modelled quotes included (a wrong number is wrong anywhere)
+  hits.push(...helplineHits(normForMatch([raw, ...modelled].join(" . ")), opts.helplines ?? HELPLINE_DATA, !!opts.requireHelpline));
   if (opts.goodbye && /\?/.test(raw)) hits.push({ family: "guilt", rule: "guilt.goodbye_question" });
   if (opts.goodbye && GOODBYE_TEASER.test(normForMatch(raw))) hits.push({ family: "guilt", rule: "guilt.goodbye_teaser" });
   return hits;
@@ -307,25 +376,41 @@ const DEVA_WORD = "[\\u0900-\\u097F]+";                            // Devanagari
 const PII_STOP = "(?:hai|hain|he|hoon|hun|है|हैं|हूं|हूँ|and|aur|और|from|se|से|in|mein|में|class|kaksha|कक्षा|ka|ki|ke|का|की|के|tha|thi|था|थी)";
 /** A value token that is not a stop word ("mera naam Riya hai": "hai" is never a surname). */
 const VALUE = `(?!${PII_STOP}(?![\\p{L}\\p{M}]))(?:${PROPER}|${DEVA_WORD})`;
+/**
+ * After an EXPLICIT cue ("my name is", "mera naam", "meri mummy ka naam", "my school is", "I live in") the value
+ * may be lower case: children type in lower case and romanised Hinglish has no capitals (2026-10-03 review:
+ * "my name is riya sharma", "i live in vaishali nagar jaipur" passed through). The cue carries the precision, so
+ * a lower-case value only has to not be a function word or a describing word ("my school is big").
+ */
+const LC_STOP = `(?:${PII_STOP.slice(3, -1)}|i|am|is|are|was|my|me|the|a|an|to|at|of|or|but|so|on|with|by|near|very|really|too|not|no|yes|also|just|big|small|good|nice|far|close|fun|boring|great|new|old|bahut|bohot|accha|achha|acha|bada|badi|bade|chhota|chhoti|door|paas|naya|nayi|purana|mast|bekar|yahan|wahan|idhar|udhar|school|ghar|home|house|bhi|toh|to|na|nahi|kya|kaun|kahan|main|mai|mera|meri|mere|naam|wala|wali|age|years?|old|saal|live|study|go|like|love|have|want)`;
+const VALUE_LC = `(?!${LC_STOP}(?![\\p{L}\\p{M}]))(?:${PROPER}|\\p{Ll}[\\p{L}\\p{M}]*|${DEVA_WORD})`;
 const STOP_AFTER = `(?=\\s*(?:$|[.,!?।;'’"”)]|\\s${PII_STOP}(?![\\p{L}\\p{M}])))`;
 /** Case-insensitive Roman cue text WITHOUT the i flag (which would make \p{Lu} match lower case too). Plain text only. */
 const ci = (src) => src.replace(/[a-z]/g, (c) => `[${c}${c.toUpperCase()}]`);
 const IS = "(?:is\\s+|hai\\s+|है\\s+)?";
+/**
+ * A phone after an explicit cue ("mera number", "my number is", "papa ka mobile", "फोन") however it is split: in
+ * pairs ("98 29 47 31 65") or digit by digit ("9 8 2 9 …"), the common spoken Indian forms (2026-10-03 review).
+ * Without a cue a split-at-every-digit run stays a sequence (the split guard below).
+ */
+const CUED_PHONE = new RegExp(`(?<=(?:${ci("number|phone|mobile|mob|contact|whatsapp")}|नंबर|नम्बर|फोन|मोबाइल)\\s*(?:(?:${ci("is|hai|no")}|है)\\s*|[:=-]\\s*)?)(?:\\+?91[\\s.-]*)?[6-9](?:[\\s.-]*\\d){9}(?![\\s.-]*\\d)`, "gu");
 const CUED = [
   // the child's own name: the FIRST name is kept (the teacher already uses it), a surname after it is masked
-  ["name", new RegExp(`(?<=(?:${ci("my (?:full |real )?name is|mera (?:pura |poora )?naam")}|मेरा (?:पूरा )?नाम)\\s+${IS}${VALUE}\\s+)${VALUE}(?:\\s+${VALUE})?${STOP_AFTER}`, "gu")],
+  ["name", new RegExp(`(?<=(?:${ci("my (?:full |real )?name is|mera (?:pura |poora )?naam")}|मेरा (?:पूरा )?नाम)\\s+${IS}${VALUE_LC}\\s+)${VALUE_LC}(?:\\s+${VALUE_LC})?${STOP_AFTER}`, "gu")],
   // a family member's name: all of it
-  ["name", new RegExp(`(?<=(?:${ci("my (?:papa|father|dad|mummy|mother|mom|mum|brother|sister|bhai|didi)'?s name is|mere (?:papa|pitaji|bhai) ka naam|meri (?:mummy|maa|didi|behen) ka naam")}|मेरे (?:पापा|पिताजी|भाई) का नाम|मेरी (?:मम्मी|माँ|मां|दीदी|बहन) का नाम)\\s+${IS})${VALUE}(?:\\s+${VALUE}){0,2}${STOP_AFTER}`, "gu")],
+  ["name", new RegExp(`(?<=(?:${ci("my (?:papa|father|dad|mummy|mother|mom|mum|brother|sister|bhai|didi)'?s name is|mere (?:papa|pitaji|bhai) ka naam|meri (?:mummy|maa|didi|behen) ka naam")}|मेरे (?:पापा|पिताजी|भाई) का नाम|मेरी (?:मम्मी|माँ|मां|दीदी|बहन) का नाम)\\s+${IS})${VALUE_LC}(?:\\s+${VALUE_LC}){0,2}${STOP_AFTER}`, "gu")],
   // schools: a cue then a proper name ("my school is St Mary's", "I study at Delhi Public School", "मेरे स्कूल का नाम …")
   ["school", new RegExp(`(?<=(?:${ci("my school(?:'s name)? is|i study (?:at|in)|i go to|school ka naam(?: hai)?|mera school")}|मेरा स्कूल|मेरे स्कूल का नाम|स्कूल का नाम)\\s+${IS})(?:${PROPER}|${DEVA_WORD}(?=\\s))(?:\\s+(?:${PROPER}|${DEVA_WORD})){0,4}?${STOP_AFTER}`, "gu")],
+  // ... and lower case after the unambiguous cues only ("i go to school" is not one)
+  ["school", new RegExp(`(?<=(?:${ci("my school(?:'s name)? is|school ka naam(?: hai)?|mera school(?: hai)?")})\\s+${IS})${VALUE_LC}(?:\\s+${VALUE_LC}){0,4}?${STOP_AFTER}`, "gu")],
   ["school", /(?<![\p{L}\p{M}])(?:\p{Lu}[\p{L}.'’]*\s+){1,4}(?:Public|Convent|Model|International|Senior Secondary|Sr\.? Sec\.?|Higher Secondary|English Medium|Vidya|Shishu|Bal)\s+(?:School|Vidyalaya|Mandir|Niketan|Academy)(?![\p{L}])/gu],
   ["school", /(?<![\p{L}\p{M}])(?:[ऀ-ॿ]+\s+){2,3}(?:विद्यालय|विद्या मंदिर|शिशु मंदिर)(?![\p{L}\p{M}])/gu],
   // addresses: an explicit house/flat/plot NUMBER marker, or a street marker with its number (not a pie-chart sector)
   ["address", new RegExp(`(?<![\\p{L}\\p{M}])(?:${ci("(?:house|flat|plot|h)")}\\.?\\s*${ci("(?:no|number|num)")}\\.?|मकान\\s*(?:नंबर|नं)\\.?|(?:${ci("gali|street|lane|sector|ward")}|गली|सेक्टर|वार्ड)\\s*(?:${ci("no|number")}|नंबर|नं)?\\.?)\\s*[:#-]?\\s*\\d+(?![\\d°%]|[.,]\\d|\\s*(?:°|%|degree|percent|प्रतिशत))[a-z]?(?:[\\s,/-]+\\p{Lu}[\\p{L}\\p{M}]*){0,3}`, "gu")],
   // "I live in Vaishali Nagar", "mera ghar Kota mein hai", "मैं जयपुर में रहती हूँ"
-  ["address", new RegExp(`(?<=(?:${ci("i live (?:in|at|near)|my (?:house|home|address) is(?: in| at| near)?|mera (?:ghar|pata|address)(?: hai)?")})\\s+)${PROPER}(?:\\s+${PROPER}){0,3}${STOP_AFTER}`, "gu")],
+  ["address", new RegExp(`(?<=(?:${ci("i live (?:in|at|near)|my (?:house|home|address) is(?: in| at| near)?|mera (?:ghar|pata|address)(?: hai)?")})\\s+)${VALUE_LC}(?:\\s+${VALUE_LC}){0,3}${STOP_AFTER}`, "gu")],
   ["address", new RegExp(`(?<=(?:मैं|मेरा घर)\\s+)${DEVA_WORD}(?:\\s+${DEVA_WORD})?(?=\\s+(?:में|पर|के पास)\\s+(?:रहता|रहती|रहते|है))`, "gu")],
-  ["address", new RegExp(`(?<=(?:${ci("main|mai|mera ghar")})\\s+)(?:${PROPER}|${ci("sector|gali")}\\s+\\d+)(?:\\s+${PROPER})?(?=\\s+(?:mein|me|par|ke paas)\\s+(?:rehta|rehti|rahta|rahti|rehte|hai))`, "gu")],
+  ["address", new RegExp(`(?<=(?:${ci("main|mai|mera ghar")})\\s+)(?:${VALUE_LC}|${ci("sector|gali")}\\s+\\d+)(?:\\s+${VALUE_LC})?(?=\\s+(?:mein|me|par|ke paas)\\s+(?:rehta|rehti|rahta|rahti|rehte|hai))`, "gu")],
 ];
 
 /**
@@ -340,18 +425,20 @@ export function scrubPii(text, opts = {}) {
   const found = [];
   const spans = [];
   const folded = () => foldDigits(out);
-  const take = (kind, re) => {
+  const take = (kind, re, { anySplit = false } = {}) => {
     const f = folded();
     for (const m of f.matchAll(new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g"))) {
       // a contiguous monotone run is a maths answer; the same digits grouped like a phone ("98765 43210") are a phone
       if ((kind === "phone" || kind === "aadhaar") && /^\d+$/.test(m[0]) && monotone(m[0])) continue;
-      if (kind === "phone" && /^[+\d]/.test(m[0]) && (m[0].match(/[ .-]/g) ?? []).length > 3) continue;
+      if (kind === "phone" && anySplit && monotone(m[0].replace(/\D/g, ""))) continue;
+      if (kind === "phone" && !anySplit && /^[+\d]/.test(m[0]) && (m[0].match(/[ .-]/g) ?? []).length > 3) continue;
       if (kind === "phone" && !/\d/.test(m[0]) && monotone(m[0].split(/[\s,-]+/).map(wordDigit).join(""))) continue;
       spans.push({ kind, at: m.index, end: m.index + m[0].length });
     }
   };
   for (const [kind, re] of PII_RULES) take(kind, re);
   take("phone", DIGIT_WORD_RUN);
+  take("phone", CUED_PHONE, { anySplit: true });
   for (const [kind, re] of CUED) take(kind, re);
   for (const n of (opts.names ?? []).filter((x) => String(x).trim().length >= 2)) {
     const re = new RegExp(`(?<![\\p{L}\\p{M}])${String(n).trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\p{L}\\p{M}])`, "giu");

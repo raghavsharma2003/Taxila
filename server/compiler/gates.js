@@ -1,5 +1,5 @@
 // The gate kernel (harvest port task 2; source `src/engine/clock.ts@vy` MINOR_HARD_GATES / gatesFor / saferTier).
-// The source's DEFAULT was adult: an `unverified` user got romance: true and engagementMechanics: true, so a
+// The source's DEFAULT was adult: an `unverified` user got romance and engagementMechanics switched ON, so a
 // child who never proved an age got the adult product. Taxila inverts it structurally — there is NO adult
 // branch to fall into: every tier, including "adult", "verified_adult", unknown, null and garbage, gets the
 // same frozen minor gates. A guardian's adult attestation is about the PARENT surfaces, never the child lane.

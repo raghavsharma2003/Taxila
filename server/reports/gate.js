@@ -71,6 +71,8 @@ export function lineViolations(text, { shapeId, fixedId, slots = {}, lang, k7 = 
   return v;
 }
 
+/** Growth-edge shapes: each carries the task feature, [hedged reasoning past the gate], and Taxila's action (S11). */
+const TRICKY = new Set(["tricky.work", "tricky.mixup", "tricky.work_next", "tricky.mixup_next"]);
 /** Sections whose lines count against the body cap (the header is the S1 line, not body). */
 const BODY = new Set(["strength", "row", "tricky", "interest", "home"]);
 
@@ -97,7 +99,7 @@ export function gateReport(r, { k7 = false, firstName }) {
         seen.set(c.id, (seen.get(c.id) || 0) + 1);
         v.push(...lineViolations(line.text, { shapeId: c.shapeId, slots: c.slots, lang, k7, firstName }).map(tag));
         perSection[c.section] = (perSection[c.section] || 0) + 1;
-        if (c.section === "tricky" && !(c.shapeId.startsWith("tricky.") && c.slots?.date)) v.push(tag({ rule: "tricky_three_parts" }));
+        if (c.section === "tricky" && !TRICKY.has(c.shapeId)) v.push(tag({ rule: "tricky_three_parts" }));
         if (!Array.isArray(c.factIds) || (!c.factIds.length && c.shapeId !== "header.zero")) v.push(tag({ rule: "claim_without_facts", detail: c.id }));
       } else if (line.kind === "fixed") {
         v.push(...lineViolations(line.text, { fixedId: line.fixedId, slots: line.slots, lang, firstName }).map(tag));

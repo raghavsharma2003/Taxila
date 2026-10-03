@@ -1,6 +1,6 @@
 // The report's snapshot of the ledger (PARENT-REPORT.md §10.1 stage 1): everything a report may cite, read once
 // for a window, as plain data. Sources (and only these): lesson, kt_evidence, kt_skill_state, kt_misconception,
-// memory (interest rows, memory consent only), consent. comp_facet_state is read for the evidence drawer only, and
+// consent. memory is NOT read (its text is model paraphrase; no interest line, config.js). comp_facet_state is read for the evidence drawer only, and
 // voice_feature is NEVER read: no parent line may rest on voice features (COMPREHENSION-ENGINE §7.3, PARENT-REPORT §3).
 import { createHash } from "crypto";
 import { addDays, isoWeek, localParts, zonedToUtc } from "../conductor/clock.js";
@@ -57,7 +57,7 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
   const w = windowOf(cadence, period, c.tz);
   const histFrom = new Date(Date.parse(w.from) - HISTORY_DAYS * 86_400_000).toISOString();
   const [consentRows, lessons, events, skills, mis] = await Promise.all([
-    db.q(LATEST_CONSENT, [c.guardian_id, childId, ["core_tutoring", "memory"]]),
+    db.q(LATEST_CONSENT, [c.guardian_id, childId, ["core_tutoring"]]),
     db.q(`select id, topic_id, started_at, ended_at from lesson where child_id = $1 and started_at >= $2 and started_at < $3 order by started_at, id`, [childId, w.from, w.to]),
     db.q(`select id, seq, session_id, occurred_at, skill_ids, cls, outcome, grader, item_key, teach, pre_attempt_help, entry_rung, misconception_id,
         discriminates, via, contaminated, assisted
@@ -66,10 +66,6 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
     db.q(`select misconception_id, hits, resolved_at from kt_misconception where child_id = $1`, [childId]),
   ]);
   const consent = Object.fromEntries(consentRows.map((r) => [r.purpose, !!r.granted]));
-  const memories = consent.memory
-    ? await db.q(`select id, kind, text, created_at from memory where child_id = $1 and kind = 'interest' and superseded_by is null
-        and created_at >= $2 and created_at < $3 order by created_at, id`, [childId, w.from, w.to])
-    : [];
   const facts = {
     child: { id: c.id, firstName: c.first_name, classLevel: c.class_level, languagePref: c.language_pref, tz: c.tz },
     window: w,
@@ -80,7 +76,6 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
       misconceptionId: e.misconception_id, discriminates: e.discriminates, via: e.via, contaminated: !!e.contaminated, assisted: e.assisted })),
     skills: Object.fromEntries(skills.map((s) => [s.skill_id, { display: s.display, nextReviewAt: iso(s.next_review_at), refresh: !!s.refresh }])),
     misconceptions: Object.fromEntries(mis.map((m) => [m.misconception_id, { hits: Number(m.hits), resolvedAt: iso(m.resolved_at) }])),
-    memories: memories.map((m) => ({ id: String(m.id), kind: m.kind, text: m.text, createdAt: iso(m.created_at) })),
     titles: {}, beliefs: {},
   };
   const skillIds = new Set(facts.events.flatMap((e) => e.skillIds));
@@ -92,4 +87,4 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
 
 /** Digest of the snapshot (audit and replay: the same facts render the same Lane A text, E-R9). */
 export const factsDigest = (f) => createHash("sha256").update(JSON.stringify({ c: f.child, w: f.window, l: f.lessons, e: f.events.map((e) => [e.id, e.seq]),
-  s: f.skills, m: f.misconceptions, mem: f.memories.map((x) => x.id), t: f.titles, b: f.beliefs })).digest("hex").slice(0, 32);
+  s: f.skills, m: f.misconceptions, t: f.titles, b: f.beliefs })).digest("hex").slice(0, 32);
