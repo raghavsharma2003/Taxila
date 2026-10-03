@@ -58,6 +58,8 @@ timeout --kill-after=30 __RUN_S__ bash $J/run.sh >> $J/log.txt 2>&1
 RC=$?
 END=$(now)
 echo "[harness] run.sh exit $RC after $((END-START)) s" >> $J/log.txt
+if [ "${HARNESS_SELFTEST_HANG:-0}" = 1 ]; then echo "[harness] SELFTEST: hanging before upload; only the hard lifetime / backstop can end this" >> $J/log.txt
+  { cat $J/boot.log; echo "---- run.sh ----"; cat $J/log.txt; } > $J/log.up; put $J/log.up '__PUT_LOG__'; sleep infinity; fi
 tar czf $J/outputs.tar.gz -C $J/out . 2>> $J/log.txt
 if command -v aws >/dev/null 2>&1 && aws s3 cp --only-show-errors $J/outputs.tar.gz "s3://__BUCKET__/__PREFIX__outputs.tar.gz" 2>> $J/log.txt; then :; else put $J/outputs.tar.gz '__PUT_OUT__' || echo "[harness] output upload FAILED" >> $J/log.txt; fi
 UP=$(now)
@@ -270,7 +272,7 @@ def main():
         rec["t"].update({"bootToStartS": stj.get("startEpoch", 0) - stj.get("bootEpoch", 0),
                          "jobS": stj.get("endEpoch", 0) - stj.get("startEpoch", 0),
                          "uploadS": stj.get("uploadedEpoch", 0) - stj.get("endEpoch", 0),
-                         "runningToBootedS": round(t_status.get("booted", t_running or 0) - (t_running or 0), 1) if t_running else None})
+                         "launchToBootS": round(stj.get("bootEpoch", 0) - d["LaunchTime"].timestamp(), 1)})
         out_dir.mkdir(parents=True, exist_ok=True)
         td = time.time()
         try:

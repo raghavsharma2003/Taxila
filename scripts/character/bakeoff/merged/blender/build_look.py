@@ -464,6 +464,12 @@ def shift_parts(obj, sel, d):
         c = key_co(kb)
         c[sel] += d
         set_key_co(kb, c)
+    # merged (fix 6): the MESH must follow the Basis key. The join below re-bases every key on the mesh vertices, so a
+    # Basis-only shift became a delta in EVERY key and the rest pose kept the unshifted parts (measured on base.blend:
+    # mouthSmileLeft and mouthUpperUpLeft both moved the teeth 2.83 mm = the lowerTeethBack set-back, the tongue 3.2 mm =
+    # its fwd/up shift). The same bug class as the resting smile (ai-portrait-wrap's finding).
+    obj.data.vertices.foreach_set("co", key_co(obj.data.shape_keys.key_blocks[0]).ravel())
+    obj.data.update()
 
 
 # Speech shows the UPPER incisors and the lower ones only on wide vowels; MH's teeth sit high behind the upper lip,
@@ -840,9 +846,10 @@ def _teeth_push(state):
 
 
 _tp_rep = {}
-_pb = _teeth_push(fb)
-_tp_rep["basisVerts"] = int((np.linalg.norm(_pb, axis=1) > 1e-6).sum())
-fb2 = fb + _pb
+# the basis is NOT pushed: at rest the lips meet in front of the teeth, and pushing each lip along its own nearest
+# tooth normal opened the rest seal (G5 sd0 failed, measured); rest G6 is already at baseline
+_tp_rep["basisVerts"] = 0
+fb2 = fb.copy()
 _PK = {kb.name: _teeth_push(fb2 + FD[kb.name]) for kb in _kbs_f[1:]}
 for kL in list(_PK):
     if not kL.endswith("Left") or kL[:-4] + "Right" not in _PK:

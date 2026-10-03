@@ -299,6 +299,12 @@ def shift_parts(obj, sel, d):
         c = key_co(kb)
         c[sel] += d
         set_key_co(kb, c)
+    # FIX (2026-10-03, found by the bake-off merged build): the MESH must follow the Basis key. The join re-bases every
+    # key on the mesh vertices, so a Basis-only shift became a delta in EVERY key while the rest pose kept the unshifted
+    # teeth / tongue (merged base.blend: mouthSmileLeft moved the teeth 2.83 mm, the tongue 3.2 mm). Same bug class as
+    # the resting smile.
+    obj.data.vertices.foreach_set("co", key_co(obj.data.shape_keys.key_blocks[0]).ravel())
+    obj.data.update()
 
 
 # Speech shows the UPPER incisors and the lower ones only on wide vowels; MH's teeth sit high behind the upper lip,
