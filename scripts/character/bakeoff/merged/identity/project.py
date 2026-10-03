@@ -224,8 +224,13 @@ def apply(G):
     # merged: the scalp is v3's (its designed per-texel hairline, hair-coloured, under the curve-generated cards); the
     # portrait is never projected onto hair-bearing texels. Projecting the portrait's own hair there brought its centre
     # parting (a skin-coloured line in the hair) onto a scalp whose cards do not part: the wedge (VERDICT item 1)
-    hs_strict = np.clip((G["scalpT"] - 0.15) / 0.25, 0, 1)
+    # merged (fix 2): the exclusion follows the SAME curve as the painted hairline (texture.py: hl = smoothstep(0.3, 0.7,
+    # scalpT)). The earlier ramp (0.15 -> 0.4) cut the projection well below the painted hairline, so the band
+    # 0.15 < scalpT < 0.5 fell back to the bare procedural skin: the light triangles at both temples
+    _t = np.clip((G["scalpT"] - 0.3) / 0.4, 0, 1)
+    hs_strict = _t * _t * (3 - 2 * _t)
     alpha = alpha * (1 - hs_strict)
+    G["PJ_ALPHA"] = alpha
     A2 = A * (1 - alpha[:, None]) + Ap * alpha[:, None]
     A_H2 = A_H * (1 - alpha[:, None]) + Ap * alpha[:, None]
     # the scalp texels the portraits do not see (crown, back) keep the procedural hair-coloured scalp (alpha is 0 there)

@@ -470,6 +470,34 @@ def shift_parts(obj, sel, d):
 # so most visemes showed the lower row and hid the upper one (review item 6). Upper row 1.3 mm down + 1.0 mm forward.
 _tb, _tD = deltas(teeth)
 _upper = np.linalg.norm(_tD["jawOpen"], axis=1) < 1e-4
+# merged (fix 3, the delighted grimace): the teeth are an MHCLO proxy, so FS.interpolate_targets gave them every skin
+# delta near the mouth. mouthSmile carried the lower row 5.6 mm FORWARD and the upper row up (probed in the viewer at
+# smile 0.85), which put the lower row in front of the retracted lower lip on every open smile. Teeth are rigid: the
+# upper row is fixed to the skull (no key moves it); the lower row moves only with the jaw. For each key that is not a
+# jaw key, its lower-row delta is replaced by a * jawOpen's lower-row delta, a = the key's jaw component measured on the
+# chin (least-squares projection of the chin's delta onto jawOpen's chin delta), so the visemes keep their jaw drop.
+_hb, _hD = deltas(h)
+_lw = group_w(h, "lips")
+_lc = (_hb * _lw[:, None]).sum(0) / max(_lw.sum(), 1e-9)
+_chin = (np.abs(_hb[:, 0]) < 0.014) & (_hb[:, 2] < _lc[2] - 0.022) & (_hb[:, 2] > _lc[2] - 0.042) & (_hb[:, 1] < _lc[1] + 0.012) & (_lw < 0.05)
+_jc = _hD["jawOpen"][_chin].ravel()
+_jaw_keys = {"jawOpen", "jawForward", "jawLeft", "jawRight"}
+_rig_fix = {"chinVerts": int(_chin.sum()), "jawComponent": {}}
+for _kb in teeth.data.shape_keys.key_blocks[1:]:
+    _k = _kb.name
+    _d = key_co(_kb) - _tb
+    if _k in _jaw_keys:
+        _d[_upper] = 0.0
+    else:
+        _a = float(_hD[_k][_chin].ravel() @ _jc / max(_jc @ _jc, 1e-12)) if _k in _hD else 0.0
+        _a = float(np.clip(_a, 0.0, 1.5))
+        _d[:] = 0.0
+        _d[~_upper] = _a * _tD["jawOpen"][~_upper]
+        if _a > 0.01:
+            _rig_fix["jawComponent"][_k] = round(_a, 3)
+    set_key_co(_kb, _tb + _d)
+report["teethRigid"] = _rig_fix
+_tb, _tD = deltas(teeth)
 mt = look.get("mouth", {})
 shift_parts(teeth, np.nonzero(_upper)[0], np.array([0, -mt.get("upperTeethFwd", 0.0010), -mt.get("upperTeethDown", 0.0013)]))
 # merged: the wrapped face has thinner, more retracted lips than MakeHuman's, so the rows sat THROUGH them (G6 rest 4 ->

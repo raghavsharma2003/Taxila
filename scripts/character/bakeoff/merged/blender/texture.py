@@ -484,15 +484,26 @@ if look.get("projection"):
     A_H = A_H * (1 - _ext[:, None]) + _hl * _ext[:, None]
     hl = np.maximum(hl, _hx)
     log(f"hairline extended from the portraits on {int((_ext > 0.5).sum())} texels")
+    # merged (fix 2): re-paint v3's designed hairline OVER the projection, so the scalp colour starts exactly where the
+    # curve-generated cards root (hair_v3.hairline_el). Without it the portrait's own higher, centre-parted hairline
+    # showed as a skin V between the cards at the crown (the parting wedge, VERDICT item 1)
+    # inside the mask (hl > 0.5) the paint is full strength, so the bar "0 skin texels inside the hairline" is real
+    _hl2 = np.clip(2.0 * hl, 0, 1) * (0.9 + 0.1 * flow)
+    A = A * (1 - _hl2[:, None]) + _hl * _hl2[:, None]
+    A_H = A_H * (1 - _hl2[:, None]) + _hl * _hl2[:, None]
 # merged gate (VERDICT item 1, the parting wedge): texels INSIDE the hairline mask (designed hairline weight > 0.5, off
 # the lips) whose final H albedo is nearer the skin colour than the hair colour. Bar 0.
 _inmask = (hl > 0.5)
 _skin_ref = np.median(A_H[(hl < 0.05) & (front > 0.5)], axis=0)
 _dS = np.linalg.norm(A_H[_inmask] - _skin_ref, axis=1)
 _dHc = np.linalg.norm(A_H[_inmask] - hairc, axis=1)
-WEDGE = {"maskTexels": int(_inmask.sum()), "skinAlbedoTexels": int((_dS < _dHc).sum()),
+# the gap the old check missed: texels above the brows, front-facing, that neither the projection (alpha < 0.5) nor
+# the painted hairline (hl < 0.5) covers, i.e. bare procedural skin where the portrait and the cards both expect hair
+_pja = globals().get("PJ_ALPHA")
+_gap = int(((hl < 0.5) & (_pja < 0.5) & (Pt[:, 2] > browZ + 0.012) & (front > 0.5) & (_hwS > 0.05)).sum()) if _pja is not None else None
+WEDGE = {"maskTexels": int(_inmask.sum()), "skinAlbedoTexels": int((_dS < _dHc).sum()), "uncoveredGapTexels": _gap,
          "skinRefLin": np.round(_skin_ref, 4).tolist(), "hairLin": np.round(hairc, 4).tolist()}
-log(f"wedge check: {WEDGE['skinAlbedoTexels']} skin-albedo texels of {WEDGE['maskTexels']} inside the hairline mask")
+log(f"wedge check: {WEDGE['skinAlbedoTexels']} skin-albedo texels of {WEDGE['maskTexels']} inside the hairline mask; {_gap} uncovered gap texels")
 # ------------------------------------------------------------------ write skin maps
 def img(vals, ch):
     out = np.zeros((R, R, ch), np.float32)
