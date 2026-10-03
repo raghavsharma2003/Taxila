@@ -497,3 +497,14 @@ CM's Codex palette included a "sand" disc tint, `#D9C7A7`. Under the hue lint wi
 
 ## reports-rule-string-in-drawer
 **Tried (2026-10-03, builder pass):** the drawer rendered claim.rule under 'How this line is counted'. **Broke (review):** internal English with the LOCKED word 'learned', 'calibration gate passed', '2k < n', 'date = kt_skill_state.next_review_at', untranslated on hi/hinglish, never gated. **Instead:** reports-how-copy-not-rule.
+
+
+<!-- merged from inbox/forge-g2.json -->
+## forge-g2-code-gates-miss-pictures
+**Tried (2026-10-03, first local G2 build, c6-maths-ch07-t05):** shipping to review on "all 18 code gates green". **Broke:** the generated fraction-match@1 drew a bar with 2/4 shaded and a pie with one of six sectors shaded beside "2/7 + 3/7 kitna hai?", tiny partitioned bars inside each option card (cuts = 2 + ((i + seed) % 4), unrelated to the card's value), a title clipped at the left edge and a word overlapping the pie — pictures that teach a wrong quantity (the generated-media-carries-facts law, in code). **Now:** the kit draws quantity pictures only through `draw.model(ref)` (bound), buttons are opaque, choice items refuse a key drawn without every option (`key_singled_out`), Q6 checks drawn-text layout, the builder's binding rules forbid hand-drawn parts, the critic flags it and the reviewer checklist names it. A hand-drawn partition is still not catchable by code: it stays a reviewer reject.
+
+## forge-g2-q8-after-build
+**Tried (2026-10-03, batch 1 of 8 Azure builds):** the full Q8 (Content Safety + brain Hindi classifier, fail closed) only after S6. **Broke:** 2/8 complete builds were rejected for benign labels — "Partner / साथी / Saathi" (brain: romance) and "Belongs" (Content Safety severity 2) — after their whole build was paid for. **Now:** forge-g2-q8-at-design. Fail-closed stays: a false positive costs a redesign, never a pass.
+
+## forge-g2-bot-without-remove
+**Tried (2026-10-03, first mutant run):** a build-archetype bot that added the solution units, made one wrong commit and pressed clear. **Broke:** 41/43 recall — "remove decrements the wrong kind" and "remove below zero accepted" were never exercised. **Now:** at the first item of each level the bot presses every remove at zero, adds one of each kind and removes them in turn, then makes the wrong commit with an add ×2 / remove ×1 (43/43).

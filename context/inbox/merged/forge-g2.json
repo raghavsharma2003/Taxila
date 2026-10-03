@@ -1,0 +1,235 @@
+{
+ "nodes": [
+  {
+   "id": "forge-g2-kit-lite",
+   "kind": "decision",
+   "title": "G2 v0 mechanics target tgk-lite@1, a vanilla-DOM/SVG trusted kit (server/forge/g2/kit/runtime.js), not Phaser-4 tgk@1: agent code is one defineMechanic({init, reduce, targets, render, facts}) call; the kit owns the bridge, values (refs only), labels, the shadow, grading, cursor, goal_met/stuck and feel",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-one-bundle-hash-csp",
+   "kind": "decision",
+   "title": "A G2 module is ONE self-contained index.html (kit + mechanic inlined) under a meta CSP allowing exactly those two inline blocks by sha256 (no network, no eval, no fonts); agent code runs in a strict wrapper whose parameters shadow window/fetch/Date/Function/…; publish refuses bytes whose sha differs from the gated sha",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-runner-aca-job",
+   "kind": "decision",
+   "title": "One G2 build = one execution of ACA Job forge-g2-runner (2 vCPU/4 GiB, manual, replicaTimeout 1800, retry 0) in its own environment taxila-forge-untrusted; image built by ACR taxilacr from the working-tree context (or --from-github); the execution holds the AOAI key and a 2 h SAS for the private container only, never the storage account key",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-harness-six-tools",
+   "kind": "decision",
+   "title": "G2 builder harness: taxila-codex via Responses API, six strict function tools (read_file, write_mechanic, edit_mechanic, run_check lint|play, note, submit), S3 ≤ 12 steps, S4 ≤ 3 fresh-context repair rounds, S5 one polish round fed by the advisory critic, S6 final gate on visible + held-out items with a new seed; job caps 30 steps / $3.50 / 25 min",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-qa-gate",
+   "kind": "decision",
+   "title": "G2 QA gate = Q1 allowlist lint + size budget, Q2 boot in a production-parity opaque-origin host with route-recorded network, dead proxy and an in-frame fetch probe, Q3 kit contract findings, Q4 scripted pointer play to goal_met with wrong paths, add/remove sweep and determinism, Q5 host re-derivation + raw-kit re-grade, Q6 geometry and drawn-text layout, leak (revealsAnswer, key position), Q8 strings at design time and at the end; Q9 critic advisory",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-review-human-only",
+   "kind": "decision",
+   "title": "G2 review queue lives in the private container forge-g2-src; approval refuses automation reviewer names; a test publish writes only under forge/g2/test/ and leaves the build pending; approval publishes forge/g2/b/<sha>/index.html and delivers to every waiting child's folder forge/g2/c/<hmac(childId)>/<day>.json (no answer keys, no ids)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-nightly-job",
+   "kind": "decision",
+   "title": "Conductor job kind forge.g2.nightly (slow lane, core_tutoring, allowedIn paused): per topic of the child's day, deliver an approved core for tomorrow, else join or start ONE build per identity (If-None-Match in-flight marker, 2 h stale takeover, daily breaker FORGE_G2_DAILY_BUILDS=20)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-private-container",
+   "kind": "decision",
+   "title": "Phase-0 private G2 storage is container forge-g2-src (no public access) in account taxilaforge, standing in for the separate taxilaforgesrc account of FACTORY §2.2",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-q8-at-design",
+   "kind": "decision",
+   "title": "The full Q8 (Content Safety per string + taxila-brain Hindi/Hinglish classifier, fail closed) runs on the design's strings table at S1, before any build spend; a flagged design is regenerated (≤ 3 attempts) and Q8 runs again at the end",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-e2e-azure-2026-10-03",
+   "kind": "measurement",
+   "title": "Forge G2 end to end on Azure ACA Job: 14 builds on 11 kit topics; 12/14 passed every hard QA gate (2 lost to Q8 false positives before Q8 moved to design time; 5/5 after); cost per build mean ≈ $0.20 (range $0.11-0.24), execution 104-203 s",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-mutants-2026-10-03",
+   "kind": "measurement",
+   "title": "G2 gate vs 43 seeded-bug mechanics (18 choice operators on 2 topics + 7 build operators) and 6 clean golden runs: recall 43/43, 0/6 false alarms; 41/43 caught by the runtime/browser half, 2 (points machine) by the lint only",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-critic-flags-2026-10-03",
+   "kind": "measurement",
+   "title": "Advisory Q9 critic (taxila-brain vision, 3 frames): before S5 it flagged ≥ 1 rubric item on 13/14 Azure builds (quantity picture unbound most often); after one S5 polish round 4/12 to_review builds were critic-clean; uncalibrated (no human labels yet)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-eligibility-2026-10-03",
+   "kind": "measurement",
+   "title": "G2 v0 eligibility over all 830 kit topics: 124 (15%) — 48 maths build, 75 maths choice, 1 English choice; science/EVS/SST/Hindi topics fail on option length > 28 chars, prompt > 180 chars or non-numeric answer shapes",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-chromium-sandbox-aca",
+   "kind": "measurement",
+   "title": "Chromium's own sandbox does not start in an ACA Consumption job container as non-root pwuser (launch closes the browser); every Azure build ran with chromiumSandbox false, recorded per build in result.chromium",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-code-gates-miss-pictures",
+   "kind": "rejection",
+   "title": "Treating 'every code gate green' as 'ready for a child': the first generated fractions game passed all 18 code gates while drawing a 2/4-shaded bar and a 1/6 pie next to '2/7 + 3/7', a clipped title and overlapping words",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-q8-after-build",
+   "kind": "rejection",
+   "title": "Running the full Q8 only after the build: 2/8 builds (~$0.40 of tokens) were discarded for benign words (Saathi/साथी flagged romance by the brain classifier; 'Belongs' Content Safety severity 2)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g2-bot-without-remove",
+   "kind": "rejection",
+   "title": "A build-archetype bot that only adds units and confirms: missed 2/7 build mutants (remove decrements the wrong kind; remove below zero)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "open-forge-g2-integration",
+   "kind": "open",
+   "title": "G2 lesson wiring not done: decide.js night fold must enqueue forge.g2.nightly; ModuleHost mount.src; CSP frame-src for the Blob play origin; Director evidence via server/forge/g2/serve.js gradeEvent; Responses adapter into server/azure.js",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "open-forge-g2-runner-trust",
+   "kind": "open",
+   "title": "G2 runner still holds the AOAI key and runs Chromium unsandboxed in ACA: needs the orchestrator gateway (FACTORY §2.2) or ACA Sandboxes (Phase 1, owner action E4)",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "forge-g2-kit-lite",
+   "rel": "part_of",
+   "dst": "forge-kit-grades-reducer"
+  },
+  {
+   "src": "forge-g2-one-bundle-hash-csp",
+   "rel": "part_of",
+   "dst": "forge-play-delivery-csp"
+  },
+  {
+   "src": "forge-g2-runner-aca-job",
+   "rel": "part_of",
+   "dst": "forge-untrusted-lane-single-use"
+  },
+  {
+   "src": "forge-g2-runner-aca-job",
+   "rel": "part_of",
+   "dst": "forge-infra-azure"
+  },
+  {
+   "src": "forge-g2-harness-six-tools",
+   "rel": "part_of",
+   "dst": "forge-models"
+  },
+  {
+   "src": "forge-g2-qa-gate",
+   "rel": "part_of",
+   "dst": "forge-qa-ladder"
+  },
+  {
+   "src": "forge-live-codegen-race",
+   "rel": "constrains",
+   "dst": "forge-g2-review-human-only"
+  },
+  {
+   "src": "forge-g2-nightly-job",
+   "rel": "part_of",
+   "dst": "forge-g2-review-human-only"
+  },
+  {
+   "src": "content-safety-sole-gate",
+   "rel": "constrains",
+   "dst": "forge-g2-qa-gate"
+  },
+  {
+   "src": "forge-g2-q8-at-design",
+   "rel": "supersedes",
+   "dst": "forge-g2-q8-after-build"
+  },
+  {
+   "src": "forge-g2-q8-at-design",
+   "rel": "caused_by",
+   "dst": "forge-g2-q8-after-build"
+  },
+  {
+   "src": "forge-g2-qa-gate",
+   "rel": "measured_by",
+   "dst": "forge-g2-mutants-2026-10-03"
+  },
+  {
+   "src": "forge-g2-harness-six-tools",
+   "rel": "measured_by",
+   "dst": "forge-g2-e2e-azure-2026-10-03"
+  },
+  {
+   "src": "forge-g2-runner-aca-job",
+   "rel": "measured_by",
+   "dst": "forge-g2-e2e-azure-2026-10-03"
+  },
+  {
+   "src": "forge-g2-runner-aca-job",
+   "rel": "measured_by",
+   "dst": "forge-g2-chromium-sandbox-aca"
+  },
+  {
+   "src": "forge-g2-qa-gate",
+   "rel": "measured_by",
+   "dst": "forge-g2-critic-flags-2026-10-03"
+  },
+  {
+   "src": "forge-g2-qa-gate",
+   "rel": "caused_by",
+   "dst": "forge-g2-code-gates-miss-pictures"
+  },
+  {
+   "src": "forge-g2-qa-gate",
+   "rel": "caused_by",
+   "dst": "forge-g2-bot-without-remove"
+  },
+  {
+   "src": "forge-g2-kit-lite",
+   "rel": "measured_by",
+   "dst": "forge-g2-eligibility-2026-10-03"
+  },
+  {
+   "src": "open-forge-g2-integration",
+   "rel": "blocks",
+   "dst": "forge-g2-nightly-job"
+  },
+  {
+   "src": "open-forge-g2-runner-trust",
+   "rel": "blocks",
+   "dst": "forge-g2-runner-aca-job"
+  },
+  {
+   "src": "forge-g2-private-container",
+   "rel": "part_of",
+   "dst": "forge-g2-review-human-only"
+  }
+ ],
+ "md": {
+  "decisions": "## forge-g2-kit-lite\n**G2 v0 builds mechanics for tgk-lite@1 (server/forge/g2/kit/), a trusted vanilla-DOM/SVG kit, instead of the Phaser-4 tgk@1 of FACTORY §4 (2026-10-03).** Agent code is one `defineMechanic({init, reduce, feedback?, targets, render, facts})`; the kit owns the bridge (shared/contracts.ts ModuleToHost: page-level ready, init + MessagePort), values (agent code only copies opaque refs from `ctx.refs`; the kit resolves them, labels every bound target and draws every numeral and quantity picture via `draw.numeral`/`draw.model`), the observation (choice = last accepted choose ref; build = a kit shadow of unit counts checked against `facts()` after every action → `state_diverged`), grading against the server-expanded kit key, the item cursor, goal_met once, stuck after 3 wrong, reveal/highlight, feel, a 50 ms per-call budget, and runtime refusals (`ref_inactive_item`, `ref_wrong_slot`, `target_too_small`, `target_overlap`, `key_unreachable`, `key_singled_out`, …). Archetypes: `choice` and `build` (integers 1-99, tens + ones). Why: Phaser 4 is not in the repo, the binding laws (§4.3 GAP-F1) need a kit that owns values, and a 37 KB bundle loads in an opaque iframe with no network. **Reverse if:** a mechanic class needs physics/animation the DOM kit cannot express (then build tgk@1 on Phaser behind the same defineMechanic surface), or real-device fps of tgk-lite is worse than the Phaser prototype.\n\n## forge-g2-one-bundle-hash-csp\n**One self-contained index.html per module, CSP by hash (2026-10-03).** `buildBundle` inlines kit + mechanic; the meta CSP is `default-src 'none'; script-src 'sha256-<that script>'; style-src 'sha256-<kit css>'; img-src data:; connect-src 'none'; …`; agent source is wrapped in `function(defineMechanic, Math, window, self, globalThis, document, fetch, Date, Function, …)` with every ambient name undefined and `Math.random` throwing; `</script` in agent text is escaped. Publish recomputes the sha of the stored bytes and refuses a mismatch. **Reverse if:** a module needs assets larger than inline data (then path-scoped CSP per FACTORY §2.6).\n\n## forge-g2-runner-aca-job\n**ACA Job `forge-g2-runner` in environment `taxila-forge-untrusted` (created 2026-10-03, eastus2, Consumption, no Log Analytics), image `forge-g2-runner:<context-hash>` built by ACR taxilacr from `infra/forge-runner/Dockerfile` (Playwright 1.63.0-noble base, non-root).** `scripts/forge-g2-deploy.mjs` uploads the working-tree context (`--from-github` builds the pushed branch). Each execution is started by trusted code (`azure-job.js startBuild`) with a template override: topic, build id and a 2-hour SAS (`sr=c`, https, racwdl) for `forge-g2-src` only — the runner never holds the storage account key, so it cannot write the public play origin. A crash before `run-build.js` reports is written by `job-entry.js`. Deviations from FACTORY §2.2, stated: the runner holds the AOAI key (no orchestrator gateway yet), the ACR admin password is reused from taxila-web (no scope-map token), Chromium runs without its own sandbox (see the measurement). **Reverse if:** the orchestrator gateway or ACA Sandboxes land — then the runner gets no AOAI key and the model loop moves out.\n\n## forge-g2-harness-six-tools\n**The G2 builder harness (server/forge/g2/harness.js).** taxila-codex over the Responses API (`previous_response_id` within a round, `prompt_cache_key` per archetype, `parallel_tool_calls:false`), six strict tools, one allowlisted file, budget footer on every observation, repeated failing action → note then end round, 3 format errors → end. Stages: S1 design by taxila-brain (strict schema) → S3 ≤ 12 steps → S4 ≤ 3 repair rounds with a fresh conversation and a handoff → S6 final gate on visible + held-out items (every third item held out; never shown to the builder) with a new seed and a rebuild-sha check → S5 one polish round fed by the advisory critic, kept only if the final gate stays fully green → Q8 → review queue. Deviation: `write_mechanic` (whole-file) is allowed beside `edit_mechanic` (search/replace with a trimmed-line second pass); the Codex apply_patch port and the day-1 transport test are not done. **Reverse if:** whole-file writes start truncating or drifting on mechanics > 300 lines (then port apply_patch), or M-F1 picks another builder.\n\n## forge-g2-qa-gate\n**The G2 gate (server/forge/g2/qa.js, truth.js, lint.js, safety.js; 2026-10-03).** Hard gates: Q1 allowlist AST lint (free identifiers ⊆ a fixed set, banned members, forged-ref literals, digits in text keys, points/coins/score identifiers) + size (agent ≤ 24 KiB, bundle ≤ 96 KiB); Q2 boot in a host page that mirrors ModuleHost (opaque-origin iframe, sandbox=allow-scripts, init + port), 0 console/page errors, 0 requests other than the bundle (Playwright route + dead proxy + resolver rules + WebRTC policy), 0 CSP violations, and an in-frame `fetch` that must be refused; Q3 0 kit contract/agent/budget findings and 0 error events; Q4 real pointer clicks at target centres to goal_met exactly once, one wrong path per level, a remove/add sweep for build items, a determinism replay; Q5 every answer re-derived host-side from the server's LevelSpec and re-graded against the raw kit file (misconception id must be the kit's); Q6 targets on screen, ≥ 48/38 px, font ≥ 14 px, no overflow, drawn words not clipped/overlapping/under a target; leak: drawn words never reveal the key (director revealsAnswer), key position not constant. Q8 per string (local predicates, Content Safety ≥ 2 blocks, brain classifier for hi/hi-Latn, all fail closed). Q9 critic advisory (not calibrated). Not built: Q7 performance under CPU throttle, Devanagari tofu check, a11y/axe, fun-floor timings, the tamper battery. **Reverse if:** the mutant corpus recall drops below 1.0 on a kit/gate change, or real-child crash/stuck rates show a class the gate misses.\n\n## forge-g2-review-human-only\n**Human-only approval (server/forge/g2/review.js, scripts/forge-g2-review.mjs).** A build that passed every hard gate is enqueued with its evidence (bundle, mechanic, design, QA report, frames, trajectory, ledger, cost, critic items). `decide()` refuses approval from names matching automation patterns; reject needs a reason and sets a 24 h cool-down; approval publishes the gated bytes and delivers to every waiting child. A test publish (automation allowed) goes only under `forge/g2/test/` and leaves the build pending. Child folders are `forge/g2/c/<HMAC-SHA256(childId)[:32]>/<day>.json` + `latest.json` with engine, url, sha, topic — params (keys) are rebuilt server-side at mount (serve.js), never stored public. **Reverse if:** the owner relaxes review with M-F2 gate-recall numbers (FACTORY §0.1 E2).\n\n## forge-g2-nightly-job\n**forge.g2.nightly (server/forge/g2/conductor-job.js; registered in server/conductor/config.js and imported by handlers.js).** Input `{day, tz?, topicIds?}`; topics = the child's ≤ 3 most frequent lesson topics of that learning day; per topic: approved → deliver for day+1; failed/rejected in cool-down → skip; else write a waiting marker and, if this call wins the If-None-Match in-flight marker (stale after 2 h), start one ACA execution under a daily breaker; a failed start removes its markers. Result codes only (no child data). The night-fold enqueue is NOT wired (decide.js is another workstream's): see open-forge-g2-integration. **Reverse if:** demand ranking (FACTORY §6.4) replaces per-child triggering.\n\n## forge-g2-private-container\n**Private G2 data in container `forge-g2-src` of `taxilaforge` (no public access; anonymous list → 404, checked 2026-10-03).** Layout: runs/<buildId>/, review/<buildId>/, queue/<status>/, catalogue/<identityKey>.json, waiting/, inflight/, breaker/<utc-day>/. **Reverse if:** the account-level separation of FACTORY §2.2 (`taxilaforgesrc`) is created, or a SAS-scoped role cannot be kept per container.\n\n## forge-g2-q8-at-design\n**Full Q8 at S1, before any build spend (2026-10-03).** `designMechanic(..., {q8})` runs Content Safety + the brain classifier on the strings table and regenerates a flagged design (≤ 3 attempts); Q8 runs again at the end (strings do not change, the classifier is non-deterministic). Measured effect: c7-maths-ch04-t03 was rejected at the end before (Content Safety severity 2 on \"Belongs\"), and passed after one redesign. **Reverse if:** Q8 false positives are fixed at the source (a calibrated Hindi classifier), making the extra design call pure cost.",
+  "measurements": "## forge-g2-e2e-azure-2026-10-03\n**Forge G2 end to end on Azure (2026-10-03, ACA Job forge-g2-runner, images wt-508121c3aca1 then wt-8296efcc49c8; method: scripts/forge-g2-run.mjs starts one execution per topic, reads runs/<id>/result.json; cost = tokens × retail (codex 1.75/0.175 cached [U]/14, brain 4/0.4/20 per 1M) + Content Safety at $0.38/1k records + ACA seconds from the execution's own start/end at 2 vCPU × $0.000024 + 4 GiB × $0.000003).**\n- n = 14 builds on 11 kit topics (c1-maths-ch03-t01, c1-maths-ch04-t01 ×2, c2-maths-ch06-t03, c3-maths-ch13-t02, c4-maths-ch09-t01, c4-maths-ch13-t01, c4-maths-ch13-t02 (started by the forge.g2.nightly handler), c5-maths-ch07-t02, c6-maths-ch01-t01, c6-maths-ch07-t05 ×2, c7-maths-ch04-t03 ×2).\n- **QA pass rate (every hard gate): 12/14 = 0.86.** Both failures were Q8 false positives in the first batch (Q8 ran only after the build); after Q8 moved to S1: 5/5. No build failed a code gate on Azure; the builder reached a green submit in S3 in every run (5-11 steps, no S4 round needed).\n- **Cost per build: mean ≈ $0.20, range $0.113-0.240** (batch 1 n=8 mean $0.1997, median $0.1981; batch 2 n=4 mean $0.214; smoke n=1 $0.113; nightly-triggered n=1 $0.240). Cost per QA-passed build ≈ $0.24 for the first batch. Split (typical): builder (codex) $0.05-0.11, designer + Q8 classifier + critic (brain) $0.05-0.09, Content Safety ≈ $0.01, compute $0.005-0.009.\n- Execution time 104-203 s (median 152 s), well under FACTORY's P50 12-15 min estimate [U] — because tgk-lite mechanics are small (≈ 150-250 lines) and green on the first submit.\n- Codex prompt caching: 72-89% of builder input tokens were cached within a build (e.g. 79,616 of 88,444).\n- Not measured: a human review decision on any of them (12 builds are in the queue, pending), real-device performance, child play.\n\n## forge-g2-mutants-2026-10-03\n**Gate recall on seeded bugs (scripts/forge-g2-mutants.mjs, local Chromium 1243 headless shell, 2026-10-03).** 18 choice mutants × 2 topics (c1-maths-ch04-t01 integers, c6-maths-ch07-t05 fractions) + 7 build mutants × 1 topic = 43, each run through BOTH the static and the browser half; controls: 2 goldens × 3 topic/archetype cells × 2 seeds = 6. **Recall 43/43 (1.0), false alarms 0/6.** 41/43 caught by the runtime/browser half alone (incl. every lint-evading variant: forged refs via Object.fromEntries, computed string keys, a Function-constructor fetch beacon); 2/43 only by the lint (a `score` identifier). History: the first run caught 41/43 (remove-wrong-kind and remove-below-zero missed) → add/remove sweep added (rejection forge-g2-bot-without-remove). Not in the corpus: hand-drawn unbound quantity pictures (no code catch exists; see the critic measurement), infinite loops, slow-device performance.\n\n## forge-g2-critic-flags-2026-10-03\n**Advisory Q9 critic (taxila-brain, chat completions with 3 PNG frames: intro, after_wrong, goal; detail auto, effort low; 2026-10-03).** First attempt at effort medium + detail high timed out at 60 s (n=1); effort low returns in ≈ 7 s. On the locally built fraction-match@1 it correctly named the unbound 2/4 bar and 1/6 pie and the clipped \"hinn milan\" (n=1, agrees with my own reading of the frame). On Azure builds: ≥ 1 flag before S5 on 13/14 Azure builds (quantity_picture_unbound on 8, text overlap on 7); S5 polish kept on 10, fully cleared the flags on 4; **4/12 to_review builds are critic-clean**. Precision/recall unknown: no human labels yet (QA-M3 needs n ≥ 30).\n\n## forge-g2-eligibility-2026-10-03\n**Which kit topics a G2 v0 build can use (levels.js over all 23+ kit files, 830 topics, 2026-10-03).** 124 eligible (15%): 48 maths `build` (≥ 4 verified integers 1-99), 75 maths `choice` (KitMath fractions, verified integers, diagnostics with exactly one correct option and labels ≤ 28 chars), 1 English choice. 706 not eligible: answers that are words/sentences, diagnostic options > 28 chars, prompts > 180 chars, unverified integers.\n\n## forge-g2-chromium-sandbox-aca\n**Chromium sandbox in the ACA job (2026-10-03, n = 14 executions).** `chromiumSandbox: true` as non-root pwuser failed to launch in every execution (\"Target page, context or browser has been closed\"); the harness fell back to an unsandboxed renderer and recorded it in result.chromium. Agent code still ran only in the renderer (opaque-origin iframe, hash CSP, dead proxy), but a renderer escape would reach a process environment holding the AOAI key and a 2 h private-container SAS.",
+  "rejected": "## forge-g2-code-gates-miss-pictures\n**Tried (2026-10-03, first local G2 build, c6-maths-ch07-t05):** shipping to review on \"all 18 code gates green\". **Broke:** the generated fraction-match@1 drew a bar with 2/4 shaded and a pie with one of six sectors shaded beside \"2/7 + 3/7 kitna hai?\", tiny partitioned bars inside each option card (cuts = 2 + ((i + seed) % 4), unrelated to the card's value), a title clipped at the left edge and a word overlapping the pie — pictures that teach a wrong quantity (the generated-media-carries-facts law, in code). **Now:** the kit draws quantity pictures only through `draw.model(ref)` (bound), buttons are opaque, choice items refuse a key drawn without every option (`key_singled_out`), Q6 checks drawn-text layout, the builder's binding rules forbid hand-drawn parts, the critic flags it and the reviewer checklist names it. A hand-drawn partition is still not catchable by code: it stays a reviewer reject.\n\n## forge-g2-q8-after-build\n**Tried (2026-10-03, batch 1 of 8 Azure builds):** the full Q8 (Content Safety + brain Hindi classifier, fail closed) only after S6. **Broke:** 2/8 complete builds were rejected for benign labels — \"Partner / साथी / Saathi\" (brain: romance) and \"Belongs\" (Content Safety severity 2) — after their whole build was paid for. **Now:** forge-g2-q8-at-design. Fail-closed stays: a false positive costs a redesign, never a pass.\n\n## forge-g2-bot-without-remove\n**Tried (2026-10-03, first mutant run):** a build-archetype bot that added the solution units, made one wrong commit and pressed clear. **Broke:** 41/43 recall — \"remove decrements the wrong kind\" and \"remove below zero accepted\" were never exercised. **Now:** at the first item of each level the bot presses every remove at zero, adds one of each kind and removes them in turn, then makes the wrong commit with an add ×2 / remove ×1 (43/43)."
+ }
+}

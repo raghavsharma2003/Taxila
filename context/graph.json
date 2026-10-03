@@ -3053,6 +3053,160 @@
    "title": "Route test under a safety hold (tests/reports-routes-db.run.mjs, real API in-process on the Neon test branch, n = 1 child): preview null + held, weekly preview null, post-hold note unlisted and 404, pre-hold note readable with voice null, speak what=report 409, preview evidence 404, stored evidence carries 'how' and no 'rule'; hold cleared → preview back",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "forge-g2-kit-lite",
+   "kind": "decision",
+   "title": "G2 v0 mechanics target tgk-lite@1, a vanilla-DOM/SVG trusted kit (server/forge/g2/kit/runtime.js), not Phaser-4 tgk@1: agent code is one defineMechanic({init, reduce, targets, render, facts}) call; the kit owns the bridge, values (refs only), labels, the shadow, grading, cursor, goal_met/stuck and feel",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-one-bundle-hash-csp",
+   "kind": "decision",
+   "title": "A G2 module is ONE self-contained index.html (kit + mechanic inlined) under a meta CSP allowing exactly those two inline blocks by sha256 (no network, no eval, no fonts); agent code runs in a strict wrapper whose parameters shadow window/fetch/Date/Function/…; publish refuses bytes whose sha differs from the gated sha",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-runner-aca-job",
+   "kind": "decision",
+   "title": "One G2 build = one execution of ACA Job forge-g2-runner (2 vCPU/4 GiB, manual, replicaTimeout 1800, retry 0) in its own environment taxila-forge-untrusted; image built by ACR taxilacr from the working-tree context (or --from-github); the execution holds the AOAI key and a 2 h SAS for the private container only, never the storage account key",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-harness-six-tools",
+   "kind": "decision",
+   "title": "G2 builder harness: taxila-codex via Responses API, six strict function tools (read_file, write_mechanic, edit_mechanic, run_check lint|play, note, submit), S3 ≤ 12 steps, S4 ≤ 3 fresh-context repair rounds, S5 one polish round fed by the advisory critic, S6 final gate on visible + held-out items with a new seed; job caps 30 steps / $3.50 / 25 min",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-qa-gate",
+   "kind": "decision",
+   "title": "G2 QA gate = Q1 allowlist lint + size budget, Q2 boot in a production-parity opaque-origin host with route-recorded network, dead proxy and an in-frame fetch probe, Q3 kit contract findings, Q4 scripted pointer play to goal_met with wrong paths, add/remove sweep and determinism, Q5 host re-derivation + raw-kit re-grade, Q6 geometry and drawn-text layout, leak (revealsAnswer, key position), Q8 strings at design time and at the end; Q9 critic advisory",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-review-human-only",
+   "kind": "decision",
+   "title": "G2 review queue lives in the private container forge-g2-src; approval refuses automation reviewer names; a test publish writes only under forge/g2/test/ and leaves the build pending; approval publishes forge/g2/b/<sha>/index.html and delivers to every waiting child's folder forge/g2/c/<hmac(childId)>/<day>.json (no answer keys, no ids)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-nightly-job",
+   "kind": "decision",
+   "title": "Conductor job kind forge.g2.nightly (slow lane, core_tutoring, allowedIn paused): per topic of the child's day, deliver an approved core for tomorrow, else join or start ONE build per identity (If-None-Match in-flight marker, 2 h stale takeover, daily breaker FORGE_G2_DAILY_BUILDS=20)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-private-container",
+   "kind": "decision",
+   "title": "Phase-0 private G2 storage is container forge-g2-src (no public access) in account taxilaforge, standing in for the separate taxilaforgesrc account of FACTORY §2.2",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-q8-at-design",
+   "kind": "decision",
+   "title": "The full Q8 (Content Safety per string + taxila-brain Hindi/Hinglish classifier, fail closed) runs on the design's strings table at S1, before any build spend; a flagged design is regenerated (≤ 3 attempts) and Q8 runs again at the end",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-e2e-azure-2026-10-03",
+   "kind": "measurement",
+   "title": "Forge G2 end to end on Azure ACA Job: 14 builds on 11 kit topics; 12/14 passed every hard QA gate (2 lost to Q8 false positives before Q8 moved to design time; 5/5 after); cost per build mean ≈ $0.20 (range $0.11-0.24), execution 104-203 s",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-mutants-2026-10-03",
+   "kind": "measurement",
+   "title": "G2 gate vs 43 seeded-bug mechanics (18 choice operators on 2 topics + 7 build operators) and 6 clean golden runs: recall 43/43, 0/6 false alarms; 41/43 caught by the runtime/browser half, 2 (points machine) by the lint only",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-critic-flags-2026-10-03",
+   "kind": "measurement",
+   "title": "Advisory Q9 critic (taxila-brain vision, 3 frames): before S5 it flagged ≥ 1 rubric item on 13/14 Azure builds (quantity picture unbound most often); after one S5 polish round 4/12 to_review builds were critic-clean; uncalibrated (no human labels yet)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-eligibility-2026-10-03",
+   "kind": "measurement",
+   "title": "G2 v0 eligibility over all 830 kit topics: 124 (15%) — 48 maths build, 75 maths choice, 1 English choice; science/EVS/SST/Hindi topics fail on option length > 28 chars, prompt > 180 chars or non-numeric answer shapes",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-chromium-sandbox-aca",
+   "kind": "measurement",
+   "title": "Chromium's own sandbox does not start in an ACA Consumption job container as non-root pwuser (launch closes the browser); every Azure build ran with chromiumSandbox false, recorded per build in result.chromium",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-code-gates-miss-pictures",
+   "kind": "rejection",
+   "title": "Treating 'every code gate green' as 'ready for a child': the first generated fractions game passed all 18 code gates while drawing a 2/4-shaded bar and a 1/6 pie next to '2/7 + 3/7', a clipped title and overlapping words",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-q8-after-build",
+   "kind": "rejection",
+   "title": "Running the full Q8 only after the build: 2/8 builds (~$0.40 of tokens) were discarded for benign words (Saathi/साथी flagged romance by the brain classifier; 'Belongs' Content Safety severity 2)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-bot-without-remove",
+   "kind": "rejection",
+   "title": "A build-archetype bot that only adds units and confirms: missed 2/7 build mutants (remove decrements the wrong kind; remove below zero)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "open-forge-g2-integration",
+   "kind": "open",
+   "title": "G2 lesson wiring not done: decide.js night fold must enqueue forge.g2.nightly; ModuleHost mount.src; CSP frame-src for the Blob play origin; Director evidence via server/forge/g2/serve.js gradeEvent; Responses adapter into server/azure.js",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "open-forge-g2-runner-trust",
+   "kind": "open",
+   "title": "G2 runner still holds the AOAI key and runs Chromium unsandboxed in ACA: needs the orchestrator gateway (FACTORY §2.2) or ACA Sandboxes (Phase 1, owner action E4)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "child-names-teacher",
+   "kind": "decision",
+   "title": "The child chooses their teacher character AND gives it a name (Meta custom-AI-character style); default names are only suggestions",
+   "at": "2026-10-03",
+   "source": "inbox/owner-2026-10-03b.json"
+  },
+  {
+   "id": "character-built-in-house",
+   "kind": "decision",
+   "title": "The 3D teacher is built in-house (no contracted artist): scripted Blender pipeline from licence-clean base meshes plus Codex reference art",
+   "at": "2026-10-03",
+   "source": "inbox/owner-2026-10-03b.json"
+  },
+  {
+   "id": "build-before-panels",
+   "kind": "decision",
+   "title": "Finish the whole app and site first; owner tests; sample pools of children and parents come after. Panel-gated items ship on best judgement",
+   "at": "2026-10-03",
+   "source": "inbox/owner-2026-10-03b.json"
   }
  ],
  "edges": [
@@ -5485,6 +5639,121 @@
    "src": "reports-safety-hold-read-side",
    "rel": "measured_by",
    "dst": "reports-route-hold-2026-10-03"
+  },
+  {
+   "src": "forge-g2-kit-lite",
+   "rel": "part_of",
+   "dst": "forge-kit-grades-reducer"
+  },
+  {
+   "src": "forge-g2-one-bundle-hash-csp",
+   "rel": "part_of",
+   "dst": "forge-play-delivery-csp"
+  },
+  {
+   "src": "forge-g2-runner-aca-job",
+   "rel": "part_of",
+   "dst": "forge-untrusted-lane-single-use"
+  },
+  {
+   "src": "forge-g2-runner-aca-job",
+   "rel": "part_of",
+   "dst": "forge-infra-azure"
+  },
+  {
+   "src": "forge-g2-harness-six-tools",
+   "rel": "part_of",
+   "dst": "forge-models"
+  },
+  {
+   "src": "forge-g2-qa-gate",
+   "rel": "part_of",
+   "dst": "forge-qa-ladder"
+  },
+  {
+   "src": "forge-live-codegen-race",
+   "rel": "constrains",
+   "dst": "forge-g2-review-human-only"
+  },
+  {
+   "src": "forge-g2-nightly-job",
+   "rel": "part_of",
+   "dst": "forge-g2-review-human-only"
+  },
+  {
+   "src": "content-safety-sole-gate",
+   "rel": "constrains",
+   "dst": "forge-g2-qa-gate"
+  },
+  {
+   "src": "forge-g2-q8-at-design",
+   "rel": "supersedes",
+   "dst": "forge-g2-q8-after-build"
+  },
+  {
+   "src": "forge-g2-q8-at-design",
+   "rel": "caused_by",
+   "dst": "forge-g2-q8-after-build"
+  },
+  {
+   "src": "forge-g2-qa-gate",
+   "rel": "measured_by",
+   "dst": "forge-g2-mutants-2026-10-03"
+  },
+  {
+   "src": "forge-g2-harness-six-tools",
+   "rel": "measured_by",
+   "dst": "forge-g2-e2e-azure-2026-10-03"
+  },
+  {
+   "src": "forge-g2-runner-aca-job",
+   "rel": "measured_by",
+   "dst": "forge-g2-e2e-azure-2026-10-03"
+  },
+  {
+   "src": "forge-g2-runner-aca-job",
+   "rel": "measured_by",
+   "dst": "forge-g2-chromium-sandbox-aca"
+  },
+  {
+   "src": "forge-g2-qa-gate",
+   "rel": "measured_by",
+   "dst": "forge-g2-critic-flags-2026-10-03"
+  },
+  {
+   "src": "forge-g2-qa-gate",
+   "rel": "caused_by",
+   "dst": "forge-g2-code-gates-miss-pictures"
+  },
+  {
+   "src": "forge-g2-qa-gate",
+   "rel": "caused_by",
+   "dst": "forge-g2-bot-without-remove"
+  },
+  {
+   "src": "forge-g2-kit-lite",
+   "rel": "measured_by",
+   "dst": "forge-g2-eligibility-2026-10-03"
+  },
+  {
+   "src": "open-forge-g2-integration",
+   "rel": "blocks",
+   "dst": "forge-g2-nightly-job"
+  },
+  {
+   "src": "open-forge-g2-runner-trust",
+   "rel": "blocks",
+   "dst": "forge-g2-runner-aca-job"
+  },
+  {
+   "src": "forge-g2-private-container",
+   "rel": "part_of",
+   "dst": "forge-g2-review-human-only"
+  },
+  {
+   "src": "character-built-in-house",
+   "rel": "supersedes",
+   "dst": "owner-design-v2-directive"
   }
  ]
 }
