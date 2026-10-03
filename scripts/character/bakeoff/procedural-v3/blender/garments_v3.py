@@ -248,7 +248,7 @@ def make(skin, look, J, report):
     x_arm = abs(J["joint-l-shoulder"][0]) + 0.045 - 0.006
     front = np.clip(np.cos(th), 0, 1)
     base = z_clav + 0.045
-    z_col = base - gv.get("scoop", 0.055) * front ** 2           # kurti scoop neckline
+    z_col = base - gv.get("scoop", 0.055) * front ** gv.get("scoopExp", 2.0)    # kurti scoop neckline (U for exp ~1)
     z_colJ = base + 0.006 - 0.03 * front ** 2                     # jacket neckline (higher: the collar sits on it)
     polys = skin.data.polygons
     skin_bvh = _bvh_of([skin])

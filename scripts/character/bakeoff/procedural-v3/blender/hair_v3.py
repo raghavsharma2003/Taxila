@@ -191,7 +191,7 @@ def _finish(bm, name, attrs):
 # elevation (deg, from the head centre: joint-head + (0, -1, +4) cm) of the hairline by azimuth (deg, 0 = front, + = her
 # left), symmetric: a soft female hairline about 6 cm above the brows, a slight temple recess, a sideburn in front of
 # the ear, the line over the ear top, behind the ear and down to the nape.
-HAIRLINE = [(0, 46), (20, 45), (38, 41), (52, 31), (62, 14), (70, -2), (77, -9), (83, -5), (89, 5), (100, 7), (110, 3),
+HAIRLINE = [(0, 46), (20, 45), (38, 40), (50, 27), (60, 8), (68, -4), (76, -9), (83, -6), (89, 1), (100, 2), (110, -2),
             (118, -14), (135, -31), (155, -42), (180, -45)]
 
 
