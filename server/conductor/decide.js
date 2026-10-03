@@ -154,7 +154,12 @@ const reportRunAfter = (s, day) => new Date(zonedToUtc(addDays(day, 1), "04:00",
 const enqueueDaily = (s, day, H) => H.enqueue("report.daily", `report.daily:${s.childId}:${day}`, { day }, { runAfter: reportRunAfter(s, day) });
 function enqueueReports(s, day, H, active) {
   const runAfter = reportRunAfter(s, day);
-  if (active) { enqueueDaily(s, day, H); H.rule("report_daily"); }
+  if (active) {
+    enqueueDaily(s, day, H); H.rule("report_daily");
+    // Forge G2 end-of-day (server/forge/g2/conductor-job.js): ingest finished builds, deliver approved ones, ask for
+    // tomorrow's. One per child per learning day; same window as the daily note.
+    H.enqueue("forge.g2.nightly", `forge.g2.nightly:${s.childId}:${day}`, { day }, { runAfter }); H.rule("forge_g2_nightly");
+  }
   if (weekday(day) === 0) {
     const wk = isoWeek(day);
     H.enqueue("parent.letter", `parent.letter:${s.childId}:${wk}`, { isoWeek: wk }, { runAfter });

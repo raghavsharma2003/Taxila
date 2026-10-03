@@ -3207,6 +3207,328 @@
    "title": "Finish the whole app and site first; owner tests; sample pools of children and parents come after. Panel-gated items ship on best judgement",
    "at": "2026-10-03",
    "source": "inbox/owner-2026-10-03b.json"
+  },
+  {
+   "id": "b1-floor-machine",
+   "kind": "decision",
+   "title": "The eight-state floor (src/lesson/floor.ts) is reduced from runtime link events + ui.handover/cues + local commits; YOUR TURN needs an open hand-over; a lesson is in legacy mode (no handover = answer) only until the first turn carries ui.handover",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-signals-one-transition",
+   "kind": "decision",
+   "title": "One floor transition fires every carrier (dock data-floor + lamp, earcon, haptic, performance mark) from src/lesson/signals.ts in a microtask, and only if the state still holds: a transient state never chimes",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-outbox-retry-policy",
+   "kind": "decision",
+   "title": "Outbox: every child turn written to IndexedDB before send; auto-retry at 1/3/6 s ONLY for no-HTTP-answer and 408/429/502/503/504; 500/409 wait for the child's Send again (the server writes turn rows before its state check); resends carry retried:true + turnSeq; held turns lose their module events (re-buffered, sent once)",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-strip-own-row",
+   "kind": "decision",
+   "title": "The trouble strip is its own row directly above the dock (56 dp, 96 dp when two actions do not fit at 360), taken from the elastic zone (face / tray); a strip inside the dock was tried and clipped the card and the dock body",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-verdict-before-next-ask",
+   "kind": "decision",
+   "title": "When one Director turn both grades the answer and asks the next item, the old ask + answer stay on the card while she speaks (the verdict lands on the child's own answer on her first voiced frame) and the new ask takes the card at the hand-over",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-desk-measured-2026-10-03",
+   "kind": "measurement",
+   "title": "B1 Desk battery (tests/e2e-design-b1.mjs, headless Chromium, dev server, scripted Director + clock-driven voice): receipt ('Got it') after Done/Send well inside 150 ms; lamp + chime + haptic marks within one frame; T2 offline < 3 s; RC < 3 s; T1 at 8 s; see the run log for exact numbers",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-fonts-measured-2026-10-03",
+   "kind": "measurement",
+   "title": "Self-hosted Latin woff2 (Google Fonts, Android Chrome UA, n=1 fetch each): Atkinson Hyperlegible Next 34,024 B, Literata 39,260 B, Andika 12,768 B (match the spec's CM measurement exactly); only Atkinson is preloaded",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-rejected-strip-in-dock",
+   "kind": "rejection",
+   "title": "Trouble strip rendered inside the Answer dock (above its body): at 360 x 640 the strip + two actions + the dock body did not fit 124 dp; the answer chip on the card and the mic label were clipped",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-rejected-button-font-inherit",
+   "kind": "rejection",
+   "title": "A `.dk button { font: inherit }` reset (specificity 0,1,1) silently beat every .dk-* button class (0,1,0): tile numerals rendered at body size; resets must be :where() (specificity 0)",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "forge-g2-run-container-per-build",
+   "kind": "decision",
+   "title": "Each G2 build writes ONLY its own private run container g2run-<buildId> through a 2 h SAS scoped to that container (sp=racwl, no delete); trusted code (review.js ingest) believes the starter's build record, re-hashes the bundle, copies the evidence into forge-g2-src and deletes the run container; no runner credential reaches the queue, catalogue, waiting/in-flight markers, another build, the public origin or the test container",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-whole-container-sas",
+   "kind": "rejection",
+   "title": "Handing the untrusted runner a racwdl SAS on the whole private container forge-g2-src: the same container held the approval state (catalogue/<k>.json, review manifests, waiting/), so a compromised runner could write catalogue {status: approved, src: <any URL>} and the next nightly would deliver it to children unreviewed",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-opaque-refs",
+   "kind": "decision",
+   "title": "tgk-lite@2: refs are opaque per-mount crypto tokens ({item, slot: 'o:<nonce>'}) with the token→key/d:N/u:K map private to the kit closure; option order is crypto-shuffled per mount; shared intrinsics are frozen before agent code runs; ctx.refs.same/indexOf replace .slot reads (a Q1.ref_read lint error); the kit posts the INTERNAL slot plus a per-item attempt counter",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-refs-carry-slot",
+   "kind": "rejection",
+   "title": "tgk-lite@1 refs carried slot:'key' for the correct option and the lint banned only BUILDING ref literals, not reading .slot; the option shuffle was seeded from params.seed (mountFor default 1), so even position was reproducible; a mechanic that glows the key passed every hard gate",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-ingest-pending-review",
+   "kind": "decision",
+   "title": "A build that reaches the review queue marks its identity catalogue/<k>.json = pending_review (nightlies join it, never rebuild it); failures and rejections back off 1 d / 3 d / 7 d per identity and go to triage after 4 attempts; an in-flight marker is created If-None-Match and taken over only when orphaned (no open build record, > 10 min) and only If-Match on the ETag read; a build with no result after 60 min is closed as lost; waiting children are released on failure and dropped after 7 days",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-inflight-stale-takeover",
+   "kind": "rejection",
+   "title": "A 2 h stale-takeover of the in-flight marker as the only single-flight guard: a build waiting for human review left its marker, nothing marked the catalogue, so every nightly after 2 h started another build of the same identity (≈ $0.2 each, bounded only by the 20/day breaker), and the takeover was an unconditional write that two concurrent nightlies could both win",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-deliver-merge",
+   "kind": "decision",
+   "title": "deliver() merges a module into g2/c/<childKey>/<day>.json by topic and sha with an ETag-conditional read-modify-write (5 retries), src is always rebuilt from the sha (bundleUrl), latest.json only moves forward in time; a waiting child is delivered for max(their forDay, tomorrow), never a past-dated folder",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-deliver-overwrite",
+   "kind": "rejection",
+   "title": "Writing { modules: [entry] } over the child's day manifest and latest.json: with up to 3 approved topics in a day (or a later approval for a child already served that day) only the last topic survived — one module per CHILD per day, not per identity",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-review-name-asserted",
+   "kind": "decision",
+   "title": "G2 approval is name-asserted and UNAUTHENTICATED: decide() refuses automation-looking names (word-boundary regex, so 'Abbott' passes), refuses an approval without the CLI's attestation (interactive TTY + the reviewer typing ≥ 8 chars of the bundle sha), and refuses a build gated on a different kit hash; anything holding the storage key can still bypass it",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-grade-guarantee",
+   "kind": "decision",
+   "title": "serve.js gradeEvent states its guarantee on every evidence row (trust: value_ref_consistent; graded_by_server_against_kit; selection_is_frame_claim), requires a kit attempt counter and drops a repeated (module, item, attempt) as duplicate; mountFor serves only bundleUrl(sha) and refuses any stored src that differs",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-test-container",
+   "kind": "decision",
+   "title": "Test publishes go to the separate public-read container forge-g2-test, never under the play container; the app's frame-src must be scoped to https://taxilaforge.blob.core.windows.net/forge/g2/b/ (path prefix), not the account origin; the one legacy test bundle under forge/g2/test/ was deleted (404 verified)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-q8-verdict-reuse",
+   "kind": "decision",
+   "title": "The post-build Q8 gate reuses the design-time FULL verdict (Content Safety + taxila-brain) for the identical strings table (hash-matched) and re-runs only the deterministic local predicates; no second non-deterministic model call, fails closed when no verdict matches",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-runner-image-closure",
+   "kind": "rejection",
+   "title": "Shipping the runner image from a hand-listed context without checking the import closure: another workstream added ./register.js to server/director/items.js and 2/2 Azure builds crashed at boot (ERR_MODULE_NOT_FOUND); the deploy script now walks the runner's relative-import closure and refuses to build when a file is outside the context",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-mutants-2026-10-03b",
+   "kind": "measurement",
+   "title": "G2 gate vs 53 seeded-bug mechanics on tgk-lite@2 (23 choice operators × 2 topics + 7 build): 51 caught, 2 inert (lint-evading key-glow: opaque tokens never say key), 0 missed; 0/6 clean false alarms; leak detectors on a deliberately LEAKY kit variant caught 8/10 leak-mutant runs (key_styled misses an fx glow shown only after a tap)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-sas-probe-2026-10-03",
+   "kind": "measurement",
+   "title": "Live Blob probe of a run-container SAS (taxilaforge, 2026-10-03): own-container write 201; own delete 403; write to forge-g2-src/catalogue 403; another build's run container 403; public forge container 403; forge-g2-test 403",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-queue-scan-2026-10-03",
+   "kind": "measurement",
+   "title": "Re-lint of the 12 builds queued under tgk-lite@1 with g2-lint@2: 12/12 read .slot (all as ref equality, 0/12 compare a slot to 'key' or 'd:N'); 12/12 are stale-kit and decide() refuses to approve them",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "forge-g2-e2e-azure-2026-10-03b",
+   "kind": "measurement",
+   "title": "Forge G2 on Azure after the fix (image wt-da02f11dd8ef, tgk-lite@2, per-build run containers): 2/2 builds passed every hard gate and were ingested into the queue (pending_review, run containers deleted, markers cleared); cost $0.200 and $0.2355 (estimate), execution 166 s and 223 s; the first attempt on wt-872e4f8fd0ac crashed 2/2 at boot (missing register.js)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "open-forge-g2-integration-2",
+   "kind": "open",
+   "title": "G2 wiring still owed by the main loop: decide.js enqueue forge.g2.nightly; ModuleHost mount.src; frame-src scoped to /forge/g2/b/ only; Director passes a per-lesson seen Set to gradeEvent and stores its trust field; FORGE_G2_CHILD_SALT in scripts/deploy-azure.mjs + the conductor worker env; main loop owns the config.js/handlers.js lines; Responses adapter into server/azure.js",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "open-forge-g2-fx-hint",
+   "kind": "open",
+   "title": "leak.key_styled reads agent marks before any action only: a key hint shown through fx or feedback AFTER a tap is not detected (S18e on the leaky kit); opaque refs make it inert today, the person's review is the remaining check",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "open-forge-g2-approval-auth",
+   "kind": "open",
+   "title": "G2 approval needs an owner-authenticated route (or a signed approval from a secret the owner alone holds) before name-asserted CLI approval stops being the only human gate",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g2.json"
+  },
+  {
+   "id": "lt-address-register",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "aap/tum is resolved server-side (child's Hello pick from class 5 → parent's child_controls.address → class default aap ≥ 5, tum below; English none), carried as state.ctx.address; kit questions reach an aap child in aap forms (closed-lexicon toAap in findItem); every move carries a register note; the text-lane guard rewrites tum words, then converts in code",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-exact-match-gate",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "An exact key/option match is decided by code only when the teacher's last turn posed the item or asked nothing; after a DIFFERENT question it goes to the classifier, and a bare number echoed from that other question is no evidence (source 'echo')",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-praise-guard",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "G-PRAISE-1 on the bytes: the move carries the classifier's verdict note; the reply guard catches praise/agreement for an answer not marked correct (and a 'wrong' opening after a correct one), rewrites once, then strips the praising sentences; UiDirectives.verdict/withHelp come only from the verified-key classifier on a kit item",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-screen-guard",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "G-SAY-1 on the bytes: a reply that sends the child to the screen (tap/touch/click/the choices below…) needs Director chips or a mounted module in the SAME response; the unclear-repair shape mentions tapping only when chips exist; violations are rewritten, then the screen sentences stripped and the item question re-posed",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-child-plan-map",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "GET /api/child/plan, /api/child/map, /api/child/teacher and POST /api/lesson/request exist (server/routes/child.js): one home state (resume > capped > done > resting > first > start) from lesson rows, child_controls, conductor_usage/day_plan and consent; the map is the class syllabus × kit skills × skill_state with the four V2 shapes, seals, 'here' and server-scheduled re-checks; 'Only this session' hides map/notebook/resume",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-teacher-card",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "The teacher record (id, name, addressedAs, pronouns, voice, look rev) comes from one server function (characters teacherCard) on lesson start, plan, summary and /api/child/teacher; the lesson-end parent note is told the teacher's name and pronouns",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-summary-did",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "The summary screen's data (LessonSummary: ≤3 DidCards, tick only for a verified correct answer, 'tried' only when nothing was verified, face always 'warm') is built from state.did, which the turn route writes from the classifier's graded turns; POST /api/lesson/end returns it as `did`, GET /api/lesson/summary re-reads it",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-floor-wired",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "lesson.js now calls floorViolations: text lane as a reply-guard problem (rewrite, then the move's fixed line), voice lane on the heard teacher turn → state.correction (compile renders the fix) + a `floor` flag on the turn row",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-ui-directives",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "The Director produces the V2 §4.10 UiDirectives: ask (kit item text ≤120 in the child's register; text-lane no-item turns take the reply's own question), handover, answerForm, phase, tray, shortTitle (≤24 on a word boundary), verdict/withHelp; explain turns put no skill title (syllabus objective) on the board; chip labels are English",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-interests-shapes",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "The parent's interests reach the greet, hook and explain move shapes directly (not only the brief row that sheds first), only under the memory consent and only as short plain labels",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lesson-truth-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "evals/lesson-truth.mjs, Azure taxila-fast, 36 real kit items (classes 5-8, numeric keys), aap child, before→after: drift (key echoed to another question) credited 36/36→0/36, praise 6/36→0/36; screen refs on repair with nothing on screen 10/36→0/36; tum marks in aap replies 152/163→0/164; key after a real hint 31/31→32/32 credited; wrong answers 0/36 praised both; greet uses the interest 12/12 both",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lesson-truth-latency-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "evals/cascade-latency.mjs n=12 per arm, before→after: class 4 director median 2312→1638 ms (p90 3781→3578), total 3855→3220; class 6 (aap) director 1652→1503 (p90 3151→2438), total 3202→3095; guard rewrites class 6 2→0; no measurable latency cost (differences are inside model-latency noise at n=12)",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lesson-truth-e2e-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "tests/e2e-design-lesson-truth.mjs (Playwright, 360x640 + 1280x800, light + dark, Neon test branch): before (old server) /api/child/plan and /map 404, a child who finished today's lesson is offered it again, the Sky is an empty navy box; after all four checks pass (200s, server-driven done/first homes, the map names the learned skill, Arjun 'he')",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-classifier-last-check",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: a LAST CHECK classifier rule (flag + 'label no_attempt if the reply answers the other question') — drift credit 0/36 but it threw away real answers after hint turns (21/31 credited vs 32/32 without it); the code echo rule gets drift to 0/36 with 32/32 kept",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-other-question-no-evidence",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: no evidence on ANY turn after the teacher asked another question — 14/31 real hint turns end in a scaffold sub-question (askedOther), so every answer after such a hint would be lost",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "open-lt-client-wiring",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "Client side of lesson truth: Hello must preselect the parent's interests (it overwrote them via PATCH /api/children) and send the child's aap/tum pick as LessonStartRequest.address; the home/map/summary/Question card must read the new fields (state, topic, today, ask, verdict, did); landing/onboarding must use /api/child/teacher?classLevel= instead of a hard-coded teacher",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "open-lt-voice-lane-truth",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "The realtime voice lane speaks before the Director runs: praise/register/screen breaks there are only flagged on the turn row (floor breaks become state.correction); ui.ask is absent on its no-item turns; G-ASK-2 parity and G-SAY-1's 'this number' clause are not implemented",
+   "source": "inbox/lesson-truth.json"
   }
  ],
  "edges": [
@@ -5753,6 +6075,216 @@
   {
    "src": "character-built-in-house",
    "rel": "supersedes",
+   "dst": "owner-design-v2-directive"
+  },
+  {
+   "src": "b1-outbox-retry-policy",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "b1-rejected-strip-in-dock",
+   "rel": "caused_by",
+   "dst": "b1-strip-own-row"
+  },
+  {
+   "src": "forge-g2-run-container-per-build",
+   "rel": "supersedes",
+   "dst": "forge-g2-whole-container-sas"
+  },
+  {
+   "src": "forge-g2-run-container-per-build",
+   "rel": "caused_by",
+   "dst": "forge-g2-whole-container-sas"
+  },
+  {
+   "src": "forge-g2-run-container-per-build",
+   "rel": "part_of",
+   "dst": "forge-g2-runner-aca-job"
+  },
+  {
+   "src": "forge-g2-run-container-per-build",
+   "rel": "measured_by",
+   "dst": "forge-g2-sas-probe-2026-10-03"
+  },
+  {
+   "src": "forge-g2-opaque-refs",
+   "rel": "supersedes",
+   "dst": "forge-g2-refs-carry-slot"
+  },
+  {
+   "src": "forge-g2-opaque-refs",
+   "rel": "caused_by",
+   "dst": "forge-g2-refs-carry-slot"
+  },
+  {
+   "src": "forge-g2-opaque-refs",
+   "rel": "part_of",
+   "dst": "forge-g2-kit-lite"
+  },
+  {
+   "src": "forge-g2-opaque-refs",
+   "rel": "measured_by",
+   "dst": "forge-g2-mutants-2026-10-03b"
+  },
+  {
+   "src": "forge-g2-opaque-refs",
+   "rel": "measured_by",
+   "dst": "forge-g2-queue-scan-2026-10-03"
+  },
+  {
+   "src": "forge-g2-mutants-2026-10-03b",
+   "rel": "supersedes",
+   "dst": "forge-g2-mutants-2026-10-03"
+  },
+  {
+   "src": "forge-g2-ingest-pending-review",
+   "rel": "supersedes",
+   "dst": "forge-g2-inflight-stale-takeover"
+  },
+  {
+   "src": "forge-g2-ingest-pending-review",
+   "rel": "caused_by",
+   "dst": "forge-g2-inflight-stale-takeover"
+  },
+  {
+   "src": "forge-g2-ingest-pending-review",
+   "rel": "part_of",
+   "dst": "forge-g2-nightly-job"
+  },
+  {
+   "src": "forge-g2-deliver-merge",
+   "rel": "supersedes",
+   "dst": "forge-g2-deliver-overwrite"
+  },
+  {
+   "src": "forge-g2-deliver-merge",
+   "rel": "caused_by",
+   "dst": "forge-g2-deliver-overwrite"
+  },
+  {
+   "src": "forge-g2-deliver-merge",
+   "rel": "part_of",
+   "dst": "forge-g2-review-human-only"
+  },
+  {
+   "src": "forge-g2-review-name-asserted",
+   "rel": "supersedes",
+   "dst": "forge-g2-review-human-only"
+  },
+  {
+   "src": "open-forge-g2-approval-auth",
+   "rel": "blocks",
+   "dst": "forge-g2-review-name-asserted"
+  },
+  {
+   "src": "forge-g2-grade-guarantee",
+   "rel": "part_of",
+   "dst": "forge-kit-grades-reducer"
+  },
+  {
+   "src": "forge-g2-test-container",
+   "rel": "part_of",
+   "dst": "forge-play-delivery-csp"
+  },
+  {
+   "src": "forge-g2-q8-verdict-reuse",
+   "rel": "part_of",
+   "dst": "forge-g2-q8-at-design"
+  },
+  {
+   "src": "forge-g2-q8-verdict-reuse",
+   "rel": "caused_by",
+   "dst": "forge-g2-q8-after-build"
+  },
+  {
+   "src": "forge-g2-runner-aca-job",
+   "rel": "caused_by",
+   "dst": "forge-g2-runner-image-closure"
+  },
+  {
+   "src": "forge-g2-runner-aca-job",
+   "rel": "measured_by",
+   "dst": "forge-g2-e2e-azure-2026-10-03b"
+  },
+  {
+   "src": "open-forge-g2-integration-2",
+   "rel": "supersedes",
+   "dst": "open-forge-g2-integration"
+  },
+  {
+   "src": "open-forge-g2-integration-2",
+   "rel": "blocks",
+   "dst": "forge-g2-nightly-job"
+  },
+  {
+   "src": "open-forge-g2-fx-hint",
+   "rel": "blocks",
+   "dst": "forge-g2-qa-gate"
+  },
+  {
+   "src": "lt-floor-wired",
+   "rel": "supersedes",
+   "dst": "open-never-rules-wiring"
+  },
+  {
+   "src": "lt-exact-match-gate",
+   "rel": "measured_by",
+   "dst": "lesson-truth-2026-10-03"
+  },
+  {
+   "src": "lt-praise-guard",
+   "rel": "measured_by",
+   "dst": "lesson-truth-2026-10-03"
+  },
+  {
+   "src": "lt-screen-guard",
+   "rel": "measured_by",
+   "dst": "lesson-truth-2026-10-03"
+  },
+  {
+   "src": "lt-address-register",
+   "rel": "measured_by",
+   "dst": "lesson-truth-2026-10-03"
+  },
+  {
+   "src": "lt-interests-shapes",
+   "rel": "measured_by",
+   "dst": "lesson-truth-2026-10-03"
+  },
+  {
+   "src": "lt-child-plan-map",
+   "rel": "measured_by",
+   "dst": "lesson-truth-e2e-2026-10-03"
+  },
+  {
+   "src": "lt-praise-guard",
+   "rel": "measured_by",
+   "dst": "lesson-truth-latency-2026-10-03"
+  },
+  {
+   "src": "lt-classifier-last-check",
+   "rel": "constrains",
+   "dst": "lt-exact-match-gate"
+  },
+  {
+   "src": "lt-other-question-no-evidence",
+   "rel": "constrains",
+   "dst": "lt-exact-match-gate"
+  },
+  {
+   "src": "open-lt-client-wiring",
+   "rel": "blocks",
+   "dst": "lt-child-plan-map"
+  },
+  {
+   "src": "lt-ui-directives",
+   "rel": "part_of",
+   "dst": "owner-design-v2-directive"
+  },
+  {
+   "src": "lt-teacher-card",
+   "rel": "part_of",
    "dst": "owner-design-v2-directive"
   }
  ]

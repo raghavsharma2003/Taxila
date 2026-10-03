@@ -508,3 +508,36 @@ CM's Codex palette included a "sand" disc tint, `#D9C7A7`. Under the hue lint wi
 
 ## forge-g2-bot-without-remove
 **Tried (2026-10-03, first mutant run):** a build-archetype bot that added the solution units, made one wrong commit and pressed clear. **Broke:** 41/43 recall — "remove decrements the wrong kind" and "remove below zero accepted" were never exercised. **Now:** at the first item of each level the bot presses every remove at zero, adds one of each kind and removes them in turn, then makes the wrong commit with an add ×2 / remove ×1 (43/43).
+
+
+<!-- merged from inbox/b1-shell-signalling-lesson.json -->
+## b1-rejected-strip-in-dock
+**Tried (2026-10-03):** the trouble strip as the top part of the Answer dock, so the Face column needed no new row. **Broke:** at 360 x 640 (dock 124 dp) the strip sentence, two actions and the dock body could not share the height; the Question card's answer chip and the mic label were clipped in the screenshots. **Instead:** `b1-strip-own-row`.
+
+## b1-rejected-button-font-inherit
+**Tried:** `.dk button { font: inherit }` as the Desk's button reset. **Broke:** its specificity (0,1,1) beat every `.dk-tile` / `.dk-side` rule (0,1,0), so tile numerals rendered at body size, unnoticed until a screenshot. **Instead:** `.dk :where(button, input) { font: inherit }`.
+
+
+<!-- merged from inbox/forge-g2.json -->
+## forge-g2-whole-container-sas
+**A whole-container SAS for the untrusted runner over the container that held approval state (2026-10-03, reviewer finding on the forge-g2 build).** The runner got `sp=racwdl, sr=c` on `forge-g2-src`, which also held `catalogue/`, `review/<id>/manifest.json`, `waiting/` and `inflight/`. Anything holding that SAS (Chromium ran unsandboxed in ACA 14/14, so a renderer escape reaches the Node process) could write `catalogue/<k>.json = {status: approved, src: <any URL>}`; the next nightly delivered `cat.src` unchecked and `mountFor` checked only that src was non-empty. "Cannot write the public origin" was true and beside the point: it could write what decides what reaches the public origin. Replaced by forge-g2-run-container-per-build.
+
+## forge-g2-refs-carry-slot
+**Refs that name the key (2026-10-03, tgk-lite@1).** `ctx.refs.options()` returned `{item, slot: "key"}` for the right answer; the lint banned building ref literals but not reading `.slot`; the option shuffle was seeded from `params.seed`, whose `mountFor` default was 1, so an agent could even reproduce positions. A mechanic that drew a glow next to `r.slot === "key"` passed `lintMechanic` and every hard gate, defeating remove-the-learning and producing "correct" evidence for the learner model and parent reports. All 12 queued tgk-lite@1 builds read `.slot` (for ref equality only; forge-g2-queue-scan-2026-10-03). Replaced by forge-g2-opaque-refs.
+
+## forge-g2-inflight-stale-takeover
+**A 2-hour stale takeover as the single-flight guard (2026-10-03).** A build that reached the review queue left `inflight/<k>` behind and nothing marked the catalogue; after 2 h the marker counted as stale, so every nightly for any child meeting the topic started another build of an identity already waiting for review (≈ $0.2 a night, bounded only by the 20/day breaker), filling the queue with duplicates. The takeover itself was an unconditional write, so two concurrent nightlies could both start. Replaced by forge-g2-ingest-pending-review.
+
+## forge-g2-deliver-overwrite
+**Overwriting the child's day manifest on every delivery (2026-10-03).** `deliver()` wrote `{modules: [entry]}` over `g2/c/<ck>/<day>.json` and `latest.json`, despite its docstring saying "append": with up to 3 approved topics in a day, or a later approval for a child already served that day, only the last module survived. No test covered two topics. Replaced by forge-g2-deliver-merge.
+
+## forge-g2-runner-image-closure
+**A hand-listed image context with no import-closure check (2026-10-03).** `infra/forge-runner/Dockerfile` copies a fixed list of files; `server/director/items.js` (another workstream's file) gained `import { toAap } from "./register.js"`, and 2/2 Azure builds on image wt-872e4f8fd0ac crashed at boot with ERR_MODULE_NOT_FOUND. `scripts/forge-g2-deploy.mjs` now walks the relative-import closure of `job-entry.js` and `run-build.js` (comments stripped, conductor imports excluded) and refuses to build when any file is outside the context.
+
+
+<!-- merged from inbox/lesson-truth.json -->
+## lt-classifier-last-check
+**Rejected: a LAST CHECK rule appended to the classifier prompt (plus a code FLAG line) telling it to label no_attempt when the reply answers the teacher's other question.** Measured on evals/lesson-truth.mjs (2026-10-03, n = 36 + 31): drift credit 0/36, but real answers after hint turns dropped to 21/31 credited (32/32 without it) — the model doubted every answer after a scaffold question. The code echo rule (a bare number the other question stated) reaches 0/36 drift with 32/32 kept.
+
+## lt-other-question-no-evidence
+**Rejected: no evidence on every turn whose preceding teacher turn asked another question.** 14/31 real text-lane hint turns end in a scaffold sub-question (`askedOther`), so the child's answer after almost half of all hints would be lost.

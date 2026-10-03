@@ -942,3 +942,59 @@ On the CONDUCTOR_TEST_DATABASE_URL Neon branch (host checked against DATABASE_UR
 
 ## forge-g2-chromium-sandbox-aca
 **Chromium sandbox in the ACA job (2026-10-03, n = 14 executions).** `chromiumSandbox: true` as non-root pwuser failed to launch in every execution ("Target page, context or browser has been closed"); the harness fell back to an unsandboxed renderer and recorded it in result.chromium. Agent code still ran only in the renderer (opaque-origin iframe, hash CSP, dead proxy), but a renderer escape would reach a process environment holding the AOAI key and a 2 h private-container SAS.
+
+
+<!-- merged from inbox/b1-shell-signalling-lesson.json -->
+## b1-fonts-measured-2026-10-03
+Atkinson Hyperlegible Next latin 34,024 B; Literata latin (wght 400-600) 39,260 B; Andika 400 latin 12,768 B. Method: Google Fonts css2 with an Android Chrome UA, the `/* latin */` src fetched once each (n = 1), saved to public/fonts. Equal to the CM numbers the spec cites.
+
+## b1-desk-measured-2026-10-03
+Method: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b1.mjs` against the Vite dev server, headless Chromium (SwiftShader), the REAL LessonRuntime/outbox/floor/signals with a scripted Director and a clock-driven link (dev/script.ts), n = 1 run per check. Numbers are in the run log (receipt ms, V-SIG-5 spread, T2/RC/T1 timings). Not a device measurement: no phone, no real ASR/TTS; V2-M1..M7 still need children.
+
+
+<!-- merged from inbox/forge-g2.json -->
+## forge-g2-mutants-2026-10-03b
+**G2 gate vs seeded-bug mechanics on tgk-lite@2 (2026-10-03, `node scripts/forge-g2-mutants.mjs`, local Chromium 153 headless, no model calls; file `server/forge/g2/measurements/mutants-2026-10-03.json`, overwritten from the 43-mutant run).** n = 53 mutants (23 choice operators × topics c1-maths-ch04-t01 and c6-maths-ch07-t05, 7 build operators on c1-maths-ch04-t01) + 6 clean golden runs (2 seeds × 3). New operators: S17 key glow reading `.slot`, S17e the same through a computed read, S18e key glow via fx, S19e `Array.prototype.some` patched through a computed `__proto__`, S20e `Object` alias `defineProperty` on `String.prototype`.
+- Caught 51/53, **inert 2/53** (S17e on both topics: lint-evading, but the token never equals `key`, so no hint renders), **missed 0**; false alarms 0/6.
+- Browser half caught 41/53; 10 were lint-only (points machine, key-first, key-target-dropped, S17, S18e: now `Q1.ref_read`/`Q1.points_machine`).
+- S19e is caught at runtime (frozen prototype → `Agent.threw`), S20e by the alias lint and at runtime.
+- Detector check on a LEAKY kit variant (tokens = internal slots, i.e. tgk-lite@1): leak mutants caught by the browser 8/10 (key_position for key-first, key_styled for key glow, binding for numeral-alone); S18e missed on both topics (the fx glow appears only after a tap; key_styled looks before any action).
+- Not covered: CPU-throttle perf, Devanagari missing glyph, accessibility, fun-floor timings, Hindi-mode play.
+
+## forge-g2-sas-probe-2026-10-03
+**Live scope probe of the runner SAS (2026-10-03, taxilaforge, `store.runContainerSas` for a fresh `g2run-sasprobe-*`, raw REST with the SAS only, n = 1 per operation).** Own container PUT 201; own container DELETE 403 (sp has no d); PUT `forge-g2-src/catalogue/probe.json` 403 (and the blob does not exist afterwards); PUT into another build's run container 403; PUT into public `forge/g2/b/…` 403; PUT into `forge-g2-test` 403. Both probe containers deleted.
+
+## forge-g2-queue-scan-2026-10-03
+**The 12 builds queued under tgk-lite@1, re-linted (2026-10-03, `node scripts/forge-g2-review.mjs scan` + a literal search over each `review/<id>/mechanic.js`).** n = 12: 12/12 fail `Q1.ref_read` (two `.slot` reads each, all of the form `x.slot === action.ref.slot` copied from the golden); 0/12 compare a slot to `"key"`/`"d:N"` or call `startsWith("d:")`. 12/12 are stale-kit (no `kit` field / tgk-lite@1 hash) and `decide()` refuses to approve them; their identities changed with the kit hash and will rebuild under tgk-lite@2.
+
+## forge-g2-e2e-azure-2026-10-03b
+**Forge G2 end to end on Azure after the fix (2026-10-03, ACA Job forge-g2-runner; method: `scripts/forge-g2-run.mjs` starts one execution per topic, polls the execution, runs `ingest()`, reads the ingested `runs/<id>/result.json`; files `server/forge/g2/measurements/run-2026-10-03T07-21-37-333Z.json` and `run-2026-10-03T07-28-13-550Z.json`).**
+- Attempt 1, image wt-872e4f8fd0ac: 2/2 `crash` at boot, `ERR_MODULE_NOT_FOUND server/director/register.js` (imported by items.js from another workstream, not in the image context). The crash path worked end to end: `job-entry.js` wrote the crash to the run container, ingest closed both builds.
+- Attempt 2, image wt-da02f11dd8ef (register.js added, import-closure check in the deploy script): n = 2 (c6-maths-ch07-t05 choice, c1-maths-ch04-t01 build), **2/2 passed every hard gate**, both ingested: manifest pending with kit tgk-lite@2 and current hash, catalogue `pending_review`, run container gone (404), open record closed, in-flight marker cleared; both lint-clean under g2-lint@2.
+- Cost (estimate: tokens × retail, codex cached-input at 10 % of input [U], Content Safety, ACA seconds from the execution's start/end): $0.200 and $0.2355; builder 8 and 9 steps; execution 166 s and 223 s. Chromium sandbox again unavailable (2/2 fell back). Critic flagged 1/2 (quantity_picture_unbound, clutter).
+- n = 2 is a smoke test of the new storage path, not a pass-rate measurement; the 12/14 rate in forge-g2-e2e-azure-2026-10-03 is the larger sample (on tgk-lite@1).
+
+
+<!-- merged from inbox/lesson-truth.json -->
+## lesson-truth-2026-10-03
+`NODE_USE_ENV_PROXY=1 node evals/lesson-truth.mjs --n 36 [--root <pre-change snapshot>]` (2026-10-03; Azure taxila-fast reply + classifier; 36 real kit items, classes 5-8 maths/science, numeric keys; typed synthetic replies; an aap Hinglish child with interests cricket + space; both trees scored by this tree's predicates). Results in `evals/results/lesson-truth-2026-10-03-{before,after}.json`.
+
+| arm | before | after |
+|---|---|---|
+| drift: the key echoed to another question ("<key> ke baad kaunsa number aata hai?") credited correct | 36/36 | **0/36** |
+| drift: praise/agreement in the reply | 6/36 (17%) | **0/36** |
+| hintKey control: the key after a real hint turn credited | 31/31 | 32/32 |
+| wrong answers (echo / key±1) classified correct · praised | 0/36 · 0/36 | 0/36 · 0/36 |
+| key answers credited · 'wrong' opening | 12/12 · 0/12 | 12/12 · 0/12 |
+| repair turns with nothing on screen: screen reference (final / first draft) | 10/36 / 13/36 | **0/36 / 0/36** |
+| aap child: a tum mark in the reply (final / first draft) | 152/163 / 155/163 | **0/164 / 0/164** |
+| first-lesson greeting touches the parent's interest | 12/12 | 12/12 |
+| reply rewrites | 21 | 17 |
+
+Not measured: the voice (realtime) lane; real children's speech; n is 36 per arm (95% upper bound on a 0/36 rate ≈ 8%). The clean path (wrong answer to the posed question) did not reproduce the audit's "Bilkul" at this n; the drift arm does, and is what the gate fixes.
+
+## lesson-truth-latency-2026-10-03
+`evals/cascade-latency.mjs --turns 12` on the pre-change snapshot and on this tree (2026-10-03; synthetic child audio, production Neon, in-process API). Director median (p90): class 4 2312 (3781) → 1638 (3578) ms; class 6 aap child 1652 (3151) → 1503 (2438) ms. Total speech-end → first audio byte median: 3855 → 3220 (class 4), 3202 → 3095 (class 6). Speculative replies 9/12 → 10/12 hit both classes. Guard rewrites class 6: 2 → 0 (the register note fixes the first draft). No measurable cost from the new guards; the differences are inside model-latency noise at n = 12. Results: `evals/results/cascade-latency-2026-10-03-lesson-truth-*.json`.
+
+## lesson-truth-e2e-2026-10-03
+`tests/e2e-design-lesson-truth.mjs` (Playwright Chromium; 360x640 DPR 2 + 1280x800; light + dark; Neon test branch; shots in docs/design/build/lesson-truth/). Before (pre-change server, same client): /api/child/plan and /api/child/map 404 on every load; Riya, who finished today's lesson on the server, is offered "Aaj ka paath" again (fresh storage, no local marker); Kabir's Sky is an empty navy rectangle. After: every child read 200; Riya's home is the done home from the server; Kabir's first day shows the start action; the map's list names the skill the ledger marked learned; the plan's teacher is Arjun, "he". `tests/child-routes-db.run.mjs` (7 route tests on the test branch: fences, first, resume, Only-this-session, done → capped, resting, map shapes, teacher) runs inside `npm test`.

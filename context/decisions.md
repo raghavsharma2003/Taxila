@@ -1444,3 +1444,100 @@ Owner: 'we should make the character ourself'. This replaces TEACHER-VISUAL's co
 
 ## build-before-panels (2026-10-03)
 Owner: 'first complete the app and site then we will test and then later send out to sample pools'. Items the design spec gates on child or parent panels ship on our best judgement now, with the gate kept as the reversal condition.
+
+
+<!-- merged from inbox/b1-shell-signalling-lesson.json -->
+## b1-floor-machine (2026-10-03)
+**Decision.** `src/lesson/floor.ts` reduces the eight floor states (idle, speaking, showing, yielding, your_turn, listening, heard, thinking) from `LessonRuntime.events` (every link event in order, plus the runtime's own `ui`, `settle` and `reset`) and local commits (module answers). YOUR TURN needs an open hand-over (`handover` in answer/choice/judge/ready/finish). Legacy mode (no turn has carried `ui.handover`) treats an absent handover as `answer`, exactly the old `statusOf`; the first turn with a handover switches the lesson to strict mode. A `settle` while a Director call is in flight is ignored (the held answer is not dropped). `statusOf()` got the same fix (a `handover` flag; `isFree()` replaces the runtime's internal "your_turn means free" checks). `yielding` is reached only from a `teacher_audio_ending {remainingMs}` event, which no link emits yet, so today her offset goes straight to your_turn on the same frame.
+**Reverse** if V2-M1 shows children miss turns because the lamp lands after her voice ends (then build the TurnClock and emit teacher_audio_ending from the cascade player).
+
+## b1-signals-one-transition (2026-10-03)
+**Decision.** `src/lesson/signals.ts` fires the dock attribute + `[data-lamp]`, the earcon (`src/ui/sound/earcons.ts`, synthesised, pre-built buffers) and the haptic (`src/ui/haptics.ts`) from one floor transition, in a microtask, and only if the floor still holds that state. Under a sheet or any strip the lamp and the turn chime are suppressed (rule 3); the receipt tok and mic click still play.
+**Reverse** if V-SIG-5 on a real device shows the microtask defer costs a frame (then fire synchronously and debounce the typed-over-her case instead).
+
+## b1-outbox-retry-policy (2026-10-03)
+**Decision.** `src/lesson/outbox.ts`: write before send (IndexedDB, memory fallback flagged `outboxVolatile`); automatic retries 1/3/6 s only when no HTTP answer arrived or the status is 408/429/502/503/504; anything else is held for "Send again". The wire request is unchanged on the first attempt; resends add `retried: true` and `turnSeq`. **Open item for the lesson route:** dedupe on (lessonId, turnSeq) and mark evidence from `retried` turns.
+**Reverse** if the server dedupes on turnSeq (then 500 can retry automatically too).
+
+## b1-strip-own-row (2026-10-03)
+**Decision.** The trouble strip is its own Desk row above the dock; `deskLayout.solveDesk({strip})` takes its height from the elastic zone. 56 dp for one action, 96 dp when two actions do not fit beside the sentence at the container width.
+**Reverse** if a device test shows the face shrinking on trouble distracts more than a strip over the caption row would.
+
+## b1-verdict-before-next-ask (2026-10-03)
+**Decision.** See title. Implemented in `src/child/lesson/useDesk.ts` (`nextAsk`).
+**Reverse** if V2-M2 shows children read the old question as the current one while she speaks.
+
+
+<!-- merged from inbox/forge-g2.json -->
+## forge-g2-run-container-per-build
+**One private run container per build; the runner's SAS reaches nothing else (2026-10-03, fixer for forge-g2).** `azure-job.js startBuild` (trusted, account key) writes the build record `builds/open/<id>.json` (topic, archetype, identity, execution) BEFORE starting, creates `g2run-<buildId>`, and passes `FORGE_G2_RUN_CONTAINER` + a 2-hour service SAS for that container only (`sr=c`, `sp=racwl`: no delete, https only). The runner (`run-build.js`, `job-entry.js`) writes `result.json`, `mechanic.js` and `candidate/*` there and nothing else; it never writes the queue, the catalogue or a marker. `review.js ingest()` (trusted) claims the open record by ETag, believes the record (not the runner) for topic and identity, re-hashes `candidate/bundle.html` against the gated sha, whitelists file names, copies the evidence to `forge-g2-src/review/<id>/`, enqueues it, clears only its own in-flight marker (If-Match), closes the record and deletes the run container. `containerSas` refuses to mint for `forge-g2-src`, `forge` or `forge-g2-test`. Ingest runs at the start of every nightly, in `forge-g2-review.mjs list|ingest`, and in `forge-g2-run.mjs`. **Reverse if:** the orchestrator gateway (FACTORY §2.2) lands and the runner holds no storage credential at all, or ADLS directory SAS (sr=d) becomes available on the account and a single container is simpler.
+
+## forge-g2-opaque-refs
+**tgk-lite@2: opaque refs, crypto shuffle, frozen intrinsics (2026-10-03).** Every ref the kit hands agent code is `{item, slot: "o:<64-bit crypto nonce>"}`, minted per item start; the token → `key` / `d:N` / `u:K` map lives only in the kit closure. Option order is shuffled with `crypto.getRandomValues` per mount (the seed no longer decides it). Before `agentFactory` runs the kit freezes Object/Array/Function/String/Number/Boolean/Symbol/JSON/Math/Map/Set/Promise/RegExp/Error* and their prototypes, the iterator prototypes, %TypedArray%, MessagePort and EventTarget, so a patched `Array.prototype.some` throws instead of changing what the kit posts. Agent code compares refs with `ctx.refs.same(a, b)` / `ctx.refs.indexOf(ref)`; reading `.slot` (member, computed, folded `'sl'+'ot'`, destructured) is `Q1.ref_read`; computed access on a local that aliases an ambient (`var O = Object; O[k]`) is `Q1.computed_on_ambient`. The kit posts the INTERNAL slot and a per-item `attempt` counter to the host. QA adds `leak.key_styled`: agent marks local to exactly one option, a mark only the key carries on every choice item fails. SHADOWED gains MessagePort, MessageChannel, EventTarget, Symbol, Promise, WebAssembly, SharedArrayBuffer, Atomics, structuredClone, getComputedStyle, customElements. The kit hash changed, so every G2 identity key changed. **Reverse if:** a mechanic class needs to know which option is right before the child answers (it should not), or freezing intrinsics breaks a measured mechanic and a membrane (separate realm) replaces it.
+
+## forge-g2-ingest-pending-review
+**Pending review is a catalogue state; failures back off; markers move by ETag (2026-10-03).** `enqueue` (called by ingest) writes `catalogue/<k>.json = {status: pending_review, buildId}` unless the identity is already approved; the nightly treats `pending_review` as join (the child is added to `waiting/`). Failures (`qa_failed`, `design_rejected`, `crash`, `lost`, `candidate_rejected`, …) and rejections write `failureEntry`: cool-down 1 d, 3 d, 7 d, then `triage` at 4 attempts (no automatic rebuild; a person clears it). Waiting children of a failed identity are released (they keep G1/T1; a later nightly re-adds them). In-flight markers: create-only (If-None-Match); a marker whose build has an open record is always joined; a marker with no open record older than 10 min is an orphan and is taken over with If-Match on the ETag just read (a conflict = join). A build with no result 60 min after start (replicaTimeout is 30 min) is closed as `lost`. `FORGE_G2_CHILD_SALT` is required (no fallback to the storage key; the nightly returns the final code `g2:no_salt`). Heavy modules load lazily inside `nightly()`, so the worker's boot import is two small files. **Reverse if:** the queue moves to Postgres (then row locks replace ETags), or measured per-identity failure rates show the cap strands topics that would pass on a retry.
+
+## forge-g2-deliver-merge
+**Child folders merge, never overwrite (2026-10-03).** `deliver()` reads `g2/c/<ck>/<day>.json` with its ETag, drops any module with the same sha or topic, appends, and writes If-Match (If-None-Match when new), retrying up to 5 times; `latest.json` is rewritten from the day file only when that day is not older than what it already points at. The module's `src` is always `bundleUrl(sha)`; the nightly additionally checks the approved review manifest's sha and status before delivering (a mismatch is counted, nothing is delivered). `publish()` delivers a waiting child for max(forDay, tomorrow) and drops waiting entries older than 7 days. **Reverse if:** child folders move behind an authenticated API (then the server composes the day's list per request).
+
+## forge-g2-review-name-asserted
+**Approval is name-asserted, unauthenticated, and says so (2026-10-03; supersedes the "human-only" claim of forge-g2-review-human-only).** `decide()` refuses: automation-looking names (word-boundary regex: claude, agent, bot, automation, ci, workflow, script, codex, gpt, model, llm, ai — "Abbott" passes), an approval without the CLI attestation `{method: tty-sha-confirm, shaPrefix ≥ 8 chars of the bundle sha}`, and a build whose recorded kit hash is not the kit this server serves. `scripts/forge-g2-review.mjs approve` requires stdin and stdout to be a TTY and the reviewer to type the sha prefix. The manifest records `approval.auth = "name-asserted, tty + sha-prefix confirm (unauthenticated)"`. This is a speed bump against an automated agent following instructions, not authentication: anything with the storage key can write the catalogue directly. **Reverse if:** an owner-authenticated admin route (or a signature from a secret only the owner holds) exists; then approval goes only through it (open-forge-g2-approval-auth).
+
+## forge-g2-grade-guarantee
+**gradeEvent states what it guarantees (2026-10-03).** Guaranteed: the value is re-derived from the server's LevelSpec, agrees with what the frame posted, and is graded against the raw kit. Not guaranteed: which option the child picked (or how many units) — that is the frame's claim, behind frozen intrinsics, lint, CSP and the person's review. Every evidence row carries `trust: "value_ref_consistent; graded_by_server_against_kit; selection_is_frame_claim"` and `attempt`; a payload without an integer attempt is `shape`; with the caller's per-lesson `seen` Set a repeated (module, item, attempt) is `duplicate`. `mountFor` serves only `bundleUrl(sha)` (64-hex sha) and returns null when a stored src differs. **Reverse if:** selection becomes server-observable (e.g. the host relays raw pointer targets), then the trust string changes.
+
+## forge-g2-test-container
+**Test publishes never share the play container (2026-10-03).** `decide({testPublish})` writes `forge-g2-test/g2/b/<sha>/index.html` (public blob read, created on demand) and leaves the build pending; nothing a child or the app can frame. The app's CSP must be `frame-src https://taxilaforge.blob.core.windows.net/forge/g2/b/` (path prefix; Blob does not redirect), never the account origin, which would also allow G1 content and child manifests. The legacy bundle `forge/g2/test/b/7766517d…/index.html` was deleted (GET → 404). **Reverse if:** approved bundles move to a dedicated play host, then frame-src names that host.
+
+## forge-g2-q8-verdict-reuse
+**Q8 after the build reuses the design-time verdict (2026-10-03).** `run-build.js` records the full S1 verdict with `stringsHash(design)`; `q8Gate` passes only when that hash matches the built design's strings, the verdict was ok, and `checkStringsLocal` still passes. The builder's code had kept a second full Content Safety + taxila-brain pass after the build, which can flip on the same strings (the waste recorded in forge-g2-q8-after-build). **Reverse if:** the strings table becomes editable after S1 (then Q8 must rerun on the changed rows only).
+
+
+<!-- merged from inbox/lesson-truth.json -->
+## lt-address-register
+**The teacher's aap/tum register is resolved on the server and carried by the lesson (`state.ctx.address`, server/director/register.js `resolveAddress`): the child's own Hello pick (`LessonStartRequest.address`, honoured from class 5 up) → the parent's `child_controls.address` → the class default (aap from class 5, tum below; English lessons: none).** Kit questions are written in tum forms, so for an aap child `findItem` returns the item with `prompt_hi` converted by a closed lexicon (`toAap`: pronouns, every tum imperative/future form found in the kits, Devanagari included, the copula at the end of an addressed sentence; keys, acceptable answers, hints and options untouched); every reader of the posed question (compile, guards, classifier, Question card) gets that one text. Every real move carries a register note (never the voice branches, whose `last`-section budget checkFits measured without it); the text-lane guard catches tum marks (`registerBroken`), rewrites once, then converts the words in code. 0/10,707 loaded items fail checkFits after the conversion. (2026-10-03)
+- Rationale: audit #7 — a Class 5 and a Class 8 "aap" child were greeted "tumhara… Tumhe…"; the register lived nowhere in the prompt.
+- Reverse if: a reviewed aap rendering of the kits lands (then `toAap` is replaced by authored `prompt_hi_aap`), or a listening test shows the converted questions read unnaturally (then author them).
+
+## lt-exact-match-gate
+**`classifyFast` decides an exact key/option match by code only when the teacher's last turn posed the item (`posesItem`) or asked no question; after a DIFFERENT question (`askedOther`) the model decides, and a bare number that the other question itself stated is no evidence (source `echo`).** (2026-10-03)
+- Rationale: audit #13 — "25" to "what comes after 25?" and "36" to an improvised "5 ka square?" were graded right (Parent corner: "Right · On their own") and confirmed ("Bilkul"): the exact-match shortcut never looked at what was asked.
+- Reverse if: the text lane stops asking side questions on hint turns (then askedOther never fires) — or a hint-turn measure shows real answers lost (now 32/32 kept).
+
+## lt-praise-guard
+**Confirmations never contradict the verdict (G-PRAISE-1, on the bytes).** `step()` appends the classifier's verdict note to the move (not right / partly right / unverified), `planTurn` records `state.lastVerdict`, and `textReply` treats praise or agreement for an answer the key did not mark correct (and a "wrong" opening after a correct one) as a problem: one rewrite, then the praising sentences are stripped and the question re-posed. `UiDirectives.verdict` (+ `withHelp`) is set only from the verified-key classifier on a kit item; covert why / teach-back turns stay ungraded on screen. (2026-10-03)
+- Rationale: V2 §4.6 / §4.10 and audit #13.
+- Reverse if: an out-of-sample battery shows the praise lexicon blocking honest partial confirmations at a rate a listener notices (then narrow the lexicon).
+
+## lt-screen-guard
+**A teacher line that sends the child to the screen needs something on it in the same response (G-SAY-1): Director chips or a mounted module.** The unclear-repair shape says "tap one of the choices on screen" only when chips exist; `screenProblem` in the text-lane guard rewrites, then strips the screen sentences and re-poses the item. Voice lane: flagged (`screenRef`) on the turn row. (2026-10-03)
+- Rationale: audit #6 "60 mein se choice tap karo" with no choices; the repair shape itself said "or to tap a choice" on every item.
+- Reverse if: the client shows tiles the Director did not send (then the predicate must read the client's tray state).
+
+## lt-child-plan-map
+**`server/routes/child.js`: GET /api/child/plan (one home state: resume > capped > done > resting > first > start; today's topic with a ≤ 24-char title and minutes; today's DidCards; the teacher record; `surfaces` hidden under "Only this session"; the legacy `homeState` for src/child/day.ts), GET /api/child/map (class syllabus × kit skills × skill_state → not_started / practising / got_it / secure via routes/parent.js parentState, chapter seals only when every skill is got it or secure, "here" = the next planned topic's chapter, re-checks only from weave_queue or a missed delayed check), GET /api/child/teacher (?childId or ?classLevel for onboarding), POST /api/lesson/request (grants only start/first/resume — never "one more").** requireChild on every child id (uuid-checked: 400, not 500); nothing behind the parent PIN. (2026-10-03)
+- Rationale: audit #9, both reads 404 in production; V2 §6.3.3 and §3.8.
+- Reverse if: the Conductor's day_plan becomes the only source of the home state (then plan reads it and stops recomputing), or the school position is known (then `here` uses it, not the next planned topic).
+
+## lt-teacher-card
+**One teacher record for every surface: `teacherCard(c)` (characters/index.js) = id, name, addressedAs, pronouns (now on each character sheet), voice, look rev and colour; returned by lesson start, the plan, the summary and /api/child/teacher. The lesson-end writer is given the teacher's name and pronouns (Arjun is "he"; the child is named or "they").** (2026-10-03)
+- Rationale: audit #4 — three faces, two names, two genders; "How she teaches Riya" while the teacher was Arjun.
+- Reverse if: a teacher's presented gender changes (one field on the sheet).
+
+## lt-summary-did
+**The summary screen's facts are the lesson's own record of graded turns (`state.did`, session state, every legal mode), never the model's account: `lessonSummary` gives ≤ 3 cards (verified right answers first, unaided first, the latest attempt per item; a teach-back pass), a tick only when the kit's key verified it and it was not leaked, `tried` only when nothing was verified, `face: "warm"` always (ReactionGate), the next topic's title and the child turn to re-voice.** (2026-10-03)
+- Rationale: audit #12 — the summary showed clipped board strings and nothing the child did; V2 §6.3.5 / PX1.
+- Reverse if: the client needs per-card media (then the card carries a tray still id from the module log).
+
+## lt-floor-wired
+**`floorViolations` is called by lesson.js (closing `open-never-rules-wiring` for the reply paths): text lane as a guard problem (one rewrite with the FLOOR_FIX shapes, then the move's fixed line — the safeguard line carries Childline); voice lane on the heard teacher turn → `state.correction` for the next compile, and a `floor` flag on the row.** scrubPii and the voice-lane incident row are still not wired. (2026-10-03)
+- Reverse if: the floor families move into compile's own post-check.
+
+## lt-ui-directives
+**The Director now produces V2 §4.10's UiDirectives: `ask` (the kit item's question in the child's register, ≤ 120 chars, pinned on item turns; on a text-lane turn with no item, the question the reply actually handed back), `handover` (answer / choice / finish), `answerForm`, `phase`, `tray` (none when nothing is mounted: the Face layout), `shortTitle`, `verdict` / `withHelp`. Explain turns no longer put the skill title (a syllabus objective) on the board (G-OBJ-1), and chip labels are English in every lesson language.** (2026-10-03)
+- Reverse if: the signalling client derives any of these itself (then the server stops sending that field).
+
+## lt-interests-shapes
+**The parent's interests reach the teacher through the move shapes (greet: today's topic tied to the interest; hook: built on it; explain: an example from the second one), not only through the brief row that sheds first under the budget — and only under the memory consent ("Remember what {child} likes"), as plain labels of ≤ 24 letters.** (2026-10-03)
+- Reverse if: the brief row becomes never-drop (then the shapes need not repeat it).

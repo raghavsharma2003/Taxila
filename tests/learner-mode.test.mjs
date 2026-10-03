@@ -159,8 +159,6 @@ const columnsOf = (t) => [...[...t.body.matchAll(/^\s*([a-z_0-9]+)\s+(text|bigin
  * learner-nm3-legacy-columns).
  */
 const NM3_KNOWN = Object.freeze({
-  "rel_state.trust": "001; no longer written (writer.relSessionStmt); deleted with the row on M0",
-  "rel_state.last_trust_update": "001; no longer written",
   "rel_event.note": "001; free-text about the child; never written by any route; deleted on M0",
   "turn.asr_conf": "001; transcript table (no child_id, cascades from lesson on M0)",
   "lesson.parent_note": "001; the parent's lesson note; deleted on M0 with the lesson",

@@ -48,7 +48,21 @@ c0.image = `taxilacr.azurecr.io/taxila-web:${sha}`;
 for (const [name, value] of Object.entries({ DB_DRIVER: "pg", NODE_ENV: "production", TAXILA_HOST: "azure", DEPLOY_CLASSIFY: "grok-4-1-fast-non-reasoning", TAXILA_CLASSIFY_HEDGE_MS: "1500" })) {
   const e = c0.env.find((x) => x.name === name); if (e) { e.value = value; delete e.secretRef; } else c0.env.push({ name, value });
 }
-await arm("PATCH", "/providers/Microsoft.App/containerApps/taxila-web?api-version=2024-03-01", { properties: { template: tpl } });
+// Secrets from .env.local that the image reads, stored as Container App secrets (never plain env). A PATCH that
+// touches configuration.secrets must restate every secret's value, so the current ones are listed first.
+const SECRET_ENV = { FORGE_G2_CHILD_SALT: "forge-g2-child-salt" };
+const props = { template: tpl };
+const missing = Object.entries(SECRET_ENV).filter(([envName, ref]) => process.env[envName] && !(c0.env.find((x) => x.name === envName)?.secretRef === ref));
+if (missing.length) {
+  const cur = (await arm("POST", "/providers/Microsoft.App/containerApps/taxila-web/listSecrets?api-version=2024-03-01")).value || [];
+  const secrets = cur.map(({ name, value }) => ({ name, value }));
+  for (const [envName, ref] of missing) {
+    if (!secrets.some((x) => x.name === ref)) secrets.push({ name: ref, value: process.env[envName] });
+    const e = c0.env.find((x) => x.name === envName); if (e) { delete e.value; e.secretRef = ref; } else c0.env.push({ name: envName, secretRef: ref });
+  }
+  props.configuration = { ...app.properties.configuration, secrets };
+}
+await arm("PATCH", "/providers/Microsoft.App/containerApps/taxila-web?api-version=2024-03-01", { properties: props });
 const fqdn = app.properties.configuration.ingress.fqdn;
 for (let i = 0; i < 40; i++) {
   await sleep(6000);

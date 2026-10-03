@@ -55,6 +55,11 @@ test("night fold of an active day enqueues its daily note once, to run after the
   assert.ok(!jobs.some((j) => j.kind === "parent.letter"), "not a Sunday: no letter");
   assert.ok(out.state.pending.jobs[d.idemKey]);
   assert.ok(out.rulesFired.includes("report_daily"));
+  const g2 = jobs.find((j) => j.kind === "forge.g2.nightly");
+  assert.ok(g2, "Forge G2 nightly enqueued with the daily note");
+  assert.equal(g2.idemKey, `forge.g2.nightly:${CHILD}:2026-10-06`);
+  assert.equal(g2.runAfter, d.runAfter);
+  assert.ok(out.rulesFired.includes("forge_g2_nightly"));
   const again = run(out.state, night, ist("2026-10-07", "02:21"));
   assert.ok(!enq(again).length, "the fold runs once per learning day, so the job is asked for once");
 });

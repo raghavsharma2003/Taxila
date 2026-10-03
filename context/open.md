@@ -26,3 +26,11 @@
 - **Held-verdict settle rate** at the next turn is unmeasured in production (debug.carried[].graded); the e2e saw the held why flushed at end.
 - **008_tutor_choice.sql** is not applied to the Neon database (tests/migrations-applied fails); owner: the tutor-choice workstream.
 - **not_yet accuracy** fell with the misconception cap (comp-sim-integration-2026-10-03); mut_vc4 still does not fail.
+
+
+<!-- merged from inbox/lesson-truth.json -->
+## open-lt-client-wiring
+The server side is in; the child client must: (1) preselect the parent's interests at Hello and stop overwriting them (it PATCHed a fresh set); (2) send the child's aap/tum pick as `LessonStartRequest.address`; (3) read `ChildPlanResponse.state/topic/today/resume` (V2 §6.3.3) instead of only `homeState`, `ChildMapResponse.subjects/state/sealed/here`, `ui.ask/verdict/handover/tray`, and `did` for the summary; (4) take the teacher from `/api/child/teacher` (landing/onboarding: `?classLevel=`). Owner: the child UI workstreams.
+
+## open-lt-voice-lane-truth
+The realtime lane answers before the Director runs, so praise / register / screen breaks there are flagged on the turn row only (floor breaks become `state.correction`); `ui.ask` is absent on its no-item turns; G-ASK-2 parity and G-SAY-1's "this number" clause are not implemented; the parent note's pronouns are instructed, not checked by code.
