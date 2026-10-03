@@ -264,9 +264,10 @@
   "subdivH": {
     "mode": "rings",
     "depth": 0.012,
-    "eyeR": 0.021,
-    "mouthX": 0.034,
-    "mouthZ": 0.019
+    "eyeR": 0.015,
+    "mouthX": 0.026,
+    "mouthZ": 0.0135,
+    "_note": "merged: a smaller ring mask than v3 (eyeR 0.021, mouth 0.034 x 0.019) so the H head fits 16k tris"
   },
   "references": {
     "used": true,
@@ -307,5 +308,11 @@
     "alpha": 0.55,
     "alphaGamma": 1.6,
     "_note": "merged: thin sparse brow cards over the projected brows (texture.py)"
+  },
+  "mouth": {
+    "upperTeethFwd": -0.001,
+    "lowerTeethBack": 0.0028,
+    "lowerTeethDown": 0.0004,
+    "_note": "merged: teeth set back behind the thinner wrapped lips (G6)"
   }
 }

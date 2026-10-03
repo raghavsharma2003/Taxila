@@ -24,6 +24,7 @@ try {
       else if (/^yaw-?\d+/.test(s)) { yaw = +s.slice(3); }
       else if (/^byaw-?\d+/.test(s)) { yaw = +s.slice(4); cam = "bust"; }
       else if (/^pyaw-?\d+/.test(s)) { yaw = +s.slice(4); cam = "profile"; }
+      else if (s.startsWith("clipf_")) { const [, n, t] = s.split("_"); pose = TX.clip(n, +t); }
       else if (s === "nohair") { pose = { bs: {}, hide: ["hair", "cards"] }; }
       else if (s.includes(":")) { const [c, n] = s.split(":"); cam = c === "state" ? "bust" : c; pose = c === "state" ? TX.state(n) : (n === "rest" ? { bs: {} } : TX.emotion(n, 1)); }
       else if (s === "rest") { pose = { bs: {} }; }

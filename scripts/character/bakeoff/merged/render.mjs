@@ -44,6 +44,17 @@ for (const look of LOOKS) {
       for (const e of ["warm", "encouraging", "curious", "thinking", "listening", "concerned", "delighted", "playful", "surprised"]) {
         await still(path.join(dir, "emotions", `${e}.png`), (n) => { TX.frame("face", 0); TX.pose(TX.emotion(n, 1)); TX.render(); }, e);
       }
+      // merged: emotions judged on motion get a 2 s clip (25 fps MP4) and a 6-frame strip for the judge
+      const clips = await P.evaluate(() => TX.clips());
+      for (const c of clips) {
+        const dur = 2.0, tmp = fs.mkdtempSync(path.join(os.tmpdir(), "cl-"));
+        const n = Math.round(dur * 25);
+        for (let i = 0; i < n; i++) await still(path.join(tmp, `${String(i).padStart(3, "0")}.png`), ([nm, t]) => { TX.frame("face", 0); TX.pose(TX.clip(nm, t)); TX.render(); }, [c, i / 25]);
+        ff(["-framerate", "25", "-i", path.join(tmp, "%03d.png"), "-c:v", "libx264", "-crf", "22", "-pix_fmt", "yuv420p", path.join(dir, "emotions", `${c}_clip.mp4`)]);
+        const pick = [0, 0.3, 0.6, 0.95, 1.3, 1.9].map((t) => path.join(tmp, `${String(Math.min(n - 1, Math.round(t * 25))).padStart(3, "0")}.png`));
+        execFileSync("python3", ["-c", "import sys\nfrom PIL import Image\nims=[Image.open(f).convert('RGB').resize((300,375)) for f in sys.argv[2:]]\nW=Image.new('RGB',(300*len(ims),375))\nfor i,im in enumerate(ims): W.paste(im,(300*i,0))\nW.save(sys.argv[1])", path.join(dir, "emotions", `${c}_clip.png`), ...pick]);
+        fs.rmSync(tmp, { recursive: true });
+      }
       log(`${look} emotions`);
     }
     if (only.includes("states")) {

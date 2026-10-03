@@ -21,17 +21,46 @@
 //   delighted   OPEN-mouth Duchenne: jaw 0.32, upper teeth showing (upperUp 0.7), big cheek raise, crinkled eyes, head back
 //   playful     a lopsided smile pulled to one side, the opposite brow raised, a half-wink, a sideways tilt + glance
 //   surprised   brows high, eyes wide, jaw dropped with a soft O, head back
+// merged (bake-off VERDICT): three presets changed on the merged face, every change for a stated defect, not for a score:
+//   listening  faces the camera (yaw 0, gaze held) with a slight 7 deg tilt: v3's 10 deg turn let the judge read the
+//              turn, not the face (VERDICT "cheats");
+//   playful    the half-wink (eyeBlinkLeft 0.22) is gone: a partial blink over the squint showed a lid artefact; the
+//              wink is carried by the squint and the cheek instead;
+//   delighted  a believable open smile: jaw 0.32 -> 0.2, lower lip barely down (0.25 -> 0.08), upper lip up 0.55, so the
+//              upper teeth show and the lower row and the mouth's back stay hidden (the grimace, VERDICT).
 export const EMOTIONS = {
   warm: { bs: { mouthSmileLeft: 0.5, mouthSmileRight: 0.5, cheekSquintLeft: 0.38, cheekSquintRight: 0.38, eyeSquintLeft: 0.16, eyeSquintRight: 0.16, mouthDimpleLeft: 0.08, mouthDimpleRight: 0.08, browInnerUp: 0.06 }, head: [1, 0, 4], env: [600, 1500, 900] },
   encouraging: { bs: { mouthSmileLeft: 0.35, mouthSmileRight: 0.35, mouthPressLeft: 0.3, mouthPressRight: 0.3, browInnerUp: 0.5, browOuterUpLeft: 0.5, browOuterUpRight: 0.5, eyeWideLeft: 0.15, eyeWideRight: 0.15 }, head: [5, 0, 0], lean: 0.3, env: [400, 1200, 800] },
   curious: { bs: { browInnerUp: 0.55, browOuterUpLeft: 0.42, browOuterUpRight: 0.3, eyeWideLeft: 0.22, eyeWideRight: 0.22, mouthPucker: 0.32, mouthFunnel: 0.08, mouthSmileLeft: 0.12, mouthSmileRight: 0.12, jawOpen: 0.03 }, head: [-3, 4, 9], env: [350, 1800, 700] },
   thinking: { bs: { browDownLeft: 0.06, browDownRight: 0.06, browInnerUp: 0.06, mouthPressLeft: 0.08, mouthPressRight: 0.08, mouthLeft: 0.04 }, head: [-2, -3, 0], gaze: [-14, 12], env: [300, 3500, 300] },
-  listening: { bs: { eyeSquintLeft: 0.3, eyeSquintRight: 0.3, browInnerUp: 0.12, browDownLeft: 0.05, browDownRight: 0.05, mouthPressLeft: 0.06, mouthPressRight: 0.06, mouthSmileLeft: 0.03, mouthSmileRight: 0.03 }, head: [3, 10, 9], gaze: [-9, 0], lean: 0.8, env: [120, 0, 280] },
+  listening: { bs: { eyeSquintLeft: 0.22, eyeSquintRight: 0.22, browInnerUp: 0.18, browOuterUpLeft: 0.06, browOuterUpRight: 0.06, mouthPressLeft: 0.05, mouthPressRight: 0.05, mouthSmileLeft: 0.06, mouthSmileRight: 0.06 }, head: [2, 0, 7], gaze: [0, 0], lean: 0.6, env: [120, 0, 280] },
   concerned: { bs: { browInnerUp: 0.9, browDownLeft: 0.25, browDownRight: 0.25, mouthPressLeft: 0.2, mouthPressRight: 0.2, mouthFrownLeft: 0.25, mouthFrownRight: 0.25, mouthPucker: 0.1, eyeWideLeft: 0.08, eyeWideRight: 0.08 }, head: [7, 0, 9], gaze: [0, -2], lean: 0.6, env: [700, 2500, 1200] },
-  delighted: { bs: { mouthSmileLeft: 0.9, mouthSmileRight: 0.9, jawOpen: 0.32, mouthUpperUpLeft: 0.7, mouthUpperUpRight: 0.7, mouthLowerDownLeft: 0.25, mouthLowerDownRight: 0.25, cheekSquintLeft: 0.8, cheekSquintRight: 0.8, eyeSquintLeft: 0.45, eyeSquintRight: 0.45, browOuterUpLeft: 0.35, browOuterUpRight: 0.35, browInnerUp: 0.2 }, head: [-7, 0, 3], flush: 0.04, env: [350, 1200, 900] },
-  playful: { bs: { mouthSmileLeft: 0.58, mouthSmileRight: 0.08, mouthLeft: 0.18, cheekSquintLeft: 0.45, eyeSquintLeft: 0.42, eyeBlinkLeft: 0.22, browOuterUpRight: 0.6, browInnerUp: 0.1, browDownLeft: 0.12, mouthDimpleLeft: 0.2 }, head: [1, 6, 10], gaze: [9, 2], env: [300, 1000, 600] },
+  delighted: { bs: { mouthSmileLeft: 0.85, mouthSmileRight: 0.85, jawOpen: 0.2, mouthUpperUpLeft: 0.55, mouthUpperUpRight: 0.55, mouthLowerDownLeft: 0.08, mouthLowerDownRight: 0.08, cheekSquintLeft: 0.75, cheekSquintRight: 0.75, eyeSquintLeft: 0.35, eyeSquintRight: 0.35, browOuterUpLeft: 0.3, browOuterUpRight: 0.3, browInnerUp: 0.15 }, head: [-6, 0, 3], flush: 0.04, env: [350, 1200, 900] },
+  playful: { bs: { mouthSmileLeft: 0.6, mouthSmileRight: 0.12, mouthLeft: 0.15, cheekSquintLeft: 0.55, eyeSquintLeft: 0.5, browOuterUpRight: 0.6, browInnerUp: 0.1, browDownLeft: 0.15, mouthDimpleLeft: 0.2 }, head: [1, 5, 9], gaze: [8, 2], env: [300, 1000, 600] },
   surprised: { bs: { browInnerUp: 0.75, browOuterUpLeft: 0.75, browOuterUpRight: 0.75, eyeWideLeft: 0.6, eyeWideRight: 0.6, jawOpen: 0.32, mouthFunnel: 0.22, mouthSmileLeft: 0.1, mouthSmileRight: 0.1 }, head: [-5, 0, 0], env: [120, 400, 500] },
 };
+/** merged: emotions judged on MOTION (the logged decision `encouraging-judged-on-motion`: ~29 still designs scored 0
+ *  on two faces). A clip is the emotion's still pose plus head keyframes over `durationS` (linear between keys, degrees
+ *  added to the pose's head [pitch + chin down, yaw, roll]) and optional per-key blendshape boosts. The renderer samples
+ *  6 frames for the judge's strip and 25 fps for the MP4. The runtime plays the same keys as a gesture. */
+export const CLIPS = {
+  // two small nods with a lift between them, the smile and the raised brows building on the second nod
+  encouraging: { durationS: 2.0, keys: [
+    { t: 0.0, head: [0, 0, 0] }, { t: 0.3, head: [8, 0, 1] }, { t: 0.6, head: [-2, 0, 0] },
+    { t: 0.95, head: [9, 0, 2], bs: { mouthSmileLeft: 0.1, mouthSmileRight: 0.1 } }, { t: 1.3, head: [-1, 0, 1], bs: { browInnerUp: 0.1 } },
+    { t: 2.0, head: [2, 0, 1] }] },
+};
+export function clipPose(name, t, asym) {
+  const c = CLIPS[name], base = emotionPose(name, 1, asym);
+  const k = c.keys; let i = 0;
+  while (i < k.length - 2 && t > k[i + 1].t) i++;
+  const a = k[i], b = k[i + 1], u = Math.max(0, Math.min(1, (t - a.t) / Math.max(1e-6, b.t - a.t)));
+  const lerp = (x, y) => x + (y - x) * u;
+  const head = base.head.map((h, j) => h + lerp(a.head[j], b.head[j]));
+  const bs = { ...base.bs };
+  for (const key of new Set([...Object.keys(a.bs || {}), ...Object.keys(b.bs || {})])) bs[key] = (bs[key] || 0) + lerp((a.bs || {})[key] || 0, (b.bs || {})[key] || 0);
+  return { ...base, bs, head };
+}
 export const EMOTION_ORDER = ["warm", "encouraging", "curious", "thinking", "listening", "concerned", "delighted", "playful", "surprised"];
 
 /** §7.2: the seven owner states as floor x affect, posed at a representative instant. */

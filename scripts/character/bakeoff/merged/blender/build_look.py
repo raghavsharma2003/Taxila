@@ -370,6 +370,36 @@ for p_ in garment.data.polygons:
 if lens is not None:
     lens.name = "lens"
 stage("garments")
+# merged: skin wholly hidden under the garment is deleted (it is never seen, and the H head must fit 16k skin tris with
+# the subdivided lid and mouth rings): a vertex is hidden when rays along its normal AND straight forward both hit the
+# garment within 4 cm; only below the neck base, never the neck opening
+if look.get("hiddenSkinCull", True):
+    _gb = []
+    for o_ in (garment,):
+        o_.data.calc_loop_triangles()
+        _t = np.empty(len(o_.data.loop_triangles) * 3, np.int64); o_.data.loop_triangles.foreach_get("vertices", _t)
+        _gb.append((co(o_.data), _t.reshape(-1, 3)))
+    _off = 0; _GP = []; _GT = []
+    for P_, T_ in _gb:
+        _GP.append(P_); _GT.append(T_ + _off); _off += len(P_)
+    _gbvh = BVHTree.FromPolygons([Vector(p) for p in np.concatenate(_GP)], np.concatenate(_GT).tolist())
+    _Ph = co(h.data)
+    _nh = np.empty(len(h.data.vertices) * 3); h.data.vertices.foreach_get("normal", _nh); _nh = _nh.reshape(-1, 3)
+    _zneck = J["joint-neck"][2] - 0.03
+    _hid = np.zeros(len(_Ph), bool)
+    for i_ in np.nonzero(_Ph[:, 2] < _zneck)[0]:
+        p_ = Vector(_Ph[i_])
+        a_ = _gbvh.ray_cast(p_ + Vector(_nh[i_]) * 0.0005, Vector(_nh[i_]), 0.04)[0] is not None
+        b_ = _gbvh.ray_cast(p_ + Vector((0, -0.0005, 0)), Vector((0, -1, 0)), 0.04)[0] is not None
+        _hid[i_] = a_ and b_
+    # keep a 1-ring of margin: only vertices whose every neighbour is hidden go
+    _e = np.empty(len(h.data.edges) * 2, np.int64); h.data.edges.foreach_get("vertices", _e); _e = _e.reshape(-1, 2)
+    _keep = ~_hid
+    _ring = np.zeros(len(_Ph), bool); _ring[_e[_keep[_e[:, 0]], 1]] = True; _ring[_e[_keep[_e[:, 1]], 0]] = True
+    _del = _hid & ~_ring
+    if _del.any():
+        delete_verts(h, _del)
+    report["hiddenSkinCulled"] = int(_del.sum())
 
 
 def attr(obj, nm):
@@ -442,6 +472,10 @@ _tb, _tD = deltas(teeth)
 _upper = np.linalg.norm(_tD["jawOpen"], axis=1) < 1e-4
 mt = look.get("mouth", {})
 shift_parts(teeth, np.nonzero(_upper)[0], np.array([0, -mt.get("upperTeethFwd", 0.0010), -mt.get("upperTeethDown", 0.0013)]))
+# merged: the wrapped face has thinner, more retracted lips than MakeHuman's, so the rows sat THROUGH them (G6 rest 4 ->
+# kk 12 / jawOpen 19; at rest 10 lower-tooth samples outside the skin, measured): the lower row can move back and down too
+if mt.get("lowerTeethBack", 0) or mt.get("lowerTeethDown", 0):
+    shift_parts(teeth, np.nonzero(~_upper)[0], np.array([0, mt.get("lowerTeethBack", 0.0), -mt.get("lowerTeethDown", 0.0)]))
 # The tongue rests 2.5 mm higher and 2 mm forward, so its tip reads at aa and the Hindi tongue keys show.
 shift_parts(tongue, np.arange(len(tongue.data.vertices)), np.array([0, -mt.get("tongueFwd", 0.002), mt.get("tongueUp", 0.0025)]))
 _tb = co(teeth.data)

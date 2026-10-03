@@ -3,7 +3,7 @@
 // Compositor), fed from the decoded TTS waveform frame by frame, then drives this GLB rig.
 import * as THREE from "three";
 import { loadTeacher } from "./rig.js";
-import { EMOTIONS, STATES, emotionPose } from "./presets.js";
+import { EMOTIONS, STATES, emotionPose, clipPose, CLIPS } from "./presets.js";
 import { LipDriver, lipKeys } from "/src/avatar/lip.ts";
 import { Behaviour } from "/src/avatar/behaviour.ts";
 import { Compositor } from "/src/avatar/compositor.ts";
@@ -72,6 +72,8 @@ window.TX = {
   },
   frame,
   pose(p) { rig.apply(p.bs || {}, p.head || [0, 0, 0], p.gaze || [0, 0], p.lean || 0, p.breath || 0, { flush: p.flush || 0 }); },
+  clip(name, t) { return clipPose(name, t, look.faceStyle.asym); },
+  clips: () => Object.keys(CLIPS),
   emotion(name, i = 1) {
     const e = emotionPose(name, i, look.faceStyle.asym);
     return e;

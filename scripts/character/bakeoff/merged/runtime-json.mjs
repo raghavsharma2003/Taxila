@@ -3,7 +3,7 @@
 //   node scripts/character/runtime-json.mjs <buildDir> <look>
 import fs from "node:fs";
 import path from "node:path";
-import { EMOTIONS, STATES, VISEME_TO_ARKIT, correctiveParents } from "./viewer/presets.js";
+import { EMOTIONS, STATES, VISEME_TO_ARKIT, CLIPS, correctiveParents } from "./viewer/presets.js";
 
 // the stage light rig is parsed from shaders.js (no three import in node): G9 was solved under exactly this rig
 const shSrc = fs.readFileSync("scripts/character/bakeoff/merged/viewer/shaders.js", "utf8");
@@ -39,7 +39,11 @@ const out = {
   lidFollow: { upper: 0.5, lower: 0.25, via: "eyeLookUp*/eyeLookDown* at gaze pitch / 25 deg" },
   visemeFold: { when: "the tier has no viseme_* morphs (B+, B-lite)", map: VISEME_TO_ARKIT },
   faceStyle: L.faceStyle, iris: L.eyes.iris,
-  emotions: EMOTIONS, states: STATES,
+  // merged, additive: the eye pass (sclera albedo tuned to the reference, lid-following shadow from the rest lid) and
+  // the gesture clips (encouraging is a nod, judged on motion)
+  eyePass: { sclera: L.eyes.sclera ?? null, restLid: L.faceStyle?.restBlink ?? 0, uniforms: "TaxilaEye uSclera (linear albedo), uLidClose (vec2 per eye: restLid + (1 - restLid) * blink - 0.35 wide + 0.25 squint + 0.3 lookDown - 0.3 lookUp)" },
+  mouthInterior: { teeth: [0.64, 0.58, 0.47], gum: [0.30, 0.10, 0.09], tongue: [0.46, 0.16, 0.14], bag: [0.16, 0.045, 0.04], note: "merged: tongue and bag keep a floor of warm light when the jaw is open (shaders.js SKIN_FRAG)" },
+  emotions: EMOTIONS, states: STATES, clips: CLIPS,
   plates: fs.existsSync(`public/assets/teacher-bakeoff/merged/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`public/assets/teacher-bakeoff/merged/${look}/plate/plate.json`)) : null,
 };
 fs.writeFileSync(`public/assets/teacher-bakeoff/merged/${look}/runtime.json`, JSON.stringify(out, null, 1));
