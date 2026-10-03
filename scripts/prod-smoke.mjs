@@ -33,6 +33,9 @@ let child;
 try {
   ({ child } = await A("POST", "/api/children", { firstName: "Riya", classLevel: 5, languagePref: "hinglish", interests: ["cricket"] }));
   await A("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
+  // Lessons only start inside the child's allowed hours (07:00-21:00 by default, IST): open the whole day for the smoke
+  // child so the probe runs at any clock time. A fresh signup with no PIN may write the first controls row.
+  await A("POST", "/api/parent/controls", { childId: child.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
   const s = await A("POST", "/api/lesson/start", { childId: child.id, mode: MODE });
   ok(!!s.lessonId, `start ${s.ms} ms · topic ${s.topic?.id} "${s.topic?.title}" · teacher ${s.teacher?.name}`);
   console.log(`  T: ${s.teacherOpening ?? "(voice lane: instructions only)"}`);

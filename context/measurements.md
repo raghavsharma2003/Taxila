@@ -1146,3 +1146,8 @@ tests/ui-v2-claims.test.mjs: 7/7; the 3,000-ledger simulation (seed 20261003) wi
 ## b3-fixer-battery-2026-10-03 (2026-10-03)
 tests/e2e-design-b3-parent.mjs: 418/418 (n = 1, headless Chromium, production build, /api/* MOCKED: layout and payload handling only), 91 shots in docs/design/build/b3-parent/ (360x640 DPR 2 + 1280x800, light + dark; new: home-held, data-delete-deferred). New checks, each with its negative control where one exists: V-ONE (contradicting payload caught; generic activity; headline label == sheet == Progress == Lesson card), V-SAFE (held → no card; released → card; Help promises no message; deferred deletion sentence), V-HONEST (receipt copy, no Lesson summary, Progress makes no overview call), V-NEXT fresh signup → /start/consent, V-LAYOUT rail column painted full height (light, dark). Shot helper now parks the bottom bar static (it was painted mid-page in full-page 360 shots).
 (Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+<!-- merged from inbox/release-160bcb5.json -->
+## release-160bcb5 (2026-10-03)
+Revision taxila-web--s160bcb5-z8m7. Static gates 11/11; npm test 1104/1107 with 3 known browser-mic skips. The first live smoke failed with 409 'outside today's lesson hours' (IST night, default 07:00-21:00): the new day-plan gate working as designed. scripts/prod-smoke.mjs now opens 00:00-23:59 for its own child through /api/parent/controls. Re-run, cascade, n=1 lesson: start 2,089 ms; turns 1,241 / 2,799 / 1,496 ms; end 1,739 ms. All 4 teacher lines passed the floor predicate; the smoke child was deleted.

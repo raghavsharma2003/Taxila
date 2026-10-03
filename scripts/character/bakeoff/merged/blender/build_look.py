@@ -133,6 +133,33 @@ if look.get("wrap"):
         for g_ in ("helper-l-eye", "helper-r-eye"):
             ix_ = group_idx(h, g_)
             B[ix_] = _Bpre[ix_] + (B[ix_] - _Bpre[ix_]).mean(0)
+    # ... and the lids, which the field drew in around a smaller opening, are conformed OUT onto the full-size ball:
+    # skin vertices on the front cap of each eye closer than 1.015 r to its centre are pushed radially to it, the push
+    # spread smoothly over the neighbourhood (Gaussian, 3 mm) so the lid keeps its shape (rest: 160 lid vertices per eye
+    # inside the ball without this, measured)
+    if look["wrap"].get("rigidEyes", True) and look["wrap"].get("conformLids", True):
+        from scipy.spatial import cKDTree as _KD
+        _push = np.zeros_like(B)
+        for g_ in ("helper-l-eye", "helper-r-eye"):
+            ix_ = group_idx(h, g_)
+            c_ = B[ix_].mean(0); r_ = 0.962 * float(np.linalg.norm(B[ix_] - c_, axis=1).mean())
+            d_ = B - c_; n_ = np.linalg.norm(d_, axis=1)
+            sel_ = np.nonzero(_body & (n_ < 1.015 * r_) & (-d_[:, 1] > 0.2 * r_))[0]
+            _push[sel_] += (d_[sel_] / n_[sel_, None]) * (1.015 * r_ - n_[sel_])[:, None]
+        src_ = np.nonzero(np.linalg.norm(_push, axis=1) > 0)[0]
+        if len(src_):
+            kd_ = _KD(B[src_])
+            near_ = np.nonzero(_body & (kd_.query(B)[0] < 0.006))[0]
+            sm_ = np.zeros_like(B); ws_ = np.zeros(len(B))
+            for i_ in near_:
+                j_ = kd_.query_ball_point(B[i_], 0.006)
+                wj_ = np.exp(-(np.linalg.norm(B[src_[j_]] - B[i_], axis=1) / 0.003) ** 2)
+                sm_[i_] = (wj_[:, None] * _push[src_[j_]]).sum(0) / max(wj_.sum(), 1e-9)
+                ws_[i_] = 1.0
+            # keep the full push where it was needed (the spread only fills around it)
+            sm_ = np.where((np.linalg.norm(_push, axis=1) > np.linalg.norm(sm_, axis=1))[:, None], _push, sm_)
+            B = B + sm_
+            report["lidConform"] = {"pushedVerts": int(len(src_)), "maxMm": round(float(np.linalg.norm(_push, axis=1).max() * 1000), 2)}
     h.data.vertices.foreach_set("co", B.ravel())
     h.data.update()
     _eyeC0 = {s_: B[group_idx(h, g_)].mean(0) for s_, g_ in (("L", "helper-l-eye"), ("R", "helper-r-eye"))}

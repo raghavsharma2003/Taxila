@@ -22,9 +22,13 @@ try {
       let cam = "face", yaw = 0, pose = { bs: {} };
       if (ex[s]) { pose = ex[s]; cam = ex[s].cam || "face"; yaw = ex[s].yaw || 0; }
       else if (/^yaw-?\d+/.test(s)) { yaw = +s.slice(3); }
+      else if (/^byaw-?\d+/.test(s)) { yaw = +s.slice(4); cam = "bust"; }
+      else if (s === "nohair") { pose = { bs: {}, hide: ["hair", "cards"] }; }
       else if (s.includes(":")) { const [c, n] = s.split(":"); cam = c === "state" ? "bust" : c; pose = c === "state" ? TX.state(n) : (n === "rest" ? { bs: {} } : TX.emotion(n, 1)); }
       else if (s === "rest") { pose = { bs: {} }; }
       else pose = TX.emotion(s, 1);
+      const hide = (pose.hide || []);
+      for (const [n, m] of Object.entries(TX.rig.meshes)) m.visible = !hide.includes(n);
       TX.frame(cam, yaw); TX.pose(pose); TX.render();
     }, [s, extra]);
     await hx.shot(f);
