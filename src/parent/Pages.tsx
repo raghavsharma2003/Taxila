@@ -87,7 +87,7 @@ export function Children() {
                   <Art id={`avatars/${k.avatar ?? "none"}`} className="pa-kid-avatar" alt="" fallback={<span className="pa-kid-disc" aria-hidden="true">{k.first_name.slice(0, 1)}</span>} />
                   <span className="pa-kid-text">
                     <strong>{k.first_name}</strong>
-                    <span className="pa-meta">Class {k.class_level} · {BOARD_NAME[k.board] ?? k.board} · Teacher: {teacherNameOf(k)}</span>
+                    <span className="pa-meta">Class {k.class_level} · {BOARD_NAME[k.board] ?? (k.board ? String(k.board).toUpperCase() : "CBSE")} · Teacher: {teacherNameOf(k)}</span>
                   </span>
                 </div>
                 <div className="pa-actions">

@@ -212,6 +212,11 @@ def apply(G):
     Ap = Ap * k[None, :]
     alpha = np.clip(wacc / float(spec.get("fullWeight", 0.35)), 0, 1)
     alpha = alpha * float(spec.get("strength", 1.0))
+    # merged: the scalp is v3's (its designed per-texel hairline, hair-coloured, under the curve-generated cards); the
+    # portrait is never projected onto hair-bearing texels. Projecting the portrait's own hair there brought its centre
+    # parting (a skin-coloured line in the hair) onto a scalp whose cards do not part: the wedge (VERDICT item 1)
+    hs_strict = np.clip((G["scalpT"] - 0.15) / 0.25, 0, 1)
+    alpha = alpha * (1 - hs_strict)
     A2 = A * (1 - alpha[:, None]) + Ap * alpha[:, None]
     A_H2 = A_H * (1 - alpha[:, None]) + Ap * alpha[:, None]
     # the scalp texels the portraits do not see (crown, back) keep the procedural hair-coloured scalp (alpha is 0 there)

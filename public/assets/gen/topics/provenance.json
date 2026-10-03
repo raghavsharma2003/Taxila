@@ -682,5 +682,37 @@
     "tool": "codex image tool",
     "model": "built-in image_gen (model identifier not exposed)",
     "attempts": 2
+  },
+  {
+    "file": "bead-pattern.png",
+    "id": "topics/bead-pattern",
+    "prompt": "GLOBAL WORLD STYLE (the base for every `public/assets/gen/**` image except `brand/*`):\n- **Medium:** matte gouache-and-pencil digital painting on warm paper grain, with soft edges. Visible brush texture\n  on large images; simpler and flatter on small icons, avatars and pictograms.\n- **Light:** one soft key light from the UPPER LEFT, always, with gentle fill and calm late-afternoon warmth.\n  Light is cream, never yellow.\n- **Palette anchors:**\n  - warm paper `#F6F3EC`;\n  - deep ink blue `#24346E`;\n  - teal `#0B7285`;\n  - terracotta `#B5532E`;\n  - leaf green `#2E7D32`;\n  - neem green `#2F6B4F`;\n  - dusty rose `#B4466A`;\n  - day sky `#A9D8E8`;\n  - stone `#C9C6BE`;\n  - dusk blue `#26304A`;\n  - night `#0F1A33`;\n  - chalkboard green `#1F3B30`;\n  - natural Indian skin tones from `#F3D2B3` through `#C99366` and `#8A5634` to `#5F3A22`, weighted to the middle.\n- **Objects:** everyday, specific, unglamorous modern Indian home and school life. Steel tumbler, steel tiffin,\n  cloth-bound notebooks, geometry box, slate, school bag on a hook, ceiling-fan shadow, window with neem leaves,\n  matka, charpai, white kolam dots, terracotta pots, bougainvillea, rooftop water tank, rooftop rail, city lights.\n- **Composition:** detail lives at the EDGES. Keep the CENTRE THIRD calm and low in detail, because text and a face\n  go there.\n- **People** (only where an item asks):\n  - Indian children and adults of varied skin tone, mostly medium, with varied hair; some wear glasses.\n  - Modest everyday clothes with no logos. Friendly, never stereotyped.\n  - Never make a hero lighter-skinned.\n- **By age:** ages 6\u20139 items are rounder and brighter, with a few more objects. Ages 10\u201315 items are editorial and\n  muted, with more empty space, and no cartoon faces on objects.\n\nOne object or a small scene, centred, filling about 85% of the frame, on full transparency. No ground plane and no cast shadow outside the object. Topics are for ages 6\u20139: rounder and brighter. Evocative still life, never an instructional diagram.\nNative 1024x1024 PNG. Reference is STYLE only; match the style, palette, light and (for characters) the identity of the reference images exactly. Draw requested subject, no panda, no background disc. Soft gouache pencil edges, younger rounded friendly style. Real alpha transparency. Cool neutral grey materials, no yellow highlights.\nSubject: a string of wooden beads in a repeating teal, rose and leaf sequence, loosely coiled\nPrecise description (the previous attempts failed on this): ONE continuous, unbroken thin grey cotton string, loosely coiled in a single relaxed loop, threaded through about eighteen round beads of EQUAL size. The beads are painted wood in exactly three colours that repeat in a strict, regular order all the way along the string: teal, then dusty rose, then leaf green, then teal, dusty rose, leaf green, and so on, with no two neighbouring beads the same colour and no other bead colours. Every bead is matte painted (no natural wood colour, no tan, no beige). The two string ends are tied in a small simple knot. Fully transparent background, no cloth, no surface.\n- NO text, letters, numbers, digits, symbols, logos, brand marks, signage, labels, watermarks or signatures of\n  any kind, in ANY script: Latin, Devanagari or any other.\n  - No writing on chalkboards, slates, books, packets, screens, walls, clothes or vehicles.\n  - Clocks have no numerals and no tick marks.\n  - Pages and screens are blank, or carry only soft abstract marks.\n- NO currency notes or coins. NO counted quantities meant to be read. NO diagrams, charts, maps or labels.\n- NO religious symbols, idols, temples, deities, sacred plants shown as sacred, flags, maps of India or national\n  emblems. Nothing political, and no festival-specific imagery.\n- NO real people, celebrities, brands or copyrighted characters. No resemblance to any real person.\n- NO owls, parrots, cows or pigs as characters. NO coins, trophies, medals, crowns, gems, stars-as-rewards, flames\n  or streak symbols.\n- NO scary, sad, crying or angry characters. No wilting or dead plants.\n- **The reserved colour.** NEVER use marigold, saffron, amber, gold, brass, mustard, bright yellow or yellow-orange\n  anywhere: no hue between 28\u00b0 and 52\u00b0 at more than low saturation. The app reserves that colour for one signal.\n  - Sunlight is warm CREAM, never yellow.\n  - Wood is greyed walnut or weathered teak, desaturated, never honey or golden.\n  - Metal is steel or iron, never brass or gold.\n  - No neon. No gradients used as decoration.\n  - The only exception is the teacher references (`art/gen/teacher/**`), which follow their character block.\n- **Prompt text is never drawn.** Hex colour codes, ids, paths and words in these instructions are guidance\n  only. Never render a hex code, a word or a label from this prompt inside the image.\n- **Shipped UI images (`public/assets/gen/**`):** NO adult teacher figure, anywhere. Where an item needs a place\n  for the teacher, leave that area empty and calm.",
+    "references": [
+      "avatars/red-panda"
+    ],
+    "date": "2026-10-03T16:00:21Z",
+    "tool": "Azure AI Foundry images/edits API, deployment taxila-image",
+    "model": "taxila-image (gpt-image-2)",
+    "attempts": 1,
+    "sha256": "398d90f69de7b175667fd52e7507d44da5be6e965db2c34c9909b244041cd14c",
+    "qa": {
+      "ok": true,
+      "problems": [],
+      "size": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "bytes": 157771,
+      "transparentShare": 78.3,
+      "lampHueShare": 0.03,
+      "ocr": "visual",
+      "visual": "inspected with the Read tool before acceptance"
+    },
+    "editInputs": [
+      "public/assets/gen/avatars/red-panda.png",
+      "public/assets/gen/topics/stick-bundles.png"
+    ],
+    "notes": "Generated with background=transparent (real alpha), 2 candidates. Picked the one whose outer loop runs one unbroken string through 15 beads in a strict teal, rose, leaf-green order to a knot. It also had a detached inner ring with a broken sequence: that separate alpha component was removed by script (connected-component erase), then fit to 512x512. Reads as a loose loop rather than a double coil."
   }
 ]

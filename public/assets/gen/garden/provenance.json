@@ -166,5 +166,36 @@
     "tool": "codex image tool",
     "model": "built-in image_gen (model identifier not exposed)",
     "attempts": 1
+  },
+  {
+    "file": "rose-bush-sprout.png",
+    "id": "garden/rose-bush-sprout",
+    "prompt": "**GLOBAL WORLD STYLE** (the base for every `public/assets/gen/**` image except `brand/*`):\n- **Medium:** matte gouache-and-pencil digital painting on warm paper grain, with soft edges. Visible brush texture\n  on large images; simpler and flatter on small icons, avatars and pictograms.\n- **Light:** one soft key light from the UPPER LEFT, always, with gentle fill and calm late-afternoon warmth.\n  Light is cream, never yellow.\n- **Palette anchors:**\n  - warm paper `#F6F3EC`;\n  - deep ink blue `#24346E`;\n  - teal `#0B7285`;\n  - terracotta `#B5532E`;\n  - leaf green `#2E7D32`;\n  - neem green `#2F6B4F`;\n  - dusty rose `#B4466A`;\n  - day sky `#A9D8E8`;\n  - stone `#C9C6BE`;\n  - dusk blue `#26304A`;\n  - night `#0F1A33`;\n  - chalkboard green `#1F3B30`;\n  - natural Indian skin tones from `#F3D2B3` through `#C99366` and `#8A5634` to `#5F3A22`, weighted to the middle.\n- **Objects:** everyday, specific, unglamorous modern Indian home and school life. Steel tumbler, steel tiffin,\n  cloth-bound notebooks, geometry box, slate, school bag on a hook, ceiling-fan shadow, window with neem leaves,\n  matka, charpai, white kolam dots, terracotta pots, bougainvillea, rooftop water tank, rooftop rail, city lights.\n- **Composition:** detail lives at the EDGES. Keep the CENTRE THIRD calm and low in detail, because text and a face\n  go there.\n- **People** (only where an item asks):\n  - Indian children and adults of varied skin tone, mostly medium, with varied hair; some wear glasses.\n  - Modest everyday clothes with no logos. Friendly, never stereotyped.\n  - Never make a hero lighter-skinned.\n- **By age:** ages 6\u20139 items are rounder and brighter, with a few more objects. Ages 10\u201315 items are editorial and\n  muted, with more empty space, and no cartoon faces on objects.\n\nFraming: one plant growing from a small mound of dark soil, bottom-centred. The mound has the SAME size and position in all 12 plant images, so the stages swap in place. Keep a consistent scale across kinds. No rings, glows or sparkles. Portrait native 1024x1536 PNG with genuine alpha, target 512x768. Match the style, palette, light and (for characters) the identity of the reference images exactly.\nSubject: a soil mound with two small leaves\nThis is an edit of the reference image (garden/rose-bush-seed): keep the soil mound EXACTLY as it is, same size, same position, same clumps; there is no seed packet and no stick. From the top centre of the mound, two small fresh leaf-green seedling leaves on one short pale green stem emerge, about as tall as a fifth of the mound's width, in the same soft gouache-and-pencil style. Everything around the mound and the seedling is fully transparent.\n- NO text, letters, numbers, digits, symbols, logos, brand marks, signage, labels, watermarks or signatures of\n  any kind, in ANY script: Latin, Devanagari or any other.\n  - No writing on chalkboards, slates, books, packets, screens, walls, clothes or vehicles.\n  - Clocks have no numerals and no tick marks.\n  - Pages and screens are blank, or carry only soft abstract marks.\n- NO currency notes or coins. NO counted quantities meant to be read. NO diagrams, charts, maps or labels.\n- NO religious symbols, idols, temples, deities, sacred plants shown as sacred, flags, maps of India or national\n  emblems. Nothing political, and no festival-specific imagery.\n- NO real people, celebrities, brands or copyrighted characters. No resemblance to any real person.\n- NO owls, parrots, cows or pigs as characters. NO coins, trophies, medals, crowns, gems, stars-as-rewards, flames\n  or streak symbols.\n- NO scary, sad, crying or angry characters. No wilting or dead plants.\n- **The reserved colour.** NEVER use marigold, saffron, amber, gold, brass, mustard, bright yellow or yellow-orange\n  anywhere: no hue between 28\u00b0 and 52\u00b0 at more than low saturation. The app reserves that colour for one signal.\n  - Sunlight is warm CREAM, never yellow.\n  - Wood is greyed walnut or weathered teak, desaturated, never honey or golden.\n  - Metal is steel or iron, never brass or gold.\n  - No neon. No gradients used as decoration.\n  - The only exception is the teacher references (`art/gen/teacher/**`), which follow their character block.\n- **Prompt text is never drawn.** Hex colour codes, ids, paths and words in these instructions are guidance\n  only. Never render a hex code, a word or a label from this prompt inside the image.\n- **Shipped UI images (`public/assets/gen/**`):** NO adult teacher figure, anywhere. Where an item needs a place\n  for the teacher, leave that area empty and calm.\n\n\nReference image: match the style, palette, light and (for characters) the identity of the reference images exactly. Preserve mound footprint and positioning: at final 512x768, its base spans x49 to463 and rests at y730, highest soil point y602, centre x256. Scale these coordinates 2x for native1024x1536. Soil dark cool grey-brown with no yellow/gold ochre. Entire surrounding canvas true alpha, including generous top empty space. Plant grows centred from mound, retain mound size exactly. Do not enlarge mound. Small sprite gouache. All wood weathered neutral grey. Never yellow, cream blossoms nearly neutral offwhite with cool grey shadows. Same tomato species across stages, characteristic tomato serrated leaflets.",
+    "references": [
+      "garden/rose-bush-seed"
+    ],
+    "date": "2026-10-03T16:00:22Z",
+    "tool": "Azure AI Foundry images/edits API, deployment taxila-image",
+    "model": "taxila-image (gpt-image-2)",
+    "attempts": 1,
+    "sha256": "9dcdbe72b3242ca98b4dcfab39937649af2e2493391dacee2282c2b57e4a38c0",
+    "qa": {
+      "ok": true,
+      "problems": [],
+      "size": [
+        512,
+        768
+      ],
+      "mode": "RGBA",
+      "bytes": 109001,
+      "transparentShare": 89.4,
+      "lampHueShare": 0.0,
+      "ocr": "visual",
+      "visual": "inspected with the Read tool before acceptance"
+    },
+    "editInputs": [
+      "public/assets/gen/garden/rose-bush-seed.png"
+    ],
+    "notes": "Masked inpaint of rose-bush-seed (packet and stick region only, background=transparent). The final composite keeps the seed's own mound pixels outside the edit region, so the mound footprint is identical to the seed: alpha bbox x50-462, y600-731 in both files."
   }
 ]

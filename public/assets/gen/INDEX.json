@@ -3076,12 +3076,31 @@
       "references": [
         "avatars/red-panda"
       ],
-      "status": "failed",
-      "date": "2026-10-03T10:36:51Z",
-      "notes": "Three attempts failed: reserved hue first, then broken string and inconsistent repeating teal/rose/leaf sequence. Best third attempt passes machine checks but color sequence fails visual QA; kept b06_b/bead-pattern-best-failed.png. No final image.",
-      "model": "built-in image_gen (model identifier not exposed)",
-      "attempts": 3,
-      "ocr": "visual"
+      "status": "done",
+      "date": "2026-10-03T16:00:21Z",
+      "notes": "Generated with background=transparent (real alpha), 2 candidates. Picked the one whose outer loop runs one unbroken string through 15 beads in a strict teal, rose, leaf-green order to a knot. It also had a detached inner ring with a broken sequence: that separate alpha component was removed by script (connected-component erase), then fit to 512x512. Reads as a loose loop rather than a double coil.",
+      "model": "taxila-image (gpt-image-2)",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 512,
+      "height": 512,
+      "bytes": 157771,
+      "sha256": "398d90f69de7b175667fd52e7507d44da5be6e965db2c34c9909b244041cd14c",
+      "lampHueShare": 0.03,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "bytes": 157771,
+        "transparentShare": 78.3,
+        "lampHueShare": 0.03,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "topics/daily-clock": {
       "path": "public/assets/gen/topics/daily-clock.png",
@@ -4722,12 +4741,31 @@
       "references": [
         "garden/rose-bush-seed"
       ],
-      "status": "failed",
-      "date": "2026-10-03T13:21:33Z",
-      "notes": "All3 attempts passed machine QA but did not preserve exact soil mound footprint/position. Best attempt3 at C:/tmp/taxila-gen/b09_rosevariants/sprout-attempt3.png; mound approx x43..473 y588..729 vs seed x50..462 y603..734.",
-      "model": "built-in image_gen (model identifier not exposed)",
-      "attempts": 3,
-      "ocr": "visual"
+      "status": "done",
+      "date": "2026-10-03T16:00:22Z",
+      "notes": "Masked inpaint of rose-bush-seed (packet and stick region only, background=transparent). The final composite keeps the seed's own mound pixels outside the edit region, so the mound footprint is identical to the seed: alpha bbox x50-462, y600-731 in both files.",
+      "model": "taxila-image (gpt-image-2)",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 512,
+      "height": 768,
+      "bytes": 109001,
+      "sha256": "9dcdbe72b3242ca98b4dcfab39937649af2e2493391dacee2282c2b57e4a38c0",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          512,
+          768
+        ],
+        "mode": "RGBA",
+        "bytes": 109001,
+        "transparentShare": 89.4,
+        "lampHueShare": 0.0,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "garden/rose-bush-bloom": {
       "path": "public/assets/gen/garden/rose-bush-bloom.png",
@@ -5530,12 +5568,31 @@
       "lint": "lamp-hue",
       "batch": "B10",
       "references": [],
-      "status": "failed",
-      "date": "2026-10-03T13:25:23Z",
-      "notes": "Machine QA passes 1024x1024 RGBA alpha29.1% hue0%, clean book-and-nib silhouette. Visual strict spec still fails: very faint tonal texture in blue fill, tile ~85% instead of88%. Attempts1-2 also contained dark smudges. Best final saved C:/tmp/taxila-gen/b10_mark/best-failed.png. No derivatives generated.",
-      "model": "built-in image_gen (model identifier not exposed)",
-      "attempts": 3,
-      "ocr": "visual"
+      "status": "done",
+      "date": "2026-10-03T16:00:37Z",
+      "notes": "Rebuilt 2026-10-03 from the hand-authored SVG mark (public/assets/gen/brand/mark.svg); no image model.",
+      "model": "svg-authored",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 34405,
+      "sha256": "9743162f0e41519740e9d262f56582901eca70ec988e27b8be82adb6b110dc31",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "bytes": 34405,
+        "transparentShare": 26.0,
+        "lampHueShare": 0.0,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "brand/app-icon": {
       "path": "public/assets/gen/brand/app-icon.png",
@@ -5547,9 +5604,30 @@
       "references": [
         "brand/mark"
       ],
-      "status": "skipped",
-      "date": "2026-10-03T13:27:54Z",
-      "notes": "Required brand/mark anchor failed three image-generation attempts (strict flat-fill/style QA); downstream reference chain cannot satisfy done-reference requirement."
+      "status": "done",
+      "date": "2026-10-03T16:00:38Z",
+      "notes": "Rebuilt 2026-10-03 from the hand-authored SVG mark (public/assets/gen/brand/mark.svg); no image model.",
+      "model": "svg-authored",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 28390,
+      "sha256": "7ec3d08242813500a90f3be9b54899a95c943f52da43dac8d39bdf7e748b4219",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGB",
+        "bytes": 28390,
+        "lampHueShare": 0.0,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "brand/adaptive-foreground": {
       "path": "public/assets/gen/brand/adaptive-foreground.png",
@@ -5563,9 +5641,31 @@
       "references": [
         "brand/app-icon"
       ],
-      "status": "skipped",
-      "date": "2026-10-03T13:27:54Z",
-      "notes": "Required brand/mark anchor failed three image-generation attempts (strict flat-fill/style QA); downstream reference chain cannot satisfy done-reference requirement."
+      "status": "done",
+      "date": "2026-10-03T16:00:39Z",
+      "notes": "Rebuilt 2026-10-03 from the hand-authored SVG mark (public/assets/gen/brand/mark.svg); no image model.",
+      "model": "svg-authored",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 22684,
+      "sha256": "311d048a1f42a20e2c191fa9e4450c9286ef509fd8fc182dfb92cc65666bc63a",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "bytes": 22684,
+        "transparentShare": 90.6,
+        "lampHueShare": 0.0,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "brand/adaptive-background": {
       "path": "public/assets/gen/brand/adaptive-background.png",
@@ -5579,9 +5679,30 @@
       "references": [
         "brand/app-icon"
       ],
-      "status": "skipped",
-      "date": "2026-10-03T13:27:55Z",
-      "notes": "Required brand/mark anchor failed three image-generation attempts (strict flat-fill/style QA); downstream reference chain cannot satisfy done-reference requirement."
+      "status": "done",
+      "date": "2026-10-03T16:00:40Z",
+      "notes": "Rebuilt 2026-10-03 from the hand-authored SVG mark (public/assets/gen/brand/mark.svg); no image model.",
+      "model": "svg-authored",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 286082,
+      "sha256": "4b4d33fde771d39e68304d889cc3204336dc660c516b7749a017a3047d101e47",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGB",
+        "bytes": 286082,
+        "lampHueShare": 0.0,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "brand/monochrome": {
       "path": "public/assets/gen/brand/monochrome.png",
@@ -5596,9 +5717,31 @@
       "references": [
         "brand/adaptive-foreground"
       ],
-      "status": "skipped",
-      "date": "2026-10-03T13:27:56Z",
-      "notes": "Required brand/mark anchor failed three image-generation attempts (strict flat-fill/style QA); downstream reference chain cannot satisfy done-reference requirement."
+      "status": "done",
+      "date": "2026-10-03T16:00:41Z",
+      "notes": "Rebuilt 2026-10-03 from the hand-authored SVG mark (public/assets/gen/brand/mark.svg); no image model.",
+      "model": "svg-authored",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 22743,
+      "sha256": "446f8d3dc0d9aecb053280b6ef4fb5069e2c2729d2d570b662378d5ad9150abd",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "bytes": 22743,
+        "transparentShare": 90.6,
+        "lampHueShare": 0.0,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "brand/splash-light": {
       "path": "public/assets/gen/brand/splash-light.png",
@@ -5612,9 +5755,30 @@
       "references": [
         "brand/mark"
       ],
-      "status": "skipped",
-      "date": "2026-10-03T13:27:56Z",
-      "notes": "Required brand/mark anchor failed three image-generation attempts (strict flat-fill/style QA); downstream reference chain cannot satisfy done-reference requirement."
+      "status": "done",
+      "date": "2026-10-03T16:00:42Z",
+      "notes": "Rebuilt 2026-10-03 from the hand-authored SVG mark (public/assets/gen/brand/mark.svg); no image model.",
+      "model": "svg-authored",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 2732,
+      "height": 2732,
+      "bytes": 63539,
+      "sha256": "0c085c20265b42a58d880a46ea72eabf78fa2bf07b3d59f7d5d4e9e7c03c11ee",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          2732,
+          2732
+        ],
+        "mode": "RGB",
+        "bytes": 63539,
+        "lampHueShare": 0.0,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "brand/splash-dark": {
       "path": "public/assets/gen/brand/splash-dark.png",
@@ -5628,9 +5792,30 @@
       "references": [
         "brand/mark"
       ],
-      "status": "skipped",
-      "date": "2026-10-03T13:27:57Z",
-      "notes": "Required brand/mark anchor failed three image-generation attempts (strict flat-fill/style QA); downstream reference chain cannot satisfy done-reference requirement."
+      "status": "done",
+      "date": "2026-10-03T16:00:43Z",
+      "notes": "Rebuilt 2026-10-03 from the hand-authored SVG mark (public/assets/gen/brand/mark.svg); no image model.",
+      "model": "svg-authored",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 2732,
+      "height": 2732,
+      "bytes": 61797,
+      "sha256": "88df94cf2889025166f82449dffd7d4d47781b72f4ce16247afbd9a7821e3ce4",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          2732,
+          2732
+        ],
+        "mode": "RGB",
+        "bytes": 61797,
+        "lampHueShare": 0.0,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "teacher-ref/asha/turnaround/front": {
       "path": "art/gen/teacher/asha/turnaround/front.webp",
@@ -7736,12 +7921,28 @@
       "references": [
         "teacher-ref/arjun/turnaround/front"
       ],
-      "status": "failed",
-      "date": "2026-10-03T15:13:48Z",
-      "notes": "After 3 attempts, retroflex anatomy remains unreliable: final tight crop has malformed two-lobed folded tongue; earlier anatomically better attempt had invalid wide neck/clothes framing. Best prior PNG preserved in scratch. No final image retained.",
-      "model": "built-in image_gen (model identifier not exposed)",
-      "attempts": 3,
-      "ocr": "visual"
+      "status": "done",
+      "date": "2026-10-03T16:00:20Z",
+      "notes": "Regenerated 2026-10-03 on taxila-image: 2 candidates, picked the one with correct retroflex anatomy (tongue tip raised and curled back to the roof of the mouth just behind the alveolar ridge, underside and frenulum visible, normal teeth). Framing/identity matched to tongue-tip-up and the front turnaround.",
+      "model": "taxila-image (gpt-image-2)",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 352990,
+      "sha256": "e47e23a1c8a51e8ac874740374f51866b707587f1ba53c3ebe8502724655386e",
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGB",
+        "bytes": 352990,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "teacher-ref/uma/visemes/tongue-curl": {
       "path": "art/gen/teacher/uma/visemes/tongue-curl.webp",
@@ -8931,26 +9132,16 @@
       "sha256": "f8ed7ea3c619599529d71132506aef01a4280dd40743e0a994f47c14b8b4f94d"
     }
   },
-  "updatedAt": "2026-10-03T15:21:59Z",
+  "updatedAt": "2026-10-03T16:00:43Z",
   "summary": {
     "pending": 0,
-    "done": 386,
-    "skipped": 7,
-    "failed": 6
+    "done": 396,
+    "skipped": 1,
+    "failed": 2
   },
   "skipped": [
     "bg/garden-panorama",
     "bg/who-phone",
-    "bg/who-wide",
-    "brand/adaptive-background",
-    "brand/adaptive-foreground",
-    "brand/app-icon",
-    "brand/mark",
-    "brand/monochrome",
-    "brand/splash-dark",
-    "brand/splash-light",
-    "garden/rose-bush-sprout",
-    "teacher-ref/arjun/visemes/tongue-curl",
-    "topics/bead-pattern"
+    "bg/who-wide"
   ]
 }

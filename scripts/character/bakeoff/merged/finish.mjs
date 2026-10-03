@@ -32,9 +32,9 @@ const tex = (f) => path.join(buildDir, "tex", f);
 const MAPS = [
   // H: albedo without the painted brows (the H brow cards carry them; painted + cards was a double brow). B+ face albedo
   // in UASTC: ETC1S left a yellow blotch on plum's forehead (review item 14); B-lite keeps ETC1S.
-  ["skin_albedo_H.png", "TaxilaSkin", "baseColor", { H: [2048, 2048, "u"], Bplus: null, Blite: null }, true],
+  ["skin_albedo_H.png", "TaxilaSkin", "baseColor", { H: [1536, 1536, "u"], Bplus: null, Blite: null }, true],
   ["skin_albedo.png", "TaxilaSkin", "baseColor", { H: null, Bplus: [1024, 1024, "u"], Blite: [1024, 1024, "e"] }, true],
-  ["skin_normal.png", "TaxilaSkin", "normal", { H: [2048, 2048, "u"], Bplus: [1024, 1024, "u"], Blite: null }, false],
+  ["skin_normal.png", "TaxilaSkin", "normal", { H: [1536, 1536, "u"], Bplus: [1024, 1024, "u"], Blite: null }, false],
   ["skin_packed.png", "TaxilaSkin", "occlusion", { H: [1024, 1024, "u"], Bplus: [512, 512, "u"], Blite: [256, 256, "e"] }, false],
   ["skin_wrinkle.png", "TaxilaSkin", "emissive", { H: [1024, 1024, "u"], Bplus: [512, 512, "u"], Blite: null }, false],
   ["skin_maskA.png", "TaxilaSkin", "metallicRoughness", { H: [512, 512, "u"], Bplus: [256, 256, "u"], Blite: null }, false],
@@ -42,7 +42,9 @@ const MAPS = [
   ["skin_wrinkle_stretch.png", "TaxilaSkin", "clearcoatNormal", { H: [1024, 1024, "u"], Bplus: null, Blite: null }, false],
   // procedural-v3: skin detail (R fuzz, G subsurface tint, B moisture, A micro strength) and the tiled micro tile
   ["skin_detail.png", "TaxilaSkin", "specular", { H: [1024, 1024, "u"], Bplus: [512, 512, "u"], Blite: null }, false],
-  ["skin_micro.png", "TaxilaSkin", "clearcoatRoughness", { H: [512, 512, "u"], Bplus: null, Blite: null }, false],
+  // merged: the micro tile is dropped on the projected face (VERDICT budgets row; stylised-premium did the same): H must
+  // carry 1536 photo-derived face maps under 6 MB, and the projected high-pass normal already carries the pore detail
+  // ["skin_micro.png", "TaxilaSkin", "clearcoatRoughness", { H: [512, 512, "u"], Bplus: null, Blite: null }, false],
   ["garment_albedo.png", "TaxilaCloth", "baseColor", { H: [1024, 1024, "u"], Bplus: [512, 512, "e"], Blite: [512, 512, "e"] }, true],
   ["hair_atlas.png", "TaxilaHair", "baseColor", { H: [2048, 1024, "u"], Bplus: [1024, 512, "u"], Blite: [1024, 512, "e"] }, true],
   ["cards_atlas.png", "TaxilaCards", "baseColor", { H: [2048, 1024, "u"], Bplus: [512, 256, "u"], Blite: [512, 256, "e"] }, true],
@@ -58,7 +60,9 @@ const MEANING = {
 
 // card textures (hair, brows, lashes) take a stronger UASTC rate-distortion setting: their fine alpha survives it,
 // and it pays for the 2x brow alpha resolution on H inside the 6 MB cap
-const RDO = { "hair_atlas.png": "2.5", "cards_atlas.png": "2.5" };
+// merged (from ai-portrait-wrap): photo-derived albedo and normal do not compress like procedural noise (H 7.43 MB at
+// RDO 1.0, measured there); they take RDO 3, and on H the face albedo and normal are 1536 (still above the source)
+const RDO = { "hair_atlas.png": "2.5", "cards_atlas.png": "2.5", "skin_albedo_H.png": "3", "skin_albedo.png": "3", "skin_normal.png": "3" };
 function ktx2(src, w, h, enc, srgb) {
   const out = path.join(os.tmpdir(), `tx-${process.pid}-${path.basename(src, ".png")}-${w}-${enc}.ktx2`);
   const args = ["--t2", "--genmipmap", "--resize", `${w}x${h}`, "--assign_oetf", srgb ? "srgb" : "linear"];

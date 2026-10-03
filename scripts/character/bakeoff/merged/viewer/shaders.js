@@ -201,8 +201,10 @@ uniform vec3 uEyeL; uniform vec3 uEyeR; uniform float uEyeRad;
 varying vec3 vLocal;     // bind-space position relative to this eye's centre, in eye radii
 varying vec3 vViewL;     // view direction in bind space
 varying mat3 vToWorld;
+varying float vSide;      // merged: 1 on the +x eye (her left), 0 on the other
 void main() {
   vec3 c = position.x > 0.0 ? uEyeL : uEyeR;
+  vSide = position.x > 0.0 ? 1.0 : 0.0;
   vLocal = (position - c) / uEyeRad;
 ` + SKINNED_VERT_BODY + /* glsl */ `
   mat3 R = mat3(modelMatrix);
@@ -217,8 +219,11 @@ const EYE_FRAG = /* glsl */ `
 precision highp float;
 ${LIGHT_PARS}
 uniform vec3 uIris; uniform float uPupil; uniform float uLidShadow; uniform float uIrisDetail;
+uniform vec3 uSclera;      // merged: linear sclera albedo, tuned so the rendered sclera / cheek luminance matches the
+                           // reference portraits' (identity/refsclera.py: 0.83, warm tint); was a fixed 0.78 grey
+uniform vec2 uLidClose;    // merged: per eye (L, R) how far the upper lid is down (0 open .. 1 closed), from the rig
 varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormalW;
-varying vec3 vLocal; varying vec3 vViewL; varying mat3 vToWorld;
+varying vec3 vLocal; varying vec3 vViewL; varying mat3 vToWorld; varying float vSide;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float vnoise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y); }
@@ -254,13 +259,20 @@ void main() {
     float veins = vnoise(vec2(ang * 30.0, p.z * 20.0)) * smoothstep(0.6, 0.0, p.z) * 0.1;
     // sclera: ~0.78 albedo, warmer and pinker-grey toward the corners (caruncle side), never paper white (item 13)
     float corner = smoothstep(0.35, 0.9, abs(p.x));
-    albedo = mix(vec3(0.78, 0.74, 0.70), vec3(0.70, 0.56, 0.54), corner) * (1.0 - veins * vec3(0.0, 1.0, 1.0));
+    // merged: the sclera takes the reference's tone relative to the skin; the corners keep a pinker, darker caruncle side
+    albedo = mix(uSclera, uSclera * vec3(0.92, 0.72, 0.70), corner) * (1.0 - veins * vec3(0.0, 1.0, 1.0));
     albedo = mix(albedo, uIris * 0.3 + 0.55, smoothstep(1.02, 1.12, rr) * smoothstep(1.2, 1.0, rr) * 0.0);
   }
   // lid shadow + corner occlusion (the AO shell, analytically): darker towards the top and the corners
   // the upper lid's shadow covers the top quarter of the visible ball; the lower lid's wet line a thin band
-  float ao = mix(1.0, 0.3, smoothstep(0.25, 0.62, p.y) * uLidShadow) * mix(1.0, 0.55, smoothstep(0.4, 0.85, abs(p.x)))
-           * mix(1.0, 0.7, smoothstep(-0.45, -0.7, p.y) * uLidShadow);
+  // merged eye pass: the upper lid's shadow follows the lid (uLidClose: the resting lid sits over the top of the iris),
+  // a soft contact band under the lid margin plus the socket's overall occlusion, the lower lid's wet-line band, and
+  // darker corners; was a fixed band that left the visible ball brighter than the skin (VERDICT: CG-bright eyes)
+  float lc = vSide > 0.5 ? uLidClose.x : uLidClose.y;
+  float lidY = mix(0.62, -0.2, lc);                     // ball-local height of the upper lid margin
+  float under = smoothstep(lidY - 0.42, lidY + 0.02, p.y);
+  float ao = mix(1.0, 0.22, under * uLidShadow) * mix(1.0, 0.5, smoothstep(0.35, 0.85, abs(p.x)))
+           * mix(1.0, 0.62, smoothstep(-0.40, -0.68, p.y) * uLidShadow) * 0.86;
   float nl = clamp(dot(Nw, L) * 0.5 + 0.5, 0.0, 1.0);
   vec3 col = albedo * (uKeyColor * nl * 0.8 + shIrradiance(Nw)) * ao;
   // cornea specular: the key light's real reflection (the catch-light) + a soft environment reflection
@@ -270,8 +282,13 @@ void main() {
   float NoH = max(dot(ncw, H), 0.0);
   float spec = D_GGX(NoH, 0.012) * 0.25;
   float fres = F_Schlick(0.025, max(dot(ncw, Vw), 0.0));
-  col += uKeyColor * spec * fres * float(cornea) * ao;
-  col += shIrradiance(reflect(-Vw, ncw)) * fres * 0.8 * float(p.z > 0.55);
+  col += uKeyColor * spec * fres * float(cornea) * mix(1.0, ao, 0.6);
+  col += shIrradiance(reflect(-Vw, ncw)) * fres * 0.8 * float(p.z > 0.55) * mix(1.0, ao, 0.5);
+  // wetness: the tear film is a sharp, low-roughness lobe over the whole visible ball (not only the cornea), dimmed under
+  // the lid; it is what makes an eye read wet rather than painted
+  vec3 Nb = normalize(vToWorld * normalize(p));
+  float NoHb = max(dot(Nb, H), 0.0);
+  col += uKeyColor * D_GGX(NoHb, 0.05 * 0.05) * 0.035 * F_Schlick(0.03, max(dot(Nb, Vw), 0.0)) * ao * float(!cornea);
   gl_FragColor = vec4(col, 1.0);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>

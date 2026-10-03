@@ -92,7 +92,9 @@ export async function loadTeacher(renderer, url, opts = {}) {
     const iris = new THREE.Color(look.iris || "#3A2416").convertSRGBToLinear();
     eyes.material = mk(eyes, SHADERS.EYE_VERT, SHADERS.EYE_FRAG, {
       uEyeL: { value: L }, uEyeR: { value: R }, uEyeRad: { value: rad }, uIris: { value: new THREE.Vector3(iris.r, iris.g, iris.b) },
-      uPupil: { value: 0.42 }, uLidShadow: { value: 0.8 }, uIrisDetail: { value: tier === "H" ? 1 : 0.6 } }, {});
+      uPupil: { value: 0.42 }, uLidShadow: { value: 0.8 }, uIrisDetail: { value: tier === "H" ? 1 : 0.6 },
+      // merged eye pass: sclera albedo from the look (tuned to the reference's sclera / skin ratio), lid-following shadow
+      uSclera: { value: new THREE.Vector3(...(look.sclera || [0.78, 0.74, 0.70])) }, uLidClose: { value: new THREE.Vector2(look.restLid ?? 0.35, look.restLid ?? 0.35) } }, {});
   }
   // ---------------- hair + cards (alpha-to-coverage under MSAA; never alpha-blend)
   for (const nm of ["hair", "cards"]) {
@@ -196,6 +198,11 @@ export async function loadTeacher(renderer, url, opts = {}) {
     const u = face.material.uniforms;
     if (u.uWrA) { const w = wrinkleWeights(final); u.uWrA.value.fromArray(w.A); u.uWrB.value.fromArray(w.B); if (u.uStretch) u.uStretch.value = w.stretch * 0.6; }
     u.uMouthOpen.value = final.jawOpen || 0;
+    { // merged: the upper lid position for the eye shader's lid shadow (rest lid + blink - wide + squint share)
+      const r0 = look.restLid ?? 0.35, el = eyes.material.uniforms.uLidClose.value, cl = (S) => Math.max(0, Math.min(1,
+        r0 + (1 - r0) * (final[`eyeBlink${S}`] || 0) - 0.35 * (final[`eyeWide${S}`] || 0) + 0.25 * (final[`eyeSquint${S}`] || 0) + 0.3 * (final[`eyeLookDown${S}`] || 0) - 0.3 * (final[`eyeLookUp${S}`] || 0)));
+      el.set(cl("Left"), cl("Right"));
+    }
     u.uFlush.value = tier === "H" ? (extra.flush || 0) : 0;
     // head: neck carries 35%, head 65%; + = chin down / her left; roll sign matches head.ts
     const [p, y, r] = head;

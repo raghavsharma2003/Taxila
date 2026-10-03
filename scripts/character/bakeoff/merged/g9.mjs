@@ -23,6 +23,24 @@ export function lin2lab([r, g, b]) {
   const L = 116 * f(Y) - 16, a = 500 * (f(X) - f(Y)), bb = 200 * (f(Y) - f(Z));
   return { L: +L.toFixed(1), a: +a.toFixed(1), b: +bb.toFixed(1), C: +Math.hypot(a, bb).toFixed(1) };
 }
+// merged: the rendered skin is solved to the MST band's L* and C* (the G9 bar, unchanged) AND to the hue angle of the
+// reference portraits' skin (look.skin.refHue, measured by identity/refhue.py), not to the MST hex's own hue. The MST 6
+// hex sits at h 73.8 deg, the generated reference's cheeks at about 56.5 deg; solving every channel to the hex pulled
+// the projected skin yellow-green, which read as the olive-grey cast (VERDICT defect 6, ai-portrait-wrap defect 4).
+function lab2lin(L, a, b) {
+  const fy = (L + 16) / 116, fx = fy + a / 500, fz = fy - b / 200;
+  const fi = (t) => (t ** 3 > 0.008856 ? t ** 3 : (t - 16 / 116) / 7.787);
+  const X = fi(fx) * 0.95047, Y = fi(fy), Z = fi(fz) * 1.08883;
+  return [3.2406 * X - 1.5372 * Y - 0.4986 * Z, -0.9689 * X + 1.8758 * Y + 0.0415 * Z, 0.0557 * X - 0.2040 * Y + 1.0570 * Z];
+}
+export function g9Target(L) {
+  const mst = lin2lab(hex2lin(MST_HEX[L.skin.mst]));
+  if (L.skin.refHue == null) return { lin: hex2lin(MST_HEX[L.skin.mst]), lab: mst };
+  const h = (L.skin.refHue * Math.PI) / 180;
+  const lin = lab2lin(mst.L, mst.C * Math.cos(h), mst.C * Math.sin(h));
+  return { lin, lab: { ...lin2lab(lin), h: L.skin.refHue } };
+}
+const hueOf = (lab) => +((Math.atan2(lab.b, lab.a) * 180) / Math.PI).toFixed(1);
 const med = (a) => { const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
 const pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(s.length * p))]; };
 
@@ -45,15 +63,17 @@ function summarise(patches) {
 
 export async function g9Gate(look, hx) {
   const L = JSON.parse(fs.readFileSync(`art/character/bakeoff/merged/looks/${look}.json`));
-  const tgtLin = hex2lin(MST_HEX[L.skin.mst]), tgt = lin2lab(tgtLin);
+  const tgt = lin2lab(hex2lin(MST_HEX[L.skin.mst]));
   await hx.page.evaluate((l) => TX.load(l, "H"), look);
   const s = summarise(await sample(hx.page, [1, 1, 1]));
   const dL = +(s.lab.L - tgt.L).toFixed(1), dC = +(s.lab.C - tgt.C).toFixed(1);
+  const hue = hueOf(s.lab), dh = L.skin.refHue == null ? null : +(hue - L.skin.refHue).toFixed(1);
   // interior: teeth L* at jawOpen 0.3, mouth camera, 5 x 5 px at the incisor landmark, 90th percentile
   const teeth = await hx.page.evaluate(() => { TX.frame("mouth", 0); TX.pose({ bs: { jawOpen: 0.3 } }); return TX.samplePatches("teeth").teeth; });
   const tL = teeth.px.map((q) => lin2lab(q.map(s2l)).L);
   const teethL = pct(tL, 0.9);
-  return { mst: L.skin.mst, target: tgt, rendered: s.lab, patches: s.per, dL, dC, pass: Math.abs(dL) <= 3 && Math.abs(dC) <= 4,
+  return { mst: L.skin.mst, target: tgt, rendered: { ...s.lab, h: hue }, patches: s.per, dL, dC, refHue: L.skin.refHue ?? null, dHue: dh,
+    pass: Math.abs(dL) <= 3 && Math.abs(dC) <= 4, huePass: dh == null ? null : Math.abs(dh) <= 5,
     teethLp90AtJaw03: teethL, teethPass: teethL <= 80 };
 }
 
@@ -62,19 +82,20 @@ async function solve(look) {
   try {
     const f = `art/character/bakeoff/merged/looks/${look}.json`;
     const L = JSON.parse(fs.readFileSync(f));
-    const tgtLin = hex2lin(MST_HEX[L.skin.mst]), tgt = lin2lab(tgtLin);
+    const T = g9Target(L), tgtLin = T.lin, tgt = T.lab;
     await hx.page.evaluate((l) => TX.load(l, "H"), look);
     let g = [1, 1, 1], s;
     const trace = [];
     // damped per-channel update (exponent 0.6): an undamped ratio overshot chroma back and forth; the gain kept is the
     // LAST MEASURED one, never an unmeasured extrapolation
     let best = null;
-    for (let it = 0; it < 10; it++) {
+    for (let it = 0; it < 14; it++) {
       s = summarise(await sample(hx.page, g));
-      const err = Math.abs(s.lab.L - tgt.L) / 3 + Math.abs(s.lab.C - tgt.C) / 4;
-      trace.push({ gain: g.map((x) => +x.toFixed(4)), ...s.lab, err: +err.toFixed(3) });
+      const dh = tgt.h == null ? 0 : Math.abs(hueOf(s.lab) - tgt.h);
+      const err = Math.abs(s.lab.L - tgt.L) / 3 + Math.abs(s.lab.C - tgt.C) / 4 + dh / 5;
+      trace.push({ gain: g.map((x) => +x.toFixed(4)), ...s.lab, h: hueOf(s.lab), err: +err.toFixed(3) });
       if (!best || err < best.err) best = { g: [...g], err };
-      if (Math.abs(s.lab.L - tgt.L) < 0.8 && Math.abs(s.lab.C - tgt.C) < 1.2) break;
+      if (Math.abs(s.lab.L - tgt.L) < 0.8 && Math.abs(s.lab.C - tgt.C) < 1.2 && dh < 1.5) break;
       g = g.map((x, c) => x * Math.max(0.5, Math.min(2.0, (tgtLin[c] / Math.max(s.lin[c], 1e-5)) ** 0.6)));
     }
     g = best.g;

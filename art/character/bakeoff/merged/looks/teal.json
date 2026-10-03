@@ -57,10 +57,24 @@
     ],
     "lipCoverage": 0.4,
     "lipDesat": 0.2,
-    "_note": "albedo = MST hex x albedoGain (solved by scripts/character/g9.mjs --solve); base/shade/lip hex are design colours whose RATIOS are kept"
+    "_note": "albedo = MST hex x albedoGain (solved by scripts/character/g9.mjs --solve); base/shade/lip hex are design colours whose RATIOS are kept",
+    "refHue": 55.9,
+    "_refHueNote": "hue angle (deg) of the reference portraits' skin (identity/refhue.py); G9 solves L*/C* to the MST band and the hue to this"
   },
   "eyes": {
-    "iris": "#4A2E1C"
+    "iris": "#4A2E1C",
+    "_scleraNote": "reference sclera (brightest 40% of the eye opening) luminance / cheek luminance and its chroma (identity/refsclera.py); the eye pass is tuned so the RENDERED ratio matches (render-measured, merged.md)",
+    "scleraLumaToSkin": 0.827,
+    "scleraTint": [
+      1.135,
+      0.968,
+      0.921
+    ],
+    "sclera": [
+      0.3405,
+      0.2904,
+      0.2763
+    ]
   },
   "brows": "eyebrow001",
   "browColor": "#1A120C",

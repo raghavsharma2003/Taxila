@@ -124,7 +124,15 @@ _eyeR_pre = _eye_radius(B)
 if look.get("wrap"):
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "identity"))
     import wrap as WR
+    _Bpre = B.copy()
     B, report["wrap"] = WR.apply(B, look["wrap"], head_weight(B), log=lambda m: print(f"[build:{look['id']}] {m}", flush=True), mir=MIR)
+    # the eye helper (the cage our eyeball is fitted to) moves RIGIDLY with the field's mean over it: the free field
+    # shrank it to 0.87 of its radius (measured, this build and ai-portrait-wrap's: eyeR 12.9 vs 14.8 mm), which is the
+    # 'iris looks small' / CG-eye read; the lids follow the field, the ball keeps its size
+    if look["wrap"].get("rigidEyes", True):
+        for g_ in ("helper-l-eye", "helper-r-eye"):
+            ix_ = group_idx(h, g_)
+            B[ix_] = _Bpre[ix_] + (B[ix_] - _Bpre[ix_]).mean(0)
     h.data.vertices.foreach_set("co", B.ravel())
     h.data.update()
     _eyeC0 = {s_: B[group_idx(h, g_)].mean(0) for s_, g_ in (("L", "helper-l-eye"), ("R", "helper-r-eye"))}

@@ -1774,3 +1774,38 @@ textReply history maps every row through `scrubbed`; turn() `heard` scrubbed; gr
 <!-- merged from inbox/owner-2026-10-03c.json -->
 ## teacher-human-first-gpu (2026-10-03)
 Owner, after seeing the bake-off: none of the three looks is good enough. The main loop picks the interim look; the realistic human direction is to be taken as far as possible once an Azure GPU is available (neural head reconstruction from portraits, texture synthesis). Only then does the owner decide between human and a cartoon or animation model. The in-house rule stands: no contracted artist. **Reverse** to a stylised or cartoon model if the GPU-backed human face still fails the owner's eye test.
+
+
+## b3-parent-counted-lesson (2026-10-03)
+A lesson counts on parent surfaces (Lessons this week, 'first lesson', Recent lessons) only when it ran ≥ 5 minutes or something in it was graded and it was not an abandoned start (COUNTED_SQL, the same rule as child.js countsAsDone). Shorter visits are listed in Lessons as 'Short visit, not counted as a lesson'. Interim for audit #20's doubt-counted-as-lesson: lesson rows do not record purpose (lesson|practice|doubt). Reverse when lesson.js stores the start purpose: then a doubt shows as 'Question: {topic}' by purpose, not by length.
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+## b3-parent-try-at-home-from-letter (2026-10-03)
+Parent home 'Try at home' is the weekly letter's home activity (server/reports Lane A preview of this ISO week: a reviewed template, gate-passed, with its own How-do-we-know tap-through to the kt_evidence rows), not lesson.parent_note (model text the audit read as system voice). Picture chips show only objects the sentence names (maths → home/roti). Done / Not this week log {period} to audit. Reverse if the weekly home activity is too rarely admitted (then a reviewed per-topic home task authored in the kits).
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+## b3-parent-text-english-voice-family (2026-10-03)
+Notes (daily note, weekly letter) render the English text only; Listen plays the stored spoken script in the family's report language (§3.12). The language switcher and the Devanagari chrome tables in Report.tsx are gone (G-EN-1). Reverse if parents who read Hindi ask for Hindi text in pilot (then the text joins [data-speech] content, never chrome).
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+## b3-parent-errors-are-sentences (2026-10-03)
+Parent-corner errors go through src/parent/copy.ts parentError: known server codes (password_wrong, too_many_tries, pin_wrong, pin_shape, pin_weak, password_needed, confirm_needed; added to parent.js/account.js errors, additive) map to sentences; everything else is 'Something went wrong. Try again.'. Password errors sit on the password field (PasswordAgain = ReauthField's anti-autofill + a field error with aria-describedby). Sign-in (login mode) errors in src/onboarding/Account.tsx are field-level too; signup-mode errors are the onboarding workstream's.
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+## b3-signin-next (2026-10-03)
+Sign-in ?next= (src/onboarding/next.ts safeNext + Account.tsx): a ?next= makes sign-in the default form (the gate, a lesson's T8 and first-run 401s send returning parents there; LessonScreen and the steps sent ?next= without login=1, which showed 'Create your parent account'); an already-signed-in visitor with ?next= goes straight there; next must be a same-origin path, not //host, not /\host, no control chars, never /start/phone itself.
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+## b3-one-parent-label (2026-10-03)
+One parent name per skill: /api/parent/evidence, /api/parent/lesson and /api/parent/syllabus all send `label` (parentLabelOf: kit parentLabel, else the title with its first letter lowered) and every surface shows it (src/parent/copy.ts labelTitle raises the first letter for stand-alone titles). The Lesson card no longer shows lesson.parent_note (model text; audit #20's system voice) and its Listen speaks lessonSpeech (the card's own counts). Progress takes its per-topic skills from /api/parent/syllabus and no longer calls /api/parent/overview. Reverse if: kits author parentLabel (then nothing changes on the client) or a reviewed per-lesson summary lane exists.
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+## b3-signup-next-consent-first (2026-10-03)
+src/onboarding/Account.tsx: ?next= is honoured only for a returning parent (login, or already signed in). A fresh signup with ?next= goes to /start/consent, never straight into the corner with no consent and no child. Reverse if: a signup entry point needs to resume somewhere other than consent (then it must pass through consent first).
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)

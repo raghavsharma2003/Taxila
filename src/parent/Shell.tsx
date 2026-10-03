@@ -108,7 +108,7 @@ function Switcher({ kids, child, onSwitch }: { kids: ChildRow[]; child: ChildRow
           <Icon name="chevron" size={16} className="pa-switch-chev" />
         </label>
       ) : <span className="pa-switch-name">{child.first_name}</span>}
-      <span className="pa-meta">Class {child.class_level} · {BOARD_NAME[child.board] ?? child.board.toUpperCase()}</span>
+      <span className="pa-meta">Class {child.class_level} · {BOARD_NAME[child.board] ?? (child.board ? String(child.board).toUpperCase() : "CBSE")}</span>
     </div>
   );
 }

@@ -1121,3 +1121,28 @@ Commands: `node --test tests/teacher-name.test.mjs tests/lesson-safety.test.mjs`
 <!-- merged from inbox/owner-2026-10-03c.json -->
 ## codex-pack-landed (2026-10-03)
 Owner's Codex run (built-in image tool, model id not exposed), batches B00-B13 on branch claude/blissful-mayer-icwe2j, final commit efc8359. INDEX.json lists 399 entries: 386 done and QA-passed (size, format, transparency, colour, hash, provenance), 6 failed after three attempts and 7 skipped because a reference failed. Failed: bg/who-wide (framing), bg/garden-panorama (seam), topics/bead-pattern (sequence), garden/rose-bush-sprout (mound alignment), brand/mark (flat fill), teacher-ref/arjun/visemes/tongue-curl (anatomy). Skipped: bg/who-phone and app-icon, adaptive-foreground, adaptive-background, monochrome, splash-light and splash-dark (all downstream of brand/mark). Codex advised a human review of the skin-review scenes and the states/something-wrong paw vignette.
+
+
+## b3-parent-claims-sim-2026-10-03 (2026-10-03)
+tests/ui-v2-claims.test.mjs (npm test): 3,000 simulated ledgers (mulberry32 seed 20261003, 1-8 skills, 0-6 rows each over 30 days, 0-5 lessons): 0 server claims dropped by the client gate, 0 practising claims on < 2 non-unaided attempts in 14 days, claim state = ledger state in every case; branch coverage asserted (can_now > 200, practising > 100, too_early > 20, first > 200). Negative control: the audit case picked the pre-B3 way is dropped by the client gate.
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+## b3-account-delete-db-2026-10-03 (2026-10-03)
+tests/account-delete-db.test.mjs on the Neon TEST branch (n = 1 run): 5/5. Overview/lessons/lesson card/progress/export on real Postgres (COUNTED_SQL: a 1-minute visit listed, not counted); deletion refused when locked (403), without confirm, with a wrong password (nothing deleted); then 200 + receipt, 0 rows for the guardian/children in guardian, child, lesson, evidence, skill_state, consent, guardian_pin, auth_session and every information_schema table with child_id except learner_mode_audit; 1 audit row with detail keys ['receipt']; the old cookie → 401.
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+## b3-fixer-db-2026-10-03 (2026-10-03)
+tests/account-delete-db.run.mjs on the Neon TEST branch, real router + Postgres (n = 1 run): 8/8. New: can_now chip == /api/parent/evidence state and label; a newer miss removes can_now; Progress skill state == sheet; no skill with two states on the home; alert null for a raw incident, a safety_hold and a blocked notice, shown for a sent one; erasure (account and child) 409 erase_review while hold/notice/unhandled incident are open, each alone; after handling, the incident row survives detached (child_id null, detail.erased = receipt). Negative control (n = 1): with alertOf reading incident, can_now without the newest-row guard and erasure without safetyFirst, 4/8 fail (claim, alert, and the two erasure tests; the erasure ones fail via the shared fixture).
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+## b3-fixer-claims-sim-2026-10-03 (2026-10-03)
+tests/ui-v2-claims.test.mjs: 7/7; the 3,000-ledger simulation (seed 20261003) with the newest-row can_now guard: 1,028 claims (780 can_now, 248 practising), 202 too_early, 502 first; 0 client drops; every can_now's newest counted row is right-on-their-own. Plus reconcileTryAtHome, lessonSpeech, labelTitle and the erase_review sentence. Note: this sim tests the pure rule only; the real code path is b3-fixer-db-2026-10-03.
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)
+
+
+## b3-fixer-battery-2026-10-03 (2026-10-03)
+tests/e2e-design-b3-parent.mjs: 418/418 (n = 1, headless Chromium, production build, /api/* MOCKED: layout and payload handling only), 91 shots in docs/design/build/b3-parent/ (360x640 DPR 2 + 1280x800, light + dark; new: home-held, data-delete-deferred). New checks, each with its negative control where one exists: V-ONE (contradicting payload caught; generic activity; headline label == sheet == Progress == Lesson card), V-SAFE (held → no card; released → card; Help promises no message; deferred deletion sentence), V-HONEST (receipt copy, no Lesson summary, Progress makes no overview call), V-NEXT fresh signup → /start/consent, V-LAYOUT rail column painted full height (light, dark). Shot helper now parks the bottom bar static (it was painted mid-page in full-page 360 shots).
+(Recorded by the wave-5 parent-corner workstream, inbox/b3-parent.json.)

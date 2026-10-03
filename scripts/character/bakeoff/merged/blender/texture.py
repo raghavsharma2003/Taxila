@@ -476,6 +476,15 @@ if look.get("projection"):
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "identity"))
     import project as PJ
     A, A_H, Nb = PJ.apply(globals())
+# merged gate (VERDICT item 1, the parting wedge): texels INSIDE the hairline mask (designed hairline weight > 0.5, off
+# the lips) whose final H albedo is nearer the skin colour than the hair colour. Bar 0.
+_inmask = (hl > 0.5)
+_skin_ref = np.median(A_H[(hl < 0.05) & (front > 0.5)], axis=0)
+_dS = np.linalg.norm(A_H[_inmask] - _skin_ref, axis=1)
+_dHc = np.linalg.norm(A_H[_inmask] - hairc, axis=1)
+WEDGE = {"maskTexels": int(_inmask.sum()), "skinAlbedoTexels": int((_dS < _dHc).sum()),
+         "skinRefLin": np.round(_skin_ref, 4).tolist(), "hairLin": np.round(hairc, 4).tolist()}
+log(f"wedge check: {WEDGE['skinAlbedoTexels']} skin-albedo texels of {WEDGE['maskTexels']} inside the hairline mask")
 # ------------------------------------------------------------------ write skin maps
 def img(vals, ch):
     out = np.zeros((R, R, ch), np.float32)
@@ -630,7 +639,7 @@ C[:, 1024:, :3] = lin2srgb(np.array([0.012, 0.010, 0.009]))
 C[:, 1024:, 3] = Cl[:, :, 3]
 Image.fromarray(to8(C), "RGBA").save(os.path.join(OUT, "cards_atlas.png"), optimize=True)
 log("hair + cards written")
-json.dump({"res": R, "texels": int(cov.sum()), "landmarks": {"noseTip": noseTip.tolist(), "chin": chin.tolist(),
+json.dump({"res": R, "texels": int(cov.sum()), "wedge": WEDGE if "WEDGE" in globals() else None, "landmarks": {"noseTip": noseTip.tolist(), "chin": chin.tolist(),
            "lipC": lipC.tolist(), "mcL": mcL.tolist(), "mcR": mcR.tolist(), "browZ": float(browZ)}},
           open(os.path.join(OUT, "tex.json"), "w"), indent=1)
 log("done")

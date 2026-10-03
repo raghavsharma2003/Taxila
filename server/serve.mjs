@@ -1,7 +1,8 @@
 // Production entry for Azure Container Apps: serves the built SPA from dist/ and the API router on one port.
 // Long-lived process (no serverless time limit), so lessons, Forge status streams and WebSockets can live here.
 import http from "http";
-import { createReadStream, existsSync, statSync } from "fs";
+import { createReadStream, existsSync, readFileSync, statSync } from "fs";
+import { brotliCompressSync, gzipSync, constants as Z } from "zlib";
 import { extname, join, normalize, resolve } from "path";
 import { handle } from "./index.js";
 
@@ -27,8 +28,39 @@ const FRAME = { "content-security-policy": "sandbox allow-scripts; frame-ancesto
  */
 const ASSET = { "cache-control": "public, max-age=31536000, immutable", "access-control-allow-origin": "*" };
 
-function sendFile(res, file, headers) {
-  res.writeHead(200, { "content-type": TYPES[extname(file)] || "application/octet-stream", "cache-control": "no-cache", ...headers });
+/** Vite's content-hashed bundles (name-HASH.ext) are immutable; anything else under /assets/ (e.g. the generated-image
+ *  manifest, which changes in place) revalidates. */
+const HASHED = /-[A-Za-z0-9_-]{8,}\.[a-z0-9]+$/;
+const assetHeaders = (path) => (HASHED.test(path) ? ASSET : { "cache-control": "public, max-age=300, must-revalidate", "access-control-allow-origin": "*" });
+
+/** Text responses go out brotli (else gzip) encoded; the encoded bytes are cached per file and mtime. Measured:
+ *  the landing's JS+CSS is 471 KB raw vs 146 KB gzipped, LCP 4.4 s -> about 2.4 s on Fast 3G + 4x CPU. */
+const COMPRESSIBLE = new Set([".html", ".js", ".mjs", ".css", ".json", ".svg", ".wasm", ".map", ".txt"]);
+const packed = new Map();
+function encoded(file, enc, mtime) {
+  const key = `${enc}:${file}`; const hit = packed.get(key);
+  if (hit && hit.mtime === mtime) return hit.buf;
+  const raw = readFileSync(file);
+  const buf = enc === "br" ? brotliCompressSync(raw, { params: { [Z.BROTLI_PARAM_QUALITY]: 9, [Z.BROTLI_PARAM_SIZE_HINT]: raw.length } }) : gzipSync(raw, { level: 9 });
+  packed.set(key, { mtime, buf });
+  return buf;
+}
+
+function sendFile(res, file, headers, req) {
+  const type = TYPES[extname(file)] || "application/octet-stream";
+  const base = { "content-type": type, "cache-control": "no-cache", ...headers };
+  const st = statSync(file);
+  if (COMPRESSIBLE.has(extname(file)) && st.size > 1024) {
+    const ae = String(req?.headers["accept-encoding"] || "");
+    const enc = /\bbr\b/.test(ae) ? "br" : /\bgzip\b/.test(ae) ? "gzip" : null;
+    if (enc) {
+      const buf = encoded(file, enc, st.mtimeMs);
+      res.writeHead(200, { ...base, "content-encoding": enc, "content-length": buf.length, vary: "Accept-Encoding" });
+      return res.end(req.method === "HEAD" ? undefined : buf);
+    }
+  }
+  res.writeHead(200, { ...base, "content-length": st.size, vary: "Accept-Encoding" });
+  if (req?.method === "HEAD") return res.end();
   createReadStream(file).pipe(res);
 }
 
@@ -39,8 +71,8 @@ http.createServer((req, res) => {
   const frame = join(ROOT, "modules.html");
   if (file.startsWith(ROOT) && existsSync(file) && statSync(file).isFile()) {
     // hashed build assets are immutable; html must revalidate (the default no-cache)
-    return sendFile(res, file, path.startsWith("/assets/") ? ASSET : file === frame ? FRAME : {});
+    return sendFile(res, file, path.startsWith("/assets/") ? assetHeaders(path) : file === frame ? FRAME : {}, req);
   }
-  if (path === "/modules" || path.startsWith("/modules.")) return sendFile(res, frame, FRAME);
-  sendFile(res, join(ROOT, "index.html"), {}); // SPA fallback
+  if (path === "/modules" || path.startsWith("/modules.")) return sendFile(res, frame, FRAME, req);
+  sendFile(res, join(ROOT, "index.html"), {}, req); // SPA fallback
 }).listen(PORT, () => console.log(`taxila on :${PORT}`));
