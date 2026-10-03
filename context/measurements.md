@@ -1166,3 +1166,8 @@ The 6 failed and 7 skipped Codex assets were redone and pass the same machine QA
 <!-- merged from inbox/aws-setup.json -->
 ## aws-setup-2026-10-03
 The identity checked out as arn:aws:iam::780899467240:user/claude-taxila (keys in .env.local only; the console password was not stored). Starting quotas in us-east-1: On-Demand G and VT 0, Spot G and VT 0, On-Demand P 0, On-Demand Standard 5 vCPUs. Service Quotas requests, all PENDING: G/VT on-demand 8 (d81fbdfd…), G/VT spot 8 (2cfea88e…), Standard on-demand 16 (b5dd41c6…). Also created: AWS Budget taxila-build-gpu at $100/month with email alerts at 50% and 90% actual, to the owner's address; S3 bucket taxila-build-780899467240 (public access fully blocked, scratch/ expires after 14 days); IAM role and instance profile taxila-gpu-worker (S3 on that bucket only, self-terminate only for instances tagged taxila=gpu-build, plus SSM core). Cost Explorer is not enabled for this user, so credit use is checked in the Billing console.
+
+
+<!-- merged from inbox/aws-credits.json -->
+## aws-credits-2026-10-03
+From the owner's screenshot of Billing > Credits, 2026-10-03 11:03 IST: total remaining $1,100.00, used $0.00. Two active credits: AWS Activate - FOUNDERS, $1,000.00, start 07/01/2026; AWS Free Tier, $100.00, start 02/23/2026. The expiry dates and applicable products were not visible. It is not the $2k the owner remembered. The build-GPU plan (10-30 GPU hours on g6.xlarge, about $0.80/h on-demand) costs about $10-40, under 4% of the credit. Cost Explorer works for the IAM user but shows no credit records until spend begins.
