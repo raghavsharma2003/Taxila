@@ -33,7 +33,7 @@
   {
    "id": "realtime-teacher-bakeoff-2026-10-02",
    "kind": "measurement",
-   "title": "Realtime 2.1 vs mini with teacher prompt: 64\u219225 words/turn when brevity is structural",
+   "title": "Realtime 2.1 vs mini with teacher prompt: 64→25 words/turn when brevity is structural",
    "at": "2026-10-02"
   },
   {
@@ -125,7 +125,7 @@
   {
    "id": "db-driver-latency-2026-10-02",
    "kind": "measurement",
-   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 \u2192 Neon us-east-1",
+   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 → Neon us-east-1",
    "at": "2026-10-02"
   },
   {
@@ -575,7 +575,7 @@
   {
    "id": "voice-lane-cascade-default",
    "kind": "decision",
-   "title": "Default voice = STT\u2192Director\u2192TTS cascade (~\u20b928/h); realtime 2.1 premium share",
+   "title": "Default voice = STT→Director→TTS cascade (~₹28/h); realtime 2.1 premium share",
    "at": "2026-10-02"
   },
   {
@@ -859,7 +859,7 @@
   {
    "id": "azure-billed-open-models",
    "kind": "decision",
-   "title": "Open models (DeepSeek, Kimi, gpt-oss, Grok, FLUX\u2026) allowed if Direct-from-Azure billed; per-task routing by bake-off",
+   "title": "Open models (DeepSeek, Kimi, gpt-oss, Grok, FLUX…) allowed if Direct-from-Azure billed; per-task routing by bake-off",
    "at": "2026-10-02"
   },
   {
@@ -889,7 +889,7 @@
   {
    "id": "language-core-hinglish-english-hindi",
    "kind": "constraint",
-   "title": "Core = English + Hindi + Hinglish; regional languages later \u2014 keep language a parameter",
+   "title": "Core = English + Hindi + Hinglish; regional languages later — keep language a parameter",
    "at": "2026-10-02"
   },
   {
@@ -909,28 +909,28 @@
   {
    "id": "cascade-barge-pause-decide",
    "kind": "decision",
-   "title": "Cascade barge-in is pause-then-decide: local onset ducks (~90 ms), sustained local voice (~120 ms) or server speech_started pauses with the reply kept; the transcript decides: a real turn stops her (teacher_interrupted even while loading), nothing / lone backchannel with \u22651 s left / her own echo resumes from the last word gap",
+   "title": "Cascade barge-in is pause-then-decide: local onset ducks (~90 ms), sustained local voice (~120 ms) or server speech_started pauses with the reply kept; the transcript decides: a real turn stops her (teacher_interrupted even while loading), nothing / lone backchannel with ≥1 s left / her own echo resumes from the last word gap",
    "at": "2026-10-02",
    "source": "inbox/cascade-fix.json"
   },
   {
    "id": "cascade-2s-budget-unreachable-at-900ms",
    "kind": "measurement",
-   "title": "The 2.0 s speech-end\u2192first-audio budget is not reachable with 900 ms server-VAD silence: endpoint alone measures 1046-1146 ms (n=24), STT +250-500, TTS first byte +160-480, leaving < 0.3 s for the Director (best measured 1.9 s)",
+   "title": "The 2.0 s speech-end→first-audio budget is not reachable with 900 ms server-VAD silence: endpoint alone measures 1046-1146 ms (n=24), STT +250-500, TTS first byte +160-480, leaving < 0.3 s for the Director (best measured 1.9 s)",
    "at": "2026-10-02",
    "source": "inbox/cascade-fix.json"
   },
   {
    "id": "cascade-typed-lane-grading",
    "kind": "rejection",
-   "title": "Rejected: starting cascade lessons as mode 'text' \u2014 every spoken turn was stored asr_conf=null and graded as typed; a conf 0.401 transcript went to the model and was graded (baseline eval turn 3); the repair turn was graded as an empty typed answer",
+   "title": "Rejected: starting cascade lessons as mode 'text' — every spoken turn was stored asr_conf=null and graded as typed; a conf 0.401 transcript went to the model and was graded (baseline eval turn 3); the repair turn was graded as an empty typed answer",
    "at": "2026-10-02",
    "source": "inbox/cascade-fix.json"
   },
   {
    "id": "cascade-barge-all-or-nothing",
    "kind": "rejection",
-   "title": "Rejected: barge-in that discards the reply on any server speech_started \u2014 a cough, TV, 'hmm' or her own echo killed her question, the empty transcript then emitted child_silent and both sides waited; a reply cut while loading was never marked interrupted",
+   "title": "Rejected: barge-in that discards the reply on any server speech_started — a cough, TV, 'hmm' or her own echo killed her question, the empty transcript then emitted child_silent and both sides waited; a reply cut while loading was never marked interrupted",
    "at": "2026-10-02",
    "source": "inbox/cascade-fix.json"
   },
@@ -944,7 +944,7 @@
   {
    "id": "cascade-pcm-throttle-sim-2026-10-02",
    "kind": "measurement",
-   "title": "PCM player throttle SIMULATION (1 Mbit/s, 150 ms RTT): no gaps unless a stall hits in the first ~0.1 s; then gaps 158/119/79 ms as the adaptive start lead grows 60\u2192100\u2192140 ms; no real-link measurement",
+   "title": "PCM player throttle SIMULATION (1 Mbit/s, 150 ms RTT): no gaps unless a stall hits in the first ~0.1 s; then gaps 158/119/79 ms as the adaptive start lead grows 60→100→140 ms; no real-link measurement",
    "at": "2026-10-02",
    "source": "inbox/cascade-fix.json"
   },
@@ -993,7 +993,7 @@
   {
    "id": "norm-strips-devanagari-matras",
    "kind": "measurement",
-   "title": "items.js norm() strips Devanagari combining marks (\\p{M}): \u0926\u093e\u0926\u0940==\u0926\u093e\u0926\u093e, \u092a\u0940\u0932\u093e==\u092a\u093f\u0932\u093e, \u092e\u0942\u0932\u0940==\u092e\u0941\u0932\u0940, \u092c\u0948\u0902\u0917\u0928==\u092c\u0947\u0902\u0917\u0928 after norm \u2014 matra-contrast answers cannot be graded or leak-checked correctly",
+   "title": "items.js norm() strips Devanagari combining marks (\\p{M}): दादी==दादा, पीला==पिला, मूली==मुली, बैंगन==बेंगन after norm — matra-contrast answers cannot be graded or leak-checked correctly",
    "at": "2026-10-02",
    "source": "inbox/kits-c2-hindi.json"
   },
@@ -1063,14 +1063,14 @@
   {
    "id": "parent-gate-e2e-2026-10-02",
    "kind": "measurement",
-   "title": "tests/parent-gate-e2e.mjs 35/35 PASS (Neon, n=1 run): onboarding PIN leaves corner locked; burst of 8 wrong PINs \u2192 4 'wrong' + lockout; burst of 7 wrong passwords \u2192 0 checked; Playwright walk 12/12",
+   "title": "tests/parent-gate-e2e.mjs 35/35 PASS (Neon, n=1 run): onboarding PIN leaves corner locked; burst of 8 wrong PINs → 4 'wrong' + lockout; burst of 7 wrong passwords → 0 checked; Playwright walk 12/12",
    "at": "2026-10-02",
    "source": "inbox/ui-a-shell-parent-fix.json"
   },
   {
    "id": "ui-a-gaps-2026-10-02",
    "kind": "rejection",
-   "title": "NOT built in ui-a (recorded so coverage is not implied): /who speaks the name on tap; P6 NameSayer + optional first subject; P7 first-day cap \u2265 child path; P8 MB estimate on cellular; WhatsApp/email notice of a PIN reset or lockout; Class 1-4 spoken summary as the DEFAULT lesson view (a speaker is offered, not autoplayed)",
+   "title": "NOT built in ui-a (recorded so coverage is not implied): /who speaks the name on tap; P6 NameSayer + optional first subject; P7 first-day cap ≥ child path; P8 MB estimate on cellular; WhatsApp/email notice of a PIN reset or lockout; Class 1-4 spoken summary as the DEFAULT lesson view (a speaker is offered, not autoplayed)",
    "at": "2026-10-02",
    "source": "inbox/ui-a-shell-parent-fix.json"
   },
@@ -1091,21 +1091,21 @@
   {
    "id": "voice-features-wired-2026-10-02",
    "kind": "measurement",
-   "title": "Voice features wired into live lessons: runtime \u2192 TurnRequest.voiceFeatures \u2192 turnVoice() in /api/lesson/turn (114 ms Neon write, parallel to classify); browser smoke: 1 PTT turn \u2192 1 turn POST with numbers-only features",
+   "title": "Voice features wired into live lessons: runtime → TurnRequest.voiceFeatures → turnVoice() in /api/lesson/turn (114 ms Neon write, parallel to classify); browser smoke: 1 PTT turn → 1 turn POST with numbers-only features",
    "at": "2026-10-02",
    "source": "inbox/voice-features-fix.json"
   },
   {
    "id": "voice-features-onset-one-clock",
    "kind": "measurement",
-   "title": "Onset measured in one clock (receipt-relative chunk stamps, + outputLatency on teacher end): Chromium, n=5, known 700 ms gap \u2192 630-647 ms (outputLatency 32 ms; residual \u221221..\u221238 ms = 40 ms window-centre bias)",
+   "title": "Onset measured in one clock (receipt-relative chunk stamps, + outputLatency on teacher end): Chromium, n=5, known 700 ms gap → 630-647 ms (outputLatency 32 ms; residual −21..−38 ms = 40 ms window-centre bias)",
    "at": "2026-10-02",
    "source": "inbox/voice-features-fix.json"
   },
   {
    "id": "voice-signals-null-fire-rate",
    "kind": "measurement",
-   "title": "signalsFrom null fire rates (MC n=40k, correlated pairs \u03c1=0.8): max/min of pairs 5.71/0.56/1.13 % (probe/gentler/slower) \u2192 mean of pairs 3.54/0.25/0.37 %",
+   "title": "signalsFrom null fire rates (MC n=40k, correlated pairs ρ=0.8): max/min of pairs 5.71/0.56/1.13 % (probe/gentler/slower) → mean of pairs 3.54/0.25/0.37 %",
    "at": "2026-10-02",
    "source": "inbox/voice-features-fix.json"
   },
@@ -1119,7 +1119,7 @@
   {
    "id": "voice-features-latest-signals-race",
    "kind": "rejection",
-   "title": "Rejected: separate fire-and-forget POST /api/voice/features + latestSignals(lesson, withinMs) as the Director's read \u2014 the turn POST races it and reads the PREVIOUS utterance's signals (different item)",
+   "title": "Rejected: separate fire-and-forget POST /api/voice/features + latestSignals(lesson, withinMs) as the Director's read — the turn POST races it and reads the PREVIOUS utterance's signals (different item)",
    "at": "2026-10-02",
    "source": "inbox/voice-features-fix.json"
   },
@@ -1294,14 +1294,14 @@
   {
    "id": "conductor-pause-at-lesson-end",
    "kind": "decision",
-   "title": "parent.pause during a live lesson takes effect when the lesson ends (or at the 3 h stale-lesson clock close), not at the next day boundary as CONDUCTOR.md \u00a73.3 says",
+   "title": "parent.pause during a live lesson takes effect when the lesson ends (or at the 3 h stale-lesson clock close), not at the next day boundary as CONDUCTOR.md §3.3 says",
    "at": "2026-10-02",
    "source": "inbox/conductor-m0-fix.json"
   },
   {
    "id": "conductor-budget-threshold-today",
    "kind": "decision",
-   "title": "budget.threshold (child scope, >=80%) narrows TODAY's unshown slots to cascade via a debounced re-plan, not only tomorrow's plan as \u00a73.3 says; shown/started slots stay frozen (V10)",
+   "title": "budget.threshold (child scope, >=80%) narrows TODAY's unshown slots to cascade via a debounced re-plan, not only tomorrow's plan as §3.3 says; shown/started slots stay frozen (V10)",
    "at": "2026-10-02",
    "source": "inbox/conductor-m0-fix.json"
   },
@@ -1385,7 +1385,7 @@
   {
    "id": "parent-recheck-from-missed-check",
    "kind": "decision",
-   "title": "Parent 'Pakka \u00b7 dobara jaanch' tag is derived from evidence (a missed delayed P10 check after a delayed pass), never from bkt status 'due'; 'due' reads as its underlying level",
+   "title": "Parent 'Pakka · dobara jaanch' tag is derived from evidence (a missed delayed P10 check after a delayed pass), never from bkt status 'due'; 'due' reads as its underlying level",
    "at": "2026-10-02",
    "source": "inbox/ui-a-shell-parent-fix.json"
   },
@@ -1406,7 +1406,7 @@
   {
    "id": "ui-a-open-gaps",
    "kind": "open",
-   "title": "ui-a unbuilt spec items: \u00a72.3 tap plays the name aloud on /who; \u00a72.2 P6 NameSayer TTS preview + optional first subject; \u00a76.5 level bridge and school sync; \u00a76.6 delete per lesson; \u00a76.10 in-app safety alert (GET /api/parent/alerts over incident, never quoting the child, with helplines, safeguarding suppression branch); \u00a76.2 WhatsApp notice of a pending PIN reset; ChildShell should call useSurface/ensureFont and drop src/child/tokens.css duplicates (ui-b)",
+   "title": "ui-a unbuilt spec items: §2.3 tap plays the name aloud on /who; §2.2 P6 NameSayer TTS preview + optional first subject; §6.5 level bridge and school sync; §6.6 delete per lesson; §6.10 in-app safety alert (GET /api/parent/alerts over incident, never quoting the child, with helplines, safeguarding suppression branch); §6.2 WhatsApp notice of a pending PIN reset; ChildShell should call useSurface/ensureFont and drop src/child/tokens.css duplicates (ui-b)",
    "at": "2026-10-02",
    "source": "inbox/ui-a-shell-parent-fix.json"
   },
@@ -1462,14 +1462,14 @@
   {
    "id": "learner-fold-id-tiebreak-diverged",
    "kind": "rejection",
-   "title": "Sorting unsequenced events by id as strings in fold() while inserting in arrival order: 'e10' < 'e9', so kt_skill_state \u2260 replay of kt_evidence (online pL 0.8999 vs replay 0.8371 on [e9 C4, e10 C0, e11 why-full])",
+   "title": "Sorting unsequenced events by id as strings in fold() while inserting in arrival order: 'e10' < 'e9', so kt_skill_state ≠ replay of kt_evidence (online pL 0.8999 vs replay 0.8371 on [e9 C4, e10 C0, e11 why-full])",
    "at": "2026-10-02",
    "source": "inbox/learner-upgrade-fix.json"
   },
   {
    "id": "learner-delayed-check-session-clock",
    "kind": "decision",
-   "title": "The 20 h delayed-check delay is measured session start \u2192 session start (no intra-session clock, isolation \u00a713.1), not event \u2192 event as PRODUCT-DESIGN \u00a76.4.1 says; a check can count \u224819 h after the real anchor event after a 45-min lesson. Only item/solo, near transfer and error-spot are check classes; C1/C2 re-anchor; a recognition item spends the check",
+   "title": "The 20 h delayed-check delay is measured session start → session start (no intra-session clock, isolation §13.1), not event → event as PRODUCT-DESIGN §6.4.1 says; a check can count ≈19 h after the real anchor event after a 45-min lesson. Only item/solo, near transfer and error-spot are check classes; C1/C2 re-anchor; a recognition item spends the check",
    "at": "2026-10-02",
    "source": "inbox/learner-upgrade-fix.json"
   },
@@ -1490,7 +1490,7 @@
   {
    "id": "learner-nm3-legacy-columns",
    "kind": "open",
-   "title": "OPEN (owner): NM-3 columns that predate the learner model \u2014 rel_state.trust/last_trust_update (no longer written), rel_event.note, lesson.parent_note, turn.asr_conf, voice_feature.asr_conf/barge_in, voice_baseline rows \u2014 are listed in tests/learner-mode.test.mjs NM3_KNOWN and deleted on M0; drop vs M3-only split is the owner's call",
+   "title": "OPEN (owner): NM-3 columns that predate the learner model — rel_state.trust/last_trust_update (no longer written), rel_event.note, lesson.parent_note, turn.asr_conf, voice_feature.asr_conf/barge_in, voice_baseline rows — are listed in tests/learner-mode.test.mjs NM3_KNOWN and deleted on M0; drop vs M3-only split is the owner's call",
    "at": "2026-10-02",
    "source": "inbox/learner-upgrade-fix.json"
   },
@@ -1504,7 +1504,7 @@
   {
    "id": "learner-fold-cost-2026-10-02",
    "kind": "measurement",
-   "title": "One online fold() event on a 4,800-event ledger (92 KB): 6.7 ms with a whole-ledger structuredClone \u2192 \u22481.8 ms with copy-on-write; the remainder is the flat copy of the complete seen map (spec budget < 1 ms not yet met)",
+   "title": "One online fold() event on a 4,800-event ledger (92 KB): 6.7 ms with a whole-ledger structuredClone → ≈1.8 ms with copy-on-write; the remainder is the flat copy of the complete seen map (spec budget < 1 ms not yet met)",
    "at": "2026-10-02",
    "source": "inbox/learner-upgrade-fix.json"
   },
@@ -1589,7 +1589,7 @@
    "id": "cascade-latency-v2-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-02",
-   "title": "Cascade lane after the latency pass (n=20-40 per config, synthetic speech): median speech end \u2192 first TTS byte 3977 ms (p90 4900, n=28) \u2192 2966 ms (p90 3163, n=20) with classify=grok-4-1-fast-non-reasoning + hedge; Director 2044 \u2192 1292 ms, TTS stage 362 \u2192 216 ms; 0 turns \u2264 2.0 s in any config",
+   "title": "Cascade lane after the latency pass (n=20-40 per config, synthetic speech): median speech end → first TTS byte 3977 ms (p90 4900, n=28) → 2966 ms (p90 3163, n=20) with classify=grok-4-1-fast-non-reasoning + hedge; Director 2044 → 1292 ms, TTS stage 362 → 216 ms; 0 turns ≤ 2.0 s in any config",
    "source": "inbox/cascade-latency-2.json"
   },
   {
@@ -1610,7 +1610,7 @@
    "id": "drift-repair-in-code",
    "kind": "decision",
    "at": "2026-10-02",
-   "title": "A reply whose only guard failures are drift (+flat) is repaired in code \u2014 the draft up to its first question, then the item's verified question \u2014 and every guard re-runs; anything left goes to the model rewrite. Matches 9/9 measured drift rewrites, saves ~1 s",
+   "title": "A reply whose only guard failures are drift (+flat) is repaired in code — the draft up to its first question, then the item's verified question — and every guard re-runs; anything left goes to the model rewrite. Matches 9/9 measured drift rewrites, saves ~1 s",
    "source": "inbox/cascade-latency-2.json"
   },
   {
@@ -1631,42 +1631,42 @@
    "id": "classify-accuracy-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-02",
-   "title": "Real classify() on kit c4-maths-ch01-t01, 20 hand-labelled model-reaching replies \u00d7 2 reps \u00d7 2 runs: taxila-fast 72/80 exact, grok-4-1-fast-non-reasoning 75/80, DeepSeek-V4-Pro 74/80; 0 graded-wrong for all; distress flag 10/10 each (n=10); p50 1.06 / 0.63 / 1.14-1.32 s",
+   "title": "Real classify() on kit c4-maths-ch01-t01, 20 hand-labelled model-reaching replies × 2 reps × 2 runs: taxila-fast 72/80 exact, grok-4-1-fast-non-reasoning 75/80, DeepSeek-V4-Pro 74/80; 0 graded-wrong for all; distress flag 10/10 each (n=10); p50 1.06 / 0.63 / 1.14-1.32 s",
    "source": "inbox/cascade-latency-2.json"
   },
   {
    "id": "keepalive-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-02",
-   "title": "Outbound keep-alive (server/net.js, 30 s): a tiny taxila-fast call after 6 s idle 1302 ms \u2192 698 ms median (n=5 each; warm-connection calls ~990 ms)",
+   "title": "Outbound keep-alive (server/net.js, 30 s): a tiny taxila-fast call after 6 s idle 1302 ms → 698 ms median (n=5 each; warm-connection calls ~990 ms)",
    "source": "inbox/cascade-latency-2.json"
   },
   {
    "id": "reply-streaming-no-gain",
    "kind": "rejection",
    "at": "2026-10-02",
-   "title": "Rejected: streaming the teacher reply to start TTS on the first guarded sentence \u2014 the first content delta (already a whole sentence; Azure releases filtered text in blocks) arrives 37-140 ms before the call ends (n=5 \u00d7 2 models); TTFT is the whole cost",
+   "title": "Rejected: streaming the teacher reply to start TTS on the first guarded sentence — the first content delta (already a whole sentence; Azure releases filtered text in blocks) arrives 37-140 ms before the call ends (n=5 × 2 models); TTFT is the whole cost",
    "source": "inbox/cascade-latency-2.json"
   },
   {
    "id": "tts-first-clause-no-gain",
    "kind": "rejection",
    "at": "2026-10-02",
-   "title": "Rejected: TTS on the first clause \u2014 gpt-4o-mini-tts first byte is length-independent (2-word clause 262 ms vs 16-word sentence 260 ms median, n=6 each)",
+   "title": "Rejected: TTS on the first clause — gpt-4o-mini-tts first byte is length-independent (2-word clause 262 ms vs 16-word sentence 260 ms median, n=6 each)",
    "source": "inbox/cascade-latency-2.json"
   },
   {
    "id": "reply-two-drafts",
    "kind": "rejection",
    "at": "2026-10-02",
-   "title": "Rejected (for now): two parallel reply drafts, first guard-clean wins \u2014 Director median 1577 vs 1422 ms single-draft (n=10 vs 30), p90 worse (waits on the slower draft when the first fails), and doubles reply calls",
+   "title": "Rejected (for now): two parallel reply drafts, first guard-clean wins — Director median 1577 vs 1422 ms single-draft (n=10 vs 30), p90 worse (waits on the slower draft when the first fails), and doubles reply calls",
    "source": "inbox/cascade-latency-2.json"
   },
   {
    "id": "reply-ds41-cascade",
    "kind": "rejection",
    "at": "2026-10-02",
-   "title": "Rejected as cascade DEPLOY_REPLY: taxila-ds41 \u2014 guard rewrites 4/10 and its rewrites took 2.5-3.7 s; total median 3783 ms vs 3055 with taxila-fast (n=10 vs 30)",
+   "title": "Rejected as cascade DEPLOY_REPLY: taxila-ds41 — guard rewrites 4/10 and its rewrites took 2.5-3.7 s; total median 3783 ms vs 3055 with taxila-fast (n=10 vs 30)",
    "source": "inbox/cascade-latency-2.json"
   },
   {
@@ -1679,7 +1679,7 @@
   {
    "id": "sim-misconception-truth-leak",
    "kind": "rejection",
-   "title": "Simulator tagged misconception hits only when the hidden truth bit said the child held it (&& t.mis) \u2014 every hit was a true one; fixed to observable-only tags with a non-holder match rate",
+   "title": "Simulator tagged misconception hits only when the hidden truth bit said the child held it (&& t.mis) — every hit was a true one; fixed to observable-only tags with a non-holder match rate",
    "at": "2026-10-02",
    "source": "inbox/comprehension-review.json"
   },
@@ -1714,7 +1714,7 @@
   {
    "id": "sim-mutants-invisible-bkt2",
    "kind": "measurement",
-   "title": "Mutants VC2 (partial scored as full) and VC4 (game at full weight, no E4) do NOT fail CE-M3 under bkt2 (false mastery 0.021 / 0.022); VC2 fails under cfrag-lite (0.056, shallow 0.040), VC4 does not (0.046) \u2014 the battery cannot see VC4",
+   "title": "Mutants VC2 (partial scored as full) and VC4 (game at full weight, no E4) do NOT fail CE-M3 under bkt2 (false mastery 0.021 / 0.022); VC2 fails under cfrag-lite (0.056, shallow 0.040), VC4 does not (0.046) — the battery cannot see VC4",
    "at": "2026-10-02",
    "source": "inbox/comprehension-review.json"
   },
@@ -1722,7 +1722,7 @@
    "id": "model-router-v1",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "PROPOSED model router v1 (docs/research/models/MODEL-ROUTER.md): live reply gpt-5.6-terra \u2192 fallback taxila-ds41; classify/distress/director taxila-fast \u2192 fallbacks grok-4-20-nr / taxila-ds41 / oss120; writing taxila-brain \u2192 terra; diagram+game code taxila-codex \u2192 brain / DeepSeek-V4-Pro; images gpt-image-2 (text) + FLUX.2-pro (text-free art); OCR taxila-brain \u2192 grok-4-20-nr; ask owner to deploy gpt-6.1-sol, gpt-6-luna, text-embedding-3-large, Cohere-Embed-V5-Pro, gpt-image-2.5-flare/sunburst, MAI-Image-2.6, Kimi-K3 (after billing check), mistral-ocr-4-0",
+   "title": "PROPOSED model router v1 (docs/research/models/MODEL-ROUTER.md): live reply gpt-5.6-terra → fallback taxila-ds41; classify/distress/director taxila-fast → fallbacks grok-4-20-nr / taxila-ds41 / oss120; writing taxila-brain → terra; diagram+game code taxila-codex → brain / DeepSeek-V4-Pro; images gpt-image-2 (text) + FLUX.2-pro (text-free art); OCR taxila-brain → grok-4-20-nr; ask owner to deploy gpt-6.1-sol, gpt-6-luna, text-embedding-3-large, Cohere-Embed-V5-Pro, gpt-image-2.5-flare/sunburst, MAI-Image-2.6, Kimi-K3 (after billing check), mistral-ocr-4-0",
    "source": "inbox/model-router-research.json"
   },
   {
@@ -1736,21 +1736,21 @@
    "id": "image-bench-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "3 prompts \u00d7 gpt-image-2 / FLUX.2-pro / FLUX.1-Kontext-pro, n=1, brain vision judge: gpt-image-2 25/25 on every prompt (37-47 s, $0.053); FLUX.2-pro labels on wrong parts, tutor character 5/5 in 6.2 s (~$0.03); Kontext gibberish caption",
+   "title": "3 prompts × gpt-image-2 / FLUX.2-pro / FLUX.1-Kontext-pro, n=1, brain vision judge: gpt-image-2 25/25 on every prompt (37-47 s, $0.053); FLUX.2-pro labels on wrong parts, tutor character 5/5 in 6.2 s (~$0.03); Kontext gibberish caption",
    "source": "inbox/model-router-research.json"
   },
   {
    "id": "game-code-probe-models-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "Phaser 4 single-file probe (2 tasks \u00d7 n=3) on 8 models: functional 6/6 codex, DeepSeek-V4-Pro (9.9 s), ds41 (5.7 s), brain, grok-4.3, oss120; 4/6 terra and kimi-code (95 s); tasks at ceiling",
+   "title": "Phaser 4 single-file probe (2 tasks × n=3) on 8 models: functional 6/6 codex, DeepSeek-V4-Pro (9.9 s), ds41 (5.7 s), brain, grok-4.3, oss120; 4/6 terra and kimi-code (95 s); tasks at ceiling",
    "source": "inbox/model-router-research.json"
   },
   {
    "id": "oss120-json-mode-corrupt",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "gpt-oss-120b with response_format json_object on Foundry returns corrupted JSON ({\"final{\": ...}) \u2014 explains model-bakeoff C 0/12; send plain text and parse",
+   "title": "gpt-oss-120b with response_format json_object on Foundry returns corrupted JSON ({\"final{\": ...}) — explains model-bakeoff C 0/12; send plain text and parse",
    "source": "inbox/model-router-research.json"
   },
   {
@@ -1785,28 +1785,28 @@
    "id": "voice-tts-spoken-render",
    "kind": "decision",
    "at": "2026-10-02",
-   "title": "Every TTS input is rendered by server/voice/spoken.js toSpoken() (data-driven NCERT SpokenSet per mode \u00d7 school medium \u00d7 band; helplines from floor.js matched exactly first, always digit by digit); captions, stored turns and leak/safety guards keep the written text; the realtime (voice) compile carries the helplines as the mode's digit words, never numerals",
+   "title": "Every TTS input is rendered by server/voice/spoken.js toSpoken() (data-driven NCERT SpokenSet per mode × school medium × band; helplines from floor.js matched exactly first, always digit by digit); captions, stored turns and leak/safety guards keep the written text; the realtime (voice) compile carries the helplines as the mode's digit words, never numerals",
    "source": "inbox/spoken-notation-build.json"
   },
   {
    "id": "notation-probe-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-02",
-   "title": "G1 spoken-notation probe (53 items \u00d7 en/hl/hi \u00d7 written vs pre-rendered \u00d7 RT/TTS, n=159/arm): TTS written 33% render / 28% mixed / 18% misread vs pre-rendered 6/6/1%; Indian-comma numbers misread 11/15 TTS, 9/15 RT written; helplines Hindi mode written 0/4 digit-exact, pre-rendered 11/12",
+   "title": "G1 spoken-notation probe (53 items × en/hl/hi × written vs pre-rendered × RT/TTS, n=159/arm): TTS written 33% render / 28% mixed / 18% misread vs pre-rendered 6/6/1%; Indian-comma numbers misread 11/15 TTS, 9/15 RT written; helplines Hindi mode written 0/4 digit-exact, pre-rendered 11/12",
    "source": "inbox/spoken-notation-build.json"
   },
   {
    "id": "spoken-render-tts-rerun-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-02",
-   "title": "Reduced probe re-run with toSpoken() as the TTS input (gpt-4o-mini-tts marin, 30 items \u00d7 en/hl/hi, n=90 + 4 helpline clips): any flag 13% vs written 57% and hand-authored 14% on the same items; misread 6% (3% excl. ASR-suspect) vs 24% / 2%; Indian-comma numbers misread 1/15 vs 11/15; en mode 0/30 flags",
+   "title": "Reduced probe re-run with toSpoken() as the TTS input (gpt-4o-mini-tts marin, 30 items × en/hl/hi, n=90 + 4 helpline clips): any flag 13% vs written 57% and hand-authored 14% on the same items; misread 6% (3% excl. ASR-suspect) vs 24% / 2%; Indian-comma numbers misread 1/15 vs 11/15; en mode 0/30 flags",
    "source": "inbox/spoken-notation-build.json"
   },
   {
    "id": "spoken-helplines-repeat-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "Helplines through toSpoken() in all 5 mode \u00d7 medium cells, 3 takes each (n=30): 28/30 judged digit-exact, 0 confirmed wrong digit (1 undeterminable, 1 single-ASR disagreement); with the first re-run's 10 clips, 37/40 exact, 0 confirmed wrong; one Hindi-mode Tele-MANAS take clipped the final \u091b\u0939",
+   "title": "Helplines through toSpoken() in all 5 mode × medium cells, 3 takes each (n=30): 28/30 judged digit-exact, 0 confirmed wrong digit (1 undeterminable, 1 single-ASR disagreement); with the first re-run's 10 clips, 37/40 exact, 0 confirmed wrong; one Hindi-mode Tele-MANAS take clipped the final छह",
    "source": "inbox/spoken-notation-build.json"
   },
   {
@@ -1820,7 +1820,7 @@
    "id": "open-realtime-lesson-now-notation",
    "kind": "open",
    "at": "2026-10-02",
-   "title": "Realtime lane LESSON NOW still poses kit items with written notation (director/items.js promptFor): only the helplines are pre-rendered there; the kit `spoken` field + checkSpoken at kit-load (spoken-notation \u00a72.1) is unbuilt",
+   "title": "Realtime lane LESSON NOW still poses kit items with written notation (director/items.js promptFor): only the helplines are pre-rendered there; the kit `spoken` field + checkSpoken at kit-load (spoken-notation §2.1) is unbuilt",
    "source": "inbox/spoken-notation-build.json"
   },
   {
@@ -1867,7 +1867,7 @@
   {
    "id": "model-router-v2",
    "kind": "decision",
-   "title": "FINAL model router (MODEL-ROUTER.md \u00a71, post-review): live reply taxila-fast -> DeepSeek-V4-Pro; premium voice taxila-realtime; cascade TTS DragonHD per character (proposed) -> gpt-4o-mini-tts; STT live-transcribe (lesson-term keywords only) -> Azure Speech RT LID; classify fast -> grok-4-20-nr; distress predicate + fast -> DeepSeek-V4-Pro; director fast -> oss120; reports brain -> fast; code codex -> brain / V4-Pro; images gpt-image-2 / FLUX.2-pro; OCR brain -> grok-4-20-nr; ds41 and Kimi-K3 out of production until the Fireworks meter is confirmed Direct",
+   "title": "FINAL model router (MODEL-ROUTER.md §1, post-review): live reply taxila-fast -> DeepSeek-V4-Pro; premium voice taxila-realtime; cascade TTS DragonHD per character (proposed) -> gpt-4o-mini-tts; STT live-transcribe (lesson-term keywords only) -> Azure Speech RT LID; classify fast -> grok-4-20-nr; distress predicate + fast -> DeepSeek-V4-Pro; director fast -> oss120; reports brain -> fast; code codex -> brain / V4-Pro; images gpt-image-2 / FLUX.2-pro; OCR brain -> grok-4-20-nr; ds41 and Kimi-K3 out of production until the Fireworks meter is confirmed Direct",
    "at": "2026-10-02",
    "source": "inbox/voice-models.json"
   },
@@ -1944,7 +1944,7 @@
   {
    "id": "avatar-tutor-offer-sheet-ranges",
    "kind": "decision",
-   "title": "The picker offers a tutor only inside its persona sheet's class range and only when the sheet + voice exist: today one tutor per class, so the picker is skipped (no fake one-tile choice); AVATAR \u00a75.1 widened ranges sit behind TAXILA_TUTOR_OFFER=wide; Uma is a draft",
+   "title": "The picker offers a tutor only inside its persona sheet's class range and only when the sheet + voice exist: today one tutor per class, so the picker is skipped (no fake one-tile choice); AVATAR §5.1 widened ranges sit behind TAXILA_TUTOR_OFFER=wide; Uma is a draft",
    "at": "2026-10-03",
    "source": "inbox/avatar-m0.json"
   },
@@ -2028,7 +2028,7 @@
   {
    "id": "engines-v1-catalog-binding",
    "kind": "decision",
-   "title": "shared/engine-catalog.js is the planner's engine table: kit hint aliases (\u2248230) \u2192 engine + preset, topic-map fallback, and item adapters that BIND a kit item (module answers grade it) only when the engine's right answer derived from params alone equals the verified kit key; everything else mounts unbound",
+   "title": "shared/engine-catalog.js is the planner's engine table: kit hint aliases (≈230) → engine + preset, topic-map fallback, and item adapters that BIND a kit item (module answers grade it) only when the engine's right answer derived from params alone equals the verified kit key; everything else mounts unbound",
    "at": "2026-10-03",
    "source": "inbox/engines-v1.json"
   },
@@ -2063,21 +2063,21 @@
   {
    "id": "engines-v1-browser-2026-10-03",
    "kind": "measurement",
-   "title": "Playwright, real sandboxed frame at 360\u00d7900: 60 scenarios (53 + 7 fixer scenarios: product entry, word-problem product with no expression, c1 given-pieces read, three predict-mode hides, bar value axis) pass 60/60 on the dev server and 60/60 on the production build; 0 console errors / CSP violations, 0 buttons under the band hit size, 0 px overflow",
+   "title": "Playwright, real sandboxed frame at 360×900: 60 scenarios (53 + 7 fixer scenarios: product entry, word-problem product with no expression, c1 given-pieces read, three predict-mode hides, bar value axis) pass 60/60 on the dev server and 60/60 on the production build; 0 console errors / CSP violations, 0 buttons under the band hit size, 0 px overflow",
    "at": "2026-10-03",
    "source": "inbox/engines-v1.json"
   },
   {
    "id": "engines-v1-mount-2026-10-03",
    "kind": "measurement",
-   "title": "Engine mount in the production frame, headless Chromium in the dev container, n=5 per engine (re-run 2026-10-03): p50 67-90 ms (1\u00d7), 209-263 ms (4\u00d7 CPU); FIRST mount of a session (cold frame + React) 146 ms (1\u00d7) / 406 ms (4\u00d7); first mount of each further engine 63-96 ms / 197-274 ms; engine chunks 3-5 kB gz, scene@1 12.5 kB gz (not a reference-phone V15 measurement)",
+   "title": "Engine mount in the production frame, headless Chromium in the dev container, n=5 per engine (re-run 2026-10-03): p50 67-90 ms (1×), 209-263 ms (4× CPU); FIRST mount of a session (cold frame + React) 146 ms (1×) / 406 ms (4×); first mount of each further engine 63-96 ms / 197-274 ms; engine chunks 3-5 kB gz, scene@1 12.5 kB gz (not a reference-phone V15 measurement)",
    "at": "2026-10-03",
    "source": "inbox/engines-v1.json"
   },
   {
    "id": "scene-port-parity-2026-10-03",
    "kind": "measurement",
-   "title": "Frame scene@1 ports vs the normative validator: 40/40 expressions give the same AST and value, 6/6 malformed expressions refused by both; node boxes and repeat instances identical on all 7 validated templates (6 T2a + Forge choice-card); geoboard construct() complete against an exhaustive enumeration of shapes up to area 7 on 6\u00d78 (0 misses)",
+   "title": "Frame scene@1 ports vs the normative validator: 40/40 expressions give the same AST and value, 6/6 malformed expressions refused by both; node boxes and repeat instances identical on all 7 validated templates (6 T2a + Forge choice-card); geoboard construct() complete against an exhaustive enumeration of shapes up to area 7 on 6×8 (0 misses)",
    "at": "2026-10-03",
    "source": "inbox/engines-v1.json"
   },
@@ -2091,7 +2091,7 @@
   {
    "id": "rj-share-for-quotitive",
    "kind": "rejection",
-   "title": "Binding quotitive division items ('48 ladoos packed in boxes of 6 \u2014 how many boxes?') to the share-among-k engine: same number, different action, so the share is not evidence for that item; such items mount unbound",
+   "title": "Binding quotitive division items ('48 ladoos packed in boxes of 6 — how many boxes?') to the share-among-k engine: same number, different action, so the share is not evidence for that item; such items mount unbound",
    "at": "2026-10-03",
    "source": "inbox/engines-v1.json"
   },
@@ -2133,21 +2133,21 @@
   {
    "id": "engines-v1-module-commands",
    "kind": "decision",
-   "title": "moduleCommands(cur, plan, id) in shared/engine-catalog.js is the one step from plan to frame commands: set_param only when engine, mode, param keys, goal and itemId are all unchanged, otherwise unmount + mount; itemId and goal exist only on bound plans; Director predict intent travels as params.predict (engine mode kept) and plan.predict \u2192 awaitingReveal",
+   "title": "moduleCommands(cur, plan, id) in shared/engine-catalog.js is the one step from plan to frame commands: set_param only when engine, mode, param keys, goal and itemId are all unchanged, otherwise unmount + mount; itemId and goal exist only on bound plans; Director predict intent travels as params.predict (engine mode kept) and plan.predict → awaitingReveal",
    "at": "2026-10-03",
    "source": "inbox/engines-v1.json"
   },
   {
    "id": "engines-v1-unbound-fallback-2026-10-03",
    "kind": "measurement",
-   "title": "Unbound fallback mounts (no adapter matched) whose engine ignores the item (normalize(params) == normalize(params minus numbers/fractions)): before the fix 296/1,013 c4-c7 maths fallbacks showed demo defaults (data-graphs 96, measure 58, number-line 52, fraction-bars 47 \u2026); after the CONSUMES gate 6/655 c4-c7 and 13/1,138 c1-c9, with 561 c4-c7 / 1,164 c1-c9 items now mounting nothing",
+   "title": "Unbound fallback mounts (no adapter matched) whose engine ignores the item (normalize(params) == normalize(params minus numbers/fractions)): before the fix 296/1,013 c4-c7 maths fallbacks showed demo defaults (data-graphs 96, measure 58, number-line 52, fraction-bars 47 …); after the CONSUMES gate 6/655 c4-c7 and 13/1,138 c1-c9, with 561 c4-c7 / 1,164 c1-c9 items now mounting nothing",
    "at": "2026-10-03",
    "source": "inbox/engines-v1.json"
   },
   {
    "id": "rj-array-dims-binding",
    "kind": "rejection",
-   "title": "Binding 'What is 7 \u00d7 8?' (and 15 word problems) to multiply-divide array mode graded on the built dimensions: the engine showed 'Make an array of 7 \u00d7 8', so setting rows 7 and cols 8 was graded correct without the child ever producing 56; share mode is the same shape (tap 'one each' until it greys out). Replaced by product entry; share unbound",
+   "title": "Binding 'What is 7 × 8?' (and 15 word problems) to multiply-divide array mode graded on the built dimensions: the engine showed 'Make an array of 7 × 8', so setting rows 7 and cols 8 was graded correct without the child ever producing 56; share mode is the same shape (tap 'one each' until it greys out). Replaced by product entry; share unbound",
    "at": "2026-10-03",
    "source": "inbox/engines-v1.json"
   },
@@ -2343,7 +2343,7 @@
   {
    "id": "integration-ledger-live-path",
    "kind": "decision",
-   "title": "The live lesson folds on the BKT-R ledger + facets: Director evidence \u2192 learner/live.js answerEvents \u2192 fuseEvidence \u2192 noteOutcome \u2192 beliefs into step() \u2192 closeEvents \u2192 fuse; kt_evidence is the event source (inserted in the turn's one transaction, child advisory lock + legal-mode guard first); kt_skill_state/comp_facet_state are the cache; skill_state is a projection of the ledger and the 001 evidence rows stay as the verdict log for the parent corner and lesson-end facts",
+   "title": "The live lesson folds on the BKT-R ledger + facets: Director evidence → learner/live.js answerEvents → fuseEvidence → noteOutcome → beliefs into step() → closeEvents → fuse; kt_evidence is the event source (inserted in the turn's one transaction, child advisory lock + legal-mode guard first); kt_skill_state/comp_facet_state are the cache; skill_state is a projection of the ledger and the 001 evidence rows stay as the verdict log for the parent corner and lesson-end facts",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
@@ -2357,14 +2357,14 @@
   {
    "id": "integration-episode-close-carries-misconception",
    "kind": "decision",
-   "title": "An open item's wrong answers are not KT events until the episode closes (correct \u2192 C0-C4 by tries/rungs; left or assertion \u2192 C4); a misconception the child showed in the episode rides on the closing event; options items grade the first try only; the teach-back is ONE probe.teachback event over \u22643 taught skills",
+   "title": "An open item's wrong answers are not KT events until the episode closes (correct → C0-C4 by tries/rungs; left or assertion → C4); a misconception the child showed in the episode rides on the closing event; options items grade the first try only; the teach-back is ONE probe.teachback event over ≤3 taught skills",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
   {
    "id": "integration-held-why-graded-off-path",
    "kind": "decision",
-   "title": "A why / teach-back answer moves the Director at once on classify's label, but its KT event is held one turn while the blind closed-label grader (DeepSeek-V4-Pro \u2192 taxila-brain) runs in the background after commit; the next turn (or lesson end, \u22646 s wait) folds it with the grader's outcome and the code span check, else with classify's outcome and spanOk:false (K only, E6)",
+   "title": "A why / teach-back answer moves the Director at once on classify's label, but its KT event is held one turn while the blind closed-label grader (DeepSeek-V4-Pro → taxila-brain) runs in the background after commit; the next turn (or lesson end, ≤6 s wait) folds it with the grader's outcome and the code span check, else with classify's outcome and spanOk:false (K only, E6)",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
@@ -2378,14 +2378,14 @@
   {
    "id": "integration-voice-tiebreak-race",
    "kind": "decision",
-   "title": "Voice tie-breakers (features.js signalsFrom) reach the plan only if turnVoice has resolved by the time classify has: followUpProbe \u2192 scheduler gap \u22121 / fallback why draw, gentlerHint \u2192 one gentler rung CONTENT (count unchanged), slowerPace/onset z \u2192 persona pace knobs (TurnResponse.pace); zero belief weight (CE8), test-pinned",
+   "title": "Voice tie-breakers (features.js signalsFrom) reach the plan only if turnVoice has resolved by the time classify has: followUpProbe → scheduler gap −1 / fallback why draw, gentlerHint → one gentler rung CONTENT (count unchanged), slowerPace/onset z → persona pace knobs (TurnResponse.pace); zero belief weight (CE8), test-pinned",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
   {
    "id": "integration-engine-reteach-cooldown",
    "kind": "decision",
-   "title": "Engine re-teach (reteachTrigger \u2192 selectReteach) on graded item answers, after the kit's own once-per-misconception re-teach; 2 graded items of cooldown per skill; park \u2192 skip item + Conductor seam (no-op); prereq_descent \u2192 changeApproach (no cross-kit prerequisite item yet)",
+   "title": "Engine re-teach (reteachTrigger → selectReteach) on graded item answers, after the kit's own once-per-misconception re-teach; 2 graded items of cooldown per skill; park → skip item + Conductor seam (no-op); prereq_descent → changeApproach (no cross-kit prerequisite item yet)",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
@@ -2406,35 +2406,35 @@
   {
    "id": "safety-content-filter-fails-closed",
    "kind": "decision",
-   "title": "An Azure content-filter block (400 error.code content_filter / ResponsibleAIPolicyViolation, 400 with choices[].finish_reason content_filter, 200 finish_reason content_filter) on any call carrying the child's words is a distress signal: classify (grok and taxila-fast), its hedged duplicate (a block on either request wins at once), the low-ASR distress backup, and the teacher reply all fail CLOSED \u2192 safeguard move, incident row (source content_filter), speakNow interrupt on voice",
+   "title": "An Azure content-filter block (400 error.code content_filter / ResponsibleAIPolicyViolation, 400 with choices[].finish_reason content_filter, 200 finish_reason content_filter) on any call carrying the child's words is a distress signal: classify (grok and taxila-fast), its hedged duplicate (a block on either request wins at once), the low-ASR distress backup, and the teacher reply all fail CLOSED → safeguard move, incident row (source content_filter), speakNow interrupt on voice",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
   {
    "id": "safety-predicate-passive-ideation-hinglish",
    "kind": "decision",
-   "title": "The deterministic self-harm predicate now catches Hinglish/Devanagari passive ideation ('gayab ho jaana chahta', 'hamesha ke liye chali jaana chahti', '\u0917\u093e\u092f\u092c \u0939\u094b \u091c\u093e\u0928\u093e \u091a\u093e\u0939\u0924\u0940'); the predicate runs before every model call",
+   "title": "The deterministic self-harm predicate now catches Hinglish/Devanagari passive ideation ('gayab ho jaana chahta', 'hamesha ke liye chali jaana chahti', 'गायब हो जाना चाहती'); the predicate runs before every model call",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
   {
    "id": "ledger-source-weight",
    "kind": "decision",
-   "title": "bktr.js temper(): K evidence \u00d70.5 for via game, \u00d70.75 for via module (= facets W_SRC; spec \u00a71.1)",
+   "title": "bktr.js temper(): K evidence ×0.5 for via game, ×0.75 for via module (= facets W_SRC; spec §1.1)",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
   {
    "id": "ledger-mis-session-cap",
    "kind": "decision",
-   "title": "Misconception log-evidence clamped at \u00b1log 50 per (misconception, session) in the ledger (spendMis), as K's budget; hits still counted",
+   "title": "Misconception log-evidence clamped at ±log 50 per (misconception, session) in the ledger (spendMis), as K's budget; hits still counted",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
   {
    "id": "hook-like-with-like",
    "kind": "decision",
-   "title": "Hook shape carries a like-with-like note (a shape, not a line) and the text-lane reply guards carry a code predicate (director/units.js mixedUnitComparison: a comparing question whose quantities span kinds with \u22651 measure) \u2192 one rewrite, then the comparing question is cut; voice-lane teacher turns are flagged meta.unitMix",
+   "title": "Hook shape carries a like-with-like note (a shape, not a line) and the text-lane reply guards carry a code predicate (director/units.js mixedUnitComparison: a comparing question whose quantities span kinds with ≥1 measure) → one rewrite, then the comparing question is cut; voice-lane teacher turns are flagged meta.unitMix",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
@@ -2448,14 +2448,14 @@
   {
    "id": "comp-sim-integration-2026-10-03",
    "kind": "measurement",
-   "title": "Comprehension sim, 30 seeds (4,320 child-concepts per family), engine policy: bkt2 macro acc 0.640\u21920.659, false mastery 0.025\u21920.023, load/10 2.256\u21922.258; cfrag 0.475\u21920.480, 0.043\u21920.039, 2.235\u21922.236; not_yet acc fell (bkt2 0.779\u21920.746, cfrag 0.470\u21920.418); source weight alone \u2248 neutral (bkt2 0.637, cfrag 0.470)",
+   "title": "Comprehension sim, 30 seeds (4,320 child-concepts per family), engine policy: bkt2 macro acc 0.640→0.659, false mastery 0.025→0.023, load/10 2.256→2.258; cfrag 0.475→0.480, 0.043→0.039, 2.235→2.236; not_yet acc fell (bkt2 0.779→0.746, cfrag 0.470→0.418); source weight alone ≈ neutral (bkt2 0.637, cfrag 0.470)",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
   {
    "id": "cascade-latency-integration-2026-10-03",
    "kind": "measurement",
-   "title": "Cascade latency n=12 before/after the integration (grok classify): Director median 1488\u21921562 ms, p90 2206\u21922328 (model variance); per phase plan 1\u21922 ms, store 60\u219264.5 ms median (max 71\u2192101), no added serial model calls",
+   "title": "Cascade latency n=12 before/after the integration (grok classify): Director median 1488→1562 ms, p90 2206→2328 (model variance); per phase plan 1→2 ms, store 60→64.5 ms median (max 71→101), no added serial model calls",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
@@ -2476,7 +2476,7 @@
   {
    "id": "spoken-ask-in-load-gate",
    "kind": "rejection",
-   "title": "Rendering the voice branch question in spoken notation inside the load gate (checkFits): 122/10815 items dropped (1.13%, gate \u22641%; baseline 108), and an item dropped from EVERY lane for a voice-only rendering",
+   "title": "Rendering the voice branch question in spoken notation inside the load gate (checkFits): 122/10815 items dropped (1.13%, gate ≤1%; baseline 108), and an item dropped from EVERY lane for a voice-only rendering",
    "at": "2026-10-03",
    "source": "inbox/integration-learner-comp.json"
   },
@@ -2652,42 +2652,42 @@
    "id": "floor-core-quote-free",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "The compiled CORE (character sheets + floor) is quote-free and bracket-free: floor.js 'best friend'/'only me' \u2192 friend-role or only-you claims; asha 'baby'/'dear' \u2192 pet names or endearments; arjun 'almost' \u2192 no softening. Linted by evals/persona-invariants.mjs; behaviour A/B on the live voice model: no measurable change (floor-relational-ab-2026-10-03)",
+   "title": "The compiled CORE (character sheets + floor) is quote-free and bracket-free: floor.js 'best friend'/'only me' → friend-role or only-you claims; asha 'baby'/'dear' → pet names or endearments; arjun 'almost' → no softening. Linted by evals/persona-invariants.mjs; behaviour A/B on the live voice model: no measurable change (floor-relational-ab-2026-10-03)",
    "source": "inbox/harvest-ports.json"
   },
   {
    "id": "never-rules-battery-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "never-rules: authored red-team 86/86 positives (first run 83/86), 44/44 negatives quiet, goodbye 5/5, safeguard 3/3; relational probe blind codes n=108 IN-SAMPLE any-violation caught 20/22 false 2/86 (first pass 15/22, 1/86); kit strings flagged unless passed as content 86/126,863 (0.068%), as content 0; other recorded teacher turns 0/308; 31 \u00b5s/call; \\p{M}-stripped control 0/20 Devanagari positives",
+   "title": "never-rules: authored red-team 86/86 positives (first run 83/86), 44/44 negatives quiet, goodbye 5/5, safeguard 3/3; relational probe blind codes n=108 IN-SAMPLE any-violation caught 20/22 false 2/86 (first pass 15/22, 1/86); kit strings flagged unless passed as content 86/126,863 (0.068%), as content 0; other recorded teacher turns 0/308; 31 µs/call; \\p{M}-stripped control 0/20 Devanagari positives",
    "source": "inbox/harvest-ports.json"
   },
   {
    "id": "pii-battery-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "scrubPii: authored identifiers 29/29 (first run 27/29), lesson answers 36/36 untouched (first 34/36); kit strings masked 114/126,863 on the first pass (incl. kit answers) \u2192 2/126,863 (0 answers, 2 Hindi story lines); recorded child utterances 0/228 masked; 36 \u00b5s/call; Gurukul-style contiguous-digit scrub control catches 0/4 refuting shapes",
+   "title": "scrubPii: authored identifiers 29/29 (first run 27/29), lesson answers 36/36 untouched (first 34/36); kit strings masked 114/126,863 on the first pass (incl. kit answers) → 2/126,863 (0 answers, 2 Hindi story lines); recorded child utterances 0/228 masked; 36 µs/call; Gurukul-style contiguous-digit scrub control catches 0/4 refuting shapes",
    "source": "inbox/harvest-ports.json"
   },
   {
    "id": "prompt-budget-worst-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "check-prompt-budget: 4,344 worst-case compiles (60 longest of 9,884 items, both lanes \u00d7 3 langs \u00d7 2 bands \u00d7 rung 0/3 \u00d7 no/longest/all corrections + safeguard/wrap) worst 1,614/2,600 tokens, last section 359/360; --all (118,632 compiles, every item, longest correction pair exclusivity+personal_data 88 chars) 0 over budget, last 360/360",
+   "title": "check-prompt-budget: 4,344 worst-case compiles (60 longest of 9,884 items, both lanes × 3 langs × 2 bands × rung 0/3 × no/longest/all corrections + safeguard/wrap) worst 1,614/2,600 tokens, last section 359/360; --all (118,632 compiles, every item, longest correction pair exclusivity+personal_data 88 chars) 0 over budget, last 360/360",
    "source": "inbox/harvest-ports.json"
   },
   {
    "id": "persona-invariants-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "persona invariants: 2 characters \u00d7 72 compiled lanes \u00d7 18 checks + 16 negative controls = 70/70 pass; on HEAD before the quote-free rewrite the CORE quote check failed 72/72 lanes for each character",
+   "title": "persona invariants: 2 characters × 72 compiled lanes × 18 checks + 16 negative controls = 70/70 pass; on HEAD before the quote-free rewrite the CORE quote check failed 72/72 lanes for each character",
    "source": "inbox/harvest-ports.json"
   },
   {
    "id": "spoken-preserve-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "spoken-preserve: toSpoken over every kit prompt/hint/diagnostic \u00d7 3 modes, 229,605 renderings: 0 empty, 0 unexplained word losses (112 by design: min, lakh/crore read in Hindi, formula and point names spelled); the 5 port-plan corruption probes read right; 11 \u00b5s/rendering; empty-seam and word-drop controls caught \u2014 '[a, b]' and 'x -> y' are returned UNCHANGED (TTS still gets the bracket/arrow): preserved, not read out",
+   "title": "spoken-preserve: toSpoken over every kit prompt/hint/diagnostic × 3 modes, 229,605 renderings: 0 empty, 0 unexplained word losses (112 by design: min, lakh/crore read in Hindi, formula and point names spelled); the 5 port-plan corruption probes read right; 11 µs/rendering; empty-seam and word-drop controls caught — '[a, b]' and 'x -> y' are returned UNCHANGED (TTS still gets the bracket/arrow): preserved, not read out",
    "source": "inbox/harvest-ports.json"
   },
   {
@@ -2701,7 +2701,7 @@
    "id": "scrub-pii-uncued-shapes",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rejected: PII rules matching lowercase cue values and bare number markers: 'I go to school' \u2192 'I go to [school]' (a kit ANSWER), '1 h 20 min' and 'H 4, T 0' \u2192 [address], '3012 3120 3201 3210' \u2192 [aadhaar], '6 3 10 5 16 8 4 2 1' \u2192 [phone]; 114/126,863 kit strings masked, which would grade right answers wrong",
+   "title": "Rejected: PII rules matching lowercase cue values and bare number markers: 'I go to school' → 'I go to [school]' (a kit ANSWER), '1 h 20 min' and 'H 4, T 0' → [address], '3012 3120 3201 3210' → [aadhaar], '6 3 10 5 16 8 4 2 1' → [phone]; 114/126,863 kit strings masked, which would grade right answers wrong",
    "source": "inbox/harvest-ports.json"
   },
   {
@@ -2722,7 +2722,7 @@
    "id": "open-never-rules-wiring",
    "kind": "open",
    "at": "2026-10-03",
-   "title": "lesson.js does not call floorViolations yet (tests/never-rules.test.mjs reports a TODO): text-lane reply guard (problems \u2192 rewrite \u2192 fallback) and voice/cascade transcript post-check (\u2192 state.correction + incident); scrubPii is not called anywhere yet \u2014 now printed as a TODO in every verify-release verdict",
+   "title": "lesson.js does not call floorViolations yet (tests/never-rules.test.mjs reports a TODO): text-lane reply guard (problems → rewrite → fallback) and voice/cascade transcript post-check (→ state.correction + incident); scrubPii is not called anywhere yet — now printed as a TODO in every verify-release verdict",
    "source": "inbox/harvest-ports.json"
   },
   {
@@ -2750,35 +2750,35 @@
    "id": "live-probes-prod-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "scripts/live-probes.mjs against taxila-web (2026-10-03, n=1 run): health 200 in 245-483 ms, db round trip 5\u00d7select 1 ok, app shell 200, lesson/start, parent/overview and /api/me 401 without a session, lesson/turn, tts and realtime/token 404 'lesson not found' for a random id, unknown route JSON 404; prod-smoke (text lane, Arjun, c5-maths-ch01-t01): start 1530 ms, 3 turns 1152-1205 ms, end 1703 ms, 4/4 teacher lines keep the floor (floorViolations empty)",
+   "title": "scripts/live-probes.mjs against taxila-web (2026-10-03, n=1 run): health 200 in 245-483 ms, db round trip 5×select 1 ok, app shell 200, lesson/start, parent/overview and /api/me 401 without a session, lesson/turn, tts and realtime/token 404 'lesson not found' for a random id, unknown route JSON 404; prod-smoke (text lane, Arjun, c5-maths-ch01-t01): start 1530 ms, 3 turns 1152-1205 ms, end 1703 ms, 4/4 teacher lines keep the floor (floorViolations empty)",
    "source": "inbox/harvest-ports.json"
   },
   {
    "id": "never-rules-battery-2026-10-03-fixed",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "never-rules after the review fixes (2026-10-03): authored 92/92 positives, 50/50 negatives, goodbye 7/7, safeguard 3/3; NEW call-site measure 0/26,576 posed kit questions flagged in a teacher draft with the item as content; short-content collapse 92/92 positives still fire and 33/33 safeguard replies clean with 23,110 short kit strings as content; safeguard register 33/33 clean (en 14 / hl 13 / hi 6); coded probe n=108 in-sample 20/22 caught, 2/86 false (unchanged); 0/308 recorded turns; kit strings alone 149/126,863 (was 86: quoted spans are judged now); 34 \u00b5s/call",
+   "title": "never-rules after the review fixes (2026-10-03): authored 92/92 positives, 50/50 negatives, goodbye 7/7, safeguard 3/3; NEW call-site measure 0/26,576 posed kit questions flagged in a teacher draft with the item as content; short-content collapse 92/92 positives still fire and 33/33 safeguard replies clean with 23,110 short kit strings as content; safeguard register 33/33 clean (en 14 / hl 13 / hi 6); coded probe n=108 in-sample 20/22 caught, 2/86 false (unchanged); 0/308 recorded turns; kit strings alone 149/126,863 (was 86: quoted spans are judged now); 34 µs/call",
    "source": "inbox/harvest-ports.json"
   },
   {
    "id": "pii-battery-2026-10-03-fixed",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "scrubPii after the review fixes (2026-10-03): authored identifiers 40/40 (adds 11 lower-case-after-cue and pair/digit-split phone shapes the first set lacked), lesson answers 45/45 untouched; kit strings 2/126,863 masked (0 answers, unchanged); recorded child utterances 0/228 (precision only, not recall); 68 \u00b5s/call (was 36)",
+   "title": "scrubPii after the review fixes (2026-10-03): authored identifiers 40/40 (adds 11 lower-case-after-cue and pair/digit-split phone shapes the first set lacked), lesson answers 45/45 untouched; kit strings 2/126,863 masked (0 answers, unchanged); recorded child utterances 0/228 (precision only, not recall); 68 µs/call (was 36)",
    "source": "inbox/harvest-ports.json"
   },
   {
    "id": "floor-relational-ab-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "Live A/B of the quote-free floor (evals/floor-relational.mjs, taxila-realtime, real compiled voice prompt Asha/Hinglish/6-9, 12 relational scenarios \u00d7 3 reps \u00d7 2 arms = 72 replies, 0 errors, coded blind): relational violations (friend/excl/love_miss/secret/human/feel) OLD 0/36, NEW 0/36; desired move 24/36 both; hooks 6/36 both; literal 'best friend' OLD 3 NEW 2 (all negated). No measurable regression; at n=36 the NEW rate's 95% upper bound is ~8%",
+   "title": "Live A/B of the quote-free floor (evals/floor-relational.mjs, taxila-realtime, real compiled voice prompt Asha/Hinglish/6-9, 12 relational scenarios × 3 reps × 2 arms = 72 replies, 0 errors, coded blind): relational violations (friend/excl/love_miss/secret/human/feel) OLD 0/36, NEW 0/36; desired move 24/36 both; hooks 6/36 both; literal 'best friend' OLD 3 NEW 2 (all negated). No measurable regression; at n=36 the NEW rate's 95% upper bound is ~8%",
    "source": "inbox/harvest-ports.json"
   },
   {
    "id": "fix-load-gate-computed",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "compile.js FIX_LOAD_GATE is computed as the longest FIX_MAX-key FLOOR_FIX combination (not pinned); personal_data \u2192 'no personal questions', ability \u2192 'name the step, no labels' (<= 25 chars), so the longest pair stays ai_denial + exclusivity (82) and the kit load gate admits exactly what it did",
+   "title": "compile.js FIX_LOAD_GATE is computed as the longest FIX_MAX-key FLOOR_FIX combination (not pinned); personal_data → 'no personal questions', ability → 'name the step, no labels' (<= 25 chars), so the longest pair stays ai_denial + exclusivity (82) and the kit load gate admits exactly what it did",
    "source": "inbox/harvest-ports.json"
   },
   {
@@ -2792,14 +2792,14 @@
    "id": "never-rules-substring-content",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rejected: removing verified content as a raw substring: content ['no'] turned 'I am not a robot' into a pass, ['o'] hid 'I love you', ['8'] made a correct safeguard reply read as missing 1098 \u2014 kits hold hundreds of such short answers",
+   "title": "Rejected: removing verified content as a raw substring: content ['no'] turned 'I am not a robot' into a pass, ['o'] hid 'I love you', ['8'] made a correct safeguard reply read as missing 1098 — kits hold hundreds of such short answers",
    "source": "inbox/harvest-ports.json"
   },
   {
    "id": "never-rules-content-length-only",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rejected: a length-only floor (>= 12 chars) for content removal: the 12-character kit answer '\u0915\u093f\u0938\u0940 \u0915\u094b \u0928\u0939\u0940\u0902' (nobody) still cut the violation out of '\u092e\u0948\u0902 \u0915\u093f\u0938\u0940 \u0915\u094b \u0928\u0939\u0940\u0902 \u092c\u0924\u093e\u090a\u0902\u0917\u0940' (short-content collapse eval, 91/92)",
+   "title": "Rejected: a length-only floor (>= 12 chars) for content removal: the 12-character kit answer 'किसी को नहीं' (nobody) still cut the violation out of 'मैं किसी को नहीं बताऊंगी' (short-content collapse eval, 91/92)",
    "source": "inbox/harvest-ports.json"
   },
   {
@@ -2813,7 +2813,7 @@
    "id": "never-rules-teaser-continue-next-time",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rejected (for now): extending the goodbye-teaser rule to 'we can continue next time' / 'hum fir se continue karenge': it took the floor-relational hooks 1/12 \u2192 12/12 but added 2 false flags against the 2026-10-02 blind codes (2/86 \u2192 4/86), whose coder did not code that shape as a hook",
+   "title": "Rejected (for now): extending the goodbye-teaser rule to 'we can continue next time' / 'hum fir se continue karenge': it took the floor-relational hooks 1/12 → 12/12 but added 2 false flags against the 2026-10-02 blind codes (2/86 → 4/86), whose coder did not code that shape as a hook",
    "source": "inbox/harvest-ports.json"
   },
   {
@@ -2833,14 +2833,14 @@
   {
    "id": "reports-gate-throws",
    "kind": "decision",
-   "title": "server/reports/gate.js: the banned-word + overclaim + numeric + structure gate THROWS (ReportGateError) on the assembled report; candidates are screened before assembly with the same predicates and every screen is logged; caps and the spoken-script budget (words and \u2264 1200 chars) are enforced by throwing, never by trimming",
+   "title": "server/reports/gate.js: the banned-word + overclaim + numeric + structure gate THROWS (ReportGateError) on the assembled report; candidates are screened before assembly with the same predicates and every screen is logged; caps and the spoken-script budget (words and ≤ 1200 chars) are enforced by throwing, never by trimming",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-k7-locked-words",
    "kind": "decision",
-   "title": "Mastery words (pakka, mastered, learned, understood, can do, \u0938\u092e\u091d \u0917\u092f\u093e, \u2026) are locked behind CALIBRATION.k7Passed (false); only the st.pakka shape may use them after K7, and only on \u2265 2 delayed successes on distinct items \u2265 1 day apart; until then rows state evidence ('right again d days later, first try, no help')",
+   "title": "Mastery words (pakka, mastered, learned, understood, can do, समझ गया, …) are locked behind CALIBRATION.k7Passed (false); only the st.pakka shape may use them after K7, and only on ≥ 2 delayed successes on distinct items ≥ 1 day apart; until then rows state evidence ('right again d days later, first try, no help')",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
@@ -2854,14 +2854,14 @@
   {
    "id": "reports-lane-b-brain-ordering",
    "kind": "decision",
-   "title": "Lane B on taxila-brain (fallback taxila-fast) only orders Lane A segments and picks approved connective ids for the spoken script; output is ids, validated in code, script assembled from our strings; invalid twice \u2192 Lane A order; budget pre-checked per call against job.budget_micro_usd \u2212 spent",
+   "title": "Lane B on taxila-brain (fallback taxila-fast) only orders Lane A segments and picks approved connective ids for the spoken script; output is ids, validated in code, script assembled from our strings; invalid twice → Lane A order; budget pre-checked per call against job.budget_micro_usd − spent",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-end-of-day-jobs",
    "kind": "decision",
-   "title": "Conductor job kinds report.daily:{child}:{day} (active days only, pull-only X11) and parent.letter:{child}:{isoWeek} (Sunday fold, X8) are enqueued by decide.js foldNight, run after 04:00 local + 10 min, purpose core_tutoring, dropped in safety_hold, budgets 25k / 40k \u00b5$, idempotent on the job key and on parent_report(child, cadence, period, render_version)",
+   "title": "Conductor job kinds report.daily:{child}:{day} (active days only, pull-only X11) and parent.letter:{child}:{isoWeek} (Sunday fold, X8) are enqueued by decide.js foldNight, run after 04:00 local + 10 min, purpose core_tutoring, dropped in safety_hold, budgets 25k / 40k µ$, idempotent on the job key and on parent_report(child, cadence, period, render_version)",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
@@ -2875,28 +2875,28 @@
   {
    "id": "reports-voice-features-excluded",
    "kind": "decision",
-   "title": "No parent line rests on voice features: facts.js never reads voice_feature/voice_baseline (COMPREHENSION-ENGINE \u00a77.3, PARENT-REPORT \u00a73 lists none); a test scans the loader",
+   "title": "No parent line rests on voice features: facts.js never reads voice_feature/voice_baseline (COMPREHENSION-ENGINE §7.3, PARENT-REPORT §3 lists none); a test scans the loader",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-sim-week-2026-10-03",
    "kind": "measurement",
-   "title": "3 STUDENT-SIM personas (p02 Hinglish understander, p18 confident misconception, p24 Hindi-medium) \u00d7 one week (5 lesson days, 353 kt_evidence rows via the real writer) on the test branch: 18/18 reports stored, 0 gate throws; independent checker 78/78 claims supported (100%), 450/450 rendered lines mapped; 240/240 claim mutants caught",
+   "title": "3 STUDENT-SIM personas (p02 Hinglish understander, p18 confident misconception, p24 Hindi-medium) × one week (5 lesson days, 353 kt_evidence rows via the real writer) on the test branch: 18/18 reports stored, 0 gate throws; independent checker 78/78 claims supported (100%), 450/450 rendered lines mapped; 240/240 claim mutants caught",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-lane-b-brain-2026-10-03",
    "kind": "measurement",
-   "title": "Lane B on taxila-brain, n = 18 reports (19 calls incl. the job run): 18/18 valid first call, 0 fallbacks; call latency p50 2,950 ms / p90 3,642 ms; mean $0.0074 per report (7,412 \u00b5$; 133,416 \u00b5$ total); end-to-end generate p50 3.3 s, max 6.5 s (per child-month figure corrected in reports-laneb-tokens-2026-10-03)",
+   "title": "Lane B on taxila-brain, n = 18 reports (19 calls incl. the job run): 18/18 valid first call, 0 fallbacks; call latency p50 2,950 ms / p90 3,642 ms; mean $0.0074 per report (7,412 µ$; 133,416 µ$ total); end-to-end generate p50 3.3 s, max 6.5 s (per child-month figure corrected in reports-laneb-tokens-2026-10-03)",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-conductor-job-e2e-2026-10-03",
    "kind": "measurement",
-   "title": "parent.letter through the real job queue on the test branch (enqueue \u2192 duplicate enqueue no-op \u2192 claim \u2192 runJob \u2192 complete_job): status done, result_ref parent_report:<id>, spent_micro_usd 7,600, job.done ingested 1, re-claim 0; 5.9 s",
+   "title": "parent.letter through the real job queue on the test branch (enqueue → duplicate enqueue no-op → claim → runJob → complete_job): status done, result_ref parent_report:<id>, spent_micro_usd 7,600, job.done ingested 1, re-claim 0; 5.9 s",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
@@ -2910,28 +2910,28 @@
   {
    "id": "reports-gate-fuzz-2026-10-03",
    "kind": "measurement",
-   "title": "Gate unit batteries (tests/reports-gate.test.mjs): TEMPLATE DIGIT HYGIENE fuzz 2,000 random slot sets \u00d7 3 languages, 0 stray digits (not numeric correctness: set membership passes swapped slots); lexicon recall every BANNED/LOCKED entry inflected and embedded in 3 frames, 100%; every template \u00d7 3 languages passes its own gate",
+   "title": "Gate unit batteries (tests/reports-gate.test.mjs): TEMPLATE DIGIT HYGIENE fuzz 2,000 random slot sets × 3 languages, 0 stray digits (not numeric correctness: set membership passes swapped slots); lexicon recall every BANNED/LOCKED entry inflected and embedded in 3 frames, 100%; every template × 3 languages passes its own gate",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-date-slot-object-leak",
    "kind": "rejection",
-   "title": "Rejected: passing a date slot object straight to the template \u2014 rendered 'It comes back on [object Object]' and the gate PASSED it (it re-renders the same template); fix: renderShape formats typed slots, and a template_bug predicate refuses [object / undefined / NaN / null / {slot}",
+   "title": "Rejected: passing a date slot object straight to the template — rendered 'It comes back on [object Object]' and the gate PASSED it (it re-renders the same template); fix: renderShape formats typed slots, and a template_bug predicate refuses [object / undefined / NaN / null / {slot}",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-prefix-lexicon-overmatch",
    "kind": "rejection",
-   "title": "Rejected: prefix entries exam*, habit*, \u092e\u0902\u0926*, dar* \u2014 they screened 'Taxila will use it in examples' (exam*), would hit 'habitat', '\u092e\u0902\u0926\u093f\u0930' (temple), 'darwaza'; whole-word entries with English inflections instead",
+   "title": "Rejected: prefix entries exam*, habit*, मंद*, dar* — they screened 'Taxila will use it in examples' (exam*), would hit 'habitat', 'मंदिर' (temple), 'darwaza'; whole-word entries with English inflections instead",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-tricky-needs-review-date",
    "kind": "rejection",
-   "title": "Rejected: requiring kt_skill_state.next_review_at for every growth edge \u2014 practising skills never have one, so the confident-misconception persona (7 of 8 answers on the comma mix-up) got NO tricky line in any report",
+   "title": "Rejected: requiring kt_skill_state.next_review_at for every growth edge — practising skills never have one, so the confident-misconception persona (7 of 8 answers on the comma mix-up) got NO tricky line in any report",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
@@ -2952,14 +2952,14 @@
   {
    "id": "reports-delayed-copy-last-came-up",
    "kind": "decision",
-   "title": "Delayed-success copy says the topic was right on the first try without help 'd days after it last came up' / 'd din baad phir aaya' \u2014 never 'right again' / 'baad bhi sahi', because the previous contact may be a teach row or a wrong, helped or contaminated answer",
+   "title": "Delayed-success copy says the topic was right on the first try without help 'd days after it last came up' / 'd din baad phir aaya' — never 'right again' / 'baad bhi sahi', because the previous contact may be a teach row or a wrong, helped or contaminated answer",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-recheck-date-ahead",
    "kind": "decision",
-   "title": "A growth-edge re-check date is stated only when kt_skill_state.next_review_at \u2265 max(window end, generation time); otherwise the _next wording (not-learned skills) or no growth-edge line; the checker enforces the same against created_at",
+   "title": "A growth-edge re-check date is stated only when kt_skill_state.next_review_at ≥ max(window end, generation time); otherwise the _next wording (not-learned skills) or no growth-edge line; the checker enforces the same against created_at",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
@@ -2980,14 +2980,14 @@
   {
    "id": "reports-late-activity-daily",
    "kind": "decision",
-   "title": "Activity after the night fold (\u224802:00-03:00) but before the learning day ends (04:00) enqueues that day's daily note from markActive (same idem key, at most once)",
+   "title": "Activity after the night fold (≈02:00-03:00) but before the learning day ends (04:00) enqueues that day's daily note from markActive (same idem key, at most once)",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-header-open-lessons",
    "kind": "decision",
-   "title": "Header minutes count an open lesson (ended_at null) up to its last evidence row in the window (cited), or to now in a preview; a daily window with evidence and no lesson gets header.nolesson instead of '0 lessons \u00b7 0 min'",
+   "title": "Header minutes count an open lesson (ended_at null) up to its last evidence row in the window (cited), or to now in a preview; a daily window with evidence and no lesson gets header.nolesson instead of '0 lessons · 0 min'",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
@@ -3001,35 +3001,35 @@
   {
    "id": "reports-interest-from-memory-text",
    "kind": "rejection",
-   "title": "Rejected: an interest line filled from memory.text (\u2264 4 letters-only words) \u2014 real rows are model paraphrase ('loves cricket' \u2192 'said they like loves cricket'), English inside hi/hinglish reports, labelled as the child's words; the sim only inserted hand-picked single words so 3/3 interest lines never exercised it",
+   "title": "Rejected: an interest line filled from memory.text (≤ 4 letters-only words) — real rows are model paraphrase ('loves cricket' → 'said they like loves cricket'), English inside hi/hinglish reports, labelled as the child's words; the sim only inserted hand-picked single words so 3/3 interest lines never exercised it",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-hold-job-path-only",
    "kind": "rejection",
-   "title": "Rejected: enforcing the safety hold only on the job path \u2014 GET /api/parent/report built a live preview on every request and stored scripts stayed playable during a safety incident",
+   "title": "Rejected: enforcing the safety hold only on the job path — GET /api/parent/report built a live preview on every request and stored scripts stayed playable during a safety incident",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-right-again-copy",
    "kind": "rejection",
-   "title": "Rejected: 'right again d days later' / 'd din baad bhi sahi' \u2014 the previous contact counted by derive.js can be a teach row or a wrong answer, and the checker re-derived the same rule, so 78/78 support could not see that the WORDING overclaimed",
+   "title": "Rejected: 'right again d days later' / 'd din baad bhi sahi' — the previous contact counted by derive.js can be a teach row or a wrong answer, and the checker re-derived the same rule, so 78/78 support could not see that the WORDING overclaimed",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-recheck-date-window-start",
    "kind": "rejection",
-   "title": "Rejected: dating the growth edge when next_review_at \u2265 window START \u2014 jobs run after the window closes, so a same-day 15:00 re-check read 'It comes back on 3 Oct' in a note stored 4 Oct",
+   "title": "Rejected: dating the growth edge when next_review_at ≥ window START — jobs run after the window closes, so a same-day 15:00 re-check read 'It comes back on 3 Oct' in a note stored 4 Oct",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-rule-string-in-drawer",
    "kind": "rejection",
-   "title": "Rejected: showing claim.rule to parents \u2014 internal English with the LOCKED word 'learned', 'calibration gate passed', '2k < n', untranslated on hi/hinglish screens, and no gate ran on it",
+   "title": "Rejected: showing claim.rule to parents — internal English with the LOCKED word 'learned', 'calibration gate passed', '2k < n', untranslated on hi/hinglish screens, and no gate ran on it",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
@@ -3043,14 +3043,14 @@
   {
    "id": "reports-laneb-tokens-2026-10-03",
    "kind": "measurement",
-   "title": "Lane B token use on taxila-brain, n = 18 calls: prompt p50 646 / max 806 tokens, completion p50 229 / max 456; mean cost daily 7,047 \u00b5$, weekly 9,297 \u00b5$; latency p50 3,141 ms / p90 3,929 ms; per child-month \u2248 7,047 \u00d7 A + 9,297 \u00d7 4.35 \u00b5$ = $0.18 at A = 20 active days, $0.25 at A = 30 (A unmeasured)",
+   "title": "Lane B token use on taxila-brain, n = 18 calls: prompt p50 646 / max 806 tokens, completion p50 229 / max 456; mean cost daily 7,047 µ$, weekly 9,297 µ$; latency p50 3,141 ms / p90 3,929 ms; per child-month ≈ 7,047 × A + 9,297 × 4.35 µ$ = $0.18 at A = 20 active days, $0.25 at A = 30 (A unmeasured)",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
   {
    "id": "reports-route-hold-2026-10-03",
    "kind": "measurement",
-   "title": "Route test under a safety hold (tests/reports-routes-db.run.mjs, real API in-process on the Neon test branch, n = 1 child): preview null + held, weekly preview null, post-hold note unlisted and 404, pre-hold note readable with voice null, speak what=report 409, preview evidence 404, stored evidence carries 'how' and no 'rule'; hold cleared \u2192 preview back",
+   "title": "Route test under a safety hold (tests/reports-routes-db.run.mjs, real API in-process on the Neon test branch, n = 1 child): preview null + held, weekly preview null, post-hold note unlisted and 404, pre-hold note readable with voice null, speak what=report 409, preview evidence 404, stored evidence carries 'how' and no 'rule'; hold cleared → preview back",
    "at": "2026-10-03",
    "source": "inbox/parent-reports.json"
   },
@@ -3064,7 +3064,7 @@
   {
    "id": "forge-g2-one-bundle-hash-csp",
    "kind": "decision",
-   "title": "A G2 module is ONE self-contained index.html (kit + mechanic inlined) under a meta CSP allowing exactly those two inline blocks by sha256 (no network, no eval, no fonts); agent code runs in a strict wrapper whose parameters shadow window/fetch/Date/Function/\u2026; publish refuses bytes whose sha differs from the gated sha",
+   "title": "A G2 module is ONE self-contained index.html (kit + mechanic inlined) under a meta CSP allowing exactly those two inline blocks by sha256 (no network, no eval, no fonts); agent code runs in a strict wrapper whose parameters shadow window/fetch/Date/Function/…; publish refuses bytes whose sha differs from the gated sha",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
@@ -3078,7 +3078,7 @@
   {
    "id": "forge-g2-harness-six-tools",
    "kind": "decision",
-   "title": "G2 builder harness: taxila-codex via Responses API, six strict function tools (read_file, write_mechanic, edit_mechanic, run_check lint|play, note, submit), S3 \u2264 12 steps, S4 \u2264 3 fresh-context repair rounds, S5 one polish round fed by the advisory critic, S6 final gate on visible + held-out items with a new seed; job caps 30 steps / $3.50 / 25 min",
+   "title": "G2 builder harness: taxila-codex via Responses API, six strict function tools (read_file, write_mechanic, edit_mechanic, run_check lint|play, note, submit), S3 ≤ 12 steps, S4 ≤ 3 fresh-context repair rounds, S5 one polish round fed by the advisory critic, S6 final gate on visible + held-out items with a new seed; job caps 30 steps / $3.50 / 25 min",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
@@ -3106,21 +3106,21 @@
   {
    "id": "forge-g2-private-container",
    "kind": "decision",
-   "title": "Phase-0 private G2 storage is container forge-g2-src (no public access) in account taxilaforge, standing in for the separate taxilaforgesrc account of FACTORY \u00a72.2",
+   "title": "Phase-0 private G2 storage is container forge-g2-src (no public access) in account taxilaforge, standing in for the separate taxilaforgesrc account of FACTORY §2.2",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
   {
    "id": "forge-g2-q8-at-design",
    "kind": "decision",
-   "title": "The full Q8 (Content Safety per string + taxila-brain Hindi/Hinglish classifier, fail closed) runs on the design's strings table at S1, before any build spend; a flagged design is regenerated (\u2264 3 attempts) and Q8 runs again at the end",
+   "title": "The full Q8 (Content Safety per string + taxila-brain Hindi/Hinglish classifier, fail closed) runs on the design's strings table at S1, before any build spend; a flagged design is regenerated (≤ 3 attempts) and Q8 runs again at the end",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
   {
    "id": "forge-g2-e2e-azure-2026-10-03",
    "kind": "measurement",
-   "title": "Forge G2 end to end on Azure ACA Job: 14 builds on 11 kit topics; 12/14 passed every hard QA gate (2 lost to Q8 false positives before Q8 moved to design time; 5/5 after); cost per build mean \u2248 $0.20 (range $0.11-0.24), execution 104-203 s",
+   "title": "Forge G2 end to end on Azure ACA Job: 14 builds on 11 kit topics; 12/14 passed every hard QA gate (2 lost to Q8 false positives before Q8 moved to design time; 5/5 after); cost per build mean ≈ $0.20 (range $0.11-0.24), execution 104-203 s",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
@@ -3134,14 +3134,14 @@
   {
    "id": "forge-g2-critic-flags-2026-10-03",
    "kind": "measurement",
-   "title": "Advisory Q9 critic (taxila-brain vision, 3 frames): before S5 it flagged \u2265 1 rubric item on 13/14 Azure builds (quantity picture unbound most often); after one S5 polish round 4/12 to_review builds were critic-clean; uncalibrated (no human labels yet)",
+   "title": "Advisory Q9 critic (taxila-brain vision, 3 frames): before S5 it flagged ≥ 1 rubric item on 13/14 Azure builds (quantity picture unbound most often); after one S5 polish round 4/12 to_review builds were critic-clean; uncalibrated (no human labels yet)",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
   {
    "id": "forge-g2-eligibility-2026-10-03",
    "kind": "measurement",
-   "title": "G2 v0 eligibility over all 830 kit topics: 124 (15%) \u2014 48 maths build, 75 maths choice, 1 English choice; science/EVS/SST/Hindi topics fail on option length > 28 chars, prompt > 180 chars or non-numeric answer shapes",
+   "title": "G2 v0 eligibility over all 830 kit topics: 124 (15%) — 48 maths build, 75 maths choice, 1 English choice; science/EVS/SST/Hindi topics fail on option length > 28 chars, prompt > 180 chars or non-numeric answer shapes",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
@@ -3162,7 +3162,7 @@
   {
    "id": "forge-g2-q8-after-build",
    "kind": "rejection",
-   "title": "Running the full Q8 only after the build: 2/8 builds (~$0.40 of tokens) were discarded for benign words (Saathi/\u0938\u093e\u0925\u0940 flagged romance by the brain classifier; 'Belongs' Content Safety severity 2)",
+   "title": "Running the full Q8 only after the build: 2/8 builds (~$0.40 of tokens) were discarded for benign words (Saathi/साथी flagged romance by the brain classifier; 'Belongs' Content Safety severity 2)",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
@@ -3183,7 +3183,7 @@
   {
    "id": "open-forge-g2-runner-trust",
    "kind": "open",
-   "title": "G2 runner still holds the AOAI key and runs Chromium unsandboxed in ACA: needs the orchestrator gateway (FACTORY \u00a72.2) or ACA Sandboxes (Phase 1, owner action E4)",
+   "title": "G2 runner still holds the AOAI key and runs Chromium unsandboxed in ACA: needs the orchestrator gateway (FACTORY §2.2) or ACA Sandboxes (Phase 1, owner action E4)",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
@@ -3288,7 +3288,7 @@
   {
    "id": "forge-g2-opaque-refs",
    "kind": "decision",
-   "title": "tgk-lite@2: refs are opaque per-mount crypto tokens ({item, slot: 'o:<nonce>'}) with the token\u2192key/d:N/u:K map private to the kit closure; option order is crypto-shuffled per mount; shared intrinsics are frozen before agent code runs; ctx.refs.same/indexOf replace .slot reads (a Q1.ref_read lint error); the kit posts the INTERNAL slot plus a per-item attempt counter",
+   "title": "tgk-lite@2: refs are opaque per-mount crypto tokens ({item, slot: 'o:<nonce>'}) with the token→key/d:N/u:K map private to the kit closure; option order is crypto-shuffled per mount; shared intrinsics are frozen before agent code runs; ctx.refs.same/indexOf replace .slot reads (a Q1.ref_read lint error); the kit posts the INTERNAL slot plus a per-item attempt counter",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
@@ -3309,7 +3309,7 @@
   {
    "id": "forge-g2-inflight-stale-takeover",
    "kind": "rejection",
-   "title": "A 2 h stale-takeover of the in-flight marker as the only single-flight guard: a build waiting for human review left its marker, nothing marked the catalogue, so every nightly after 2 h started another build of the same identity (\u2248 $0.2 each, bounded only by the 20/day breaker), and the takeover was an unconditional write that two concurrent nightlies could both win",
+   "title": "A 2 h stale-takeover of the in-flight marker as the only single-flight guard: a build waiting for human review left its marker, nothing marked the catalogue, so every nightly after 2 h started another build of the same identity (≈ $0.2 each, bounded only by the 20/day breaker), and the takeover was an unconditional write that two concurrent nightlies could both win",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
@@ -3323,14 +3323,14 @@
   {
    "id": "forge-g2-deliver-overwrite",
    "kind": "rejection",
-   "title": "Writing { modules: [entry] } over the child's day manifest and latest.json: with up to 3 approved topics in a day (or a later approval for a child already served that day) only the last topic survived \u2014 one module per CHILD per day, not per identity",
+   "title": "Writing { modules: [entry] } over the child's day manifest and latest.json: with up to 3 approved topics in a day (or a later approval for a child already served that day) only the last topic survived — one module per CHILD per day, not per identity",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
   {
    "id": "forge-g2-review-name-asserted",
    "kind": "decision",
-   "title": "G2 approval is name-asserted and UNAUTHENTICATED: decide() refuses automation-looking names (word-boundary regex, so 'Abbott' passes), refuses an approval without the CLI's attestation (interactive TTY + the reviewer typing \u2265 8 chars of the bundle sha), and refuses a build gated on a different kit hash; anything holding the storage key can still bypass it",
+   "title": "G2 approval is name-asserted and UNAUTHENTICATED: decide() refuses automation-looking names (word-boundary regex, so 'Abbott' passes), refuses an approval without the CLI's attestation (interactive TTY + the reviewer typing ≥ 8 chars of the bundle sha), and refuses a build gated on a different kit hash; anything holding the storage key can still bypass it",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
@@ -3365,7 +3365,7 @@
   {
    "id": "forge-g2-mutants-2026-10-03b",
    "kind": "measurement",
-   "title": "G2 gate vs 53 seeded-bug mechanics on tgk-lite@2 (23 choice operators \u00d7 2 topics + 7 build): 51 caught, 2 inert (lint-evading key-glow: opaque tokens never say key), 0 missed; 0/6 clean false alarms; leak detectors on a deliberately LEAKY kit variant caught 8/10 leak-mutant runs (key_styled misses an fx glow shown only after a tap)",
+   "title": "G2 gate vs 53 seeded-bug mechanics on tgk-lite@2 (23 choice operators × 2 topics + 7 build): 51 caught, 2 inert (lint-evading key-glow: opaque tokens never say key), 0 missed; 0/6 clean false alarms; leak detectors on a deliberately LEAKY kit variant caught 8/10 leak-mutant runs (key_styled misses an fx glow shown only after a tap)",
    "at": "2026-10-03",
    "source": "inbox/forge-g2.json"
   },
@@ -3415,7 +3415,7 @@
    "id": "lt-address-register",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "aap/tum is resolved server-side (child's Hello pick from class 5 \u2192 parent's child_controls.address \u2192 class default aap \u2265 5, tum below; English none), carried as state.ctx.address; kit questions reach an aap child in aap forms (closed-lexicon toAap in findItem); every move carries a register note; the text-lane guard rewrites tum words, then converts in code",
+   "title": "aap/tum is resolved server-side (child's Hello pick from class 5 → parent's child_controls.address → class default aap ≥ 5, tum below; English none), carried as state.ctx.address; kit questions reach an aap child in aap forms (closed-lexicon toAap in findItem); every move carries a register note; the text-lane guard rewrites tum words, then converts in code",
    "source": "inbox/lesson-truth.json"
   },
   {
@@ -3436,14 +3436,14 @@
    "id": "lt-screen-guard",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "G-SAY-1 on the bytes: a reply that sends the child to the screen (tap/touch/click/the choices below\u2026) needs Director chips or a mounted module in the SAME response; the unclear-repair shape mentions tapping only when chips exist; violations are rewritten, then the screen sentences stripped and the item question re-posed",
+   "title": "G-SAY-1 on the bytes: a reply that sends the child to the screen (tap/touch/click/the choices below…) needs Director chips or a mounted module in the SAME response; the unclear-repair shape mentions tapping only when chips exist; violations are rewritten, then the screen sentences stripped and the item question re-posed",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lt-child-plan-map",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "GET /api/child/plan, /api/child/map, /api/child/teacher and POST /api/lesson/request exist (server/routes/child.js): one home state (resume > capped > done > resting > first > start) from lesson rows, child_controls, conductor_usage/day_plan and consent; the map is the class syllabus \u00d7 kit skills \u00d7 skill_state with the four V2 shapes, seals, 'here' and server-scheduled re-checks; 'Only this session' hides map/notebook/resume",
+   "title": "GET /api/child/plan, /api/child/map, /api/child/teacher and POST /api/lesson/request exist (server/routes/child.js): one home state (resume > capped > done > resting > first > start) from lesson rows, child_controls, conductor_usage/day_plan and consent; the map is the class syllabus × kit skills × skill_state with the four V2 shapes, seals, 'here' and server-scheduled re-checks; 'Only this session' hides map/notebook/resume",
    "source": "inbox/lesson-truth.json"
   },
   {
@@ -3457,21 +3457,21 @@
    "id": "lt-summary-did",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "The summary screen's data (LessonSummary: \u22643 DidCards, tick only for a verified correct answer, 'tried' only when nothing was verified, face always 'warm') is built from state.did, which the turn route writes from the classifier's graded turns; POST /api/lesson/end returns it as `did`, GET /api/lesson/summary re-reads it",
+   "title": "The summary screen's data (LessonSummary: ≤3 DidCards, tick only for a verified correct answer, 'tried' only when nothing was verified, face always 'warm') is built from state.did, which the turn route writes from the classifier's graded turns; POST /api/lesson/end returns it as `did`, GET /api/lesson/summary re-reads it",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lt-floor-wired",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "lesson.js now calls floorViolations: text lane as a reply-guard problem (rewrite, then the move's fixed line), voice lane on the heard teacher turn \u2192 state.correction (compile renders the fix) + a `floor` flag on the turn row",
+   "title": "lesson.js now calls floorViolations: text lane as a reply-guard problem (rewrite, then the move's fixed line), voice lane on the heard teacher turn → state.correction (compile renders the fix) + a `floor` flag on the turn row",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lt-ui-directives",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "The Director produces the V2 \u00a74.10 UiDirectives: ask (kit item text \u2264120 in the child's register; text-lane no-item turns take the reply's own question), handover, answerForm, phase, tray, shortTitle (\u226424 on a word boundary), verdict/withHelp; explain turns put no skill title (syllabus objective) on the board; chip labels are English",
+   "title": "The Director produces the V2 §4.10 UiDirectives: ask (kit item text ≤120 in the child's register; text-lane no-item turns take the reply's own question), handover, answerForm, phase, tray, shortTitle (≤24 on a word boundary), verdict/withHelp; explain turns put no skill title (syllabus objective) on the board; chip labels are English",
    "source": "inbox/lesson-truth.json"
   },
   {
@@ -3485,14 +3485,14 @@
    "id": "lesson-truth-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "evals/lesson-truth.mjs, Azure taxila-fast, 36 real kit items (classes 5-8, numeric keys), aap child, before\u2192after: drift (key echoed to another question) credited 36/36\u21920/36, praise 6/36\u21920/36; screen refs on repair with nothing on screen 10/36\u21920/36; tum marks in aap replies 152/163\u21920/164; key after a real hint 31/31\u219232/32 credited; wrong answers 0/36 praised both; greet uses the interest 12/12 both",
+   "title": "evals/lesson-truth.mjs, Azure taxila-fast, 36 real kit items (classes 5-8, numeric keys), aap child, before→after: drift (key echoed to another question) credited 36/36→0/36, praise 6/36→0/36; screen refs on repair with nothing on screen 10/36→0/36; tum marks in aap replies 152/163→0/164; key after a real hint 31/31→32/32 credited; wrong answers 0/36 praised both; greet uses the interest 12/12 both",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lesson-truth-latency-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "evals/cascade-latency.mjs n=12 per arm, before\u2192after: class 4 director median 2312\u21921638 ms (p90 3781\u21923578), total 3855\u21923220; class 6 (aap) director 1652\u21921503 (p90 3151\u21922438), total 3202\u21923095; guard rewrites class 6 2\u21920; no measurable latency cost (differences are inside model-latency noise at n=12)",
+   "title": "evals/cascade-latency.mjs n=12 per arm, before→after: class 4 director median 2312→1638 ms (p90 3781→3578), total 3855→3220; class 6 (aap) director 1652→1503 (p90 3151→2438), total 3202→3095; guard rewrites class 6 2→0; no measurable latency cost (differences are inside model-latency noise at n=12)",
    "source": "inbox/lesson-truth.json"
   },
   {
@@ -3506,14 +3506,14 @@
    "id": "lt-classifier-last-check",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rejected: a LAST CHECK classifier rule (flag + 'label no_attempt if the reply answers the other question') \u2014 drift credit 0/36 but it threw away real answers after hint turns (21/31 credited vs 32/32 without it); the code echo rule gets drift to 0/36 with 32/32 kept",
+   "title": "Rejected: a LAST CHECK classifier rule (flag + 'label no_attempt if the reply answers the other question') — drift credit 0/36 but it threw away real answers after hint turns (21/31 credited vs 32/32 without it); the code echo rule gets drift to 0/36 with 32/32 kept",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lt-other-question-no-evidence",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rejected: no evidence on ANY turn after the teacher asked another question \u2014 14/31 real hint turns end in a scaffold sub-question (askedOther), so every answer after such a hint would be lost",
+   "title": "Rejected: no evidence on ANY turn after the teacher asked another question — 14/31 real hint turns end in a scaffold sub-question (askedOther), so every answer after such a hint would be lost",
    "source": "inbox/lesson-truth.json"
   },
   {
@@ -3540,7 +3540,7 @@
   {
    "id": "b1-card-sized-to-content",
    "kind": "decision",
-   "title": "The Question card (and the trouble strip and the NumberPad tray) is sized to what it holds: the Desk measures [data-measure] bodies after every render and the solver grows the zone to fit (the spec heights are floors), taking the extra from tray \u2192 face (to faceMin) \u2192 caption \u2192 pad; never clipped. Reversal: a layout where the card's content is bounded by construction (e.g. a hard 2-line ask cap plus a chip that never wraps) so a fixed height provably fits at 360 and font scale 2.0",
+   "title": "The Question card (and the trouble strip and the NumberPad tray) is sized to what it holds: the Desk measures [data-measure] bodies after every render and the solver grows the zone to fit (the spec heights are floors), taking the extra from tray → face (to faceMin) → caption → pad; never clipped. Reversal: a layout where the card's content is bounded by construction (e.g. a hard 2-line ask cap plus a chip that never wraps) so a fixed height provably fits at 360 and font scale 2.0",
    "at": "2026-10-03",
    "source": "inbox/b1-shell-signalling-lesson.json"
   },
@@ -3554,7 +3554,7 @@
   {
    "id": "b1-outbox-turnseq-always",
    "kind": "decision",
-   "title": "Outbox: every attempt (the first too) carries turnSeq; turnSeq is per lesson and seeded from max(turnSeq) in the store (a reloaded page never overwrites a held record); records of other lessons are flushed when the next lesson starts (marked retried), that lesson is then closed; 409 'ended' / 404 drop them; > 24 h dropped unsent. Per-attempt 25 s deadline (abort \u2192 retryable). kick() = T1 'Try again' (abandon the attempt in flight, resend now); edit() = 'Fix' (same turnSeq, edited:true). Reversal: the lesson route dedupes and resumes by lid itself (a resume endpoint), so the client no longer needs to flush another lesson's answers",
+   "title": "Outbox: every attempt (the first too) carries turnSeq; turnSeq is per lesson and seeded from max(turnSeq) in the store (a reloaded page never overwrites a held record); records of other lessons are flushed when the next lesson starts (marked retried), that lesson is then closed; 409 'ended' / 404 drop them; > 24 h dropped unsent. Per-attempt 25 s deadline (abort → retryable). kick() = T1 'Try again' (abandon the attempt in flight, resend now); edit() = 'Fix' (same turnSeq, edited:true). Reversal: the lesson route dedupes and resumes by lid itself (a resume endpoint), so the client no longer needs to flush another lesson's answers",
    "at": "2026-10-03",
    "source": "inbox/b1-shell-signalling-lesson.json"
   },
@@ -3582,7 +3582,7 @@
   {
    "id": "b1-vsig3-6pct-restored",
    "kind": "decision",
-   "title": "V-SIG-3/4 run at the spec's 6% bar on the dock + card region (the 0.5% bar was a deviation, not a measurement). Shape carriers added so state differs by more than colour: HEARD shows a solid receipt disc and no side controls; SPEAKING/SHOWING hold only the mic (the side controls come with YOUR TURN). The one pair exempted is yielding/your_turn (yielding IS your_turn arriving, \u2264 250 ms, same word by \u00a74.2). Reversal: a yielding state that is actually triggered (a TurnClock) and seen long enough to need its own look",
+   "title": "V-SIG-3/4 run at the spec's 6% bar on the dock + card region (the 0.5% bar was a deviation, not a measurement). Shape carriers added so state differs by more than colour: HEARD shows a solid receipt disc and no side controls; SPEAKING/SHOWING hold only the mic (the side controls come with YOUR TURN). The one pair exempted is yielding/your_turn (yielding IS your_turn arriving, ≤ 250 ms, same word by §4.2). Reversal: a yielding state that is actually triggered (a TurnClock) and seen long enough to need its own look",
    "at": "2026-10-03",
    "source": "inbox/b1-shell-signalling-lesson.json"
   },
@@ -3596,21 +3596,21 @@
   {
    "id": "b1-ui-v2-flag-not-restored",
    "kind": "decision",
-   "title": "PROPOSED for the owner (not decided here): the B1 Desk stays the default lesson UI rather than going behind VITE_UI_V2=1 as \u00a714 says. The old lesson UI was deleted by the B1 build and already merged; restoring it to flag it would put two lesson UIs in the tree. Open acceptance rows: B1-A5 (director-sim lints), B1-A7 (baselines not human-approved), B1-A11 (prod smoke), lint-ui not in verify-release (264 findings in other owners' files). Reversal: the owner wants the flag, or a B1 acceptance row fails in the prod smoke",
+   "title": "PROPOSED for the owner (not decided here): the B1 Desk stays the default lesson UI rather than going behind VITE_UI_V2=1 as §14 says. The old lesson UI was deleted by the B1 build and already merged; restoring it to flag it would put two lesson UIs in the tree. Open acceptance rows: B1-A5 (director-sim lints), B1-A7 (baselines not human-approved), B1-A11 (prod smoke), lint-ui not in verify-release (264 findings in other owners' files). Reversal: the owner wants the flag, or a B1 acceptance row fails in the prod smoke",
    "at": "2026-10-03",
    "source": "inbox/b1-shell-signalling-lesson.json"
   },
   {
    "id": "b1-fix-battery-2026-10-03",
    "kind": "measurement",
-   "title": "B1 fixer batteries (headless Chromium/SwiftShader, n=1 run each): dev harness tests/e2e-design-b1.mjs and the shipped route tests/e2e-design-b1-route.mjs (built SPA via server/serve.mjs, API mocked by page.route). Route: 0 clipped card/strip/dock frames across Older 360/1280 \u00d7 light/dark and Young 360/1280; 0 long tasks > 50 ms in 10 s of YOUR TURN with the live face at 360 (V-PERF-1 bar \u2264 2); every turn carried turnSeq; T4 'Send again' and T2\u2192RC delivered",
+   "title": "B1 fixer batteries (headless Chromium/SwiftShader, n=1 run each): dev harness tests/e2e-design-b1.mjs and the shipped route tests/e2e-design-b1-route.mjs (built SPA via server/serve.mjs, API mocked by page.route). Route: 0 clipped card/strip/dock frames across Older 360/1280 × light/dark and Young 360/1280; 0 long tasks > 50 ms in 10 s of YOUR TURN with the live face at 360 (V-PERF-1 bar ≤ 2); every turn carried turnSeq; T4 'Send again' and T2→RC delivered",
    "at": "2026-10-03",
    "source": "inbox/b1-shell-signalling-lesson.json"
   },
   {
    "id": "b2-art-pipeline",
    "kind": "decision",
-   "title": "Image pack build step: Codex masters stay in public/assets/gen/** (where the prompt writes them); scripts/gen-assets.mjs converts each landed master to content-hashed 1x/2x WebP under public/assets/art/** (q 80 first, stepping down to fit the \u00a712 budgets; an image that cannot fit, fails the lamp-hue lint or carries OCR text is NOT shipped and its designed fallback renders) and writes public/assets/gen/manifest.json (urls, CSS size, bytes, LQIP for scenes, lint share, OCR result, MANIFEST.topicMap). The vite plugin taxila:art-masters deletes dist/assets/gen/** except manifest.json, so masters never ship. Encoder: sharp if installed, else ImageMagick (libwebp). Reversal: the Codex prompt writes masters outside public/ (then the plugin goes), or the Docker build gets an encoder and runs gen-assets itself (then public/assets/art need not be committed)",
+   "title": "Image pack build step: Codex masters stay in public/assets/gen/** (where the prompt writes them); scripts/gen-assets.mjs converts each landed master to content-hashed 1x/2x WebP under public/assets/art/** (q 80 first, stepping down to fit the §12 budgets; an image that cannot fit, fails the lamp-hue lint or carries OCR text is NOT shipped and its designed fallback renders) and writes public/assets/gen/manifest.json (urls, CSS size, bytes, LQIP for scenes, lint share, OCR result, MANIFEST.topicMap). The vite plugin taxila:art-masters deletes dist/assets/gen/** except manifest.json, so masters never ship. Encoder: sharp if installed, else ImageMagick (libwebp). Reversal: the Codex prompt writes masters outside public/ (then the plugin goes), or the Docker build gets an encoder and runs gen-assets itself (then public/assets/art need not be committed)",
    "at": "2026-10-03",
    "source": "inbox/b2-home-progress-assets.json"
   },
@@ -3631,7 +3631,7 @@
   {
    "id": "b2-garden-started-beds",
    "kind": "decision",
-   "title": "The Garden draws only the beds the child has started plus the class's current chapter (server `here`), never a bed per syllabus chapter: a class 3 garden would otherwise open on ~25 beds of bare seed packets, which is the banned 'empty-plot count' (\u00a74.8). Not-started skills inside a drawn bed show as plots. Reversal: MW-M2 shows children cannot find where the next lesson grows without the empty beds",
+   "title": "The Garden draws only the beds the child has started plus the class's current chapter (server `here`), never a bed per syllabus chapter: a class 3 garden would otherwise open on ~25 beds of bare seed packets, which is the banned 'empty-plot count' (§4.8). Not-started skills inside a drawn bed show as plots. Reversal: MW-M2 shows children cannot find where the next lesson grows without the empty beds",
    "at": "2026-10-03",
    "source": "inbox/b2-home-progress-assets.json"
   },
@@ -3645,14 +3645,14 @@
   {
    "id": "b2-clip-own-teacher-only",
    "kind": "decision",
-   "title": "A pre-rendered clip (Hello greeting, onboarding Meet \u25b6) plays only under the face of the teacher who recorded it (src/child/voice.ts registry). Today only Asha's greeting exists (public/audio/hello-*.mp3), so Asha's Hello and Meet speak and Arjun's / Uma's show her words and face without sound. The old onboarding played Asha's 'Main Asha didi hoon' under every class, the audit #4 identity break in audio form. Reversal: per-teacher no-name greeting clips rendered in each live voice (then every Hello speaks)",
+   "title": "A pre-rendered clip (Hello greeting, onboarding Meet ▶) plays only under the face of the teacher who recorded it (src/child/voice.ts registry). Today only Asha's greeting exists (public/audio/hello-*.mp3), so Asha's Hello and Meet speak and Arjun's / Uma's show her words and face without sound. The old onboarding played Asha's 'Main Asha didi hoon' under every class, the audit #4 identity break in audio form. Reversal: per-teacher no-name greeting clips rendered in each live voice (then every Hello speaks)",
    "at": "2026-10-03",
    "source": "inbox/b2-home-progress-assets.json"
   },
   {
    "id": "b2-onboarding-order",
    "kind": "decision",
-   "title": "Onboarding order (\u00a73.2) built in B2: 1 class + board \u2192 2 meet the class's actual teacher (GET /api/child/teacher?classLevel=) and pick her language once \u2192 3 our promises + Hold to continue (the grown-up hold gate moved here from the account step; typed 'parent' alternative) \u2192 4 account \u2192 5 consent \u2192 6 about the child (name, Casual / Respectful, the 12 interest pictures Hello shows, captions) \u2192 7 PIN + limit \u2192 9 hand over (Now \u2192 Hello, Later \u2192 the Parent corner). Every step opens at scrollY 0 with focus on its h1, the <title> follows the step, the primary action is in the flow (never sticky). /start/lang, /trust, /taste redirect. Step 8 (sound and mic check) is NOT built (B3). Reversal: V2-M8 shows the class-first order slows hand-over beyond 6 min",
+   "title": "Onboarding order (§3.2) built in B2: 1 class + board → 2 meet the class's actual teacher (GET /api/child/teacher?classLevel=) and pick her language once → 3 our promises + Hold to continue (the grown-up hold gate moved here from the account step; typed 'parent' alternative) → 4 account → 5 consent → 6 about the child (name, Casual / Respectful, the 12 interest pictures Hello shows, captions) → 7 PIN + limit → 9 hand over (Now → Hello, Later → the Parent corner). Every step opens at scrollY 0 with focus on its h1, the <title> follows the step, the primary action is in the flow (never sticky). /start/lang, /trust, /taste redirect. Step 8 (sound and mic check) is NOT built (B3). Reversal: V2-M8 shows the class-first order slows hand-over beyond 6 min",
    "at": "2026-10-03",
    "source": "inbox/b2-home-progress-assets.json"
   },
@@ -3666,7 +3666,7 @@
   {
    "id": "b2-rejected-offline-before-load",
    "kind": "rejection",
-   "title": "Testing the offline home with the browser offline BEFORE the first load: there is no service worker / cached shell, so the SPA never loads and nothing can render (all 4 offline cases failed with an empty page). The offline home is tested by dropping the link after load (the home re-reads on the `offline` event). The cached-shell half of \u00a76.1.1 'offline \u2192 the cached shell' does not exist yet",
+   "title": "Testing the offline home with the browser offline BEFORE the first load: there is no service worker / cached shell, so the SPA never loads and nothing can render (all 4 offline cases failed with an empty page). The offline home is tested by dropping the link after load (the home re-reads on the `offline` event). The cached-shell half of §6.1.1 'offline → the cached shell' does not exist yet",
    "at": "2026-10-03",
    "source": "inbox/b2-home-progress-assets.json"
   },
@@ -3687,7 +3687,7 @@
   {
    "id": "open-b2-not-built",
    "kind": "open",
-   "title": "Not built in B2, listed so coverage is not implied: per-teacher greeting clips (Arjun, Uma Hello is silent); her once-a-day home greeting line (no endpoint); Young labels spoken on tap; Ask 'Say it' and 'Photo of the question' (no route; hidden, not dead buttons); the Garden/Sky sheet 'Hear {T}' line and Older 'How I know' evidence rows (no child evidence read); Notebook per-page explanation line and tray still, Older 'Notes for a friend'; Your teacher 10 s preview clips; prot\u00e9g\u00e9 teach-back art and milestone ceremonies (lesson-side); Who avatars (src/app/Who.tsx, not this workstream); onboarding step 8 sound and mic check and field-level errors (B3); OCR no-text check (needs AZURE_VISION_*); the 18 rig stills (scripts/teacher-stills.mjs not run: every still renders the plate fallback); the human review sheet (B2-A2)",
+   "title": "Not built in B2, listed so coverage is not implied: per-teacher greeting clips (Arjun, Uma Hello is silent); her once-a-day home greeting line (no endpoint); Young labels spoken on tap; Ask 'Say it' and 'Photo of the question' (no route; hidden, not dead buttons); the Garden/Sky sheet 'Hear {T}' line and Older 'How I know' evidence rows (no child evidence read); Notebook per-page explanation line and tray still, Older 'Notes for a friend'; Your teacher 10 s preview clips; protégé teach-back art and milestone ceremonies (lesson-side); Who avatars (src/app/Who.tsx, not this workstream); onboarding step 8 sound and mic check and field-level errors (B3); OCR no-text check (needs AZURE_VISION_*); the 18 rig stills (scripts/teacher-stills.mjs not run: every still renders the plate fallback); the human review sheet (B2-A2)",
    "at": "2026-10-03",
    "source": "inbox/b2-home-progress-assets.json"
   },
@@ -3695,28 +3695,28 @@
    "id": "lt-address-parent-first",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "aap/tum is the PARENT's choice: child_controls.address \u2192 class default (aap from class 5, tum below; English none). LessonStartRequest.address is removed; no client value can outrank the parent or change the register between lessons (V2 \u00a73.3 step 4)",
+   "title": "aap/tum is the PARENT's choice: child_controls.address → class default (aap from class 5, tum below; English none). LessonStartRequest.address is removed; no client value can outrank the parent or change the register between lessons (V2 §3.3 step 4)",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lt-start-gate",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "POST /api/lesson/start enforces /api/child/plan (startRefusal): capped and resting refuse every start (409 LessonStartRefused {state, opensAt, capRemaining}); done refuses a lesson but lets purpose practice / doubt through (\u00a76.3.3 'Practise something'); start / first / resume start. Checked before the kit read, any model call or write",
+   "title": "POST /api/lesson/start enforces /api/child/plan (startRefusal): capped and resting refuse every start (409 LessonStartRefused {state, opensAt, capRemaining}); done refuses a lesson but lets purpose practice / doubt through (§6.3.3 'Practise something'); start / first / resume start. Checked before the kit read, any model call or write",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lt-done-rule",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "An ended lesson is 'Done for today' only if it graded something (state.did) or ran \u2265 5 min (countsAsDone); an open lesson with zero child turns older than 2 min is closed (state.abandoned) by the next start and never counts",
+   "title": "An ended lesson is 'Done for today' only if it graded something (state.did) or ran ≥ 5 min (countsAsDone); an open lesson with zero child turns older than 2 min is closed (state.abandoned) by the next start and never counts",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lt-short-titles",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "shortTitle comes from an authored table (server/director/short-titles.json: all 380 curriculum topic titles > 24 chars), else the title's lead clause, else whole words ending before a joiner, else null (no title) \u2014 never a word cut that dangles ('Keeping track without' \u2192 'Counting without numbers')",
+   "title": "shortTitle comes from an authored table (server/director/short-titles.json: all 380 curriculum topic titles > 24 chars), else the title's lead clause, else whole words ending before a joiner, else null (no title) — never a word cut that dangles ('Keeping track without' → 'Counting without numbers')",
    "source": "inbox/lesson-truth.json"
   },
   {
@@ -3730,7 +3730,7 @@
    "id": "lt-choice-echo",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "The echo rule (a bare number the teacher's other question stated \u2192 no evidence) does not fire when that question offers numbers as alternatives ('Kya yeh 25 hai ya 30?', '26 or 36?'): the model decides",
+   "title": "The echo rule (a bare number the teacher's other question stated → no evidence) does not fire when that question offers numbers as alternatives ('Kya yeh 25 hai ya 30?', '26 or 36?'): the model decides",
    "source": "inbox/lesson-truth.json"
   },
   {
@@ -3758,35 +3758,35 @@
    "id": "lesson-truth-start-gate-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "tests/child-routes-db.run.mjs (Neon test branch, in npm test): start 409 for done (lesson), capped (practice too), resting; 201 for practice after done; an accidental 0.2-min lesson is not done; a 10-min-old zero-turn open lesson is closed by the next start. Start latency, in-process voice start, n=8 x 2 runs, pre-fix vs fixed: median 362/338 \u2192 359/363 ms (no measurable cost; planFor alone ~+50 ms before it was overlapped)",
+   "title": "tests/child-routes-db.run.mjs (Neon test branch, in npm test): start 409 for done (lesson), capped (practice too), resting; 201 for practice after done; an accidental 0.2-min lesson is not done; a 10-min-old zero-turn open lesson is closed by the next start. Start latency, in-process voice start, n=8 x 2 runs, pre-fix vs fixed: median 362/338 → 359/363 ms (no measurable cost; planFor alone ~+50 ms before it was overlapped)",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lesson-truth-e2e-fix-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "tests/e2e-design-lesson-truth.mjs rewritten in two tiers (360x640 + 1280x800, light + dark). SERVER tier all pass (V-LT1 200s, V-LT2s plan states first/done + DidCards, V-LT3s chapters + one 'here' + a seal + got_it, V-LT4 Arjun 'he', V-LT5s start 409 when done); on the pre-fix tree V-LT5s fails (201). CLIENT tier fails, as it should until open-lt-client-wiring: no 'Your first lesson' / 'Done for today' / DidCard, no 'Your class is here' or seal, Hinglish and Devanagari chrome (Bagiya, Abhyaas, Aasmaan, \u0906 \u0917\u092f\u093e, \u0905\u092d\u0940 \u0928\u0939\u0940\u0902), Sky star targets 41 px",
+   "title": "tests/e2e-design-lesson-truth.mjs rewritten in two tiers (360x640 + 1280x800, light + dark). SERVER tier all pass (V-LT1 200s, V-LT2s plan states first/done + DidCards, V-LT3s chapters + one 'here' + a seal + got_it, V-LT4 Arjun 'he', V-LT5s start 409 when done); on the pre-fix tree V-LT5s fails (201). CLIENT tier fails, as it should until open-lt-client-wiring: no 'Your first lesson' / 'Done for today' / DidCard, no 'Your class is here' or seal, Hinglish and Devanagari chrome (Bagiya, Abhyaas, Aasmaan, आ गया, अभी नहीं), Sky star targets 41 px",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lt-child-address-pick",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rejected: the child's own aap/tum pick sent as LessonStartRequest.address and ranked above the parent's setting (class 5+). The spec gives the choice to the parent (\u00a73.2 step 6, \u00a73.3 step 4) and Hello has no such card; a client-supplied, unstored value outranked the parent and could flip the register between lessons",
+   "title": "Rejected: the child's own aap/tum pick sent as LessonStartRequest.address and ranked above the parent's setting (class 5+). The spec gives the choice to the parent (§3.2 step 6, §3.3 step 4) and Hello has no such card; a client-supplied, unstored value outranked the parent and could flip the register between lessons",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "lt-word-cut-short-title",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rejected: shortTitle as a word-boundary cut of the title \u2014 84 of 380 long topic titles came out as dangling fragments or a bare first word ('Equal groups as', 'Making shapes from', 'Keeping track without'); V2 \u00a74.10 forbids a truncated name, so the titles are authored",
+   "title": "Rejected: shortTitle as a word-boundary cut of the title — 84 of 380 long topic titles came out as dangling fragments or a bare first word ('Equal groups as', 'Making shapes from', 'Keeping track without'); V2 §4.10 forbids a truncated name, so the titles are authored",
    "source": "inbox/lesson-truth.json"
   },
   {
    "id": "open-lt-client-wiring-2",
    "kind": "open",
    "at": "2026-10-03",
-   "title": "Child client (blocks B2 and audit #9's child-facing fix): read ChildPlanResponse.state (expose data-plan-state) and render first/done/capped/resting per \u00a76.3.3 incl. the done DidCard from plan.today.summary; Sky/Garden render chapters, seals and 'Your class is here'; Practice and Ask send LessonStartRequest.purpose ('practice' / 'doubt') \u2014 without it they are now refused 409 after a done lesson \u2014 and handle a 409 LessonStartRefused; English chrome; star targets \u2265 48 px; Hello preselects the parent's interests; landing/onboarding use /api/child/teacher. The client no longer sends address (the field is gone)",
+   "title": "Child client (blocks B2 and audit #9's child-facing fix): read ChildPlanResponse.state (expose data-plan-state) and render first/done/capped/resting per §6.3.3 incl. the done DidCard from plan.today.summary; Sky/Garden render chapters, seals and 'Your class is here'; Practice and Ask send LessonStartRequest.purpose ('practice' / 'doubt') — without it they are now refused 409 after a done lesson — and handle a 409 LessonStartRefused; English chrome; star targets ≥ 48 px; Hello preselects the parent's interests; landing/onboarding use /api/child/teacher. The client no longer sends address (the field is gone)",
    "source": "inbox/lesson-truth.json"
   },
   {
@@ -3856,14 +3856,14 @@
    "id": "b2-home-no-lying-signal",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "The child home never shows a signal the next screen breaks (\u00a73.4, \u00a76.3.3): (1) while GET /api/child/plan is in flight the PrimaryCard is a neutral busy card ('Getting today ready', aria-busy, NO Start, no Practice tile) instead of a provisional 'start' card with a live Start; (2) server state `resume` is shown as `start` (\"Today's lesson\" \u00b7 Start) while src/child/plan.ts RESUME_BY_ID is false, because /c/:cid/lesson/:lid cannot reopen a lesson by id and 'Continue' would start a new one; the server state is kept as plan.serverState; (3) offline says 'Practice works offline.' and offers Quick practice ONLY when plan.packReady, else 'Lessons need the internet.' + Try again, and the Practice / Ask tiles are not offered offline. Reversal: (2) the lesson route resumes by id (flip RESUME_BY_ID); (3) an offline pack ships (packReady true); (1) the plan read becomes local-first (then the cached state may render, still without a Start until confirmed)",
+   "title": "The child home never shows a signal the next screen breaks (§3.4, §6.3.3): (1) while GET /api/child/plan is in flight the PrimaryCard is a neutral busy card ('Getting today ready', aria-busy, NO Start, no Practice tile) instead of a provisional 'start' card with a live Start; (2) server state `resume` is shown as `start` (\"Today's lesson\" · Start) while src/child/plan.ts RESUME_BY_ID is false, because /c/:cid/lesson/:lid cannot reopen a lesson by id and 'Continue' would start a new one; the server state is kept as plan.serverState; (3) offline says 'Practice works offline.' and offers Quick practice ONLY when plan.packReady, else 'Lessons need the internet.' + Try again, and the Practice / Ask tiles are not offered offline. Reversal: (2) the lesson route resumes by id (flip RESUME_BY_ID); (3) an offline pack ships (packReady true); (1) the plan read becomes local-first (then the cached state may render, still without a Start until confirmed)",
    "source": "inbox/b2-home-progress-assets.json"
   },
   {
    "id": "b2-child-type-rem",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "Child screens outside the lesson (.cs, .cs-gate) re-declare the band type tokens in rem (px/16, so 100 % renders identically) times one factor --cs-k (Me \u2192 Bigger text = 1.18): text follows the browser/OS font size to 200 % (\u00a711.7) and Bigger text grows it. The lesson (no .cs) keeps the px tokens (it yields per \u00a76.3.4, lesson workstream). Layout follows: grids use minmax(0,1fr), tiles reflow with auto-fit minmax(min(100%, n rem)), the top bar wraps only when one row no longer fits. Reversal: tokens.css itself moves the band scale to rem (then the re-declaration in src/child/child.css goes)",
+   "title": "Child screens outside the lesson (.cs, .cs-gate) re-declare the band type tokens in rem (px/16, so 100 % renders identically) times one factor --cs-k (Me → Bigger text = 1.18): text follows the browser/OS font size to 200 % (§11.7) and Bigger text grows it. The lesson (no .cs) keeps the px tokens (it yields per §6.3.4, lesson workstream). Layout follows: grids use minmax(0,1fr), tiles reflow with auto-fit minmax(min(100%, n rem)), the top bar wraps only when one row no longer fits. Reversal: tokens.css itself moves the band scale to rem (then the re-declaration in src/child/child.css goes)",
    "source": "inbox/b2-home-progress-assets.json"
   },
   {
@@ -3877,7 +3877,7 @@
    "id": "b2-garden-raised-beds",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "Garden layout: each bed is a raised bed (brick edge + soil) that fills the panel from its signboard to the bottom, one bed per phone width (100cqw \u2212 gutters, max 340), so no hollow paper band sits above the plants and the seal is never clipped by the panel edge; a code-drawn courtyard ground (sky + clouds band holding the 64 dp arrows, hedge, soil) stands in for the failed bg/garden-panorama; each bed's signboard has its own token colour plus the topic picture (code-drawn subject emblem until topic art lands); the class's current chapter carries a flag picture whose accessible name is 'Your class is here'. Beds carry NO visible chapter name: \u00a710 'Garden: plants, no words, no numbers' (R0/R1 readers), and a spoken label needs her voice for arbitrary text, which has no route. Reversal: MW-M2 / a child test shows Young children cannot tell beds apart, or a 'speak this chapter name' route exists",
+   "title": "Garden layout: each bed is a raised bed (brick edge + soil) that fills the panel from its signboard to the bottom, one bed per phone width (100cqw − gutters, max 340), so no hollow paper band sits above the plants and the seal is never clipped by the panel edge; a code-drawn courtyard ground (sky + clouds band holding the 64 dp arrows, hedge, soil) stands in for the failed bg/garden-panorama; each bed's signboard has its own token colour plus the topic picture (code-drawn subject emblem until topic art lands); the class's current chapter carries a flag picture whose accessible name is 'Your class is here'. Beds carry NO visible chapter name: §10 'Garden: plants, no words, no numbers' (R0/R1 readers), and a spoken label needs her voice for arbitrary text, which has no route. Reversal: MW-M2 / a child test shows Young children cannot tell beds apart, or a 'speak this chapter name' route exists",
    "source": "inbox/b2-home-progress-assets.json"
   },
   {
@@ -3891,7 +3891,7 @@
    "id": "b2-battery-fix-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "B2 battery after the fixer pass, tests/e2e-design-b2.mjs: 1116/1116 checks (n = 1 run, headless Chromium SwiftShader, production build via server/serve.mjs, /api/* mocked; 360x640 DPR 2 touch + 1280x800; light + dark for Older). New since the 942-check run: V-TGT at the spec bars (48 Older/adult, 64 Young, the 48 dp Grown-ups door excepted) with negative controls (46 px and 60 px buttons trip); V-PLAN loading (plan delayed 3 s; capped/resting/done: 0 Start links and 0 Practice tiles at 1.2 s; control trips); resume shown as start; offline makes no offline-practice promise and offers no Practice/Ask; card region named by its own heading; Bigger text grows computed sizes (Older home title 24 \u2192 28.3 px); text follows a 200 % root font size on home, map, notebook, me (Young + Older) with no off-screen clipping and no top-bar overlap (new off-screen check + control); V-CON text contrast against the composited pixels under it, 30 screen states, \u2265 4.5 / 3 (control trips); V-MOTION reduced motion leaves nothing looping (6 routes); Garden bed fills the panel, class flag present and in view, sheet shows the visible '{T} \u00b7 AI teacher' label; Notebook summaries fetched once (3 on first open, 0 on reopen); V-ABS now varies the last-visit device state (plan cache day, day marker, artefact date) as well as the clock, compares text and primary-card pixels, with a control. V-SHOT-B2 image diff implemented (in-browser OffscreenCanvas YIQ, \u0394E 0.1, \u2264 0.5 %) but SKIPPED for all 141 shots: no human-approved baselines exist in tests/visual/baselines/b2/. V-PERF-1 max 66 KB art per child route. Not a device, child or parent measurement",
+   "title": "B2 battery after the fixer pass, tests/e2e-design-b2.mjs: 1116/1116 checks (n = 1 run, headless Chromium SwiftShader, production build via server/serve.mjs, /api/* mocked; 360x640 DPR 2 touch + 1280x800; light + dark for Older). New since the 942-check run: V-TGT at the spec bars (48 Older/adult, 64 Young, the 48 dp Grown-ups door excepted) with negative controls (46 px and 60 px buttons trip); V-PLAN loading (plan delayed 3 s; capped/resting/done: 0 Start links and 0 Practice tiles at 1.2 s; control trips); resume shown as start; offline makes no offline-practice promise and offers no Practice/Ask; card region named by its own heading; Bigger text grows computed sizes (Older home title 24 → 28.3 px); text follows a 200 % root font size on home, map, notebook, me (Young + Older) with no off-screen clipping and no top-bar overlap (new off-screen check + control); V-CON text contrast against the composited pixels under it, 30 screen states, ≥ 4.5 / 3 (control trips); V-MOTION reduced motion leaves nothing looping (6 routes); Garden bed fills the panel, class flag present and in view, sheet shows the visible '{T} · AI teacher' label; Notebook summaries fetched once (3 on first open, 0 on reopen); V-ABS now varies the last-visit device state (plan cache day, day marker, artefact date) as well as the clock, compares text and primary-card pixels, with a control. V-SHOT-B2 image diff implemented (in-browser OffscreenCanvas YIQ, ΔE 0.1, ≤ 0.5 %) but SKIPPED for all 141 shots: no human-approved baselines exist in tests/visual/baselines/b2/. V-PERF-1 max 66 KB art per child route. Not a device, child or parent measurement",
    "source": "inbox/b2-home-progress-assets.json"
   },
   {
@@ -3905,35 +3905,35 @@
    "id": "open-b2-fixer-followups",
    "kind": "open",
    "at": "2026-10-03",
-   "title": "Left open by the B2 fixer: (1) server owner: GET /api/child/notebook (lesson ids + best card + her one line) so the Notebook is not device-bound, plus no-cache for /assets/gen/manifest.json in server/serve.mjs; (2) lesson owner: resume a lesson by id (then flip RESUME_BY_ID), send LessonStartRequest.purpose, honour prefs.face / largeText on the Desk; (3) parent owner: server-held speech text for the four onboarding promise rows (\u00a76.2 step 3 '\u25b6'), reachable before an account exists; the consent rows' CONSENT_SPEECH still says 'she'; (4) B1 owner: src/ui/Art.tsx and src/child/art.tsx each fetch the manifest; make one delegate to the other (one table); <Teacher> loads the stage background when not shown; (5) human: approve the first V-SHOT-B2 baselines (`--update-baselines`), the B2-A2 review sheet; (6) not built: the Young 1280 painted beds as tap targets (the Garden tile is in the panel instead), her greeting line, Hear {T} / How I know / the child's made thing in the map sheet, Your teacher preview clips (stills shown), onboarding step 8 (counter says 'of 8'), the sky SVG labels stay px (the List view is the scalable source of truth), re-run gen-assets after picto/notebook is regenerated",
+   "title": "Left open by the B2 fixer: (1) server owner: GET /api/child/notebook (lesson ids + best card + her one line) so the Notebook is not device-bound, plus no-cache for /assets/gen/manifest.json in server/serve.mjs; (2) lesson owner: resume a lesson by id (then flip RESUME_BY_ID), send LessonStartRequest.purpose, honour prefs.face / largeText on the Desk; (3) parent owner: server-held speech text for the four onboarding promise rows (§6.2 step 3 '▶'), reachable before an account exists; the consent rows' CONSENT_SPEECH still says 'she'; (4) B1 owner: src/ui/Art.tsx and src/child/art.tsx each fetch the manifest; make one delegate to the other (one table); <Teacher> loads the stage background when not shown; (5) human: approve the first V-SHOT-B2 baselines (`--update-baselines`), the B2-A2 review sheet; (6) not built: the Young 1280 painted beds as tap targets (the Garden tile is in the panel instead), her greeting line, Hear {T} / How I know / the child's made thing in the map sheet, Your teacher preview clips (stills shown), onboarding step 8 (counter says 'of 8'), the sky SVG labels stay px (the List view is the scalable source of truth), re-run gen-assets after picto/notebook is regenerated",
    "source": "inbox/b2-home-progress-assets.json"
   },
   {
    "id": "b3-parent-claim-gate",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "G-PARENT-1 is one written rule applied twice: server/routes/parent.js homeHeadline picks the parent home's headline from the legacy evidence + skill_state rows, and src/parent/claims.ts gateHeadline re-checks every claim it is sent and drops any the rows do not support. 'can now' needs the ledger at Got it/Secure AND \u2265 1 row right-on-their-own AND the newest counted row right-on-their-own (fixer: never over a sheet whose latest row is 'Not yet'); 'Still practising' needs the ledger at Practising AND \u2265 2 attempts in 14 days not right-on-their-own; < 3 counted rows in total \u2192 'Too early to say'; exactly one counted lesson \u2192 '{child} had a first lesson: {topic}' and never a practising claim; a misconception may only steer WHICH practising skill is named, never whether. The chip shown is the same skill_state fold the How-do-we-know sheet shows. During a safety hold the headline holds too ('No new note right now.'). Reverse if: parent trust testing (V2-M-parent read test) shows parents read 'Too early to say' as the product not working, or the kt_* ledger replaces legacy evidence (then the rows move with it).",
+   "title": "G-PARENT-1 is one written rule applied twice: server/routes/parent.js homeHeadline picks the parent home's headline from the legacy evidence + skill_state rows, and src/parent/claims.ts gateHeadline re-checks every claim it is sent and drops any the rows do not support. 'can now' needs the ledger at Got it/Secure AND ≥ 1 row right-on-their-own AND the newest counted row right-on-their-own (fixer: never over a sheet whose latest row is 'Not yet'); 'Still practising' needs the ledger at Practising AND ≥ 2 attempts in 14 days not right-on-their-own; < 3 counted rows in total → 'Too early to say'; exactly one counted lesson → '{child} had a first lesson: {topic}' and never a practising claim; a misconception may only steer WHICH practising skill is named, never whether. The chip shown is the same skill_state fold the How-do-we-know sheet shows. During a safety hold the headline holds too ('No new note right now.'). Reverse if: parent trust testing (V2-M-parent read test) shows parents read 'Too early to say' as the product not working, or the kt_* ledger replaces legacy evidence (then the rows move with it).",
    "source": "inbox/b3-parent.json"
   },
   {
    "id": "b3-parent-counted-lesson",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "A lesson counts on parent surfaces (Lessons this week, 'first lesson', Recent lessons) only when it ran \u2265 5 minutes or something in it was graded and it was not an abandoned start (COUNTED_SQL, the same rule as child.js countsAsDone). Shorter visits are listed in Lessons as 'Short visit, not counted as a lesson'. Interim for audit #20's doubt-counted-as-lesson: lesson rows do not record purpose (lesson|practice|doubt). Reverse when lesson.js stores the start purpose: then a doubt shows as 'Question: {topic}' by purpose, not by length.",
+   "title": "A lesson counts on parent surfaces (Lessons this week, 'first lesson', Recent lessons) only when it ran ≥ 5 minutes or something in it was graded and it was not an abandoned start (COUNTED_SQL, the same rule as child.js countsAsDone). Shorter visits are listed in Lessons as 'Short visit, not counted as a lesson'. Interim for audit #20's doubt-counted-as-lesson: lesson rows do not record purpose (lesson|practice|doubt). Reverse when lesson.js stores the start purpose: then a doubt shows as 'Question: {topic}' by purpose, not by length.",
    "source": "inbox/b3-parent.json"
   },
   {
    "id": "b3-parent-try-at-home-from-letter",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "Parent home 'Try at home' is the weekly letter's home activity (server/reports Lane A preview of this ISO week: a reviewed template, gate-passed, with its own How-do-we-know tap-through to the kt_evidence rows), not lesson.parent_note (model text the audit read as system voice). Picture chips show only objects the sentence names (maths \u2192 home/roti). Done / Not this week log {period} to audit. Reverse if the weekly home activity is too rarely admitted (then a reviewed per-topic home task authored in the kits).",
+   "title": "Parent home 'Try at home' is the weekly letter's home activity (server/reports Lane A preview of this ISO week: a reviewed template, gate-passed, with its own How-do-we-know tap-through to the kt_evidence rows), not lesson.parent_note (model text the audit read as system voice). Picture chips show only objects the sentence names (maths → home/roti). Done / Not this week log {period} to audit. Reverse if the weekly home activity is too rarely admitted (then a reviewed per-topic home task authored in the kits).",
    "source": "inbox/b3-parent.json"
   },
   {
    "id": "b3-parent-text-english-voice-family",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "Notes (daily note, weekly letter) render the English text only; Listen plays the stored spoken script in the family's report language (\u00a73.12). The language switcher and the Devanagari chrome tables in Report.tsx are gone (G-EN-1). Reverse if parents who read Hindi ask for Hindi text in pilot (then the text joins [data-speech] content, never chrome).",
+   "title": "Notes (daily note, weekly letter) render the English text only; Listen plays the stored spoken script in the family's report language (§3.12). The language switcher and the Devanagari chrome tables in Report.tsx are gone (G-EN-1). Reverse if parents who read Hindi ask for Hindi text in pilot (then the text joins [data-speech] content, never chrome).",
    "source": "inbox/b3-parent.json"
   },
   {
@@ -3968,7 +3968,7 @@
    "id": "b3-parent-battery-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "tests/e2e-design-b3-parent.mjs: 384/384 checks (n = 1 run, headless Chromium, production build via server/serve.mjs, /api/* mocked), 86 shots (19 routes/states \u00d7 360x640 DPR 2 touch + 1280x800 \u00d7 light + dark, plus flow states) in docs/design/build/b3-parent/. V-SIG-2 (0 [data-lamp], no lamp colour), V-EN-1, V-NAME-1, V-LAYOUT-2 (+ no nav to unbuilt pages), V-TGT, V-FOCUS, V-CON light+dark, V-CLAIM (audit case not rendered; headline state = sheet state), V-ERR, V-PIN (gate, Change PIN, conversation re-check; a 120 px fixed footer control trips), V-FOOT (inline Save not covered, no floating bar), V-GATE (wrong/cool-off/reset pending/re-lock), V-DEL (early release cancels; password+confirm; receipt), V-NEXT (+ //evil control), V-TIME. Not a parent measurement.",
+   "title": "tests/e2e-design-b3-parent.mjs: 384/384 checks (n = 1 run, headless Chromium, production build via server/serve.mjs, /api/* mocked), 86 shots (19 routes/states × 360x640 DPR 2 touch + 1280x800 × light + dark, plus flow states) in docs/design/build/b3-parent/. V-SIG-2 (0 [data-lamp], no lamp colour), V-EN-1, V-NAME-1, V-LAYOUT-2 (+ no nav to unbuilt pages), V-TGT, V-FOCUS, V-CON light+dark, V-CLAIM (audit case not rendered; headline state = sheet state), V-ERR, V-PIN (gate, Change PIN, conversation re-check; a 120 px fixed footer control trips), V-FOOT (inline Save not covered, no floating bar), V-GATE (wrong/cool-off/reset pending/re-lock), V-DEL (early release cancels; password+confirm; receipt), V-NEXT (+ //evil control), V-TIME. Not a parent measurement.",
    "source": "inbox/b3-parent.json"
   },
   {
@@ -3982,7 +3982,7 @@
    "id": "b3-account-delete-db-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "tests/account-delete-db.test.mjs on the Neon TEST branch (n = 1 run): 5/5. Overview/lessons/lesson card/progress/export on real Postgres (COUNTED_SQL: a 1-minute visit listed, not counted); deletion refused when locked (403), without confirm, with a wrong password (nothing deleted); then 200 + receipt, 0 rows for the guardian/children in guardian, child, lesson, evidence, skill_state, consent, guardian_pin, auth_session and every information_schema table with child_id except learner_mode_audit; 1 audit row with detail keys ['receipt']; the old cookie \u2192 401.",
+   "title": "tests/account-delete-db.test.mjs on the Neon TEST branch (n = 1 run): 5/5. Overview/lessons/lesson card/progress/export on real Postgres (COUNTED_SQL: a 1-minute visit listed, not counted); deletion refused when locked (403), without confirm, with a wrong password (nothing deleted); then 200 + receipt, 0 rows for the guardian/children in guardian, child, lesson, evidence, skill_state, consent, guardian_pin, auth_session and every information_schema table with child_id except learner_mode_audit; 1 audit row with detail keys ['receipt']; the old cookie → 401.",
    "source": "inbox/b3-parent.json"
   },
   {
@@ -3996,7 +3996,7 @@
    "id": "b3-open-parent-gaps",
    "kind": "open",
    "at": "2026-10-03",
-   "title": "Not built in b3-parent (hidden, not stubbed, per P6): POST /api/account/reset (no email/SMS sender on the Azure grant), N4 account notices (no Notifier), Delete this lesson (needs a ledger refold of skill_state/kt_* \u2014 learner workstream), Controls rows with no server field (Tap and type only, Extra time to answer, Sounds, Data saver, Open mic, Teacher choice, Child sign-in), authored parentLabel per kit skill (headline uses the skill title lower-cased), lesson purpose (doubt) on lesson rows, 'School is here' (Progress marks the chapter of the next lesson instead), Help contact address, teacher-name change in the corner (child-names-teacher workstream).",
+   "title": "Not built in b3-parent (hidden, not stubbed, per P6): POST /api/account/reset (no email/SMS sender on the Azure grant), N4 account notices (no Notifier), Delete this lesson (needs a ledger refold of skill_state/kt_* — learner workstream), Controls rows with no server field (Tap and type only, Extra time to answer, Sounds, Data saver, Open mic, Teacher choice, Child sign-in), authored parentLabel per kit skill (headline uses the skill title lower-cased), lesson purpose (doubt) on lesson rows, 'School is here' (Progress marks the chapter of the next lesson instead), Help contact address, teacher-name change in the corner (child-names-teacher workstream).",
    "source": "inbox/b3-parent.json"
   },
   {
@@ -4010,7 +4010,7 @@
    "id": "b3-erasure-waits-for-safeguarding",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "Account and child erasure (server/routes/account.js safetyFirst + SAFETY_OPEN_SQL) are DEFERRED (409 code erase_review; one content-free audit row erase_deferred {what}; the page: 'This deletion needs a check by our team first. Nothing has been deleted.') while any child in scope is in safety_hold, has an unhandled safeguarding incident (incident.handled = false), or has a safety notification pending/sending/blocked. Otherwise every incident row of those children is DETACHED inside the erasure's transaction (child_id \u2192 null, detail.erased = receipt code) so the safeguarding record survives the cascade de-identified; the children are locked FOR UPDATE first, so no new incident can land between check and delete. No migration (incident.child_id is already nullable). Supersedes the builder's DB test assertion that every child_id table is empty afterwards including incident. Reverse if: the safeguarding owner rules a different retention or a time-boxed deferral (e.g. erase after N days even if unhandled), or a human queue UI lets staff release a deferred erasure.",
+   "title": "Account and child erasure (server/routes/account.js safetyFirst + SAFETY_OPEN_SQL) are DEFERRED (409 code erase_review; one content-free audit row erase_deferred {what}; the page: 'This deletion needs a check by our team first. Nothing has been deleted.') while any child in scope is in safety_hold, has an unhandled safeguarding incident (incident.handled = false), or has a safety notification pending/sending/blocked. Otherwise every incident row of those children is DETACHED inside the erasure's transaction (child_id → null, detail.erased = receipt code) so the safeguarding record survives the cascade de-identified; the children are locked FOR UPDATE first, so no new incident can land between check and delete. No migration (incident.child_id is already nullable). Supersedes the builder's DB test assertion that every child_id table is empty afterwards including incident. Reverse if: the safeguarding owner rules a different retention or a time-boxed deferral (e.g. erase after N days even if unhandled), or a human queue UI lets staff release a deferred erasure.",
    "source": "inbox/b3-parent.json"
   },
   {
@@ -4052,21 +4052,21 @@
    "id": "b3-fixer-battery-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "tests/e2e-design-b3-parent.mjs: 418/418 (n = 1, headless Chromium, production build, /api/* MOCKED: layout and payload handling only), 91 shots in docs/design/build/b3-parent/ (360x640 DPR 2 + 1280x800, light + dark; new: home-held, data-delete-deferred). New checks, each with its negative control where one exists: V-ONE (contradicting payload caught; generic activity; headline label == sheet == Progress == Lesson card), V-SAFE (held \u2192 no card; released \u2192 card; Help promises no message; deferred deletion sentence), V-HONEST (receipt copy, no Lesson summary, Progress makes no overview call), V-NEXT fresh signup \u2192 /start/consent, V-LAYOUT rail column painted full height (light, dark). Shot helper now parks the bottom bar static (it was painted mid-page in full-page 360 shots).",
+   "title": "tests/e2e-design-b3-parent.mjs: 418/418 (n = 1, headless Chromium, production build, /api/* MOCKED: layout and payload handling only), 91 shots in docs/design/build/b3-parent/ (360x640 DPR 2 + 1280x800, light + dark; new: home-held, data-delete-deferred). New checks, each with its negative control where one exists: V-ONE (contradicting payload caught; generic activity; headline label == sheet == Progress == Lesson card), V-SAFE (held → no card; released → card; Help promises no message; deferred deletion sentence), V-HONEST (receipt copy, no Lesson summary, Progress makes no overview call), V-NEXT fresh signup → /start/consent, V-LAYOUT rail column painted full height (light, dark). Shot helper now parks the bottom bar static (it was painted mid-page in full-page 360 shots).",
    "source": "inbox/b3-parent.json"
   },
   {
    "id": "b3-open-n4-deletion-notice",
    "kind": "open",
    "at": "2026-10-03",
-   "title": "N4 'deletion started' (V2 \u00a76.5.5, B3-A5 'N4 queued') is not sent and not queued: no Notifier (M1), and an outbox row keyed to guardian_id (NOT NULL, on delete cascade) would vanish with the guardian. Path: the Notifier migration lets an account-class notification outlive its guardian (guardian_id set null + an address snapshot cleared on send); deleteAccount then inserts it inside its transaction, before the delete. Owner: Notifier/Conductor workstream.",
+   "title": "N4 'deletion started' (V2 §6.5.5, B3-A5 'N4 queued') is not sent and not queued: no Notifier (M1), and an outbox row keyed to guardian_id (NOT NULL, on delete cascade) would vanish with the guardian. Path: the Notifier migration lets an account-class notification outlive its guardian (guardian_id set null + an address snapshot cleared on send); deleteAccount then inserts it inside its transaction, before the delete. Owner: Notifier/Conductor workstream.",
    "source": "inbox/b3-parent.json"
   },
   {
    "id": "b3-open-lesson-purpose",
    "kind": "open",
    "at": "2026-10-03",
-   "title": "Lesson purpose is still not stored: lesson.js accepts body.purpose (lesson|practice|doubt) at start but inserts kind='live', so Lessons detects a question visit by length (COUNTED_SQL) and cannot show 'Question: {topic}' (\u00a76.5.3). Needs server/routes/lesson.js (not b3-parent's path) to store state.purpose; parent.js then reads it.",
+   "title": "Lesson purpose is still not stored: lesson.js accepts body.purpose (lesson|practice|doubt) at start but inserts kind='live', so Lessons detects a question visit by length (COUNTED_SQL) and cannot show 'Question: {topic}' (§6.5.3). Needs server/routes/lesson.js (not b3-parent's path) to store state.purpose; parent.js then reads it.",
    "source": "inbox/b3-parent.json"
   },
   {
@@ -4080,7 +4080,7 @@
    "id": "b4-site-no-teacher-name",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "The marketing site names no teacher and uses no teacher pronoun: the child names the teacher (child-names-teacher), so the landing shows the three rig looks (teal, slate, plum B+ plates, rendered from the in-house rig, never generated art) unnamed, each labelled 'AI teacher', and sells the choice itself ('Your child picks the teacher, and names them'). This replaces \u00a76.1.1's '{T} \u00b7 AI teacher \u00b7 classes 1\u20134' cast captions. Reversal: the owner fixes a launch cast with names that the child cannot change",
+   "title": "The marketing site names no teacher and uses no teacher pronoun: the child names the teacher (child-names-teacher), so the landing shows the three rig looks (teal, slate, plum B+ plates, rendered from the in-house rig, never generated art) unnamed, each labelled 'AI teacher', and sells the choice itself ('Your child picks the teacher, and names them'). This replaces §6.1.1's '{T} · AI teacher · classes 1–4' cast captions. Reversal: the owner fixes a launch cast with names that the child cannot change",
    "source": "inbox/b4-polish-site.json"
   },
   {
@@ -4101,14 +4101,14 @@
    "id": "b4-lint-content-vs-chrome",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "scripts/lint-ui.mjs tells content from chrome by rule, not by blanket path exemptions (CONTENT table): a `lint-ui: speech` marker, a JSX line carrying data-speech, an engine's lesson-language triplet (tri(en, hinglish, hindi) or {english, hinglish, hindi}) under src/modules/frame/engines/** (TrayContent), and a Devanagari range inside a regex (/[\u0900-\u097f]/: code that detects the script). System notices in the frame (bootstrap.tsx) and the host (host.tsx) are chrome and became English-only in every lesson language. New rule L-HING: the \u00a75.3 Hinglish wordlist (read from src/ui/copy.ts HINGLISH_CHROME, one source, plus kya/kaun/padhega found on Who) over visible strings in *.tsx. L-HOLD's TODO is upper-case only ('todo' = break in Hinglish). lint-ui is now a verify-release gate over the whole of src/. Reversal: a localisation layer replaces English-only chrome (owner-design-v2-directive reversal)",
+   "title": "scripts/lint-ui.mjs tells content from chrome by rule, not by blanket path exemptions (CONTENT table): a `lint-ui: speech` marker, a JSX line carrying data-speech, an engine's lesson-language triplet (tri(en, hinglish, hindi) or {english, hinglish, hindi}) under src/modules/frame/engines/** (TrayContent), and a Devanagari range inside a regex (/[ऀ-ॿ]/: code that detects the script). System notices in the frame (bootstrap.tsx) and the host (host.tsx) are chrome and became English-only in every lesson language. New rule L-HING: the §5.3 Hinglish wordlist (read from src/ui/copy.ts HINGLISH_CHROME, one source, plus kya/kaun/padhega found on Who) over visible strings in *.tsx. L-HOLD's TODO is upper-case only ('todo' = break in Hinglish). lint-ui is now a verify-release gate over the whole of src/. Reversal: a localisation layer replaces English-only chrome (owner-design-v2-directive reversal)",
    "source": "inbox/b4-polish-site.json"
   },
   {
    "id": "b4-lint-zero-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "lint-ui over all of src/: 150 findings at B4 start (116 L-DEVA in module engine triplets, 2 L-DEVA + 1 L-HEX in host.tsx, 3 L-DEVA + 2 L-HOLD in frame bootstrap/placeValue, 1 L-DEVA regex in scene.tsx, 19 L-HEX in avatar Plate2D.tsx + avatar.css, 10 L-HEX in dev pages) \u2192 0; the new L-HING rule then found 4 real/marking cases (Who.tsx 'Kaun padhega?', 'Kya tum \u2026 ho?', 'Haan', 'Nahi' as Young chrome; 2 unmarked speech lines) \u2192 0. Method: node scripts/lint-ui.mjs, n = every .css/.ts/.tsx file under src/, 2026-10-03. The task brief's 264 had already fallen to 150 through other workstreams before B4 started",
+   "title": "lint-ui over all of src/: 150 findings at B4 start (116 L-DEVA in module engine triplets, 2 L-DEVA + 1 L-HEX in host.tsx, 3 L-DEVA + 2 L-HOLD in frame bootstrap/placeValue, 1 L-DEVA regex in scene.tsx, 19 L-HEX in avatar Plate2D.tsx + avatar.css, 10 L-HEX in dev pages) → 0; the new L-HING rule then found 4 real/marking cases (Who.tsx 'Kaun padhega?', 'Kya tum … ho?', 'Haan', 'Nahi' as Young chrome; 2 unmarked speech lines) → 0. Method: node scripts/lint-ui.mjs, n = every .css/.ts/.tsx file under src/, 2026-10-03. The task brief's 264 had already fallen to 150 through other workstreams before B4 started",
    "source": "inbox/b4-polish-site.json"
   },
   {
@@ -4157,14 +4157,14 @@
    "id": "b4-site-no-hear-player",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "Deviation from \u00a76.1.1: the landing has no 'Hear a lesson' player. The only recorded clips (public/audio/hello-*.mp3) are the onboarding greeting 'I am Asha didi, a computer teacher', which gave the parent a fixed named female teacher under faces of both genders, contradicting child-names-teacher and the site's own no-name rule, and they are a greeting, not a lesson. The secondary CTA reads 'See a real lesson' (scrolls to the real lesson screenshot). Battery V-AUDIO: every clip the site can play must be in NO_NAME_CLIPS (empty). Reversal: no-name sample clips of a real lesson exchange exist in each lesson language, rendered in the live voices, with a transcript on the page (WCAG 1.2.1); add them to the registry and restore the player",
+   "title": "Deviation from §6.1.1: the landing has no 'Hear a lesson' player. The only recorded clips (public/audio/hello-*.mp3) are the onboarding greeting 'I am Asha didi, a computer teacher', which gave the parent a fixed named female teacher under faces of both genders, contradicting child-names-teacher and the site's own no-name rule, and they are a greeting, not a lesson. The secondary CTA reads 'See a real lesson' (scrolls to the real lesson screenshot). Battery V-AUDIO: every clip the site can play must be in NO_NAME_CLIPS (empty). Reversal: no-name sample clips of a real lesson exchange exist in each lesson language, rendered in the live voices, with a transcript on the page (WCAG 1.2.1); add them to the registry and restore the player",
    "source": "inbox/b4-polish-site.json"
   },
   {
    "id": "b4-site-spec-deviations",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "Other \u00a76.1.1 deviations, declared: (1) no 12 s rig clip in the hero (the rig is not the product's face yet: task 16); (2) no inline 'Hear {T}' at 1280 (no no-name clips; b4-site-no-hear-player); (3) the hero art is 200 dp tall at 360, not 280, so the CTA bottom stays above the 584 dp fold; (4) no offline 'cached shell' state: there is no service worker. Reversal: (1) rig wired into picker + lesson, (2) no-name clips exist, (3) a measured layout with 280 dp art that keeps the CTA above 584 dp, (4) a service worker ships (owner of the app shell)",
+   "title": "Other §6.1.1 deviations, declared: (1) no 12 s rig clip in the hero (the rig is not the product's face yet: task 16); (2) no inline 'Hear {T}' at 1280 (no no-name clips; b4-site-no-hear-player); (3) the hero art is 200 dp tall at 360, not 280, so the CTA bottom stays above the 584 dp fold; (4) no offline 'cached shell' state: there is no service worker. Reversal: (1) rig wired into picker + lesson, (2) no-name clips exist, (3) a measured layout with 280 dp art that keeps the CTA above 584 dp, (4) a service worker ships (owner of the app shell)",
    "source": "inbox/b4-polish-site.json"
   },
   {
@@ -4199,7 +4199,7 @@
    "id": "b4-fixer-battery-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "tests/e2e-design-b4-polish-site.mjs after the fixer: 180/180 checks pass plus 1 KNOWN failure (server). Landing at 360, headless Chromium, Fast 3G (150 ms, 1.6 Mb/s) + 4x CPU, n = 5 each: as shipped by serve.mjs LCP median 4392 ms (4400, 4344, 4336, 4412, 4392), FCP ~3.8 s, JS 405 KB transferred; gzip projection median 2424 ms (2456, 2392, 2404, 2464, 2424), JS 133 KB, CSS 16 KB, fonts 72 KB; unthrottled LCP 572 ms. JS+CSS requested by '/': 471 KB raw / 146 KB gzip (useTeacher 36 KB gzip still pulled by main's eager child routes). lint-ui over all of src/ with the widened scope: 45 findings \u2192 0 (17 L-DEVA + 8 L-HING frame kit chrome fixed; REQUESTS, regex classes, numeral tables, a union type classified as content by rule; 2 Meet.tsx markers moved onto their lines). Relative numbers; the device lab owns absolute ones",
+   "title": "tests/e2e-design-b4-polish-site.mjs after the fixer: 180/180 checks pass plus 1 KNOWN failure (server). Landing at 360, headless Chromium, Fast 3G (150 ms, 1.6 Mb/s) + 4x CPU, n = 5 each: as shipped by serve.mjs LCP median 4392 ms (4400, 4344, 4336, 4412, 4392), FCP ~3.8 s, JS 405 KB transferred; gzip projection median 2424 ms (2456, 2392, 2404, 2464, 2424), JS 133 KB, CSS 16 KB, fonts 72 KB; unthrottled LCP 572 ms. JS+CSS requested by '/': 471 KB raw / 146 KB gzip (useTeacher 36 KB gzip still pulled by main's eager child routes). lint-ui over all of src/ with the widened scope: 45 findings → 0 (17 L-DEVA + 8 L-HING frame kit chrome fixed; REQUESTS, regex classes, numeral tables, a union type classified as content by rule; 2 Meet.tsx markers moved onto their lines). Relative numbers; the device lab owns absolute ones",
    "source": "inbox/b4-polish-site.json"
   },
   {
@@ -4227,14 +4227,14 @@
    "id": "lsn-floor-wired-transcripts",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "The teacher-output floor runs on every teacher turn that reaches a child, by code: the text-lane reply guard (floorViolations \u2192 one rewrite with the FLOOR_FIX shapes \u2192 else the move's fixed line; already wired by lt-floor-wired) now passes the full call-site recipe as content (floorContentOf: prompt_en/_hi, answer, acceptable, hints, options); the voice transcript is judged with requireHelpline on a safeguard move and goodbye on a wrap; the cascade/text final words (what TTS speaks) are re-judged. A break \u2192 next.correction (the next compile renders the fix first) and the families on the turn row; a break in ai_denial, helpline, romance or exclusivity also writes an incident row kind 'floor_violation' with the family names only (never the words), keyed to the stored teacher row in the turn's transaction. Reversal: a human-coded battery of >= 300 recorded voice turns shows a family's precision < 0.9 (then that family goes log-only, never an incident), or the floor families move into compile's own post-check",
+   "title": "The teacher-output floor runs on every teacher turn that reaches a child, by code: the text-lane reply guard (floorViolations → one rewrite with the FLOOR_FIX shapes → else the move's fixed line; already wired by lt-floor-wired) now passes the full call-site recipe as content (floorContentOf: prompt_en/_hi, answer, acceptable, hints, options); the voice transcript is judged with requireHelpline on a safeguard move and goodbye on a wrap; the cascade/text final words (what TTS speaks) are re-judged. A break → next.correction (the next compile renders the fix first) and the families on the turn row; a break in ai_denial, helpline, romance or exclusivity also writes an incident row kind 'floor_violation' with the family names only (never the words), keyed to the stored teacher row in the turn's transaction. Reversal: a human-coded battery of >= 300 recorded voice turns shows a family's precision < 0.9 (then that family goes log-only, never an incident), or the floor families move into compile's own post-check",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
    "id": "lsn-scrub-at-model-boundary",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "scrubPii masks the child's words at every MODEL boundary in a lesson: the reply model (the turn and every child row of the history; the teacher's own rows untouched), the classifier and its distress backup (after classifyFast decided nothing on the raw bytes), the blind grader (gradeRequestFor), and the lesson-end summary/memory call. A memory row is dropped, never stored masked, when its text carries an identifier or a copied mask ([name], [phone]\u2026). The stored turn rows stay raw (the transcript is the parent's and the safeguarding record). The realtime voice lane cannot be scrubbed (the model hears audio). Reversal: a transcripts-retention rule asks for masked rows (then scrub at stageTurns too), or evals/pii.mjs finds a kit answer masked",
+   "title": "scrubPii masks the child's words at every MODEL boundary in a lesson: the reply model (the turn and every child row of the history; the teacher's own rows untouched), the classifier and its distress backup (after classifyFast decided nothing on the raw bytes), the blind grader (gradeRequestFor), and the lesson-end summary/memory call. A memory row is dropped, never stored masked, when its text carries an identifier or a copied mask ([name], [phone]…). The stored turn rows stay raw (the transcript is the parent's and the safeguarding record). The realtime voice lane cannot be scrubbed (the model hears audio). Reversal: a transcripts-retention rule asks for masked rows (then scrub at stageTurns too), or evals/pii.mjs finds a kit answer masked",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
@@ -4262,7 +4262,7 @@
    "id": "lsn-ui-hint",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "A hint move sends ui.hint = { level, text } (V2 \u00a74.3/\u00a74.6) at rungs 1-3 with the kit's rung text (the gentler-hint voice path sends the rung actually shown); never at rung 4 (the assertion is the key), never a rung text that states the key (revealsAnswer), \u2264 120 chars. Kit hints are English in every lesson language. Reversal: kits gain per-language hint text (then pick by lesson language)",
+   "title": "A hint move sends ui.hint = { level, text } (V2 §4.3/§4.6) at rungs 1-3 with the kit's rung text (the gentler-hint voice path sends the rung actually shown); never at rung 4 (the assertion is the key), never a rung text that states the key (revealsAnswer), ≤ 120 chars. Kit hints are English in every lesson language. Reversal: kits gain per-language hint text (then pick by lesson language)",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
@@ -4283,28 +4283,28 @@
    "id": "lsn-floor-wiring-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "evals/floor-wiring.mjs on the Neon TEST branch's stored turns (n = 1 run, 2026-10-03): 244 real teacher turns through the wired call (17 posing a kit item, content passed; requireHelpline/goodbye by the row's move): 0 flags in any family, 0 incident-family flags; the 308 recorded model turns of earlier evals with no content: 0 incident-family flags; 76 real child turns through scrubPii: 0 masked (no PII present: this measures false masks only; recall is evals/pii.mjs). Added latency, steady state after a warm-up: floor check per reply (draft + final) median 152 \u00b5s, p95 324 \u00b5s, max 3.9 ms; scrub of a turn + 8 history turns median 596 \u00b5s, p95 747 \u00b5s \u2014 against a 3,055 ms median cascade turn. Teacher-name predicate: 166/166 ordinary names pass (incl. Shital, Kamini, Lovely, Cassandra, Bob, Gandharv), 65/65 refusal rows right, 10.9 \u00b5s/check. Not a coded out-of-sample battery: the turns are model output from test and eval lessons, not children",
+   "title": "evals/floor-wiring.mjs on the Neon TEST branch's stored turns (n = 1 run, 2026-10-03): 244 real teacher turns through the wired call (17 posing a kit item, content passed; requireHelpline/goodbye by the row's move): 0 flags in any family, 0 incident-family flags; the 308 recorded model turns of earlier evals with no content: 0 incident-family flags; 76 real child turns through scrubPii: 0 masked (no PII present: this measures false masks only; recall is evals/pii.mjs). Added latency, steady state after a warm-up: floor check per reply (draft + final) median 152 µs, p95 324 µs, max 3.9 ms; scrub of a turn + 8 history turns median 596 µs, p95 747 µs — against a 3,055 ms median cascade turn. Teacher-name predicate: 166/166 ordinary names pass (incl. Shital, Kamini, Lovely, Cassandra, Bob, Gandharv), 65/65 refusal rows right, 10.9 µs/check. Not a coded out-of-sample battery: the turns are model output from test and eval lessons, not children",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
    "id": "lsn-battery-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "tests/e2e-design-lesson-safety-naming.mjs: 269/269 checks (n = 1 run, headless Chromium SwiftShader, production build via server/serve.mjs, /api/* mocked with the REAL name predicate behind the name route; 360x640 DPR 2 touch + 1280x800; light + dark for Older, light for Young). Hello ends in the naming step after the AI card for Young (one teacher) and Older (pick, then name); romance, own-name and public-figure refusals each give one gentle sentence (never the name) and keep the field; a bad shape is caught as typed; a tapped suggestion is POSTed and lesson 1 opens; Your teacher shows and renames; the home label reads '{name} \u00b7 AI teacher'; the lesson shows the PINNED name with its AI label, not a rename made since; the hint line renders with its rung; the parent row shows the name, the AI note and earlier names, and Reset posts {name:null, source:parent}. Shared audits on every frame: English chrome, accessible names, targets 48/64, no empty container, no horizontal scroll, no lamp off the dock. Shots: docs/design/build/lesson-safety-naming/. Not a device, child or parent measurement \u2014 superseded in count by lsn-fixer-2026-10-03 (337/337 with N-KEEP, N-PARENT Change and N-REAL).",
+   "title": "tests/e2e-design-lesson-safety-naming.mjs: 269/269 checks (n = 1 run, headless Chromium SwiftShader, production build via server/serve.mjs, /api/* mocked with the REAL name predicate behind the name route; 360x640 DPR 2 touch + 1280x800; light + dark for Older, light for Young). Hello ends in the naming step after the AI card for Young (one teacher) and Older (pick, then name); romance, own-name and public-figure refusals each give one gentle sentence (never the name) and keep the field; a bad shape is caught as typed; a tapped suggestion is POSTed and lesson 1 opens; Your teacher shows and renames; the home label reads '{name} · AI teacher'; the lesson shows the PINNED name with its AI label, not a rename made since; the hint line renders with its rung; the parent row shows the name, the AI note and earlier names, and Reset posts {name:null, source:parent}. Shared audits on every frame: English chrome, accessible names, targets 48/64, no empty container, no horizontal scroll, no lamp off the dock. Shots: docs/design/build/lesson-safety-naming/. Not a device, child or parent measurement — superseded in count by lsn-fixer-2026-10-03 (337/337 with N-KEEP, N-PARENT Change and N-REAL).",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
    "id": "lsn-db-suite-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "tests/lesson-safety-naming-db.test.mjs (real API in-process, Neon TEST branch, no model call): 5/5 \u2014 the 422 refusals (romance, own name, public figure, shape, companion) with no row; a stored name and its history; /api/me carries it; the DB shape check refuses markup; the name in the voice-lane persona and PINNED across a mid-lesson rename; an ai_denial voice transcript \u2192 correction ['ai_denial'], turn meta.floor, one floor_violation incident with families only; a lesser family (ability) \u2192 no incident; a resend of a landed turnSeq \u2192 duplicate, nothing stored; a superseded attempt \u2192 409, the edit lands, a post-landing edit \u2192 editLanded; a text/plain end \u2192 endedBy pagehide, a late answer stored with no reply and the lesson still closed; a JSON-ended lesson refuses; the next lesson uses the new name with ctx.renamed; the parent's view, history and reset",
+   "title": "tests/lesson-safety-naming-db.test.mjs (real API in-process, Neon TEST branch, no model call): 5/5 — the 422 refusals (romance, own name, public figure, shape, companion) with no row; a stored name and its history; /api/me carries it; the DB shape check refuses markup; the name in the voice-lane persona and PINNED across a mid-lesson rename; an ai_denial voice transcript → correction ['ai_denial'], turn meta.floor, one floor_violation incident with families only; a lesser family (ability) → no incident; a resend of a landed turnSeq → duplicate, nothing stored; a superseded attempt → 409, the edit lands, a post-landing edit → editLanded; a text/plain end → endedBy pagehide, a late answer stored with no reply and the lesson still closed; a JSON-ended lesson refuses; the next lesson uses the new name with ctx.renamed; the parent's view, history and reset",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
    "id": "lsn-rejected-collapsed-substring",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Teacher-name denylist matched as substrings of the name with every letter run collapsed (so 'fuuuck' \u2192 'fuck'): refuted by the name corpus before it shipped \u2014 'boob' collapsed to 'bob' and refused Bob, 'gaand' collapsed to 'gand' and refused Gandhi-shaped names (Gandharv), and 'shit' as a substring refused Shital, a common Indian girl's name. Instead: 'contains' entries become patterns that admit stretched letters but never shrink a doubled one (each run of k letters must appear >= k times), and short or ambiguous entries (shit, paki, mulla, randi, kafir) match whole words only",
+   "title": "Teacher-name denylist matched as substrings of the name with every letter run collapsed (so 'fuuuck' → 'fuck'): refuted by the name corpus before it shipped — 'boob' collapsed to 'bob' and refused Bob, 'gaand' collapsed to 'gand' and refused Gandhi-shaped names (Gandharv), and 'shit' as a substring refused Shital, a common Indian girl's name. Instead: 'contains' entries become patterns that admit stretched letters but never shrink a doubled one (each run of k letters must appear >= k times), and short or ambiguous entries (shit, paki, mulla, randi, kafir) match whole words only",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
@@ -4318,28 +4318,28 @@
    "id": "lsn-name-predicate-rev2",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "Teacher-name predicate rev 2 (denylist rev 2), after review: (a) an AI-denial check runs FIRST on the name folded to letters (a negation glued to ai/bot/robot/machine anywhere \u2014 notanai, imnotai, notabot; no/not+ai, real, i-am-a-girl at a word start; human/insaan/manushya/person anywhere) and then the floor predicate itself on 'I am <name>, your AI teacher.' / 'Main <name> hoon, tumhari AI teacher.' \u2014 a name under which her self-introduction would be an ai_denial floor break can never be stored, so she can always state her own name cleanly; (b) 'word' entries of 3+ letters also match glued to each other or to a fixed affix (segmentation LEAD* (WORD TRAIL?)+ with LEAD my/ur/your/mera/meri/mere/i/iam/im/the, TRAIL s/es/u/ji/ie/me/you): Mybaby, Babylove, Iloveyou, Friends, Mummyji caught; 2-letter entries (ma, bc, mc, gf) only whole-word, gf/bf also as a prefix; (c) high-risk sexual, violence and self-harm terms moved to 'contains' (sexy, sexi, horny, rapist, suicid, murder, terroris, jihadi, waifu, senpai, iloveyou\u2026), Hindi abbreviations and abuse added (bsdk, bc, mc, bkl, mkc, chut, raand, bhadwa, lodu, lavde, nangi\u2026), slur spellings (chinky, bhangee, chhakke, hijde, mullah) and family terms (ammi, amma, abba, abbu, ma, mataji). Kept OUT on purpose (real names): Luv (Luv-Kush; luvu/luvyou are in), Babu, Shona, Rand, Sister/Brother (convent-school teacher titles); 'nazi' word-only (Nazia/Naziya pass), 'lavde' word-only (Lavdeep), no 'z'/'ya' trail (Maaz, Naziya). 'Ma Uma' moved from the allowed corpus to refused (family term). Reversal: a false refusal of a real name a child reports (then fix the entry or the affix set, add the name to ALLOWED_WIDE), or an independent adversarial corpus finds a family the segmentation cannot reach (then add entries, never loosen the matcher)",
+   "title": "Teacher-name predicate rev 2 (denylist rev 2), after review: (a) an AI-denial check runs FIRST on the name folded to letters (a negation glued to ai/bot/robot/machine anywhere — notanai, imnotai, notabot; no/not+ai, real, i-am-a-girl at a word start; human/insaan/manushya/person anywhere) and then the floor predicate itself on 'I am <name>, your AI teacher.' / 'Main <name> hoon, tumhari AI teacher.' — a name under which her self-introduction would be an ai_denial floor break can never be stored, so she can always state her own name cleanly; (b) 'word' entries of 3+ letters also match glued to each other or to a fixed affix (segmentation LEAD* (WORD TRAIL?)+ with LEAD my/ur/your/mera/meri/mere/i/iam/im/the, TRAIL s/es/u/ji/ie/me/you): Mybaby, Babylove, Iloveyou, Friends, Mummyji caught; 2-letter entries (ma, bc, mc, gf) only whole-word, gf/bf also as a prefix; (c) high-risk sexual, violence and self-harm terms moved to 'contains' (sexy, sexi, horny, rapist, suicid, murder, terroris, jihadi, waifu, senpai, iloveyou…), Hindi abbreviations and abuse added (bsdk, bc, mc, bkl, mkc, chut, raand, bhadwa, lodu, lavde, nangi…), slur spellings (chinky, bhangee, chhakke, hijde, mullah) and family terms (ammi, amma, abba, abbu, ma, mataji). Kept OUT on purpose (real names): Luv (Luv-Kush; luvu/luvyou are in), Babu, Shona, Rand, Sister/Brother (convent-school teacher titles); 'nazi' word-only (Nazia/Naziya pass), 'lavde' word-only (Lavdeep), no 'z'/'ya' trail (Maaz, Naziya). 'Ma Uma' moved from the allowed corpus to refused (family term). Reversal: a false refusal of a real name a child reports (then fix the entry or the affix set, add the name to ALLOWED_WIDE), or an independent adversarial corpus finds a family the segmentation cannot reach (then add entries, never loosen the matcher)",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
    "id": "lsn-rejected-word-only-denylist",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rev 1 teacher-name matcher: 'word' entries matched only a whole word, and AI denial only the token 'notai' plus human/real/person. Refuted by the REVIEWER's adversarial corpus (74 names written by someone other than the list author): every one PASSED rev 1 \u2014 'Not An Ai', 'Im Not Ai', 'Notanai', 'Iamhuman', 'Realhuman' (her greeting under such a name is itself an ai_denial floor break: it would be rewritten or write a high-severity floor_violation incident on every greeting), glued/plural romance and companion forms (Mybaby, Babylove, Iloveyou, Kissme, Friends, Bestfriends, Mummyji), most Hindi abuse (bsdk, bc, mc, chut, raand), sexual/violence/self-harm terms (Horny, Rapist, Suicide, Nazi). The builder's '65/65 refusals' only tested the builder's own list \u2014 a denylist author cannot be its own adversary",
+   "title": "Rev 1 teacher-name matcher: 'word' entries matched only a whole word, and AI denial only the token 'notai' plus human/real/person. Refuted by the REVIEWER's adversarial corpus (74 names written by someone other than the list author): every one PASSED rev 1 — 'Not An Ai', 'Im Not Ai', 'Notanai', 'Iamhuman', 'Realhuman' (her greeting under such a name is itself an ai_denial floor break: it would be rewritten or write a high-severity floor_violation incident on every greeting), glued/plural romance and companion forms (Mybaby, Babylove, Iloveyou, Kissme, Friends, Bestfriends, Mummyji), most Hindi abuse (bsdk, bc, mc, chut, raand), sexual/violence/self-harm terms (Horny, Rapist, Suicide, Nazi). The builder's '65/65 refusals' only tested the builder's own list — a denylist author cannot be its own adversary",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
    "id": "lsn-late-disclosure-helpline",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "A late answer (page-hide-closed lesson) that is a disclosure \u2014 the plan's move is safeguard or a safeguarding incident was raised \u2014 is NOT silent: the response carries move.kind 'safeguard' and teacherReply = the fixed safeguarding line with both helplines (FALLBACK.safeguard, aap-converted, in the child's language), stored as her turn (meta.late) in the same transaction; the lesson stays closed. Client: runtime.ts flushOthers (the cross-lesson flush at the next start) sets LessonState.lateSafeguard on such a response, and useDesk raises the Help sheet (Childline 1098, Tele-MANAS 14416 printed in the buttons). Every other late answer stays reply-less. Reversal: late answers are flushed somewhere the Desk is not mounted (then that surface must raise the sheet too)",
+   "title": "A late answer (page-hide-closed lesson) that is a disclosure — the plan's move is safeguard or a safeguarding incident was raised — is NOT silent: the response carries move.kind 'safeguard' and teacherReply = the fixed safeguarding line with both helplines (FALLBACK.safeguard, aap-converted, in the child's language), stored as her turn (meta.late) in the same transaction; the lesson stays closed. Client: runtime.ts flushOthers (the cross-lesson flush at the next start) sets LessonState.lateSafeguard on such a response, and useDesk raises the Help sheet (Childline 1098, Tele-MANAS 14416 printed in the buttons). Every other late answer stays reply-less. Reversal: late answers are flushed somewhere the Desk is not mounted (then that surface must raise the sheet too)",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
    "id": "lsn-replay-after-gates",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "The (lessonId, turnSeq) replay runs AFTER the ended check and the core_tutoring consent check: a resend of a landed turn after a normal (non-page-hide) end gets 409 'lesson has ended' and after consent withdrawal 403 \u2014 never her stored reply or freshly compiled voice instructions; a replay under withdrawn consent does not re-scan or re-write the distress incident (the landed turn already did). Page-hide-closed lessons still replay (dedupe holds for late answers). Reversal: a client needs a landed response after a normal end (then strip teacherReply/instructions from such replays instead of refusing)",
+   "title": "The (lessonId, turnSeq) replay runs AFTER the ended check and the core_tutoring consent check: a resend of a landed turn after a normal (non-page-hide) end gets 409 'lesson has ended' and after consent withdrawal 403 — never her stored reply or freshly compiled voice instructions; a replay under withdrawn consent does not re-scan or re-write the distress incident (the landed turn already did). Page-hide-closed lessons still replay (dedupe holds for late answers). Reversal: a client needs a landed response after a normal end (then strip teacherReply/instructions from such replays instead of refusing)",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
@@ -4353,14 +4353,14 @@
    "id": "lsn-one-name-everywhere",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "One name for one teacher on every surface: /api/me and PATCH /api/children send teacher_name as the EFFECTIVE custom name (account.js clientChild via teacherFor \u2192 effectiveTeacherName: a stored name that no longer passes is null, so the client falls back to the look's own, as lessons do); a parent changing teacher_id through PATCH resets the name with a 'switch' history row in one statement (as the picker's CHOOSE_SQL); the cascade TTS style resolves the lesson's pinned name (voice.js styleForChild pinnedName). The parent corner can CHANGE the name (ParentTeacherName \u2192 the same TeacherNamer step, source 'parent', same predicate) as well as reset it (decision child-names-teacher: 'can change or reset'). POST /api/tutors/name is rate limited to 20 tries per child per minute (in-process, like parent.js rateLimit). Naming-step labels: with no custom name 'Keep {T}' writes nothing (a failing route can never strand a first-run child in Hello); with a custom name the button reads 'Go back to {own}' (it resets; 'Not now' keeps). Reversal: the parent corner asks to hide the child's naming from the parent's Change (then Change goes), or the rate limit refuses a real child (raise it)",
+   "title": "One name for one teacher on every surface: /api/me and PATCH /api/children send teacher_name as the EFFECTIVE custom name (account.js clientChild via teacherFor → effectiveTeacherName: a stored name that no longer passes is null, so the client falls back to the look's own, as lessons do); a parent changing teacher_id through PATCH resets the name with a 'switch' history row in one statement (as the picker's CHOOSE_SQL); the cascade TTS style resolves the lesson's pinned name (voice.js styleForChild pinnedName). The parent corner can CHANGE the name (ParentTeacherName → the same TeacherNamer step, source 'parent', same predicate) as well as reset it (decision child-names-teacher: 'can change or reset'). POST /api/tutors/name is rate limited to 20 tries per child per minute (in-process, like parent.js rateLimit). Naming-step labels: with no custom name 'Keep {T}' writes nothing (a failing route can never strand a first-run child in Hello); with a custom name the button reads 'Go back to {own}' (it resets; 'Not now' keeps). Reversal: the parent corner asks to hide the child's naming from the parent's Change (then Change goes), or the rate limit refuses a real child (raise it)",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
    "id": "lsn-fixer-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "lesson-safety-naming fixer (n = 1 run each, 2026-10-03): name predicate rev 2 \u2014 165/165 ALLOWED + 368/368 ALLOWED_WIDE ordinary names pass (0 false refusals; first rev-2 draft refused Luv, fixed), 65/65 REFUSED rows right, 74/74 reviewer adversarial names refused with the expected family, 2/2 adversarial public figures; 0 passing names make 'Hi Riya! I am <name>, your AI teacher.' an ai_denial break; checkTeacherName median 59 \u00b5s, p95 120 \u00b5s (n = 3035, includes 2 floorViolations calls) \u2014 84 \u00b5s mean in evals/floor-wiring.mjs. Floor wiring re-run: 244 real teacher turns 0 flags; 308 recorded 0 incident flags; 75 real child turns 0 masks; 244 teacher turns 0 masks; floor median 146 \u00b5s p95 526 \u00b5s per reply; scrub median 581 \u00b5s p95 752 \u00b5s per turn+8 history. DB route suite (Neon test branch, no model call) 8/8 incl. late disclosure \u2192 helpline line + safeguard move + incident, 409 on a resend after a normal end, effective name in /api/me, PATCH switch reset + history, parent Change, 429 after 20 name tries. Playwright battery 337/337 (360x640 + 1280x800, light + dark; Young light) including N-KEEP (Keep with a 500 name route still opens lesson 1, 0 POSTs), N-PARENT Change, and N-REAL against the real routes on the test branch (serve.mjs, real PIN gate): 422 retry, stored row + history, /api/me, parent Change stored as source 'parent'",
+   "title": "lesson-safety-naming fixer (n = 1 run each, 2026-10-03): name predicate rev 2 — 165/165 ALLOWED + 368/368 ALLOWED_WIDE ordinary names pass (0 false refusals; first rev-2 draft refused Luv, fixed), 65/65 REFUSED rows right, 74/74 reviewer adversarial names refused with the expected family, 2/2 adversarial public figures; 0 passing names make 'Hi Riya! I am <name>, your AI teacher.' an ai_denial break; checkTeacherName median 59 µs, p95 120 µs (n = 3035, includes 2 floorViolations calls) — 84 µs mean in evals/floor-wiring.mjs. Floor wiring re-run: 244 real teacher turns 0 flags; 308 recorded 0 incident flags; 75 real child turns 0 masks; 244 teacher turns 0 masks; floor median 146 µs p95 526 µs per reply; scrub median 581 µs p95 752 µs per turn+8 history. DB route suite (Neon test branch, no model call) 8/8 incl. late disclosure → helpline line + safeguard move + incident, 409 on a resend after a normal end, effective name in /api/me, PATCH switch reset + history, parent Change, 429 after 20 name tries. Playwright battery 337/337 (360x640 + 1280x800, light + dark; Young light) including N-KEEP (Keep with a 500 name route still opens lesson 1, 0 POSTs), N-PARENT Change, and N-REAL against the real routes on the test branch (serve.mjs, real PIN gate): 422 retry, stored row + history, /api/me, parent Change stored as source 'parent'",
    "source": "inbox/lesson-safety-naming.json"
   },
   {
@@ -4486,6 +4486,13 @@
    "kind": "measurement",
    "title": "AWS GPU quota approved in about 1.6 h: G/VT 8 on-demand + 8 spot, Standard 16 (us-east-1)",
    "at": "2026-10-03"
+  },
+  {
+   "id": "owner-north-star-2026-10-03",
+   "kind": "decision",
+   "title": "Owner north star: keep building until the full product is testable end to end: great UX for students and parents, human-like teacher, live code-generated content (animation, images, diagrams, games), breakthrough comprehension detection, learning-style discovery, hyper-personalisation",
+   "at": "2026-10-03",
+   "source": "inbox/owner-north-star.json"
   }
  ],
  "edges": [
