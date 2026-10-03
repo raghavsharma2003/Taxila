@@ -25,7 +25,7 @@ export function PromisesStep() {
   const rec = teacherRecord(defaultTutorFor({ class_level: cl }), cl <= 4 ? "b2" : "b3");
   const they = rec.pronouns.subject;
   const rows = [
-    { art: "promises/ai-honest", title: `${rec.name} is an AI and says so`, body: `${cap(they)} tells your child ${they}'s a computer teacher, not a person, at the first hello and whenever asked.` },
+    { art: "promises/ai-honest", title: `${rec.name} is an AI and says so`, body: aiHonestLine(they) },
     { art: "promises/you-see", title: `You see what ${they} sees`, body: "Every lesson's answers and checks are in the Parent corner, with the evidence behind each claim." },
     { art: "promises/no-ads", title: "No ads, sales calls, loans or EMI", body: PROMISES[0].body },
     { art: "promises/delete", title: "Delete anything, any time", body: PROMISES[2].body },
@@ -48,6 +48,12 @@ export function PromisesStep() {
 /** The old name (the route table and older links). */
 export const TrustStep = PromisesStep;
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** Contraction- and agreement-safe: "She tells … she's", "They tell … they're" (a they/them record never reads "they's"). */
+export function aiHonestLine(subject: string): string {
+  const plural = subject.toLowerCase() === "they";
+  return `${cap(subject)} ${plural ? "tell" : "tells"} your child ${subject}${plural ? "'re" : "'s"} a computer teacher, not a person, at the first hello and whenever asked.`;
+}
 
 // Each row: sentence + speaker + toggle (§2.2 P5). The spoken text is server-held (CONSENT_SPEECH in
 // server/routes/parent.js); keep the two in step when this copy changes.

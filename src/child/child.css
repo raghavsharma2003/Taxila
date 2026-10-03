@@ -11,7 +11,27 @@
 .tx-child :where(button, input, textarea) { font: inherit; color: inherit; }
 .tx-child :where(h1, h2, h3, p) { margin: 0; }
 .tx-child :where(h1, h2) { font-family: var(--font-heading); line-height: 1.25; }
-.tx-child[data-comfort="large"] { --t-body: calc(var(--t-body) + 3px); --t-label: calc(var(--t-label) + 3px); --t-title: calc(var(--t-title) + 3px); --t-meta: calc(var(--t-meta) + 2px); }
+/* Type on the child screens outside the lesson (§11.7 "text to 200 % outside the lesson"; Me → Bigger text). The band
+   tokens in src/styles/tokens.css are px, which ignore the browser / OS font size; here the same §7.2 values are
+   re-declared in rem (px ÷ 16, so 100 % renders exactly as before) times one factor --cs-k (Bigger text ×1.18, about
+   +3 px on the body). NEVER `--t-body: calc(var(--t-body) + 3px)` on one element: that is a custom-property cycle,
+   every token in it becomes invalid and the text falls back to 16 px (the B2 bug: Older body text got SMALLER). The
+   lesson has no .cs, so it keeps its own type and yields to large text on its own terms (§6.3.4). */
+.tx-child :is(.cs, .cs-gate) { --cs-k: 1; }
+.tx-child[data-comfort="large"] :is(.cs, .cs-gate) { --cs-k: 1.18; }
+.tx-child[data-band="b1"] :is(.cs, .cs-gate) { --t-display: calc(2.125rem * var(--cs-k)); --t-title: calc(1.625rem * var(--cs-k));
+  --t-ask: calc(1.5rem * var(--cs-k)); --t-caption: calc(1.375rem * var(--cs-k)); --t-numeral: calc(2.5rem * var(--cs-k));
+  --t-body: calc(1.25rem * var(--cs-k)); --t-label: calc(1.25rem * var(--cs-k)); --t-state: calc(1.375rem * var(--cs-k)); --t-meta: calc(1rem * var(--cs-k)); }
+.tx-child[data-band="b2"] :is(.cs, .cs-gate) { --t-display: calc(1.875rem * var(--cs-k)); --t-title: calc(1.5rem * var(--cs-k));
+  --t-ask: calc(1.375rem * var(--cs-k)); --t-caption: calc(1.25rem * var(--cs-k)); --t-numeral: calc(2.25rem * var(--cs-k));
+  --t-body: calc(1.1875rem * var(--cs-k)); --t-label: calc(1.125rem * var(--cs-k)); --t-state: calc(1.25rem * var(--cs-k)); --t-meta: calc(1rem * var(--cs-k)); }
+.tx-child[data-band="b3"] :is(.cs, .cs-gate) { --t-display: calc(1.75rem * var(--cs-k)); --t-title: calc(1.5rem * var(--cs-k));
+  --t-ask: calc(1.25rem * var(--cs-k)); --t-caption: calc(1.125rem * var(--cs-k)); --t-numeral: calc(2rem * var(--cs-k));
+  --t-body: calc(1.0625rem * var(--cs-k)); --t-label: calc(1rem * var(--cs-k)); --t-state: calc(1.125rem * var(--cs-k)); --t-meta: calc(.875rem * var(--cs-k)); }
+.tx-child[data-band="b4"] :is(.cs, .cs-gate) { --t-display: calc(1.625rem * var(--cs-k)); --t-title: calc(1.375rem * var(--cs-k));
+  --t-ask: calc(1.1875rem * var(--cs-k)); --t-caption: calc(1.0625rem * var(--cs-k)); --t-numeral: calc(1.75rem * var(--cs-k));
+  --t-body: calc(1rem * var(--cs-k)); --t-label: calc(1rem * var(--cs-k)); --t-state: calc(1.0625rem * var(--cs-k)); --t-meta: calc(.875rem * var(--cs-k)); }
+.tx-child :is(.cs, .cs-gate) { font-size: var(--t-body); }
 .tx-child :focus-visible { outline: var(--focus-w) solid var(--focus); outline-offset: var(--focus-offset);
   box-shadow: 0 0 0 calc(var(--focus-offset) + var(--focus-w) + 2px) var(--focus-halo); }
 .tx-child [tabindex="-1"]:focus, .tx-child [tabindex="-1"]:focus-visible { outline: none; box-shadow: none; }
@@ -29,7 +49,7 @@
 .cs-btn--primary { background: var(--nib); color: var(--on-nib); }
 .cs-btn--secondary { background: var(--surface); color: var(--ink); border-color: var(--line); }
 .cs-btn--quiet { background: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
-.cs-btn--sm { min-height: 48px; padding: var(--space-2) var(--space-4); font-size: var(--t-meta); }
+.cs-btn--sm { min-height: var(--hit-min); padding: var(--space-2) var(--space-4); font-size: var(--t-meta); }
 .cs-btn svg { flex: none; }
 .cs-link { display: inline-flex; align-items: center; min-height: var(--hit-min); color: var(--ink-2); font-weight: 600; text-decoration: underline;
   text-underline-offset: 3px; font-size: var(--t-meta); }
@@ -50,10 +70,9 @@
 .cs-switch[aria-checked="true"] .cs-switch-knob { border-color: var(--on-nib); }
 .cs-switch[aria-checked="true"] .cs-switch-word { color: var(--on-nib); }
 .seg { display: inline-flex; flex-wrap: wrap; gap: var(--space-1); padding: 3px; border-radius: var(--radius-pill); background: var(--tray); }
-.seg-btn { min-height: 44px; min-width: 48px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-pill); background: transparent;
+.seg-btn { min-height: var(--hit-min); min-width: var(--hit-min); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-pill); background: transparent;
   color: var(--ink); font-weight: 600; font-size: var(--t-meta); cursor: pointer; }
 .seg-btn[aria-checked="true"] { background: var(--surface); box-shadow: inset 0 0 0 2px var(--nib); color: var(--ink); font-weight: 700; }
-[data-family="young"] .seg-btn { min-height: 56px; }
 
 /* ───────── art (src/child/art.tsx) ───────── */
 .scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: var(--paper); }
@@ -76,11 +95,11 @@
 .cs-main { position: relative; z-index: 1; display: flex; flex-direction: column; gap: var(--space-2); min-height: 100dvh;
   max-width: 1040px; margin: 0 auto; padding: 0 var(--space-4) var(--space-4); }
 .cs--older .cs-main { padding-bottom: calc(64px + var(--space-4) + env(safe-area-inset-bottom, 0px)); }
-.cs-top { display: flex; align-items: center; gap: var(--space-2); min-height: 48px; flex: none; }
+.cs-top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); min-height: 48px; flex: none; }
 [data-family="young"] .cs-top { min-height: 56px; }
 .cs-top-gap, .cs-top-fill { flex: 1; }
 .cs-top-gap { flex: 0 0 0; }
-.cs-title { flex: 0 1 auto; min-width: 0; font-size: var(--t-title); font-weight: 700; padding: 4px var(--space-3); border-radius: var(--radius-sm);
+.cs-title { flex: 0 1 auto; min-width: min-content; font-size: var(--t-title); font-weight: 700; padding: 4px var(--space-3); border-radius: var(--radius-sm);
   background: var(--surface); background: color-mix(in srgb, var(--surface) 88%, transparent); width: fit-content; max-width: 100%; outline: none; }
 .cs-top-actions { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; }
 .cs-grownups { display: inline-flex; align-items: center; min-height: 48px; padding: 0 var(--space-3); color: var(--ink-2); font-size: var(--t-meta);
@@ -96,7 +115,7 @@
   padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--surface); border-top: 1px solid var(--line); }
 .cs-nav-me { display: none; }
 .cs-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 48px;
-  color: var(--ink-2); text-decoration: none; font-size: 13px; font-weight: 600; }
+  color: var(--ink-2); text-decoration: none; font-size: .8125rem; font-weight: 600; }
 .cs-nav-item.active { color: var(--nib); font-weight: 700; }
 .cs-nav-item.active::before { content: ""; position: absolute; width: 32px; height: 3px; border-radius: 2px; background: var(--nib); transform: translateY(-26px); }
 /* … a left rail 88 wide with the same items + the avatar from 1024 px. */
@@ -116,7 +135,7 @@
 .cs-gate-card h1 { font-size: var(--t-title); outline: none; }
 
 /* ───────── Home (§6.3.3) ───────── */
-.home-grid { flex: 1; display: grid; gap: var(--space-2); align-content: start; grid-template-rows: minmax(232px, 1fr) auto auto; }
+.home-grid { flex: 1; display: grid; gap: var(--space-2); align-content: start; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(232px, 1fr) auto auto; }
 .home--older .home-grid { grid-template-rows: minmax(200px, 1fr) auto auto; }
 .home-her { min-height: 0; display: flex; justify-content: center; }
 .home-her > .teacher, .home-her > .home-still { width: 100%; max-width: 420px; }
@@ -152,12 +171,21 @@
 .didmini-label { color: var(--ink-2); font-size: var(--t-meta); }
 .didmini-tick { display: inline-flex; color: var(--got); }
 .didmini-tick--help svg path { stroke-dasharray: 3 3; }
+/* first paint: a neutral card, no action, until the plan read answers (src/child/plan.ts LOADING) */
+.hpc--loading { grid-template-columns: 72px 1fr; }
+.home--young .hpc--loading { grid-template-columns: 96px 1fr; }
+.hpc-skel-pic { width: 100%; aspect-ratio: 1; border-radius: var(--radius-tile); background: var(--tray); }
+.hpc-skel-bar { display: block; width: 70%; height: 14px; margin-top: var(--space-2); border-radius: 7px; background: var(--tray); }
+.hpc--loading .hpc-head { color: var(--ink-2); }
+.home-panel { display: contents; }
 .home-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
 .ptile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); min-height: 136px;
   padding: var(--space-2); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-tile); color: var(--ink);
   text-decoration: none; font-weight: 700; font-size: var(--t-label); text-align: center; transition: transform var(--m-press) var(--ease-standard); }
 .ptile:active, .otile:active { transform: scale(var(--press-scale)); }
-.home-tiles--older { grid-template-columns: repeat(2, 1fr); }
+/* two tiles side by side at normal sizes; one per row once large text no longer fits two (§11.7) */
+.home-tiles--older { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); }
+.home-tiles--older > :only-child { grid-column: 1 / -1; }
 .otile { display: flex; align-items: center; gap: var(--space-3); min-height: 96px; padding: var(--space-3) var(--space-4); background: var(--surface);
   border: 1px solid var(--line); border-radius: var(--radius-tile); color: var(--ink); text-decoration: none; font-weight: 700; font-size: var(--t-label);
   line-height: 1.25; }
@@ -176,19 +204,24 @@
     align-content: start; margin-top: var(--space-5); }
   .home--older .home-her { grid-column: 1; grid-row: 1; height: 340px; }
   .home--older .home-her > .teacher { max-width: none; }
-  .home--older .hpc { grid-column: 2; grid-row: 1; align-self: stretch; align-content: center; }
+  /* the card is as tall as its content (not stretched to her 340 window: a short "done" card left a hollow box) */
+  .home--older .hpc { grid-column: 2; grid-row: 1; align-self: start; }
   .home--older .home-tiles { grid-column: 1 / 3; grid-row: 2; }
   .home--older .skypeek { grid-column: 3; grid-row: 1 / 3; margin-top: 0; align-self: start; }
   /* 1280, Young: the courtyard full-bleed; she stands in the left third (480 tall); the card and tiles on a surface panel
      at 92% in the right third, 420 wide */
-  .home--young .cs-main { max-width: 1280px; }
-  .home--young .home-grid { grid-template-columns: 1fr 420px; grid-template-rows: auto auto 1fr; column-gap: var(--space-6); align-content: center; }
-  .home--young .home-her { grid-column: 1; grid-row: 1 / 4; height: 480px; align-self: center; }
-  .home--young .home-her > .teacher { max-width: 400px; }
-  .home--young .hpc, .home--young .home-tiles { grid-column: 2; }
-  .home--young .hpc { grid-row: 1; background: color-mix(in srgb, var(--surface) 92%, transparent); }
-  .home--young .home-tiles { grid-row: 2; align-self: start; }
-  .home--young .ptile { background: color-mix(in srgb, var(--surface) 92%, transparent); }
+  .home--young .cs-main { max-width: 1280px; padding-inline: var(--space-6); }
+  .home--young .home-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 420px; grid-template-rows: 1fr; column-gap: var(--space-5);
+    align-items: end; padding-bottom: var(--space-5); }
+  /* she stands at the veranda door: the left third, 480 tall, on the ground line (no floating frame in mid-air) */
+  .home--young .home-her { grid-column: 1; grid-row: 1; height: 480px; align-self: end; justify-content: flex-start; }
+  .home--young .home-her > .teacher { max-width: 360px; }
+  /* ONE surface panel at 92 % in the right third, 420 wide: the card and the three tiles together */
+  .home--young .home-panel { grid-column: 3; grid-row: 1; align-self: center; display: flex; flex-direction: column; gap: var(--space-3);
+    padding: var(--space-4); border-radius: var(--radius-window); border: 1px solid var(--line); box-shadow: var(--elev-card);
+    background: var(--surface); background: color-mix(in srgb, var(--surface) 92%, transparent); }
+  .home--young .home-panel .hpc { box-shadow: none; border: 0; padding: 0; background: transparent; min-height: 0; }
+  .home--young .ptile { min-height: 120px; background: var(--paper); }
 }
 
 /* ───────── Map: Garden / Sky / List (§3.8, §6.3.7) ───────── */
@@ -200,23 +233,32 @@
 .empty .spot { width: 200px; height: 150px; }
 .empty-line { font-size: var(--t-label); font-weight: 600; max-width: 28ch; }
 .empty-fb { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-.garden { position: relative; flex: 1; min-height: 360px; display: flex; }
-.garden-scroll { flex: 1; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; border-radius: var(--radius-card);
-  border: 1px solid var(--line); background: var(--tray); overscroll-behavior-x: contain; scrollbar-width: none; }
+.garden { position: relative; flex: 1; min-height: 380px; display: flex; }
+.garden-scroll { flex: 1; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; border-radius: var(--radius-card);
+  border: 1px solid var(--line); background: var(--tray); overscroll-behavior-x: contain; scrollbar-width: none; container-type: inline-size; }
 .garden-scroll::-webkit-scrollbar { display: none; }
-.garden-pano { position: relative; display: flex; gap: var(--space-4); height: 100%; min-height: 360px; padding: var(--space-4) 72px;
-  width: max(300%, calc(var(--beds) * 316px + 144px)); }
+/* the sky band (96) holds the arrows and the clouds; the beds stand on the soil below it and fill to the bottom */
+.garden-pano { position: relative; display: flex; gap: var(--space-4); height: 100%; min-height: 380px; min-width: 100%; width: max-content;
+  padding: 96px var(--space-3) var(--space-3); }
 .garden-paint { position: absolute; inset: 0; z-index: 0; }
 .garden-paint.scene { position: absolute; }
-.garden-flat { position: absolute; inset: 0; background: linear-gradient(to bottom, var(--art-sky) 0 18%, var(--paper) 18% 64%, var(--tray) 64% 100%); }
-.garden-flat::after { content: ""; position: absolute; left: 0; right: 0; top: 18%; height: 6px; background: var(--art-stone); opacity: .5; }
-.bed { position: relative; z-index: 1; flex: 0 0 300px; scroll-snap-align: start; scroll-margin-left: 72px; display: flex; flex-direction: column; justify-content: flex-end;
-  gap: var(--space-2); padding: var(--space-3); }
-.bed-head { display: flex; align-items: center; justify-content: space-between; }
-.bed-pic { border-radius: var(--radius-sm); background: var(--surface); }
+.garden-ground { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.bed { position: relative; z-index: 1; flex: 0 0 300px; flex: 0 0 min(340px, calc(100cqw - 2 * var(--space-3))); scroll-snap-align: center;
+  display: flex; flex-direction: column; gap: 0; }
+.bed-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-2); margin-top: -12px; padding: 0 var(--space-2); }
+.bed-sign { display: flex; flex-direction: column; align-items: center; }
+.bed-sign-board { display: inline-flex; align-items: center; justify-content: center; width: 84px; height: 76px; padding: 6px;
+  border-radius: var(--radius-sm); background: var(--surface); border: 5px solid var(--bed-tint, var(--art-terracotta)); box-shadow: var(--elev-card); }
+.bed-pic { border-radius: var(--radius-xs); }
+.bed-sign-post { width: 8px; height: 14px; background: var(--bed-tint, var(--art-terracotta)); border-radius: 0 0 3px 3px; }
+.bed-marks { display: flex; align-items: flex-end; gap: var(--space-2); }
+.bed-here { display: inline-flex; width: 40px; height: 56px; }
 .bed-seal { display: inline-flex; }
-.bed-plants { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-1); }
-.bed-soil { height: 14px; border-radius: 8px; background: var(--grow-plot); opacity: .45; }
+/* the raised bed: a brick edge and soil, as tall as the panel allows; the plants sit in it */
+.bed-box { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 140px; padding: var(--space-2);
+  border-radius: var(--radius-card); border: 4px solid var(--art-terracotta);
+  background: color-mix(in srgb, var(--grow-plot) 30%, var(--tray)); }
+.bed-plants { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; align-content: center; gap: var(--space-1); }
 .plant-btn { min-width: 112px; min-height: 112px; padding: 0; border: 0; background: transparent; cursor: pointer; display: flex; align-items: flex-end;
   justify-content: center; border-radius: var(--radius-tile); }
 .plant-btn:active { transform: scale(var(--press-scale)); }
@@ -258,6 +300,8 @@
 .skill-sheet { display: flex; flex-direction: column; gap: var(--space-3); }
 .skill-sheet-row { display: flex; align-items: flex-end; gap: var(--space-4); }
 .skill-sheet-face { width: 96px; height: 96px; }
+.skill-sheet-her { margin: 0; display: flex; flex-direction: column; align-items: center; gap: var(--space-1); }
+.skill-sheet-her .teacher-label { font-size: var(--t-meta); font-weight: 700; color: var(--ink); white-space: nowrap; }
 .skill-sheet-word { font-size: var(--t-label); }
 .skill-sheet-note { color: var(--ink-2); font-size: var(--t-meta); }
 
@@ -280,7 +324,7 @@
 .ask-source { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 88px; height: 88px;
   border: 1px solid var(--line); border-radius: var(--radius-tile); background: var(--surface); color: var(--ink); font-weight: 600; font-size: var(--t-meta); cursor: pointer; }
 .ask-go { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-3); flex-wrap: wrap; }
-.ask .cs-title { font-size: 24px; }
+.ask .cs-title { font-size: calc(1.5rem * var(--cs-k)); }
 
 /* ───────── Me (§6.3.8) ───────── */
 .me-list { list-style: none; margin: 0; padding: var(--space-2) var(--space-4); display: flex; flex-direction: column; }

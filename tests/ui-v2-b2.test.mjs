@@ -4,7 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { BUDGETS, heightFor, lampHueShare, lintVerdict, QUALITIES, shipPlan } from "../scripts/gen-assets.mjs";
 import { lint } from "../scripts/lint-ui.mjs";
-import { fallbackPlan, fromServer, isPlanResponse } from "../src/child/plan.ts";
+import { fallbackPlan, fromServer, isPlanResponse, practiceOffered, RESUME_BY_ID } from "../src/child/plan.ts";
 import { bestCard, normaliseMap, offerOf } from "../src/child/api.ts";
 import { chapterLines, gardenBeds, layoutSky } from "../src/child/progress/layout.ts";
 import { visibleEdges } from "../src/child/progress/prereqs.ts";
@@ -58,6 +58,21 @@ test("home plan: the server state is shown as-is; the done DidCard and the surfa
   assert.equal(p.did.length, 1);
   assert.equal(p.surfaces.map, false, "Only this session hides the map");
   assert.equal(fromServer({ ...PLAN, state: "start", resume: { lessonId: "x", ask: null, topicTitle: "t" } }).resume, null, "resume only in the resume state");
+});
+
+test("home plan: no signal that lies (resume until it can resume; offline practice only with a pack; nothing before the answer)", () => {
+  const r = fromServer({ ...PLAN, state: "resume", today: null, resume: { lessonId: "L9", ask: "q", topicTitle: "t" } });
+  if (!RESUME_BY_ID) {
+    assert.equal(r.state, "start", "a Continue card whose tap starts a new lesson would lie: shown as start");
+    assert.equal(r.resume, null);
+  }
+  assert.equal(r.serverState, "resume", "the server's own state is kept");
+  assert.equal(fromServer(PLAN).packReady, false, "packReady null = no offline pack");
+  assert.equal(practiceOffered({ source: "loading", state: "start", packReady: false }), false, "never before the plan answered");
+  assert.equal(practiceOffered({ source: "server", state: "offline", packReady: false }), false, "offline without a pack: no Practice");
+  assert.equal(practiceOffered({ source: "server", state: "offline", packReady: true }), true);
+  assert.equal(practiceOffered({ source: "server", state: "capped", packReady: false }), false);
+  assert.equal(practiceOffered({ source: "server", state: "done", packReady: false }), true);
 });
 
 test("home plan fallback (audit #9): never an empty card", () => {

@@ -8,6 +8,10 @@
 //        Today's finished-lesson marker (src/child/day.ts, written at the summary's Finish) turns that into "done", so
 //        a plan outage after a lesson never offers a second one.
 //   401 → "signedout" (the shell asks a grown-up to sign in).
+// While the first read is in flight the home shows a neutral busy card with NO action (source "loading"): a Start link
+// before the server answered could start a lesson the server is about to refuse (capped / resting / done).
+// "resume" is shown as "start" until the lesson route can resume a lesson by id (RESUME_BY_ID): a "Continue" card whose
+// tap starts a new lesson would be a signal that lies (§3.4). The server's own state stays in `serverState`.
 import { useCallback, useEffect, useState } from "react";
 import type { ChildHomeState, ChildPlanResponse, DidCard } from "../../shared/contracts.ts";
 import { ApiError, getJson } from "../lesson/api.ts";
@@ -23,6 +27,10 @@ export interface HomePlan {
   tried: number | null;
   opensAt: string | null;
   surfaces: { map: boolean; notebook: boolean; resume: boolean };
+  /** An offline practice pack is on this device (plan.packReady). Only then may the offline card offer Practice. */
+  packReady: boolean;
+  /** The state the server sent, before the client's honest mapping (resume → start). Null on a fallback. */
+  serverState: ChildHomeState | null;
   /** "server": the plan read answered; "fallback": it failed and this is the designed fallback; "loading": first paint. */
   source: "server" | "fallback" | "loading";
   signedOut?: boolean;
@@ -50,17 +58,23 @@ function writeCache(cid: string, c: Cached): void {
 
 const ALL_SURFACES = { map: true, notebook: true, resume: true };
 
+/** The lesson route cannot reopen a lesson by id yet (src/child/screens/Practice.tsx LessonRoute → a new lesson). */
+export const RESUME_BY_ID = false;
+
 /** Server response → the home's plan. Pure (unit-tested). */
 export function fromServer(r: ChildPlanResponse): HomePlan {
   const summary = r.today?.summary ?? null;
+  const resume = r.state === "resume" && RESUME_BY_ID;
   return {
-    state: r.state,
+    state: r.state === "resume" && !RESUME_BY_ID ? "start" : r.state,
+    serverState: r.state,
     topic: r.topic ?? null,
-    resume: r.state === "resume" ? r.resume ?? null : null,
+    resume: resume ? r.resume ?? null : null,
     did: (summary?.cards ?? []).slice(0, 3),
     tried: summary?.tried ?? null,
     opensAt: r.opensAt ?? null,
     surfaces: { ...ALL_SURFACES, ...(r.surfaces ?? {}) },
+    packReady: !!r.packReady,
     source: "server",
   };
 }
@@ -69,11 +83,18 @@ export function fromServer(r: ChildPlanResponse): HomePlan {
 export function fallbackPlan(opts: { online: boolean; cached: Cached | null; doneToday: boolean }): HomePlan {
   const base = {
     topic: opts.cached?.topic ?? null, resume: null, did: [], tried: null, opensAt: null,
-    surfaces: opts.cached?.surfaces ?? ALL_SURFACES, source: "fallback" as const,
+    surfaces: opts.cached?.surfaces ?? ALL_SURFACES, packReady: false, serverState: null, source: "fallback" as const,
   };
   if (!opts.online) return { ...base, state: "offline" };
   if (opts.doneToday) return { ...base, state: "done" };
   return { ...base, state: "start" };
+}
+
+/** Practice is offered only once the server answered, when the plan allows it, and never offline without a pack. Pure. */
+export function practiceOffered(plan: Pick<HomePlan, "source" | "state" | "packReady">): boolean {
+  if (plan.source === "loading") return false;
+  if (plan.state === "offline") return plan.packReady;
+  return plan.state !== "capped" && plan.state !== "resting";
 }
 
 export function isPlanResponse(r: unknown): r is ChildPlanResponse {
@@ -104,7 +125,9 @@ export async function readPlan(cid: string, signal?: AbortSignal): Promise<HomeP
   return fallbackPlan({ online: online(), cached: readCache(cid), doneToday });
 }
 
-const LOADING: HomePlan = { state: "start", topic: null, resume: null, did: [], tried: null, opensAt: null, surfaces: ALL_SURFACES, source: "loading" };
+/** First paint, before the read answers: `state` is a placeholder the home never acts on (source "loading"). */
+const LOADING: HomePlan = { state: "start", topic: null, resume: null, did: [], tried: null, opensAt: null, surfaces: ALL_SURFACES, packReady: false,
+  serverState: null, source: "loading" };
 
 /** The home's plan, re-read on `online` / `offline` and when `reload()` is called (Try again). */
 export function usePlan(cid: string): { plan: HomePlan; reload: () => void } {

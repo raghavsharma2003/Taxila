@@ -11,15 +11,22 @@
 //   V-EN-1      English chrome: no Devanagari and no Hinglish chrome word outside [data-speech]
 //   V-NAME-1    every button / link / input has an accessible name; switches expose their state
 //   V-SIG-2     0 [data-lamp] on child non-lesson routes and onboarding (the lamp is the lesson dock's alone)
-//   V-TGT       visible controls ≥ 48 px (Older) / ≥ 64 px for the Young primary controls
-//   V-PLAN      the home has ONE primary card in every plan state, incl. the plan API 404 / 500 / offline fallback
+//   V-TGT       every visible control ≥ 48 px (Older, adult) / ≥ 64 px (Young; the 48 dp Grown-ups door excepted, §5.2)
+//   V-PLAN      the home has ONE primary card in every plan state, incl. the plan API 404 / 500 / offline fallback;
+//               no Start while the plan read is in flight; no "Continue" that starts a new lesson; offline makes no
+//               offline-practice promise without a pack
 //   V-MAP       Garden / Sky: empty state with an action; a sealed chapter shows its seal; "Your class is here"; List
 //   V-ID-1      the child's teacher record on home, Hello, the map sheet and Your teacher (data-teacher-id)
 //   V-PERF-1    art transferred per child route ≤ 350 KB; tier D (?tier=D) requests no background
 //   V-ONB       each onboarding step opens at scrollY 0 with focus on its h1; class first → Meet shows that class's
 //               teacher; promises before the account; English language tiles
 //   V-MASTER    the build ships no master: /assets/gen/<master> is not served as an image; manifest.json is
-//   V-ABS       absence invariance: the home after 1 vs 30 days away renders the same text
+//   V-ABS       absence invariance: the home after 1 vs 30 days away (clock AND last-visit device state) renders the
+//               same text and the same primary-card pixels
+//   V-CON       text contrast against the pixels under it (painted grounds included), ≥ 4.5 / 3 (large)
+//   V-MOTION    with prefers-reduced-motion nothing loops; text follows the browser font size to 200 %; Bigger text grows
+//   V-SHOT-B2   each shot vs its approved baseline (tests/visual/baselines/b2/, in-browser YIQ diff); SKIPPED, not
+//               passed, while no human-approved baseline exists (`--update-baselines` writes them)
 import http from "http";
 import fs from "fs";
 import os from "os";
@@ -120,6 +127,7 @@ async function mockApi(page, fx) {
     const child = Object.values(CHILDREN).find((c) => c.id === cid) ?? fx.children[0];
     if (p === "/api/me") return json(200, { guardian: { id: "g1", email: "parent@example.test", name: "Parent" }, children: fx.children });
     if (p === "/api/child/plan") {
+      if (fx.planDelay) await new Promise((r) => setTimeout(r, fx.planDelay));
       if (fx.plan === 404 || fx.plan === 500) return json(fx.plan, { error: "not found" });
       return json(200, { ...planFor(child, fx.plan ?? "start"), ...(fx.hideSurfaces ? { surfaces: { map: false, notebook: false, resume: false } } : {}) });
     }
@@ -183,11 +191,13 @@ async function audit(page, { young }) {
       if (!visible(el) || el.closest("[aria-hidden='true']")) continue;
       if (!nameOf(el)) out.names.push(el.outerHTML.slice(0, 90));
       if (el.getAttribute("role") === "switch" && !["true", "false"].includes(el.getAttribute("aria-checked"))) out.names.push(`switch without state: ${el.outerHTML.slice(0, 60)}`);
-      // V-TGT
+      // V-TGT (§11.5): every visible control ≥ 48 css px (Older, adult) / ≥ 64 (Young) on both sides. Exempt: inline
+      // links inside running text, and the Young "Grown-ups" door, which §5.2 fixes at 48 dp on purpose (it must not
+      // invite a child's tap).
       const r = el.getBoundingClientRect();
-      const min = 44;
-      if (!el.closest("p, li.me-hint, .t-note, summary") && (r.width < min || r.height < min) && el.tagName !== "INPUT") out.tgt.push(`${Math.round(r.width)}x${Math.round(r.height)} ${(el.innerText || el.getAttribute("aria-label") || el.tagName).slice(0, 30)}`);
-      if (young && el.matches(".cs-btn--start, .ptile, .cs-homebtn, .plant-btn, .garden-arrow, .hello-go") && (r.height < 64 || r.width < 64)) out.tgt.push(`young<64 ${(el.innerText || "").slice(0, 20)} ${Math.round(r.width)}x${Math.round(r.height)}`);
+      const min = young && !el.matches(".cs-grownups") ? 64 : 48;
+      if (!el.closest("p, li.me-hint, .t-note, summary") && (r.width < min - 0.5 || r.height < min - 0.5) && el.tagName !== "INPUT")
+        out.tgt.push(`<${min} ${Math.round(r.width)}x${Math.round(r.height)} ${(el.innerText || el.getAttribute("aria-label") || el.tagName).slice(0, 30)}`);
     }
     // V-LAYOUT-2: an empty container taller than 48 px inside main
     const main = document.querySelector("main") ?? document.body;
@@ -197,6 +207,22 @@ async function audit(page, { young }) {
       if (r.height <= 48) continue;
       const hasContent = (el.innerText ?? "").trim() || el.querySelector("img, svg, canvas, picture, video, input, textarea, button, a, [role=img]");
       if (!hasContent) out.dead.push(`${el.tagName.toLowerCase()}.${el.className}`.slice(0, 80) + ` ${Math.round(r.height)}px`);
+      // …and a box > 120 px whose ONLY content is a placeholder (art fallback) with no words and no control: a
+      // generic tile in an empty panel is still an empty panel (the B2 Garden finding)
+      else if (r.height > 120 && !el.closest("[data-art-fallback]") && !(el.innerText ?? "").trim()) {
+        const real = [...el.querySelectorAll("img, svg, canvas, picture, video, input, textarea, button, a, [role=img]")].filter((c) => !c.closest("[data-art-fallback]"));
+        if (!real.length) out.dead.push(`fallback-only ${el.tagName.toLowerCase()}.${el.className}`.slice(0, 80) + ` ${Math.round(r.height)}px`);
+      }
+    }
+    // …and nothing pushed off the side of the screen (a page with overflow hidden never scrolls, it just clips):
+    // a visible text or control box that leaves the viewport, unless it sits in a sideways scroller (the Garden)
+    for (const el of main.querySelectorAll("h1, h2, p, a, button, label, li, .hpc, .otile, .ptile")) {
+      if (!visible(el) || el.closest("[aria-hidden='true'], .scene")) continue;
+      let sc = el.parentElement, inScroller = false;
+      for (; sc && sc !== document.body; sc = sc.parentElement) { const o = getComputedStyle(sc).overflowX; if (o === "auto" || o === "scroll") { inScroller = true; break; } }
+      if (inScroller) continue;
+      const r = el.getBoundingClientRect();
+      if (r.right > window.innerWidth + 1 || r.left < -1) out.dead.push(`offscreen ${el.tagName.toLowerCase()}.${el.className} ${Math.round(r.left)}..${Math.round(r.right)}`.slice(0, 90));
     }
     out.lamps = document.querySelectorAll("[data-lamp]").length;
     out.hscroll = document.scrollingElement.scrollWidth > window.innerWidth + 1;
@@ -212,14 +238,121 @@ function report(tag, a) {
   check(`V-TGT ${tag}`, a.tgt.length === 0, a.tgt.slice(0, 4).join(" | "));
 }
 
+// V-CON (WCAG 1.4.3 on the painted grounds): every visible text element against the pixels actually under it. The
+// page is screenshotted with all text made transparent, so semi-transparent cards over a painting are measured as
+// composited; per element the 20th-percentile contrast of its text colour against the pixels in its box must be ≥ 4.5
+// (≥ 3 for large text: ≥ 24 px, or ≥ 18.66 px bold). Disabled controls are exempt (WCAG).
+async function contrast(page) {
+  const els = await page.evaluate(() => {
+    const out = [];
+    const all = document.querySelectorAll("body *");
+    let k = 0;
+    for (const el of all) {
+      if (el.closest("svg, .scene, [aria-hidden='true'] .scene, script, style")) continue;
+      const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+      if (!own) continue;
+      const cs = getComputedStyle(el);
+      if (cs.visibility === "hidden" || cs.display === "none" || Number(cs.opacity) === 0) continue;
+      if (el.closest("[disabled], [aria-disabled='true'], .tx-sr")) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width < 4 || r.height < 4 || r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth) continue;
+      const size = parseFloat(cs.fontSize), weight = Number(cs.fontWeight) || 400;
+      el.setAttribute("data-con", String(k));
+      out.push({ k: k++, color: cs.color, large: size >= 24 || (size >= 18.66 && weight >= 700), text: el.textContent.trim().slice(0, 30),
+        x: Math.max(0, r.left), y: Math.max(0, r.top), w: Math.min(innerWidth, r.right) - Math.max(0, r.left), h: Math.min(innerHeight, r.bottom) - Math.max(0, r.top) });
+    }
+    return out;
+  });
+  if (!els.length) return [];
+  const style = await page.addStyleTag({ content: "*,*::before,*::after{color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important;text-decoration-color:transparent!important;caret-color:transparent!important}" });
+  await page.waitForTimeout(60);
+  const png = (await page.screenshot({ fullPage: false })).toString("base64");
+  await style.evaluate((n) => n.remove());
+  return page.evaluate(async ({ png, els }) => {
+    const parse = (c) => {
+      let m = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/.exec(c);
+      if (m) return [Number(m[1]), Number(m[2]), Number(m[3]), m[4] === undefined ? 1 : Number(m[4])];
+      m = /color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)(?: \/ ([\d.]+))?/.exec(c);
+      if (m) return [Number(m[1]) * 255, Number(m[2]) * 255, Number(m[3]) * 255, m[4] === undefined ? 1 : Number(m[4])];
+      return null;
+    };
+    const lum = ([r, g, b]) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+    const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+    const blob = await (await fetch(`data:image/png;base64,${png}`)).blob();
+    const bmp = await createImageBitmap(blob);
+    const cv = new OffscreenCanvas(bmp.width, bmp.height);
+    const cx = cv.getContext("2d");
+    cx.drawImage(bmp, 0, 0);
+    const dpr = bmp.width / innerWidth;
+    const bad = [];
+    for (const e of els) {
+      const fg = parse(e.color);
+      if (!fg || fg[3] < 0.05) continue;
+      const x = Math.floor(e.x * dpr), y = Math.floor(e.y * dpr), w = Math.max(1, Math.floor(e.w * dpr)), h = Math.max(1, Math.floor(e.h * dpr));
+      const d = cx.getImageData(x, y, Math.min(w, bmp.width - x), Math.min(h, bmp.height - y)).data;
+      const step = Math.max(1, Math.floor(d.length / 4 / 600));
+      const rs = [];
+      for (let i = 0; i < d.length / 4; i += step) {
+        const bg = [d[i * 4], d[i * 4 + 1], d[i * 4 + 2]];
+        // the text colour composited over this pixel (a translucent ink-2 is lighter than its token)
+        const c = [0, 1, 2].map((j) => fg[j] * fg[3] + bg[j] * (1 - fg[3]));
+        rs.push(ratio(c, bg));
+      }
+      rs.sort((a, b) => a - b);
+      const p20 = rs[Math.floor(rs.length * 0.2)] ?? 21;
+      const need = e.large ? 3 : 4.5;
+      if (p20 < need) bad.push(`${p20.toFixed(2)} < ${need} "${e.text}"`);
+    }
+    document.querySelectorAll("[data-con]").forEach((n) => n.removeAttribute("data-con"));
+    return bad;
+  }, { png, els });
+}
+
+// V-MOTION (§11, §9.1): with prefers-reduced-motion, no CSS animation or transition is left running on the page
+async function runningMotion(page) {
+  return page.evaluate(() => document.getAnimations().filter((a) => a.playState === "running" && (a.effect?.getTiming().duration ?? 0) > 0 &&
+    a.effect.getTiming().iterations === Infinity).map((a) => `${a.animationName ?? a.transitionProperty ?? "anim"} on ${a.effect?.target?.className ?? "?"}`.slice(0, 80)));
+}
+
+// V-SHOT-B2 (§13.2): each shot against its approved baseline in tests/visual/baselines/b2/, compared IN THE BROWSER
+// (OffscreenCanvas, no new dependency): per-pixel YIQ ΔE ≤ 0.1, mismatch ≤ 0.5 %. The first baselines are approved by
+// a human (`--update-baselines` copies the current shots there); until then each comparison is SKIPPED, never passed.
+const BASELINES = `${ROOT}tests/visual/baselines/b2`;
+const UPDATE_BASELINES = process.argv.includes("--update-baselines");
+const shotDiffs = [];
+async function diffShot(page, name) {
+  const cur = path.join(SHOTS, `${name}.png`);
+  const base = path.join(BASELINES, `${name}.png`);
+  if (UPDATE_BASELINES) { fs.mkdirSync(BASELINES, { recursive: true }); fs.copyFileSync(cur, base); return; }
+  if (!fs.existsSync(base)) { shotDiffs.push({ name, status: "no-baseline" }); return; }
+  const r = await page.evaluate(async ({ a, b }) => {
+    const load = async (s) => createImageBitmap(await (await fetch(`data:image/png;base64,${s}`)).blob());
+    const [A, B] = await Promise.all([load(a), load(b)]);
+    if (A.width !== B.width || A.height !== B.height) return { ratio: 1, size: true };
+    const px = (bm) => { const c = new OffscreenCanvas(bm.width, bm.height).getContext("2d"); c.drawImage(bm, 0, 0); return c.getImageData(0, 0, bm.width, bm.height).data; };
+    const da = px(A), db = px(B);
+    const yiq = (r, g, bb) => [0.29889531 * r + 0.58662247 * g + 0.11448223 * bb, 0.59597799 * r - 0.2741761 * g - 0.32180189 * bb, 0.21147017 * r - 0.52261711 * g + 0.31114694 * bb];
+    let bad = 0;
+    const MAX = 35215; // the YIQ ΔE² range (pixelmatch's normalisation)
+    for (let i = 0; i < da.length; i += 4) {
+      const [y1, i1, q1] = yiq(da[i], da[i + 1], da[i + 2]), [y2, i2, q2] = yiq(db[i], db[i + 1], db[i + 2]);
+      const d = 0.5053 * (y1 - y2) ** 2 + 0.299 * (i1 - i2) ** 2 + 0.1957 * (q1 - q2) ** 2;
+      if (d / MAX > 0.1 * 0.1) bad++;
+    }
+    return { ratio: bad / (da.length / 4) };
+  }, { a: fs.readFileSync(cur).toString("base64"), b: fs.readFileSync(base).toString("base64") });
+  shotDiffs.push({ name, status: r.ratio <= 0.005 ? "pass" : "fail", ratio: r.ratio });
+  check(`V-SHOT-B2 ${name}`, r.ratio <= 0.005, `${(r.ratio * 100).toFixed(2)} % of pixels differ${r.size ? " (size)" : ""}`);
+}
+
 // ───────────────────────────── run ─────────────────────────────
 const browser = await chromium.launch({ args: ["--use-gl=swiftshader", "--enable-unsafe-swiftshader"] });
 const VIEWS = QUICK ? [{ w: 360, h: 640 }] : [{ w: 360, h: 640 }, { w: 1280, h: 800 }];
 
-async function open(fx, url, { w, h, theme = "light", offline = false } = {}) {
+async function open(fx, url, { w, h, theme = "light", offline = false, motion = "no-preference", wait = 900 } = {}) {
   const ctx = await browser.newContext({
     viewport: { width: w, height: h }, deviceScaleFactor: w < 720 ? 2 : 1, hasTouch: w < 720, isMobile: w < 720, colorScheme: theme,
-    serviceWorkers: "block",
+    serviceWorkers: "block", reducedMotion: motion,
   });
   const page = await ctx.newPage();
   const art = { bytes: 0, bg: 0 };
@@ -231,14 +364,17 @@ async function open(fx, url, { w, h, theme = "light", offline = false } = {}) {
     if (u.pathname.startsWith("/assets/art/bg/")) art.bg++;
   });
   const calls = await mockApi(page, fx);
-  if (fx.storage) await page.addInitScript((s) => { for (const [k, v] of Object.entries(s)) localStorage.setItem(k, v); }, fx.storage);
+  // seed storage once per context (not on every navigation: a reload must see what the page itself wrote)
+  if (fx.storage) await page.addInitScript((s) => { if (sessionStorage.getItem("__seeded")) return; sessionStorage.setItem("__seeded", "1"); for (const [k, v] of Object.entries(s)) localStorage.setItem(k, v); }, fx.storage);
+  // the browser / OS font size (what a 200 % accessibility setting does): the root font size, applied as the page loads
+  if (fx.fontScale) await page.addInitScript((f) => { const set = () => document.documentElement?.style.setProperty("font-size", `${f * 100}%`); set(); document.addEventListener("DOMContentLoaded", set); }, fx.fontScale);
   await page.goto(`${BASE}${url}`, { waitUntil: "domcontentloaded" }).catch(() => {});
-  await page.waitForTimeout(900);
+  await page.waitForTimeout(wait);
   // offline: the app is up (the cached shell) and the link drops; the home re-reads on the `offline` event
   if (offline) { await ctx.setOffline(true).catch(() => {}); await page.waitForTimeout(700); }
   return { ctx, page, art, calls };
 }
-const shot = async (page, name) => page.screenshot({ path: path.join(SHOTS, `${name}.png`), fullPage: false });
+const shot = async (page, name) => { await page.screenshot({ path: path.join(SHOTS, `${name}.png`), fullPage: false }); await diffShot(page, name); };
 
 const helloDone = (cid) => ({ [`taxila.child.${cid}.prefs`]: JSON.stringify({ hello: true }) });
 
@@ -272,10 +408,20 @@ for (const who of ["riya", "kabir"]) {
         text: card?.innerText.trim() ?? "", action: !!card?.querySelector("a, button"), teacher: document.querySelector("[data-teacher-id]")?.getAttribute("data-teacher-id"),
         theme: document.documentElement.getAttribute("data-theme"), grownups: !!document.querySelector("[data-testid=grownups]") };
     });
-    const expect = typeof st === "number" ? "start" : st;
-    const needsAction = ["start", "first", "resume", "done", "offline"].includes(expect);
+    // "resume" is shown as "start" until the lesson route can resume by id (src/child/plan.ts RESUME_BY_ID)
+    const expect = typeof st === "number" || st === "resume" ? "start" : st;
+    const needsAction = ["start", "first", "done", "offline"].includes(expect);
     check(`V-PLAN ${tag}`, info.cards === 1 && info.state === expect && info.text.length > 3 && (!needsAction || info.action), `${info.state}/${info.source} "${info.text.slice(0, 50)}"`);
     if (typeof st === "number") check(`V-PLAN fallback start link ${tag}`, await page.locator("[data-testid=start-lesson]").count() === 1);
+    if (st === "resume") check(`V-PLAN no "Continue" that would start a new lesson ${tag}`, (await page.locator("[data-testid=continue-lesson]").count()) === 0 && !/Continue/.test(info.text), info.text.slice(0, 40));
+    if (st === "offline") {
+      // no offline pack exists (packReady null): no "Practice works offline" promise, no Practice / Ask tile to fail
+      check(`V-PLAN offline makes no offline-practice promise ${tag}`, !/works offline/i.test(info.text), info.text);
+      check(`V-PLAN offline offers no Practice / Ask ${tag}`, (await page.locator("[data-testid=tile-practice], [data-testid=tile-ask]").count()) === 0);
+    }
+    const aria = await page.evaluate(() => { const c = document.querySelector("[data-testid=primary-card]"); const id = c?.getAttribute("aria-labelledby"); return { id, name: id ? document.getElementById(id)?.textContent : null, label: c?.getAttribute("aria-label") }; });
+    check(`card region named by its own heading ${tag}`, !!aria.name && !aria.label && info.text.startsWith(aria.name.slice(0, 8)), JSON.stringify(aria));
+    if (["start", "done", "offline", 404].includes(st)) { const bad = await contrast(page); check(`V-CON ${tag}`, bad.length === 0, bad.slice(0, 3).join(" | ")); }
     check(`V-ID-1 home ${tag}`, info.teacher === child.teacher_id, `${info.teacher}`);
     if (young) check(`Young light-only ${tag}`, info.theme === "light", `${info.theme}`);
     check(`Grown-ups door ${tag}`, info.grownups);
@@ -295,19 +441,37 @@ for (const who of ["riya", "kabir"]) {
   check("B2-A7 tier D: home still usable", await page.locator("[data-testid=primary-card]").count() === 1);
   await shot(page, "home__tier-D__b3__360__light");
   await ctx.close();
+  // V-ABS (B2-A6, absence invariance): the SAME server plan, but a device whose last visit was 1 vs 30 days ago: the
+  // clock differs AND the device state the home can read differs (the cached plan's day, yesterday's finished-lesson
+  // marker vs a month-old one, the Notebook's last artefact date). The home's text and its pixels must match.
+  // Limits, said plainly: her greeting line (the one thing allowed to differ) is not built, and the server plan is
+  // mocked, so this proves the CLIENT adds no absence signal; the server half is B2-A1's API test.
   const texts = [];
+  const pngs = [];
   for (const days of [1, 30]) {
     const c2 = await browser.newContext({ viewport: { width: 360, height: 640 } });
     const p2 = await c2.newPage();
-    await p2.clock.setFixedTime(new Date(Date.UTC(2026, 9, 3 + days, 4, 0)));
+    const now = Date.UTC(2026, 9, 3 + days, 4, 0);
+    const last = new Date(now - days * 86400e3).toISOString().slice(0, 10);
+    await p2.clock.setFixedTime(new Date(now));
     await mockApi(p2, { children: [child], plan: "start" });
-    await p2.addInitScript((s) => { for (const [k, v] of Object.entries(s)) localStorage.setItem(k, v); }, helloDone(child.id));
+    await p2.addInitScript(({ s, cid, last, at }) => {
+      for (const [k, v] of Object.entries(s)) localStorage.setItem(k, v);
+      localStorage.setItem(`taxila.child.${cid}.plan`, JSON.stringify({ topic: null, surfaces: { map: true, notebook: true, resume: true }, day: last }));
+      localStorage.setItem(`taxila.child.${cid}.day`, JSON.stringify({ day: last, done: true, lessonId: "L-last" }));
+      localStorage.setItem(`taxila.child.${cid}.artefacts`, JSON.stringify([{ lessonId: "L-last", topic: "Fractions", chips: [], at }]));
+    }, { s: helloDone(child.id), cid: child.id, last, at: now - days * 86400e3 });
     await p2.goto(`${BASE}/c/${child.id}`);
-    await p2.waitForSelector("[data-testid=primary-card]", { timeout: 8000 }).catch(() => {});
+    await p2.waitForFunction(() => document.querySelector("[data-plan-source]")?.getAttribute("data-plan-source") === "server", null, { timeout: 8000 }).catch(() => {});
+    await p2.waitForTimeout(400);
     texts.push(await p2.locator("main").innerText());
+    pngs.push((await p2.locator("[data-testid=primary-card]").screenshot()).toString("base64"));
     await c2.close();
   }
-  check("V-ABS home after 1 vs 30 days away is the same", texts[0] === texts[1]);
+  check("V-ABS home text after 1 vs 30 days away is the same", texts[0] === texts[1], texts[0] === texts[1] ? "" : `${texts[0].slice(0, 60)} ≠ ${texts[1].slice(0, 60)}`);
+  check("V-ABS primary card pixels after 1 vs 30 days away are the same", pngs[0] === pngs[1]);
+  // negative control: the comparator must see a one-word difference ("We missed you" is exactly what is banned)
+  check("negative control V-ABS trips on an absence line", texts[0] !== `${texts[0]}\nWe missed you`);
   const { ctx: c3, page: p3 } = await open({ children: [CHILDREN.dev], plan: "first" }, `/c/${CHILDREN.dev.id}`, VIEWS[0]);
   await p3.waitForSelector("[data-testid=hello]", { timeout: 8000 }).catch(() => {});
   check("Later never skips Hello: a never-met child lands on Hello", p3.url().endsWith("/hello"), p3.url());
@@ -316,6 +480,86 @@ for (const who of ["riya", "kabir"]) {
   await p4.waitForTimeout(500);
   check("Only this session: no Garden / Notebook tiles", await p4.locator("[data-testid=tile-garden], [data-testid=tile-notebook]").count() === 0);
   await c4.close();
+}
+
+// HOME first paint: while the plan read is in flight there is NO Start (the server may answer capped / resting / done)
+for (const who of ["riya", "kabir"]) {
+  const child = CHILDREN[who];
+  for (const st of ["capped", "resting", "done"]) {
+    const { ctx, page } = await open({ children: [child], plan: st, planDelay: 3000, storage: helloDone(child.id) }, `/c/${child.id}`, { ...VIEWS[0], wait: 1200 });
+    const tag = `${who} ${st}`;
+    const early = await page.evaluate(() => ({ starts: document.querySelectorAll("[data-testid=start-lesson], [data-testid=continue-lesson]").length,
+      practice: document.querySelectorAll("[data-testid=tile-practice]").length, busy: document.querySelector("[data-testid=primary-card]")?.getAttribute("aria-busy"),
+      state: document.querySelector("[data-plan-state]")?.getAttribute("data-plan-state"), text: document.querySelector("[data-testid=primary-card]")?.innerText ?? "" }));
+    check(`V-PLAN loading: no Start before the plan answers ${tag}`, early.starts === 0 && early.practice === 0 && early.busy === "true" && early.state === "loading", JSON.stringify(early));
+    if (st === "capped") await shot(page, `home__loading__${child.class_level <= 4 ? "b2" : "b3"}__360__light`);
+    await page.waitForFunction((s) => document.querySelector("[data-plan-state]")?.getAttribute("data-plan-state") === s, st, { timeout: 8000 }).catch(() => {});
+    check(`V-PLAN after the answer ${tag}`, (await page.locator("[data-testid=start-lesson]").count()) === 0 && (await page.getAttribute("[data-plan-state]", "data-plan-state")) === st);
+    if (who === "kabir" && st === "capped") {
+      // negative control: a Start link inside the loading card must trip the loading check
+      const { ctx: c2, page: p2 } = await open({ children: [child], plan: st, planDelay: 3000, storage: helloDone(child.id) }, `/c/${child.id}`, { ...VIEWS[0], wait: 1200 });
+      await p2.evaluate(() => { const a = document.createElement("a"); a.href = "#"; a.setAttribute("data-testid", "start-lesson"); a.textContent = "Start"; document.querySelector("[data-testid=primary-card]")?.appendChild(a); });
+      check("negative control V-PLAN loading trips on a Start link", (await p2.locator("[data-testid=start-lesson]").count()) > 0);
+      await c2.close();
+    }
+    await ctx.close();
+  }
+}
+
+// TEXT SIZE (§11.7: to 200 % outside the lesson; Me → Bigger text) and REDUCED MOTION
+{
+  const child = CHILDREN.kabir;
+  const size = async (page, sel) => page.evaluate((q) => { const e = document.querySelector(q); return e ? parseFloat(getComputedStyle(e).fontSize) : 0; }, sel);
+  const base = await open({ children: [child], plan: "start", storage: helloDone(child.id) }, `/c/${child.id}`, VIEWS[0]);
+  await base.page.waitForSelector(".hpc-head", { timeout: 8000 }).catch(() => {});
+  const head0 = await size(base.page, ".hpc-head"), tile0 = await size(base.page, ".otile");
+  await base.ctx.close();
+  const big = await open({ children: [child], plan: "start", storage: { [`taxila.child.${child.id}.prefs`]: JSON.stringify({ hello: true, largeText: true }) } }, `/c/${child.id}`, VIEWS[0]);
+  await big.page.waitForSelector(".hpc-head", { timeout: 8000 }).catch(() => {});
+  const head1 = await size(big.page, ".hpc-head"), tile1 = await size(big.page, ".otile");
+  check("Bigger text makes home text BIGGER (no custom-property cycle)", head1 > head0 + 2 && tile1 > tile0 + 2, `title ${head0}→${head1} px, tile ${tile0}→${tile1} px`);
+  report("home kabir bigger-text 360", await audit(big.page, { young: false }));
+  await shot(big.page, "home__bigger-text__b3__360__light");
+  await big.ctx.close();
+  // Me: the switch itself changes the computed size of Me's own rows
+  const me = await open({ children: [child], plan: "start", storage: helloDone(child.id) }, `/c/${child.id}/me`, VIEWS[0]);
+  await me.page.waitForSelector("[data-testid=me]", { timeout: 8000 }).catch(() => {});
+  const lab0 = await size(me.page, ".me-label");
+  await me.page.locator("[data-testid=switch-bigtext]").click().catch(() => {});
+  await me.page.waitForTimeout(200);
+  const lab1 = await size(me.page, ".me-label");
+  check("Me → Bigger text grows Me's rows", lab1 > lab0 + 2, `${lab0}→${lab1} px`);
+  await me.ctx.close();
+  for (const who of ["kabir", "riya"]) {
+    const c = CHILDREN[who];
+    for (const route of ["", "/map", "/notebook", "/me"]) {
+      const r200 = await open({ children: [c], plan: "start", fontScale: 2, storage: helloDone(c.id) }, `/c/${c.id}${route}`, VIEWS[0]);
+      await r200.page.waitForTimeout(400);
+      const tag = `${who} ${route || "/"} 200%`;
+      if (!route) {
+        const h = await size(r200.page, ".hpc-head");
+        const ref = who === "kabir" ? head0 : 24;
+        check(`text follows the browser font size to 200 % ${tag}`, h >= ref * 1.9, `${h} px vs ${ref} px at 100 %`);
+      }
+      const a = await audit(r200.page, { young: c.class_level <= 4 });
+      check(`200 %: no horizontal scroll, nothing clipped off-screen ${tag}`, !a.hscroll && !a.dead.some((x) => x.startsWith("offscreen")), a.dead.filter((x) => x.startsWith("offscreen")).slice(0, 3).join(" | "));
+      check(`200 %: top bar items do not overlap ${tag}`, await r200.page.evaluate(() => {
+        const els = [...document.querySelectorAll(".cs-top > *")].map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0);
+        return els.every((a, i) => els.every((b, j) => j <= i || a.right <= b.left + 1 || b.right <= a.left + 1 || a.bottom <= b.top + 1 || b.bottom <= a.top + 1));
+      }));
+      check(`200 %: names intact ${tag}`, a.names.length === 0, a.names.slice(0, 2).join(" | "));
+      await shot(r200.page, `${route ? route.slice(1) : "home"}__text-200__${c.class_level <= 4 ? "b2" : "b3"}__360__light`);
+      await r200.ctx.close();
+    }
+    for (const route of ["", "/map", "/notebook"]) {
+      const rm = await open({ children: [c], plan: "start", storage: helloDone(c.id) }, `/c/${c.id}${route}`, { ...VIEWS[0], motion: "reduce" });
+      await rm.page.waitForTimeout(500);
+      const run = await runningMotion(rm.page);
+      const flag = await rm.page.evaluate(() => document.documentElement.getAttribute("data-motion"));
+      check(`V-MOTION reduced motion: nothing loops ${who} ${route || "/"}`, run.length === 0 && flag === "reduce", `${flag} ${run.slice(0, 3).join(" | ")}`);
+      await rm.ctx.close();
+    }
+  }
 }
 
 // MAP: Garden (Young) and Sky (Older): empty, mid (seal + here), list, the tapped sheet
@@ -333,6 +577,15 @@ for (const who of ["riya", "kabir"]) {
       check(`V-MAP garden beds ${tag}`, await page.locator(".bed").count() >= 3);
       check(`V-MAP garden seal ${tag}`, await page.locator(".bed[data-sealed] .bed-seal").count() >= 1);
       check(`V-MAP no field of empty plots ${tag}`, await page.locator(".bed").count() < 14);
+      check(`V-MAP garden marks the class's chapter ${tag}`, (await page.locator(".bed[data-here] [data-testid=garden-here]").count()) >= 1);
+      // the first bed fills the panel: signboard → raised bed → bottom, no hollow band, seal not clipped by the edge
+      const g = await page.evaluate(() => {
+        const sc = document.querySelector(".garden-scroll").getBoundingClientRect();
+        const bed = document.querySelector(".bed"), box = bed.querySelector(".bed-box").getBoundingClientRect(), head = bed.querySelector(".bed-head").getBoundingClientRect();
+        const seal = bed.querySelector(".bed-seal")?.getBoundingClientRect();
+        return { gap: box.top - head.bottom, bottom: sc.bottom - box.bottom, share: box.height / sc.height, sealIn: !seal || (seal.left >= sc.left && seal.right <= sc.right) };
+      });
+      check(`V-MAP garden bed fills the panel ${tag}`, g.gap <= 8 && g.bottom <= 24 && g.share >= 0.45 && g.sealIn, JSON.stringify(g));
     } else {
       await page.waitForTimeout(400);
       check(`V-MAP sky here ${tag}`, (await page.locator(".sky-here").count()) === 1);
@@ -343,7 +596,17 @@ for (const who of ["riya", "kabir"]) {
       check(`V-MAP prerequisite edges drawn ${tag}`, (await page.locator(".sky-svg line").count()) > 0);
     }
     report(tag, await audit(page, { young }));
+    if (kind === "mid") { const bad = await contrast(page); check(`V-CON ${tag}`, bad.length === 0, bad.slice(0, 3).join(" | ")); }
     await shot(page, `map__${kind}__${young ? "b2" : "b3"}__${v.w}__${theme}`);
+    if (young && kind === "mid" && v.w === 360) {
+      // the class's chapter, two beds along: its flag inside the visible bed
+      await page.locator(".garden-arrow--right").click(); await page.waitForTimeout(450);
+      await page.locator(".garden-arrow--right").click(); await page.waitForTimeout(450);
+      const vis = await page.evaluate(() => { const f = document.querySelector("[data-testid=garden-here]")?.getBoundingClientRect(); const sc = document.querySelector(".garden-scroll").getBoundingClientRect(); return !!f && f.left >= sc.left && f.right <= sc.right; });
+      check(`V-MAP garden: the class flag is in view on its bed ${tag}`, vis);
+      await shot(page, `map__mid-here__b2__360__light`);
+      await page.locator(".garden-arrow--left").click(); await page.locator(".garden-arrow--left").click(); await page.waitForTimeout(450);
+    }
     if (kind === "mid") {
       // tap a plant / star → the sheet (phone) or the side panel (1280 Older)
       await page.locator(young ? ".plant-btn" : ".sky-star").first().click().catch(() => {});
@@ -352,6 +615,8 @@ for (const who of ["riya", "kabir"]) {
       check(`V-MAP tapped sheet ${tag}`, await sheet.count() >= 1);
       const ids = await page.locator("[data-testid=skill-sheet] [data-teacher-id], [data-testid=skill-sheet] [data-art^='teacher/']").evaluateAll((els) => els.map((e) => e.getAttribute("data-teacher-id") ?? e.getAttribute("data-art")));
       check(`V-ID-1 map sheet ${tag}`, ids.some((x) => x?.includes(child.teacher_id)), ids.join(","));
+      const lab = await page.locator("[data-testid=skill-sheet] .teacher-label").first();
+      check(`map sheet shows the visible "{T} · AI teacher" label ${tag}`, (await lab.isVisible().catch(() => false)) && /· AI teacher$/.test(await lab.innerText().catch(() => "")));
       await shot(page, `map__sheet__${young ? "b2" : "b3"}__${v.w}__${theme}`);
       await page.keyboard.press("Escape").catch(() => {});
       await page.locator("[data-testid=list-toggle]").click().catch(() => {});
@@ -376,10 +641,18 @@ for (const who of ["riya", "kabir"]) {
       const arte = JSON.stringify([1, 2, 3].map((i) => ({ lessonId: `L${i}`, topic: `Lesson ${i}`, chips: ["12", "24"], at: Date.UTC(2026, 9, i) })));
       for (const pages of [0, 3]) {
         const storage = { ...helloDone(child.id), ...(pages ? { [`taxila.child.${child.id}.artefacts`]: arte } : {}) };
-        const { ctx, page } = await open({ children: [child], plan: "start", storage }, `/c/${child.id}/notebook`, { ...v, theme });
+        const { ctx, page, calls } = await open({ children: [child], plan: "start", storage }, `/c/${child.id}/notebook`, { ...v, theme });
         await page.waitForSelector(pages ? "[data-testid=notebook-page]" : "[data-testid=notebook-empty]", { timeout: 8000 }).catch(() => {});
         const tag = `notebook ${who} ${pages} ${v.w} ${theme}`;
         check(`notebook ${pages ? "pages" : "empty"} ${tag}`, pages ? (await page.locator("[data-testid=notebook-page]").count()) === 3 : (await page.locator("[data-testid=notebook-empty]").count()) === 1);
+        if (!pages) check(`notebook empty line is true on any device (plan is not "first") ${tag}`, !/after your first lesson/.test(await page.locator("[data-testid=notebook-empty]").innerText()));
+        if (pages && v.w === 360 && theme === "light") {
+          const n0 = calls.filter((c) => c.includes("/api/lesson/summary")).length;
+          await page.reload(); await page.waitForSelector("[data-testid=notebook-page]", { timeout: 8000 }).catch(() => {}); await page.waitForTimeout(500);
+          const n1 = calls.filter((c) => c.includes("/api/lesson/summary")).length - n0;
+          check(`notebook summaries fetched once, not on every open ${tag}`, n0 === 3 && n1 === 0 && (await page.locator("[data-testid=notebook-page]").count()) === 3, `first open ${n0}, reopen ${n1}`);
+          const bad = await contrast(page); check(`V-CON ${tag}`, bad.length === 0, bad.slice(0, 3).join(" | "));
+        }
         report(tag, await audit(page, { young }));
         await shot(page, `notebook__${pages ? "3-pages" : "empty"}__${b}__${v.w}__${theme}`);
         await ctx.close();
@@ -508,6 +781,7 @@ for (const v of VIEWS) {
   const st2 = await page.evaluate(() => ({ y: window.scrollY, focus: document.activeElement?.tagName, h1: document.querySelector("h1")?.textContent }));
   check(`V-ONB promises before the account, at scroll 0 ${tag}`, page.url().endsWith("/start/promises") && st2.y === 0 && st2.focus === "H1", JSON.stringify(st2));
   check(`V-ONB promises name the teacher ${tag}`, /Arjun is an AI and says so/.test(await page.locator("main").innerText()));
+  check(`V-ONB promise pronoun agrees (he tells … he's) ${tag}`, /He tells your child he's a computer teacher/.test(await page.locator("main").innerText()));
   report(`${tag} promises`, await audit(page, { young: false }));
   await shot(page, `onboarding__3-promises__adult__${v.w}__light`);
   await ctx.close();
@@ -536,17 +810,40 @@ for (const v of VIEWS) {
     const w = document.createElement("div"); w.style.cssText = "width:2000px;height:10px"; m.appendChild(w);
   });
   const a = await audit(page, { young: false });
+  await page.evaluate(() => {
+    const m = document.querySelector("main");
+    const b = document.createElement("button"); b.textContent = "x"; b.className = "neg-46"; b.style.cssText = "width:120px;height:46px;min-height:0"; m.appendChild(b);
+    const f = document.createElement("div"); f.style.cssText = "height:200px"; f.innerHTML = '<span data-art-fallback=""><svg width="60" height="60"></svg></span>'; m.appendChild(f);
+    const c = document.createElement("p"); c.textContent = "Faint words"; c.style.cssText = "color:#d8d8d8;background:#ffffff;font-size:16px;position:relative;z-index:9"; m.prepend(c);
+  });
+  const a2 = await audit(page, { young: false });
+  check("negative control V-TGT trips on a 46 px button (Older bar 48)", a2.tgt.some((x) => x.includes("x46")));
+  check("negative control V-LAYOUT-2 trips on a box holding only a placeholder", a2.dead.some((x) => x.startsWith("fallback-only")));
+  const con = await contrast(page);
+  check("negative control V-CON trips on light-grey text on white", con.some((x) => x.includes("Faint words")));
   check("negative control V-EN-1 trips on 'Abhyaas'", a.en.length > 0);
   check("negative control V-LAYOUT-2 trips on an empty 120 px box", a.dead.length > 0);
   check("negative control V-NAME-1 trips on a nameless button", a.names.length > 0);
   check("negative control V-SIG-2 trips on a stray [data-lamp]", a.lamps > 0);
   check("negative control horizontal scroll trips", a.hscroll);
   await ctx.close();
+  // Young bar 64: a 60 px tile must trip
+  const y = await open({ children: [CHILDREN.riya], plan: "start", storage: helloDone(CHILDREN.riya.id) }, `/c/${CHILDREN.riya.id}`, VIEWS[0]);
+  await y.page.waitForSelector("[data-testid=primary-card]", { timeout: 8000 }).catch(() => {});
+  await y.page.evaluate(() => { const b = document.createElement("button"); b.textContent = "y"; b.style.cssText = "width:120px;height:60px;min-height:0"; document.querySelector("main").appendChild(b); });
+  check("negative control V-TGT trips on a 60 px Young control (bar 64)", (await audit(y.page, { young: true })).tgt.some((x) => x.includes("x60")));
+  // a paragraph pushed past the right edge (what overflow-hidden large text did before the fix) must trip
+  await y.page.evaluate(() => { const o = document.createElement("p"); o.textContent = "off the edge"; o.style.cssText = "position:relative;left:300px;width:200px"; document.querySelector("main").appendChild(o); });
+  check("negative control off-screen clip trips", (await audit(y.page, { young: true })).dead.some((x) => x.startsWith("offscreen")));
+  await y.ctx.close();
 }
 
 await browser.close();
 srv.kill();
 const failed = results.filter((r) => !r.ok);
-fs.writeFileSync(path.join(SHOTS, "checks.json"), JSON.stringify({ at: new Date().toISOString(), total: results.length, failed: failed.length, results }, null, 1));
+const noBase = shotDiffs.filter((d) => d.status === "no-baseline").length;
+if (!UPDATE_BASELINES) console.log(noBase ? `V-SHOT-B2: SKIPPED for ${noBase} shot(s): no approved baseline in tests/visual/baselines/b2/ (a human approves the first set with --update-baselines)` : "V-SHOT-B2: every shot compared against its baseline");
+fs.writeFileSync(path.join(SHOTS, "checks.json"), JSON.stringify({ at: new Date().toISOString(), total: results.length, failed: failed.length,
+  shotBaselines: { compared: shotDiffs.filter((d) => d.status !== "no-baseline").length, skippedNoBaseline: noBase }, results }, null, 1));
 console.log(`\n${results.length - failed.length}/${results.length} passed${failed.length ? `; FAILED: ${failed.map((f) => f.name).slice(0, 20).join("; ")}` : ""}`);
 process.exit(failed.length ? 1 : 0);

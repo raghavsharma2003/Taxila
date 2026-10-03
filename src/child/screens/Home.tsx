@@ -17,7 +17,7 @@ import { ChildScreen } from "../chrome.tsx";
 import { useChild } from "../ChildShell.tsx";
 import { clock, t } from "../copy.ts";
 import { Icon, Picto } from "../pictos.tsx";
-import { usePlan, type HomePlan } from "../plan.ts";
+import { practiceOffered, usePlan, type HomePlan } from "../plan.ts";
 import { SkyStar } from "../progress/StateShape.tsx";
 import { useChildMap } from "../useChildMap.ts";
 
@@ -47,10 +47,13 @@ export function Home() {
   return (
     <ChildScreen testid="home" ground={young ? "courtyard" : "rooftop"} rest={resting} home surfaces={plan.surfaces}
       className={`home home--${young ? "young" : "older"}`}>
-      <div className="home-grid" data-plan-state={plan.state} data-plan-source={plan.source}>
+      <div className="home-grid" data-plan-state={plan.source === "loading" ? "loading" : plan.state} data-plan-source={plan.source}>
         <div className="home-her">{resting ? <RestingStill /> : her}</div>
-        <PrimaryCard plan={plan} reload={reload} />
-        {young ? <YoungTiles plan={plan} /> : <OlderTiles plan={plan} />}
+        {/* Young 1280: card + tiles share ONE surface panel in the right third (§6.3.3); elsewhere display: contents */}
+        <div className="home-panel">
+          <PrimaryCard plan={plan} reload={reload} />
+          {young ? <YoungTiles plan={plan} /> : <OlderTiles plan={plan} />}
+        </div>
         {!young && plan.surfaces.map && sky.map && !sky.map.empty && <SkyPeek skills={sky.map.skills} />}
       </div>
     </ChildScreen>
@@ -96,6 +99,7 @@ function DidCardMini({ card }: { card: DidCard }) {
 
 export function PrimaryCard({ plan, reload }: { plan: HomePlan; reload: () => void }) {
   const { cid, family } = useChild();
+  const headId = `hpc-head-${cid}`;
   const young = family === "young";
   const topicPic = useTopicArt(plan.topic?.id);
   const subject = (plan.topic?.subject ?? "maths").toLowerCase().replace(/\s+/g, "-");
@@ -104,6 +108,20 @@ export function PrimaryCard({ plan, reload }: { plan: HomePlan; reload: () => vo
   const picture = young
     ? <Spot id={topicPic} size={96} fallback={<span className="spot-tile"><Icon name="notebook" size={44} /></span>} />
     : <Spot id={`subjects/${subject}`} size={72} fallback={<span className="spot-tile"><Icon name="practice" size={36} /></span>} />;
+
+  // First paint: a neutral card with NO action until the server has said what today is (never a live Start that the
+  // server may refuse: capped / resting / done).
+  if (plan.source === "loading") {
+    return (
+      <section className="cs-card hpc hpc--loading" aria-busy="true" aria-labelledby={headId} data-testid="primary-card" data-state="loading">
+        <span className="hpc-skel-pic" aria-hidden="true" />
+        <div className="hpc-text">
+          <h2 className="hpc-head hpc-head--line" id={headId}>{t("homeLoading")}</h2>
+          <span className="hpc-skel-bar" aria-hidden="true" />
+        </div>
+      </section>
+    );
+  }
 
   let body;
   switch (plan.state) {
@@ -115,7 +133,7 @@ export function PrimaryCard({ plan, reload }: { plan: HomePlan; reload: () => vo
         <>
           {picture}
           <div className="hpc-text">
-            <h2 className="hpc-head">{head}</h2>
+            <h2 className="hpc-head" id={headId}>{head}</h2>
             {title && !young && <p className="hpc-title">{title}</p>}
             {!young && plan.topic && <p className="hpc-meta">{t("aboutMin", { n: plan.topic.minutes })}</p>}
           </div>
@@ -128,7 +146,7 @@ export function PrimaryCard({ plan, reload }: { plan: HomePlan; reload: () => vo
       body = (
         <>
           <div className="hpc-text">
-            <h2 className="hpc-head">{t("continueLesson")}</h2>
+            <h2 className="hpc-head" id={headId}>{t("continueLesson")}</h2>
             {plan.resume?.ask && <p className="hpc-thumb" data-speech="">{plan.resume.ask}</p>}
             {!plan.resume?.ask && plan.resume?.topicTitle && <p className="hpc-sub">{plan.resume.topicTitle}</p>}
           </div>
@@ -141,7 +159,7 @@ export function PrimaryCard({ plan, reload }: { plan: HomePlan; reload: () => vo
         <>
           <Spot id="states/done-for-today" size={young ? 96 : 72} fallback={<span className="spot-tile spot-tile--got"><Icon name="tick" size={40} /></span>} />
           <div className="hpc-text">
-            <h2 className="hpc-head">{t("doneToday")}</h2>
+            <h2 className="hpc-head" id={headId}>{t("doneToday")}</h2>
             {plan.did[0] ? <DidCardMini card={plan.did[0]} /> : plan.tried ? <p className="hpc-sub">{plan.tried === 1 ? t("triedOne") : t("triedN", { n: plan.tried })}</p> : null}
           </div>
           <Link to={`/c/${cid}/practice`} className="cs-link" data-testid="practise-something">{t("practiseSomething")}</Link>
@@ -152,27 +170,31 @@ export function PrimaryCard({ plan, reload }: { plan: HomePlan; reload: () => vo
       body = (
         <>
           <Spot id="states/rest-until-tomorrow" size={young ? 96 : 72} fallback={<span className="spot-tile"><Icon name="theme" size={40} /></span>} />
-          <div className="hpc-text"><h2 className="hpc-head pc-head--line">{t("capped")}</h2></div>
+          <div className="hpc-text"><h2 className="hpc-head hpc-head--line" id={headId}>{t("capped")}</h2></div>
         </>
       );
       break;
     case "resting":
       body = (
-        <div className="hpc-text"><h2 className="hpc-head pc-head--line">{t("resting", { time: clock(plan.opensAt) })}</h2></div>
+        <div className="hpc-text"><h2 className="hpc-head hpc-head--line" id={headId}>{t("resting", { time: clock(plan.opensAt) })}</h2></div>
       );
       break;
     case "offline":
       body = (
         <>
           <Spot id="states/no-internet" size={young ? 96 : 72} fallback={<span className="spot-tile"><Icon name="wifiOff" size={40} /></span>} />
-          <div className="hpc-text"><h2 className="hpc-head pc-head--line">{t("offline")}</h2></div>
-          <button type="button" className="cs-btn cs-btn--secondary" onClick={reload} data-testid="try-again">{t("tryAgain")}</button>
+          <div className="hpc-text"><h2 className="hpc-head hpc-head--line" id={headId}>{plan.packReady ? t("offline") : t("offlineNoPack")}</h2></div>
+          {plan.packReady ? (
+            <Link to={`/c/${cid}/practice`} className="cs-btn cs-btn--primary" data-testid="offline-practice">{t("practice")}</Link>
+          ) : (
+            <button type="button" className="cs-btn cs-btn--secondary" onClick={reload} data-testid="try-again">{t("tryAgain")}</button>
+          )}
         </>
       );
       break;
   }
   return (
-    <section className={`cs-card hpc hpc--${plan.state}`} aria-label={t("todayLesson")} data-testid="primary-card" data-state={plan.state}>
+    <section className={`cs-card hpc hpc--${plan.state}`} aria-labelledby={headId} data-testid="primary-card" data-state={plan.state}>
       {body}
     </section>
   );
@@ -180,7 +202,7 @@ export function PrimaryCard({ plan, reload }: { plan: HomePlan; reload: () => vo
 
 function YoungTiles({ plan }: { plan: HomePlan }) {
   const { cid } = useChild();
-  const practice = plan.state !== "capped" && plan.state !== "resting";
+  const practice = practiceOffered(plan);
   return (
     <nav className="home-tiles" aria-label={t("home")}>
       {plan.surfaces.map && (
@@ -204,7 +226,10 @@ function YoungTiles({ plan }: { plan: HomePlan }) {
 
 function OlderTiles({ plan }: { plan: HomePlan }) {
   const { cid } = useChild();
-  const practice = plan.state !== "capped" && plan.state !== "resting";
+  const practice = practiceOffered(plan);
+  // Ask needs the network (no offline answers); offline it is not offered rather than offered and broken
+  const ask = plan.state !== "offline";
+  if (!practice && !ask) return null;
   return (
     <nav className="home-tiles home-tiles--older" aria-label={t("home")}>
       {practice && (
@@ -212,9 +237,11 @@ function OlderTiles({ plan }: { plan: HomePlan }) {
           <Icon name="practice" size={28} /><span>{t("practice")}</span>
         </Link>
       )}
-      <Link to={`/c/${cid}/ask`} className="otile" data-testid="tile-ask">
-        <Icon name="ask" size={28} /><span>{t("askTile")}</span>
-      </Link>
+      {ask && (
+        <Link to={`/c/${cid}/ask`} className="otile" data-testid="tile-ask">
+          <Icon name="ask" size={28} /><span>{t("askTile")}</span>
+        </Link>
+      )}
     </nav>
   );
 }

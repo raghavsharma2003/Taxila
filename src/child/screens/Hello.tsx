@@ -7,7 +7,8 @@
 //     learn." + Got it (always a labelled button).
 //   3 Pick your picture: 6 of the 24 avatar discs, "More pictures", "That's me". This is the Who tile from now on.
 //   4 Confirm what you like: the parent's picks preselected; That's right · Change. (Skipped when the parent chose none.)
-//   5 Pick a teacher: only when ≥ 2 are eligible; no default; "Choose for me". The child's first choice.
+//   5 Pick a teacher: only when ≥ 2 are eligible; no default; "Choose for me". The child's first choice. Deviation:
+//     each teacher shows a still, not §6.3.2's "two preview clips" (no per-teacher preview clip exists yet).
 // Then STRAIGHT into lesson 1: no second start gate (the Desk carries none). Every label is English; what she says
 // is in the family's language.
 import { useEffect, useMemo, useState } from "react";
@@ -94,7 +95,7 @@ export function Hello() {
           <p className="hello-role">{t("aiTeacher")}</p>
           {helloClip(rec.id, lang) && !clip.failed ? (
             <button type="button" className="cs-btn cs-btn--primary hello-go" onClick={clip.play} disabled={clip.playing} data-testid="hello-hear">
-              <Icon name="speaker" /> <span>{clip.playing ? t("teacherLabel", { T: rec.name }) : t("tapToHear", { T: rec.name })}</span>
+              <Icon name="speaker" /> <span>{clip.playing ? t("playing") : t("tapToHear", { T: rec.name })}</span>
             </button>
           ) : (
             <button type="button" className="cs-btn cs-btn--primary hello-go" onClick={() => setCard("ai")} data-testid="hello-next">{t("helloNext")}</button>
@@ -180,7 +181,8 @@ export function Hello() {
           <Teacher teacherId={rec.id} band={band} form="live" floor={clip.playing ? "speaking" : card === "greet" ? "idle" : "your_turn"}
             meters={[clip.meter]} label="below" lights="up" reducedMotion={reducedMotion} aiPicto={young} />
         </div>}
-        <section className="cs-card hello-card" aria-live="polite">{body}</section>
+        {/* no aria-live here: each card moves focus to its title, which announces it once (a live region too = twice) */}
+        <section className="cs-card hello-card">{body}</section>
       </main>
     </div>
   );

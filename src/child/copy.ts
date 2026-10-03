@@ -34,6 +34,7 @@ const S = {
   connectionWeak: "Something went wrong. Try again.",
   tryAgain: "Try again",
   loading: "Getting things ready",
+  homeLoading: "Getting today ready",
   // home (§6.3.3, §5.4 home.*)
   todayLesson: "Today's lesson",
   firstLesson: "Your first lesson",
@@ -44,7 +45,10 @@ const S = {
   doneToday: "Done for today",
   capped: "That's all for today. Your next lesson is tomorrow.",
   resting: "Lessons open again at {time}.",
+  // §6.3.3 offline: "Practice works offline." is said ONLY when an offline pack is ready (plan.packReady); no pack
+  // exists yet, so the no-pack line drops the promise (and Practice / Ask are not offered offline).
   offline: "Lessons need the internet. Practice works offline.",
+  offlineNoPack: "Lessons need the internet.",
   practiseSomething: "Practise something",
   aboutMin: "About {n} min",
   youSaid: "You said",
@@ -74,6 +78,8 @@ const S = {
   hiddenMap: "Your grown-up chose not to keep progress between days.",
   // notebook (§3.9)
   emptyNotebook: "Your notes will appear here after your first lesson.",
+  // pages come from this device's lessons until the server lists them (open item): true for a child with lessons
+  emptyNotebookLater: "Your next lesson will add a page here.",
   yourAnswer: "Your answer:",
   lessonOn: "Lesson",
   // ask (§3.7, §6.3.7)
@@ -132,6 +138,7 @@ const S = {
   // Hello (§3.3, §6.3.2)
   tapToHear: "Tap to hear {T}",
   hearAgain: "Hear again",
+  playing: "Playing",
   aiLine1: "I'm a computer teacher, not a person.",
   aiLine2: "Your grown-ups can see what we learn.",
   gotIt: "Got it",

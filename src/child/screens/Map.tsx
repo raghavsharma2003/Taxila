@@ -1,7 +1,8 @@
 // /c/:cid/map: the Garden (ages 6-9) or the Sky map (10-15) over the child's ledger (PRODUCT-DESIGN-V2 §3.8, §6.3.7;
 // audit #9: "Mera map opens an empty navy rectangle"). Both have a List toggle (the source of truth). Tapping a plant
-// or star opens a sheet with her rendered pose still (watering can / telescope), the shape and, for Older, the state
-// word with "This shows what you've shown so far". Empty: the painted empty state + Start today's lesson. If the parent
+// or star opens a sheet with her rendered pose still (watering can / telescope) under the visible "{T} · AI teacher"
+// label, the shape and, for Older, the state word with "This shows what you've shown so far". Not yet (open items):
+// her one line (needs server-written text + her voice), the thing the child made, Hear {T}, How I know. Empty: the painted empty state + Start today's lesson. If the parent
 // chose "Only this session" the map is not shown at all (§3.13): the route goes home.
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
@@ -107,8 +108,12 @@ export function MapScreen() {
   const detail = picked && (
     <div className="skill-sheet" data-testid="skill-sheet">
       <div className="skill-sheet-row">
-        <Spot id={young ? rec.stills.watering : rec.stills.telescope} size={96} alt={t("teacherLabel", { T: rec.name })}
-          fallback={<Teacher teacherId={rec.id} band={band} form="plate" floor="idle" label="none" lights="up" className="skill-sheet-face" />} />
+        {/* §8: the "{T} · AI teacher" label goes with her everywhere, visibly (not only in the alt text) */}
+        <figure className="skill-sheet-her" data-teacher-id={rec.id}>
+          <Spot id={young ? rec.stills.watering : rec.stills.telescope} size={96}
+            fallback={<Teacher teacherId={rec.id} band={band} form="plate" floor="idle" label="none" lights="up" className="skill-sheet-face" />} />
+          <figcaption className="teacher-label">{t("teacherLabel", { T: rec.name })}</figcaption>
+        </figure>
         {young
           ? <Plant state={picked.skill.state} kind={PLANT_KINDS[picked.kind % PLANT_KINDS.length]} size={96} recheck={picked.skill.recheckScheduled} />
           : <StateShape state={picked.skill.state} mode="sky" size={72} />}

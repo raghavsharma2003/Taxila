@@ -44,7 +44,7 @@ export const PATHS = {
   clientManifest: "public/assets/gen/manifest.json",
 };
 
-// ───────────────────────────── pure policy (unit-tested: tests/ui-v2-b2-assets.test.mjs) ─────────────────────────────
+// ───────────────────────────── pure policy (unit-tested: tests/ui-v2-b2.test.mjs) ─────────────────────────────
 
 const KB = 1024;
 /** §12 budgets at 1x, in bytes. The 2x budget is provisional [I]: 3x the 1x budget (2x has 4x the pixels). */
