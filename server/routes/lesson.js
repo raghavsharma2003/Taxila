@@ -31,13 +31,15 @@ import { scanSafety, floorViolations } from "../director/safety.js";
 import { initLessonState, step, evidenceFrom, upcomingItem, LIMITS, shortTitleOf } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, whyKey, norm as normAnswer } from "../director/items.js";
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
-import { resolveAddress, registerBroken, toAap, ADDRESSES } from "../director/register.js";
+import { HELPLINES } from "../compiler/floor.js";
+import { resolveAddress, registerBroken, toAap } from "../director/register.js";
 import { verdictFor, uiVerdict, praiseProblem, stripPraise, screenProblem, stripScreenRefs, askFromReply, askText, refersToScreen, leaksStage, stripStage } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
 import { teacherFor, teacherForLesson, teacherCard } from "../compiler/characters/index.js";
 import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
 import { styleForChild } from "./voice.js";
+import { planFor } from "./child.js";
 
 /**
  * Debug payloads carry answer keys, so they go only to a loopback caller on a dev machine (never on a
@@ -183,10 +185,13 @@ const OFF_SCRIPT = { hinglish: /[^\p{Script=Latin}\p{Script=Common}\p{M}]/gu, en
  * some — the question on the table — else a fixed line for the move. Never a throw after the turn's
  * evidence is decided: the lesson goes on. The safeguard line carries the helpline (the floor's contract).
  */
+/** Both crisis lines, from the one source (compiler/floor.js HELPLINES; the floor and V2 §16 name them together). */
+const HELPLINE_LINE = HELPLINES.map((h) => `${h.name} ${h.number}`).join(" or ");
+const HELPLINE_LINE_HI = HELPLINES.map((h) => `${h.name} ${h.number}`).join(" ya ");
 const FALLBACK = {
-  english: { wrap: "That's all for today. See you next time!", safeguard: "What you said matters. Please tell a grown-up you trust, or call Childline 1098. Are you okay right now?",
+  english: { wrap: "That's all for today. See you next time!", safeguard: `What you said matters. Please tell a grown-up you trust, or call ${HELPLINE_LINE}. Are you okay right now?`,
     other: "Sorry, I lost my words for a second. Can you say that again?" },
-  hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: "Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya Childline 1098 pe call karo. Kya tum abhi theek ho?",
+  hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
     other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?" },
 };
 function fallbackReply(state, item) {
@@ -418,11 +423,31 @@ export function childTurnRow({ childText, chipId, asrConfidence, typed, extra = 
   };
 }
 
+const START_PURPOSES = new Set(["lesson", "practice", "doubt"]);
+/**
+ * PURE. Why a lesson cannot start in this plan state (null: it can). capped and resting refuse everything; done
+ * refuses a lesson ("never one more") but lets Practice and Ask through (§6.3.3 done row: "Practise something").
+ * @param {import("../../shared/contracts").ChildHomeState} state  @param {string | undefined} purpose
+ */
+export function startRefusal(state, purpose) {
+  const p = START_PURPOSES.has(purpose) ? purpose : "lesson";
+  if (state === "capped") return "today's lesson time is used up";
+  if (state === "resting") return "outside today's lesson hours";
+  if (state === "done" && p === "lesson") return "today's lesson is done";
+  return null;
+}
+
 /** @type {(req: any, res: any, body: import("../../shared/contracts").LessonStartRequest) => Promise<void>} */
 async function start(req, res, body) {
   const t0 = performance.now();
   const trace = [];
   const { guardian, child } = await requireChild(req, need(body, "childId").childId);
+  // The parent's daily cap and lesson hours, and "Done for today", are promises (V2 §3.4, §6.3.3, §6.5.4): the plan
+  // decides, here as on POST /api/lesson/request — a stale tab or a direct call cannot open a lesson past them. Read
+  // alongside the consent and topic reads, checked before the kit read, any model call or write (planFor alone added
+  // ~50 ms median on the Neon test branch, n = 12, before it was overlapped).
+  const planP = planFor(child, guardian);
+  planP.catch(() => {}); // awaited below; never an unhandled rejection if an earlier check throws first
   const [core, memory, controls] = await Promise.all([
     hasConsent(guardian.id, child.id, "core_tutoring"), hasConsent(guardian.id, child.id, "memory"),
     one("select address from child_controls where child_id = $1", [child.id]).catch(() => null),
@@ -431,6 +456,10 @@ async function start(req, res, body) {
   const mode = body.mode === "text" || body.mode === "cascade" ? body.mode : "voice";
   const topic = body.topicId ? getTopic(body.topicId) : await nextTopicFor(child);
   if (!topic) throw bad(body.topicId ? `unknown topic ${body.topicId}` : "no topic available for this class");
+  // before getKit: a topic with no kit would otherwise be generated (a model call) for a refused start
+  const dayPlan = await planP;
+  const refusal = startRefusal(dayPlan.state, body.purpose);
+  if (refusal) throw new HttpError(409, refusal, { state: dayPlan.state, opensAt: dayPlan.opensAt, capRemaining: dayPlan.capRemaining });
   const kit = await getKit(topic.id, { trace });
   if (!kit) throw new HttpError(503, "no teaching content is available for this topic yet");
   // Every later request of this lesson reads back exactly this kit (kitFor).
@@ -455,9 +484,8 @@ async function start(req, res, body) {
   // V2 §3.2 step 5: "No" → no interests in examples), and only as short plain labels (they are interpolated).
   const interests = memory ? lessonInterests(brief0.interests) : [];
   const brief = { ...brief0, interests };
-  // aap / tum: the child's own pick (Hello, classes 5+), the parent's controls, then the class default (G-REG-1).
-  const address = resolveAddress({ classLevel: child.class_level, lang: child.language_pref, parent: controls?.address ?? null,
-    child: ADDRESSES.includes(body.address) ? body.address : null });
+  // aap / tum: the parent's controls, then the class default (G-REG-1; V2 §3.3 step 4). Never the request body.
+  const address = resolveAddress({ classLevel: child.class_level, lang: child.language_pref, parent: controls?.address ?? null });
   // The Director's skill snapshot and misconceptions come from the ledger (the legacy fold is gone).
   const skills = Object.fromEntries(skillIds.filter((id) => ledger.skills[id]).map((id) => [id, { skillId: id, ...snapshotFromKt(ledger.skills[id], now) }]));
   const activeMisconceptionIds = misconceptionView(ledger.mis).slice(0, 5).map((m) => m.id);
@@ -488,7 +516,12 @@ async function start(req, res, body) {
     teacherOpeningSeq = rows[0].seq;
   }
   // The lesson and its opening turn land together, or not at all.
-  const [created] = await tx([
+  const [, created] = await tx([
+    // An open lesson the child never spoke in (an accidental start, a killed tab) is closed, not left open beside
+    // this one (V2 §3.13); it has no turns to fold, so nothing is lost, and it never counts as done (child.js countsAsDone).
+    { text: `update lesson set ended_at = now(), state = state || '{"phase":"done","abandoned":true}'::jsonb
+        where child_id = $1 and ended_at is null and started_at < now() - interval '2 minutes'
+          and not exists (select 1 from turn t where t.lesson_id = lesson.id and t.speaker = 'child')`, params: [child.id] },
     { text: "insert into lesson(id, child_id, topic_id, kind, state) values ($1,$2,$3,'live',$4) returning id", params: [lessonId, child.id, topic.id, state] },
     ...(rows.length ? [turnInsertStmt(lessonId, rows)] : []),
     // the weave queue after this topic was planned (topicsSince, hosted, expired-as-callback): only the open entries
@@ -881,7 +914,7 @@ async function planTurn(base, cls, c) {
   const { r, instructions, skipped } = instructionsAfter(stepped, kit, now);
   const next = r.state;
   // The verdict this turn's words must agree with (G-PRAISE-1): a kit item graded against its key, or "ungraded".
-  next.lastVerdict = verdictFor(cls, targetFor(state, kit, activeItem));
+  next.lastVerdict = verdictFor(cls, targetFor(state, kit, activeItem), { childText: c.childText });
   // 3. the episode that just closed without a correct answer, and a teaching move's teach event
   const b2 = closeEvents({ ...ev0, next, hold: !!r.hold }, a);
   const after = b2.events.length ? fuseEvidence(fused, b2.events, LIVE_FOLD_CTX) : fused;
@@ -1280,4 +1313,4 @@ async function missReason(specs, key) {
 }
 
 /** Internals for tests (the turn's planning and speculation, which need no database or model). */
-export const __test = { planTurn, replyKey, speculate, specFanout, textReply, noteDid, withAsk, uiVerdictOf };
+export const __test = { planTurn, replyKey, speculate, specFanout, textReply, noteDid, withAsk, uiVerdictOf, fallbackReply };

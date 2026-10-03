@@ -73,18 +73,18 @@ export function ChoiceTiles({ tiles, young, onPick, disabled }: { tiles: { id: s
   );
 }
 
-/** NumberPad (§6.3.4): 0-9, delete, Send; 64 dp keys Young, 56 dp Older. Digits only: Young never types words. */
+/** NumberPad (§6.3.4): 0-9, delete, Send; 64 dp keys Young, 56 dp Older (§11.5 targets), four columns so a 360 dp
+ *  phone holds them at full size. Digits only: Young never types words. Measured (data-measure="tray"): the Work
+ *  tray is never shorter than the pad. */
 export function NumberPad({ young, onSend }: { young: boolean; onSend: (v: string) => void }) {
   const [v, setV] = useState("");
+  const digit = (d: string) => <button key={d} type="button" className="dk-key" onClick={() => setV((x) => (x.length < 9 ? x + d : x))}>{d}</button>;
   return (
-    <div className="dk-pad" data-young={young ? "1" : undefined} data-testid="number-pad">
+    <div className="dk-pad" data-young={young ? "1" : undefined} data-testid="number-pad" data-measure="tray">
       <output className="dk-pad-value" aria-live="polite">{v || " "}</output>
       <div className="dk-pad-keys">
-        {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((d) => (
-          <button key={d} type="button" className="dk-key" onClick={() => setV((x) => (x.length < 9 ? x + d : x))}>{d}</button>
-        ))}
+        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].map(digit)}
         <button type="button" className="dk-key dk-key--quiet" onClick={() => setV((x) => x.slice(0, -1))} disabled={!v}>{t("dock.delete")}</button>
-        <button type="button" className="dk-key" onClick={() => setV((x) => (x.length < 9 ? x + "0" : x))}>0</button>
         <button type="button" className="dk-key dk-key--send" onClick={() => { if (v) { onSend(v); setV(""); } }} disabled={!v}>{t("dock.send")}</button>
       </div>
     </div>

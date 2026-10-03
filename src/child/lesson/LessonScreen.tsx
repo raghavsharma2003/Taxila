@@ -11,8 +11,8 @@ import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
 import { ageBandOf } from "../band.ts";
 import { useChild } from "../ChildShell.tsx";
 import { markLessonDone } from "../day.ts";
-import { saveArtefact } from "../prefs.ts";
-import { Desk } from "./Desk.tsx";
+import { readArtefacts, saveArtefact } from "../prefs.ts";
+import { Desk, sameSize, type DeskSize } from "./Desk.tsx";
 import { openMicAllowed, useHeadset } from "./headset.ts";
 import { useDesk } from "./useDesk.ts";
 import { useSyncExternalStore } from "react";
@@ -40,9 +40,10 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const { runtime } = useLesson(bridge.deps);
   const bs = useSyncExternalStore(bridge.store.subscribe, bridge.store.get, bridge.store.get);
   const headset = useHeadset();
+  const [firstLesson] = useState(() => readArtefacts(cid).length === 0);
   const rec = teacherRecord(child.teacher_id, band);
-  const [size, setSize] = useState({ w: typeof innerWidth === "number" ? innerWidth : 360, h: typeof innerHeight === "number" ? innerHeight : 640, fontScale: 1 });
-  const onSize = useCallback((s: { w: number; h: number; fontScale: number }) => setSize((p) => (p.w === s.w && p.h === s.h && p.fontScale === s.fontScale ? p : s)), []);
+  const [size, setSize] = useState<DeskSize>({ w: typeof innerWidth === "number" ? innerWidth : 360, h: typeof innerHeight === "number" ? innerHeight : 640, fontScale: 1 });
+  const onSize = useCallback((s: DeskSize) => setSize((p) => (sameSize(p, s) ? p : s)), []);
 
   const { m, a, dockRef, live, state } = useDesk(runtime, bridge, {
     cid,
@@ -64,6 +65,8 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     openMic: openMicAllowed({ older: family === "older", wanted: prefs.talk === "open", headset, echoDemoted: bs.echoFlags >= ECHO_DEMOTE_FLAGS }),
     faceForm: "live",
     setCaptionsAlways: (on) => setPrefs({ captionsAlways: on }),
+    // No finished lesson saved on this device yet (the T6 heuristic runs in the first lesson only).
+    firstLesson: firstLesson,
   }, {
     home: () => navigate(`/c/${cid}`),
     who: () => navigate("/who"),
@@ -77,19 +80,19 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     },
   }, size);
 
-  // Laptop keys (§6.3.4; off for Young, and never while a text field has focus): Space talk/done, H hear the
-  // question, 1-4 a tile, Esc pause.
+  // Laptop keys (§6.3.4; never while a text field has focus): Esc opens Pause on every band (§6.4.1); Space
+  // talk/done, H hear the question and 1-4 a tile are single-key shortcuts, off for Young and when turned off.
   useEffect(() => {
-    if (family === "young" || !prefs.shortcuts) return;
     const onKey = (e: KeyboardEvent) => {
-      if (isEditable(e.target as Element) || isEditable(document.activeElement)) return;
       if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (isEditable(e.target as Element) || isEditable(document.activeElement)) return;
       if (e.key === "Escape") {
         if (m.sheet === "help" || m.sheet === "grownup") return; // one key never dismisses the safeguarding hand-off
         if (m.sheet) return a.resume();
         if (state.phase === "live") a.pause();
         return;
       }
+      if (family === "young" || !prefs.shortcuts) return;
       if (state.phase !== "live" || m.sheet) return;
       if (e.key === " " && m.mic.available && (m.floor === "your_turn" || m.mic.talking)) {
         if ((e.target as HTMLElement)?.closest?.("button, a, [role=button]")) return;
@@ -109,6 +112,6 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
 
   return (
     <Desk m={m} a={a} media={{ meters: [runtime.levels.teacher, bridge.replayLevel], mic: runtime.levels.mic, modules: runtime.modules, lang: child.language_pref, ageBand: ageBandOf(band) }}
-      dockRef={dockRef} live={live} onSize={onSize} notMeWindow={false} theme={prefs.theme === "system" ? null : prefs.theme} />
+      dockRef={dockRef} live={live} onSize={onSize} theme={prefs.theme === "system" ? null : prefs.theme} />
   );
 }

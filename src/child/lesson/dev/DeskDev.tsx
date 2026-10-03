@@ -12,7 +12,7 @@ import { isStrip, type StripId } from "../../../lesson/trouble.ts";
 import { stripHeight } from "../TroubleStrip.tsx";
 import { teacherRecord } from "../../../ui/teacher/useTeacher.ts";
 import { ageBandOf, familyOf, type Band } from "../../band.ts";
-import { Desk } from "../Desk.tsx";
+import { Desk, sameSize, type DeskSize } from "../Desk.tsx";
 import { solveDesk } from "../deskLayout.ts";
 import type { DeskActions, DeskModel, Sheet, TrayModel } from "../model.ts";
 import { useDesk } from "../useDesk.ts";
@@ -39,7 +39,7 @@ const ACTIONS: DeskActions = {
   troubleAction: noop, dismissNoMic: noop, finish: noop, moduleEvent: noop, fixAnswer: noop,
 };
 
-export function fixtureModel(name: string, band: Band, size: { w: number; h: number; fontScale: number }, faceForm: "live" | "plate", reducedMotion: boolean): DeskModel {
+export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm: "live" | "plate", reducedMotion: boolean): DeskModel {
   const family = familyOf(band);
   const young = family === "young";
   const rec = teacherRecord(null, band);
@@ -76,7 +76,7 @@ export function fixtureModel(name: string, band: Band, size: { w: number; h: num
   const keyboard = name === "keyboard";
   const strip = (["T1", "T2", "T3", "T4", "T5", "T6", "T8", "T9", "RC", "PTT"] as const).includes(name as StripId & string) ? (name as StripId) : null;
   const stripH = strip && isStrip(strip) ? stripHeight(strip, { noPack: true, young, width: Math.min(size.w, 600) - 32 }) : 0;
-  const layout = solveDesk({ width: size.w, height: size.h, family, geometry, keyboard: keyboard && !young, fontScale: size.fontScale, captionsOn: band !== "b1", strip: stripH });
+  const layout = solveDesk({ width: size.w, height: size.h, family, geometry, keyboard: keyboard && !young, fontScale: size.fontScale, captionsOn: band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed });
   const sheet: Sheet = name === "pause" ? "pause" : name === "end" ? "end" : name === "hint" ? "hint" : name === "help" ? "help" : name === "grownup" ? "grownup" : null;
   const caption = young ? "Do barabar tukde gino. Kaunsa aadha hai?" : "Board dekho: 1/2 barabar 2/4. Toh ek half mein kitne quarters hote hain?";
   return {
@@ -87,7 +87,7 @@ export function fixtureModel(name: string, band: Band, size: { w: number; h: num
     shortTitle: young ? "Halves" : "Fractions: halves", lastOne: false,
     thinkingSeconds: name === "thinking-4s" && !young ? 4 : null, thinkingLabel: floor === "thinking",
     mic: { available: true, talking: floor === "listening", drain: floor === "listening" ? 0.3 : 0, tapToTalk: true },
-    showHelp: young && name === "help-menu", typing: keyboard || name === "T3", captionsOn: band !== "b1",
+    showHelp: young && name === "help-menu", typing: !young && (keyboard || name === "T3"), captionsOn: band !== "b1",
     offlineBadge: false, gate: name === "locked" ? "locked" : null,
     summary: name === "summary" ? { cards: [
       { ask: young ? "Which one is half?" : "Which is bigger: 1/2 or 1/4?", answer: young ? "1/2" : "one half", verified: true, withHelp: false },
@@ -105,8 +105,8 @@ export default function DeskDev() {
   const band = (["b1", "b2", "b3", "b4"].includes(sp.get("band") ?? "") ? sp.get("band") : "b3") as Band;
   const theme = sp.get("theme") === "dark" ? "dark" : sp.get("theme") === "light" ? "light" : null;
   const reduced = sp.get("motion") === "reduce";
-  const [size, setSize] = useState({ w: typeof innerWidth === "number" ? innerWidth : 360, h: typeof innerHeight === "number" ? innerHeight : 640, fontScale: 1 });
-  const onSize = useCallback((s: { w: number; h: number; fontScale: number }) => setSize((p) => (p.w === s.w && p.h === s.h && p.fontScale === s.fontScale ? p : s)), []);
+  const [size, setSize] = useState<DeskSize>({ w: typeof innerWidth === "number" ? innerWidth : 360, h: typeof innerHeight === "number" ? innerHeight : 640, fontScale: 1 });
+  const onSize = useCallback((s: DeskSize) => setSize((p) => (sameSize(p, s) ? p : s)), []);
   if (sp.get("live")) return <LiveDesk band={band} theme={theme} reduced={reduced} size={size} onSize={onSize} sp={sp} />;
   const name = sp.get("fixture") ?? "your_turn";
   const faceForm = sp.get("face") === "live" ? "live" : "plate";
@@ -118,7 +118,7 @@ export default function DeskDev() {
   );
 }
 
-function LiveDesk({ band, theme, reduced, size, onSize, sp }: { band: Band; theme: "light" | "dark" | null; reduced: boolean; size: { w: number; h: number; fontScale: number }; onSize: (s: { w: number; h: number; fontScale: number }) => void; sp: URLSearchParams }) {
+function LiveDesk({ band, theme, reduced, size, onSize, sp }: { band: Band; theme: "light" | "dark" | null; reduced: boolean; size: DeskSize; onSize: (s: DeskSize) => void; sp: URLSearchParams }) {
   const young = familyOf(band) === "young";
   const fail = sp.get("fail");
   const [status, n] = (fail ?? "").split(":");
@@ -132,7 +132,7 @@ function LiveDesk({ band, theme, reduced, size, onSize, sp }: { band: Band; them
   }), [young, fail, status, n, sp]);
   const [deps] = useState(() => ({
     api: scriptedApi(opts),
-    createLink: scriptedLinkFactory(lessonScript(young).spoken, opts.ttsFail),
+    createLink: scriptedLinkFactory(lessonScript(young).spoken, opts.ttsFail, sp.get("stt") === "down"),
     retrySchedule: sp.get("retry") === "fast" ? [200, 400, 800] : undefined,
   }));
   const { runtime } = useLesson(deps);
@@ -140,7 +140,7 @@ function LiveDesk({ band, theme, reduced, size, onSize, sp }: { band: Band; them
   const { m, a, dockRef, live } = useDesk(runtime, null, {
     cid: "dev-child", band, family: familyOf(band), teacherId: rec.id, teacherName: rec.name, childName: young ? "Riya" : "Kabir",
     lessonLang: "hinglish", captionsAlways: false, sounds: true, haptics: true, reducedMotion: reduced, timing: 1, variant: "lesson",
-    textOnly: sp.get("mode") === "text", openMic: false, faceForm: sp.get("face") === "live" ? "live" : "plate",
+    textOnly: sp.get("mode") === "text", openMic: false, faceForm: sp.get("face") === "live" ? "live" : "plate", firstLesson: sp.get("first") === "1",
   }, { home: () => location.assign("/dev/desk"), who: () => location.assign("/dev/desk"), signIn: () => location.assign("/start"), parent: () => location.assign("/parent"), finished: () => (document.body.dataset.finished = "1") }, size);
   (window as unknown as { __desk?: unknown }).__desk = { runtime, calls: (deps.api as { calls: unknown[] }).calls };
   return (

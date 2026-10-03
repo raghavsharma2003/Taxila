@@ -122,11 +122,15 @@ export class TextLink implements TeacherLink {
       audio.onended = () => {
         if (this.current?.id === id) this.stop("completed", false);
       };
-      // A playback error, or a load the browser aborted, after play() resolved would otherwise leave the
-      // status on "speaking" for the rest of the lesson.
-      audio.onerror = audio.onabort = () => {
+      // A playback error after play() resolved would otherwise leave the status on "speaking" for the rest of the
+      // lesson. NOT "abort": setting a new src on an element whose last clip played fires "abort" for the OLD
+      // resource as a queued task, after these handlers are set, so every second reply was failed on arrival
+      // (measured on the shipped route, tests/e2e-design-b1-route.mjs: the floor stuck in "thinking"). A load
+      // that really dies is caught by the error event or the stall timer below.
+      audio.onerror = () => {
         if (this.current?.id === id) this.stop("failed", false);
       };
+      audio.onabort = null;
       // A stall fires no event that ends the clip, so a timer does: the clip's length plus slack.
       const arm = (ms: number, status: "completed" | "failed") => {
         const cur = this.current;

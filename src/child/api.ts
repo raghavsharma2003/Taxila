@@ -1,7 +1,8 @@
 // Child-surface reads. The child id routes the view; the server checks it against the signed-in guardian
-// (requireChild). Today the only child read is /api/me; the skill map comes from a read endpoint another
-// workstream owns, so it is probed and normalised defensively, and an absent endpoint gives an empty map
-// (the screens render their calm "nothing yet" state, never an error aimed at the child).
+// (requireChild), so a cross-family id is a 404, never data. A failed read gives the screen's designed empty or
+// fallback state, never an error string aimed at the child (§4.7 "raw API strings are never shown").
+import type { ChildMapResponse, ChildMapSkill, DidCard, LessonSummary, MapState } from "../../shared/contracts.ts";
+import { tutorById } from "../../shared/tutors.js";
 import { ApiError, getJson, postJson } from "../lesson/api.ts";
 
 export interface ChildRow {
@@ -22,88 +23,58 @@ export interface MeResponse {
   children: ChildRow[];
 }
 
-export type MapStatus = "unseen" | "introduced" | "practising" | "learned_today" | "mastered" | "due";
-export interface MapSkill {
-  skillId: string;
-  title: string;
-  topicId?: string;
-  chapter?: string;
-  subject?: string;
-  status: MapStatus;
-  /** Ledger flags (§6.4.1) when the endpoint carries them. */
-  generativePass?: boolean;
-  delayedPass?: boolean;
-  /** Bird / re-check ring: only from a server-written recheck_scheduled row (R13), never from time. */
-  recheckScheduled?: boolean;
-}
-export interface ChildMap {
-  skills: MapSkill[];
-  /** Which endpoint answered (for the report and debugging); null = none, empty map. */
-  source: string | null;
-}
-
 export const getMe = () => getJson<MeResponse>("/api/me");
 
-/**
- * The child-scoped ledger read this workstream asks for. The parent reads (/api/parent/overview, /syllabus)
- * sit behind the guardian PIN gate and answer 403 to a child surface, which is correct: a child screen must
- * never depend on the Parent corner being unlocked. So there is no parent fallback here.
- */
-const MAP_ENDPOINTS = (cid: string) => [`/api/child/map?childId=${encodeURIComponent(cid)}`];
+export type { ChildMapResponse, ChildMapSkill, MapState };
+export type MapChapter = ChildMapResponse["subjects"][number]["chapters"][number];
+export type MapSubject = ChildMapResponse["subjects"][number];
 
-export async function getChildMap(cid: string, signal?: AbortSignal): Promise<ChildMap> {
-  for (const url of MAP_ENDPOINTS(cid)) {
-    try {
-      const data = await getJson<unknown>(url, signal);
-      const skills = normaliseSkills(data);
-      if (skills) return { skills, source: url.split("?")[0] };
-    } catch (e) {
-      if (signal?.aborted) throw e;
-      if (e instanceof ApiError && e.status === 401) throw e;
-      // 404 / shape mismatch: try the next one
-    }
-  }
-  return { skills: [], source: null };
+const MAP_STATES = new Set<MapState>(["not_started", "practising", "got_it", "secure"]);
+
+/** A map read that answered with the wrong shape is treated as empty, never as an error. Pure (unit-tested). */
+export function normaliseMap(data: unknown, mode: "garden" | "sky"): ChildMapResponse {
+  const empty: ChildMapResponse = { mode, hidden: false, subjects: [], skills: [], empty: true };
+  if (!data || typeof data !== "object") return empty;
+  const r = data as Partial<ChildMapResponse>;
+  if (r.hidden) return { ...empty, hidden: true };
+  const subjects = (Array.isArray(r.subjects) ? r.subjects : []).map((s) => ({
+    subject: String(s?.subject ?? ""), book: String(s?.book ?? ""),
+    chapters: (Array.isArray(s?.chapters) ? s.chapters : []).map((c) => ({
+      id: String(c?.id ?? ""), number: Number(c?.number) || 0, title: String(c?.title ?? ""), sealed: c?.sealed === true, here: c?.here === true,
+      secure: Number(c?.secure) || 0, total: Number(c?.total) || 0,
+      topics: (Array.isArray(c?.topics) ? c.topics : []).map((t) => ({
+        id: String(t?.id ?? ""), title: String(t?.title ?? ""),
+        skills: (Array.isArray(t?.skills) ? t.skills : []).filter((k) => k && MAP_STATES.has(k.state)),
+      })),
+    })).filter((c) => c.id),
+  })).filter((s) => s.chapters.length);
+  const skills = subjects.flatMap((s) => s.chapters.flatMap((c) => c.topics.flatMap((t) => t.skills)));
+  const touched = skills.some((k) => k.state !== "not_started");
+  return { mode: r.mode === "garden" || r.mode === "sky" ? r.mode : mode, hidden: false, subjects, skills, empty: r.empty === true || !touched };
 }
 
-const STATUSES = new Set(["unseen", "introduced", "practising", "learned_today", "mastered", "due"]);
+export async function getChildMap(cid: string, mode: "garden" | "sky", signal?: AbortSignal): Promise<ChildMapResponse> {
+  try {
+    return normaliseMap(await getJson<unknown>(`/api/child/map?childId=${encodeURIComponent(cid)}`, signal), mode);
+  } catch (e) {
+    if (signal?.aborted) throw e;
+    return normaliseMap(null, mode);
+  }
+}
 
-/** Accepts { skills: [...] }, { skillStates: [...] }, { children: [{ skills }] } or a bare array. */
-export function normaliseSkills(data: unknown): MapSkill[] | null {
-  const pick = (o: unknown): unknown[] | null => {
-    if (Array.isArray(o)) return o;
-    if (!o || typeof o !== "object") return null;
-    const r = o as Record<string, unknown>;
-    for (const k of ["skills", "skillStates", "skill_states", "ledger"]) if (Array.isArray(r[k])) return r[k] as unknown[];
-    if (Array.isArray(r.children) && r.children[0]) return pick(r.children[0]);
-    if (r.child && typeof r.child === "object") return pick(r.child);
+/** One finished lesson's DidCards (the Notebook page). null when the read fails. */
+export async function getLessonSummary(lessonId: string, signal?: AbortSignal): Promise<LessonSummary | null> {
+  try {
+    // GET /api/lesson/summary → { lessonId, ended, did: LessonSummary }
+    const r = await getJson<{ did?: LessonSummary } & Partial<LessonSummary>>(`/api/lesson/summary?lessonId=${encodeURIComponent(lessonId)}`, signal);
+    const s = (r?.did ?? r) as LessonSummary;
+    return Array.isArray(s?.cards) ? s : null;
+  } catch {
     return null;
-  };
-  const rows = pick(data);
-  if (!rows) return null;
-  const out: MapSkill[] = [];
-  for (const row of rows) {
-    if (!row || typeof row !== "object") continue;
-    const r = row as Record<string, unknown>;
-    const skillId = String(r.skillId ?? r.skill_id ?? r.id ?? "");
-    const status = String(r.status ?? r.display ?? "");
-    if (!skillId || !STATUSES.has(status)) continue;
-    out.push({
-      skillId,
-      title: String(r.title ?? r.skillTitle ?? r.name ?? skillId),
-      topicId: (r.topicId ?? r.topic_id) as string | undefined,
-      chapter: (r.chapter ?? r.chapterTitle) as string | undefined,
-      subject: r.subject as string | undefined,
-      status: status as MapStatus,
-      generativePass: (r.generativePass ?? r.generative_pass) as boolean | undefined,
-      delayedPass: (r.delayedPass ?? r.delayed_pass) as boolean | undefined,
-      recheckScheduled: (r.recheckScheduled ?? r.recheck_scheduled) === true,
-    });
   }
-  return out;
 }
 
-/** C1-C3 picks go to the existing child profile route (avatar, interests). */
+/** Hello picks (avatar, interests) go to the child profile; the profile facts are the parent's. */
 export const updateChild = (childId: string, patch: { avatar?: string; interests?: string[] }) =>
   postPatch("/api/children", { childId, ...patch });
 
@@ -116,6 +87,28 @@ async function postPatch(path: string, body: unknown): Promise<unknown> {
   });
   if (!res.ok) throw new ApiError(res.status, `PATCH ${path} failed (${res.status})`, null);
   return res.json().catch(() => null);
+}
+
+export interface TutorsResponse {
+  current: string | null;
+  chosen: boolean;
+  mode: "picker" | "single" | "none";
+  band: string;
+  tutors: string[];
+  live: boolean;
+}
+export const getTutors = (cid: string) => getJson<TutorsResponse>(`/api/tutors?childId=${encodeURIComponent(cid)}`);
+export const chooseTutor = (cid: string, tutorId: string, source: "child" | "child_random") =>
+  postJson("/api/tutors/choose", { childId: cid, tutorId, source });
+
+/** The page's best card: a verified one first, then one with an answer. Pure. */
+export function bestCard(cards: DidCard[]): DidCard | null {
+  return cards.find((c) => c.tick && !c.withHelp) ?? cards.find((c) => c.tick) ?? cards.find((c) => c.answer) ?? null;
+}
+
+/** The offer to show: the server's order, real characters only. Pure. */
+export function offerOf(r: TutorsResponse | null): string[] {
+  return (r?.tutors ?? []).filter((id) => !!tutorById(id));
 }
 
 export { ApiError, postJson };

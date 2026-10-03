@@ -95,3 +95,165 @@ test("outbox: the memory fallback when IndexedDB is unavailable says so (durable
   await ob.send(req(1), async () => ({}));
   assert.equal(ob.durable, false);
 });
+
+// ───────────── fixer pass (review 2026-10-03): seq seeding, turnSeq always, deadline, kick, edit, cross-lesson ─────────────
+
+test("outbox: EVERY attempt carries turnSeq (the first too), so the server can dedupe a retry against it", async () => {
+  const ft = fakeTimers();
+  const ob = new Outbox({ store: new MemoryOutboxStore(true), timers: ft.timers, now: ft.now });
+  const seen = [];
+  let n = 0;
+  const p = ob.send(req(1), async (r) => { seen.push({ seq: r.turnSeq, retried: !!r.retried }); if (++n < 2) throw netErr(); return {}; });
+  await ft.advance(2000);
+  await p;
+  assert.deepEqual(seen, [{ seq: 1, retried: false }, { seq: 1, retried: true }]);
+});
+
+test("outbox: a reloaded page (a new Outbox over the same store) never reuses a held record's turnSeq", async () => {
+  const store = new MemoryOutboxStore(true);
+  const a = new Outbox({ store, timers: fakeTimers().timers, schedule: [] });
+  await a.send(req(1), async () => { throw netErr(); }).catch(() => {});
+  await a.send(req(2), async () => { throw netErr(); }).catch(() => {});
+  const b = new Outbox({ store, timers: fakeTimers().timers, schedule: [] }); // the page reloaded
+  const seq = await b.reserve("L1");
+  assert.equal(seq, 3, "seeded from max(turnSeq) in the store");
+  await b.send(req(3), async () => ({}), { turnSeq: seq });
+  assert.deepEqual((await store.list("L1")).map((r) => r.req.childText), ["answer 1", "answer 2"], "the held answers were not overwritten");
+  // negative control: an unseeded counter (turnSeq 1 again, the old bug) overwrites the held "answer 1"
+  await b.send(req(9), async () => { throw netErr(); }, { turnSeq: 1 }).catch(() => {});
+  assert.equal((await store.list("L1")).find((r) => r.turnSeq === 1).req.childText, "answer 9", "the control loses answer 1");
+});
+
+test("outbox: an attempt that hangs past its deadline is aborted and retried (marked retried), never stuck", async () => {
+  const ft = fakeTimers();
+  const ob = new Outbox({ store: new MemoryOutboxStore(true), timers: ft.timers, now: ft.now, deadlineMs: 5000 });
+  const attempts = [];
+  const p = ob.send(req(1), (r, signal) => {
+    attempts.push({ at: ft.now(), retried: !!r.retried, signal });
+    return attempts.length === 1 ? new Promise(() => {}) : Promise.resolve({ ok: true }); // the first never answers
+  });
+  await ft.advance(7000);
+  assert.deepEqual(await p, { ok: true });
+  assert.deepEqual(attempts.map((a) => [a.at, a.retried]), [[0, false], [6000, true]], "aborted at 5 s, retried 1 s later");
+  assert.equal(attempts[0].signal.aborted, true, "the hung request's signal was aborted");
+});
+
+test("outbox: kick() ('Try again' on T1) abandons the attempt in flight and resends at once, same turnSeq", async () => {
+  const ft = fakeTimers();
+  const ob = new Outbox({ store: new MemoryOutboxStore(true), timers: ft.timers, now: ft.now });
+  const attempts = [];
+  const p = ob.send(req(1), (r) => {
+    attempts.push({ at: ft.now(), seq: r.turnSeq, retried: !!r.retried });
+    return attempts.length === 1 ? new Promise(() => {}) : Promise.resolve({});
+  });
+  await ft.advance(8000);
+  assert.equal(ob.kick(), true);
+  await ft.advance(0);
+  await p;
+  assert.deepEqual(attempts, [{ at: 0, seq: 1, retried: false }, { at: 8000, seq: 1, retried: true }]);
+  assert.equal(ob.kick(), false, "nothing in flight any more");
+});
+
+test("outbox: edit() ('Fix') re-sends the turn in flight with the corrected words under the same turnSeq, marked edited", async () => {
+  const ft = fakeTimers();
+  const store = new MemoryOutboxStore(true);
+  const ob = new Outbox({ store, timers: ft.timers, now: ft.now });
+  const wire = [];
+  const p = ob.send(req(1), (r) => {
+    wire.push({ text: r.childText, seq: r.turnSeq, edited: !!r.edited });
+    return wire.length === 1 ? new Promise(() => {}) : Promise.resolve({});
+  });
+  await ft.advance(500);
+  assert.equal(await ob.edit("fifty six"), true);
+  await ft.advance(0);
+  await p;
+  assert.deepEqual(wire, [{ text: "answer 1", seq: 1, edited: false }, { text: "fifty six", seq: 1, edited: true }]);
+  assert.equal((await store.list("L1")).length, 0, "one answer, acknowledged once: not two");
+});
+
+test("outbox: lessons() lists the OTHER lessons that still hold answers (the cross-lesson flush)", async () => {
+  const store = new MemoryOutboxStore(true);
+  const ob = new Outbox({ store, timers: fakeTimers().timers, schedule: [] });
+  await ob.send({ ...req(1), lessonId: "OLD" }, async () => { throw netErr(); }).catch(() => {});
+  await ob.send(req(2), async () => { throw netErr(); }).catch(() => {});
+  assert.deepEqual(await ob.lessons("L1"), ["OLD"]);
+  await ob.dropLesson("OLD");
+  assert.deepEqual(await ob.lessons("L1"), []);
+});
+
+// The runtime: answers held for an earlier lesson (T8 expired session → sign-in → a new lesson; a reload) are sent
+// when the next lesson starts, marked retried, and that lesson is then closed. A 409 "lesson has ended" drops them.
+import { LessonRuntime } from "../src/lesson/runtime.ts";
+import { ApiError } from "../src/lesson/api.ts";
+
+class QuietLink {
+  constructor(levels) { this.mode = "text"; this.levels = levels; this.fns = new Set(); }
+  on(fn) { this.fns.add(fn); return () => this.fns.delete(fn); }
+  emit(e) { for (const f of [...this.fns]) f(e); }
+  async connect() { this.emit({ type: "connection", state: "connected" }); }
+  applyInstructions() {}
+  sendChild(text) { this.emit({ type: "child_final", text, startedAt: Date.now(), typed: true }); }
+  promptTeacher() {}
+  interrupt() {}
+  setPushToTalk() {}
+  talkStart() {}
+  talkEnd() {}
+  close() {}
+}
+function api(turn) {
+  const calls = { turn: [], end: [] };
+  return {
+    calls,
+    start: async () => ({ lessonId: "NEW", topic: { id: "t", title: "T", chapter: "1" }, teacher: { id: "asha", name: "Asha", voice: "v" }, moduleCommands: [], ui: {} }),
+    turn: async (r) => { calls.turn.push(r); return turn ? turn(r) : { move: { kind: "probe", shape: "x" }, moduleCommands: [], ui: {} }; },
+    end: async (id) => { calls.end.push(id); return {}; },
+    realtimeToken: async () => { throw new Error("no"); },
+  };
+}
+const settle = () => new Promise((r) => setTimeout(r, 20));
+
+test("runtime: answers held for an EARLIER lesson are sent at the next start (retried, same turnSeq), then that lesson is closed", async () => {
+  const store = new MemoryOutboxStore(true);
+  const old = new Outbox({ store, timers: fakeTimers().timers, schedule: [] });
+  await old.send({ lessonId: "OLD", childText: "held while signed out", typed: true }, async () => { throw new ApiError(401, "not signed in", null); }).catch(() => {});
+  const a = api();
+  const rt = new LessonRuntime({ api: a, outboxStore: store, createLink: (_m, c) => new QuietLink(c.levels) });
+  await rt.start("c1", "text");
+  await settle();
+  const sent = a.calls.turn.find((r) => r.lessonId === "OLD");
+  assert.ok(sent, "the earlier lesson's answer reached the server");
+  assert.equal(sent.childText, "held while signed out");
+  assert.equal(sent.turnSeq, 1);
+  assert.equal(sent.retried, true);
+  assert.deepEqual(a.calls.end, ["OLD"], "the abandoned lesson is closed once its answers landed");
+  assert.equal((await store.list("OLD")).length, 0);
+  rt.dispose();
+});
+
+test("runtime: a 409 'lesson has ended' on the cross-lesson flush drops that lesson's records (it can never take them)", async () => {
+  const store = new MemoryOutboxStore(true);
+  const old = new Outbox({ store, timers: fakeTimers().timers, schedule: [] });
+  await old.send({ lessonId: "OLD", childText: "x", typed: true }, async () => { throw netErr(); }).catch(() => {});
+  const a = api((r) => { if (r.lessonId === "OLD") throw new ApiError(409, "this lesson has ended", null); return { move: { kind: "probe", shape: "x" }, moduleCommands: [], ui: {} }; });
+  const rt = new LessonRuntime({ api: a, outboxStore: store, createLink: (_m, c) => new QuietLink(c.levels) });
+  await rt.start("c1", "text");
+  await settle();
+  assert.equal((await store.all()).length, 0);
+  assert.deepEqual(a.calls.end, []);
+  rt.dispose();
+});
+
+test("runtime: a held child turn settles the wait on every lane (after pendingTurns drops), so the floor is not stuck in thinking", async () => {
+  const a = api(() => { throw new ApiError(500, "boom", null); });
+  const rt = new LessonRuntime({ api: a, outboxStore: new MemoryOutboxStore(true), createLink: (_m, c) => new QuietLink(c.levels) });
+  const signals = [];
+  rt.events.on((e) => signals.push({ type: e.type, pending: rt.state.pendingTurns }));
+  await rt.start("c1", "text");
+  rt.say("one half");
+  await settle();
+  const s = signals.filter((x) => x.type === "settle").at(-1);
+  assert.ok(s, "a settle was emitted");
+  assert.equal(s.pending, 0, "…after the call stopped counting as in flight (the floor ignores a settle while one is)");
+  assert.equal(rt.state.failure?.kind, "send");
+  rt.dispose();
+});

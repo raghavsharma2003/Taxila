@@ -1,7 +1,9 @@
 // The Desk's view model: everything the lesson screen shows, as plain data. The live controller (useDesk.ts)
 // derives it from the runtime, the floor and the outbox; the dev fixtures (dev/DeskFixtures.tsx) write it by hand,
 // so every floor, trouble and feedback state can be pinned and photographed deterministically.
+import type { Emotion } from "../../avatar/behaviour.ts";
 import type { Floor } from "../../lesson/floor.ts";
+import type { CopyKey } from "../../ui/copy.ts";
 import type { StripId } from "../../lesson/trouble.ts";
 import type { Band, Family } from "../band.ts";
 import type { DeskLayout } from "./deskLayout.ts";
@@ -23,6 +25,9 @@ export interface Ask {
   lang?: string;
   lines: AskLine[];
   itemId?: string;
+  /** The stored teacher turn that posed this ask (its TTS seq and words): "Hear the question" replays THAT turn,
+   *  never a later hint or praise turn. */
+  replay?: { seq: number | null; text: string | null };
 }
 
 export interface AnswerChip {
@@ -33,6 +38,8 @@ export interface AnswerChip {
   delivery: "sending" | "not_sent" | "sent" | "done";
   verdict?: Verdict;
   withHelp?: boolean;
+  /** The child fixed a misheard transcript: the in-flight turn was re-sent with these words (same turnSeq). */
+  edited?: boolean;
 }
 
 export interface Board { lines: { text: string; kind: "text" | "math" | "image" }[]; chalked?: string | null; mark?: "tick" | "underline" | null }
@@ -91,6 +98,17 @@ export interface DeskModel {
   faceForm: "live" | "plate";
   /** Young: one more lamp breath at glowS. */
   lampBreath: number;
+  /** A strip sentence other than the id's own (T2 "Try again" while still offline: "Still no internet…"). */
+  stripText?: CopyKey | null;
+  /** "That wasn't me" is offered in the ⋯ menu for the first 2 minutes of the lesson (§3.13). */
+  notMeWindow?: boolean;
+  /** Her affect for the face (never a verdict preview): the encouraging warm variant under trouble (§4.2). */
+  affect?: Emotion | null;
+  /** Older, thinking: when the wait began, so the dock's own clock can show "Thinking… 4 s" without the whole
+   *  Desk re-rendering every second. */
+  thinkingSince?: number | null;
+  /** "Fix": the type row opens prefilled with the heard transcript; sending re-sends the turn in flight. */
+  fixDraft?: string | null;
 }
 
 export interface DeskActions {
@@ -124,4 +142,6 @@ export interface DeskActions {
   finish(): void;
   moduleEvent(ev: unknown): void;
   fixAnswer(): void;
+  /** Older "123": the NumberPad opens in the tray (§6.3.4 answerForm number). */
+  openPad?(): void;
 }

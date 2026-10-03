@@ -1,6 +1,8 @@
 // The Question card (PRODUCT-DESIGN-V2 §4.3): the ask, pinned from her first frame until the item resolves. It is
 // never merged with the caption (design-v2-rejected-caption-card-merge) and never marigold. Hints, re-asks and
 // her follow-ups add lines UNDER the ask; they never replace it. "Hear the question" replays the ask.
+// The card is sized to what it holds: the Desk measures `.dk-card-body` (data-measure="card") and the layout grows
+// the card zone to fit, so the answer chip, its marks and the verdict or hint line are never clipped.
 import { t } from "../../ui/copy.ts";
 import { Glyph } from "../../ui/icons/state.tsx";
 import { Art } from "../../ui/Art.tsx";
@@ -13,6 +15,7 @@ export function QuestionCard({ ask, answer, young, onHear, onFix, goal }:
   const verdictLine = answer?.verdict === "not_yet" ? t("card.not_yet") : answer?.verdict === "partial" ? t("card.partly") : null;
   return (
     <section className="dk-card" aria-label={ask ? "The question" : "Today"} data-testid="question-card" data-ask-source={ask?.source}>
+      <div className="dk-card-body" data-measure="card">
       <div className="dk-card-ask">
         {ask?.picture && <Art id={ask.picture} className="dk-card-picture" />}
         {ask ? (
@@ -26,7 +29,7 @@ export function QuestionCard({ ask, answer, young, onHear, onFix, goal }:
         {ask && (
           <button type="button" className="dk-hear" onClick={onHear} aria-label={t("card.hear")} data-testid="hear-question">
             <Glyph name="hear" size={24} />
-            {!young && <span className="dk-hear-word dk-hear-short" aria-hidden="true">Hear</span>}
+            <span className="dk-hear-word dk-hear-short" aria-hidden="true">{t("card.hear_short")}</span>
             {!young && <span className="dk-hear-word dk-hear-long" aria-hidden="true">{t("card.hear")}</span>}
           </button>
         )}
@@ -41,10 +44,14 @@ export function QuestionCard({ ask, answer, young, onHear, onFix, goal }:
       {answer && (
         <p className="dk-answer" data-testid="answer-row">
           <span className="dk-answer-label">{t("card.your_answer")}</span>
-          <AnswerChip chip={answer} young={young} onFix={onFix} />
+          <AnswerChip chip={answer} young={young} />
+          {onFix && !young && answer.form === "spoken" && answer.text && !answer.verdict && answer.delivery !== "not_sent" && (
+            <button type="button" className="dk-fix" onClick={onFix} data-testid="fix">{t("card.fix")}</button>
+          )}
         </p>
       )}
       {verdictLine && <p className="dk-verdict-line" aria-live="polite">{verdictLine}</p>}
+      </div>
     </section>
   );
 }

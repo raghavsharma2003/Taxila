@@ -21,6 +21,7 @@ export const EN = {
   "floor.mode.read": "Read it out loud",
   "floor.mode.pad": "Use the numbers above",
   "floor.mode.done": "tap when you're done",
+  "floor.mode.done_young": "tap Done",
   "floor.listening": "Listening… tap when you're done",
   "floor.listening_open": "Listening…",
   "floor.heard": "Got it",
@@ -28,6 +29,8 @@ export const EN = {
   "floor.thinking_s": "Thinking… {s} s",
   "floor.moment": "One moment. {T} is thinking.",
   "floor.last": "Last one",
+  "floor.held": "Your answer is saved",
+  "floor.mode.help": "Tap Help for choices",
   // screen reader (§4.2 last column)
   "sr.speaking": "{T} is talking",
   "sr.showing": "Watch the activity",
@@ -38,6 +41,7 @@ export const EN = {
   "sr.thinking": "{T} is thinking",
   // question card (§4.3)
   "card.hear": "Hear the question",
+  "card.hear_short": "Hear",
   "card.your_answer": "Your answer:",
   "card.your_question": "Your question",
   "card.not_sent": "Not sent yet",
@@ -139,6 +143,7 @@ export const EN = {
   "trouble.T8": "Please ask a grown-up to sign in again.",
   "trouble.T9": "We couldn't start the lesson.",
   "trouble.back_online": "Back online.",
+  "trouble.still_offline": "Still no internet. Your answers are saved.",
   "trouble.continue_live": "Continue with {T}",
   "trouble.finish_now": "Finish for now",
   "trouble.wait": "Wait",

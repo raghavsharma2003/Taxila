@@ -113,7 +113,8 @@ def correctives(base, D, regions):
     fix = _spread(base, fix, np.concatenate([up, lo]), regions["lips"], radius=0.006)
     # With the basis and mouthClose sealed upstream the seal term is ~0; what remains real is the thinning of
     # lips held closed over an open jaw: 30% of the press shape on the lip ring.
-    out["jawOpen_mouthClose"] = fix + 0.3 * (D["mouthPressLeft"] + D["mouthPressRight"]) * regions["lips"][:, None]
+    # (A press term was tried here and measured: it re-opened 8-16% of the lip aperture at jaw 0.3 + close 0.3.)
+    out["jawOpen_mouthClose"] = fix
     for S_ in ("Left", "Right"):
         # 2. jawOpen x mouthSmile: the jaw drags the smiling corner down and in; give back 40% of the jaw's motion at
         #    the corner region (weighted by how much the smile moves the vertex).
@@ -161,9 +162,94 @@ def validate(name, delta, base, limits):
     m = np.linalg.norm(delta, axis=1)
     lim = limits.get(name, limits["default"])
     rec = {"key": name, "maxMm": round(float(m.max() * 1000), 2), "moved": int((m > 2e-4).sum()), "limitMm": lim * 1000}
-    ok = np.isfinite(delta).all() and m.max() <= lim and (rec["moved"] > 0 or name == "viseme_sil")
+    # a corrective may be legitimately empty: its parents do not overlap on this face, or the seal is already exact
+    may_be_empty = name == "viseme_sil" or "_" in name
+    if rec["moved"] == 0 and may_be_empty:
+        rec["note"] = "empty by construction (parents do not overlap / already sealed)"
+    ok = np.isfinite(delta).all() and m.max() <= lim and (rec["moved"] > 0 or may_be_empty)
     rec["ok"] = bool(ok)
     return ok, rec
+
+
+def mirror_map(P, tol=2e-4):
+    """Topological mirror on the SYMMETRIC MakeHuman base (before any one-sided target): index of x -> -x twin."""
+    from scipy.spatial import cKDTree
+    d, idx = cKDTree(P).query(P * np.array([-1, 1, 1]))
+    ok = d < tol
+    idx = np.where(ok, idx, np.arange(len(P)))
+    return idx, int((~ok).sum())
+
+
+def _M(d, mir):
+    return d[mir] * np.array([-1, 1, 1])
+
+
+def partner(name):
+    if name.endswith("Left"):
+        return name[:-4] + "Right"
+    if name.endswith("Right"):
+        return name[:-5] + "Left"
+    return None
+
+
+def symmetrize(D, mir):
+    """Make every key mirror-exact on the face topology: a sided pair becomes (avg, mirror of avg); a bilateral key
+    becomes the average of itself and its mirror. The faceunits01 L/R units differ by up to 6.5 mm (G3, 2026-10-03),
+    which swamped the designed 3-8% asymmetry; the designed asymmetry is applied at runtime (faceStyle.asym)."""
+    out = {}
+    for k, d in D.items():
+        p = partner(k)
+        if p and p in D:
+            if k.endswith("Left"):
+                L = 0.5 * (d + _M(D[p], mir))
+                out[k] = L
+                out[p] = _M(L, mir)
+        elif k not in out:
+            out[k] = 0.5 * (d + _M(d, mir))
+    return out
+
+
+def side_of(D, key, P):
+    """Which x-sign a sided key moves (the packs' Left/Right convention, read from the data, not assumed)."""
+    m = np.linalg.norm(D[key], axis=1)
+    return 1 if (m * (P[:, 0] > 0)).sum() >= (m * (P[:, 0] < 0)).sum() else -1
+
+
+def expression_correctives(P, D, lips_w, eyeC, head_w):
+    """Scripted deltas on top of the CC0 units so runtime calibration gains go back to 1.0 (review item 10).
+    mouthSmile: the corner goes up AND back (zygomaticus), plus a nasolabial bulge lateral to the fold;
+    cheekSquint: lower-lid raise + cheek-pad lift (the Duchenne marker); browInnerUp / browOuterUp: x1.3 (the pack is
+    soft there). Every field is a smooth Gaussian, bounded, and validated by G2 afterwards."""
+    out = {k: v.copy() for k, v in D.items()}
+    lip = np.nonzero(lips_w > 0.3)[0]
+    g = lambda c, r: np.exp(-(np.linalg.norm(P - c, axis=1) / r) ** 2) * head_w
+    up_back = np.array([0.0, 0.45, 0.89])                  # Blender: +y = back, +z = up
+    for S in ("Left", "Right"):
+        sg = side_of(D, "mouthSmile" + S, P)
+        c = P[lip[np.argmax(sg * P[lip, 0])]]
+        amp = 0.6 * float(np.linalg.norm(D["mouthSmile" + S][np.argmin(np.linalg.norm(P - c, axis=1))]))
+        corner = g(c, 0.011)
+        bulge_c = c + np.array([sg * 0.009, -0.003, 0.013])
+        outward = np.array([sg * 0.55, -0.83, 0.0])
+        out["mouthSmile" + S] = D["mouthSmile" + S] + corner[:, None] * (amp * up_back)[None, :] \
+            + (g(bulge_c, 0.009) * 0.0011)[:, None] * outward[None, :]
+        sq = side_of(D, "cheekSquint" + S, P)
+        e = eyeC["L"] if sq > 0 else eyeC["R"]
+        lowlid = g(e + np.array([0, -0.009, -0.009]), 0.007)
+        pad = g(e + np.array([sq * 0.006, -0.012, -0.024]), 0.013)
+        out["cheekSquint" + S] = D["cheekSquint" + S] + (lowlid * 0.0010 + pad * 0.0012)[:, None] * np.array([0, 0, 1.0])[None, :]
+    for k in ("browInnerUp", "browOuterUpLeft", "browOuterUpRight"):
+        out[k] = D[k] * 1.3
+    return out
+
+
+def mirror_error_topo(dL, dR, mir_idx, valid):
+    """Max |L - mirror(R)| over vertices whose topological twin is known (mir_idx >= 0)."""
+    sel = np.nonzero(valid & (mir_idx >= 0))[0]
+    if not len(sel):
+        return 0.0
+    err = np.linalg.norm(dL[sel] - dR[mir_idx[sel]] * np.array([-1, 1, 1]), axis=1)
+    return float(err.max())
 
 
 def mirror_error(base, dL, dR, tol=0.0008):

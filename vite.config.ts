@@ -1,6 +1,8 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "url";
+import { existsSync, readFileSync, readdirSync, rmSync } from "fs";
+import { isAbsolute, join } from "path";
 
 const page = (file: string) => fileURLToPath(new URL(file, import.meta.url));
 
@@ -58,8 +60,48 @@ function devFrameCors(): Plugin {
   };
 }
 
+/**
+ * The image pack's masters never ship (PRODUCT-DESIGN-V2 §12). Codex writes full-size masters to public/assets/gen/**
+ * (PNG / WebP, ~400 KB per scene); scripts/gen-assets.mjs converts them to the budgeted 1x/2x WebP under
+ * public/assets/art/** and writes public/assets/gen/manifest.json. Vite copies all of public/ into the build, so after
+ * the bundle is written this deletes dist/assets/gen/** except manifest.json. It also warns when a master has landed
+ * that the manifest does not ship yet (run `node scripts/gen-assets.mjs`), so a stale manifest is visible in the log.
+ */
+function artMasters(): Plugin {
+  let outDir = "dist";
+  let root = process.cwd();
+  return {
+    name: "taxila:art-masters",
+    apply: "build",
+    configResolved(c) {
+      root = c.root;
+      outDir = isAbsolute(c.build.outDir) ? c.build.outDir : join(c.root, c.build.outDir);
+    },
+    closeBundle() {
+      const gen = join(outDir, "assets", "gen");
+      if (!existsSync(gen)) return;
+      let removed = 0;
+      for (const e of readdirSync(gen, { withFileTypes: true })) {
+        if (e.isFile() && e.name === "manifest.json") continue;
+        rmSync(join(gen, e.name), { recursive: true, force: true });
+        removed++;
+      }
+      try {
+        const index = JSON.parse(readFileSync(join(root, "public/assets/gen/INDEX.json"), "utf8")) as { items?: Record<string, { status?: string }> };
+        const man = JSON.parse(readFileSync(join(root, "public/assets/gen/manifest.json"), "utf8")) as { assets?: { id: string }[] };
+        const shipped = new Set((man.assets ?? []).map((a) => a.id));
+        const stale = Object.entries(index.items ?? {}).filter(([id, it]) => it.status === "done" && !shipped.has(id) && !id.startsWith("teacher-ref/"));
+        if (stale.length) this.warn(`${stale.length} landed image(s) not in public/assets/gen/manifest.json (e.g. ${stale[0][0]}): run node scripts/gen-assets.mjs`);
+      } catch {
+        /* no INDEX or manifest yet: every screen renders its flat fallback */
+      }
+      if (removed) this.info?.(`dropped ${removed} master entr${removed === 1 ? "y" : "ies"} from ${gen}`);
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), moduleFrameCsp(), devFrameCors()],
+  plugins: [react(), moduleFrameCsp(), devFrameCors(), artMasters()],
   server: {
     port: 5173,
     proxy: { "/api": "http://localhost:8790" },

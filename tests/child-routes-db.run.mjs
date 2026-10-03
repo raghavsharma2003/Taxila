@@ -127,6 +127,49 @@ describe("child routes (test branch)", { skip: SKIP, concurrency: false, timeout
     await hours("00:00", "23:59");
   });
 
+  test("start: POST /api/lesson/start enforces the plan (cap, hours, done); accidental lessons neither count nor linger", async () => {
+    const mine = () => q("select id from lesson where child_id = $1 and started_at > now() - interval '1 hour'", [kid]);
+    // an accidental lesson today (nothing graded, seconds long) is not "Done for today"
+    await one("insert into lesson (child_id, topic_id, state, ended_at) values ($1, $2, $3, now())", [kid, topic.id, { minutes: 0.2, did: [] }]);
+    assert.equal((await call(`/api/child/plan?childId=${kid}`)).body.state, "start");
+    // a stale open lesson the child never spoke in is closed by the next start, not left open beside it
+    const stale = (await one("insert into lesson (child_id, topic_id, state, started_at) values ($1, $2, $3, now() - interval '10 minutes') returning id",
+      [kid, topic.id, { minutes: 0, ctx: { lang: "hinglish" } }])).id;
+    let r = await call("/api/lesson/start", { method: "POST", body: { childId: kid, mode: "voice" } });
+    assert.equal(r.status, 201, JSON.stringify(r.body));
+    const closed = await one("select ended_at, state from lesson where id = $1", [stale]);
+    assert.ok(closed.ended_at, "the zero-turn lesson is closed");
+    assert.equal(closed.state.abandoned, true);
+    assert.equal((await call(`/api/child/plan?childId=${kid}`)).body.state, "start", "an abandoned lesson is not done either");
+    await q("update lesson set ended_at = now() where id = $1", [r.body.lessonId]);
+    // done today: no "one more" lesson by a direct call; Practice and Ask still open (§6.3.3 "Practise something")
+    const did = [{ kind: "item", itemId: "a", ask: "13 ka square?", answer: "169", verdict: "correct", withHelp: false, verified: true, seq: 4, turn: 2 }];
+    const done = (await one("insert into lesson (child_id, topic_id, state, ended_at) values ($1, $2, $3, now()) returning id", [kid, topic.id, { minutes: 12, did }])).id;
+    r = await call("/api/lesson/start", { method: "POST", body: { childId: kid, mode: "voice" } });
+    assert.equal(r.status, 409, JSON.stringify(r.body));
+    assert.equal(r.body.state, "done");
+    r = await call("/api/lesson/start", { method: "POST", body: { childId: kid, mode: "voice", purpose: "practice" } });
+    assert.equal(r.status, 201, JSON.stringify(r.body));
+    await q("update lesson set ended_at = now() where id = $1", [r.body.lessonId]);
+    // the daily cap: nothing starts, practice included
+    await q("update lesson set state = jsonb_set(state, '{minutes}', '31') where id = $1", [done]);
+    r = await call("/api/lesson/start", { method: "POST", body: { childId: kid, mode: "voice", purpose: "practice" } });
+    assert.equal(r.status, 409);
+    assert.equal(r.body.state, "capped");
+    assert.equal(r.body.capRemaining, 0);
+    await q("delete from lesson where id = $1", [done]);
+    // outside the parent's lesson hours: nothing starts
+    const ist = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
+    const h = String((Number(ist.slice(0, 2)) + 2) % 24).padStart(2, "0");
+    await hours(`${h}:00`, `${h}:30`);
+    r = await call("/api/lesson/start", { method: "POST", body: { childId: kid, mode: "voice" } });
+    assert.equal(r.status, 409);
+    assert.equal(r.body.state, "resting");
+    assert.equal(r.body.opensAt, `${h}:00`);
+    await hours("00:00", "23:59");
+    await q("delete from lesson where id = any($1::uuid[])", [(await mine()).map((x) => x.id)]);
+  });
+
   test("map: the class syllabus with the ledger's shapes; Garden for class 3, Sky for class 8", async () => {
     const { kitFromFile } = await import("../server/content/kits.js");
     const { getTopic } = await import("../server/content/curriculum.js");

@@ -998,3 +998,65 @@ Not measured: the voice (realtime) lane; real children's speech; n is 36 per arm
 
 ## lesson-truth-e2e-2026-10-03
 `tests/e2e-design-lesson-truth.mjs` (Playwright Chromium; 360x640 DPR 2 + 1280x800; light + dark; Neon test branch; shots in docs/design/build/lesson-truth/). Before (pre-change server, same client): /api/child/plan and /api/child/map 404 on every load; Riya, who finished today's lesson on the server, is offered "Aaj ka paath" again (fresh storage, no local marker); Kabir's Sky is an empty navy rectangle. After: every child read 200; Riya's home is the done home from the server; Kabir's first day shows the start action; the map's list names the skill the ledger marked learned; the plan's teacher is Arjun, "he". `tests/child-routes-db.run.mjs` (7 route tests on the test branch: fences, first, resume, Only-this-session, done → capped, resting, map shapes, teacher) runs inside `npm test`.
+
+
+<!-- merged from inbox/b1-shell-signalling-lesson-run.json -->
+## b1-desk-battery-run-2026-10-03
+Run log: docs/design/build/b1/run-2026-10-03.log (97/97). 'Got it' 45 ms after Done; typed Send also < 150 ms; performance marks floor:your_turn / earcon:turn / haptic:your_turn within 0.5 ms; T2 visible 8 ms after the offline send; RC ('Back online.' / 'Sent') 14 ms after the link returned; T1 at 8,326 ms; the offline answer reached the scripted server after reconnect with nothing left held. V-SIG-3/4 used a 0.5% region-diff bar on dock + card (the spec's 6% is for whole frames). Method: headless Chromium (SwiftShader), Vite dev server, REAL LessonRuntime/outbox/floor/signals; Director and voice simulated (src/child/lesson/dev/script.ts). Not a device or child measurement.
+
+
+<!-- merged from inbox/b1-shell-signalling-lesson.json -->
+## b1-fix-battery-2026-10-03
+Run logs: docs/design/build/b1/fix/run-dev-2026-10-03.log and docs/design/build/b1/fix/run-route-2026-10-03.log. Method: headless Chromium (SwiftShader), 360 × 640 DPR 2 touch and 1280 × 800, light and dark; the dev battery drives /dev/desk fixtures and the live harness (REAL LessonRuntime/outbox/floor/signals; Director and voice simulated); the route battery builds the production SPA, serves it with server/serve.mjs and mocks /api/* (scripted Director, a 0.9 s silent WAV per stored turn). V-PERF-1: PerformanceObserver('longtask') over 10 s of YOUR TURN on the route with the live face: 0 long tasks (n=1, SwiftShader; relative only). Not a device or child measurement.
+
+
+<!-- merged from inbox/b2-home-progress-assets.json -->
+## b2-gen-assets-run-2026-10-03
+Command: `node scripts/gen-assets.mjs` (ImageMagick 6 `convert`, libwebp 1.3.2). Output public/assets/art/** + public/assets/gen/manifest.json.
+
+## b2-battery-2026-10-03
+Run log: docs/design/build/b2/run-2026-10-03.log; checks: docs/design/build/b2/checks.json; 129 screenshots in docs/design/build/b2/ named <screen>__<state>__<band>__<width>__<theme>.png. Command: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b2.mjs`.
+
+
+<!-- merged from inbox/lesson-truth.json -->
+## lesson-truth-fix-2026-10-03
+`NODE_USE_ENV_PROXY=1 node evals/lesson-truth.mjs --n 36 --out evals/results/lesson-truth-2026-10-03-fix.json` on the fixed tree (2026-10-03; Azure taxila-fast; same items and child as lesson-truth-2026-10-03): wrong answers credited 0/36, praised 0/36 (first draft 0/36); key answers credited 12/12, 'wrong' opening 0/12; drift credited 0/36, praise 0/36; key after a real hint credited 32/32; screen references 0/36; tum marks 0/164 (first draft 0/164); greeting uses the interest 12/12; rewrites 17; errors 0. The after-arm corpus holds no true choice-style hint question (the detector fires on 2/48 hint replies, both lists, which then go to the model), so lt-choice-echo is covered by unit tests only. Old vs new register predicate over both arms' 395 replies and first drafts: identical verdicts (no "chalo" in the corpus), so the inclusive-chalo false-positive rate on model output is not measured.
+
+## lesson-truth-start-gate-2026-10-03
+`tests/child-routes-db.run.mjs` (Neon test branch, inside npm test; the wrapper now reports SKIPPED, not a pass, when the branch is unset or is production): 409 done for a lesson; 201 for practice after done; 409 capped for practice; 409 resting with opensAt; an accidental 0.2-minute lesson is not done; a 10-minute-old zero-turn open lesson is closed by the next start. Start latency (in-process voice start, Neon test branch, n = 8 per run, two runs, pre-fix vs fixed): median 362 / 338 → 359 / 363 ms — no measurable cost; planFor alone measured ~+50 ms median (n = 12) before it was overlapped with the consent and topic reads.
+
+## lesson-truth-e2e-fix-2026-10-03
+`tests/e2e-design-lesson-truth.mjs` (Playwright Chromium, 360x640 DPR 2 + 1280x800, light + dark; Neon test branch; shots and checks-{after,prefix}.json in docs/design/build/lesson-truth/). SERVER tier: V-LT1, V-LT2s, V-LT3s, V-LT4, V-LT5s pass; on the pre-fix tree V-LT5s fails (a child done today got 201). CLIENT tier (V-LT2c, V-LT3c, V-EN-1, V-TGT) fails on every viewport and theme — the client still reads only homeState and renders Hinglish/Devanagari chrome; V-ID-1 passes. The old V-LT2 passed on the client's 404 fallback attribute and is gone.
+
+
+<!-- merged from inbox/teacher-character.json -->
+## teacher-character-build-2026-10-03
+Method: `node scripts/character/build.mjs` on 4 vCPU. Gates come from `art/character/reports/<look>.json`. FPS comes from `docs/design/teacher/renders/measure-2026-10-03.json`: headless Chromium on ANGLE SwiftShader (software GL), 3 reps x 90 uncapped animated frames with a 1-px readPixels each, host load 1.9-4.2. n = 3 looks x 3 tiers.
+- Budgets, all met:
+  - H: 5.54 / 5.60 / 5.92 MB; 19.7k / 23.2k / 24.1k tris; 5 / 6 / 5 draws (the glasses lens is the 6th); 82 morphs.
+  - B+: 1.63 / 1.52 / 1.69 MB; 15.7k / 16.9k / 17.1k tris; 5 draws; 58 morphs.
+  - B-lite: 0.70-0.75 MB.
+- Validation:
+  - G1: 82/82.
+  - G2: bounded and finite; viseme_sil is empty, and so are two slate correctives, by construction.
+  - G4 lid seal: 0.0% cornea rays escaping at blink, also with lookDown or squint plus correctives.
+  - G5 lip aperture: 0% at rest, PP and jaw 0.3 + close 0.3, except plum at rest (3.9%).
+  - G3 mirror: **fails** at up to 6.5 mm (jawLeft/Right) and 5.5 mm (mouthUpperUp), identically on every look, so it is a faceunits01 property.
+- SwiftShader ms/frame p50:
+  - H: 173-197 at 0.49 Mpx with MSAA.
+  - B+: 92-103 at 0.22 Mpx with MSAA.
+  - B-lite: 27-31 at 0.14 Mpx without MSAA.
+  - These are relative only; the device lab (E-T2) is still owed.
+- Lip-sync clips: real Azure gpt-4o-mini-tts audio (marin / cedar / sage) driven by the real LipDriver -> Behaviour -> Compositor. In 194-211 voiced frames per clip, the jaw went below 0.04 on 0 frames, so the M0 RMS driver never makes a bilabial closure.
+
+## teacher-character-build-2026-10-03-it2 (supersedes teacher-character-build-2026-10-03)
+Method: the iteration-2 scripts on 4 vCPU. Gates are from `art/character/reports/<look>.json`. G9 and teeth luma are from `docs/design/teacher/renders/measure-2026-10-03.json` (`g9.mjs`). FPS: headless Chromium, SwiftShader, 3 reps x 90 frames; teal was re-run alone at load 1.2. The emotion check (`emotion-check.json`): taxila-brain, blind forced choice, 3 looks x 2 reps per emotion at 196x245, against iteration-1 crops at the same size. n = 3 looks.
+- G9 rendered skin (L*/C*): teal 54.8/27.8 vs MST 6 55.1/27.9; slate 42.7/24.2 vs MST 7 42.5/23.9; plum 30.5/17.2 vs MST 8 30.7/17.7. All pass; iteration 1 was about 78/68/54 L*.
+- G5 lip gap, surface distance p95, rest / PP / jaw 0.3 + close 0.3: teal 0.21/0.16/0.20, slate 0.14/0.16/0.14, plum 0.15/0.24/0.16 mm; 0% aperture everywhere (plum rest was 3.9%).
+- G3 mirror: 0.16 / 0.21 / 0.17 mm (was 6.48 / 6.40 / 6.13).
+- Teeth L* p90 at jaw 0.3: 43 / 32 / 19 (bar <= 80).
+- Lip-sync, aligned /p b m/ frames sealed (n = 9 per clip): the aligned-viseme arm 9/9 on every look. The M0 RmsDriver arm with jawCeiling 0.55, gateFrac 0.18, curve 1.6, tau 25 ms: 1/9, 2/9, 3/9.
+- Emotion self-check: 37% overall (iteration 1: 24%). Per emotion: warm 83, thinking 100, surprised 67, listening 33, concerned 33, curious 17, encouraging 0, delighted 0, playful 0. The bar is >= 70%, so not met; this is a proxy, not E-T4.
+- Garment poke-through, inner vertices outside the outer layer: 21 / 49 / 88 (bar 0, not met).
+- Budgets: H 5.93 / 5.93 / 5.53 MB, 23.8k / 22.6k / 20.1k tris, 5 / 6 / 5 draws; B+ 1.92 / 1.85 / 1.75 MB, 17.0k / 16.7k / 15.5k, 5 draws; B-lite 0.77 / 0.73 / 0.73 MB; D plates 16-27 KB.
+- SwiftShader p50 (ms): H 195 / 179 / 179, B+ 101 / 97 / 95, B-lite 31 / 29 / 29. Unchanged from iteration 1 within noise.

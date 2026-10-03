@@ -9,10 +9,11 @@
 //   ?live=1           the REAL runtime (LessonRuntime + outbox + floor + signals + trouble) with a scripted
 //                     Director and a clock-driven voice: states come from real events, and the network is cut
 //                     with Playwright's setOffline, so fetch-level failure is real.
-// Checks: V-SIG-1..5, V-ASK-1, V-LAYOUT-1/2, V-EN-1, V-NAME-1, V-CHAOS-1 (subset: offline, HTTP 500, slow reply,
-// expired session, failed start, TTS failure), V-ID-1 (lesson), receipt ≤ 150 ms, pause + help copy. Every check
-// with a negative control runs the control too. Shots (360 × 640 DPR 2 touch, 1280 × 800; light, dark for Older)
-// go to docs/design/build/b1/ (or --shots).
+// Checks: V-SIG-1..5, V-ASK-1, V-LAYOUT-1/2/3, V-TGT, V-EN-1, V-NAME-1, V-CHAOS-1 (subset: offline, HTTP 500, slow
+// reply + Try again, expired session, failed start, TTS failure, speech recognition down), V-ID-1 (lesson),
+// receipt ≤ 150 ms, Hear the question, Fix, pause + help copy. Every check with a negative control runs the control
+// too. Shots (360 × 640 DPR 2 touch, 1280 × 800; light, dark for Older) go to docs/design/build/b1/ (or --shots).
+// The SHIPPED route (built app, server/serve.mjs, mocked API) is covered by tests/e2e-design-b1-route.mjs.
 import http from "http";
 import { mkdirSync } from "fs";
 import { chromium } from "playwright";
@@ -86,6 +87,32 @@ const unnamed = (page) => page.evaluate(() => {
     const by = el.getAttribute("aria-labelledby");
     const name = (el.getAttribute("aria-label") || (by && document.getElementById(by)?.textContent) || el.textContent || el.getAttribute("placeholder") || "").trim();
     if (!name) bad.push(el.outerHTML.slice(0, 80));
+  }
+  return bad;
+});
+const clipped = (page) => page.evaluate(() => {
+  const bad = [];
+  for (const sel of [".dk-card", ".dk-strip", ".dk-dock", ".dk-tray"]) for (const el of document.querySelectorAll(sel)) {
+    if (el.scrollHeight > el.clientHeight + 1) bad.push(`${sel} ${el.scrollHeight}>${el.clientHeight}`);
+    const body = el.querySelector("[data-measure]");
+    if (body && body.getBoundingClientRect().bottom > el.getBoundingClientRect().bottom + 1) bad.push(`${sel} body ${Math.round(body.getBoundingClientRect().bottom - el.getBoundingClientRect().bottom)}px below`);
+  }
+  for (const el of document.querySelectorAll(".dk-mode, .dk-word-text, .dk-strip-text")) if (el.scrollWidth > el.clientWidth + 1) bad.push(`${el.className} truncated "${el.textContent}"`);
+  return bad;
+});
+const smallTargets = (page) => page.evaluate(() => {
+  const root = document.querySelector('[data-testid="lesson"]');
+  if (!root || document.querySelector(".dk-veil")) return [];
+  const min = root.getAttribute("data-family") === "young" ? 64 : 48;
+  const bad = [];
+  for (const el of root.querySelectorAll("button, [role=button], input")) {
+    if (el.closest("[inert], .dk-sr, .dk-veil") || el.offsetParent === null) continue;
+    if (el.matches(".dk-wait")) continue; // 32 dp pill + 48 dp ::after hit area
+    const r = el.getBoundingClientRect();
+    let h = r.height;
+    const after = getComputedStyle(el, "::after");
+    if (after.content !== "none" && after.position === "absolute") h += -2 * (parseFloat(after.top) || 0);
+    if (Math.round(h) < min || Math.round(r.width) < min) bad.push(`${(el.getAttribute("data-testid") || el.textContent || "").trim().slice(0, 20)} ${Math.round(r.width)}x${Math.round(h)}`);
   }
   return bad;
 });
@@ -176,19 +203,25 @@ try {
         imgs[f] = await regionShot(page, CVD[mode]);
       }
       let worst = { pair: "", d: 1 };
+      const all = [];
       const keys = Object.keys(imgs);
       for (let i = 0; i < keys.length; i++) for (let j = i + 1; j < keys.length; j++) {
-        // heard/thinking differ in the dock word and glyph only: the check is on the whole region as specified
+        // yielding IS your_turn arriving (§4.2: the word "changes to 'Your turn' on her offset frame", ≤ 250 ms):
+        // that one pair is one signal in two phases and is not required to differ (a logged deviation).
+        if ([keys[i], keys[j]].sort().join("/") === "yielding/your_turn") continue;
+        // the dock + card region, as §13.2 specifies (heard and thinking now differ by shape: the receipt disc)
         const d = await diffFraction(page, imgs[keys[i]], imgs[keys[j]]);
+        all.push([`${keys[i]}/${keys[j]}`, d]);
         if (d < worst.d) worst = { pair: `${keys[i]}/${keys[j]}`, d };
       }
-      check(`V-SIG-${mode === "grey" ? 3 : 4} ${mode}: every pair of floor states differs (≥ 0.5% of the region; spec bar 6% for whole-frame pairs)`, worst.d >= 0.005, `closest ${worst.pair} ${(worst.d * 100).toFixed(1)}%`);
+      check(`V-SIG-${mode === "grey" ? 3 : 4} ${mode}: the dock + card region of every pair of floor states differs by ≥ 6% of pixels (§13.2)`, worst.d >= 0.06, `closest ${all.sort((x, y) => x[1] - y[1]).slice(0, 3).map(([p, d]) => `${p} ${(d * 100).toFixed(1)}%`).join(", ")}`);
     }
     // negative control: the same frame twice differs by 0
     const a = await regionShot(page, "grayscale(1)");
     check("V-SIG-3 negative control: identical frames are caught as identical", (await diffFraction(page, a, a)) === 0);
     await ctx.close();
   }
+  if (flag("--sig-only")) throw new Error("--sig-only: stopped after V-SIG");
 
   // ═════════ fixtures: layout, English, names, identity; screenshots ═════════
   const FX = ["idle", "speaking", "work-showing", "yielding", "your_turn", "listening", "heard", "thinking", "work-your_turn", "work-tiles", "work-thinking",
@@ -197,14 +230,15 @@ try {
   const matrix = [
     { dev: PHONE, tag: "360", bands: QUICK ? ["b3"] : ["b2", "b3"], themes: ["light"] },
     { dev: PHONE, tag: "360", bands: ["b3"], themes: ["dark"] },
+    ...(QUICK ? [] : [{ dev: PHONE, tag: "360", bands: ["b1", "b4"], themes: ["light"] }]),
     { dev: LAPTOP, tag: "1280", bands: QUICK ? ["b3"] : ["b2", "b3"], themes: ["light"] },
     { dev: LAPTOP, tag: "1280", bands: ["b3"], themes: ["dark"] },
   ];
   for (const mx of matrix) for (const band of mx.bands) for (const theme of mx.themes) {
     const { ctx, page } = await open(mx.dev, fixture("idle", band, theme), { scheme: theme });
-    let layoutBad = [], enBad = [], nameBad = [], idBad = [];
-    const list = band === "b2" ? FX.filter((f) => !["hint", "keyboard", "thinking-4s"].includes(f)) : FX.filter((f) => f !== "help-menu");
-    if (band === "b2") list.push("help-menu");
+    let layoutBad = [], enBad = [], nameBad = [], idBad = [], clipBad = [], tgtBad = [];
+    const list = band === "b2" || band === "b1" ? FX.filter((f) => !["hint", "keyboard", "thinking-4s"].includes(f)) : FX.filter((f) => f !== "help-menu");
+    if (band === "b2" || band === "b1") list.push("help-menu");
     for (const f of list) {
       await page.goto(`${base}${fixture(f, band, theme)}`, { waitUntil: "networkidle" });
       await page.waitForTimeout(450);
@@ -217,6 +251,8 @@ try {
       if (z.strip && z.dock && z.strip.bottom > z.dock.top + 1) layoutBad.push(`${f}: strip covers the dock`);
       if (z.strip && z.card && z.strip.top < z.card.bottom - 1) layoutBad.push(`${f}: strip covers the card`);
       if (["idle", "speaking", "your_turn", "listening", "heard", "thinking"].includes(f) && z.tray) layoutBad.push(`${f}: tray rendered with nothing in it`);
+      clipBad.push(...(await clipped(page)).map((s) => `${f}: ${s}`));
+      if (mx.tag === "360") tgtBad.push(...(await smallTargets(page)).map((s) => `${f}: ${s}`));
       enBad.push(...enViolations(await chromeText(page)).map((s) => `${f}: ${s}`));
       nameBad.push(...(await unnamed(page)).map((s) => `${f}: ${s}`));
       const id = await page.evaluate(() => ({
@@ -229,6 +265,8 @@ try {
     }
     const tag = `${band} ${mx.tag} ${theme}`;
     check(`V-LAYOUT-1/2 ${tag}: zones never overlap, dock and card on screen, no empty tray, no horizontal scroll`, !layoutBad.length, layoutBad.slice(0, 4).join("; "));
+    check(`V-LAYOUT-3 ${tag}: no card, strip, dock or tray clips its content; no state word or mode line truncated`, !clipBad.length, clipBad.slice(0, 5).join("; "));
+    if (mx.tag === "360") check(`V-TGT ${tag}: every control ≥ ${band === "b1" || band === "b2" ? 64 : 48} dp (§11.5)`, !tgtBad.length, [...new Set(tgtBad)].slice(0, 6).join("; "));
     check(`V-EN-1 ${tag}: English chrome (no Devanagari, no Hinglish chrome words outside [data-speech])`, !enBad.length, enBad.slice(0, 4).join("; "));
     check(`V-NAME-1 ${tag}: every control has a name`, !nameBad.length, nameBad.slice(0, 3).join("; "));
     check(`V-ID-1 ${tag}: one teacher id per frame and the AI label/tag visible wherever she is`, !idBad.length, idBad.slice(0, 3).join("; "));
@@ -243,22 +281,30 @@ try {
   }
 
   // ═════════ font scale 1.3 / 2.0: the card and dock stay fully visible (they never yield) ═════════
-  for (const fs of [1.3, 2.0]) {
-    const { ctx, page } = await open(PHONE, fixture("your_turn", "b3"));
+  for (const fs of [1.3, 2.0]) for (const band of QUICK ? ["b3"] : ["b2", "b3"]) for (const fx of ["your_turn", "not_yet", "T4", "work-tiles"]) {
+    const { ctx, page } = await open(PHONE, fixture(fx, band));
     await page.addStyleTag({ content: `html { font-size: ${16 * fs}px !important }` });
     await page.evaluate(() => window.dispatchEvent(new Event("resize")));
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(350);
     const z = await zones(page);
     const scrollable = await page.evaluate(() => document.querySelector('[data-testid="lesson"]').dataset.overflow === "1");
     const ok = z.card && z.dock && z.card.bottom <= z.dock.top + 1 && (scrollable || z.dock.bottom <= z.vh + 1);
-    check(`V-LAYOUT-1 font ×${fs}: card and dock fully visible (or the Desk scrolls; never clipped)`, ok, JSON.stringify({ card: z.card?.h, dock: z.dock?.h, scrollable }));
-    await page.screenshot({ path: `${SHOTS}/desk__your_turn__b3__360__light__font${fs}.png` });
+    const clip = (await clipped(page)).filter((x) => !/truncated/.test(x));
+    check(`V-LAYOUT-1/3 font ×${fs} ${band} ${fx}: card and dock fully visible and unclipped (or the Desk scrolls)`, ok && !clip.length, JSON.stringify({ card: z.card?.h, dock: z.dock?.h, scrollable, clip }));
+    await page.screenshot({ path: `${SHOTS}/desk__${fx}__${band}__360__light__font${fs}.png` });
+    await ctx.close();
+  }
+  // V-LAYOUT-3 negative control: a card forced to a fixed 60 px is reported as clipped
+  {
+    const { ctx, page } = await open(PHONE, fixture("not_yet", "b2"));
+    await page.addStyleTag({ content: ".dk-card { height: 60px !important; overflow: hidden !important; }" });
+    check("V-LAYOUT-3 negative control: a card forced to 60 px is caught", (await clipped(page)).length > 0);
     await ctx.close();
   }
 
   // ═════════ LIVE: the real runtime, scripted Director ═════════
   async function live(qs = "", dev = PHONE) {
-    const r = await open(dev, `/dev/desk?live=1&band=b3&${qs}`);
+    const r = await open(dev, `/dev/desk?live=1&${qs}&band=b3`);
     await r.page.evaluate(() => {
       window.__lampMax = 0; window.__lampBad = [];
       const tick = () => {
@@ -310,13 +356,15 @@ try {
     await waitFloor(page, "your_turn");
     check("V-ASK-1 live: a new item pins its own ask", (await page.locator('[data-testid="ask"]').textContent())?.trim() === "How many quarters make one half?");
     check("live: the Board tray appears for a board turn (Work layout)", await page.locator('[data-testid="board"]').isVisible());
-    // typed answer → not yet + a hint line; the ask survives the hint turn
+    // a number item: Older "123" puts the NumberPad in the tray (§6.3.4); a pad send → not yet + a hint line
     await page.locator('[data-testid="type"]').click();
-    await page.locator('[data-testid="child-input"]').fill("three");
+    const pad = await page.locator('[data-testid="number-pad"]').isVisible().catch(() => false);
+    check("live: a number item — '123' opens the NumberPad in the tray (never a dead text field)", pad);
+    await page.locator('[data-testid="number-pad"] .dk-key', { hasText: /^3$/ }).click();
     const t1 = Date.now();
-    await page.locator('[data-testid="send"]').click();
+    await page.locator('[data-testid="number-pad"] .dk-key--send').click();
     await waitFloor(page, "heard", 1000);
-    check("live: typed send → 'Got it' within 150 ms", Date.now() - t1 <= 150, `${Date.now() - t1} ms`);
+    check("live: pad send → 'Got it' within 150 ms", Date.now() - t1 <= 150, `${Date.now() - t1} ms`);
     await waitFloor(page, "your_turn", 15_000);
     const ask2 = (await page.locator('[data-testid="ask"]').textContent())?.trim();
     const hintLine = await page.locator(".dk-line--hint").count();
@@ -335,10 +383,10 @@ try {
     const lampMax = await page.evaluate(() => window.__lampMax);
     const lampBad = await page.evaluate(() => window.__lampBad);
     check("V-SIG-2 live: ≤ 1 [data-lamp] in every animation frame, and only the dock in YOUR TURN", lampMax <= 1 && lampBad.length === 0, `max ${lampMax}, bad ${lampBad.slice(0, 3)}`);
-    // tiles turn
-    await page.locator('[data-testid="type"]').click().catch(() => {});
-    await page.locator('[data-testid="child-input"]').fill("two").catch(() => {});
-    await page.locator('[data-testid="send"]').click().catch(() => {});
+    // tiles turn (answer the number item on the pad)
+    if (!(await page.locator('[data-testid="number-pad"]').isVisible().catch(() => false))) await page.locator('[data-testid="type"]').click().catch(() => {});
+    await page.locator('[data-testid="number-pad"] .dk-key', { hasText: /^2$/ }).click().catch(() => {});
+    await page.locator('[data-testid="number-pad"] .dk-key--send').click().catch(() => {});
     await page.waitForSelector('[data-testid="choices"]', { timeout: 15_000 });
     await waitFloor(page, "your_turn", 15_000);
     check("live: a choice turn puts tiles in the tray; the lamp stays on the dock; the mode line points at them", (await lampCount(page))[0]?.startsWith("dock") && /Say it, or tap|Tap a picture above/.test(await page.locator('[data-testid="mode-line"]').textContent()));
@@ -363,6 +411,10 @@ try {
     check("V-CHAOS-1 offline: the chip says 'Not sent yet' (the answer is held, not lost)", await page.locator('[data-testid="not-sent"]').isVisible().catch(() => false));
     check("V-SIG-2: the lamp is off while a trouble strip shows", (await lampCount(page)).length === 0);
     await page.screenshot({ path: `${SHOTS}/live__T2_offline__b3__360.png` });
+    await page.locator('[data-testid="strip-try_again"]').click();
+    await page.waitForTimeout(150);
+    check("T2 'Try again' while still offline: the strip stays and says 'Still no internet…'", /Still no internet/.test(await page.locator('[data-testid="trouble-strip"]').textContent().catch(() => "")));
+    await page.screenshot({ path: `${SHOTS}/live__T2_still__b3__360.png` });
     await ctx.setOffline(false);
     const tOn = Date.now();
     const rc = await page.waitForSelector('[data-strip="RC"], [data-testid="sent"]', { timeout: 3000 }).then(() => true, () => false);
@@ -385,6 +437,7 @@ try {
     await page.locator('[data-testid="mic"]').click();
     const t4 = await page.waitForSelector('[data-strip="T4"]', { timeout: 3000 }).then(() => true, () => false);
     check("V-CHAOS-1 HTTP 500: T4 'Your answer didn't send.' with Send again, within 3 s", t4);
+    check("T4: the dock word is suspended ('Your answer is saved', not '{T} is thinking' under the strip)", (await word(page))?.trim() === "Your answer is saved", await word(page));
     await page.screenshot({ path: `${SHOTS}/live__T4__b3__360.png` });
     await page.locator('[data-testid="strip-send_again"]').click().catch(() => {});
     const resolved = await waitFloor(page, "speaking", 8000).then(() => true, () => false);
@@ -402,6 +455,68 @@ try {
     const at = Date.now() - t;
     check("V-CHAOS-1 slow reply: T1 'Still working on it…' at 8 s (not before 7.5 s)", t1 && at >= 7500, `${at} ms`);
     await page.screenshot({ path: `${SHOTS}/live__T1__b3__360.png` });
+    // "Try again": the hung request is abandoned and re-sent NOW, same turnSeq, marked retried; never a dead end
+    const before = await page.evaluate(() => window.__desk.calls.length);
+    await page.locator('[data-testid="strip-try_again"]').click();
+    await page.waitForTimeout(400);
+    const after = await page.evaluate(() => window.__desk.calls.map((c) => ({ seq: c.turnSeq, retried: !!c.retried })));
+    const w1 = (await word(page))?.trim();
+    const stripGone = !(await page.locator('[data-strip="T1"]').isVisible().catch(() => false));
+    check("T1 'Try again' re-sends at once (same turnSeq, retried) and the dock shows a live state, not a dead end",
+      after.length === before + 1 && after.at(-1).retried && after.at(-1).seq === after.at(-2).seq && stripGone && /thinking/i.test(w1 || ""),
+      `${JSON.stringify(after)} word "${w1}"`);
+    const back = await page.waitForSelector('[data-strip="T1"]', { timeout: 10_000 }).then(() => true, () => false);
+    check("T1 'Try again' with the reply still slow: 'Still working on it…' returns after another 8 s (a visible state, never silence)", back);
+    await ctx.close();
+  }
+  // Hear the question replays the turn that POSED the ask (not the hint she said since); Fix supersedes in flight
+  {
+    const { ctx, page } = await live();
+    await page.locator('[data-testid="tap-to-hear"]').click().catch(() => {});
+    await waitFloor(page, "your_turn");
+    await page.locator('[data-testid="mic"]').click();
+    await page.locator('[data-testid="mic"]').click(); // "one half" → correct; the board item is posed
+    await waitFloor(page, "your_turn", 15_000);
+    await page.locator('[data-testid="type"]').click();
+    await page.locator('[data-testid="number-pad"] .dk-key', { hasText: /^3$/ }).click();
+    await page.locator('[data-testid="number-pad"] .dk-key--send').click(); // → not yet + hint turn
+    await waitFloor(page, "your_turn", 15_000);
+    await page.locator('[data-testid="hear-question"]').click();
+    await waitFloor(page, "speaking", 3000).catch(() => {});
+    const cap = await page.evaluate(() => window.__desk.runtime.state.captions.filter((c) => c.who === "teacher").at(-1)?.text ?? "");
+    check("Hear the question replays the turn that posed the ask (the board question), not the later hint turn", /quarters hote hain/.test(cap) && !/ek baar phir/.test(cap), cap.slice(0, 70));
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await live("slow=3000");
+    await page.locator('[data-testid="tap-to-hear"]').click().catch(() => {});
+    await waitFloor(page, "your_turn");
+    await page.locator('[data-testid="mic"]').click();
+    await page.locator('[data-testid="mic"]').click();
+    await page.waitForSelector('[data-testid="fix"]', { timeout: 3000 });
+    await page.locator('[data-testid="fix"]').click();
+    await page.locator('[data-testid="child-input"]').fill("one quarter");
+    await page.locator('[data-testid="send"]').click();
+    await waitFloor(page, "speaking", 10_000).catch(() => {});
+    const calls = await page.evaluate(() => window.__desk.calls.map((c) => ({ t: c.childText, seq: c.turnSeq, edited: !!c.edited })));
+    check("Fix: the corrected words re-send the turn in flight under the same turnSeq, marked edited (one answer, not two)",
+      calls.length === 2 && calls[0].seq === calls[1].seq && calls[1].edited && calls[1].t === "one quarter", JSON.stringify(calls));
+    await page.screenshot({ path: `${SHOTS}/live__fix__b3__360.png` });
+    await ctx.close();
+  }
+  // Young, speech recognition down (T3): tiles or Help at once, never "Tap a picture above" with nothing to tap
+  {
+    const { ctx, page } = await live("band=b2&stt=down");
+    await page.locator('[data-testid="tap-to-hear"]').click().catch(() => {});
+    await waitFloor(page, "your_turn");
+    await page.waitForTimeout(300);
+    const t3 = await page.locator('[data-strip="T3"]').isVisible().catch(() => false);
+    const helpMenu = await page.locator('[data-testid="help-menu"]').isVisible().catch(() => false);
+    const mode = (await page.locator('[data-testid="mode-line"]').textContent().catch(() => "")) ?? "";
+    const tapTargets = await page.locator('[data-testid="tray"] button').count();
+    check("T3 Young: the strip shows and the Help menu is in the tray at once; any 'Tap a picture above' has pictures to tap",
+      t3 && helpMenu && (!/Tap a picture above/.test(mode) || tapTargets > 0), `T3 ${t3}, help ${helpMenu}, mode "${mode}", targets ${tapTargets}`);
+    await page.screenshot({ path: `${SHOTS}/live__T3__b2__360.png` });
     await ctx.close();
   }
   for (const [qs, id, re] of [["start=401", "T8", /sign in again/], ["start=500", "T9", /couldn't start/], ["tts=fail", "T5", /Sound didn't play/]]) {

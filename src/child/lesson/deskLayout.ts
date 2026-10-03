@@ -6,8 +6,12 @@
 // viewport media query (ds-layout-dp-budget). Percentage layouts are not used (ds-rejected-percentage-layout).
 //
 // Font scale 1.3 / 2.0: the card, caption and dock grow with the text; the extra height is taken from the tray
-// first, then the face (down to faceMin 64 Older / 96 Young), then the bottom pad, then the caption. Never from
+// first, then the face (down to faceMin 64 Older / 96 Young), then the caption, then the bottom pad. Never from
 // the card or the dock. When even that cannot fit, `overflow` is set and the Desk scrolls (it never clips them).
+// Content pressure: the spec's card height is a FLOOR, not a box. The Desk measures what the card actually holds
+// (the ask lines, the answer chip and its marks, the verdict or hint line) and what the trouble strip holds (its
+// sentence and its actions at their real target sizes), and passes them as `cardNeed` / `stripNeed`; the zones
+// grow to fit and the extra height is taken in the same yield order. A card or strip is never clipped.
 import type { Family } from "../band.ts";
 
 export type Geometry = "face" | "work";
@@ -25,6 +29,12 @@ export interface DeskInput {
   /** A trouble strip is up: its height (56, or 96 with two actions), taken directly above the dock from the elastic
    *  zone (face / tray), so it never covers the face or the card (§4.7). */
   strip?: number;
+  /** The card's measured content height (dp): the card zone is at least this tall. */
+  cardNeed?: number;
+  /** The strip's measured content height (dp): the strip zone is at least this tall. */
+  stripNeed?: number;
+  /** The tray's measured content height (the NumberPad at full target size), dp: Work only. */
+  trayNeed?: number;
 }
 
 export interface PhoneZones {
@@ -90,6 +100,10 @@ const TEACHER_MAX_PHONE = 440;
 export const WIDE_MIN_WIDTH = 840;
 
 const r4 = (n: number) => Math.round(n / 4) * 4;
+/** A measured content height, rounded UP to whole dp (0 when not measured). */
+const need = (n: number | undefined) => (n && n > 0 ? Math.ceil(n) : 0);
+/** The strip zone: 0 with no strip; else the larger of the estimate and the measured content. */
+const stripOf = (i: DeskInput) => (i.strip && i.strip > 0 ? Math.max(i.strip, need(i.stripNeed)) : 0);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const sum = (z: PhoneZones) => z.top + z.teacher + z.caption + z.card + z.tray + z.strip + z.dock + z.pad;
 
@@ -105,8 +119,8 @@ function solvePhone(i: DeskInput, fs: number): DeskLayout {
   const keyboard = !!i.keyboard && family === "older";
   let z: PhoneZones;
   if (keyboard) {
-    z = { ...KEYBOARD, strip: Math.max(0, i.strip ?? 0) };
-    z.card = Math.round(z.card * fs);
+    z = { ...KEYBOARD, strip: stripOf(i) };
+    z.card = Math.max(Math.round(z.card * fs), need(i.cardNeed));
     z.dock = Math.round(z.dock + 24 * (fs - 1));
     z.tray = Math.max(0, h - (sum(z) - z.tray)); // the strip takes what is left (≥ 0)
     const total = sum(z);
@@ -115,7 +129,7 @@ function solvePhone(i: DeskInput, fs: number): DeskLayout {
   const col = COLUMNS[family][geometry];
   const t = Math.min(1, Math.max(0, (h - FLOOR) / (COMFY - FLOOR)));
   const at = (p: Pair) => r4(lerp(p[0], p[1], t));
-  z = { top: at(col.top), teacher: at(col.teacher), caption: at(col.caption), card: at(col.card), tray: at(col.tray), strip: Math.max(0, i.strip ?? 0), dock: at(col.dock), pad: at(col.pad) };
+  z = { top: at(col.top), teacher: at(col.teacher), caption: at(col.caption), card: at(col.card), tray: at(col.tray), strip: stripOf(i), dock: at(col.dock), pad: at(col.pad) };
   if (i.captionsOn === false && geometry === "face") {
     z.card += z.caption;
     z.caption = 0;
@@ -126,6 +140,8 @@ function solvePhone(i: DeskInput, fs: number): DeskLayout {
     z.caption = Math.round(z.caption * fs);
     z.dock = Math.round(z.dock + 44 * (fs - 1));
   }
+  // Content: the card holds what it holds (never clipped).
+  z.card = Math.max(z.card, need(i.cardNeed));
   // Elastic zone takes the remainder (positive or negative).
   const elastic: keyof PhoneZones = geometry === "work" ? "tray" : "teacher";
   z[elastic] += h - sum(z);
@@ -134,11 +150,18 @@ function solvePhone(i: DeskInput, fs: number): DeskLayout {
     z.pad += z.teacher - TEACHER_MAX_PHONE;
     z.teacher = TEACHER_MAX_PHONE;
   }
-  // Yield order when short: tray → face (to faceMin) → pad → caption. Never card or dock.
+  // Yield order when short: tray → face (to faceMin) → caption → pad. Never card or dock. The elastic zone has
+  // already absorbed the remainder; if that took it below its floor, the floor is restored and the deficit is
+  // taken from the other zones in that order (and last from the tray down to nothing, Work only).
   const faceMin = FACE_MIN[family];
   const trayMin = geometry === "work" ? TRAY_MIN[family] : 0;
   const teacherMin = geometry === "work" ? faceMin + 8 : faceMin;
-  let deficit = sum(z) - h;
+  const elasticMin = elastic === "tray" ? Math.max(trayMin, need(i.trayNeed)) : teacherMin;
+  let deficit = 0;
+  if (z[elastic] < elasticMin) {
+    deficit = elasticMin - z[elastic];
+    z[elastic] = elasticMin;
+  }
   const take = (k: keyof PhoneZones, floor: number) => {
     if (deficit <= 0) return;
     const room = Math.max(0, z[k] - floor);
@@ -148,8 +171,10 @@ function solvePhone(i: DeskInput, fs: number): DeskLayout {
   };
   take("tray", trayMin);
   take("teacher", teacherMin);
-  take("pad", 0);
   take("caption", 0);
+  take("pad", 0);
+  // Last, the tray below its floor (a trouble strip on a 584 dp phone is transient; the dock must stay on screen).
+  // Still short after that (font scale 2.0 on a 584 dp phone): the Desk scrolls (overflow), never clips.
   take("tray", 0);
   const total = sum(z);
   const speechFace = geometry === "work" ? Math.max(48, Math.min(80, z.teacher - 8)) : 0;
@@ -173,16 +198,16 @@ function solveWide(i: DeskInput, fs: number): DeskLayout {
   let right: WideZones["right"];
   let overflow = false;
   if (geometry === "work") {
-    const card = Math.round(128 * fs);
+    const card = Math.max(Math.round(128 * fs), need(i.cardNeed));
     const dock = Math.round(128 + 44 * (fs - 1));
-    const strip = Math.max(0, i.strip ?? 0);
+    const strip = stripOf(i);
     const tray = H - card - 16 - 16 - strip - dock - 16;
-    overflow = tray < TRAY_MIN[i.family];
+    overflow = tray < Math.max(TRAY_MIN[i.family], need(i.trayNeed));
     right = { padTop: 0, card, gapA: 16, tray: Math.max(0, tray), gapB: 16, strip, dock, pad: 16 };
   } else {
-    const card = Math.round(240 * fs);
+    const card = Math.max(Math.round(240 * fs), need(i.cardNeed));
     const dock = Math.round(144 + 44 * (fs - 1));
-    const strip = Math.max(0, i.strip ?? 0);
+    const strip = stripOf(i);
     const free = H - card - 16 - strip - dock;
     overflow = free < 0;
     const padTop = Math.max(0, Math.floor(free / 2));

@@ -98,20 +98,22 @@ export function useTapToTalk(opts: {
  * the guard window after a screen change is ignored.
  */
 export function useYourTurn(active: boolean, changeKey: string, tokens: BandTokens, paused: boolean, multiplier = 1) {
-  const [elapsed, setElapsed] = useState(0);
+  // Two thresholds, two timeouts: no interval re-rendering the Desk (and the WebGL face beside it) while the child
+  // thinks (V-PERF-1). "Wait" and the sheets pause them (paused → both reset).
+  const [glowStrong, setGlowStrong] = useState(false);
+  const [tapOptions, setTapOptions] = useState(false);
   const changedAt = useRef(performance.now());
   useEffect(() => {
     changedAt.current = performance.now();
   }, [changeKey]);
   useEffect(() => {
-    setElapsed(0);
+    setGlowStrong(false);
+    setTapOptions(false);
     if (!active || paused) return;
-    const t0 = performance.now();
-    const id = setInterval(() => setElapsed((performance.now() - t0) / 1000), 500);
-    return () => clearInterval(id);
-  }, [active, paused, changeKey]);
-  const glowStrong = active && elapsed >= tokens.glowS * multiplier;
-  const tapOptions = active && tokens.tapOptionsS !== null && elapsed >= tokens.tapOptionsS * multiplier;
+    const ids = [setTimeout(() => setGlowStrong(true), tokens.glowS * multiplier * 1000)];
+    if (tokens.tapOptionsS !== null) ids.push(setTimeout(() => setTapOptions(true), tokens.tapOptionsS * multiplier * 1000));
+    return () => ids.forEach(clearTimeout);
+  }, [active, paused, changeKey, tokens.glowS, tokens.tapOptionsS, multiplier]);
   const guard = useCallback(
     <A extends unknown[]>(fn: (...a: A) => void) =>
       (...a: A) => {
@@ -120,5 +122,5 @@ export function useYourTurn(active: boolean, changeKey: string, tokens: BandToke
       },
     [tokens.holdoverMs],
   );
-  return { elapsed, glowStrong, tapOptions, guard };
+  return { glowStrong: active && glowStrong, tapOptions: active && tapOptions, guard };
 }

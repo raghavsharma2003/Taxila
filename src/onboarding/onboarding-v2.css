@@ -1,0 +1,31 @@
+/* Onboarding v2 frame (PRODUCT-DESIGN-V2 §5.2, §6.2): "Step n of N" + a segment line; the primary action in the flow,
+   never sticky; 1280: a centred 560 card on the painted onboarding edge. Tokens only (PD-G13). */
+.onb-v2 { position: relative; isolation: isolate; }
+.onb-edge { display: none; }
+.onb-sheet { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100dvh; background: var(--paper); }
+.onb-v2 .onb-title { outline: none; }
+.onb-count { font-weight: 600; color: var(--ink-2); }
+.onb-steps { display: flex; gap: 4px; padding-block: 0 var(--space-2); }
+.onb-seg { flex: 1; height: 4px; border-radius: 2px; background: var(--tray); }
+.onb-seg--on { background: var(--nib); }
+.onb-actions { margin-top: var(--space-4); }
+.onb-go { display: flex; flex-direction: column; gap: var(--space-2); }
+.onb-meet { display: flex; justify-content: center; gap: var(--space-4); }
+.onb-meet--two { justify-content: space-around; }
+.onb-teacher { margin: 0; }
+.onb-lang { display: flex; align-items: stretch; gap: var(--space-2); }
+.onb-lang .lang-tile { flex: 1; }
+.onb-play { min-width: 56px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+.onb-likes { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+.onb-like { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 96px; padding: var(--space-2);
+  border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); color: var(--ink); font-weight: 600; cursor: pointer; }
+.onb-like[aria-pressed="true"] { border: 3px solid var(--nib); background: var(--nib-soft); }
+.onb-like-fb { display: block; width: 100%; height: 100%; border-radius: 30%; background: var(--nib-soft); }
+.onb-hand .handover-tile { min-height: 168px; gap: var(--space-2); text-align: center; }
+.onb-v2 .promise-li .spot { flex: none; }
+@media (min-width: 1024px) {
+  .onb-edge { display: block; position: fixed; inset: 0; z-index: 0; }
+  .onb-edge .scene { position: absolute; }
+  .onb-sheet { width: 560px; margin: var(--space-6) auto; min-height: auto; border-radius: var(--radius-lg); border: 1px solid var(--line);
+    box-shadow: var(--elev-card); padding-bottom: var(--space-5); }
+}

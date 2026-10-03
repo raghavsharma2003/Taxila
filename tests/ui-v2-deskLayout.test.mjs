@@ -7,7 +7,9 @@ import { COLUMNS, FACE_MIN, KEYBOARD, TRAY_MIN, solveDesk } from "../src/child/l
 const sumP = (z) => z.top + z.teacher + z.caption + z.card + z.tray + z.strip + z.dock + z.pad;
 const pairSum = (c, i) => Object.values(c).reduce((n, p) => n + p[i], 0);
 
-test("deskLayout: the spec's columns sum to 584 and 744 exactly (Face, Work × Older, Young)", () => {
+// Data sanity only (the table is copied from the spec; it cannot fail on the shipped behaviour): the tests after it
+// exercise the SOLVER's output under content and font-scale pressure.
+test("deskLayout: the spec's column table sums to 584 and 744 (data sanity)", () => {
   for (const fam of ["older", "young"]) for (const g of ["face", "work"]) {
     assert.equal(pairSum(COLUMNS[fam][g], 0), 584, `${fam} ${g} @584`);
     assert.equal(pairSum(COLUMNS[fam][g], 1), 744, `${fam} ${g} @744`);
@@ -63,4 +65,36 @@ test("deskLayout: font scale yields tray → face, never card or dock", () => {
 test("deskLayout: the negative control — a percentage split would not sum (sanity of the check)", () => {
   const pct = { top: 48, teacher: Math.round(640 * 0.4), caption: 56, card: 120, tray: 0, strip: 0, dock: 120, pad: 8 };
   assert.notEqual(sumP(pct), 640);
+});
+
+test("deskLayout (solver): a card that holds more than its spec height grows to fit; the face yields first, never the dock", () => {
+  for (const family of ["older", "young"]) for (const geometry of ["face", "work"]) for (const h of [584, 640, 744]) for (const need of [0, 150, 185, 230]) {
+    const base = solveDesk({ width: 360, height: h, family, geometry }).phone;
+    const L = solveDesk({ width: 360, height: h, family, geometry, cardNeed: need });
+    const z = L.phone;
+    assert.ok(z.card >= need, `${family} ${geometry} h=${h}: card ${z.card} holds ${need}`);
+    assert.ok(z.card >= base.card, "never smaller than the spec row");
+    assert.equal(z.dock, base.dock, "the dock never yields to the card");
+    if (!L.overflow) assert.equal(sumP(z), h, "still sums to the container");
+    if (geometry === "work" && !L.overflow) assert.ok(z.tray >= TRAY_MIN[family] || z.teacher <= FACE_MIN[family] + 8, "the tray floor holds before the face yields");
+    if (geometry === "face" && need > base.card && z.teacher < base.teacher) assert.equal(z.caption, base.caption, "Face: the face yields before the caption");
+  }
+});
+
+test("deskLayout (solver): a strip whose measured content is taller than the estimate gets its height; nothing clips", () => {
+  for (const family of ["older", "young"]) for (const geometry of ["face", "work"]) {
+    const L = solveDesk({ width: 360, height: 640, family, geometry, strip: 56, stripNeed: 112 });
+    assert.equal(L.phone.strip, 112);
+    if (!L.overflow) assert.equal(sumP(L.phone), 640);
+    assert.equal(solveDesk({ width: 360, height: 640, family, geometry, strip: 0, stripNeed: 112 }).phone.strip, 0, "no strip, no zone");
+  }
+});
+
+test("deskLayout (solver): font scale 2.0 + a big card on a 584 phone → overflow (the Desk scrolls), never a clipped card", () => {
+  const L = solveDesk({ width: 360, height: 584, family: "young", geometry: "work", fontScale: 2, cardNeed: 260 });
+  assert.ok(L.phone.card >= 260);
+  assert.ok(L.overflow || sumP(L.phone) === 584);
+  // wide: the card zone grows to its content too
+  const W = solveDesk({ width: 1280, height: 800, family: "older", geometry: "work", cardNeed: 200 });
+  assert.equal(W.wide.right.card, 200);
 });

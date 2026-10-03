@@ -47,7 +47,8 @@ export const postJson = <T>(path: string, body: unknown, signal?: AbortSignal) =
 /** The lesson routes the runtime depends on (injectable for tests). */
 export interface LessonApi {
   start(req: LessonStartRequest): Promise<LessonStartResponse>;
-  turn(req: TurnRequest): Promise<TurnResponse>;
+  /** The signal aborts the request (the outbox's per-attempt deadline, "Try again", "Fix"). */
+  turn(req: TurnRequest, signal?: AbortSignal): Promise<TurnResponse>;
   end(lessonId: string): Promise<unknown>;
   /** End that survives page unload; rejects if the browser refused to send it. */
   endBeacon?(lessonId: string): Promise<unknown>;
@@ -56,7 +57,7 @@ export interface LessonApi {
 
 export const httpLessonApi: LessonApi = {
   start: (req) => postJson("/api/lesson/start", req),
-  turn: (req) => postJson("/api/lesson/turn", req),
+  turn: (req, signal) => postJson("/api/lesson/turn", req, signal),
   end: (lessonId) => postJson("/api/lesson/end", { lessonId }),
   endBeacon: (lessonId) => {
     const body = JSON.stringify({ lessonId });

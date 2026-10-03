@@ -3529,6 +3529,328 @@
    "at": "2026-10-03",
    "title": "The realtime voice lane speaks before the Director runs: praise/register/screen breaks there are only flagged on the turn row (floor breaks become state.correction); ui.ask is absent on its no-item turns; G-ASK-2 parity and G-SAY-1's 'this number' clause are not implemented",
    "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "b1-desk-battery-run-2026-10-03",
+   "kind": "measurement",
+   "title": "B1 Desk battery 97/97 (tests/e2e-design-b1.mjs, headless Chromium, dev server, scripted Director + clock-driven voice, n=1 run): 'Got it' 45 ms after Done (bar 150); lamp/chime/haptic marks within 0.5 ms (bar 17); T2 8 ms after an offline send; RC 14 ms after reconnect; T1 at 8.3 s; 0 answers lost",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson-run.json"
+  },
+  {
+   "id": "b1-card-sized-to-content",
+   "kind": "decision",
+   "title": "The Question card (and the trouble strip and the NumberPad tray) is sized to what it holds: the Desk measures [data-measure] bodies after every render and the solver grows the zone to fit (the spec heights are floors), taking the extra from tray → face (to faceMin) → caption → pad; never clipped. Reversal: a layout where the card's content is bounded by construction (e.g. a hard 2-line ask cap plus a chip that never wraps) so a fixed height provably fits at 360 and font scale 2.0",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-rejected-fixed-card-height",
+   "kind": "rejection",
+   "title": "A fixed solved card height with overflow:hidden: at 360 it clipped the signals the card exists for (the 'Not sent yet' chip cut in half under T2/T4, the hint's 2nd line, the whole magnifier + 'Let's look again' chip in b2 not_yet: scrollHeight 173 > 102). V-LAYOUT-1 passed because it checked box positions, not content",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-outbox-turnseq-always",
+   "kind": "decision",
+   "title": "Outbox: every attempt (the first too) carries turnSeq; turnSeq is per lesson and seeded from max(turnSeq) in the store (a reloaded page never overwrites a held record); records of other lessons are flushed when the next lesson starts (marked retried), that lesson is then closed; 409 'ended' / 404 drop them; > 24 h dropped unsent. Per-attempt 25 s deadline (abort → retryable). kick() = T1 'Try again' (abandon the attempt in flight, resend now); edit() = 'Fix' (same turnSeq, edited:true). Reversal: the lesson route dedupes and resumes by lid itself (a resume endpoint), so the client no longer needs to flush another lesson's answers",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-rejected-textlink-onabort",
+   "kind": "rejection",
+   "title": "TextLink treated the media 'abort' event as a failed reply. Setting a new src on an element whose last clip had played fires 'abort' for the OLD resource as a queued task after the new handlers are set, so EVERY second text-lane reply was failed on arrival and the floor stuck in 'thinking' (found only on the shipped route: tests/e2e-design-b1-route.mjs; the dev harness's ScriptedLink never used an <audio>). 'abort' no longer fails a reply; error and the stall timer still do",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-rejected-keyboard-from-focus",
+   "kind": "rejection",
+   "title": "Choosing the Keyboard layout from text-field focus alone: in a text-mode Older lesson the field autofocuses, so a laptop or a phone with no keyboard up got the 324 dp keyboard column (a 64 dp face and ~300 dp of dead paper above the dock). The Keyboard layout now needs a real on-screen keyboard (visualViewport inset > 120 dp)",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-rejected-settle-before-decrement",
+   "kind": "rejection",
+   "title": "Settling the floor inside the failed turn's catch: pendingTurns was still counted (it drops in finally), and the floor ignores a settle while a Director call is in flight, so after a held answer the dock said '{T} is thinking' under 'Your answer didn't send.' Now the settle is dispatched after the decrement, on every lane, and the dock word is suspended to 'Your answer is saved' while T2/T4 hold the answer",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-vsig3-6pct-restored",
+   "kind": "decision",
+   "title": "V-SIG-3/4 run at the spec's 6% bar on the dock + card region (the 0.5% bar was a deviation, not a measurement). Shape carriers added so state differs by more than colour: HEARD shows a solid receipt disc and no side controls; SPEAKING/SHOWING hold only the mic (the side controls come with YOUR TURN). The one pair exempted is yielding/your_turn (yielding IS your_turn arriving, ≤ 250 ms, same word by §4.2). Reversal: a yielding state that is actually triggered (a TurnClock) and seen long enough to need its own look",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-hear-replays-posing-turn",
+   "kind": "decision",
+   "title": "'Hear the question' replays the stored teacher turn that POSED the pinned ask (its TTS seq, from the bridge clip buffer, else fetched again by seq), never her last turn (a hint or praise); a second tap within 10 s sends the REPEAT-SLOW request ('slower' chip) instead of time-stretching. Reversal: the server exposes TTS of ui.ask.spoken (an /api/tts by ask), so the exact question can be replayed without her preamble",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-ui-v2-flag-not-restored",
+   "kind": "decision",
+   "title": "PROPOSED for the owner (not decided here): the B1 Desk stays the default lesson UI rather than going behind VITE_UI_V2=1 as §14 says. The old lesson UI was deleted by the B1 build and already merged; restoring it to flag it would put two lesson UIs in the tree. Open acceptance rows: B1-A5 (director-sim lints), B1-A7 (baselines not human-approved), B1-A11 (prod smoke), lint-ui not in verify-release (264 findings in other owners' files). Reversal: the owner wants the flag, or a B1 acceptance row fails in the prod smoke",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b1-fix-battery-2026-10-03",
+   "kind": "measurement",
+   "title": "B1 fixer batteries (headless Chromium/SwiftShader, n=1 run each): dev harness tests/e2e-design-b1.mjs and the shipped route tests/e2e-design-b1-route.mjs (built SPA via server/serve.mjs, API mocked by page.route). Route: 0 clipped card/strip/dock frames across Older 360/1280 × light/dark and Young 360/1280; 0 long tasks > 50 ms in 10 s of YOUR TURN with the live face at 360 (V-PERF-1 bar ≤ 2); every turn carried turnSeq; T4 'Send again' and T2→RC delivered",
+   "at": "2026-10-03",
+   "source": "inbox/b1-shell-signalling-lesson.json"
+  },
+  {
+   "id": "b2-art-pipeline",
+   "kind": "decision",
+   "title": "Image pack build step: Codex masters stay in public/assets/gen/** (where the prompt writes them); scripts/gen-assets.mjs converts each landed master to content-hashed 1x/2x WebP under public/assets/art/** (q 80 first, stepping down to fit the §12 budgets; an image that cannot fit, fails the lamp-hue lint or carries OCR text is NOT shipped and its designed fallback renders) and writes public/assets/gen/manifest.json (urls, CSS size, bytes, LQIP for scenes, lint share, OCR result, MANIFEST.topicMap). The vite plugin taxila:art-masters deletes dist/assets/gen/** except manifest.json, so masters never ship. Encoder: sharp if installed, else ImageMagick (libwebp). Reversal: the Codex prompt writes masters outside public/ (then the plugin goes), or the Docker build gets an encoder and runs gen-assets itself (then public/assets/art need not be committed)",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-gen-assets-run-2026-10-03",
+   "kind": "measurement",
+   "title": "gen-assets over the landed pack (B00-B02, 26 masters, 6.7 MB): 22 shipped + 0 passthrough, every one within budget at the first quality (q 80); 1x 1.6-63 KB (phone backgrounds 10-16 KB of the 60 KB budget, wide 38-63 KB of 120 KB), 2x max 159 KB; 0 lamp-hue failures (max share 1.25 %, bg/stage-young; bar 1.5 %); public/assets/art 2.2 MB; 23 s wall with ImageMagick 6 + libwebp 1.3.2 (n = 1 run). OCR NOT run: no AZURE_VISION_ENDPOINT / AZURE_VISION_KEY in .env.local. 217 ids pending in INDEX.json; bg/who-wide and bg/garden-panorama failed, bg/who-phone skipped (their flat fallbacks render)",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-home-plan-fallback",
+   "kind": "decision",
+   "title": "The child home is never an empty card (audit #9): the server plan state is shown as-is; when GET /api/child/plan fails (404 / 5xx / wrong shape / 6 s timeout) the home shows `start` with the last topic the plan returned on this device (else \"Start a lesson\" with no topic) and Start goes to /lesson/new (the server resolves the next planned topic; a failure there is the lesson's T9); today's finished-lesson marker turns the fallback into `done`, so an outage after a lesson never offers a second one; offline (navigator.onLine false or the `offline` event) shows the designed offline card with Try again. Reversal: the plan read becomes part of the offline pack (packReady), so the fallback can show the true state offline",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-garden-started-beds",
+   "kind": "decision",
+   "title": "The Garden draws only the beds the child has started plus the class's current chapter (server `here`), never a bed per syllabus chapter: a class 3 garden would otherwise open on ~25 beds of bare seed packets, which is the banned 'empty-plot count' (§4.8). Not-started skills inside a drawn bed show as plots. Reversal: MW-M2 shows children cannot find where the next lesson grows without the empty beds",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-sky-edges-syllabus",
+   "kind": "decision",
+   "title": "Sky map edges are the real topic prerequisites from data/curriculum/c<class>-<subject>.json (lazy 10-20 KB chunk on the map route), drawn only between two topics both on the visible map; a prerequisite in an earlier class draws nothing; cross-chapter edges are faint and dashed so the sky stays readable (class 6 maths: 24 same-class links). The map response carries no edges, and invented 'constellation lines' would be decoration posing as structure. Reversal: GET /api/child/map returns the prerequisite edges itself (then the client stops loading the syllabus files)",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-clip-own-teacher-only",
+   "kind": "decision",
+   "title": "A pre-rendered clip (Hello greeting, onboarding Meet ▶) plays only under the face of the teacher who recorded it (src/child/voice.ts registry). Today only Asha's greeting exists (public/audio/hello-*.mp3), so Asha's Hello and Meet speak and Arjun's / Uma's show her words and face without sound. The old onboarding played Asha's 'Main Asha didi hoon' under every class, the audit #4 identity break in audio form. Reversal: per-teacher no-name greeting clips rendered in each live voice (then every Hello speaks)",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-onboarding-order",
+   "kind": "decision",
+   "title": "Onboarding order (§3.2) built in B2: 1 class + board → 2 meet the class's actual teacher (GET /api/child/teacher?classLevel=) and pick her language once → 3 our promises + Hold to continue (the grown-up hold gate moved here from the account step; typed 'parent' alternative) → 4 account → 5 consent → 6 about the child (name, Casual / Respectful, the 12 interest pictures Hello shows, captions) → 7 PIN + limit → 9 hand over (Now → Hello, Later → the Parent corner). Every step opens at scrollY 0 with focus on its h1, the <title> follows the step, the primary action is in the flow (never sticky). /start/lang, /trust, /taste redirect. Step 8 (sound and mic check) is NOT built (B3). Reversal: V2-M8 shows the class-first order slows hand-over beyond 6 min",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-rejected-generic-class-names",
+   "kind": "rejection",
+   "title": "Generic CSS class names on child screens: `.avatar` (src/styles/app.css paints it a jamun disc) and `.pc` (src/styles/parent.css) collided, so every Older avatar sat in a navy ring and the home card would have taken parent-corner grid rules once the parent chunk had loaded. Found only in a screenshot (computed styles looked right on the button). Now `.cs-avatar` / `.hpc`; the battery's class list was grepped against every global stylesheet",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-rejected-offline-before-load",
+   "kind": "rejection",
+   "title": "Testing the offline home with the browser offline BEFORE the first load: there is no service worker / cached shell, so the SPA never loads and nothing can render (all 4 offline cases failed with an empty page). The offline home is tested by dropping the link after load (the home re-reads on the `offline` event). The cached-shell half of §6.1.1 'offline → the cached shell' does not exist yet",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "b2-battery-2026-10-03",
+   "kind": "measurement",
+   "title": "B2 battery tests/e2e-design-b2.mjs: 942/942 checks (n = 1 run, headless Chromium SwiftShader, the production build served by server/serve.mjs, every /api/* mocked with page.route; 360x640 DPR 2 touch + 1280x800; light + dark for Older): V-PLAN one primary card in all 9 home states incl. plan 404 / 500 / offline; V-LAYOUT-2, V-EN-1, V-NAME-1, V-SIG-2 (0 lamps), V-TGT over home, map, list, sheet, notebook, ask, me, your teacher, Hello cards 1-5 and onboarding 1-3; V-PERF-1 max 95 KB art per child route (bar 350 KB); tier D requested 0 backgrounds; V-ID-1 on home, map sheet, Hello, Your teacher, Meet; masters not served from the build; home text identical after 1 vs 30 days away; 5 negative controls trip. Not a device, child or parent measurement",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "open-b2-lesson-wiring",
+   "kind": "open",
+   "title": "For the lesson workstream (src/lesson/**, src/child/lesson/**): (1) LessonStartRequest.purpose is never sent: Practice and Ask after a done lesson are refused 409 by the plan gate (lt-start-gate); send purpose 'practice' / 'doubt' from the LessonScreen variant and show the 409 as the plan state; (2) /c/:cid/lesson/<lid> from 'Continue your lesson' starts a NEW lesson (no resume by lid); (3) prefs.face 'small' (Still picture) and 'voice' (Voice only) and prefs.largeText are set on Me but not honoured on the Desk",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "open-b2-not-built",
+   "kind": "open",
+   "title": "Not built in B2, listed so coverage is not implied: per-teacher greeting clips (Arjun, Uma Hello is silent); her once-a-day home greeting line (no endpoint); Young labels spoken on tap; Ask 'Say it' and 'Photo of the question' (no route; hidden, not dead buttons); the Garden/Sky sheet 'Hear {T}' line and Older 'How I know' evidence rows (no child evidence read); Notebook per-page explanation line and tray still, Older 'Notes for a friend'; Your teacher 10 s preview clips; protégé teach-back art and milestone ceremonies (lesson-side); Who avatars (src/app/Who.tsx, not this workstream); onboarding step 8 sound and mic check and field-level errors (B3); OCR no-text check (needs AZURE_VISION_*); the 18 rig stills (scripts/teacher-stills.mjs not run: every still renders the plate fallback); the human review sheet (B2-A2)",
+   "at": "2026-10-03",
+   "source": "inbox/b2-home-progress-assets.json"
+  },
+  {
+   "id": "lt-address-parent-first",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "aap/tum is the PARENT's choice: child_controls.address → class default (aap from class 5, tum below; English none). LessonStartRequest.address is removed; no client value can outrank the parent or change the register between lessons (V2 §3.3 step 4)",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-start-gate",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "POST /api/lesson/start enforces /api/child/plan (startRefusal): capped and resting refuse every start (409 LessonStartRefused {state, opensAt, capRemaining}); done refuses a lesson but lets purpose practice / doubt through (§6.3.3 'Practise something'); start / first / resume start. Checked before the kit read, any model call or write",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-done-rule",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "An ended lesson is 'Done for today' only if it graded something (state.did) or ran ≥ 5 min (countsAsDone); an open lesson with zero child turns older than 2 min is closed (state.abandoned) by the next start and never counts",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-short-titles",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "shortTitle comes from an authored table (server/director/short-titles.json: all 380 curriculum topic titles > 24 chars), else the title's lead clause, else whole words ending before a joiner, else null (no title) — never a word cut that dangles ('Keeping track without' → 'Counting without numbers')",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-praise-effort",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "G-PRAISE-1 ignores warmth about a question, a try or thinking ('Great question!', 'Nice try', 'Good thinking', 'Achhi koshish'); 'Right,' is a discourse marker; a no-evidence turn where the CHILD asked a question is 'ungraded' (no rewrite, nothing stripped)",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-choice-echo",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "The echo rule (a bare number the teacher's other question stated → no evidence) does not fire when that question offers numbers as alternatives ('Kya yeh 25 hai ya 30?', '26 or 36?'): the model decides",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-inclusive-chalo",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "registerBroken: an inclusive 'chalo' (with hum / a -te hain or -ein verb / an aap form in the same sentence) is not a tum mark; for a tum child, aap forms break the register only when no tum form addresses the child",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-safeguard-both-lines",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "The fixed safeguard line (floor break, model unavailable, content filter) names Childline 1098 AND Tele-MANAS 14416 in both languages, read from compiler/floor.js HELPLINES",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lesson-truth-fix-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "evals/lesson-truth.mjs re-run on the fixed tree (Azure taxila-fast, n=36 items, aap child): drift credited 0/36, praise 0/36; wrong answers classified correct 0/36, praised 0/36; key answers credited 12/12; key after a real hint credited 32/32; screen refs 0/36; tum marks 0/164 (first draft 0/164); greet uses the interest 12/12; rewrites 17. Register guard old vs new on both arms' 395 replies: 0 verdict changes (the corpus has no 'chalo'), so the inclusive-chalo false-positive fix is covered by unit controls only",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lesson-truth-start-gate-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "tests/child-routes-db.run.mjs (Neon test branch, in npm test): start 409 for done (lesson), capped (practice too), resting; 201 for practice after done; an accidental 0.2-min lesson is not done; a 10-min-old zero-turn open lesson is closed by the next start. Start latency, in-process voice start, n=8 x 2 runs, pre-fix vs fixed: median 362/338 → 359/363 ms (no measurable cost; planFor alone ~+50 ms before it was overlapped)",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lesson-truth-e2e-fix-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "tests/e2e-design-lesson-truth.mjs rewritten in two tiers (360x640 + 1280x800, light + dark). SERVER tier all pass (V-LT1 200s, V-LT2s plan states first/done + DidCards, V-LT3s chapters + one 'here' + a seal + got_it, V-LT4 Arjun 'he', V-LT5s start 409 when done); on the pre-fix tree V-LT5s fails (201). CLIENT tier fails, as it should until open-lt-client-wiring: no 'Your first lesson' / 'Done for today' / DidCard, no 'Your class is here' or seal, Hinglish and Devanagari chrome (Bagiya, Abhyaas, Aasmaan, आ गया, अभी नहीं), Sky star targets 41 px",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-child-address-pick",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: the child's own aap/tum pick sent as LessonStartRequest.address and ranked above the parent's setting (class 5+). The spec gives the choice to the parent (§3.2 step 6, §3.3 step 4) and Hello has no such card; a client-supplied, unstored value outranked the parent and could flip the register between lessons",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "lt-word-cut-short-title",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: shortTitle as a word-boundary cut of the title — 84 of 380 long topic titles came out as dangling fragments or a bare first word ('Equal groups as', 'Making shapes from', 'Keeping track without'); V2 §4.10 forbids a truncated name, so the titles are authored",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "open-lt-client-wiring-2",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "Child client (blocks B2 and audit #9's child-facing fix): read ChildPlanResponse.state (expose data-plan-state) and render first/done/capped/resting per §6.3.3 incl. the done DidCard from plan.today.summary; Sky/Garden render chapters, seals and 'Your class is here'; Practice and Ask send LessonStartRequest.purpose ('practice' / 'doubt') — without it they are now refused 409 after a done lesson — and handle a 409 LessonStartRefused; English chrome; star targets ≥ 48 px; Hello preselects the parent's interests; landing/onboarding use /api/child/teacher. The client no longer sends address (the field is gone)",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "open-lt-evals-plan-gate",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "Evals and smoke scripts that start several lessons for one child (tests/lesson-api-e2e.mjs s2 after an ended lesson, evals/cascade-latency.mjs, evals/director-sim.mjs, scripts/prod-smoke.mjs) now meet the plan gate: outside 07:00-20:30 IST, or after a done lesson, start is 409. They must set the child's controls (hours 00:00-23:59) or pass purpose 'practice'. Not in this workstream's paths",
+   "source": "inbox/lesson-truth.json"
+  },
+  {
+   "id": "teacher-character-pipeline",
+   "kind": "decision",
+   "title": "The three default teacher looks (teal, slate, plum = the asha, arjun, uma designs; no names in any asset) are generated by ONE scripted headless-Blender + node pipeline (scripts/character/build.mjs) from CC0 MakeHuman/MPFB inputs: identity by modelling targets, ARKit 52 + 15 visemes from faceunits01/visemes02, scripted Hindi tongue keys and 7 correctives, procedural skin maps, KTX2 + meshopt H/Bplus/Blite GLBs, B+-rendered D plates",
+   "at": "2026-10-03",
+   "source": "inbox/teacher-character.json"
+  },
+  {
+   "id": "teacher-runtime-contract",
+   "kind": "decision",
+   "title": "Factory GLB runtime contract: public/assets/teacher/<look>/{H,Bplus,Blite}.glb + runtime.json; meshes face/eyes/cards/hair/garment(/lens), bones Spine2 Neck Head LeftEye RightEye LeftShoulder RightShoulder; correctives = product of parents; B+ folds visemes into ARKit; calibration gains on the CC0 units; world landmarks via getVertexPosition because quantized positions are not metres; rig.js implements head.ts HeadRig unchanged",
+   "at": "2026-10-03",
+   "source": "inbox/teacher-character.json"
+  },
+  {
+   "id": "teacher-character-build-2026-10-03",
+   "kind": "measurement",
+   "title": "In-house characters, iteration 1 (AMENDED after the art-director review): budgets met (H 5.54-5.92 MB / 19.7-24.1k tris / 5-6 draws / 82 morphs; B+ 1.52-1.69 MB / 15.7-17.1k / 5 / 58; B-lite 0.70-0.75 MB); lid seal 0.0%; lip gap FAILED the 0.3 mm bar (rest p95 0.47-0.71 mm, max 0.95-1.02; plum rest aperture 3.9%), although it was reported as a pass from ray escape alone; mirror FAILED 6.1-6.5 mm (pack); G9 rendered skin NOT RUN (it rendered ~23 L* too light at about 2x chroma); SwiftShader p50 H 173-197 / B+ 92-103 / B-lite 27-31 ms; M0 lip driver 0 jaw closures in ~200 voiced frames",
+   "at": "2026-10-03",
+   "source": "inbox/teacher-character.json"
+  },
+  {
+   "id": "teacher-character-dead-ends",
+   "kind": "rejection",
+   "title": "Character pipeline traps: nearest-vertex key transfer on decimated teeth (spike tooth), press term in jawOpen_mouthClose (re-opened lips), MH UV atlas for the bust (face got ~400 px of 2048), MH eye-helper radius as eyeball (lids inside the ball), 0.56r cornea (iris filled the opening), texture-space saree band (striped shell), bpy 4.2 teardown SIGSEGV",
+   "at": "2026-10-03",
+   "source": "inbox/teacher-character.json"
+  },
+  {
+   "id": "teacher-skin-g9-solved",
+   "kind": "decision",
+   "title": "Teacher skin albedo = the look's Monk Skin Tone hex x a per-look per-channel gain SOLVED against the render under the shipped TaxilaSkin and the stage light rig (G9: |dL*| <= 3, |dC*| <= 4); the rig ships in runtime.json.lighting and src/avatar must render with it",
+   "at": "2026-10-03",
+   "source": "inbox/teacher-character.json"
+  },
+  {
+   "id": "teacher-canvas-opaque",
+   "kind": "decision",
+   "title": "The teacher WebGL canvas must be an OPAQUE context created by hand (alpha:false), because alpha-to-coverage cards write fragment alpha and three r180 always requests an alpha context; src/avatar stage3d.ts (alpha:true) must change before the factory GLBs ship",
+   "at": "2026-10-03",
+   "source": "inbox/teacher-character.json"
+  },
+  {
+   "id": "teacher-character-build-2026-10-03-it2",
+   "kind": "measurement",
+   "title": "In-house characters, iteration 2: G9 rendered skin within 0.3 L* / 0.5 C* of MST 6/7/8 (was ~23 L* light); lip gap p95 0.14-0.21 mm at rest, 0.16-0.24 at PP, 0% aperture (bar 0.3 mm, all pass); mirror 0.16-0.21 mm (was 6.1-6.5); teeth L* p90 19-43 at jaw 0.3; aligned-viseme clip closes 9/9 bilabial frames, the M0 RMS driver 1-3/9; emotion vision self-check 37% (was 24%, bar 70% per emotion); garment poke-through 21-88 verts (not 0); budgets H 5.53-5.93 MB, B+ 1.75-1.92 MB, B-lite 0.73-0.77 MB; SwiftShader p50 unchanged within noise",
+   "at": "2026-10-03",
+   "source": "inbox/teacher-character.json"
+  },
+  {
+   "id": "teacher-character-dead-ends-it2",
+   "kind": "rejection",
+   "title": "Character pipeline traps, iteration 2: vertex-pair lip seal (cannot converge), alpha canvas with alpha-to-coverage cards (pale brows), brow/lash cards sharing the whole atlas, strand tangent from the derivative frame (and Blender exports custom vectors without the Y-up swap), cylindrical UVs on the diagonal pallu (border bleed), MST hex as raw albedo, undamped G9 solve, holes_fill on the arm cut",
+   "at": "2026-10-03",
+   "source": "inbox/teacher-character.json"
   }
  ],
  "edges": [
@@ -6286,6 +6608,226 @@
    "src": "lt-teacher-card",
    "rel": "part_of",
    "dst": "owner-design-v2-directive"
+  },
+  {
+   "src": "b1-desk-battery-run-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b1-desk-measured-2026-10-03"
+  },
+  {
+   "src": "b1-card-sized-to-content",
+   "rel": "caused_by",
+   "dst": "b1-rejected-fixed-card-height"
+  },
+  {
+   "src": "b1-card-sized-to-content",
+   "rel": "measured_by",
+   "dst": "b1-fix-battery-2026-10-03"
+  },
+  {
+   "src": "b1-outbox-turnseq-always",
+   "rel": "supersedes",
+   "dst": "b1-outbox-retry-policy"
+  },
+  {
+   "src": "b1-vsig3-6pct-restored",
+   "rel": "supersedes",
+   "dst": "b1-desk-battery-run-2026-10-03"
+  },
+  {
+   "src": "b1-fix-battery-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b1-desk-battery-run-2026-10-03"
+  },
+  {
+   "src": "b1-outbox-turnseq-always",
+   "rel": "measured_by",
+   "dst": "b1-fix-battery-2026-10-03"
+  },
+  {
+   "src": "b2-art-pipeline",
+   "rel": "measured_by",
+   "dst": "b2-gen-assets-run-2026-10-03"
+  },
+  {
+   "src": "b2-home-plan-fallback",
+   "rel": "measured_by",
+   "dst": "b2-battery-2026-10-03"
+  },
+  {
+   "src": "b2-home-plan-fallback",
+   "rel": "caused_by",
+   "dst": "b2-rejected-offline-before-load"
+  },
+  {
+   "src": "b2-onboarding-order",
+   "rel": "measured_by",
+   "dst": "b2-battery-2026-10-03"
+  },
+  {
+   "src": "b2-sky-edges-syllabus",
+   "rel": "measured_by",
+   "dst": "b2-battery-2026-10-03"
+  },
+  {
+   "src": "b2-garden-started-beds",
+   "rel": "measured_by",
+   "dst": "b2-battery-2026-10-03"
+  },
+  {
+   "src": "lt-address-parent-first",
+   "rel": "supersedes",
+   "dst": "lt-address-register"
+  },
+  {
+   "src": "lt-child-address-pick",
+   "rel": "constrains",
+   "dst": "lt-address-parent-first"
+  },
+  {
+   "src": "lt-start-gate",
+   "rel": "part_of",
+   "dst": "lt-child-plan-map"
+  },
+  {
+   "src": "lt-done-rule",
+   "rel": "part_of",
+   "dst": "lt-child-plan-map"
+  },
+  {
+   "src": "lt-start-gate",
+   "rel": "measured_by",
+   "dst": "lesson-truth-start-gate-2026-10-03"
+  },
+  {
+   "src": "lt-done-rule",
+   "rel": "measured_by",
+   "dst": "lesson-truth-start-gate-2026-10-03"
+  },
+  {
+   "src": "lt-start-gate",
+   "rel": "measured_by",
+   "dst": "lesson-truth-e2e-fix-2026-10-03"
+  },
+  {
+   "src": "lesson-truth-e2e-fix-2026-10-03",
+   "rel": "supersedes",
+   "dst": "lesson-truth-e2e-2026-10-03"
+  },
+  {
+   "src": "lt-short-titles",
+   "rel": "part_of",
+   "dst": "lt-ui-directives"
+  },
+  {
+   "src": "lt-word-cut-short-title",
+   "rel": "constrains",
+   "dst": "lt-short-titles"
+  },
+  {
+   "src": "lt-praise-effort",
+   "rel": "part_of",
+   "dst": "lt-praise-guard"
+  },
+  {
+   "src": "lt-praise-effort",
+   "rel": "measured_by",
+   "dst": "lesson-truth-fix-2026-10-03"
+  },
+  {
+   "src": "lt-choice-echo",
+   "rel": "part_of",
+   "dst": "lt-exact-match-gate"
+  },
+  {
+   "src": "lt-choice-echo",
+   "rel": "measured_by",
+   "dst": "lesson-truth-fix-2026-10-03"
+  },
+  {
+   "src": "lt-inclusive-chalo",
+   "rel": "part_of",
+   "dst": "lt-address-parent-first"
+  },
+  {
+   "src": "lt-inclusive-chalo",
+   "rel": "measured_by",
+   "dst": "lesson-truth-fix-2026-10-03"
+  },
+  {
+   "src": "lt-safeguard-both-lines",
+   "rel": "part_of",
+   "dst": "lt-floor-wired"
+  },
+  {
+   "src": "open-lt-client-wiring-2",
+   "rel": "supersedes",
+   "dst": "open-lt-client-wiring"
+  },
+  {
+   "src": "open-lt-client-wiring-2",
+   "rel": "blocks",
+   "dst": "lt-child-plan-map"
+  },
+  {
+   "src": "open-lt-evals-plan-gate",
+   "rel": "blocks",
+   "dst": "lt-start-gate"
+  },
+  {
+   "src": "teacher-character-pipeline",
+   "rel": "part_of",
+   "dst": "character-built-in-house"
+  },
+  {
+   "src": "teacher-character-pipeline",
+   "rel": "measured_by",
+   "dst": "teacher-character-build-2026-10-03"
+  },
+  {
+   "src": "teacher-runtime-contract",
+   "rel": "constrains",
+   "dst": "avatar-m0-procedural-head"
+  },
+  {
+   "src": "teacher-character-dead-ends",
+   "rel": "part_of",
+   "dst": "teacher-character-pipeline"
+  },
+  {
+   "src": "teacher-character-pipeline",
+   "rel": "constrains",
+   "dst": "child-names-teacher"
+  },
+  {
+   "src": "teacher-character-build-2026-10-03-it2",
+   "rel": "supersedes",
+   "dst": "teacher-character-build-2026-10-03"
+  },
+  {
+   "src": "teacher-character-pipeline",
+   "rel": "measured_by",
+   "dst": "teacher-character-build-2026-10-03-it2"
+  },
+  {
+   "src": "teacher-skin-g9-solved",
+   "rel": "part_of",
+   "dst": "teacher-character-pipeline"
+  },
+  {
+   "src": "teacher-canvas-opaque",
+   "rel": "constrains",
+   "dst": "avatar-m0-procedural-head"
+  },
+  {
+   "src": "teacher-canvas-opaque",
+   "rel": "part_of",
+   "dst": "teacher-runtime-contract"
+  },
+  {
+   "src": "teacher-character-dead-ends-it2",
+   "rel": "part_of",
+   "dst": "teacher-character-pipeline"
   }
  ]
 }

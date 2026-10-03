@@ -1,13 +1,14 @@
-// The child root for /c/:cid/*: loads the child from /api/me (the server scopes it to the signed-in
-// guardian), resolves the visual band, writes data-band / data-motion / data-theme on the child root, and
-// provides it all through context. No child-facing error copy: a missing session asks for a grown-up.
+// The child root for /c/:cid/*: loads the child from /api/me (the server scopes it to the signed-in guardian),
+// resolves the visual band, and provides it all through context (PRODUCT-DESIGN-V2 §13.1 ChildShell).
+// It writes data-band on <html> and on its own [data-v2] root, and data-theme: ALWAYS "light" for Young (b1/b2 are
+// light-only, `ds-band-fork-older`), the child's Light / Dark / Match phone choice for Older. No child-facing error
+// copy beyond the designed T8 line: a missing session asks for a grown-up.
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
 import { ApiError, getMe, type ChildRow, type MeResponse } from "./api.ts";
 import { bandForClass, effectiveBand, familyOf, type Band, type Family } from "./band.ts";
-import { langAttr, t, type Lang } from "./copy.ts";
+import { t, type Lang } from "./copy.ts";
 import { usePrefs, type ChildPrefs } from "./prefs.ts";
-import "./tokens.css";
 import "./child.css";
 
 export interface ChildCtx {
@@ -16,10 +17,13 @@ export interface ChildCtx {
   me: MeResponse;
   band: Band;
   family: Family;
+  /** The language SHE speaks (the family's choice). Chrome is English whatever this is. */
   lang: Lang;
   prefs: ChildPrefs;
   setPrefs: (p: Partial<ChildPrefs>) => void;
   reducedMotion: boolean;
+  /** Re-read /api/me (after Hello saves the avatar, or a teacher switch). */
+  refresh: () => void;
 }
 
 const Ctx = createContext<ChildCtx | null>(null);
@@ -42,10 +46,32 @@ function useReducedMotionQuery(): boolean {
   return rm;
 }
 
+/** The theme a band may use: Young is light-only; Older follows the child's choice ("system" = no attribute). */
+export const themeFor = (band: Band, pref: ChildPrefs["theme"]): "light" | "dark" | undefined =>
+  familyOf(band) === "young" ? "light" : pref === "system" ? undefined : pref;
+
+/** Mirror the band and theme on <html> (the token file keys :root on them), restoring the previous values on exit. */
+function useHtmlAttrs(band: Band | null, theme: "light" | "dark" | undefined, reduced: boolean) {
+  useEffect(() => {
+    const el = document.documentElement;
+    const prev = { band: el.getAttribute("data-band"), theme: el.getAttribute("data-theme"), motion: el.getAttribute("data-motion") };
+    const set = (k: string, v: string | null | undefined) => (v ? el.setAttribute(k, v) : el.removeAttribute(k));
+    set("data-band", band);
+    set("data-theme", theme);
+    set("data-motion", reduced ? "reduce" : prev.motion);
+    return () => {
+      set("data-band", prev.band);
+      set("data-theme", prev.theme);
+      set("data-motion", prev.motion);
+    };
+  }, [band, theme, reduced]);
+}
+
 export function ChildShell({ children }: { children?: ReactNode }) {
   const { cid = "" } = useParams();
   const [me, setMe] = useState<MeResponse | null>(null);
   const [state, setState] = useState<"loading" | "ok" | "signedout" | "missing" | "error">("loading");
+  const [n, setN] = useState(0);
   const [prefs, setPrefs] = usePrefs(cid);
   const osReduced = useReducedMotionQuery();
 
@@ -61,37 +87,43 @@ export function ChildShell({ children }: { children?: ReactNode }) {
     return () => {
       live = false;
     };
-  }, [cid]);
+  }, [cid, n]);
 
   const child = me?.children.find((c) => c.id === cid) ?? null;
   const ctx = useMemo<ChildCtx | null>(() => {
     if (!me || !child) return null;
     const band = effectiveBand(bandForClass(Number(child.class_level) || 1), prefs.bandUp);
     const lang = (["hinglish", "hindi", "english"].includes(child.language_pref) ? child.language_pref : "hinglish") as Lang;
-    return { cid, child, me, band, family: familyOf(band), lang, prefs, setPrefs, reducedMotion: osReduced || prefs.calm };
+    return { cid, child, me, band, family: familyOf(band), lang, prefs, setPrefs, reducedMotion: osReduced || prefs.calm, refresh: () => setN((x) => x + 1) };
   }, [me, child, cid, prefs, setPrefs, osReduced]);
 
-  const lang = (child?.language_pref as Lang) ?? "hinglish";
+  const band = ctx?.band ?? null;
+  const theme = band ? themeFor(band, prefs.theme) : "light";
+  useHtmlAttrs(band, theme, !!ctx?.reducedMotion);
   const rootAttrs = {
     className: "tx-child",
-    "data-band": ctx?.band ?? "b2",
-    "data-motion": ctx?.reducedMotion ? "reduced" : "full",
-    "data-theme": prefs.theme === "system" ? undefined : prefs.theme,
+    "data-v2": "",
+    "data-band": band ?? "b3",
+    "data-family": ctx?.family ?? "older",
+    "data-theme": theme,
     "data-comfort": prefs.largeText ? "large" : undefined,
-    lang: langAttr(lang),
+    lang: "en",
   };
 
   if (!ctx) {
     return (
       <div {...rootAttrs}>
-        <main className="tx-screen tx-center" aria-busy={state === "loading"}>
-          {state === "loading" ? (
-            <p className="tx-muted" aria-label="loading">…</p>
-          ) : (
-            <div className="tx-card tx-stack">
-              <h1>{t("grownupSignIn", lang)}</h1>
-              {state === "error" && <p className="tx-muted">{t("connectionWeak", lang)}</p>}
-              <Link className="tx-tile tx-tile--plain" to="/who">{t("home", lang)}</Link>
+        <main className="cs-gate" aria-busy={state === "loading"} data-testid="child-gate">
+          {state !== "loading" && (
+            <div className="cs-card cs-gate-card">
+              <h1 tabIndex={-1}>{state === "error" ? t("connectionWeak") : t("grownupSignIn")}</h1>
+              {state === "error" ? (
+                <button type="button" className="cs-btn cs-btn--primary" onClick={() => setN((x) => x + 1)}>{t("tryAgain")}</button>
+              ) : (
+                <Link className="cs-btn cs-btn--primary" to={state === "signedout" ? `/start/phone?login=1&next=${encodeURIComponent(location.pathname)}` : "/who"}>
+                  {state === "signedout" ? t("signIn") : t("home")}
+                </Link>
+              )}
             </div>
           )}
         </main>

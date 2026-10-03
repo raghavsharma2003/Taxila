@@ -3,7 +3,7 @@
   "design": "TEACHER-VISUAL 4.3 row 1 (F, apparent age 24, MST 6). The look carries no name; the child names the teacher.",
   "seed": 11,
   "macros": {
-    "gender": 0.0,
+    "gender": 0,
     "age": 0.478,
     "muscle": 0.5,
     "weight": 0.45,
@@ -11,15 +11,15 @@
     "cupsize": 0.45,
     "firmness": 0.5,
     "race": {
-      "caucasian": 0.5,
-      "african": 0.3,
-      "asian": 0.2
+      "caucasian": 0.6,
+      "african": 0.18,
+      "asian": 0.22
     }
   },
   "targets": {
-    "head-oval": 0.35,
-    "head-scale-horiz-decr": 0.05,
-    "chin-width-decr": 0.15,
+    "head-oval": 0.5,
+    "head-scale-horiz-decr": 0.15,
+    "chin-width-decr": 0.3,
     "chin-prominent-incr": 0.1,
     "chin-height-decr": 0.1,
     "l-cheek-bones-incr": 0.25,
@@ -28,9 +28,6 @@
     "nose-point-width-incr": 0.2,
     "nose-scale-horiz-incr": 0.1,
     "nose-volume-incr": 0.1,
-    "mouth-upperlip-volume-incr": 0.08,
-    "mouth-lowerlip-volume-incr": 0.1,
-    "mouth-scale-horiz-incr": 0.08,
     "mouth-cupidsbow-incr": 0.2,
     "l-eye-scale-incr": 0.18,
     "r-eye-scale-incr": 0.18,
@@ -41,7 +38,10 @@
     "eyebrows-angle-up": 0.15,
     "l-eye-trans-up": 0.04,
     "r-cheek-volume-incr": 0.06,
-    "mouth-dimples-in": 0.15
+    "mouth-dimples-in": 0.15,
+    "l-cheek-inner-decr": 0.15,
+    "r-cheek-inner-decr": 0.15,
+    "mouth-lowerlip-volume-decr": 0.15
   },
   "headScale": 1.03,
   "skin": {
@@ -49,7 +49,15 @@
     "shade": "#B07E55",
     "lip": "#9A4E44",
     "mst": 6,
-    "flush": 0.04
+    "flush": 0.04,
+    "albedoGain": [
+      1.0507,
+      1.1476,
+      1.4093
+    ],
+    "lipCoverage": 0.4,
+    "lipDesat": 0.2,
+    "_note": "albedo = MST hex x albedoGain (solved by scripts/character/g9.mjs --solve); base/shade/lip hex are design colours whose RATIOS are kept"
   },
   "eyes": {
     "iris": "#4A2E1C"
@@ -61,15 +69,16 @@
     "asset": "ponytail01",
     "color": "#2A1C14",
     "style": "ponytail",
-    "raisePonytail": 0.06,
-    "flyaways": 14
+    "raisePonytail": 0.04,
+    "tailTiltDeg": 12,
+    "crownVolume": 0.05
   },
   "garment": {
     "kind": "kurti-jacket",
     "base": "#3E7C74",
     "shade": "#32665F",
     "piping": "#C2410C",
-    "jacket": "#7C9CB8"
+    "jacket": "#3B5677"
   },
   "accessory": {
     "studs": "#D4AF37"
@@ -83,6 +92,67 @@
       "brow": 0.04,
       "squint": 0.03
     },
-    "dimple": "left"
+    "dimple": "left",
+    "restSmile": 0.03
+  },
+  "ageYears": 24,
+  "jawCeiling": 0.55,
+  "sculpt": {
+    "_note": "mm, character axes (dx outward, dy forward, dz up); identity_sculpt.py",
+    "browRidge": [
+      0,
+      -0.6,
+      0.8
+    ],
+    "lidCrease": [
+      0,
+      -0.5,
+      0.3
+    ],
+    "noseBridge": [
+      0,
+      -0.3,
+      0
+    ],
+    "noseTip": [
+      0,
+      0,
+      0.8
+    ],
+    "alar": [
+      -0.8,
+      0,
+      0
+    ],
+    "upperLip": [
+      0,
+      0.5,
+      0.2
+    ],
+    "lowerLip": [
+      0,
+      -0.8,
+      0.3
+    ],
+    "mouthCorner": [
+      0,
+      -0.2,
+      0.5
+    ],
+    "cheekPad": [
+      0.4,
+      1,
+      0.6
+    ],
+    "jawAngle": [
+      -2,
+      0,
+      0.5
+    ],
+    "chin": [
+      0,
+      0.3,
+      0.6
+    ]
   }
 }

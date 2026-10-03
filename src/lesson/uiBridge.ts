@@ -63,6 +63,8 @@ export const ECHO_DEMOTE_FLAGS = 2;
 interface Clip {
   blob: Blob;
   ms: number;
+  /** The stored teacher turn it is (TtsRequest.seq): "Hear the question" replays the turn that posed the ask. */
+  seq?: number;
 }
 
 const MAX_CLIPS = 3;
@@ -99,7 +101,7 @@ export class UiBridge {
   constructor(base: LessonApi = httpLessonApi) {
     const api: LessonApi = {
       start: (req: LessonStartRequest) => base.start(req),
-      turn: (req: TurnRequest) => base.turn(req),
+      turn: (req: TurnRequest, signal?: AbortSignal) => base.turn(req, signal),
       realtimeToken: (lessonId: string): Promise<RealtimeTokenResponse> => base.realtimeToken(lessonId),
       end: async (lessonId: string) => {
         const res = (await base.end(lessonId)) as Partial<EndResult> | null;
@@ -209,8 +211,8 @@ export class UiBridge {
    * a Director REPEAT-SLOW move with fewer words; that replaces this once the Director supports it.
    * Returns false when nothing is buffered.
    */
-  replay(slower = false): boolean {
-    const clip = this.clips.at(-1);
+  replay(slower = false, seq?: number | null): boolean {
+    const clip = seq == null ? this.clips.at(-1) : [...this.clips].reverse().find((c) => c.seq === seq);
     if (!clip) return false;
     this.stopReplay();
     const audio = this.ensurePlayer();
@@ -277,7 +279,7 @@ export class UiBridge {
   private cachingSpeech = async (req: TtsRequest, signal: AbortSignal): Promise<Blob> => {
     await this.waitHold(signal);
     const blob = await fetchSpeech(req, signal);
-    this.push({ blob, ms: 0 });
+    this.push({ blob, ms: 0, seq: req.seq });
     return blob;
   };
 
@@ -292,7 +294,7 @@ export class UiBridge {
       kept = true;
       const bytes = parts.reduce((n, p) => n + p.length, 0);
       const ms = (bytes / 2 / PCM_RATE) * 1000;
-      if (ms > 300) this.push({ blob: wavOf(parts, bytes), ms });
+      if (ms > 300) this.push({ blob: wavOf(parts, bytes), ms, seq: req.seq });
     };
     // A stop mid-stream keeps what arrived (the stream runs ahead of her voice, so it covers what was heard).
     signal.addEventListener("abort", keep, { once: true });

@@ -541,3 +541,89 @@ CM's Codex palette included a "sand" disc tint, `#D9C7A7`. Under the hue lint wi
 
 ## lt-other-question-no-evidence
 **Rejected: no evidence on every turn whose preceding teacher turn asked another question.** 14/31 real text-lane hint turns end in a scaffold sub-question (`askedOther`), so the child's answer after almost half of all hints would be lost.
+
+
+<!-- merged from inbox/b1-shell-signalling-lesson.json -->
+## b1-rejected-fixed-card-height
+Measured in /dev/desk at 360: .dk-card scrollHeight > clientHeight in not_yet (b2 173>102, b3 185>114, b1 184>154), partial, with-help, hint-line, board-not_yet, keyboard, T2, T4 (b2 142>102, b3 144>114) and heard/thinking/T1/RC/correct on b2.
+
+## b1-rejected-textlink-onabort
+Trace on the built route: reply 2's play() rejected 'interrupted by a call to pause()' after an 'abort' event at src change; TextLink.stop('failed') ran from the onabort handler. Every second reply in a text-lane lesson was silent and the floor never left 'thinking'.
+
+## b1-rejected-keyboard-from-focus
+On the built route at 360, a text-mode Older lesson rendered the 324 dp Keyboard column with no keyboard: SpeechRow face, card, ~300 dp of empty paper, a 92 dp dock that clipped its header.
+
+## b1-rejected-settle-before-decrement
+floor.ts ignores `settle` while `turnInFlight()`; runtime.ts dispatched it in the chain's catch, before `.finally` decremented pendingTurns.
+
+
+<!-- merged from inbox/b2-home-progress-assets.json -->
+## b2-rejected-generic-class-names
+Seen in the 360 Older home shot: a 4 px navy ring around the avatar disc. elementFromPoint at the ring returned the avatar span with background rgb(36,52,110) from app.css `.avatar`.
+
+## b2-rejected-offline-before-load
+`context.setOffline(true)` before `page.goto`: Chromium could not fetch the document; the 4 offline home cases rendered nothing.
+
+
+<!-- merged from inbox/lesson-truth.json -->
+## lt-child-address-pick
+**Rejected: the child's own aap/tum pick as `LessonStartRequest.address`, ranked above the parent's setting from class 5.** The spec gives the register to the parent (V2 §3.2 step 6, §3.3 step 4) and the Hello flow has no such card; the value was supplied per request, never stored, and outranked the parent, so two clients could give the same child different registers on different days.
+
+## lt-word-cut-short-title
+**Rejected: shortTitle as a word-boundary cut of the topic title.** 84 of the 380 topic titles over 24 characters came out as dangling fragments or a bare first word ("Equal groups as", "Making shapes from", "Keeping track without"). Authored short titles replace it.
+
+
+<!-- merged from inbox/teacher-character.json -->
+## teacher-character-dead-ends
+Traps hit while building the in-house characters (2026-10-03):
+1. **Nearest-vertex key transfer onto decimated teeth.**
+   - Broke: a lower incisor took an upper tooth's zero jaw delta, and one tooth stretched into a spike on every open-jaw frame.
+   - Instead: map within the matching loose part.
+2. **A press term in the jawOpen_mouthClose corrective.**
+   - Broke: it re-opened 8-16% of the lip aperture at jaw 0.3 + close 0.3.
+   - Instead: the seal term only.
+3. **MakeHuman's UV atlas for the bust.**
+   - Broke: the face got ~400 px of a 2048 map.
+   - Instead: one LSCM face chart at 2.4x density plus smart-projected charts for the rest.
+4. **The MH eye helper's radius used as the eyeball radius.**
+   - Broke: the helper cage is ~4% large, so the lids sat inside the ball.
+   - Instead: 0.962x the helper, from a sphere fit.
+5. **A 0.56 r cornea with its apex at 1.055 r.**
+   - Broke: the limbus came out at 0.34 r and the iris filled the eye opening.
+   - Instead: limbus at 0.48 r.
+6. **A texture-space saree band edge.**
+   - Broke: it striped the outer shell with blouse-coloured patches standing 10 mm proud of the blouse.
+7. **bpy 4.2 teardown.**
+   - Broke: the process exits with SIGSEGV after a successful run.
+   - Instead: every stage ends with os._exit(0).
+
+**Reverse if**: none of these are preferences; each is a measured break.
+
+## teacher-character-dead-ends-it2
+Traps hit in iteration 2 (2026-10-03):
+1. **Vertex-pair lip seal.**
+   - Broke: one pass left p95 0.47-0.71 mm, because several upper vertices share one lower partner. Pairing both ways and iterating did not converge (p95 0.85, max 2.7 mm).
+   - Instead: point-to-surface contacts within 2.4 mm, half-way moves, iterated.
+2. **An alpha WebGL canvas with alpha-to-coverage cards.**
+   - Broke: the fragment alpha reached the compositor, so brows, lashes and card edges read pale. Neither the texture nor the GPU decode was at fault (shown by an offline decode and a raw-RGBA transcode).
+   - Instead: an opaque context made by hand.
+3. **Brow and lash cards sharing the whole cards atlas.**
+   - Broke: each set sampled the other's texels.
+   - Instead: pack each into its half.
+4. **Strand tangent from the derivative frame's v axis.**
+   - Broke: it flips across the mirrored UVs of the MH cards, so the hair lit half grey and half black.
+   - Instead: a baked `_strand` attribute. Blender's glTF exporter does NOT apply the Y-up swap to custom vector attributes; store (x, z, -y).
+5. **Cylindrical UVs on a diagonal pallu strip.**
+   - Broke: the dilated border colour bled across it in the lower mips.
+   - Instead: the strip's own UVs.
+6. **The MST hex used directly as albedo.**
+   - Broke: under the stage rig it rendered too dark and too saturated.
+   - Instead: solve the gain against the render.
+7. **An undamped per-channel G9 update.**
+   - Broke: chroma oscillated, and an off-skin jaw patch drove a 0.17 blue gain.
+   - Instead: exponent 0.6, outlier rejection, keep the best measured gain.
+8. **`holes_fill` on the bust's arm cut.**
+   - Broke: it is a no-op, because the cut is part of the single boundary loop.
+   - Instead: a centroid fan on the visible layer.
+
+**Reverse if**: none of these are preferences; each is a measured break.

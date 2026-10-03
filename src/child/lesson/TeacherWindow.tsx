@@ -13,7 +13,7 @@ export function TeacherWindow({ m, media, floor, labelBelow = true }: { m: DeskM
   return (
     <div className="dk-window" data-testid="teacher-window">
       <Teacher teacherId={m.teacher.id} band={m.band} floor={floor} form={m.faceForm} meters={media.meters} mic={media.mic}
-        reducedMotion={m.reducedMotion} label={labelBelow ? "below" : "none"} lights={m.lights} aiPicto={m.family === "young"} />
+        reducedMotion={m.reducedMotion} label={labelBelow ? "below" : "none"} lights={m.lights} aiPicto={m.family === "young"} affect={m.affect ?? null} />
     </div>
   );
 }
@@ -23,7 +23,7 @@ export function SpeechRow({ m, media, floor, size }: { m: DeskModel; media: Face
     <div className="dk-speechrow" data-testid="speech-row">
       <div className="dk-speechrow-face" style={{ width: size, height: size }}>
         <Teacher teacherId={m.teacher.id} band={m.band} floor={floor} form={m.faceForm} meters={media.meters} mic={media.mic}
-          reducedMotion={m.reducedMotion} label="tag" ground={false} framing="close" lights={m.lights} />
+          reducedMotion={m.reducedMotion} label="tag" ground={false} framing="close" lights={m.lights} affect={m.affect ?? null} />
       </div>
       {m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}
     </div>

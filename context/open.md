@@ -34,3 +34,11 @@ The server side is in; the child client must: (1) preselect the parent's interes
 
 ## open-lt-voice-lane-truth
 The realtime lane answers before the Director runs, so praise / register / screen breaks there are flagged on the turn row only (floor breaks become `state.correction`); `ui.ask` is absent on its no-item turns; G-ASK-2 parity and G-SAY-1's "this number" clause are not implemented; the parent note's pronouns are instructed, not checked by code.
+
+
+<!-- merged from inbox/lesson-truth.json -->
+## open-lt-client-wiring-2
+(supersedes open-lt-client-wiring) The child client must: read `ChildPlanResponse.state` (and expose `data-plan-state`) and render first / done / capped / resting per V2 §6.3.3, the done row with today's DidCard from `plan.today.summary`; render the Sky/Garden chapters, seals and "Your class is here" from `ChildMapResponse`; send `LessonStartRequest.purpose` from Practice ("practice") and Ask ("doubt") — after a done lesson the interim Practice route is now refused 409 without it — and handle 409 `LessonStartRefused`; English-only chrome; Sky star targets ≥ 48 px; Hello preselects the parent's interests; landing / onboarding use /api/child/teacher. `LessonStartRequest.address` no longer exists. tests/e2e-design-lesson-truth.mjs's CLIENT tier is the acceptance check.
+
+## open-lt-evals-plan-gate
+Scripts that start lessons for one child repeatedly meet the plan gate: tests/lesson-api-e2e.mjs (its s2 after s1 ended), evals/cascade-latency.mjs, evals/director-sim.mjs and scripts/prod-smoke.mjs get 409 outside 07:00-20:30 IST or after a done lesson. They need the child's controls set to 00:00-23:59 (PATCH controls) or `purpose: "practice"`. Not in the lesson-truth paths.

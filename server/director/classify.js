@@ -242,6 +242,10 @@ export function askedOther(heard, item, lang) {
   return !posesItem(heard, item, lang) && !posesItem(lastQ, item, lang);
 }
 
+/** Does a question offer two or more numbers as alternatives ("25 hai ya 30", "26 or 36", "25, 30 ya 35")? */
+export const isChoiceQuestion = (q) =>
+  /\d[\d,]*(?:[./]\d+)?\s*(?:hai|he|h|hoga|is|aayega)?\s*(?:,|ya\s+phir|ya|or|या|athva|athwa|vs\.?|versus)\s*[^?？]*?\d/iu.test(String(q ?? "").replace(/(\d),(?=\d)/g, "$1"));
+
 export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang }) {
   const text = String(childText || "").trim();
   const read = readUtterance(text);
@@ -270,7 +274,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const lastQ = (String(heard).match(/[^.!?।]*[?？]/g) ?? []).at(-1) ?? "";
     const nums = (t) => (String(t).match(/\d[\d,]*(?:[./]\d+)?/g) ?? []).map((x) => x.replace(/,/g, ""));
     const [n] = nums(text);
-    if (n && nums(lastQ).includes(n)) return done("no_evidence", "echo");
+    // A choice question ("Kya yeh 25 hai ya 30?", "26 or 36?") offers the number as an ANSWER, not as its subject:
+    // picking one is a real answer, so it goes to the model (no exact match after another question).
+    if (n && nums(lastQ).includes(n) && !isChoiceQuestion(lastQ)) return done("no_evidence", "echo");
   }
   if (target.mode === "item" && !other) {
     const t = norm(text);

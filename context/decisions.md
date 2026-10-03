@@ -1541,3 +1541,100 @@ Owner: 'first complete the app and site then we will test and then later send ou
 ## lt-interests-shapes
 **The parent's interests reach the teacher through the move shapes (greet: today's topic tied to the interest; hook: built on it; explain: an example from the second one), not only through the brief row that sheds first under the budget — and only under the memory consent ("Remember what {child} likes"), as plain labels of ≤ 24 letters.** (2026-10-03)
 - Reverse if: the brief row becomes never-drop (then the shapes need not repeat it).
+
+
+<!-- merged from inbox/b1-shell-signalling-lesson.json -->
+## b1-card-sized-to-content
+The Desk measures `[data-measure="card"]`, `[data-measure="strip"]` and `[data-measure="tray"]` (the NumberPad) after every render (useLayoutEffect + ResizeObserver + fonts.ready) and reports cardNeed / stripNeed / trayNeed with the container size. `solveDesk` treats the §6.3.4 heights as floors: card = max(spec, need), strip = max(estimate, need), Work tray ≥ max(trayMin, need). The extra height is taken tray → face (to faceMin) → caption → pad, then the tray below its floor (a strip is transient; the dock must stay on screen); still short → overflow (the Desk scrolls). Strip actions are full targets (48 dp Older, 64 dp Young) and wrap under the sentence. Why: a fixed card clipped the answer chip, the verdict line and the hint at 360. Reversal: a card whose content is bounded by construction.
+
+## b1-outbox-turnseq-always
+src/lesson/outbox.ts: `reserve(lessonId)` seeds from the store; every attempt sends `turnSeq`; resends add `retried: true`; `edit()` adds `edited: true` under the same turnSeq; a per-attempt deadline (25 s) aborts a hung request (retryable); `kick()` abandons the attempt in flight or the wait before the next retry. src/lesson/runtime.ts: `retryNow()` (T1 Try again), `fixAnswer()` (Fix), `flushOthers()` at start (answers held for an earlier lesson are sent, marked retried, and that lesson closed; 409 ended / 404 drop; > 24 h dropped), the `online` event kicks a sleeping retry (RC within 3 s). OPEN for the lesson route owner: dedupe on (lessonId, turnSeq) and treat `edited: true` as superseding the earlier attempt; accept late turns for a lesson closed by page-hide, or held answers of that lesson are dropped on the 409.
+
+## b1-vsig3-6pct-restored
+The battery's V-SIG-3/4 bar is back to 6% of the dock + card region, as §13.2 says. Heard shows a solid ink receipt disc in place of the mic and hides the side controls for its 400-600 ms; speaking/showing hide the side controls (the mic stays for barge-in). Deviation: the yielding/your_turn pair is exempt (one signal in two phases).
+
+## b1-hear-replays-posing-turn
+LessonState gains replySeq/replyText (set just before the ui of the turn they came with); the pinned Ask records them; UiBridge clips carry their TTS seq and `replay(slower, seq)` picks that clip. Fallback: `runtime.replayReply({text, seq})` speaks the stored turn again (text lanes), then her last clip.
+
+## b1-ui-v2-flag-not-restored
+Proposed, needs the owner. See the title for the open acceptance rows.
+
+
+<!-- merged from inbox/b2-home-progress-assets.json -->
+## b2-art-pipeline
+scripts/gen-assets.mjs (`--strict` is the B2-A2 acceptance run: every shipped id present, 0 pending, budgets, lint, provenance, OCR). Budgets [I]: backgrounds 120 KB at 1x, phone 60 KB, spots/states/tiles 40 KB, avatars/pictograms 16 KB; 2x provisional at 3x the 1x budget. 1x CSS widths per category are in `shipPlan` (bg wide 1280, phone 360, stage 480, sky-panel 800 + a 360x640 crop, picto 64, avatars 112, states 240, garden plants 112). Brand icons and the OG card pass through unchanged. Client: src/child/art.tsx (`<Scene id="home-young">` picks -phone / -wide with srcset 1x/2x and the LQIP; `<Spot id=… size=…>`), compatible with B1's src/ui/Art.tsx which reads the same manifest's `url`. Tier D (`?tier=D`, Save-Data, deviceMemory ≤ 1, prefers-reduced-data) loads no background. Known issue for the server owner: server/serve.mjs serves all of /assets/* as immutable for a year, which includes /assets/gen/manifest.json; a new deploy's manifest can be shadowed by a cached old one. Hashed image names are safe; the manifest needs no-cache (or a hashed name).
+
+## b2-home-plan-fallback
+src/child/plan.ts (`fromServer`, `fallbackPlan`, `usePlan`; unit-tested in tests/ui-v2-b2.test.mjs). The home exposes data-plan-state / data-plan-source.
+
+## b2-garden-started-beds
+src/child/progress/layout.ts `gardenBeds`.
+
+## b2-sky-edges-syllabus
+src/child/progress/prereqs.ts (`loadPrereqs`, `visibleEdges`); star hit targets are 48 px HTML buttons over the SVG (layout keeps ≥ 48 px between centres at 360).
+
+## b2-clip-own-teacher-only
+src/child/voice.ts `helloClip(teacherId, lang)`.
+
+## b2-onboarding-order
+src/onboarding/index.tsx, Layout.tsx (STEPS / ADD_STEPS, scroll + focus + title), steps/Class.tsx, steps/Meet.tsx, Consent.tsx (PromisesStep), Account.tsx (no hold gate), ChildProfile.tsx, Setup.tsx (PIN + handover). The consent rows' ▶ still read the server-held CONSENT_SPEECH text (server/routes/parent.js), which was written for the old gendered copy: the parent workstream should re-align it with the on-screen rows.
+
+
+<!-- merged from inbox/lesson-truth.json -->
+## lt-address-parent-first
+**The teacher's aap/tum register is the parent's choice: `resolveAddress` = `child_controls.address` → the class default (aap from class 5, tum below; English lessons: none). `LessonStartRequest.address` is removed.** (2026-10-03, supersedes lt-address-register's precedence; the kit conversion, register note and reply guard are unchanged.)
+- Rationale: V2 §3.2 step 6 (the parent picks Casual / Respectful) and §3.3 step 4 ("From her first sentence she uses the address term the parent chose"); Hello has no aap/tum card. The previous order let an unstored client value outrank the parent and change between lessons.
+- Reverse if: the spec adds a Hello card for the child's own pick — then store it (child row or controls) and decide its rank against the parent's setting there, never per request.
+
+## lt-start-gate
+**POST /api/lesson/start enforces the plan (`startRefusal(plan.state, body.purpose)`): capped and resting refuse every start; done refuses a lesson and lets `purpose: "practice" | "doubt"` through; start / first / resume start. A refusal is 409 `LessonStartRefused { error, state, opensAt, capRemaining }`.** planFor runs alongside the consent and topic reads and is checked before the kit read, any model call or write. (2026-10-03)
+- Rationale: the daily cap, the lesson hours and "never one more" are parent-control promises (V2 §3.4, §6.3.3, §6.5.4); only /api/lesson/request checked them, so a stale tab or a direct call could open a lesson past them.
+- Reverse if: Practice and Ask get their own start route (then start refuses "done" for every purpose), or the Conductor's day_plan becomes the only authority (then start reads it).
+
+## lt-done-rule
+**An ended lesson counts as "Done for today" only if `state.did` holds a graded turn or it ran ≥ 5 minutes (`countsAsDone`); the next start closes an open lesson older than 2 minutes in which the child never spoke (`state.abandoned`), which never counts.** (2026-10-03)
+- Rationale: V2 §3.13 wants designed flows; an accidental End or a crash seconds in locked the child out for the day, and zero-turn open lessons piled up.
+- Reverse if: a real lesson can end with nothing graded inside 5 minutes and still be "the lesson" (then lower the floor or count child turns).
+
+## lt-short-titles
+**`shortTitleOf` uses the authored table `server/director/short-titles.json` (every one of the 380 curriculum topic titles over 24 characters), else the title's lead clause (before ":", " — ", "(" or ","), else whole words ending before a joiner, else null.** A unit test walks every curriculum topic. (2026-10-03)
+- Rationale: V2 §4.10 "Never a CSS-truncated chapter name"; the word cut gave 84/380 fragments or bare first words.
+- Reverse if: the curriculum graph gains an authored `shortTitle` per topic (then read it and delete the table).
+
+## lt-praise-effort
+**G-PRAISE-1 strips warmth about the question, a try or the thinking before it looks for praise; "Right," is a discourse marker ("Right!"/"Right." still count); `verdictFor` returns "ungraded" for a no-evidence turn where the child asked a question.** (2026-10-03)
+- Rationale: "Great question! Socho…" on an unverified turn cost a 1-2 s rewrite and could lose the warm sentence.
+- Reverse if: a battery shows "great question" used as a disguised confirmation of a wrong answer.
+
+## lt-choice-echo
+**The echo rule skips a choice question ("Kya yeh 25 hai ya 30?", "26 or 36?", "25, 30 ya 35"); a thousands comma is not a list.** The model decides those turns (no exact match after another question). (2026-10-03)
+- Reverse if: a measure of choice-style hint turns shows the model mis-crediting picks.
+
+## lt-inclusive-chalo
+**An inclusive "chalo" (with hum, a "-te hain"/"-ein" verb or an aap form later in the sentence) is not a tum mark; for a tum child aap forms break the register only when nothing in the line addresses the child with tum.** (2026-10-03)
+- Reverse if: listeners hear "Chalo, aap…" as the wrong register for an aap child.
+
+## lt-safeguard-both-lines
+**The fixed safeguard line names Childline 1098 and Tele-MANAS 14416 (from compiler/floor.js HELPLINES) in English and Hinglish, and in aap forms for an aap child.** (2026-10-03)
+
+
+<!-- merged from inbox/teacher-character.json -->
+## teacher-character-pipeline (2026-10-03)
+The teacher characters are built by one command, `node scripts/character/build.mjs`, with no artist and no paid or third-party character service. Inputs are all CC0 (`art/character/LICENSES.md`): the MakeHuman base mesh and modelling targets via MPFB 2.0.17 (GPL code, offline only), the faceunits01 and visemes02 packs, and the MakeHuman teeth, tongue, brow, lash and hair proxies. Our scripts add the identity (targets plus seeded asymmetry plus a 3% head scale), the lip seal, the Hindi tongue keys (`tongueTipUp`, `tongueCurl`, `tongueWide`), 7 correctives (12 keys, sided where a parent is sided), our eyes (cornea plus iris parallax), garments and accessories, procedural skin maps rasterised in the face's own UVs, and KTX2 + meshopt H/B+/B-lite GLBs plus B+-rendered D plates. The look ids are `teal`, `slate` and `plum`, and no asset carries a name, because the child names the teacher. Full detail: `docs/design/teacher/CHARACTER-PIPELINE.md`. **Reverse if** the owner's eye test fails after two iterations (per `character-built-in-house`). In that case keep this pipeline for rig, keys, tiers and export, and bring in an artist only for the identity sculpt, hair and garments on the hero tier.
+
+## teacher-runtime-contract (2026-10-03)
+src/avatar loads `public/assets/teacher/<look>/{H,Bplus,Blite}.glb` and `runtime.json`, using GLTFLoader with KTX2Loader and MeshoptDecoder. `scripts/character/viewer/rig.js` implements the head.ts `HeadRig` contract (`apply(bs, head, gaze, lean, breath)`), so the M0 driver stack is unchanged. The rig applies these rules after the compositor:
+- Visemes fold into ARKit keys on B+.
+- Calibration gains of 1.2-1.6 apply to smile, squint and brow.
+- Lid follow goes through the eyeLook keys.
+- Each corrective's weight is the product of its parents.
+- Wrinkle-region weights come from the final weights.
+- The head splits Neck 35% / Head 65%.
+
+Trap: positions are quantized, and for skinned meshes the dequantisation sits in the inverse bind matrices, so world landmarks must be computed through `getVertexPosition`. **Reverse if** the avatar workstream needs a separate jaw bone, or per-mesh morph splitting for memory (E-T7).
+
+## teacher-skin-g9-solved (2026-10-03)
+The teacher skin albedo is the Monk Skin Tone hex of the look's band, multiplied by a per-look per-channel `skin.albedoGain`. The gain is solved by `scripts/character/g9.mjs --solve` against the RENDER: the H tier under TaxilaSkin and the stage light rig (`shaders.js` LIGHTING, Neutral tone mapping, exposure 1), emotion `warm`, cheek / forehead / jaw patches, CIE L*a*b*, damped per-channel update. The gate is |dL*| <= 3 and |dC*| <= 4 (TEACHER-VISUAL H7, G9). The rig ships in `runtime.json.lighting`, and the runtime must render with it. Why: iteration 1 used a designer hex as albedo under a brighter rig and rendered every look about 23 L* too light at about double the chroma, which lightens Indian skin. The raw MST hex is also wrong as albedo: it rendered too dark and too saturated under the rig. **Reverse if** an on-device lookdev (H13) under the real stage background measures outside the band; then re-solve against that rig, never by eye.
+
+## teacher-canvas-opaque (2026-10-03)
+The teacher's WebGL2 context is created by hand with `alpha: false` and passed to three (`{ canvas, context }`). Why: hair, brow and lash cards use alpha-to-coverage, which writes the fragment alpha into the drawing buffer. three r180 always requests an alpha context (it only emulates `alpha: false`), so the page composited every card edge. That produced iteration 1's tan, patchy brows and bright card edges. `src/avatar/three/stage3d.ts` (`alpha: true`) must change before the factory GLBs ship. **Reverse if** the stage needs a transparent canvas; then add a final alpha-to-1 pass, and never alpha-blend the cards (Mali Early-Z).

@@ -31,11 +31,11 @@ export function stateWord(floor: Floor, o: { teacher: string; thinkingLabel: boo
   }
 }
 
-export function StateWord({ floor, word, mode, modeGlyph, live }: { floor: Floor; word: string; mode?: CopyKey | null; modeGlyph?: StateGlyphName | null; live?: boolean }) {
+export function StateWord({ floor, word, mode, modeGlyph, live, glyph }: { floor: Floor; word: string; mode?: CopyKey | null; modeGlyph?: StateGlyphName | null; live?: boolean; glyph?: StateGlyphName }) {
   return (
-    <div className="dk-word" data-floor={floor}>
+    <div className="dk-word" data-floor={floor} data-held={glyph ? "1" : undefined}>
       <span className="dk-word-main">
-        <Glyph name={GLYPH[floor]} size={24} className="dk-word-glyph" />
+        <Glyph name={glyph ?? GLYPH[floor]} size={24} className="dk-word-glyph" />
         <strong className="dk-word-text" data-testid="state-word">{word}</strong>
         {live && <span className="dk-level" aria-hidden="true" />}
       </span>

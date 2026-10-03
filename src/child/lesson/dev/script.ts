@@ -119,10 +119,12 @@ export class ScriptedLink implements TeacherLink {
   private talkAt = 0;
   private ttsFailOnce: boolean;
   private readonly spoken: string[];
-  constructor(levels: LinkLevels, spoken: string[], ttsFail = false) {
+  private sttDown: boolean;
+  constructor(levels: LinkLevels, spoken: string[], ttsFail = false, sttDown = false) {
     this.levels = levels;
     this.spoken = spoken;
     this.ttsFailOnce = ttsFail;
+    this.sttDown = sttDown;
   }
   on(fn: (e: LinkEvent) => void) {
     return this.ev.on(fn);
@@ -131,6 +133,8 @@ export class ScriptedLink implements TeacherLink {
     this.ev.emit({ type: "connection", state: "connecting" });
     await new Promise((r) => setTimeout(r, 60));
     this.ev.emit({ type: "connection", state: "connected" });
+    // ?stt=down: the mic works but speech recognition is unavailable (T3), as cascadeLink reports it
+    if (this.sttDown) setTimeout(() => this.ev.emit({ type: "error", message: "transcription unavailable", fatal: false, code: "stt_unavailable" }), 30);
   }
   applyInstructions() {}
   sendChild(text: string, opts: { chipId?: string } = {}) {
@@ -203,4 +207,4 @@ export class ScriptedLink implements TeacherLink {
   }
 }
 
-export const scriptedLinkFactory = (spoken: string[], ttsFail: boolean): LinkFactory => (_mode, ctx) => new ScriptedLink(ctx.levels, spoken, ttsFail);
+export const scriptedLinkFactory = (spoken: string[], ttsFail: boolean, sttDown = false): LinkFactory => (_mode, ctx) => new ScriptedLink(ctx.levels, spoken, ttsFail, sttDown);

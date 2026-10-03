@@ -3,12 +3,13 @@
 // echo); typed and tapped answers show what was entered. Verdict marks land on the chip, never on her face:
 // correct = a drawn tick (stroke, 280 ms) and the `got` border; partly = a half tick; not yet = a magnifier and
 // NO colour change, no cross, no red. Delivery: "Not sent yet" (clock, ink-2) while held in the outbox, then
-// "Sent" (tick in a bubble: a receipt, never the verdict tick) for 1.5 s after the link returns.
+// "Sent" (tick in a bubble: a receipt, never the verdict tick) for 1.5 s after the link returns. "Fix" sits beside
+// the chip on the card (QuestionCard), a full 48 dp target, not inside it.
 import { t } from "../../ui/copy.ts";
 import { Glyph } from "../../ui/icons/state.tsx";
 import type { AnswerChip as Chip } from "./model.ts";
 
-export function AnswerChip({ chip, young, onFix }: { chip: Chip; young: boolean; onFix?: () => void }) {
+export function AnswerChip({ chip, young }: { chip: Chip; young: boolean }) {
   const wave = chip.text === null || (young && chip.form === "spoken");
   return (
     <span className="dk-chip" data-verdict={chip.verdict ?? "none"} data-delivery={chip.delivery} data-help={chip.withHelp ? "1" : undefined} data-testid="answer-chip">
@@ -37,9 +38,6 @@ export function AnswerChip({ chip, young, onFix }: { chip: Chip; young: boolean;
       )}
       {chip.delivery === "sent" && (
         <span className="dk-chip-tag dk-chip-tag--sent" data-testid="sent"><Glyph name="heard" size={16} />{t("card.sent")}</span>
-      )}
-      {onFix && !young && chip.form === "spoken" && chip.text && !chip.verdict && (
-        <button type="button" className="dk-fix" onClick={onFix}>{t("card.fix")}</button>
       )}
     </span>
   );

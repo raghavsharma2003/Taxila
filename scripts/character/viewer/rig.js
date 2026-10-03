@@ -10,12 +10,21 @@ import { SHADERS, lightUniforms, makeSkinLUT } from "./shaders.js";
 import { correctiveParents, VISEME_TO_ARKIT, wrinkleWeights } from "./presets.js";
 
 const DEG = Math.PI / 180;
+// Runtime calibration gains. The first build needed 1.2-1.6 on smile / squint / brow because the CC0 units are soft;
+// those gains pushed the units past their designed range (corner artefacts). keys.py now bakes scripted corrective
+// deltas into the units instead (expression_correctives), so every gain is 1.0 and this table is empty.
+export const CALIBRATION = {};
 let LUT = null;
 let ktx2 = null;
 
 export async function loadTeacher(renderer, url, opts = {}) {
+  // opts: { tier, look: { iris }, lights (lightUniforms(runtime.json.lighting)), jawCeiling (runtime.json.jawCeiling) }
   const tier = opts.tier || "H";
-  if (!ktx2) ktx2 = new KTX2Loader().setTranscoderPath(opts.basisPath || "/node_modules/three/examples/jsm/libs/basis/").detectSupport(renderer);
+  if (!ktx2) {
+    ktx2 = new KTX2Loader().setTranscoderPath(opts.basisPath || "/node_modules/three/examples/jsm/libs/basis/").detectSupport(renderer);
+    // evidence harness only (?ktxRaw=1): transcode to uncompressed RGBA, to separate encoder faults from GPU decode faults
+    if (opts.ktxRaw) for (const k of Object.keys(ktx2.workerConfig)) if (k.endsWith("Supported")) ktx2.workerConfig[k] = false;
+  }
   const loader = new GLTFLoader().setKTX2Loader(ktx2).setMeshoptDecoder(MeshoptDecoder);
   const t0 = performance.now();
   const gltf = await loader.loadAsync(url);
@@ -27,6 +36,7 @@ export async function loadTeacher(renderer, url, opts = {}) {
   const meshes = {};
   root.traverse((o) => { if (o.isMesh) meshes[o.name] = o; });
   const lite = tier === "Blite";
+  const jawCeiling = opts.jawCeiling ?? 1;
   const materials = [];
 
   function mk(o, vert, frag, uniforms, defines, extra = {}) {
@@ -42,9 +52,11 @@ export async function loadTeacher(renderer, url, opts = {}) {
     const defs = {};
     const u = {
       tAlbedo: { value: s.map }, tLUT: { value: LUT },
-      uTeeth: { value: new THREE.Vector3(0.78, 0.74, 0.66) }, uTongue: { value: new THREE.Vector3(0.55, 0.22, 0.2) },
-      uBag: { value: new THREE.Vector3(0.16, 0.05, 0.05) }, uMouthOpen: { value: 0 }, uMouthFront: { value: new THREE.Vector3() },
-      uFlush: { value: 0 }, uCheekL: { value: new THREE.Vector3() }, uCheekR: { value: new THREE.Vector3() }, uSpec: { value: 0.55 },
+      uTeeth: { value: new THREE.Vector3(0.6, 0.55, 0.46) }, uGum: { value: new THREE.Vector3(0.30, 0.10, 0.09) },
+      uTongue: { value: new THREE.Vector3(0.40, 0.13, 0.11) }, uBag: { value: new THREE.Vector3(0.09, 0.022, 0.018) },
+      uAlbedoGain: { value: new THREE.Vector3(1, 1, 1) },
+      uMouthOpen: { value: 0 }, uMouthFront: { value: new THREE.Vector3() },
+      uFlush: { value: 0 }, uCheekL: { value: new THREE.Vector3() }, uCheekR: { value: new THREE.Vector3() }, uSpec: { value: 0.42 },
     };
     if (s.normalMap && !lite) { defs.HAS_NORMAL = ""; u.tNormal = { value: s.normalMap }; u.uNormalScale = { value: 1.0 }; }
     if (s.aoMap) { defs.HAS_PACKED = ""; u.tPacked = { value: s.aoMap }; }
@@ -75,14 +87,16 @@ export async function loadTeacher(renderer, url, opts = {}) {
   for (const nm of ["hair", "cards"]) {
     const o = meshes[nm];
     if (!o) continue;
+    // brows and lashes take no Kajiya-Kay highlight: it lit the brow cards tan and patchy (review item 11)
     o.material = mk(o, SHADERS.HAIR_VERT, SHADERS.HAIR_FRAG, { tAlbedo: { value: src(o).map }, uShift: { value: nm === "hair" ? 0.1 : 0 },
-      uSpecTint: { value: new THREE.Vector3(1.0, 0.85, 0.7) }, uKK: { value: nm === "hair" ? 1 : 0.3 } }, {},
+      uSpecTint: { value: new THREE.Vector3(1.0, 0.85, 0.7) }, uKK: { value: nm === "hair" ? 0.32 : 0.0 } },
+    o.geometry.attributes._strand ? { HAS_STRAND: "" } : {},
     { side: THREE.DoubleSide, alphaToCoverage: true, transparent: false });
   }
   const garment = meshes.garment;
-  garment.material = mk(garment, SHADERS.HAIR_VERT, SHADERS.CLOTH_FRAG, { tAlbedo: { value: src(garment).map } }, {}, { side: THREE.DoubleSide });
+  garment.material = mk(garment, SHADERS.PLAIN_VERT, SHADERS.CLOTH_FRAG, { tAlbedo: { value: src(garment).map } }, {}, { side: THREE.DoubleSide });
   if (meshes.lens) {
-    meshes.lens.material = mk(meshes.lens, SHADERS.HAIR_VERT, SHADERS.LENS_FRAG, {}, {}, { transparent: true, depthWrite: false, side: THREE.DoubleSide });
+    meshes.lens.material = mk(meshes.lens, SHADERS.PLAIN_VERT, SHADERS.LENS_FRAG, {}, {}, { transparent: true, depthWrite: false, side: THREE.DoubleSide });
     meshes.lens.renderOrder = 2;
   }
   for (const o of Object.values(meshes)) o.frustumCulled = false;
@@ -128,7 +142,14 @@ export async function loadTeacher(renderer, url, opts = {}) {
   face.material.uniforms.uMouthFront.value.copy(lipsFront);
   face.material.uniforms.uCheekL.value.copy(eyeW.L).add(new THREE.Vector3(0.012, -0.03, 0.004));
   face.material.uniforms.uCheekR.value.copy(eyeW.R).add(new THREE.Vector3(-0.012, -0.03, 0.004));
-  const landmarks = { eyeL: eyeW.L, eyeR: eyeW.R, mouthFront: lipsFront };
+  // lip line: the skin vertex nearest the midline in front of the teeth (frames the mouth camera; review item 15)
+  const lipLine = new THREE.Vector3(0, 0, -1e9);
+  for (let i = 0; i < reg.count; i++) {
+    if (Math.round(reg.getX(i)) !== 0) continue;
+    const w = worldOf(face, i);
+    if (Math.abs(w.x) < 0.004 && Math.abs(w.y - lipsFront.y) < 0.007 && w.z > lipLine.z) lipLine.copy(w);
+  }
+  const landmarks = { eyeL: eyeW.L, eyeR: eyeW.R, mouthFront: lipsFront, lipLine };
 
   const dict = face.morphTargetDictionary;
   const corrNames = Object.keys(dict).map((k) => [k, correctiveParents(k)]).filter(([, p]) => p);
@@ -149,7 +170,12 @@ export async function loadTeacher(renderer, url, opts = {}) {
       final[`eyeLookUp${S}`] = (final[`eyeLookUp${S}`] || 0) + up * 0.5;
       final[`eyeLookDown${S}`] = (final[`eyeLookDown${S}`] || 0) + dn * 0.5;
     }
+    // rig calibration: the CC0 face units are authored softer than Apple's ARKit reference on some keys; these gains
+    // map a spec amplitude (TEACHER-VISUAL §6) to the same visible size (runtime.json "calibration")
+    for (const [k, g] of Object.entries(CALIBRATION)) if (final[k]) final[k] *= g;
     for (const k in final) final[k] = Math.max(0, Math.min(1, final[k]));
+    // per-look jaw ceiling (runtime.json.jawCeiling): the open-jaw frames read as gaping above ~0.55 on these faces
+    if (final.jawOpen) final.jawOpen = Math.min(final.jawOpen, jawCeiling);
     for (const [k, p] of corrNames) final[k] = (final[p[0]] || 0) * (final[p[1]] || 0);
     for (const m of morphMeshes) {
       const d = m.morphTargetDictionary, inf = m.morphTargetInfluences;

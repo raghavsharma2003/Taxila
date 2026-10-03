@@ -186,7 +186,18 @@ export interface TurnResponse {
  * `address`: the child's own aap / tum pick at Hello (honoured from class 5 up); the parent's controls and the class
  * default decide otherwise (server/director/register.js resolveAddress).
  */
-export interface LessonStartRequest { childId: string; topicId?: string; mode?: "voice" | "text" | "cascade"; address?: "tum" | "aap" }
+export interface LessonStartRequest {
+  childId: string; topicId?: string; mode?: "voice" | "text" | "cascade";
+  /**
+   * What the start is for. The server checks it against /api/child/plan: a "lesson" (the default) starts only in the
+   * plan states start | first | resume; "practice" / "doubt" (Practice, Ask) are also allowed when the day is done
+   * (V2 §6.3.3: "Practise something"). capped and resting refuse every purpose: 409 LessonStartRefused.
+   * The aap/tum register is never a request field: the parent's controls decide it (V2 §3.3 step 4).
+   */
+  purpose?: "lesson" | "practice" | "doubt";
+}
+/** 409 from POST /api/lesson/start when the plan does not allow a lesson now (daily cap, lesson hours, done). */
+export interface LessonStartRefused { error: string; state: ChildHomeState; opensAt: string | null; capRemaining: number }
 export interface LessonStartResponse {
   lessonId: string; topic: { id: string; title: string; chapter: string };
   /** Voice lane only (see TurnResponse.instructions). */
@@ -229,7 +240,7 @@ export interface ChildPlanResponse {
   /** Legacy shape for src/child/day.ts: start/first/resume → "default", done/capped → "done", resting → "resting". */
   homeState: "default" | "done" | "resting";
   plan: { openLesson: string | null; window: { from: string; to: string } };
-  topic: { id: string; title: string; shortTitle: string; chapter: string; subject: string; minutes: number } | null;
+  topic: { id: string; title: string; shortTitle: string | null; chapter: string; subject: string; minutes: number } | null;
   /** The open lesson to resume (< 6 h, at least one child turn): its pinned question for the thumbnail. */
   resume: { lessonId: string; ask: string | null; topicTitle: string } | null;
   /** Today's finished lesson (state done/capped). */

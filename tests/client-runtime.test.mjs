@@ -536,7 +536,8 @@ test("runtime text mode: opening, typed turn, reply is spoken from its stored tu
   await flush();
   assert.equal(api.calls.turn.length, 1);
   // The server wrote and stored the teacher's lines in text mode: echoing them back stored each one twice.
-  assert.deepEqual(api.calls.turn[0], { lessonId: "L1", childText: "teen chauthai", typed: true });
+  // Every attempt carries its outbox turnSeq (the server's dedupe key, PRODUCT-DESIGN-V2 §4.7).
+  assert.deepEqual(api.calls.turn[0], { lessonId: "L1", childText: "teen chauthai", typed: true, turnSeq: 1 });
   assert.deepEqual(link.instructions, ["INSTR-0", "INSTR-1"]);
   assert.deepEqual(link.prompts, ["Namaste Aarav!", "reply 1"]);
   assert.deepEqual(link.replySeqs, [1, 11]);
@@ -551,7 +552,7 @@ test("runtime text mode: opening, typed turn, reply is spoken from its stored tu
   link.emit({ type: "teacher_interrupted", responseId: "t2" });
   rt.say("ruko");
   await flush();
-  assert.deepEqual(api.calls.turn[1], { lessonId: "L1", childText: "ruko", teacherInterrupted: true, typed: true });
+  assert.deepEqual(api.calls.turn[1], { lessonId: "L1", childText: "ruko", teacherInterrupted: true, typed: true, turnSeq: 2 });
 
   await rt.end();
   assert.equal(rt.state.phase, "ended");
@@ -631,7 +632,7 @@ test("runtime voice mode: a transcript that lands after the reply started still 
   link.emit({ type: "child_final", text: "teen chauthai", startedAt: 200, typed: false, itemId: "u1", asrConfidence: 0.9 });
   await flush();
   assert.deepEqual(api.calls.turn[0], {
-    lessonId: "L1", childText: "teen chauthai", asrConfidence: 0.9, teacherText: "Batao, 3/4 bada hai ya 2/3?", teacherInterrupted: false,
+    lessonId: "L1", childText: "teen chauthai", asrConfidence: 0.9, teacherText: "Batao, 3/4 bada hai ya 2/3?", teacherInterrupted: false, turnSeq: 1,
   });
   assert.equal(link.prompts.length, 1, "voice mode does not speak teacherReply");
   assert.deepEqual(link.instructions, ["INSTR-0", "INSTR-1"]);
@@ -662,7 +663,7 @@ test("runtime voice mode: a milestone during a streaming reply; the child turn t
   await flush();
   assert.deepEqual(api.calls.turn[1], {
     lessonId: "L1", childText: "teen chauthai", asrConfidence: 0.9,
-    teacherText: "Batao, kitne hisse? Bahut badhiya, ab answer hai teen chauthai", teacherInterrupted: true,
+    teacherText: "Batao, kitne hisse? Bahut badhiya, ab answer hai teen chauthai", teacherInterrupted: true, turnSeq: 1,
   });
   assert.equal(link.prompts.length, 1, "the deferred reaction was dropped: the child took the floor");
 });

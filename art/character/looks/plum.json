@@ -3,7 +3,7 @@
   "design": "TEACHER-VISUAL 4.3 row 3 (F, apparent age 34, MST 8). The look carries no name; the child names the teacher.",
   "seed": 37,
   "macros": {
-    "gender": 0.0,
+    "gender": 0,
     "age": 0.569,
     "muscle": 0.5,
     "weight": 0.55,
@@ -11,8 +11,8 @@
     "cupsize": 0.5,
     "firmness": 0.45,
     "race": {
-      "caucasian": 0.4,
-      "african": 0.4,
+      "caucasian": 0.5,
+      "african": 0.3,
       "asian": 0.2
     }
   },
@@ -21,16 +21,15 @@
     "head-fat-incr": 0.1,
     "chin-width-incr": 0.05,
     "chin-height-decr": 0.05,
-    "l-cheek-volume-incr": 0.2,
-    "r-cheek-volume-incr": 0.18,
+    "l-cheek-volume-incr": 0.32,
+    "r-cheek-volume-incr": 0.3,
     "l-cheek-bones-incr": 0.1,
     "r-cheek-bones-incr": 0.1,
     "nose-nostrils-width-incr": 0.35,
     "nose-point-width-incr": 0.25,
     "nose-scale-horiz-incr": 0.15,
     "nose-flaring-incr": 0.15,
-    "mouth-lowerlip-volume-incr": 0.1,
-    "mouth-upperlip-volume-incr": 0.05,
+    "mouth-lowerlip-volume-incr": 0.05,
     "mouth-scale-horiz-incr": 0.06,
     "l-eye-scale-incr": 0.12,
     "r-eye-scale-incr": 0.12,
@@ -40,8 +39,9 @@
     "r-eye-epicanthus-out": 0.2,
     "l-eye-eyefold-down": 0.1,
     "r-eye-eyefold-down": 0.1,
-    "eyebrows-angle-down": 0.05,
-    "l-eye-trans-down": 0.03
+    "l-eye-trans-down": 0.03,
+    "chin-width-decr": 0.1,
+    "eyebrows-trans-up": 0.25
   },
   "headScale": 1.03,
   "skin": {
@@ -50,12 +50,19 @@
     "lip": "#6E3A30",
     "mst": 8,
     "flush": 0.02,
-    "lowerLid": 0.6
+    "lowerLid": 0.6,
+    "albedoGain": [
+      1.1849,
+      1.6107,
+      2.0178
+    ],
+    "lipCoverage": 0.4,
+    "lipDesat": 0.2
   },
   "eyes": {
     "iris": "#2E1C10"
   },
-  "brows": "eyebrow003",
+  "brows": "eyebrow001",
   "browColor": "#1C130E",
   "lashes": "eyelashes01",
   "hair": {
@@ -64,14 +71,17 @@
     "style": "bun",
     "bun": {
       "radius": 0.042
-    }
+    },
+    "crownVolume": 0.04,
+    "clipFringe": 0.05
   },
   "garment": {
     "kind": "saree",
     "base": "#7A4A6E",
     "shade": "#653C5B",
     "border": "#C2410C",
-    "blouse": "#EADFC8"
+    "blouse": "#A57A2C",
+    "palluBorder": 0.012
   },
   "accessory": {},
   "faceStyle": {
@@ -82,6 +92,65 @@
       "smile": 0.06,
       "brow": 0.03,
       "squint": 0.05
-    }
+    },
+    "restSmile": 0.05
+  },
+  "ageYears": 34,
+  "jawCeiling": 0.55,
+  "sculpt": {
+    "_note": "mm, character axes (dx outward, dy forward, dz up); identity_sculpt.py",
+    "browRidge": [
+      0,
+      -0.8,
+      1.2
+    ],
+    "browInner": [
+      0,
+      0,
+      0.8
+    ],
+    "lidCrease": [
+      0,
+      0,
+      0.4
+    ],
+    "alar": [
+      1.2,
+      0,
+      0
+    ],
+    "noseTip": [
+      0,
+      0.3,
+      -0.4
+    ],
+    "upperLip": [
+      0,
+      0.6,
+      0
+    ],
+    "mouthCorner": [
+      0,
+      0,
+      0.6
+    ],
+    "cheekPad": {
+      "d": [
+        0.8,
+        1.6,
+        0.4
+      ],
+      "r": 17
+    },
+    "jawAngle": [
+      -1.2,
+      0,
+      0
+    ],
+    "chin": [
+      0,
+      0,
+      0.3
+    ]
   }
 }

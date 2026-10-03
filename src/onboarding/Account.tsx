@@ -2,10 +2,10 @@
 // is not approved yet, so v1 signs in with email + password through the existing /api/auth routes. The
 // screen is laid out so OTP drops in: the number field already sits first with its why-line and the
 // no-calls promise, and `OtpSlot` marks where the code field goes.
-// Entry is behind press-and-hold "I am the parent" (stops a young child). Typed fields persist (G-ONB-6).
+// The grown-up hold gate now sits on step 3 (Our promises), before this step (V2 §3.2). Typed fields persist (G-ONB-6).
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button, ErrorNote, Field, HoldButton, Icon } from "../ui/index.ts";
+import { Button, ErrorNote, Field, Icon } from "../ui/index.ts";
 import { errText, loadMe, postJson, refreshMe, type Me } from "../app/api.ts";
 import { StepFrame } from "./Layout.tsx";
 import { clearDraftContact, useDraft } from "./draft.ts";
@@ -25,7 +25,6 @@ export function AccountStep() {
   const next = sp.get("next");
   const [d, set] = useDraft();
   const [mode, setMode] = useState<"signup" | "login">(sp.get("login") ? "login" : "signup");
-  const [gateOpen, setGateOpen] = useState(!!sp.get("login"));
   const [me, setMe] = useState<Me | null | undefined>(undefined);
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -36,7 +35,7 @@ export function AccountStep() {
     // Same-origin paths only: "//host" would make pushState throw (cross-origin URL).
     if (next && /^\/(?!\/)/.test(next) && !next.startsWith("/\\")) return nav(next, { replace: true });
     if (m && m.children.length && mode === "login") return nav("/who", { replace: true });
-    nav("/start/trust");
+    nav("/start/consent");
   };
 
   const submit = async (e: FormEvent) => {
@@ -71,19 +70,9 @@ export function AccountStep() {
     );
   }
 
-  if (!gateOpen) {
-    return (
-      <StepFrame step="phone" title="This part is for a grown-up"
-        why="Next we ask for your details. Press and hold the button to show you are the parent or guardian.">
-        <HoldButton ms={1500} block onConfirm={() => setGateOpen(true)}>I am the parent</HoldButton>
-        <p className="t-note">Hold for about 2 seconds. If you let go early, nothing happens.</p>
-      </StepFrame>
-    );
-  }
-
   const signup = mode === "signup";
   return (
-    <StepFrame step="phone" title={signup ? "Your details" : "Sign in"}
+    <StepFrame step="phone" title={signup ? "Create your parent account" : "Sign in"}
       why={signup ? "So you get your child's reports, and only you can change their settings." : undefined}>
       <form className="stack" onSubmit={submit} noValidate>
         {signup && (

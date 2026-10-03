@@ -13,7 +13,7 @@ import argparse, json, math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import numpy as np
 import bpy
-from mpfb_env import co, smoothstep, select_only, hex_lin
+from mpfb_env import co, smoothstep, select_only, hex_lin, delete_verts
 import keys as K
 
 ap = argparse.ArgumentParser()
@@ -78,21 +78,73 @@ else:
     remove(O.get("lens"))
     cards = O["lashes"]
     decimate(O["hair"], 3000)
-    decimate(O["garment"], 2200)
+    # accessories (glasses rims, studs) never go through the decimator: collapsing them made the rims octagonal
+    g_ = O["garment"]
+    gl_ = attr(g_, "gLayer")
+    if (gl_ >= 2).any():
+        acc_ = g_.copy()
+        acc_.data = g_.data.copy()
+        bpy.context.collection.objects.link(acc_)
+        delete_verts(acc_, gl_ < 2)
+        delete_verts(g_, gl_ >= 2)
+        nacc = sum(len(p.vertices) - 2 for p in acc_.data.polygons)
+        decimate(g_, 2200 - nacc)
+        select_only([g_, acc_])
+        bpy.context.view_layer.objects.active = g_
+        bpy.ops.object.join()
+    else:
+        decimate(g_, 2200)
 eyes.name = "eyes"
 cards.name = "cards"
 keep_keys(cards, allowed & set(K.ARKIT52))
 hair, garment = O["hair"], O["garment"]
 lens = O.get("lens")
 
-# ------------------------------------------------------------------ attributes: only _region survives (face)
+# ------------------------------------------------------------------ attributes: only _region (face) and _strand (cards)
 reg = attr(face, "region")
 for ob in [o for o in O if o.type == "MESH"]:
     for a in [a.name for a in ob.data.attributes if not a.is_internal and a.name not in ("position",)
-              and a.domain == "POINT" and a.data_type == "FLOAT" and not a.name.startswith(".")]:
+              and a.domain == "POINT" and a.data_type in ("FLOAT", "INT") and not a.name.startswith(".")]:
         ob.data.attributes.remove(ob.data.attributes[a])
 a = face.data.attributes.new("_region", "FLOAT", "POINT")
 a.data.foreach_set("value", reg)
+
+
+def strand_tangent(ob, hc):
+    """Per-vertex strand direction, root -> tip, in object space: dP/dv per polygon (cards run along v), averaged per
+    vertex, then signed so it points away from the scalp and down. The shader used the derivative frame's v axis,
+    which flips sign across the mirrored UVs of the MH cards: slate's hair lit half grey / half black (review item 4)."""
+    me = ob.data
+    P = co(me)
+    uvl = me.uv_layers.active
+    acc = np.zeros_like(P)
+    for p in me.polygons:
+        ls = list(p.loop_indices)
+        vs = list(p.vertices)
+        if len(vs) < 3:
+            continue
+        p0, p1, p2 = P[vs[0]], P[vs[1]], P[vs[2]]
+        u0, u1, u2 = (np.array(uvl.data[l].uv) for l in ls[:3])
+        e1, e2, d1, d2 = p1 - p0, p2 - p0, u1 - u0, u2 - u0
+        den = d1[0] * d2[1] - d1[1] * d2[0]
+        if abs(den) < 1e-12:
+            continue
+        B = (e2 * d1[0] - e1 * d2[0]) / den               # dP/dv
+        for v in vs:
+            acc[v] += B / max(np.linalg.norm(B), 1e-12)
+    n = np.linalg.norm(acc, axis=1, keepdims=True)
+    T = np.where(n > 1e-9, acc / np.maximum(n, 1e-9), np.array([0, 0, -1.0]))
+    ref = (P - hc) / np.maximum(np.linalg.norm(P - hc, axis=1, keepdims=True), 1e-9) + np.array([0, 0, -0.7])
+    T *= np.where((T * ref).sum(1) < 0, -1.0, 1.0)[:, None]
+    # the glTF exporter converts POSITION/NORMAL to Y-up but writes custom vector attributes verbatim, so store the
+    # strand already in glTF axes (x, z, -y) (checked in the viewer against dP/dv: dot 0.03 before, ~1 after)
+    T = np.stack([T[:, 0], T[:, 2], -T[:, 1]], 1)
+    a = me.attributes.new("_strand", "FLOAT_VECTOR", "POINT")
+    a.data.foreach_set("vector", T.astype(np.float32).ravel())
+
+
+for ob in (O["hair"], cards):
+    strand_tangent(ob, J["joint-head"] + np.array([0, 0.005, 0.06]))
 # UV maps: exactly one per mesh
 for ob in [o for o in O if o.type == "MESH"]:
     while len(ob.data.uv_layers) > 1:

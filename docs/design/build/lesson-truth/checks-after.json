@@ -3,24 +3,6 @@
  "root": "/home/user/Taxila",
  "statuses": [
   {
-   "path": "/api/child/map",
-   "status": 200,
-   "w": 360,
-   "scheme": "light"
-  },
-  {
-   "path": "/api/child/plan",
-   "status": 200,
-   "w": 360,
-   "scheme": "light"
-  },
-  {
-   "path": "/api/child/map",
-   "status": 200,
-   "w": 360,
-   "scheme": "light"
-  },
-  {
    "path": "/api/child/plan",
    "status": 200,
    "w": 360,
@@ -39,16 +21,22 @@
    "scheme": "light"
   },
   {
-   "path": "/api/child/map",
-   "status": 200,
-   "w": 360,
-   "scheme": "dark"
-  },
-  {
    "path": "/api/child/plan",
    "status": 200,
    "w": 360,
-   "scheme": "dark"
+   "scheme": "light"
+  },
+  {
+   "path": "/api/child/map",
+   "status": 200,
+   "w": 360,
+   "scheme": "light"
+  },
+  {
+   "path": "/api/child/map",
+   "status": 200,
+   "w": 360,
+   "scheme": "light"
   },
   {
    "path": "/api/child/plan",
@@ -69,6 +57,12 @@
    "scheme": "dark"
   },
   {
+   "path": "/api/child/plan",
+   "status": 200,
+   "w": 360,
+   "scheme": "dark"
+  },
+  {
    "path": "/api/child/map",
    "status": 200,
    "w": 360,
@@ -77,6 +71,18 @@
   {
    "path": "/api/child/map",
    "status": 200,
+   "w": 360,
+   "scheme": "dark"
+  },
+  {
+   "path": "/api/child/plan",
+   "status": 200,
+   "w": 1280,
+   "scheme": "light"
+  },
+  {
+   "path": "/api/child/map",
+   "status": 200,
    "w": 1280,
    "scheme": "light"
   },
@@ -87,37 +93,31 @@
    "scheme": "light"
   },
   {
+   "path": "/api/child/map",
+   "status": 200,
+   "w": 1280,
+   "scheme": "light"
+  },
+  {
+   "path": "/api/child/map",
+   "status": 200,
+   "w": 1280,
+   "scheme": "light"
+  },
+  {
+   "path": "/api/child/map",
+   "status": 200,
+   "w": 1280,
+   "scheme": "light"
+  },
+  {
    "path": "/api/child/plan",
-   "status": 200,
-   "w": 1280,
-   "scheme": "light"
-  },
-  {
-   "path": "/api/child/map",
-   "status": 200,
-   "w": 1280,
-   "scheme": "light"
-  },
-  {
-   "path": "/api/child/map",
-   "status": 200,
-   "w": 1280,
-   "scheme": "light"
-  },
-  {
-   "path": "/api/child/map",
-   "status": 200,
-   "w": 1280,
-   "scheme": "light"
-  },
-  {
-   "path": "/api/child/map",
    "status": 200,
    "w": 1280,
    "scheme": "dark"
   },
   {
-   "path": "/api/child/plan",
+   "path": "/api/child/map",
    "status": 200,
    "w": 1280,
    "scheme": "dark"
@@ -148,10 +148,16 @@
   }
  ],
  "checks": {
-  "V-LT2": true,
-  "V-LT3": true,
+  "V-LT2c": false,
+  "V-ID-1": true,
+  "V-TGT": false,
+  "V-EN-1": false,
+  "V-LT3c": false,
   "V-LT1": true,
-  "V-LT4": true
+  "V-LT2s": true,
+  "V-LT4": true,
+  "V-LT3s": true,
+  "V-LT5s": true
  },
  "shots": [
   "docs/design/build/lesson-truth/home-kabir-first-360-light-after.png",
@@ -177,7 +183,189 @@
  ],
  "plan": {
   "state": "first",
-  "topic": "Square numbers and their",
+  "topic": "Square numbers",
   "teacher": "Arjun"
- }
+ },
+ "failures": [
+  {
+   "id": "V-LT2c",
+   "tier": "client",
+   "detail": "Kabir 360 light: data-plan-state=null, \"Your first lesson\" absent"
+  },
+  {
+   "id": "V-TGT",
+   "tier": "client",
+   "detail": "Kabir home 360 light: g \"Compute squares and reco\" 41x41; g \"Describe patterns in squ\" 41x41; g \"Decide whether a number \" 41x41; g \"Find square roots of per\" 41x41"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Kabir home 360 light: [\"Abhyaas\",\"स्वदेश\",\"दो गौरैया\",\"एक आशीर्वाद\",\"हरिद्वार\"]"
+  },
+  {
+   "id": "V-LT2c",
+   "tier": "client",
+   "detail": "Riya 360 light: data-plan-state=null, \"Done for today\" absent, DidCard \"3 lines: |||\" absent"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Riya home 360 light: [\"Aaj humne banaya\",\"Bagiya\",\"Abhyaas\",\"Aaj humne banaya\",\"Bagiya\"]"
+  },
+  {
+   "id": "V-LT3c",
+   "tier": "client",
+   "detail": "Sky 360 light: \"Your class is here\" absent, seals 0, dead zones []"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Sky 360 light: [\"Aasmaan\",\"Aasmaan\",\"स्वदेश\",\"दो गौरैया\",\"एक आशीर्वाद\"]"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Sky list 360 light: [\"Aasmaan\",\"Aasmaan\",\"आ गया\",\"अभी नहीं\",\"अभी नहीं\"]"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Garden 360 light: [\"Bagiya\",\"Bagiya\",\"Ghar\",\"Bagiya\",\"सीखो\"]"
+  },
+  {
+   "id": "V-LT2c",
+   "tier": "client",
+   "detail": "Kabir 360 dark: data-plan-state=null, \"Your first lesson\" absent"
+  },
+  {
+   "id": "V-TGT",
+   "tier": "client",
+   "detail": "Kabir home 360 dark: g \"Compute squares and reco\" 41x41; g \"Describe patterns in squ\" 41x41; g \"Decide whether a number \" 41x41; g \"Find square roots of per\" 41x41"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Kabir home 360 dark: [\"Abhyaas\",\"स्वदेश\",\"दो गौरैया\",\"एक आशीर्वाद\",\"हरिद्वार\"]"
+  },
+  {
+   "id": "V-LT2c",
+   "tier": "client",
+   "detail": "Riya 360 dark: data-plan-state=null, \"Done for today\" absent, DidCard \"3 lines: |||\" absent"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Riya home 360 dark: [\"Aaj humne banaya\",\"Bagiya\",\"Abhyaas\",\"Aaj humne banaya\",\"Bagiya\"]"
+  },
+  {
+   "id": "V-LT3c",
+   "tier": "client",
+   "detail": "Sky 360 dark: \"Your class is here\" absent, seals 0, dead zones []"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Sky 360 dark: [\"Aasmaan\",\"Aasmaan\",\"स्वदेश\",\"दो गौरैया\",\"एक आशीर्वाद\"]"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Sky list 360 dark: [\"Aasmaan\",\"Aasmaan\",\"आ गया\",\"अभी नहीं\",\"अभी नहीं\"]"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Garden 360 dark: [\"Bagiya\",\"Bagiya\",\"Ghar\",\"Bagiya\",\"सीखो\"]"
+  },
+  {
+   "id": "V-LT2c",
+   "tier": "client",
+   "detail": "Kabir 1280 light: data-plan-state=null, \"Your first lesson\" absent"
+  },
+  {
+   "id": "V-TGT",
+   "tier": "client",
+   "detail": "Kabir home 1280 light: g \"Compute squares and reco\" 41x41; g \"Describe patterns in squ\" 41x41; g \"Decide whether a number \" 41x41; g \"Find square roots of per\" 41x41"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Kabir home 1280 light: [\"Abhyaas\",\"स्वदेश\",\"दो गौरैया\",\"एक आशीर्वाद\",\"हरिद्वार\"]"
+  },
+  {
+   "id": "V-LT2c",
+   "tier": "client",
+   "detail": "Riya 1280 light: data-plan-state=null, \"Done for today\" absent, DidCard \"3 lines: |||\" absent"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Riya home 1280 light: [\"Aaj humne banaya\",\"Bagiya\",\"Abhyaas\",\"Aaj humne banaya\",\"Bagiya\"]"
+  },
+  {
+   "id": "V-LT3c",
+   "tier": "client",
+   "detail": "Sky 1280 light: \"Your class is here\" absent, seals 0, dead zones []"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Sky 1280 light: [\"Aasmaan\",\"Aasmaan\",\"स्वदेश\",\"दो गौरैया\",\"एक आशीर्वाद\"]"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Sky list 1280 light: [\"Aasmaan\",\"Aasmaan\",\"आ गया\",\"अभी नहीं\",\"अभी नहीं\"]"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Garden 1280 light: [\"Bagiya\",\"Bagiya\",\"Ghar\",\"Bagiya\",\"सीखो\"]"
+  },
+  {
+   "id": "V-LT2c",
+   "tier": "client",
+   "detail": "Kabir 1280 dark: data-plan-state=null, \"Your first lesson\" absent"
+  },
+  {
+   "id": "V-TGT",
+   "tier": "client",
+   "detail": "Kabir home 1280 dark: g \"Compute squares and reco\" 41x41; g \"Describe patterns in squ\" 41x41; g \"Decide whether a number \" 41x41; g \"Find square roots of per\" 41x41"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Kabir home 1280 dark: [\"Abhyaas\",\"स्वदेश\",\"दो गौरैया\",\"एक आशीर्वाद\",\"हरिद्वार\"]"
+  },
+  {
+   "id": "V-LT2c",
+   "tier": "client",
+   "detail": "Riya 1280 dark: data-plan-state=null, \"Done for today\" absent, DidCard \"3 lines: |||\" absent"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Riya home 1280 dark: [\"Aaj humne banaya\",\"Bagiya\",\"Abhyaas\",\"Aaj humne banaya\",\"Bagiya\"]"
+  },
+  {
+   "id": "V-LT3c",
+   "tier": "client",
+   "detail": "Sky 1280 dark: \"Your class is here\" absent, seals 0, dead zones []"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Sky 1280 dark: [\"Aasmaan\",\"Aasmaan\",\"स्वदेश\",\"दो गौरैया\",\"एक आशीर्वाद\"]"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Sky list 1280 dark: [\"Aasmaan\",\"Aasmaan\",\"आ गया\",\"अभी नहीं\",\"अभी नहीं\"]"
+  },
+  {
+   "id": "V-EN-1",
+   "tier": "client",
+   "detail": "Garden 1280 dark: [\"Bagiya\",\"Bagiya\",\"Ghar\",\"Bagiya\",\"सीखो\"]"
+  }
+ ]
 }

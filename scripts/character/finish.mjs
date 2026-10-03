@@ -30,7 +30,10 @@ const tex = (f) => path.join(buildDir, "tex", f);
 // [file, slotOwner, slot, {H:[w,h,enc], Bplus:[...], Blite:[...]}, colour?]
 // enc: "u" = UASTC (normals, alpha, hero colour), "e" = ETC1S (B+ colour), null = not shipped on that tier
 const MAPS = [
-  ["skin_albedo.png", "TaxilaSkin", "baseColor", { H: [2048, 2048, "u"], Bplus: [1024, 1024, "e"], Blite: [1024, 1024, "e"] }, true],
+  // H: albedo without the painted brows (the H brow cards carry them; painted + cards was a double brow). B+ face albedo
+  // in UASTC: ETC1S left a yellow blotch on plum's forehead (review item 14); B-lite keeps ETC1S.
+  ["skin_albedo_H.png", "TaxilaSkin", "baseColor", { H: [2048, 2048, "u"], Bplus: null, Blite: null }, true],
+  ["skin_albedo.png", "TaxilaSkin", "baseColor", { H: null, Bplus: [1024, 1024, "u"], Blite: [1024, 1024, "e"] }, true],
   ["skin_normal.png", "TaxilaSkin", "normal", { H: [2048, 2048, "u"], Bplus: [1024, 1024, "u"], Blite: null }, false],
   ["skin_packed.png", "TaxilaSkin", "occlusion", { H: [1024, 1024, "u"], Bplus: [512, 512, "u"], Blite: [256, 256, "e"] }, false],
   ["skin_wrinkle.png", "TaxilaSkin", "emissive", { H: [1024, 1024, "u"], Bplus: [512, 512, "u"], Blite: null }, false],
@@ -39,7 +42,7 @@ const MAPS = [
   ["skin_wrinkle_stretch.png", "TaxilaSkin", "clearcoatNormal", { H: [1024, 1024, "u"], Bplus: null, Blite: null }, false],
   ["garment_albedo.png", "TaxilaCloth", "baseColor", { H: [1024, 1024, "u"], Bplus: [512, 512, "e"], Blite: [512, 512, "e"] }, true],
   ["hair_atlas.png", "TaxilaHair", "baseColor", { H: [2048, 2048, "u"], Bplus: [1024, 1024, "u"], Blite: [1024, 1024, "e"] }, true],
-  ["cards_atlas.png", "TaxilaCards", "baseColor", { H: [1024, 512, "u"], Bplus: [512, 256, "u"], Blite: [512, 256, "e"] }, true],
+  ["cards_atlas.png", "TaxilaCards", "baseColor", { H: [2048, 1024, "u"], Bplus: [512, 256, "u"], Blite: [512, 256, "e"] }, true],
 ];
 const MEANING = {
   baseColor: "albedo (sRGB; garment alpha = roughness)", normal: "tangent-space normal (base detail)",
@@ -48,10 +51,13 @@ const MEANING = {
   sheenColor: "region mask B: nasoL, nasoR, chin, neck", clearcoatNormal: "wrinkle normal, stretch",
 };
 
+// card textures (hair, brows, lashes) take a stronger UASTC rate-distortion setting: their fine alpha survives it,
+// and it pays for the 2x brow alpha resolution on H inside the 6 MB cap
+const RDO = { "hair_atlas.png": "2.5", "cards_atlas.png": "2.5" };
 function ktx2(src, w, h, enc, srgb) {
   const out = path.join(os.tmpdir(), `tx-${process.pid}-${path.basename(src, ".png")}-${w}-${enc}.ktx2`);
   const args = ["--t2", "--genmipmap", "--resize", `${w}x${h}`, "--assign_oetf", srgb ? "srgb" : "linear"];
-  if (enc === "u") args.push("--encode", "uastc", "--uastc_quality", "2", "--uastc_rdo_l", "1.0", "--zcmp", "19");
+  if (enc === "u") args.push("--encode", "uastc", "--uastc_quality", "2", "--uastc_rdo_l", RDO[path.basename(src)] || "1.0", "--zcmp", "19");
   else args.push("--encode", "etc1s", "--clevel", "2", "--qlevel", "160");
   execFileSync(TOKTX, [...args, out, src], { env: { ...process.env, LD_LIBRARY_PATH: KTXLIB } });
   const b = fs.readFileSync(out);

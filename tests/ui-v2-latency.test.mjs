@@ -1,6 +1,10 @@
 // B1-A4 (PRODUCT-DESIGN-V2 §4.5, G-WAIT-1): ack clip ≤ 1 per 3 turns, never consecutive, never on a safety turn;
 // over 200 simulated turns the clip rate, nod timing and thinking duration do not differ between correct and wrong
 // (χ² p > 0.2); the negative control (clip only after correct) fails.
+// Scope, stated plainly (review 2026-10-03): the ack-clip PATH is not integrated yet (no clips are recorded, the
+// bank is empty, B4), so the clip tests below exercise the rationing rules only. What IS integrated is tested at the
+// end: the REAL LessonRuntime + FloorController, driven by scripted turns whose ui.verdict is correct or not_yet,
+// must produce the identical pre-audio signal sequence (heard → thinking at heardMs, the label beat) after both.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { AckRationer, beatsAt, BEATS } from "../src/lesson/latency.ts";
@@ -89,4 +93,68 @@ test("latency beats: the label at 600 ms (never earlier), chalk at 1.2 s, the mo
   assert.equal(beatsAt(1200, { older: true }).chalk, true);
   assert.equal(beatsAt(4200, { older: true }).seconds, 4);
   assert.equal(beatsAt(4200, { older: false }).seconds, null, "Young never see a number");
+});
+
+// ── integrated: the real runtime + floor, verdict-varied turns ──
+import { LessonRuntime } from "../src/lesson/runtime.ts";
+import { FloorController } from "../src/lesson/floor.ts";
+import { MemoryOutboxStore } from "../src/lesson/outbox.ts";
+
+class Link {
+  constructor(levels) { this.mode = "text"; this.levels = levels; this.fns = new Set(); }
+  on(fn) { this.fns.add(fn); return () => this.fns.delete(fn); }
+  emit(e) { for (const f of [...this.fns]) f(e); }
+  async connect() { this.emit({ type: "connection", state: "connected" }); }
+  applyInstructions() {}
+  sendChild(text) { this.emit({ type: "child_final", text, startedAt: 0, typed: true }); }
+  promptTeacher() { this.prompted = (this.prompted ?? 0) + 1; }
+  interrupt() {}
+  setPushToTalk() {}
+  talkStart() {}
+  talkEnd() {}
+  close() {}
+}
+
+test("G-WAIT-1 (integrated): after correct and after wrong, the real runtime + floor emit the same pre-audio signals", async () => {
+  const rnd = lcg(7);
+  const verdicts = Array.from({ length: 60 }, () => (rnd() < 0.5 ? "correct" : "not_yet"));
+  let k = 0;
+  const api = {
+    start: async () => ({ lessonId: "L", topic: { id: "t", title: "T", chapter: "1" }, teacher: { id: "asha", name: "Asha", voice: "v" }, moduleCommands: [],
+      ui: { handover: "answer", ask: { text: "Q0" } }, teacherOpening: "hi", teacherOpeningSeq: 1 }),
+    turn: async () => ({ move: { kind: "probe", shape: "x" }, moduleCommands: [], ui: { handover: "answer", verdict: verdicts[k], ask: { text: `Q${k + 1}` } }, teacherReply: `r${k}`, teacherReplySeq: 2 + k }),
+    end: async () => ({}),
+    realtimeToken: async () => { throw new Error("no"); },
+  };
+  let link;
+  const rt = new LessonRuntime({ api, outboxStore: new MemoryOutboxStore(true), createLink: (_m, c) => (link = new Link(c.levels)) });
+  let clock = 0;
+  const q = [];
+  const timers = { setTimeout: (fn, ms) => { const h = { at: clock + ms, fn }; q.push(h); return h; }, clearTimeout: (h) => { const i = q.indexOf(h); if (i >= 0) q.splice(i, 1); } };
+  const advance = (ms) => { const until = clock + ms; for (;;) { q.sort((a, b) => a.at - b.at); if (!q.length || q[0].at > until) break; const h = q.shift(); clock = h.at; h.fn(); } clock = until; };
+  const fc = new FloorController(FLOOR_TIMING.older, timers, () => clock, () => rt.state.pendingTurns > 0);
+  fc.attach(rt);
+  const log = [];
+  fc.onTransition((t) => log.push([t.to, t.at]));
+  await rt.start("c", "text");
+  link.emit({ type: "teacher_audio_start" });
+  link.emit({ type: "teacher_audio_end" });
+  const seqs = { correct: new Set(), not_yet: new Set() };
+  for (k = 0; k < verdicts.length; k++) {
+    assert.equal(fc.state.floor, "your_turn");
+    log.length = 0;
+    const t0 = clock;
+    rt.say(`answer ${k}`);
+    advance(1000); // the receipt hold passes; the reply has landed (its verdict is in ui) but her audio has not started
+    await new Promise((r) => setImmediate(r));
+    advance(1000);
+    const pre = log.map(([f, at]) => `${f}@${at - t0}`).join(" ");
+    seqs[verdicts[k]].add(pre);
+    link.emit({ type: "teacher_audio_start" });
+    link.emit({ type: "teacher_audio_end" });
+  }
+  assert.ok(verdicts.includes("correct") && verdicts.includes("not_yet"));
+  assert.deepEqual([...seqs.correct], [...seqs.not_yet], "identical pre-audio signal sequence after right and wrong");
+  assert.deepEqual([...seqs.correct], [`heard@0 thinking@${FLOOR_TIMING.older.heardMs}`]);
+  rt.dispose();
 });

@@ -2,7 +2,9 @@
 // (`[data-lamp]`, AnswerDock[data-floor="your_turn"] only; G-LAMP-1, V-SIG-2). A 24 dp header row holds the state
 // word (visible at every band and size) and, for Older, Wait; the body follows `answerForm`. Every icon button has
 // a visible one-word label (audit 17); the text field never shrinks below 160 dp.
-// The lamp is never lit under a sheet or a trouble strip (§4.2 rule 3): the strip takes the header's place.
+// The lamp is never lit under a sheet or a trouble strip (§4.2 rule 3). An overlay suspends the floor: while T2 or
+// T4 holds the child's answer, the header says "Your answer is saved" (never "Got it" or "{T} is thinking" over
+// "Your answer didn't send."). The mode line points up only when the tray holds something to tap.
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { StripId } from "../../lesson/trouble.ts";
 import { t, type CopyKey } from "../../ui/copy.ts";
@@ -13,32 +15,74 @@ import { TalkButton } from "./TalkButton.tsx";
 
 interface Meter { subscribe(fn: (v: number) => void): () => void }
 
-/** The mode line in YOUR TURN: how to answer, pointing at the tray when the touch is up there. */
-export function modeOf(m: Pick<DeskModel, "answerForm" | "family" | "mic" | "typing" | "tray">): { key: CopyKey; glyph: StateGlyphName | null } {
+/** Does the tray hold something the child can tap (tiles, the pad, an activity, the Help menu)? */
+export function tapTargets(tray: DeskModel["tray"]): boolean {
+  if (!tray) return false;
+  if (tray.overlay === "help_menu") return true;
+  if (tray.overlay === "no_mic") return false;
+  return tray.kind === "pad" || tray.kind === "module" || (tray.kind === "tiles" && !!tray.tiles?.length);
+}
+
+/** The mode line in YOUR TURN: how to answer, pointing at the tray ONLY when the touch is up there. */
+export function modeOf(m: Pick<DeskModel, "answerForm" | "family" | "mic" | "typing" | "tray"> & { showHelp?: boolean }): { key: CopyKey; glyph: StateGlyphName | null } | null {
   const young = m.family === "young";
   if (m.typing) return { key: "floor.mode.type", glyph: null };
+  const up = tapTargets(m.tray);
+  const helpMenu = m.tray?.overlay === "help_menu";
+  // Young with no voice and nothing to tap yet: point at Help (never at an empty tray).
+  const noVoiceYoung = young && !m.mic.available;
+  if (helpMenu) return { key: "floor.mode.tap_above", glyph: "hand_up" };
   switch (m.answerForm) {
     case "choice":
+      if (!up) return noVoiceYoung ? (m.showHelp ? { key: "floor.mode.help", glyph: null } : null) : { key: "floor.mode.say_or_tap", glyph: null };
       return young ? { key: "floor.mode.tap_above", glyph: "hand_up" } : { key: "floor.mode.say_or_tap", glyph: null };
     case "tap_in_tray":
-      return { key: "floor.mode.tray", glyph: young ? "hand_up" : null };
+      if (up) return { key: "floor.mode.tray", glyph: young ? "hand_up" : null };
+      break; // T7: the activity is gone; the item carries on by voice or typing (below)
     case "draw":
-      return { key: "floor.mode.draw", glyph: young ? "hand_up" : null };
+      if (up) return { key: "floor.mode.draw", glyph: young ? "hand_up" : null };
+      break;
     case "read_aloud":
       return { key: "floor.mode.read", glyph: null };
     case "number":
-      return m.tray?.kind === "pad" ? { key: "floor.mode.pad", glyph: young ? "hand_up" : null } : { key: "floor.mode.say_or_tap", glyph: null };
-    default:
-      return m.mic.available ? { key: m.tray?.kind === "tiles" ? "floor.mode.say_or_tap" : "floor.mode.say_or_tap", glyph: null } : { key: young ? "floor.mode.tap_above" : "floor.mode.type", glyph: null };
+      if (m.tray?.kind === "pad") return { key: "floor.mode.pad", glyph: young ? "hand_up" : null };
+      break;
   }
+  // words, and every form whose tray target is gone
+  if (m.mic.available) return { key: "floor.mode.say_or_tap", glyph: null };
+  if (!young) return { key: "floor.mode.type", glyph: null };
+  return up ? { key: "floor.mode.tap_above", glyph: "hand_up" } : m.showHelp ? { key: "floor.mode.help", glyph: null } : null;
 }
+
+/** Older, thinking: "Thinking… N s" from 4 s, ticking here (the dock), not across the whole Desk. */
+function useThinkingSeconds(since: number | null | undefined): number | null {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (since == null) return;
+    setNow(Date.now());
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [since]);
+  if (since == null) return null;
+  const ms = now - since;
+  return ms >= 4000 ? Math.floor(ms / 1000) : null;
+}
+
+/** Strips that hold the child's answer: the floor word is suspended while they show. */
+const HOLDS_ANSWER = new Set<StripId>(["T2", "T4"]);
 
 export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
   { m: DeskModel; a: DeskActions; micMeter?: Meter; stripId: StripId | null; lit: boolean; setRef?: (el: HTMLElement | null) => void }) {
   const young = m.family === "young";
   const yourTurn = m.floor === "your_turn" || m.floor === "yielding";
-  const word = stateWord(m.floor, { teacher: m.teacher.name, thinkingLabel: m.thinkingLabel, seconds: m.thinkingSeconds, lastOne: m.lastOne, tapToTalk: m.mic.tapToTalk });
-  const mode = yourTurn && !stripId ? modeOf(m) : m.floor === "listening" && m.mic.tapToTalk ? { key: "floor.mode.done" as CopyKey, glyph: null } : null;
+  const liveSeconds = useThinkingSeconds(m.floor === "thinking" ? m.thinkingSince : null);
+  const held = !!stripId && HOLDS_ANSWER.has(stripId);
+  const word = held ? t("floor.held")
+    : stateWord(m.floor, { teacher: m.teacher.name, thinkingLabel: m.thinkingLabel, seconds: m.thinkingSeconds ?? liveSeconds, lastOne: m.lastOne, tapToTalk: m.mic.tapToTalk });
+  const mode = held ? null : yourTurn && !stripId ? modeOf(m) : m.floor === "listening" && m.mic.tapToTalk ? { key: (young ? "floor.mode.done_young" : "floor.mode.done") as CopyKey, glyph: null } : null;
+  // While she talks (or shows), the dock holds only the mic (barge-in); the side controls come with YOUR TURN
+  // (§4.2 speaking row), so SPEAKING and YOUR TURN differ by shape, not only by the lamp's colour (V-SIG-3).
+  const sidesHidden = m.floor === "speaking" || m.floor === "showing";
   const [momentNote, setMomentNote] = useState(false);
   useEffect(() => {
     if (m.floor !== "thinking") setMomentNote(false);
@@ -56,7 +100,9 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
       disabled={m.gate !== null || m.sheet !== null} small={m.layout.keyboard} />
   ) : null;
 
-  const side = (label: CopyKey, glyph: StateGlyphName, onClick: () => void, testid: string, extra?: { pressed?: boolean }) => (
+  const side = (label: CopyKey, glyph: StateGlyphName, onClick: () => void, testid: string, extra?: { pressed?: boolean }) => sidesHidden ? (
+    <span className="dk-side dk-side--empty" aria-hidden="true" />
+  ) : (
     <button type="button" className="dk-side" onClick={onClick} data-testid={testid} aria-pressed={extra?.pressed}>
       <Glyph name={glyph} size={young ? 28 : 24} />
       <span>{t(label)}</span>
@@ -72,8 +118,18 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
         <Glyph name="hear" size={28} />{t("audio.tap_to_hear", { T: m.teacher.name })}
       </button>
     );
+  } else if (m.floor === "heard" && !m.typing) {
+    // The receipt (§4.2 heard): the mic collapses into a solid "got it" disc and the side controls step back for
+    // the 400-600 ms beat, so HEARD and THINKING differ by SHAPE, not only by word and glyph (V-SIG-3).
+    body = (
+      <div className="dk-dock-row dk-dock-row--heard">
+        <span className="dk-side dk-side--empty" aria-hidden="true" />
+        <span className="dk-receipt" aria-hidden="true"><Glyph name="heard" size={young ? 44 : 36} /></span>
+        <span className="dk-side dk-side--empty" aria-hidden="true" />
+      </div>
+    );
   } else if (m.typing) {
-    body = <TypeRow young={young} onSend={a.send} onClose={() => a.setTyping(false)} onFocus={a.setTypingFocus} canClose={m.mic.available} />;
+    body = <TypeRow key={m.fixDraft ?? ""} initial={m.fixDraft ?? ""} young={young} onSend={a.send} onClose={() => a.setTyping(false)} onFocus={a.setTypingFocus} canClose={m.mic.available} />;
   } else if (young) {
     body = (
       <div className="dk-dock-row">
@@ -83,8 +139,8 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
       </div>
     );
   } else {
-    const typeBtn = m.answerForm === "number" ? (
-      <button type="button" className="dk-side" onClick={() => a.setTyping(true)} data-testid="type" aria-label="Type a number">
+    const typeBtn = sidesHidden ? <span className="dk-side dk-side--empty" aria-hidden="true" /> : m.answerForm === "number" ? (
+      <button type="button" className="dk-side" onClick={() => (a.openPad ? a.openPad() : a.setTyping(true))} data-testid="type" aria-label="Number pad" aria-pressed={m.tray?.kind === "pad"}>
         <span className="dk-side-num" aria-hidden="true">{t("dock.numbers")}</span>
       </button>
     ) : side("dock.type", "keyboard", () => a.setTyping(true), "type");
@@ -109,8 +165,8 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
       data-testid="dock"
     >
       <header className="dk-dock-head">
-        <StateWord floor={m.floor} word={word} mode={mode?.key} modeGlyph={mode?.glyph} />
-        {!young && !m.typing && m.gate === null && !stripId && (yourTurn || m.floor === "listening") && (
+        <StateWord floor={m.floor} word={word} mode={mode?.key} modeGlyph={mode?.glyph} glyph={held ? "clock" : undefined} />
+        {!young && !m.typing && m.gate === null && !stripId && yourTurn && (
           <button type="button" className="dk-wait" onClick={a.wait} data-testid="wait">{t("dock.wait")}</button>
         )}
       </header>
@@ -120,8 +176,8 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
   );
 }
 
-function TypeRow({ young, onSend, onClose, onFocus, canClose }: { young: boolean; onSend: (v: string) => void; onClose: () => void; onFocus: (on: boolean) => void; canClose: boolean }) {
-  const [v, setV] = useState("");
+function TypeRow({ young, onSend, onClose, onFocus, canClose, initial = "" }: { young: boolean; onSend: (v: string) => void; onClose: () => void; onFocus: (on: boolean) => void; canClose: boolean; initial?: string }) {
+  const [v, setV] = useState(initial);
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
     ref.current?.focus({ preventScroll: true });

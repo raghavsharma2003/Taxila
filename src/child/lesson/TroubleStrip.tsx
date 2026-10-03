@@ -39,29 +39,38 @@ export function stripRow(id: StripId, o: { noPack: boolean; young: boolean }): R
   }
 }
 
-/** 56 dp for one short sentence and ≤ 1 action; 96 dp when it needs a second line (two actions, or a long one). */
+/** The first-frame estimate of the strip's height (the Desk then measures `.dk-strip-body` and the layout uses the
+ *  larger): one row when the sentence and its actions fit side by side, else the actions wrap under it. Actions are
+ *  48 dp (Older) / 64 dp (Young) targets (§11.5). */
 export function stripHeight(id: StripId, o: { noPack: boolean; young: boolean; width: number }): number {
   const row = stripRow(id, o);
-  // A width estimate (Atkinson at body size ≈ 8.2 px per character incl. the action pills); no DOM measuring.
+  const target = o.young ? 64 : 48;
+  const pad = 2 * 4 + 2; // var(--space-1) top and bottom + the border
+  // A width estimate (Atkinson at body size ≈ 8.2 px per character incl. the action pills).
   const chars = t(row.text, { T: "Teacher" }).length + row.actions.reduce((n, x) => n + t(x.label).length + 6, 0);
-  return chars * 8.2 + 64 > o.width ? 96 : 56;
+  const textRows = Math.ceil((t(row.text, { T: "Teacher" }).length * 8.2) / Math.max(120, o.width - 56));
+  const oneRow = Math.max(row.actions.length ? target : 0, textRows * 26) + pad;
+  if (!row.actions.length || chars * 8.2 + 64 <= o.width) return Math.max(56, oneRow);
+  return Math.max(56, textRows * 26 + 4 + target + pad);
 }
 
-export function TroubleStrip({ id, noPack, young, teacher, onAction }: { id: StripId; noPack: boolean; young: boolean; teacher: string; onAction: DeskActions["troubleAction"] }) {
+export function TroubleStrip({ id, noPack, young, teacher, onAction, text }: { id: StripId; noPack: boolean; young: boolean; teacher: string; onAction: DeskActions["troubleAction"]; text?: CopyKey | null }) {
   const row = stripRow(id, { noPack, young });
   return (
     <div className={`dk-strip dk-strip--${row.kind}`} role={row.kind === "trouble" ? "alert" : "status"} data-strip={id} data-testid="trouble-strip">
-      <Glyph name={row.glyph} size={24} className="dk-strip-glyph" />
-      <p className="dk-strip-text">{t(row.text, { T: teacher })}</p>
-      {row.actions.length > 0 && (
-        <span className="dk-strip-actions">
-          {row.actions.map((x) => (
-            <button key={x.a} type="button" className="dk-btn dk-btn--quiet dk-btn--strip" onClick={() => onAction(x.a)} data-testid={`strip-${x.a}`}>
-              {t(x.label)}
-            </button>
-          ))}
-        </span>
-      )}
+      <div className="dk-strip-body" data-measure="strip">
+        <Glyph name={row.glyph} size={24} className="dk-strip-glyph" />
+        <p className="dk-strip-text">{t(text ?? row.text, { T: teacher })}</p>
+        {row.actions.length > 0 && (
+          <span className="dk-strip-actions">
+            {row.actions.map((x) => (
+              <button key={x.a} type="button" className="dk-btn dk-btn--quiet dk-btn--strip" onClick={() => onAction(x.a)} data-testid={`strip-${x.a}`}>
+                {t(x.label)}
+              </button>
+            ))}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

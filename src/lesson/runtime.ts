@@ -9,7 +9,8 @@
 //      reset signals) on `events`, which the eight-state floor (src/lesson/floor.ts) reduces,
 //   5. close the lesson on the server on every way out (end, Director end, unmount, page hide, fatal error),
 //   6. never lose a child's answer: every turn goes through the outbox (src/lesson/outbox.ts): written before it
-//      is sent, retried at 1/3/6 s, held on failure and flushed in order on reconnect (PRODUCT-DESIGN-V2 §4.7).
+//      is sent, retried at 1/3/6 s, held on failure and flushed in order on reconnect (PRODUCT-DESIGN-V2 §4.7);
+//      answers held for an EARLIER lesson (a session that expired, a reload) are flushed when the next one starts.
 // The Director runs off the voice critical path: the realtime teacher answers from her current
 // instructions while the turn call is in flight; its result shapes her NEXT turn — except where the
 // Director says it must be voiced now (TurnResponse.speakNow, and the goodbye after `end`).
@@ -66,6 +67,11 @@ export interface LessonState {
   lastResent: number | null;
   /** The outbox is memory-only (IndexedDB unavailable): the lesson card notes it. */
   outboxVolatile: boolean;
+  /** The stored seq of the teacher turn the current ui came with (set just before that ui): the turn that posed
+   *  the pinned question, so "Hear the question" can replay THAT turn, not whatever she said last. */
+  replySeq: number | null;
+  /** Her words for replySeq (text lanes), so the turn can be fetched and spoken again when no clip is buffered. */
+  replyText: string | null;
   debug: Record<string, unknown> | null;
 }
 
@@ -124,6 +130,8 @@ const END_GRACE_MS = 12_000;
  * (2.6-6.1 s): the last answer was discarded and its evidence could land after the summary.
  */
 const END_DRAIN_MS = 20_000;
+/** Held answers older than this are not sent to their (long closed) lesson: dropped at the next start. */
+const OUTBOX_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 /** A child turn waits at most this long for a teacher turn that started before it to finish streaming. */
 const TEACHER_SETTLE_MS = 2_000;
 const LESSON_ENDED = /lesson has ended/;
@@ -147,6 +155,8 @@ const initialState = (mode: LessonMode = "voice"): LessonState => ({
   held: [],
   lastResent: null,
   outboxVolatile: false,
+  replySeq: null,
+  replyText: null,
 });
 
 interface ChildInput {
@@ -216,7 +226,7 @@ export class LessonRuntime {
       // IndexedDB opens asynchronously; turns before it opens are held in memory and carried over.
       this.outboxReady = (given ?? openOutboxStore)().then(
         async (store) => {
-          await this.outbox.useStore(store, this.state.lessonId ? [this.state.lessonId] : []);
+          await this.outbox.useStore(store);
           this.store.set({ outboxVolatile: !store.durable });
         },
         () => this.store.set({ outboxVolatile: true }),
@@ -254,6 +264,7 @@ export class LessonRuntime {
       void this.startVoiceFeatures(link, gen);
       if (s.instructions) link.applyInstructions(s.instructions);
       this.modules.push(s.moduleCommands);
+      this.store.set({ replySeq: s.teacherOpeningSeq ?? null, replyText: s.teacherOpening ?? null });
       this.applyUi(s.ui);
       this.store.set({ phase: "live" });
       if (typeof window !== "undefined") window.addEventListener("pagehide", this.onPageHide);
@@ -265,6 +276,9 @@ export class LessonRuntime {
         link.promptTeacher(this.lastReply);
       }
       else this.dispatch({ type: "settle" });
+      // Answers held for an earlier lesson (the session expired, the page was reloaded, "Finish for now"):
+      // sent now, in the background, off this lesson's chain (§4.7 T8: "the outbox is kept and sent after sign-in").
+      void this.flushOthers(s.lessonId);
     } catch (err) {
       if (gen !== this.generation) return lessonId ? this.closeQuietly(lessonId) : undefined;
       this.teardown();
@@ -322,7 +336,7 @@ export class LessonRuntime {
       const recs = await this.outbox.pending(lessonId);
       for (const rec of recs) {
         if (gen !== this.generation) return;
-        const res = await this.outbox.resend(rec.key, lessonId, (r) => this.api.turn(r));
+        const res = await this.outbox.resend(rec.key, lessonId, (r, signal) => this.api.turn(r, signal));
         if (gen !== this.generation) return;
         this.store.set((s) => ({ held: s.held.filter((x) => x !== rec.turnSeq), lastResent: rec.turnSeq }));
         this.applyTurn(res, false);
@@ -339,13 +353,79 @@ export class LessonRuntime {
     return p.then(() => true, () => false);
   }
 
+  /**
+   * T1 "Try again": abandon the request in flight (or the wait before its next retry) and send it again now,
+   * marked retried. When nothing is in flight, the held answers are re-sent. Resolves true when something went.
+   */
+  retryNow(): Promise<boolean> {
+    if (this.state.phase !== "live") return Promise.resolve(false);
+    if (this.outbox.kick()) return Promise.resolve(true);
+    return this.resendHeld();
+  }
+
+  /**
+   * "Fix" (§4.3): the child corrected a misheard transcript before she replied. The turn in flight is re-sent
+   * with the corrected words under the same turnSeq, marked edited, so it supersedes the first attempt instead of
+   * counting as a second answer. With no turn in flight it is an ordinary typed answer. Returns "edited" or "new".
+   */
+  async fixAnswer(text: string): Promise<"edited" | "new" | "none"> {
+    const t = text.trim();
+    if (!t || !this.live()) return "none";
+    if (await this.outbox.edit(t)) return "edited";
+    this.say(t);
+    return "new";
+  }
+
   /** Her last line again (T5 "Play again": the speech failed; the stored turn is fetched and spoken again). */
   replayTeacher(): void {
     if (this.live() && this.lastReply && this.link?.mode === "text") this.link.promptTeacher(this.lastReply);
   }
 
+  /** A stored teacher turn again (text lanes): "Hear the question" when its clip is no longer buffered. */
+  replayReply(reply: TeacherReply): boolean {
+    if (!this.live() || this.link?.mode !== "text" || !reply.text) return false;
+    this.link.promptTeacher(reply);
+    return true;
+  }
+
+  /**
+   * Flush answers held for OTHER lessons, oldest first, off this lesson's chain. Each lesson's answers are sent
+   * (marked retried) and that lesson is then closed on the server once nothing of it is held. A lesson the server
+   * says has ended (409) or does not know (404) can never take them: its records are dropped. A network or auth
+   * failure keeps them for the next start. Records older than OUTBOX_MAX_AGE_MS are dropped unsent.
+   */
+  private async flushOthers(current: string): Promise<void> {
+    try {
+      await this.outboxReady;
+      for (const id of await this.outbox.lessons(current)) {
+        let sent = false;
+        for (const rec of await this.outbox.pending(id)) {
+          if (Date.now() - rec.at > OUTBOX_MAX_AGE_MS) {
+            await this.outbox.drop(rec.key);
+            continue;
+          }
+          try {
+            await this.outbox.resend(rec.key, id, (r, signal) => this.api.turn(r, signal));
+            sent = true;
+          } catch (err) {
+            const cause = err instanceof OutboxHeld ? err.cause : err;
+            const status = cause instanceof ApiError ? cause.status : undefined;
+            if ((status === 409 && LESSON_ENDED.test(messageOf(cause))) || status === 404) await this.outbox.dropLesson(id);
+            break;
+          }
+        }
+        if (sent && !(await this.outbox.hasPending(id))) this.closeQuietly(id);
+      }
+    } catch (err) {
+      console.warn("lesson: could not flush earlier answers", err);
+    }
+  }
+
   private onOnline = (): void => {
-    if (this.state.phase === "live" && (this.state.held.length || this.state.failure?.kind === "send")) void this.resendHeld();
+    if (this.state.phase !== "live") return;
+    // An answer still being delivered is waiting out a retry delay: send it NOW (RC within 3 s, §4.7).
+    if (this.outbox.kick()) return;
+    if (this.state.held.length || this.state.failure?.kind === "send") void this.resendHeld();
   };
 
   /**
@@ -503,6 +583,9 @@ export class LessonRuntime {
   /** Serialise Director calls: each sees the previous one's state, and answers apply in order. null = a module milestone. */
   private queueTurn(input: ChildInput | null): void {
     const gen = this.generation;
+    // A child turn that failed: no reply is coming, so the wait is settled AFTER pendingTurns drops (the floor
+    // ignores a settle while a Director call is still counted in flight), on every lane.
+    let settleAfter = false;
     this.store.set((s) => ({ pendingTurns: s.pendingTurns + 1 }));
     this.chain = this.chain
       .then(() => (gen === this.generation ? this.runTurn(input) : undefined))
@@ -535,12 +618,14 @@ export class LessonRuntime {
           this.teardown();
           this.modules.clear();
           this.store.set({ phase: "error", pendingTurns: 0, failure: { kind: "auth", status, at: Date.now() } });
-        } else if (this.state.mode === "text" && input) {
-          this.dispatch({ type: "settle" }); // no reply is coming (a milestone call never started a wait)
+        } else if (input && (this.state.mode === "text" || held)) {
+          settleAfter = true; // no reply is coming (a milestone call never started a wait)
         }
       })
       .finally(() => {
-        if (gen === this.generation) this.store.set((s) => ({ pendingTurns: Math.max(0, s.pendingTurns - 1) }));
+        if (gen !== this.generation) return;
+        this.store.set((s) => ({ pendingTurns: Math.max(0, s.pendingTurns - 1) }));
+        if (settleAfter) this.dispatch({ type: "settle" });
       });
   }
 
@@ -577,9 +662,9 @@ export class LessonRuntime {
       await this.outboxReady;
       if (input) {
         // A child turn goes through the outbox: written before it is sent, retried, held, never lost.
-        const turnSeq = this.outbox.nextSeq();
+        const turnSeq = await this.outbox.reserve(lessonId);
         this.store.set((s) => ({ held: [...s.held, turnSeq] }));
-        res = await this.outbox.send(req, (r) => this.api.turn(r), { turnSeq });
+        res = await this.outbox.send(req, (r, signal) => this.api.turn(r, signal), { turnSeq });
         this.store.set((s) => ({ held: s.held.filter((x) => x !== turnSeq) }));
       } else {
         res = await this.api.turn(req); // a module milestone: its events are re-buffered on failure
@@ -598,6 +683,7 @@ export class LessonRuntime {
     if (r.instructions) link.applyInstructions(r.instructions); // voice lane only
     const dropped = this.modules.push(r.moduleCommands ?? []);
     if (dropped) console.warn(`lesson: dropped ${dropped} malformed module command(s)`);
+    if (r.teacherReplySeq !== undefined || r.teacherReply) this.store.set({ replySeq: r.teacherReplySeq ?? null, replyText: r.teacherReply ?? null });
     this.applyUi(r.ui ?? {});
     this.store.set((s) => ({ move: r.move ?? null, debug: r.debug ?? null, error: null, failure: s.failure?.kind === "send" ? null : s.failure }));
     this.deferred = null; // a newer Director answer supersedes a reaction still waiting for the floor

@@ -73,7 +73,7 @@ uniform vec4 uWrA; uniform vec4 uWrB;
 #ifdef HAS_STRETCH
 uniform sampler2D tWrinkleS; uniform float uStretch;
 #endif
-uniform vec3 uTeeth; uniform vec3 uTongue; uniform vec3 uBag;
+uniform vec3 uTeeth; uniform vec3 uGum; uniform vec3 uTongue; uniform vec3 uBag; uniform vec3 uAlbedoGain;
 uniform float uMouthOpen; uniform vec3 uMouthFront;
 uniform float uFlush; uniform vec3 uCheekL; uniform vec3 uCheekR;
 uniform float uSpec;
@@ -86,7 +86,7 @@ void main() {
   int region = int(vRegion + 0.5);
   vec3 col;
   if (region == 0) {
-    vec3 albedo = texture2D(tAlbedo, vUv).rgb;
+    vec3 albedo = texture2D(tAlbedo, vUv).rgb * uAlbedoGain;
     float cav = 1.0, rough = 0.5, thick = 0.0, ao = 1.0;
 #ifdef HAS_PACKED
     vec4 pk = texture2D(tPacked, vUv); cav = pk.r; rough = pk.g; thick = pk.b; ao = pk.a;
@@ -129,7 +129,7 @@ void main() {
     float spec = mix(D_GGX(NoH, a1) * V_SmithJointApprox(NoV, nl, a1), D_GGX(NoH, a2) * V_SmithJointApprox(NoV, nl, a2), 0.15);
     col += uKeyColor * nl * spec * F_Schlick(0.028, VoH) * cav * uSpec;
     // ambient specular sheen + rim (subtle)
-    col += shIrradiance(reflect(-V, Nn)) * F_Schlick(0.028, NoV) * 0.6 * ao * cav;
+    col += shIrradiance(reflect(-V, Nn)) * F_Schlick(0.028, NoV) * 0.35 * ao * cav;
     col += uRimColor * pow(1.0 - NoV, 3.0) * max(dot(Nn, normalize(uRimDir)), 0.0) * 0.45 * ao;
   #ifdef TIER_H
     // back-scatter through thin regions (ears, nostrils, lids)
@@ -138,17 +138,21 @@ void main() {
   #endif
 #endif
   } else {
-    // mouth interior: teeth (1), tongue (2), bag (3); occluded by how far behind the lips and how open the jaw is
-    float depth = max(0.0, dot(uMouthFront - vWorldPos, normalize(vec3(0.0, 0.0, 1.0))));
-    float occ = mix(0.18, 0.75, clamp(uMouthOpen * 2.0, 0.0, 1.0)) * exp(-depth / 0.018);
-    vec3 alb = region == 1 ? uTeeth : (region == 2 ? uTongue : uBag);
+    // mouth interior: teeth (1, gum weight in the fraction), tongue (2), bag (3). Occlusion from depth behind the lip
+    // front AND from how open the jaw is: a near-closed mouth is dark inside, a wide one lets light onto the front
+    // teeth and the tongue tip only (review item 6: flat white teeth, a light-pink interior)
+    float depth = max(0.0, dot(uMouthFront - vWorldPos, vec3(0.0, 0.0, 1.0)));
+    float open = clamp(uMouthOpen * 2.2, 0.0, 1.0);
+    float occ = mix(0.16, 0.62, open) * exp(-depth / mix(0.008, 0.016, open));
+    float gum = clamp((vRegion - 1.0) / 0.45, 0.0, 1.0);
+    vec3 alb = region == 1 ? mix(uTeeth, uGum, gum) : (region == 2 ? uTongue : uBag);
     float nl = clamp(dot(N, L) * 0.5 + 0.5, 0.0, 1.0);
     col = alb * (uKeyColor * nl + shIrradiance(N)) * occ;
     if (region == 1) {
       vec3 H = normalize(L + V);
-      col += uKeyColor * pow(max(dot(N, H), 0.0), 60.0) * 0.25 * occ;
+      col += uKeyColor * pow(max(dot(N, H), 0.0), 60.0) * 0.12 * occ * (1.0 - gum);
     }
-    if (region == 3) col = uBag * 0.4 * (0.4 + 0.6 * occ);
+    if (region == 3) col = uBag * (0.15 + 0.5 * occ);
   }
   gl_FragColor = vec4(col, 1.0);
   #include <tonemapping_fragment>
@@ -213,11 +217,15 @@ void main() {
   } else {
     float ang = atan(p.y, p.x);
     float veins = vnoise(vec2(ang * 30.0, p.z * 20.0)) * smoothstep(0.6, 0.0, p.z) * 0.1;
-    albedo = vec3(0.86, 0.82, 0.78) * (1.0 - veins * vec3(0.0, 1.0, 1.0));
+    // sclera: ~0.78 albedo, warmer and pinker-grey toward the corners (caruncle side), never paper white (item 13)
+    float corner = smoothstep(0.35, 0.9, abs(p.x));
+    albedo = mix(vec3(0.78, 0.74, 0.70), vec3(0.70, 0.56, 0.54), corner) * (1.0 - veins * vec3(0.0, 1.0, 1.0));
     albedo = mix(albedo, uIris * 0.3 + 0.55, smoothstep(1.02, 1.12, rr) * smoothstep(1.2, 1.0, rr) * 0.0);
   }
   // lid shadow + corner occlusion (the AO shell, analytically): darker towards the top and the corners
-  float ao = mix(1.0, 0.45, smoothstep(0.15, 0.75, p.y) * uLidShadow) * mix(1.0, 0.6, smoothstep(0.45, 0.85, abs(p.x)));
+  // the upper lid's shadow covers the top quarter of the visible ball; the lower lid's wet line a thin band
+  float ao = mix(1.0, 0.3, smoothstep(0.25, 0.62, p.y) * uLidShadow) * mix(1.0, 0.55, smoothstep(0.4, 0.85, abs(p.x)))
+           * mix(1.0, 0.7, smoothstep(-0.45, -0.7, p.y) * uLidShadow);
   float nl = clamp(dot(Nw, L) * 0.5 + 0.5, 0.0, 1.0);
   vec3 col = albedo * (uKeyColor * nl * 0.8 + shIrradiance(Nw)) * ao;
   // cornea specular: the key light's real reflection (the catch-light) + a soft environment reflection
@@ -236,12 +244,29 @@ void main() {
 `;
 
 // ------------------------------------------------------------------ hair + cards (alpha-to-coverage, Kajiya-Kay)
-const HAIR_VERT = SKINNED_VERT_HEAD + `void main() {` + SKINNED_VERT_BODY + `}`;
+const HAIR_VERT = SKINNED_VERT_HEAD + /* glsl */ `
+#ifdef HAS_STRAND
+attribute vec3 _strand;
+varying vec3 vStrand;
+#endif
+void main() {` + SKINNED_VERT_BODY + /* glsl */ `
+#ifdef HAS_STRAND
+  vec3 st = _strand;
+  #ifdef USE_SKINNING
+  st = mat3(skinMatrix) * st;
+  #endif
+  vStrand = normalize(mat3(modelMatrix) * st);
+#endif
+}`;
+const PLAIN_VERT = SKINNED_VERT_HEAD + `void main() {` + SKINNED_VERT_BODY + `}`;
 const HAIR_FRAG = /* glsl */ `
 precision highp float;
 ${LIGHT_PARS}
 uniform sampler2D tAlbedo; uniform float uShift; uniform vec3 uSpecTint; uniform float uKK;
 varying vec2 vUv; varying vec3 vWorldPos; varying vec3 vNormalW;
+#ifdef HAS_STRAND
+varying vec3 vStrand;
+#endif
 float kk(vec3 T, vec3 H, float e) { float th = dot(T, H); return pow(sqrt(max(1.0 - th * th, 0.0)), e); }
 void main() {
   vec4 a = texture2D(tAlbedo, vUv);
@@ -249,14 +274,21 @@ void main() {
   vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);
   vec3 V = normalize(cameraPosition - vWorldPos);
   vec3 L = normalize(uKeyDir);
+#ifdef HAS_STRAND
+  // baked root->tip strand direction (export_tier.py): one consistent sign per card, so the shifted highlight does not
+  // jump across mirrored UVs (review item 4)
+  vec3 T = normalize(vStrand - N * dot(vStrand, N));
+#else
   mat3 tbn = cotangentFrame(N, vWorldPos, vUv);
   vec3 T = normalize(tbn[1]);                   // strands run along v
+#endif
   vec3 H = normalize(L + V);
   float wrap = clamp((dot(N, L) + 0.5) / 1.5, 0.0, 1.0);
   vec3 col = a.rgb * (uKeyColor * wrap * 0.9 + shIrradiance(N));
   float s1 = kk(normalize(T + N * uShift), H, 90.0);
   float s2 = kk(normalize(T + N * (uShift - 0.25)), H, 22.0);
-  col += uKeyColor * wrap * (s1 * 0.22 + s2 * 0.12 * uSpecTint * a.rgb * 4.0) * uKK;
+  // no highlight on the card fringe: at alpha < 0.5 the edge texels lit as bright lines in profile
+  col += uKeyColor * wrap * (s1 * 0.22 + s2 * 0.12 * uSpecTint * a.rgb * 4.0) * uKK * smoothstep(0.35, 0.6, a.a);
   col += uRimColor * pow(1.0 - max(dot(N, V), 0.0), 3.0) * 0.15;
   gl_FragColor = vec4(col, a.a);
   #include <tonemapping_fragment>
@@ -338,15 +370,25 @@ export function makeSkinLUT(W = 128, H = 64) {
   return t;
 }
 
-export function lightUniforms() {
+/** The stage light rig. ONE definition shared by the evidence renders, G9 and src/avatar (runtime.json "lighting"):
+ *  the skin albedo is solved against THIS rig under Neutral tone mapping at exposure 1, so a different rig at runtime
+ *  re-opens G9. The first build's rig (key 2.05, SH L0 0.27) rendered every look ~23 L* too light (review item 1);
+ *  this one is that rig x 0.62, so a white Lambert card facing the camera renders ~0.95 linear. */
+export const LIGHTING = {
+  toneMapping: "Neutral", exposure: 1.0,
+  keyDir: [-0.62, 0.55, 0.62], keyColor: [1.27, 1.24, 1.19],
+  rimDir: [0.7, 0.4, -0.6], rimColor: [0.34, 0.37, 0.43],
+  sh: [[0.167, 0.167, 0.177], [0.056, 0.056, 0.062], [0.025, 0.025, 0.022], [0, 0, 0]],
+};
+export function lightUniforms(L = LIGHTING) {
+  const v = (a) => new THREE.Vector3(...a);
   return {
-    uKeyDir: { value: new THREE.Vector3(-0.55, 0.62, 0.75).normalize() },
-    uKeyColor: { value: new THREE.Vector3(2.05, 2.0, 1.92) },
-    uRimDir: { value: new THREE.Vector3(0.7, 0.4, -0.6).normalize() },
-    uRimColor: { value: new THREE.Vector3(0.55, 0.6, 0.7) },
-    // L1 SH irradiance of a warm-grey room (top brighter, front slightly warm)
-    uSH: { value: [new THREE.Vector3(0.34, 0.34, 0.35), new THREE.Vector3(0.1, 0.1, 0.11), new THREE.Vector3(0.04, 0.04, 0.035), new THREE.Vector3(0.0, 0.0, 0.0)] },
+    uKeyDir: { value: v(L.keyDir).normalize() },
+    uKeyColor: { value: v(L.keyColor) },
+    uRimDir: { value: v(L.rimDir).normalize() },
+    uRimColor: { value: v(L.rimColor) },
+    uSH: { value: L.sh.map(v) },
   };
 }
 
-export const SHADERS = { SKIN_VERT, SKIN_FRAG, EYE_VERT, EYE_FRAG, HAIR_VERT, HAIR_FRAG, CLOTH_FRAG, LENS_FRAG };
+export const SHADERS = { SKIN_VERT, SKIN_FRAG, EYE_VERT, EYE_FRAG, HAIR_VERT, HAIR_FRAG, PLAIN_VERT, CLOTH_FRAG, LENS_FRAG };

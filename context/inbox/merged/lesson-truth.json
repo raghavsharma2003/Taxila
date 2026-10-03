@@ -1,179 +1,202 @@
 {
  "nodes": [
   {
-   "id": "lt-address-register",
+   "id": "lt-address-parent-first",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "aap/tum is resolved server-side (child's Hello pick from class 5 → parent's child_controls.address → class default aap ≥ 5, tum below; English none), carried as state.ctx.address; kit questions reach an aap child in aap forms (closed-lexicon toAap in findItem); every move carries a register note; the text-lane guard rewrites tum words, then converts in code"
+   "title": "aap/tum is the PARENT's choice: child_controls.address → class default (aap from class 5, tum below; English none). LessonStartRequest.address is removed; no client value can outrank the parent or change the register between lessons (V2 §3.3 step 4)"
   },
   {
-   "id": "lt-exact-match-gate",
+   "id": "lt-start-gate",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "An exact key/option match is decided by code only when the teacher's last turn posed the item or asked nothing; after a DIFFERENT question it goes to the classifier, and a bare number echoed from that other question is no evidence (source 'echo')"
+   "title": "POST /api/lesson/start enforces /api/child/plan (startRefusal): capped and resting refuse every start (409 LessonStartRefused {state, opensAt, capRemaining}); done refuses a lesson but lets purpose practice / doubt through (§6.3.3 'Practise something'); start / first / resume start. Checked before the kit read, any model call or write"
   },
   {
-   "id": "lt-praise-guard",
+   "id": "lt-done-rule",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "G-PRAISE-1 on the bytes: the move carries the classifier's verdict note; the reply guard catches praise/agreement for an answer not marked correct (and a 'wrong' opening after a correct one), rewrites once, then strips the praising sentences; UiDirectives.verdict/withHelp come only from the verified-key classifier on a kit item"
+   "title": "An ended lesson is 'Done for today' only if it graded something (state.did) or ran ≥ 5 min (countsAsDone); an open lesson with zero child turns older than 2 min is closed (state.abandoned) by the next start and never counts"
   },
   {
-   "id": "lt-screen-guard",
+   "id": "lt-short-titles",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "G-SAY-1 on the bytes: a reply that sends the child to the screen (tap/touch/click/the choices below…) needs Director chips or a mounted module in the SAME response; the unclear-repair shape mentions tapping only when chips exist; violations are rewritten, then the screen sentences stripped and the item question re-posed"
+   "title": "shortTitle comes from an authored table (server/director/short-titles.json: all 380 curriculum topic titles > 24 chars), else the title's lead clause, else whole words ending before a joiner, else null (no title) — never a word cut that dangles ('Keeping track without' → 'Counting without numbers')"
   },
   {
-   "id": "lt-child-plan-map",
+   "id": "lt-praise-effort",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "GET /api/child/plan, /api/child/map, /api/child/teacher and POST /api/lesson/request exist (server/routes/child.js): one home state (resume > capped > done > resting > first > start) from lesson rows, child_controls, conductor_usage/day_plan and consent; the map is the class syllabus × kit skills × skill_state with the four V2 shapes, seals, 'here' and server-scheduled re-checks; 'Only this session' hides map/notebook/resume"
+   "title": "G-PRAISE-1 ignores warmth about a question, a try or thinking ('Great question!', 'Nice try', 'Good thinking', 'Achhi koshish'); 'Right,' is a discourse marker; a no-evidence turn where the CHILD asked a question is 'ungraded' (no rewrite, nothing stripped)"
   },
   {
-   "id": "lt-teacher-card",
+   "id": "lt-choice-echo",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "The teacher record (id, name, addressedAs, pronouns, voice, look rev) comes from one server function (characters teacherCard) on lesson start, plan, summary and /api/child/teacher; the lesson-end parent note is told the teacher's name and pronouns"
+   "title": "The echo rule (a bare number the teacher's other question stated → no evidence) does not fire when that question offers numbers as alternatives ('Kya yeh 25 hai ya 30?', '26 or 36?'): the model decides"
   },
   {
-   "id": "lt-summary-did",
+   "id": "lt-inclusive-chalo",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "The summary screen's data (LessonSummary: ≤3 DidCards, tick only for a verified correct answer, 'tried' only when nothing was verified, face always 'warm') is built from state.did, which the turn route writes from the classifier's graded turns; POST /api/lesson/end returns it as `did`, GET /api/lesson/summary re-reads it"
+   "title": "registerBroken: an inclusive 'chalo' (with hum / a -te hain or -ein verb / an aap form in the same sentence) is not a tum mark; for a tum child, aap forms break the register only when no tum form addresses the child"
   },
   {
-   "id": "lt-floor-wired",
+   "id": "lt-safeguard-both-lines",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "lesson.js now calls floorViolations: text lane as a reply-guard problem (rewrite, then the move's fixed line), voice lane on the heard teacher turn → state.correction (compile renders the fix) + a `floor` flag on the turn row"
+   "title": "The fixed safeguard line (floor break, model unavailable, content filter) names Childline 1098 AND Tele-MANAS 14416 in both languages, read from compiler/floor.js HELPLINES"
   },
   {
-   "id": "lt-ui-directives",
-   "kind": "decision",
-   "at": "2026-10-03",
-   "title": "The Director produces the V2 §4.10 UiDirectives: ask (kit item text ≤120 in the child's register; text-lane no-item turns take the reply's own question), handover, answerForm, phase, tray, shortTitle (≤24 on a word boundary), verdict/withHelp; explain turns put no skill title (syllabus objective) on the board; chip labels are English"
-  },
-  {
-   "id": "lt-interests-shapes",
-   "kind": "decision",
-   "at": "2026-10-03",
-   "title": "The parent's interests reach the greet, hook and explain move shapes directly (not only the brief row that sheds first), only under the memory consent and only as short plain labels"
-  },
-  {
-   "id": "lesson-truth-2026-10-03",
+   "id": "lesson-truth-fix-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "evals/lesson-truth.mjs, Azure taxila-fast, 36 real kit items (classes 5-8, numeric keys), aap child, before→after: drift (key echoed to another question) credited 36/36→0/36, praise 6/36→0/36; screen refs on repair with nothing on screen 10/36→0/36; tum marks in aap replies 152/163→0/164; key after a real hint 31/31→32/32 credited; wrong answers 0/36 praised both; greet uses the interest 12/12 both"
+   "title": "evals/lesson-truth.mjs re-run on the fixed tree (Azure taxila-fast, n=36 items, aap child): drift credited 0/36, praise 0/36; wrong answers classified correct 0/36, praised 0/36; key answers credited 12/12; key after a real hint credited 32/32; screen refs 0/36; tum marks 0/164 (first draft 0/164); greet uses the interest 12/12; rewrites 17. Register guard old vs new on both arms' 395 replies: 0 verdict changes (the corpus has no 'chalo'), so the inclusive-chalo false-positive fix is covered by unit controls only"
   },
   {
-   "id": "lesson-truth-latency-2026-10-03",
+   "id": "lesson-truth-start-gate-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "evals/cascade-latency.mjs n=12 per arm, before→after: class 4 director median 2312→1638 ms (p90 3781→3578), total 3855→3220; class 6 (aap) director 1652→1503 (p90 3151→2438), total 3202→3095; guard rewrites class 6 2→0; no measurable latency cost (differences are inside model-latency noise at n=12)"
+   "title": "tests/child-routes-db.run.mjs (Neon test branch, in npm test): start 409 for done (lesson), capped (practice too), resting; 201 for practice after done; an accidental 0.2-min lesson is not done; a 10-min-old zero-turn open lesson is closed by the next start. Start latency, in-process voice start, n=8 x 2 runs, pre-fix vs fixed: median 362/338 → 359/363 ms (no measurable cost; planFor alone ~+50 ms before it was overlapped)"
   },
   {
-   "id": "lesson-truth-e2e-2026-10-03",
+   "id": "lesson-truth-e2e-fix-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "tests/e2e-design-lesson-truth.mjs (Playwright, 360x640 + 1280x800, light + dark, Neon test branch): before (old server) /api/child/plan and /map 404, a child who finished today's lesson is offered it again, the Sky is an empty navy box; after all four checks pass (200s, server-driven done/first homes, the map names the learned skill, Arjun 'he')"
+   "title": "tests/e2e-design-lesson-truth.mjs rewritten in two tiers (360x640 + 1280x800, light + dark). SERVER tier all pass (V-LT1 200s, V-LT2s plan states first/done + DidCards, V-LT3s chapters + one 'here' + a seal + got_it, V-LT4 Arjun 'he', V-LT5s start 409 when done); on the pre-fix tree V-LT5s fails (201). CLIENT tier fails, as it should until open-lt-client-wiring: no 'Your first lesson' / 'Done for today' / DidCard, no 'Your class is here' or seal, Hinglish and Devanagari chrome (Bagiya, Abhyaas, Aasmaan, आ गया, अभी नहीं), Sky star targets 41 px"
   },
   {
-   "id": "lt-classifier-last-check",
+   "id": "lt-child-address-pick",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rejected: a LAST CHECK classifier rule (flag + 'label no_attempt if the reply answers the other question') — drift credit 0/36 but it threw away real answers after hint turns (21/31 credited vs 32/32 without it); the code echo rule gets drift to 0/36 with 32/32 kept"
+   "title": "Rejected: the child's own aap/tum pick sent as LessonStartRequest.address and ranked above the parent's setting (class 5+). The spec gives the choice to the parent (§3.2 step 6, §3.3 step 4) and Hello has no such card; a client-supplied, unstored value outranked the parent and could flip the register between lessons"
   },
   {
-   "id": "lt-other-question-no-evidence",
+   "id": "lt-word-cut-short-title",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "Rejected: no evidence on ANY turn after the teacher asked another question — 14/31 real hint turns end in a scaffold sub-question (askedOther), so every answer after such a hint would be lost"
+   "title": "Rejected: shortTitle as a word-boundary cut of the title — 84 of 380 long topic titles came out as dangling fragments or a bare first word ('Equal groups as', 'Making shapes from', 'Keeping track without'); V2 §4.10 forbids a truncated name, so the titles are authored"
   },
   {
-   "id": "open-lt-client-wiring",
+   "id": "open-lt-client-wiring-2",
    "kind": "open",
    "at": "2026-10-03",
-   "title": "Client side of lesson truth: Hello must preselect the parent's interests (it overwrote them via PATCH /api/children) and send the child's aap/tum pick as LessonStartRequest.address; the home/map/summary/Question card must read the new fields (state, topic, today, ask, verdict, did); landing/onboarding must use /api/child/teacher?classLevel= instead of a hard-coded teacher"
+   "title": "Child client (blocks B2 and audit #9's child-facing fix): read ChildPlanResponse.state (expose data-plan-state) and render first/done/capped/resting per §6.3.3 incl. the done DidCard from plan.today.summary; Sky/Garden render chapters, seals and 'Your class is here'; Practice and Ask send LessonStartRequest.purpose ('practice' / 'doubt') — without it they are now refused 409 after a done lesson — and handle a 409 LessonStartRefused; English chrome; star targets ≥ 48 px; Hello preselects the parent's interests; landing/onboarding use /api/child/teacher. The client no longer sends address (the field is gone)"
   },
   {
-   "id": "open-lt-voice-lane-truth",
+   "id": "open-lt-evals-plan-gate",
    "kind": "open",
    "at": "2026-10-03",
-   "title": "The realtime voice lane speaks before the Director runs: praise/register/screen breaks there are only flagged on the turn row (floor breaks become state.correction); ui.ask is absent on its no-item turns; G-ASK-2 parity and G-SAY-1's 'this number' clause are not implemented"
+   "title": "Evals and smoke scripts that start several lessons for one child (tests/lesson-api-e2e.mjs s2 after an ended lesson, evals/cascade-latency.mjs, evals/director-sim.mjs, scripts/prod-smoke.mjs) now meet the plan gate: outside 07:00-20:30 IST, or after a done lesson, start is 409. They must set the child's controls (hours 00:00-23:59) or pass purpose 'practice'. Not in this workstream's paths"
   }
  ],
  "edges": [
   {
-   "src": "lt-floor-wired",
+   "src": "lt-address-parent-first",
    "rel": "supersedes",
-   "dst": "open-never-rules-wiring"
+   "dst": "lt-address-register"
   },
   {
-   "src": "lt-exact-match-gate",
-   "rel": "measured_by",
-   "dst": "lesson-truth-2026-10-03"
+   "src": "lt-child-address-pick",
+   "rel": "constrains",
+   "dst": "lt-address-parent-first"
   },
   {
-   "src": "lt-praise-guard",
-   "rel": "measured_by",
-   "dst": "lesson-truth-2026-10-03"
+   "src": "lt-start-gate",
+   "rel": "part_of",
+   "dst": "lt-child-plan-map"
   },
   {
-   "src": "lt-screen-guard",
-   "rel": "measured_by",
-   "dst": "lesson-truth-2026-10-03"
+   "src": "lt-done-rule",
+   "rel": "part_of",
+   "dst": "lt-child-plan-map"
   },
   {
-   "src": "lt-address-register",
+   "src": "lt-start-gate",
    "rel": "measured_by",
-   "dst": "lesson-truth-2026-10-03"
+   "dst": "lesson-truth-start-gate-2026-10-03"
   },
   {
-   "src": "lt-interests-shapes",
+   "src": "lt-done-rule",
    "rel": "measured_by",
-   "dst": "lesson-truth-2026-10-03"
+   "dst": "lesson-truth-start-gate-2026-10-03"
   },
   {
-   "src": "lt-child-plan-map",
+   "src": "lt-start-gate",
    "rel": "measured_by",
+   "dst": "lesson-truth-e2e-fix-2026-10-03"
+  },
+  {
+   "src": "lesson-truth-e2e-fix-2026-10-03",
+   "rel": "supersedes",
    "dst": "lesson-truth-e2e-2026-10-03"
   },
   {
-   "src": "lt-praise-guard",
+   "src": "lt-short-titles",
+   "rel": "part_of",
+   "dst": "lt-ui-directives"
+  },
+  {
+   "src": "lt-word-cut-short-title",
+   "rel": "constrains",
+   "dst": "lt-short-titles"
+  },
+  {
+   "src": "lt-praise-effort",
+   "rel": "part_of",
+   "dst": "lt-praise-guard"
+  },
+  {
+   "src": "lt-praise-effort",
    "rel": "measured_by",
-   "dst": "lesson-truth-latency-2026-10-03"
+   "dst": "lesson-truth-fix-2026-10-03"
   },
   {
-   "src": "lt-classifier-last-check",
-   "rel": "constrains",
+   "src": "lt-choice-echo",
+   "rel": "part_of",
    "dst": "lt-exact-match-gate"
   },
   {
-   "src": "lt-other-question-no-evidence",
-   "rel": "constrains",
-   "dst": "lt-exact-match-gate"
+   "src": "lt-choice-echo",
+   "rel": "measured_by",
+   "dst": "lesson-truth-fix-2026-10-03"
   },
   {
-   "src": "open-lt-client-wiring",
+   "src": "lt-inclusive-chalo",
+   "rel": "part_of",
+   "dst": "lt-address-parent-first"
+  },
+  {
+   "src": "lt-inclusive-chalo",
+   "rel": "measured_by",
+   "dst": "lesson-truth-fix-2026-10-03"
+  },
+  {
+   "src": "lt-safeguard-both-lines",
+   "rel": "part_of",
+   "dst": "lt-floor-wired"
+  },
+  {
+   "src": "open-lt-client-wiring-2",
+   "rel": "supersedes",
+   "dst": "open-lt-client-wiring"
+  },
+  {
+   "src": "open-lt-client-wiring-2",
    "rel": "blocks",
    "dst": "lt-child-plan-map"
   },
   {
-   "src": "lt-ui-directives",
-   "rel": "part_of",
-   "dst": "owner-design-v2-directive"
-  },
-  {
-   "src": "lt-teacher-card",
-   "rel": "part_of",
-   "dst": "owner-design-v2-directive"
+   "src": "open-lt-evals-plan-gate",
+   "rel": "blocks",
+   "dst": "lt-start-gate"
   }
  ],
  "md": {
-  "decisions": "## lt-address-register\n**The teacher's aap/tum register is resolved on the server and carried by the lesson (`state.ctx.address`, server/director/register.js `resolveAddress`): the child's own Hello pick (`LessonStartRequest.address`, honoured from class 5 up) → the parent's `child_controls.address` → the class default (aap from class 5, tum below; English lessons: none).** Kit questions are written in tum forms, so for an aap child `findItem` returns the item with `prompt_hi` converted by a closed lexicon (`toAap`: pronouns, every tum imperative/future form found in the kits, Devanagari included, the copula at the end of an addressed sentence; keys, acceptable answers, hints and options untouched); every reader of the posed question (compile, guards, classifier, Question card) gets that one text. Every real move carries a register note (never the voice branches, whose `last`-section budget checkFits measured without it); the text-lane guard catches tum marks (`registerBroken`), rewrites once, then converts the words in code. 0/10,707 loaded items fail checkFits after the conversion. (2026-10-03)\n- Rationale: audit #7 — a Class 5 and a Class 8 \"aap\" child were greeted \"tumhara… Tumhe…\"; the register lived nowhere in the prompt.\n- Reverse if: a reviewed aap rendering of the kits lands (then `toAap` is replaced by authored `prompt_hi_aap`), or a listening test shows the converted questions read unnaturally (then author them).\n\n## lt-exact-match-gate\n**`classifyFast` decides an exact key/option match by code only when the teacher's last turn posed the item (`posesItem`) or asked no question; after a DIFFERENT question (`askedOther`) the model decides, and a bare number that the other question itself stated is no evidence (source `echo`).** (2026-10-03)\n- Rationale: audit #13 — \"25\" to \"what comes after 25?\" and \"36\" to an improvised \"5 ka square?\" were graded right (Parent corner: \"Right · On their own\") and confirmed (\"Bilkul\"): the exact-match shortcut never looked at what was asked.\n- Reverse if: the text lane stops asking side questions on hint turns (then askedOther never fires) — or a hint-turn measure shows real answers lost (now 32/32 kept).\n\n## lt-praise-guard\n**Confirmations never contradict the verdict (G-PRAISE-1, on the bytes).** `step()` appends the classifier's verdict note to the move (not right / partly right / unverified), `planTurn` records `state.lastVerdict`, and `textReply` treats praise or agreement for an answer the key did not mark correct (and a \"wrong\" opening after a correct one) as a problem: one rewrite, then the praising sentences are stripped and the question re-posed. `UiDirectives.verdict` (+ `withHelp`) is set only from the verified-key classifier on a kit item; covert why / teach-back turns stay ungraded on screen. (2026-10-03)\n- Rationale: V2 §4.6 / §4.10 and audit #13.\n- Reverse if: an out-of-sample battery shows the praise lexicon blocking honest partial confirmations at a rate a listener notices (then narrow the lexicon).\n\n## lt-screen-guard\n**A teacher line that sends the child to the screen needs something on it in the same response (G-SAY-1): Director chips or a mounted module.** The unclear-repair shape says \"tap one of the choices on screen\" only when chips exist; `screenProblem` in the text-lane guard rewrites, then strips the screen sentences and re-poses the item. Voice lane: flagged (`screenRef`) on the turn row. (2026-10-03)\n- Rationale: audit #6 \"60 mein se choice tap karo\" with no choices; the repair shape itself said \"or to tap a choice\" on every item.\n- Reverse if: the client shows tiles the Director did not send (then the predicate must read the client's tray state).\n\n## lt-child-plan-map\n**`server/routes/child.js`: GET /api/child/plan (one home state: resume > capped > done > resting > first > start; today's topic with a ≤ 24-char title and minutes; today's DidCards; the teacher record; `surfaces` hidden under \"Only this session\"; the legacy `homeState` for src/child/day.ts), GET /api/child/map (class syllabus × kit skills × skill_state → not_started / practising / got_it / secure via routes/parent.js parentState, chapter seals only when every skill is got it or secure, \"here\" = the next planned topic's chapter, re-checks only from weave_queue or a missed delayed check), GET /api/child/teacher (?childId or ?classLevel for onboarding), POST /api/lesson/request (grants only start/first/resume — never \"one more\").** requireChild on every child id (uuid-checked: 400, not 500); nothing behind the parent PIN. (2026-10-03)\n- Rationale: audit #9, both reads 404 in production; V2 §6.3.3 and §3.8.\n- Reverse if: the Conductor's day_plan becomes the only source of the home state (then plan reads it and stops recomputing), or the school position is known (then `here` uses it, not the next planned topic).\n\n## lt-teacher-card\n**One teacher record for every surface: `teacherCard(c)` (characters/index.js) = id, name, addressedAs, pronouns (now on each character sheet), voice, look rev and colour; returned by lesson start, the plan, the summary and /api/child/teacher. The lesson-end writer is given the teacher's name and pronouns (Arjun is \"he\"; the child is named or \"they\").** (2026-10-03)\n- Rationale: audit #4 — three faces, two names, two genders; \"How she teaches Riya\" while the teacher was Arjun.\n- Reverse if: a teacher's presented gender changes (one field on the sheet).\n\n## lt-summary-did\n**The summary screen's facts are the lesson's own record of graded turns (`state.did`, session state, every legal mode), never the model's account: `lessonSummary` gives ≤ 3 cards (verified right answers first, unaided first, the latest attempt per item; a teach-back pass), a tick only when the kit's key verified it and it was not leaked, `tried` only when nothing was verified, `face: \"warm\"` always (ReactionGate), the next topic's title and the child turn to re-voice.** (2026-10-03)\n- Rationale: audit #12 — the summary showed clipped board strings and nothing the child did; V2 §6.3.5 / PX1.\n- Reverse if: the client needs per-card media (then the card carries a tray still id from the module log).\n\n## lt-floor-wired\n**`floorViolations` is called by lesson.js (closing `open-never-rules-wiring` for the reply paths): text lane as a guard problem (one rewrite with the FLOOR_FIX shapes, then the move's fixed line — the safeguard line carries Childline); voice lane on the heard teacher turn → `state.correction` for the next compile, and a `floor` flag on the row.** scrubPii and the voice-lane incident row are still not wired. (2026-10-03)\n- Reverse if: the floor families move into compile's own post-check.\n\n## lt-ui-directives\n**The Director now produces V2 §4.10's UiDirectives: `ask` (the kit item's question in the child's register, ≤ 120 chars, pinned on item turns; on a text-lane turn with no item, the question the reply actually handed back), `handover` (answer / choice / finish), `answerForm`, `phase`, `tray` (none when nothing is mounted: the Face layout), `shortTitle`, `verdict` / `withHelp`. Explain turns no longer put the skill title (a syllabus objective) on the board (G-OBJ-1), and chip labels are English in every lesson language.** (2026-10-03)\n- Reverse if: the signalling client derives any of these itself (then the server stops sending that field).\n\n## lt-interests-shapes\n**The parent's interests reach the teacher through the move shapes (greet: today's topic tied to the interest; hook: built on it; explain: an example from the second one), not only through the brief row that sheds first under the budget — and only under the memory consent (\"Remember what {child} likes\"), as plain labels of ≤ 24 letters.** (2026-10-03)\n- Reverse if: the brief row becomes never-drop (then the shapes need not repeat it).\n",
-  "measurements": "## lesson-truth-2026-10-03\n`NODE_USE_ENV_PROXY=1 node evals/lesson-truth.mjs --n 36 [--root <pre-change snapshot>]` (2026-10-03; Azure taxila-fast reply + classifier; 36 real kit items, classes 5-8 maths/science, numeric keys; typed synthetic replies; an aap Hinglish child with interests cricket + space; both trees scored by this tree's predicates). Results in `evals/results/lesson-truth-2026-10-03-{before,after}.json`.\n\n| arm | before | after |\n|---|---|---|\n| drift: the key echoed to another question (\"<key> ke baad kaunsa number aata hai?\") credited correct | 36/36 | **0/36** |\n| drift: praise/agreement in the reply | 6/36 (17%) | **0/36** |\n| hintKey control: the key after a real hint turn credited | 31/31 | 32/32 |\n| wrong answers (echo / key±1) classified correct · praised | 0/36 · 0/36 | 0/36 · 0/36 |\n| key answers credited · 'wrong' opening | 12/12 · 0/12 | 12/12 · 0/12 |\n| repair turns with nothing on screen: screen reference (final / first draft) | 10/36 / 13/36 | **0/36 / 0/36** |\n| aap child: a tum mark in the reply (final / first draft) | 152/163 / 155/163 | **0/164 / 0/164** |\n| first-lesson greeting touches the parent's interest | 12/12 | 12/12 |\n| reply rewrites | 21 | 17 |\n\nNot measured: the voice (realtime) lane; real children's speech; n is 36 per arm (95% upper bound on a 0/36 rate ≈ 8%). The clean path (wrong answer to the posed question) did not reproduce the audit's \"Bilkul\" at this n; the drift arm does, and is what the gate fixes.\n\n## lesson-truth-latency-2026-10-03\n`evals/cascade-latency.mjs --turns 12` on the pre-change snapshot and on this tree (2026-10-03; synthetic child audio, production Neon, in-process API). Director median (p90): class 4 2312 (3781) → 1638 (3578) ms; class 6 aap child 1652 (3151) → 1503 (2438) ms. Total speech-end → first audio byte median: 3855 → 3220 (class 4), 3202 → 3095 (class 6). Speculative replies 9/12 → 10/12 hit both classes. Guard rewrites class 6: 2 → 0 (the register note fixes the first draft). No measurable cost from the new guards; the differences are inside model-latency noise at n = 12. Results: `evals/results/cascade-latency-2026-10-03-lesson-truth-*.json`.\n\n## lesson-truth-e2e-2026-10-03\n`tests/e2e-design-lesson-truth.mjs` (Playwright Chromium; 360x640 DPR 2 + 1280x800; light + dark; Neon test branch; shots in docs/design/build/lesson-truth/). Before (pre-change server, same client): /api/child/plan and /api/child/map 404 on every load; Riya, who finished today's lesson on the server, is offered \"Aaj ka paath\" again (fresh storage, no local marker); Kabir's Sky is an empty navy rectangle. After: every child read 200; Riya's home is the done home from the server; Kabir's first day shows the start action; the map's list names the skill the ledger marked learned; the plan's teacher is Arjun, \"he\". `tests/child-routes-db.run.mjs` (7 route tests on the test branch: fences, first, resume, Only-this-session, done → capped, resting, map shapes, teacher) runs inside `npm test`.\n",
-  "rejected": "## lt-classifier-last-check\n**Rejected: a LAST CHECK rule appended to the classifier prompt (plus a code FLAG line) telling it to label no_attempt when the reply answers the teacher's other question.** Measured on evals/lesson-truth.mjs (2026-10-03, n = 36 + 31): drift credit 0/36, but real answers after hint turns dropped to 21/31 credited (32/32 without it) — the model doubted every answer after a scaffold question. The code echo rule (a bare number the other question stated) reaches 0/36 drift with 32/32 kept.\n\n## lt-other-question-no-evidence\n**Rejected: no evidence on every turn whose preceding teacher turn asked another question.** 14/31 real text-lane hint turns end in a scaffold sub-question (`askedOther`), so the child's answer after almost half of all hints would be lost.\n",
-  "open": "## open-lt-client-wiring\nThe server side is in; the child client must: (1) preselect the parent's interests at Hello and stop overwriting them (it PATCHed a fresh set); (2) send the child's aap/tum pick as `LessonStartRequest.address`; (3) read `ChildPlanResponse.state/topic/today/resume` (V2 §6.3.3) instead of only `homeState`, `ChildMapResponse.subjects/state/sealed/here`, `ui.ask/verdict/handover/tray`, and `did` for the summary; (4) take the teacher from `/api/child/teacher` (landing/onboarding: `?classLevel=`). Owner: the child UI workstreams.\n\n## open-lt-voice-lane-truth\nThe realtime lane answers before the Director runs, so praise / register / screen breaks there are flagged on the turn row only (floor breaks become `state.correction`); `ui.ask` is absent on its no-item turns; G-ASK-2 parity and G-SAY-1's \"this number\" clause are not implemented; the parent note's pronouns are instructed, not checked by code.\n"
+  "decisions": "## lt-address-parent-first\n**The teacher's aap/tum register is the parent's choice: `resolveAddress` = `child_controls.address` → the class default (aap from class 5, tum below; English lessons: none). `LessonStartRequest.address` is removed.** (2026-10-03, supersedes lt-address-register's precedence; the kit conversion, register note and reply guard are unchanged.)\n- Rationale: V2 §3.2 step 6 (the parent picks Casual / Respectful) and §3.3 step 4 (\"From her first sentence she uses the address term the parent chose\"); Hello has no aap/tum card. The previous order let an unstored client value outrank the parent and change between lessons.\n- Reverse if: the spec adds a Hello card for the child's own pick — then store it (child row or controls) and decide its rank against the parent's setting there, never per request.\n\n## lt-start-gate\n**POST /api/lesson/start enforces the plan (`startRefusal(plan.state, body.purpose)`): capped and resting refuse every start; done refuses a lesson and lets `purpose: \"practice\" | \"doubt\"` through; start / first / resume start. A refusal is 409 `LessonStartRefused { error, state, opensAt, capRemaining }`.** planFor runs alongside the consent and topic reads and is checked before the kit read, any model call or write. (2026-10-03)\n- Rationale: the daily cap, the lesson hours and \"never one more\" are parent-control promises (V2 §3.4, §6.3.3, §6.5.4); only /api/lesson/request checked them, so a stale tab or a direct call could open a lesson past them.\n- Reverse if: Practice and Ask get their own start route (then start refuses \"done\" for every purpose), or the Conductor's day_plan becomes the only authority (then start reads it).\n\n## lt-done-rule\n**An ended lesson counts as \"Done for today\" only if `state.did` holds a graded turn or it ran ≥ 5 minutes (`countsAsDone`); the next start closes an open lesson older than 2 minutes in which the child never spoke (`state.abandoned`), which never counts.** (2026-10-03)\n- Rationale: V2 §3.13 wants designed flows; an accidental End or a crash seconds in locked the child out for the day, and zero-turn open lessons piled up.\n- Reverse if: a real lesson can end with nothing graded inside 5 minutes and still be \"the lesson\" (then lower the floor or count child turns).\n\n## lt-short-titles\n**`shortTitleOf` uses the authored table `server/director/short-titles.json` (every one of the 380 curriculum topic titles over 24 characters), else the title's lead clause (before \":\", \" — \", \"(\" or \",\"), else whole words ending before a joiner, else null.** A unit test walks every curriculum topic. (2026-10-03)\n- Rationale: V2 §4.10 \"Never a CSS-truncated chapter name\"; the word cut gave 84/380 fragments or bare first words.\n- Reverse if: the curriculum graph gains an authored `shortTitle` per topic (then read it and delete the table).\n\n## lt-praise-effort\n**G-PRAISE-1 strips warmth about the question, a try or the thinking before it looks for praise; \"Right,\" is a discourse marker (\"Right!\"/\"Right.\" still count); `verdictFor` returns \"ungraded\" for a no-evidence turn where the child asked a question.** (2026-10-03)\n- Rationale: \"Great question! Socho…\" on an unverified turn cost a 1-2 s rewrite and could lose the warm sentence.\n- Reverse if: a battery shows \"great question\" used as a disguised confirmation of a wrong answer.\n\n## lt-choice-echo\n**The echo rule skips a choice question (\"Kya yeh 25 hai ya 30?\", \"26 or 36?\", \"25, 30 ya 35\"); a thousands comma is not a list.** The model decides those turns (no exact match after another question). (2026-10-03)\n- Reverse if: a measure of choice-style hint turns shows the model mis-crediting picks.\n\n## lt-inclusive-chalo\n**An inclusive \"chalo\" (with hum, a \"-te hain\"/\"-ein\" verb or an aap form later in the sentence) is not a tum mark; for a tum child aap forms break the register only when nothing in the line addresses the child with tum.** (2026-10-03)\n- Reverse if: listeners hear \"Chalo, aap…\" as the wrong register for an aap child.\n\n## lt-safeguard-both-lines\n**The fixed safeguard line names Childline 1098 and Tele-MANAS 14416 (from compiler/floor.js HELPLINES) in English and Hinglish, and in aap forms for an aap child.** (2026-10-03)\n",
+  "measurements": "## lesson-truth-fix-2026-10-03\n`NODE_USE_ENV_PROXY=1 node evals/lesson-truth.mjs --n 36 --out evals/results/lesson-truth-2026-10-03-fix.json` on the fixed tree (2026-10-03; Azure taxila-fast; same items and child as lesson-truth-2026-10-03): wrong answers credited 0/36, praised 0/36 (first draft 0/36); key answers credited 12/12, 'wrong' opening 0/12; drift credited 0/36, praise 0/36; key after a real hint credited 32/32; screen references 0/36; tum marks 0/164 (first draft 0/164); greeting uses the interest 12/12; rewrites 17; errors 0. The after-arm corpus holds no true choice-style hint question (the detector fires on 2/48 hint replies, both lists, which then go to the model), so lt-choice-echo is covered by unit tests only. Old vs new register predicate over both arms' 395 replies and first drafts: identical verdicts (no \"chalo\" in the corpus), so the inclusive-chalo false-positive rate on model output is not measured.\n\n## lesson-truth-start-gate-2026-10-03\n`tests/child-routes-db.run.mjs` (Neon test branch, inside npm test; the wrapper now reports SKIPPED, not a pass, when the branch is unset or is production): 409 done for a lesson; 201 for practice after done; 409 capped for practice; 409 resting with opensAt; an accidental 0.2-minute lesson is not done; a 10-minute-old zero-turn open lesson is closed by the next start. Start latency (in-process voice start, Neon test branch, n = 8 per run, two runs, pre-fix vs fixed): median 362 / 338 → 359 / 363 ms — no measurable cost; planFor alone measured ~+50 ms median (n = 12) before it was overlapped with the consent and topic reads.\n\n## lesson-truth-e2e-fix-2026-10-03\n`tests/e2e-design-lesson-truth.mjs` (Playwright Chromium, 360x640 DPR 2 + 1280x800, light + dark; Neon test branch; shots and checks-{after,prefix}.json in docs/design/build/lesson-truth/). SERVER tier: V-LT1, V-LT2s, V-LT3s, V-LT4, V-LT5s pass; on the pre-fix tree V-LT5s fails (a child done today got 201). CLIENT tier (V-LT2c, V-LT3c, V-EN-1, V-TGT) fails on every viewport and theme — the client still reads only homeState and renders Hinglish/Devanagari chrome; V-ID-1 passes. The old V-LT2 passed on the client's 404 fallback attribute and is gone.\n",
+  "rejected": "## lt-child-address-pick\n**Rejected: the child's own aap/tum pick as `LessonStartRequest.address`, ranked above the parent's setting from class 5.** The spec gives the register to the parent (V2 §3.2 step 6, §3.3 step 4) and the Hello flow has no such card; the value was supplied per request, never stored, and outranked the parent, so two clients could give the same child different registers on different days.\n\n## lt-word-cut-short-title\n**Rejected: shortTitle as a word-boundary cut of the topic title.** 84 of the 380 topic titles over 24 characters came out as dangling fragments or a bare first word (\"Equal groups as\", \"Making shapes from\", \"Keeping track without\"). Authored short titles replace it.\n",
+  "open": "## open-lt-client-wiring-2\n(supersedes open-lt-client-wiring) The child client must: read `ChildPlanResponse.state` (and expose `data-plan-state`) and render first / done / capped / resting per V2 §6.3.3, the done row with today's DidCard from `plan.today.summary`; render the Sky/Garden chapters, seals and \"Your class is here\" from `ChildMapResponse`; send `LessonStartRequest.purpose` from Practice (\"practice\") and Ask (\"doubt\") — after a done lesson the interim Practice route is now refused 409 without it — and handle 409 `LessonStartRefused`; English-only chrome; Sky star targets ≥ 48 px; Hello preselects the parent's interests; landing / onboarding use /api/child/teacher. `LessonStartRequest.address` no longer exists. tests/e2e-design-lesson-truth.mjs's CLIENT tier is the acceptance check.\n\n## open-lt-evals-plan-gate\nScripts that start lessons for one child repeatedly meet the plan gate: tests/lesson-api-e2e.mjs (its s2 after s1 ended), evals/cascade-latency.mjs, evals/director-sim.mjs and scripts/prod-smoke.mjs get 409 outside 07:00-20:30 IST or after a done lesson. They need the child's controls set to 00:00-23:59 (PATCH controls) or `purpose: \"practice\"`. Not in the lesson-truth paths.\n"
  }
 }

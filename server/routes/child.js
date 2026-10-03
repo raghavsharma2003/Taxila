@@ -33,6 +33,15 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** The child id from the query or body, shape-checked before it reaches a query (a malformed id is a 400, not a 500). */
 const childIdOf = (v) => { if (!UUID.test(String(v ?? ""))) throw bad("childId must be a child id"); return String(v); };
 
+/** A lesson this short with nothing graded is an accidental start or a crash, not "Done for today" (V2 §3.13). */
+export const DONE_MIN_MINUTES = 5;
+/**
+ * PURE. Does an ended lesson count as today's lesson? Only when the child did something the classifier graded
+ * (state.did) or it ran DONE_MIN_MINUTES; an abandoned zero-turn lesson (closed by lesson start) never does.
+ */
+export const countsAsDone = (state) => !state?.abandoned
+  && ((Array.isArray(state?.did) && state.did.length > 0) || Number(state?.minutes) >= DONE_MIN_MINUTES);
+
 /** Lesson length shown on the card (V2 §3.4: Young 10-20 min, Older 20-30), never more than what is left today. */
 export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(Number(classLevel) <= 4 ? 15 : 25, capRemaining ?? Infinity));
 
@@ -96,12 +105,13 @@ export async function planFor(child, guardian, now = new Date()) {
   const lastAt = open ? new Date(open.last_at).getTime() : 0;
   // "Only this session" (learning_profile off): no Continue, no map, no notebook — hidden, not empty (§3.13).
   const resumable = !!open && profile && open.child_turns > 0 && now.getTime() - lastAt < RESUME_HOURS * 3600_000;
-  const state = homeStateOf({ resumable, usedMin, capMin, doneToday: todayRows.length > 0, now: localTime(now, tz),
+  const doneRows = todayRows.filter((r) => countsAsDone(r.state));
+  const state = homeStateOf({ resumable, usedMin, capMin, doneToday: doneRows.length > 0, now: localTime(now, tz),
     from: controls.from, to: controls.to, anyLesson: !!anyRow?.any });
   const teacher = teacherFor(child);
   const topic = next ? { id: next.id, title: next.title, shortTitle: shortTitleOf(next.title), chapter: next.chapter.title, subject: next.subject,
     minutes: Number(dayPlan?.plan?.slots?.find((x) => x.kind === "live_lesson")?.targetMin) || lessonMinutes(child.class_level, capRemaining) } : null;
-  const last = todayRows[0];
+  const last = doneRows[0];
   return {
     state, homeState: legacyHome(state),
     plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to } },

@@ -23,6 +23,7 @@ from mpfb_env import (enable_mpfb, asset, co, key_co, set_key_co, deltas, tris_o
                       delete_verts, USER_DATA)
 import keys as K
 import parts
+import identity_sculpt as SC
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--look", required=True)
@@ -55,6 +56,12 @@ for k, v in look["macros"].items():
         macro[k] = v
 h = HS.create_human(macro_detail_dict=macro)
 h.name = "Human"
+# topological mirror map on the still-symmetric base (before any one-sided target); "vid" tracks original vertex ids
+# through the bust cut, garment cut and joins so G3 can compare a key with its true mirror twin
+MIR, _unm = K.mirror_map(co(h.data))
+report["mirrorMapUnmatched"] = _unm
+_a = h.data.attributes.new("vid", "INT", "POINT")
+_a.data.foreach_set("value", np.arange(len(h.data.vertices), dtype=np.int32))
 stack = [{"target": k, "value": float(v)} for k, v in look["targets"].items()]
 # Seeded asymmetry, 3-8% class (TEACHER-VISUAL 4.2): small one-sided offsets on cheeks, brows, mouth corners.
 for side in ("l", "r"):
@@ -93,6 +100,18 @@ def head_weight(P):
     return smoothstep(-0.018, 0.012, (P - q) @ n)
 
 
+# 1b. identity sculpt layer (landmark-anchored RBF displacements, look["sculpt"]); before the head scale, keys, proxies
+_body = np.zeros(len(B), bool)
+_body[group_idx(h, "body")] = True
+_eyeC0 = {s_: B[group_idx(h, g_)].mean(0) for s_, g_ in (("L", "helper-l-eye"), ("R", "helper-r-eye"))}
+if look.get("sculpt"):
+    _A = SC.landmarks(B, _body & (head_weight(B) > 0.5), _eyeC0, group_w(h, "lips"))
+    B = SC.apply(B, _body * head_weight(B), _A, look["sculpt"], log=lambda m: print(f"[build:{look['id']}] {m}", flush=True))
+    h.data.vertices.foreach_set("co", B.ravel())
+    h.data.update()
+    report["sculptAnchors"] = {k: np.round(v, 4).tolist() for k, v in _A.items()}
+stage("sculpt")
+
 # 2. S3h head scale (~3%), baked into the basis so every proxy fits the scaled head.
 s = float(look.get("headScale", 1.0))
 w = head_weight(B)
@@ -108,6 +127,27 @@ FS.load_targets(h, load_microsoft_visemes=False, load_meta_visemes=True, load_ar
 kn = [k.name for k in h.data.shape_keys.key_blocks]
 missing = [k for k in K.ARKIT52 + K.VISEMES if k not in kn]
 assert not missing, missing
+# 3b. symmetrise the CC0 units on the topological mirror (G3), add the scripted expression deltas (smile corner up and
+# back + nasolabial bulge, cheekSquint lower-lid raise, brow raise x1.3) so runtime calibration is 1.0, and bake the
+# look's resting smile into the basis. All before the proxies, so MHCLO interpolation carries the final deltas.
+_kbs = h.data.shape_keys.key_blocks
+_base = key_co(_kbs[0])
+_names = K.ARKIT52 + K.VISEMES
+_D = {k: key_co(_kbs[k]) - _base for k in _names}
+_pre = max(float(np.linalg.norm(_D["mouthUpperUpLeft"] - K._M(_D["mouthUpperUpRight"], MIR), axis=1).max()), 0)
+_D = K.symmetrize(_D, MIR)
+_hw = head_weight(_base) * _body
+_D = K.expression_correctives(_base, _D, group_w(h, "lips") * _body, _eyeC0, _hw)
+for k in _names:
+    set_key_co(_kbs[k], _base + _D[k])
+report["symmetrize"] = {"mouthUpperUpBeforeMm": round(_pre * 1000, 2)}
+rs = float(look.get("faceStyle", {}).get("restSmile", 0.0))
+if rs > 0:
+    fix = rs * (_D["mouthSmileLeft"] + _D["mouthSmileRight"])
+    for kb in _kbs:
+        set_key_co(kb, key_co(kb) + fix)
+    report["restSmileBaked"] = rs
+B = key_co(_kbs[0])
 
 # ------------------------------------------------------------------ 4. proxies
 def add(kind, name, typ):
@@ -207,8 +247,30 @@ def decimate_with_keys(obj, ratio):
     select_only([tmp])
     bpy.ops.object.modifier_apply(modifier="dec")
     from scipy.spatial import cKDTree
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
     P = co(tmp.data)
-    _, idx = cKDTree(base).query(P)
+
+    def parts(me_, n):
+        e = np.empty(len(me_.edges) * 2, np.int64)
+        me_.edges.foreach_get("vertices", e)
+        e = e.reshape(-1, 2)
+        g = coo_matrix((np.ones(len(e)), (e[:, 0], e[:, 1])), shape=(n, n))
+        return connected_components(g, directed=False)[1]
+
+    # map within the matching loose part only: a lower incisor must never take an upper tooth's delta (that
+    # stretched one tooth into a spike when the jaw opened, 2026-10-03)
+    lab_o = parts(obj.data, len(base))
+    lab_n = parts(tmp.data, len(P))
+    cen_o = {l: base[lab_o == l].mean(0) for l in np.unique(lab_o)}
+    idx = np.zeros(len(P), np.int64)
+    for l in np.unique(lab_n):
+        sel = np.nonzero(lab_n == l)[0]
+        c = P[sel].mean(0)
+        lo_ = min(cen_o, key=lambda k: np.linalg.norm(cen_o[k] - c))
+        src = np.nonzero(lab_o == lo_)[0]
+        _, j = cKDTree(base[src]).query(P[sel])
+        idx[sel] = src[j]
     tmp.shape_key_add(name="Basis")
     for k, d in D.items():
         if np.abs(d).max() < 1e-6:
@@ -222,6 +284,33 @@ def decimate_with_keys(obj, ratio):
 teeth = decimate_with_keys(teeth, 0.22)
 teeth.name = "teeth"
 
+
+def shift_parts(obj, sel, d):
+    """Translate vertices `sel` of obj by d in the basis AND every key (deltas unchanged)."""
+    for kb in obj.data.shape_keys.key_blocks:
+        c = key_co(kb)
+        c[sel] += d
+        set_key_co(kb, c)
+
+
+# Speech shows the UPPER incisors and the lower ones only on wide vowels; MH's teeth sit high behind the upper lip,
+# so most visemes showed the lower row and hid the upper one (review item 6). Upper row 1.3 mm down + 1.0 mm forward.
+_tb, _tD = deltas(teeth)
+_upper = np.linalg.norm(_tD["jawOpen"], axis=1) < 1e-4
+mt = look.get("mouth", {})
+shift_parts(teeth, np.nonzero(_upper)[0], np.array([0, -mt.get("upperTeethFwd", 0.0010), -mt.get("upperTeethDown", 0.0013)]))
+# The tongue rests 2.5 mm higher and 2 mm forward, so its tip reads at aa and the Hindi tongue keys show.
+shift_parts(tongue, np.arange(len(tongue.data.vertices)), np.array([0, -mt.get("tongueFwd", 0.002), mt.get("tongueUp", 0.0025)]))
+_tb = co(teeth.data)
+# gum weight (0 on the enamel .. 1 at the gum line): the top band of the upper row, the bottom band of the lower row
+_gum = np.zeros(len(_tb))
+for m_ in (_upper, ~_upper):
+    z = _tb[m_, 2]
+    lo_, hi_ = z.min(), z.max()
+    t_ = (z - lo_) / max(hi_ - lo_, 1e-6)
+    # a thin gum band only (speech rarely shows gum; a 0.62-0.8 band read as a red strip at jaw 0.3)
+    _gum[m_] = smoothstep(0.8, 0.95, t_) if m_ is _upper else smoothstep(0.2, 0.05, t_)
+
 # ------------------------------------------------------------------ mouth interior: region tags + a dark bag
 def tag(obj, region):
     a = obj.data.attributes.new("region", "FLOAT", "POINT")
@@ -230,6 +319,8 @@ def tag(obj, region):
 
 tag(h, 0.0)
 tag(teeth, 1.0)
+# _region encodes the gum weight in its fraction (1.00 enamel .. 1.45 gum); every reader rounds to the region id
+teeth.data.attributes["region"].data.foreach_set("value", (1.0 + 0.45 * _gum).astype(np.float32))
 tag(tongue, 2.0)
 # Mouth bag: an ellipsoid shell behind the teeth; its lower half follows the jaw (lower-teeth key deltas).
 tb, tD = deltas(teeth)
@@ -264,6 +355,8 @@ for k, d in tD.items():
 for o in (teeth, tongue, bag):
     if not o.data.shape_keys:
         o.shape_key_add(name="Basis")
+    _v = o.data.attributes.new("vid", "INT", "POINT")
+    _v.data.foreach_set("value", np.full(len(o.data.vertices), -1, np.int32))
 select_only([h, teeth, tongue, bag])
 bpy.context.view_layer.objects.active = h
 bpy.ops.object.join()
@@ -272,7 +365,7 @@ face.name = "face"
 stage("mouth")
 
 # ------------------------------------------------------------------ tongue extras
-region = attr(face, "region")
+region = np.round(attr(face, "region"))
 fb, FD = deltas(face)
 tsel = np.nonzero(region == 2.0)[0]
 tx = K.tongue_extras(fb[tsel])
@@ -299,6 +392,26 @@ dist, nn = cKDTree(fb[lowerl]).query(fb[upper])
 pair = dist < 0.0016
 reg["lipSealUpper"] = upper[pair]
 reg["lipSealLower"] = lowerl[nn[pair]]
+# Lip seal by point-to-SURFACE distance (iteration 2): every upper-lip vertex within 2.4 mm of the lower lip's surface
+# (and vice versa) is a contact vertex; the gap is its distance to the opposite surface. Vertex pairs alone measured
+# 0.5-0.7 mm p95 at rest after the first build's seal (many-to-one pairs) and could not converge both ways.
+F_all = tris_of(face.data)
+_up_set = np.zeros(len(fb), bool); _up_set[upper] = True
+_lo_set = np.zeros(len(fb), bool); _lo_set[lowerl] = True
+UT = F_all[np.all(_up_set[F_all], axis=1)]
+LT = F_all[np.all(_lo_set[F_all], axis=1)]
+
+
+def lip_contacts(state, reach=0.0024):
+    bu = BVHTree.FromPolygons([Vector(p) for p in state], UT.tolist())
+    bl = BVHTree.FromPolygons([Vector(p) for p in state], LT.tolist())
+    out = []
+    for vs, bvh_ in ((upper, bl), (lowerl, bu)):
+        for v in vs:
+            loc, _, _, d = bvh_.find_nearest(Vector(state[v]), reach)
+            if loc is not None:
+                out.append((int(v), np.array(loc), float(d)))
+    return out
 reg["lips"] = np.clip(lipsW * skin, 0, 1)
 bi = np.linalg.norm(FD["browInnerUp"], axis=1)
 reg["browInner"] = ((bi > 0.001) & (np.abs(fb[:, 0]) < 0.022) & skin).astype(float)
@@ -310,30 +423,56 @@ report["lipSealPairs"] = int(pair.sum())
 
 
 def seal_fix(state, falloff=0.007):
-    """Delta that pulls each upper/lower contact pair to its midpoint, spread over the lips with a falloff."""
-    up, lo = reg["lipSealUpper"], reg["lipSealLower"]
+    """Delta that moves each contact vertex half-way to the opposite lip's surface, spread over the lips."""
     fix = np.zeros_like(state)
-    mid = 0.5 * (state[up] + state[lo])
-    fix[up] = mid - state[up]
-    fix[lo] = mid - state[lo]
-    return K._spread(state, fix, np.concatenate([up, lo]), reg["lips"], radius=falloff)
+    src = []
+    for v, loc, d in lip_contacts(state):
+        fix[v] = 0.5 * (loc - state[v])
+        src.append(v)
+    if not src:
+        return fix
+    return K._spread(state, fix, np.array(sorted(set(src))), reg["lips"], radius=falloff)
 
 
 # MH's neutral rests with the lips ~1.5 mm apart. A teacher at rest has a closed, relaxed mouth (and parted lips at
 # rest read as a different register), so the basis is sealed; every key keeps its delta, so nothing else moves.
-fix0 = seal_fix(fb)
+def gap_p95(state):
+    g = [d for _, _, d in lip_contacts(state)]
+    return float(np.percentile(g, 95)) if g else 0.0
+
+
+def seal_iter(state_fn, apply_fn, label, bar=0.00025, n=12):
+    """Repeat the midpoint seal until the contact-pair gap p95 <= bar: a lower-lip vertex can be the nearest partner of
+    several upper ones, so one pass leaves 0.5-0.7 mm (G5 before, 2026-10-03)."""
+    tot = 0.0
+    for it in range(n):
+        st = state_fn()
+        if gap_p95(st) <= bar:
+            break
+        f = seal_fix(st)
+        apply_fn(f)
+        tot = max(tot, float(np.abs(f).max()))
+    report.setdefault("lipSealIters", {})[label] = it
+    return tot
+
+
 kbs = face.data.shape_keys.key_blocks
-for kb in kbs:
-    set_key_co(kb, key_co(kb) + fix0)
+
+
+def _apply_all(f):
+    for kb in kbs:
+        set_key_co(kb, key_co(kb) + f)
+
+
+fix0 = seal_iter(lambda: key_co(kbs[0]), _apply_all, "rest")
 fb, FD = deltas(face)
 # viseme_PP must close the lips (the bilabial closure bar): seal its own pose the same way.
-fixpp = seal_fix(fb + FD["viseme_PP"])
-set_key_co(kbs["viseme_PP"], key_co(kbs["viseme_PP"]) + fixpp)
-fixcl = seal_fix(fb + FD["jawOpen"] + FD["mouthClose"])
-set_key_co(kbs["mouthClose"], key_co(kbs["mouthClose"]) + fixcl)
+fixpp = seal_iter(lambda: key_co(kbs["viseme_PP"]), lambda f: set_key_co(kbs["viseme_PP"], key_co(kbs["viseme_PP"]) + f), "viseme_PP")
 fb, FD = deltas(face)
-report["lipSealFixMm"] = {"rest": round(float(np.abs(fix0).max() * 1000), 2), "viseme_PP": round(float(np.abs(fixpp).max() * 1000), 2),
-                          "mouthClose": round(float(np.abs(fixcl).max() * 1000), 2)}
+fixcl = seal_iter(lambda: key_co(kbs[0]) + (key_co(kbs["jawOpen"]) - key_co(kbs[0])) + (key_co(kbs["mouthClose"]) - key_co(kbs[0])),
+                  lambda f: set_key_co(kbs["mouthClose"], key_co(kbs["mouthClose"]) + f), "mouthClose")
+fb, FD = deltas(face)
+report["lipSealFixMm"] = {"rest": round(fix0 * 1000, 2), "viseme_PP": round(fixpp * 1000, 2), "mouthClose": round(fixcl * 1000, 2)}
 CO = K.correctives(fb, FD, reg)
 for k, d in CO.items():
     set_key_co(face.shape_key_add(name=k), fb + d)
@@ -399,8 +538,69 @@ for o in (brows, lashes):
 tag(brows, 4.0)
 tag(lashes, 5.0)
 brows.name, lashes.name = "brows", "lashes"
+# the cards atlas is brows | lashes (texture.py): pack each card set into its half. Both sets had sampled the WHOLE
+# atlas since the first build (tan patchy brows, review item 11, were partly this)
+for o_, u0 in ((brows, 0.0), (lashes, 0.5)):
+    _ul = o_.data.uv_layers.active
+    _uv = np.empty(len(_ul.data) * 2)
+    _ul.data.foreach_get("uv", _uv)
+    _uv = _uv.reshape(-1, 2)
+    _uv[:, 0] = u0 + np.clip(_uv[:, 0], 0, 1) * 0.5
+    _ul.data.foreach_set("uv", _uv.ravel())
+# lower lash cards read as dark specks under the eye at every framing (review item 11): keep the upper lashes only
+# (the lower lid line is carried by the skin's lid-crease shade and the eye's wet-line darkening)
+_lp = co(lashes.data)
+_low = np.zeros(len(_lp), bool)
+for side, sg in (("L", 1), ("R", -1)):
+    _low |= (np.sign(_lp[:, 0]) == sg) & (_lp[:, 2] < eyeC[side][2] - 0.0015)
+if look.get("lowerLashes", False) is False and _low.any():
+    delete_verts(lashes, _low)
+    report["lowerLashesRemovedVerts"] = int(_low.sum())
 hair.shape_key_clear()
 hair.name = "hair"
+# ---- hair silhouette edits (review item 12): all scripted on the CC0 card hair, rigid to the head
+hP = co(hair.data)
+hcfg = look["hair"]
+skullBackY = float(co(h.data)[(attr(h, "scalpW") > 0.3), 1].max()) if "scalpW" in h.data.attributes else hP[:, 1].max() - 0.03
+hc = J["joint-head"] + np.array([0, 0.005, 0.06])
+if hcfg.get("crownVolume"):
+    # lift the hair off the skull above the ears, most at the crown: breaks the "helmet" profile
+    r_ = hP - hc
+    wv = smoothstep(J["joint-head"][2] + 0.02, J["joint-head"][2] + 0.12, hP[:, 2])
+    hP = hc + r_ * (1 + hcfg["crownVolume"] * wv)[:, None]
+if hcfg.get("raisePonytail"):
+    # the tail: hair behind the skull. Lift the tie and the tail by raise (m), carried smoothly into the cap near the tie
+    tail = smoothstep(skullBackY + 0.002, skullBackY + 0.02, hP[:, 1])
+    tieZ = float(np.percentile(hP[tail > 0.9, 2], 92)) if (tail > 0.9).any() else J["joint-head"][2]
+    tie = np.array([0.0, skullBackY + 0.01, tieZ])
+    near = np.exp(-(np.linalg.norm(hP - tie, axis=1) / 0.05) ** 2)
+    lift = hcfg["raisePonytail"]
+    w_ = np.maximum(tail, near * 0.8)
+    hP[:, 2] += lift * w_
+    # tilt the hanging tail out from the neck by ~12 deg about the (raised) tie, so it clears the collar
+    ang = np.radians(hcfg.get("tailTiltDeg", 12)) * tail * smoothstep(tieZ + lift, tieZ + lift - 0.08, hP[:, 2])
+    rel = hP - (tie + np.array([0, 0, lift]))
+    c_, s_ = np.cos(ang), np.sin(ang)
+    # rotation in the y-z plane: points below the tie move backwards (+y) as the angle grows
+    hP[:, 1] = tie[1] + rel[:, 1] * c_ - rel[:, 2] * s_
+    hP[:, 2] = tie[2] + lift + rel[:, 1] * s_ + rel[:, 2] * c_
+    report["ponytail"] = {"tieZ": round(tieZ, 4), "lift": lift}
+hair.data.vertices.foreach_set("co", hP.ravel())
+hair.data.update()
+if hcfg.get("clipFringe"):
+    # cards that hang in front of the forehead below the hairline read as black scratches across the face
+    eyeZ = 0.5 * (eyeC["L"][2] + eyeC["R"][2])
+    eyeY = 0.5 * (eyeC["L"][1] + eyeC["R"][1])
+    bad = (hP[:, 1] < eyeY - 0.006) & (hP[:, 2] < eyeZ + hcfg["clipFringe"]) & (np.abs(hP[:, 0]) < 0.06)
+    me_ = hair.data
+    kill = np.zeros(len(hP), bool)
+    for p_ in me_.polygons:
+        vs = list(p_.vertices)
+        if bad[vs].mean() > 0.5:
+            kill[vs] = True
+    if kill.any():
+        delete_verts(hair, kill)
+    report["fringeClippedVerts"] = int(kill.sum())
 # hair atlas: the MH card texture (CC0) fills u in [0, 0.74]; u in [0.76, 0.98] is our opaque strand column
 uvl = hair.data.uv_layers.active
 uv = np.empty(len(uvl.data) * 2)
@@ -429,14 +629,20 @@ for k, d in FD.items():
     allok &= ok
 report["gates"]["G1_names"] = {"expected": len(K.tier_keys("H")), "present": sum(k in FD for k in K.tier_keys("H"))}
 report["gates"]["G2_bounded_nonempty"] = {"ok": bool(allok), "failed": [r["key"] for r in report["keys"] if not r["ok"]]}
-sk = (region == 0) | (region == 3)   # mirror test on skin only
+# G3 mirror: each Left key against the mirror of its Right key, on the TOPOLOGICAL twin (vid map from the symmetric
+# base), so the identity's seeded asymmetry is not counted as key asymmetry. Bar 0.5 mm.
+_vid = np.zeros(len(face.data.vertices), np.int32)
+face.data.attributes["vid"].data.foreach_get("value", _vid)
+_cur = {int(v): i for i, v in enumerate(_vid) if v >= 0}
+mir_idx = np.array([_cur.get(int(MIR[v]), -1) if v >= 0 else -1 for v in _vid])
 mir = {}
 for k in K.ARKIT52:
     if k.endswith("Left"):
         r_ = k[:-4] + "Right"
         if r_ in FD:
-            mir[k[:-4]] = round(K.mirror_error(fb[skin], FD[k][skin], FD[r_][skin]) * 1000, 2)
+            mir[k[:-4]] = round(K.mirror_error_topo(FD[k], FD[r_], mir_idx, skin) * 1000, 2)
 report["gates"]["G3_mirror_mm"] = mir
+report["gates"]["G3_pass"] = bool(max(mir.values()) <= 0.5)
 
 # G4 lid seal: rays from the eyeball centre through cornea-front vertices must hit the skin at eyeBlink = 1
 F = tris_of(face.data)
@@ -475,8 +681,9 @@ report["gates"]["G4_lid_seal_escaped_pct"] = {
 
 # G5 lip seal: upper/lower contact pairs within 0.3 mm (reported in mm, p95 and max)
 def seal(state):
-    g = np.linalg.norm(state[reg["lipSealUpper"]] - state[reg["lipSealLower"]], axis=1) * 1000
-    return {"p95": round(float(np.percentile(g, 95)), 3), "max": round(float(g.max()), 3)} if len(g) else None
+    """Contact-vertex distance to the opposite lip SURFACE, mm (TEACHER-VISUAL H5 bar: <= 0.3)."""
+    g = np.array([d for _, _, d in lip_contacts(state)]) * 1000
+    return {"p95": round(float(np.percentile(g, 95)), 3), "max": round(float(g.max()), 3), "contacts": int(len(g))} if len(g) else None
 
 
 def aperture(state):
@@ -499,12 +706,16 @@ report["gates"]["G5_lip_aperture_escaped_pct"] = {
                                                     + 0.09 * FD["jawOpen_mouthClose"]),
     "jawOpen0.15": aperture(fb + 0.15 * FD["jawOpen"]),
 }
-report["gates"]["G5_lip_gap_mm"] = {
+report["gates"]["G5_lip_gap_mm"] = _g5 = {
     "rest": seal(fb), "viseme_PP": seal(fb + FD["viseme_PP"]),
     "jawOpen0.3+mouthClose0.3": seal(fb + 0.3 * FD["jawOpen"] + 0.3 * FD["mouthClose"]),
     "jawOpen0.3+mouthClose0.3+corrective": seal(fb + 0.3 * FD["jawOpen"] + 0.3 * FD["mouthClose"]
                                                 + 0.09 * FD["jawOpen_mouthClose"]),
 }
+
+# G5 fails on millimetres (TEACHER-VISUAL H5: gap <= 0.3 mm) AND on ray escape, never on escape alone
+report["gates"]["G5_pass"] = bool(all(v is None or v["p95"] <= 0.3 for v in _g5.values())
+                                  and all(v == 0 for k, v in report["gates"]["G5_lip_aperture_escaped_pct"].items() if k != "jawOpen0.15"))
 
 # G6 teeth/tongue inside the lips: a segment from the mouth-bag centre to each sampled tooth/tongue vertex must
 # not cross the skin (a crossing means the vertex is outside the face) -- at rest and at every viseme.

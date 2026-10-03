@@ -257,8 +257,8 @@ def pores(Pp):
 
 def base_height(Pp):
     h = 0.00012 * pores(Pp) * (1 - 0.7 * interp_cache["lip"])
-    # lips: fine vertical lines
-    h += -0.00008 * interp_cache["lip"] * np.clip(np.abs(np.sin(Pp[:, 0] * 2400 + NZ(Pp * 300) * 2)) ** 6, 0, 1)
+    # lips: fine vertical lines (half the first build's amplitude: they read as corrugation, review item 9)
+    h += -0.00004 * interp_cache["lip"] * np.clip(np.abs(np.sin(Pp[:, 0] * 2400 + NZ(Pp * 300) * 2)) ** 6, 0, 1)
     # soft skin undulation
     h += 0.0001 * NZ.fbm(Pp * 120.0, 3)
     return h
@@ -284,11 +284,17 @@ def wrinkle_height(Pp, age):
         ang = np.arctan2(rel[:, 2], sg * rel[:, 0])
         m = smoothstep(0.004, 0.008, r) * (1 - smoothstep(0.018, 0.026, r)) * (sg * rel[:, 0] > -0.002)
         h += -0.0004 * m * np.clip(np.sin(ang * 9 + NZ(Pp * 80) * 1.5), 0, 1) ** 4
-    # nasolabial fold: a groove from the nose wing to just outside the mouth corner
+    # nasolabial fold: a SOFT groove (sigma ~3.5 mm, shallow) from the alar base along the fold to just past the mouth
+    # corner. The first build used sigma 2.2 mm at 0.9 mm depth: a pen-like slash beside the corner (review item 5).
     for w_, mc in ((wingL, mcL), (wingR, mcR)):
-        end = mc + np.array([np.sign(mc[0]) * 0.006, 0.002, -0.006])
-        d, t = seg_dist(Pp, w_ + np.array([np.sign(mc[0]) * 0.004, 0.002, 0.0]), end)
-        h += -0.0009 * np.exp(-(d / 0.0022) ** 2) * smoothstep(0.0, 0.15, t)
+        sg_ = np.sign(mc[0])
+        start = w_ + np.array([sg_ * 0.002, 0.003, -0.002])
+        bend = mc + np.array([sg_ * 0.0085, 0.001, 0.004])
+        end = mc + np.array([sg_ * 0.007, 0.002, -0.008])
+        d1, t1 = seg_dist(Pp, start, bend)
+        d2, _ = seg_dist(Pp, bend, end)
+        d = np.minimum(d1, d2)
+        h += -0.0005 * np.exp(-(d / 0.0035) ** 2) * np.where(d1 < d2, smoothstep(0.0, 0.25, t1), 1.0)
     # under-eye fine lines
     for side in ("L", "R"):
         c = eyeC[side]
@@ -329,7 +335,9 @@ age = (look["macros"]["age"] - 0.45) / 0.15
 log("normals")
 Nb = normal_from(base_height, Pt)
 # the static part of the expression lines for an older face (tiny), baked into the base normal
-static_k = float(np.clip(0.1 + 0.25 * age, 0, 0.35))
+# none below 30: forehead lines on a 24-year-old read as age (review item 5)
+age_years = float(look.get("ageYears", 25))
+static_k = 0.0 if age_years < 30 else float(np.clip(0.03 + 0.01 * (age_years - 30), 0, 0.12))
 Nw = normal_from(lambda q: wrinkle_height(q, age), Pt)
 if static_k > 0:
     Ns = normal_from(lambda q: base_height(q) + static_k * wrinkle_height(q, age), Pt)
@@ -339,13 +347,23 @@ log("albedo")
 
 # ------------------------------------------------------------------ albedo (linear, then sRGB)
 sk = look["skin"]
-base = hex_lin(sk["base"])
-shade = hex_lin(sk["shade"])
-lip = hex_lin(sk["lip"])
+# G9 (TEACHER-VISUAL H7): the albedo is anchored on the Monk Skin Tone hex of the look's band, times a per-look,
+# per-channel gain that the closed loop solves (render under the stage rig -> cheek/forehead/jaw L*a*b* -> rescale;
+# scripts/character/g9.mjs writes skin.albedoGain). The look's old "base" hex was a designer colour, 2-3 MST steps light
+# and too orange when used as albedo (review item 1); shade and lip keep their designed ratios to that hex.
+MST_HEX = {1: "#f6ede4", 2: "#f3e7db", 3: "#f7ead0", 4: "#eadaba", 5: "#d7bd96", 6: "#a07e56", 7: "#825c43",
+           8: "#604134", 9: "#3a312a", 10: "#292420"}
+design = hex_lin(sk["base"])
+gain = np.array(sk.get("albedoGain", [1.0, 1.0, 1.0]))
+base = hex_lin(MST_HEX[int(sk["mst"])]) * gain
+shade = base * hex_lin(sk["shade"]) / design
+lip = base * hex_lin(sk["lip"]) / design
+_ll = lip @ np.array([0.2126, 0.7152, 0.0722])
+lip = lip * (1 - sk.get("lipDesat", 0.2)) + _ll * sk.get("lipDesat", 0.2)       # no lipstick read (review item 9)
 hairc = hex_lin(look["hair"]["color"])
 browc = hex_lin(look.get("browColor", look["hair"]["color"]))
-mel = NZ.fbm(Pt * 18.0, 3) * 0.5 + NZ.fbm(Pt * 70.0 + 3.3, 2) * 0.25
-A = base[None, :] * (1 + 0.06 * mel[:, None])
+mel = NZ.fbm(Pt * 18.0, 3) * 0.5 + NZ.fbm(Pt * 70.0 + 3.3, 2) * 0.25 + NZ(Pt * 400.0) * 0.12
+A = base[None, :] * (1 + 0.08 * mel[:, None])
 # shade colour in creases/periphery: under-eye, upper-lid crease, sides of the nose, neck
 peri = sum(gauss(Pt, eyeC[s] + np.array([0, -0.004, -eyeR * 0.9]), 0.011) for s in "LR")
 lidc = sum(gauss(Pt, eyeC[s] + np.array([0, -0.006, eyeR * 0.55]), 0.008) for s in "LR")
@@ -359,9 +377,10 @@ hz += 0.3 * gauss(Pt, noseTip, 0.01) + 0.45 * earT + 0.15 * gauss(Pt, chin, 0.01
 hz = np.clip(hz, 0, 1) * 0.16
 A = A * (1 - hz[:, None]) + (A * red / red.mean()) * hz[:, None]
 # lips: vermilion colour with a soft border; slightly darker line at the closure
-lt = smoothstep(0.25, 0.75, lipT)
-lipcol = lip[None, :] * (1 + 0.07 * NZ(Pt * 260)[:, None])
-A = A * (1 - 0.8 * lt[:, None]) + lipcol * (0.8 * lt[:, None])
+lt = smoothstep(0.12, 0.88, lipT)                  # feathered border (was 0.25-0.75: a hard lipstick edge)
+lipcol = lip[None, :] * (1 + 0.05 * NZ(Pt * 260)[:, None])
+LC = float(sk.get("lipCoverage", 0.4))             # was 0.62
+A = A * (1 - LC * lt[:, None]) + lipcol * (LC * lt[:, None])
 # stubble (one look): fine dark speckle over the beard area, never on the lips
 if sk.get("stubble"):
     ez = eyeC["L"][2]
@@ -375,19 +394,25 @@ if sk.get("stubble"):
 bd, _ = btree.query(Pt)
 bmask = (1 - smoothstep(0.0012, 0.0026, bd)) * front
 strand = np.clip(NZ(np.stack([Pt[:, 0] * 900, Pt[:, 2] * 220 + Pt[:, 0] * 300, Pt[:, 1] * 400], 1)) * 1.6 + 0.4, 0, 1)
-bp = np.clip(bmask * (0.55 + 0.45 * strand), 0, 1) * 0.85
+bp = np.clip(bmask * (0.45 + 0.55 * strand), 0, 1) * 0.72
+A_H = A * (1 - 0.35 * bp[:, None]) + browc[None, :] * (0.35 * bp[:, None])   # H: cards carry the brow; a faint under-tone only
 A = A * (1 - bp[:, None]) + browc[None, :] * bp[:, None]
 # scalp under the hair: hair colour with strand streaks along the flow (the opaque core the cards sit on)
 flow = np.clip(NZ(np.stack([Pt[:, 0] * 1400, Pt[:, 1] * 80, Pt[:, 2] * 80], 1)) * 1.5 + 0.5, 0, 1)
-hl = smoothstep(0.2, 0.6, scalpT) * (1 - lt)
-hairline = hl * (0.75 + 0.25 * flow)
-A = A * (1 - hairline[:, None]) + (hairc[None, :] * (0.7 + 0.5 * flow[:, None])) * hairline[:, None]
+hl = smoothstep(0.35, 0.6, scalpT) * (1 - lt)       # a narrower blend: the 0.2-0.6 ramp left a grey fringe (item 12)
+hairline = hl * (0.8 + 0.2 * flow)
+_hl = (hairc[None, :] * (0.6 + 0.3 * flow[:, None]))
+A = A * (1 - hairline[:, None]) + _hl * hairline[:, None]
+A_H = A_H * (1 - hairline[:, None]) + _hl * hairline[:, None]
 # flush (look option): pre-baked cheek tint is OFF here; delighted flush is a runtime uniform on H.
 
 # ------------------------------------------------------------------ packed: cavity, roughness, thickness, AO
 cav = np.clip(1 + 2.2 * pores(Pt), 0, 1)
 tz = gauss(Pt, np.array([0, eyeC["L"][1] - 0.01, browZ + 0.03]), 0.03) + gauss(Pt, noseTip, 0.015)
-rough = np.clip(0.5 - 0.1 * tz - 0.12 * lt + 0.25 * hairline, 0.25, 0.85)
+# min roughness 0.42 and less T-zone gloss: plum's forehead read oily (review item 14); specular also scales down for
+# darker MST bands through the cavity channel (the shader multiplies the GGX lobes by it)
+rough = np.clip(0.56 - 0.05 * tz - 0.08 * lt + 0.25 * hairline, 0.42, 0.85)
+specK = float(np.clip(1.0 - 0.1 * (int(sk["mst"]) - 6), 0.6, 1.0))
 thick = np.clip(0.75 * earT + 0.5 * gauss(Pt, noseTip + np.array([0, 0.006, -0.004]), 0.008) + 0.3 * (sum(gauss(Pt, eyeC[s] + np.array([0, -eyeR, 0.004]), 0.006) for s in "LR")), 0, 1)
 log("ao")
 # vertex AO by hemisphere ray casts against the face + garment + hair (rest pose), interpolated per texel
@@ -427,10 +452,11 @@ def img(vals, ch):
     return dilate(out, cov)
 
 
-A_ = img(lin2srgb(A), 3)
-# white patch (teeth/tongue/bag UVs point here): neutral; the shader colours those regions itself
-A_[int(R * 0.985):, int(R * 0.985):] = 1.0
-save("skin_albedo.png", A_)
+for nm_, AA in (("skin_albedo.png", A), ("skin_albedo_H.png", A_H)):
+    A_ = img(lin2srgb(AA), 3)
+    # white patch (teeth/tongue/bag UVs point here): neutral; the shader colours those regions itself
+    A_[int(R * 0.985):, int(R * 0.985):] = 1.0
+    save(nm_, A_)
 enc = lambda n: n * 0.5 + 0.5
 Nimg = img(enc(Nb), 3)
 Nimg[int(R * 0.985):, int(R * 0.985):] = (0.5, 0.5, 1.0)
@@ -440,7 +466,7 @@ save("skin_wrinkle_stretch.png", img(enc(Nstretch), 3))
 mA, mB = masks(Pt)
 save("skin_maskA.png", img(mA, 4))
 save("skin_maskB.png", img(mB, 4))
-save("skin_packed.png", img(np.stack([cav, rough, thick, AOt], 1), 4))
+save("skin_packed.png", img(np.stack([cav * specK, rough, thick, AOt], 1), 4))
 log("skin maps written")
 
 # ------------------------------------------------------------------ garment atlas
@@ -470,30 +496,51 @@ if kind == "kurti-jacket":
     col[inner] = hex_lin(gk["base"]) * fine[inner, None]
     pip = inner & (gEdge < 0.006)
     col[pip] = hex_lin(gk["piping"])
-    twill = 0.5 + 0.5 * np.sin((arc * 1.0 + gPt[:, 2]) * 2 * math.pi / 0.0016)
-    den = hex_lin(gk["jacket"]) * (0.86 + 0.14 * twill[:, None]) * (0.92 + 0.16 * NZ(gPt * 40)[:, None])
+    # denim: indigo warp with a diagonal twill and fading on the high points (review item 7: was #7C9CB8 baby blue)
+    twill = 0.5 + 0.5 * np.sin((arc * 1.0 + gPt[:, 2]) * 2 * math.pi / 0.0012)
+    slub = NZ(np.stack([gPt[:, 0] * 60, gPt[:, 1] * 60, gPt[:, 2] * 900], 1))
+    den = hex_lin(gk["jacket"]) * (0.8 + 0.2 * twill[:, None]) * (0.9 + 0.12 * slub[:, None]) * (0.93 + 0.14 * NZ(gPt * 40)[:, None])
     col[outer] = den[outer]
     stitch = outer & (np.abs(gEdge - 0.005) < 0.0007)
     col[stitch] = hex_lin("#B98A4A")
     rgh[outer] = 0.9
 elif kind == "shirt-tee":
     col[inner] = hex_lin(gk["tee"]) * fine[inner, None]
-    u = arc / 0.018
-    v = gPt[:, 2] / 0.018
-    stripe = lambda x, w: (np.abs((x % 1.0) - 0.5) < w).astype(float)
-    chk = np.clip(stripe(u, 0.09) + stripe(v, 0.09), 0, 1)
-    thin = np.clip(stripe(u + 0.5, 0.025) + stripe(v + 0.5, 0.025), 0, 1)
-    sc = hex_lin(gk["base"]) * (1 - 0.35 * chk[:, None]) * (1 + 0.25 * thin[:, None])
+    # a woven plaid, not a grid: soft (cosine-profile) bands in two colours, the overlap darker, a thin light line
+    u = arc / 0.022
+    v = gPt[:, 2] / 0.022
+    band = lambda x, w: np.clip(1 - np.abs(((x % 1.0) - 0.5) / w), 0, 1) ** 1.5
+    bu, bv = band(u, 0.16), band(v, 0.16)
+    thin = np.clip(band(u + 0.5, 0.05) + band(v + 0.5, 0.05), 0, 1)
+    c0, c1 = hex_lin(gk["base"]), hex_lin(gk.get("check", gk["shade"]))
+    mixw = np.clip(0.5 * bu + 0.5 * bv, 0, 1)
+    sc = c0 * (1 - mixw[:, None]) + c1 * mixw[:, None]
+    sc = sc * (1 - 0.18 * (bu * bv)[:, None]) * (1 + 0.18 * thin[:, None]) * (0.95 + 0.1 * weave[:, None])
     col[outer] = (sc * fine[:, None])[outer]
 else:
     col[inner] = hex_lin(gk["blouse"]) * fine[inner, None]
-    hl_ = hex_lin(gk["base"]) * (0.9 + 0.1 * NZ(np.stack([gPt[:, 0] * 900, gPt[:, 1] * 120, gPt[:, 2] * 120], 1))[:, None])
+    # handloom: fine warp streaks along the pallu; the border is trim along the strip's long edges (gEdge = distance
+    # to them), a thin gold zari line inside it. (Rejected 2026-10-03: a texture-space band on an offset shell.)
+    hl_ = hex_lin(gk["base"]) * (0.88 + 0.12 * NZ(np.stack([gPt[:, 0] * 1400, gPt[:, 1] * 1400, gPt[:, 2] * 90], 1))[:, None])
     col[outer] = (hl_ * fine[:, None])[outer]
-    border = outer & (gEdge < 0.016)
-    col[border] = hex_lin(gk["border"]) * fine[border, None]
-    gold = outer & (np.abs(gEdge - 0.017) < 0.0015)
-    col[gold] = hex_lin("#C9A45C")
-# soft shading so the folds read (ambient towards the body)
+    bw = float(gk.get("palluBorder", 0.012))
+    border = outer & (gEdge < bw)
+    col[border] = hex_lin(gk["border"]) * (0.85 + 0.15 * weave[border, None])
+    gold = outer & (np.abs(gEdge - (bw + 0.0025)) < 0.0012)
+    col[gold] = hex_lin("#B8955A")
+# garment AO (hemisphere casts per vertex against face + garment): collars, lapels, the pallu over the blouse and the
+# tee under the shirt get contact shading; the first build's tee was flat and unshaded (review item 7)
+Gn = vnormals(G.data)
+gao = np.ones(len(GP))
+for i in range(len(GP)):
+    n = Gn[i]
+    hits = 0
+    for d in dirs:
+        if d @ n <= 0.05:
+            d = d - 2 * (d @ n) * n
+        hits += bvh.ray_cast(Vector(GP[i] + n * 0.0008), Vector(d), 0.04)[0] is not None
+    gao[i] = 1 - hits / len(dirs)
+col *= np.clip(0.45 + 0.55 * gi(gao), 0, 1)[:, None]
 gA = np.zeros((GR, GR, 4), np.float32)
 gA[cov2, :3] = lin2srgb(col)
 gA[cov2, 3] = rgh
@@ -517,7 +564,7 @@ lum = mha[:, :, :3].mean(2)
 lum = (lum - lum[mha[:, :, 3] > 0.5].mean()) / max(lum[mha[:, :, 3] > 0.5].std(), 1e-3)
 hc = lin2srgb(hairc)
 H = np.zeros((2048, 2048, 4), np.float32)
-H[:, :1536, :3] = np.clip(hc[None, None, :] * (1 + 0.28 * lum[:, :, None]), 0, 1)
+H[:, :1536, :3] = np.clip(hc[None, None, :] * (1 + 0.16 * lum[:, :, None]), 0, 1)
 H[:, :1536, 3] = mha[:, :, 3]
 # opaque strand column (u 0.76-0.98): fibres along v
 yy, xx = np.mgrid[0:2048, 0:512]
@@ -531,17 +578,18 @@ Image.fromarray(to8(H), "RGBA").save(os.path.join(OUT, "hair_atlas.png"), optimi
 def card_tex(kind, name):
     d = os.path.join(USER_DATA, kind, name)
     f = [x for x in os.listdir(d) if x.endswith(".png")][0]
-    return np.asarray(Image.open(os.path.join(d, f)).convert("RGBA").resize((512, 512), Image.LANCZOS)).astype(np.float32) / 255
+    return np.asarray(Image.open(os.path.join(d, f)).convert("RGBA").resize((1024, 1024), Image.LANCZOS)).astype(np.float32) / 255
 
 
+# brows at 1024 px, full brow colour, alpha x1.3 (was 512 px, colour x0.6, alpha x1.9: tan, patchy, blobby; item 11)
 Cb = card_tex("eyebrows", look["brows"])
 Cl = card_tex("eyelashes", look["lashes"])
-C = np.zeros((512, 1024, 4), np.float32)
+C = np.zeros((1024, 2048, 4), np.float32)
 bc = lin2srgb(browc)
-C[:, :512, :3] = bc
-C[:, :512, 3] = Cb[:, :, 3]
-C[:, 512:, :3] = lin2srgb(np.array([0.012, 0.010, 0.009]))
-C[:, 512:, 3] = Cl[:, :, 3]
+C[:, :1024, :3] = bc
+C[:, :1024, 3] = np.clip(Cb[:, :, 3] * 1.6, 0, 1)
+C[:, 1024:, :3] = lin2srgb(np.array([0.012, 0.010, 0.009]))
+C[:, 1024:, 3] = Cl[:, :, 3]
 Image.fromarray(to8(C), "RGBA").save(os.path.join(OUT, "cards_atlas.png"), optimize=True)
 log("hair + cards written")
 json.dump({"res": R, "texels": int(cov.sum()), "landmarks": {"noseTip": noseTip.tolist(), "chin": chin.tolist(),

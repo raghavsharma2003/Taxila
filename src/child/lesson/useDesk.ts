@@ -1,7 +1,8 @@
 // useDesk: the live lesson → DeskModel + DeskActions. Every state on the Desk is derived from the runtime's REAL
 // events (src/lesson: link events, the Director's ui, the outbox, connection and HTTP failures), never from a
 // timer pretending to know: the only clocks are the ones the spec names (the heard hold, the latency beats, T1's
-// 8 s, the Young help timer, RC's 2 s, the help sheet's 10 s "Back").
+// 8 s, the Young help timer, RC's 2 s, the help sheet's 10 s "Back"). There is no polling interval: the Desk
+// re-renders only at the NEXT of those deadlines (V-PERF-1); the Older "Thinking… N s" counter ticks in the dock.
 //   floor   ← FloorController(runtime.events)          src/lesson/floor.ts
 //   lamp, chime, haptic ← Signals(floor transition)     src/lesson/signals.ts
 //   trouble ← classifyTrouble(facts from events)        src/lesson/trouble.ts
@@ -9,11 +10,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { Move } from "../../../shared/contracts.ts";
 import { FloorController, FLOOR_TIMING, type Floor, type FloorState } from "../../lesson/floor.ts";
-import { beatsAt } from "../../lesson/latency.ts";
+import { BEATS, beatsAt } from "../../lesson/latency.ts";
 import type { LessonMode } from "../../lesson/link.ts";
 import type { LessonRuntime, StartMode } from "../../lesson/runtime.ts";
 import { Signals } from "../../lesson/signals.ts";
-import { classifyTrouble, factOfLinkError, isStrip, T1_MS, type StripId } from "../../lesson/trouble.ts";
+import { classifyTrouble, factOfLinkError, isStrip, RC_MS, T1_MS, T2_LINK_MS, type StripId } from "../../lesson/trouble.ts";
+import type { Emotion } from "../../avatar/behaviour.ts";
 import type { UiBridge } from "../../lesson/uiBridge.ts";
 import { t } from "../../ui/copy.ts";
 import { prepareEarcons, setEarcons } from "../../ui/sound/earcons.ts";
@@ -54,6 +56,8 @@ export interface DeskContext {
   faceForm: "live" | "plate";
   /** Young B1 (R0): CC turns "captions always" on for the child (a saved preference). */
   setCaptionsAlways?: (on: boolean) => void;
+  /** The child's first lesson on this device: the T6 "Can't hear?" heuristic runs only then (§3.13). */
+  firstLesson?: boolean;
 }
 
 export interface DeskNav {
@@ -106,7 +110,10 @@ function shortTitleOf(ui: { shortTitle?: string }, topic: { title: string; chapt
 
 interface Item { ask: Ask | null; answer: AnswerChip | null; pendingVerdict: Verdict | null; pendingWithHelp?: boolean; nextAsk?: Ask | null }
 
-export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: DeskContext, nav: DeskNav, size: { w: number; h: number; fontScale: number }) {
+/** The Director's ui.affect → her face: effort / insight is the one face reaction to a result (§4.6). */
+const AFFECT: Record<string, Emotion> = { effort: "proud", insight: "excited" };
+
+export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: DeskContext, nav: DeskNav, size: { w: number; h: number; fontScale: number; cardNeed?: number; stripNeed?: number; keyboardInset?: number; trayNeed?: number }) {
   const state = useSyncExternalStore(runtime.store.subscribe, runtime.store.get, runtime.store.get);
   const bs = useSyncExternalStore(bridge?.store.subscribe ?? noopSub, bridge?.store.get ?? nullGet, bridge?.store.get ?? nullGet);
   const young = ctx.family === "young";
@@ -168,6 +175,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const [recoveredAt, setRecoveredAt] = useState<number | null>(null);
   const [dismissed, setDismissed] = useState<Set<StripId>>(() => new Set());
   const [commitAt, setCommitAt] = useState<number | null>(null);
+  /** T1's Wait / Try again restart ITS 8 s from here; the latency beats keep counting from the commit. */
+  const [retryAt, setRetryAt] = useState<number | null>(null);
   const [audioSinceCommit, setAudioSinceCommit] = useState(false);
   const troubleShown = useRef<StripId | null>(null);
 
@@ -193,6 +202,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         }
       } else if (e.type === "child_speech_end" || (e.type === "child_final" && e.typed)) {
         setCommitAt(Date.now());
+        setRetryAt(null);
         setAudioSinceCommit(false);
       }
     });
@@ -221,18 +231,15 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     }
   }, [state.lastResent]);
 
-  // A 1 s clock only while something time-based can change (T1, RC, the sent flash, the latency beats).
+  // The clock: `now` advances only at the next deadline that can change what is shown (scheduled below, after
+  // the facts are known); never a polling interval.
   const [now, setNow] = useState(() => Date.now());
-  const ticking = floor === "heard" || floor === "thinking" || recoveredAt !== null || sentFlashAt !== null || linkDownSince !== null || (commitAt !== null && state.pendingTurns > 0);
-  useEffect(() => {
-    if (!ticking) return;
-    const id = setInterval(() => setNow(Date.now()), 250);
-    return () => clearInterval(id);
-  }, [ticking]);
+  const [stillOfflineAt, setStillOfflineAt] = useState<number | null>(null);
   useEffect(() => {
     if (recoveredAt !== null && now - recoveredAt > 2_500) setRecoveredAt(null);
     if (sentFlashAt !== null && now - sentFlashAt > 1_500) setSentFlashAt(null);
-  }, [now, recoveredAt, sentFlashAt]);
+    if (stillOfflineAt !== null && now - stillOfflineAt > 2_500) setStillOfflineAt(null);
+  }, [now, recoveredAt, sentFlashAt, stillOfflineAt]);
 
   // ───────── the question card: the pinned ask + the answer chip ─────────
   const [item, setItem] = useState<Item>({ ask: null, answer: null, pendingVerdict: null });
@@ -244,7 +251,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     setItem((it) => {
       let next = it;
       if (serverAsk?.text && serverAsk.text !== it.ask?.text) {
-        const ask: Ask = { text: serverAsk.text, source: "server", picture: serverAsk.picture, itemId: serverAsk.itemId, lines: [], lang: langAttr(ctx.lessonLang) };
+        const ask: Ask = { text: serverAsk.text, source: "server", picture: serverAsk.picture, itemId: serverAsk.itemId, lines: [], lang: langAttr(ctx.lessonLang),
+          replay: { seq: state.replySeq, text: state.replyText } };
         // A new item. If this turn also grades the child's answer, the old question and answer stay up while she
         // speaks, so the verdict lands on THEIR answer on her first voiced frame; the new ask takes the card at
         // the hand-over. Otherwise the new ask pins at once (from her first frame).
@@ -257,7 +265,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       if (ui.verdict) next = { ...next, pendingVerdict: ui.verdict, pendingWithHelp: withHelpNow };
       return next;
     });
-  }, [state.ui, serverAsk, ui.hint, ui.verdict, withHelpNow, ctx.lessonLang]);
+  }, [state.ui, serverAsk, ui.hint, ui.verdict, withHelpNow, ctx.lessonLang, state.replySeq, state.replyText]);
 
   // The hand-over: a queued next question takes the card (the graded answer has been seen with its mark).
   useEffect(() => {
@@ -272,8 +280,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     if (floor !== "your_turn" || serverAsk || !teacherCap) return;
     const q = inferAsk(teacherCap.text);
     if (!q) return;
-    setItem((it) => (it.ask?.text === q ? it : { ask: { text: q, source: "inferred", lines: [], lang: langAttr(ctx.lessonLang) }, answer: it.ask ? null : it.answer, pendingVerdict: null }));
-  }, [floor, serverAsk, teacherCap, ctx.lessonLang]);
+    setItem((it) => (it.ask?.text === q ? it : { ask: { text: q, source: "inferred", lines: [], lang: langAttr(ctx.lessonLang), replay: { seq: state.replySeq, text: state.replyText } }, answer: it.ask ? null : it.answer, pendingVerdict: null }));
+  }, [floor, serverAsk, teacherCap, ctx.lessonLang, state.replySeq, state.replyText]);
 
   // The receipt: the answer chip lands on the card from the child's commit (spoken: at speech end; typed/tapped:
   // at once). The verdict lands on it on her first voiced frame of the reply.
@@ -306,8 +314,20 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   useEffect(() => setModuleFailed(false), [modulesMounted.join(",")]);
   const chips = ui.chips ?? [];
   const wb = ui.whiteboard?.value ? ui.whiteboard : null;
-  const trayKind: TrayModel["kind"] | null = ui.tray && ui.tray !== "none" ? ui.tray
-    : modulesMounted.length && !moduleFailed ? "module" : chips.length ? "tiles" : wb && (phase === "teach" || phase === "practice") ? "board" : null;
+  // The voice the child can use right now (no mic, or speech recognition down → tap and type only).
+  const spoken = !ctx.textOnly && bs?.transport !== "typed" && !facts.noMic;
+  const voiceDown = !spoken || facts.sttDown;
+  // A number item puts the NumberPad in the tray for Young (they never type words), for anyone without a working
+  // voice, and for Older who tapped "123" (§6.3.4). A module keeps the tray; the pad takes the board's place.
+  const [padOpen, setPadOpen] = useState(false);
+  const numberItem = ui.answerForm === "number";
+  useEffect(() => setPadOpen(false), [ui.ask?.text, ui.answerForm]);
+  const padWanted = numberItem && (young || voiceDown || padOpen);
+  const serverTray = ui.tray && ui.tray !== "none" ? ui.tray : null;
+  const trayKind: TrayModel["kind"] | null = serverTray === "module" ? "module"
+    : padWanted && !(modulesMounted.length && !moduleFailed) ? "pad"
+      : serverTray ? serverTray
+        : modulesMounted.length && !moduleFailed ? "module" : chips.length ? "tiles" : wb && (phase === "teach" || phase === "practice") ? "board" : null;
   // Geometry is decided at a phase boundary; within a phase it only ever grows Face → Work (legacy: content that
   // the Director did not announce with ui.tray), never back, so nothing reflows mid-item.
   const [geometry, setGeometry] = useState<"face" | "work">("face");
@@ -315,6 +335,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   useEffect(() => {
     const boundary = phaseRef.current !== phase;
     phaseRef.current = phase;
+    if (trayKind === "pad") return setGeometry("work");
     if (ui.tray) return setGeometry(ui.tray === "none" ? "face" : "work");
     if (boundary) setGeometry(trayKind ? "work" : "face");
     else if (trayKind) setGeometry("work");
@@ -323,7 +344,6 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const effectiveGeometry = geometry === "work" && !trayKind ? "face" : geometry;
 
   // ───────── talking ─────────
-  const spoken = !ctx.textOnly && bs?.transport !== "typed" && !facts.noMic;
   const pttOn = bs?.cascade ? bs.pushToTalk : state.pushToTalk;
   const tapToTalk = spoken && (state.phase === "live" ? pttOn || !ctx.openMic : !ctx.openMic);
   const paused = sheet !== null;
@@ -337,15 +357,22 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     },
     end: () => runtime.talkEnd(),
   });
-  bridge?.setPushToTalk(!ctx.openMic || paused);
   useEffect(() => {
+    bridge?.setPushToTalk(!ctx.openMic || paused);
     if (state.phase === "live" && spoken) runtime.setPushToTalk(!ctx.openMic || paused);
-  }, [state.phase, spoken, ctx.openMic, paused, runtime]);
+  }, [state.phase, spoken, ctx.openMic, paused, runtime, bridge]);
 
   // YOUR TURN timers (escalate only; they never set a state): Young help after tapOptionsS, the second breath.
   const changeKey = `${floor}|${chips.map((c) => c.id).join(",")}|${bs?.replays ?? 0}`;
-  const yt = useYourTurn(floor === "your_turn", changeKey, tokens, paused, ctx.timing);
-  const [typing, setTyping] = useState(ctx.textOnly);
+  // Older "Wait" pauses the YOUR TURN timers (re-ask, T6, the second breath) until the floor moves on (§11.8).
+  const [waitHeld, setWaitHeld] = useState(false);
+  useEffect(() => {
+    if (floor !== "your_turn") setWaitHeld(false);
+  }, [floor]);
+  const yt = useYourTurn(floor === "your_turn", changeKey, tokens, paused || waitHeld, ctx.timing);
+  // Young never type words (§6.3.4): a text-only Young lesson answers by tiles, the pad and the Help menu.
+  const [typing, setTyping] = useState(ctx.textOnly && !young);
+  const [fixDraft, setFixDraft] = useState<string | null>(null);
   const [captionsOverride, setCaptionsOverride] = useState<boolean | null>(null);
   // A choice turn puts the touch on the tiles: a typed field left open from the last item closes.
   useEffect(() => {
@@ -365,21 +392,28 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     if (facts.sttDown && !young) setTyping(true); // T3: the dock switches to Type (Older); Young get tiles
   }, [facts.sttDown, young]);
 
-  // T6 heuristic (§3.13 "Phone muted"): two YOUR TURN windows in a row reach the re-ask time with no tap and no
-  // speech, in this lesson. Event-derived: counted from the floor, reset by any child action.
+  // T6 heuristic (§3.13 "Phone muted"): in the child's FIRST lesson only, two YOUR TURN windows in a row reach the
+  // re-ask time with no tap and no speech. Shown once per lesson; from then on captions are on for the lesson.
   const [quietTurns, setQuietTurns] = useState(0);
+  const [t6, setT6] = useState<"no" | "showing" | "done">("no");
   const reaskS = young ? 8 : 12;
   useEffect(() => {
-    if (floor !== "your_turn" || paused) return;
+    if (floor !== "your_turn" || paused || waitHeld || !ctx.firstLesson || t6 !== "no") return;
     const id = setTimeout(() => setQuietTurns((n) => n + 1), reaskS * 1000 * ctx.timing);
     return () => clearTimeout(id);
-  }, [floor, paused, reaskS, ctx.timing, changeKey]);
+  }, [floor, paused, waitHeld, reaskS, ctx.timing, changeKey, ctx.firstLesson, t6]);
   useEffect(() => {
-    if (floor === "listening" || floor === "heard") setQuietTurns(0);
+    if (floor === "listening" || floor === "heard") {
+      setQuietTurns(0);
+      setT6((v) => (v === "showing" ? "done" : v)); // the child answered: they can hear her
+    }
   }, [floor]);
+  useEffect(() => {
+    if (quietTurns >= 2 && t6 === "no") setT6("showing");
+  }, [quietTurns, t6]);
 
   // ───────── trouble ─────────
-  const waitingSince = commitAt !== null && !audioSinceCommit && (state.pendingTurns > 0 || floor === "thinking" || floor === "heard") ? commitAt : null;
+  const waitingSince = commitAt !== null && !audioSinceCommit && (state.pendingTurns > 0 || floor === "thinking" || floor === "heard") ? Math.max(commitAt, retryAt ?? 0) : null;
   const strip: StripId | null = classifyTrouble({
     now,
     offline,
@@ -390,7 +424,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     startFailed: state.failure?.kind === "start" && state.phase === "error",
     ttsFailed: facts.tts,
     sttDown: facts.sttDown && spoken,
-    likelyMuted: quietTurns >= 2,
+    likelyMuted: t6 === "showing",
     dismissed,
     recoveredAt: recoveredAt !== null && (troubleShown.current !== null || sentFlashAt !== null) ? recoveredAt : null,
     pttFallback: facts.ptt && !ctx.textOnly,
@@ -400,6 +434,31 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     if (strip === null && recoveredAt === null) troubleShown.current = null;
   }, [strip, recoveredAt]);
   suspendedRef.current = sheet !== null || isStrip(strip) || strip === "T8" || strip === "T9";
+
+  // "That wasn't me" (⋯): the first 2 minutes of the live lesson only (§3.13).
+  const [liveAt, setLiveAt] = useState<number | null>(null);
+  useEffect(() => {
+    if (state.phase === "live") setLiveAt((v) => v ?? Date.now());
+  }, [state.phase]);
+  const notMeWindow = liveAt !== null && state.phase === "live" && now - liveAt < 120_000;
+
+  // The next deadline that can change what is shown: the Desk re-renders then, and only then.
+  const nextAt = (() => {
+    const c: number[] = [];
+    if (waitingSince !== null && !dismissed.has("T1")) c.push(waitingSince + T1_MS);
+    if (linkDownSince !== null) c.push(linkDownSince + T2_LINK_MS);
+    if (recoveredAt !== null) c.push(recoveredAt + RC_MS, recoveredAt + 2_500);
+    if (sentFlashAt !== null) c.push(sentFlashAt + 1_500);
+    if (stillOfflineAt !== null) c.push(stillOfflineAt + 2_500);
+    if (liveAt !== null && state.phase === "live") c.push(liveAt + 120_000);
+    if (commitAt !== null && (floor === "thinking" || floor === "heard")) c.push(commitAt + BEATS.labelMs, commitAt + BEATS.chalkMs, commitAt + BEATS.momentMs);
+    return c.filter((x) => x > now).sort((x, y) => x - y)[0] ?? null;
+  })();
+  useEffect(() => {
+    if (nextAt === null) return;
+    const id = setTimeout(() => setNow(Date.now()), Math.max(0, nextAt - Date.now()) + 5);
+    return () => clearTimeout(id);
+  }, [nextAt]);
 
   // ───────── announcements: assertive once per change, polite for her finished phrase ─────────
   const [assertive, setAssertive] = useState("");
@@ -478,14 +537,17 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
 
   // ───────── layout ─────────
   const stripH = strip && isStrip(strip) ? stripHeight(strip, { noPack: true, young, width: Math.min(size.w, 600) - 32 }) : 0;
+  // The Keyboard layout only when an on-screen keyboard really covers the Desk (visualViewport), never from focus
+  // alone: a laptop, a hardware keyboard or a text-mode lesson with the field focused keeps the full layout.
+  const keyboardUp = typingFocus && !young && size.w < 600 && (size.keyboardInset ?? 0) > 0;
   const layout: DeskLayout = solveDesk({
-    width: size.w, height: size.h, family: ctx.family, geometry: effectiveGeometry,
-    keyboard: typingFocus && !young && size.w < size.h && size.w < 600, fontScale: size.fontScale,
-    captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH,
+    width: size.w, height: keyboardUp ? size.h - (size.keyboardInset ?? 0) : size.h, family: ctx.family, geometry: effectiveGeometry,
+    keyboard: keyboardUp, fontScale: size.fontScale,
+    captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed,
   });
 
   // ───────── thinking beats ─────────
-  const beats = commitAt !== null && (floor === "thinking" || floor === "heard") ? beatsAt(now - commitAt, { older: !young }) : null;
+  const beats = commitAt !== null && (floor === "thinking" || floor === "heard") ? beatsAt(now - commitAt, { older: false }) : null;
 
   // ───────── the tray model ─────────
   const tray: TrayModel | null = trayKind
@@ -497,18 +559,22 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
           chalked: beats?.chalk || floor === "speaking" ? item.answer?.text ?? null : null,
           mark: item.answer?.verdict === "correct" ? "tick" : item.answer?.verdict === "not_yet" ? "underline" : null,
         } : undefined,
-        overlay: trayOverlay ?? (young && yt.tapOptions && floor === "your_turn" ? "help_menu" : null),
+        overlay: trayOverlay ?? (young && yt.tapOptions && floor === "your_turn" && trayKind !== "pad" ? "help_menu" : null),
       }
     : trayOverlay
       ? { kind: "tiles", tiles: [], overlay: trayOverlay }
-      : null;
+      // Young with no working voice and nothing to tap: the Help menu (Hear it again · Show me choices · Show me
+      // how) is in the tray at once, never a "Tap a picture above" with no picture (T3, no mic).
+      : young && voiceDown && floor === "your_turn" && ui.answerForm !== "number"
+        ? { kind: "tiles", tiles: [], overlay: "help_menu" }
+        : null;
   const geometryOut = tray && (trayOverlay || tray.overlay) ? "work" : effectiveGeometry;
-  const finalLayout = geometryOut === effectiveGeometry ? layout : solveDesk({ width: size.w, height: size.h, family: ctx.family, geometry: geometryOut, fontScale: size.fontScale, captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH });
+  const finalLayout = geometryOut === effectiveGeometry ? layout : solveDesk({ width: size.w, height: size.h, family: ctx.family, geometry: geometryOut, fontScale: size.fontScale, captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed });
 
   const answerForm: DeskModel["answerForm"] = ui.answerForm ?? (chips.length ? "choice" : trayKind === "module" ? "tap_in_tray" : "words");
   // Captions: on by reading level (R1+), "always" by preference, forced on for a turn whose sound failed (T5);
   // the CC button overrides for this lesson.
-  const captionsOn = facts.tts || (captionsOverride ?? (ctx.captionsAlways || ctx.band !== "b1"));
+  const captionsOn = facts.tts || t6 !== "no" || (captionsOverride ?? (ctx.captionsAlways || ctx.band !== "b1"));
 
   const m: DeskModel = {
     band: ctx.band,
@@ -527,10 +593,11 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     phase,
     shortTitle: shortTitle || shortTitleOf(ui, state.topic),
     lastOne: young && phase === "wrap",
-    thinkingSeconds: beats?.seconds ?? null,
+    thinkingSeconds: null,
+    thinkingSince: !young && commitAt !== null && (floor === "thinking" || floor === "heard") ? commitAt : null,
     thinkingLabel: !!beats?.thinkingLabel || (floor === "thinking" && commitAt === null),
     mic: { available: spoken, talking: ptt.talking, drain: ptt.drain, tapToTalk },
-    showHelp: young && (yt.tapOptions || tokens.tapOptionsS === null),
+    showHelp: young && (yt.tapOptions || tokens.tapOptionsS === null || voiceDown),
     typing: typing || (!spoken && !young),
     captionsOn,
     offlineBadge: false,
@@ -542,6 +609,10 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     reducedMotion: ctx.reducedMotion,
     faceForm: ctx.faceForm,
     lampBreath: floor === "your_turn" ? (young && yt.glowStrong ? 2 : 1) : 0,
+    stripText: strip === "T2" && stillOfflineAt !== null ? "trouble.still_offline" : null,
+    notMeWindow,
+    affect: strip && isStrip(strip) && strip !== "RC" && strip !== "PTT" ? "warm" : ui.affect ? AFFECT[ui.affect] ?? null : null,
+    fixDraft,
   };
 
   // ───────── actions ─────────
@@ -557,7 +628,14 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     send: (text) => {
       if (!text.trim() || state.phase !== "live") return;
       bridge?.stopReplay();
-      runtime.say(text);
+      if (fixDraft !== null) {
+        // "Fix": the corrected words replace the turn in flight (same turnSeq, marked edited), never a 2nd answer.
+        const fixed = text.trim();
+        setFixDraft(null);
+        void runtime.fixAnswer(fixed).then((how) => {
+          if (how === "edited") setItem((it) => (it.answer ? { ...it, answer: { ...it.answer, text: fixed, edited: true } } : it));
+        });
+      } else runtime.say(text);
       if (spoken && !ctx.textOnly) setTyping(false); // back to the mic dock for the next item
     },
     pickTile: (c) => {
@@ -570,13 +648,24 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     },
     hearQuestion: () => {
       const n = Date.now();
-      const slower = n - lastHear.current < 10_000; // a second tap within 10 s: the slower version
-      lastHear.current = n;
+      const second = n - lastHear.current < 10_000;
+      lastHear.current = second ? 0 : n;
       ptt.stop();
-      if (bridge && bs && bs.buffered > 0) {
-        if (floor === "speaking") bridge.quietStop();
-        bridge.replay(slower);
-      } else runtime.replayTeacher();
+      bridge?.stopReplay();
+      if (floor === "speaking" || floor === "showing") bridge?.quietStop();
+      const lang = ctx.lessonLang === "hindi" ? 1 : ctx.lessonLang === "english" ? 2 : 0;
+      if (second && state.phase === "live") {
+        // A second tap within 10 s: ask her for the slower, simpler version (a REPEAT-SLOW request, §4.3).
+        runtime.tapChip({ id: "slower", label: REQUESTS.slower[lang] });
+        return;
+      }
+      // The turn that POSED the pinned question (never the hint or praise she said since): its buffered clip, else
+      // the stored turn fetched and spoken again, else her last turn. The button always does something.
+      const rp = item.ask?.replay;
+      if (bridge && rp?.seq != null && bridge.replay(false, rp.seq)) return;
+      if (rp?.text && runtime.replayReply({ text: rp.text, ...(rp.seq != null ? { seq: rp.seq } : {}) })) return;
+      if (bridge?.replay(false)) return;
+      runtime.replayTeacher();
     },
     hearAgain: () => a.hearQuestion(),
     openHint: () => setSheet("hint"),
@@ -592,11 +681,15 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     },
     openHelpMenu: () => setTrayOverlay((o) => (o === "help_menu" ? null : "help_menu")),
     wait: () => {
-      // Older "Wait": pauses the turn timers; the strip's Wait hides T1 until her reply or 8 s more.
-      setDismissed((d) => new Set([...d, "T1"]));
-      setCommitAt((c) => (c === null ? c : Date.now()));
+      // Older "Wait" in the dock: pauses the YOUR TURN timers until the floor moves on (§11.8).
+      if (floor === "your_turn") return setWaitHeld(true);
+      // The T1 strip's Wait: T1 goes, and comes back if there is still no reply 8 s from now.
+      setRetryAt(Date.now());
     },
-    setTyping: (on) => setTyping(on),
+    setTyping: (on) => {
+      setTyping(on);
+      if (!on) setFixDraft(null);
+    },
     setTypingFocus: (on) => setTypingFocus(on),
     toggleCaptions: () => {
       const next = !m.captionsOn;
@@ -637,9 +730,15 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
           return a.wait();
         case "try_again":
           if (strip === "T9") return void start();
-          if (strip === "T2" && typeof navigator !== "undefined" && navigator.onLine === false) return; // still offline: nothing to send yet
-          void runtime.resendHeld();
-          setDismissed((d) => new Set([...d, "T1"]));
+          if (strip === "T2" && typeof navigator !== "undefined" && navigator.onLine === false) {
+            // Still offline: the strip stays and says so (nothing can be sent yet); the answer stays saved.
+            setStillOfflineAt(Date.now());
+            return;
+          }
+          // T1: abandon the request in flight and send it again now (marked retried); the 8 s wait restarts, so
+          // "Still working on it…" returns if there is still no reply. Never a silent dismiss.
+          void runtime.retryNow();
+          setRetryAt(Date.now());
           return;
         case "send_again":
           return void runtime.resendHeld();
@@ -650,6 +749,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
           return runtime.replayTeacher();
         case "hear_now":
           setQuietTurns(0);
+          setT6("done");
           return setDismissed((d) => new Set([...d, "T6"]));
         case "type_instead":
           setTyping(true);
@@ -661,7 +761,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         case "go_home":
           return nav.home();
         case "continue_live":
-          return;
+          return void runtime.resendHeld();
       }
     },
     dismissNoMic: () => {
@@ -676,8 +776,11 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       runtime.moduleEvent(e);
     },
     fixAnswer: () => {
+      ptt.stop();
+      setFixDraft(item.answer?.text ?? "");
       setTyping(true);
     },
+    openPad: () => setPadOpen(true),
     notMe: () => {
       void runtime.end();
       nav.who();

@@ -2,9 +2,10 @@
 // verified kit content, and one predicate for the teacher's own words (PRODUCT-DESIGN-V2 §4.10 G-REG-1; audit #7:
 // a Class 8 "aap" child was greeted "tumhara… Tumhe…").
 //
-// Precedence (V2 §3.2 step 6 + §3.3 step 4): the child's own pick at Hello (classes 5+, where the persona sheet lets
-// them choose) → the parent's controls row (child_controls.address) → the class default (aap from class 5 up, tum
-// below; server/routes/parent.js defaultControls). English lessons have no aap/tum distinction: null.
+// Precedence (V2 §3.2 step 6 + §3.3 step 4: "From her first sentence she uses the address term the parent chose"):
+// the parent's controls row (child_controls.address) → the class default (aap from class 5 up, tum below;
+// server/routes/parent.js defaultControls). There is no child pick: the Hello flow has no aap/tum card, and a
+// client-supplied register would outrank the parent and could change between lessons. English lessons: null.
 //
 // Kit questions are written in tum forms ("Pehle 8 odd numbers jodo"). Asked of an aap child they contradict the
 // register on the very turn the child is being addressed, so the question the Director poses is converted to aap
@@ -14,13 +15,12 @@
 export const ADDRESSES = ["aap", "tum"];
 
 /**
- * @param {{ classLevel: number, lang: string, parent?: string | null, child?: string | null }} a
+ * @param {{ classLevel: number, lang: string, parent?: string | null }} a
  * @returns {"aap" | "tum" | null}
  */
-export function resolveAddress({ classLevel, lang, parent = null, child = null }) {
+export function resolveAddress({ classLevel, lang, parent = null }) {
   if (lang === "english") return null;
   const cl = Number(classLevel) || 1;
-  if (ADDRESSES.includes(child) && cl >= 5) return child;
   if (ADDRESSES.includes(parent)) return parent;
   return cl >= 5 ? "aap" : "tum";
 }
@@ -124,14 +124,25 @@ const isTumMark = (w) => {
  * Which register a teacher line uses toward the child: counts of tum-form and aap-form markers (pronouns, and the
  * kits' tum imperative and future verb forms). English text has none.
  */
+/**
+ * "Chalo" said WITH the child ("Chalo, shuru karte hain", "chalo dekhein": an inclusive "let's") or as an
+ * interjection before an aap line ("Chalo, aap bataiye") is not an order to them: neutral in either register. Only
+ * a "chalo" with a first-person-plural verb, "hum" or an aap form later in the same sentence is neutralised; a bare
+ * "Chalo, batao" still carries the tum "batao", and "Chalo jaldi" stays a tum mark.
+ */
+const INCLUSIVE_CHALO = /(^|[^\p{L}\p{M}])(chalo|चलो)(?![\p{L}\p{M}])(?=[^.!?।]*?(?:(?<![\p{L}])(?:hum|ham|हम|aap|aapk[aie]|aapko|aapne|aapse|आप[\p{L}\p{M}]*)(?![\p{L}])|[a-z]+te\s+hain\b|[a-z]{3,}(?:ein|en)\b|ते\s+हैं|एं|ें(?![\p{L}\p{M}])))/giu;
+const neutralised = (text) => String(text ?? "").replace(INCLUSIVE_CHALO, "$1");
+
 export function registerMarks(text) {
-  const ws = words(text);
+  const ws = words(neutralised(text));
   return { tum: ws.filter(isTumMark).length, aap: ws.filter((w) => AAP_FORMS.has(w.toLowerCase())).length };
 }
 
-/** G-REG-1: does the line break the child's address register? (aap child: any tum mark; tum child: an aap pronoun.) */
+/** G-REG-1: does the line break the child's address register? (aap child: any tum mark; tum child: aap forms and no tum form.) */
 export function registerBroken(text, address) {
   if (!address) return false;
   const m = registerMarks(text);
-  return address === "aap" ? m.tum > 0 : m.aap > 0;
+  // A tum child: an aap form breaks the register only when nothing in the line addresses them with tum — "aap"
+  // beside "tum" is about someone else (a third person, honorific), not to the child.
+  return address === "aap" ? m.tum > 0 : m.aap > 0 && m.tum === 0;
 }

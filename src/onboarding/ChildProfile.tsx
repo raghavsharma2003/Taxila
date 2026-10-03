@@ -1,29 +1,22 @@
-// P6 child profile (§2.2): a name, then taps. Class 1-9 as 3 × 3 tiles (>= 48 dp), board, school medium,
-// how she should speak, tum / aap (aap default for Class 5-9; the child may override from B3 up), optional
-// interests from a gender-neutral vetted set (no festival or religion tiles), optional comfort and
-// hard-to-hear switches that never name a condition. Creates via POST /api/children; the controls row
-// (address, comfort, captions, report channel) is written once at P7 from the draft.
-// `?add=1` is the second-child edge flow (P6 → P8 only), behind the parent gate (GateIfPin in ./index.tsx).
+// Step 6 "About {child}" (PRODUCT-DESIGN-V2 §3.2, §6.2): the first name; how {T} should speak to them (Casual /
+// Respectful: Respectful from class 5 up, nothing preselected below that); what they like (the 12 interest pictures,
+// up to 3: the same set Hello shows the child, so the parent's picks are the ones the child confirms, audit #7);
+// "Captions always on". The class and board were chosen in step 1 and the language in step 2 (asked once, audit #24).
+// Creates via POST /api/children; the controls row (address, comfort, captions, report channel) is written once at
+// the PIN step from the draft. `?add=1` is the second-child path, behind the parent gate (GateIfPin).
 import { useState, type FormEvent } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Chip, ErrorNote, Field, Icon, TileGroup } from "../ui/index.ts";
+import { defaultTutorFor } from "../../shared/tutors.js";
+import { teacherRecord } from "../ui/teacher/useTeacher.ts";
+import { Spot } from "../child/art.tsx";
+import { INTERESTS } from "../child/interests.ts";
 import { ApiError, errText, postJson, refreshMe, request } from "../app/api.ts";
 import { useGate } from "../parent/Gate.tsx";
 import { isGateError } from "../parent/api.ts";
 import { StepFrame } from "./Layout.tsx";
 import { useDraft } from "./draft.ts";
 
-const BOARDS = [
-  { value: "cbse", label: "CBSE" }, { value: "ncert", label: "NCERT books" }, { value: "rbse", label: "RBSE" },
-  { value: "icse", label: "ICSE" }, { value: "other-state", label: "Other state board" },
-];
-const MEDIUM = [{ value: "english", label: "English" }, { value: "hindi", label: "Hindi" }, { value: "other", label: "Other" }];
-const SPEAK = [
-  { value: "hindi", label: "हिन्दी", sub: "mostly Hindi", lang: "hi" }, { value: "hinglish", label: "Hinglish", sub: "a mix" },
-  { value: "english", label: "English", sub: "mostly English" },
-];
-// Gender-neutral vetted set (§2.4 C3 rule); the child can still say something else in their first lesson.
-const INTERESTS = ["Animals", "Cricket", "Cooking", "Drawing", "Music", "Space", "Machines", "Stories", "Plants", "Puzzles", "Football", "Dance"];
 
 export function ChildStep() {
   const nav = useNavigate();
@@ -36,8 +29,11 @@ export function ChildStep() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const cl = c.classLevel;
-  const address = c.address ?? (cl ? (cl >= 5 ? "aap" : "tum") : undefined);
-  const ready = !!c.firstName?.trim() && !!cl;
+  // Respectful from class 5 up; nothing preselected below that (§3.2 step 6)
+  const address = c.address ?? (cl && cl >= 5 ? "aap" : undefined);
+  const ready = !!c.firstName?.trim() && !!cl && !!address;
+  const rec = teacherRecord(defaultTutorFor({ class_level: cl ?? 5 }), (cl ?? 5) <= 4 ? "b2" : "b3");
+  const name = c.firstName?.trim() || "your child";
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -75,51 +71,52 @@ export function ChildStep() {
 
   const toggleInterest = (x: string) => {
     const cur = new Set(c.interests ?? []);
-    if (cur.has(x)) cur.delete(x); else if (cur.size < 8) cur.add(x);
+    if (cur.has(x)) cur.delete(x); else if (cur.size < 3) cur.add(x);
     setC({ interests: [...cur] });
   };
 
+  if (!cl) return <Navigate to={`/start/class${adding ? "?add=1" : ""}`} replace />;
+  const label = (id: string) => id.charAt(0).toUpperCase() + id.slice(1);
   return (
-    <StepFrame step="child" title={adding ? "Add a child" : "About your child"} why="She uses this to pick the right chapter and the right way to talk.">
+    <StepFrame step="child" title={c.firstName?.trim() ? `About ${c.firstName.trim()}` : "About your child"} docTitle="About your child"
+      why={`${rec.name} uses this to talk to ${name} the right way.`}>
       <form className="stack" onSubmit={submit} noValidate>
+        <p className="row t-meta">Class {cl}{c.board ? ` · ${c.board === "other-state" ? "Other board" : c.board.toUpperCase()}` : ""}
+          <Link to={`/start/class${adding ? "?add=1" : ""}`} className="block-link" style={{ marginLeft: "auto" }}>Change</Link></p>
         <Field label="Child's first name" hint="Just the name they are called at home is fine." autoComplete="off" maxLength={40}
           value={c.firstName ?? ""} onChange={(e) => setC({ firstName: e.target.value })} required />
-        <fieldset className="fs"><legend className="label">Class</legend>
-          <TileGroup label="Class" columns={3} value={cl ?? null} onChange={(v) => setC({ classLevel: v, address: undefined })}
-            options={[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({ value: n, label: `Class ${n}` }))} />
-        </fieldset>
-        <fieldset className="fs"><legend className="label">Board</legend>
-          <TileGroup label="Board" columns={2} value={c.board ?? null} onChange={(v) => setC({ board: v })} options={BOARDS} />
+        <fieldset className="fs"><legend className="label">How should {rec.name} speak to {name}?</legend>
+          <TileGroup label="How to speak" columns={2} value={address ?? null} onChange={(v) => setC({ address: v as "tum" | "aap" })}
+            options={[{ value: "tum", label: "Casual" }, { value: "aap", label: "Respectful" }]} />
         </fieldset>
         <fieldset className="fs"><legend className="label">School teaches in</legend>
-          <TileGroup label="School medium" columns={3} value={c.schoolMedium ?? null} onChange={(v) => setC({ schoolMedium: v })} options={MEDIUM} />
+          <TileGroup label="School medium" columns={3} value={c.schoolMedium ?? null} onChange={(v) => setC({ schoolMedium: v })}
+            options={[{ value: "english", label: "English" }, { value: "hindi", label: "Hindi" }, { value: "other", label: "Other" }]} />
         </fieldset>
-        <fieldset className="fs"><legend className="label">She should speak</legend>
-          <TileGroup label="Teacher's language" columns={3}
-            value={c.languagePref ?? (d.lang === "hi" ? "hindi" : d.lang === "en" ? "english" : "hinglish")} onChange={(v) => setC({ languagePref: v })} options={SPEAK} />
-        </fieldset>
-        {cl && (
-          <fieldset className="fs"><legend className="label">She calls your child</legend>
-            <TileGroup label="Address" columns={2} value={address ?? null} onChange={(v) => setC({ address: v as "tum" | "aap" })}
-              options={[{ value: "tum", label: "tum" }, { value: "aap", label: "aap" }]} />
-            {cl >= 5 && <p className="t-note">From Class 5 your child can change this themselves.</p>}
-          </fieldset>
-        )}
-        <fieldset className="fs"><legend className="label">Likes <span className="muted">(optional)</span></legend>
-          <p className="t-note">She uses these in examples. Your child can tell her more in the first lesson.</p>
-          <div className="chips">
-            {INTERESTS.map((x) => <Chip key={x} selected={(c.interests ?? []).includes(x)} onClick={() => toggleInterest(x)}>{x}</Chip>)}
+        <fieldset className="fs"><legend className="label">What does {name} like? Pick up to 3. <span className="muted">(optional)</span></legend>
+          <div className="onb-likes">
+            {INTERESTS.map((x) => {
+              const on = (c.interests ?? []).map((v) => v.toLowerCase()).includes(x);
+              return (
+                <button key={x} type="button" className="onb-like" aria-pressed={on} onClick={() => toggleInterest(label(x))}>
+                  <Spot id={`interests/${x}`} size={56} fallback={<span className="onb-like-fb" />} />
+                  <span>{label(x)}</span>
+                </button>
+              );
+            })}
           </div>
         </fieldset>
         <fieldset className="fs"><legend className="label">Anything that helps <span className="muted">(optional)</span></legend>
           <div className="stack-sm">
+            <Chip selected={!!c.hardToHear} onClick={() => setC({ hardToHear: !c.hardToHear })}>Captions always on</Chip>
             <Chip selected={!!c.comfort} onClick={() => setC({ comfort: !c.comfort })}>Larger text and a calmer screen</Chip>
-            <Chip selected={!!c.hardToHear} onClick={() => setC({ hardToHear: !c.hardToHear })}>Finds it hard to hear: always show words</Chip>
           </div>
         </fieldset>
         <ErrorNote>{err}</ErrorNote>
-        {!ready && <p className="t-note">Add a name and a class to continue.</p>}
-        <Button type="submit" block disabled={!ready || busy} icon={<Icon name="chevron" />}>{busy ? "Saving" : "Continue"}</Button>
+        <div className="onb-go">
+          {!ready && <span className="t-note" id="child-why">{!c.firstName?.trim() ? "Add a name to continue" : "Choose how to speak to continue"}</span>}
+          <Button type="submit" block disabled={!ready || busy} aria-describedby={ready ? undefined : "child-why"} icon={<Icon name="chevron" />}>{busy ? "Saving" : "Continue"}</Button>
+        </div>
       </form>
     </StepFrame>
   );

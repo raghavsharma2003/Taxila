@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, ButtonLink, ErrorNote, Field, Icon, PinPad, TeacherFace } from "../ui/index.ts";
+import { teacherRecord } from "../ui/teacher/useTeacher.ts";
+import { Spot } from "../child/art.tsx";
 import { ApiError, errText, getJson, loadMe, lockBeacon, postJson, type ChildRow } from "../app/api.ts";
 import { useGate } from "../parent/Gate.tsx";
 import { isGateError } from "../parent/api.ts";
@@ -63,7 +65,7 @@ export function ControlsStep() {
 
   const onPin = (p: string) => {
     if (!pin1) { setPin1(p); setResetKey((k) => k + 1); return; }
-    if (p !== pin1) { setErr("The two PINs were different. Please set it again."); setPin1(null); setResetKey((k) => k + 1); return; }
+    if (p !== pin1) { setErr("The PINs don't match. Try again."); setPin1(null); setResetKey((k) => k + 1); return; }
     setErr(null);
     setPinOk(true);
   };
@@ -102,16 +104,17 @@ export function ControlsStep() {
     }
   };
 
-  if (!child || !c || hasPin === null) return <StepFrame step="controls" title="Safe settings">{err ? <ErrorNote>{err}</ErrorNote> : <div className="spinner" />}</StepFrame>;
+  if (!child || !c || hasPin === null) return <StepFrame step="controls" title="Set a parent PIN">{err ? <ErrorNote>{err}</ErrorNote> : <div className="spinner" />}</StepFrame>;
   const needPin = !hasPin && (!pinOk || (needPw && !password));
+  const tname = teacherRecord(child.teacher_id, child.class_level <= 4 ? "b2" : "b3").name;
 
   return (
-    <StepFrame step="controls" title="Safe settings" why={`Set for ${child.first_name}, Class ${child.class_level}. You can change these any time.`}
-      footer={<Button block onClick={save} disabled={busy || needPin}>{busy ? "Saving" : "Looks right"}</Button>}>
+    <StepFrame step="controls" title={hasPin ? "Daily limit" : "Set a parent PIN"} why={hasPin ? `For ${child.first_name}, Class ${child.class_level}. You can change this any time.` : "Only grown-ups should know it."}
+      footer={<div className="onb-go">{needPin && <span className="t-note" id="pin-why">Set the PIN to continue</span>}<Button block onClick={save} disabled={busy || needPin} aria-describedby={needPin ? "pin-why" : undefined}>{busy ? "Saving" : "Looks good"}</Button></div>}>
       {!hasPin && (
         <section className="card card-flat stack-sm">
           <h2 className="t-h3 row" style={{ fontFamily: "var(--font-text)" }}><Icon name="lock" /> Parent PIN</h2>
-          <p className="muted">The Parent corner opens only with this PIN. Choose 4 to 6 digits your child does not know. Not your phone's unlock code.</p>
+          <p className="muted">The Parent corner opens only with this PIN. Choose 4 digits your child does not know. Not your phone's unlock code.</p>
           {pinOk ? <p className="row"><Icon name="tick" /> <strong>PIN set</strong>
             <Button variant="quiet" small onClick={resetPinUi}>Change</Button></p>
             : <PinPad label={pin1 ? "Enter the same PIN again" : "Choose a PIN"} onComplete={onPin} resetKey={resetKey} okLabel={pin1 ? "OK" : "Next"} />}
@@ -124,23 +127,29 @@ export function ControlsStep() {
       <section className="card card-flat stack-sm">
         <h2 className="t-h3 row" style={{ fontFamily: "var(--font-text)" }}><Icon name="clock" /> Time each day</h2>
         <MinutesStepper value={c.dailyMinutes} onChange={(n) => setC({ ...c, dailyMinutes: n })} />
-        <p className="t-note">At the limit she finishes at the next natural stop. She never shows your child a countdown.</p>
+        <p className="t-note">At the limit {tname} finishes at the next natural stop. {tname} never shows {child.first_name} a countdown.</p>
       </section>
       <section className="card card-flat stack-sm">
         <h2 className="t-h3" style={{ fontFamily: "var(--font-text)" }}>Allowed hours</h2>
         <HoursFields start={c.hoursStart} end={c.hoursEnd} onChange={(s, e) => setC({ ...c, hoursStart: s, hoursEnd: e })} />
-        <p className="t-note">Outside these hours your child sees "the teacher is resting".</p>
+        <p className="t-note">Outside these hours lessons don't start. {child.first_name} sees when they open again.</p>
       </section>
       <ErrorNote>{err}</ErrorNote>
     </StepFrame>
   );
 }
 
+/**
+ * Step 9 "Ready for {child}?" (PRODUCT-DESIGN-V2 §3.2, §6.2; audit #16, #24): two equal tiles, "Give the phone to
+ * {child} now" and "Later", with spot art (never a raised-palm "stop" icon), and the teacher the child will meet.
+ * Now → Hello (the tap is the child's audio unlock). Later → the Parent corner; "Later" never skips Hello or the AI
+ * disclosure: the child home sends a child who has not met the teacher to Hello first.
+ */
 export function HandoverStep() {
   const nav = useNavigate();
   const [d] = useDraft();
   const [child, setChild] = useState<ChildRow | null>(null);
-  // P8 hands the phone to the child: the corner is shut here whatever happened before (review blocker).
+  // The phone goes to the child here: the corner is shut whatever happened before (review blocker).
   useEffect(() => { lockBeacon(); }, []);
   useEffect(() => {
     loadMe().then((me) => {
@@ -148,21 +157,24 @@ export function HandoverStep() {
       setChild(me.children.find((x) => x.id === d.childId) ?? me.children.at(-1) ?? null);
     }, () => {});
   }, [d.childId, nav]);
-  if (!child) return <StepFrame step="handover" title="All set"><div className="spinner" /></StepFrame>;
+  if (!child) return <StepFrame step="handover" title="Ready"><div className="spinner" /></StepFrame>;
   const done = (to: string) => { lockBeacon(); clearDraft(); nav(to); };
+  const band = child.class_level <= 4 ? "b2" : "b3";
+  const rec = teacherRecord(child.teacher_id, band);
   return (
-    <StepFrame step="handover" title={`${child.first_name} is ready to meet her`} back={false}>
-      <div className="meet"><TeacherFace size={140} /></div>
-      <p className="t-lead">Give the phone to {child.first_name} now, or later. Both are fine.</p>
-      <div className="tiles tiles-2">
-        <button type="button" className="tile handover-tile" onClick={() => done(`/c/${child.id}/hello`)}>
-          <Icon name="hand" size={40} /><span>Abhi</span><span className="tile-sub">Now</span>
+    <StepFrame step="handover" title={`Ready for ${child.first_name}?`} back={false}>
+      <div className="meet"><TeacherFace size={180} teacherId={rec.id} band={band} /></div>
+      <div className="tiles tiles-2 onb-hand">
+        <button type="button" className="tile handover-tile" onClick={() => done(`/c/${child.id}/hello`)} data-testid="handover-now">
+          <Spot id="onboarding/handover-now" size={96} fallback={<Icon name="phone" size={40} />} />
+          <span>Give the phone to {child.first_name} now</span>
         </button>
-        <button type="button" className="tile handover-tile" onClick={() => done("/who")}>
-          <Icon name="clock" size={40} /><span>Baad mein</span><span className="tile-sub">Later</span>
+        <button type="button" className="tile handover-tile" onClick={() => done("/parent")} data-testid="handover-later">
+          <Spot id="onboarding/handover-later" size={96} fallback={<Icon name="clock" size={40} />} />
+          <span>Later</span>
         </button>
       </div>
-      <p className="t-note">She will say hello, then a few minutes of play to find where to start. Nothing is marked.</p>
+      <p className="t-note">{rec.name} will say hello the first time {child.first_name} opens Taxila.</p>
     </StepFrame>
   );
 }

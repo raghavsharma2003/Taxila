@@ -1,95 +1,101 @@
 {
  "nodes": [
   {
-   "id": "b1-floor-machine",
+   "id": "b1-card-sized-to-content",
    "kind": "decision",
-   "title": "The eight-state floor (src/lesson/floor.ts) is reduced from runtime link events + ui.handover/cues + local commits; YOUR TURN needs an open hand-over; a lesson is in legacy mode (no handover = answer) only until the first turn carries ui.handover",
+   "title": "The Question card (and the trouble strip and the NumberPad tray) is sized to what it holds: the Desk measures [data-measure] bodies after every render and the solver grows the zone to fit (the spec heights are floors), taking the extra from tray → face (to faceMin) → caption → pad; never clipped. Reversal: a layout where the card's content is bounded by construction (e.g. a hard 2-line ask cap plus a chip that never wraps) so a fixed height provably fits at 360 and font scale 2.0",
    "at": "2026-10-03"
   },
   {
-   "id": "b1-signals-one-transition",
-   "kind": "decision",
-   "title": "One floor transition fires every carrier (dock data-floor + lamp, earcon, haptic, performance mark) from src/lesson/signals.ts in a microtask, and only if the state still holds: a transient state never chimes",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b1-outbox-retry-policy",
-   "kind": "decision",
-   "title": "Outbox: every child turn written to IndexedDB before send; auto-retry at 1/3/6 s ONLY for no-HTTP-answer and 408/429/502/503/504; 500/409 wait for the child's Send again (the server writes turn rows before its state check); resends carry retried:true + turnSeq; held turns lose their module events (re-buffered, sent once)",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b1-strip-own-row",
-   "kind": "decision",
-   "title": "The trouble strip is its own row directly above the dock (56 dp, 96 dp when two actions do not fit at 360), taken from the elastic zone (face / tray); a strip inside the dock was tried and clipped the card and the dock body",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b1-verdict-before-next-ask",
-   "kind": "decision",
-   "title": "When one Director turn both grades the answer and asks the next item, the old ask + answer stay on the card while she speaks (the verdict lands on the child's own answer on her first voiced frame) and the new ask takes the card at the hand-over",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b1-desk-measured-2026-10-03",
-   "kind": "measurement",
-   "title": "B1 Desk battery (tests/e2e-design-b1.mjs, headless Chromium, dev server, scripted Director + clock-driven voice): receipt ('Got it') after Done/Send well inside 150 ms; lamp + chime + haptic marks within one frame; T2 offline < 3 s; RC < 3 s; T1 at 8 s; see the run log for exact numbers",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b1-fonts-measured-2026-10-03",
-   "kind": "measurement",
-   "title": "Self-hosted Latin woff2 (Google Fonts, Android Chrome UA, n=1 fetch each): Atkinson Hyperlegible Next 34,024 B, Literata 39,260 B, Andika 12,768 B (match the spec's CM measurement exactly); only Atkinson is preloaded",
-   "at": "2026-10-03"
-  },
-  {
-   "id": "b1-rejected-strip-in-dock",
+   "id": "b1-rejected-fixed-card-height",
    "kind": "rejection",
-   "title": "Trouble strip rendered inside the Answer dock (above its body): at 360 x 640 the strip + two actions + the dock body did not fit 124 dp; the answer chip on the card and the mic label were clipped",
+   "title": "A fixed solved card height with overflow:hidden: at 360 it clipped the signals the card exists for (the 'Not sent yet' chip cut in half under T2/T4, the hint's 2nd line, the whole magnifier + 'Let's look again' chip in b2 not_yet: scrollHeight 173 > 102). V-LAYOUT-1 passed because it checked box positions, not content",
    "at": "2026-10-03"
   },
   {
-   "id": "b1-rejected-button-font-inherit",
+   "id": "b1-outbox-turnseq-always",
+   "kind": "decision",
+   "title": "Outbox: every attempt (the first too) carries turnSeq; turnSeq is per lesson and seeded from max(turnSeq) in the store (a reloaded page never overwrites a held record); records of other lessons are flushed when the next lesson starts (marked retried), that lesson is then closed; 409 'ended' / 404 drop them; > 24 h dropped unsent. Per-attempt 25 s deadline (abort → retryable). kick() = T1 'Try again' (abandon the attempt in flight, resend now); edit() = 'Fix' (same turnSeq, edited:true). Reversal: the lesson route dedupes and resumes by lid itself (a resume endpoint), so the client no longer needs to flush another lesson's answers",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "b1-rejected-textlink-onabort",
    "kind": "rejection",
-   "title": "A `.dk button { font: inherit }` reset (specificity 0,1,1) silently beat every .dk-* button class (0,1,0): tile numerals rendered at body size; resets must be :where() (specificity 0)",
+   "title": "TextLink treated the media 'abort' event as a failed reply. Setting a new src on an element whose last clip had played fires 'abort' for the OLD resource as a queued task after the new handlers are set, so EVERY second text-lane reply was failed on arrival and the floor stuck in 'thinking' (found only on the shipped route: tests/e2e-design-b1-route.mjs; the dev harness's ScriptedLink never used an <audio>). 'abort' no longer fails a reply; error and the stall timer still do",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "b1-rejected-keyboard-from-focus",
+   "kind": "rejection",
+   "title": "Choosing the Keyboard layout from text-field focus alone: in a text-mode Older lesson the field autofocuses, so a laptop or a phone with no keyboard up got the 324 dp keyboard column (a 64 dp face and ~300 dp of dead paper above the dock). The Keyboard layout now needs a real on-screen keyboard (visualViewport inset > 120 dp)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "b1-rejected-settle-before-decrement",
+   "kind": "rejection",
+   "title": "Settling the floor inside the failed turn's catch: pendingTurns was still counted (it drops in finally), and the floor ignores a settle while a Director call is in flight, so after a held answer the dock said '{T} is thinking' under 'Your answer didn't send.' Now the settle is dispatched after the decrement, on every lane, and the dock word is suspended to 'Your answer is saved' while T2/T4 hold the answer",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "b1-vsig3-6pct-restored",
+   "kind": "decision",
+   "title": "V-SIG-3/4 run at the spec's 6% bar on the dock + card region (the 0.5% bar was a deviation, not a measurement). Shape carriers added so state differs by more than colour: HEARD shows a solid receipt disc and no side controls; SPEAKING/SHOWING hold only the mic (the side controls come with YOUR TURN). The one pair exempted is yielding/your_turn (yielding IS your_turn arriving, ≤ 250 ms, same word by §4.2). Reversal: a yielding state that is actually triggered (a TurnClock) and seen long enough to need its own look",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "b1-hear-replays-posing-turn",
+   "kind": "decision",
+   "title": "'Hear the question' replays the stored teacher turn that POSED the pinned ask (its TTS seq, from the bridge clip buffer, else fetched again by seq), never her last turn (a hint or praise); a second tap within 10 s sends the REPEAT-SLOW request ('slower' chip) instead of time-stretching. Reversal: the server exposes TTS of ui.ask.spoken (an /api/tts by ask), so the exact question can be replayed without her preamble",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "b1-ui-v2-flag-not-restored",
+   "kind": "decision",
+   "title": "PROPOSED for the owner (not decided here): the B1 Desk stays the default lesson UI rather than going behind VITE_UI_V2=1 as §14 says. The old lesson UI was deleted by the B1 build and already merged; restoring it to flag it would put two lesson UIs in the tree. Open acceptance rows: B1-A5 (director-sim lints), B1-A7 (baselines not human-approved), B1-A11 (prod smoke), lint-ui not in verify-release (264 findings in other owners' files). Reversal: the owner wants the flag, or a B1 acceptance row fails in the prod smoke",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "b1-fix-battery-2026-10-03",
+   "kind": "measurement",
+   "title": "B1 fixer batteries (headless Chromium/SwiftShader, n=1 run each): dev harness tests/e2e-design-b1.mjs and the shipped route tests/e2e-design-b1-route.mjs (built SPA via server/serve.mjs, API mocked by page.route). Route: 0 clipped card/strip/dock frames across Older 360/1280 × light/dark and Young 360/1280; 0 long tasks > 50 ms in 10 s of YOUR TURN with the live face at 360 (V-PERF-1 bar ≤ 2); every turn carried turnSeq; T4 'Send again' and T2→RC delivered",
    "at": "2026-10-03"
   }
  ],
  "edges": [
   {
-   "src": "b1-floor-machine",
-   "rel": "implements",
-   "dst": "design-v2-product-design"
-  },
-  {
-   "src": "b1-signals-one-transition",
-   "rel": "implements",
-   "dst": "design-v2-lamp-on-dock"
-  },
-  {
-   "src": "b1-outbox-retry-policy",
-   "rel": "part_of",
-   "dst": "design-v2-product-design"
-  },
-  {
-   "src": "b1-strip-own-row",
-   "rel": "implements",
-   "dst": "design-v2-desk-layout"
-  },
-  {
-   "src": "b1-verdict-before-next-ask",
-   "rel": "implements",
-   "dst": "design-v2-ask-pinned"
-  },
-  {
-   "src": "b1-rejected-strip-in-dock",
+   "src": "b1-card-sized-to-content",
    "rel": "caused_by",
-   "dst": "b1-strip-own-row"
+   "dst": "b1-rejected-fixed-card-height"
+  },
+  {
+   "src": "b1-card-sized-to-content",
+   "rel": "measured_by",
+   "dst": "b1-fix-battery-2026-10-03"
+  },
+  {
+   "src": "b1-outbox-turnseq-always",
+   "rel": "supersedes",
+   "dst": "b1-outbox-retry-policy"
+  },
+  {
+   "src": "b1-vsig3-6pct-restored",
+   "rel": "supersedes",
+   "dst": "b1-desk-battery-run-2026-10-03"
+  },
+  {
+   "src": "b1-fix-battery-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b1-desk-battery-run-2026-10-03"
+  },
+  {
+   "src": "b1-outbox-turnseq-always",
+   "rel": "measured_by",
+   "dst": "b1-fix-battery-2026-10-03"
   }
  ],
  "md": {
-  "decisions": "## b1-floor-machine (2026-10-03)\n**Decision.** `src/lesson/floor.ts` reduces the eight floor states (idle, speaking, showing, yielding, your_turn, listening, heard, thinking) from `LessonRuntime.events` (every link event in order, plus the runtime's own `ui`, `settle` and `reset`) and local commits (module answers). YOUR TURN needs an open hand-over (`handover` in answer/choice/judge/ready/finish). Legacy mode (no turn has carried `ui.handover`) treats an absent handover as `answer`, exactly the old `statusOf`; the first turn with a handover switches the lesson to strict mode. A `settle` while a Director call is in flight is ignored (the held answer is not dropped). `statusOf()` got the same fix (a `handover` flag; `isFree()` replaces the runtime's internal \"your_turn means free\" checks). `yielding` is reached only from a `teacher_audio_ending {remainingMs}` event, which no link emits yet, so today her offset goes straight to your_turn on the same frame.\n**Reverse** if V2-M1 shows children miss turns because the lamp lands after her voice ends (then build the TurnClock and emit teacher_audio_ending from the cascade player).\n\n## b1-signals-one-transition (2026-10-03)\n**Decision.** `src/lesson/signals.ts` fires the dock attribute + `[data-lamp]`, the earcon (`src/ui/sound/earcons.ts`, synthesised, pre-built buffers) and the haptic (`src/ui/haptics.ts`) from one floor transition, in a microtask, and only if the floor still holds that state. Under a sheet or any strip the lamp and the turn chime are suppressed (rule 3); the receipt tok and mic click still play.\n**Reverse** if V-SIG-5 on a real device shows the microtask defer costs a frame (then fire synchronously and debounce the typed-over-her case instead).\n\n## b1-outbox-retry-policy (2026-10-03)\n**Decision.** `src/lesson/outbox.ts`: write before send (IndexedDB, memory fallback flagged `outboxVolatile`); automatic retries 1/3/6 s only when no HTTP answer arrived or the status is 408/429/502/503/504; anything else is held for \"Send again\". The wire request is unchanged on the first attempt; resends add `retried: true` and `turnSeq`. **Open item for the lesson route:** dedupe on (lessonId, turnSeq) and mark evidence from `retried` turns.\n**Reverse** if the server dedupes on turnSeq (then 500 can retry automatically too).\n\n## b1-strip-own-row (2026-10-03)\n**Decision.** The trouble strip is its own Desk row above the dock; `deskLayout.solveDesk({strip})` takes its height from the elastic zone. 56 dp for one action, 96 dp when two actions do not fit beside the sentence at the container width.\n**Reverse** if a device test shows the face shrinking on trouble distracts more than a strip over the caption row would.\n\n## b1-verdict-before-next-ask (2026-10-03)\n**Decision.** See title. Implemented in `src/child/lesson/useDesk.ts` (`nextAsk`).\n**Reverse** if V2-M2 shows children read the old question as the current one while she speaks.\n",
-  "measurements": "## b1-fonts-measured-2026-10-03\nAtkinson Hyperlegible Next latin 34,024 B; Literata latin (wght 400-600) 39,260 B; Andika 400 latin 12,768 B. Method: Google Fonts css2 with an Android Chrome UA, the `/* latin */` src fetched once each (n = 1), saved to public/fonts. Equal to the CM numbers the spec cites.\n\n## b1-desk-measured-2026-10-03\nMethod: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b1.mjs` against the Vite dev server, headless Chromium (SwiftShader), the REAL LessonRuntime/outbox/floor/signals with a scripted Director and a clock-driven link (dev/script.ts), n = 1 run per check. Numbers are in the run log (receipt ms, V-SIG-5 spread, T2/RC/T1 timings). Not a device measurement: no phone, no real ASR/TTS; V2-M1..M7 still need children.\n",
-  "rejected": "## b1-rejected-strip-in-dock\n**Tried (2026-10-03):** the trouble strip as the top part of the Answer dock, so the Face column needed no new row. **Broke:** at 360 x 640 (dock 124 dp) the strip sentence, two actions and the dock body could not share the height; the Question card's answer chip and the mic label were clipped in the screenshots. **Instead:** `b1-strip-own-row`.\n\n## b1-rejected-button-font-inherit\n**Tried:** `.dk button { font: inherit }` as the Desk's button reset. **Broke:** its specificity (0,1,1) beat every `.dk-tile` / `.dk-side` rule (0,1,0), so tile numerals rendered at body size, unnoticed until a screenshot. **Instead:** `.dk :where(button, input) { font: inherit }`.\n"
+  "decisions": "## b1-card-sized-to-content\nThe Desk measures `[data-measure=\"card\"]`, `[data-measure=\"strip\"]` and `[data-measure=\"tray\"]` (the NumberPad) after every render (useLayoutEffect + ResizeObserver + fonts.ready) and reports cardNeed / stripNeed / trayNeed with the container size. `solveDesk` treats the §6.3.4 heights as floors: card = max(spec, need), strip = max(estimate, need), Work tray ≥ max(trayMin, need). The extra height is taken tray → face (to faceMin) → caption → pad, then the tray below its floor (a strip is transient; the dock must stay on screen); still short → overflow (the Desk scrolls). Strip actions are full targets (48 dp Older, 64 dp Young) and wrap under the sentence. Why: a fixed card clipped the answer chip, the verdict line and the hint at 360. Reversal: a card whose content is bounded by construction.\n\n## b1-outbox-turnseq-always\nsrc/lesson/outbox.ts: `reserve(lessonId)` seeds from the store; every attempt sends `turnSeq`; resends add `retried: true`; `edit()` adds `edited: true` under the same turnSeq; a per-attempt deadline (25 s) aborts a hung request (retryable); `kick()` abandons the attempt in flight or the wait before the next retry. src/lesson/runtime.ts: `retryNow()` (T1 Try again), `fixAnswer()` (Fix), `flushOthers()` at start (answers held for an earlier lesson are sent, marked retried, and that lesson closed; 409 ended / 404 drop; > 24 h dropped), the `online` event kicks a sleeping retry (RC within 3 s). OPEN for the lesson route owner: dedupe on (lessonId, turnSeq) and treat `edited: true` as superseding the earlier attempt; accept late turns for a lesson closed by page-hide, or held answers of that lesson are dropped on the 409.\n\n## b1-vsig3-6pct-restored\nThe battery's V-SIG-3/4 bar is back to 6% of the dock + card region, as §13.2 says. Heard shows a solid ink receipt disc in place of the mic and hides the side controls for its 400-600 ms; speaking/showing hide the side controls (the mic stays for barge-in). Deviation: the yielding/your_turn pair is exempt (one signal in two phases).\n\n## b1-hear-replays-posing-turn\nLessonState gains replySeq/replyText (set just before the ui of the turn they came with); the pinned Ask records them; UiBridge clips carry their TTS seq and `replay(slower, seq)` picks that clip. Fallback: `runtime.replayReply({text, seq})` speaks the stored turn again (text lanes), then her last clip.\n\n## b1-ui-v2-flag-not-restored\nProposed, needs the owner. See the title for the open acceptance rows.\n",
+  "measurements": "## b1-fix-battery-2026-10-03\nRun logs: docs/design/build/b1/fix/run-dev-2026-10-03.log and docs/design/build/b1/fix/run-route-2026-10-03.log. Method: headless Chromium (SwiftShader), 360 × 640 DPR 2 touch and 1280 × 800, light and dark; the dev battery drives /dev/desk fixtures and the live harness (REAL LessonRuntime/outbox/floor/signals; Director and voice simulated); the route battery builds the production SPA, serves it with server/serve.mjs and mocks /api/* (scripted Director, a 0.9 s silent WAV per stored turn). V-PERF-1: PerformanceObserver('longtask') over 10 s of YOUR TURN on the route with the live face: 0 long tasks (n=1, SwiftShader; relative only). Not a device or child measurement.\n",
+  "rejected": "## b1-rejected-fixed-card-height\nMeasured in /dev/desk at 360: .dk-card scrollHeight > clientHeight in not_yet (b2 173>102, b3 185>114, b1 184>154), partial, with-help, hint-line, board-not_yet, keyboard, T2, T4 (b2 142>102, b3 144>114) and heard/thinking/T1/RC/correct on b2.\n\n## b1-rejected-textlink-onabort\nTrace on the built route: reply 2's play() rejected 'interrupted by a call to pause()' after an 'abort' event at src change; TextLink.stop('failed') ran from the onabort handler. Every second reply in a text-lane lesson was silent and the floor never left 'thinking'.\n\n## b1-rejected-keyboard-from-focus\nOn the built route at 360, a text-mode Older lesson rendered the 324 dp Keyboard column with no keyboard: SpeechRow face, card, ~300 dp of empty paper, a 92 dp dock that clipped its header.\n\n## b1-rejected-settle-before-decrement\nfloor.ts ignores `settle` while `turnInFlight()`; runtime.ts dispatched it in the chain's catch, before `.finally` decremented pendingTurns.\n"
  }
 }

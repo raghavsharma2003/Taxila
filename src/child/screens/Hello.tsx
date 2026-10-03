@@ -1,128 +1,187 @@
-// Child first run (/c/:cid/hello, PRODUCT-DESIGN §2.4), C1-C3 on the client: hello (Young picks a picture,
-// Older picks tum / aap), the fixed "computer teacher, who can see" disclosure, and interest tiles. C4-C6
-// (placement, first win, show someone) are Director-run lesson steps: the last tile hands over to the lesson.
-// Picks are saved to the child profile (PATCH /api/children) and to device prefs.
-import { useMemo, useState, type ReactElement } from "react";
+// Hello /c/:cid/hello: the child's first meeting (PRODUCT-DESIGN-V2 §3.3, §6.3.2; audit #16 "first run says
+// nothing", #10 "asked to start twice", #7 "interests replaced by a random set", #17 "an unlabelled arrow").
+// Five cards under her window (360 tall; 1280: the face left 520, the cards right 560):
+//   1 Greeting: her name + "AI teacher". "Tap to hear {T}" plays her pre-rendered greeting (the tap is the audio
+//     unlock); her lips follow the clip.
+//   2 The AI card: states/ai-teacher-card + "I'm a computer teacher, not a person." + "Your grown-ups can see what we
+//     learn." + Got it (always a labelled button).
+//   3 Pick your picture: 6 of the 24 avatar discs, "More pictures", "That's me". This is the Who tile from now on.
+//   4 Confirm what you like: the parent's picks preselected; That's right · Change. (Skipped when the parent chose none.)
+//   5 Pick a teacher: only when ≥ 2 are eligible; no default; "Choose for me". The child's first choice.
+// Then STRAIGHT into lesson 1: no second start gate (the Desk carries none). Every label is English; what she says
+// is in the family's language.
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TeacherStage } from "../../stage/TeacherStage.tsx";
-import { updateChild } from "../api.ts";
+import { Teacher } from "../../ui/teacher/Teacher.tsx";
+import { useTeacher } from "../../ui/teacher/useTeacher.ts";
+import { getTutors, updateChild, type TutorsResponse } from "../api.ts";
+import { Spot } from "../art.tsx";
 import { useChild } from "../ChildShell.tsx";
+import { INTERESTS, interestIds } from "../interests.ts";
 import { t } from "../copy.ts";
-import { Arrow, EyeAdult, Play } from "../icons.tsx";
+import { AVATARS, Avatar, avatarName, Icon, Picto } from "../pictos.tsx";
+import { helloClip, useVoiceClip } from "../voice.ts";
+import { offerOf, TeacherChoice } from "./Teacher.tsx";
 
-const silent = { value: 0 };
+const label = (id: string) => id.charAt(0).toUpperCase() + id.slice(1);
 
-/** Fixed, never unlockable pictures (C1). Everyday objects, no festival or religious images. */
-const PICTURES: { id: string; label: string; draw: ReactElement }[] = [
-  { id: "kite", label: "patang", draw: <path d="M24 4 L40 22 L24 40 L8 22 Z M24 4 V40 M8 22 H40 M24 40 q-4 6 2 8" fill="#F5D46B" stroke="currentColor" strokeWidth="2.5" /> },
-  { id: "mango", label: "aam", draw: <g><path d="M24 10 C36 10 40 22 36 32 C32 42 16 42 12 32 C8 22 14 10 24 10 Z" fill="#F2A93B" stroke="currentColor" strokeWidth="2.5" /><path d="M24 10 q4 -6 10 -6" stroke="#2F7A3E" strokeWidth="3" fill="none" /></g> },
-  { id: "ball", label: "gend", draw: <g><circle cx="24" cy="24" r="16" fill="#2A72C6" stroke="currentColor" strokeWidth="2.5" /><path d="M8 24 H40 M24 8 C16 16 16 32 24 40 M24 8 C32 16 32 32 24 40" stroke="#fff" strokeWidth="2" fill="none" /></g> },
-];
+type Card = "greet" | "ai" | "picture" | "likes" | "change" | "teacher";
 
-/** Interest tiles (C3): a gender-neutral vetted set, order randomised per visit. */
-const INTERESTS: Record<string, [string, string, string]> = {
-  animals: ["Jaanwar", "जानवर", "Animals"],
-  sports: ["Khel", "खेल", "Sports"],
-  trains: ["Rail gaadi", "रेल गाड़ी", "Trains"],
-  drawing: ["Drawing", "चित्रकारी", "Drawing"],
-  music: ["Gaana", "संगीत", "Music"],
-  space: ["Antariksh", "अंतरिक्ष", "Space"],
-  cooking: ["Khaana banana", "खाना बनाना", "Cooking"],
-  plants: ["Paudhe", "पौधे", "Plants"],
-};
+function InterestTile({ id, on, toggle }: { id: string; on: boolean; toggle?: () => void }) {
+  const body = (
+    <>
+      <Spot id={`interests/${id}`} size={72} fallback={<span className="spot-tile spot-tile--sm"><Icon name="picture" size={36} /></span>} />
+      <span>{label(id)}</span>
+    </>
+  );
+  return toggle ? (
+    <button type="button" className="itile" aria-pressed={on} onClick={toggle}>{body}</button>
+  ) : (
+    <span className="itile itile--static" data-on={on || undefined}>{body}</span>
+  );
+}
 
 export function Hello() {
-  const { cid, child, band, family, lang, prefs, setPrefs, reducedMotion } = useChild();
-  const navigate = useNavigate();
-  const [step, setStep] = useState(0);
-  const [interests, setInterests] = useState<string[]>([]);
-  const [other, setOther] = useState("");
-  const order = useMemo(() => Object.keys(INTERESTS).sort(() => Math.random() - 0.5).slice(0, family === "young" ? 6 : 4), [family]);
-  const label = (row: [string, string, string]) => (lang === "hindi" ? row[1] : lang === "english" ? row[2] : row[0]);
+  const { cid, child, band, family, lang, setPrefs, refresh, reducedMotion } = useChild();
+  const nav = useNavigate();
+  const young = family === "young";
+  const rec = useTeacher(child.teacher_id, band);
+  const clip = useVoiceClip(helloClip(rec.id, lang));
+  const parentPicks = useMemo(() => interestIds(child.interests), [child.interests]);
+  const [card, setCard] = useState<Card>("greet");
+  const [avatar, setAvatar] = useState<string | null>(child.avatar ?? null);
+  const [page, setPage] = useState(0);
+  const [likes, setLikes] = useState<string[]>(parentPicks);
+  const [tutors, setTutors] = useState<TutorsResponse | null>(null);
+  useEffect(() => {
+    let live = true;
+    getTutors(cid).then((d) => live && setTutors(d), () => {});
+    return () => {
+      live = false;
+    };
+  }, [cid]);
+  const twoTeachers = !!tutors && tutors.mode === "picker" && offerOf(tutors).length >= 2 && !tutors.chosen;
+  // the greeting card moves on by itself once her clip has played
+  useEffect(() => {
+    if (card === "greet" && clip.played) setCard("ai");
+  }, [card, clip.played]);
+  // focus each card's title (§11: a new card is announced)
+  useEffect(() => {
+    document.querySelector<HTMLElement>(".hello-card h1, .hello-card h2")?.focus({ preventScroll: true });
+  }, [card]);
 
-  const finish = async () => {
-    const chosen = [...interests.map((k) => INTERESTS[k][2].toLowerCase()), ...(other.trim() ? [other.trim().slice(0, 30)] : [])];
-    setPrefs({ hello: true });
+  const finish = async (picks: string[] = likes) => {
+    setPrefs({ hello: true, picture: avatar });
     try {
-      if (chosen.length || prefs.picture) await updateChild(cid, { ...(chosen.length && { interests: chosen }), ...(prefs.picture && { avatar: prefs.picture }) });
+      await updateChild(cid, { ...(avatar ? { avatar } : {}), ...(picks.length ? { interests: picks.map(label) } : {}) });
     } catch {
       /* the lesson still starts; the picks stay on this device */
     }
-    navigate(`/c/${cid}/lesson/new`);
+    nav(`/c/${cid}/lesson/new`, { replace: true });
   };
+  const afterLikes = (picks: string[]) => (twoTeachers ? setCard("teacher") : void finish(picks));
+  const afterPicture = () => (parentPicks.length ? setCard("likes") : twoTeachers ? setCard("teacher") : void finish());
 
-  const her = (
-    <div className="tx-home-hero">
-      <TeacherStage floor={null} teacherId={child.teacher_id} band={band} mouth={[silent]} reducedMotion={reducedMotion} badge={family === "young"} plainRoom={band === "b4"} />
-    </div>
-  );
-  const next = (
-    <button type="button" className="tx-tile tx-ring" style={{ alignSelf: "center", minWidth: 160 }} onClick={() => (step < 2 ? setStep(step + 1) : void finish())} data-testid="hello-next">
-      {step < 2 ? <Arrow /> : <Play />}
-      {step === 2 && t("startLesson", lang)}
-    </button>
-  );
+  const pageAvatars = AVATARS.slice((page * 6) % AVATARS.length, ((page * 6) % AVATARS.length) + 6);
+  const framing = young ? t("storyStart") : t("olderStart");
+
+  let body;
+  switch (card) {
+    case "greet":
+      body = (
+        <>
+          <h1 tabIndex={-1} className="hello-name">{rec.name}</h1>
+          <p className="hello-role">{t("aiTeacher")}</p>
+          {helloClip(rec.id, lang) && !clip.failed ? (
+            <button type="button" className="cs-btn cs-btn--primary hello-go" onClick={clip.play} disabled={clip.playing} data-testid="hello-hear">
+              <Icon name="speaker" /> <span>{clip.playing ? t("teacherLabel", { T: rec.name }) : t("tapToHear", { T: rec.name })}</span>
+            </button>
+          ) : (
+            <button type="button" className="cs-btn cs-btn--primary hello-go" onClick={() => setCard("ai")} data-testid="hello-next">{t("helloNext")}</button>
+          )}
+          {clip.playing && <button type="button" className="cs-btn cs-btn--quiet" onClick={() => setCard("ai")}>{t("helloNext")}</button>}
+        </>
+      );
+      break;
+    case "ai":
+      body = (
+        <>
+          <Spot id="states/ai-teacher-card" size={young ? 128 : 112} fallback={<span className="spot-tile"><Icon name="computer" size={72} /></span>} />
+          <h2 tabIndex={-1} className="hello-line">{t("aiLine1")}</h2>
+          <p className="hello-line2"><Picto id="picto/who-sees" size={32} /> <span>{t("aiLine2")}</span></p>
+          <button type="button" className="cs-btn cs-btn--primary hello-go" onClick={() => setCard("picture")} data-testid="hello-gotit">{t("gotIt")}</button>
+        </>
+      );
+      break;
+    case "picture":
+      body = (
+        <>
+          <h2 tabIndex={-1} className="hello-q">{t("pickPicture")}</h2>
+          <div className="avatar-grid avatar-grid--hello" role="radiogroup" aria-label={t("pickPicture")}>
+            {pageAvatars.map((a) => (
+              <button key={a} type="button" role="radio" aria-checked={avatar === a} className="avatar-btn" aria-label={avatarName(a)} onClick={() => setAvatar(a)}>
+                <Avatar id={a} size={young ? 88 : 72} />
+              </button>
+            ))}
+          </div>
+          <div className="hello-row">
+            <button type="button" className="cs-btn cs-btn--secondary" onClick={() => setPage((p) => p + 1)}>
+              <Picto id="picto/more-pictures" size={32} /> <span>{t("morePictures")}</span>
+            </button>
+            <button type="button" className="cs-btn cs-btn--primary" disabled={!avatar} onClick={afterPicture} data-testid="hello-thatsme">{t("thatsMe")}</button>
+          </div>
+          {!parentPicks.length && !twoTeachers && <p className="hello-framing">{framing}</p>}
+        </>
+      );
+      break;
+    case "likes":
+      body = (
+        <>
+          <h2 tabIndex={-1} className="hello-q">{t("likesQ")}</h2>
+          <div className="itiles">{parentPicks.map((id) => <InterestTile key={id} id={id} on />)}</div>
+          <div className="hello-row">
+            <button type="button" className="cs-btn cs-btn--secondary" onClick={() => setCard("change")}><Picto id="picto/pencil" size={32} /> <span>{t("change")}</span></button>
+            <button type="button" className="cs-btn cs-btn--primary" onClick={() => afterLikes(parentPicks)} data-testid="hello-right">{t("thatsRight")}</button>
+          </div>
+          {!twoTeachers && <p className="hello-framing">{framing}</p>}
+        </>
+      );
+      break;
+    case "change":
+      body = (
+        <>
+          <h2 tabIndex={-1} className="hello-q">{t("likesPick")}</h2>
+          <div className="itiles itiles--all">
+            {INTERESTS.map((id) => (
+              <InterestTile key={id} id={id} on={likes.includes(id)}
+                toggle={() => setLikes((xs) => (xs.includes(id) ? xs.filter((x) => x !== id) : xs.length < 3 ? [...xs, id] : xs))} />
+            ))}
+          </div>
+          <button type="button" className="cs-btn cs-btn--primary hello-go" onClick={() => afterLikes(likes)} data-testid="hello-done">{t("done")}</button>
+        </>
+      );
+      break;
+    case "teacher":
+      body = (
+        <>
+          <h2 tabIndex={-1} className="hello-q">{t("teacherPickTitle")}</h2>
+          {tutors && <TeacherChoice data={tutors} firstPick onDone={() => { refresh(); void finish(); }} />}
+          <p className="hello-framing">{framing}</p>
+        </>
+      );
+      break;
+  }
 
   return (
-    <main className="tx-screen" data-testid="hello" data-step={step}>
-      {her}
-      {step === 0 && (
-        <section className="tx-stack" style={{ alignItems: "center" }}>
-          <h1>{child.first_name}</h1>
-          {family === "young" ? (
-            <div className="tx-pictures" role="radiogroup" aria-label="picture">
-              {PICTURES.map((p) => (
-                <button key={p.id} type="button" role="radio" aria-checked={prefs.picture === p.id} aria-pressed={prefs.picture === p.id} aria-label={p.label}
-                  className="tx-tile tx-picture" onClick={() => setPrefs({ picture: p.id })}>
-                  <svg viewBox="0 0 48 48" aria-hidden="true">{p.draw}</svg>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="tx-sheet-pair" role="radiogroup" aria-label="tum / aap" style={{ width: "100%", maxWidth: 360 }}>
-              {(["tum", "aap"] as const).map((a) => (
-                <button key={a} type="button" role="radio" aria-checked={prefs.address === a} className="tx-tile" style={prefs.address === a ? { borderColor: "var(--ink)", borderWidth: 3 } : undefined}
-                  onClick={() => setPrefs({ address: a })}>
-                  {a}
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
-      {step === 1 && (
-        <section className="tx-stack" aria-label="who sees">
-          <div className="tx-disclose">
-            <span className="tx-stage-badge" style={{ position: "static", width: 56, height: 56 }} role="img" aria-label="computer teacher">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="3.5" width="19" height="13" rx="2.5" fill="var(--surface)" stroke="var(--ink)" strokeWidth="1.6" /><circle cx="9" cy="9.5" r="1.2" fill="var(--ink)" /><circle cx="15" cy="9.5" r="1.2" fill="var(--ink)" /><path d="M9 12.5 Q12 14.5 15 12.5" fill="none" stroke="var(--ink)" strokeWidth="1.4" /></svg>
-            </span>
-            <span>{lang === "hindi" ? "कंप्यूटर टीचर, इंसान नहीं" : lang === "english" ? "A computer teacher, not a person" : "Computer teacher, insaan nahi"}</span>
-          </div>
-          <div className="tx-disclose">
-            <EyeAdult />
-            <span>{lang === "hindi" ? "घर के बड़े देख सकते हैं" : lang === "english" ? "Your grown-ups can see your lessons" : "Ghar ke bade dekh sakte hain"}</span>
-          </div>
-        </section>
-      )}
-      {step === 2 && (
-        <section className="tx-stack" style={{ width: "100%" }}>
-          <div className="tx-tiles-grid" style={{ width: "100%" }} role="group" aria-label="interests">
-            {order.map((k) => {
-              const on = interests.includes(k);
-              return (
-                <button key={k} type="button" className="tx-tile" aria-pressed={on} style={on ? { borderColor: "var(--ink)", borderWidth: 3 } : undefined}
-                  onClick={() => setInterests((xs) => (on ? xs.filter((x) => x !== k) : [...xs, k].slice(-3)))}>
-                  {label(INTERESTS[k])}
-                </button>
-              );
-            })}
-          </div>
-          {family === "older" && (
-            <input className="tx-input" style={{ width: "100%" }} value={other} onChange={(e) => setOther(e.target.value)} placeholder={lang === "english" ? "Something else" : "Kuch aur"} aria-label="something else" />
-          )}
-        </section>
-      )}
-      {next}
-    </main>
+    <div className={`cs hello ${young ? "cs--young" : "cs--older"}`} data-testid="hello" data-card={card}>
+      <main className="hello-main" id="main" data-compact={card !== "greet" || undefined}>
+        {/* card 5 shows the choice only: no teacher's face is bigger than the other's (no default, §3.3 step 5) */}
+        {card !== "teacher" && <div className="hello-face">
+          <Teacher teacherId={rec.id} band={band} form="live" floor={clip.playing ? "speaking" : card === "greet" ? "idle" : "your_turn"}
+            meters={[clip.meter]} label="below" lights="up" reducedMotion={reducedMotion} aiPicto={young} />
+        </div>}
+        <section className="cs-card hello-card" aria-live="polite">{body}</section>
+      </main>
+    </div>
   );
 }

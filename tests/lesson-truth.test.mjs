@@ -8,13 +8,13 @@ import { initLessonState, step, branchesFor, shortTitleOf, isObjective } from ".
 import { findItem, promptFor } from "../server/director/items.js";
 import { resolveAddress, toAap, registerBroken, registerMarks, registerNote } from "../server/director/register.js";
 import { praiseProblem, stripPraise, screenProblem, refersToScreen, askText, askFromReply, verdictFor, uiVerdict } from "../server/director/say.js";
-import { classifyFast, askedOther, targetFor } from "../server/director/classify.js";
+import { classifyFast, askedOther, targetFor, isChoiceQuestion } from "../server/director/classify.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CHARACTERS, teacherCard, teacherFor } from "../server/compiler/characters/index.js";
-import { __test as L, replyDeps, lessonSummary, lessonInterests } from "../server/routes/lesson.js";
-import { homeStateOf, legacyHome, buildMap, lessonMinutes } from "../server/routes/child.js";
+import { __test as L, replyDeps, lessonSummary, lessonInterests, startRefusal } from "../server/routes/lesson.js";
+import { homeStateOf, legacyHome, buildMap, lessonMinutes, countsAsDone } from "../server/routes/child.js";
 import { kit, CTX, cls, BRIEF } from "./fixtures/kit.mjs";
 
 const K = kit();
@@ -31,13 +31,23 @@ const SQ = kitFromFile(getTopic("c8-maths-ch01-t01"));
 
 // ───────────── (1) address register ─────────────
 
-test("register: the child's pick (class 5+) → the parent's → the class default; English has none", () => {
+test("register: the parent's controls → the class default (no child pick, no request field); English has none", () => {
   assert.equal(resolveAddress({ classLevel: 8, lang: "hinglish" }), "aap");
   assert.equal(resolveAddress({ classLevel: 3, lang: "hinglish" }), "tum");
   assert.equal(resolveAddress({ classLevel: 8, lang: "hinglish", parent: "tum" }), "tum");
-  assert.equal(resolveAddress({ classLevel: 8, lang: "hinglish", parent: "tum", child: "aap" }), "aap");
-  assert.equal(resolveAddress({ classLevel: 3, lang: "hinglish", parent: "aap", child: "tum" }), "aap", "below class 5 the parent decides");
+  assert.equal(resolveAddress({ classLevel: 3, lang: "hinglish", parent: "aap" }), "aap");
+  // a stray child/body value is ignored: the parent's setting is authoritative (V2 §3.3 step 4)
+  assert.equal(resolveAddress({ classLevel: 8, lang: "hinglish", parent: "tum", child: "aap" }), "tum");
   assert.equal(resolveAddress({ classLevel: 8, lang: "english", parent: "aap" }), null);
+});
+
+test("register: inclusive 'chalo' is not a tum mark; a tum child's line with tum forms may name someone else with aap", () => {
+  for (const t of ["Chalo shuru karte hain.", "Chalo dekhein, 5 ke baad kya aata hai?", "Chalo, ab hum dekhte hain kya hota hai.", "Chalo, aap bataiye 25 ke baad kya hai?"]) {
+    assert.equal(registerBroken(t, "aap"), false, t);
+  }
+  for (const t of ["Chalo jaldi.", "Chalo! Batao toh?", "Chalo, tum batao."]) assert.equal(registerBroken(t, "aap"), true, t);
+  assert.equal(registerBroken("Tumhare papa ne kaha tha ki aap ko pata hai? Tum batao.", "tum"), false, "aap about a third person beside tum");
+  assert.equal(registerBroken("Aap bataiye.", "tum"), true);
 });
 
 test("register: kit questions in aap forms keep their meaning words; the predicate sees the audit's greeting", () => {
@@ -127,6 +137,33 @@ test("G-PRAISE-1: an exact key match to a DIFFERENT question the teacher asked g
   assert.equal(classifyFast({ ...base, heard: "Socho dhyaan se. Dono 6 pe khatam hote hain.", lang: "hinglish" }).result?.outcome, "correct", "a nudge without a question");
 });
 
+test("G-PRAISE-1: warmth about a question, a try or thinking is not a verdict; 'Right,' is a discourse marker", () => {
+  for (const t of ["Great question! Socho, 5 ke baad kya aata hai?", "Nice question. Dekho isse, kya dikhta hai?", "Right, let's look again. 25 ke baad kya hai?",
+    "Good thinking! Ab ek aur baar bataiye?", "Achhi koshish. Phir se sochiye?", "What a great question! Kya lagta hai?"]) {
+    assert.equal(praiseProblem(t, "unverified"), null, t);
+  }
+  for (const t of ["Great question! Bilkul sahi.", "Great job!", "Right! 26 hai.", "Nice! Agla?"]) assert.equal(praiseProblem(t, "unverified"), "praise", t);
+  assert.equal(stripPraise("Great question! Bilkul sahi. Socho?"), "Great question! Socho?");
+  const c = { outcome: "no_evidence" }, item = { mode: "item" };
+  assert.equal(verdictFor(c, item, { childText: "Ye kaise karte hain?" }), "ungraded", "the child asked: nothing to praise or not");
+  assert.equal(verdictFor(c, item, { childText: "why is it 25" }), "ungraded");
+  assert.equal(verdictFor(c, item, { childText: "25?" }), "unverified", "a number with a rising '?' is an answer");
+  assert.equal(verdictFor(c, item, { childText: "pata nahi" }), "unverified");
+});
+
+test("echo: a number picked from a CHOICE hint question is an answer (the model decides), not an echo", () => {
+  const item = SQ.items.find((i) => i.id.endsWith("-i05")); // key 36
+  const s = { phase: "practice", hintLevel: 1, activeItemId: item.id, pendingWhy: undefined, ctx: { lang: "hinglish" }, warmup: [], seed: 1 };
+  const target = targetFor(s, SQ, item);
+  const base = { target, childText: "36", typed: true, lang: "hinglish" };
+  assert.equal(isChoiceQuestion("Kya yeh 26 hai ya 36?"), true);
+  assert.equal(isChoiceQuestion("26 or 36, which one?"), true);
+  assert.equal(isChoiceQuestion("36 ke baad kaunsa number aata hai?"), false);
+  assert.equal(isChoiceQuestion("1,000 ke baad kya aata hai?"), false, "a thousands comma is not a list");
+  assert.equal(classifyFast({ ...base, heard: "Socho. Kya yeh 26 hai ya 36?" }).result, null, "choice hint: the model decides");
+  assert.equal(classifyFast({ ...base, heard: "Ek chhota sawaal: 36 ke baad kaunsa number aata hai?" }).result?.source, "echo", "subject number: echo");
+});
+
 test("G-PRAISE-1: the move carries the verdict, and the guard removes praise the model added anyway", async () => {
   let r = toPractice();
   r = turn(r, cls("incorrect"));
@@ -187,11 +224,11 @@ test("ui: an item turn pins the ask (≤ 120, the posed text), names the handove
   assert.equal(r.ui.handover, "answer");
   assert.ok(["number", "words", "tap_in_tray"].includes(r.ui.answerForm));
   assert.equal(r.ui.phase, "practice");
-  assert.equal(r.ui.shortTitle, "Fractions as equal");
+  assert.equal(r.ui.shortTitle, "Equal shares");
   assert.ok(r.ui.shortTitle.length <= 24);
   assert.ok(askText("x ".repeat(100) + "Which one?").length <= 120);
   assert.equal(askFromReply("Achha socha. Ab batao, 13 ka square kya hai? Socho."), "Ab batao, 13 ka square kya hai?");
-  assert.equal(shortTitleOf("Numbers in thousands and beyond"), "Numbers in thousands");
+  assert.equal(shortTitleOf("Numbers in thousands and beyond"), "Big numbers");
   assert.ok(isObjective("equal parts make a fraction", K, null));
   // chips are English chrome in every lesson language
   const labels = JSON.stringify(step({ ...r.state, affect: { ...r.state.affect, dontKnowStreak: 9, minimalStreak: 9, wrongStreak: 9 } }, { event: "turn", kit: K, cls: cls("incorrect", { flags: { dontKnow: true } }), now: 9e6 }).ui.chips ?? []);
@@ -251,6 +288,56 @@ test("plan: one home state, in precedence order", () => {
   assert.deepEqual(["start", "first", "resume", "done", "capped", "resting"].map(legacyHome), ["default", "default", "default", "done", "done", "resting"]);
   assert.equal(lessonMinutes(3, 40), 15);
   assert.equal(lessonMinutes(8, 12), 12);
+});
+
+test("start: the plan's limits are enforced, not advice; done lets only Practice / Ask through", () => {
+  for (const st of ["start", "first", "resume"]) assert.equal(startRefusal(st, undefined), null, st);
+  for (const p of [undefined, "lesson", "practice", "doubt", "anything"]) {
+    assert.ok(startRefusal("capped", p), `capped refuses ${p}`);
+    assert.ok(startRefusal("resting", p), `resting refuses ${p}`);
+  }
+  assert.ok(startRefusal("done", undefined), "never 'one more' lesson");
+  assert.ok(startRefusal("done", "bogus"), "an unknown purpose is a lesson");
+  assert.equal(startRefusal("done", "practice"), null, "§6.3.3 done: 'Practise something'");
+  assert.equal(startRefusal("done", "doubt"), null);
+});
+
+test("plan: an accidental or crashed lesson (nothing graded, a few minutes) is not 'Done for today'", () => {
+  assert.equal(countsAsDone({ minutes: 0.2, did: [] }), false);
+  assert.equal(countsAsDone({ minutes: 0.2 }), false);
+  assert.equal(countsAsDone({ minutes: 12, did: [], abandoned: true }), false);
+  assert.equal(countsAsDone({ minutes: 1, did: [{ kind: "item" }] }), true, "one graded answer");
+  assert.equal(countsAsDone({ minutes: 6, did: [] }), true, "a real stretch of lesson");
+});
+
+test("shortTitle: every curriculum topic title has a meaningful ≤ 24 title, never a dangling cut", async () => {
+  const { readdirSync, readFileSync } = await import("fs");
+  const dir = new URL("../data/curriculum/", import.meta.url);
+  const joiner = /(?:^|\s)(and|or|yet|but|of|the|in|on|to|a|an|for|with|from|by|as|at|into|aur|ya|ka|ki|ke|se|mein)$|[,:;–—-]$/i;
+  let n = 0;
+  for (const f of readdirSync(dir).filter((x) => /^c\d-.*\.json$/.test(x))) {
+    for (const ch of JSON.parse(readFileSync(new URL(f, dir), "utf8")).chapters) {
+      for (const t of ch.topics) {
+        const s = shortTitleOf(t.title);
+        assert.ok(s && s.length <= 24, `${t.title} → ${s}`);
+        if (t.title.length > 24) assert.ok(!joiner.test(s), `dangling: ${t.title} → ${s}`);
+        n++;
+      }
+    }
+  }
+  assert.ok(n > 500);
+  assert.equal(shortTitleOf("We Distribute, Yet Things Multiply"), "We Distribute", "an unlisted title: its lead clause");
+  assert.equal(shortTitleOf("Supercalifragilisticexpialidocious numbers"), null, "nothing meaningful fits: no title, not a cut");
+});
+
+test("safeguard fallback names Childline 1098 AND Tele-MANAS 14416, in both languages and in aap forms", () => {
+  for (const lang of ["english", "hinglish"]) {
+    for (const address of ["tum", "aap"]) {
+      const line = L.fallbackReply({ ctx: { lang, address }, lastMove: { kind: "safeguard" } }, null);
+      assert.match(line, /Childline 1098/); assert.match(line, /Tele-MANAS 14416/);
+      if (address === "aap" && lang !== "english") assert.equal(registerMarks(line).tum, 0, line);
+    }
+  }
 });
 
 test("map: chapters → skills in the four shapes from the ledger projection; a seal only when every skill is got it or secure", () => {

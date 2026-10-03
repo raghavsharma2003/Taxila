@@ -15,7 +15,7 @@ export async function openHarness({ w = 720, h = 900, dpr = 1, msaa = 1, port = 
   const errors = [];
   page.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") errors.push(m.text()); });
   page.on("pageerror", (e) => errors.push(String(e)));
-  await page.goto(`${url}/scripts/character/viewer/index.html?w=${w}&h=${h}&dpr=${dpr}&msaa=${msaa}`);
+  await page.goto(`${url}/scripts/character/viewer/index.html?w=${w}&h=${h}&dpr=${dpr}&msaa=${msaa}${process.env.KTX_RAW ? "&ktxRaw=1" : ""}`);
   await page.waitForFunction(() => window.TX_READY === true, null, { timeout: 120000 });
   return {
     page, errors,

@@ -95,6 +95,106 @@ def _rolled_edge(ob, inward, keep_low_z):
     bm.free()
 
 
+def _surface_bvh(ob):
+    from mathutils.bvhtree import BVHTree
+    me = ob.data
+    return BVHTree.FromPolygons([v.co.copy() for v in me.vertices], [list(p.vertices) for p in me.polygons])
+
+
+def _clean_edges(ob, bvh, offset, iters=14, ring_iters=6):
+    """Smooth the open edges of a shell along themselves and re-project onto the body at `offset`: the shells are
+    cut on whole skin polygons, which left saw-tooth necklines and collars (review item 7)."""
+    me = ob.data
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bm.verts.ensure_lookup_table()
+    bnd = [v for v in bm.verts if v.is_boundary]
+    nb = {v.index: [e.other_vert(v) for e in v.link_edges if e.is_boundary] for v in bnd}
+    ring = {v for b in bnd for e in b.link_edges for v in [e.other_vert(b)] if not v.is_boundary}
+
+    def proj(p):
+        loc, n, _, _ = bvh.find_nearest(p)
+        return loc + n * offset if loc is not None else p
+
+    for _ in range(iters):
+        new = {}
+        for v in bnd:
+            ns = nb[v.index]
+            if len(ns) == 2:
+                new[v.index] = proj(v.co * 0.5 + (ns[0].co + ns[1].co) * 0.25)
+        for i, c in new.items():
+            bm.verts[i].co = c
+    for _ in range(ring_iters):
+        new = {}
+        for v in ring:
+            ns = [e.other_vert(v).co for e in v.link_edges]
+            avg = sum(ns, Vector((0, 0, 0))) / len(ns)
+            new[v.index] = proj(v.co * 0.5 + avg * 0.5)
+        for i, c in new.items():
+            bm.verts[i].co = c
+    bm.to_mesh(me)
+    bm.free()
+    me.update()
+
+
+def _push_out(outer, inner, gap):
+    """Every outer-layer vertex at least `gap` outside the inner layer (along the inner surface normal)."""
+    bvh = _surface_bvh(inner)
+    me = outer.data
+    P = co(me)
+    moved = 0
+    for i, p in enumerate(P):
+        loc, n, _, d = bvh.find_nearest(Vector(p))
+        if loc is None or d > 0.03:
+            continue
+        s_ = (Vector(p) - loc).dot(n)
+        if s_ < gap:
+            P[i] = np.array(Vector(p) + n * (gap - s_))
+            moved += 1
+    me.vertices.foreach_set("co", P.ravel())
+    me.update()
+    return moved
+
+
+def penetration(under, over, reach=0.03):
+    """Vertices of `under` that sit OUTSIDE `over` where `over` exists: the ray along the under-vertex normal finds
+    no `over` surface ahead, but the opposite ray finds it behind within 15 mm. 0 = no poke-through."""
+    bvh = _surface_bvh(over)
+    me = under.data
+    me.update()
+    n = 0
+    for v in me.vertices:
+        p, nn = v.co, v.normal
+        ahead = bvh.ray_cast(p + nn * 1e-4, nn, reach)[0]
+        if ahead is None and bvh.ray_cast(p - nn * 1e-4, -nn, 0.015)[0] is not None:
+            n += 1
+    return n
+
+
+def _cap_arm_holes(ob, x_min):
+    """Close the shell's open loops at the bust's arm cut (|x| > x_min) so the turntable never looks into the garment:
+    at yaw 90 / 270 the open sleeve showed the kurti and its piping through the jacket (review item 7)."""
+    me = ob.data
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    zlow = min(v.co.z for v in bm.verts) + 0.012
+    for sg in (1, -1):
+        edges = [e for e in bm.edges if e.is_boundary and all(sg * v.co.x > x_min and v.co.z > zlow for v in e.verts)]
+        if len(edges) < 3:
+            continue
+        vs = {v for e in edges for v in e.verts}
+        c = bm.verts.new(sum((v.co for v in vs), Vector((0, 0, 0))) / len(vs))
+        for e in edges:
+            try:
+                bm.faces.new([e.verts[0], e.verts[1], c])
+            except ValueError:
+                pass
+    bm.normal_update()
+    bm.to_mesh(me)
+    bm.free()
+    me.update()
+
+
 def _attr(ob, name, arr):
     a = ob.data.attributes.get(name) or ob.data.attributes.new(name, "FLOAT", "POINT")
     a.data.foreach_set("value", np.asarray(arr, np.float32))
@@ -136,7 +236,11 @@ def make_garments(skin, look, J, report):
     fmask = np.array([all(covered_v[i] for i in p.vertices) for p in polys])
     objs = []
 
+    sbvh = _surface_bvh(skin)
     inner, _ = _shell(skin, fmask, 0.0042, "g_inner")
+    _clean_edges(inner, sbvh, 0.0042)
+    if kind == "saree":            # the blouse is the visible layer at the arm cut; otherwise the outer layer caps it
+        _cap_arm_holes(inner, abs(J["joint-l-shoulder"][0]) - 0.01)
     _rolled_edge(inner, 0.003, zmin + 0.015)
     objs.append((inner, 0))
 
@@ -147,6 +251,8 @@ def make_garments(skin, look, J, report):
             m = extra_mask
         fm = np.array([all(m[i] for i in p.vertices) for p in polys])
         ob, _ = _shell(skin, fm, offset, name)
+        _clean_edges(ob, sbvh, offset)
+        _cap_arm_holes(ob, abs(J["joint-l-shoulder"][0]) - 0.01)
         if stand > 0:   # a standing collar: extrude the neck-side boundary up and slightly out
             bm = bmesh.new()
             bm.from_mesh(ob.data)
@@ -163,21 +269,18 @@ def make_garments(skin, look, J, report):
         return ob
 
     if kind == "kurti-jacket":
-        objs.append((outer_shell(28, 0.011, "g_outer", stand=0.022), 1))
+        objs.append((outer_shell(28, 0.011, "g_outer", stand=0.012), 1))
     elif kind == "shirt-tee":
-        objs.append((outer_shell(16, 0.009, "g_outer", stand=0.03), 1))
+        objs.append((outer_shell(16, 0.009, "g_outer", stand=0.022), 1))
     else:
-        # saree pallu: a band from the right lower chest over the LEFT shoulder and down the back
-        a = np.array([-0.13, J["joint-neck"][1] - 0.12, zmin + 0.02])        # right lower chest (front)
-        b = np.array([0.085, J["joint-l-clavicle"][1], z_clav + 0.045])       # over the left shoulder
-        c = np.array([0.02, J["joint-l-clavicle"][1] + 0.16, zmin + 0.02])    # down the back
-        def seg_d(p, s0, s1):
-            v = s1 - s0
-            t = np.clip(((p - s0) @ v) / (v @ v), 0, 1)
-            return np.linalg.norm(p - (s0 + t[:, None] * v), axis=1)
-        d = np.minimum(seg_d(P, a, b), seg_d(P, b, c))
-        band = (d < 0.075) & (P[:, 2] < z_col + 0.035)
-        objs.append((outer_shell(0, 0.010, "g_outer", extra_mask=band), 1))
+        # saree pallu: a separate pleated strip from the right lower chest, over the LEFT shoulder, down the back
+        # (TEACHER-VISUAL 4.3), projected onto the body; its border is UV-space trim along the strip's long edges
+        objs.append((make_pallu(sbvh, J, z_clav, zmin, g), 1))
+
+    # layers never interpenetrate: outer >= 4 mm outside inner (review item 7, "kurti pokes through the jacket")
+    report["garmentPushedVerts"] = 0
+    if len(objs) > 1:
+        report["garmentPushedVerts"] = _push_out(objs[1][0], objs[0][0], 0.004)
 
     # delete the skin the garment covers (keep a 1.5 cm skirt under the collar so no gap shows on motion)
     under = P[:, 2] < (z_col - 0.015)
@@ -185,7 +288,15 @@ def make_garments(skin, look, J, report):
 
     zs = (zmin, z_clav + 0.08)
     out = []
+    # penetration gate: the inner layer must not show through the outer one, the kept skin skirt not through the inner
+    report["garmentPenetration"] = {"innerThroughOuter": penetration(objs[0][0], objs[1][0]) if len(objs) > 1 else 0}
     for ob, layer in objs:
+        if "gEdge" in ob.data.attributes:
+            _attr(ob, "gLayer", np.full(len(ob.data.vertices), layer))
+            if "gOwnUV" not in ob.data.attributes:
+                _cyl_uv(ob, ctr, layer, *zs)
+            out.append(ob)
+            continue
         dist, _ = _edge_distance(ob)
         _attr(ob, "gEdge", np.minimum(dist, 0.2))
         _attr(ob, "gLayer", np.full(len(ob.data.vertices), layer))
@@ -193,6 +304,76 @@ def make_garments(skin, look, J, report):
         out.append(ob)
     report["garment"] = {"kind": kind, "collarBaseZ": float(base)}
     return out
+
+
+def make_pallu(sbvh, J, z_clav, zmin, g, n_along=72, n_across=12):
+    """The pallu: a strip along a smooth path (front right lower chest -> over the left shoulder -> down the back),
+    narrowing where it is gathered on the shoulder, with soft pleat folds, projected onto the bust at a cloth offset.
+    gEdge = distance to the strip's LONG edges (so the border is a trim along the edge, not a texture-space band)."""
+    yN = J["joint-neck"][1]
+    yC = J["joint-l-clavicle"][1]
+    ctrl = np.array([[-0.14, yN - 0.11, zmin + 0.01], [-0.02, yN - 0.115, z_clav - 0.07], [0.075, yN - 0.07, z_clav + 0.02],
+                     [0.105, yC + 0.01, z_clav + 0.045], [0.085, yC + 0.09, z_clav + 0.01], [0.04, yC + 0.17, zmin + 0.01]])
+    pts = ctrl
+    for _ in range(4):                                   # Chaikin: a smooth drape path through the control points
+        q = [pts[0]]
+        for i in range(len(pts) - 1):
+            q += [0.75 * pts[i] + 0.25 * pts[i + 1], 0.25 * pts[i] + 0.75 * pts[i + 1]]
+        q.append(pts[-1])
+        pts = np.array(q)
+    seg = np.linalg.norm(np.diff(pts, axis=0), axis=1)
+    s = np.concatenate([[0], np.cumsum(seg)])
+    st = np.linspace(0, s[-1], n_along)
+    path = np.stack([np.interp(st, s, pts[:, k]) for k in range(3)], 1)
+    W = g.get("palluWidth", 0.18)
+    sh_t = s[np.argmin(np.linalg.norm(pts - ctrl[3], axis=1))] / s[-1]
+    verts, gEdge, uvs = [], [], []
+    for i, p in enumerate(path):
+        t = st[i] / s[-1]
+        T = path[min(i + 1, n_along - 1)] - path[max(i - 1, 0)]
+        T /= np.linalg.norm(T)
+        loc, n, _, _ = sbvh.find_nearest(Vector(p))
+        n = np.array(n)
+        A = np.cross(n, T)
+        A /= np.linalg.norm(A)
+        gather = np.exp(-((t - sh_t) / 0.12) ** 2)        # gathered (narrow, deeper pleats) on the shoulder
+        w = W * (1 - 0.45 * gather)
+        for j in range(n_across):
+            u = j / (n_across - 1)
+            q = p + A * (u - 0.5) * w
+            l2, n2, _, _ = sbvh.find_nearest(Vector(q))
+            fold = (0.0018 + 0.003 * gather) * np.sin(u * math.pi * (5 + 2 * gather)) ** 2
+            v = np.array(l2) + np.array(n2) * (0.0095 + fold)
+            verts.append(v)
+            gEdge.append((0.5 - abs(u - 0.5)) * w)
+    bm = bmesh.new()
+    bv = [bm.verts.new(Vector(v)) for v in verts]
+    for i in range(n_along - 1):
+        for j in range(n_across - 1):
+            a, b = i * n_across + j, i * n_across + j + 1
+            c, d = (i + 1) * n_across + j + 1, (i + 1) * n_across + j
+            bm.faces.new([bv[a], bv[b], bv[c], bv[d]])
+    bm.normal_update()
+    # outward-facing: flip if the average normal points into the body
+    avg = sum((f.normal for f in bm.faces), Vector((0, 0, 0)))
+    cen = sum((v.co for v in bm.verts), Vector((0, 0, 0))) / len(bm.verts)
+    if avg.dot(cen - Vector((0, yN, cen.z))) < 0:
+        bmesh.ops.reverse_faces(bm, faces=bm.faces)
+    me = bpy.data.meshes.new("pallu")
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new("pallu", me)
+    bpy.context.collection.objects.link(ob)
+    _attr(ob, "gEdge", np.array(gEdge))
+    # its own strip UVs in the outer band (u along the drape, v across): the cylindrical unwrap squashed the diagonal
+    # strip into a thin region and the dilated border colour bled across it in the lower mips (iteration 2)
+    uvl = me.uv_layers.new(name="UVMap")
+    for p_ in me.polygons:
+        for li, vi in zip(p_.loop_indices, p_.vertices):
+            i, j = divmod(vi, n_across)
+            uvl.data[li].uv = (0.02 + 0.86 * i / (n_along - 1), 0.47 + 0.40 * j / (n_across - 1))
+    _attr(ob, "gOwnUV", np.ones(len(me.vertices)))
+    return ob
 
 
 def _uv_patch(ob, uv):
@@ -209,7 +390,7 @@ def make_glasses(look, eyeC, eyeR, earsP):
     bm = bmesh.new()
     rims = {}
     for side, sg in (("L", 1), ("R", -1)):
-        c = np.array(eyeC[side]) + np.array([sg * 0.002, -(eyeR + 0.012), 0.0015])
+        c = np.array(eyeC[side]) + np.array([sg * 0.001, -(eyeR + 0.009), 0.001])
         rims[side] = c
         t = bmesh.ops.create_circle(bm, cap_ends=False, radius=R, segments=40)
         ring = t["verts"]

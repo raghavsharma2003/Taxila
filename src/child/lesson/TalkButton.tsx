@@ -23,7 +23,7 @@ export function TalkButton({ floor, talking, drain, onTap, mic, disabled, small 
   const resting = floor === "thinking" || floor === "heard";
   const label = talking ? t("dock.done") : t("dock.talk");
   return (
-    <button type="button" className={`dk-mic ${small ? "dk-mic--small" : ""}`} data-on={talking ? "1" : undefined} data-resting={resting ? "1" : undefined}
+    <button type="button" className={`dk-mic ${small ? "dk-mic--small" : ""}`} data-on={talking ? "1" : undefined} data-resting={resting ? "1" : undefined} data-floor={floor}
       onClick={onTap} disabled={disabled} aria-pressed={talking} data-testid="mic" style={{ "--drain": drain } as CSSProperties}>
       <span className="dk-mic-disc">
         {talking && <span ref={arc} className="dk-mic-arc" aria-hidden="true" />}

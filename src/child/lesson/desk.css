@@ -41,7 +41,9 @@
 .dk-pause { flex: none; display: inline-flex; align-items: center; gap: var(--space-1); min-height: min(var(--hit-min), 48px); padding: 0 var(--space-3) 0 var(--space-2);
   border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); font-weight: 700; font-size: var(--t-label);
   transition: transform var(--m-press) var(--ease-standard); }
-.dk[data-family="young"] .dk-pause { min-height: 52px; }
+/* Young: the 56 dp top bar holds a 56 dp pill; a ::after extends its hit area to 64 dp (§11.5) without a taller bar. */
+.dk[data-family="young"] .dk-pause { min-height: 56px; min-width: 64px; position: relative; }
+.dk[data-family="young"] .dk-pause::after { content: ""; position: absolute; inset: -4px 0; }
 .dk-pause:active { transform: scale(var(--press-scale)); }
 .dk-pause:disabled { opacity: .45; cursor: default; }
 .dk-title { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-2); justify-content: flex-start; overflow: hidden; }
@@ -79,8 +81,11 @@
 @keyframes dk-fade { from { opacity: 0; } to { opacity: 1; } }
 
 /* ── Question card (never marigold) ── */
+/* Sized to its content: the Desk measures .dk-card-body and the solver grows the card zone to fit (never clipped).
+   overflow stays visible so a measurement lag of one frame can never hide the chip. */
 .dk-card { height: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 10px 14px;
-  display: flex; flex-direction: column; gap: var(--space-1); overflow: hidden; }
+  display: flex; flex-direction: column; }
+.dk-card-body { flex: none; display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
 .dk-card--empty { border-style: dashed; border-color: transparent; background: transparent; }
 .dk-card-ask { display: flex; align-items: flex-start; gap: var(--space-3); }
 .dk-card-picture { width: 64px; height: 64px; flex: none; border-radius: var(--radius-sm); }
@@ -89,13 +94,14 @@
 .dk-ask-label { color: var(--ink-2); }
 .dk[data-layout="phone"] .dk-hear-long { display: none; }
 .dk[data-layout="wide"] .dk-hear-short { display: none; }
+.dk[data-family="young"][data-layout="wide"] .dk-hear-short { display: inline; }
 .dk-hear { flex: none; display: inline-flex; align-items: center; gap: var(--space-1); min-height: 48px; min-width: 48px; padding: 0 var(--space-3);
   border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); font-weight: 600; font-size: var(--t-meta); }
-.dk[data-family="young"] .dk-hear { min-width: 56px; min-height: 56px; justify-content: center; padding: 0; }
-.dk[data-band="b1"] .dk-hear { min-width: 64px; min-height: 64px; }
+/* Young: glyph over its word ("Hear"), a 64 dp target (audit 17: every icon button has a visible word). */
+.dk[data-family="young"] .dk-hear { min-width: 64px; min-height: 64px; flex-direction: column; justify-content: center; gap: 0; padding: 4px var(--space-2); border-radius: var(--radius-md); }
 .dk-line { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-2); font-size: var(--t-body); }
 .dk-rung { letter-spacing: 2px; font-weight: 700; color: var(--ink); }
-.dk-answer { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; margin-top: auto; }
+.dk-answer { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
 .dk-answer-label { color: var(--ink-2); font-size: var(--t-meta); font-weight: 600; }
 .dk-verdict-line { color: var(--ink); font-weight: 600; font-size: var(--t-body); }
 
@@ -113,7 +119,7 @@
 .dk-chip[data-help="1"] .dk-tick-stroke { stroke-width: 1.6; }
 @keyframes dk-draw { to { stroke-dashoffset: 0; } }
 .dk-chip-tag { display: inline-flex; align-items: center; gap: 4px; font-size: var(--t-meta); font-weight: 600; color: var(--ink-2); }
-.dk-fix { border: 0; background: none; color: var(--nib); text-decoration: underline; font-weight: 600; min-height: 36px; padding: 0 var(--space-1); }
+.dk-fix { border: 0; background: none; color: var(--nib); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; min-height: 48px; min-width: 48px; padding: 0 var(--space-2); }
 
 /* ── Work tray (only when it has content) ── */
 .dk-tray { position: relative; height: 100%; background: var(--tray); border-radius: var(--radius-card); overflow: hidden; }
@@ -135,11 +141,12 @@
 .dk-tile:active { transform: scale(var(--press-scale)); }
 .dk-tile-key { position: absolute; top: 4px; left: 8px; font-size: 12px; color: var(--ink-2); font-weight: 600; }
 
-.dk-pad { flex: 1; display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-2) var(--space-3); }
-.dk-pad-value { min-height: 40px; background: var(--surface); border-radius: var(--radius-sm); font-size: var(--t-numeral); font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
-.dk-pad-keys { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
-.dk-key { min-height: 44px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); font-size: var(--t-label); font-weight: 700; }
-.dk-pad[data-young="1"] .dk-key { min-height: 52px; }
+.dk-pad { flex: none; align-self: flex-start; width: 100%; display: flex; flex-direction: column; gap: 6px; padding: 6px var(--space-3) var(--space-2); }
+.dk-pad-value { min-height: 36px; line-height: 36px; background: var(--surface); border-radius: var(--radius-sm); font-size: var(--t-numeral); font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+.dk-pad-keys { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 56px; gap: 6px; }
+.dk-pad[data-young="1"] .dk-pad-keys { grid-auto-rows: 64px; }
+.dk-key { min-width: 48px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); font-size: var(--t-label); font-weight: 700; }
+.dk-pad[data-young="1"] .dk-key { min-width: 64px; }
 .dk-key--quiet { font-size: var(--t-meta); }
 .dk-key--send { background: var(--nib); color: var(--on-nib); border-color: var(--nib); }
 .dk-key:disabled { opacity: .45; }
@@ -196,6 +203,9 @@
 .dk-dock-row > :first-child { justify-self: start; }
 .dk-dock-row > :last-child { justify-self: end; }
 .dk-dock-gap { width: var(--mic); }
+.dk-receipt { width: calc(var(--mic) + 12px); height: calc(var(--mic) + 12px); border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--surface);
+  animation: dk-collapse var(--m-receipt) var(--ease-enter) both; }
+@keyframes dk-collapse { from { transform: scale(1.15); opacity: .6; } to { transform: none; opacity: 1; } }
 .dk-dock-note { font-size: var(--t-meta); color: var(--ink-2); text-align: center; }
 .glyph-think-stroke { animation: dk-think var(--m-think) var(--ease-standard) infinite alternate; }
 @keyframes dk-think { from { opacity: .35; } to { opacity: 1; } }
@@ -216,6 +226,9 @@
 /* the word sits INSIDE the disc: the mic always has a visible label (audit 17) without a row of its own */
 .dk-mic-word { font-weight: 700; font-size: 13px; line-height: 1; margin-top: 1px; }
 .dk[data-family="young"] .dk-mic-word { font-size: 16px; }
+/* YOUR TURN (and its yielding frame): the mic is the solid ink call to tap — a SHAPE change from her turn's outlined
+   mic, so the hand-over reads in greyscale and under every colour-vision type, not only by the lamp's hue (V-SIG-3). */
+.dk-mic[data-floor="your_turn"]:not([data-on="1"]) .dk-mic-disc, .dk-mic[data-floor="yielding"]:not([data-on="1"]) .dk-mic-disc { background: var(--ink); border-color: var(--ink); color: var(--surface); }
 .dk-mic[data-on="1"] .dk-mic-disc { background: var(--listen); border-color: var(--listen); color: var(--on-listen); }
 .dk-mic[data-resting="1"] .dk-mic-disc { opacity: .45; }
 .dk-mic--small .dk-mic-disc { width: 48px; height: 48px; }
@@ -235,13 +248,16 @@
       or the card. One sentence, ≤ 2 actions; a second line only when the actions do not fit beside it. ── */
 .dk-zone--strip { padding-bottom: var(--space-1); }
 .dk-zone--strip:empty { padding: 0; }
-.dk-strip { height: 100%; display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-2); row-gap: var(--space-1); padding: var(--space-1) var(--space-3);
+/* The strip zone is sized to .dk-strip-body (measured by the Desk): the actions wrap under the sentence when they do
+   not fit beside it, at their full target size (48 dp Older, 64 dp Young); nothing hangs off the edge. */
+.dk-strip { height: 100%; display: flex; align-items: center; padding: var(--space-1) var(--space-3);
   background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--trouble); border-radius: var(--radius-sm); }
+.dk-strip-body { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-2); row-gap: var(--space-1); }
 .dk-strip--info { border-left-color: var(--line); }
 .dk-strip-glyph { flex: none; color: var(--trouble); }
 .dk-strip--info .dk-strip-glyph { color: var(--ink-2); }
 .dk-strip-text { flex: 1 1 160px; font-weight: 600; font-size: var(--t-body); line-height: 1.25; min-width: 0; }
-.dk-strip-actions { display: flex; gap: var(--space-2); margin-left: auto; }
+.dk-strip-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-left: auto; justify-content: flex-end; max-width: 100%; }
 
 /* ── buttons ── */
 .dk-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: var(--hit-min); padding: 0 var(--space-4);
@@ -253,11 +269,14 @@
 .dk-btn--secondary { background: var(--surface); color: var(--ink); border-color: var(--line); }
 .dk-btn--ink { border-color: var(--ink); border-width: 2px; }
 .dk-btn--quiet { background: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
-.dk-btn--strip { min-height: 44px; padding: 0 var(--space-3); font-size: var(--t-meta); text-decoration: none; border: 1px solid var(--line); background: var(--surface); }
+.dk-btn--strip { min-height: 48px; min-width: 48px; padding: 0 var(--space-3); font-size: var(--t-meta); text-decoration: none; border: 1px solid var(--line); background: var(--surface); }
+.dk[data-family="young"] .dk-btn--strip { min-height: 64px; min-width: 64px; font-size: var(--t-label); }
 .dk-btn--block { width: 100%; }
 .dk-btn--tall { min-height: 56px; }
 .dk-btn--big { min-height: 64px; padding: 0 var(--space-5); font-size: var(--t-label); }
 .dk-btn--help { width: 100%; min-height: 72px; font-size: var(--t-label); }
+/* Young: every button is a 64 dp target (§11.5), the full-screen states and the Summary included. */
+.dk[data-family="young"] .dk-btn { min-height: 64px; }
 
 /* ── sheets: flat veil (no blur), opaque surface ── */
 .dk-veil { position: absolute; inset: 0; z-index: 40; background: var(--veil); display: flex; align-items: flex-end; justify-content: center; animation: dk-fade var(--m-enter) var(--ease-enter) both; }
@@ -332,4 +351,3 @@
 .dk[data-layout="phone"][data-geometry="work"] .dk-card { padding: 8px 12px; gap: 2px; }
 .dk[data-layout="phone"][data-geometry="work"] .dk-ask { font-size: calc(var(--t-ask) - 2px); }
 .dk[data-layout="phone"][data-geometry="work"] .dk-chip { min-height: 28px; }
-.dk[data-layout="phone"][data-geometry="work"] .dk-hear { min-height: 44px; }

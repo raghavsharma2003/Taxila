@@ -18,6 +18,7 @@
 // branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
 // lines are the director's own next moves, never a second guess at them.
 import * as SH from "./shapes.js";
+import { readFileSync } from "fs";
 import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT } from "./items.js";
 import { registerNote } from "./register.js";
 import { askText } from "./say.js";
@@ -608,14 +609,32 @@ export function isObjective(text, kit, topic) {
   return (kit?.skills ?? []).some((sk) => normText(sk.title) === t) || (topic?.outcomes ?? []).some((o) => normText(o) === t);
 }
 
-/** ≤ 24 characters on a word boundary, never a CSS cut (V2 §4.10 shortTitle); a dangling joiner word is dropped. */
+/** Authored short titles for every curriculum topic title longer than 24 characters (short-titles.json). */
+const SHORT_TITLES = JSON.parse(readFileSync(new URL("./short-titles.json", import.meta.url), "utf8"));
+const JOINER = /^(and|or|yet|but|of|the|in|on|to|a|an|for|with|from|by|as|at|into|its|their|is|are|vs|aur|ya|ka|ki|ke|se|mein|par|ko|&|:|-|–|—)$/i;
+
+/**
+ * ≤ 24 characters and meaningful, never a CSS cut (V2 §4.10 shortTitle): the authored short title when the title
+ * has one; else the title's lead clause (before ":", " — ", "(" or ",") when it fits; else whole words up to the
+ * first preposition or joiner that fits. null when nothing meaningful fits (the screen shows no title, not a stub).
+ */
 export function shortTitleOf(title, max = 24) {
   const t = String(title ?? "").replace(/\s+/g, " ").trim();
   if (t.length <= max) return t;
-  const out = [];
-  for (const w of t.split(" ")) { if ([...out, w].join(" ").length > max) break; out.push(w); }
-  while (out.length > 1 && /^(and|of|the|in|on|to|a|an|for|with|aur|ka|ki|ke|mein|&|:|-|–|—)$/i.test(out.at(-1))) out.pop();
-  return (out.join(" ") || t.slice(0, max)).replace(/[,:;–—-]+$/, "");
+  const authored = SHORT_TITLES[t];
+  if (typeof authored === "string" && authored.length <= max) return authored;
+  const lead = t.split(/\s*(?::|\s[—–-]\s|—|\(|,)\s*/)[0].trim();
+  if (lead.length <= max && lead.split(" ").length >= 2) return lead;
+  const ws = lead.split(" ");
+  // the longest prefix that fits and ends before a joiner word (so the phrase never dangles)
+  for (let n = ws.length - 1; n >= 1; n--) {
+    const cut = ws.slice(0, n);
+    if (cut.join(" ").length > max) continue;
+    if (JOINER.test(cut.at(-1))) continue;
+    if (n < ws.length && !JOINER.test(ws[n])) continue;
+    return cut.join(" ");
+  }
+  return lead.length <= max ? lead : null;
 }
 
 const NUMERIC_KEY = /^[-−]?[\d,]+(?:[./]\d+)?$/;

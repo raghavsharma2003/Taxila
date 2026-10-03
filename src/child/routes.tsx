@@ -1,28 +1,28 @@
-// childRoutes: the child surface's react-router route objects (PRODUCT-DESIGN §1.2). Mount them in the app
-// router with `...childRoutes`. Every route renders inside <ChildShell>, which loads the child from /api/me
-// (server-scoped to the signed-in guardian) and sets the band.
-//   /c/:cid                 home (Young "Aaj ka paath" / Older study home; `done` variant via location.state)
-//   /c/:cid/hello           first run C1-C3, then hands over to the lesson
-//   /c/:cid/lesson/:lid     live lesson ("new" starts the next planned lesson); ?mode=text for text mode
-//   /c/:cid/practice[/:sid] Abhyaas: the same runtime in text mode
-//   /c/:cid/doubt           doubt (B3-B4): typed problem → a short Work-geometry lesson
-//   /c/:cid/map             Bagiya / Aasmaan / list
-//   /c/:cid/notes           notebook (Young) / explainer notes (Older)
-//   /c/:cid/me              child settings + what your parent can see
+// childRoutes: the child surface's route objects (PRODUCT-DESIGN-V2 §5.1). Every route renders inside <ChildShell>,
+// which loads the child from /api/me (server-scoped to the signed-in guardian) and sets the band.
+//   /c/:cid                 Home (Today): the one next step, from /api/child/plan, with the designed fallback
+//   /c/:cid/hello           the first meeting (5 cards), then straight into lesson 1
+//   /c/:cid/lesson/:lid     the Desk ("new" starts the next planned lesson)
+//   /c/:cid/practice        Quick practice
+//   /c/:cid/ask             Ask a question (ages 10-15)
+//   /c/:cid/map             Garden (6-9) / Sky map (10-15), with List
+//   /c/:cid/notebook        Notebook
+//   /c/:cid/me              Me
+//   /c/:cid/teacher         Your teacher
+// Renames (§5.1): /doubt → /ask, /notes → /notebook (the old paths redirect).
 import { lazy, Suspense, type ReactNode } from "react";
-import type { RouteObject } from "react-router-dom";
+import { Navigate, type RouteObject } from "react-router-dom";
 import { ChildShell } from "./ChildShell.tsx";
 
 const Home = lazy(() => import("./screens/Home.tsx").then((m) => ({ default: m.Home })));
 const Hello = lazy(() => import("./screens/Hello.tsx").then((m) => ({ default: m.Hello })));
-const LessonRoute = lazy(() => import("./screens/Other.tsx").then((m) => ({ default: m.LessonRoute })));
-const PracticeRoute = lazy(() => import("./screens/Other.tsx").then((m) => ({ default: m.PracticeRoute })));
-const Doubt = lazy(() => import("./screens/Other.tsx").then((m) => ({ default: m.Doubt })));
-const MapScreen = lazy(() => import("./screens/Other.tsx").then((m) => ({ default: m.MapScreen })));
-const Notes = lazy(() => import("./screens/Other.tsx").then((m) => ({ default: m.Notes })));
-const Me = lazy(() => import("./screens/Other.tsx").then((m) => ({ default: m.Me })));
-// avatar-m0 mount point: the tutor picker (C1b / My teacher), lazily loaded from src/avatar.
-const TeacherPick = lazy(() => import("../avatar/picker/TeacherRoute.tsx"));
+const LessonRoute = lazy(() => import("./screens/Practice.tsx").then((m) => ({ default: m.LessonRoute })));
+const PracticeRoute = lazy(() => import("./screens/Practice.tsx").then((m) => ({ default: m.PracticeRoute })));
+const Ask = lazy(() => import("./screens/Ask.tsx").then((m) => ({ default: m.Ask })));
+const MapScreen = lazy(() => import("./screens/Map.tsx").then((m) => ({ default: m.MapScreen })));
+const Notebook = lazy(() => import("./screens/Notebook.tsx").then((m) => ({ default: m.Notebook })));
+const Me = lazy(() => import("./screens/Me.tsx").then((m) => ({ default: m.Me })));
+const TeacherScreen = lazy(() => import("./screens/Teacher.tsx").then((m) => ({ default: m.TeacherScreen })));
 
 const s = (el: ReactNode) => <Suspense fallback={null}>{el}</Suspense>;
 
@@ -36,12 +36,14 @@ export const childRoutes: RouteObject[] = [
       { path: "lesson/:lid", element: s(<LessonRoute />) },
       { path: "practice", element: s(<PracticeRoute />) },
       { path: "practice/:sid", element: s(<PracticeRoute />) },
-      { path: "doubt", element: s(<Doubt />) },
+      { path: "ask", element: s(<Ask />) },
+      { path: "doubt", element: <Navigate to="../ask" replace relative="path" /> },
       { path: "map", element: s(<MapScreen />) },
-      { path: "map/:skill", element: s(<MapScreen />) },
-      { path: "notes", element: s(<Notes />) },
+      { path: "map/:skill", element: <Navigate to=".." replace relative="path" /> },
+      { path: "notebook", element: s(<Notebook />) },
+      { path: "notes", element: <Navigate to="../notebook" replace relative="path" /> },
       { path: "me", element: s(<Me />) },
-      { path: "teacher", element: s(<TeacherPick />) },
+      { path: "teacher", element: s(<TeacherScreen />) },
     ],
   },
 ];

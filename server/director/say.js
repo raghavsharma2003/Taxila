@@ -16,7 +16,7 @@ const lead = (alts) => new RegExp(`(?:^|[.!?।]\\s*|—\\s*|,\\s*(?=(?:bilkul|s
 /** Words that open a turn as agreement or praise. "Haan"/"yes" count only after an answer that was not right. */
 const PRAISE_OPEN = lead([
   "bilkul(?:\\s+sahi|\\s+theek)?", "sahi(?!\\s+(?:answer|jawab|uttar|tareeka|tarika|kya|kaun|kaunsa|wala|wali)\\s*(?:kya|kaun|kaunsa|hoga|hai\\s+kya|\\?))(?:\\s+hai|\\s+jawab|\\s+answer|\\s+kaha|\\s+bataya|\\s+pakda)?",
-  "correct", "that'?s\\s+(?:right|correct|it)", "you'?re\\s+right", "right(?=\\s*[!,.])", "exactly", "perfect", "great(?:\\s+job|\\s+work)?",
+  "correct", "that'?s\\s+(?:right|correct|it)", "you'?re\\s+right", "right(?=\\s*[!.])", "exactly", "perfect", "great(?:\\s+job|\\s+work)?",
   "well\\s+done", "very\\s+good", "good\\s+job", "nice(?!\\s+try)", "shabaa?sh(?:i)?", "waa?h", "badhiya", "bahut\\s+(?:accha|achha|acha|badhiya|khoob|sahi)",
   "zabardast", "awesome", "excellent", "brilliant", "super", "ekdam\\s+(?:sahi|theek)", "theek\\s+(?:kaha|bataya)", "haan\\s+ji,?\\s+(?:sahi|bilkul)",
   "सही", "बिल्कुल", "शाबाश", "बहुत\\s+(?:अच्छा|बढ़िया)",
@@ -38,13 +38,22 @@ const DENY_OPEN = lead(["galat", "wrong", "not\\s+quite", "not\\s+right", "incor
  * "partial" | "unverified" (an attempt the classifier could not label: praise would be praise on an unverified answer).
  * @param {{ outcome?: string } | null | undefined} cls  @param {{ mode: string }} target
  */
-export function verdictFor(cls, target, { moduleOnly = false } = {}) {
+export function verdictFor(cls, target, { moduleOnly = false, childText = "" } = {}) {
   if (!cls || !target || target.mode === "none" || moduleOnly) return "ungraded";
   if (cls.outcome === "correct") return "correct";
   if (cls.outcome === "partial") return "partial";
   if (cls.outcome === "incorrect" || cls.outcome === "misconception") return "not_yet";
+  // The child asked something rather than answered: there is no answer to praise or not ("Great question!" is fine).
+  if (childAsks(childText)) return "ungraded";
   return "unverified";
 }
+
+/** Is the child's turn a question of their own (not an answer with a rising "?")? */
+export const childAsks = (text) => {
+  const t = String(text ?? "").trim();
+  if (!t || /^[-−]?[\d,./\s]+\??$/.test(t)) return false;
+  return /[?？]\s*$/.test(t) || /^(?:kya|kyun|kyon|kaise|kaun|kaunsa|kab|kahan|kitna|kitne|why|how|what|which|who|when|where|can|could|is|are|do|does|क्या|क्यों|कैसे)(?![\p{L}\p{M}])/iu.test(t);
+};
 
 /** The child-facing verdict (UiDirectives.verdict) — only for a graded kit item, never for a covert why / teach-back. */
 export function uiVerdict(cls, target) {
@@ -56,8 +65,15 @@ export function uiVerdict(cls, target) {
  * G-PRAISE-1. → null when the words agree with the verdict, else "praise" (agreement/praise for an answer not marked
  * correct) or "contradicts" (a "wrong" opening after a correct one).
  */
+/**
+ * Warmth about the child's question, effort or thinking — not about the answer — is never a verdict ("Great
+ * question!", "Nice try", "Good thinking", "Achhi koshish"). Removed before the praise predicates run.
+ */
+const EFFORT = /(?:^|(?<=[^\p{L}]))(?:(?:very|really|such\s+a|what\s+a)\s+)?(?:great|good|nice|lovely|interesting|smart|accha|achha|acha|achhi|acchi|badhiya|bahut\s+(?:accha|achha|achhi|badhiya))\s+(?:question|questions|try|effort|thinking|thought|idea|guess|attempt|socha|sawaal|sawal|koshish|prashn)(?![\p{L}])/giu;
+export const withoutEffortPraise = (text) => String(text ?? "").replace(EFFORT, " ");
+
 export function praiseProblem(text, verdict) {
-  const t = String(text ?? "").trim();
+  const t = withoutEffortPraise(text).trim();
   if (!t || verdict === "ungraded") return null;
   if (verdict === "correct") return DENY_OPEN.test(t) ? "contradicts" : null;
   // partial: "nearly" is honest; "bilkul / sahi" is not.
@@ -71,7 +87,7 @@ const OPENER = /^\s*(?:[\p{L}]+\s*[,—-]\s*)?(?:bilkul(?:\s+sahi)?|sahi(?:\s+ha
 /** The turn with its praise / agreement removed: sentences that praise the answer, and a praising opener on a question. */
 export function stripPraise(text) {
   const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
-  const praising = (x) => PRAISE_ANY.test(x) || PRAISE_OPEN.test(x) || AGREE_OPEN.test(x);
+  const praising = (x) => { const y = withoutEffortPraise(x).trim(); return PRAISE_ANY.test(y) || PRAISE_OPEN.test(y) || AGREE_OPEN.test(y); };
   let out = sentences.filter((x) => /[?？]/.test(x) || !praising(x)).join("").trim();
   for (let i = 0; i < 3 && OPENER.test(out); i++) out = out.replace(OPENER, "");
   return out ? out[0].toUpperCase() + out.slice(1) : "";
