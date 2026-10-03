@@ -27,6 +27,7 @@ ap.add_argument("--no-profile", action="store_true")
 ap.add_argument("--depth", type=float, default=0.6, help="gain of the 3/4 depth term (0 = off)")
 ap.add_argument("--front", type=float, default=1.0, help="gain of the frontal x/z term")
 ap.add_argument("--parts", default="front,under", help="profile parts fed back")
+ap.add_argument("--select", default="nme", help="nme | profile: how the best iterate is chosen")
 a = ap.parse_args()
 ROOT = "/home/user/Taxila"
 CH = os.environ.get("CHAR_HOME", "/tmp/claude-0/char")
@@ -123,6 +124,12 @@ for it in range(a.iters + 1):
                             "--cam", f"{SHOTS}/teal_profile.json", "--corr", profF if it < a.iters else f"{SHOTS}/profile_final.json",
                             "--step", str(a.pstep if it < a.iters else 0.0), "--parts", a.parts], cwd=ROOT, capture_output=True, text=True)
         row["profile"] = r.stdout.strip()[-200:]
+    if a.select == "profile" and "profile" in row:
+        try:
+            _pj = json.loads(row["profile"].split("}")[0] + "}")
+            row["objective"] = round(_pj["frontMeanAbs"] + _pj["underMeanAbs"], 3)
+        except Exception:
+            pass
     log.append(row); print(json.dumps(row), flush=True)
     if it == a.iters:
         break

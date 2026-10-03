@@ -397,6 +397,16 @@ if look.get("hiddenSkinCull", True):
     _keep = ~_hid
     _ring = np.zeros(len(_Ph), bool); _ring[_e[_keep[_e[:, 0]], 1]] = True; _ring[_e[_keep[_e[:, 1]], 0]] = True
     _del = _hid & ~_ring
+    # merged: the culled set is PINNED per build dir (cullcache.json, original vertex ids), so mm-scale identity edits
+    # do not change the topology (which would invalidate the pinned UVs and the baked texture; measured: the fit loop
+    # re-unwrapped after the cull count moved)
+    _cc = os.path.join(args.out, "cullcache.json")
+    _vh = np.zeros(len(_Ph), np.int32); h.data.attributes["vid"].data.foreach_get("value", _vh)
+    if os.path.exists(_cc):
+        _keepv = set(json.load(open(_cc))["vids"])
+        _del = np.array([int(v) in _keepv for v in _vh])
+    else:
+        json.dump({"vids": sorted(int(v) for v in _vh[_del])}, open(_cc, "w"))
     if _del.any():
         delete_verts(h, _del)
     report["hiddenSkinCulled"] = int(_del.sum())
@@ -518,6 +528,20 @@ shift_parts(teeth, np.nonzero(_upper)[0], np.array([0, -mt.get("upperTeethFwd", 
 # kk 12 / jawOpen 19; at rest 10 lower-tooth samples outside the skin, measured): the lower row can move back and down too
 if mt.get("lowerTeethBack", 0) or mt.get("lowerTeethDown", 0):
     shift_parts(teeth, np.nonzero(~_upper)[0], np.array([0, mt.get("lowerTeethBack", 0.0), -mt.get("lowerTeethDown", 0.0)]))
+# merged: the MakeHuman dental arch is wider than the wrapped mouth: in a wide smile the canines and premolars
+# (x +-16..21 mm) came through the lip corners (G6 delighted 10, measured). mouth.teethWidth narrows both rows about
+# the midline (x only), the molars included; the tongue is narrowed with them so it stays inside the arch.
+_twk = float(mt.get("teethWidth", 1.0))
+# plus a taper toward the molars (mouth.molarTaper, extra narrowing at 3 cm behind the incisors): a lower molar touched
+# the inner cheek once the jaw opened past 0.3 (G6 +1 at the tongue keys and surprised, measured)
+_mtp = float(mt.get("molarTaper", 0.0))
+_yf = key_co(teeth.data.shape_keys.key_blocks[0])[:, 1].min()
+if _twk != 1.0 or _mtp:
+    for _o in (teeth, tongue):
+        for kb in _o.data.shape_keys.key_blocks:
+            c = key_co(kb); c[:, 0] *= _twk * (1 - _mtp * np.clip((c[:, 1] - _yf) / 0.03, 0, 1)); set_key_co(kb, c)
+        _o.data.vertices.foreach_set("co", key_co(_o.data.shape_keys.key_blocks[0]).ravel())
+        _o.data.update()
 # The tongue rests 2.5 mm higher and 2 mm forward, so its tip reads at aa and the Hindi tongue keys show.
 shift_parts(tongue, np.arange(len(tongue.data.vertices)), np.array([0, -mt.get("tongueFwd", 0.002), mt.get("tongueUp", 0.0025)]))
 _tb = co(teeth.data)
@@ -850,7 +874,13 @@ _tp_rep = {}
 # tooth normal opened the rest seal (G5 sd0 failed, measured); rest G6 is already at baseline
 _tp_rep["basisVerts"] = 0
 fb2 = fb.copy()
-_PK = {kb.name: _teeth_push(fb2 + FD[kb.name]) for kb in _kbs_f[1:]}
+# the seal pair is excluded: mouthClose ALONE presses the lips through the teeth by design (it only ever plays on top of
+# jawOpen), and conforming it broke the jawOpen 0.3 + mouthClose 0.3 seal (G5 p95 1.76 mm, measured)
+_SEAL = {"mouthClose", "jawOpen", "jawOpen_mouthClose", "viseme_PP"}
+# OFF by default (measured): after fix 6 (shift_parts) and the narrowed arch, G6 at every emotion is at baseline WITHOUT
+# this conform, and with it the mouthUpperUp/smile keys opened see-through holes in the nostrils
+_LTC = look.get("mouth", {}).get("lipTeethConform", False)
+_PK = {kb.name: (np.zeros_like(fb) if (kb.name in _SEAL or not _LTC) else _teeth_push(fb2 + FD[kb.name])) for kb in _kbs_f[1:]}
 for kL in list(_PK):
     if not kL.endswith("Left") or kL[:-4] + "Right" not in _PK:
         continue
@@ -955,7 +985,7 @@ if look.get("lowerLashes", False) is False and _low.any():
 import hair_v3
 hair = hair_v3.build(face, look, J, eyeC, report, collide=(garment,), lod="H")
 hair_lo = hair_v3.build(face, look, J, eyeC, report, collide=(garment,), lod="B")
-_hw = hair_v3.hair_weight(co(face.data), J, attr(face, "earsW"), np.round(attr(face, "region")), seed=look["seed"])
+_hw = hair_v3.hair_weight(co(face.data), J, attr(face, "earsW"), np.round(attr(face, "region")), seed=look["seed"], hv=look["hair"].get("v3"))
 _a = face.data.attributes.new("hairW", "FLOAT", "POINT")
 _a.data.foreach_set("value", _hw.astype(np.float32))
 report["hairV3"]["hairBearingVerts"] = int((_hw > 0.5).sum())
@@ -1068,22 +1098,30 @@ samp = inner[rng.choice(len(inner), size=min(300, len(inner)), replace=False)]
 ctr = fb[region == 3].mean(0)
 
 
-def pokes(state):
+_G6_WHO = {}
+
+
+def pokes(state, tag=None):
     bvh = skin_bvh(state)
     n = 0
     c = Vector(ctr + (state[region == 3].mean(0) - fb[region == 3].mean(0)))
+    who = []
     for i in samp:
         p = Vector(state[i])
         d = p - c
         L = d.length
         hit = bvh.ray_cast(c, d.normalized(), L)
-        n += hit[0] is not None
+        if hit[0] is not None:
+            n += 1
+            who.append(int(i))
+    if tag:
+        _G6_WHO[tag] = who
     return n
 
 
-g6 = {"rest": pokes(fb)}
+g6 = {"rest": pokes(fb, "rest")}
 for k in K.VISEMES + ["jawOpen", "tongueOut", "tongueTipUp", "tongueCurl", "tongueWide"]:
-    g6[k] = pokes(fb + FD[k] + (0.3 * FD["jawOpen"] if k.startswith("tongue") and k != "tongueOut" else 0))
+    g6[k] = pokes(fb + FD[k] + (0.3 * FD["jawOpen"] if k.startswith("tongue") and k != "tongueOut" else 0), k)
 # merged: AND at every emotion preset (viewer/presets.js EMOTIONS, parsed here, with the product-weight correctives the
 # rig adds). The delighted grimace (lower row in front of the lower lip) was invisible to a viseme-only G6.
 import re as _re
@@ -1102,8 +1140,12 @@ for _m in _re.finditer(r"^  (\w+): \{ bs: (\{[^}]*\})", _pj, _re.M):
             st = st + _bs.get("jawOpen", 0) * _bs.get("mouthSmile" + _S, 0) * FD[_c]
     if "mouthFunnel_jawOpen" in FD:
         st = st + _bs.get("jawOpen", 0) * _bs.get("mouthFunnel", 0) * FD["mouthFunnel_jawOpen"]
-    g6["emotion_" + _m.group(1)] = pokes(st)
+    g6["emotion_" + _m.group(1)] = pokes(st, "emotion_" + _m.group(1))
 report["gates"]["G6_inner_vertices_outside_lips"] = {"sample": int(len(samp)), **g6}
+# which samples poke, beyond the rest set, by part (1 teeth upper/lower, 2 tongue) and position (mm)
+_rest_who = set(_G6_WHO.get("rest", []))
+report["G6_detail"] = {"rest": [[int(region[i]), *np.round(fb[i] * 1000, 1).tolist()] for i in _rest_who],
+                       **{k: [[int(region[i]), *np.round(fb[i] * 1000, 1).tolist()] for i in v if i not in _rest_who] for k, v in _G6_WHO.items() if k != "rest" and set(v) - _rest_who}}
 
 # Eyelids never inside the eyeball: lid vertices within the eye's angular cap keep distance >= ball radius
 def lid_pen(state):
@@ -1263,6 +1305,38 @@ def unwrap_face(ob):
 face_sel, unwrap_res = unwrap_face(face)
 report["faceUV"] = pack_face_uvs(face, face_poly_mask=face_sel)
 report["faceUV"]["unwrap"] = [str(r) for r in unwrap_res]
+# merged: the UV layout is PINNED per build dir (uvcache.npz, keyed on the loop -> vertex topology). The angle-based
+# unwrap re-packs its charts after mm-scale edits (the lid / lip conforms), so a texture baked on one build landed
+# scrambled on the next (the fit loop then read MediaPipe landmarks off a scrambled face: front NME 2.1 %, measured).
+# Delete the file (and cullcache.json) to take a fresh unwrap; the texture stage must follow any fresh unwrap.
+_uvc = os.path.join(args.out, "uvcache.json")
+_vF = np.zeros(len(face.data.vertices), np.int32); face.data.attributes["vid"].data.foreach_get("value", _vF)
+_lv = np.empty(len(face.data.loops), np.int64); face.data.loops.foreach_get("vertex_index", _lv)
+_uvl = face.data.uv_layers.active
+_uv = np.empty(len(face.data.loops) * 2); _uvl.data.foreach_get("uv", _uv); _uv = _uv.reshape(-1, 2)
+# key: (the polygon's sorted original vertex ids, this loop's original vertex id), skin polygons only
+_keys = {}
+for _p in face.data.polygons:
+    _pv = [int(_vF[face.data.loops[li].vertex_index]) for li in _p.loop_indices]
+    if min(_pv) < 0:
+        continue
+    _pk = ",".join(map(str, sorted(_pv)))
+    for li, v in zip(_p.loop_indices, _pv):
+        _keys[li] = f"{_pk}|{v}"
+if os.path.exists(_uvc):
+    _C = json.load(open(_uvc))
+    _hit = [li for li, k in _keys.items() if k in _C]
+    if len(_hit) >= 0.995 * len(_keys):
+        for li in _hit:
+            _uv[li] = _C[_keys[li]]
+        _uvl.data.foreach_set("uv", _uv.ravel())
+        report["faceUV"]["pinned"] = f"uvcache.json (reused {len(_hit)}/{len(_keys)} skin loops)"
+    else:
+        json.dump({k: _uv[li].tolist() for li, k in _keys.items()}, open(_uvc, "w"))
+        report["faceUV"]["pinned"] = f"uvcache.json (topology changed, {len(_hit)}/{len(_keys)}: rewritten)"
+else:
+    json.dump({k: _uv[li].tolist() for li, k in _keys.items()}, open(_uvc, "w"))
+    report["faceUV"]["pinned"] = "uvcache.json (new)"
 stage("uv")
 
 # ------------------------------------------------------------------ H face-mask subdivision (procedural-v3, §10.5)

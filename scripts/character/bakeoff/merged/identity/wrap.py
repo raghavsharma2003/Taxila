@@ -42,6 +42,8 @@ def procrustes(A, B, w=None):
 
 def apply(B, spec, headw, log=print, mir=None):
     """B: (V,3) basis (Blender axes, metres). headw: (V,) 1 on the head, 0 below the throat. Returns (B', report)."""
+    import gpu_target as GT                     # no-op unless TAXILA_IDENTITY_TARGET names a face3d GPU run
+    spec = GT.wrap_spec(spec, log)
     C = json.load(open(spec["corr"]))["corr"]
     X = np.array(json.load(open(spec["recon"]))["X"])
     RG = json.load(open(spec["regions"]))
@@ -95,4 +97,9 @@ def apply(B, spec, headw, log=print, mir=None):
                              "residualMm": {"p50": round(float(np.median(res) * 1000), 3), "p95": round(float(np.percentile(res, 95) * 1000), 3)},
                              "movedVerts": int(sel.sum()), "vertMoveMaxMm": round(float(np.linalg.norm(D, axis=1).max() * 1000), 2)})
         log(f"wrap iter {it}: landmark disp p50 {np.median(n) * 1000:.2f} mm p95 {np.percentile(n, 95) * 1000:.2f} mm; residual p95 {np.percentile(res, 95) * 1000:.3f} mm; {sel.sum()} verts")
+    if spec.get("dense"):                       # GPU target only: shrink the skin onto the reconstructed surface
+        feat = (Bc[V] * W[:, :, None]).sum(1)[np.isin(idx, sum((RG[k] for k in ("leye", "reye", "lips")), []))]
+        Bc, rep["dense"] = GT.dense_pass(Bc, spec, (s, R, t), idx, wv, mir=mir, log=log, feature_pts=feat)
+    if spec.get("_gpuTarget"):
+        rep["gpuTarget"] = spec["_gpuTarget"]
     return Bc, rep

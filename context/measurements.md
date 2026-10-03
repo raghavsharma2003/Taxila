@@ -1174,3 +1174,6 @@ From the owner's screenshot of Billing > Credits, 2026-10-03 11:03 IST: total re
 
 ## azure-gpu-quota-api-2026-10-03
 The four Quota API requests filed 2026-10-03 ~16:53 UTC (eastus2 NCADS_A100_v4=24 and NCASv3_T4=16, eastus NCADS_A100_v4=24, centralindia NCASv3_T4=16) all show Failed at 17:42 UTC, as did the owner's three portal requests (QuotaNotAvailableForResource). Every GPU family in all 17 regions checked is still at 0. The sponsored subscription gets no self-serve GPU quota; only the owner's open support tickets remain, so build GPU goes to AWS (aws-build-gpu).
+
+## aws-quota-approved-2026-10-03
+Checked 19:03 UTC, us-east-1, Service Quotas: Running On-Demand G and VT = 8 vCPU, All G and VT Spot = 8 vCPU, On-Demand Standard = 16 vCPU. All three cases are closed. That is about 1.6 h from request (17:32) to all approved. Azure's Quota API requests are all still Failed. Build GPU runs on AWS (aws-build-gpu).

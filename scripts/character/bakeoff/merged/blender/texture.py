@@ -342,7 +342,7 @@ _scalp_soft = None
 age = (look["macros"]["age"] - 0.45) / 0.15
 log("normals")
 import hair_v3 as _H3
-_scalp_soft = _H3.hair_weight(Pt, rep["joints"], earT, np.zeros(len(Pt)), seed=look["seed"], soft=3.0)
+_scalp_soft = _H3.hair_weight(Pt, rep["joints"], earT, np.zeros(len(Pt)), seed=look["seed"], soft=3.0, hv=look["hair"].get("v3"))
 def base_height(Pp, _z=ZONES):
     # the zones are evaluated at the texel; the finite-difference offsets are sub-texel, so they are reused as is
     return SV.height_v3(Pp, NZ, _z, interp_cache["lip"], earT, float(look.get("ageYears", 25)), eyeC, eyeR, browZ, _scalp_soft)
@@ -419,8 +419,8 @@ flow = np.clip(NZ(np.stack([Pt[:, 0] * 1400, Pt[:, 1] * 80, Pt[:, 2] * 80], 1)) 
 # procedural-v3: the designed hairline evaluated per TEXEL (the scalp vertices are 2-3 cm apart, so a per-vertex weight
 # blurs the hairline into a smear); a seeded irregular edge, plus sparse streaks just outside it (fine baby hair)
 import hair_v3
-_hwT = hair_v3.hair_weight(Pt, rep["joints"], earT, np.zeros(len(Pt)), seed=look["seed"], soft=1.1)
-_hwS = hair_v3.hair_weight(Pt, rep["joints"], earT, np.zeros(len(Pt)), seed=look["seed"], soft=4.0)
+_hwT = hair_v3.hair_weight(Pt, rep["joints"], earT, np.zeros(len(Pt)), seed=look["seed"], soft=1.1, hv=look["hair"].get("v3"))
+_hwS = hair_v3.hair_weight(Pt, rep["joints"], earT, np.zeros(len(Pt)), seed=look["seed"], soft=4.0, hv=look["hair"].get("v3"))
 _streak = np.clip(NZ(np.stack([Pt[:, 0] * 2600, Pt[:, 1] * 300, Pt[:, 2] * 300], 1)) * 2.2 - 0.3, 0, 1)
 scalpT = np.clip(_hwT + 0.45 * _streak * np.clip(_hwS - _hwT, 0, 1) * 2.0, 0, 1)
 hl = smoothstep(0.3, 0.7, scalpT) * (1 - lt)
@@ -491,6 +491,17 @@ if look.get("projection"):
     _hl2 = np.clip(2.0 * hl, 0, 1) * (0.9 + 0.1 * flow)
     A = A * (1 - _hl2[:, None]) + _hl * _hl2[:, None]
     A_H = A_H * (1 - _hl2[:, None]) + _hl * _hl2[:, None]
+    # the temple band: above the brows, off the ears, where NEITHER the portrait projection (alpha < 0.5) NOR the
+    # painted hairline (hl < 0.5) covers the texel, the bare procedural skin showed as a light flap between the
+    # portrait's own temple hair and v3's hairline (in the turntable at both temples). Those texels take the scalp.
+    _pja_ = globals().get("PJ_ALPHA")
+    if _pja_ is not None:
+        _band = smoothstep(browZ + 0.012, browZ + 0.03, Pt[:, 2]) * (earT < 0.3) * (1 - lt)
+        _fill = np.clip(_band * np.clip(1 - _pja_ / 0.5, 0, 1) * np.clip(1 - 2 * hl, 0, 1), 0, 1) * (0.9 + 0.1 * flow)
+        A = A * (1 - _fill[:, None]) + _hl * _fill[:, None]
+        A_H = A_H * (1 - _fill[:, None]) + _hl * _fill[:, None]
+        hl = np.maximum(hl, _fill)
+        log(f"temple band filled on {int((_fill > 0.5).sum())} texels")
 # merged gate (VERDICT item 1, the parting wedge): texels INSIDE the hairline mask (designed hairline weight > 0.5, off
 # the lips) whose final H albedo is nearer the skin colour than the hair colour. Bar 0.
 _inmask = (hl > 0.5)
@@ -500,7 +511,7 @@ _dHc = np.linalg.norm(A_H[_inmask] - hairc, axis=1)
 # the gap the old check missed: texels above the brows, front-facing, that neither the projection (alpha < 0.5) nor
 # the painted hairline (hl < 0.5) covers, i.e. bare procedural skin where the portrait and the cards both expect hair
 _pja = globals().get("PJ_ALPHA")
-_gap = int(((hl < 0.5) & (_pja < 0.5) & (Pt[:, 2] > browZ + 0.012) & (front > 0.5) & (_hwS > 0.05)).sum()) if _pja is not None else None
+_gap = int(((hl < 0.5) & (_pja < 0.5) & (Pt[:, 2] > browZ + 0.03) & (earT < 0.3) & (lt < 0.5)).sum()) if _pja is not None else None
 WEDGE = {"maskTexels": int(_inmask.sum()), "skinAlbedoTexels": int((_dS < _dHc).sum()), "uncoveredGapTexels": _gap,
          "skinRefLin": np.round(_skin_ref, 4).tolist(), "hairLin": np.round(hairc, 4).tolist()}
 log(f"wedge check: {WEDGE['skinAlbedoTexels']} skin-albedo texels of {WEDGE['maskTexels']} inside the hairline mask; {_gap} uncovered gap texels")

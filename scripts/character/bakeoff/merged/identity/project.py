@@ -67,6 +67,8 @@ def _ordered_loop(idx_edges):
 def apply(G):
     look, log, R = G["look"], G["log"], G["R"]
     spec = look["projection"]
+    import gpu_target as GT                     # no-op unless TAXILA_IDENTITY_TARGET names a face3d GPU run
+    spec = GT.projection_spec(spec, log)
     Pt, Nt, Tx, Bx, cov = G["Pt"], G["Nt"], G["Tx"], G["Bx"], G["cov"]
     A, A_H, Nb = G["A"], G["A_H"], G["Nb"]
     face, P, tris = G["face"], G["P"], G["tris"]
@@ -219,6 +221,24 @@ def apply(G):
     pt_ = patch_tex[have[patch_tex]]
     k = A[pt_].mean(0) / np.maximum(Ap[pt_].mean(0), 1e-6)
     Ap = Ap * k[None, :]
+    # merged (blotches): the de-lit portrait keeps low-frequency grey-blue / olive patches around the mouth and jaw (the
+    # generator's shadowing and stubble-like shading), which read as dirty skin on the shipped face. Luminance detail is
+    # kept; chromaticity that drifts from the face's median skin chroma toward blue/green (the cast directions) is
+    # clamped to spec.chromaTol (rg-chromaticity units); warm drift (flush, lips) is left alone.
+    _tol = float(spec.get("chromaTol", 0.012))
+    if _tol > 0:
+        _Y = Ap @ np.array([0.2126, 0.7152, 0.0722])
+        _c = Ap / np.maximum(Ap.sum(1, keepdims=True), 1e-6)
+        _ref = have & (np.clip(wacc / float(spec.get("fullWeight", 0.35)), 0, 1) > 0.5)
+        _m = np.median(_c[_ref], axis=0)
+        _d = _c - _m
+        # "cast" = less red than the median (grey, olive, blue); clamp its magnitude
+        _cast = np.clip(-_d[:, 0], 0, None)
+        _k = np.where(_cast > _tol, _tol / np.maximum(_cast, 1e-9), 1.0)
+        _c2 = _m + _d * _k[:, None]
+        _Ap2 = _c2 * (_Y / np.maximum(_c2 @ np.array([0.2126, 0.7152, 0.0722]), 1e-6))[:, None]
+        G["PJ_CHROMA"] = {"tol": _tol, "clampedPct": round(100 * float((_k < 1)[_ref].mean()), 1), "medianChroma": np.round(_m, 4).tolist()}
+        Ap = np.where(have[:, None], _Ap2, Ap)
     alpha = np.clip(wacc / float(spec.get("fullWeight", 0.35)), 0, 1)
     alpha = alpha * float(spec.get("strength", 1.0))
     # merged: the scalp is v3's (its designed per-texel hairline, hair-coloured, under the curve-generated cards); the
@@ -249,7 +269,7 @@ def apply(G):
     Nb2 = Nb + np.stack([Nd[:, 0], Nd[:, 1], np.zeros(len(Nd))], 1) * a_n[:, None]
     Nb2 /= np.linalg.norm(Nb2, axis=1, keepdims=True)
     G["PJ_HAIR"] = hacc / np.maximum(hwacc, 1e-6) * (hwacc > 0.05)
-    rep = {"views": views_used, "g9AnchorScale": np.round(k, 4).tolist(), "coveredTexelPct": round(100 * float((alpha > 0.5).mean()), 1),
+    rep = {"views": views_used, "chroma": G.get("PJ_CHROMA"), "g9AnchorScale": np.round(k, 4).tolist(), "coveredTexelPct": round(100 * float((alpha > 0.5).mean()), 1),
            "patchTexels": int(len(pt_))}
     json.dump(rep, open(os.path.join(G["args"].build, "projection.json"), "w"), indent=1)
     log(f"projection: {rep['coveredTexelPct']}% of skin texels at alpha > 0.5; G9 anchor scale {rep['g9AnchorScale']}")

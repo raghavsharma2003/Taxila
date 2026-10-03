@@ -6,7 +6,7 @@
 
 A job directory holds `run.sh` (executed as root with bash on the instance, cwd = the unpacked job) plus any inputs, and
 optionally `job.json` with defaults: {"name", "gpuTypes", "cpuTypes", "maxMinutes", "diskGb", "amiSsm", "cpuAmi"
-("ubuntu" | "dlami"), "exclude": [glob, ...], "env": {K: V}}. run.sh writes its results under $OUT; everything there
+("ubuntu" | "dlami"), "exclude": [glob, ...], "include": {"dest": "repo/path"}, "env": {K: V}}. run.sh writes its results under $OUT; everything there
 comes back to <out>/ (default <job-dir>/runs/<job-id>/). Env on the instance: JOB_ID, OUT, JOB_DIR, BUCKET, S3_PREFIX,
 AWS_DEFAULT_REGION, MAX_MINUTES, DEADLINE_EPOCH, plus job.json env.
 
@@ -79,7 +79,8 @@ class Stop(Exception):
     pass
 
 
-def pack(job_dir, exclude):
+def pack(job_dir, exclude, include=None):
+    """tar.gz of the job dir, plus `include`: {"dest/in/tar": "repo/relative/path (file or dir)"} for repo inputs."""
     buf = io.BytesIO()
     ex = list(exclude) + ["runs/*", "runs", "__pycache__", "*.pyc", ".git"]
     with tarfile.open(fileobj=buf, mode="w:gz") as tf:
@@ -89,6 +90,16 @@ def pack(job_dir, exclude):
                 continue
             if p.is_file():
                 tf.add(p, arcname=rel)
+        for dest, src in (include or {}).items():
+            sp = (C.ROOT / src).resolve()
+            if not sp.exists():
+                sys.exit(f"include {src} not found")
+            files = [sp] if sp.is_file() else sorted(q for q in sp.rglob("*") if q.is_file())
+            for q in files:
+                rel = q.relative_to(sp).as_posix() if sp.is_dir() else ""
+                if rel and any(fnmatch.fnmatch(rel, e) for e in ex):
+                    continue
+                tf.add(q, arcname=(dest.rstrip("/") + "/" + rel) if rel else dest)
     return buf.getvalue()
 
 
@@ -139,6 +150,8 @@ def main():
     ap.add_argument("--on-demand", action="store_true", help="skip spot")
     ap.add_argument("--no-spot-retry", action="store_true", help="do not relaunch on-demand after a spot interruption")
     ap.add_argument("--ami-ssm", help="pin an AMI family by SSM parameter path")
+    ap.add_argument("--env", action="append", default=[], metavar="K=V", help="extra env for run.sh (overrides job.json env)")
+    ap.add_argument("--include", action="append", default=[], metavar="DEST=REPO_PATH", help="extra repo file/dir packed at DEST")
     ap.add_argument("--out")
     ap.add_argument("--poll", type=float, default=15)
     ap.add_argument("--dry-run", action="store_true", help="pack + resolve + print, launch nothing")
@@ -157,13 +170,19 @@ def main():
     prefix = f"jobs/{job_id}/"
     out_dir = Path(a.out).resolve() if a.out else job_dir / "runs" / job_id
     ami_kind = spec.get("cpuAmi", "ubuntu") if a.cpu else "dlami"
-    ami, ssm_path, ami_name, img = C.resolve_ami(ami_kind, a.ami_ssm or (None if a.cpu else spec.get("amiSsm")))
+    ami_ssm = a.ami_ssm or (spec.get("amiSsm") if ami_kind == "dlami" else None)
+    ami, ssm_path, ami_name, img = C.resolve_ami(ami_kind, ami_ssm)
+    if spec.get("amiId") and not a.ami_ssm:                      # exact pin wins over the SSM family
+        ami, ssm_path = spec["amiId"], "job.json amiId"
+        img = C.client("ec2").describe_images(ImageIds=[ami])["Images"][0]; ami_name = img.get("Name", "")
     root_dev = img["RootDeviceName"]
     snap_gb = max([b["Ebs"]["VolumeSize"] for b in img.get("BlockDeviceMappings", []) if "Ebs" in b] or [8])
     disk = max(int(a.disk or spec.get("diskGb", 20 if a.cpu else 150)), snap_gb)
 
     s3, ec2 = C.client("s3"), C.client("ec2")
-    blob = pack(job_dir, spec.get("exclude", []))
+    inc = dict(spec.get("include") or {})
+    inc.update(kv.split("=", 1) for kv in a.include)
+    blob = pack(job_dir, spec.get("exclude", []), inc)
     rec = {"jobId": job_id, "jobDir": str(job_dir.relative_to(C.ROOT)) if job_dir.is_relative_to(C.ROOT) else str(job_dir),
            "ami": ami, "amiName": ami_name, "amiSsm": ssm_path, "types": types, "maxMinutes": max_min, "diskGb": disk,
            "packedBytes": len(blob), "s3": f"s3://{C.bucket()}/{prefix}", "t": {}}
@@ -177,7 +196,10 @@ def main():
     s3.put_object(Bucket=C.bucket(), Key=prefix + "manifest.json", Body=json.dumps(rec, indent=1).encode())
     exp = max_min * 60 + 3600
     deadline = dt.datetime.utcnow().replace(microsecond=0) + dt.timedelta(minutes=max_min)
-    env_lines = "\n".join(f"export {k}={json.dumps(str(v))}" for k, v in spec.get("env", {}).items())
+    envs = dict(spec.get("env", {}))
+    envs.update(kv.split("=", 1) for kv in a.env)
+    rec["env"] = envs
+    env_lines = "\n".join(f"export {k}={json.dumps(str(v))}" for k, v in envs.items())
     ud = (USER_DATA.replace("__JOB_ID__", job_id).replace("__MAX__", str(max_min)).replace("__MAX_S__", str(max_min * 60 + 60))
           .replace("__RUN_S__", str(max(60, max_min * 60 - 240)))                    # leave 4 min for upload + shutdown
           .replace("__BUCKET__", C.bucket()).replace("__PREFIX__", prefix).replace("__REGION__", C.region())
@@ -216,8 +238,10 @@ def main():
             rec["t"]["launchCallS"] = round(time.time() - tl, 1)
             C.log(f"instance {inst_id} {inst['InstanceType']} {lifecycle} in {state['az']}")
             try:
-                rec["backstop"] = C.schedule_backstop(inst_id, deadline + dt.timedelta(minutes=C.SCHEDULER_GRACE_MIN), job_id)
-                C.log(f"backstop schedule {rec['backstop']} at {deadline + dt.timedelta(minutes=C.SCHEDULER_GRACE_MIN)}Z")
+                # from NOW (the instance boots after this), so slow capacity retries never eat into the job's window
+                at = dt.datetime.utcnow().replace(microsecond=0) + dt.timedelta(minutes=max_min + C.SCHEDULER_GRACE_MIN)
+                rec["backstop"] = C.schedule_backstop(inst_id, at, job_id)
+                C.log(f"backstop schedule {rec['backstop']} at {at}Z")
             except Exception as e:
                 rec["backstop"] = None
                 C.log(f"WARNING: backstop schedule failed ({str(e)[:120]}); instance self-shutdown + reaper still apply")

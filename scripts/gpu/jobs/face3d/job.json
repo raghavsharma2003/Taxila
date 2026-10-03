@@ -1,0 +1,39 @@
+{
+ "name": "face3d",
+ "gpuTypes": [
+  "g6.2xlarge",
+  "g5.2xlarge",
+  "g6e.xlarge"
+ ],
+ "maxMinutes": 120,
+ "diskGb": 200,
+ "amiSsm": "/aws/service/deeplearning/ami/x86_64/oss-nvidia-driver-gpu-pytorch-2.7-ubuntu-22.04/latest/ami-id",
+ "include": {
+  "inputs/refs": "art/character/bakeoff/merged/refs/teal",
+  "inputs/mp_regions.json": "art/character/bakeoff/merged/mp_regions.json"
+ },
+ "exclude": [
+  "*_correction.json",
+  "fitloop.json",
+  "recon.json",
+  "runs",
+  "__pycache__",
+  "test"
+ ],
+ "env": {
+  "FACE3D_LOOK": "teal",
+  "FACE3D_SEEDS": "0,1,2",
+  "FACE3D_OCTREE": "512",
+  "FACE3D_STEPS": "50",
+  "FACE3D_GUIDANCE": "5.0",
+  "FACE3D_PAINT_REFS": "front",
+  "FACE3D_PAINT_VIEWS": "6",
+  "FACE3D_PAINT_RES": "512"
+ },
+ "cpuAmi": "dlami",
+ "cpuTypes": [
+  "c6i.2xlarge",
+  "m6i.2xlarge",
+  "c5.2xlarge"
+ ]
+}

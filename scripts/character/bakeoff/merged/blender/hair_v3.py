@@ -197,7 +197,9 @@ HAIRLINE = [(0, 46), (20, 45), (38, 40), (50, 27), (60, 8), (68, -4), (76, -9), 
 
 def hairline_el(az_deg, hv=None):
     a = np.abs(((np.asarray(az_deg) + 180) % 360) - 180)
-    xs, ys = zip(*HAIRLINE)
+    # merged: a look may override the designed hairline (look.hair.v3.hairline = [[az, el], ...]); the wrapped teal's
+    # temples showed bare skin between the cards and the ear at v3's table (az 50 -> el 27)
+    xs, ys = zip(*((hv or {}).get("hairline") or HAIRLINE))
     el = np.interp(a, xs, ys)
     return el + (hv or {}).get("hairlineRaise", 0.0)
 
@@ -206,7 +208,7 @@ def head_centre(J):
     return np.array(J["joint-head"]) + np.array([0.0, -0.01, 0.04])
 
 
-def hair_weight(P, J, ears_w, region, seed=0, soft=2.0):
+def hair_weight(P, J, ears_w, region, seed=0, soft=2.0, hv=None):
     """Per-vertex hair-bearing weight on the skin (0 bare .. 1 hair), with a seeded irregular edge; 0 on the ears."""
     c = head_centre(J)
     d = P - c
@@ -215,7 +217,7 @@ def hair_weight(P, J, ears_w, region, seed=0, soft=2.0):
     rng = np.random.default_rng(seed)
     k = rng.normal(0, 1, (6, 3))
     jit = sum(np.sin(P @ (k[i] * (40 + 25 * i)) + i) for i in range(6)) / 6 * 2.2
-    t = np.clip((el - hairline_el(az) - jit + soft) / (2 * soft), 0, 1)
+    t = np.clip((el - hairline_el(az, hv) - jit + soft) / (2 * soft), 0, 1)
     w = t * t * (3 - 2 * t)
     return w * (ears_w < 0.3) * (region == 0)
 

@@ -4480,6 +4480,12 @@
    "kind": "measurement",
    "title": "Azure GPU quota via the Quota API: 4/4 requests Failed; GPU families 0 in all 17 regions",
    "at": "2026-10-03"
+  },
+  {
+   "id": "aws-quota-approved-2026-10-03",
+   "kind": "measurement",
+   "title": "AWS GPU quota approved in about 1.6 h: G/VT 8 on-demand + 8 spot, Standard 16 (us-east-1)",
+   "at": "2026-10-03"
   }
  ],
  "edges": [
@@ -7755,6 +7761,11 @@
   },
   {
    "src": "aws-setup-2026-10-03",
+   "rel": "part_of",
+   "dst": "aws-build-gpu"
+  },
+  {
+   "src": "aws-quota-approved-2026-10-03",
    "rel": "part_of",
    "dst": "aws-build-gpu"
   }
