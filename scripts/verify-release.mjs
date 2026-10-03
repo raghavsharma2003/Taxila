@@ -39,6 +39,8 @@ export const GATES = [
   ["pii", "scrubPii: refuting shapes, Devanagari, answers untouched", "node", ["evals/pii.mjs"]],
   ["spoken", "spoken renderer keeps content (mustSay control)", "node", ["evals/spoken-preserve.mjs"]],
   ["context", "context graph validates", "node", ["scripts/context.mjs", "--check"]],
+  // PRODUCT-DESIGN-V2 §14 (B4): the UI lint over the WHOLE of src/, not only the B1/B2 paths npm test pins.
+  ["lint-ui", "English chrome, one lamp, no raw hex, no placeholders (G-EN-1, G-LAMP-1, PD-G13)", "node", ["scripts/lint-ui.mjs"]],
   ["web-build", "vite build", "npx", ["vite", "build"]],
   ["npm-test", "npm test (node:test over tests/)", "npm", ["test"], { tap: true }],
 ];

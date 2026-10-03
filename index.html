@@ -8,10 +8,26 @@
     <meta name="description" content="Taxila is a personal AI teacher for classes 1 to 9 (CBSE, NCERT, RBSE and state boards). Lessons by voice, in English, Hindi or both. Your child always knows it's an AI, and you see what they learn." />
     <title>Taxila · a personal AI teacher</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/brand/favicon-48.png" sizes="48x48" type="image/png" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta property="og:title" content="Taxila · a personal AI teacher for classes 1 to 9" />
+    <meta property="og:description" content="Lessons by voice, in English, Hindi or both. Your child always knows it's an AI, and you see what they learn." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io/" />
+    <!-- absolute: WhatsApp and Facebook scrapers do not resolve a relative og:image -->
+    <meta property="og:image" content="https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io/brand/share-1200x630.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Taxila, a personal AI teacher for classes 1 to 9" />
+    <meta name="twitter:card" content="summary_large_image" />
     <!-- Fonts (PRODUCT-DESIGN-V2 §7.2): self-hosted from /fonts (OFL, public/fonts/OFL-NOTICE.txt), declared in
          src/styles/fonts.css. Only the UI face every first paint needs is preloaded; Literata (Older titles),
          Andika (early reading) and the Mukta Devanagari subset load on use, by unicode-range. -->
     <link rel="preload" href="/fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- The landing's hero art comes through the art ledger (src/ui/Art.tsx reads /assets/gen/manifest.json). On "/"
+         only, start that fetch with the document so the hero image is not three round trips deep (LCP). -->
+    <script>if(location.pathname==="/"){var l=document.createElement("link");l.rel="preload";l.as="fetch";l.href="/assets/gen/manifest.json";l.crossOrigin="anonymous";document.head.appendChild(l)}</script>
   </head>
   <body>
     <div id="root"></div>

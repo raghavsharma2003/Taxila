@@ -9,6 +9,9 @@
 //   4 Confirm what you like: the parent's picks preselected; That's right · Change. (Skipped when the parent chose none.)
 //   5 Pick a teacher: only when ≥ 2 are eligible; no default; "Choose for me". The child's first choice. Deviation:
 //     each teacher shows a still, not §6.3.2's "two preview clips" (no per-teacher preview clip exists yet).
+//   6 Name your teacher (decision child-names-teacher): every child, after the AI card, names the look they have (Asha,
+//     Arjun and Uma are suggestions; "Keep {T}" keeps the look's own name). The name is checked by the server's code
+//     predicate; a refusal is a gentle retry. The AI card came first, and the step repeats it: any name, still an AI.
 // Then STRAIGHT into lesson 1: no second start gate (the Desk carries none). Every label is English; what she says
 // is in the family's language.
 import { useEffect, useMemo, useState } from "react";
@@ -23,10 +26,11 @@ import { t } from "../copy.ts";
 import { AVATARS, Avatar, avatarName, Icon, Picto } from "../pictos.tsx";
 import { helloClip, useVoiceClip } from "../voice.ts";
 import { offerOf, TeacherChoice } from "./Teacher.tsx";
+import { TeacherNamer } from "../teacher/TeacherNamer.tsx";
 
 const label = (id: string) => id.charAt(0).toUpperCase() + id.slice(1);
 
-type Card = "greet" | "ai" | "picture" | "likes" | "change" | "teacher";
+type Card = "greet" | "ai" | "picture" | "likes" | "change" | "teacher" | "name";
 
 function InterestTile({ id, on, toggle }: { id: string; on: boolean; toggle?: () => void }) {
   const body = (
@@ -54,6 +58,7 @@ export function Hello() {
   const [page, setPage] = useState(0);
   const [likes, setLikes] = useState<string[]>(parentPicks);
   const [tutors, setTutors] = useState<TutorsResponse | null>(null);
+  const [named, setNamed] = useState<string | null>(null); // the look being named (the pick, or the one they have)
   useEffect(() => {
     let live = true;
     getTutors(cid).then((d) => live && setTutors(d), () => {});
@@ -80,8 +85,9 @@ export function Hello() {
     }
     nav(`/c/${cid}/lesson/new`, { replace: true });
   };
-  const afterLikes = (picks: string[]) => (twoTeachers ? setCard("teacher") : void finish(picks));
-  const afterPicture = () => (parentPicks.length ? setCard("likes") : twoTeachers ? setCard("teacher") : void finish());
+  const toName = (id: string | null | undefined) => { setNamed(id ?? rec.id); setCard("name"); };
+  const afterLikes = (picks: string[]) => { setLikes(picks); if (twoTeachers) setCard("teacher"); else toName(rec.id); };
+  const afterPicture = () => (parentPicks.length ? setCard("likes") : twoTeachers ? setCard("teacher") : toName(rec.id));
 
   const pageAvatars = AVATARS.slice((page * 6) % AVATARS.length, ((page * 6) % AVATARS.length) + 6);
   const framing = young ? t("storyStart") : t("olderStart");
@@ -166,7 +172,17 @@ export function Hello() {
       body = (
         <>
           <h2 tabIndex={-1} className="hello-q">{t("teacherPickTitle")}</h2>
-          {tutors && <TeacherChoice data={tutors} firstPick onDone={() => { refresh(); void finish(); }} />}
+          {tutors && <TeacherChoice data={tutors} firstPick onDone={(id) => { refresh(); toName(id); }} />}
+          <p className="hello-framing">{framing}</p>
+        </>
+      );
+      break;
+    case "name":
+      body = (
+        <>
+          <TeacherNamer cid={cid} characterId={named ?? rec.id} band={band} young={young} suggestions={tutors?.suggestions} face={false}
+            current={named && named !== rec.id ? null : rec.name}
+            onDone={() => { refresh(); void finish(); }} />
           <p className="hello-framing">{framing}</p>
         </>
       );

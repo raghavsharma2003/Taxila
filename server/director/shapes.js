@@ -7,13 +7,17 @@ const RUNG = ["pump", "hint", "prompt", "assertion"];
 const join = (...parts) => parts.filter(Boolean).join("; ");
 
 /**
+ * `renamed`: the teacher's name differs from the child's last lesson (the child named her, or picked another teacher).
  * `interest`: an interest the parent picked at onboarding (child.interests, under the memory consent), never a guess. It used to reach the
  * teacher only through the brief row that sheds first under the prompt budget (compile.js drop 3), and the greeting
  * then asked about a topic of its own (audit #7).
  */
-export const greet = ({ firstName, teacherName, firstMeeting, hasCallback, warmup, topicTitle, interest }) => join(
+export const greet = ({ firstName, teacherName, firstMeeting, renamed, hasCallback, warmup, topicTitle, interest }) => join(
   `greet ${firstName} by name, warm and unhurried`,
   firstMeeting && `first meeting: name yourself — ${teacherName}, their AI teacher`,
+  // the child gave the teacher a new name (decision child-names-teacher): she answers to it, and the disclosure is
+  // said again under it — the name never changes what she is
+  !firstMeeting && renamed && `new name from the child: answer to ${teacherName}; say once you are still their AI teacher`,
   hasCallback && "at most one callback from the child brief, only if it fits",
   warmup ? "then pose the warm-up question (LESSON NOW) — a quick look back at something learned before"
     : `one line on today's topic (${topicTitle})${interest ? `, tied to their interest (${interest}) if it fits` : ""}; then one easy question about them`,

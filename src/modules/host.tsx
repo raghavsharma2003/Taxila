@@ -66,22 +66,16 @@ interface Tile {
 const DEFAULT_FRAME_STYLE: CSSProperties = { display: "block", width: "100%", height: 360, border: 0, background: "transparent" };
 const NOTICE_STYLE: CSSProperties = {
   position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-  padding: 16, textAlign: "center", background: "rgba(255, 250, 242, 0.92)", color: "#2b2620",
+  padding: 16, textAlign: "center", background: "var(--paper)", color: "var(--ink)",
 };
 
-const TEXT: Record<string, Record<string, string>> = {
-  slow: {
-    english: "This activity is taking a while to load…",
-    hinglish: "Activity khulne mein thoda time lag raha hai…",
-    hindi: "गतिविधि खुलने में थोड़ा समय लग रहा है…",
-  },
-  dead: {
-    english: "This activity could not load. Your teacher will carry on without it.",
-    hinglish: "Yeh activity khul nahi payi. Teacher iske bina aage chalenge.",
-    hindi: "यह गतिविधि नहीं खुली। टीचर इसके बिना आगे बढ़ेंगे।",
-  },
+// System notices are chrome: English in every lesson language (PRODUCT-DESIGN-V2 §5.3, G-EN-1). The lesson's own
+// words (her speech, the ask, the activity's prompts) stay in the lesson language.
+const TEXT: Record<string, string> = {
+  slow: "This activity is taking a while to load…",
+  dead: "This activity could not load. Your teacher will carry on without it.",
 };
-const say = (key: string, lang: string) => TEXT[key][lang] ?? TEXT[key].english;
+const say = (key: string, _lang?: string) => TEXT[key];
 
 /** Network Information API (Chromium, Android WebView); absent elsewhere. */
 function networkScaled(ms: number): number {

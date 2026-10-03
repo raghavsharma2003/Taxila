@@ -25,9 +25,8 @@ const LANGS: { id: Speak; ui: Lang; label: string }[] = [
 /** What Asha's greeting clip says, per language: her spoken words (shown on request), not chrome. */
 const TRANSCRIPT: Partial<Record<string, Record<Speak, string>>> = {
   asha: {
-    // lint-ui: speech
-    hindi: "नमस्ते! मैं आशा दीदी हूँ, एक कंप्यूटर टीचर, इंसान नहीं। मैं आपके बच्चे से बात करके पढ़ाती हूँ, और आपको दिखाती हूँ कि उसने सच में क्या समझा।",
-    hinglish: "Namaste! Main Asha didi hoon, ek computer teacher, insaan nahi. Main aapke bacche se baat karke padhaati hoon, aur aapko dikhaati hoon ki usne sach mein kya samjha.",
+    hindi: "नमस्ते! मैं आशा दीदी हूँ, एक कंप्यूटर टीचर, इंसान नहीं। मैं आपके बच्चे से बात करके पढ़ाती हूँ, और आपको दिखाती हूँ कि उसने सच में क्या समझा।", // lint-ui: speech
+    hinglish: "Namaste! Main Asha didi hoon, ek computer teacher, insaan nahi. Main aapke bacche se baat karke padhaati hoon, aur aapko dikhaati hoon ki usne sach mein kya samjha.", // lint-ui: speech
     english: "Hello! I am Asha didi, a computer teacher, not a person. I teach your child by talking with them, and I show you what they have really understood.",
   },
 };

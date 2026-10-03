@@ -1652,3 +1652,120 @@ src/child/progress/Garden.tsx (GardenGround, BedSign, SubjectEmblem, HereFlag). 
 
 ## b2-notebook-device-source
 src/child/screens/Notebook.tsx (`SUMMARY_CONCURRENCY`, localStorage key taxila.child.<cid>.nbsum).
+
+
+<!-- merged from inbox/b3-parent.json -->
+## b3-parent-claim-gate
+server/routes/parent.js (claimHolds, evidenceTally, homeHeadline, HOME_COPY, headlineLines, homeSpeech), src/parent/claims.ts, src/parent/Home.tsx. Tested in tests/ui-v2-claims.test.mjs and tests/account-delete-db.run.mjs.
+
+## b3-account-deletion
+server/routes/account.js deleteAccount; src/parent/Pages.tsx DeleteAccount (intro → password → 2 s hold → receipt in Gate.tsx Erased).
+
+## b3-alert-only-when-released
+server/routes/parent.js alertOf + ALERT_RELEASED_SQL; src/parent/Pages.tsx Help copy. Tested in tests/account-delete-db.run.mjs (safety alert) and the battery (V-SAFE).
+
+## b3-erasure-waits-for-safeguarding
+server/routes/account.js SAFETY_OPEN_SQL, safetyFirst, erase (deleteAccount and deleteChild); src/parent/copy.ts erase_review sentence. Tested in tests/account-delete-db.run.mjs.
+
+## b3-try-at-home-one-state
+server/routes/parent.js reconcileTryAtHome (homeData). Tested in tests/ui-v2-claims.test.mjs and the battery (V-ONE).
+
+
+<!-- merged from inbox/b4-polish-site.json -->
+## b4-site-no-teacher-name
+src/app/landing/Landing.tsx (hero cast, 'picks the teacher' section), src/app/landing/Site.tsx (LOOKS, RigPortrait). V-COPY in the battery fails any he/she/him/his outside the sample child's evidence rows.
+
+## b4-site-real-shots
+public/landing/shot-{lesson,garden,parent}.webp. Captions are alt text describing the real screen.
+
+## b4-hero-art-lcp
+index.html inline preload; Site.tsx useArtEntry + HeroArt; Landing.tsx heroReady. The gzip arm of V-PERF is the gate (LCP <= 2.5 s on Fast 3G + 4x CPU); the uncompressed number is reported as a server-owner item.
+
+## b4-lint-content-vs-chrome
+scripts/lint-ui.mjs CONTENT, stripScriptRanges, L-HING, ALLOW (dev pages: L-HEX only). Controls live in tests/e2e-design-b4-polish-site.mjs (L-UI).
+
+## b4-brand-mark
+Re-run: PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node src/app/landing/brand.mjs. src/ui/Icon.tsx#Mark (the app shell's old book mark) is not yet the new glyph (src/ui owner).
+
+## b4-site-faces-are-picker-looks
+src/app/landing/Site.tsx SITE_TUTORS + TeacherPortrait (Plate2D still); Landing.tsx hero-cast and pick-cast. The rig plates under public/assets/teacher/ are left in place for task 16, unreferenced by the site.
+
+## b4-site-no-hear-player
+Landing.tsx header comment; battery V-AUDIO with NO_NAME_CLIPS.
+
+## b4-site-spec-deviations
+Landing.tsx hero; landing.css hero-art height.
+
+## b4-site-claims-shipped-only
+Landing.tsx (STATES, FAQ, parent section, pick note), promises.ts SITE_PROMISES[0], Public.tsx Help.
+
+## b4-lint-scoped-exemptions
+scripts/lint-ui.mjs stripContent, LANG_SCOPE, CONTENT, stripScriptRanges, visibleText; src/modules/frame/kit/i18n.ts chrome(). Controls: tests/e2e-design-b4-polish-site.mjs L-UI (18 cases) and tests/ui-v2-lint.test.mjs.
+
+## b4-plate-stud-silver
+src/styles/tokens.css --face-stud; src/avatar/Plate2D.tsx.
+
+## b4-share-card
+index.html og:*; brand.mjs SHARE_HTML.
+
+## b4-promises-data-module
+src/app/promises.ts; src/onboarding/Consent.tsx import.
+
+
+<!-- merged from inbox/lesson-safety-naming.json -->
+## lsn-floor-wired-transcripts
+`server/routes/lesson.js`: `floorContentOf(item)` (the call-site recipe), `floorIncidentStmt(childId, lessonId, seq, families, lane)` (kind `floor_violation`, severity high, detail `{source: teacher_transcript, lane, families}` — family names only), `FLOOR_INCIDENT_FAMILIES = [ai_denial, helpline, romance, exclusivity]`. Voice lane: the heard transcript is judged with `requireHelpline` when the last move was a safeguard and `goodbye` on a wrap, → `next.correction` + `meta.floor` + the incident. Text and cascade: `textReply` returns `floor` for its FINAL words (what TTS speaks); non-empty only if even the fixed line broke a rule. Start's text-lane opening gets the same. Closes the voice-lane incident half of `open-never-rules-wiring` (lt-floor-wired said it was not wired). **Reverse** per the entry's title.
+
+## lsn-scrub-at-model-boundary
+`textReply` masks every user message (history and the turn); `server/director/classify.js` masks the text handed to the classifier and the distress check (classifyFast keeps the raw bytes for exact key matches and the safety predicate); `gradeRequestFor` masks the blind grader's input; lesson end masks the child turns it sends and drops memories with an identifier or a copied mask. **Reverse** per the entry's title.
+
+## lsn-turnseq-dedupe
+`turnSeqOf`, `replayFor`, `sendReplay` in lesson.js; `state.acks` (≤ 16) and `state.lastAck` written with the turn. The voice lane's replay recompiles the current instructions (they are never stored). **Reverse** per the entry's title.
+
+## lsn-edit-supersede
+The mark: `update lesson set state = jsonb_set(state, '{supersede}', $turnSeq) where … and not (state->'acks' @> [{turnSeq}])`; the commit guard of a non-edited attempt adds `and coalesce((state->>'supersede')::int, -1) <> $turnSeq`; a GUARD_FAILED loser re-reads and answers the replay, or 409 'this answer was replaced by an edit'. **Reverse** per the entry's title.
+
+## lsn-late-after-pagehide
+`endedByPageHide(req, body)`, `acceptsLate(lesson, turnSeq)`, `LATE_TURN_MS = 24 h`. No client change was needed: `src/lesson/api.ts endBeacon` already sends text/plain. **Reverse** per the entry's title.
+
+## lsn-ui-hint
+`server/director/state.js hintFor(move, item, rung)`; the hint plans carry `hintRung`. The B1 client already renders `ui.hint` (lightbulb + rung dots). **Reverse** per the entry's title.
+
+## lsn-teacher-name-predicate
+Files: `shared/tutors.js` (TEACHER_NAME, NAME_SUGGESTIONS, normalizeTeacherName, teacherNameShape, teacherNameSuggestions), `server/compiler/characters/naming.js` + `name-denylist.json`, `server/routes/tutor.js` (`POST /api/tutors/name`, `GET /api/tutors/name`, GET /api/tutors adds name/characterName/custom/suggestions; CHOOSE_SQL resets the name on a switch with a `switch` history row), `db/migrations/011_teacher_name.sql` (child.teacher_name + teacher_name_at with a shape CHECK; `teacher_name_history`, classified m0_delete in server/learner/mode.js). The child names the teacher freely; the parent's reset needs the Parent-corner gate (requireParentIfPinSet). **Reverse** per the entry's title.
+
+## lsn-name-pinned-disclosure
+`server/compiler/characters/index.js`: `named(c, name)`, `characterForState(state)` (used by `server/compiler/instructions.js`), `teacherFor` (the child's checked name), `teacherForLesson(child, pinnedId, pinnedName)`, `teacherCard` adds `characterName`. `server/director/shapes.js greet` adds the renamed note when `ctx.renamed` (start compares the last lesson's pinned name). Client: `src/ui/teacher/useTeacher.ts` TeacherNameProvider / useTeacher; `src/child/ChildShell.tsx` provides the saved name; `src/child/lesson/LessonScreen.tsx` the pinned one; the naming step `src/child/teacher/TeacherNamer.tsx` in Hello (every child, after the AI card; after the pick when two are offered) and Your teacher (Change name; after a switch); the parent row `src/child/teacher/ParentTeacherName.tsx` mounted in `src/parent/Controls.tsx`. **Reverse** per the entry's title.
+
+## lsn-name-predicate-rev2
+`server/compiler/characters/naming.js`: `deniesAi(name)` (AI_DENIAL_ANYWHERE, AI_DENIAL_AT_WORD on the folded name, then `floorViolations` on the two self-introduction lines), `gluedDeny(str)` (the LEAD*/WORD/TRAIL segmentation, GLUE_MIN 3, PREFIX_ONLY gf/bf); romance 'contains' now compiled. `name-denylist.json` rev 2. Corpora: `evals/teacher-names.data.mjs` ALLOWED (165), ALLOWED_WIDE (368), ADVERSARIAL (74, the reviewer's), ADVERSARIAL_FIGURES. Tests: `tests/teacher-name.test.mjs` (wide corpus, adversarial, no passing name breaks ai_denial). **Reverse** per the entry's title.
+
+## lsn-late-disclosure-helpline
+`server/routes/lesson.js` turn(): `lateSafeguard` → `safeguardLine(state.ctx)` staged as a teacher row; outCore late carries move safeguard + teacherReply + teacherReplySeq. `shared/contracts.ts` TurnResponse.late doc. Client: `src/lesson/runtime.ts` LessonState.lateSafeguard (set in flushOthers), `src/child/lesson/useDesk.ts` raises the Help sheet. Tests: lesson-safety.test.mjs (safeguardLine; runtime flush raises lateSafeguard only for a late safeguard), DB suite (route). **Reverse** per the entry's title.
+
+## lsn-replay-after-gates
+turn(): `replayFor` computed first, returned only after the 409 ended check and the consent check. **Reverse** per the entry's title.
+
+## lsn-scrub-teacher-turns
+textReply history maps every row through `scrubbed`; turn() `heard` scrubbed; gradeRequestFor's echo scrubbed. **Reverse** per the entry's title.
+
+## lsn-one-name-everywhere
+`server/routes/account.js` `clientChild` (me, updateChild), updateChild's switch statement; `server/routes/tutor.js` `nameRateLimit` (NAME_TRIES_PER_MIN 20), GET name adds characterId + band; `server/routes/voice.js` styleForChild(…, pinnedName); `src/child/teacher/TeacherNamer.tsx` (source, onGateError, title, parent button classes; Keep/Go back), `ParentTeacherName.tsx` (Change), `naming.ts` copy, `teacher-name.css` (.tn--parent, .ptn-actions); `src/child/screens/Hello.tsx` passes current. **Reverse** per the entry's title.
+
+
+<!-- merged from inbox/teacher-bakeoff.json -->
+## teacher-bakeoff-verdict
+**The teacher face is the ai-portrait-wrap identity on the procedural-v3 expression stage, hair and garments. The identity is gpt-image-2 references from `taxila-image`, a MediaPipe closed-loop landmark wrap (symmetrised on the topological mirror) and de-lit projected skin. stylised-premium is rejected. The merged build is not made yet.** (2026-10-03)
+- Rationale:
+  - Of the four rows in `docs/design/teacher/bakeoff/COMPARE.png`, only ai-portrait-wrap reads as a specific human. The others are one MakeHuman face with three different finishes, and both their own docs call the face the ceiling.
+  - ai-portrait-wrap's 57% used the iteration-2 presets and face units. v3's expression stage moved the same judge from 37% to 85% on the old face, and it is a build stage that can move onto the wrapped basis.
+  - v3 supplies the hair, the garments and the subdivided H mouth and lids. ai-portrait-wrap's own hair and garments are still the weakest parts of its sheet.
+- Reverse if either holds:
+  - the merged teal cannot keep a front NME of at most 1.2% and at least 70% on 8 of 9 stills at n = 12 under a held-out judge, both at once;
+  - the owner's eye test or E-T4 prefers the v3 or stylised face for warmth.
+  Revisit stylisation only with a designed stylised base, never a fielded MakeHuman, and only on child-panel evidence. Plan: `docs/design/teacher/bakeoff/VERDICT.md`.
+
+## teacher-encouraging-is-motion
+**Encouraging is judged on a 1-2 s clip with the nod, not a still.** (2026-10-03)
+- Rationale: 0 of 108 judgements over about 29 still designs on two faces (v3 17 variants, stylised 12). It reads as warm, sometimes playful.
+- Reverse if a still variant reaches 70% on the same judge.

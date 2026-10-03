@@ -1,0 +1,231 @@
+{
+  "nodes": [
+    {
+      "id": "lsn-floor-wired-transcripts",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "The teacher-output floor runs on every teacher turn that reaches a child, by code: the text-lane reply guard (floorViolations → one rewrite with the FLOOR_FIX shapes → else the move's fixed line; already wired by lt-floor-wired) now passes the full call-site recipe as content (floorContentOf: prompt_en/_hi, answer, acceptable, hints, options); the voice transcript is judged with requireHelpline on a safeguard move and goodbye on a wrap; the cascade/text final words (what TTS speaks) are re-judged. A break → next.correction (the next compile renders the fix first) and the families on the turn row; a break in ai_denial, helpline, romance or exclusivity also writes an incident row kind 'floor_violation' with the family names only (never the words), keyed to the stored teacher row in the turn's transaction. Reversal: a human-coded battery of >= 300 recorded voice turns shows a family's precision < 0.9 (then that family goes log-only, never an incident), or the floor families move into compile's own post-check"
+    },
+    {
+      "id": "lsn-scrub-at-model-boundary",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "scrubPii masks the child's words at every MODEL boundary in a lesson: the reply model (the turn and every child row of the history; the teacher's own rows untouched), the classifier and its distress backup (after classifyFast decided nothing on the raw bytes), the blind grader (gradeRequestFor), and the lesson-end summary/memory call. A memory row is dropped, never stored masked, when its text carries an identifier or a copied mask ([name], [phone]…). The stored turn rows stay raw (the transcript is the parent's and the safeguarding record). The realtime voice lane cannot be scrubbed (the model hears audio). Reversal: a transcripts-retention rule asks for masked rows (then scrub at stageTurns too), or evals/pii.mjs finds a kit answer masked"
+    },
+    {
+      "id": "lsn-turnseq-dedupe",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "The turn route dedupes on (lessonId, turnSeq): lesson.state.acks keeps the last 16 landed turnSeqs and lastAck the latest response (without instructions or debug), written in the turn's own transaction; a resend of a landed turnSeq gets that response back with duplicate:true (an older one gets the current directives), stores nothing and calls no model; a resend that loses the race to its own first attempt (GUARD_FAILED) is answered with the replay, not a 409. The child row carries meta.turnSeq / retried / edited / late. Reversal: the client stops sending turnSeq (then the route falls back to the old 409 'retry')"
+    },
+    {
+      "id": "lsn-edit-supersede",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "edited:true (\"Fix\" on a misheard transcript) REPLACES the attempt still in flight: the edit first writes state.supersede = turnSeq in one guarded statement (refused if that turnSeq already landed), and every non-edited attempt's commit guard requires supersede <> its turnSeq, so the misheard attempt loses (409 'replaced by an edit') and only the corrected answer is counted; the mark is cleared by the landing turn. An edit that arrives AFTER its turn landed gets the landed response with editLanded:true: the kt ledger is append-only, so a landed answer is never un-counted or counted twice. Reversal: the ledger gains a compensating (void) event, then a post-landing edit can truly replace"
+    },
+    {
+      "id": "lsn-late-after-pagehide",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "A lesson closed by the page-hide beacon still takes the answers its outbox held: /api/lesson/end marks state.endedBy = 'pagehide' when the body came as text/plain (navigator.sendBeacon's Blob, or the keepalive fetch fallback) or with reason:'pagehide'; the turn route then accepts a turn WITH a turnSeq for up to 24 h (the outbox's own drop age), stores and grades it in a transaction guarded on 'ended_at is not null and endedBy = pagehide', writes no reply, keeps the lesson closed (phase done), flushes its held why/teach-back like lesson end, and answers {late:true, end:true}. A lesson ended by Finish (a JSON end), an abandoned close, or a turn without turnSeq still gets 409. Reversal: the client sends an explicit reason (drop the content-type inference), or late answers are found to distort the lesson summary"
+    },
+    {
+      "id": "lsn-ui-hint",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "A hint move sends ui.hint = { level, text } (V2 §4.3/§4.6) at rungs 1-3 with the kit's rung text (the gentler-hint voice path sends the rung actually shown); never at rung 4 (the assertion is the key), never a rung text that states the key (revealsAnswer), ≤ 120 chars. Kit hints are English in every lesson language. Reversal: kits gain per-language hint text (then pick by lesson language)"
+    },
+    {
+      "id": "lsn-teacher-name-predicate",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "The child names the teacher (child-names-teacher) through a CODE predicate (server/compiler/characters/naming.js checkTeacherName) whose denylists are data (name-denylist.json): shape 2-16 Latin letters with at most two single spaces/hyphens (shared, so the picker answers as the child types; the same check is a DB constraint), not the child's own first name or a word of it, no profanity/slurs ('contains' entries as stretch-tolerant patterns that never shrink a doubled letter), no romance or companion terms and nothing that denies being an AI or reads as an instruction (whole-word only), no public figure (full names + distinctive surnames). A refusal is a 422 with a reason code and suggestions and never echoes the name; refused names never reach a row. The stored name is re-checked on every read (a later denylist entry retires it with no migration). A character switch resets the name (it belongs to the look the child named). Asha, Arjun and Uma are suggestions, the look's own name first. Reversal: testing shows children pick names that break the teacher register (tighten to suggestions + an allowlist), or false refusals on real children's names > 1%"
+    },
+    {
+      "id": "lsn-name-pinned-disclosure",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "The name is pinned per lesson exactly like the character: state.ctx.teacherName is set at lesson start and compile (characterForState), the summary, /api/tts and the realtime token read it, so a rename (allowed any time, by the child or the parent's reset) lands on the NEXT lesson; the client provides the pinned name to the Desk (TeacherNameProvider over LessonStartResponse.teacher) and the child's saved name to every other child surface (ChildShell). Only name and addressedAs change (a titled name is said as given); look, voice, pronouns, notes and the floor are the character's. The compiled prompt under a new name differs from the original ONLY by the name (test), and the first lesson under a new name carries a greet note to answer to it and say once she is still their AI teacher. Reversal: renaming is found to weaken the AI disclosure (child-names-teacher's own reversal)"
+    },
+    {
+      "id": "lsn-floor-wiring-2026-10-03",
+      "kind": "measurement",
+      "at": "2026-10-03",
+      "title": "evals/floor-wiring.mjs on the Neon TEST branch's stored turns (n = 1 run, 2026-10-03): 244 real teacher turns through the wired call (17 posing a kit item, content passed; requireHelpline/goodbye by the row's move): 0 flags in any family, 0 incident-family flags; the 308 recorded model turns of earlier evals with no content: 0 incident-family flags; 76 real child turns through scrubPii: 0 masked (no PII present: this measures false masks only; recall is evals/pii.mjs). Added latency, steady state after a warm-up: floor check per reply (draft + final) median 152 µs, p95 324 µs, max 3.9 ms; scrub of a turn + 8 history turns median 596 µs, p95 747 µs — against a 3,055 ms median cascade turn. Teacher-name predicate: 166/166 ordinary names pass (incl. Shital, Kamini, Lovely, Cassandra, Bob, Gandharv), 65/65 refusal rows right, 10.9 µs/check. Not a coded out-of-sample battery: the turns are model output from test and eval lessons, not children"
+    },
+    {
+      "id": "lsn-battery-2026-10-03",
+      "kind": "measurement",
+      "at": "2026-10-03",
+      "title": "tests/e2e-design-lesson-safety-naming.mjs: 269/269 checks (n = 1 run, headless Chromium SwiftShader, production build via server/serve.mjs, /api/* mocked with the REAL name predicate behind the name route; 360x640 DPR 2 touch + 1280x800; light + dark for Older, light for Young). Hello ends in the naming step after the AI card for Young (one teacher) and Older (pick, then name); romance, own-name and public-figure refusals each give one gentle sentence (never the name) and keep the field; a bad shape is caught as typed; a tapped suggestion is POSTed and lesson 1 opens; Your teacher shows and renames; the home label reads '{name} · AI teacher'; the lesson shows the PINNED name with its AI label, not a rename made since; the hint line renders with its rung; the parent row shows the name, the AI note and earlier names, and Reset posts {name:null, source:parent}. Shared audits on every frame: English chrome, accessible names, targets 48/64, no empty container, no horizontal scroll, no lamp off the dock. Shots: docs/design/build/lesson-safety-naming/. Not a device, child or parent measurement — superseded in count by lsn-fixer-2026-10-03 (337/337 with N-KEEP, N-PARENT Change and N-REAL)."
+    },
+    {
+      "id": "lsn-db-suite-2026-10-03",
+      "kind": "measurement",
+      "at": "2026-10-03",
+      "title": "tests/lesson-safety-naming-db.test.mjs (real API in-process, Neon TEST branch, no model call): 5/5 — the 422 refusals (romance, own name, public figure, shape, companion) with no row; a stored name and its history; /api/me carries it; the DB shape check refuses markup; the name in the voice-lane persona and PINNED across a mid-lesson rename; an ai_denial voice transcript → correction ['ai_denial'], turn meta.floor, one floor_violation incident with families only; a lesser family (ability) → no incident; a resend of a landed turnSeq → duplicate, nothing stored; a superseded attempt → 409, the edit lands, a post-landing edit → editLanded; a text/plain end → endedBy pagehide, a late answer stored with no reply and the lesson still closed; a JSON-ended lesson refuses; the next lesson uses the new name with ctx.renamed; the parent's view, history and reset"
+    },
+    {
+      "id": "lsn-rejected-collapsed-substring",
+      "kind": "rejection",
+      "at": "2026-10-03",
+      "title": "Teacher-name denylist matched as substrings of the name with every letter run collapsed (so 'fuuuck' → 'fuck'): refuted by the name corpus before it shipped — 'boob' collapsed to 'bob' and refused Bob, 'gaand' collapsed to 'gand' and refused Gandhi-shaped names (Gandharv), and 'shit' as a substring refused Shital, a common Indian girl's name. Instead: 'contains' entries become patterns that admit stretched letters but never shrink a doubled one (each run of k letters must appear >= k times), and short or ambiguous entries (shit, paki, mulla, randi, kafir) match whole words only"
+    },
+    {
+      "id": "lsn-open-2026-10-03",
+      "kind": "open",
+      "at": "2026-10-03",
+      "title": "Open after lesson-safety-naming (+ fixer): apply 011_teacher_name.sql to PRODUCTION before deploying (account.js /api/me selects child.teacher_name); an edit after its turn landed cannot replace it (append-only ledger); an abandoned-closed lesson (start's 2-minute sweep) refuses held answers; src/parent/Controls.tsx reads the teacher name from /api/me once, so after a parent's Change in the same page its other copy ('Rao Sir uses the polite form') stays on the old name until reload (B3 owns Controls: needs an onChanged from ParentTeacherName); the denylist is still author-maintained (rev 2 adds the reviewer's corpus as ADVERSARIAL; a periodic independent adversarial pass is the remaining control); the name rate limit is per replica (in-process); B3's parent pages crash on a child row with no board (seen with a mock only). Closed by the fixer: PATCH teacher_id now resets the name."
+    },
+    {
+      "id": "lsn-name-predicate-rev2",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "Teacher-name predicate rev 2 (denylist rev 2), after review: (a) an AI-denial check runs FIRST on the name folded to letters (a negation glued to ai/bot/robot/machine anywhere — notanai, imnotai, notabot; no/not+ai, real, i-am-a-girl at a word start; human/insaan/manushya/person anywhere) and then the floor predicate itself on 'I am <name>, your AI teacher.' / 'Main <name> hoon, tumhari AI teacher.' — a name under which her self-introduction would be an ai_denial floor break can never be stored, so she can always state her own name cleanly; (b) 'word' entries of 3+ letters also match glued to each other or to a fixed affix (segmentation LEAD* (WORD TRAIL?)+ with LEAD my/ur/your/mera/meri/mere/i/iam/im/the, TRAIL s/es/u/ji/ie/me/you): Mybaby, Babylove, Iloveyou, Friends, Mummyji caught; 2-letter entries (ma, bc, mc, gf) only whole-word, gf/bf also as a prefix; (c) high-risk sexual, violence and self-harm terms moved to 'contains' (sexy, sexi, horny, rapist, suicid, murder, terroris, jihadi, waifu, senpai, iloveyou…), Hindi abbreviations and abuse added (bsdk, bc, mc, bkl, mkc, chut, raand, bhadwa, lodu, lavde, nangi…), slur spellings (chinky, bhangee, chhakke, hijde, mullah) and family terms (ammi, amma, abba, abbu, ma, mataji). Kept OUT on purpose (real names): Luv (Luv-Kush; luvu/luvyou are in), Babu, Shona, Rand, Sister/Brother (convent-school teacher titles); 'nazi' word-only (Nazia/Naziya pass), 'lavde' word-only (Lavdeep), no 'z'/'ya' trail (Maaz, Naziya). 'Ma Uma' moved from the allowed corpus to refused (family term). Reversal: a false refusal of a real name a child reports (then fix the entry or the affix set, add the name to ALLOWED_WIDE), or an independent adversarial corpus finds a family the segmentation cannot reach (then add entries, never loosen the matcher)"
+    },
+    {
+      "id": "lsn-rejected-word-only-denylist",
+      "kind": "rejection",
+      "at": "2026-10-03",
+      "title": "Rev 1 teacher-name matcher: 'word' entries matched only a whole word, and AI denial only the token 'notai' plus human/real/person. Refuted by the REVIEWER's adversarial corpus (74 names written by someone other than the list author): every one PASSED rev 1 — 'Not An Ai', 'Im Not Ai', 'Notanai', 'Iamhuman', 'Realhuman' (her greeting under such a name is itself an ai_denial floor break: it would be rewritten or write a high-severity floor_violation incident on every greeting), glued/plural romance and companion forms (Mybaby, Babylove, Iloveyou, Kissme, Friends, Bestfriends, Mummyji), most Hindi abuse (bsdk, bc, mc, chut, raand), sexual/violence/self-harm terms (Horny, Rapist, Suicide, Nazi). The builder's '65/65 refusals' only tested the builder's own list — a denylist author cannot be its own adversary"
+    },
+    {
+      "id": "lsn-late-disclosure-helpline",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "A late answer (page-hide-closed lesson) that is a disclosure — the plan's move is safeguard or a safeguarding incident was raised — is NOT silent: the response carries move.kind 'safeguard' and teacherReply = the fixed safeguarding line with both helplines (FALLBACK.safeguard, aap-converted, in the child's language), stored as her turn (meta.late) in the same transaction; the lesson stays closed. Client: runtime.ts flushOthers (the cross-lesson flush at the next start) sets LessonState.lateSafeguard on such a response, and useDesk raises the Help sheet (Childline 1098, Tele-MANAS 14416 printed in the buttons). Every other late answer stays reply-less. Reversal: late answers are flushed somewhere the Desk is not mounted (then that surface must raise the sheet too)"
+    },
+    {
+      "id": "lsn-replay-after-gates",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "The (lessonId, turnSeq) replay runs AFTER the ended check and the core_tutoring consent check: a resend of a landed turn after a normal (non-page-hide) end gets 409 'lesson has ended' and after consent withdrawal 403 — never her stored reply or freshly compiled voice instructions; a replay under withdrawn consent does not re-scan or re-write the distress incident (the landed turn already did). Page-hide-closed lessons still replay (dedupe holds for late answers). Reversal: a client needs a landed response after a normal end (then strip teacherReply/instructions from such replays instead of refusing)"
+    },
+    {
+      "id": "lsn-scrub-teacher-turns",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "scrubPii now also masks TEACHER turns on their way to a model: reply-model history (assistant messages), the classifier's 'heard', and the blind grader's echo. On the voice lane her transcript comes from a model that heard the child's audio unmasked and can repeat a phone number, school or address back. The realtime model itself still hears raw audio (cannot be scrubbed); stored rows stay raw. Measured: 0/244 real teacher turns masked (no false masks on the test branch). Reversal: as lsn-scrub-at-model-boundary"
+    },
+    {
+      "id": "lsn-one-name-everywhere",
+      "kind": "decision",
+      "at": "2026-10-03",
+      "title": "One name for one teacher on every surface: /api/me and PATCH /api/children send teacher_name as the EFFECTIVE custom name (account.js clientChild via teacherFor → effectiveTeacherName: a stored name that no longer passes is null, so the client falls back to the look's own, as lessons do); a parent changing teacher_id through PATCH resets the name with a 'switch' history row in one statement (as the picker's CHOOSE_SQL); the cascade TTS style resolves the lesson's pinned name (voice.js styleForChild pinnedName). The parent corner can CHANGE the name (ParentTeacherName → the same TeacherNamer step, source 'parent', same predicate) as well as reset it (decision child-names-teacher: 'can change or reset'). POST /api/tutors/name is rate limited to 20 tries per child per minute (in-process, like parent.js rateLimit). Naming-step labels: with no custom name 'Keep {T}' writes nothing (a failing route can never strand a first-run child in Hello); with a custom name the button reads 'Go back to {own}' (it resets; 'Not now' keeps). Reversal: the parent corner asks to hide the child's naming from the parent's Change (then Change goes), or the rate limit refuses a real child (raise it)"
+    },
+    {
+      "id": "lsn-fixer-2026-10-03",
+      "kind": "measurement",
+      "at": "2026-10-03",
+      "title": "lesson-safety-naming fixer (n = 1 run each, 2026-10-03): name predicate rev 2 — 165/165 ALLOWED + 368/368 ALLOWED_WIDE ordinary names pass (0 false refusals; first rev-2 draft refused Luv, fixed), 65/65 REFUSED rows right, 74/74 reviewer adversarial names refused with the expected family, 2/2 adversarial public figures; 0 passing names make 'Hi Riya! I am <name>, your AI teacher.' an ai_denial break; checkTeacherName median 59 µs, p95 120 µs (n = 3035, includes 2 floorViolations calls) — 84 µs mean in evals/floor-wiring.mjs. Floor wiring re-run: 244 real teacher turns 0 flags; 308 recorded 0 incident flags; 75 real child turns 0 masks; 244 teacher turns 0 masks; floor median 146 µs p95 526 µs per reply; scrub median 581 µs p95 752 µs per turn+8 history. DB route suite (Neon test branch, no model call) 8/8 incl. late disclosure → helpline line + safeguard move + incident, 409 on a resend after a normal end, effective name in /api/me, PATCH switch reset + history, parent Change, 429 after 20 name tries. Playwright battery 337/337 (360x640 + 1280x800, light + dark; Young light) including N-KEEP (Keep with a 500 name route still opens lesson 1, 0 POSTs), N-PARENT Change, and N-REAL against the real routes on the test branch (serve.mjs, real PIN gate): 422 retry, stored row + history, /api/me, parent Change stored as source 'parent'"
+    }
+  ],
+  "edges": [
+    {
+      "src": "lsn-floor-wired-transcripts",
+      "rel": "supersedes",
+      "dst": "lt-floor-wired"
+    },
+    {
+      "src": "lsn-floor-wired-transcripts",
+      "rel": "measured_by",
+      "dst": "lsn-floor-wiring-2026-10-03"
+    },
+    {
+      "src": "lsn-scrub-at-model-boundary",
+      "rel": "measured_by",
+      "dst": "lsn-floor-wiring-2026-10-03"
+    },
+    {
+      "src": "lsn-turnseq-dedupe",
+      "rel": "measured_by",
+      "dst": "lsn-db-suite-2026-10-03"
+    },
+    {
+      "src": "lsn-edit-supersede",
+      "rel": "measured_by",
+      "dst": "lsn-db-suite-2026-10-03"
+    },
+    {
+      "src": "lsn-late-after-pagehide",
+      "rel": "measured_by",
+      "dst": "lsn-db-suite-2026-10-03"
+    },
+    {
+      "src": "lsn-teacher-name-predicate",
+      "rel": "caused_by",
+      "dst": "lsn-rejected-collapsed-substring"
+    },
+    {
+      "src": "lsn-teacher-name-predicate",
+      "rel": "measured_by",
+      "dst": "lsn-floor-wiring-2026-10-03"
+    },
+    {
+      "src": "lsn-name-pinned-disclosure",
+      "rel": "measured_by",
+      "dst": "lsn-battery-2026-10-03"
+    },
+    {
+      "src": "lsn-teacher-name-predicate",
+      "rel": "measured_by",
+      "dst": "lsn-battery-2026-10-03"
+    },
+    {
+      "src": "lsn-name-predicate-rev2",
+      "rel": "supersedes",
+      "dst": "lsn-teacher-name-predicate"
+    },
+    {
+      "src": "lsn-name-predicate-rev2",
+      "rel": "caused_by",
+      "dst": "lsn-rejected-word-only-denylist"
+    },
+    {
+      "src": "lsn-name-predicate-rev2",
+      "rel": "measured_by",
+      "dst": "lsn-fixer-2026-10-03"
+    },
+    {
+      "src": "lsn-late-disclosure-helpline",
+      "rel": "supersedes",
+      "dst": "lsn-late-after-pagehide"
+    },
+    {
+      "src": "lsn-late-disclosure-helpline",
+      "rel": "measured_by",
+      "dst": "lsn-fixer-2026-10-03"
+    },
+    {
+      "src": "lsn-replay-after-gates",
+      "rel": "supersedes",
+      "dst": "lsn-turnseq-dedupe"
+    },
+    {
+      "src": "lsn-replay-after-gates",
+      "rel": "measured_by",
+      "dst": "lsn-fixer-2026-10-03"
+    },
+    {
+      "src": "lsn-scrub-teacher-turns",
+      "rel": "supersedes",
+      "dst": "lsn-scrub-at-model-boundary"
+    },
+    {
+      "src": "lsn-scrub-teacher-turns",
+      "rel": "measured_by",
+      "dst": "lsn-fixer-2026-10-03"
+    },
+    {
+      "src": "lsn-one-name-everywhere",
+      "rel": "measured_by",
+      "dst": "lsn-fixer-2026-10-03"
+    }
+  ],
+  "md": {
+    "decisions": "## lsn-floor-wired-transcripts\n`server/routes/lesson.js`: `floorContentOf(item)` (the call-site recipe), `floorIncidentStmt(childId, lessonId, seq, families, lane)` (kind `floor_violation`, severity high, detail `{source: teacher_transcript, lane, families}` — family names only), `FLOOR_INCIDENT_FAMILIES = [ai_denial, helpline, romance, exclusivity]`. Voice lane: the heard transcript is judged with `requireHelpline` when the last move was a safeguard and `goodbye` on a wrap, → `next.correction` + `meta.floor` + the incident. Text and cascade: `textReply` returns `floor` for its FINAL words (what TTS speaks); non-empty only if even the fixed line broke a rule. Start's text-lane opening gets the same. Closes the voice-lane incident half of `open-never-rules-wiring` (lt-floor-wired said it was not wired). **Reverse** per the entry's title.\n\n## lsn-scrub-at-model-boundary\n`textReply` masks every user message (history and the turn); `server/director/classify.js` masks the text handed to the classifier and the distress check (classifyFast keeps the raw bytes for exact key matches and the safety predicate); `gradeRequestFor` masks the blind grader's input; lesson end masks the child turns it sends and drops memories with an identifier or a copied mask. **Reverse** per the entry's title.\n\n## lsn-turnseq-dedupe\n`turnSeqOf`, `replayFor`, `sendReplay` in lesson.js; `state.acks` (≤ 16) and `state.lastAck` written with the turn. The voice lane's replay recompiles the current instructions (they are never stored). **Reverse** per the entry's title.\n\n## lsn-edit-supersede\nThe mark: `update lesson set state = jsonb_set(state, '{supersede}', $turnSeq) where … and not (state->'acks' @> [{turnSeq}])`; the commit guard of a non-edited attempt adds `and coalesce((state->>'supersede')::int, -1) <> $turnSeq`; a GUARD_FAILED loser re-reads and answers the replay, or 409 'this answer was replaced by an edit'. **Reverse** per the entry's title.\n\n## lsn-late-after-pagehide\n`endedByPageHide(req, body)`, `acceptsLate(lesson, turnSeq)`, `LATE_TURN_MS = 24 h`. No client change was needed: `src/lesson/api.ts endBeacon` already sends text/plain. **Reverse** per the entry's title.\n\n## lsn-ui-hint\n`server/director/state.js hintFor(move, item, rung)`; the hint plans carry `hintRung`. The B1 client already renders `ui.hint` (lightbulb + rung dots). **Reverse** per the entry's title.\n\n## lsn-teacher-name-predicate\nFiles: `shared/tutors.js` (TEACHER_NAME, NAME_SUGGESTIONS, normalizeTeacherName, teacherNameShape, teacherNameSuggestions), `server/compiler/characters/naming.js` + `name-denylist.json`, `server/routes/tutor.js` (`POST /api/tutors/name`, `GET /api/tutors/name`, GET /api/tutors adds name/characterName/custom/suggestions; CHOOSE_SQL resets the name on a switch with a `switch` history row), `db/migrations/011_teacher_name.sql` (child.teacher_name + teacher_name_at with a shape CHECK; `teacher_name_history`, classified m0_delete in server/learner/mode.js). The child names the teacher freely; the parent's reset needs the Parent-corner gate (requireParentIfPinSet). **Reverse** per the entry's title.\n\n## lsn-name-pinned-disclosure\n`server/compiler/characters/index.js`: `named(c, name)`, `characterForState(state)` (used by `server/compiler/instructions.js`), `teacherFor` (the child's checked name), `teacherForLesson(child, pinnedId, pinnedName)`, `teacherCard` adds `characterName`. `server/director/shapes.js greet` adds the renamed note when `ctx.renamed` (start compares the last lesson's pinned name). Client: `src/ui/teacher/useTeacher.ts` TeacherNameProvider / useTeacher; `src/child/ChildShell.tsx` provides the saved name; `src/child/lesson/LessonScreen.tsx` the pinned one; the naming step `src/child/teacher/TeacherNamer.tsx` in Hello (every child, after the AI card; after the pick when two are offered) and Your teacher (Change name; after a switch); the parent row `src/child/teacher/ParentTeacherName.tsx` mounted in `src/parent/Controls.tsx`. **Reverse** per the entry's title.\n\n## lsn-name-predicate-rev2\n`server/compiler/characters/naming.js`: `deniesAi(name)` (AI_DENIAL_ANYWHERE, AI_DENIAL_AT_WORD on the folded name, then `floorViolations` on the two self-introduction lines), `gluedDeny(str)` (the LEAD*/WORD/TRAIL segmentation, GLUE_MIN 3, PREFIX_ONLY gf/bf); romance 'contains' now compiled. `name-denylist.json` rev 2. Corpora: `evals/teacher-names.data.mjs` ALLOWED (165), ALLOWED_WIDE (368), ADVERSARIAL (74, the reviewer's), ADVERSARIAL_FIGURES. Tests: `tests/teacher-name.test.mjs` (wide corpus, adversarial, no passing name breaks ai_denial). **Reverse** per the entry's title.\n\n## lsn-late-disclosure-helpline\n`server/routes/lesson.js` turn(): `lateSafeguard` → `safeguardLine(state.ctx)` staged as a teacher row; outCore late carries move safeguard + teacherReply + teacherReplySeq. `shared/contracts.ts` TurnResponse.late doc. Client: `src/lesson/runtime.ts` LessonState.lateSafeguard (set in flushOthers), `src/child/lesson/useDesk.ts` raises the Help sheet. Tests: lesson-safety.test.mjs (safeguardLine; runtime flush raises lateSafeguard only for a late safeguard), DB suite (route). **Reverse** per the entry's title.\n\n## lsn-replay-after-gates\nturn(): `replayFor` computed first, returned only after the 409 ended check and the consent check. **Reverse** per the entry's title.\n\n## lsn-scrub-teacher-turns\ntextReply history maps every row through `scrubbed`; turn() `heard` scrubbed; gradeRequestFor's echo scrubbed. **Reverse** per the entry's title.\n\n## lsn-one-name-everywhere\n`server/routes/account.js` `clientChild` (me, updateChild), updateChild's switch statement; `server/routes/tutor.js` `nameRateLimit` (NAME_TRIES_PER_MIN 20), GET name adds characterId + band; `server/routes/voice.js` styleForChild(…, pinnedName); `src/child/teacher/TeacherNamer.tsx` (source, onGateError, title, parent button classes; Keep/Go back), `ParentTeacherName.tsx` (Change), `naming.ts` copy, `teacher-name.css` (.tn--parent, .ptn-actions); `src/child/screens/Hello.tsx` passes current. **Reverse** per the entry's title.\n",
+    "measurements": "## lsn-floor-wiring-2026-10-03\nCommand: `set -a; . ./.env.local; NODE_USE_ENV_PROXY=1 node evals/floor-wiring.mjs --json evals/results/floor-wiring-2026-10-03.json` (refuses the production endpoint). Numbers in the title. Gates: n ≥ 50 teacher and child turns; incident-family flags ≤ 0 (pinned; review each flag before raising it); every ordinary name passes.\n\n## lsn-battery-2026-10-03\nCommand: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-lesson-safety-naming.mjs`. Results: docs/design/build/lesson-safety-naming/results.json.\n\n## lsn-db-suite-2026-10-03\nCommand: `set -a; . ./.env.local; NODE_USE_ENV_PROXY=1 node tests/lesson-safety-naming-db.run.mjs` (also run by npm test through tests/lesson-safety-naming-db.test.mjs; skips without CONDUCTOR_TEST_DATABASE_URL, refuses production).\n\n## lsn-fixer-2026-10-03\nCommands: `node --test tests/teacher-name.test.mjs tests/lesson-safety.test.mjs`; `set -a; . ./.env.local; NODE_USE_ENV_PROXY=1 node tests/lesson-safety-naming-db.run.mjs`; `node evals/floor-wiring.mjs --json evals/results/floor-wiring-2026-10-03.json`; `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-lesson-safety-naming.mjs` (results.json; N-REAL needs CONDUCTOR_TEST_DATABASE_URL and skips, reported, without it). Latency of checkTeacherName: process.hrtime over 5 passes of ALLOWED+ALLOWED_WIDE+ADVERSARIAL.\n",
+    "rejected": "## lsn-rejected-collapsed-substring\nFound by tests/teacher-name.test.mjs's corpus on its first run (166 names): `Bob` refused as profanity ('boob'), a `Gandhi` row refused as profanity instead of public_figure ('gaand' collapsed), and `Shital` refused by the plain 'shit' substring. See the entry's title for what replaced it.\n\n## lsn-rejected-word-only-denylist\nThe reviewer ran the real checkTeacherName (child Riya) over names they wrote themselves; all 74 now in `evals/teacher-names.data.mjs` ADVERSARIAL passed rev 1. `safety.js floorViolations('Hi Riya! I am Not An Ai, your AI teacher.')` returns ['ai_denial'], so the rev 1 predicate admitted names under which the floor itself fires on every greeting. Replaced by lsn-name-predicate-rev2.\n"
+  }
+}

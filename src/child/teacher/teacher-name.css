@@ -1,0 +1,45 @@
+/* The naming step (child-names-teacher) and the parent row. Paper, ink and the nib only: no lamp colour here (the
+   lamp is the Answer dock's alone, §0.3). Targets ≥ --hit-min (48 dp Older), 64 dp for Young. */
+.tn { display: flex; flex-direction: column; align-items: stretch; gap: var(--space-3); width: 100%; text-align: left; }
+.tn-face { align-self: center; display: inline-block; border-radius: var(--radius-window); overflow: hidden; background: var(--stage); }
+.tn-face .teacher { width: 100%; height: 100%; }
+.tn-title { font-size: var(--t-title); font-family: var(--font-ui); text-align: center; outline: none; }
+.tn-pick { border: 0; margin: 0; padding: 0; min-width: 0; }
+.tn-legend { display: block; font-weight: 700; font-size: var(--t-meta); color: var(--ink); margin-bottom: var(--space-2); padding: 0; }
+.tn-names { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+.tn-name { min-height: var(--hit-min); padding: var(--space-2) var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-tile);
+  background: var(--surface); color: var(--ink); font-weight: 700; font-size: var(--t-label); cursor: pointer; overflow-wrap: anywhere; }
+.tn-name[aria-pressed="true"] { border: 3px solid var(--nib); background: var(--nib-soft); }
+.tn-name[disabled] { opacity: .45; cursor: default; }
+.tn-type { display: flex; flex-direction: column; }
+.tn-input { font-size: var(--t-label); }
+.tn-rule { color: var(--ink-2); font-size: var(--t-meta); margin-top: var(--space-1); }
+.tn-rule--bad { color: var(--ink); font-weight: 700; }
+.tn-retry { padding: var(--space-2) var(--space-3); border-left: 4px solid var(--nib); background: var(--surface);
+  border-radius: var(--radius-sm); font-size: var(--t-meta); color: var(--ink); }
+.tn-still { color: var(--ink-2); font-size: var(--t-meta); text-align: center; }
+.tn-actions { display: flex; flex-direction: column; gap: var(--space-2); }
+.tn-actions .cs-btn { width: 100%; }
+.tn--young .tn-name, .tn--young .tn-actions .cs-btn { min-height: 64px; }
+.tn--young .tn-names { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
+@media (min-width: 1024px) {
+  .tn-actions { flex-direction: row; flex-wrap: wrap; }
+  .tn-actions .cs-btn { flex: 1 1 200px; width: auto; }
+}
+
+/* Your teacher: the name row above the choice */
+.tn-current { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); width: 100%;
+  padding: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.tn-current p { font-weight: 700; }
+
+/* Parent corner row */
+.ptn { display: flex; flex-direction: column; gap: var(--space-2); }
+.ptn-history { margin: 0; padding-left: 1.2em; color: var(--ink-2); font-size: var(--t-meta, 14px); }
+
+/* The naming step inside the parent corner (no child shell stylesheet there): the field and the button widths */
+.tn--parent .tn-title { font-size: var(--t-h3, 1.125rem); text-align: left; }
+.tn--parent .tn-input { width: 100%; min-height: var(--hit-min); padding: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--surface); color: var(--ink); }
+.tn--parent .tn-actions .btn { width: 100%; }
+@media (min-width: 1024px) { .tn--parent .tn-actions .btn { flex: 1 1 200px; width: auto; } }
+.ptn-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }

@@ -160,6 +160,10 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       setSheet("help");
     }
   }, [state.move]);
+  // ... and so does a late disclosure (an answer held for an earlier, page-hide-closed lesson): the helplines still show.
+  useEffect(() => {
+    if (state.lateSafeguard) setSheet("help");
+  }, [state.lateSafeguard]);
   const [helpBackVisible, setHelpBackVisible] = useState(false);
   useEffect(() => {
     setHelpBackVisible(false);

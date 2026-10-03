@@ -117,7 +117,11 @@ export interface UiDirectives {
 
 /** The teacher as every surface shows them: the server is the one source (compiler/characters teacherCard). */
 export interface TeacherCard {
-  id: string; name: string; addressedAs: string; role: "AI teacher";
+  /**
+   * `name`: the name the child gave the teacher (decision child-names-teacher), else the character's own; pinned for the
+   * life of a lesson. `characterName`: the look's own name (Asha, Arjun, Uma), for "Reset to {characterName}".
+   */
+  id: string; name: string; characterName?: string; addressedAs: string; role: "AI teacher";
   pronouns: { subject: string; object: string; possessive: string };
   voice: string; lookRev: number | null; signatureColor: string | null;
 }
@@ -139,6 +143,19 @@ export interface TurnRequest {
   chipId?: string;                   // the child tapped a choice chip
   typed?: boolean;                   // no ASR (typed or tapped); does not select the text lane
   voiceFeatures?: VoiceUtterance;    // on-device numeric features of this spoken turn (src/voice/); never audio or text
+  /**
+   * The outbox's per-lesson key for this answer (src/lesson/outbox.ts). The server dedupes on (lessonId, turnSeq): a
+   * resend of a turn that already landed gets that turn's response back (`duplicate: true`) and is never counted twice.
+   */
+  turnSeq?: number;
+  /** A resend (a retry, "Try again", "Send again"); its child row is marked retried. */
+  retried?: boolean;
+  /**
+   * "Fix" on a misheard transcript: the same turnSeq with the corrected words. It REPLACES the earlier attempt when that
+   * attempt has not landed yet (the earlier one then loses with 409); after it landed, the landed turn's response
+   * comes back with `editLanded: true` (the ledger is append-only, so a landed answer is never counted twice).
+   */
+  edited?: boolean;
 }
 /**
  * One child utterance's voice features, computed on the device (src/voice/tracker.ts UtteranceFeatures).
@@ -178,7 +195,35 @@ export interface TurnResponse {
    * prompt text. waitNudgeSec: silence before a gentle nudge; endpointSilenceMs: end-of-speech silence.
    */
   pace?: { waitNudgeSec: number; endpointSilenceMs: number };
+  /** This turnSeq had already landed: the response is that turn's, replayed (nothing was stored again). */
+  duplicate?: boolean;
+  /** An edited resend arrived after the first attempt landed: the landed turn's response, replayed. */
+  editLanded?: boolean;
+  /**
+   * A held answer for a lesson the page-hide beacon closed (src/lesson/api.ts endBeacon): it was stored and graded
+   * like any turn, but the lesson stays closed and no teacher reply is written (`end` is true) — EXCEPT a disclosure:
+   * then `move.kind` is "safeguard" and `teacherReply` is the fixed safeguarding line with both helplines, and the
+   * client raises the Help sheet (runtime.ts flushOthers → LessonState.lateSafeguard) though the lesson stays closed.
+   */
+  late?: boolean;
   debug?: Record<string, unknown>;
+}
+
+/** GET /api/tutors/name (the parent corner) and POST /api/tutors/name (the picker's naming step, the parent's reset). */
+export interface TeacherNameResponse {
+  name: string; characterName: string; custom: boolean;
+  /** POST only: the card every surface renders from. */
+  teacher?: TeacherCard;
+  /** GET only: a stored name a later denylist entry retired (the character's own name is in use). */
+  retired?: boolean;
+  history?: { name: string | null; characterId: string; source: "child" | "parent" | "switch"; at: string }[];
+  /** GET only: the look being named and the child's band (the parent row's "Change" opens the same naming step). */
+  characterId?: string;
+  band?: string;
+}
+/** 422 from POST /api/tutors/name: a gentle retry. The typed name is never echoed back. */
+export interface TeacherNameRefused {
+  error: string; reason: "shape" | "own_name" | "not_allowed" | "public_figure"; suggestions: string[];
 }
 
 /**

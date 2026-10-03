@@ -162,3 +162,43 @@ export function eligibleTutors(child, { catalogue = TUTORS, hasSheet = () => tru
 
 /** The class default when nothing was chosen (matches server teacherFor's rule). */
 export const defaultTutorFor = (child) => (Number(child.class_level) <= 4 ? "asha" : "arjun");
+
+// ───────────── the child names the teacher (decision child-names-teacher) ─────────────
+// The SHAPE half of the name predicate, shared so the picker can answer instantly; the server's
+// server/compiler/characters/naming.js checkTeacherName() adds the denylists (slurs, profanity, romance and
+// companion terms, public figures) and the child's own name, and is the only authority. The DB check
+// (011_teacher_name.sql child_teacher_name_shape) is the same shape, so a write that skipped the predicate still
+// cannot store markup or a long string.
+
+/** 2-16 characters: Latin letters, with at most two single spaces or hyphens between letters. */
+export const TEACHER_NAME = Object.freeze({ min: 2, max: 16, re: /^[A-Za-z]+(?:[ -][A-Za-z]+){0,2}$/ });
+
+/** The names the picker offers (owner: "Asha, Arjun and Uma are suggestions"). Never a default the child must keep. */
+export const NAME_SUGGESTIONS = Object.freeze(["Asha", "Arjun", "Uma"]);
+
+/** Typed text → the name as it would be stored: trimmed, inner whitespace collapsed, each word capitalised. */
+export function normalizeTeacherName(raw) {
+  const s = String(raw ?? "").normalize("NFC").replace(/\s+/g, " ").trim();
+  return s.replace(/[A-Za-z]+/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
+/** The shape rule alone: null when the shape is fine, else "empty" | "length" | "charset". */
+export function teacherNameShape(name) {
+  const s = normalizeTeacherName(name);
+  if (!s) return "empty";
+  if (s.length < TEACHER_NAME.min || s.length > TEACHER_NAME.max) return "length";
+  return TEACHER_NAME.re.test(s) ? null : "charset";
+}
+
+/**
+ * Suggestions for this child: the look's own name first, then the others; never the child's own first name (a
+ * teacher with the child's name is the own-name rule) and never `exclude` (the name just refused).
+ * @param {string | null | undefined} characterId  @param {{ childFirstName?: string, exclude?: string | null }} [opts]
+ */
+export function teacherNameSuggestions(characterId, { childFirstName = "", exclude = null } = {}) {
+  const own = tutorById(characterId)?.displayName.roman;
+  const fold = (x) => String(x ?? "").toLowerCase().replace(/[^a-z]/g, "");
+  const kid = fold(String(childFirstName).split(/\s+/)[0]);
+  const refused = String(exclude ?? "").trim().toLowerCase();
+  return [...new Set([own, ...NAME_SUGGESTIONS].filter(Boolean))].filter((n) => fold(n) !== kid && n.toLowerCase() !== refused);
+}

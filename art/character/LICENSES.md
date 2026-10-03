@@ -71,3 +71,26 @@ Considered and not used: TRELLIS (MIT) and TripoSR (MIT) need a GPU for TRELLIS 
 for TripoSR on CPU (no Azure GPU was creatable, see the bakeoff doc); Hunyuan3D-2 (Tencent Hunyuan 3D Community
 Licence: territory excludes the EU, UK and South Korea, so India is in scope, with extra terms above a monthly-active-user
 threshold [U, from the licence text as recalled, not re-read this session]): not used.
+
+## Bake-off `procedural-v3` (2026-10-03; outputs under `public/assets/teacher-bakeoff/procedural-v3/**`)
+
+| input | used for | source | licence | evidence |
+|---|---|---|---|---|
+| MakeHuman expression units (`targets/expression/units/{caucasian,african,asian}/*.target.gz`: mouth-corner-puller, mouth-retraction, mouth-upward-retraction, eyebrows-*-inner-up / -down / -extern-up, eye-*-slit), blended by the look's race mix | mixed into the ARKit keys `mouthSmile*`, `mouthUpperUp*`, `browInnerUp`, `browDown*`, `browOuterUp*`, `eyeSquint*` (`faceStyle.v3mix`) | MPFB 2.0.17 bundled data (same sha256-pinned zip as above) | **CC0** | MPFB `LICENSE.md` §C (bundled assets CC0) and `LICENSE.ASSETS.md` (CC0 1.0 text) |
+| everything else in v3: hair guide curves, strand cards and the strand atlas (`hair_v3.py`), modelled garments, collar, pocket flaps, buttons, piping (`garments_v3.py`), skin zones, pores, micro tile, detail map, albedo detail (`skin_v3.py`), the H subdivision (`subdiv.py`) | | written by us, procedural from our own mesh; no image or third-party hair/cloth asset | ours | — |
+
+The MakeHuman CC0 card hair (`ponytail01`) is **not** used by v3 (replaced by the generated cards). Evidence-only, as
+above: Azure `taxila-brain` for the emotion check; the existing Azure TTS clip and its alignment (re-used unchanged).
+
+## Bake-off `stylised-premium` (2026-10-03; outputs under `public/assets/teacher-bakeoff/stylised-premium/**`)
+
+Built on the procedural-v3 scripts (forked into `scripts/character/bakeoff/stylised-premium/`), so every v3 row above
+applies unchanged. New inputs: **none from third parties.**
+
+| input | used for | source | licence |
+|---|---|---|---|
+| more MakeHuman modelling targets (`head-round`, `chin-*`, `nose-*`, `mouth-*`, `cheek-*`, `eyebrows-trans-up`) | the stylised proportions, at the values in `art/character/bakeoff/stylised-premium/looks/teal.json` | MPFB 2.0.17 bundled data (same sha256-pinned zip) | **CC0** |
+| the eye-region proportion field, the rest-wide bake, the stylised expression fields (`keys.expression_stylised`), the sculpted hair mass, the toon-PBR skin / hair / eye shader terms, the base blush | | written by us, procedural; no image, no third-party asset or service | ours |
+
+Evidence-only, as above: Azure `taxila-brain` for the emotion check and variant scoring (`variants.mjs`), and the
+existing Azure TTS clip and its alignment, re-used unchanged.

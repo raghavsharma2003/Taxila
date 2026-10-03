@@ -1,0 +1,98 @@
+{
+ "nodes": [
+  {
+   "id": "teacher-bakeoff-verdict",
+   "kind": "decision",
+   "title": "Teacher face = ai-portrait-wrap identity (gpt-image-2 references -> MediaPipe closed-loop landmark wrap + de-lit projected skin) on the procedural-v3 expression stage, hair and garments; stylised-premium rejected; not built yet",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "teacher-bakeoff-2026-10-03",
+   "kind": "measurement",
+   "title": "Bake-off, teal only, same renderer + light: vision-judge emotion check baseline 43% (same-day; 37% originally), procedural-v3 85%, ai-portrait-wrap 57% (on iteration-2 presets), stylised-premium 86% pooled n=12; encouraging 0 in every arm; all three meet H/B+ budgets with equal tris/draws",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "teacher-encouraging-is-motion",
+   "kind": "decision",
+   "title": "Encouraging is judged on a 1-2 s clip with the nod, not a still: 0/108 judgements over ~29 still designs on two faces; reverse if a still variant reaches 70% on the same judge",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "teacher-stylised-on-makehuman-rejected",
+   "kind": "rejection",
+   "title": "Stylising a fielded MakeHuman head (bigger eyes, rounder face, toon-PBR skin) reads as a doll, not a cartoon: realistic nose/lips beside doll eyes, the toon ramp invisible under the contract light; its high scores partly come from a head-turn listening pose and judge-tuned variants",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "teacher-presets-per-face",
+   "kind": "rejection",
+   "title": "Emotion presets carried unchanged onto a reshaped face drop (stylised: 85% -> 67%); presets must be re-scored per face, and poses tuned against a judge need a held-out judge",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "teacher-pipeline-restsmile-bug",
+   "kind": "open",
+   "title": "Main pipeline: build_look.py writes faceStyle.restSmile into the Basis but not the mesh, so it is undone (0.000 mm diff between 0.03 and 0); expression_correctives picks the mouth corner by extreme x and breaks G3 (6.6-7.0 mm) on an asymmetric basis",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "teacher-generated-likeness-review",
+   "kind": "open",
+   "title": "A generated reference identity can resemble a real person by chance: a reverse-image / lookalike review per look is owed before any child sees an ai-portrait-wrap face",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "teacher-bakeoff-verdict",
+   "rel": "part_of",
+   "dst": "teacher-character-pipeline"
+  },
+  {
+   "src": "teacher-bakeoff-verdict",
+   "rel": "measured_by",
+   "dst": "teacher-bakeoff-2026-10-03"
+  },
+  {
+   "src": "teacher-bakeoff-verdict",
+   "rel": "constrains",
+   "dst": "teacher-runtime-contract"
+  },
+  {
+   "src": "teacher-bakeoff-verdict",
+   "rel": "inherits",
+   "dst": "character-built-in-house"
+  },
+  {
+   "src": "teacher-bakeoff-verdict",
+   "rel": "blocks",
+   "dst": "teacher-generated-likeness-review"
+  },
+  {
+   "src": "teacher-encouraging-is-motion",
+   "rel": "measured_by",
+   "dst": "teacher-bakeoff-2026-10-03"
+  },
+  {
+   "src": "teacher-stylised-on-makehuman-rejected",
+   "rel": "measured_by",
+   "dst": "teacher-bakeoff-2026-10-03"
+  },
+  {
+   "src": "teacher-presets-per-face",
+   "rel": "measured_by",
+   "dst": "teacher-bakeoff-2026-10-03"
+  },
+  {
+   "src": "teacher-pipeline-restsmile-bug",
+   "rel": "part_of",
+   "dst": "teacher-character-pipeline"
+  }
+ ],
+ "md": {
+  "decisions": "## teacher-bakeoff-verdict\n**The teacher face is the ai-portrait-wrap identity on the procedural-v3 expression stage, hair and garments. The identity is gpt-image-2 references from `taxila-image`, a MediaPipe closed-loop landmark wrap (symmetrised on the topological mirror) and de-lit projected skin. stylised-premium is rejected. The merged build is not made yet.** (2026-10-03)\n- Rationale:\n  - Of the four rows in `docs/design/teacher/bakeoff/COMPARE.png`, only ai-portrait-wrap reads as a specific human. The others are one MakeHuman face with three different finishes, and both their own docs call the face the ceiling.\n  - ai-portrait-wrap's 57% used the iteration-2 presets and face units. v3's expression stage moved the same judge from 37% to 85% on the old face, and it is a build stage that can move onto the wrapped basis.\n  - v3 supplies the hair, the garments and the subdivided H mouth and lids. ai-portrait-wrap's own hair and garments are still the weakest parts of its sheet.\n- Reverse if either holds:\n  - the merged teal cannot keep a front NME of at most 1.2% and at least 70% on 8 of 9 stills at n = 12 under a held-out judge, both at once;\n  - the owner's eye test or E-T4 prefers the v3 or stylised face for warmth.\n  Revisit stylisation only with a designed stylised base, never a fielded MakeHuman, and only on child-panel evidence. Plan: `docs/design/teacher/bakeoff/VERDICT.md`.\n\n## teacher-encouraging-is-motion\n**Encouraging is judged on a 1-2 s clip with the nod, not a still.** (2026-10-03)\n- Rationale: 0 of 108 judgements over about 29 still designs on two faces (v3 17 variants, stylised 12). It reads as warm, sometimes playful.\n- Reverse if a still variant reaches 70% on the same judge.\n",
+  "measurements": "## teacher-bakeoff-2026-10-03\n**Teal only, same renderer and stage light. Blind 9-way vision-judge emotion check (Azure `taxila-brain`); n = 6 per emotion unless noted.**\n- Overall scores:\n  - baseline: 43% (same-day re-run; 37% in the original 3-look run);\n  - procedural-v3: 85%;\n  - ai-portrait-wrap: 57%;\n  - stylised-premium: 85% and 87% in two runs (pooled 86%, n = 12).\n- Encouraging is 0 in every arm.\n- Budgets:\n  - H: 5.84 / 5.77 / 5.91 MB;\n  - B+: 1.74 / 2.17 / 1.81 MB;\n  - tris and draws equal within 3% across arms.\n- Gates: aligned-viseme closures are 9/9 in every arm. ai-portrait-wrap fails G6 (teeth outside lips 4 \u2192 12) and has 27 garment poke-throughs; v3 and stylised have 0.\n- Frame times: SwiftShader p50 on a host loaded to a different level in each arm, so they are not comparable and not phone numbers.\n- Sources: `docs/design/teacher/bakeoff/*/renders/emotion-check*.json` and `measure*.json`.\n",
+  "rejected": "## teacher-stylised-on-makehuman-rejected\n- **Tried:** stylised-premium. On the fielded MakeHuman head: the eye region enlarged 20%, the iris enlarged 10%, a rounder face, and toon-PBR two-tone skin with blush, all under the contract light rig.\n- **Broke:**\n  - The face reads as a doll, with realistic nose and lips beside doll eyes. The two-tone ramp is invisible under the near-frontal key.\n  - Delighted is a dark open grimace with gappy lower teeth.\n  - The playful wink shows a lid artifact.\n  - The listening score comes from a head-turn pose, not the face.\n  - Its poses were chosen against the judge that grades them.\n\n## teacher-presets-per-face\n- **Tried:** v3's emotion presets carried unchanged onto the re-proportioned stylised face.\n- **Broke:** the score fell from 85% to 67% (concerned 0/6, listening 3/6, playful 3/6).\n- **Rule:**\n  - re-score the presets on every new face;\n  - confirm judge-tuned poses with a held-out judge or a human panel.\n"
+ }
+}

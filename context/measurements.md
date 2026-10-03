@@ -1068,3 +1068,51 @@ Command: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b2.mjs
 
 ## b2-gen-assets-run-2-2026-10-03
 Command: `node scripts/gen-assets.mjs`. Output public/assets/art/** + public/assets/gen/manifest.json (both must be committed: the Docker build has no encoder).
+
+
+<!-- merged from inbox/b3-parent.json -->
+## b3-parent-battery-2026-10-03
+PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b3-parent.mjs
+
+
+<!-- merged from inbox/b4-polish-site.json -->
+## b4-lint-zero-2026-10-03
+node scripts/lint-ui.mjs → 'lint-ui: 0 finding(s) in src/'. verify-release gate id: lint-ui.
+
+## b4-site-battery-2026-10-03
+PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b4-polish-site.mjs; results and measures in docs/design/build/b4-polish-site/checks.json; shots alongside.
+
+## b4-fixer-battery-2026-10-03
+PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b4-polish-site.mjs; docs/design/build/b4-polish-site/checks.json (results, known, measures.lcpShipped, measures.lcpGzipProjection).
+
+
+<!-- merged from inbox/lesson-safety-naming.json -->
+## lsn-floor-wiring-2026-10-03
+Command: `set -a; . ./.env.local; NODE_USE_ENV_PROXY=1 node evals/floor-wiring.mjs --json evals/results/floor-wiring-2026-10-03.json` (refuses the production endpoint). Numbers in the title. Gates: n ≥ 50 teacher and child turns; incident-family flags ≤ 0 (pinned; review each flag before raising it); every ordinary name passes.
+
+## lsn-battery-2026-10-03
+Command: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-lesson-safety-naming.mjs`. Results: docs/design/build/lesson-safety-naming/results.json.
+
+## lsn-db-suite-2026-10-03
+Command: `set -a; . ./.env.local; NODE_USE_ENV_PROXY=1 node tests/lesson-safety-naming-db.run.mjs` (also run by npm test through tests/lesson-safety-naming-db.test.mjs; skips without CONDUCTOR_TEST_DATABASE_URL, refuses production).
+
+## lsn-fixer-2026-10-03
+Commands: `node --test tests/teacher-name.test.mjs tests/lesson-safety.test.mjs`; `set -a; . ./.env.local; NODE_USE_ENV_PROXY=1 node tests/lesson-safety-naming-db.run.mjs`; `node evals/floor-wiring.mjs --json evals/results/floor-wiring-2026-10-03.json`; `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-lesson-safety-naming.mjs` (results.json; N-REAL needs CONDUCTOR_TEST_DATABASE_URL and skips, reported, without it). Latency of checkTeacherName: process.hrtime over 5 passes of ALLOWED+ALLOWED_WIDE+ADVERSARIAL.
+
+
+<!-- merged from inbox/teacher-bakeoff.json -->
+## teacher-bakeoff-2026-10-03
+**Teal only, same renderer and stage light. Blind 9-way vision-judge emotion check (Azure `taxila-brain`); n = 6 per emotion unless noted.**
+- Overall scores:
+  - baseline: 43% (same-day re-run; 37% in the original 3-look run);
+  - procedural-v3: 85%;
+  - ai-portrait-wrap: 57%;
+  - stylised-premium: 85% and 87% in two runs (pooled 86%, n = 12).
+- Encouraging is 0 in every arm.
+- Budgets:
+  - H: 5.84 / 5.77 / 5.91 MB;
+  - B+: 1.74 / 2.17 / 1.81 MB;
+  - tris and draws equal within 3% across arms.
+- Gates: aligned-viseme closures are 9/9 in every arm. ai-portrait-wrap fails G6 (teeth outside lips 4 → 12) and has 27 garment poke-throughs; v3 and stylised have 0.
+- Frame times: SwiftShader p50 on a host loaded to a different level in each arm, so they are not comparable and not phone numbers.
+- Sources: `docs/design/teacher/bakeoff/*/renders/emotion-check*.json` and `measure*.json`.

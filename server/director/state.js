@@ -19,7 +19,7 @@
 // lines are the director's own next moves, never a second guess at them.
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
-import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT } from "./items.js";
+import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer } from "./items.js";
 import { registerNote } from "./register.js";
 import { askText } from "./say.js";
 import { getTopic } from "../content/curriculum.js";
@@ -197,7 +197,7 @@ function warmup(s, input, item) {
     s.tries += 1;
     if (s.tries >= LIMITS.warmupTries) return leave();
     s.hintLevel = Math.min(2, s.hintLevel + 1);
-    return plan("hint", SH.hint({ level: s.hintLevel, rungShape: item.hints[s.hintLevel - 1], askedForAnswer: input.cls?.flags?.asksForAnswer }), { item });
+    return plan("hint", SH.hint({ level: s.hintLevel, rungShape: item.hints[s.hintLevel - 1], askedForAnswer: input.cls?.flags?.asksForAnswer }), { item, hintRung: s.hintLevel });
   }
   return unclear(s, input, item, v, leave);
 }
@@ -357,7 +357,7 @@ function afterMiss(s, input, item) {
   // (pump instead of hint) — the hint count, the key gate and the C-outcome are unchanged. Never at the assertion.
   const gentle = !!input.voice?.gentlerHint && s.hintLevel >= 2 && s.hintLevel < 4;
   const shown = gentle ? s.hintLevel - 1 : s.hintLevel;
-  return plan("hint", SH.hint({ level: shown, rungShape: item.hints[shown - 1], askedForAnswer: cls?.flags?.asksForAnswer }), { item });
+  return plan("hint", SH.hint({ level: shown, rungShape: item.hints[shown - 1], askedForAnswer: cls?.flags?.asksForAnswer }), { item, hintRung: shown });
 }
 
 const GENERIC_REP = { manipulative: "objects they can hold or imagine moving", diagram: "a simple drawing on the whiteboard",
@@ -661,9 +661,24 @@ function uiFor(s, p, move, item, kit) {
     : asking && s.module?.awaitingReveal && s.module.itemId === item.id ? "tap_in_tray"
       : asking && NUMERIC_KEY.test(String(item.answer).trim()) ? "number" : "words";
   ui.tray = s.module ? "module" : ui.chips ? "tiles" : "none";
+  const hint = hintFor(move, item, p.hintRung);
+  if (hint) ui.hint = hint;
   const short = shortTitleOf(s.ctx.topicTitle);
   if (short && !isObjective(short, kit, topic)) ui.shortTitle = short;
   return ui;
+}
+
+/**
+ * The Question card's hint line (V2 §4.3, §4.6 "Hint"): sent on a hint move at rungs 1-3, with the kit's rung text for
+ * the line under the ask. Rung 4 is the assertion (the key itself), which is never a hint line; a rung whose text
+ * would state the key before rung 4 is not sent (the card must never give away what her words withhold). Exported for tests.
+ * @returns {{ level: 1 | 2 | 3, text: string } | null}
+ */
+export function hintFor(move, item, rung) {
+  if (move?.kind !== "hint" || !item || !Number.isInteger(rung) || rung < 1 || rung > 3) return null;
+  const text = String(item.hints?.[rung - 1] ?? "").replace(/\s+/g, " ").trim();
+  if (!text || revealsAnswer(text, item)) return null;
+  return { level: /** @type {1 | 2 | 3} */ (rung), text: text.length > 120 ? `${text.slice(0, 119).replace(/\s+\S*$/, "")}…` : text };
 }
 
 /**

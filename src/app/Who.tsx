@@ -63,7 +63,7 @@ export default function Who() {
         <Link to="/parent" className="iconbtn parent-door" aria-label="Parent corner, for grown-ups"><Icon name="door" /></Link>
       </header>
       <div className="who-body">
-        <h1 className="who-title">{young ? "Kaun padhega?" : "Who is learning?"}</h1>
+        <h1 className="who-title">Who is learning?</h1>
         <ul className="who-grid" aria-label="Children">
           {kids.map((c) => (
             <li key={c.id}>
@@ -78,13 +78,13 @@ export default function Who() {
         <div className="who-confirm" aria-live="polite">
           {chosen && (
             <>
-              <p className="who-ask">{young ? <>Kya tum <strong>{chosen.first_name}</strong> ho?</> : <>Continue as <strong>{chosen.first_name}</strong>?</>}</p>
+              <p className="who-ask">Continue as <strong>{chosen.first_name}</strong>?</p>
               <div className="who-pair">
                 <button type="button" className="pair-btn pair-no" onClick={() => setPicked(null)} aria-label={`No, I am not ${chosen.first_name}`}>
-                  <Icon name="cross" size={36} /><span>{young ? "Nahi" : "No"}</span>
+                  <Icon name="cross" size={36} /><span>No</span>
                 </button>
                 <button type="button" className="pair-btn pair-yes" onClick={() => go(chosen)} aria-label={`Yes, I am ${chosen.first_name}`}>
-                  <Icon name="tick" size={36} /><span>{young ? "Haan" : "Yes"}</span>
+                  <Icon name="tick" size={36} /><span>Yes</span>
                 </button>
               </div>
             </>

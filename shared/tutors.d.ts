@@ -59,3 +59,9 @@ export function eligibleTutors(
   opts?: { catalogue?: TutorCharacter[]; hasSheet?: (id: string) => boolean; allow?: string[] | null; offer?: "sheet" | "wide"; includeDraft?: boolean },
 ): Eligibility;
 export function defaultTutorFor(child: { class_level: number | string }): string;
+
+export const TEACHER_NAME: { readonly min: number; readonly max: number; readonly re: RegExp };
+export const NAME_SUGGESTIONS: readonly string[];
+export function normalizeTeacherName(raw: string | null | undefined): string;
+export function teacherNameShape(name: string | null | undefined): "empty" | "length" | "charset" | null;
+export function teacherNameSuggestions(characterId: string | null | undefined, opts?: { childFirstName?: string; exclude?: string | null }): string[];

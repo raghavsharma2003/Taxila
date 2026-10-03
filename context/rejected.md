@@ -632,3 +632,54 @@ Traps hit in iteration 2 (2026-10-03):
 <!-- merged from inbox/b2-home-progress-assets.json -->
 ## b2-rejected-custom-property-cycle
 Reproduced in Chromium: computed --t-body was the guaranteed-invalid value, font-size resolved to the inherited 16 px. Also found: the old V-TGT used 44 px against its own 48 px header, which hid 44 px segmented controls (Me, Sky subject switcher); the old V-PLAN waited 900 ms, so it never saw the pre-answer Start card; the old 200 % check did not exist and an overflow-hidden page clips instead of scrolling, so a scroll check alone cannot see it (now an off-screen box check against the emulated width, because a mobile page that overflows zooms out and innerWidth grows with it).
+
+
+<!-- merged from inbox/b3-parent.json -->
+## b3-parent-pinpad-ok-invisible
+src/ui/ui.css rule order: .btn-primary before .pin-key.
+
+## (fixer) alert from raw incident / erasure that cascades incident
+The first B3 build read the alert card straight from `incident` and let account deletion cascade incident + safety outbox rows, and its tests locked both in (the battery only checked the card rendered; the DB test asserted every child_id table empty). Both bypassed safety-parent-notice-settle. A mocked battery cannot see this class: payload rules need DB-backed tests through the router.
+
+
+<!-- merged from inbox/b4-polish-site.json -->
+## b4-rejected-perf-with-route-interception
+See the node.
+
+## b4-rejected-hidden-with-display
+See the node.
+
+## b4-rejected-rig-plates-on-landing
+See the node.
+
+## b4-rejected-whole-line-lint-exemption
+See the node.
+
+## b4-rejected-gzip-proxy-gate
+See the node.
+
+
+<!-- merged from inbox/lesson-safety-naming.json -->
+## lsn-rejected-collapsed-substring
+Found by tests/teacher-name.test.mjs's corpus on its first run (166 names): `Bob` refused as profanity ('boob'), a `Gandhi` row refused as profanity instead of public_figure ('gaand' collapsed), and `Shital` refused by the plain 'shit' substring. See the entry's title for what replaced it.
+
+## lsn-rejected-word-only-denylist
+The reviewer ran the real checkTeacherName (child Riya) over names they wrote themselves; all 74 now in `evals/teacher-names.data.mjs` ADVERSARIAL passed rev 1. `safety.js floorViolations('Hi Riya! I am Not An Ai, your AI teacher.')` returns ['ai_denial'], so the rev 1 predicate admitted names under which the floor itself fires on every greeting. Replaced by lsn-name-predicate-rev2.
+
+
+<!-- merged from inbox/teacher-bakeoff.json -->
+## teacher-stylised-on-makehuman-rejected
+- **Tried:** stylised-premium. On the fielded MakeHuman head: the eye region enlarged 20%, the iris enlarged 10%, a rounder face, and toon-PBR two-tone skin with blush, all under the contract light rig.
+- **Broke:**
+  - The face reads as a doll, with realistic nose and lips beside doll eyes. The two-tone ramp is invisible under the near-frontal key.
+  - Delighted is a dark open grimace with gappy lower teeth.
+  - The playful wink shows a lid artifact.
+  - The listening score comes from a head-turn pose, not the face.
+  - Its poses were chosen against the judge that grades them.
+
+## teacher-presets-per-face
+- **Tried:** v3's emotion presets carried unchanged onto the re-proportioned stylised face.
+- **Broke:** the score fell from 85% to 67% (concerned 0/6, listening 3/6, playful 3/6).
+- **Rule:**
+  - re-score the presets on every new face;
+  - confirm judge-tuned poses with a held-out judge or a human panel.

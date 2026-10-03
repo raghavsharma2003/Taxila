@@ -8,7 +8,7 @@ import { defaultTutorFor } from "../../shared/tutors.js";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { Spot } from "../child/art.tsx";
 import { ApiError, errText, postJson } from "../app/api.ts";
-import { PROMISES } from "../app/Public.tsx";
+import { PROMISES } from "../app/promises.ts";
 import { StepFrame } from "./Layout.tsx";
 import { useDraft } from "./draft.ts";
 

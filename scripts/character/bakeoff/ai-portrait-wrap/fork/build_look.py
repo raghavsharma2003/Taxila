@@ -155,11 +155,15 @@ report["symmetrize"] = {"mouthUpperUpBeforeMm": round(_pre * 1000, 2)}
 rb_ = float(look.get("faceStyle", {}).get("restBlink", 0.0))
 if rb_ > 0:
     for S_ in ("Left", "Right"):
-        dB_ = _D["eyeBlink" + S_].copy()
+        dB_ = _D["eyeBlink" + S_] * _body[:, None]       # skin only: the unit also moves the eye HELPER, and moving it moved the eyeball (G4 14% escape at 0.35, measured)
         for kb in _kbs:
             set_key_co(kb, key_co(kb) + rb_ * dB_)
         set_key_co(_kbs["eyeBlink" + S_], key_co(_kbs["eyeBlink" + S_]) - rb_ * dB_)
-        _D["eyeBlink" + S_] = (1 - rb_) * dB_
+        _D["eyeBlink" + S_] = _D["eyeBlink" + S_] - rb_ * dB_
+    # the mesh vertices must follow the Basis key: later stages read co(mesh), and a Basis-only edit left the rest lid
+    # where it was while eyeBlink got shorter (G4 blink 14% escape, basis diff 0.0 mm, measured)
+    h.data.vertices.foreach_set("co", key_co(_kbs[0]).ravel())
+    h.data.update()
     report["restBlinkBaked"] = rb_
 rs = float(look.get("faceStyle", {}).get("restSmile", 0.0))
 if rs > 0:
@@ -167,6 +171,8 @@ if rs > 0:
     for kb in _kbs:
         set_key_co(kb, key_co(kb) + fix)
     report["restSmileBaked"] = rs
+    h.data.vertices.foreach_set("co", key_co(_kbs[0]).ravel())
+    h.data.update()
 B = key_co(_kbs[0])
 
 # ------------------------------------------------------------------ 4. proxies

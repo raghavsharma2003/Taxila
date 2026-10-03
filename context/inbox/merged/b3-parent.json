@@ -1,0 +1,205 @@
+{
+ "nodes": [
+  {
+   "id": "b3-parent-claim-gate",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "G-PARENT-1 is one written rule applied twice: server/routes/parent.js homeHeadline picks the parent home's headline from the legacy evidence + skill_state rows, and src/parent/claims.ts gateHeadline re-checks every claim it is sent and drops any the rows do not support. 'can now' needs the ledger at Got it/Secure AND ≥ 1 row right-on-their-own AND the newest counted row right-on-their-own (fixer: never over a sheet whose latest row is 'Not yet'); 'Still practising' needs the ledger at Practising AND ≥ 2 attempts in 14 days not right-on-their-own; < 3 counted rows in total → 'Too early to say'; exactly one counted lesson → '{child} had a first lesson: {topic}' and never a practising claim; a misconception may only steer WHICH practising skill is named, never whether. The chip shown is the same skill_state fold the How-do-we-know sheet shows. During a safety hold the headline holds too ('No new note right now.'). Reverse if: parent trust testing (V2-M-parent read test) shows parents read 'Too early to say' as the product not working, or the kt_* ledger replaces legacy evidence (then the rows move with it)."
+  },
+  {
+   "id": "b3-parent-counted-lesson",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "A lesson counts on parent surfaces (Lessons this week, 'first lesson', Recent lessons) only when it ran ≥ 5 minutes or something in it was graded and it was not an abandoned start (COUNTED_SQL, the same rule as child.js countsAsDone). Shorter visits are listed in Lessons as 'Short visit, not counted as a lesson'. Interim for audit #20's doubt-counted-as-lesson: lesson rows do not record purpose (lesson|practice|doubt). Reverse when lesson.js stores the start purpose: then a doubt shows as 'Question: {topic}' by purpose, not by length."
+  },
+  {
+   "id": "b3-parent-try-at-home-from-letter",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Parent home 'Try at home' is the weekly letter's home activity (server/reports Lane A preview of this ISO week: a reviewed template, gate-passed, with its own How-do-we-know tap-through to the kt_evidence rows), not lesson.parent_note (model text the audit read as system voice). Picture chips show only objects the sentence names (maths → home/roti). Done / Not this week log {period} to audit. Reverse if the weekly home activity is too rarely admitted (then a reviewed per-topic home task authored in the kits)."
+  },
+  {
+   "id": "b3-parent-text-english-voice-family",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Notes (daily note, weekly letter) render the English text only; Listen plays the stored spoken script in the family's report language (§3.12). The language switcher and the Devanagari chrome tables in Report.tsx are gone (G-EN-1). Reverse if parents who read Hindi ask for Hindi text in pilot (then the text joins [data-speech] content, never chrome)."
+  },
+  {
+   "id": "b3-account-deletion",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "DELETE /api/account {password, confirm:true} (handler server/routes/account.js deleteAccount, registered in parent.js's route table): unlocked corner once a PIN exists + counted password re-auth + explicit confirm; one transaction: lock the children FOR UPDATE, the safety guard (see b3-erasure-waits-for-safeguarding), detach + stamp every incident row, delete the guardian (cascading every child and child-keyed table, consent, PIN, sessions, notifications) and the guardian's audit trail, then ONE audit row {action:'account_erase', guardian_id, detail:{receipt}}; cookie cleared; receipt (code, time, children count, backups gone by +7 d) shown outside the corner, and it says what is kept (a record of the deletion and safety records, no names, no lesson content). learner_mode_audit and detached incident rows are kept. N4 is NOT sent: explicit deviation, see b3-open-n4-deletion-notice. Reverse if: the Notifier exists (send N4 inside the transaction), or the safeguarding owner rules that incident rows must be erased with the child."
+  },
+  {
+   "id": "b3-parent-errors-are-sentences",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Parent-corner errors go through src/parent/copy.ts parentError: known server codes (password_wrong, too_many_tries, pin_wrong, pin_shape, pin_weak, password_needed, confirm_needed; added to parent.js/account.js errors, additive) map to sentences; everything else is 'Something went wrong. Try again.'. Password errors sit on the password field (PasswordAgain = ReauthField's anti-autofill + a field error with aria-describedby). Sign-in (login mode) errors in src/onboarding/Account.tsx are field-level too; signup-mode errors are the onboarding workstream's."
+  },
+  {
+   "id": "b3-signin-next",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Sign-in ?next= (src/onboarding/next.ts safeNext + Account.tsx): a ?next= makes sign-in the default form (the gate, a lesson's T8 and first-run 401s send returning parents there; LessonScreen and the steps sent ?next= without login=1, which showed 'Create your parent account'); an already-signed-in visitor with ?next= goes straight there; next must be a same-origin path, not //host, not /\\host, no control chars, never /start/phone itself."
+  },
+  {
+   "id": "b3-parent-pinpad-ok-invisible",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Seen in the B3 gate shot: the PinPad OK key (.pin-key.btn-primary, src/ui/PinPad.tsx) painted white text on the white .pin-key ground, because .pin-key's background rule comes after .btn-primary in ui.css. The contrast check skipped it because the key is disabled until 4 digits. Fixed for parent pads in src/parent/parent.css; src/ui owner should fix ui.css for onboarding's step 7 pad."
+  },
+  {
+   "id": "b3-parent-battery-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "tests/e2e-design-b3-parent.mjs: 384/384 checks (n = 1 run, headless Chromium, production build via server/serve.mjs, /api/* mocked), 86 shots (19 routes/states × 360x640 DPR 2 touch + 1280x800 × light + dark, plus flow states) in docs/design/build/b3-parent/. V-SIG-2 (0 [data-lamp], no lamp colour), V-EN-1, V-NAME-1, V-LAYOUT-2 (+ no nav to unbuilt pages), V-TGT, V-FOCUS, V-CON light+dark, V-CLAIM (audit case not rendered; headline state = sheet state), V-ERR, V-PIN (gate, Change PIN, conversation re-check; a 120 px fixed footer control trips), V-FOOT (inline Save not covered, no floating bar), V-GATE (wrong/cool-off/reset pending/re-lock), V-DEL (early release cancels; password+confirm; receipt), V-NEXT (+ //evil control), V-TIME. Not a parent measurement."
+  },
+  {
+   "id": "b3-parent-claims-sim-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "tests/ui-v2-claims.test.mjs (npm test): 3,000 simulated ledgers (mulberry32 seed 20261003, 1-8 skills, 0-6 rows each over 30 days, 0-5 lessons): 0 server claims dropped by the client gate, 0 practising claims on < 2 non-unaided attempts in 14 days, claim state = ledger state in every case; branch coverage asserted (can_now > 200, practising > 100, too_early > 20, first > 200). Negative control: the audit case picked the pre-B3 way is dropped by the client gate."
+  },
+  {
+   "id": "b3-account-delete-db-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "tests/account-delete-db.test.mjs on the Neon TEST branch (n = 1 run): 5/5. Overview/lessons/lesson card/progress/export on real Postgres (COUNTED_SQL: a 1-minute visit listed, not counted); deletion refused when locked (403), without confirm, with a wrong password (nothing deleted); then 200 + receipt, 0 rows for the guardian/children in guardian, child, lesson, evidence, skill_state, consent, guardian_pin, auth_session and every information_schema table with child_id except learner_mode_audit; 1 audit row with detail keys ['receipt']; the old cookie → 401."
+  },
+  {
+   "id": "b3-open-prod-audit-guardian",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "The audit's production guardian audit+1791002756256@taxila.test (id 8facc8d3-7a7b-499e-8afe-3bb42de07710; 0 children, 0 sessions, 3 consent rows, a PIN, 17 audit rows; read-only check 2026-10-03) was NOT deleted: deleting it through DELETE /api/account needs that account's password and PIN, which this workstream does not have; forging a session or skipping the re-auth on production is not 'the path'. Main loop: after deploy, delete it with the audit run's credentials through the Data and privacy page, or with owner sign-off by running the endpoint's three statements for that id."
+  },
+  {
+   "id": "b3-open-parent-gaps",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "Not built in b3-parent (hidden, not stubbed, per P6): POST /api/account/reset (no email/SMS sender on the Azure grant), N4 account notices (no Notifier), Delete this lesson (needs a ledger refold of skill_state/kt_* — learner workstream), Controls rows with no server field (Tap and type only, Extra time to answer, Sounds, Data saver, Open mic, Teacher choice, Child sign-in), authored parentLabel per kit skill (headline uses the skill title lower-cased), lesson purpose (doubt) on lesson rows, 'School is here' (Progress marks the chapter of the next lesson instead), Help contact address, teacher-name change in the corner (child-names-teacher workstream)."
+  },
+  {
+   "id": "b3-alert-only-when-released",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "The parent home's safety alert card ('Please check in with {child}') shows ONLY for a safety notice the protocol RELEASED: a notification row cls='safety', status sent|delivered, for this child, in the last 7 days (server/routes/parent.js ALERT_RELEASED_SQL). Never from a raw incident row and never from a Conductor safety_hold (then the home says only 'No new note right now.'). Supersedes the builder's alertOf, which read incident directly and so bypassed safety-parent-notice-settle: at M0 every S notice goes to a human, and familyImplicated yes/unknown or abuse/neglect/violence_at_home is never auto-sent, so the card could tell the adult the child disclosed about. At M0 nothing is released, so the card never shows. Help and safety no longer promises 'a message at once': it says the safeguarding team is told and a person looks, and lessons may pause. Reverse if: the safeguarding owner specifies a different family-facing surface for held incidents."
+  },
+  {
+   "id": "b3-erasure-waits-for-safeguarding",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Account and child erasure (server/routes/account.js safetyFirst + SAFETY_OPEN_SQL) are DEFERRED (409 code erase_review; one content-free audit row erase_deferred {what}; the page: 'This deletion needs a check by our team first. Nothing has been deleted.') while any child in scope is in safety_hold, has an unhandled safeguarding incident (incident.handled = false), or has a safety notification pending/sending/blocked. Otherwise every incident row of those children is DETACHED inside the erasure's transaction (child_id → null, detail.erased = receipt code) so the safeguarding record survives the cascade de-identified; the children are locked FOR UPDATE first, so no new incident can land between check and delete. No migration (incident.child_id is already nullable). Supersedes the builder's DB test assertion that every child_id table is empty afterwards including incident. Reverse if: the safeguarding owner rules a different retention or a time-boxed deferral (e.g. erase after N days even if unhandled), or a human queue UI lets staff release a deferred erasure."
+  },
+  {
+   "id": "b3-try-at-home-one-state",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "One state per skill per page: when the home headline names the weekly letter's home-activity skill with a state other than practising (i.e. '{child} can now X' above 'has been practising X'), server/routes/parent.js reconcileTryAtHome replaces the skill activity with the letter's reviewed generic home line (reports templates home.generic; no claim, no How-do-we-know, no pictures). The two blocks read different ledgers (legacy evidence vs kt_*), which is why it was possible. Reverse when the headline moves to the kt_* ledger (then both come from one fold and the check becomes a test only)."
+  },
+  {
+   "id": "b3-one-parent-label",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "One parent name per skill: /api/parent/evidence, /api/parent/lesson and /api/parent/syllabus all send `label` (parentLabelOf: kit parentLabel, else the title with its first letter lowered) and every surface shows it (src/parent/copy.ts labelTitle raises the first letter for stand-alone titles). The Lesson card no longer shows lesson.parent_note (model text; audit #20's system voice) and its Listen speaks lessonSpeech (the card's own counts). Progress takes its per-topic skills from /api/parent/syllabus and no longer calls /api/parent/overview. Reverse if: kits author parentLabel (then nothing changes on the client) or a reviewed per-lesson summary lane exists."
+  },
+  {
+   "id": "b3-signup-next-consent-first",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "src/onboarding/Account.tsx: ?next= is honoured only for a returning parent (login, or already signed in). A fresh signup with ?next= goes to /start/consent, never straight into the corner with no consent and no child. Reverse if: a signup entry point needs to resume somewhere other than consent (then it must pass through consent first)."
+  },
+  {
+   "id": "b3-fixer-db-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "tests/account-delete-db.run.mjs on the Neon TEST branch, real router + Postgres (n = 1 run): 8/8. New: can_now chip == /api/parent/evidence state and label; a newer miss removes can_now; Progress skill state == sheet; no skill with two states on the home; alert null for a raw incident, a safety_hold and a blocked notice, shown for a sent one; erasure (account and child) 409 erase_review while hold/notice/unhandled incident are open, each alone; after handling, the incident row survives detached (child_id null, detail.erased = receipt). Negative control (n = 1): with alertOf reading incident, can_now without the newest-row guard and erasure without safetyFirst, 4/8 fail (claim, alert, and the two erasure tests; the erasure ones fail via the shared fixture)."
+  },
+  {
+   "id": "b3-fixer-claims-sim-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "tests/ui-v2-claims.test.mjs: 7/7; the 3,000-ledger simulation (seed 20261003) with the newest-row can_now guard: 1,028 claims (780 can_now, 248 practising), 202 too_early, 502 first; 0 client drops; every can_now's newest counted row is right-on-their-own. Plus reconcileTryAtHome, lessonSpeech, labelTitle and the erase_review sentence. Note: this sim tests the pure rule only; the real code path is b3-fixer-db-2026-10-03."
+  },
+  {
+   "id": "b3-fixer-battery-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "tests/e2e-design-b3-parent.mjs: 418/418 (n = 1, headless Chromium, production build, /api/* MOCKED: layout and payload handling only), 91 shots in docs/design/build/b3-parent/ (360x640 DPR 2 + 1280x800, light + dark; new: home-held, data-delete-deferred). New checks, each with its negative control where one exists: V-ONE (contradicting payload caught; generic activity; headline label == sheet == Progress == Lesson card), V-SAFE (held → no card; released → card; Help promises no message; deferred deletion sentence), V-HONEST (receipt copy, no Lesson summary, Progress makes no overview call), V-NEXT fresh signup → /start/consent, V-LAYOUT rail column painted full height (light, dark). Shot helper now parks the bottom bar static (it was painted mid-page in full-page 360 shots)."
+  },
+  {
+   "id": "b3-open-n4-deletion-notice",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "N4 'deletion started' (V2 §6.5.5, B3-A5 'N4 queued') is not sent and not queued: no Notifier (M1), and an outbox row keyed to guardian_id (NOT NULL, on delete cascade) would vanish with the guardian. Path: the Notifier migration lets an account-class notification outlive its guardian (guardian_id set null + an address snapshot cleared on send); deleteAccount then inserts it inside its transaction, before the delete. Owner: Notifier/Conductor workstream."
+  },
+  {
+   "id": "b3-open-lesson-purpose",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "Lesson purpose is still not stored: lesson.js accepts body.purpose (lesson|practice|doubt) at start but inserts kind='live', so Lessons detects a question visit by length (COUNTED_SQL) and cannot show 'Question: {topic}' (§6.5.3). Needs server/routes/lesson.js (not b3-parent's path) to store state.purpose; parent.js then reads it."
+  },
+  {
+   "id": "b3-open-deferred-erasure-queue",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "A deferred erasure is recorded only as an audit row erase_deferred {what}; there is no human queue UI to see it or release it, and incident.handled is never set by any code yet, so at M0 a family with any safeguarding incident can never erase until a human sets handled. Needs the safeguarding queue (D-SAFE owner)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "b3-parent-claim-gate",
+   "rel": "informs",
+   "dst": "psych-parent-claim-gate"
+  },
+  {
+   "src": "b3-account-deletion",
+   "rel": "informs",
+   "dst": "dek-in-pitr-database"
+  },
+  {
+   "src": "b3-alert-only-when-released",
+   "rel": "informs",
+   "dst": "safety-parent-notice-settle"
+  },
+  {
+   "src": "b3-erasure-waits-for-safeguarding",
+   "rel": "informs",
+   "dst": "safety-parent-notice-settle"
+  },
+  {
+   "src": "b3-erasure-waits-for-safeguarding",
+   "rel": "informs",
+   "dst": "b3-account-deletion"
+  },
+  {
+   "src": "b3-try-at-home-one-state",
+   "rel": "informs",
+   "dst": "b3-parent-try-at-home-from-letter"
+  },
+  {
+   "src": "b3-fixer-db-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b3-account-delete-db-2026-10-03"
+  },
+  {
+   "src": "b3-fixer-claims-sim-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b3-parent-claims-sim-2026-10-03"
+  },
+  {
+   "src": "b3-fixer-battery-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b3-parent-battery-2026-10-03"
+  },
+  {
+   "src": "b3-open-n4-deletion-notice",
+   "rel": "informs",
+   "dst": "b3-account-deletion"
+  }
+ ],
+ "md": {
+  "decisions": "## b3-parent-claim-gate\nserver/routes/parent.js (claimHolds, evidenceTally, homeHeadline, HOME_COPY, headlineLines, homeSpeech), src/parent/claims.ts, src/parent/Home.tsx. Tested in tests/ui-v2-claims.test.mjs and tests/account-delete-db.run.mjs.\n\n## b3-account-deletion\nserver/routes/account.js deleteAccount; src/parent/Pages.tsx DeleteAccount (intro → password → 2 s hold → receipt in Gate.tsx Erased).\n\n## b3-alert-only-when-released\nserver/routes/parent.js alertOf + ALERT_RELEASED_SQL; src/parent/Pages.tsx Help copy. Tested in tests/account-delete-db.run.mjs (safety alert) and the battery (V-SAFE).\n\n## b3-erasure-waits-for-safeguarding\nserver/routes/account.js SAFETY_OPEN_SQL, safetyFirst, erase (deleteAccount and deleteChild); src/parent/copy.ts erase_review sentence. Tested in tests/account-delete-db.run.mjs.\n\n## b3-try-at-home-one-state\nserver/routes/parent.js reconcileTryAtHome (homeData). Tested in tests/ui-v2-claims.test.mjs and the battery (V-ONE).\n",
+  "measurements": "## b3-parent-battery-2026-10-03\nPLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/e2e-design-b3-parent.mjs\n",
+  "rejected": "## b3-parent-pinpad-ok-invisible\nsrc/ui/ui.css rule order: .btn-primary before .pin-key.\n\n## (fixer) alert from raw incident / erasure that cascades incident\nThe first B3 build read the alert card straight from `incident` and let account deletion cascade incident + safety outbox rows, and its tests locked both in (the battery only checked the card rendered; the DB test asserted every child_id table empty). Both bypassed safety-parent-notice-settle. A mocked battery cannot see this class: payload rules need DB-backed tests through the router.\n"
+ }
+}

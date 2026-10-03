@@ -148,6 +148,20 @@
   :focus-visible { outline:var(--focus-w) solid Highlight; }
 }
 
+/* ── fixed colours, never themed (B4). The brand mark is the same two colours on a launcher, a light page and a
+      dark page (public/favicon.svg, src/app/landing/brand.mjs). The hero fallback tints are the painted desk's
+      wall, window and desk while bg/landing-hero has not loaded. --on-sig is text on a character's signature colour.
+      The face-* set is the code-drawn 2D plate (src/avatar/Plate2D.tsx): sclera, iris, glint, lash, brow, mouth,
+      teeth, attire and the earring stud. The stud was a gold #D9B45A (43 deg, inside the 12 deg lamp window,
+      G-LAMP-1): now a silver. ── */
+:root, [data-v2] {
+  --brand-ink:#24346E; --brand-cream:#F6F3EC;
+  --hero-wall:#E4DED3; --hero-window:#3B4466; --hero-desk:#8C8780;
+  --on-sig:#FFFFFF;
+  --face-sclera:#F6F1E8; --face-iris:#0D0806; --face-glint:#FFFFFF; --face-lash:#1A120C; --face-brow:#2A2420;
+  --face-mouth:#3A1410; --face-teeth:#FBF7EE; --face-attire:#4C6A8C; --face-stud:#C7CBD1;
+}
+
 /* ── LEGACY ALIASES (B1 bridge, no raw hex). Surfaces not yet migrated to v2 names (onboarding, parent corner,
       landing; owned by B3) keep rendering through these. Delete each alias when its last reader migrates.
       Deliberately NOT aliased: --turn, --turn-ring, --p-yourturn-* (the lamp is the dock's alone, G-LAMP-1)

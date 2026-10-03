@@ -153,12 +153,15 @@ export function FrameApp() {
   );
 }
 
-const TEXT: Record<string, Record<string, string>> = {
-  soon: { english: "This activity is coming soon", hinglish: "Yeh activity jald aa rahi hai", hindi: "यह गतिविधि जल्द आ रही है" },
-  stopped: { english: "This activity stopped working", hinglish: "Yeh activity ruk gayi", hindi: "यह गतिविधि रुक गई" },
-  carryOn: { english: "Your teacher will carry on without it.", hinglish: "Teacher iske bina aage chalenge.", hindi: "टीचर इसके बिना आगे बढ़ेंगे।" },
+// System cards are chrome: English in every lesson language (PRODUCT-DESIGN-V2 §5.3, G-EN-1); no placeholder copy
+// ("coming soon" promised something that may never ship). The engines' prompts are tray content and stay in the
+// lesson language.
+const TEXT: Record<string, string> = {
+  soon: "This activity can't open here",
+  stopped: "This activity stopped working",
+  carryOn: "Your teacher will carry on without it.",
 };
-const say = (key: string, lang: string) => TEXT[key][lang] ?? TEXT[key].english;
+const say = (key: string, _lang?: string) => TEXT[key];
 
 function ComingSoon({ lang }: { lang: string }) {
   return (

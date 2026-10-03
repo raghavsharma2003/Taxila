@@ -10,7 +10,7 @@
 .profile-tile { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); width: 100%; min-width: var(--tile-min);
   min-height: calc(var(--tile-min) + 48px); padding: var(--space-3); border-radius: var(--radius-tile); border: 3px solid var(--tile-border);
   background: var(--surface); box-shadow: var(--elev-press); transition: transform var(--dur-press) var(--ease-standard); }
-.profile-tile:active { transform: scale(0.94) translateY(2px); }
+.profile-tile:active { transform: scale(var(--press-scale)); } /* settle, no ledge (§9.1) */
 .profile-tile[aria-pressed="true"] { border-color: var(--jamun); background: var(--jamun-soft); }
 .avatar { display: inline-flex; align-items: center; justify-content: center; width: calc(var(--tile-min) - 24px); height: calc(var(--tile-min) - 24px);
   min-width: 56px; min-height: 56px; border-radius: 50%; background: var(--jamun); color: var(--surface);
@@ -22,7 +22,7 @@
 .pair-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); min-width: 112px;
   min-height: var(--tile-min); border-radius: var(--radius-tile); border: 3px solid var(--ink); background: var(--surface); color: var(--ink);
   font-weight: 700; font-size: 1.25rem; transition: transform var(--dur-press) var(--ease-standard); }
-.pair-btn:active { transform: scale(0.94); }
+.pair-btn:active { transform: scale(var(--press-scale)); }
 .pair-yes { border-color: var(--done); }
 .pair-yes svg { color: var(--done); }
 .parent-door { color: var(--ink-2); opacity: 0.75; }

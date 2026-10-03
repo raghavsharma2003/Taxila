@@ -17,7 +17,10 @@ test("lint-ui negative controls: each rule trips on its own violation, and the d
   assert.deepEqual(rules("src/child/lesson/x.css", ".dk-card { color: #ffb21e; }"), ["L-HEX"]);
   assert.deepEqual(rules("src/styles/tokens.css", ":root { --nib: #1f3a8a; }"), []);
   assert.deepEqual(rules("src/child/lesson/X.tsx", 'const label = "अभ्यास";'), ["L-DEVA"]);
-  assert.deepEqual(rules("src/child/lesson/X.tsx", '// lint-ui: speech\nconst said = "अभ्यास";'), []);
+  // the speech marker exempts ONE string literal on its own line (b4 fixer: a marker on the line above, or on a line
+  // with several literals, let chrome through)
+  assert.deepEqual(rules("src/child/lesson/X.tsx", 'const said = "अभ्यास"; // lint-ui: speech'), []);
+  assert.deepEqual(rules("src/child/lesson/X.tsx", '// lint-ui: speech\nconst said = "अभ्यास";'), ["L-DEVA"]);
   assert.deepEqual(rules("src/child/lesson/X.tsx", "<p>This activity is coming soon</p>"), ["L-HOLD"]);
   assert.deepEqual(rules("src/child/lesson/X.tsx", 'const t = "TODO";'), ["L-HOLD"]);
 });

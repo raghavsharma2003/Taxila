@@ -91,6 +91,12 @@ def apply(G):
     skinT = G["tris"]                                          # texture.py already restricted tris to skin
     N = len(Pt)
     hs = np.clip((G["scalpT"] - 0.2) / 0.3, 0, 1)
+    # texels above the portrait's forehead-top landmark (10) are hair zone too: the wrap gave this face a taller forehead
+    # than MakeHuman's scalp mask, and those texels fell back to a flat procedural skin wedge at the parting (measured: a
+    # light wedge that stayed with the hair cards hidden)
+    if 10 in idx:
+        z10 = L3[idx.index(10)][2]
+        hs = np.maximum(hs, np.clip((Pt[:, 2] - (z10 - 0.006)) / 0.008, 0, 1))
     mir = np.array([-1.0, 1.0, 1.0])
     acc = np.zeros((N, 3)); wacc = np.zeros(N); hacc = np.zeros(N); views_used = {}
     hfuns = []

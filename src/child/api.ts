@@ -13,6 +13,8 @@ export interface ChildRow {
   school_medium?: string;
   language_pref: "hinglish" | "hindi" | "english" | string;
   teacher_id?: string | null;
+  /** The name the child gave the teacher (null: the character's own). Decision child-names-teacher. */
+  teacher_name?: string | null;
   avatar?: string | null;
   interests?: string[];
   /** A10 parent-set YOUR TURN timing multiplier (1 / 1.5 / 2) when the profile carries it. */
@@ -96,6 +98,11 @@ export interface TutorsResponse {
   band: string;
   tutors: string[];
   live: boolean;
+  /** The name in use (the child's own pick, else the character's), the look's own name, and names to suggest. */
+  name?: string;
+  characterName?: string;
+  custom?: boolean;
+  suggestions?: string[];
 }
 export const getTutors = (cid: string) => getJson<TutorsResponse>(`/api/tutors?childId=${encodeURIComponent(cid)}`);
 export const chooseTutor = (cid: string, tutorId: string, source: "child" | "child_random") =>

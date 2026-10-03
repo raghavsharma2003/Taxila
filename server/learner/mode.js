@@ -42,6 +42,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "tutor_switch",
   // 010_parent_report.sql: rendered parent reports, derived from the academic evidence (claims cite ledger rows)
   "parent_report",
+  // 011_teacher_name.sql: the names the child gave the teacher (accepted names and resets) — history, not a layer
+  "teacher_name_history",
 ]);
 
 /**

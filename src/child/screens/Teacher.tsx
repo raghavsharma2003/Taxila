@@ -6,12 +6,16 @@
 //     teacher; choosing opens a confirm: "{T2} will teach your next lesson. {T2} will know what you've learned."
 //     Switching only between lessons (server `live` → disabled with the reason). A refusal from the parent's policy
 //     says "Ask a grown-up to change your teacher." "Choose for me" picks at random and still asks to confirm.
+//   Naming (decision child-names-teacher): the child names the look they picked (src/child/teacher/TeacherNamer); a new
+//     look starts under its own name and the naming step follows the confirm. "Change name" renames the current one.
 // Not yet (open item): the 10 s preview clips in each teacher's voice (rendered from the rig, TV §13).
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Sheet } from "../../ui/Sheet.tsx";
 import { Teacher } from "../../ui/teacher/Teacher.tsx";
-import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
+import { teacherRecord, useTeacher } from "../../ui/teacher/useTeacher.ts";
+import { TeacherNamer } from "../teacher/TeacherNamer.tsx";
+import { fill, NAME_COPY } from "../teacher/naming.ts";
 import { ApiError, chooseTutor, getTutors, offerOf, type TutorsResponse } from "../api.ts";
 import { Spot } from "../art.tsx";
 import { ChildScreen } from "../chrome.tsx";
@@ -95,7 +99,7 @@ export function TeacherChoice({ data, onDone, firstPick }: { data: TutorsRespons
 export { offerOf };
 
 export function TeacherScreen() {
-  const { cid, child, band, refresh } = useChild();
+  const { cid, child, band, family, refresh } = useChild();
   const { plan } = usePlan(cid);
   const nav = useNavigate();
   const [q] = useSearchParams();
@@ -109,24 +113,51 @@ export function TeacherScreen() {
     };
   }, [cid]);
   const offer = useMemo(() => offerOf(data), [data]);
-  const rec = teacherRecord(child.teacher_id, band);
+  const rec = useTeacher(child.teacher_id, band); // under the name the child gave it
+  // the naming step: for the current teacher ("Change name"), or for a look just chosen
+  const [naming, setNaming] = useState<{ id: string; afterPick: boolean } | null>(null);
+  const [savedName, setSavedName] = useState<string | null>(null);
   const next = q.get("next");
   const back = next && next.startsWith(`/c/${cid}`) ? next : `/c/${cid}`;
   const single = failed || (data && (data.mode !== "picker" || offer.length < 2));
 
+  const nameRow = (
+    <div className="tn-current" data-testid="teacher-name-row">
+      <p>{fill(NAME_COPY.current, { T: rec.name })}</p>
+      <button type="button" className="cs-btn cs-btn--secondary cs-btn--sm" onClick={() => setNaming({ id: rec.id, afterPick: false })} data-testid="name-change">{NAME_COPY.change}</button>
+    </div>
+  );
+  if (naming) {
+    const fresh = naming.afterPick; // a look just chosen: it starts under its own name, and the step returns to `back`
+    return (
+      <ChildScreen testid="teacher" ground="plain" title={t("yourTeacher")} surfaces={plan.surfaces} className="teacher-screen">
+        <section className="cs-card tc-one tc-naming">
+          <TeacherNamer cid={cid} characterId={naming.id} band={band} young={family === "young"} current={fresh ? null : rec.name}
+            suggestions={data?.suggestions} headingLevel={2}
+            onDone={(n) => { setSavedName(n); setNaming(null); refresh(); if (fresh) nav(back, { replace: true }); }}
+            onCancel={fresh ? undefined : () => setNaming(null)} />
+        </section>
+      </ChildScreen>
+    );
+  }
+
   return (
     <ChildScreen testid="teacher" ground="plain" title={t("yourTeacher")} surfaces={plan.surfaces} className="teacher-screen">
+      {savedName && <p className="cs-reason" role="status" data-testid="name-saved">{fill(NAME_COPY.saved, { T: savedName })}</p>}
       {single ? (
         <section className="cs-card tc-one" data-teacher-id={rec.id}>
           <TeacherCardFace id={rec.id} band={band} size={200} />
           <p className="tc-name">{rec.name}</p>
           <p className="tc-role">{t("aiTeacher")}</p>
           <p className="tc-line">{t("teacherOne", { T: rec.name })}</p>
+          {nameRow}
         </section>
       ) : data ? (
         <>
+          {nameRow}
           <h2 className="tc-q">{t("teacherPickTitle")}</h2>
-          <TeacherChoice data={data} onDone={() => { refresh(); nav(back, { replace: true }); }} />
+          {/* a new look comes with its own name; the naming step follows the confirm */}
+          <TeacherChoice data={data} onDone={(id) => { refresh(); setNaming({ id, afterPick: true }); }} />
         </>
       ) : (
         <div className="map-wait" aria-busy="true" />

@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ECHO_DEMOTE_FLAGS, UiBridge } from "../../lesson/uiBridge.ts";
 import { useLesson } from "../../lesson/useLesson.ts";
-import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
+import { TeacherNameProvider, teacherRecord } from "../../ui/teacher/useTeacher.ts";
 import { ageBandOf } from "../band.ts";
 import { useChild } from "../ChildShell.tsx";
 import { markLessonDone } from "../day.ts";
@@ -41,7 +41,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const bs = useSyncExternalStore(bridge.store.subscribe, bridge.store.get, bridge.store.get);
   const headset = useHeadset();
   const [firstLesson] = useState(() => readArtefacts(cid).length === 0);
-  const rec = teacherRecord(child.teacher_id, band);
+  const rec = teacherRecord(child.teacher_id, band, child.teacher_name);
   const [size, setSize] = useState<DeskSize>({ w: typeof innerWidth === "number" ? innerWidth : 360, h: typeof innerHeight === "number" ? innerHeight : 640, fontScale: 1 });
   const onSize = useCallback((s: DeskSize) => setSize((p) => (sameSize(p, s) ? p : s)), []);
 
@@ -110,8 +110,11 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     document.title = `${m.shortTitle || "Lesson"} · Taxila`;
   }, [m.shortTitle]);
 
+  // The lesson's own identity: the name pinned at lesson start (state.teacher), so a rename never changes an open lesson.
   return (
-    <Desk m={m} a={a} media={{ meters: [runtime.levels.teacher, bridge.replayLevel], mic: runtime.levels.mic, modules: runtime.modules, lang: child.language_pref, ageBand: ageBandOf(band) }}
-      dockRef={dockRef} live={live} onSize={onSize} theme={prefs.theme === "system" ? null : prefs.theme} />
+    <TeacherNameProvider id={m.teacher.id} name={m.teacher.name}>
+      <Desk m={m} a={a} media={{ meters: [runtime.levels.teacher, bridge.replayLevel], mic: runtime.levels.mic, modules: runtime.modules, lang: child.language_pref, ageBand: ageBandOf(band) }}
+        dockRef={dockRef} live={live} onSize={onSize} theme={prefs.theme === "system" ? null : prefs.theme} />
+    </TeacherNameProvider>
   );
 }

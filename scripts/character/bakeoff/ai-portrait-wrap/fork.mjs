@@ -60,6 +60,15 @@ fork("runtime-json.mjs", "runtime-json.mjs", [
   ["`public/assets/teacher/${look}/plate/plate.json`", `\`${ASSETS}/\${look}/plate/plate.json\``],
   ["`public/assets/teacher/${look}/runtime.json`", `\`${ASSETS}/\${look}/runtime.json\``],
 ]);
+// finish: the projected albedo and its normal detail carry photographic high frequencies that UASTC RDO 1.0 does not
+// compress (H 7.43 MB / B+ 2.35 MB against 6 / 2.2, measured); they take the cards' stronger RDO setting
+fork("finish.mjs", "finish.mjs", [['const RDO = { "hair_atlas.png": "2.5", "cards_atlas.png": "2.5" };',
+  'const RDO = { "hair_atlas.png": "2.5", "cards_atlas.png": "2.5", ...JSON.parse(process.env.APW_RDO || \'{"skin_albedo_H.png":"3","skin_albedo.png":"3","skin_normal.png":"3"}\') };'],
+  // H face albedo and normal at 1536 (still above the source: the portrait face is 472 px wide, the 1536 chart about
+  // 680 px); RDO alone left H at 6.88 MB (measured)
+  ['["skin_albedo_H.png", "TaxilaSkin", "baseColor", { H: [2048, 2048, "u"]', '["skin_albedo_H.png", "TaxilaSkin", "baseColor", { H: [1536, 1536, "u"]'],
+  ['["skin_normal.png", "TaxilaSkin", "normal", { H: [2048, 2048, "u"]', '["skin_normal.png", "TaxilaSkin", "normal", { H: [1536, 1536, "u"]'],
+]);
 console.log("forked into", DST);
 // ---- Blender stages: build_look.py gets ONE hook (the wrap, after the identity sculpt); texture.py gets ONE hook (the
 // portrait projection, before the skin maps are written). Everything else is the pipeline's own code.
@@ -71,11 +80,15 @@ const PYPATH2 = 'sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname
 const BLINK = `rb_ = float(look.get("faceStyle", {}).get("restBlink", 0.0))
 if rb_ > 0:
     for S_ in ("Left", "Right"):
-        dB_ = _D["eyeBlink" + S_].copy()
+        dB_ = _D["eyeBlink" + S_] * _body[:, None]       # skin only: the unit also moves the eye HELPER, and moving it moved the eyeball (G4 14% escape at 0.35, measured)
         for kb in _kbs:
             set_key_co(kb, key_co(kb) + rb_ * dB_)
         set_key_co(_kbs["eyeBlink" + S_], key_co(_kbs["eyeBlink" + S_]) - rb_ * dB_)
-        _D["eyeBlink" + S_] = (1 - rb_) * dB_
+        _D["eyeBlink" + S_] = _D["eyeBlink" + S_] - rb_ * dB_
+    # the mesh vertices must follow the Basis key: later stages read co(mesh), and a Basis-only edit left the rest lid
+    # where it was while eyeBlink got shorter (G4 blink 14% escape, basis diff 0.0 mm, measured)
+    h.data.vertices.foreach_set("co", key_co(_kbs[0]).ravel())
+    h.data.update()
     report["restBlinkBaked"] = rb_
 `;
 fork("blender/build_look.py", "build_look.py", [
@@ -92,6 +105,9 @@ if look.get("wrap"):
     stage("wrap")
 `],
   ['rs = float(look.get("faceStyle", {}).get("restSmile", 0.0))\n', BLINK + 'rs = float(look.get("faceStyle", {}).get("restSmile", 0.0))\n'],
+  // (c) the pipeline's resting-smile bake edits the Basis KEY only; Blender later re-bases every key on the mesh
+  // vertices, so the bake vanished (basis diff restSmile 0.03 vs 0: 0.000 mm, measured). Sync the mesh after it.
+  ['    report["restSmileBaked"] = rs\nB = key_co(_kbs[0])\n', '    report["restSmileBaked"] = rs\n    h.data.vertices.foreach_set("co", key_co(_kbs[0]).ravel())\n    h.data.update()\nB = key_co(_kbs[0])\n'],
 ]);
 fork("blender/texture.py", "texture.py", [
   [PYPATH, PYPATH2],

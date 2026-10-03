@@ -1,0 +1,292 @@
+{
+  "id": "teal",
+  "design": "TEACHER-VISUAL 4.3 row 1 (the Asha design: warm Indian woman teacher, mid-30s, MST 6). stylised-premium bake-off: a feature-animation look built on the procedural-v3 rig (bigger eyes, softened nose and jaw, fuller cheeks, sculpted hair mass + edge cards, toon-PBR skin). The look carries no name; the child names the teacher.",
+  "seed": 11,
+  "macros": {
+    "gender": 0,
+    "age": 0.569,
+    "muscle": 0.5,
+    "weight": 0.45,
+    "proportions": 0.6,
+    "cupsize": 0.45,
+    "firmness": 0.5,
+    "race": {
+      "caucasian": 0.6,
+      "african": 0.18,
+      "asian": 0.22
+    }
+  },
+  "targets": {
+    "head-oval": 0.3,
+    "head-scale-horiz-decr": 0.15,
+    "chin-width-decr": 0.35,
+    "chin-height-decr": 0.3,
+    "l-cheek-bones-incr": 0.25,
+    "r-cheek-bones-incr": 0.22,
+    "nose-point-width-incr": 0.1,
+    "mouth-cupidsbow-incr": 0.35,
+    "l-eye-scale-incr": 0.18,
+    "r-eye-scale-incr": 0.18,
+    "l-eye-height2-incr": 0.15,
+    "r-eye-height2-incr": 0.13,
+    "l-eye-epicanthus-out": 0.2,
+    "r-eye-epicanthus-out": 0.2,
+    "eyebrows-angle-up": 0.15,
+    "l-eye-trans-up": 0.04,
+    "r-cheek-volume-incr": 0.25,
+    "mouth-lowerlip-volume-decr": 0.5,
+    "mouth-upperlip-volume-decr": 0.25,
+    "mouth-angles-up": 0.2,
+    "mouth-scale-horiz-incr": 0,
+    "head-round": 0.35,
+    "nose-scale-vert-decr": 0.15,
+    "nose-scale-depth-decr": 0.25,
+    "nose-hump-decr": 0.3,
+    "nose-point-up": 0.2,
+    "nose-volume-decr": 0.1,
+    "mouth-scale-horiz-decr": 0.2,
+    "mouth-lowerlip-height-decr": 0.3,
+    "mouth-upperlip-height-decr": 0.1,
+    "l-cheek-volume-incr": 0.25,
+    "l-cheek-inner-incr": 0.2,
+    "r-cheek-inner-incr": 0.2,
+    "eyebrows-trans-up": 0.1,
+    "nose-nostrils-width-decr": 0.2,
+    "nose-flaring-decr": 0.3
+  },
+  "headScale": 1.055,
+  "skin": {
+    "base": "#C99366",
+    "shade": "#B07E55",
+    "lip": "#874239",
+    "mst": 6,
+    "flush": 0.04,
+    "albedoGain": [
+      0.8381,
+      0.984,
+      1.2175
+    ],
+    "lipCoverage": 0.45,
+    "lipDesat": 0.15,
+    "_note": "albedo = MST hex x albedoGain (solved by scripts/character/g9.mjs --solve); base/shade/lip hex are design colours whose RATIOS are kept"
+  },
+  "eyes": {
+    "iris": "#4A2E1C"
+  },
+  "brows": "eyebrow001",
+  "browColor": "#1A120C",
+  "lashes": "eyelashes01",
+  "hair": {
+    "asset": "ponytail01",
+    "color": "#1E140F",
+    "style": "ponytail",
+    "raisePonytail": 0.04,
+    "tailTiltDeg": 12,
+    "crownVolume": 0.05,
+    "v3": {
+      "tieElevDeg": 46,
+      "volume": 0.013,
+      "tailLength": 0.24,
+      "flyaways": 10,
+      "babyHairs": 36,
+      "massVolume": 0.013,
+      "sideBulge": 0.5,
+      "mass": true,
+      "riseT": 0.3
+    }
+  },
+  "garment": {
+    "kind": "kurti-jacket",
+    "base": "#3E7C74",
+    "shade": "#32665F",
+    "piping": "#C2410C",
+    "jacket": "#3B5677",
+    "v3": {
+      "pocketDrop": 0.048,
+      "pocketThetaDeg": 40,
+      "openHalfDeg": 26,
+      "easeKurti": 0.0035,
+      "easeJacket": 0.009,
+      "scoop": 0.068,
+      "kurtiUnderlap": 0.3,
+      "relaxIters": 36,
+      "scoopExp": 1.2
+    }
+  },
+  "accessory": {
+    "studs": "#D4AF37"
+  },
+  "faceStyle": {
+    "smile": 0.8,
+    "headGain": 1.1,
+    "browGain": 1.1,
+    "asym": {
+      "smile": 0.05,
+      "brow": 0.04,
+      "squint": 0.03
+    },
+    "dimple": "left",
+    "restSmile": 0.03,
+    "v3mix": {
+      "_note": "procedural-v3: ARKit key = cc0 x faceunits01 unit + sum(w x MakeHuman CC0 expression unit), split by side for sided keys (build_look.py)",
+      "mouthSmile": {
+        "sided": true,
+        "cc0": 0.45,
+        "mh": [
+          [
+            "mouth-corner-puller",
+            0.75
+          ],
+          [
+            "mouth-retraction",
+            0.15
+          ]
+        ]
+      },
+      "mouthUpperUp": {
+        "sided": true,
+        "cc0": 0.6,
+        "mh": [
+          [
+            "mouth-upward-retraction",
+            0.55
+          ]
+        ]
+      },
+      "browInnerUp": {
+        "cc0": 0.6,
+        "mh": [
+          [
+            "eyebrows-left-inner-up",
+            0.6
+          ],
+          [
+            "eyebrows-right-inner-up",
+            0.6
+          ]
+        ]
+      },
+      "browDown": {
+        "sided": true,
+        "cc0": 0.6,
+        "mh": [
+          [
+            "eyebrows-{side}-down",
+            0.5
+          ]
+        ]
+      },
+      "browOuterUp": {
+        "sided": true,
+        "cc0": 0.7,
+        "mh": [
+          [
+            "eyebrows-{side}-extern-up",
+            0.5
+          ]
+        ]
+      },
+      "eyeSquint": {
+        "sided": true,
+        "cc0": 0.8,
+        "mh": [
+          [
+            "eye-{side}-slit",
+            0.2
+          ]
+        ]
+      }
+    },
+    "v3keys": {
+      "fold": 0.0012
+    }
+  },
+  "ageYears": 34,
+  "jawCeiling": 0.55,
+  "sculpt": {
+    "_note": "mm, character axes (dx outward, dy forward, dz up); identity_sculpt.py",
+    "browRidge": [
+      0,
+      -1,
+      0.6
+    ],
+    "lidCrease": [
+      0,
+      -0.3,
+      0.3
+    ],
+    "noseBridge": [
+      0,
+      -1,
+      0.2
+    ],
+    "noseTip": {
+      "d": [
+        0,
+        -1.8,
+        1
+      ],
+      "r": 9
+    },
+    "alar": [
+      -2,
+      -0.4,
+      0.3
+    ],
+    "upperLip": [
+      0,
+      0.2,
+      0
+    ],
+    "lowerLip": [
+      0,
+      -0.9,
+      0.5
+    ],
+    "mouthCorner": [
+      0,
+      -0.3,
+      0.6
+    ],
+    "cheekPad": [
+      0.8,
+      1.8,
+      0.5
+    ],
+    "jawAngle": [
+      -3.8,
+      0,
+      1.2
+    ],
+    "chin": [
+      0,
+      0,
+      1.2
+    ],
+    "cheekBone": [
+      0.5,
+      0.6,
+      0.3
+    ]
+  },
+  "subdivH": {
+    "mode": "rings",
+    "depth": 0.012,
+    "eyeR": 0.023,
+    "mouthX": 0.034,
+    "mouthZ": 0.019
+  },
+  "stylise": {
+    "_note": "stylised-premium: eye-region scale field (build_look.py 3c) + stylised expression fields (keys.expression_stylised)",
+    "eyeScale": 1.2,
+    "eyeR0": 0.016,
+    "eyeR1": 0.034,
+    "eyeShiftMm": [
+      0.9,
+      0,
+      0.4
+    ],
+    "keys": {},
+    "restWide": 0.22
+  }
+}

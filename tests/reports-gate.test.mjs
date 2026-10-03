@@ -308,9 +308,13 @@ test("'how this line is counted': reviewed copy for every shape in every languag
 });
 
 test("every parent-visible string in the report screen (src/parent/Report.tsx label maps) passes the lexicon and the lock list", () => {
-  const src = readFileSync(new URL("../src/parent/Report.tsx", import.meta.url), "utf8");
-  const strings = [...src.matchAll(/\b(?:en|hinglish|hi): "([^"]+)"/g)].map((m) => m[1]);
-  assert.ok(strings.length > 50);
+  // B3: the screen is English chrome only (V2 §3.12: the text is English, Listen is in the family's language); its label
+  // maps are `key: "string"` rows in Report.tsx and the shared parent words in src/parent/copy.ts
+  const strings = ["../src/parent/Report.tsx", "../src/parent/copy.ts"].flatMap((f) => {
+    const src = readFileSync(new URL(f, import.meta.url), "utf8");
+    return [...src.matchAll(/^\s*(?:[a-z_]+): "([^"]+)",?\s*(?:\/\/.*)?$|\b[a-z_]+: "([^"]+)"/gm)].map((m) => m[1] ?? m[2]);
+  });
+  assert.ok(strings.length > 30, String(strings.length));
   for (const t of strings) assert.deepEqual([...bannedHits(t), ...lockedHits(t)], [], t);
 });
 

@@ -9,6 +9,7 @@ import { ApiError, getMe, type ChildRow, type MeResponse } from "./api.ts";
 import { bandForClass, effectiveBand, familyOf, type Band, type Family } from "./band.ts";
 import { t, type Lang } from "./copy.ts";
 import { usePrefs, type ChildPrefs } from "./prefs.ts";
+import { TeacherNameProvider } from "../ui/teacher/useTeacher.ts";
 import "./child.css";
 
 export interface ChildCtx {
@@ -133,7 +134,10 @@ export function ChildShell({ children }: { children?: ReactNode }) {
 
   return (
     <Ctx.Provider value={ctx}>
-      <div {...rootAttrs}>{children ?? <Outlet />}</div>
+      {/* the name the child gave their teacher reaches every child surface (child-names-teacher) */}
+      <TeacherNameProvider id={ctx.child.teacher_id} name={ctx.child.teacher_name}>
+        <div {...rootAttrs}>{children ?? <Outlet />}</div>
+      </TeacherNameProvider>
     </Ctx.Provider>
   );
 }

@@ -1,100 +1,160 @@
-// Lessons (§6.6): reverse-chronological list, and the per-lesson card (never pushed): what happened in plain
-// sentences, skill chips with Kaise pata?, one quote <= 25 words, the next re-check date. Full verbatim
-// transcripts: Class 1-4 visible; Class 5-9 on request (§6.11), and that request path is not built yet.
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { Card, Icon, Speaker, StateChip, readLang } from "../ui/index.ts";
-import { parentApi, speakUrl } from "./api.ts";
+// Lessons and the Lesson card (PRODUCT-DESIGN-V2 §6.5.3).
+// Lessons: reverse-chronological rows (date · topic in parent words · length). A short visit (under 5 minutes with
+// nothing graded) is listed as one and never counted as a lesson (audit #20). Classes 1-4: a Listen button per row.
+// Lesson card: "What {child} did" (the same DidCards as the child's Summary: their own answers, a tick only where the
+// answer key verified it), "In {child}'s words", the skills with their evidence, "Next check: {day}", and the full
+// conversation: Classes 1-4 after the parent PIN is entered again; Classes 5-9 stay private to the child (§6.11).
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { Button, Glyph, PinPad, Speaker, StateChip } from "../ui/index.ts";
+import { isRelock, parentApi, speakUrl, type LessonCardOut, type LessonLine } from "./api.ts";
+import { dayWord, fmtDayLong, fmtTime, labelTitle, parentError, SUBJECT_NAME } from "./copy.ts";
 import { EvidenceSheet } from "./EvidenceSheet.tsx";
-import { PageState, ParentShell, useChildren, useParentData } from "./Shell.tsx";
-import { fmtDayLong, SUBJECT_NAME } from "./words.ts";
+import { useGate } from "./Gate.tsx";
+import { PageState, ParentShell, RowLink, useChildren, useParentData } from "./Shell.tsx";
 
-const firstLine = (s: string | null) => (s ? s.split(/(?<=[.!?])\s/)[0] : null);
+const title = (l: { topic: { title: string; shortTitle?: string | null } }) => l.topic.shortTitle || l.topic.title;
 
 export function LessonList() {
-  const nav = useNavigate();
   const { kids, current } = useChildren();
   const cid = current?.id ?? "";
-  const { data, err } = useParentData(current ? () => parentApi.lessons(current.id) : null, [current?.id]);
+  const { data, err, stale, reload } = useParentData<{ lessons: LessonLine[] }>(current ? () => parentApi.lessons(current.id) : null, [current?.id], `lessons:${cid}`);
+  const young = (current?.class_level ?? 9) <= 4;
   return (
-    <ParentShell title="Lessons" child={current} kids={kids} onSwitch={(id) => nav(`/parent/${id}/lessons`)}>
-      <PageState err={err} loading={!data} />
+    <ParentShell title="Lessons" child={current} kids={kids}>
+      <h1 className="pa-h1">Lessons</h1>
+      <PageState err={err} loading={!data} stale={stale} onRetry={reload} />
       {data && (
-        <div className="stack">
-          <h1 className="t-title">Lessons</h1>
-          {data.lessons.length === 0 ? <p className="note">No lessons yet.</p> : (
-            <ul className="lesson-list">
-              {data.lessons.map((l) => (
-                <li key={l.id}>
-                  <Link to={`/parent/${cid}/lessons/${l.id}`} className="lesson-row card card-flat">
-                    <span className="t-note">{fmtDayLong(l.startedAt)}{l.minutes ? ` · ${l.minutes} min` : ""}{l.topic.subject ? ` · ${SUBJECT_NAME[l.topic.subject] ?? l.topic.subject}` : ""}</span>
-                    <strong>{l.topic.title}</strong>
-                    {firstLine(l.note) && <span className="muted">{firstLine(l.note)}</span>}
-                    {!l.endedAt && <span className="t-meta">Not finished</span>}
-                    <Icon name="chevron" className="lesson-chev" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        data.lessons.length === 0 ? (
+          <p className="pa-note">{current?.first_name}'s first lesson will appear here.</p>
+        ) : (
+          <ul className="pa-lessons">
+            {data.lessons.map((l) => (
+              <li key={l.id} className="pa-lesson">
+                <RowLink to={`/parent/lessons/${l.id}?c=${cid}`}
+                  sub={[dayWord(l.startedAt), fmtTime(l.startedAt), l.minutes ? `${l.minutes} min` : !l.endedAt ? "Not finished" : null,
+                    l.topic.subject ? SUBJECT_NAME[l.topic.subject] ?? l.topic.subject : null, !l.counted ? "Short visit, not counted as a lesson" : null].filter(Boolean).join(" · ")}>
+                  {title(l)}
+                </RowLink>
+                {young && l.endedAt && (
+                  <Speaker src={speakUrl({ what: "lesson", childId: cid, lessonId: l.id })} label={`Listen to the summary of ${title(l)}`} className="speaker pa-listen-sm"><span>Listen</span></Speaker>
+                )}
+              </li>
+            ))}
+          </ul>
+        )
       )}
     </ParentShell>
   );
 }
 
+function Conversation({ data, name, onAsking }: { data: LessonCardOut; name: string; onAsking: (on: boolean) => void }) {
+  const { relock } = useGate();
+  const [open, setOpen] = useState(false);
+  const [asking, setAsking] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [k, setK] = useState(0);
+  if (!data.transcript) {
+    return <p className="pa-note">For Class 5 to 9 the word-for-word conversation stays private to {name}. What they did and said is above.</p>;
+  }
+  if (open) {
+    return (
+      <section className="pa-card" aria-labelledby="pa-conv-h">
+        <h2 id="pa-conv-h" className="pa-card-title">The full conversation</h2>
+        <ol className="pa-transcript">
+          {data.transcript.map((t) => (
+            <li key={t.seq} data-speaker={t.speaker}><strong>{t.speaker === "child" ? name : "Teacher"}:</strong> <span data-speech="">{t.text}</span></li>
+          ))}
+        </ol>
+      </section>
+    );
+  }
+  if (asking) {
+    return (
+      <section className="pa-card pa-stack-sm" aria-labelledby="pa-conv-pin">
+        <h2 id="pa-conv-pin" className="pa-card-title">Enter your parent PIN to see the full conversation</h2>
+        <PinPad label="Parent PIN" resetKey={k} autoFocus onComplete={async (pin) => {
+          setErr(null);
+          try { await parentApi.unlock(pin); setOpen(true); onAsking(false); } catch (e) {
+            if (isRelock(e) && (e as { body?: { code?: string } }).body?.code !== "pin_wrong") { relock(); return; }
+            setErr(parentError(e)); setK((x) => x + 1);
+          }
+        }} />
+        <p className="pa-gate-msg" aria-live="assertive">{err}</p>
+        <Button variant="quiet" small onClick={() => { setAsking(false); onAsking(false); }}>Cancel</Button>
+      </section>
+    );
+  }
+  return <Button variant="secondary" onClick={() => { setAsking(true); onAsking(true); }}>See the full conversation</Button>;
+}
+
 export function LessonCard() {
-  const nav = useNavigate();
-  const { lid, skill } = useParams();
+  const { lid } = useParams();
   const { kids, current } = useChildren();
   const cid = current?.id ?? "";
-  const { data, err } = useParentData(current && lid ? () => parentApi.lesson(current.id, lid) : null, [current?.id, lid]);
-  const lang = readLang();
+  const { data, err, reload } = useParentData<LessonCardOut>(current && lid ? () => parentApi.lesson(current.id, lid) : null, [current?.id, lid]);
+  const [skill, setSkill] = useState<string | null>(null);
+  const [pinOpen, setPinOpen] = useState(false);
+  const name = current?.first_name ?? "Your child";
   return (
-    <ParentShell title="Lesson" child={current} kids={kids} onSwitch={(id) => nav(`/parent/${id}/lessons`)}>
-      <Link to={`/parent/${cid}/lessons`} className="back-link"><Icon name="back" size={20} /> All lessons</Link>
-      <PageState err={err} loading={!data} />
+    <ParentShell title="Lesson" child={current} kids={kids} noTabs={pinOpen}>
+      <RowLink to={`/parent/lessons?c=${cid}`}>All lessons</RowLink>
+      <PageState err={err} loading={!data} onRetry={reload} />
       {data && (
-        <div className="stack">
-          <p className="t-note">{fmtDayLong(data.lesson.startedAt)}{data.lesson.topic.chapter ? ` · ${data.lesson.topic.chapter}` : ""}</p>
-          <h1 className="t-title">{data.lesson.topic.title}</h1>
-          {/* §6.6: a spoken summary (the default view for Class 1-4 families; offered to every family). */}
-          <Speaker key={data.lesson.id} src={speakUrl({ what: "lesson", childId: cid, lessonId: data.lesson.id })} label="Listen to this lesson's summary"
-            className="speaker speaker-wide"><span>Suno · Listen</span></Speaker>
-          {data.lesson.note ? <p className="t-lead">{data.lesson.note}</p> : <p className="muted">{data.lesson.endedAt ? "The summary for this lesson is not ready." : "This lesson did not finish, so there is no summary."}</p>}
-          {data.quote && (
-            <Card title={`${current?.first_name ?? "Your child"} said`}>
-              <q className="ev-quote big-quote">{data.quote}</q>
-            </Card>
+        <div className="pa-stack">
+          <div>
+            <p className="pa-meta">{fmtDayLong(data.lesson.startedAt)} · {fmtTime(data.lesson.startedAt)}{data.lesson.minutes ? ` · ${data.lesson.minutes} min` : ""}{data.lesson.topic.chapter ? ` · ${data.lesson.topic.chapter}` : ""}</p>
+            <h1 className="pa-h1">{data.lesson.topic.title}</h1>
+            {!data.lesson.counted && <p className="pa-meta">A short visit: not counted as a lesson.</p>}
+          </div>
+          {data.lesson.endedAt && (
+            <Speaker key={data.lesson.id} src={speakUrl({ what: "lesson", childId: cid, lessonId: data.lesson.id })} label="Listen to this lesson's summary" className="speaker pa-listen"><span>Listen</span></Speaker>
           )}
-          <Card title="Skills in this lesson">
-            {data.skills.length === 0 ? <p className="muted">No checks were recorded in this lesson.</p> : (
-              <ul className="skill-list">
+          <section className="pa-card" aria-labelledby="pa-did-h">
+            <h2 id="pa-did-h" className="pa-card-title">What {name} did</h2>
+            {data.did && data.did.cards.length > 0 ? (
+              <ul className="pa-did">
+                {data.did.cards.map((c, i) => (
+                  <li key={i} className="pa-did-row" data-tick={c.tick || undefined}>
+                    {c.tick && <Glyph name="tick" size={20} className="pa-ev-glyph" />}
+                    <span>
+                      {c.kind === "teachback" ? "Explained it back" : <span data-speech="">{c.ask}</span>}
+                      <span className="pa-muted">{c.kind === "teachback" ? "" : " · "}{c.kind === "teachback" ? "" : <>Answered <q className="pa-quote" data-speech="">{c.answer}</q></>}</span>
+                      {c.tick && <span className="pa-meta"> · {c.withHelp ? "Right, with a hint" : "Right, on their own"}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="pa-muted">{data.lesson.endedAt ? "No answers were checked in this lesson." : "This lesson didn't finish."}</p>}
+            {data.did?.tried ? <p className="pa-meta">{name} tried {data.did.tried} questions.</p> : null}
+          </section>
+          {data.quote && (
+            <section className="pa-card" aria-labelledby="pa-quote-h">
+              <h2 id="pa-quote-h" className="pa-card-title">In {name}'s words</h2>
+              <q className="pa-quote pa-quote-big" data-speech="">{data.quote}</q>
+            </section>
+          )}
+          <section className="pa-card" aria-labelledby="pa-sk-h">
+            <h2 id="pa-sk-h" className="pa-card-title">What was checked</h2>
+            {data.skills.length === 0 ? <p className="pa-muted">No checks were recorded in this lesson.</p> : (
+              <ul className="pa-list">
                 {data.skills.map((s) => (
                   <li key={s.skillId}>
-                    <Link to={`/parent/${cid}/lessons/${lid}/skill/${encodeURIComponent(s.skillId)}`} className="skill-row">
-                      <span className="skill-title">{s.title}<span className="t-meta"> · {s.unaided} of {s.attempts} on their own</span></span>
-                      <StateChip state={s} lang={lang} nextReview={s.nextReview} />
-                    </Link>
+                    <button type="button" className="pa-skill pa-skill-row" onClick={() => setSkill(s.skillId)}>
+                      <span className="pa-skill-main"><span>{labelTitle(s.label)}</span><span className="pa-meta">{s.unaided} of {s.attempts} right on their own</span></span>
+                      <StateChip state={s} lang="en" />
+                      <span className="pa-how">How do we know?</span>
+                    </button>
                   </li>
                 ))}
               </ul>
             )}
-          </Card>
-          {data.transcript ? (
-            <details className="card card-flat">
-              <summary className="summary">Full conversation</summary>
-              <ol className="transcript">
-                {data.transcript.map((t) => (
-                  <li key={t.seq} data-speaker={t.speaker}><strong>{t.speaker === "child" ? current?.first_name : "Teacher"}:</strong> {t.text}</li>
-                ))}
-              </ol>
-            </details>
-          ) : (
-            <p className="note">For Class 5 to 9, the full word-for-word conversation is shown only on request, and your child is told when it is opened. Requesting it is coming soon.</p>
-          )}
+            {data.nextCheck && <p><strong>Next check:</strong> {fmtDayLong(data.nextCheck)}, in a later lesson.</p>}
+          </section>
+          <Conversation data={data} name={name} onAsking={setPinOpen} />
         </div>
       )}
-      {current && <EvidenceSheet childId={cid} skill={skill ?? null} childName={current.first_name} onClose={() => nav(`/parent/${cid}/lessons/${lid}`)} />}
+      {current && <EvidenceSheet childId={cid} skill={skill} childName={name} onClose={() => setSkill(null)} />}
     </ParentShell>
   );
 }

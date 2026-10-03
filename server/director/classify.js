@@ -5,7 +5,7 @@
 // when the bytes cannot decide.
 import { chat, DEPLOY, isReasoningFamily, isContentFilter } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
-import { scanSafety, wantsToStop } from "./safety.js";
+import { scanSafety, wantsToStop, scrubPii } from "./safety.js";
 import { whyKey, norm as normAnswer, posesItem } from "./items.js";
 
 /** Below this ASR confidence a transcript is not evidence (signal-fusion rule 3: never score it wrong). */
@@ -212,7 +212,8 @@ async function distressCheck(text, classLevel, trace) {
   try {
     const { json } = await hedged(() => chat(DEPLOY.classify, [
       { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.` },
-      { role: "user", content: text },
+      // direct identifiers masked before the child's words reach the model (decision scrub-pii-cued)
+      { role: "user", content: scrubPii(text).text },
     ], { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace }), classifyHedgeMs());
     return !!json?.distress;
   } catch (e) {
@@ -314,7 +315,8 @@ export async function classify(args) {
   try {
     const { json } = await hedged(() => chat(DEPLOY.classify, [
       { role: "system", content: systemPrompt(target, classLevel) },
-      { role: "user", content: userPrompt(target, text, heard) },
+      // the bytes decided nothing (classifyFast); the model gets the child's words with direct identifiers masked
+      { role: "user", content: userPrompt(target, scrubPii(text).text, heard) },
     ], {
       schema: schemaFor(target), schemaName: `classify_${target.mode}`,
       effort: target.mode === "none" ? "none" : "low", maxTokens: target.mode === "none" ? 120 : 900, timeoutMs: 7000, trace,

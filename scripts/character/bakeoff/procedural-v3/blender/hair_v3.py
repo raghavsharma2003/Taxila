@@ -78,7 +78,7 @@ def make_atlas(hair_lin, seed=7, W=ATLAS_W, H=ATLAS_H):
     fibres(KIND["medium"], 90, (1.4, 2.4), (0.7, 1.0), 0.55, 0.06, (0.7, 1.0), (0.7, 1.25))
     fibres(KIND["strandy"], 55, (1.3, 2.2), (0.6, 1.0), 0.6, 0.08, (0.6, 1.0), (0.7, 1.3))
     fibres(KIND["sparse"], 28, (1.2, 2.0), (0.5, 1.0), 0.3, 0.1, (0.5, 0.95), (0.75, 1.3))
-    fibres(KIND["wisp"], 5, (1.1, 1.8), (0.6, 1.0), 0.1, 0.15, (0.55, 0.9), (0.8, 1.35))
+    fibres(KIND["wisp"], 9, (1.5, 2.3), (0.6, 1.0), 0.1, 0.15, (0.75, 1.0), (0.8, 1.2))
     fibres(KIND["baby"], 22, (0.9, 1.4), (0.3, 0.9), 0.0, 0.2, (0.35, 0.7), (0.85, 1.4))
     # core: opaque fibres (left 3/4) + an elastic band patch (right 1/4)
     c0 = KIND["core"] * COL
@@ -289,7 +289,7 @@ def build(face, look, J, eyeC, report, collide=(), lod="H"):
     if H:
         counts["cap0"] = cap_layer(54, ["dense", "denseB"], 0.0004, 1.0, hv.get("volume", 0.0055), 0.0025)
         counts["cap1"] = cap_layer(46, ["medium", "denseB"], 0.0016, 0.95, hv.get("volume", 0.0055) * 1.15, 0.004)
-        counts["cap2"] = cap_layer(34, ["strandy", "sparse"], 0.0030, 0.8, hv.get("volume", 0.0055) * 1.3, 0.006, inset=0.08)
+        counts["cap2"] = cap_layer(34, ["medium", "denseB"], 0.0024, 0.8, hv.get("volume", 0.0055) * 1.2, 0.005, inset=0.08)
     else:
         counts["cap0"] = cap_layer(40, ["dense", "denseB"], 0.0006, 1.15, hv.get("volume", 0.0055), 0.0025, seg=10)
         counts["cap1"] = cap_layer(26, ["medium"], 0.0022, 1.0, hv.get("volume", 0.0055) * 1.2, 0.004, inset=0.08, seg=9)
@@ -318,7 +318,7 @@ def build(face, look, J, eyeC, report, collide=(), lod="H"):
         counts["baby"] = nb
 
     # ---- flyaways on the cap: thin wisps that leave the surface in a loose arc
-    nfly = hv.get("flyaways", 34) if H else 8
+    nfly = hv.get("flyaways", 22) if H else 6
     for i in range(nfly):
         a = rng.uniform(-math.pi, math.pi)
         hl = hairline_at(a)
@@ -405,7 +405,7 @@ def build(face, look, J, eyeC, report, collide=(), lod="H"):
         pts[:, 2] -= 0.006 * sT[:kk] ** 2 * rng.uniform(0.5, 1.5)
         w = 2 * math.pi * rr / (ntail / 2.2)
         w = np.maximum(w, 0.004)
-        kind = ["dense", "denseB", "medium", "strandy"][rng.integers(4)] if rho > 0.75 else ["dense", "denseB"][rng.integers(2)]
+        kind = ["dense", "denseB", "medium"][rng.integers(3)] if rho > 0.75 else ["dense", "denseB"][rng.integers(2)]
         _ribbon(bm, uvl, attrs, pts, radial, w, _u_range(kind), flip=bool(rng.integers(2)))
     counts["tail"] = ntail
     if H:
@@ -415,9 +415,9 @@ def build(face, look, J, eyeC, report, collide=(), lod="H"):
             radial = np.cos(phi) * F1[:kk] + np.sin(phi) * F2[:kk]
             nrm = np.cross(tan[:kk], radial)
             pts = M[:kk] + radial * (rad[:kk] * 0.35)[:, None]
-            _ribbon(bm, uvl, attrs, pts, nrm, rad[:kk] * 1.3, _u_range(["medium", "strandy"][j % 2]))
+            _ribbon(bm, uvl, attrs, pts, nrm, rad[:kk] * 1.3, _u_range(["dense", "medium"][j % 2]))
         counts["tailCross"] = 14
-        for i in range(12):           # tail flyaways
+        for i in range(8):            # tail flyaways
             s0 = rng.uniform(0.2, 0.8)
             i0 = int(s0 * (K - 1))
             phi = rng.uniform(0, 2 * math.pi)
@@ -426,7 +426,7 @@ def build(face, look, J, eyeC, report, collide=(), lod="H"):
             L = rng.uniform(0.025, 0.05)
             pts = np.array([root + tan[i0] * L * t + radial * 0.012 * t ** 1.5 for t in np.linspace(0, 1, 7)])
             _ribbon(bm, uvl, attrs, pts, np.repeat(radial[None], 7, 0), np.linspace(0.003, 0.0018, 7), _u_range("wisp"))
-        counts["tailFly"] = 12
+        counts["tailFly"] = 8
     # opaque core tube inside the tail (the cards never show the background through the middle)
     ncirc = 10 if H else 6
     kc = int(K * 0.85)

@@ -6,9 +6,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, ErrorNote, Field, Icon } from "../ui/index.ts";
-import { errText, loadMe, postJson, refreshMe, type Me } from "../app/api.ts";
+import { ApiError, errText, loadMe, postJson, refreshMe, type Me } from "../app/api.ts";
 import { StepFrame } from "./Layout.tsx";
 import { clearDraftContact, useDraft } from "./draft.ts";
+import { safeNext } from "./next.ts";
 
 function NoCallsPromise() {
   return <p className="promise-inline"><Icon name="noCall" size={20} /> We never call you to sell anything.</p>;
@@ -22,25 +23,40 @@ function OtpSlot() {
 export function AccountStep() {
   const nav = useNavigate();
   const [sp] = useSearchParams();
-  const next = sp.get("next");
+  const next = safeNext(sp.get("next"));
   const [d, set] = useDraft();
-  const [mode, setMode] = useState<"signup" | "login">(sp.get("login") ? "login" : "signup");
+  // A ?next= means someone was sent here from a screen that needs a signed-in parent (the gate, a lesson's T8, a
+  // first-run step after a 401): they have an account, so sign-in is the default; ?signup=1 still forces the form.
+  const [mode, setMode] = useState<"signup" | "login">(sp.get("login") || (next && !sp.get("signup")) ? "login" : "signup");
   const [me, setMe] = useState<Me | null | undefined>(undefined);
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [fieldErr, setFieldErr] = useState<{ email?: string; password?: string }>({});
 
   useEffect(() => { loadMe().then(setMe, () => setMe(null)); }, []);
-  const after = (m: Me | null) => {
-    // Same-origin paths only: "//host" would make pushState throw (cross-origin URL).
-    if (next && /^\/(?!\/)/.test(next) && !next.startsWith("/\\")) return nav(next, { replace: true });
-    if (m && m.children.length && mode === "login") return nav("/who", { replace: true });
+  const after = (m: Me | null, signedInNow = true) => {
+    // ?next= is for a returning parent. A brand-new account (signup just now) goes through consent first, never
+    // straight into the corner with no consent and no child.
+    const fresh = signedInNow && mode === "signup";
+    if (next && !fresh) return nav(next, { replace: true });
+    if (m && m.children.length && (mode === "login" || !signedInNow)) return nav("/who", { replace: true });
     nav("/start/consent");
   };
+  // Already signed in and sent here with somewhere to go back to: go straight there (no extra Continue screen).
+  useEffect(() => { if (me && next) nav(next, { replace: true }); }, [me, next, nav]);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setErr(null);
+    setFieldErr({});
+    if (mode === "login") {
+      // Sign-in errors sit on their field, in sentences, never the server's string (V2 §4.7, audit #18).
+      const fe: { email?: string; password?: string } = {};
+      if (!(d.email ?? "").trim()) fe.email = "Enter your email.";
+      if (!password) fe.password = "Enter your password.";
+      if (fe.email || fe.password) { setFieldErr(fe); return; }
+    }
     setBusy(true);
     try {
       if (mode === "signup") {
@@ -52,7 +68,13 @@ export function AccountStep() {
       clearDraftContact(); // the account now holds name, email and phone; the shared phone's storage does not need them
       after(await refreshMe());
     } catch (e2) {
-      setErr(errText(e2));
+      if (mode === "login") {
+        const st = e2 instanceof ApiError ? e2.status : 0;
+        const until = e2 instanceof ApiError ? (e2.body as { lockedUntil?: string } | null)?.lockedUntil : undefined;
+        if (st === 400) setFieldErr({ password: "That email and password don't match. Try again." });
+        else if (st === 429) setErr(until ? `Too many tries. Try again at ${new Date(until).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}.` : "Too many tries. Try again in a few minutes.");
+        else setErr(typeof navigator !== "undefined" && navigator.onLine === false ? "No internet. Try again when you're online." : "Something went wrong. Try again.");
+      } else setErr(errText(e2));
     } finally {
       setBusy(false);
     }
@@ -60,10 +82,11 @@ export function AccountStep() {
 
   if (me === undefined) return <StepFrame step="phone" title="Your account"><div className="spinner" /></StepFrame>;
 
+  if (me && next) return <StepFrame step="phone" title="Signing you in"><div className="spinner" /></StepFrame>;
   if (me) {
     return (
       <StepFrame step="phone" title="You are signed in"
-        footer={<Button block onClick={() => after(me)}>Continue</Button>}>
+        footer={<Button block onClick={() => after(me, false)}>Continue</Button>}>
         <p className="t-lead">Signed in as <strong>{me.guardian.email}</strong>.</p>
         <Button variant="quiet" onClick={async () => { await postJson("/api/auth/logout", {}); setMe(await refreshMe()); }}>Not you? Sign out</Button>
       </StepFrame>
@@ -91,13 +114,14 @@ export function AccountStep() {
             <OtpSlot />
           </>
         )}
-        <Field label="Email" type="email" autoComplete="email" inputMode="email" value={d.email ?? ""} onChange={(e) => set({ email: e.target.value.trim() })} required />
-        <Field label="Password" type="password" autoComplete={signup ? "new-password" : "current-password"} value={password}
-          hint={signup ? "At least 8 characters." : undefined} onChange={(e) => setPassword(e.target.value)} required />
+        <Field label="Email" type="email" autoComplete="email" inputMode="email" value={d.email ?? ""} error={fieldErr.email}
+          onChange={(e) => { set({ email: e.target.value.trim() }); setFieldErr((f) => ({ ...f, email: undefined })); }} required />
+        <Field label="Password" type="password" autoComplete={signup ? "new-password" : "current-password"} value={password} error={fieldErr.password}
+          hint={signup ? "At least 8 characters." : undefined} onChange={(e) => { setPassword(e.target.value); setFieldErr((f) => ({ ...f, password: undefined })); }} required />
         {signup && <p className="t-note">By continuing you confirm you are 18 or older and this child's parent or guardian.</p>}
         <ErrorNote>{err}</ErrorNote>
         <Button type="submit" block disabled={busy}>{busy ? "Please wait" : signup ? "Create account" : "Sign in"}</Button>
-        <Button variant="quiet" onClick={() => { setErr(null); setMode(signup ? "login" : "signup"); }}>
+        <Button variant="quiet" onClick={() => { setErr(null); setFieldErr({}); setMode(signup ? "login" : "signup"); }}>
           {signup ? "I already have an account" : "New here? Create an account"}
         </Button>
       </form>

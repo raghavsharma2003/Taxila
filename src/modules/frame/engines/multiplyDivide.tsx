@@ -10,7 +10,7 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import type { EngineModule, EngineProps } from "../engine.ts";
 import { defineEngine, GENERIC_MODES } from "../kit/def.ts";
-import { say, tri } from "../kit/i18n.ts";
+import { chrome, say, tri } from "../kit/i18n.ts";
 import { useTracker } from "../kit/tracker.ts";
 import { Btn, CheckBtn, cls, EngineRoot, NumPad, Prompt, Stepper, useEngineError, useHl, useIssues, Verdict } from "../kit/ui.tsx";
 import { arrayCorrect, productCorrect, factorPairs, factorsCorrect, MAX_SIDE, normalize, pairKey, shareCorrect, shareUnequal } from "./multiplyDivide.logic.ts";
@@ -41,9 +41,9 @@ const TX = {
   cols: tri("Columns", "Stambh", "स्तंभ"),
   share: tri("Share fairly. Keep back what is left over.", "Barabar baanto. Jo bache, alag rakho.", "बराबर बाँटो। जो बचे, अलग रखो।"),
   each: tri("one each", "sabko ek", "सबको एक"),
-  takeBack: tri("take all back", "sab wapas", "सब वापस"),
+  takeBack: chrome("Take all back"), // a control: English in every lesson language (G-EN-1)
   factors: tri("Find every rectangle that uses all", "Saare rectangle dhoondo jo poore istemaal karein:", "सारे आयत ढूँढो जो पूरे इस्तेमाल करें:"),
-  addRect: tri("Add", "Jodo", "जोड़ो"),
+  addRect: chrome("Add"), // a control
   rotate: tri("turn", "ghumao", "घुमाओ"),
   left: tri("left over", "bache", "बचे"),
 };

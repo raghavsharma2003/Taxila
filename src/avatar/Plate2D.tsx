@@ -82,7 +82,7 @@ export function Plate2D({ tutor, sources = [], reducedMotion = false, still = fa
       </>
     ) : (
       <>
-        <path d="M30 240 C34 196 60 178 100 176 C140 178 166 196 170 240 Z" fill={L.attire === "shirt-tee" ? L.top : "#4C6A8C"} />
+        <path d="M30 240 C34 196 60 178 100 176 C140 178 166 196 170 240 Z" fill={L.attire === "shirt-tee" ? L.top : "var(--face-attire)"} />
         <path d="M84 178 L100 240 L116 178 Z" fill={L.attire === "shirt-tee" ? L.accent : L.top} />
         {L.attire === "kurti-jacket" && <path d="M86 180 Q100 192 114 180" fill="none" stroke={L.accentBorder} strokeWidth="2.5" />}
       </>
@@ -107,10 +107,10 @@ export function Plate2D({ tutor, sources = [], reducedMotion = false, still = fa
       {/* eyes */}
       {[80, 120].map((cx) => (
         <g key={cx}>
-          <ellipse cx={cx} cy="96" rx="9.5" ry="8" fill="#F6F1E8" />
+          <ellipse cx={cx} cy="96" rx="9.5" ry="8" fill="var(--face-sclera)" />
           <circle cx={cx} cy="96.5" r="5.4" fill={L.iris} />
-          <circle cx={cx} cy="96.5" r="2.5" fill="#0D0806" />
-          <circle cx={cx + 1.8} cy="94.4" r="1.2" fill="#FFFFFF" />
+          <circle cx={cx} cy="96.5" r="2.5" fill="var(--face-iris)" />
+          <circle cx={cx + 1.8} cy="94.4" r="1.2" fill="var(--face-glint)" />
         </g>
       ))}
       <g ref={lids} transform="translate(0 -14)">
@@ -119,10 +119,10 @@ export function Plate2D({ tutor, sources = [], reducedMotion = false, still = fa
         ))}
       </g>
       {[80, 120].map((cx) => (
-        <path key={cx} d={`M${cx - 10} 93 Q ${cx} 86.5 ${cx + 10} 93`} fill="none" stroke="#1A120C" strokeWidth="2" strokeLinecap="round" />
+        <path key={cx} d={`M${cx - 10} 93 Q ${cx} 86.5 ${cx + 10} 93`} fill="none" stroke="var(--face-lash)" strokeWidth="2" strokeLinecap="round" />
       ))}
       {L.glasses !== "none" && (
-        <g fill="none" stroke="#2A2420" strokeWidth="1.8">
+        <g fill="none" stroke="var(--face-brow)" strokeWidth="1.8">
           <rect x="67" y="85" width="26" height="21" rx={L.glasses === "round" ? 10 : 3} />
           <rect x="107" y="85" width="26" height="21" rx={L.glasses === "round" ? 10 : 3} />
           <path d="M93 93 Q100 90 107 93" />
@@ -131,9 +131,9 @@ export function Plate2D({ tutor, sources = [], reducedMotion = false, still = fa
       <path d="M70 80 Q80 75 91 79" fill="none" stroke={hair} strokeWidth="3.4" strokeLinecap="round" />
       <path d="M109 79 Q120 75 130 80" fill="none" stroke={hair} strokeWidth="3.4" strokeLinecap="round" />
       <path d="M100 102 Q97 112 94 115 Q100 118 106 115" fill="none" stroke={L.skinShade} strokeWidth="2.4" strokeLinecap="round" />
-      <path ref={mouth} d="M86 128 Q100 132 114 128 Q100 131 86 128 Z" fill="#3A1410" stroke={L.lip} strokeWidth="2.2" strokeLinejoin="round" />
-      <rect ref={teeth} x="93" y="128.5" width="14" height="2.6" rx="1.2" fill="#FBF7EE" opacity="0" />
-      {L.presentedGender === "F" && [56, 144].map((x) => <circle key={x} cx={x} cy="110" r="1.8" fill="#D9B45A" />)}
+      <path ref={mouth} d="M86 128 Q100 132 114 128 Q100 131 86 128 Z" fill="var(--face-mouth)" stroke={L.lip} strokeWidth="2.2" strokeLinejoin="round" />
+      <rect ref={teeth} x="93" y="128.5" width="14" height="2.6" rx="1.2" fill="var(--face-teeth)" opacity="0" />
+      {L.presentedGender === "F" && [56, 144].map((x) => <circle key={x} cx={x} cy="110" r="1.8" fill="var(--face-stud)" />)}
     </svg>
   );
 }

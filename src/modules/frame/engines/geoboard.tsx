@@ -7,7 +7,7 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import type { EngineModule, EngineProps } from "../engine.ts";
 import { defineEngine, GENERIC_MODES } from "../kit/def.ts";
-import { say, tri } from "../kit/i18n.ts";
+import { chrome, say, tri } from "../kit/i18n.ts";
 import { useTracker } from "../kit/tracker.ts";
 import { CheckBtn, cls, EngineRoot, hitPx, NumPad, Prompt, useEngineError, useHl, useIssues, Verdict, Btn } from "../kit/ui.tsx";
 import { area, buildCorrect, cellKey, connected, contrastCorrect, solveBuild, measureCorrect, measureMisc, normalize, perimeter, type Cell } from "./geoboard.logic.ts";
@@ -39,7 +39,7 @@ const TX = {
   measure: tri("What is its", "Iska kitna hai:", "इसका कितना है:"),
   sameArea: tri("Make a new shape: same area, different perimeter", "Nayi shape banao: kshetrafal wahi, parimaap alag", "नई आकृति बनाओ: क्षेत्रफल वही, परिमाप अलग"),
   samePerim: tri("Make a new shape: same perimeter, different area", "Nayi shape banao: parimaap wahi, kshetrafal alag", "नई आकृति बनाओ: परिमाप वही, क्षेत्रफल अलग"),
-  clear: tri("clear", "mitao", "मिटाओ"),
+  clear: chrome("Clear"), // a control: English in every lesson language (G-EN-1)
 };
 
 function Geoboard({ params, goal, lang, ageBand, highlight, revealed, api }: EngineProps) {

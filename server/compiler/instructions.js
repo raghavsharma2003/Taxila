@@ -1,7 +1,7 @@
 // A lesson state → its compiled instructions: the one place both routes (start, turn, realtime token) and the
 // tests build compile()'s input, so the voice lane's branches can never again be left out of one caller.
 import { compile, BudgetError } from "./compile.js";
-import { CHARACTERS } from "./characters/index.js";
+import { characterForState } from "./characters/index.js";
 import { getTopic } from "../content/curriculum.js";
 import { describe, branchesFor, skipItem } from "../director/state.js";
 
@@ -12,7 +12,8 @@ import { describe, branchesFor, skipItem } from "../director/state.js";
  */
 export function instructionsFor(state, kit, lane = state.mode === "voice" || !state.mode ? "voice" : "text") {
   return compile({
-    character: CHARACTERS[state.ctx.teacherId], brief: state.brief, lessonState: state, move: state.lastMove,
+    // the pinned character under its pinned name (child-names-teacher)
+    character: characterForState(state), brief: state.brief, lessonState: state, move: state.lastMove,
     ...describe(state, kit), ...(lane === "voice" ? { branches: branchesFor(state, kit) } : {}),
     topic: getTopic(state.topicId), language: state.ctx.lang, lane,
   });

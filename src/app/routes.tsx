@@ -1,19 +1,20 @@
-// The route map (PRODUCT-DESIGN §1.2). Public: / /trust /privacy /leaving /help. First run: /start/*. Child
+// The route map (PRODUCT-DESIGN §1.2). Public: / /promises (/trust redirects) /privacy /leaving /help. First run: /start/*. Child
 // mode: /who, /c/:cid/... (workstream ui-b's `childRoutes` from src/child/routes.tsx when it exists, else the
 // stubs in ./childStubs.tsx). Parent corner: /parent/* behind the guardian gate. Dev: /dev/lesson (dev builds
 // or VITE_DEV_ROUTES=1 only). Page groups load lazily so the cold path to the picker stays small (§7.3).
 import { lazy, Suspense, useEffect, type ReactNode } from "react";
-import { Outlet, type RouteObject } from "react-router-dom";
+import { Navigate, Outlet, type RouteObject } from "react-router-dom";
 import { lockBeacon } from "./api.ts";
 import { childStubRoutes } from "./childStubs.tsx";
-import { Leaving, Privacy, Trust } from "./Public.tsx";
-import { Loading, NotFound, RouteError } from "./Shell.tsx";
+import { Loading, RouteError } from "./Shell.tsx";
 import Who from "./Who.tsx";
 
 const Landing = lazy(() => import("./landing/Landing.tsx"));
 const Onboarding = lazy(() => import("../onboarding/index.tsx"));
 const ParentCorner = lazy(() => import("../parent/index.tsx"));
-const PublicHelp = lazy(() => import("../parent/Pages.tsx").then((m) => ({ default: m.PublicHelp })));
+// The public pages share the marketing site's chrome (B4, PRODUCT-DESIGN-V2 §6.1.2): one lazy chunk, off the child path.
+const pub = (k: "Promises" | "Privacy" | "Help" | "Leaving" | "NotFound") => lazy(() => import("./Public.tsx").then((m) => ({ default: m[k] })));
+const Promises = pub("Promises"), Privacy = pub("Privacy"), PublicHelp = pub("Help"), Leaving = pub("Leaving"), NotFound = pub("NotFound");
 
 // Dev screens are not part of a production build unless VITE_DEV_ROUTES=1 (they can create test accounts).
 const DEV_ROUTES = import.meta.env.DEV || import.meta.env.VITE_DEV_ROUTES === "1";
@@ -50,9 +51,10 @@ export const routes: RouteObject[] = [
     errorElement: <RouteError />,
     children: [
       { path: "/", element: s(<Landing />) },
-      { path: "/trust", element: <Trust /> },
-      { path: "/privacy", element: <Privacy /> },
-      { path: "/leaving", element: <Leaving /> },
+      { path: "/promises", element: s(<Promises />) },
+      { path: "/trust", element: <Navigate to="/promises" replace /> },
+      { path: "/privacy", element: s(<Privacy />) },
+      { path: "/leaving", element: s(<Leaving />) },
       { path: "/help", element: s(<PublicHelp />) },
       { path: "/start/*", element: s(<Onboarding />) },
       { path: "/who", element: <Who /> },
@@ -61,7 +63,7 @@ export const routes: RouteObject[] = [
       ...(LessonDev ? [{ path: "/dev/lesson", element: s(<LessonDev />) }] : []),
       ...(AvatarDev ? [{ path: "/dev/avatar", element: s(<AvatarDev />) }] : []),
       ...(DeskDev ? [{ path: "/dev/desk", element: s(<DeskDev />) }] : []),
-      { path: "*", element: <NotFound /> },
+      { path: "*", element: s(<NotFound />) },
     ],
   },
 ];

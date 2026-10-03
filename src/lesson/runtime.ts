@@ -72,6 +72,9 @@ export interface LessonState {
   replySeq: number | null;
   /** Her words for replySeq (text lanes), so the turn can be fetched and spoken again when no clip is buffered. */
   replyText: string | null;
+  /** When a held answer for an EARLIER, page-hide-closed lesson came back as a disclosure (TurnResponse.late with a
+   *  safeguard move): the Desk raises the Help sheet with the helplines, though that lesson stays closed. */
+  lateSafeguard: number | null;
   debug: Record<string, unknown> | null;
 }
 
@@ -157,6 +160,7 @@ const initialState = (mode: LessonMode = "voice"): LessonState => ({
   outboxVolatile: false,
   replySeq: null,
   replyText: null,
+  lateSafeguard: null,
 });
 
 interface ChildInput {
@@ -405,8 +409,10 @@ export class LessonRuntime {
             continue;
           }
           try {
-            await this.outbox.resend(rec.key, id, (r, signal) => this.api.turn(r, signal));
+            const r = await this.outbox.resend(rec.key, id, (req, signal) => this.api.turn(req, signal));
             sent = true;
+            // Safety by predicate: a late answer that was a disclosure still reaches the helplines.
+            if (r?.late && (r.move?.kind === "safeguard" || r.teacherReply)) this.store.set({ lateSafeguard: Date.now() });
           } catch (err) {
             const cause = err instanceof OutboxHeld ? err.cause : err;
             const status = cause instanceof ApiError ? cause.status : undefined;
