@@ -1769,3 +1769,8 @@ textReply history maps every row through `scrubbed`; turn() `heard` scrubbed; gr
 **Encouraging is judged on a 1-2 s clip with the nod, not a still.** (2026-10-03)
 - Rationale: 0 of 108 judgements over about 29 still designs on two faces (v3 17 variants, stylised 12). It reads as warm, sometimes playful.
 - Reverse if a still variant reaches 70% on the same judge.
+
+
+<!-- merged from inbox/owner-2026-10-03c.json -->
+## teacher-human-first-gpu (2026-10-03)
+Owner, after seeing the bake-off: none of the three looks is good enough. The main loop picks the interim look; the realistic human direction is to be taken as far as possible once an Azure GPU is available (neural head reconstruction from portraits, texture synthesis). Only then does the owner decide between human and a cartoon or animation model. The in-house rule stands: no contracted artist. **Reverse** to a stylised or cartoon model if the GPU-backed human face still fails the owner's eye test.

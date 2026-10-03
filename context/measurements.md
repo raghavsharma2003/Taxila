@@ -1116,3 +1116,8 @@ Commands: `node --test tests/teacher-name.test.mjs tests/lesson-safety.test.mjs`
 - Gates: aligned-viseme closures are 9/9 in every arm. ai-portrait-wrap fails G6 (teeth outside lips 4 → 12) and has 27 garment poke-throughs; v3 and stylised have 0.
 - Frame times: SwiftShader p50 on a host loaded to a different level in each arm, so they are not comparable and not phone numbers.
 - Sources: `docs/design/teacher/bakeoff/*/renders/emotion-check*.json` and `measure*.json`.
+
+
+<!-- merged from inbox/owner-2026-10-03c.json -->
+## codex-pack-landed (2026-10-03)
+Owner's Codex run (built-in image tool, model id not exposed), batches B00-B13 on branch claude/blissful-mayer-icwe2j, final commit efc8359. INDEX.json lists 399 entries: 386 done and QA-passed (size, format, transparency, colour, hash, provenance), 6 failed after three attempts and 7 skipped because a reference failed. Failed: bg/who-wide (framing), bg/garden-panorama (seam), topics/bead-pattern (sequence), garden/rose-bush-sprout (mound alignment), brand/mark (flat fill), teacher-ref/arjun/visemes/tongue-curl (anatomy). Skipped: bg/who-phone and app-icon, adaptive-foreground, adaptive-background, monochrome, splash-light and splash-dark (all downstream of brand/mark). Codex advised a human review of the skin-review scenes and the states/something-wrong paw vignette.
