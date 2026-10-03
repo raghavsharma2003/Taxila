@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "b1-desk-battery-run-2026-10-03",
+   "kind": "measurement",
+   "title": "B1 Desk battery 97/97 (tests/e2e-design-b1.mjs, headless Chromium, dev server, scripted Director + clock-driven voice, n=1 run): 'Got it' 45 ms after Done (bar 150); lamp/chime/haptic marks within 0.5 ms (bar 17); T2 8 ms after an offline send; RC 14 ms after reconnect; T1 at 8.3 s; 0 answers lost",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "b1-desk-battery-run-2026-10-03",
+   "rel": "supersedes",
+   "dst": "b1-desk-measured-2026-10-03"
+  }
+ ],
+ "md": {
+  "measurements": "## b1-desk-battery-run-2026-10-03\nRun log: docs/design/build/b1/run-2026-10-03.log (97/97). 'Got it' 45 ms after Done; typed Send also < 150 ms; performance marks floor:your_turn / earcon:turn / haptic:your_turn within 0.5 ms; T2 visible 8 ms after the offline send; RC ('Back online.' / 'Sent') 14 ms after the link returned; T1 at 8,326 ms; the offline answer reached the scripted server after reconnect with nothing left held. V-SIG-3/4 used a 0.5% region-diff bar on dock + card (the spec's 6% is for whole frames). Method: headless Chromium (SwiftShader), Vite dev server, REAL LessonRuntime/outbox/floor/signals; Director and voice simulated (src/child/lesson/dev/script.ts). Not a device or child measurement.\n"
+ }
+}
