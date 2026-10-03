@@ -179,6 +179,9 @@ void main() {
     float open = clamp(uMouthOpen * 2.2, 0.0, 1.0);
     float occ = mix(0.16, 0.62, open) * exp(-depth / mix(0.008, 0.016, open));
     if (region == 1) occ = mix(0.34, 0.95, open) * exp(-depth / mix(0.011, 0.022, open));   // procedural-v3
+    // merged: an open smile reads as a mouth, not a void: the tongue and the back of the mouth keep a floor of soft,
+    // warm light (a black interior behind gappy teeth read as a grimace, VERDICT), still darker with depth
+    if (region == 2) occ = max(occ, mix(0.22, 0.55, open) * exp(-depth / 0.03));
     float gum = clamp((vRegion - 1.0) / 0.45, 0.0, 1.0);
     vec3 alb = region == 1 ? mix(uTeeth, uGum, gum) : (region == 2 ? uTongue : uBag);
     float nl = clamp(dot(N, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -187,7 +190,7 @@ void main() {
       vec3 H = normalize(L + V);
       col += uKeyColor * pow(max(dot(N, H), 0.0), 60.0) * 0.12 * occ * (1.0 - gum);
     }
-    if (region == 3) col = uBag * (0.15 + 0.5 * occ);
+    if (region == 3) col = uBag * (0.15 + 0.5 * occ) + uBag * 1.6 * open * exp(-depth / 0.025);
   }
   gl_FragColor = vec4(col, 1.0);
   #include <tonemapping_fragment>

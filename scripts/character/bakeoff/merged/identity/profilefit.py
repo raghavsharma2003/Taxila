@@ -75,6 +75,11 @@ def measure(a):
     lim = 0.006
     nF = np.clip(np.nan_to_num(dF), -lim, lim) * a.step
     nU = np.clip(np.nan_to_num(dU), -lim, lim) * a.step
+    parts = a.parts.split(",")
+    if "front" not in parts:
+        nF = nF * 0
+    if "under" not in parts:
+        nU = nU * 0
     # smooth the update along its grid (three taps), so a noisy silhouette row cannot carve a groove
     k = np.array([0.25, 0.5, 0.25])
     nF = np.convolve(np.pad(nF, 1, mode="edge"), k, "valid"); nU = np.convolve(np.pad(nU, 1, mode="edge"), k, "valid")
@@ -123,6 +128,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("mode")
     ap.add_argument("--ref"); ap.add_argument("--reflm"); ap.add_argument("--render"); ap.add_argument("--cam")
-    ap.add_argument("--corr", required=True); ap.add_argument("--step", type=float, default=0.7)
+    ap.add_argument("--corr", required=True); ap.add_argument("--step", type=float, default=0.7); ap.add_argument("--parts", default="front,under")
     a = ap.parse_args()
     measure(a)

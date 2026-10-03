@@ -26,6 +26,7 @@ ap.add_argument("--reset", action="store_true")
 ap.add_argument("--no-profile", action="store_true")
 ap.add_argument("--depth", type=float, default=0.6, help="gain of the 3/4 depth term (0 = off)")
 ap.add_argument("--front", type=float, default=1.0, help="gain of the frontal x/z term")
+ap.add_argument("--parts", default="front,under", help="profile parts fed back")
 a = ap.parse_args()
 ROOT = "/home/user/Taxila"
 CH = os.environ.get("CHAR_HOME", "/tmp/claude-0/char")
@@ -110,7 +111,7 @@ for it in range(a.iters + 1):
         r = subprocess.run(["python3", f"{S}/identity/profilefit.py", "measure", "--ref", f"{D}/refs/teal/profile90_left.png",
                             "--reflm", f"{D}/refs/teal/landmarks.json", "--render", f"{SHOTS}/teal_profile.png",
                             "--cam", f"{SHOTS}/teal_profile.json", "--corr", profF if it < a.iters else f"{SHOTS}/profile_final.json",
-                            "--step", str(a.pstep if it < a.iters else 0.0)], cwd=ROOT, capture_output=True, text=True)
+                            "--step", str(a.pstep if it < a.iters else 0.0), "--parts", a.parts], cwd=ROOT, capture_output=True, text=True)
         row["profile"] = r.stdout.strip()[-200:]
     log.append(row); print(json.dumps(row), flush=True)
     if it == a.iters:

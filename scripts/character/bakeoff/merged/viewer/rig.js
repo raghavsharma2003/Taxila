@@ -53,7 +53,7 @@ export async function loadTeacher(renderer, url, opts = {}) {
     const u = {
       tAlbedo: { value: s.map }, tLUT: { value: LUT },
       uTeeth: { value: new THREE.Vector3(0.64, 0.58, 0.47) }, uGum: { value: new THREE.Vector3(0.30, 0.10, 0.09) },
-      uTongue: { value: new THREE.Vector3(0.40, 0.13, 0.11) }, uBag: { value: new THREE.Vector3(0.09, 0.022, 0.018) },
+      uTongue: { value: new THREE.Vector3(0.46, 0.16, 0.14) }, uBag: { value: new THREE.Vector3(0.16, 0.045, 0.04) },   // merged: a warm dark red, not near-black
       uAlbedoGain: { value: new THREE.Vector3(1, 1, 1) },
       uMouthOpen: { value: 0 }, uMouthFront: { value: new THREE.Vector3() },
       uFlush: { value: 0 }, uCheekL: { value: new THREE.Vector3() }, uCheekR: { value: new THREE.Vector3() }, uSpec: { value: 0.42 },

@@ -642,7 +642,12 @@ Cl = card_tex("eyelashes", look["lashes"])
 C = np.zeros((1024, 2048, 4), np.float32)
 bc = lin2srgb(browc)
 C[:, :1024, :3] = bc
-C[:, :1024, 3] = np.clip(Cb[:, :, 3] * 1.6, 0, 1)
+# merged: on the projected face the brows are already in the albedo (the reference's own brows), so the H brow cards are
+# THINNED to a sparse hair layer over them (look.browCards.alpha, default 1.6 = v3): full cards over projected brows
+# read as drawn-on (VERDICT, ai-portrait-wrap defect 3). The cards also take the projected brows' tone, not pure brow hex.
+_bcA = float(look.get("browCards", {}).get("alpha", 1.6))
+_bcG = float(look.get("browCards", {}).get("alphaGamma", 1.0))
+C[:, :1024, 3] = np.clip((Cb[:, :, 3] ** _bcG) * _bcA, 0, 1)
 C[:, 1024:, :3] = lin2srgb(np.array([0.012, 0.010, 0.009]))
 C[:, 1024:, 3] = Cl[:, :, 3]
 Image.fromarray(to8(C), "RGBA").save(os.path.join(OUT, "cards_atlas.png"), optimize=True)
