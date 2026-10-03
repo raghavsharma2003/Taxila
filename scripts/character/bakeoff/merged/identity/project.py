@@ -251,6 +251,33 @@ def apply(G):
     hs_strict = _t * _t * (3 - 2 * _t)
     alpha = alpha * (1 - hs_strict)
     G["PJ_ALPHA"] = alpha
+    # merged (seams): where the projection fades out (under the chin, the neck, the ears, the temples) the procedural
+    # skin showed through LIGHTER than the projected skin (a pale band under the jaw, the temple flaps). The procedural
+    # maps take the projection's low-frequency tone: per channel, the ratio projected / procedural averaged on a 5 mm
+    # voxel grid over well-covered texels (alpha > 0.5), diffused (normalised Gaussian, 1.5 cm, with a 6 cm fallback
+    # where nothing is near), clamped to 0.6..1.6, multiplies the procedural albedo before the blend.
+    from scipy import ndimage as _nd
+    _h = 0.005
+    _lo = Pt.min(0)
+    _ix = np.floor((Pt - _lo) / _h).astype(int)
+    _sh = tuple(_ix.max(0) + 1)
+    _w = (alpha > 0.5).astype(np.float64)
+    _flat = np.ravel_multi_index(_ix.T, _sh)
+    _W = np.bincount(_flat, _w, minlength=int(np.prod(_sh))).reshape(_sh)
+    _ratio = np.ones((len(Pt), 3))
+    _Ws, _Wb = _nd.gaussian_filter(_W, 3.0), _nd.gaussian_filter(_W, 12.0)
+    for _c in range(3):
+        _Sp = np.bincount(_flat, Ap[:, _c] * _w, minlength=_W.size).reshape(_sh)
+        _Sa = np.bincount(_flat, A[:, _c] * _w, minlength=_W.size).reshape(_sh)
+        _rs = _nd.gaussian_filter(_Sp, 3.0) / np.maximum(_nd.gaussian_filter(_Sa, 3.0), 1e-9)
+        _rb = _nd.gaussian_filter(_Sp, 12.0) / np.maximum(_nd.gaussian_filter(_Sa, 12.0), 1e-9)
+        _t = np.clip(_Ws / max(float(_Ws.max()) * 0.02, 1e-9), 0, 1)
+        _r = _rs * _t + _rb * (1 - _t)
+        _ratio[:, _c] = np.clip(_r.ravel()[_flat], 0.6, 1.6)
+    G["PJ_TONE"] = {"ratioMedian": np.round(np.median(_ratio, 0), 3).tolist(), "ratioP5": np.round(np.percentile(_ratio, 5, 0), 3).tolist(),
+                    "ratioP95": np.round(np.percentile(_ratio, 95, 0), 3).tolist()}
+    A = A * _ratio
+    A_H = A_H * _ratio
     A2 = A * (1 - alpha[:, None]) + Ap * alpha[:, None]
     A_H2 = A_H * (1 - alpha[:, None]) + Ap * alpha[:, None]
     # the scalp texels the portraits do not see (crown, back) keep the procedural hair-coloured scalp (alpha is 0 there)
@@ -269,7 +296,7 @@ def apply(G):
     Nb2 = Nb + np.stack([Nd[:, 0], Nd[:, 1], np.zeros(len(Nd))], 1) * a_n[:, None]
     Nb2 /= np.linalg.norm(Nb2, axis=1, keepdims=True)
     G["PJ_HAIR"] = hacc / np.maximum(hwacc, 1e-6) * (hwacc > 0.05)
-    rep = {"views": views_used, "chroma": G.get("PJ_CHROMA"), "g9AnchorScale": np.round(k, 4).tolist(), "coveredTexelPct": round(100 * float((alpha > 0.5).mean()), 1),
+    rep = {"views": views_used, "chroma": G.get("PJ_CHROMA"), "tone": G.get("PJ_TONE"), "g9AnchorScale": np.round(k, 4).tolist(), "coveredTexelPct": round(100 * float((alpha > 0.5).mean()), 1),
            "patchTexels": int(len(pt_))}
     json.dump(rep, open(os.path.join(G["args"].build, "projection.json"), "w"), indent=1)
     log(f"projection: {rep['coveredTexelPct']}% of skin texels at alpha > 0.5; G9 anchor scale {rep['g9AnchorScale']}")

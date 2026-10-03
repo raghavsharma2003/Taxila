@@ -88,7 +88,7 @@ async function solve(look) {
     const trace = [];
     // damped per-channel update (exponent 0.6): an undamped ratio overshot chroma back and forth; the gain kept is the
     // LAST MEASURED one, never an unmeasured extrapolation
-    let best = null;
+    let best = null, expo = 0.5, lastEL = 0;
     for (let it = 0; it < 14; it++) {
       s = summarise(await sample(hx.page, g));
       const dh = tgt.h == null ? 0 : Math.abs(hueOf(s.lab) - tgt.h);
@@ -96,7 +96,13 @@ async function solve(look) {
       trace.push({ gain: g.map((x) => +x.toFixed(4)), ...s.lab, h: hueOf(s.lab), err: +err.toFixed(3) });
       if (!best || err < best.err) best = { g: [...g], err };
       if (Math.abs(s.lab.L - tgt.L) < 0.8 && Math.abs(s.lab.C - tgt.C) < 1.2 && dh < 1.5) break;
-      g = g.map((x, c) => x * Math.max(0.5, Math.min(2.0, (tgtLin[c] / Math.max(s.lin[c], 1e-5)) ** 0.6)));
+      // merged: adaptive damping. Under the contract light L* moved ~1 per 1% of gain (twice what exponent 0.6 assumes),
+      // so the update flipped between two gains (L* 58.1 <-> 52.2, measured); the exponent halves whenever the L* error
+      // changes sign
+      const eL = s.lab.L - tgt.L;
+      if (it > 0 && Math.sign(eL) !== Math.sign(lastEL)) expo *= 0.5;
+      lastEL = eL;
+      g = g.map((x, c) => x * Math.max(0.5, Math.min(2.0, (tgtLin[c] / Math.max(s.lin[c], 1e-5)) ** expo)));
     }
     g = best.g;
     const old = L.skin.albedoGain || [1, 1, 1];
