@@ -648,3 +648,8 @@ The workflow's write-up is the prose merged from inbox/model-router-research.jso
 ## router-t-judge-split-2026-10-03 (2026-10-03)
 Re-analysis of router-bench T (n=10 turns, 2 judges): judge agreement Spearman 0.43 on model means (p=0.10), 0.46 item-level; grok judge per-turn gpt-6.1-sol vs fast 3-6, gpt-6-luna vs fast 2-6; terra-fast combined +0.50 (bootstrap 95% CI 0.05-1.00, mostly sol judge), terra-ds41 +0.30 (CI -0.40-1.20); OpenRouter arms ran reasoning effort low vs Azure none; gpt-6.1-sol 3/20 leak flags; W: taxila-fast 5/5 overall both languages at ~$0.54/1k vs brain $16.6/1k.
 The workflow's write-up is the prose merged from inbox/model-router-review.json earlier in this file; this heading ties the graph node to it.
+
+
+<!-- merged from inbox/prod-smoke-169d555.json -->
+## prod-smoke-169d555 (2026-10-03)
+Method: scripts/prod-smoke.mjs cascade, from the sandbox; n=1 lesson, 3 turns. start 1,573 ms, turns 1,518 / 2,123 / 2,031 ms, end 1,663 ms. The previous deploy was 947 / 1,218-1,345 ms. With n=3 this can't tell noise from a real regression; the sandbox eval (n=20) said grok plus the hedge plus prewarm is faster. Next: a prod-side n≥20 run. Quality: the hook compared '45,000 fans' with '4,500 km' as 'which is bigger', across different units (fix assigned to the integration agent).
