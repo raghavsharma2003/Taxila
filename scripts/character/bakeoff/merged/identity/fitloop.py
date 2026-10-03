@@ -101,12 +101,22 @@ log = []
 for it in range(a.iters + 1):
     json.dump({"mm": np.round(corr * 1000, 3).tolist(), "note": "merged fitloop.py closed-loop correction added to wrap targets"}, open(corrF, "w"))
     json.dump(L, open(LOOK, "w"), indent=2)
+    if os.path.exists(profF):      # the profile correction THIS build uses (profilefit.py measure rewrites it below)
+        import shutil as _sh
+        _sh.copy(profF, f"{SHOTS}/prof_it{it}.json")
     lm = build_and_shoot(it)
     E = {rv: err(lm, rv, y) for rv, y in {**TRAIN, **HELD}.items()}
     E["q45_at_yaw24_left"] = err(lm, "q45_left", 24)
     E["q45_at_yaw24_right"] = err(lm, "q45_right", 24)
     row = {"iter": it, **{k: round(v[1], 2) for k, v in E.items()}}
     row["yaw24_over_front"] = round(0.5 * (E["q45_at_yaw24_left"][1] + E["q45_at_yaw24_right"][1]) / E["front"][1], 3)
+    # merged: the 3/4 error at the reference's OWN yaw (21.4 / 26.0 deg): the yaw-24 render against those references
+    # carries a 2-3 deg pose mismatch that is not a shape error; both are reported, the matched one is the fit's target
+    row["q45_matched_over_front"] = round(0.5 * (E["q45_left"][1] + E["q45_right"][1]) / E["front"][1], 3)
+    # objective: both bars at once (front NME <= 1.2 %, 3/4 <= 1.5 x front), the worse of the two normalised
+    row["objective"] = round(max(E["front"][1] / 1.2, row["q45_matched_over_front"] / 1.5), 3)
+    import shutil
+    shutil.copy(corrF, f"{SHOTS}/corr_it{it}.json")
     if not a.no_profile:
         r = subprocess.run(["python3", f"{S}/identity/profilefit.py", "measure", "--ref", f"{D}/refs/teal/profile90_left.png",
                             "--reflm", f"{D}/refs/teal/landmarks.json", "--render", f"{SHOTS}/teal_profile.png",
@@ -127,5 +137,12 @@ for it in range(a.iters + 1):
     dzgl[oval] = 0
     dzgl = np.clip(dzgl, -0.004, 0.004)
     corr = corr + a.step * np.stack([dX * a.front, -dzgl * a.depth, dZ * a.front], 1)
-json.dump({"log": log, "pxPerM": 1 / PX, "step": a.step, "train": TRAIN, "heldOut": HELD, "method": __doc__.split("\n")[0]},
+# merged: keep the BEST iterate, not the last (the loop oscillated: front 0.91 -> 1.04 -> 1.34 % at step 0.6)
+best = min(log, key=lambda r: r["objective"])
+import shutil
+shutil.copy(f"{SHOTS}/corr_it{best['iter']}.json", corrF)
+if os.path.exists(f"{SHOTS}/prof_it{best['iter']}.json"):
+    shutil.copy(f"{SHOTS}/prof_it{best['iter']}.json", profF)
+print("best iteration", best["iter"], json.dumps(best), flush=True)
+json.dump({"best": best["iter"], "log": log, "pxPerM": 1 / PX, "step": a.step, "train": TRAIN, "heldOut": HELD, "method": __doc__.split("\n")[0]},
           open(f"{D}/refs/teal/fitloop.json", "w"), indent=1)

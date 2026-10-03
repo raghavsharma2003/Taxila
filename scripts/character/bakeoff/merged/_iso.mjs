@@ -1,8 +1,5 @@
 import { openHarness } from "./harness.mjs";
-const hx = await openHarness({ w: 900, h: 1100 });
+const hx = await openHarness({ w: 400, h: 500 });
 await hx.page.evaluate(() => TX.load("teal", "H"));
-for (const [nm, vis] of [["real", ["face"]], ["all", null]]) for (const y of [0, 30]) {
-  await hx.page.evaluate(([y, vis]) => { for (const [n, o] of Object.entries(TX.rig.meshes)) o.visible = !vis || vis.includes(n); TX.frame("face", y); TX.pose({ bs: {} }); TX.render(); }, [y, vis]);
-  await hx.shot(`/tmp/claude-0/char/bakeoff-merged/uv_${nm}_${y}.png`);
-}
+console.log(await hx.page.evaluate(() => Object.fromEntries(Object.entries(TX.rig.meshes).map(([n, m]) => [n, { morphs: Object.keys(m.morphTargetDictionary || {}).length, verts: m.geometry.attributes.position.count, attrs: Object.keys(m.geometry.attributes) }]))));
 await hx.close();

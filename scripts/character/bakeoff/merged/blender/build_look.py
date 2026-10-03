@@ -694,6 +694,83 @@ for k, d in CO.items():
     set_key_co(face.shape_key_add(name=k), fb + d)
 stage("correctives")
 
+# merged (fix 4, the lower-lid blob): skin near each eye is kept OUTSIDE the eye's real surface, ball AND cornea bulge
+# (make_eyes below: cornea sphere 0.693 r, apex 1.07 r), with a 0.35 mm margin, on the basis and in every key's own
+# pose. cheekSquint + eyeSquint lifted the lower lid over the cornea, whose front then showed through the skin as a
+# dark dash under the iris (delighted, playful). A push in one key is spread over that key's lid ring (Gaussian 2 mm)
+# so the lid keeps its shape. Combined poses are checked below (lid_inside_eye_surface, emotion presets).
+def _eye_surface(c, r, Pq):
+    d_ = Pq - c
+    n_ = np.linalg.norm(d_, axis=1)
+    u_ = d_ / np.maximum(n_, 1e-9)[:, None]
+    rc_ = 0.693 * r
+    t_ = np.zeros(len(Pq))
+    # the cornea under gaze up to +-15 deg yaw and pitch (the presets' range), the outermost of the nine
+    for ya_ in (-15, 0, 15):
+        for pi_ in (-15, 0, 15):
+            a_, b0_ = math.radians(ya_), math.radians(pi_)
+            fwd_ = np.array([math.sin(a_) * math.cos(b0_), -math.cos(a_) * math.cos(b0_), math.sin(b0_)])
+            cc_ = fwd_ * (1.07 * r - rc_)
+            b_ = u_ @ cc_
+            disc_ = b_ * b_ - (cc_ @ cc_ - rc_ * rc_)
+            t_ = np.maximum(t_, np.where(disc_ > 0, b_ + np.sqrt(np.maximum(disc_, 0)), 0.0))
+    return n_, u_, np.maximum(r, t_)
+
+
+_LID_M = 0.00035
+_kbs_f = face.data.shape_keys.key_blocks
+fb, FD = deltas(face)
+_skin_f = np.round(attr(face, "region")) == 0
+_eyezone = {}
+for _s in ("L", "R"):
+    _d = fb - eyeC[_s]
+    _eyezone[_s] = np.nonzero(_skin_f & (np.linalg.norm(_d, axis=1) < 1.6 * eyeR[_s]) & (-_d[:, 1] > 0.15 * eyeR[_s]))[0]
+
+
+def _conform(Pq):
+    """Radial push (N,3) that puts every eye-zone skin vertex at least margin outside the eye surface."""
+    push = np.zeros_like(Pq)
+    for _s in ("L", "R"):
+        z_ = _eyezone[_s]
+        n_, u_, sr_ = _eye_surface(eyeC[_s], eyeR[_s], Pq[z_])
+        need = np.clip(sr_ + _LID_M - n_, 0, None)
+        push[z_] = u_ * need[:, None]
+    return push
+
+
+def _spread_push(Pq, push):
+    src = np.nonzero(np.linalg.norm(push, axis=1) > 1e-7)[0]
+    if not len(src):
+        return push
+    zone = np.concatenate([_eyezone["L"], _eyezone["R"]])
+    dd = np.linalg.norm(Pq[zone][:, None, :] - Pq[src][None, :, :], axis=2)
+    w_ = np.exp(-(dd / 0.002) ** 2)
+    sm = (w_ @ push[src]) / np.maximum(w_.sum(1), 1e-9)[:, None] * np.clip(w_.sum(1), 0, 1)[:, None]
+    out = push.copy()
+    keep = np.linalg.norm(sm, axis=1) > np.linalg.norm(push[zone], axis=1)
+    out[zone[keep]] = sm[keep]
+    return out
+
+
+_lc_rep = {}
+_pb = _spread_push(fb, _conform(fb))
+_lc_rep["basis"] = int((np.linalg.norm(_pb, axis=1) > 1e-6).sum())
+fb2 = fb + _pb
+for kb in _kbs_f:
+    if kb.name == _kbs_f[0].name:
+        continue
+    st = fb2 + FD[kb.name]
+    pk = _spread_push(st, _conform(st))
+    if np.abs(pk).max() > 1e-7:
+        _lc_rep[kb.name] = round(float(np.linalg.norm(pk, axis=1).max() * 1000), 2)
+    set_key_co(kb, st + pk)
+set_key_co(_kbs_f[0], fb2)
+face.data.vertices.foreach_set("co", fb2.ravel())   # the mesh follows the Basis key (the rest-smile lesson)
+face.data.update()
+report["lidSurfaceConform"] = {"marginMm": _LID_M * 1000, "basisVerts": _lc_rep.pop("basis"), "keysPushedMaxMm": _lc_rep}
+fb, FD = deltas(face)
+stage("lid conform")
+
 # ------------------------------------------------------------------ our eyes (sclera/iris ball + cornea bulge)
 def make_eyes(nu, nv, name):
     bm = bmesh.new()
@@ -944,6 +1021,26 @@ rest_pen = lid_pen(fb)
 report["gates"]["lid_inside_eyeball_count"] = {k: {s_: v[s_] - rest_pen[s_] for s_ in v}
                                                for k, v in report["gates"]["lid_inside_eyeball_count"].items()}
 report["gates"]["lid_inside_eyeball_count"]["_note"] = "increase over rest (rest baseline %s)" % rest_pen
+# merged: skin vertices inside the eye's real surface (ball + cornea), no margin, at rest and at each emotion preset
+# (its bs only; gaze rotates the ball at runtime and is not modelled). Bar 0 everywhere.
+def _inside_surface(state):
+    o = {}
+    for _s in ("L", "R"):
+        z_ = _eyezone[_s]
+        n_, u_, sr_ = _eye_surface(eyeC[_s], eyeR[_s], state[z_])
+        o[_s] = int((n_ < sr_ - 1e-5).sum())
+    return o
+
+
+_lis = {"rest": _inside_surface(fb)}
+for _m in _re.finditer(r"^  (\w+): \{ bs: (\{[^}]*\})", _pj, _re.M):
+    _bs = json.loads(_re.sub(r"(\w+):", r'"\1":', _m.group(2)))
+    st = fb.copy()
+    for _k, _w in _bs.items():
+        if _k in FD:
+            st = st + _w * FD[_k]
+    _lis["emotion_" + _m.group(1)] = _inside_surface(st)
+report["gates"]["lid_inside_eye_surface"] = _lis
 stage("validate")
 
 # ------------------------------------------------------------------ face UVs: MH islands, re-packed for the bust
