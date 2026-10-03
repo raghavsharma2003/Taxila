@@ -8,6 +8,7 @@ import { routes as tts } from "./routes/tts.js";
 import { routes as parent } from "./routes/parent.js";
 import { routes as modules } from "./routes/modules.js";
 import { routes as voice } from "./routes/voice.js";
+import { routes as tutor } from "./routes/tutor.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor });
 export { handle, register };

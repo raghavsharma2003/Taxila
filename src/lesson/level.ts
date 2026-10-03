@@ -26,12 +26,14 @@ export class LevelMeter {
   private analyser: AnalyserNode | null = null;
   private buf: Float32Array<ArrayBuffer> | null = null;
   private listeners = new Set<(v: number) => void>();
+  private taps = new Set<(a: AnalyserNode | null) => void>();
 
   attach(analyser: AnalyserNode): void {
     this.analyser = analyser;
     this.buf = new Float32Array(analyser.fftSize);
     active.add(this);
     if (!raf && typeof requestAnimationFrame === "function") raf = requestAnimationFrame(frame);
+    for (const fn of [...this.taps]) fn(analyser);
   }
 
   detach(): void {
@@ -40,6 +42,19 @@ export class LevelMeter {
     active.delete(this);
     this.value = 0;
     this.notify();
+    for (const fn of [...this.taps]) fn(null);
+  }
+
+  /**
+   * The audio tap behind this meter, for the 3D tutor's lip driver (AVATAR.md §2.2 "LevelMeter.onTap"): fires now
+   * with the current analyser (if attached) and again on every attach (each reconnect / new stream makes a new
+   * one) and with null on detach. A consumer may connect its OWN analysis-only node to the analyser's output (an
+   * AnalyserNode passes its input through); it must never connect anything to a destination.
+   */
+  onTap(fn: (a: AnalyserNode | null) => void): () => void {
+    this.taps.add(fn);
+    if (this.analyser) fn(this.analyser);
+    return () => this.taps.delete(fn);
   }
 
   /** Per-frame callback; use it to drive a mouth or meter without re-rendering React. */
