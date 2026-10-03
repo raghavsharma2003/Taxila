@@ -121,7 +121,7 @@ def detail_map(Pt, NZ, Z, lipT, earT, scalp, eyeC, eyeR):
                    + 0.25, 0, 1) * (1 - lip) * face * (1 - 0.6 * Z["lid"])
     sss = np.clip(0.6 * Z["cheek"] + 0.6 * Z["nose"] + 0.7 * earT + 0.8 * lip + 0.5 * Z["lid"] + 0.4 * Z["under"] + 0.2, 0, 1)
     # moisture: the vermilion centre, the lid margins (a thin ring at the lash line), the inner corners
-    wet = 0.85 * _ss(0.55, 0.95, lip)
+    wet = 0.35 * _ss(0.6, 0.95, lip)          # natural lips, not gloss (teacher register)
     for side in ("L", "R"):
         c = eyeC[side]
         d = np.linalg.norm(Pt - c, axis=1) / eyeR

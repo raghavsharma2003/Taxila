@@ -158,8 +158,11 @@ def apply(G):
         # scalp texels may take HAIR pixels (anything that is not background or eye): a painted hairline that matches
         # the portrait instead of a procedural one (the procedural scalp read as a bare wedge at the parting)
         border = np.concatenate([img[:8].reshape(-1, 3), img[:, :8].reshape(-1, 3), img[:, -8:].reshape(-1, 3)])
-        bg = np.linalg.norm(img - np.median(border, 0), axis=-1) < 0.06
-        bg = ndimage.binary_opening(bg, iterations=2)
+        # background: bright and unsaturated (the generated backdrop is light warm grey with a soft gradient; a
+        # border-colour distance of 0.06 missed its gradient and painted it onto the scalp at the parting)
+        mx, mn = img.max(-1), img.min(-1)
+        bg = ((Y > 0.45) & ((mx - mn) / np.maximum(mx, 1e-4) < 0.22)) | (np.linalg.norm(img - np.median(border, 0), axis=-1) < 0.08)
+        bg = ndimage.binary_dilation(ndimage.binary_opening(bg, iterations=2), iterations=3)
         okh = ndimage.gaussian_filter((~bg & ~eyes & (np.arange(H_)[:, None] < lm_all[152, 1])).astype(np.float32), 1.5)
 
         # ---- visibility: z-buffer of our skin triangles in this camera

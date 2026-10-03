@@ -12,22 +12,23 @@
 // rows were each ~0.5x too small to read on this face (37% vision self-check); the register rules hold (no sad, no
 // fear, no glamour; concern stays warm). Signatures:
 //   warm        closed-mouth Duchenne: smile + cheek raise + lower-lid crinkle, soft 4 deg tilt
-//   encouraging raised brows + pressed-lip smile ("you can do it"), a nod pose (chin down 7 deg) + lean in
+//   encouraging raised brows + pressed-lip smile ("you can do it"), a nod pose (chin down 5 deg) + lean in. NOT legible
+//               to the judge: 0/6 on every one of 17 tried variants (always read as warm); kept as the most honest design
 //   curious     inner brows up, eyes a little wide, lips softly pursed, a 9 deg tilt with the chin up
 //   thinking    (unchanged: 100% in iteration 2) gaze averted up and to the side, pressed mouth to one side
 //   listening   no smile: an attentive squint, the head turned and tilted (ear to the child), gaze held, lean in
 //   concerned   the oblique brow (inner up + knit), lips pressed, a slight downturn, tilt + chin down; warmth kept
-//   delighted   OPEN-mouth Duchenne: jaw 0.24, upper teeth showing, big cheek raise, crinkled eyes, head back
+//   delighted   OPEN-mouth Duchenne: jaw 0.32, upper teeth showing (upperUp 0.7), big cheek raise, crinkled eyes, head back
 //   playful     a lopsided smile pulled to one side, the opposite brow raised, a half-wink, a sideways tilt + glance
 //   surprised   brows high, eyes wide, jaw dropped with a soft O, head back
 export const EMOTIONS = {
   warm: { bs: { mouthSmileLeft: 0.5, mouthSmileRight: 0.5, cheekSquintLeft: 0.38, cheekSquintRight: 0.38, eyeSquintLeft: 0.16, eyeSquintRight: 0.16, mouthDimpleLeft: 0.08, mouthDimpleRight: 0.08, browInnerUp: 0.06 }, head: [1, 0, 4], env: [600, 1500, 900] },
-  encouraging: { bs: { mouthSmileLeft: 0.36, mouthSmileRight: 0.36, mouthPressLeft: 0.22, mouthPressRight: 0.22, browInnerUp: 0.42, browOuterUpLeft: 0.38, browOuterUpRight: 0.38, eyeWideLeft: 0.12, eyeWideRight: 0.12, cheekSquintLeft: 0.18, cheekSquintRight: 0.18, mouthRollLower: 0.12 }, head: [7, 0, 0], lean: 1.0, env: [400, 1200, 800] },
+  encouraging: { bs: { mouthSmileLeft: 0.35, mouthSmileRight: 0.35, mouthPressLeft: 0.3, mouthPressRight: 0.3, browInnerUp: 0.5, browOuterUpLeft: 0.5, browOuterUpRight: 0.5, eyeWideLeft: 0.15, eyeWideRight: 0.15 }, head: [5, 0, 0], lean: 0.3, env: [400, 1200, 800] },
   curious: { bs: { browInnerUp: 0.55, browOuterUpLeft: 0.42, browOuterUpRight: 0.3, eyeWideLeft: 0.22, eyeWideRight: 0.22, mouthPucker: 0.32, mouthFunnel: 0.08, mouthSmileLeft: 0.12, mouthSmileRight: 0.12, jawOpen: 0.03 }, head: [-3, 4, 9], env: [350, 1800, 700] },
   thinking: { bs: { browDownLeft: 0.06, browDownRight: 0.06, browInnerUp: 0.06, mouthPressLeft: 0.08, mouthPressRight: 0.08, mouthLeft: 0.04 }, head: [-2, -3, 0], gaze: [-14, 12], env: [300, 3500, 300] },
   listening: { bs: { eyeSquintLeft: 0.3, eyeSquintRight: 0.3, browInnerUp: 0.12, browDownLeft: 0.05, browDownRight: 0.05, mouthPressLeft: 0.06, mouthPressRight: 0.06, mouthSmileLeft: 0.03, mouthSmileRight: 0.03 }, head: [3, 10, 9], gaze: [-9, 0], lean: 0.8, env: [120, 0, 280] },
-  concerned: { bs: { browInnerUp: 0.62, browDownLeft: 0.32, browDownRight: 0.32, mouthPressLeft: 0.26, mouthPressRight: 0.26, mouthFrownLeft: 0.14, mouthFrownRight: 0.14, mouthShrugLower: 0.1, eyeSquintLeft: 0.08, eyeSquintRight: 0.08 }, head: [4, 0, 7], gaze: [0, -2], env: [700, 2500, 1200] },
-  delighted: { bs: { mouthSmileLeft: 0.78, mouthSmileRight: 0.78, jawOpen: 0.24, mouthUpperUpLeft: 0.35, mouthUpperUpRight: 0.35, mouthLowerDownLeft: 0.12, mouthLowerDownRight: 0.12, cheekSquintLeft: 0.68, cheekSquintRight: 0.68, eyeSquintLeft: 0.32, eyeSquintRight: 0.32, browOuterUpLeft: 0.25, browOuterUpRight: 0.25, browInnerUp: 0.12 }, head: [-5, 0, 2], flush: 0.04, env: [350, 1200, 900] },
+  concerned: { bs: { browInnerUp: 0.9, browDownLeft: 0.25, browDownRight: 0.25, mouthPressLeft: 0.2, mouthPressRight: 0.2, mouthFrownLeft: 0.25, mouthFrownRight: 0.25, mouthPucker: 0.1, eyeWideLeft: 0.08, eyeWideRight: 0.08 }, head: [7, 0, 9], gaze: [0, -2], lean: 0.6, env: [700, 2500, 1200] },
+  delighted: { bs: { mouthSmileLeft: 0.9, mouthSmileRight: 0.9, jawOpen: 0.32, mouthUpperUpLeft: 0.7, mouthUpperUpRight: 0.7, mouthLowerDownLeft: 0.25, mouthLowerDownRight: 0.25, cheekSquintLeft: 0.8, cheekSquintRight: 0.8, eyeSquintLeft: 0.45, eyeSquintRight: 0.45, browOuterUpLeft: 0.35, browOuterUpRight: 0.35, browInnerUp: 0.2 }, head: [-7, 0, 3], flush: 0.04, env: [350, 1200, 900] },
   playful: { bs: { mouthSmileLeft: 0.58, mouthSmileRight: 0.08, mouthLeft: 0.18, cheekSquintLeft: 0.45, eyeSquintLeft: 0.42, eyeBlinkLeft: 0.22, browOuterUpRight: 0.6, browInnerUp: 0.1, browDownLeft: 0.12, mouthDimpleLeft: 0.2 }, head: [1, 6, 10], gaze: [9, 2], env: [300, 1000, 600] },
   surprised: { bs: { browInnerUp: 0.75, browOuterUpLeft: 0.75, browOuterUpRight: 0.75, eyeWideLeft: 0.6, eyeWideRight: 0.6, jawOpen: 0.32, mouthFunnel: 0.22, mouthSmileLeft: 0.1, mouthSmileRight: 0.1 }, head: [-5, 0, 0], env: [120, 400, 500] },
 };

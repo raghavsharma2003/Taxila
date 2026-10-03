@@ -52,7 +52,7 @@ export async function loadTeacher(renderer, url, opts = {}) {
     const defs = {};
     const u = {
       tAlbedo: { value: s.map }, tLUT: { value: LUT },
-      uTeeth: { value: new THREE.Vector3(0.6, 0.55, 0.46) }, uGum: { value: new THREE.Vector3(0.30, 0.10, 0.09) },
+      uTeeth: { value: new THREE.Vector3(0.64, 0.58, 0.47) }, uGum: { value: new THREE.Vector3(0.30, 0.10, 0.09) },
       uTongue: { value: new THREE.Vector3(0.40, 0.13, 0.11) }, uBag: { value: new THREE.Vector3(0.09, 0.022, 0.018) },
       uAlbedoGain: { value: new THREE.Vector3(1, 1, 1) },
       uMouthOpen: { value: 0 }, uMouthFront: { value: new THREE.Vector3() },
