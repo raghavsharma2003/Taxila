@@ -1,6 +1,7 @@
 // Conductor configuration as data. Values tagged [U] are unmeasured design defaults (CONDUCTOR.md tags);
 // change them here, never inline in decide/planDay, so cfgDigest (PlannerInputs.build) moves with them.
 import { jcs, sha256hex } from "./ids.js";
+import { JOB_BUDGET as REPORT_BUDGET } from "../reports/config.js";
 
 export const STATE_V = 1;
 export const PLANNER_V = "code-planner@1";
@@ -48,7 +49,15 @@ export const WAKE = { dayStart: { at: "05:00", windowSec: 3600 }, night: { at: "
 export const JOB_KINDS = {
   "memory.consolidate": { lane: "fast", priority: 1, purpose: "memory", budgetMicroUsd: 20_000, maxAttempts: 5, leaseSec: 60, allowedIn: ["paused", "in_lesson"] },
   "kt.refold": { lane: "fast", priority: 1, purpose: "learning_profile", budgetMicroUsd: 0, maxAttempts: 5, leaseSec: 60, allowedIn: ["in_lesson"], notBeforeLessonEnd: true },
+  // End-of-day parent reports (server/reports/jobs.js; enqueued by decide.js foldNight). report.daily:{child}:{day} is the
+  // pull-only daily note (X11); parent.letter:{child}:{isoWeek} the weekly letter body (X8; the Notifier send is M1).
+  // budgetMicroUsd caps the Lane B writer (taxila-brain ordering only); over budget the report ships Lane A order.
+  // Not allowed in safety_hold (the protocol decides what reaches the family); allowed while paused or in a lesson.
+  "report.daily": { lane: "fast", priority: 3, purpose: "core_tutoring", budgetMicroUsd: REPORT_BUDGET.daily, maxAttempts: 4, leaseSec: 120, allowedIn: ["paused", "in_lesson"] },
+  "parent.letter": { lane: "fast", priority: 2, purpose: "core_tutoring", budgetMicroUsd: REPORT_BUDGET.weekly, maxAttempts: 4, leaseSec: 120, allowedIn: ["paused", "in_lesson"] },
 };
+/** A report job runs this long after its learning day closes (04:00 local), so the window's evidence is in [U]. */
+export const REPORT_GRACE_MIN = 10;
 /** Test-only kinds registered at runtime (tests/conductor-*.test.mjs). */
 export function registerJobKind(kind, spec) { JOB_KINDS[kind] = spec; }
 

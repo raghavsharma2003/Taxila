@@ -23,6 +23,10 @@ import { allowSpeech, DEFAULT_VOICE, MAX_TTS_CHARS } from "./tts.js";
 import { MIN_DELAY_MS } from "../learner/bkt.js";
 import { loadLive } from "../learner/live.js";
 import { beliefFor, conceptCard } from "../comprehension/index.js";
+import { CADENCES, LANGS, LANG_OF_PREF } from "../reports/config.js";
+import { learningDay, isoWeek } from "../conductor/clock.js";
+import { listReports, previewReport, reportById, windowOf } from "../reports/index.js";
+import { outcomeName } from "../learner/kt/outcomes.js";
 
 export const PIN_RE = /^\d{4,6}$/;
 export const PIN_MAX_TRIES = 5;
@@ -668,6 +672,115 @@ export function hafteSpeech(name, d) {
   return parts.join(" ").replace(/\s+\./g, ".");
 }
 
+// ───────────────────────────── reports (server/reports/**) ─────────────────────────────
+
+const REPORT_ID = /^\d{1,18}$/;
+const missingTable = (e) => e?.code === "42P01";          // parent_report not migrated yet (sql/009_parent_report.sql)
+/** The stored report as the client reads it: lines per language, never factIds (the drawer resolves those server-side). */
+const reportOut = (r) => ({
+  id: String(r.id), cadence: r.cadence, period: r.period, window: { from: r.window_from ?? r.window?.from, to: r.window_to ?? r.window?.to },
+  k7: !!r.k7, preview: !r.id, createdAt: r.created_at ?? null,
+  claims: r.claims.map((c) => ({ id: c.id, section: c.section, shapeId: c.shapeId, facts: c.factIds.length })),
+  renders: Object.fromEntries(Object.entries(r.renders).map(([lang, R]) => [lang, { title: R.title.text,
+    lines: R.lines.filter((l) => !l.voiceOnly).map((l) => ({ key: l.key, kind: l.kind, claimId: l.claimId ?? null, section: l.section, text: l.text })),
+    voice: R.voice?.text ?? null }])),
+});
+const tzOf = async (childId) => (await one("select tz from child_routine where child_id = $1", [childId]))?.tz || "Asia/Kolkata";
+
+/** GET /api/parent/reports?childId= → the stored daily notes and weekly letters, newest first. */
+async function reports(req, res) {
+  const { child } = await requireParentChild(req, query(req).get("childId"));
+  let rows = [];
+  try { rows = await listReports({ q }, child.id); } catch (e) { if (!missingTable(e)) throw e; }
+  const tz = await tzOf(child.id);
+  const today = learningDay(new Date(), tz);
+  send(res, 200, { reports: rows.map((r) => ({ id: String(r.id), cadence: r.cadence, period: r.period, createdAt: r.created_at })),
+    today, thisWeek: isoWeek(today), lang: LANG_OF_PREF[child.language_pref] ?? "en", langs: LANGS });
+}
+
+/**
+ * GET /api/parent/report?childId=&id=  → one stored report.
+ * GET /api/parent/report?childId=&cadence=daily|weekly&period=today|thisweek|YYYY-MM-DD|YYYY-Www&preview=1 → today's /
+ * this week's notes so far: Lane A only, never stored, no model call (the night job writes the stored one).
+ */
+async function report(req, res) {
+  const sp = query(req);
+  const { child } = await requireParentChild(req, sp.get("childId"));
+  const id = sp.get("id");
+  if (id) {
+    if (!REPORT_ID.test(id)) throw bad("invalid report id");
+    let r = null;
+    try { r = await reportById({ q }, child.id, id); } catch (e) { if (!missingTable(e)) throw e; }
+    if (!r) throw new HttpError(404, "report not found");
+    return send(res, 200, { report: reportOut(r) });
+  }
+  const cadence = sp.get("cadence");
+  if (!CADENCES.includes(cadence)) throw bad("cadence must be daily or weekly");
+  const tz = await tzOf(child.id);
+  const today = learningDay(new Date(), tz);
+  let period = sp.get("period") || (cadence === "daily" ? "today" : "thisweek");
+  if (period === "today") period = today;
+  if (period === "thisweek") period = isoWeek(today);
+  try { windowOf(cadence, period, tz); } catch { throw bad("invalid period"); }
+  const out = await previewReport(child.id, { cadence, period }, { db: { q } });
+  if (out.skipped) return send(res, 200, { report: null, skipped: out.skipped, period });
+  send(res, 200, { report: reportOut(out.report) });
+}
+
+/** What kind of evidence row a kt_evidence class is, for the drawer (client words it; PROBE_KIND's family). */
+const EV_KIND = { "item.open": "practice", "item.mcq2": "practice", "item.mcq3": "practice", "item.mcq4": "practice", solo: "practice", teach: "taught",
+  "probe.why": "why", "probe.teachback": "teachback", "probe.transfer.near": "near_transfer", "probe.transfer.far": "far_transfer",
+  "probe.errorspot": "error_spot", "probe.predict": "predict", para: "practice" };
+const RIGHT = new Set(["C0", "first_correct", "full", "high", "pass", "caught_fixed", "right"]);
+const PART = new Set(["C1", "C2", "partial", "mid", "caught"]);
+
+/**
+ * GET /api/parent/report/evidence?childId=&id=&claimId=  ("Kaise pata?") → the rows behind ONE line, re-read from the
+ * ledger for this child (a factId of another child resolves to nothing). Preview lines: pass cadence+period instead of id.
+ */
+async function reportEvidence(req, res) {
+  const sp = query(req);
+  const { child } = await requireParentChild(req, sp.get("childId"));
+  const claimId = sp.get("claimId") || "";
+  if (!/^[a-z]+:[a-z._]+:[0-9a-f]{10}$/.test(claimId)) throw bad("invalid claimId");
+  let r;
+  if (sp.get("id")) {
+    if (!REPORT_ID.test(sp.get("id"))) throw bad("invalid report id");
+    try { r = await reportById({ q }, child.id, sp.get("id")); } catch (e) { if (!missingTable(e)) throw e; }
+  } else {
+    const cadence = sp.get("cadence"), period = sp.get("period");
+    if (!CADENCES.includes(cadence)) throw bad("cadence must be daily or weekly");
+    try { windowOf(cadence, String(period), await tzOf(child.id)); } catch { throw bad("invalid period"); }
+    r = (await previewReport(child.id, { cadence, period }, { db: { q } })).report;
+  }
+  const c = r?.claims.find((x) => x.id === claimId);
+  if (!c) throw new HttpError(404, "line not found");
+  const pick = (kind) => c.factIds.filter((f) => f.startsWith(kind + ":")).map((f) => f.slice(kind.length + 1));
+  const [ev, lessons, skills, mems] = await Promise.all([
+    pick("kt_evidence").length ? q(`select id, occurred_at, skill_ids, cls, outcome, grader, pre_attempt_help, entry_rung, misconception_id, via, session_id
+        from kt_evidence where child_id = $1 and id = any($2::text[]) order by seq`, [child.id, pick("kt_evidence")]) : [],
+    pick("lesson").length ? q("select id, topic_id, started_at, ended_at from lesson where child_id = $1 and id::text = any($2::text[]) order by started_at", [child.id, pick("lesson")]) : [],
+    pick("kt_skill_state").length ? q("select skill_id, next_review_at from kt_skill_state where child_id = $1 and skill_id = any($2::text[])", [child.id, pick("kt_skill_state")]) : [],
+    pick("memory").length ? q("select id, kind, text, created_at from memory where child_id = $1 and id::text = any($2::text[])", [child.id, pick("memory")]) : [],
+  ]);
+  const titles = new Map();
+  for (const e of ev) for (const sk of e.skill_ids) if (!titles.has(sk)) titles.set(sk, (await skillTitle(sk)) ?? sk);
+  send(res, 200, {
+    claim: { id: c.id, section: c.section, shapeId: c.shapeId, rule: c.rule },
+    window: { from: r.window_from ?? r.window?.from, to: r.window_to ?? r.window?.to },
+    evidence: ev.map((e) => {
+      const name = e.cls === "teach" ? "taught" : outcomeName(e.cls, Number(e.outcome)) ?? "?";
+      return { id: e.id, at: e.occurred_at, skill: titles.get(e.skill_ids[0]) ?? e.skill_ids[0], kind: EV_KIND[e.cls] ?? "practice",
+        result: e.cls === "teach" ? "taught" : RIGHT.has(name) ? "right" : PART.has(name) ? "partly" : name === "IDK" ? "not_sure" : "not_yet",
+        help: e.pre_attempt_help ? "asked_first" : Number(e.entry_rung) > 0 ? "hint" : "none", checkedBy: e.grader, game: e.via === "game", session: e.session_id };
+    }),
+    lessons: lessons.map((l) => { const t = getTopic(l.topic_id); return { id: l.id, topic: t?.title ?? l.topic_id, startedAt: l.started_at,
+      minutes: l.ended_at ? Math.round((new Date(l.ended_at) - new Date(l.started_at)) / 60000) : null }; }),
+    schedule: skills.map((x) => ({ skill: x.skill_id, nextReview: x.next_review_at })),
+    memories: mems.map((m) => ({ id: String(m.id), kind: m.kind, text: m.text, at: m.created_at })),
+  });
+}
+
 const clipCache = new Map(); // fixed consent text → mp3 (the same for every family)
 
 /**
@@ -696,6 +809,18 @@ async function speakCard(req, res) {
     if (!l) throw new HttpError(404, "lesson not found");
     const t = getTopic(l.topic_id);
     text = `${t?.title ?? "Lesson"}. ${l.parent_note || (l.ended_at ? "The summary for this lesson is not ready." : "This lesson did not finish, so there is no summary.")}`;
+  } else if (what === "report") {
+    // the stored, gate-passed spoken script of one report, in one language (server-held text only)
+    const { guardian, child } = await requireParentChild(req, sp.get("childId"));
+    guardianId = guardian.id;
+    const id = sp.get("id"), lang = sp.get("lang") || LANG_OF_PREF[child.language_pref] || "en";
+    if (!id || !REPORT_ID.test(id) || !LANGS.includes(lang)) throw bad("invalid report or lang");
+    let r = null;
+    try { r = await reportById({ q }, child.id, id); } catch (e) { if (!missingTable(e)) throw e; }
+    if (!r?.renders?.[lang]?.voice?.text) throw new HttpError(404, "report not found");
+    text = r.renders[lang].voice.text;
+    // the report gate holds scripts to VOICE_CHARS ≤ MAX_TTS_CHARS; a longer one is refused, never cut mid-sentence
+    if (text.length > MAX_TTS_CHARS) throw new HttpError(500, "report script over the speech limit");
   } else throw bad("unknown what");
   if (!allowSpeech(guardianId)) throw new HttpError(429, "too many speech requests");
   let audio = cache ? clipCache.get(text) : null;
@@ -730,4 +855,7 @@ export const routes = {
   "GET /api/parent/controls": getControls,
   "POST /api/parent/controls": setControls,
   "POST /api/parent/hometask": homeTask,
+  "GET /api/parent/reports": reports,
+  "GET /api/parent/report": report,
+  "GET /api/parent/report/evidence": reportEvidence,
 };

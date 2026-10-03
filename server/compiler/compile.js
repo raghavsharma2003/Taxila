@@ -20,6 +20,7 @@
 //     answered — derived from step() itself (director/state.js branchesFor), with the safety escape first,
 //     because the safeguard move only reaches the instructions one turn later.
 import { floorText, FLOOR_HEADING } from "./floor.js";
+import { gatesFor, assertMinorGates } from "./gates.js";
 import { spokenSafetyNumbers, toSpoken } from "../voice/spoken.js";
 import { vibeRow } from "../persona/adapter.js";
 import { briefRows, estimateTokens, BRIEF_TOKEN_CAP } from "../learner/brief.js";
@@ -64,13 +65,25 @@ const ESCAPE_NUMBER_RESERVE = " 1098";
 const SAFEGUARD_CHECK = "care first: no lesson content this turn; a trusted adult and Childline 1098 if not said yet.";
 const SAFEGUARD_CHECK_VOICE = "care first: no lesson content this turn; a trusted adult and Childline if not said yet.";
 const STOP = "they want to stop → stop, short warm goodbye";
-/** Corrective shapes after the teacher's own words broke the floor (director/safety.js floorViolations), most severe first. */
-const FLOOR_FIX = {
+/**
+ * Corrective shapes after the teacher's own words broke the floor (director/safety.js floorViolations, whose
+ * NEVER_FAMILIES is this key order), most severe first. Keys added for the never-rules matcher are kept at
+ * <= 25 characters so that no pair of them with `exclusivity` is longer than the pair checkFits measures
+ * (FIX_LOAD_GATE): the load gate admits exactly what it admitted before they existed.
+ */
+export const FLOOR_FIX = {
   ai_denial: "say plainly you are an AI",
+  helpline: "helpline numbers exactly",
+  romance: "no love or looks talk",
   exclusivity: "a teacher, not a friend; point them to family and friends",
   personal_data: "take back the personal question",
+  guilt: "no guilt; let them go",
+  shaming: "no blame; name the step",
   ability: "no ability words, name the step",
+  feelings: "no feelings of your own",
 };
+/** The correction checkFits renders: the original two-key worst case, pinned so new keys cannot change what loads. */
+const FIX_LOAD_GATE = ["ai_denial", "exclusivity"];
 
 function characterParts(c) {
   return [
@@ -233,6 +246,8 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
  */
 export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } = {}) {
   const cap = { ...SECTION_CAPS, ...caps };
+  // The floor below is the MINOR floor for every child, whatever age claim travels with the brief (no adult branch).
+  assertMinorGates(gatesFor(input.brief?.ageTier));
   const ageBand = input.brief.ageBand;
   const lane = input.lane === "voice" ? "voice" : "text";
   const voiced = lane === "voice" && !!input.lessonState.moveVoiced;
@@ -302,7 +317,7 @@ export function checkFits(item, { cap = SECTION_CAPS.last - FIT_MARGIN } = {}) {
   const longHint = "x".repeat(HINT_TOKEN_MAX * 3.5);
   const prefixes = [...Object.values(SH.CONFIRM), SH.retrievalNext(), "now a similar one for them", "an easier one now"];
   const lead = prefixes.reduce((a, b) => (b.length > a.length ? b : a));
-  const correction = Object.keys(FLOOR_FIX);
+  const correction = FIX_LOAD_GATE;
   const protegeName = "Bittu";
   for (const language of LANGS) {
     const ask = promptFor(item, language);

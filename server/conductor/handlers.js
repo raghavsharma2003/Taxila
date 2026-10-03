@@ -1,5 +1,7 @@
-// Job handlers the worker runs (CONDUCTOR.md §8.2). M0 has one Conductor-enqueued kind.
+// Job handlers the worker runs (CONDUCTOR.md §8.2). The parent-report kinds (report.daily, parent.letter) register
+// themselves in server/reports/jobs.js, imported here so the worker's one handlers import loads them all.
 import { registerHandler } from "./jobs.js";
+import "../reports/jobs.js";
 import { one } from "./pg.js";
 
 /**

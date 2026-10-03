@@ -52,6 +52,24 @@ export interface SyllabusOut {
   header: { chaptersTouched: number; topicsPakka: number; topics: number };
 }
 
+/** A parent report (server/reports/**): Lane A lines per language, each claim line backed by ledger rows. */
+export type ReportLang = "en" | "hinglish" | "hi";
+export interface ReportLine { key: string; kind: "claim" | "fixed"; claimId: string | null; section: string; text: string }
+export interface ReportOut {
+  id: string; cadence: "daily" | "weekly"; period: string; window: { from: string; to: string }; k7: boolean; preview: boolean; createdAt: string | null;
+  claims: { id: string; section: string; shapeId: string; facts: number }[];
+  renders: Record<ReportLang, { title: string; lines: ReportLine[]; voice: string | null }>;
+}
+export interface ReportList { reports: { id: string; cadence: "daily" | "weekly"; period: string; createdAt: string }[]; today: string; thisWeek: string; lang: ReportLang; langs: ReportLang[] }
+export interface ReportEvidence {
+  claim: { id: string; section: string; shapeId: string; rule: string };
+  window: { from: string; to: string };
+  evidence: { id: string; at: string; skill: string; kind: string; result: "right" | "partly" | "not_yet" | "not_sure" | "taught"; help: "none" | "hint" | "asked_first"; checkedBy: "code" | "llm" | "human"; game: boolean; session: string }[];
+  lessons: { id: string; topic: string; startedAt: string; minutes: number | null }[];
+  schedule: { skill: string; nextReview: string | null }[];
+  memories: { id: string; kind: string; text: string; at: string }[];
+}
+
 export const isGateError = (e: unknown): e is ApiError =>
   e instanceof ApiError && e.status === 403 && !!(e.body as { gate?: string } | null)?.gate;
 
@@ -73,4 +91,10 @@ export const parentApi = {
   controls: (childId: string) => getJson<{ controls: ControlsT }>(`/api/parent/controls?${qs({ childId })}`),
   setControls: (childId: string, c: Partial<ControlsT>) => postJson<{ controls: ControlsT }>("/api/parent/controls", { childId, ...c }),
   homeTask: (childId: string, lessonId: string, done: boolean) => postJson("/api/parent/hometask", { childId, lessonId, done }),
+  reports: (childId: string) => getJson<ReportList>(`/api/parent/reports?${qs({ childId })}`),
+  report: (childId: string, id: string) => getJson<{ report: ReportOut }>(`/api/parent/report?${qs({ childId, id })}`),
+  reportPreview: (childId: string, cadence: "daily" | "weekly") =>
+    getJson<{ report: ReportOut | null; skipped?: string; period?: string }>(`/api/parent/report?${qs({ childId, cadence, preview: "1" })}`),
+  reportEvidence: (childId: string, claimId: string, at: { id: string } | { cadence: string; period: string }) =>
+    getJson<ReportEvidence>(`/api/parent/report/evidence?${qs({ childId, claimId, ...at })}`),
 };

@@ -2,8 +2,8 @@
 // Inputs only: (state, event, ctx = { now, view }). No Date.now, Math.random, env or I/O; the input state is
 // never mutated. Handlers propose candidate commands; GUARDS (authority order) drop or narrow them; the
 // surviving plan.adopt is what state.plan records. step.js gives decide one recorded `now` per batch.
-import { JOB_KINDS, PLAN, WAKE, authorityClass } from "./config.js";
-import { addDays, dayMin, daysBetween, dayKindLookup, jitterSec, learningDay, localParts, zonedToUtc } from "./clock.js";
+import { JOB_KINDS, PLAN, REPORT_GRACE_MIN, WAKE, authorityClass } from "./config.js";
+import { addDays, dayMin, daysBetween, dayKindLookup, isoWeek, jitterSec, learningDay, localParts, weekday, zonedToUtc } from "./clock.js";
 import { runGuards, summarize } from "./guards.js";
 import { buildPlannerInputs, inputsHash, planDay } from "./planner.js";
 import { validatePlan } from "./validate.js";
@@ -127,6 +127,7 @@ function endLessonMode(s, nowMs) {
 }
 
 function foldNight(s, day, H, { arm, armFrom = day }) {
+  const wasActive = s.counters.lastActiveDay === day || s.counters.activeDays.includes(day);
   const cut = addDays(day, -PLAN.closesMaxDays);
   s.adapt.closes = s.adapt.closes.filter((c) => c.day >= cut).slice(-PLAN.closesRing);
   s.counters.activeDays = s.counters.activeDays.filter((d) => d > addDays(day, -7)).sort();
@@ -136,10 +137,26 @@ function foldNight(s, day, H, { arm, armFrom = day }) {
   if (s.budget.low && s.budget.since && s.budget.since.slice(0, 7) !== addDays(day, 1).slice(0, 7)) s.budget = { low: false };
   s.adapt.foldedDay = day;
   H.rule("fold_night");
+  enqueueReports(s, day, H, wasActive);
   const active = s.counters.lastActiveDay || s.counters.lastOpenDay;
   if (arm) {
     if (active && daysBetween(active, day) <= PLAN.dormantDays) H.armAhead(armFrom);
     else H.rule("dormant_not_rearmed");
+  }
+}
+
+/**
+ * End-of-day parent reports, once per learning day (foldNight runs once per day: adapt.foldedDay). An active day gets
+ * its pull-only daily note (X11); the fold of a Sunday enqueues the ISO week's letter body (X8: one idem key per child
+ * and week, whatever the lessons). Both run after the day's window closes (04:00 local + grace), never before.
+ */
+function enqueueReports(s, day, H, active) {
+  const runAfter = new Date(zonedToUtc(addDays(day, 1), "04:00", s.tz).getTime() + REPORT_GRACE_MIN * 60_000).toISOString();
+  if (active) { H.enqueue("report.daily", `report.daily:${s.childId}:${day}`, { day }, { runAfter }); H.rule("report_daily"); }
+  if (weekday(day) === 0) {
+    const wk = isoWeek(day);
+    H.enqueue("parent.letter", `parent.letter:${s.childId}:${wk}`, { isoWeek: wk }, { runAfter });
+    H.rule("parent_letter");
   }
 }
 
