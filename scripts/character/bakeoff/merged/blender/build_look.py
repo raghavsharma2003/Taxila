@@ -905,6 +905,25 @@ def pokes(state):
 g6 = {"rest": pokes(fb)}
 for k in K.VISEMES + ["jawOpen", "tongueOut", "tongueTipUp", "tongueCurl", "tongueWide"]:
     g6[k] = pokes(fb + FD[k] + (0.3 * FD["jawOpen"] if k.startswith("tongue") and k != "tongueOut" else 0))
+# merged: AND at every emotion preset (viewer/presets.js EMOTIONS, parsed here, with the product-weight correctives the
+# rig adds). The delighted grimace (lower row in front of the lower lip) was invisible to a viseme-only G6.
+import re as _re
+_pj = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "viewer", "presets.js")).read()
+_pj = _pj[_pj.index("export const EMOTIONS"):]
+_pj = _pj[:_pj.index("\n};")]
+for _m in _re.finditer(r"^  (\w+): \{ bs: (\{[^}]*\})", _pj, _re.M):
+    _bs = json.loads(_re.sub(r"(\w+):", r'"\1":', _m.group(2)))
+    st = fb.copy()
+    for _k, _w in _bs.items():
+        if _k in FD:
+            st = st + _w * FD[_k]
+    for _S in ("Left", "Right"):
+        _c = "jawOpen_mouthSmile" + _S
+        if _c in FD:
+            st = st + _bs.get("jawOpen", 0) * _bs.get("mouthSmile" + _S, 0) * FD[_c]
+    if "mouthFunnel_jawOpen" in FD:
+        st = st + _bs.get("jawOpen", 0) * _bs.get("mouthFunnel", 0) * FD["mouthFunnel_jawOpen"]
+    g6["emotion_" + _m.group(1)] = pokes(st)
 report["gates"]["G6_inner_vertices_outside_lips"] = {"sample": int(len(samp)), **g6}
 
 # Eyelids never inside the eyeball: lid vertices within the eye's angular cap keep distance >= ball radius

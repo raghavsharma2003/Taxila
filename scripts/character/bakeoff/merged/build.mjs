@@ -49,6 +49,7 @@ for (const look of LOOKS) {
   sh("node", [path.join(HERE, "finish.mjs"), bd, look, path.join(OUTA, look)]);
   const rep = JSON.parse(fs.readFileSync(path.join(bd, "report.json")));
   rep.tiers = JSON.parse(fs.readFileSync(path.join(bd, "finish.json")));
+  try { rep.texture = { wedge: JSON.parse(fs.readFileSync(path.join(bd, "tex/tex.json"))).wedge }; } catch {}
   for (const t of ["H", "Bplus"]) rep.tiers[t].raw = JSON.parse(fs.readFileSync(path.join(bd, `${t}.stats.json`)));
   fs.writeFileSync(path.join(REP, `${look}.json`), JSON.stringify(rep, null, 1));
 }
@@ -80,9 +81,19 @@ for (const look of LOOKS) {
   if (G.G1_names.present !== G.G1_names.expected) fails.push(`${look} G1`);
   if (!G.G2_bounded_nonempty.ok) fails.push(`${look} G2 ${G.G2_bounded_nonempty.failed}`);
   if (!G.G3_pass) fails.push(`${look} G3`);
+  // merged: the parting wedge (VERDICT item 1): 0 skin-albedo texels inside the hairline mask, 0 uncovered gap texels
+  let W = null; try { W = JSON.parse(fs.readFileSync(path.join(BUILD, look, "tex/tex.json"))).wedge; } catch {}
+  if (W && (W.skinAlbedoTexels > 0 || W.uncoveredGapTexels > 0)) fails.push(`${look} wedge skin ${W.skinAlbedoTexels} gap ${W.uncoveredGapTexels}`);
   for (const [k, v] of Object.entries(G.G4_lid_seal_escaped_pct)) if (k !== "open" && (v.L > 0 || v.R > 0)) fails.push(`${look} G4 ${k}`);
   if (!G.G5_pass) fails.push(`${look} G5 sd0`);
   if (G.G5_H && !G.G5_H.pass) fails.push(`${look} G5 H (subdivided)`);
+  // merged: G6 teeth/tongue outside the lips back to the baseline (VERDICT: ai-portrait-wrap went 4 -> 12): <= 4 of 300
+  // samples at rest, every viseme, tongue key and emotion preset; jawOpen 1.0 (an extreme the rig never plays) <= 12
+  // as in iteration 2; tongueOut is meant to leave the mouth and is not gated
+  for (const [k, v] of Object.entries(G.G6_inner_vertices_outside_lips || {})) {
+    if (k === "sample" || k === "tongueOut") continue;
+    if (v > (k === "jawOpen" ? 12 : 4)) fails.push(`${look} G6 ${k}=${v}`);
+  }
   const pen = r.garmentV3?.penetration || {};
   for (const [k, v] of Object.entries(pen)) if (v !== 0) fails.push(`${look} penetration ${k}=${v}`);
   const T = r.tiers;
