@@ -777,3 +777,14 @@ Full evidence and sources: docs/research/world-best/ (merged from inbox/world-be
 ## rj-arc2avatar (2026-10-03)
 Arc2Avatar for one-shot heads: MIT code over an Inria diff-gaussian-rasterization fork (NC) and Arc2Face/InsightFace identity features (NC models)
 Full evidence and sources: docs/research/world-best/ (merged from inbox/world-best-talking-avatars.json).
+
+
+<!-- merged from inbox/teacher-gnm.json -->
+## rj-gnm-rest-lip-seal
+**Tried:** baking a rest lip seal into the GNM basis as a small lower-face expression so CHARACTER-PIPELINE's G5 contact metric (every lip vertex within 2.4 mm of the other lip's surface, p95 <= 0.3 mm) passes. **Broke:** the metric closed (1.99 -> 0.11-0.35 mm) only by flattening the lower lip into a slab: 12-14 mm vertex shifts, rendered. GNM's scanned lips meet along a line, so the MakeHuman-era metric reads ~2 mm at a closed mouth; the light-through-lips test (0%) is the meaningful half. (2026-10-03)
+
+## rj-gnm-blink-vertex-pairs
+**Tried:** closing eyeBlink in GNM's space by pairing every upper lid-margin vertex with its nearest lower one, or the 7 MediaPipe lid pairs at higher weight. **Broke:** coefficient norm 64-192 (max 17-53 unit-std), explained down to -0.4, and 0.7-2% of cornea rays still escaping. **Works:** upper-margin vertices onto the lower lid's SURFACE (re-picked twice): norm 21, explained 0.78, G4 0%. (2026-10-03)
+
+## rj-mediapipe-profile-cameras
+**Tried:** anchoring the profile cameras of the identity fit to MediaPipe landmarks (near-side points, then a yaw prior). **Broke:** MediaPipe reads 58-60 deg on near-90-degree portraits; the fit's profile yaw wandered between 63 and 97 deg and the silhouette error stayed at 8-28% IOD; a 2D landmark IOD also collapses at profile, overweighting those terms 5-10x. **Works:** silhouette-only cameras (yaw/pitch/roll grid + scale/offset ICP on the leading edge), every term normalised by camera scale x the 3D eye-corner distance: 2.5-2.7%. (2026-10-03)

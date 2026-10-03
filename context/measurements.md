@@ -1212,3 +1212,17 @@ Held-out reprojection, best orthographic camera per view, interior landmarks, % 
 | profile90 L/R (held out) | 1.86 / 2.43 | 2.50 / 2.66 |
 
 The metric favours the CPU recon, which was built from the same photo detections. The generated "q45" references measure 16-26° yaw, and "profile90" 56-63°.
+
+
+<!-- merged from inbox/teacher-gnm.json -->
+## teacher-gnm-e-gnm1
+**E-GNM1, teal only, 2026-10-03, 4 vCPU CPU only (no GPU; $0). Same renderer, light, presets (+ per-face gains) and judges as the merged row (forked).**
+- Identity fit (2D reprojection, % IOD): front 0.96, q45 L/R 1.08/1.17, held-out q3 L/R 1.14/1.21; profile skin edges 2.7/2.5; 173 coefficients, rms 0.97, max 4.0, lambda 2.
+- Likeness on renders (MediaPipe, interior NME % IOD, face camera re-centred; n = 1 render per pair): front 1.16; q45@21/26 1.54/2.20; held-out q3@18/21 1.38/1.44; yaw24 1.62/2.34 = 1.71x front (bar 1.5x). merged's GLB, same protocol: 1.03; 2.51/2.79; 1.84/2.09; 2.54x.
+- Keys: 56 solved + 26 mirrored; median explained 0.85, p10 0.71; aa lip opening 13.2 mm vs target 13.8 after a lip-label fix (was 0.0: GNM's vermilion groups were unlabelled and took v3's lower-lip motion).
+- Emotion (blind 9-way, n = 12 per judge per emotion, encouraging on the nod clip), two runs: A 8/9 (89%) and 6/9 (81%); C (held-out prompt) 7/9 (79%) and 6/9 (68%); pooled both runs 79%, 7/9; curious 10/48 (-> listening), concerned 26/48. Before per-face gains (concerned 1.3, delighted 1.6, playful 1.6, chosen on judge A n = 6): pooled 60%, 5/9.
+- Gates H: G1 82, G2 ok, G3 0.00 mm, G4 0%, G5 p95 2.15/0.70/2.00 mm (fail, metric), aperture 0/0/0, G6 0 everywhere (tongueOut 11, not gated), lids inside eye 0 except delighted 2, garment penetration 0, G9 L*55.3 C*27.7 vs 55.1/27.9, teeth L* 42, closures 9/9 aligned / 1/9 RMS.
+- Budgets: H 5.07 MB, 41,882 tris, 5 draws, morph texture 19.4 MB (2x merged); B+ 1.81 MB, 13,762, 5; B-lite 0.76 MB. SwiftShader at load 5-6: 2.6 / 7.6 / 26.6 fps (not phone numbers).
+
+## teacher-judge-variance
+**Two emotion-check runs on the same geometry and presets (texture-only change between them), n = 12 per judge per emotion: per-emotion swings of up to 67 points (playful/C 10 -> 2, concerned/A 12 -> 8, encouraging/A 11 -> 8).** (2026-10-03) A single n = 12 run cannot rank designs that differ by less than this; pool runs or raise n before a reversal call.

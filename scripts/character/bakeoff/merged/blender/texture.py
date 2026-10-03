@@ -576,6 +576,16 @@ if _lipv.sum() > 100:
         _Y2 = _Ya * (1 + 0.45 * _pw * np.clip(_cheekY / np.maximum(_Ya, 1e-6) - 1, 0, 0.8))
         _AA[:] = _c2 * (_Y2 / np.maximum(_c2 @ np.array([0.2126, 0.7152, 0.0722]), 1e-6))[:, None]
     log(f"perioral band lifted on {int((_pw > 0.5).sum())} texels")
+    # ... and the vermilion BORDER (the lip vertex group's feather, 0.08 < lipT < 0.6) read as a dark lip-liner ring
+    # (makeup, not the teacher register; a real border is a light roll): texels there darker than the lip median are
+    # lifted 60% of the way to it
+    _bw = smoothstep(0.08, 0.25, lipT) * (1 - smoothstep(0.4, 0.65, lipT)) * (front > 0.5)
+    _core2 = lipT > 0.8
+    for _AA in (A, A_H):
+        _Ya = _AA @ np.array([0.2126, 0.7152, 0.0722])
+        _Ylm = float(np.median(_Ya[_core2])) if _core2.sum() > 50 else float(np.median(_Ya))
+        _AA *= (1 + 0.6 * _bw * np.clip(_Ylm / np.maximum(_Ya, 1e-6) - 1, 0, 1.0))[:, None]
+    log(f"vermilion border lifted on {int((_bw > 0.5).sum())} texels")
 # merged gate (VERDICT item 1, the parting wedge): texels INSIDE the hairline mask (designed hairline weight > 0.5, off
 # the lips) whose final H albedo is nearer the skin colour than the hair colour. Bar 0.
 _inmask = (hl > 0.5)

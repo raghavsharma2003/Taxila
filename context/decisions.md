@@ -1922,3 +1922,17 @@ Everything is pinned: the git commit, hashed pip locks (167 + 129 pins, --requir
 - Why: Each sits on inputs only Taxila combines (always-voice Hindi/English/Hinglish lessons, code-graded closed sets, delayed/woven check scheduler, daily parent loop); none is published or shipped elsewhere as of 2026-10-03 per the six sweeps.
 - Per bet (STEAL-LIST.md): (1) Microsoft confirms restriction 12 covers latency-based knowledge inference, or delta AUC < 0.03 after two fits; (2) gate blocks all change for two quarters; (3) fine-tune adds < 0.03 AUC over stock Smart Turn; (4) off-plan all-checks < 95% after the gates; (5) reviewer acceptance < 30% over 8 weekly cycles.
 - Source: docs/research/world-best/STEAL-LIST.md.
+
+
+<!-- merged from inbox/teacher-gnm.json -->
+## teacher-gnm-identity-base
+**Proposed (art-director call owed): GNM Head v3.0 (Google, Apache-2.0 code and weights) replaces MakeHuman/MPFB as the realistic teacher's identity base; merged's expression craft (presets, contact seals) is carried into GNM's expression space; nothing ships until curious and concerned pass a held-out judge and the owner's eye test.** (2026-10-03)
+- Rationale:
+  - The gnm teal is the first row that reads as one specific woman from every side; likeness under the same protocol beats merged on every turned view (held-out q3 1.38/1.44% vs 1.84/2.09%), front 1.16% (merged 1.03%), both under the 1.2% bar.
+  - GNM's own teeth, tongue and mouth lining stay inside the lips in every viseme, tongue key and emotion (G6 0/300; merged 4/300 after five scripted fixes).
+  - Keys solved in GNM's space reproduce v3's shapes at median explained 0.85 with exact mirrors (G3 0 mm) and a surface-contact blink (G4 0%).
+- Reverse if: after brow-design re-scoring gnm cannot hold >= 70% on 8 of 9 under the held-out judge while merged can; or the owner's eye test prefers merged's face.
+- Evidence: `docs/design/teacher/bakeoff/gnm.md`, `art/character/bakeoff/gnm/reports/`, COMPARE.png gnm row. Licence obligations (Apache-2.0 attribution) in `art/character/LICENSES.md`.
+
+## gnm-adopted-identity-base (2026-10-04)
+Main-loop decision after LOOKING at docs/design/teacher/bakeoff/gnm/renders/teal/contact.png: Google GNM Head v3.0 (Apache-2.0 code and weights) is the identity base for every teacher look, replacing MPFB/MakeHuman. Evidence: it is the first teal that reads as one specific real woman at all yaws. Front likeness error is 1.16% (bar ≤ 1.2%); held-out 3/4 views are 1.38-1.44% against merged's 1.84-2.09%; teeth and tongue outside the lips 0/300 (merged 4); budgets pass; emotion check 79% pooled, 7/9 emotions pass. Not shippable yet. Open: baked portrait shading (under-eye circles and grain), the forehead band at the hairline, the V-notch on PP, under-moving brows (curious and concerned fail), the contract eye mesh in place of GNM's eyeball, the chest-fill U, and a likeness review of the generated references. An attribution line must ship with the GLBs. **Reverse if** after two fix rounds GNM still fails the held-out emotion bar (8/9) or the owner's eye prefers another row.

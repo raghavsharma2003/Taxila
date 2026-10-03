@@ -1,0 +1,113 @@
+{
+ "nodes": [
+  {
+   "id": "teacher-gnm-e-gnm1",
+   "kind": "measurement",
+   "title": "E-GNM1 (teal, CPU only, $0 GPU): GNM Head v3.0 base fitted to the portraits (front NME 1.16%, held-out q3 1.38/1.44%, yaw24 1.71x front) with 82 keys solved in GNM's 382-dim expression space (median explained 0.85); emotion A 8/9 then 6/9, held-out C 7/9 then 6/9 across two runs (pooled 79%, 7/9; curious 21%, concerned 54%); G6 0/300 everywhere; G5-mm fails at rest by construction, aperture 0; H 5.07 MB / 41.9k tris, B+ 1.81 MB / 13.8k",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "teacher-gnm-identity-base",
+   "kind": "decision",
+   "title": "Proposed: GNM Head v3.0 (Apache-2.0) replaces MPFB as the realistic teacher's identity base; merged's expression craft moves into GNM's space; nothing ships until curious/concerned pass a held-out judge and the owner eye test",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-gnm-rest-lip-seal",
+   "kind": "rejection",
+   "title": "Sealing GNM's rest lips to the MakeHuman-era G5 metric (p95 <= 0.3 mm) inside GNM's expression space flattens the lower lip into a slab (12-14 mm vertex shifts); GNM's scanned lips meet along a line, so the metric reads ~2 mm while no light passes",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-gnm-blink-vertex-pairs",
+   "kind": "rejection",
+   "title": "Closing GNM's blink by pairing every upper/lower lid-margin VERTEX pushes it out of the space (coefficient norm 144-192, explained -0.4) and still leaks 0.7-2%; upper-margin-to-lower-lid SURFACE contact closes it at norm 21, explained 0.78, G4 0%",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-mediapipe-profile-cameras",
+   "kind": "rejection",
+   "title": "MediaPipe landmarks cannot pose a profile portrait (yaw read 58-60 deg on near-90 deg views; anchoring a fit to them drove yaw to 63-97 deg and silhouette error to 8-28% IOD); silhouette-only grid + ICP cameras give 2.5-2.7%",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "teacher-judge-variance",
+   "kind": "measurement",
+   "title": "The vision emotion judge swings up to 67 points on one emotion between two runs of near-identical renders (gnm playful/C 10/12 -> 2/12 after a texture-only change, n = 12): single n = 12 runs cannot separate designs that differ by less than this",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "open-gnm-defects",
+   "kind": "open",
+   "title": "gnm teal open items: curious/concerned brow designs (held-out judge), baked under-eye shading and pore-like normal detail, hair cards short of GNM's hairline, PP V-notch, contract eye mesh instead of GNM's eyeball, likeness review of the generated references",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "teacher-gnm-identity-base",
+   "rel": "measured_by",
+   "dst": "teacher-gnm-e-gnm1"
+  },
+  {
+   "src": "teacher-gnm-identity-base",
+   "rel": "constrains",
+   "dst": "teacher-bakeoff-verdict"
+  },
+  {
+   "src": "teacher-gnm-identity-base",
+   "rel": "constrains",
+   "dst": "teacher-runtime-contract"
+  },
+  {
+   "src": "teacher-gnm-identity-base",
+   "rel": "blocks",
+   "dst": "open-gnm-defects"
+  },
+  {
+   "src": "teacher-gnm-identity-base",
+   "rel": "blocks",
+   "dst": "teacher-generated-likeness-review"
+  },
+  {
+   "src": "rj-gnm-rest-lip-seal",
+   "rel": "measured_by",
+   "dst": "teacher-gnm-e-gnm1"
+  },
+  {
+   "src": "rj-gnm-blink-vertex-pairs",
+   "rel": "measured_by",
+   "dst": "teacher-gnm-e-gnm1"
+  },
+  {
+   "src": "rj-mediapipe-profile-cameras",
+   "rel": "measured_by",
+   "dst": "teacher-gnm-e-gnm1"
+  },
+  {
+   "src": "teacher-judge-variance",
+   "rel": "part_of",
+   "dst": "teacher-bakeoff-2026-10-03"
+  },
+  {
+   "src": "open-gnm-defects",
+   "rel": "part_of",
+   "dst": "teacher-character-pipeline"
+  },
+  {
+   "src": "open-gnm-identity-base",
+   "rel": "measured_by",
+   "dst": "teacher-gnm-e-gnm1"
+  },
+  {
+   "src": "open-arkit-keys-in-gnm-space",
+   "rel": "measured_by",
+   "dst": "teacher-gnm-e-gnm1"
+  }
+ ],
+ "md": {
+  "decisions": "## teacher-gnm-identity-base\n**Proposed (art-director call owed): GNM Head v3.0 (Google, Apache-2.0 code and weights) replaces MakeHuman/MPFB as the realistic teacher's identity base; merged's expression craft (presets, contact seals) is carried into GNM's expression space; nothing ships until curious and concerned pass a held-out judge and the owner's eye test.** (2026-10-03)\n- Rationale:\n  - The gnm teal is the first row that reads as one specific woman from every side; likeness under the same protocol beats merged on every turned view (held-out q3 1.38/1.44% vs 1.84/2.09%), front 1.16% (merged 1.03%), both under the 1.2% bar.\n  - GNM's own teeth, tongue and mouth lining stay inside the lips in every viseme, tongue key and emotion (G6 0/300; merged 4/300 after five scripted fixes).\n  - Keys solved in GNM's space reproduce v3's shapes at median explained 0.85 with exact mirrors (G3 0 mm) and a surface-contact blink (G4 0%).\n- Reverse if: after brow-design re-scoring gnm cannot hold >= 70% on 8 of 9 under the held-out judge while merged can; or the owner's eye test prefers merged's face.\n- Evidence: `docs/design/teacher/bakeoff/gnm.md`, `art/character/bakeoff/gnm/reports/`, COMPARE.png gnm row. Licence obligations (Apache-2.0 attribution) in `art/character/LICENSES.md`.\n",
+  "measurements": "## teacher-gnm-e-gnm1\n**E-GNM1, teal only, 2026-10-03, 4 vCPU CPU only (no GPU; $0). Same renderer, light, presets (+ per-face gains) and judges as the merged row (forked).**\n- Identity fit (2D reprojection, % IOD): front 0.96, q45 L/R 1.08/1.17, held-out q3 L/R 1.14/1.21; profile skin edges 2.7/2.5; 173 coefficients, rms 0.97, max 4.0, lambda 2.\n- Likeness on renders (MediaPipe, interior NME % IOD, face camera re-centred; n = 1 render per pair): front 1.16; q45@21/26 1.54/2.20; held-out q3@18/21 1.38/1.44; yaw24 1.62/2.34 = 1.71x front (bar 1.5x). merged's GLB, same protocol: 1.03; 2.51/2.79; 1.84/2.09; 2.54x.\n- Keys: 56 solved + 26 mirrored; median explained 0.85, p10 0.71; aa lip opening 13.2 mm vs target 13.8 after a lip-label fix (was 0.0: GNM's vermilion groups were unlabelled and took v3's lower-lip motion).\n- Emotion (blind 9-way, n = 12 per judge per emotion, encouraging on the nod clip), two runs: A 8/9 (89%) and 6/9 (81%); C (held-out prompt) 7/9 (79%) and 6/9 (68%); pooled both runs 79%, 7/9; curious 10/48 (-> listening), concerned 26/48. Before per-face gains (concerned 1.3, delighted 1.6, playful 1.6, chosen on judge A n = 6): pooled 60%, 5/9.\n- Gates H: G1 82, G2 ok, G3 0.00 mm, G4 0%, G5 p95 2.15/0.70/2.00 mm (fail, metric), aperture 0/0/0, G6 0 everywhere (tongueOut 11, not gated), lids inside eye 0 except delighted 2, garment penetration 0, G9 L*55.3 C*27.7 vs 55.1/27.9, teeth L* 42, closures 9/9 aligned / 1/9 RMS.\n- Budgets: H 5.07 MB, 41,882 tris, 5 draws, morph texture 19.4 MB (2x merged); B+ 1.81 MB, 13,762, 5; B-lite 0.76 MB. SwiftShader at load 5-6: 2.6 / 7.6 / 26.6 fps (not phone numbers).\n\n## teacher-judge-variance\n**Two emotion-check runs on the same geometry and presets (texture-only change between them), n = 12 per judge per emotion: per-emotion swings of up to 67 points (playful/C 10 -> 2, concerned/A 12 -> 8, encouraging/A 11 -> 8).** (2026-10-03) A single n = 12 run cannot rank designs that differ by less than this; pool runs or raise n before a reversal call.\n",
+  "rejected": "## rj-gnm-rest-lip-seal\n**Tried:** baking a rest lip seal into the GNM basis as a small lower-face expression so CHARACTER-PIPELINE's G5 contact metric (every lip vertex within 2.4 mm of the other lip's surface, p95 <= 0.3 mm) passes. **Broke:** the metric closed (1.99 -> 0.11-0.35 mm) only by flattening the lower lip into a slab: 12-14 mm vertex shifts, rendered. GNM's scanned lips meet along a line, so the MakeHuman-era metric reads ~2 mm at a closed mouth; the light-through-lips test (0%) is the meaningful half. (2026-10-03)\n\n## rj-gnm-blink-vertex-pairs\n**Tried:** closing eyeBlink in GNM's space by pairing every upper lid-margin vertex with its nearest lower one, or the 7 MediaPipe lid pairs at higher weight. **Broke:** coefficient norm 64-192 (max 17-53 unit-std), explained down to -0.4, and 0.7-2% of cornea rays still escaping. **Works:** upper-margin vertices onto the lower lid's SURFACE (re-picked twice): norm 21, explained 0.78, G4 0%. (2026-10-03)\n\n## rj-mediapipe-profile-cameras\n**Tried:** anchoring the profile cameras of the identity fit to MediaPipe landmarks (near-side points, then a yaw prior). **Broke:** MediaPipe reads 58-60 deg on near-90-degree portraits; the fit's profile yaw wandered between 63 and 97 deg and the silhouette error stayed at 8-28% IOD; a 2D landmark IOD also collapses at profile, overweighting those terms 5-10x. **Works:** silhouette-only cameras (yaw/pitch/roll grid + scale/offset ICP on the leading edge), every term normalised by camera scale x the 3D eye-corner distance: 2.5-2.7%. (2026-10-03)\n"
+ }
+}
