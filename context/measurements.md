@@ -1171,3 +1171,6 @@ The identity checked out as arn:aws:iam::780899467240:user/claude-taxila (keys i
 <!-- merged from inbox/aws-credits.json -->
 ## aws-credits-2026-10-03
 From the owner's screenshot of Billing > Credits, 2026-10-03 11:03 IST: total remaining $1,100.00, used $0.00. Two active credits: AWS Activate - FOUNDERS, $1,000.00, start 07/01/2026, expires 07/31/2028; AWS Free Tier, $100.00, start 02/23/2026, expires 02/23/2027 (from the owner's saved Credits page). Applicable products shows "See complete list of services" (not expanded). It is not the $2k the owner remembered. The build-GPU plan (10-30 GPU hours on g6.xlarge, about $0.80/h on-demand) costs about $10-40, under 4% of the credit. Cost Explorer works for the IAM user but shows no credit records until spend begins.
+
+## azure-gpu-quota-api-2026-10-03
+The four Quota API requests filed 2026-10-03 ~16:53 UTC (eastus2 NCADS_A100_v4=24 and NCASv3_T4=16, eastus NCADS_A100_v4=24, centralindia NCASv3_T4=16) all show Failed at 17:42 UTC, as did the owner's three portal requests (QuotaNotAvailableForResource). Every GPU family in all 17 regions checked is still at 0. The sponsored subscription gets no self-serve GPU quota; only the owner's open support tickets remain, so build GPU goes to AWS (aws-build-gpu).
