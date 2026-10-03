@@ -1,42 +1,57 @@
-"""Closed-loop landmark fit (the "landmark-pinned solve" measured in the same space as the likeness metric).
+"""Closed-loop identity fit for the MERGED build (from ai-portrait-wrap's fitloop.py, extended).
 
-The open-loop wrap (wrap.py) moves our mesh's landmark points onto the reconstructed 3D landmarks. MediaPipe does not
-place landmarks on a CG render exactly where it places them on a photo, so the open loop leaves a bias (measured:
-eye opening 0.143 IOD vs 0.110 on the portrait). This loop renders the built head, runs MediaPipe on the render, and
-feeds the 2D error back as a per-landmark correction (metres, Blender axes) that wrap.py adds to its targets:
-  front view (yaw 0)  -> x and z (frontal plane),
-  q3 view (yaw ~24)   -> depth, from the x error left over after the frontal x correction;
-damped (step 0.6), contours frontal only, symmetrised by wrap.py's field symmetrisation. Held out: q3_right.
-    python3 fitloop.py --iters 3
-"""
+Each iteration builds the merged head (blender/build_look.py: wrap + rigid-scaled eyes + lid conform + profile term +
+v3's expression stage), exports H, finishes it, renders neutral views and measures them against the references:
+  front     (render yaw 0  vs refs front)      -> x and z correction of every landmark (frontal plane);
+  q45_left  (render yaw 21 vs refs q45_left, MediaPipe yaw 21.4) and
+  q45_right (render yaw 26 vs refs q45_right, MediaPipe yaw 26.0) -> depth, from the x error left over after the
+            frontal correction (image x' = x cos(yaw) + depth sin(yaw)); at 21-26 deg the depth term is ~1.4x better
+            conditioned than ai-portrait-wrap's 24 deg render against an 18 deg reference (a yaw mismatch that by
+            itself put NME at 3.9%, measured: the same head scores 1.29% against q3_left at its own 18 deg);
+  profile   (the profile camera vs refs profile90_left, profilefit.py) -> the face-front depth by height and the jaw
+            underside's height (the silhouette term).
+Held out (never fed back): q3_left (18 deg) and q3_right (21 deg). Every reference was turned the same way by the
+generator (MediaPipe yaw is positive on all four), so every render is at positive yaw.
+The texture is NOT rebuilt inside the loop (10 min per pass): the renders reuse the last texture set on the new UVs
+(the unwrap is stable under these mm-scale edits), as ai-portrait-wrap's loop did.
+    python3 fitloop.py [--iters 3] [--step 0.6] [--reset]"""
 import argparse, json, math, os, subprocess, sys
 import numpy as np
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--iters", type=int, default=3)
 ap.add_argument("--step", type=float, default=0.6)
-ap.add_argument("--q3yaw", type=float, default=24)
+ap.add_argument("--pstep", type=float, default=0.7)
+ap.add_argument("--reset", action="store_true")
+ap.add_argument("--no-profile", action="store_true")
+ap.add_argument("--depth", type=float, default=0.6, help="gain of the 3/4 depth term (0 = off)")
+ap.add_argument("--front", type=float, default=1.0, help="gain of the frontal x/z term")
 a = ap.parse_args()
 ROOT = "/home/user/Taxila"
+CH = os.environ.get("CHAR_HOME", "/tmp/claude-0/char")
 D = f"{ROOT}/art/character/bakeoff/merged"
 S = f"{ROOT}/scripts/character/bakeoff/merged"
 LOOK = f"{D}/looks/teal.json"
-BD = "/tmp/claude-0/apw/build/teal"
-SHOTS = "/tmp/claude-0/apw/loop"
-PY = "/tmp/claude-0/char/bpyenv/bin/python"
-MP = "/tmp/claude-0/apw/venv/bin/python"
+BD = f"{CH}/bakeoff-merged/teal"
+SHOTS = f"{CH}/bakeoff-merged/loop"
+PY = f"{CH}/bpyenv/bin/python"
+MP = os.environ.get("MP_PY", "/tmp/claude-0/apw/venv/bin/python")
+MODEL = os.environ.get("MP_MODEL", "/tmp/claude-0/apw/face_landmarker.task")
 os.makedirs(SHOTS, exist_ok=True)
-env = {**os.environ, "CHAR_TOOLS": "/tmp/claude-0/char/tools"}
+env = {**os.environ, "CHAR_TOOLS": f"{CH}/tools"}
 RG = json.load(open(f"{D}/mp_regions.json"))
 oval = np.isin(np.arange(468), RG["oval"])
 REF = json.load(open(f"{D}/refs/teal/landmarks.json"))
 PX = 2 * 0.62 * math.tan(math.radians(10)) / 750       # metres per pixel at the face plane (face camera, 600x750)
+TRAIN = {"front": 0, "q45_left": 21, "q45_right": 26}
+HELD = {"q3_left": 18, "q3_right": 21}
+YAWS = sorted(set([0, 24] + list(TRAIN.values()) + list(HELD.values())))
 
 
 def run(cmd, **kw):
     r = subprocess.run(cmd, cwd=ROOT, env=env, capture_output=True, text=True, **kw)
     if r.returncode:
-        print(r.stdout[-2000:], r.stderr[-2000:]); sys.exit(1)
+        print(r.stdout[-3000:], r.stderr[-3000:]); sys.exit(1)
     return r.stdout
 
 
@@ -48,50 +63,68 @@ def sim2(A, B):
 
 
 def build_and_shoot(tag):
-    run([PY, f"{S}/fork/build_look.py", "--look", LOOK, "--out", BD])
-    for t in ("H",):
-        run([PY, "scripts/character/blender/export_tier.py", "--look", LOOK, "--build", BD, "--tier", t])
-    run(["node", "scripts/character/finish.mjs", BD, "teal", "public/assets/teacher-bakeoff/merged/teal"])
-    run(["node", f"{S}/shoot.mjs", "--look", "teal", "--yaws", f"0,{a.q3yaw:g},27", "--out", SHOTS])
+    run([PY, f"{S}/blender/build_look.py", "--look", LOOK, "--out", BD])
+    run([PY, f"{S}/blender/export_tier.py", "--look", LOOK, "--build", BD, "--tier", "H"])
+    run(["node", f"{S}/finish.mjs", BD, "teal", f"{ROOT}/public/assets/teacher-bakeoff/merged/teal"])
+    run(["node", f"{S}/identity/shoot.mjs", "--look", "teal", "--yaws", ",".join(map(str, YAWS)), "--out", SHOTS])
     lmf = f"{SHOTS}/lm_{tag}.json"
     if os.path.exists(lmf):
         os.remove(lmf)
-    r = subprocess.run([MP, f"{S}/landmarks.py", "--model", "/tmp/claude-0/apw/face_landmarker.task", "--out", lmf,
-                        f"{SHOTS}/teal_yaw0.png", f"{SHOTS}/teal_yaw{a.q3yaw:g}.png", f"{SHOTS}/teal_yaw27.png"], capture_output=True, text=True)
+    subprocess.run([MP, f"{S}/identity/landmarks.py", "--model", MODEL, "--out", lmf] + [f"{SHOTS}/teal_yaw{y}.png" for y in YAWS],
+                   capture_output=True, text=True, cwd=ROOT)
+    if not a.no_profile:
+        run(["node", f"{S}/identity/profshot.mjs", "--look", "teal", "--out", SHOTS])
     return json.load(open(lmf))
 
 
-def errors(lm):
-    out = {}
-    for rv, qv in (("front", "teal_yaw0"), ("q3_left", f"teal_yaw{a.q3yaw:g}"), ("q3_right", "teal_yaw27")):
-        R = np.array(REF[rv]["lm"])[:468, :2]; Q = np.array(lm[qv]["lm"])[:468, :2]
-        f = sim2(R[~oval], Q[~oval])                      # reference INTO the render frame (keeps our scale/pose)
-        e = f(R) - Q                                      # px: where the landmark should move in the render
-        iod = np.linalg.norm(Q[33] - Q[263])
-        out[rv] = (e, float((np.linalg.norm(e, axis=1)[~oval]).mean() / iod * 100), float(np.linalg.norm(e, axis=1).mean() / iod * 100))
-    return out
+def err(lm, rv, y):
+    R = np.array(REF[rv]["lm"])[:468, :2]; Q = np.array(lm[f"teal_yaw{y}"]["lm"])[:468, :2]
+    f = sim2(R[~oval], Q[~oval])                      # reference INTO the render frame (keeps our scale/pose)
+    e = f(R) - Q
+    iod = np.linalg.norm(Q[33] - Q[263])
+    return e, float((np.linalg.norm(e, axis=1)[~oval]).mean() / iod * 100)
 
 
 L = json.load(open(LOOK))
 corrF = f"{D}/refs/teal/fit_correction.json"
-corr = np.array(json.load(open(corrF))["mm"]) / 1000 if os.path.exists(corrF) and L["wrap"].get("correction") else np.zeros((468, 3))
+profF = f"{D}/refs/teal/profile_correction.json"
+if a.reset:
+    for f in (profF,):
+        if os.path.exists(f):
+            os.remove(f)
+corr = np.array(json.load(open(corrF))["mm"]) / 1000 if os.path.exists(corrF) else np.zeros((468, 3))
 L["wrap"]["correction"] = corrF
+if not a.no_profile:
+    L["wrap"]["profileCorrection"] = profF
 log = []
-th = math.radians(a.q3yaw)
 for it in range(a.iters + 1):
-    json.dump({"mm": np.round(corr * 1000, 3).tolist(), "note": "fitloop.py closed-loop correction added to wrap targets"}, open(corrF, "w"))
+    json.dump({"mm": np.round(corr * 1000, 3).tolist(), "note": "merged fitloop.py closed-loop correction added to wrap targets"}, open(corrF, "w"))
     json.dump(L, open(LOOK, "w"), indent=2)
     lm = build_and_shoot(it)
-    E = errors(lm)
-    row = {"iter": it, **{k: {"interiorNME": round(v[1], 2), "allNME": round(v[2], 2)} for k, v in E.items()}}
+    E = {rv: err(lm, rv, y) for rv, y in {**TRAIN, **HELD}.items()}
+    E["q45_at_yaw24_left"] = err(lm, "q45_left", 24)
+    E["q45_at_yaw24_right"] = err(lm, "q45_right", 24)
+    row = {"iter": it, **{k: round(v[1], 2) for k, v in E.items()}}
+    row["yaw24_over_front"] = round(0.5 * (E["q45_at_yaw24_left"][1] + E["q45_at_yaw24_right"][1]) / E["front"][1], 3)
+    if not a.no_profile:
+        r = subprocess.run(["python3", f"{S}/identity/profilefit.py", "measure", "--ref", f"{D}/refs/teal/profile90_left.png",
+                            "--reflm", f"{D}/refs/teal/landmarks.json", "--render", f"{SHOTS}/teal_profile.png",
+                            "--cam", f"{SHOTS}/teal_profile.json", "--corr", profF if it < a.iters else f"{SHOTS}/profile_final.json",
+                            "--step", str(a.pstep if it < a.iters else 0.0)], cwd=ROOT, capture_output=True, text=True)
+        row["profile"] = r.stdout.strip()[-200:]
     log.append(row); print(json.dumps(row), flush=True)
     if it == a.iters:
         break
-    ef, eq = E["front"][0], E["q3_left"][0]
+    ef = E["front"][0]
     dX = ef[:, 0] * PX; dZ = -ef[:, 1] * PX
-    # yaw view: image x' = x cos + z_gl sin  ->  depth (glTF z, toward camera) from the residual after the frontal x
-    dzgl = (eq[:, 0] * PX - dX * math.cos(th)) / math.sin(th)
+    dz = []
+    for rv in ("q45_left", "q45_right"):
+        th = math.radians(TRAIN[rv])
+        eq = E[rv][0]
+        dz.append((eq[:, 0] * PX - dX * math.cos(th)) / math.sin(th))
+    dzgl = np.mean(dz, 0)
     dzgl[oval] = 0
     dzgl = np.clip(dzgl, -0.004, 0.004)
-    corr = corr + a.step * np.stack([dX, -dzgl * 0.5, dZ], 1)
-json.dump({"log": log, "pxPerM": 1 / PX, "step": a.step}, open(f"{D}/refs/teal/fitloop.json", "w"), indent=1)
+    corr = corr + a.step * np.stack([dX * a.front, -dzgl * a.depth, dZ * a.front], 1)
+json.dump({"log": log, "pxPerM": 1 / PX, "step": a.step, "train": TRAIN, "heldOut": HELD, "method": __doc__.split("\n")[0]},
+          open(f"{D}/refs/teal/fitloop.json", "w"), indent=1)

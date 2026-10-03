@@ -263,9 +263,30 @@
         "bg/home-young-wide",
         "bg/who-wide"
       ],
-      "status": "skipped",
-      "date": "2026-10-03T07:00:09Z",
-      "notes": "Required reference bg/who-wide failed after three attempts; prompt requires every reference to be done before generation."
+      "status": "done",
+      "date": "2026-10-03T16:22:32Z",
+      "notes": "Generated 2026-10-03 as an edit with the new who-wide as the first reference (2 candidates). The model added a slate easel, mat and tiffin. A masked clean-up edit removed them, and only the masked region was composited back (feathered; mean |diff| outside the region 5.9). The bare paving was extended 170 px by a seam cut, then centre-cropped and resized to 1440x2560. Gate band sits from about 22% to 39% of the height, with empty paving below.",
+      "model": "taxila-image (gpt-image-2)",
+      "attempts": 1,
+      "ocr": "visual",
+      "width": 1440,
+      "height": 2560,
+      "bytes": 404568,
+      "sha256": "a59955a57f3f2b889fd186358c897c352f1d1730f2e365cf018069ae17286ab4",
+      "lampHueShare": 0.0,
+      "qa": {
+        "ok": true,
+        "problems": [],
+        "size": [
+          1440,
+          2560
+        ],
+        "mode": "RGB",
+        "bytes": 404568,
+        "lampHueShare": 0.0,
+        "ocr": "visual",
+        "visual": "inspected with the Read tool before acceptance"
+      }
     },
     "bg/practice-wide": {
       "path": "public/assets/gen/bg/practice-wide.webp",
@@ -9173,14 +9194,12 @@
       "sha256": "f8ed7ea3c619599529d71132506aef01a4280dd40743e0a994f47c14b8b4f94d"
     }
   },
-  "updatedAt": "2026-10-03T16:19:20Z",
+  "updatedAt": "2026-10-03T16:22:32Z",
   "summary": {
     "pending": 0,
-    "done": 398,
-    "skipped": 1,
+    "done": 399,
+    "skipped": 0,
     "failed": 0
   },
-  "skipped": [
-    "bg/who-phone"
-  ]
+  "skipped": []
 }

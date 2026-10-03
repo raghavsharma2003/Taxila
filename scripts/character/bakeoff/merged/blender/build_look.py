@@ -168,6 +168,12 @@ if look.get("wrap"):
             sm_ = np.where((np.linalg.norm(_push, axis=1) > np.linalg.norm(sm_, axis=1))[:, None], _push, sm_)
             B = B + sm_
             report["lidConform"] = {"pushedVerts": int(len(src_)), "maxMm": round(float(np.linalg.norm(_push, axis=1).max() * 1000), 2)}
+    # profile (silhouette) term (identity/profilefit.py): the face front's depth by height and the jaw underside's
+    # height, fitted to the true 90 deg reference; symmetric by construction (functions of height and |x|)
+    if look["wrap"].get("profileCorrection") and os.path.exists(look["wrap"]["profileCorrection"]):
+        import profilefit as PFIT
+        B, report["profileFit"] = PFIT.apply(B, look["wrap"]["profileCorrection"], head_weight(B), _body, scale=float(look.get("headScale", 1.0)),
+                                            log=lambda m: print(f"[build:{look['id']}] {m}", flush=True))
     h.data.vertices.foreach_set("co", B.ravel())
     h.data.update()
     _eyeC0 = {s_: B[group_idx(h, g_)].mean(0) for s_, g_ in (("L", "helper-l-eye"), ("R", "helper-r-eye"))}

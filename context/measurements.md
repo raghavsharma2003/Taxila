@@ -1156,3 +1156,8 @@ Revision taxila-web--s160bcb5-z8m7. Static gates 11/11; npm test 1104/1107 with 
 <!-- merged from inbox/leak-not-echo.json -->
 ## test-accounts-cleanup (2026-10-03)
 Production Neon held 175 guardians on the @taxila.test domain, left by smoke, e2e and audit runs that deleted only their child. All were deleted (they cascade). scripts/prod-smoke.mjs and tests/lesson-api-e2e.mjs now call DELETE /api/account. Afterwards: 0 left (one smoke run plus one e2e run checked). The e2e also opens lesson hours for its child and makes its second start a practice visit, since the day plan now refuses a second lesson: 40/40 after.
+
+
+<!-- merged from inbox/codex-pack-complete.json -->
+## codex-pack-complete (2026-10-03)
+The 6 failed and 7 skipped Codex assets were redone and pass the same machine QA: size and format, alpha, lamp-hue share 0-0.03% against a 1.5% limit, and tiling (panorama loop step 3.92 against an interior 3.15, limit 18). No-text was checked by eye, since tesseract isn't installed. The raster images came from Azure taxila-image (gpt-image-2) using the provenance prompts plus reference inputs. brand/mark is hand-authored SVG (#24346E / #F6F3EC: an open book whose spine rises into a pen nib), and the app icon, adaptive layers, monochrome icon and splashes are derived from it by assetkit. INDEX.json now shows 399 done. Open for human review: the panorama's two hanging neem tips, and the guava and tomato sprouts, whose mounds don't line up with their seed images.
