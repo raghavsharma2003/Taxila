@@ -1,0 +1,203 @@
+// <TutorFace>: the tutor on the lesson stage (AVATAR.md §2.4, M0). A thin React wrapper that picks the face tier
+// and mounts the framework-free 3D stage imperatively; three.js is imported only by ./three/stage3d.ts, loaded
+// with a dynamic import on first mount, so neither the cold path nor the lesson route chunk grows.
+//
+// Tier B / B-lite → the procedural 3D head; D → the 2D plate of the same person; E → voice-only ring.
+// Falls to D on: no WebGL2 / known-bad GPU (static facts), a failed probe, a governor demotion, a lost context,
+// or a failed chunk load. Reduced motion keeps lips and blinks and scales head and expressions × 0.3.
+//
+// Callers (rules from §2.4): never mute or re-route the teacher audio; never pass sentence-shaped text; the face
+// never reads anything about the child beyond the band.
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { defaultTutorFor, tutorById, type TutorCharacter } from "../../shared/tutors.js";
+import { p as copy } from "./picker/copy.ts";
+import type { BandKey, Emotion, FloorStatus } from "./behaviour.ts";
+import { Plate2D } from "./Plate2D.tsx";
+import type { TapSource } from "./tap.ts";
+import { detectStaticFacts, staticTier, tierOverride, type FaceTier, type TierDecision } from "./tier.ts";
+import type { Stage3D, StageEvent } from "./three/stage3d.ts";
+import "./avatar.css";
+
+export interface TutorFaceProps {
+  tutorId: string | null | undefined;
+  band: BandKey | string;
+  /** The four-state lesson status (statusOf), or null outside a live lesson (idle). */
+  status: FloorStatus | null;
+  /** Her output meters: the link's teacher LevelMeter (and the replay meter). */
+  teacher: TapSource[];
+  /** The child's mic level. */
+  mic?: { readonly value: number };
+  reducedMotion?: boolean;
+  /** "Gentle face": head and lower-face expression × 0.5. */
+  gentle?: boolean;
+  framing?: "medium" | "close";
+  /** Force a tier (dev/test; `?face=` in the URL does the same). */
+  tier?: FaceTier;
+  /** A delight / affect window from the Director's ReactionGate (one fixed intensity). */
+  affect?: Emotion | null;
+  onEvent?: (e: StageEvent | { type: "fallback"; to: FaceTier; reason: string }) => void;
+  className?: string;
+  style?: CSSProperties;
+  /** Skip the 2 s probe (tests). */
+  noProbe?: boolean;
+  /** UI language for the accessible "<name>, AI teacher" on every tier. */
+  lang?: string;
+  /** The child's "voice and board only" presentation (prefs.face === "voice") → tier E. */
+  voiceOnly?: boolean;
+}
+
+let cachedFacts: ReturnType<typeof detectStaticFacts> | null = null;
+let contextLosses = 0;
+/** WebGL contexts lost by LIVE stages this page (a disposed stage never reports one). */
+export const faceContextLosses = () => contextLosses;
+if (import.meta.env?.DEV && typeof window !== "undefined") (window as unknown as { __faceContextLosses?: () => number }).__faceContextLosses = faceContextLosses;
+
+/** `?face=` is a dev/test override: honoured only in dev builds or with VITE_DEV_ROUTES=1, never in production. */
+const OVERRIDE_OK = !!import.meta.env?.DEV || import.meta.env?.VITE_DEV_ROUTES === "1";
+
+/**
+ * The tutor for an id, else the class default for the BAND (b1-b2 = classes 1-4 → Asha, b3-b4 = 5-9 → Arjun), the
+ * same rule as the server's teacherFor, so an unknown/null id can never put Asha's face over Arjun's voice.
+ */
+export function faceTutor(id: string | null | undefined, band: string): TutorCharacter {
+  return tutorById(id) ?? tutorById(defaultTutorFor({ class_level: band === "b3" || band === "b4" ? 5 : 1 }))!;
+}
+
+/** Battery, read once per page as soon as this module loads (async API; the first decision after it resolves uses
+ *  it). Applied to the START tier only, never as a repeating signal (tier.ts rules). */
+let battery: { level: number; charging: boolean } | null = null;
+try {
+  const nav = typeof navigator !== "undefined" ? (navigator as Navigator & { getBattery?: () => Promise<{ level: number; charging: boolean }> }) : null;
+  nav?.getBattery?.().then((b) => (battery = { level: b.level, charging: b.charging }), () => {});
+} catch {
+  /* no Battery API */
+}
+
+/** The stage-1 decision for this browser, computed once per page. */
+export function decideTier(override?: FaceTier | null, opts: { voiceOnly?: boolean } = {}): TierDecision {
+  const forced = override ?? (OVERRIDE_OK && typeof location !== "undefined" ? tierOverride(location.search) : null);
+  if (forced) {
+    const fps = forced === "B" ? { speaking: 30, listening: 30, idle: 20 } : { speaking: 20, listening: 20, idle: 15 };
+    return { tier: forced, pixelRatio: forced === "B" ? Math.min(typeof devicePixelRatio === "number" ? devicePixelRatio : 1, 1.25) : 1, fps, why: ["override"] };
+  }
+  cachedFacts ??= detectStaticFacts();
+  return staticTier({ ...cachedFacts, contextLosses, battery, voiceOnly: !!opts.voiceOnly });
+}
+
+/** Stable identity for a list of meters, so a caller passing a fresh array literal each render does not rebuild the stage. */
+const meterIds = new WeakMap<object, number>();
+let nextMeterId = 1;
+function sourcesKey(list: TapSource[]): string {
+  return list.map((m) => {
+    let id = meterIds.get(m);
+    if (!id) meterIds.set(m, (id = nextMeterId++));
+    return id;
+  }).join(",");
+}
+
+const bandKey = (b: string): BandKey => (b === "b1" || b === "b2" || b === "b3" || b === "b4" ? b : "b2");
+
+export function TutorFace(p: TutorFaceProps) {
+  const tutor: TutorCharacter = faceTutor(p.tutorId, String(p.band));
+  const label = `${tutor.displayName.roman}, ${copy("aiTeacher", p.lang ?? "english")}`;
+  const initial = useMemo(() => decideTier(p.tier, { voiceOnly: p.voiceOnly }), [p.tier, p.voiceOnly]);
+  const [tier, setTier] = useState<FaceTier>(initial.tier);
+  useEffect(() => setTier(initial.tier), [initial]); // presentation pref / forced tier changed
+  const host = useRef<HTMLDivElement>(null);
+  const stage = useRef<Stage3D | null>(null);
+  const live = useRef({ status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle, mic: p.mic });
+  live.current = { status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle, mic: p.mic };
+  const onEvent = useRef(p.onEvent);
+  onEvent.current = p.onEvent;
+
+  const srcKey = sourcesKey(p.teacher);
+  const sources = useMemo(() => p.teacher, [srcKey]); // the key IS the dependency
+  const threeD = tier === "B" || tier === "Blite";
+  useEffect(() => {
+    if (!threeD || !host.current) return;
+    let cancelled = false;
+    let mic = 0;
+    const el = host.current;
+    import("./three/stage3d.ts")
+      .then(({ Stage3D }) => {
+        if (cancelled) return;
+        const s = new Stage3D(el, {
+          tutor, band: bandKey(p.band), decision: { ...initial, tier }, sources, framing: p.framing ?? "medium", noProbe: p.noProbe,
+          seed: [...tutor.id].reduce((a, c) => a + c.charCodeAt(0), 0),
+          onEvent: (e) => {
+            onEvent.current?.(e);
+            if (cancelled) return; // a stage already torn down by this effect never counts or re-tiers
+            if (e.type === "contextlost") {
+              contextLosses++;
+              setTier("D");
+            } else if (e.type === "tier" && (e.to === "D" || e.to === "E")) setTier(e.to);
+          },
+        });
+        s.set({ status: live.current.status, reducedMotion: live.current.reducedMotion, gentle: live.current.gentle });
+        stage.current = s;
+        s.start();
+        // child mic level → stage, a few times a second (no React render per frame)
+        mic = window.setInterval(() => s.set({ childLevel: live.current.mic?.value ?? 0 }), 100);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        onEvent.current?.({ type: "fallback", to: "D", reason: `3D chunk failed: ${String(err).slice(0, 120)}` });
+        setTier("D");
+      });
+    return () => {
+      cancelled = true;
+      window.clearInterval(mic);
+      stage.current?.dispose();
+      stage.current = null;
+    };
+    // The stage is rebuilt only when the person or the tier changes; inputs flow through set().
+  }, [threeD, tutor.id, p.framing, sources]);
+
+  useEffect(() => {
+    stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle });
+  }, [p.status, p.reducedMotion, p.gentle]);
+
+  useEffect(() => {
+    if (p.affect) stage.current?.arm(p.affect, 1);
+  }, [p.affect]);
+
+  const cls = `tx-tutorface ${p.className ?? ""}`;
+  if (tier === "E") {
+    return (
+      <div className={`${cls} tx-tutorface--voice`} style={p.style} data-tier="E" data-tutor={tutor.id} role="img" aria-label={label}>
+        <VoiceRing sources={sources} color={tutor.look.signatureColor} />
+        <span className="tx-tutorface-name" aria-hidden="true">{tutor.displayName.roman}</span>
+        <span className="tx-tutorface-ai" aria-hidden="true">{copy("aiTeacher", p.lang ?? "english")}</span>
+      </div>
+    );
+  }
+  if (tier === "D") {
+    return (
+      <div className={cls} style={p.style} data-tier="D" data-tutor={tutor.id}>
+        <Plate2D tutor={tutor} sources={sources} reducedMotion={p.reducedMotion} className="tx-tutorface-plate" lang={p.lang} />
+      </div>
+    );
+  }
+  // The AI disclosure must not depend on the GPU tier: the 3D host carries the same accessible name as D and E.
+  return <div ref={host} className={cls} style={p.style} data-tier={tier} data-tutor={tutor.id} role="img" aria-label={label} />;
+}
+
+/** Tier E: an RMS ring, name and "AI teacher" (no face at all). */
+function VoiceRing({ sources, color }: { sources: TapSource[]; color: string }) {
+  const ring = useRef<SVGCircleElement>(null);
+  useEffect(() => {
+    let raf = 0;
+    const loop = () => {
+      raf = requestAnimationFrame(loop);
+      const v = Math.max(0, ...sources.map((s) => s.value));
+      ring.current?.setAttribute("r", (30 + v * 10).toFixed(1));
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [sources]);
+  return (
+    <svg viewBox="0 0 100 100" className="tx-tutorface-ring" aria-hidden="true">
+      <circle ref={ring} cx="50" cy="50" r="30" fill="none" stroke={color} strokeWidth="5" />
+    </svg>
+  );
+}

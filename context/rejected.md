@@ -334,3 +334,82 @@ The workflow's write-up is the prose merged from inbox/cascade-latency-2.json ea
 ## router-s-filter-artifact (2026-10-03)
 Rejected: router-bench S ranking ('DeepSeek-V4-Pro/grok/oss missed passive ideation'). Every model incl. fast/brain/terra/ds41 was Azure-content-filtered on 'I just want to disappear forever'; non-OpenAI Foundry models return HTTP 400 with choices[0].finish_reason=content_filter (no top-level error), which the harness logged as 'http 400' and scored a miss. Rescored (block = distress): all but Cohere 16/16 recall; DeepSeek-V4-Pro 32/32 best; Cohere 14/16. No model's own reading of that sentence was measured.
 The workflow's write-up is the prose merged from inbox/model-router-review.json earlier in this file; this heading ties the graph node to it.
+
+
+<!-- merged from inbox/voice-models.json -->
+## dragonhdomni-not-production
+2026-10-02. Tried `hi-IN-{Swara,Kavya,Aarti,Ananya,Diya,Madhur}:DragonHDOmniLatestNeural` (30 clips). Broke: the names resolve but are not in voices/list (an undocumented name can disappear without notice) and first-byte latency had a tail to 8.7 s (Kavya), 7.1 s (Swara), family p90 5.0 s. Retry only if the voices are listed and p90 re-measures under 1 s.
+
+## tts-style-map-from-family-default
+2026-10-02. Tried one style map for the MAI family (praise `excited`, correction `softvoice`). Broke: `hi-IN-Arjun:MAI-Voice-2.1(-Flash)` has no `softvoice` in its StyleList; the request failed (HTTP 502 / UND_ERR_SOCKET in the sweep, HTTP 400 empty body in the review probe), so the status code is not a reliable signal either. Harper and Grant list no styles. Build the style map from each voice's StyleList at boot and drop unknown styles before sending.
+
+
+<!-- merged from inbox/avatar-m0.json -->
+## avatar-m0-dead-ends
+Three traps hit while building M0 (2026-10-03):
+
+1. **Morph targets as deltas with three.js's default absolute mode.**
+   - **Tried:** `geometry.morphAttributes.position` filled with per-vertex DELTAS and `morphTargetsRelative` left false.
+   - **Broke:** three computes base × (1 − Σw) + Σ w·target, so two cheek weights of 0.064 shrank the whole head to ~0.87 and the hair shell (0.9 × head inside the face) covered the face. Diagnosed with a red-recolour probe in the browser. Fix: `morphTargetsRelative = true`. Any factory GLB loader must keep relative morphs.
+2. **A fixed-gain RMS jaw on audio of unknown level.**
+   - **Tried:** the bench's fixed gate 0.01 / gain 6 at −10.5 dB (a plausible received level after Opus/AGC).
+   - **Broke:** 72.4% of Hindi vowel frames had a closed mouth (vs 17.4% at the bench's level). The level-normalised driver held 17.3%. Reverse if: the received level is measured stable to ±2 dB across lanes and devices.
+3. **A fixed 50 ms "long frame" bar under a 20 fps cap.**
+   - **Tried:** the governor counting frames > 50 ms as long at every cap.
+   - **Broke:** at a 20 fps B-lite cap the nominal interval is 50 ms, so 39 of 200 frames in 10 s counted as long and the governor demoted DPR on a healthy face. Fix: long = max(50, 1000/cap + 17) ms (`avatar-m0-tiers-governor`).
+
+
+## avatar-m0-review-traps
+Two traps found in review of M0 (2026-10-03):
+
+1. **Trusting `WebGLRenderer.dispose()` to free the context.**
+   - **Tried:** `renderer.dispose()` + removing the canvas on unmount, with the stage's own `webglcontextlost` listener left attached.
+   - **Broke:** three r180's dispose frees programs/buffers but not the GL context. The picker builds a stage per selection, so 40 flips evicted 24 contexts; the detached canvases' stale listeners reported each eviction and the session counted 24 losses, which sends every later face (the lesson's too) to the 2D plate. Fix: remove the listener, `dispose()` then `forceContextLoss()`, ignore losses after dispose (`avatar-m0-context-churn-2026-10-03`).
+2. **"Live lesson" = a turn in the last 15 minutes.**
+   - **Tried:** `lessonLive()` counting an open lesson as live only with activity in the last 15 min, checked in one query and written in another.
+   - **Broke:** a lesson paused > 15 min (still open, still resumable) could switch teacher; the lesson kept Asha's compiled persona and face while `/api/tts` re-read `child.teacher_id` and spoke in Arjun's voice. Fix: the lesson pins its teacher (`teacherForLesson`), live = open with activity in 6 h, check + update + log in one statement. Reverse if: every speech path reads the pin, then the window is UX only.
+
+
+<!-- merged from inbox/engines-v1.json -->
+## rj-engine-prompt-shows-target
+**Tried (2026-10-03, engines-v1):** mounting planner-bound items with the target as an ordinary visible param. **Broke:** `number-line@1` jump mode printed "Jump to 14" for the kit item "2, 5, 8, 11, ___. What comes next?" (and "Jump to 71" for "46 + 25"), and `place-value@1` build printed "Make this number: 4050" for "Write in numbers: four thousand fifty" — the answer on screen. `tests/engine-catalog.test.mjs` (key in params but not in the prompt) caught it on the first run over the c4-c7 kits. **Instead:** `question` (number-line: the expression or sequence is shown, the target never), `name` (place-value: the number name is shown, not the numeral) and `round` (number-line computes the rounding target from the point itself); the line's ends are kept off the answer. The test stays as the gate for every new adapter.
+
+## rj-share-for-quotitive
+**Tried (2026-10-03):** binding "48 ladoos are packed in boxes of 6. How many boxes?" to `multiply-divide@1` share mode (48 shared among 6 plates, 8 each). **Broke (on review, before any child):** the number matches the key, but the child would share into 6 groups when the item asks how many groups of 6 — a partitive action graded as a quotitive answer. **Instead:** prompts with grouping cues ("boxes of 6", "how many boxes/packs/trays…") stay unbound until a grouping mode exists.
+
+## rj-first-hint-engine-id
+**Tried (in production code, server/director/modules.js):** the kit's engine is `engineId(engineHints[0])`. **Broke:** kit hints are free names ("fraction-strips", "pizza-cutter", "shadow_stick_sim"), so 4/385 c4-c7 topics (1.0%) resolved to a registered engine and every other mount showed "coming soon". Aliasing only the first hint still reaches just 87/385 (22.6%). **Instead:** `pickEngine` over all hints with an alias table and a topic-map fallback: 132/385 (34.3%), 146/385 with the map (`engines-v1-coverage-2026-10-03`).
+
+## rj-array-dims-binding
+**Tried (engines-v1 builder, 2026-10-03):** binding multiplication items to `multiply-divide@1` array mode graded on the built dimensions. **Broke (fixer review):** for "What is 7 × 8?" (c4-maths-ch09-t01-i02, key 56) the engine printed "Make an array of 7 × 8"; rows 7, columns 8, Check → correct:true, recorded as the item correct by classifyFast, with the child never producing 56. 24 bound items across c1-c9 (15 word problems turned into "6 × 3" arrays). Share mode had the same shape: "one each" until the button greys out always lands on the fair share (12 bound items). **Instead:** `ask: "product"` (typed total graded; `showExpr: false` for word problems); share unbound.
+
+## rj-parts-build-shows-numeral
+**Tried (2026-10-03):** place-value build for items that give the pieces ("4 tens and 6 ones. Write the number.", key 46), params `{mode: build, value: 46}` with no name. **Broke:** the prompt read "Make this number: 46" on a bound item (c1-maths-ch08-t01-i03, -i13, c1-maths-ch04-t02-i14; c2-maths-ch03-t01-i10 unbound). The leak test missed it: it scanned only c4-c7 maths, exempted `value` whenever `name` was present, and never rendered through normalize. **Instead:** read mode with `counts` (the given pieces are drawn, the child writes the numeral); the leak test runs over every kit on the text the frame's normalize puts on screen.
+
+## rj-replay-against-own-params
+**Tried (engines-v1 builder):** the coverage eval's array replay `arrayCorrect(c, c.a, c.b) && a*b === key`, and share plates filled from the key. **Broke:** both compare the planner's params with themselves, so the "perturbed key rejected" check could not fail for arrays, and the copy-task binding above passed as "76/76 agree". **Instead:** replay the child-side action the view grades; constructs that do not need the answer replay false.
+
+
+<!-- merged from inbox/forge-g1.json -->
+## forge-g1-single-tier-blocklist
+**Tried (2026-10-03, G1 gate v0): one blocklist (violence, drugs, insults incl. 'fat', romance words) over every child-visible string.** What broke: on the c4-c7 coverage survey it rejected 11 verified kit strings — science diagnostics such as 'Farmers in a village kill all the snakes', 'Groundnuts contain both fat and protein', 'The more fat you eat, the stronger you get'. Kits legitimately discuss these (FACTORY §5.1 Q8 'per-topic curriculum allowance'). Replaced by SEVERE (sexual, romance/companion register, slurs, self-harm) on all strings and MILD only on non-kit strings.
+
+## forge-g1-case-folded-keys
+**Tried (2026-10-03): comparing English answer keys after the director's `norm()`-style folding (lower-case, quotes and apostrophes stripped).** What broke: `diag:c6-english-ch13-t01-m-capital-proper` ('Chitra lives in Kerala.' vs 'kerala') and `diag:c7-english-ch14-t01-m-apostrophe-plural` ('soldiers' vs "soldier's") read as two correct options — in grammar items the capital or the apostrophe IS the answer. Fixed: diagnostics compare exact option text; contrast items fold only spacing, curly quotes and a final full stop.
+
+## forge-g1-model-before-gate
+**Tried (2026-10-03, first eval run): flavour model call first, gate after.** What broke: an activity that fails for flavour-independent reasons (option too long, template does not fit the band) paid ~1 s of taxila-fast on every request and was never cached, so the memory-hit pass had p95 987 ms (n=27, 4 gap items). Replaced by a gate on the code pick before the call and a bounded dead-key memo: repeated gaps 45 ms, memory hits ≤ 1 ms.
+
+## forge-g1-child-name-in-cached-gate
+**Tried (G1 v1, 2026-10-03): the child's first name as a Q8 check inside `gateFill`, run over every child-visible string including kit strings, with a failure memoised in the process-wide, child-free `deadKeys` map.** What broke (review, reproduced): c5-english-ch02-t01-i06 scrambles 'Yesterday Chintu ran after the scooter.'; child 'Chintu' got a gap (`safety.child_name`) and a `gate_failed` forge_gap row, then child 'Riya' got the same gap from the dead key — one child disabled the activity for everyone until restart. The reverse order also failed: a fill built for Riya was served to Chintu from the cache with no name check at all. Kits name characters constantly (Chintu 154, Ravi 123, Riya 104 occurrences in c4-c7). Replaced by `forge-g1-serve-time-child-check`. Lesson: anything that depends on the child must stay out of child-free state.
+
+## forge-g1-prefetch-unplanned
+**Tried (G1 v1): lesson-start prefetch of the first 6 candidates (recent wrong, diagnostics, then kit order) without planning them.** What broke: with bars only, 1805 of 1818 slots across 303 topics went to items that cannot become an activity, each writing a forge_gap row; it warmed 54% of the mountable queue items (10% once scenes mount). Replaced by `forge-g1-prefetch-planned` (88% / 99%, 0 slots on gaps).
+
+## forge-g1-learner-read-per-turn
+**Tried (G1 v1): `requestFill` read the learner view (4 Neon selects, 1.5 s timeout) before checking the memory cache whenever no learner was passed — which is how call site 2 was written.** What broke: every module turn, memory hits included, paid a DB round trip, and the report's 0 ms memory / 47 ms Neon hit figures were measured with the learner passed in (`timings.learner = 0`), so they did not describe the wired path. Replaced by the per-lesson memo in `forge-g1-turn-path` (later turns 0 ms learner read, measured).
+
+
+<!-- merged from inbox/integration-learner-comp.json -->
+## spoken-ask-in-load-gate
+**Tried (2026-10-03):** rendering the voice branch's next question in spoken notation inside the kit load gate too (compile.js checkFits on the spoken ask). **Broke:** 122/10815 items dropped for the prompt budget (1.13%; the gate is ≤ 1%, baseline 108 = 0.999%), and normalizeKit drops an item from EVERY lane, so a voice-only reading would have removed number-heavy items (c7-sst timelines, c8-sst census bars, c4-maths money word problems) from text lessons too. Hindi-mode readings render digits as Devanagari number words ('एक हज़ार नौ सौ इक्यावन'), +7 to +22 estimated tokens on such items. **Instead:** the gate stays on the written form, and a voice compile falls back to the written branch line only when the spoken one does not fit (integration-voice-spoken-ask).

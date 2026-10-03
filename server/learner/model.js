@@ -131,6 +131,11 @@ export function eventFromRow(r) {
     ...(r.misconception_id ? { misconceptionId: r.misconception_id } : {}), ...(r.discriminates ? { discriminates: r.discriminates } : {}),
     ...(r.mis_route ? { misRoute: r.mis_route } : {}), ...(r.entry_rung ? { entryRung: r.entry_rung } : {}),
     ...(r.contaminated ? { contaminated: true } : {}), ...(r.kit_verified === false ? { kitVerified: false } : {}),
+    // CE contract fields (007): absent columns (a row written before 007) read as absent, never as defaults.
+    ...(r.via ? { via: r.via } : {}), ...(r.ebo ? { ebo: r.ebo } : {}), ...(r.shape_id ? { shapeId: r.shape_id } : {}),
+    ...(r.weave_host ? { weaveHost: r.weave_host } : {}), ...(r.coincident ? { coincident: true } : {}),
+    ...(r.unfamiliar_context ? { unfamiliarContext: true } : {}), ...(r.deference_discount ? { deferenceDiscount: true } : {}),
+    ...(typeof r.span_ok === "boolean" ? { spanOk: r.span_ok } : {}),
   };
 }
 

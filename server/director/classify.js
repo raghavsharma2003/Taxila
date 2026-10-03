@@ -3,7 +3,7 @@
 // listed option the reply matches; code turns that into an outcome). Deterministic paths run first
 // (chips, module answers, exact key match, low ASR, lexical don't-know), so the model is only asked
 // when the bytes cannot decide.
-import { chat, DEPLOY, isReasoningFamily } from "../azure.js";
+import { chat, DEPLOY, isReasoningFamily, isContentFilter } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
 import { scanSafety, wantsToStop } from "./safety.js";
 import { whyKey, norm as normAnswer } from "./items.js";
@@ -192,7 +192,9 @@ export function hedged(fn, ms) {
     const finish = (ok, v) => { if (settled) return; settled = true; clearTimeout(timer); (ok ? resolve : reject)(v); };
     const run = () => {
       pending += 1;
-      fn().then((v) => finish(true, v), (e) => { pending -= 1; if (!pending) finish(false, e); });
+      // A content-filter block on EITHER request decides at once (fails closed): the duplicate answering
+      // "not distress" a moment later must never overrule the filter's read of the same child turn.
+      fn().then((v) => finish(true, v), (e) => { pending -= 1; if (isContentFilter(e) || !pending) finish(false, e); });
     };
     const timer = setTimeout(() => { if (!settled) run(); }, ms);
     run();
@@ -214,6 +216,8 @@ async function distressCheck(text, classLevel, trace) {
     ], { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace }), classifyHedgeMs());
     return !!json?.distress;
   } catch (e) {
+    // The content filter blocking a child's words is itself a strong distress signal: fail CLOSED.
+    if (isContentFilter(e)) { console.warn("[classify] distress check blocked by the content filter: treated as distress"); return true; }
     console.warn("[classify] distress check unavailable:", e.message);
     return false;
   }
@@ -275,7 +279,8 @@ export async function classify(args) {
   const { flags, text } = fast;
   const done = (outcome, source, extra = {}) => ({ outcome, confidence: 1, source, flags, ...extra });
   if (fast.lowAsr) {
-    flags.distress = await distressCheck(text, classLevel, trace);
+    flags.distress = flags.distress || await distressCheck(text, classLevel, trace);
+    if (flags.distress) flags.distressKind ??= "model";
     return done("no_evidence", "asr");
   }
 
@@ -291,9 +296,18 @@ export async function classify(args) {
     for (const k of Object.keys(modelFlags)) flags[k] = flags[k] || modelFlags[k];
     return { ...label, source: "model", flags };
   } catch (e) {
+    // The content filter blocked the child's turn: fail CLOSED to the safeguarding protocol (never "safe",
+    // never a normal reply). No second model call — the same words would be blocked again.
+    if (isContentFilter(e)) {
+      console.warn("[classify] blocked by the content filter: routed to safeguarding");
+      flags.distress = true;
+      flags.distressKind ??= "content_filter";
+      return done("no_evidence", "content_filter");
+    }
     // A classifier outage costs one turn of evidence, never the lesson.
     console.warn("[classify] model unavailable:", e.message);
-    flags.distress = await distressCheck(text, classLevel, trace);
+    flags.distress = flags.distress || await distressCheck(text, classLevel, trace);
+    if (flags.distress) flags.distressKind ??= "model";
     return done("no_evidence", "error");
   }
 }

@@ -379,7 +379,7 @@ try {
   await settled();
   const errorCallsBefore = turnRequests.length;
   await tap(page.getByTestId("dev-mount-unknown"));
-  const unknown = page.frameLocator("iframe[data-engine='number-line@1']");
+  const unknown = page.frameLocator("iframe[data-engine='clock-calendar@1']");
   await unknown.locator('.frame-card[data-card="coming-soon"]').waitFor({ timeout: 15_000 });
   check("unknown engine → 'coming soon' card, in the child's language", /jald/i.test((await unknown.locator(".frame-card").textContent()) ?? ""), (await unknown.locator(".frame-card").textContent())?.trim());
   await page.waitForFunction(() => [...document.querySelectorAll('[data-testid="module-events"] li[data-type="error"]')].some((li) => li.textContent.includes("unknown engine")), null, { timeout: 5_000 });

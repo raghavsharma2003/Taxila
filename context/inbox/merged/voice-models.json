@@ -1,0 +1,208 @@
+{
+ "nodes": [
+  {
+   "id": "voice-choice-v2",
+   "kind": "decision",
+   "title": "PROPOSED per-character voices (GA only for minors): Asha = en-IN-Diya:DragonHDLatestNeural, Arjun = en-IN-Arjun:DragonHDLatestNeural, Uma = en-IN-Meera:DragonHDLatestNeural (lang-tagged SSML, PCM) as cascade TTS default with gpt-4o-mini-tts marin/cedar as fallback; MAI-Voice-2.1 Priya HD / Dhruv Flash are Preview benchmarks and switch-on-GA targets; panel pilot gates the swap",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-one-identity-across-lanes",
+   "kind": "decision",
+   "title": "PROPOSED: each teacher character speaks with ONE voice on every lane; premium-lane candidate = Voice Live B (gpt-realtime-2.1 + the character's DragonHD voice, ~$0.042 vs $0.082/min, +82 ms first audio) against lane A native marin/cedar in the panel",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-blind-test-v2-protocol",
+   "kind": "decision",
+   "title": "Human blind test v2: blind-test.html (282 v2 clips + shortlist aliases + degraded/repeat catches, 361 entries, 11 blocks, -26 LUFS playback gain), adults first (>=20 kept listeners, >=800 judgments), 4 axes + real-person separately, listener-bootstrap CIs, paired LB>50% to win, 'indistinguishable' only vs a human anchor; best GA Azure arm takes the slot",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-escalation-ladder",
+   "kind": "decision",
+   "title": "If no Azure stock voice passes the panel: (1) tune + re-panel (rate, lang tags, styles, PCM, 3 takes), (2) Azure Professional Voice from one consented work-for-hire teacher recording (HD $48/M, $4.032/h hosting, Limited Access), (3) Veena/Svara LoRA on a Central India A100 VM as hedge (break-even ~20-28 concurrent sessions); never zero-shot clones or Gemini output as training data",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "model-router-v2",
+   "kind": "decision",
+   "title": "FINAL model router (MODEL-ROUTER.md §1, post-review): live reply taxila-fast -> DeepSeek-V4-Pro; premium voice taxila-realtime; cascade TTS DragonHD per character (proposed) -> gpt-4o-mini-tts; STT live-transcribe (lesson-term keywords only) -> Azure Speech RT LID; classify fast -> grok-4-20-nr; distress predicate + fast -> DeepSeek-V4-Pro; director fast -> oss120; reports brain -> fast; code codex -> brain / V4-Pro; images gpt-image-2 / FLUX.2-pro; OCR brain -> grok-4-20-nr; ds41 and Kimi-K3 out of production until the Fireworks meter is confirmed Direct",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-v2-azure-sweep-2026-10-02",
+   "kind": "measurement",
+   "title": "Azure voice sweep v2 (37 arms x 5 passages = 185 clips, n=5/arm, one take, US container -> eastus2): TTFB median MAI-Flash 321 ms (total 730), MAI HD 935 (flat ~0.6 s start-up), DragonHD 244-253 (total ~3.7 s, 3.6x RT), gpt-4o-mini-tts 302, Swara 645 (styled 1164), DragonHDOmni p90 4958 / max 8734; chars/s at rate 0.95 DragonHD ~15, MAI ~10, 4o-mini-tts 11.5; lenient ASR WER <=0.041 every arm (160/185 at 0, cannot rank); loudness -32.4 to -14.6 LUFS over 282 v2 clips",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "voice-ga-only-for-minors",
+   "kind": "constraint",
+   "title": "Preview voices never take a production slot for children: MAI-Voice-2.1 (HD and Flash, all hi-IN personas) and hi-IN-Diya:DragonLatestNeural are Preview in voices/list (2026-10-03); en-IN DragonHD (Diya, Arjun, Meera, Neerja, Aarti), en-IN Indic and hi-IN standard Neural are GA",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "dragonhdomni-not-production",
+   "kind": "rejection",
+   "title": "Rejected for production: hi-IN-*:DragonHDOmniLatestNeural. It resolves but is absent from voices/list (undocumented names can vanish) and its first-byte tail reached 8.7 s (family p90 5.0 s, n=30)",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "tts-style-map-from-family-default",
+   "kind": "rejection",
+   "title": "Rejected: a family-default MAI style map. softvoice on hi-IN-Arjun:MAI-Voice-2.1(-Flash) is not in its StyleList and failed (HTTP 502 in the sweep, 400 in the review probe); styles must be validated against each voice's StyleList at boot",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "open-voice-human-anchor-missing",
+   "kind": "open",
+   "title": "No real Indian teacher recording of the five v2 test passages exists, so 'real person?' has no base rate and no voice can be called indistinguishable; record one female + one male consented teacher and add with make-blind-v2.py --human",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "open-voice-v2-untested-arms",
+   "kind": "open",
+   "title": "Not yet rendered on passages a-e: gpt-live-1, gpt-realtime-2.1(-mini), gpt-audio-1.5, Voice Live B/C, en-IN Indic and hi-IN standard Neural voices; DragonHD prosody-rate control unverified; gpt-4o-mini-tts snapshot unknown; 100 Azure clips unrated by the AI judge",
+   "at": "2026-10-02"
+  },
+  {
+   "id": "open-fireworks-meter-direct",
+   "kind": "open",
+   "title": "taxila-ds41 (DeepSeek-V4.1-Flash) and Kimi-K3 have only an 'Azure Fireworks Models' meter; whether that is Direct-from-Azure (credit-covered) is unconfirmed, so both are excluded from production slots until the owner confirms",
+   "at": "2026-10-02"
+  }
+ ],
+ "edges": [
+  {
+   "src": "model-router-v2",
+   "rel": "supersedes",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "model-router-v2",
+   "rel": "measured_by",
+   "dst": "router-bench-2026-10-02"
+  },
+  {
+   "src": "model-router-v2",
+   "rel": "measured_by",
+   "dst": "router-t-judge-split-2026-10-03"
+  },
+  {
+   "src": "azure-billed-open-models",
+   "rel": "constrains",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "open-fireworks-meter-direct",
+   "rel": "blocks",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "open-distress-check-fails-open-on-filter",
+   "rel": "blocks",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "voice-choice-v2",
+   "rel": "part_of",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "voice-choice-v2",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "voice-choice-v2",
+   "rel": "measured_by",
+   "dst": "voice-v2-azure-sweep-2026-10-02"
+  },
+  {
+   "src": "voice-choice-v2",
+   "rel": "measured_by",
+   "dst": "voice-v2-ai-judge-proxy"
+  },
+  {
+   "src": "voice-ga-only-for-minors",
+   "rel": "constrains",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "voice-ga-only-for-minors",
+   "rel": "caused_by",
+   "dst": "voice-lane-a-v1-panel-decides"
+  },
+  {
+   "src": "azure-billed-open-models",
+   "rel": "constrains",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "ct-no-gemini-api-for-minors",
+   "rel": "constrains",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "voice-one-identity-across-lanes",
+   "rel": "part_of",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "voice-one-identity-across-lanes",
+   "rel": "caused_by",
+   "dst": "voice-lane-budget"
+  },
+  {
+   "src": "voice-blind-test-v2-protocol",
+   "rel": "part_of",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "open-voice-human-anchor-missing",
+   "rel": "blocks",
+   "dst": "voice-blind-test-v2-protocol"
+  },
+  {
+   "src": "open-voice-v2-untested-arms",
+   "rel": "blocks",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "voice-escalation-ladder",
+   "rel": "part_of",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "own-teacher-voice-record-once",
+   "rel": "part_of",
+   "dst": "voice-escalation-ladder"
+  },
+  {
+   "src": "voice-escalation-ladder",
+   "rel": "measured_by",
+   "dst": "oss-tts-hindi-landscape-v2"
+  },
+  {
+   "src": "t4-cannot-serve-3b-codec-tts",
+   "rel": "constrains",
+   "dst": "voice-escalation-ladder"
+  },
+  {
+   "src": "dragonhdomni-not-production",
+   "rel": "measured_by",
+   "dst": "voice-v2-azure-sweep-2026-10-02"
+  },
+  {
+   "src": "tts-style-map-from-family-default",
+   "rel": "measured_by",
+   "dst": "voice-v2-azure-sweep-2026-10-02"
+  }
+ ],
+ "md": {
+  "decisions": "## voice-choice-v2\n2026-10-03. PROPOSED (owner + panel pilot to confirm). Per-character voices, GA only for minors: Asha (1-4) `en-IN-Diya:DragonHDLatestNeural`, Arjun (5-9) `en-IN-Arjun:DragonHDLatestNeural`, Uma (8-9) `en-IN-Meera:DragonHDLatestNeural`; SSML with Devanagari runs in `<lang xml:lang=\"hi-IN\">`, slowed prosody rate (targets ~11 / 13 / 11 chars/s), PCM 24 kHz, styles never sent (no StyleList). Cascade TTS default moves from gpt-4o-mini-tts to this Azure Speech voice; gpt-4o-mini-tts `marin`/`cedar` (named snapshot) is the cross-service fallback. MAI-Voice-2.1 HD Priya (proxy 4.85) and Flash Dhruv (4.65) are benchmarks and switch-on-GA targets. Full recipe: docs/research/voice/v2/VOICE-CHOICE.md.\n- Rationale: Diya is the only voice that is GA, in the proxy top tier (4.70: native 5.0, Hindi 5.0, natural 4.2, warmth 4.6, 0/5 leak) and fast per sentence (TTFB 244 ms); $22/M verified, the same $ per lesson text as gpt-4o-mini-tts, whose quality is unmeasured here (1 judged clip, 3.5) and which a 1,900-rater Indian study ranks well below Gemini. Performance first; Preview voices cannot ship to minors.\n- Reverse if: the panel pilot or full panel prefers gpt-4o-mini-tts or a lane-A native voice on natural + native (paired LB > 50%); DragonHD ignores prosody rate (then pick by native pace: Meera for all female roles or MAI on GA); MAI-Voice-2.1 goes GA and wins the panel; centralindia lacks the voice and RTT pushes TTFB past MAI-Flash.\n\n## voice-one-identity-across-lanes\n2026-10-03. PROPOSED. A teacher character has one voice on every lane. The premium-lane candidate is Voice Live lane B (gpt-realtime-2.1 hears the child and reasons; the character's DragonHD voice speaks), tested against lane A native `marin`/`cedar` in Round 2 of the panel.\n- Rationale: lanes are granted per sitting (`voice-lane-budget`), so a child on cascade one day and realtime the next would meet two different people; a rung change is heard as a different teacher. Lane B is also cheaper per minute of teacher speech (~$0.042 vs $0.082) for +82 ms median first audio (858 vs 776 ms, n=5/arm, US container).\n- Reverse if: lane B fails `evals/realtime-bakeoff.mjs` or the never-deny-AI battery, or Round 2 shows lane A wins on prosody that follows the child (paired LB > 50%); then accept two timbres and pick the narration voice separately.\n\n## voice-blind-test-v2-protocol\n2026-10-03. The v2 voice decision is made by `docs/research/voice/v2/blind-test.html` (internal, 361 entries) / `blind-test-external.html` (357, clone clips removed), built by `make-blind-v2.py` (fresh codes, hard links, sealed `blind-key.json`, per-code gain to -26 LUFS) and scored by `score-blind-v2.py`. Axes native / natural / warmth / Hindi pronunciation (1-5) and real person yes/no, never folded into one score. Each listener does block S (shortlist, 59) plus one of B1-B10. Adults first (parents, teachers, launch states), >= 20 kept listeners and >= 800 judgments; children only in Round 2 on the Azure-only child page after a panel-ethics note. Exclusion: degraded anchor rated natural >= 3.5 or real, or hidden repeats off by > 1.5. A voice wins only with paired LB > 50% on natural AND native; \"indistinguishable\" only against a human anchor. Best GA Azure arm takes the slot; a winning reference triggers escalation, never a vendor swap.\n- Rationale: metric-won/ear-lost has happened twice in this lineage; the AI judge scored real humans below TTS; codes printed in reports must not unblind.\n- Reverse if: the pilot shows the -26 LUFS playback gain or the codec gap (ref 64 kbps vs Azure 96 kbps) is audible as a source cue; then re-render the shortlist as PCM, edge-trimmed, 3 takes, into v3 before the full panel.\n\n## voice-escalation-ladder\n2026-10-03. If the panel finds no GA Azure stock voice human enough (real-person CI below the human anchor's, or a reference beats every Azure arm with paired LB > 50%): (1) tune and re-panel (rate, lang tags, MAI styles, gpt-4o-mini-tts instructions, Voice Live lexicon, PCM, 3 takes; ~1 week, ~$5); (2) Azure Professional Voice from one consented work-for-hire Hindi-English teacher recording (~2,000 utterances, 3-4 style sets, ~₹1.5-4 lakh [E]; training ~$520/voice, hosting $4.032/h/model, HD synthesis $48/M ≈ ₹73/session-hour; Limited Access + recorded consent: apply now); (3) hedge: LoRA of Veena/Svara on the same recordings, served from a Central India A100 VM ($5.142/h; 2 replicas ~$7.5k/month; cheaper than DragonHD only above ~20-28 sustained sessions), Azure Speech as automatic fallback, weights mirrored to ACR. Check first whether Voxtral TTS is sold Direct on Foundry.\n- Rationale: Professional Voice keeps SSML, visemes and the managed API; the open route is the only one with emotion tags and owned weights. Never zero-shot clones, a real child's voice, or Gemini output as training data (API terms); record the Llama 3.2 licence chain (Svara) and Veena artist consent before shipping either.\n- Reverse if: a stock Azure voice reaches the human anchor in the panel (stop at rung 1), Microsoft refuses Limited Access (rung 3 becomes the production route), or the A100 pilot misses TTFA <= 0.4 s from India.\n\n## model-router-v2\n2026-10-03. Supersedes model-router-v1. FINAL routing table in docs/research/models/MODEL-ROUTER.md §1 (one table, PRIMARY / FALLBACK / evidence / changed-from-draft / upgrade). Live teacher reply `taxila-fast` -> `DeepSeek-V4-Pro` (terra is a candidate only); premium voice `taxila-realtime`; cascade TTS DragonHD per character (proposed, `voice-choice-v2`) -> gpt-4o-mini-tts; STT `taxila-live-transcribe` with lesson-term keywords only -> Azure Speech real-time LID; classification `taxila-fast` -> `grok-4-20-non-reasoning`; distress predicate + `taxila-fast` -> `DeepSeek-V4-Pro` (fix the fail-open filter path first); director `taxila-fast` -> `taxila-oss120`; parent reports `taxila-brain` -> `taxila-fast`; diagram code `taxila-codex` -> `taxila-brain`; game code `taxila-codex` -> `DeepSeek-V4-Pro`; images `taxila-image` (text) / `taxila-flux2` (text-free); OCR `taxila-brain` -> `grok-4-20-non-reasoning`; embeddings `text-embedding-3-small` (weak). Deploy asks: gpt-6-luna, gpt-6-sol, gpt-6.1-sol, DeepSeek-V4-Flash-0731, gpt-4o-mini-tts 2025-12-15, Central India Speech resource, gpt-transcribe, gpt-realtime-whisper-2, text-embedding-3-large, embed-v-4-0, gpt-image-2.5-flare/-sunburst, MAI-Image-2.6, mistral-ocr-4-0; billing confirmations first (Fireworks meter, Azure Kimi Model 6/7, MAI-Voice).\n- Rationale: review of v1 found the S ranking a content-filter artifact, terra's lead resting on a same-family judge (+0.50, CI 0.05-1.00, ~10x cost, +220 ms), W tied at the ceiling, and ds41/Kimi-K3 billed only on a partner meter; performance first, cost only among ties, Direct meters only.\n- Reverse if: a production-prompt multi-turn T re-run with a neutral judge and the Hindi ear panel shows terra or gpt-6-luna beating fast by a CI excluding 0 at <= 1.2 s TTFT; the owner confirms the Fireworks meter as Direct (ds41 returns as a candidate fallback); harder C/D/W batteries separate the tied models.\n\n## voice-ga-only-for-minors\n2026-10-03 (constraint, from `voice-lane-a-v1-panel-decides`). No Preview voice takes a production slot for children. voices/list (eastus2, 2026-10-03): Preview = every `MAI-Voice-2.1` and `MAI-Voice-2.1-Flash` persona and `hi-IN-Diya:DragonLatestNeural`; GA = en-IN DragonHD (Diya, Arjun, Meera, Neerja, Aarti, Lavanya), en-IN Indic Neural, hi-IN standard Neural incl. Swara. DragonHDOmni is unlisted.\n- Reverse if: Microsoft moves MAI-Voice-2.1 to GA with an SLA and a published meter.",
+  "measurements": "## voice-v2-azure-sweep-2026-10-02\n2026-10-02. n=5 clips per arm (one take per passage), 37 arms (6 MAI-2.1 HD, 6 MAI-2.1-Flash, 6 en-IN DragonHD plain + 6 lang-tagged, Swara plain/styled, hi-IN Diya Dragon, 6 DragonHDOmni, gpt-4o-mini-tts coral/sage/shimmer/marin) x 5 passages = 185 clips. Method: Node fetch from the US container via proxy to eastus2 REST v1, mp3 24 kHz 96 kbps, 2 workers; TTFB = first body chunk; ASR round trip via taxila-transcribe (gpt-4o-transcribe, lenient folding, 0.34 per-word tolerance); loudness ffmpeg ebur128 (2026-10-03, all 282 v2 clips). Results: TTFB median / p90 / total median ms: MAI-Flash 321 / 530 / 730; MAI HD 935 / 1523 / 1446 (flat across 160-319 chars); DragonHD plain 253 / 692 / 3728, lang 244 / 285 / 3713; Omni 593 / 4958 / 2573 (max 8734); Swara 645 (styled 1164); 4o-mini-tts 302 / 732 / 2762. Chars/s at rate 0.95: DragonHD 15.2, MAI 9.9-10.7, Swara 9.7, 4o-mini-tts 11.5 (no rate control). WER mean <= 0.041 every arm, 160/185 at 0 (saturated; MAI HD 10/30 clips > 0 vs Flash 2/30, Fisher p = 0.021 on single draws). Lang tags on DragonHD: WER 0.002 vs 0.004, TTFB identical. Loudness over 282 clips: -32.4 to -14.6 LUFS, median -22.0. Prices [V]: Neural $15/M, Neural HD $22/M, gpt-4o-mini-tts $12/M audio tokens (~$21.7/M chars equivalent); no MAI or Omni meter. Upper-bound latency; re-measure from Central India, n >= 20, first sentence. Source: docs/research/voice/v2/azure-speech-voices.md (+ Review).",
+  "rejected": "## dragonhdomni-not-production\n2026-10-02. Tried `hi-IN-{Swara,Kavya,Aarti,Ananya,Diya,Madhur}:DragonHDOmniLatestNeural` (30 clips). Broke: the names resolve but are not in voices/list (an undocumented name can disappear without notice) and first-byte latency had a tail to 8.7 s (Kavya), 7.1 s (Swara), family p90 5.0 s. Retry only if the voices are listed and p90 re-measures under 1 s.\n\n## tts-style-map-from-family-default\n2026-10-02. Tried one style map for the MAI family (praise `excited`, correction `softvoice`). Broke: `hi-IN-Arjun:MAI-Voice-2.1(-Flash)` has no `softvoice` in its StyleList; the request failed (HTTP 502 / UND_ERR_SOCKET in the sweep, HTTP 400 empty body in the review probe), so the status code is not a reliable signal either. Harper and Grant list no styles. Build the style map from each voice's StyleList at boot and drop unknown styles before sending."
+ }
+}

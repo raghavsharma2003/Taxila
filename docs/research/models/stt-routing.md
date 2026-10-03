@@ -6,8 +6,10 @@ children decides.
 
 | lane | model | config | measured (synthetic, n=180) | price |
 |---|---|---|---|---|
-| L live (default) | `taxila-live-transcribe` (gpt-live-transcribe 2026-07-28) | `keywords` = lesson terms + answer numbers; prompt = speaker+script, no vocabulary | cerNorm 0.026, numbers 92/96, 0 hallucination | $1.02/h streamed |
-| L fallback | Azure Speech real-time | continuous LID hi-IN+en-IN | cerNorm 0.071, answers 74/78, 0 hallucination | $1.00/h |
+| L live (default) | `taxila-live-transcribe` (gpt-live-transcribe 2026-07-28) | `keywords` = lesson terms only (never the item's answer numbers: stt-hinglish review R2); prompt = speaker+script, no vocabulary | cerNorm 0.026, numbers 92/96, 0 hallucination | $1.02/h streamed |
+| L fallback | Azure Speech real-time | continuous LID hi-IN+en-IN | cerNorm 0.071, answers 74/78, 0 hallucination; ~0.5 s faster to final text than live-transcribe (review R3) | ~$1.30/h incl. the LID enhanced add-on (review R6) |
 | G second opinion | Azure Fast Transcription | locales hi-IN+en-IN | cerNorm 0.072, answers 73/78, 262 ms | ~$0.36/h |
 | excluded | gpt-4o-transcribe, gpt-4o-mini-transcribe | — | fabricate text on white noise and on silence | — |
 | to test | gpt-transcribe, gpt-realtime-whisper-2 (ask the owner to deploy them); MAI-Transcribe-2 (needs a Central India resource) | — | not measured | gpt-transcribe $0.27/h |
+
+Final routing (all tasks, incl. this lane): `MODEL-ROUTER.md` §1 (2026-10-03).

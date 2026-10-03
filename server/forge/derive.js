@@ -7,6 +7,10 @@ import { fractionTask, keyValues, eq, str, R, cmp, lcm, miscDistractors, parseVa
 /** Normalised text for key comparisons (case, quotes, trailing punctuation, spaces). */
 export const normText = (s) => String(s ?? "").toLowerCase().replace(/[“”"'’‘`]/g, "").replace(/[.!?।]+$/u, "").replace(/\s+/g, " ").trim();
 
+/** Case- and punctuation-preserving form for English keys: capitals and apostrophes ARE the answer in grammar items
+ *  ("Kerala" vs "kerala", "soldiers" vs "soldier's"), so only spacing, curly quotes and a final full stop are folded. */
+export const strictText = (s) => String(s ?? "").replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, " ").trim().replace(/[.!?।]+$/u, "");
+
 /** The kit's diagnostics as items: the director's own pseudo-item id convention `diag:<misconceptionId>`. */
 export function diagnosticItems(kit) {
   return kit.misconceptions.filter((m) => m.diagnostic?.options?.filter((o) => o.correct).length === 1).map((m) => {
@@ -19,19 +23,25 @@ export function diagnosticItems(kit) {
 }
 
 // ───────────── fraction-bars@1 (T1 engine) ─────────────
+/** A kit answer that says two fractions are equal. */
+export const SAME_RE = /\b(same|equal|equivalent|barabar|neither|both are)\b/i;
 const MAX_PARTS = 12;
 /**
  * Engine params for a fraction task, or a reason it cannot be shown on bars. Params use only fraction-bars@1's
  * declared params (an unknown param makes the frame report params_adjusted).
  */
 export function barsActivity(item, kit) {
+  if (item.kind === "why" || item.kind === "teachback") return { ok: false, why: "explanation_item" };   // a bar cannot grade a reason
   const task = fractionTask(item);
   if (!task) return { ok: false, why: "not_a_fraction_task" };
   const kv = keyValues(item);
+  if (!kv.length && task.op !== "compare") return { ok: false, why: "kit_answer_not_a_value" };
   const proper = (f) => f.n >= 0 && f.n <= f.d && f.d >= 1 && f.d <= MAX_PARTS;
   let params, key = task.key;
   if (task.op === "compare") {
     if (!task.operands.every(proper)) return { ok: false, why: "outside_bars_domain" };
+    // Equal fractions: the engine's "same" button is the answer, so the kit must say so in words.
+    if (!task.key && !SAME_RE.test(String(item.answer))) return { ok: false, why: "compare_equal_unkeyed" };
     params = { mode: "compare", denominators: task.operands.map((f) => f.d), numerators: task.operands.map((f) => f.n), question: task.question, showLabels: true };
   } else if (task.op === "equiv") {
     const [a] = task.operands; const T = task.target;
@@ -51,7 +61,8 @@ export function barsActivity(item, kit) {
   return {
     ok: true, tier: "T1", renderer: "fraction-bars@1", task,
     params,
-    grade: { key: key ? str(key) : "same", acceptable: kv.map(str), distractors, keyBasis: "kitmath" },
+    // The graded form is what the child produces: the shaded target (equivalence: n/T, not the reduced operand).
+    grade: { key: task.op === "equiv" ? `${task.target.n}/${task.target.d}` : key ? str(key) : "same", acceptable: kv.map(str), distractors, keyBasis: "kitmath" },
     childStrings: [],
   };
 }
@@ -65,8 +76,8 @@ export function choiceActivity(item, kit) {
   } else {
     const q = [...String(item.prompt_en).matchAll(/['‘’"“”]([^'‘’"“”]{1,80})['‘’"“”]/g)].map((m) => m[1].trim());
     if (q.length !== 2 || !/\b(which|kaun)\b/i.test(item.prompt_en) || !/\bor\b|\bya\b/i.test(item.prompt_en)) return { ok: false, why: "no_closed_options" };
-    const want = [item.answer, ...(item.acceptable || [])].map(normText);
-    const hits = q.map((t) => want.includes(normText(t)));
+    const want = [item.answer, ...(item.acceptable || [])].map(strictText);
+    const hits = q.map((t) => want.includes(strictText(t)));
     if (hits.filter(Boolean).length !== 1) return { ok: false, why: "key_not_an_option" };
     options = q.map((t, i) => ({ text: t, misc: hits[i] ? null : item.targetsMisconception || null, correct: hits[i] }));
   }

@@ -20,6 +20,7 @@ export const warmupMoveOn = () => "no verdict speech on that one; it comes back 
 export const hook = ({ interest, contexts, protege }) => join(
   `open with one concrete everyday situation${interest ? ` built on their interest (${interest})` : ""}${contexts.length ? ` — kit contexts: ${contexts.slice(0, 3).join(", ")}` : ""}`,
   "ask what they think will happen or which they would pick — a prediction, no right answer yet",
+  "any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds",
   `mention once: at the end they will teach this to ${protege.name} (${protege.what})`,
 );
 
@@ -63,6 +64,23 @@ export const why = ({ ageBand, contrast }) => join(
     : contrast ? "ask how they knew — offer two reasons to pick from: the right reason vs the wrong belief (both in LESSON NOW), in either order"
       : "ask how they knew about THIS question, simply — they may say it in their own words",
   "it is a real question, not a test of whether they were lucky",
+);
+
+/**
+ * A covert comprehension probe (COMPREHENSION-ENGINE.md §3, §4.1): the move shape comes from the scheduler's shape
+ * RECORD (its name and family), never a written line — the voice model writes the words. Live probes are the why-class
+ * shapes the live lane grades (routes/lesson.js LIVE_PROBE_SHAPES), so it is about THIS question and the reason is theirs.
+ * `skin`: the persona's probe voice (a character asking), from the VIBE knobs.
+ */
+const FAMILY_NOTE = { B: "they judge or choose between views", C: "compare two ways", D: "predict first", E: "inside a short story" };
+const SKIN_NOTE = { silly_puppet: "a silly puppet", curious_alien: "a curious alien", new_classmate: "a new classmate", cricket_commentator: "a cricket commentator", robot_golu: "Robot Golu" };
+export const probe = ({ shape, ageBand, contrast, skin, protege }) => join(
+  "confirm in two or three words only — the reason is theirs to give, so do not explain it",
+  shape ? `covert shape: ${shape.name}${FAMILY_NOTE[shape.family] ? ` (${FAMILY_NOTE[shape.family]})` : ""}` : null,
+  shape?.id === "C03" && (protege?.name ? `${protege.name}, who does not know it, asks why` : skin && SKIN_NOTE[skin] ? `voiced as ${SKIN_NOTE[skin]}, who does not know it` : null),
+  ageBand === "6-9" && contrast ? "offer two reasons to pick from: the right reason vs the wrong belief (both in LESSON NOW), in either order"
+    : "about THIS question; one open question; wait",
+  "a real question, never a check on them",
 );
 
 /** Kit hints often carry their own rung label ("pump: …"); the shape adds it once. */

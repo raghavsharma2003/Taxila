@@ -21,7 +21,7 @@ import { dropReason, logEvidence, logit, sigmoid, spend, teachStep, temper, tEff
 import { nextReviewAt, retrievability, review } from "./fsrs.js";
 import { addObs, currentTheta, defaultItemMeta, initialBase, newEpoch, openEpoch, strandOfSkill, subjectOfSkill, subjectOfStrand, thetaObs } from "./ability.js";
 import { priorFromTheta } from "./priors.js";
-import { misconceptionEffects, newMisconception, updateMisconception } from "./misconception.js";
+import { misconceptionEffects, misLogLR, newMisconception, spendMis, updateMisconception } from "./misconception.js";
 
 export const PARAMS_VERSION = "kt-launch-2026-10-02";
 export const LEARNED_P = 0.95;
@@ -50,7 +50,7 @@ function newSkill(skillId, prior, topicType, epochId, seq, paramsVersion) {
 
 function newSession(ev) {
   const startAt = new Date(ev.sessionStartAt ?? ev.at).toISOString();
-  return { sessionId: ev.sessionId, startAt, day: dayOf(startAt), skills: {}, episodes: [], thetaW: {}, thetaCount: {}, drops: {} };
+  return { sessionId: ev.sessionId, startAt, day: dayOf(startAt), skills: {}, episodes: [], thetaW: {}, thetaCount: {}, drops: {}, misBudget: {} };
 }
 const sessSkill = (sess, k) => (sess.skills[k] ??= {
   budget: { sum: 0, byClass: {} }, episodes: [], oppEpisodes: [], teachGain: {}, memBefore: undefined, memEp: null,
@@ -218,7 +218,11 @@ function applyEvidence(L, ev, sess, ctx) {
     // hit there is nothing to discount, so no row is created and no check is scheduled.
     if (eff.kind === "discriminating_correct" && !(L.mis[eff.id]?.hits > 0)) continue;
     const m = L.mis[eff.id] ?? newMisconception(eff.id);
-    L.mis[eff.id] = updateMisconception(m, eff.kind, sess.startAt);
+    // per-(misconception, session) log-evidence cap ±log 50 (misconception.js MIS_SESSION_LOG_CAP)
+    const budget = (sess.misBudget ??= {});
+    const { applied, sum } = spendMis(budget[eff.id] ?? 0, misLogLR(eff.kind));
+    budget[eff.id] = sum;
+    L.mis[eff.id] = updateMisconception(m, eff.kind, sess.startAt, applied);
   }
 }
 

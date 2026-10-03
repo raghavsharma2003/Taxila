@@ -1,7 +1,8 @@
 // The G1 strings table and closed registries (FACTORY.md §5.1 Q8 for G1: "strings-table ids only (pre-cleared)";
 // §6.3 skin = closed InterestId). Every child-visible string a G1 fill can carry is a kit string or a row here.
 // Rows are titles (no digits, no answers, no names, no sentences a voice could recite), cleared once offline by
-// tests/forge-strings.test.mjs (local predicates) and evals/forge-g1.mjs --clear-strings (Azure Content Safety).
+// tests/forge-g1.test.mjs "strings table" (local predicates) and evals/forge-g1.mjs §5 (Azure Content Safety over
+// every HOOKS and TEMPLATE_STRINGS row).
 // Adding a row = a reviewed code change, never a model output.
 
 /** Closed skin registry (FACTORY.md §13 InterestId). */

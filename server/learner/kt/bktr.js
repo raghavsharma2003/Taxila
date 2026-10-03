@@ -48,9 +48,15 @@ export function gatedEmission(ev, R, confusionOverrides) {
   return { kR: R * k1[o] + (1 - R) * u1[o], u: u1[o] };
 }
 
-/** Rule 4 tempering exponent: assisted ^0.5, gaming window ^0.25, controllerEasy ^0.5, unverified kit ^0.5. */
+/**
+ * Source weight on K (COMPREHENSION-ENGINE.md §1.1; = comprehension/params.js W_SRC): a game commit counts ×0.5 and a
+ * Forge module (host-graded until the 50-session agreement gate) ×0.75. Lucky game predictions otherwise carried
+ * guessers over the pL 0.6 "does it" line (comprehension sim: not_yet accuracy 0.62 with game evidence, 0.75 without).
+ */
+export const SOURCE_WEIGHT = Object.freeze({ game: 0.5, module: 0.75 });
+/** Rule 4 tempering exponent: assisted ^0.5, gaming window ^0.25, controllerEasy ^0.5, unverified kit ^0.5, source (game/module). */
 export function temper(ev) {
-  let x = 1;
+  let x = SOURCE_WEIGHT[ev.via] ?? 1;
   if (ev.assisted) x *= 0.5;
   if (ev.gamingWindowKt) x *= 0.25;
   if (ev.controllerEasy) x *= 0.5;

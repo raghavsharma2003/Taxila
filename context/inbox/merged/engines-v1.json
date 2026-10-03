@@ -1,0 +1,279 @@
+{
+ "nodes": [
+  {
+   "id": "engines-v1-built",
+   "kind": "decision",
+   "title": "engines-v1: the 12 CONTENT-ENGINE v1 engines (number-line, collections, place-value, fractions, multiply-divide, geoboard v1 slice, data-graphs core, patterns core+grid, measure maths core, sky 2D, motion-lab slice, water-cycle) plus the scene@1 T2 renderer ship in the sandboxed frame as React views over framework-free *.logic.ts; tap-first (no drag), every verdict computed from params + state, interaction/answer/goal_met/stuck via the v1 EngineApi",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "engines-v1-catalog-binding",
+   "kind": "decision",
+   "title": "shared/engine-catalog.js is the planner's engine table: kit hint aliases (≈230) → engine + preset, topic-map fallback, and item adapters that BIND a kit item (module answers grade it) only when the engine's right answer derived from params alone equals the verified kit key; everything else mounts unbound",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "engines-v1-react-in-frame",
+   "kind": "decision",
+   "title": "engines-v1 uses React inside the frame (the frame already ran React: bootstrap.tsx + fraction-bars@1), amending engines-in-sandbox-frame-v1's 'vanilla TS, no React' clause; zod stays out of the frame (scene@1 uses a hand-written structural check)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "scene-renderer-validator-ports",
+   "kind": "decision",
+   "title": "The frame's scene@1 renderer evaluates EXPR@1 and lays out scenes with typed ports of the validator (genui-scene-dsl.mjs), pinned by a parity test; visuals in one SVG stage, controls as real HTML buttons at the validator's boxes (hit sizes are the ones the validator checked); a voice-commit probe lets the scene's goals carry goal_met",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "engines-v1-coverage-2026-10-03",
+   "kind": "measurement",
+   "title": "Kit topics c4-c7 whose engineHints resolve to a built engine: 132/385 = 34.3% (before: 4/385 = 1.0%, fraction-bars only); maths 105/141 (74.5%), science 21/69 (30.4%), EVS 6/40 (15%), English/Hindi/SST 0/135; with the research topic map as fallback 146/385 (37.9%); first-hint-only aliasing 87/385 (22.6%); by class c4 24/75, c5 29/74, c6 39/112, c7 40/124",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "engines-v1-item-binding-2026-10-03",
+   "kind": "measurement",
+   "title": "Item binding (fixer re-run): c4-c7 kits 5,082 items, 1,932 in covered topics, 65 bound (was 76: 9 share and 3 between-gridline bar items unbound; arrays now bind on the TYPED product); all kits c1-c9 10,815 items, 3,577 covered, 103 bound. Every bound plan replays right as the CHILD-SIDE action the view grades (typed product, typed numeral, tapped tick) 103/103, wrong on a perturbed key 103/103; the builder's 76/76 checked array plans against their own params and is withdrawn",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "engines-v1-browser-2026-10-03",
+   "kind": "measurement",
+   "title": "Playwright, real sandboxed frame at 360×900: 60 scenarios (53 + 7 fixer scenarios: product entry, word-problem product with no expression, c1 given-pieces read, three predict-mode hides, bar value axis) pass 60/60 on the dev server and 60/60 on the production build; 0 console errors / CSP violations, 0 buttons under the band hit size, 0 px overflow",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "engines-v1-mount-2026-10-03",
+   "kind": "measurement",
+   "title": "Engine mount in the production frame, headless Chromium in the dev container, n=5 per engine (re-run 2026-10-03): p50 67-90 ms (1×), 209-263 ms (4× CPU); FIRST mount of a session (cold frame + React) 146 ms (1×) / 406 ms (4×); first mount of each further engine 63-96 ms / 197-274 ms; engine chunks 3-5 kB gz, scene@1 12.5 kB gz (not a reference-phone V15 measurement)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "scene-port-parity-2026-10-03",
+   "kind": "measurement",
+   "title": "Frame scene@1 ports vs the normative validator: 40/40 expressions give the same AST and value, 6/6 malformed expressions refused by both; node boxes and repeat instances identical on all 7 validated templates (6 T2a + Forge choice-card); geoboard construct() complete against an exhaustive enumeration of shapes up to area 7 on 6×8 (0 misses)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-engine-prompt-shows-target",
+   "kind": "rejection",
+   "title": "Mounting planner-bound items with the target as a visible param: number-line jump showed 'Jump to 14' for '2, 5, 8, 11, ___' and place-value build showed 'Make this number: 4050' for a words-to-numeral item (the leak test caught it); replaced by question/name/round params that show the question and hide or compute the target",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-share-for-quotitive",
+   "kind": "rejection",
+   "title": "Binding quotitive division items ('48 ladoos packed in boxes of 6 — how many boxes?') to the share-among-k engine: same number, different action, so the share is not evidence for that item; such items mount unbound",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-first-hint-engine-id",
+   "kind": "rejection",
+   "title": "Resolving a kit's engine as engineId(engineHints[0]) (modules.js today): 4/385 c4-c7 topics resolve (1.0%) because kit hints are free names ('fraction-strips', 'shadow_stick_sim'); aliasing only the first hint gets 87/385; pickEngine over all hints gets 132/385",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "open-engines-v1-wiring",
+   "kind": "open",
+   "title": "server/director/modules.js must call planEngine + moduleCommands (shared/engine-catalog.js): s.module = result.module (itemId only when bound, awaitingReveal = plan.predict), push result.cmds; a null plan mounts nothing",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "open-engines-v1-gaps",
+   "kind": "open",
+   "title": "Not built in engines-v1: drag (tap twin only), bridge v2 (ready caps, facts schema, getState/setState, renderStatic), three fading stages + linked readouts, set_stage/demo/lock/freeze, detector JSONLogic manifests, ~20 goldens per engine (has 3-8), Devanagari numerals, the motion-lab work/energy scenes, sky seasons/eclipse, water-cycle sea-breeze/monsoon, measure balance/map-scale/conversion, data-graphs line/pie/mean, patterns machine/figure, place-value column ops/abacus visual; language/SST engines (0/135 topics)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "engines-v1-bind-on-child-answer",
+   "kind": "decision",
+   "title": "A plan binds a kit item only when the child must PRODUCE the key in the engine (type the product, write the numeral for given pieces, place the point, pick the bigger): array plans ask for the typed product (ask:'product', showExpr:false for word problems), share plans never bind, given-pieces items mount place-value read with `counts`, rounding points already on a multiple and number-line landings on a line end stay unbound",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "engines-v1-unbound-needs-item-values",
+   "kind": "decision",
+   "title": "An unbound fallback mount carries the item's extracted numbers/fractions (as the Director sent before) and mounts a maths engine only if that engine's generic normalize consumes them (CONSUMES table); data-graphs, jump-preset number lines, repeat/grid patterns and value-less prompts mount nothing rather than demo defaults; science sims mount without values",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "engines-v1-module-commands",
+   "kind": "decision",
+   "title": "moduleCommands(cur, plan, id) in shared/engine-catalog.js is the one step from plan to frame commands: set_param only when engine, mode, param keys, goal and itemId are all unchanged, otherwise unmount + mount; itemId and goal exist only on bound plans; Director predict intent travels as params.predict (engine mode kept) and plan.predict → awaitingReveal",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "engines-v1-unbound-fallback-2026-10-03",
+   "kind": "measurement",
+   "title": "Unbound fallback mounts (no adapter matched) whose engine ignores the item (normalize(params) == normalize(params minus numbers/fractions)): before the fix 296/1,013 c4-c7 maths fallbacks showed demo defaults (data-graphs 96, measure 58, number-line 52, fraction-bars 47 …); after the CONSUMES gate 6/655 c4-c7 and 13/1,138 c1-c9, with 561 c4-c7 / 1,164 c1-c9 items now mounting nothing",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-array-dims-binding",
+   "kind": "rejection",
+   "title": "Binding 'What is 7 × 8?' (and 15 word problems) to multiply-divide array mode graded on the built dimensions: the engine showed 'Make an array of 7 × 8', so setting rows 7 and cols 8 was graded correct without the child ever producing 56; share mode is the same shape (tap 'one each' until it greys out). Replaced by product entry; share unbound",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-parts-build-shows-numeral",
+   "kind": "rejection",
+   "title": "Place-value build for '4 tens and 6 ones. Write the number.' showed 'Make this number: 46' on a bound item (c1, outside the c4-c7-only leak test); replaced by read mode showing the given pieces (`counts`), and the leak test now runs over every kit through the frame's normalize",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "rj-replay-against-own-params",
+   "kind": "rejection",
+   "title": "The coverage eval's array/share replay compared the plan's params with themselves (arrayCorrect(c, c.a, c.b), plates filled from the key), so its negative replay could not fail and hid the copy-task binding; the replay now models the child-side action the view grades",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "open-engines-v1-server-recheck",
+   "kind": "open",
+   "title": "Bound mounts send the key (or what derives it) to the client and lesson.js accepts the frame's self-reported correct; re-check server-side from answer.value against plan.key in server/director/classify.js (not editable by engines-v1)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "open-engines-v1-fraction-bars-predict",
+   "kind": "open",
+   "title": "fraction-bars@1 (pre-engines-v1) has no predict handling: in predict its compare bars still show the answer; port the fractions@1 hide or route predict compare plans to fractions@1",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "engines-v1-built",
+   "rel": "part_of",
+   "dst": "content-v1-engine-set"
+  },
+  {
+   "src": "content-live-tiers",
+   "rel": "constrains",
+   "dst": "engines-v1-built"
+  },
+  {
+   "src": "engines-v1-built",
+   "rel": "measured_by",
+   "dst": "engines-v1-browser-2026-10-03"
+  },
+  {
+   "src": "engines-v1-built",
+   "rel": "measured_by",
+   "dst": "engines-v1-mount-2026-10-03"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "measured_by",
+   "dst": "engines-v1-coverage-2026-10-03"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "measured_by",
+   "dst": "engines-v1-item-binding-2026-10-03"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "supersedes",
+   "dst": "rj-first-hint-engine-id"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "supersedes",
+   "dst": "rj-engine-prompt-shows-target"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "supersedes",
+   "dst": "rj-share-for-quotitive"
+  },
+  {
+   "src": "engines-in-sandbox-frame-v1",
+   "rel": "constrains",
+   "dst": "engines-v1-react-in-frame"
+  },
+  {
+   "src": "engines-v1-react-in-frame",
+   "rel": "measured_by",
+   "dst": "engines-v1-mount-2026-10-03"
+  },
+  {
+   "src": "scene-renderer-validator-ports",
+   "rel": "measured_by",
+   "dst": "scene-port-parity-2026-10-03"
+  },
+  {
+   "src": "scene-renderer-validator-ports",
+   "rel": "part_of",
+   "dst": "engines-v1-built"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "blocks",
+   "dst": "open-engines-v1-wiring"
+  },
+  {
+   "src": "open-engines-v1-gaps",
+   "rel": "part_of",
+   "dst": "engines-v1-built"
+  },
+  {
+   "src": "engines-v1-bind-on-child-answer",
+   "rel": "supersedes",
+   "dst": "rj-array-dims-binding"
+  },
+  {
+   "src": "engines-v1-bind-on-child-answer",
+   "rel": "supersedes",
+   "dst": "rj-parts-build-shows-numeral"
+  },
+  {
+   "src": "engines-v1-bind-on-child-answer",
+   "rel": "part_of",
+   "dst": "engines-v1-catalog-binding"
+  },
+  {
+   "src": "engines-v1-bind-on-child-answer",
+   "rel": "measured_by",
+   "dst": "engines-v1-item-binding-2026-10-03"
+  },
+  {
+   "src": "engines-v1-item-binding-2026-10-03",
+   "rel": "supersedes",
+   "dst": "rj-replay-against-own-params"
+  },
+  {
+   "src": "engines-v1-unbound-needs-item-values",
+   "rel": "measured_by",
+   "dst": "engines-v1-unbound-fallback-2026-10-03"
+  },
+  {
+   "src": "engines-v1-unbound-needs-item-values",
+   "rel": "part_of",
+   "dst": "engines-v1-catalog-binding"
+  },
+  {
+   "src": "engines-v1-module-commands",
+   "rel": "part_of",
+   "dst": "engines-v1-catalog-binding"
+  },
+  {
+   "src": "engines-v1-module-commands",
+   "rel": "blocks",
+   "dst": "open-engines-v1-wiring"
+  },
+  {
+   "src": "open-engines-v1-server-recheck",
+   "rel": "part_of",
+   "dst": "engines-v1-catalog-binding"
+  },
+  {
+   "src": "open-engines-v1-fraction-bars-predict",
+   "rel": "part_of",
+   "dst": "engines-v1-built"
+  }
+ ],
+ "md": {
+  "decisions": "## engines-v1-built\n**engines-v1 (2026-10-03) ships the twelve CONTENT-ENGINE §2.2 v1 engines and the scene@1 T2 renderer in the sandboxed module frame: `number-line@1` (place / read / jump, rounding with a computed target), `collections@1` (count with tagging / make / compare), `place-value@1` (build with exchanges / read / compare, Indian or international grouping), `fractions@1` (make / compare / equivalent / add, bar or circle), `multiply-divide@1` (array / share / factors), `geoboard@1` v1 slice (area and perimeter by shading squares: build / measure / contrast), `data-graphs@1` core (table, tally, pictograph, bar: build / read), `patterns@1` core (repeat / grow / number grid), `measure@1` maths core (ruler with offset start, jug, thermometer: read / set), `sky@1` 2D (day-night, shadow stick, Moon phases), `motion-lab@1` slice (speed, friction, pendulum), `water-cycle@1` (cycle tracer, heating through the states, groundwater), and `scene@1`. Each engine is a React view over a framework-free `*.logic.ts` (normalize → verdicts), registered in `src/modules/frame/registry.ts` and listed in `shared/engine-catalog.js`.** Engines accept the Director's planning context (topicId, skillId, itemId, lang, representation, fractions, numbers, mode show|predict) so an unadapted mount still builds something sensible. Every control is a tap (drag's WCAG 2.5.7 twin is the only path), targets use the band hit size (64 px for 6-9, 48 px for 10-15) at a 360 px floor, motion is one transform tween skipped under reduced motion, colour never carries state alone, entry is numeric only, labels come in English / Hinglish / Hindi from `init.lang`. Science engines put a POE question first under `predict` and keep the lab locked until the child commits; the prediction is graded by the same model the sim runs.\n- Rationale: CONTENT-ENGINE §2.2 / §9 names these twelve (229/514 topics as primary); the frame, protocol and fraction-bars pattern already existed (`src/modules/frame`), so the engines extend it rather than fork it; machine truth must come from params, never a model (`content-live-tiers`).\n- Reverse if: the reference-phone V15 measurement (mount ≤ 1.5 s warm) fails for these chunks, or teacher review of the bound items (see `engines-v1-catalog-binding`) finds an engine's action does not match what its item asks.\n\n## engines-v1-catalog-binding\n**`shared/engine-catalog.js` is the engine table the Director plans from: `resolveHint(hint)` maps the kits' free-form engineHints (≈230 aliases, only where the engine's mode is the activity the hint names) to `{engine, preset}`; `pickEngine(kit, representation, topicMap)` takes the first hint that resolves (a representation word wins), else the research topic map (`shared/engine-topic-map.json`, regenerated by `scripts/engine-topic-map.mjs`); `planEngine({kit, item, lang, mode, representation, ageBand, topicMap})` returns `{engine, params, goal, bindItem, key, why}`. Item adapters parse the verified prompt (fraction compare / shade / add / fixed-parts equivalent, number-line place / jump / rounding / sequence, place-value compare / build from a number name or pieces, multiply-divide array / share / factors, geoboard area / perimeter of a rectangle, data-graphs pictograph key / tally / two-category difference, patterns next term, ruler length). A plan BINDS the item only when the engine's right answer, derived from the params alone, equals the kit key; the Director then stores `itemId` on the module so its answers grade the item. Everything else mounts unbound (goal_met / stuck still reach the teacher; answers grade nothing). The key never appears in what the frame shows unless the prompt already shows it (tested).**\n- Rationale: kit hints are free names (only 1.0% resolved by `engineId(hints[0])`); a module answer is machine truth in `server/routes/lesson.js` whenever `state.module.itemId === state.activeItemId`, so binding must be earned by key agreement, not assumed.\n- Reverse if: host re-grading (bridge v2 §4.5) or blind review of bound sessions shows a bound plan graded a child differently from the kit key on ≥ 1% of bound answers, or an engine action that differs from the item's (as quotitive vs partitive did) — unbind that adapter.\n\n## engines-v1-react-in-frame\n**engines-v1 renders engines with React inside the frame, amending `engines-in-sandbox-frame-v1` (\"vanilla TS on a shared engine-kit with no React and no zod inside the frame\"): the frame already shipped React (`bootstrap.tsx`, `fraction-bars@1`, the error boundary). The engine logic is framework-free (`*.logic.ts`, imported by Node tests and the coverage eval), so only the views would port. zod stays out of the frame: scene@1 uses a hand-written structural check.** (2026-10-03)\n- Rationale: one view layer in one frame; React is already in the shared chunk the app loads (jsx-runtime 69 kB gz, cached once); measured mount p50 67-90 ms (208-256 ms at 4× CPU throttle) in the dev container.\n- Reverse if: V15 on the ₹8-10k reference phone shows a T1 mount > 1.5 s warm or the React chunk is the dominant cost of a cold frame; then port the views to vanilla TS behind the same EngineApi (logic and tests unchanged).\n\n## scene-renderer-validator-ports\n**The frame's `scene@1` renderer (engine id `scene@1`, param `scene`, the shape Forge G1 already mounts) evaluates EXPR@1 and lays scenes out with typed ports of the normative validator (`docs/research/content/genui-scene-dsl.mjs` v1.3: parseExpr / evalExpr, measure / layout / positions / textBox), pinned to it by `tests/scene-runtime.test.mjs`. Visuals render in one SVG stage 1000 units wide; controls (choices, buttons, order items, draggables, zones, sliders, steppers, toggles, keypads) are real HTML buttons placed at the validator's own boxes, so hit sizes are the ones it checked. Drag is tap-the-piece, tap-the-place. A probe committed by choice or check is graded by its own `correct` and traps; a probe committed by voice (count-group) lets the scene's goals carry goal_met. Reveal marks the right option or order (found by evaluating the probe) and plays `probe.reveal`.** (2026-10-03)\n- Rationale: CONTENT-ENGINE §3.2 says the frame does not re-run the zod validator and the 200k-state solver; a port that disagreed with the validator would grade or draw a passed scene differently on the phone. Forge marks scene fills \"gated and cached but not mounted until a frame scene@1 renderer ships (FORGE_SCENE_RENDERER=1)\": it now exists.\n- Reverse if: scene@1.1 replaces scene@1 on the live path (re-port and re-run the parity test first), or device testing shows HTML-over-SVG controls drift from the SVG at any supported zoom.\n\n## engines-v1-bind-on-child-answer\n**(Fixer review, 2026-10-03.) A plan binds a kit item only when the child has to PRODUCE the key inside the engine. Array plans (`multiply-divide@1`) carry `ask: \"product\"`: the child may build the array, then types how many in all on the NumPad, and only that number is graded (`md.product`); word problems also carry `showExpr: false`, so \"6 × 3\" is not printed for \"Eggs come in trays of 6 … 3 trays\". Share plans never bind: dealing \"one each\" until the button greys out always reaches the fair share. Items that give the pieces and ask for the numeral (\"4 tens and 6 ones. Write the number.\") mount `place-value@1` read mode with `counts` (pieces per place, ones first, up to 19 each), never \"Make this number: 46\". Rounding a point that is already a multiple, and number-line jumps that land on an end of the line, stay unbound. Bar-graph difference items bind only when both values sit on a labelled gridline (`gridStep`, now drawn as a value axis).**\n- Rationale: the reviewer showed a bound array plan graded \"7 × 8\" correct from copying the prompt's two numbers (24 bound items across c1-c9), and the c1 parts path printed the key; a binding that does not require the answer feeds false mastery to the learner model.\n- Reverse if: a session audit shows children reaching the typed product by counting dots so often that product entry measures counting, not multiplication (then hide the dots for bound plans, as predict mode already does), or a share variant without the deal-all button is measured to separate knowing from tapping.\n\n## engines-v1-unbound-needs-item-values\n**An unbound fallback (no adapter matched) merges the item's extracted `numbers` / `fractions` into the params (the values modules.js sent before engines-v1; commas inside Indian/International digit groups are kept as one number) and mounts a maths engine only if its generic normalize consumes them (`CONSUMES` in `shared/engine-catalog.js`: number-line unless preset to jump; collections / place-value / multiply-divide with a whole number; fractions with a fraction; fraction-bars with a fraction ≤ 12 parts, sent as `denominators`; geoboard with a first number ≤ 40 or a contrast preset; patterns grow with ≥ 3 numbers; measure with a number; data-graphs never). Otherwise `planEngine` returns null and nothing mounts. Science sims (sky, motion-lab, water-cycle) mount without values.**\n- Rationale: 296 of 1,013 c4-c7 fallback mounts showed demo defaults unrelated to the item (place-value 345, sample A/B/C data, a target-less number line whose Check never enables) — an unrelated activity is worse than the whiteboard.\n- Reverse if: teacher review of fallback mounts finds the item-value activities (e.g. \"put the marker on 3\" for a pattern question) no better than no module; then fallbacks should return null for maths outright.\n\n## engines-v1-module-commands\n**`moduleCommands(cur, plan, moduleId)` turns a plan into frame commands and the next `s.module` record. set_param is used only when the engine, its `mode`, its param key set, the goal and the bound itemId are all unchanged; anything else unmounts and remounts (the frame merges set_param into its params and cannot change `init.goal`, so a previous item's target / question / jumps would otherwise sit beside a new bound itemId). `params.itemId`, `plan.itemId` and `plan.goal` (`item:<id>`) exist only on bound plans. The Director's predict intent travels as `params.predict: true` (every engine's `hideAnswer` reads it; the engine's own `mode` is kept) and `plan.predict` → `awaitingReveal`.**\n- Rationale: the reviewer traced the current reuse path (`Object.assign(cur, { itemId: params.itemId })`) letting an unbound plan set a bound itemId, mixed params from two items, and adapted plans overwriting `mode: \"predict\"` so reveal was never sent.\n- Reverse if: the frame gains a set_params-with-goal command (bridge v2), at which point same-engine reuse can carry a new goal without a remount.\n",
+  "measurements": "## engines-v1-coverage-2026-10-03\nKit topics (classes 4-7, all 18 kit files, 385 topics) whose `formats.engineHints` resolve to a built engine through `shared/engine-catalog.js` resolveHint, by `evals/engines-coverage.mjs` (static, no network), 2026-10-03:\n| set | before (engineId(hints[0]) registered) | any hint resolves | + topic map fallback |\n|---|---|---|---|\n| all subjects | 4/385 (1.0%) | 132/385 (34.3%) | 146/385 (37.9%) |\n| maths + science + EVS | 4/250 (1.6%) | 132/250 (52.8%) | 146/250 (58.4%) |\n| maths | | 105/141 (74.5%) | 109/141 (77.3%) |\n| science | | 21/69 (30.4%) | 26/69 (37.7%) |\n| EVS | | 6/40 (15.0%) | 11/40 (27.5%) |\n| English / Hindi / SST | | 0/135 | 0/135 |\nBy class (any hint): c4 24/75 (32.0%), c5 29/74 (39.2%), c6 39/112 (34.8%), c7 40/124 (32.3%). If only the FIRST hint is aliased (modules.js picking hints[0]): 87/385 (22.6%). Topics per engine: number-line 20, data-graphs 16, geoboard 15, measure 14, multiply-divide 14, sky 13, patterns 13, place-value 12, water-cycle 9, motion-lab 8, fraction-bars 5, fractions 4, collections 3. Top unresolved hints are language/SST (read-along 91, role-play 78, word-builder 66, picture-word-match 60, story-sequencing 57) and v1.1 maths (clock-hands 6, shopping-bill-builder 6, protractor-fan 5, balance-scale 4). Result file: `evals/results/engines-v1-coverage-2026-10-03.json`.\n\n## engines-v1-item-binding-2026-10-03\n`planEngine` over every item of the c4-c7 kits (5,082 items; 1,932 in topics with an engine; 355 of those have a single-value key), 2026-10-03, same eval: 76 items bind (multiply-divide 16, data-graphs 15, number-line 12, fractions 10, geoboard 9, place-value 7, patterns 5, fraction-bars 3). Each bound plan is replayed through the FRAME's pure logic (normalize(params) + the engine's verdict on the kit key): 76/76 right, and 76/76 wrong on a perturbed key. The first replay found 6 disagreements, all in the planner or replay (fixed-parts equivalents keyed by numerator, a 3-blank sequence keyed by its last term, rectangles taller than the default 6-row grid), none in an engine. Bound share = 76/355 single-value items (21%) = 76/1,932 covered items (3.9%): most items are arithmetic, explanation or free text the engines do not grade.\n\n## engines-v1-browser-2026-10-03\n`tests/engines-browser.test.mjs` (in `npm test` when Chromium is installed), 2026-10-03: mounts each engine in the real sandboxed frame (`modules.html`, opaque origin, the host.tsx port handshake) at a 360×900 viewport, drives it with taps like a child, and checks the event stream (interactions, then answer{correct} — the scripted wrong first commit graded wrong where scripted — then exactly one goal_met; stuck on the scripted two-wrong path; misconception facts on the wrong path that names them). 53 scenarios: 45 engine paths across the 13 engines and their modes (3 at the 6-9 band's 64 px, Hindi and Hinglish label runs, reduced motion for the sims), 5 mounts planned from real kit items, 3 host-command runs (highlight, reveal, set_param starting a new goal, reset; scene reveal; bad params → params_adjusted). Dev server: 53/53, ~25 s. Production build (`ENGINES_PROD=1`, strict meta CSP, `sandbox allow-scripts` HTTP header, CORS on hashed assets): 53/53, 0 console errors or CSP violations. Touch audit on mount: 0 buttons below the band's hit size, 0 px horizontal overflow. The console check caught one React key-spread warning in fractions@1 (fixed).\n\n## engines-v1-mount-2026-10-03\n`evals/engines-mount.mjs`, production build, headless Chromium in the dev container, 360×800, n=5 mounts per engine, ms from iframe creation to the engine root visible (includes frame boot, React, the engine chunk): no throttle p50 67-90 ms across the 13 engines (max 144); 4× CPU throttle p50 208-256 ms (max 389). Bundles: engine chunks 3.1-5.3 kB gz each, scene@1 12.5 kB gz, kit (ui + math) 4.4 kB gz, frame CSS 3.7 kB gz. This is NOT the V15 reference-phone measurement (₹8-10k, 3 GB device) that decides `engines-in-sandbox-frame-v1` / `engines-v1-react-in-frame`. Result file: `evals/results/engines-v1-mount-2026-10-03.json`.\n\n## scene-port-parity-2026-10-03\n`tests/scene-runtime.test.mjs`, 2026-10-03: the frame's EXPR@1 port gives the same AST and the same value as the normative validator on 40 expressions (precedence, right-associative ^, tolerant comparisons, state functions, ternaries, trig), and both refuse the same 6 malformed ones; the layout port gives identical node boxes and repeat-instance boxes on all 7 validator-clean templates (sort-bins, sequence-steps, compare-choice, predict-reveal, slider-explore, count-group, and a Forge G1 choice-card). Runtime verdicts: solved states correct, trap states carry their MC token, reveal finds the unique right option / order. `tests/engines-logic.test.mjs` also checks geoboard `construct()` against an exhaustive enumeration of every connected shape up to area 7 on the 6×8 grid: every achievable (area, perimeter) is constructed, none of the impossible ones.\n\n## engines-v1-item-binding-2026-10-03 (fixer re-run)\n`evals/engines-coverage.mjs`, 2026-10-03, after the review fixes. **c4-c7** (comparable with the builder's figure): 5,082 items, 1,932 in covered topics, **65 bound** (data-graphs 13, number-line 12, fractions 10, geoboard 9, place-value 7, multiply-divide 6, patterns 5, fraction-bars 3). **c1-c9** (every kit): 10,815 items, 3,577 covered, **103 bound** (multiply-divide 24 product entries, place-value 19, number-line 19, data-graphs 14, fractions 10, geoboard 9, patterns 5, fraction-bars 3). Replay now models the child-side action the view grades (the typed product; the typed numeral for given pieces; build only from a number NAME; array dimensions and share deals replay false): **103/103 right on the kit key, 103/103 wrong on a perturbed key, 0 disagreements** (the all-kits run first found 1, an eval bug: \"₹15\" keys were not stripped). Newly unbound vs the builder: 9 share (12 c1-c9) and 3 bar differences between gridlines (4 c1-c9); rounding-already-a-multiple and zero-landing jumps had no kit instances. The builder's \"76/76 replay right / reject a perturbed key\" is withdrawn: its array replay compared the plan's params with themselves (`rj-replay-against-own-params`). Restated claim: bound plans are those whose graded child action must produce the item's key.\n\n## engines-v1-unbound-fallback-2026-10-03\nSame eval, 2026-10-03. A fallback mount (no adapter matched) is \"demo default\" when the engine's own normalize gives the same config with and without the item's numbers/fractions. Before the fix (values merged, no gate): 296/1,013 c4-c7 maths fallbacks (data-graphs 96, measure 58, number-line 52, fraction-bars 47, patterns 13, place-value 12, fractions 8, geoboard 8, multiply-divide 2). After the CONSUMES gate: **6/655 c4-c7** (geoboard 3, fraction-bars 2, measure 1) and **13/1,138 c1-c9**; 561 c4-c7 (1,164 c1-c9) covered items now mount nothing. \"Not demo\" means only that the item's values changed what the engine shows, not that the activity fits the item (teacher review not done).\n\n## engines-v1-mount-2026-10-03 (re-run with first mounts)\n`evals/engines-mount.mjs --n 5`, production build, headless Chromium, dev container, 2026-10-03: p50 67-90 ms (1×), 209-263 ms (4× CPU). The FIRST mount of the session (cold frame boot + React + chunk) is the one a lesson gets: 146 ms at 1×, 406 ms at 4× (number-line, mounted first). The first mount of each later engine (its chunk cold, the frame runtime warm): 63-96 ms (1×), 197-274 ms (4×). Not the V15 reference-phone measurement.\n\n## engines-v1-browser-2026-10-03 (re-run)\n`tests/engines-browser.test.mjs`, 2026-10-03: 60 scenarios (53 + 7 new: \"7 × 8\" product entry with Check disabled until a total is typed and a wrong total graded wrong; trays-of-6 word problem with no expression on screen; c1 \"4 tens and 6 ones\" read with 4 ten-rods shown and 46 never shown; fractions compare, multiply-divide product and number-line place hiding their answer-bearing aid under predict; the bar view's 0-6 value axis). 60/60 dev server, 60/60 production build (`ENGINES_PROD=1`), 0 console errors.\n",
+  "rejected": "## rj-engine-prompt-shows-target\n**Tried (2026-10-03, engines-v1):** mounting planner-bound items with the target as an ordinary visible param. **Broke:** `number-line@1` jump mode printed \"Jump to 14\" for the kit item \"2, 5, 8, 11, ___. What comes next?\" (and \"Jump to 71\" for \"46 + 25\"), and `place-value@1` build printed \"Make this number: 4050\" for \"Write in numbers: four thousand fifty\" — the answer on screen. `tests/engine-catalog.test.mjs` (key in params but not in the prompt) caught it on the first run over the c4-c7 kits. **Instead:** `question` (number-line: the expression or sequence is shown, the target never), `name` (place-value: the number name is shown, not the numeral) and `round` (number-line computes the rounding target from the point itself); the line's ends are kept off the answer. The test stays as the gate for every new adapter.\n\n## rj-share-for-quotitive\n**Tried (2026-10-03):** binding \"48 ladoos are packed in boxes of 6. How many boxes?\" to `multiply-divide@1` share mode (48 shared among 6 plates, 8 each). **Broke (on review, before any child):** the number matches the key, but the child would share into 6 groups when the item asks how many groups of 6 — a partitive action graded as a quotitive answer. **Instead:** prompts with grouping cues (\"boxes of 6\", \"how many boxes/packs/trays…\") stay unbound until a grouping mode exists.\n\n## rj-first-hint-engine-id\n**Tried (in production code, server/director/modules.js):** the kit's engine is `engineId(engineHints[0])`. **Broke:** kit hints are free names (\"fraction-strips\", \"pizza-cutter\", \"shadow_stick_sim\"), so 4/385 c4-c7 topics (1.0%) resolved to a registered engine and every other mount showed \"coming soon\". Aliasing only the first hint still reaches just 87/385 (22.6%). **Instead:** `pickEngine` over all hints with an alias table and a topic-map fallback: 132/385 (34.3%), 146/385 with the map (`engines-v1-coverage-2026-10-03`).\n\n## rj-array-dims-binding\n**Tried (engines-v1 builder, 2026-10-03):** binding multiplication items to `multiply-divide@1` array mode graded on the built dimensions. **Broke (fixer review):** for \"What is 7 × 8?\" (c4-maths-ch09-t01-i02, key 56) the engine printed \"Make an array of 7 × 8\"; rows 7, columns 8, Check → correct:true, recorded as the item correct by classifyFast, with the child never producing 56. 24 bound items across c1-c9 (15 word problems turned into \"6 × 3\" arrays). Share mode had the same shape: \"one each\" until the button greys out always lands on the fair share (12 bound items). **Instead:** `ask: \"product\"` (typed total graded; `showExpr: false` for word problems); share unbound.\n\n## rj-parts-build-shows-numeral\n**Tried (2026-10-03):** place-value build for items that give the pieces (\"4 tens and 6 ones. Write the number.\", key 46), params `{mode: build, value: 46}` with no name. **Broke:** the prompt read \"Make this number: 46\" on a bound item (c1-maths-ch08-t01-i03, -i13, c1-maths-ch04-t02-i14; c2-maths-ch03-t01-i10 unbound). The leak test missed it: it scanned only c4-c7 maths, exempted `value` whenever `name` was present, and never rendered through normalize. **Instead:** read mode with `counts` (the given pieces are drawn, the child writes the numeral); the leak test runs over every kit on the text the frame's normalize puts on screen.\n\n## rj-replay-against-own-params\n**Tried (engines-v1 builder):** the coverage eval's array replay `arrayCorrect(c, c.a, c.b) && a*b === key`, and share plates filled from the key. **Broke:** both compare the planner's params with themselves, so the \"perturbed key rejected\" check could not fail for arrays, and the copy-task binding above passed as \"76/76 agree\". **Instead:** replay the child-side action the view grades; constructs that do not need the answer replay false.\n"
+ }
+}

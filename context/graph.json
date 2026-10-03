@@ -33,7 +33,7 @@
   {
    "id": "realtime-teacher-bakeoff-2026-10-02",
    "kind": "measurement",
-   "title": "Realtime 2.1 vs mini with teacher prompt: 64\u219225 words/turn when brevity is structural",
+   "title": "Realtime 2.1 vs mini with teacher prompt: 64→25 words/turn when brevity is structural",
    "at": "2026-10-02"
   },
   {
@@ -125,7 +125,7 @@
   {
    "id": "db-driver-latency-2026-10-02",
    "kind": "measurement",
-   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 \u2192 Neon us-east-1",
+   "title": "pg pool 9 ms/query vs Neon HTTP ~230 ms from Azure eastus2 → Neon us-east-1",
    "at": "2026-10-02"
   },
   {
@@ -575,7 +575,7 @@
   {
    "id": "voice-lane-cascade-default",
    "kind": "decision",
-   "title": "Default voice = STT\u2192Director\u2192TTS cascade (~\u20b928/h); realtime 2.1 premium share",
+   "title": "Default voice = STT→Director→TTS cascade (~₹28/h); realtime 2.1 premium share",
    "at": "2026-10-02"
   },
   {
@@ -859,7 +859,7 @@
   {
    "id": "azure-billed-open-models",
    "kind": "decision",
-   "title": "Open models (DeepSeek, Kimi, gpt-oss, Grok, FLUX\u2026) allowed if Direct-from-Azure billed; per-task routing by bake-off",
+   "title": "Open models (DeepSeek, Kimi, gpt-oss, Grok, FLUX…) allowed if Direct-from-Azure billed; per-task routing by bake-off",
    "at": "2026-10-02"
   },
   {
@@ -889,7 +889,7 @@
   {
    "id": "language-core-hinglish-english-hindi",
    "kind": "constraint",
-   "title": "Core = English + Hindi + Hinglish; regional languages later \u2014 keep language a parameter",
+   "title": "Core = English + Hindi + Hinglish; regional languages later — keep language a parameter",
    "at": "2026-10-02"
   },
   {
@@ -909,28 +909,28 @@
   {
    "id": "cascade-barge-pause-decide",
    "kind": "decision",
-   "title": "Cascade barge-in is pause-then-decide: local onset ducks (~90 ms), sustained local voice (~120 ms) or server speech_started pauses with the reply kept; the transcript decides: a real turn stops her (teacher_interrupted even while loading), nothing / lone backchannel with \u22651 s left / her own echo resumes from the last word gap",
+   "title": "Cascade barge-in is pause-then-decide: local onset ducks (~90 ms), sustained local voice (~120 ms) or server speech_started pauses with the reply kept; the transcript decides: a real turn stops her (teacher_interrupted even while loading), nothing / lone backchannel with ≥1 s left / her own echo resumes from the last word gap",
    "at": "2026-10-02",
    "source": "inbox/cascade-fix.json"
   },
   {
    "id": "cascade-2s-budget-unreachable-at-900ms",
    "kind": "measurement",
-   "title": "The 2.0 s speech-end\u2192first-audio budget is not reachable with 900 ms server-VAD silence: endpoint alone measures 1046-1146 ms (n=24), STT +250-500, TTS first byte +160-480, leaving < 0.3 s for the Director (best measured 1.9 s)",
+   "title": "The 2.0 s speech-end→first-audio budget is not reachable with 900 ms server-VAD silence: endpoint alone measures 1046-1146 ms (n=24), STT +250-500, TTS first byte +160-480, leaving < 0.3 s for the Director (best measured 1.9 s)",
    "at": "2026-10-02",
    "source": "inbox/cascade-fix.json"
   },
   {
    "id": "cascade-typed-lane-grading",
    "kind": "rejection",
-   "title": "Rejected: starting cascade lessons as mode 'text' \u2014 every spoken turn was stored asr_conf=null and graded as typed; a conf 0.401 transcript went to the model and was graded (baseline eval turn 3); the repair turn was graded as an empty typed answer",
+   "title": "Rejected: starting cascade lessons as mode 'text' — every spoken turn was stored asr_conf=null and graded as typed; a conf 0.401 transcript went to the model and was graded (baseline eval turn 3); the repair turn was graded as an empty typed answer",
    "at": "2026-10-02",
    "source": "inbox/cascade-fix.json"
   },
   {
    "id": "cascade-barge-all-or-nothing",
    "kind": "rejection",
-   "title": "Rejected: barge-in that discards the reply on any server speech_started \u2014 a cough, TV, 'hmm' or her own echo killed her question, the empty transcript then emitted child_silent and both sides waited; a reply cut while loading was never marked interrupted",
+   "title": "Rejected: barge-in that discards the reply on any server speech_started — a cough, TV, 'hmm' or her own echo killed her question, the empty transcript then emitted child_silent and both sides waited; a reply cut while loading was never marked interrupted",
    "at": "2026-10-02",
    "source": "inbox/cascade-fix.json"
   },
@@ -944,7 +944,7 @@
   {
    "id": "cascade-pcm-throttle-sim-2026-10-02",
    "kind": "measurement",
-   "title": "PCM player throttle SIMULATION (1 Mbit/s, 150 ms RTT): no gaps unless a stall hits in the first ~0.1 s; then gaps 158/119/79 ms as the adaptive start lead grows 60\u2192100\u2192140 ms; no real-link measurement",
+   "title": "PCM player throttle SIMULATION (1 Mbit/s, 150 ms RTT): no gaps unless a stall hits in the first ~0.1 s; then gaps 158/119/79 ms as the adaptive start lead grows 60→100→140 ms; no real-link measurement",
    "at": "2026-10-02",
    "source": "inbox/cascade-fix.json"
   },
@@ -993,7 +993,7 @@
   {
    "id": "norm-strips-devanagari-matras",
    "kind": "measurement",
-   "title": "items.js norm() strips Devanagari combining marks (\\p{M}): \u0926\u093e\u0926\u0940==\u0926\u093e\u0926\u093e, \u092a\u0940\u0932\u093e==\u092a\u093f\u0932\u093e, \u092e\u0942\u0932\u0940==\u092e\u0941\u0932\u0940, \u092c\u0948\u0902\u0917\u0928==\u092c\u0947\u0902\u0917\u0928 after norm \u2014 matra-contrast answers cannot be graded or leak-checked correctly",
+   "title": "items.js norm() strips Devanagari combining marks (\\p{M}): दादी==दादा, पीला==पिला, मूली==मुली, बैंगन==बेंगन after norm — matra-contrast answers cannot be graded or leak-checked correctly",
    "at": "2026-10-02",
    "source": "inbox/kits-c2-hindi.json"
   },
@@ -1063,14 +1063,14 @@
   {
    "id": "parent-gate-e2e-2026-10-02",
    "kind": "measurement",
-   "title": "tests/parent-gate-e2e.mjs 35/35 PASS (Neon, n=1 run): onboarding PIN leaves corner locked; burst of 8 wrong PINs \u2192 4 'wrong' + lockout; burst of 7 wrong passwords \u2192 0 checked; Playwright walk 12/12",
+   "title": "tests/parent-gate-e2e.mjs 35/35 PASS (Neon, n=1 run): onboarding PIN leaves corner locked; burst of 8 wrong PINs → 4 'wrong' + lockout; burst of 7 wrong passwords → 0 checked; Playwright walk 12/12",
    "at": "2026-10-02",
    "source": "inbox/ui-a-shell-parent-fix.json"
   },
   {
    "id": "ui-a-gaps-2026-10-02",
    "kind": "rejection",
-   "title": "NOT built in ui-a (recorded so coverage is not implied): /who speaks the name on tap; P6 NameSayer + optional first subject; P7 first-day cap \u2265 child path; P8 MB estimate on cellular; WhatsApp/email notice of a PIN reset or lockout; Class 1-4 spoken summary as the DEFAULT lesson view (a speaker is offered, not autoplayed)",
+   "title": "NOT built in ui-a (recorded so coverage is not implied): /who speaks the name on tap; P6 NameSayer + optional first subject; P7 first-day cap ≥ child path; P8 MB estimate on cellular; WhatsApp/email notice of a PIN reset or lockout; Class 1-4 spoken summary as the DEFAULT lesson view (a speaker is offered, not autoplayed)",
    "at": "2026-10-02",
    "source": "inbox/ui-a-shell-parent-fix.json"
   },
@@ -1091,21 +1091,21 @@
   {
    "id": "voice-features-wired-2026-10-02",
    "kind": "measurement",
-   "title": "Voice features wired into live lessons: runtime \u2192 TurnRequest.voiceFeatures \u2192 turnVoice() in /api/lesson/turn (114 ms Neon write, parallel to classify); browser smoke: 1 PTT turn \u2192 1 turn POST with numbers-only features",
+   "title": "Voice features wired into live lessons: runtime → TurnRequest.voiceFeatures → turnVoice() in /api/lesson/turn (114 ms Neon write, parallel to classify); browser smoke: 1 PTT turn → 1 turn POST with numbers-only features",
    "at": "2026-10-02",
    "source": "inbox/voice-features-fix.json"
   },
   {
    "id": "voice-features-onset-one-clock",
    "kind": "measurement",
-   "title": "Onset measured in one clock (receipt-relative chunk stamps, + outputLatency on teacher end): Chromium, n=5, known 700 ms gap \u2192 630-647 ms (outputLatency 32 ms; residual \u221221..\u221238 ms = 40 ms window-centre bias)",
+   "title": "Onset measured in one clock (receipt-relative chunk stamps, + outputLatency on teacher end): Chromium, n=5, known 700 ms gap → 630-647 ms (outputLatency 32 ms; residual −21..−38 ms = 40 ms window-centre bias)",
    "at": "2026-10-02",
    "source": "inbox/voice-features-fix.json"
   },
   {
    "id": "voice-signals-null-fire-rate",
    "kind": "measurement",
-   "title": "signalsFrom null fire rates (MC n=40k, correlated pairs \u03c1=0.8): max/min of pairs 5.71/0.56/1.13 % (probe/gentler/slower) \u2192 mean of pairs 3.54/0.25/0.37 %",
+   "title": "signalsFrom null fire rates (MC n=40k, correlated pairs ρ=0.8): max/min of pairs 5.71/0.56/1.13 % (probe/gentler/slower) → mean of pairs 3.54/0.25/0.37 %",
    "at": "2026-10-02",
    "source": "inbox/voice-features-fix.json"
   },
@@ -1119,7 +1119,7 @@
   {
    "id": "voice-features-latest-signals-race",
    "kind": "rejection",
-   "title": "Rejected: separate fire-and-forget POST /api/voice/features + latestSignals(lesson, withinMs) as the Director's read \u2014 the turn POST races it and reads the PREVIOUS utterance's signals (different item)",
+   "title": "Rejected: separate fire-and-forget POST /api/voice/features + latestSignals(lesson, withinMs) as the Director's read — the turn POST races it and reads the PREVIOUS utterance's signals (different item)",
    "at": "2026-10-02",
    "source": "inbox/voice-features-fix.json"
   },
@@ -1294,14 +1294,14 @@
   {
    "id": "conductor-pause-at-lesson-end",
    "kind": "decision",
-   "title": "parent.pause during a live lesson takes effect when the lesson ends (or at the 3 h stale-lesson clock close), not at the next day boundary as CONDUCTOR.md \u00a73.3 says",
+   "title": "parent.pause during a live lesson takes effect when the lesson ends (or at the 3 h stale-lesson clock close), not at the next day boundary as CONDUCTOR.md §3.3 says",
    "at": "2026-10-02",
    "source": "inbox/conductor-m0-fix.json"
   },
   {
    "id": "conductor-budget-threshold-today",
    "kind": "decision",
-   "title": "budget.threshold (child scope, >=80%) narrows TODAY's unshown slots to cascade via a debounced re-plan, not only tomorrow's plan as \u00a73.3 says; shown/started slots stay frozen (V10)",
+   "title": "budget.threshold (child scope, >=80%) narrows TODAY's unshown slots to cascade via a debounced re-plan, not only tomorrow's plan as §3.3 says; shown/started slots stay frozen (V10)",
    "at": "2026-10-02",
    "source": "inbox/conductor-m0-fix.json"
   },
@@ -1385,7 +1385,7 @@
   {
    "id": "parent-recheck-from-missed-check",
    "kind": "decision",
-   "title": "Parent 'Pakka \u00b7 dobara jaanch' tag is derived from evidence (a missed delayed P10 check after a delayed pass), never from bkt status 'due'; 'due' reads as its underlying level",
+   "title": "Parent 'Pakka · dobara jaanch' tag is derived from evidence (a missed delayed P10 check after a delayed pass), never from bkt status 'due'; 'due' reads as its underlying level",
    "at": "2026-10-02",
    "source": "inbox/ui-a-shell-parent-fix.json"
   },
@@ -1406,7 +1406,7 @@
   {
    "id": "ui-a-open-gaps",
    "kind": "open",
-   "title": "ui-a unbuilt spec items: \u00a72.3 tap plays the name aloud on /who; \u00a72.2 P6 NameSayer TTS preview + optional first subject; \u00a76.5 level bridge and school sync; \u00a76.6 delete per lesson; \u00a76.10 in-app safety alert (GET /api/parent/alerts over incident, never quoting the child, with helplines, safeguarding suppression branch); \u00a76.2 WhatsApp notice of a pending PIN reset; ChildShell should call useSurface/ensureFont and drop src/child/tokens.css duplicates (ui-b)",
+   "title": "ui-a unbuilt spec items: §2.3 tap plays the name aloud on /who; §2.2 P6 NameSayer TTS preview + optional first subject; §6.5 level bridge and school sync; §6.6 delete per lesson; §6.10 in-app safety alert (GET /api/parent/alerts over incident, never quoting the child, with helplines, safeguarding suppression branch); §6.2 WhatsApp notice of a pending PIN reset; ChildShell should call useSurface/ensureFont and drop src/child/tokens.css duplicates (ui-b)",
    "at": "2026-10-02",
    "source": "inbox/ui-a-shell-parent-fix.json"
   },
@@ -1462,14 +1462,14 @@
   {
    "id": "learner-fold-id-tiebreak-diverged",
    "kind": "rejection",
-   "title": "Sorting unsequenced events by id as strings in fold() while inserting in arrival order: 'e10' < 'e9', so kt_skill_state \u2260 replay of kt_evidence (online pL 0.8999 vs replay 0.8371 on [e9 C4, e10 C0, e11 why-full])",
+   "title": "Sorting unsequenced events by id as strings in fold() while inserting in arrival order: 'e10' < 'e9', so kt_skill_state ≠ replay of kt_evidence (online pL 0.8999 vs replay 0.8371 on [e9 C4, e10 C0, e11 why-full])",
    "at": "2026-10-02",
    "source": "inbox/learner-upgrade-fix.json"
   },
   {
    "id": "learner-delayed-check-session-clock",
    "kind": "decision",
-   "title": "The 20 h delayed-check delay is measured session start \u2192 session start (no intra-session clock, isolation \u00a713.1), not event \u2192 event as PRODUCT-DESIGN \u00a76.4.1 says; a check can count \u224819 h after the real anchor event after a 45-min lesson. Only item/solo, near transfer and error-spot are check classes; C1/C2 re-anchor; a recognition item spends the check",
+   "title": "The 20 h delayed-check delay is measured session start → session start (no intra-session clock, isolation §13.1), not event → event as PRODUCT-DESIGN §6.4.1 says; a check can count ≈19 h after the real anchor event after a 45-min lesson. Only item/solo, near transfer and error-spot are check classes; C1/C2 re-anchor; a recognition item spends the check",
    "at": "2026-10-02",
    "source": "inbox/learner-upgrade-fix.json"
   },
@@ -1490,7 +1490,7 @@
   {
    "id": "learner-nm3-legacy-columns",
    "kind": "open",
-   "title": "OPEN (owner): NM-3 columns that predate the learner model \u2014 rel_state.trust/last_trust_update (no longer written), rel_event.note, lesson.parent_note, turn.asr_conf, voice_feature.asr_conf/barge_in, voice_baseline rows \u2014 are listed in tests/learner-mode.test.mjs NM3_KNOWN and deleted on M0; drop vs M3-only split is the owner's call",
+   "title": "OPEN (owner): NM-3 columns that predate the learner model — rel_state.trust/last_trust_update (no longer written), rel_event.note, lesson.parent_note, turn.asr_conf, voice_feature.asr_conf/barge_in, voice_baseline rows — are listed in tests/learner-mode.test.mjs NM3_KNOWN and deleted on M0; drop vs M3-only split is the owner's call",
    "at": "2026-10-02",
    "source": "inbox/learner-upgrade-fix.json"
   },
@@ -1504,7 +1504,7 @@
   {
    "id": "learner-fold-cost-2026-10-02",
    "kind": "measurement",
-   "title": "One online fold() event on a 4,800-event ledger (92 KB): 6.7 ms with a whole-ledger structuredClone \u2192 \u22481.8 ms with copy-on-write; the remainder is the flat copy of the complete seen map (spec budget < 1 ms not yet met)",
+   "title": "One online fold() event on a 4,800-event ledger (92 KB): 6.7 ms with a whole-ledger structuredClone → ≈1.8 ms with copy-on-write; the remainder is the flat copy of the complete seen map (spec budget < 1 ms not yet met)",
    "at": "2026-10-02",
    "source": "inbox/learner-upgrade-fix.json"
   },
@@ -1589,7 +1589,7 @@
    "id": "cascade-latency-v2-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-02",
-   "title": "Cascade lane after the latency pass (n=20-40 per config, synthetic speech): median speech end \u2192 first TTS byte 3977 ms (p90 4900, n=28) \u2192 2966 ms (p90 3163, n=20) with classify=grok-4-1-fast-non-reasoning + hedge; Director 2044 \u2192 1292 ms, TTS stage 362 \u2192 216 ms; 0 turns \u2264 2.0 s in any config",
+   "title": "Cascade lane after the latency pass (n=20-40 per config, synthetic speech): median speech end → first TTS byte 3977 ms (p90 4900, n=28) → 2966 ms (p90 3163, n=20) with classify=grok-4-1-fast-non-reasoning + hedge; Director 2044 → 1292 ms, TTS stage 362 → 216 ms; 0 turns ≤ 2.0 s in any config",
    "source": "inbox/cascade-latency-2.json"
   },
   {
@@ -1610,7 +1610,7 @@
    "id": "drift-repair-in-code",
    "kind": "decision",
    "at": "2026-10-02",
-   "title": "A reply whose only guard failures are drift (+flat) is repaired in code \u2014 the draft up to its first question, then the item's verified question \u2014 and every guard re-runs; anything left goes to the model rewrite. Matches 9/9 measured drift rewrites, saves ~1 s",
+   "title": "A reply whose only guard failures are drift (+flat) is repaired in code — the draft up to its first question, then the item's verified question — and every guard re-runs; anything left goes to the model rewrite. Matches 9/9 measured drift rewrites, saves ~1 s",
    "source": "inbox/cascade-latency-2.json"
   },
   {
@@ -1631,42 +1631,42 @@
    "id": "classify-accuracy-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-02",
-   "title": "Real classify() on kit c4-maths-ch01-t01, 20 hand-labelled model-reaching replies \u00d7 2 reps \u00d7 2 runs: taxila-fast 72/80 exact, grok-4-1-fast-non-reasoning 75/80, DeepSeek-V4-Pro 74/80; 0 graded-wrong for all; distress flag 10/10 each (n=10); p50 1.06 / 0.63 / 1.14-1.32 s",
+   "title": "Real classify() on kit c4-maths-ch01-t01, 20 hand-labelled model-reaching replies × 2 reps × 2 runs: taxila-fast 72/80 exact, grok-4-1-fast-non-reasoning 75/80, DeepSeek-V4-Pro 74/80; 0 graded-wrong for all; distress flag 10/10 each (n=10); p50 1.06 / 0.63 / 1.14-1.32 s",
    "source": "inbox/cascade-latency-2.json"
   },
   {
    "id": "keepalive-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-02",
-   "title": "Outbound keep-alive (server/net.js, 30 s): a tiny taxila-fast call after 6 s idle 1302 ms \u2192 698 ms median (n=5 each; warm-connection calls ~990 ms)",
+   "title": "Outbound keep-alive (server/net.js, 30 s): a tiny taxila-fast call after 6 s idle 1302 ms → 698 ms median (n=5 each; warm-connection calls ~990 ms)",
    "source": "inbox/cascade-latency-2.json"
   },
   {
    "id": "reply-streaming-no-gain",
    "kind": "rejection",
    "at": "2026-10-02",
-   "title": "Rejected: streaming the teacher reply to start TTS on the first guarded sentence \u2014 the first content delta (already a whole sentence; Azure releases filtered text in blocks) arrives 37-140 ms before the call ends (n=5 \u00d7 2 models); TTFT is the whole cost",
+   "title": "Rejected: streaming the teacher reply to start TTS on the first guarded sentence — the first content delta (already a whole sentence; Azure releases filtered text in blocks) arrives 37-140 ms before the call ends (n=5 × 2 models); TTFT is the whole cost",
    "source": "inbox/cascade-latency-2.json"
   },
   {
    "id": "tts-first-clause-no-gain",
    "kind": "rejection",
    "at": "2026-10-02",
-   "title": "Rejected: TTS on the first clause \u2014 gpt-4o-mini-tts first byte is length-independent (2-word clause 262 ms vs 16-word sentence 260 ms median, n=6 each)",
+   "title": "Rejected: TTS on the first clause — gpt-4o-mini-tts first byte is length-independent (2-word clause 262 ms vs 16-word sentence 260 ms median, n=6 each)",
    "source": "inbox/cascade-latency-2.json"
   },
   {
    "id": "reply-two-drafts",
    "kind": "rejection",
    "at": "2026-10-02",
-   "title": "Rejected (for now): two parallel reply drafts, first guard-clean wins \u2014 Director median 1577 vs 1422 ms single-draft (n=10 vs 30), p90 worse (waits on the slower draft when the first fails), and doubles reply calls",
+   "title": "Rejected (for now): two parallel reply drafts, first guard-clean wins — Director median 1577 vs 1422 ms single-draft (n=10 vs 30), p90 worse (waits on the slower draft when the first fails), and doubles reply calls",
    "source": "inbox/cascade-latency-2.json"
   },
   {
    "id": "reply-ds41-cascade",
    "kind": "rejection",
    "at": "2026-10-02",
-   "title": "Rejected as cascade DEPLOY_REPLY: taxila-ds41 \u2014 guard rewrites 4/10 and its rewrites took 2.5-3.7 s; total median 3783 ms vs 3055 with taxila-fast (n=10 vs 30)",
+   "title": "Rejected as cascade DEPLOY_REPLY: taxila-ds41 — guard rewrites 4/10 and its rewrites took 2.5-3.7 s; total median 3783 ms vs 3055 with taxila-fast (n=10 vs 30)",
    "source": "inbox/cascade-latency-2.json"
   },
   {
@@ -1679,7 +1679,7 @@
   {
    "id": "sim-misconception-truth-leak",
    "kind": "rejection",
-   "title": "Simulator tagged misconception hits only when the hidden truth bit said the child held it (&& t.mis) \u2014 every hit was a true one; fixed to observable-only tags with a non-holder match rate",
+   "title": "Simulator tagged misconception hits only when the hidden truth bit said the child held it (&& t.mis) — every hit was a true one; fixed to observable-only tags with a non-holder match rate",
    "at": "2026-10-02",
    "source": "inbox/comprehension-review.json"
   },
@@ -1714,7 +1714,7 @@
   {
    "id": "sim-mutants-invisible-bkt2",
    "kind": "measurement",
-   "title": "Mutants VC2 (partial scored as full) and VC4 (game at full weight, no E4) do NOT fail CE-M3 under bkt2 (false mastery 0.021 / 0.022); VC2 fails under cfrag-lite (0.056, shallow 0.040), VC4 does not (0.046) \u2014 the battery cannot see VC4",
+   "title": "Mutants VC2 (partial scored as full) and VC4 (game at full weight, no E4) do NOT fail CE-M3 under bkt2 (false mastery 0.021 / 0.022); VC2 fails under cfrag-lite (0.056, shallow 0.040), VC4 does not (0.046) — the battery cannot see VC4",
    "at": "2026-10-02",
    "source": "inbox/comprehension-review.json"
   },
@@ -1722,7 +1722,7 @@
    "id": "model-router-v1",
    "kind": "decision",
    "at": "2026-10-03",
-   "title": "PROPOSED model router v1 (docs/research/models/MODEL-ROUTER.md): live reply gpt-5.6-terra \u2192 fallback taxila-ds41; classify/distress/director taxila-fast \u2192 fallbacks grok-4-20-nr / taxila-ds41 / oss120; writing taxila-brain \u2192 terra; diagram+game code taxila-codex \u2192 brain / DeepSeek-V4-Pro; images gpt-image-2 (text) + FLUX.2-pro (text-free art); OCR taxila-brain \u2192 grok-4-20-nr; ask owner to deploy gpt-6.1-sol, gpt-6-luna, text-embedding-3-large, Cohere-Embed-V5-Pro, gpt-image-2.5-flare/sunburst, MAI-Image-2.6, Kimi-K3 (after billing check), mistral-ocr-4-0",
+   "title": "PROPOSED model router v1 (docs/research/models/MODEL-ROUTER.md): live reply gpt-5.6-terra → fallback taxila-ds41; classify/distress/director taxila-fast → fallbacks grok-4-20-nr / taxila-ds41 / oss120; writing taxila-brain → terra; diagram+game code taxila-codex → brain / DeepSeek-V4-Pro; images gpt-image-2 (text) + FLUX.2-pro (text-free art); OCR taxila-brain → grok-4-20-nr; ask owner to deploy gpt-6.1-sol, gpt-6-luna, text-embedding-3-large, Cohere-Embed-V5-Pro, gpt-image-2.5-flare/sunburst, MAI-Image-2.6, Kimi-K3 (after billing check), mistral-ocr-4-0",
    "source": "inbox/model-router-research.json"
   },
   {
@@ -1736,21 +1736,21 @@
    "id": "image-bench-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "3 prompts \u00d7 gpt-image-2 / FLUX.2-pro / FLUX.1-Kontext-pro, n=1, brain vision judge: gpt-image-2 25/25 on every prompt (37-47 s, $0.053); FLUX.2-pro labels on wrong parts, tutor character 5/5 in 6.2 s (~$0.03); Kontext gibberish caption",
+   "title": "3 prompts × gpt-image-2 / FLUX.2-pro / FLUX.1-Kontext-pro, n=1, brain vision judge: gpt-image-2 25/25 on every prompt (37-47 s, $0.053); FLUX.2-pro labels on wrong parts, tutor character 5/5 in 6.2 s (~$0.03); Kontext gibberish caption",
    "source": "inbox/model-router-research.json"
   },
   {
    "id": "game-code-probe-models-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "Phaser 4 single-file probe (2 tasks \u00d7 n=3) on 8 models: functional 6/6 codex, DeepSeek-V4-Pro (9.9 s), ds41 (5.7 s), brain, grok-4.3, oss120; 4/6 terra and kimi-code (95 s); tasks at ceiling",
+   "title": "Phaser 4 single-file probe (2 tasks × n=3) on 8 models: functional 6/6 codex, DeepSeek-V4-Pro (9.9 s), ds41 (5.7 s), brain, grok-4.3, oss120; 4/6 terra and kimi-code (95 s); tasks at ceiling",
    "source": "inbox/model-router-research.json"
   },
   {
    "id": "oss120-json-mode-corrupt",
    "kind": "rejection",
    "at": "2026-10-03",
-   "title": "gpt-oss-120b with response_format json_object on Foundry returns corrupted JSON ({\"final{\": ...}) \u2014 explains model-bakeoff C 0/12; send plain text and parse",
+   "title": "gpt-oss-120b with response_format json_object on Foundry returns corrupted JSON ({\"final{\": ...}) — explains model-bakeoff C 0/12; send plain text and parse",
    "source": "inbox/model-router-research.json"
   },
   {
@@ -1785,28 +1785,28 @@
    "id": "voice-tts-spoken-render",
    "kind": "decision",
    "at": "2026-10-02",
-   "title": "Every TTS input is rendered by server/voice/spoken.js toSpoken() (data-driven NCERT SpokenSet per mode \u00d7 school medium \u00d7 band; helplines from floor.js matched exactly first, always digit by digit); captions, stored turns and leak/safety guards keep the written text; the realtime (voice) compile carries the helplines as the mode's digit words, never numerals",
+   "title": "Every TTS input is rendered by server/voice/spoken.js toSpoken() (data-driven NCERT SpokenSet per mode × school medium × band; helplines from floor.js matched exactly first, always digit by digit); captions, stored turns and leak/safety guards keep the written text; the realtime (voice) compile carries the helplines as the mode's digit words, never numerals",
    "source": "inbox/spoken-notation-build.json"
   },
   {
    "id": "notation-probe-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-02",
-   "title": "G1 spoken-notation probe (53 items \u00d7 en/hl/hi \u00d7 written vs pre-rendered \u00d7 RT/TTS, n=159/arm): TTS written 33% render / 28% mixed / 18% misread vs pre-rendered 6/6/1%; Indian-comma numbers misread 11/15 TTS, 9/15 RT written; helplines Hindi mode written 0/4 digit-exact, pre-rendered 11/12",
+   "title": "G1 spoken-notation probe (53 items × en/hl/hi × written vs pre-rendered × RT/TTS, n=159/arm): TTS written 33% render / 28% mixed / 18% misread vs pre-rendered 6/6/1%; Indian-comma numbers misread 11/15 TTS, 9/15 RT written; helplines Hindi mode written 0/4 digit-exact, pre-rendered 11/12",
    "source": "inbox/spoken-notation-build.json"
   },
   {
    "id": "spoken-render-tts-rerun-2026-10-02",
    "kind": "measurement",
    "at": "2026-10-02",
-   "title": "Reduced probe re-run with toSpoken() as the TTS input (gpt-4o-mini-tts marin, 30 items \u00d7 en/hl/hi, n=90 + 4 helpline clips): any flag 13% vs written 57% and hand-authored 14% on the same items; misread 6% (3% excl. ASR-suspect) vs 24% / 2%; Indian-comma numbers misread 1/15 vs 11/15; en mode 0/30 flags",
+   "title": "Reduced probe re-run with toSpoken() as the TTS input (gpt-4o-mini-tts marin, 30 items × en/hl/hi, n=90 + 4 helpline clips): any flag 13% vs written 57% and hand-authored 14% on the same items; misread 6% (3% excl. ASR-suspect) vs 24% / 2%; Indian-comma numbers misread 1/15 vs 11/15; en mode 0/30 flags",
    "source": "inbox/spoken-notation-build.json"
   },
   {
    "id": "spoken-helplines-repeat-2026-10-03",
    "kind": "measurement",
    "at": "2026-10-03",
-   "title": "Helplines through toSpoken() in all 5 mode \u00d7 medium cells, 3 takes each (n=30): 28/30 judged digit-exact, 0 confirmed wrong digit (1 undeterminable, 1 single-ASR disagreement); with the first re-run's 10 clips, 37/40 exact, 0 confirmed wrong; one Hindi-mode Tele-MANAS take clipped the final \u091b\u0939",
+   "title": "Helplines through toSpoken() in all 5 mode × medium cells, 3 takes each (n=30): 28/30 judged digit-exact, 0 confirmed wrong digit (1 undeterminable, 1 single-ASR disagreement); with the first re-run's 10 clips, 37/40 exact, 0 confirmed wrong; one Hindi-mode Tele-MANAS take clipped the final छह",
    "source": "inbox/spoken-notation-build.json"
   },
   {
@@ -1820,7 +1820,7 @@
    "id": "open-realtime-lesson-now-notation",
    "kind": "open",
    "at": "2026-10-02",
-   "title": "Realtime lane LESSON NOW still poses kit items with written notation (director/items.js promptFor): only the helplines are pre-rendered there; the kit `spoken` field + checkSpoken at kit-load (spoken-notation \u00a72.1) is unbuilt",
+   "title": "Realtime lane LESSON NOW still poses kit items with written notation (director/items.js promptFor): only the helplines are pre-rendered there; the kit `spoken` field + checkSpoken at kit-load (spoken-notation §2.1) is unbuilt",
    "source": "inbox/spoken-notation-build.json"
   },
   {
@@ -1835,6 +1835,657 @@
    "kind": "measurement",
    "title": "Prod cascade Director turn p50 1,214 / p90 1,605 ms (n=18), rev s169d555",
    "at": "2026-10-03"
+  },
+  {
+   "id": "voice-choice-v2",
+   "kind": "decision",
+   "title": "PROPOSED per-character voices (GA only for minors): Asha = en-IN-Diya:DragonHDLatestNeural, Arjun = en-IN-Arjun:DragonHDLatestNeural, Uma = en-IN-Meera:DragonHDLatestNeural (lang-tagged SSML, PCM) as cascade TTS default with gpt-4o-mini-tts marin/cedar as fallback; MAI-Voice-2.1 Priya HD / Dhruv Flash are Preview benchmarks and switch-on-GA targets; panel pilot gates the swap",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "voice-one-identity-across-lanes",
+   "kind": "decision",
+   "title": "PROPOSED: each teacher character speaks with ONE voice on every lane; premium-lane candidate = Voice Live B (gpt-realtime-2.1 + the character's DragonHD voice, ~$0.042 vs $0.082/min, +82 ms first audio) against lane A native marin/cedar in the panel",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "voice-blind-test-v2-protocol",
+   "kind": "decision",
+   "title": "Human blind test v2: blind-test.html (282 v2 clips + shortlist aliases + degraded/repeat catches, 361 entries, 11 blocks, -26 LUFS playback gain), adults first (>=20 kept listeners, >=800 judgments), 4 axes + real-person separately, listener-bootstrap CIs, paired LB>50% to win, 'indistinguishable' only vs a human anchor; best GA Azure arm takes the slot",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "voice-escalation-ladder",
+   "kind": "decision",
+   "title": "If no Azure stock voice passes the panel: (1) tune + re-panel (rate, lang tags, styles, PCM, 3 takes), (2) Azure Professional Voice from one consented work-for-hire teacher recording (HD $48/M, $4.032/h hosting, Limited Access), (3) Veena/Svara LoRA on a Central India A100 VM as hedge (break-even ~20-28 concurrent sessions); never zero-shot clones or Gemini output as training data",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "model-router-v2",
+   "kind": "decision",
+   "title": "FINAL model router (MODEL-ROUTER.md §1, post-review): live reply taxila-fast -> DeepSeek-V4-Pro; premium voice taxila-realtime; cascade TTS DragonHD per character (proposed) -> gpt-4o-mini-tts; STT live-transcribe (lesson-term keywords only) -> Azure Speech RT LID; classify fast -> grok-4-20-nr; distress predicate + fast -> DeepSeek-V4-Pro; director fast -> oss120; reports brain -> fast; code codex -> brain / V4-Pro; images gpt-image-2 / FLUX.2-pro; OCR brain -> grok-4-20-nr; ds41 and Kimi-K3 out of production until the Fireworks meter is confirmed Direct",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "voice-v2-azure-sweep-2026-10-02",
+   "kind": "measurement",
+   "title": "Azure voice sweep v2 (37 arms x 5 passages = 185 clips, n=5/arm, one take, US container -> eastus2): TTFB median MAI-Flash 321 ms (total 730), MAI HD 935 (flat ~0.6 s start-up), DragonHD 244-253 (total ~3.7 s, 3.6x RT), gpt-4o-mini-tts 302, Swara 645 (styled 1164), DragonHDOmni p90 4958 / max 8734; chars/s at rate 0.95 DragonHD ~15, MAI ~10, 4o-mini-tts 11.5; lenient ASR WER <=0.041 every arm (160/185 at 0, cannot rank); loudness -32.4 to -14.6 LUFS over 282 v2 clips",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "voice-ga-only-for-minors",
+   "kind": "constraint",
+   "title": "Preview voices never take a production slot for children: MAI-Voice-2.1 (HD and Flash, all hi-IN personas) and hi-IN-Diya:DragonLatestNeural are Preview in voices/list (2026-10-03); en-IN DragonHD (Diya, Arjun, Meera, Neerja, Aarti), en-IN Indic and hi-IN standard Neural are GA",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "dragonhdomni-not-production",
+   "kind": "rejection",
+   "title": "Rejected for production: hi-IN-*:DragonHDOmniLatestNeural. It resolves but is absent from voices/list (undocumented names can vanish) and its first-byte tail reached 8.7 s (family p90 5.0 s, n=30)",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "tts-style-map-from-family-default",
+   "kind": "rejection",
+   "title": "Rejected: a family-default MAI style map. softvoice on hi-IN-Arjun:MAI-Voice-2.1(-Flash) is not in its StyleList and failed (HTTP 502 in the sweep, 400 in the review probe); styles must be validated against each voice's StyleList at boot",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "open-voice-human-anchor-missing",
+   "kind": "open",
+   "title": "No real Indian teacher recording of the five v2 test passages exists, so 'real person?' has no base rate and no voice can be called indistinguishable; record one female + one male consented teacher and add with make-blind-v2.py --human",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "open-voice-v2-untested-arms",
+   "kind": "open",
+   "title": "Not yet rendered on passages a-e: gpt-live-1, gpt-realtime-2.1(-mini), gpt-audio-1.5, Voice Live B/C, en-IN Indic and hi-IN standard Neural voices; DragonHD prosody-rate control unverified; gpt-4o-mini-tts snapshot unknown; 100 Azure clips unrated by the AI judge",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "open-fireworks-meter-direct",
+   "kind": "open",
+   "title": "taxila-ds41 (DeepSeek-V4.1-Flash) and Kimi-K3 have only an 'Azure Fireworks Models' meter; whether that is Direct-from-Azure (credit-covered) is unconfirmed, so both are excluded from production slots until the owner confirms",
+   "at": "2026-10-02",
+   "source": "inbox/voice-models.json"
+  },
+  {
+   "id": "avatar-m0-procedural-head",
+   "kind": "decision",
+   "title": "M0 3D tutor = a procedural three.js 0.180.0 head generated in code from the shared cast look (no GLB, no TalkingHead yet), driven by ARKit-named weights so a factory GLB swaps in behind the same rig contract",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-m0-tap-chain",
+   "kind": "decision",
+   "title": "Lip tap = one analysis-only AnalyserNode hung off the EXISTING teacher meter's analyser via LevelMeter.onTap (no link file changes); serves the cascade PCM lane, the realtime lane and the text lane alike",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-m0-lip-normalised",
+   "kind": "decision",
+   "title": "M0 jaw = level-normalised RMS (gate 0.06x and full-open at 0.7x the running p90 voiced RMS, linear, one-pole tau 50 ms); matches the fixed-gain RMS arm's r within 0.005 and survives a -10.5 dB received level",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-tutor-offer-sheet-ranges",
+   "kind": "decision",
+   "title": "The picker offers a tutor only inside its persona sheet's class range and only when the sheet + voice exist: today one tutor per class, so the picker is skipped (no fake one-tile choice); AVATAR §5.1 widened ranges sit behind TAXILA_TUTOR_OFFER=wide; Uma is a draft",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-tutor-choice-store",
+   "kind": "decision",
+   "title": "Tutor choice = child.teacher_id + child.tutor_chosen_at (migration 008) + an analytics-only tutor_switch log written in the SAME statement as the update (from_id = previous teacher, always); 409 while any lesson is open with activity in the last 6 h; the lesson pins its own teacher; B2-B4 switch free, B1 switch (or a first pick over a parent-set teacher) needs the Parent-corner unlock",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-m0-tiers-governor",
+   "kind": "decision",
+   "title": "Static tier sends software rasterisers (SwiftShader/llvmpipe) and pre-2017 mobile GPUs to the 2D plate (D); the governor's long-frame threshold is cap-aware (max(50 ms, 1000/cap + 17 ms)); ?face= honoured only in dev / VITE_DEV_ROUTES builds; MSAA off at a static B-lite start; battery + the child's voice-only presentation now wired",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-m0-lip-bench-2026-10-03",
+   "kind": "measurement",
+   "title": "M0 lip driver on the Hindi/English viseme bench: at the bench level it is slightly WORSE than fixed-gain RMS (r 0.537 vs 0.546 hi, 0.673 vs 0.681 en; closures 23/84 vs 27/84); its win is robustness to quiet audio (-10.5 dB: vowel false-close 17% vs 72%)",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-m0-fps-headless-2026-10-03",
+   "kind": "measurement",
+   "title": "Procedural head in headless Chromium (SwiftShader, no GPU): tier B holds its 30 fps cap (300/300 frames in 10 s, interval p95 33.4 ms, main-thread work p95 0.6-0.9 ms); B-lite holds 20 fps (tier B FORCED: on SwiftShader the shipped tier logic picks D; no phone run, so M0 acceptance 'one G85 phone' is NOT met)",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-m0-bundle-2026-10-03",
+   "kind": "measurement",
+   "title": "Bundle delta: three.js + the head + the stage load as one lazy chunk (523 KB raw / 133 KB gz / 110 KB br); the picker route chunk is 26 KB raw / 10 KB gz; main +0.2 KB raw, lesson chunk +0.2 KB raw (LevelMeter.onTap)",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-m0-picker-order-2026-10-03",
+   "kind": "measurement",
+   "title": "Per-child seeded shuffle: Asha first for 50% +/- 3 pp of 4,000 simulated child ids with a two-tutor offer (no position bias by construction)",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-m0-dead-ends",
+   "kind": "rejection",
+   "title": "Three M0 traps: absolute-mode morph deltas shrink the head; a fixed-gain RMS jaw at an unknown received level; a fixed 50 ms long-frame bar under a 20 fps cap",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-teacher-pinned-bounded",
+   "kind": "decision",
+   "title": "teacherFor bounds a saved teacher_id by the persona sheet's classes (or the wide ranges under TAXILA_TUTOR_OFFER=wide) on every read and falls back to the class default with a log; teacherForLesson pins speech to the lesson's state.ctx.teacherId (wired in /api/tts; voice.js tts-stream and the realtime token still read the child's current pick)",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-m0-context-churn-2026-10-03",
+   "kind": "measurement",
+   "title": "Picker WebGL churn, 40 selection flips in headless Chromium: before the fix the browser evicted 24 contexts and the session COUNTED 24 losses (>= 2 sends every later face to tier D for the session); after (listener removed + forceContextLoss + disposed guard) 0 evictions, 0 counted, 1 canvas left",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "avatar-m0-review-traps",
+   "kind": "rejection",
+   "title": "Two M0 review traps: three r180 WebGLRenderer.dispose() does not free the GL context (stale contextlost listeners then poisoned the session tier); a 15-minute activity window as 'lesson is live' let a paused lesson switch teacher mid-lesson",
+   "at": "2026-10-03",
+   "source": "inbox/avatar-m0.json"
+  },
+  {
+   "id": "engines-v1-built",
+   "kind": "decision",
+   "title": "engines-v1: the 12 CONTENT-ENGINE v1 engines (number-line, collections, place-value, fractions, multiply-divide, geoboard v1 slice, data-graphs core, patterns core+grid, measure maths core, sky 2D, motion-lab slice, water-cycle) plus the scene@1 T2 renderer ship in the sandboxed frame as React views over framework-free *.logic.ts; tap-first (no drag), every verdict computed from params + state, interaction/answer/goal_met/stuck via the v1 EngineApi",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "engines-v1-catalog-binding",
+   "kind": "decision",
+   "title": "shared/engine-catalog.js is the planner's engine table: kit hint aliases (≈230) → engine + preset, topic-map fallback, and item adapters that BIND a kit item (module answers grade it) only when the engine's right answer derived from params alone equals the verified kit key; everything else mounts unbound",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "engines-v1-react-in-frame",
+   "kind": "decision",
+   "title": "engines-v1 uses React inside the frame (the frame already ran React: bootstrap.tsx + fraction-bars@1), amending engines-in-sandbox-frame-v1's 'vanilla TS, no React' clause; zod stays out of the frame (scene@1 uses a hand-written structural check)",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "scene-renderer-validator-ports",
+   "kind": "decision",
+   "title": "The frame's scene@1 renderer evaluates EXPR@1 and lays out scenes with typed ports of the validator (genui-scene-dsl.mjs), pinned by a parity test; visuals in one SVG stage, controls as real HTML buttons at the validator's boxes (hit sizes are the ones the validator checked); a voice-commit probe lets the scene's goals carry goal_met",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "engines-v1-coverage-2026-10-03",
+   "kind": "measurement",
+   "title": "Kit topics c4-c7 whose engineHints resolve to a built engine: 132/385 = 34.3% (before: 4/385 = 1.0%, fraction-bars only); maths 105/141 (74.5%), science 21/69 (30.4%), EVS 6/40 (15%), English/Hindi/SST 0/135; with the research topic map as fallback 146/385 (37.9%); first-hint-only aliasing 87/385 (22.6%); by class c4 24/75, c5 29/74, c6 39/112, c7 40/124",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "engines-v1-item-binding-2026-10-03",
+   "kind": "measurement",
+   "title": "Item binding (fixer re-run): c4-c7 kits 5,082 items, 1,932 in covered topics, 65 bound (was 76: 9 share and 3 between-gridline bar items unbound; arrays now bind on the TYPED product); all kits c1-c9 10,815 items, 3,577 covered, 103 bound. Every bound plan replays right as the CHILD-SIDE action the view grades (typed product, typed numeral, tapped tick) 103/103, wrong on a perturbed key 103/103; the builder's 76/76 checked array plans against their own params and is withdrawn",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "engines-v1-browser-2026-10-03",
+   "kind": "measurement",
+   "title": "Playwright, real sandboxed frame at 360×900: 60 scenarios (53 + 7 fixer scenarios: product entry, word-problem product with no expression, c1 given-pieces read, three predict-mode hides, bar value axis) pass 60/60 on the dev server and 60/60 on the production build; 0 console errors / CSP violations, 0 buttons under the band hit size, 0 px overflow",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "engines-v1-mount-2026-10-03",
+   "kind": "measurement",
+   "title": "Engine mount in the production frame, headless Chromium in the dev container, n=5 per engine (re-run 2026-10-03): p50 67-90 ms (1×), 209-263 ms (4× CPU); FIRST mount of a session (cold frame + React) 146 ms (1×) / 406 ms (4×); first mount of each further engine 63-96 ms / 197-274 ms; engine chunks 3-5 kB gz, scene@1 12.5 kB gz (not a reference-phone V15 measurement)",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "scene-port-parity-2026-10-03",
+   "kind": "measurement",
+   "title": "Frame scene@1 ports vs the normative validator: 40/40 expressions give the same AST and value, 6/6 malformed expressions refused by both; node boxes and repeat instances identical on all 7 validated templates (6 T2a + Forge choice-card); geoboard construct() complete against an exhaustive enumeration of shapes up to area 7 on 6×8 (0 misses)",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "rj-engine-prompt-shows-target",
+   "kind": "rejection",
+   "title": "Mounting planner-bound items with the target as a visible param: number-line jump showed 'Jump to 14' for '2, 5, 8, 11, ___' and place-value build showed 'Make this number: 4050' for a words-to-numeral item (the leak test caught it); replaced by question/name/round params that show the question and hide or compute the target",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "rj-share-for-quotitive",
+   "kind": "rejection",
+   "title": "Binding quotitive division items ('48 ladoos packed in boxes of 6 — how many boxes?') to the share-among-k engine: same number, different action, so the share is not evidence for that item; such items mount unbound",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "rj-first-hint-engine-id",
+   "kind": "rejection",
+   "title": "Resolving a kit's engine as engineId(engineHints[0]) (modules.js today): 4/385 c4-c7 topics resolve (1.0%) because kit hints are free names ('fraction-strips', 'shadow_stick_sim'); aliasing only the first hint gets 87/385; pickEngine over all hints gets 132/385",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "open-engines-v1-wiring",
+   "kind": "open",
+   "title": "server/director/modules.js must call planEngine + moduleCommands (shared/engine-catalog.js): s.module = result.module (itemId only when bound, awaitingReveal = plan.predict), push result.cmds; a null plan mounts nothing",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "open-engines-v1-gaps",
+   "kind": "open",
+   "title": "Not built in engines-v1: drag (tap twin only), bridge v2 (ready caps, facts schema, getState/setState, renderStatic), three fading stages + linked readouts, set_stage/demo/lock/freeze, detector JSONLogic manifests, ~20 goldens per engine (has 3-8), Devanagari numerals, the motion-lab work/energy scenes, sky seasons/eclipse, water-cycle sea-breeze/monsoon, measure balance/map-scale/conversion, data-graphs line/pie/mean, patterns machine/figure, place-value column ops/abacus visual; language/SST engines (0/135 topics)",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "engines-v1-bind-on-child-answer",
+   "kind": "decision",
+   "title": "A plan binds a kit item only when the child must PRODUCE the key in the engine (type the product, write the numeral for given pieces, place the point, pick the bigger): array plans ask for the typed product (ask:'product', showExpr:false for word problems), share plans never bind, given-pieces items mount place-value read with `counts`, rounding points already on a multiple and number-line landings on a line end stay unbound",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "engines-v1-unbound-needs-item-values",
+   "kind": "decision",
+   "title": "An unbound fallback mount carries the item's extracted numbers/fractions (as the Director sent before) and mounts a maths engine only if that engine's generic normalize consumes them (CONSUMES table); data-graphs, jump-preset number lines, repeat/grid patterns and value-less prompts mount nothing rather than demo defaults; science sims mount without values",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "engines-v1-module-commands",
+   "kind": "decision",
+   "title": "moduleCommands(cur, plan, id) in shared/engine-catalog.js is the one step from plan to frame commands: set_param only when engine, mode, param keys, goal and itemId are all unchanged, otherwise unmount + mount; itemId and goal exist only on bound plans; Director predict intent travels as params.predict (engine mode kept) and plan.predict → awaitingReveal",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "engines-v1-unbound-fallback-2026-10-03",
+   "kind": "measurement",
+   "title": "Unbound fallback mounts (no adapter matched) whose engine ignores the item (normalize(params) == normalize(params minus numbers/fractions)): before the fix 296/1,013 c4-c7 maths fallbacks showed demo defaults (data-graphs 96, measure 58, number-line 52, fraction-bars 47 …); after the CONSUMES gate 6/655 c4-c7 and 13/1,138 c1-c9, with 561 c4-c7 / 1,164 c1-c9 items now mounting nothing",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "rj-array-dims-binding",
+   "kind": "rejection",
+   "title": "Binding 'What is 7 × 8?' (and 15 word problems) to multiply-divide array mode graded on the built dimensions: the engine showed 'Make an array of 7 × 8', so setting rows 7 and cols 8 was graded correct without the child ever producing 56; share mode is the same shape (tap 'one each' until it greys out). Replaced by product entry; share unbound",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "rj-parts-build-shows-numeral",
+   "kind": "rejection",
+   "title": "Place-value build for '4 tens and 6 ones. Write the number.' showed 'Make this number: 46' on a bound item (c1, outside the c4-c7-only leak test); replaced by read mode showing the given pieces (`counts`), and the leak test now runs over every kit through the frame's normalize",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "rj-replay-against-own-params",
+   "kind": "rejection",
+   "title": "The coverage eval's array/share replay compared the plan's params with themselves (arrayCorrect(c, c.a, c.b), plates filled from the key), so its negative replay could not fail and hid the copy-task binding; the replay now models the child-side action the view grades",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "open-engines-v1-server-recheck",
+   "kind": "open",
+   "title": "Bound mounts send the key (or what derives it) to the client and lesson.js accepts the frame's self-reported correct; re-check server-side from answer.value against plan.key in server/director/classify.js (not editable by engines-v1)",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "open-engines-v1-fraction-bars-predict",
+   "kind": "open",
+   "title": "fraction-bars@1 (pre-engines-v1) has no predict handling: in predict its compare bars still show the answer; port the fractions@1 hide or route predict compare plans to fractions@1",
+   "at": "2026-10-03",
+   "source": "inbox/engines-v1.json"
+  },
+  {
+   "id": "forge-g1-live-t1-t2a",
+   "kind": "decision",
+   "title": "Until reviewed tgk@1 library cores exist, Forge G1 serves T1 engine fills (fraction-bars@1) and T2a scene@1 template fills (choice-card@1, sequence-steps@1) derived in code from the verified kit item, personalised by skin/band/language/error-replay order; scene fills are gated and cached but not mounted until a frame scene@1 renderer ships (FORGE_SCENE_RENDERER=1)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-flavour-enums",
+   "kind": "decision",
+   "title": "The only model in G1 is one taxila-fast (effort none, strict schema) flavour pick of skin, title-row id and decor sprite inside closed enums, made only when the caller's budget leaves >= 500 ms after a 1.5 s reserve: the turn path (needByMs 2000) never calls it and ships the code pick, which a background full-budget pick upgrades in the cache for the next request; prefetch (10 s) gets the model pick up front. The gate runs first on the code pick, so a doomed activity costs no model call, and a model pick that fails the gate falls back to the code pick",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-gate",
+   "kind": "decision",
+   "title": "G1 gate = trusted code over data, child-free: Q0 schema (engine param table pinned to the EngineDef; scene@1 validator, no autofix allowed) + size <= 56 KiB; Q4 solver; Q5 truth re-derived from the payload alone vs the kit (KitMath for fractions, exact kit option text for diagnostics, case/punctuation-preserving for English); leak (director revealsAnswer + any key form in a non-question string); Q8 strings in kit strings + pre-cleared table, tiered blocklist, PII. The child's first name is checked at serve time on NON-kit strings only (childNameClash), never inside the cached / dead-key verdict",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-cache-layout",
+   "kind": "decision",
+   "title": "G1 fills are cached by a child-free identity key (versions of forge/gate/prompt/model/kit + item + activity + skin set + lang + band; g1@2 since the review fixes): memory LRU -> Neon asset_cache kind g1_fill (grade table + gradeEvent binding, private) -> Blob taxilaforge/forge/g1/<sha256>.json (render payload only, immutable). First writer wins except that a model flavour pick replaces a code pick (same truth); results are structuredClone copies; gaps are demand rows (kind forge_gap, per hashed child, capped at 200 children) until the forge_job queue lands",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-latency-2026-10-03",
+   "kind": "measurement",
+   "title": "Forge G1 requestFill, PREFETCH configuration (needByMs 10 000, learner passed in; NOT the turn path), live Azure + Neon + Blob, n=30 real kit items (10 maths / 10 science+EVS / 10 English, c4-c7), re-run after the review fixes: cold p50 1094 ms / p95 1558 / max 2129 (flavour model p50 1040 / p95 1360, gate p50 5 / max 26); Neon hit p50 46 / p95 450; memory hit p50 0 / max 1; repeated gap 45 ms. Builder run before fixes: 1180 / 1542",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-gate-pass-2026-10-03",
+   "kind": "measurement",
+   "title": "G1 gate on the same n=30 (re-run): 29/30 shipped (96.7%), 29/29 first try with the model's flavour (0 model picks rejected); the 1 reject is build.option_too_long (a science diagnostic option > 80 chars, the scene@1 string cap). Mutant battery: 14/14 operators caught by their target check, 0 false alarms on clean fills (tests/forge-g1.test.mjs)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-render-2026-10-03",
+   "kind": "measurement",
+   "title": "Headless render + solution replay of every T1 fill in the production frame (dist/modules.html, meta CSP, opaque-origin iframe, Chromium 1194), re-run: 5/5 boot, labels match params, solution reaches goal_met, compare wrong-then-right verdicts match the gate; boot 112-149 ms (dev container, no throttle). Scene fills NOT render-checked (the scene@1 renderer landed mid-review; render-check.mjs covers fraction-bars@1 only)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-coverage-2026-10-03",
+   "kind": "measurement",
+   "title": "G1 coverage over every item + diagnostic of the c4-c7 maths/science/EVS/English kits (4,944): an activity derives for maths 446/2289 (19.5%), science+EVS 349/1764 (19.8%), English 229/891 (25.7%); mountable TODAY (fraction-bars@1 only) maths 30/2289 (1.3%), science 0, English 0",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-strings-cleared-2026-10-03",
+   "kind": "measurement",
+   "title": "Azure AI Content Safety (text:analyze 2024-09-01, FourSeverityLevels) over all 84 strings-table rows (27 hooks + 1 template row, x en/hi/hi_latn): max severity 0, 0 errors",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "kitmath-fraction-agreement-2026-10-03",
+   "kind": "measurement",
+   "title": "KitMath recompute vs kit answers on every value-keyed fraction item of c4-c7 maths: 23 items, 0 disagreements; misconception rules reproduce the kit diagnostic distractor 2/2 where the diagnostic poses a fraction task",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-single-tier-blocklist",
+   "kind": "rejection",
+   "title": "One blocklist over every child-visible string flagged 11 verified kit strings (science: 'farmers kill snakes', 'fat and protein'); replaced by SEVERE (all strings) + MILD (non-kit strings only)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-case-folded-keys",
+   "kind": "rejection",
+   "title": "Comparing English keys after lower-casing and stripping apostrophes made 2 grammar diagnostics (capital letters, apostrophe plural) look like two right options; keys now compare exactly (diagnostics) or case/punctuation-preserving (contrast items)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-model-before-gate",
+   "kind": "rejection",
+   "title": "Calling the flavour model before checking that the activity can pass the gate spent ~1 s per doomed item on every request (memory-hit pass p95 987 ms, n=27); replaced by a code-pick pre-gate plus a dead-key memo (repeated gap 45 ms)",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-serve-time-child-check",
+   "kind": "decision",
+   "title": "The child-name PII check is child-DEPENDENT, so it runs at serve time on every hit and fresh fill, over non-kit strings only (kits name characters constantly; verified kit text is exempt); a clash skips that activity for that child only and writes no dead key and no gap row",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-turn-path",
+   "kind": "decision",
+   "title": "Call site 2 (turn path) is requestFill(..., needByMs: 2000) with no learner argument: the learner comes from a per-lesson memo (15 min, primed by the lesson-start prefetch or primeLearner), the flavour model is never on the request path, and a cold fill ships the code pick and is upgraded to a model pick in the background",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-grade-event",
+   "kind": "decision",
+   "title": "One pure gradeEvent(grade, moduleEvent) in server/forge/grade.js maps G1 module events to evidence: the produced value is recovered from the event's choice index / option id / order through a server-side binding built from the gated payload and compared with the GradeEntry key; the module's own correct/misc flags are never read",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-prefetch-planned",
+   "kind": "decision",
+   "title": "Lesson-start prefetch walks error replays, active-misconception diagnostics, then the Director's buildPracticeQueue order, and PLANS each candidate (pure, ms) before it takes one of the max=6 slots; prefetch writes no forge_gap rows",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-turn-path-2026-10-03",
+   "kind": "measurement",
+   "title": "Turn path as wired (needByMs 2000, no learner arg, DATABASE_URL set, neon-http from the US dev container), 8 topics / 23 queue turns per arm (7 English + 1 maths topic, scene path included): cold p50 62 / p95 448 / max 575 ms (first turn of a lesson p50 109, learner read p50 52 / max 493; later turns p50 55 / max 100, learner 0); Neon warm p50 49 / p95 99; after an awaited prefetch p50 0 / p95 1 / max 47, 23/23 memory hits. Model calls on the request path 0/69; 23/23 cold code picks upgraded to model picks in the background",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-prefetch-hitrate-2026-10-03",
+   "kind": "measurement",
+   "title": "Prefetch hit rate on real lesson queues (all 303 c4-c7 maths/science/EVS/English topics, buildPracticeQueue, plan-level, offline): bars only (today) old 13/24 (54%) vs planned 21/24 (88%); with scene@1 old 39/375 (10%) vs planned 372/375 (99%); slots spent on gaps old 1805 / 1779 of 1818 vs 0",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-scene-grade-agreement-2026-10-03",
+   "kind": "measurement",
+   "title": "gradeEvent vs the scene@1 renderer's own probeOutcome (src/modules/frame/scene/runtime.ts) over every G1 scene fill of c4-c7 maths/science/EVS/English: 964 fills, 2587 verdicts (every choice option incl. trap -> kit misconception, right and reversed order), 0 disagreements",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-child-name-in-cached-gate",
+   "kind": "rejection",
+   "title": "The child's first name inside the child-free gate verdict (over kit strings too, memoised in deadKeys) disabled an activity for every child once one child shared a kit character's name (c5-english-ch02-t01-i06, Chintu then Riya) and served a fill cached for one child to another without the check",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-prefetch-unplanned",
+   "kind": "rejection",
+   "title": "Prefetching the first 6 non-teach-back kit items without planning them spent 1805 of 1818 slots on gaps (bars only) and warmed 54% of the mountable queue items (10% with scenes), writing a forge_gap row per gap",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "forge-g1-learner-read-per-turn",
+   "kind": "rejection",
+   "title": "Reading the learner view (4 Neon selects, 1.5 s timeout) before the cache on every requestFill without a learner put a DB round trip on every module turn including memory hits; the published 0 ms / 47 ms hit numbers were measured with the learner passed in and did not describe the wired path",
+   "at": "2026-10-03",
+   "source": "inbox/forge-g1.json"
+  },
+  {
+   "id": "integration-ledger-live-path",
+   "kind": "decision",
+   "title": "The live lesson folds on the BKT-R ledger + facets: Director evidence → learner/live.js answerEvents → fuseEvidence → noteOutcome → beliefs into step() → closeEvents → fuse; kt_evidence is the event source (inserted in the turn's one transaction, child advisory lock + legal-mode guard first); kt_skill_state/comp_facet_state are the cache; skill_state is a projection of the ledger and the 001 evidence rows stay as the verdict log for the parent corner and lesson-end facts",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "integration-ledger-cache",
+   "kind": "decision",
+   "title": "In-process folded learner state per child keyed by the highest kt_evidence seq; each turn reads only rows after it (in parallel with classify); a commit keeps the online fold only if its inserts got exactly the next seqs, else the cache is evicted and the next turn replays",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "integration-episode-close-carries-misconception",
+   "kind": "decision",
+   "title": "An open item's wrong answers are not KT events until the episode closes (correct → C0-C4 by tries/rungs; left or assertion → C4); a misconception the child showed in the episode rides on the closing event; options items grade the first try only; the teach-back is ONE probe.teachback event over ≤3 taught skills",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "integration-held-why-graded-off-path",
+   "kind": "decision",
+   "title": "A why / teach-back answer moves the Director at once on classify's label, but its KT event is held one turn while the blind closed-label grader (DeepSeek-V4-Pro → taxila-brain) runs in the background after commit; the next turn (or lesson end, ≤6 s wait) folds it with the grader's outcome and the code span check, else with classify's outcome and spanOk:false (K only, E6)",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "integration-live-probe-subset",
+   "kind": "decision",
+   "title": "The live scheduler (schedule.js nextProbe, new `allow` option) may pick only why-class shapes C03/C06/C09/C10/C12/C14 (LIVE_PROBE_SHAPES) for a correct answer on the current item; mandatory triggers scoped to that skill; verify_misconception uses the kit diagnostic via s.verify; warm-up openers are C31 delayed checks; the lesson teach-back is C01",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "integration-voice-tiebreak-race",
+   "kind": "decision",
+   "title": "Voice tie-breakers (features.js signalsFrom) reach the plan only if turnVoice has resolved by the time classify has: followUpProbe → scheduler gap −1 / fallback why draw, gentlerHint → one gentler rung CONTENT (count unchanged), slowerPace/onset z → persona pace knobs (TurnResponse.pace); zero belief weight (CE8), test-pinned",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "integration-engine-reteach-cooldown",
+   "kind": "decision",
+   "title": "Engine re-teach (reteachTrigger → selectReteach) on graded item answers, after the kit's own once-per-misconception re-teach; 2 graded items of cooldown per skill; park → skip item + Conductor seam (no-op); prereq_descent → changeApproach (no cross-kit prerequisite item yet)",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "integration-vibe-row",
+   "kind": "decision",
+   "title": "compile() gains a VIBE section (cap 60, drop 4) between LESSON NOW and the move: vibeRow(personaKnobs(...)) computed by the Director every step; pace knobs never in the prompt",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "integration-voice-spoken-ask",
+   "kind": "decision",
+   "title": "The voice lane poses the item via toSpoken() in LESSON NOW and in the branch question; the key line, the text lane, captions and every guard keep the written form; a voice compile whose spoken branch question overflows the `last` cap falls back to the written line (the load gate stays on the written form)",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "safety-content-filter-fails-closed",
+   "kind": "decision",
+   "title": "An Azure content-filter block (400 error.code content_filter / ResponsibleAIPolicyViolation, 400 with choices[].finish_reason content_filter, 200 finish_reason content_filter) on any call carrying the child's words is a distress signal: classify (grok and taxila-fast), its hedged duplicate (a block on either request wins at once), the low-ASR distress backup, and the teacher reply all fail CLOSED → safeguard move, incident row (source content_filter), speakNow interrupt on voice",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "safety-predicate-passive-ideation-hinglish",
+   "kind": "decision",
+   "title": "The deterministic self-harm predicate now catches Hinglish/Devanagari passive ideation ('gayab ho jaana chahta', 'hamesha ke liye chali jaana chahti', 'गायब हो जाना चाहती'); the predicate runs before every model call",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "ledger-source-weight",
+   "kind": "decision",
+   "title": "bktr.js temper(): K evidence ×0.5 for via game, ×0.75 for via module (= facets W_SRC; spec §1.1)",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "ledger-mis-session-cap",
+   "kind": "decision",
+   "title": "Misconception log-evidence clamped at ±log 50 per (misconception, session) in the ledger (spendMis), as K's budget; hits still counted",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "hook-like-with-like",
+   "kind": "decision",
+   "title": "Hook shape carries a like-with-like note (a shape, not a line) and the text-lane reply guards carry a code predicate (director/units.js mixedUnitComparison: a comparing question whose quantities span kinds with ≥1 measure) → one rewrite, then the comparing question is cut; voice-lane teacher turns are flagged meta.unitMix",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "tutor-switch-m0-history",
+   "kind": "decision",
+   "title": "008's tutor_switch (choice history + ms_to_choose) classified as an M0 history table in learner/mode.js (deleted on the M0 ratchet); it was unclassified, which failed the ratchet test",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "comp-sim-integration-2026-10-03",
+   "kind": "measurement",
+   "title": "Comprehension sim, 30 seeds (4,320 child-concepts per family), engine policy: bkt2 macro acc 0.640→0.659, false mastery 0.025→0.023, load/10 2.256→2.258; cfrag 0.475→0.480, 0.043→0.039, 2.235→2.236; not_yet acc fell (bkt2 0.779→0.746, cfrag 0.470→0.418); source weight alone ≈ neutral (bkt2 0.637, cfrag 0.470)",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "cascade-latency-integration-2026-10-03",
+   "kind": "measurement",
+   "title": "Cascade latency n=12 before/after the integration (grok classify): Director median 1488→1562 ms, p90 2206→2328 (model variance); per phase plan 1→2 ms, store 60→64.5 ms median (max 71→101), no added serial model calls",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "hook-units-2026-10-03",
+   "kind": "measurement",
+   "title": "Hook turns, c5-maths-ch01-t01, taxila-fast: cross-kind comparison 0/32 without the new constraint (12 with a cricket interest, 20 without), 0/32 with it, 0/32 after the guard; the prod bug did not reproduce at this n (95% upper bound ~9%)",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "integration-gates-2026-10-03",
+   "kind": "measurement",
+   "title": "lesson-api-e2e 40/40 on real Neon+Azure (new: replay of kt_evidence = kt_skill_state, skill_state = projection); conductor-db 14/14 on the test branch; npm test 779/780 (migrations-applied: 008 not applied); kit budget 108/10815 dropped (unchanged)",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "spoken-ask-in-load-gate",
+   "kind": "rejection",
+   "title": "Rendering the voice branch question in spoken notation inside the load gate (checkFits): 122/10815 items dropped (1.13%, gate ≤1%; baseline 108), and an item dropped from EVERY lane for a voice-only rendering",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
+  },
+  {
+   "id": "integration-learner-open-2026-10-03",
+   "kind": "open",
+   "title": "Open after the learner/comprehension integration: no kt backfill (live now), grade_audit spans never kept, TurnResponse.pace unconsumed, weave hosting seam, arm posteriors, CompState types, persona state in lesson.state, held-verdict settle rate unmeasured, 008 migration",
+   "at": "2026-10-03",
+   "source": "inbox/integration-learner-comp.json"
   }
  ],
  "edges": [
@@ -3242,6 +3893,591 @@
    "src": "prod-cascade-director-169d555",
    "rel": "supersedes",
    "dst": "prod-smoke-169d555"
+  },
+  {
+   "src": "model-router-v2",
+   "rel": "supersedes",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "model-router-v2",
+   "rel": "measured_by",
+   "dst": "router-bench-2026-10-02"
+  },
+  {
+   "src": "model-router-v2",
+   "rel": "measured_by",
+   "dst": "router-t-judge-split-2026-10-03"
+  },
+  {
+   "src": "azure-billed-open-models",
+   "rel": "constrains",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "open-fireworks-meter-direct",
+   "rel": "blocks",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "open-distress-check-fails-open-on-filter",
+   "rel": "blocks",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "voice-choice-v2",
+   "rel": "part_of",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "voice-choice-v2",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "voice-choice-v2",
+   "rel": "measured_by",
+   "dst": "voice-v2-azure-sweep-2026-10-02"
+  },
+  {
+   "src": "voice-choice-v2",
+   "rel": "measured_by",
+   "dst": "voice-v2-ai-judge-proxy"
+  },
+  {
+   "src": "voice-ga-only-for-minors",
+   "rel": "constrains",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "voice-ga-only-for-minors",
+   "rel": "caused_by",
+   "dst": "voice-lane-a-v1-panel-decides"
+  },
+  {
+   "src": "azure-billed-open-models",
+   "rel": "constrains",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "ct-no-gemini-api-for-minors",
+   "rel": "constrains",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "voice-one-identity-across-lanes",
+   "rel": "part_of",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "voice-one-identity-across-lanes",
+   "rel": "caused_by",
+   "dst": "voice-lane-budget"
+  },
+  {
+   "src": "voice-blind-test-v2-protocol",
+   "rel": "part_of",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "open-voice-human-anchor-missing",
+   "rel": "blocks",
+   "dst": "voice-blind-test-v2-protocol"
+  },
+  {
+   "src": "open-voice-v2-untested-arms",
+   "rel": "blocks",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "voice-escalation-ladder",
+   "rel": "part_of",
+   "dst": "voice-choice-v2"
+  },
+  {
+   "src": "own-teacher-voice-record-once",
+   "rel": "part_of",
+   "dst": "voice-escalation-ladder"
+  },
+  {
+   "src": "voice-escalation-ladder",
+   "rel": "measured_by",
+   "dst": "oss-tts-hindi-landscape-v2"
+  },
+  {
+   "src": "t4-cannot-serve-3b-codec-tts",
+   "rel": "constrains",
+   "dst": "voice-escalation-ladder"
+  },
+  {
+   "src": "dragonhdomni-not-production",
+   "rel": "measured_by",
+   "dst": "voice-v2-azure-sweep-2026-10-02"
+  },
+  {
+   "src": "tts-style-map-from-family-default",
+   "rel": "measured_by",
+   "dst": "voice-v2-azure-sweep-2026-10-02"
+  },
+  {
+   "src": "avatar-m0-procedural-head",
+   "rel": "part_of",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "avatar-m0-procedural-head",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "avatar-m0-procedural-head",
+   "rel": "measured_by",
+   "dst": "avatar-m0-fps-headless-2026-10-03"
+  },
+  {
+   "src": "avatar-m0-procedural-head",
+   "rel": "measured_by",
+   "dst": "avatar-m0-bundle-2026-10-03"
+  },
+  {
+   "src": "avatar-m0-tap-chain",
+   "rel": "part_of",
+   "dst": "avatar-lipsync-rms-jaw"
+  },
+  {
+   "src": "avatar-m0-lip-normalised",
+   "rel": "part_of",
+   "dst": "avatar-lipsync-rms-jaw"
+  },
+  {
+   "src": "avatar-m0-lip-normalised",
+   "rel": "measured_by",
+   "dst": "avatar-m0-lip-bench-2026-10-03"
+  },
+  {
+   "src": "avatar-m0-lip-normalised",
+   "rel": "caused_by",
+   "dst": "avatar-m0-dead-ends"
+  },
+  {
+   "src": "avatar-tutor-offer-sheet-ranges",
+   "rel": "part_of",
+   "dst": "avatar-tutor-selection"
+  },
+  {
+   "src": "avatar-tutor-choice-store",
+   "rel": "part_of",
+   "dst": "avatar-tutor-selection"
+  },
+  {
+   "src": "avatar-tutor-choice-store",
+   "rel": "measured_by",
+   "dst": "avatar-m0-picker-order-2026-10-03"
+  },
+  {
+   "src": "avatar-m0-tiers-governor",
+   "rel": "part_of",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "avatar-m0-tiers-governor",
+   "rel": "caused_by",
+   "dst": "avatar-m0-dead-ends"
+  },
+  {
+   "src": "avatar-m0-dead-ends",
+   "rel": "measured_by",
+   "dst": "avatar-m0-lip-bench-2026-10-03"
+  },
+  {
+   "src": "avatar-teacher-pinned-bounded",
+   "rel": "part_of",
+   "dst": "avatar-tutor-selection"
+  },
+  {
+   "src": "avatar-teacher-pinned-bounded",
+   "rel": "constrains",
+   "dst": "avatar-tutor-offer-sheet-ranges"
+  },
+  {
+   "src": "avatar-tutor-choice-store",
+   "rel": "caused_by",
+   "dst": "avatar-m0-review-traps"
+  },
+  {
+   "src": "avatar-m0-tiers-governor",
+   "rel": "measured_by",
+   "dst": "avatar-m0-context-churn-2026-10-03"
+  },
+  {
+   "src": "avatar-m0-review-traps",
+   "rel": "measured_by",
+   "dst": "avatar-m0-context-churn-2026-10-03"
+  },
+  {
+   "src": "engines-v1-built",
+   "rel": "part_of",
+   "dst": "content-v1-engine-set"
+  },
+  {
+   "src": "content-live-tiers",
+   "rel": "constrains",
+   "dst": "engines-v1-built"
+  },
+  {
+   "src": "engines-v1-built",
+   "rel": "measured_by",
+   "dst": "engines-v1-browser-2026-10-03"
+  },
+  {
+   "src": "engines-v1-built",
+   "rel": "measured_by",
+   "dst": "engines-v1-mount-2026-10-03"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "measured_by",
+   "dst": "engines-v1-coverage-2026-10-03"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "measured_by",
+   "dst": "engines-v1-item-binding-2026-10-03"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "supersedes",
+   "dst": "rj-first-hint-engine-id"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "supersedes",
+   "dst": "rj-engine-prompt-shows-target"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "supersedes",
+   "dst": "rj-share-for-quotitive"
+  },
+  {
+   "src": "engines-in-sandbox-frame-v1",
+   "rel": "constrains",
+   "dst": "engines-v1-react-in-frame"
+  },
+  {
+   "src": "engines-v1-react-in-frame",
+   "rel": "measured_by",
+   "dst": "engines-v1-mount-2026-10-03"
+  },
+  {
+   "src": "scene-renderer-validator-ports",
+   "rel": "measured_by",
+   "dst": "scene-port-parity-2026-10-03"
+  },
+  {
+   "src": "scene-renderer-validator-ports",
+   "rel": "part_of",
+   "dst": "engines-v1-built"
+  },
+  {
+   "src": "engines-v1-catalog-binding",
+   "rel": "blocks",
+   "dst": "open-engines-v1-wiring"
+  },
+  {
+   "src": "open-engines-v1-gaps",
+   "rel": "part_of",
+   "dst": "engines-v1-built"
+  },
+  {
+   "src": "engines-v1-bind-on-child-answer",
+   "rel": "supersedes",
+   "dst": "rj-array-dims-binding"
+  },
+  {
+   "src": "engines-v1-bind-on-child-answer",
+   "rel": "supersedes",
+   "dst": "rj-parts-build-shows-numeral"
+  },
+  {
+   "src": "engines-v1-bind-on-child-answer",
+   "rel": "part_of",
+   "dst": "engines-v1-catalog-binding"
+  },
+  {
+   "src": "engines-v1-bind-on-child-answer",
+   "rel": "measured_by",
+   "dst": "engines-v1-item-binding-2026-10-03"
+  },
+  {
+   "src": "engines-v1-item-binding-2026-10-03",
+   "rel": "supersedes",
+   "dst": "rj-replay-against-own-params"
+  },
+  {
+   "src": "engines-v1-unbound-needs-item-values",
+   "rel": "measured_by",
+   "dst": "engines-v1-unbound-fallback-2026-10-03"
+  },
+  {
+   "src": "engines-v1-unbound-needs-item-values",
+   "rel": "part_of",
+   "dst": "engines-v1-catalog-binding"
+  },
+  {
+   "src": "engines-v1-module-commands",
+   "rel": "part_of",
+   "dst": "engines-v1-catalog-binding"
+  },
+  {
+   "src": "engines-v1-module-commands",
+   "rel": "blocks",
+   "dst": "open-engines-v1-wiring"
+  },
+  {
+   "src": "open-engines-v1-server-recheck",
+   "rel": "part_of",
+   "dst": "engines-v1-catalog-binding"
+  },
+  {
+   "src": "open-engines-v1-fraction-bars-predict",
+   "rel": "part_of",
+   "dst": "engines-v1-built"
+  },
+  {
+   "src": "forge-g1-live-t1-t2a",
+   "rel": "part_of",
+   "dst": "forge-live-is-g1-fill"
+  },
+  {
+   "src": "content-live-tiers",
+   "rel": "constrains",
+   "dst": "forge-g1-live-t1-t2a"
+  },
+  {
+   "src": "forge-g1-live-t1-t2a",
+   "rel": "measured_by",
+   "dst": "forge-g1-coverage-2026-10-03"
+  },
+  {
+   "src": "forge-g1-flavour-enums",
+   "rel": "measured_by",
+   "dst": "forge-g1-latency-2026-10-03"
+  },
+  {
+   "src": "forge-g1-flavour-enums",
+   "rel": "supersedes",
+   "dst": "forge-g1-model-before-gate"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "part_of",
+   "dst": "forge-qa-ladder"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "measured_by",
+   "dst": "forge-g1-gate-pass-2026-10-03"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "measured_by",
+   "dst": "forge-g1-render-2026-10-03"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "measured_by",
+   "dst": "forge-g1-strings-cleared-2026-10-03"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "measured_by",
+   "dst": "kitmath-fraction-agreement-2026-10-03"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "supersedes",
+   "dst": "forge-g1-single-tier-blocklist"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "supersedes",
+   "dst": "forge-g1-case-folded-keys"
+  },
+  {
+   "src": "content-safety-sole-gate",
+   "rel": "constrains",
+   "dst": "forge-g1-gate"
+  },
+  {
+   "src": "forge-g1-cache-layout",
+   "rel": "part_of",
+   "dst": "forge-play-delivery-csp"
+  },
+  {
+   "src": "forge-g1-cache-layout",
+   "rel": "measured_by",
+   "dst": "forge-g1-latency-2026-10-03"
+  },
+  {
+   "src": "forge-g1-serve-time-child-check",
+   "rel": "supersedes",
+   "dst": "forge-g1-child-name-in-cached-gate"
+  },
+  {
+   "src": "forge-g1-serve-time-child-check",
+   "rel": "part_of",
+   "dst": "forge-g1-gate"
+  },
+  {
+   "src": "forge-g1-turn-path",
+   "rel": "supersedes",
+   "dst": "forge-g1-learner-read-per-turn"
+  },
+  {
+   "src": "forge-g1-turn-path",
+   "rel": "measured_by",
+   "dst": "forge-g1-turn-path-2026-10-03"
+  },
+  {
+   "src": "forge-g1-turn-path",
+   "rel": "part_of",
+   "dst": "forge-g1-flavour-enums"
+  },
+  {
+   "src": "forge-g1-prefetch-planned",
+   "rel": "supersedes",
+   "dst": "forge-g1-prefetch-unplanned"
+  },
+  {
+   "src": "forge-g1-prefetch-planned",
+   "rel": "measured_by",
+   "dst": "forge-g1-prefetch-hitrate-2026-10-03"
+  },
+  {
+   "src": "forge-g1-prefetch-planned",
+   "rel": "measured_by",
+   "dst": "forge-g1-turn-path-2026-10-03"
+  },
+  {
+   "src": "forge-g1-grade-event",
+   "rel": "measured_by",
+   "dst": "forge-g1-scene-grade-agreement-2026-10-03"
+  },
+  {
+   "src": "forge-g1-grade-event",
+   "rel": "part_of",
+   "dst": "forge-g1-live-t1-t2a"
+  },
+  {
+   "src": "integration-ledger-live-path",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "integration-ledger-live-path",
+   "rel": "part_of",
+   "dst": "comprehension-facet-belief"
+  },
+  {
+   "src": "integration-ledger-cache",
+   "rel": "part_of",
+   "dst": "integration-ledger-live-path"
+  },
+  {
+   "src": "integration-episode-close-carries-misconception",
+   "rel": "part_of",
+   "dst": "integration-ledger-live-path"
+  },
+  {
+   "src": "integration-held-why-graded-off-path",
+   "rel": "part_of",
+   "dst": "comprehension-grading-closed-label"
+  },
+  {
+   "src": "integration-live-probe-subset",
+   "rel": "part_of",
+   "dst": "comprehension-probe-budget-scheduler"
+  },
+  {
+   "src": "integration-voice-tiebreak-race",
+   "rel": "constrains",
+   "dst": "comprehension-voice-zero-weight"
+  },
+  {
+   "src": "integration-engine-reteach-cooldown",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "integration-vibe-row",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "integration-voice-spoken-ask",
+   "rel": "part_of",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "integration-voice-spoken-ask",
+   "rel": "supersedes",
+   "dst": "spoken-ask-in-load-gate"
+  },
+  {
+   "src": "safety-content-filter-fails-closed",
+   "rel": "part_of",
+   "dst": "learner-safety-gate-first"
+  },
+  {
+   "src": "safety-content-filter-fails-closed",
+   "rel": "caused_by",
+   "dst": "router-s-filter-artifact"
+  },
+  {
+   "src": "safety-predicate-passive-ideation-hinglish",
+   "rel": "part_of",
+   "dst": "learner-safety-gate-first"
+  },
+  {
+   "src": "ledger-source-weight",
+   "rel": "supersedes",
+   "dst": "ledger-game-full-weight"
+  },
+  {
+   "src": "ledger-source-weight",
+   "rel": "measured_by",
+   "dst": "comp-sim-integration-2026-10-03"
+  },
+  {
+   "src": "ledger-mis-session-cap",
+   "rel": "measured_by",
+   "dst": "comp-sim-integration-2026-10-03"
+  },
+  {
+   "src": "ledger-mis-session-cap",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "hook-like-with-like",
+   "rel": "measured_by",
+   "dst": "hook-units-2026-10-03"
+  },
+  {
+   "src": "integration-ledger-live-path",
+   "rel": "measured_by",
+   "dst": "cascade-latency-integration-2026-10-03"
+  },
+  {
+   "src": "integration-ledger-live-path",
+   "rel": "measured_by",
+   "dst": "integration-gates-2026-10-03"
+  },
+  {
+   "src": "integration-learner-open-2026-10-03",
+   "rel": "blocks",
+   "dst": "learner-no-kt-backfill"
   }
  ]
 }

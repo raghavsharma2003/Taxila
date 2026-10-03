@@ -11,12 +11,15 @@ import { CascadeLink, type CascadeTransport } from "../lesson/cascadeLink.ts";
 import { defaultLinkFactory, type LinkFactory } from "../lesson/runtime.ts";
 import { useLesson, useLevel } from "../lesson/useLesson.ts";
 import { ModuleHost } from "../modules/host.tsx";
+import { TutorFace } from "../avatar/TutorFace.tsx";
+import { bandOfClass } from "../../shared/tutors.js";
 
 interface Child {
   id: string;
   first_name: string;
   class_level: number;
   language_pref: string;
+  teacher_id?: string;
 }
 interface Me {
   guardian: { id: string; email: string; name: string };
@@ -151,6 +154,8 @@ function LessonPanel({ me, onSignedOut }: { me: Me; onSignedOut: () => Promise<v
   const [text, setText] = useState("");
   const [events, setEvents] = useState<ModuleEvent[]>([]);
   const devSeq = useRef(0);
+  // avatar-m0: the 3D tutor on the dev lesson screen (AVATAR.md M0), off by default; `?face=` forces a tier.
+  const [face3d, setFace3d] = useState(() => new URLSearchParams(location.search).has("face3d"));
 
   const child = me.children.find((c) => c.id === childId);
   const ageBand = child && child.class_level <= 4 ? "6-9" : "10-15";
@@ -255,7 +260,21 @@ function LessonPanel({ me, onSignedOut }: { me: Me; onSignedOut: () => Promise<v
           <Meter label="teacher" meter={runtime.levels.teacher} />
           {state.topic && <span>topic: {state.topic.title}</span>}
           {state.teacher && <span>teacher: {state.teacher.name} ({state.teacher.voice})</span>}
+          <label>
+            <input type="checkbox" checked={face3d} onChange={(e) => setFace3d(e.target.checked)} data-testid="face3d" /> 3D face
+          </label>
         </div>
+        {face3d && (
+          <div style={{ height: 300, maxWidth: 420, borderRadius: 16, overflow: "hidden", background: "#f1e8d9" }} data-testid="tutor-face">
+            <TutorFace
+              tutorId={state.teacher?.id ?? child?.teacher_id}
+              band={bandOfClass(child?.class_level ?? 5)}
+              status={live ? state.status : null}
+              teacher={[runtime.levels.teacher]}
+              mic={runtime.levels.mic}
+            />
+          </div>
+        )}
         {state.mode === "voice" && live && (
           <div style={row}>
             <label>
@@ -356,7 +375,7 @@ function LessonPanel({ me, onSignedOut }: { me: Me; onSignedOut: () => Promise<v
           <button type="button" onClick={() => devMount("fraction-bars@1", { denominators: [4, 3], numerators: [3, 2], mode: "compare" }, "compare 3/4 and 2/3")}>
             Mount compare 3/4 vs 2/3
           </button>
-          <button type="button" data-testid="dev-mount-unknown" onClick={() => devMount("number-line@1", { min: 0, max: 10 })}>
+          <button type="button" data-testid="dev-mount-unknown" onClick={() => devMount("clock-calendar@1", { time: "3:15" })}>
             Mount unknown engine
           </button>
           <button type="button" onClick={() => devCommand((moduleId) => ({ op: "highlight", moduleId, target: "bar:0" }))}>

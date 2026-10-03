@@ -26,12 +26,25 @@ export function misconceptionEffects(ev) {
   return out;
 }
 
+/** Raw log-evidence of one effect. */
+export const misLogLR = (kind) => Math.log(kind === "hit" ? LR_HIT : LR_DISCRIMINATING_CORRECT);
+/**
+ * Σ_session log LR per (child, misconception, session) is clamped to ±log 50, as K's budget is (bktr SESSION_LOG_CAP).
+ * Uncapped, five hits in one lesson put the logit at +7.9 and recovery after a successful re-teach needed ≥ 16
+ * discriminating correct answers; capped, at most +3.9 per session (≤ 6 to resolve). Returns the applied delta.
+ */
+export const MIS_SESSION_LOG_CAP = Math.log(50);
+export function spendMis(sum, raw) {
+  const next = Math.max(-MIS_SESSION_LOG_CAP, Math.min(MIS_SESSION_LOG_CAP, sum + raw));
+  return { applied: next - sum, sum: next };
+}
+
 /** Apply one effect. `at` is the session start (no intra-session clock). A discriminating correct answer
  * on a state with no hit only lowers the logit (the ledger does not even create such a row). */
-export function updateMisconception(m, kind, at) {
+export function updateMisconception(m, kind, at, delta = misLogLR(kind)) {
   const t = new Date(at).toISOString();
-  if (kind === "hit") return { ...m, logit: m.logit + Math.log(LR_HIT), hits: m.hits + 1, lastAt: t, resolvedAt: null, checkScheduledAt: null };
-  const next = { ...m, logit: m.logit + Math.log(LR_DISCRIMINATING_CORRECT), lastAt: t };
+  if (kind === "hit") return { ...m, logit: m.logit + delta, hits: m.hits + 1, lastAt: t, resolvedAt: null, checkScheduledAt: null };
+  const next = { ...m, logit: m.logit + delta, lastAt: t };
   if (m.hits > 0 && !m.resolvedAt && misP(next) <= RESOLVE_P) {    // never resolve (or schedule) what was never seen
     next.resolvedAt = t;
     next.checkScheduledAt = new Date(new Date(at).getTime() + CHECK_DELAY_MS).toISOString();

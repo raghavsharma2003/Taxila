@@ -100,6 +100,20 @@ try {
   ]);
   ok(ev[0].n >= 1, `evidence rows written (${ev[0].n})`);
   ok(ss.length >= 1, `skill_state rows (${ss.map((x) => `${x.skill_id.split("-").pop()}:${x.status}:${x.p_known.toFixed(2)}`).join(", ")})`);
+  // The learner model on the live path: kt_evidence is the event source, and a replay of its rows (in the seq the
+  // database assigned under the advisory lock) equals the cached fold (kt_skill_state) and its 001 projection.
+  {
+    const { eventFromRow } = await import("../server/learner/model.js");
+    const { fuseEvidence, newLearnerState } = await import("../server/comprehension/fuse.js");
+    const [kt, kss] = await Promise.all([q("select * from kt_evidence where child_id = $1 order by seq", [child.id]),
+      q("select skill_id, p_l, display from kt_skill_state where child_id = $1", [child.id])]);
+    ok(kt.length >= 1 && kt.every((r) => r.session_id === s1.lessonId), `kt_evidence rows written (${kt.length}: ${[...new Set(kt.map((r) => (r.teach ? "teach" : r.cls)))].join(", ")})`);
+    const replay = fuseEvidence(newLearnerState({ childId: child.id, classLevel: 2 }), kt.map(eventFromRow), {});
+    ok(kss.length >= 1 && kss.every((r) => Math.abs(replay.ledger.skills[r.skill_id]?.pL - r.p_l) < 1e-12 && replay.ledger.skills[r.skill_id].display === r.display),
+      `replay of kt_evidence = kt_skill_state (${kss.map((r) => `${r.skill_id.split("-").pop()}:${r.display}:${r.p_l.toFixed(3)}`).join(", ")})`);
+    ok(ss.every((r) => !replay.ledger.skills[r.skill_id] || Math.abs(Math.min(0.999, Math.max(0.001, replay.ledger.skills[r.skill_id].pL)) - r.p_known) < 1e-6),
+      "skill_state is the ledger's projection (the parent corner reads the same numbers)");
+  }
   ok(ft[0].n === 0, "no format_trial rows without learning_profile consent");
   ok(rel[0].sessions === 1 && rel[0].stage === "getting_to_know", `rel_state sessions++ (${JSON.stringify(rel[0])})`);
   ok(!!les[0].ended_at && les[0].phase === "done" && !!les[0].parent_note, "lesson closed with summary and parent note");
@@ -112,7 +126,7 @@ try {
   ok(s2.instructions === undefined, "a text-lane start does not send the instructions (they carry the key)");
   let t = await A("POST", "/api/lesson/turn", { lessonId: s2.lessonId, childText: "acha didi", typed: true });
   ok(t.instructions === undefined && typeof t.teacherReply === "string", "a text-lane turn sends the reply, not the instructions");
-  await A("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: false } });
+  await A("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: false }, password: "integration-pw-1" });
   const turnsS2 = (await q("select count(*)::int n from turn where lesson_id = $1", [s2.lessonId]))[0].n;
   const refused = await A("POST", "/api/lesson/turn", { lessonId: s2.lessonId, childText: "acha", typed: true }, [403]);
   ok(refused.status === 403, "after core_tutoring is withdrawn, a turn → 403");
@@ -134,6 +148,6 @@ try {
 } catch (e) {
   ok(false, `run aborted: ${e.message}`);
 } finally {
-  if (child) await A("DELETE", "/api/children", { childId: child.id }).catch((e) => console.log(`could not delete the test child: ${e.message}`));
+  if (child) await A("DELETE", "/api/children", { childId: child.id, password: "integration-pw-1" }).catch((e) => console.log(`could not delete the test child: ${e.message}`));
   server.close();
 }

@@ -35,6 +35,12 @@ export interface LipOptions {
   shapeGain?: number;
   /** Starting voiced reference RMS before any speech is seen (full-scale float). */
   initialRef?: number;
+  /** Gate as a fraction of the voiced reference. */
+  gateFrac?: number;
+  /** Full openness at refScale × the voiced reference. */
+  refScale?: number;
+  /** Exponent on the normalised openness (1 = linear). */
+  curve?: number;
 }
 
 const RMS_N = 512;
@@ -75,6 +81,9 @@ export class LipDriver {
   private ceiling: number;
   private shapeGain: number;
   private ref: number;
+  private gateFrac: number;
+  private refScale: number;
+  private curve: number;
   private refRing: number[] = [];
   private refDirty = 0;
   private jaw = 0;
@@ -91,6 +100,11 @@ export class LipDriver {
     this.ceiling = o.jawCeiling ?? 0.85;
     this.shapeGain = o.shapeGain ?? 0.35;
     this.ref = o.initialRef ?? 0.06;
+    // Defaults chosen on evals/avatar/lip-bench.mjs (2026-10-03): {gateFrac 0.06, refScale 0.7, curve 1} keeps
+    // r(open) within 0.005 of the fixed-gain RMS arm at the bench's level while staying level-normalised.
+    this.gateFrac = o.gateFrac ?? 0.06;
+    this.refScale = o.refScale ?? 0.7;
+    this.curve = o.curve ?? 1;
   }
 
   /** The current voiced-level reference (for tests and telemetry). */
@@ -108,7 +122,7 @@ export class LipDriver {
   }
 
   private gate(): number {
-    return Math.max(0.004, this.ref * 0.12);
+    return Math.max(0.004, this.ref * this.gateFrac);
   }
 
   /** One analysis step. `buf` is the latest time-domain window (≥ 512 samples), `t` seconds. */
@@ -138,8 +152,8 @@ export class LipDriver {
     else if (this.speaking && !voiced && silenceMs >= OFFSET_MS) this.speaking = false;
 
     // Jaw: normalised openness, gentle compressive curve, one-pole.
-    const open = clamp01((rms - gate) / Math.max(1e-4, this.ref * 1.05 - gate));
-    const target = this.ceiling * Math.pow(open, 0.85);
+    const open = clamp01((rms - gate) / Math.max(1e-4, this.ref * this.refScale - gate));
+    const target = this.ceiling * Math.pow(open, this.curve);
     const a = 1 - Math.exp(-dt / this.tau);
     this.jaw += a * (target - this.jaw);
     if (this.jaw < 0.005) this.jaw = 0;
@@ -178,7 +192,10 @@ export function lipKeys(f: Pick<LipFrame, "jaw" | "wide" | "round">): Record<str
  */
 export class LipRing {
   private ring: LipFrame[] = [];
-  constructor(private readonly size = 64) {}
+  private readonly size: number;
+  constructor(size = 64) {
+    this.size = size;
+  }
   push(f: LipFrame): void {
     this.ring.push(f);
     if (this.ring.length > this.size) this.ring.shift();

@@ -20,13 +20,14 @@
 //     answered — derived from step() itself (director/state.js branchesFor), with the safety escape first,
 //     because the safeguard move only reaches the instructions one turn later.
 import { floorText, FLOOR_HEADING } from "./floor.js";
-import { spokenSafetyNumbers } from "../voice/spoken.js";
+import { spokenSafetyNumbers, toSpoken } from "../voice/spoken.js";
+import { vibeRow } from "../persona/adapter.js";
 import { briefRows, estimateTokens, BRIEF_TOKEN_CAP } from "../learner/brief.js";
 import { promptFor, optionsSpoken } from "../director/items.js";
 import * as SH from "../director/shapes.js";
 
 export const TOKEN_BUDGET = 2600;
-export const SECTION_CAPS = { character: 450, floor: 520, brief: BRIEF_TOKEN_CAP, lesson: 800, move: 260, language: 140, last: 360 };
+export const SECTION_CAPS = { character: 450, floor: 520, brief: BRIEF_TOKEN_CAP, lesson: 800, vibe: 60, move: 260, language: 140, last: 360 };
 /** Words per teacher turn by age band (bake-off: ~25 holds for 10-15; younger children get less). */
 export const TURN_WORDS = { "6-9": 18, "10-15": 25 };
 export const TURN_SHAPE_PREFIX = "TURN SHAPE";
@@ -82,8 +83,18 @@ function characterParts(c) {
  * Drop priorities (lower sheds first): brief callbacks 1, wins 2, interests 3, vibe 4, relationship 5,
  * misconceptions 6; content lines 8 (the move's, then the voice branches'), a diagnostic's choices 9.
  */
-function lessonParts({ lessonState: s, item, content = [], branches, topic, language, lane }) {
+/**
+ * The voice lane POSES an item in spoken notation (server/voice/spoken.js toSpoken: "3/4" → its reading in the
+ * child's mode × school medium × age band), because the realtime model has no lexicon and reads written notation
+ * wrongly (spoken-notation §3). The key line, the text lane, captions and every guard keep the WRITTEN form.
+ */
+const poser = (lane, language, s, ageBand) => (lane === "voice"
+  ? (t) => toSpoken(t, { mode: language, ageBand: ageBand ?? s?.ctx?.ageBand, schoolMedium: s?.ctx?.schoolMedium })
+  : (t) => t);
+
+function lessonParts({ lessonState: s, item, content = [], branches, topic, language, lane, ageBand }) {
   const voiced = lane === "voice" && !!s.moveVoiced;
+  const posed = poser(lane, language, s, ageBand);
   const parts = [
     { text: "LESSON NOW", drop: null },
     { text: `- topic: ${topic.title} (class ${topic.classLevel} ${topic.subject}) · phase ${s.phase} · turn ${s.turn} · minute ${s.minutes}`, drop: null },
@@ -91,14 +102,14 @@ function lessonParts({ lessonState: s, item, content = [], branches, topic, lang
   if (item) {
     const lvl = s.hintLevel;
     if (s.pendingWhy === item.id) {
-      parts.push({ text: `- the question they just answered RIGHT: "${promptFor(item, language)}" (their answer: ${item.answer})`, drop: null });
+      parts.push({ text: `- the question they just answered RIGHT: "${posed(promptFor(item, language))}" (their answer: ${item.answer})`, drop: null });
     } else {
       parts.push({
-        text: voiced ? `- the question on the table (you have just posed it): "${promptFor(item, language)}"`
-          : `- the question (content — pose as written, in their language): "${promptFor(item, language)}"`,
+        text: voiced ? `- the question on the table (you have just posed it): "${posed(promptFor(item, language))}"`
+          : `- the question (content — pose as written, in their language): "${posed(promptFor(item, language))}"`,
         drop: null,
       });
-      if (item.diagnostic) parts.push({ text: `- its choices (content — read them plainly, in this order): ${optionsSpoken(item, language)}`, drop: 9 });
+      if (item.diagnostic) parts.push({ text: `- its choices (content — read them plainly, in this order): ${posed(optionsSpoken(item, language))}`, drop: 9 });
       const also = item.acceptable?.length ? `; also accept: ${item.acceptable.join(", ")}` : "";
       parts.push({ text: `- key, for checking only: ${item.answer}${also}`, drop: null });
       parts.push({
@@ -149,17 +160,17 @@ function languageRule(language, ageBand) {
 const SAME_ITEM_MOVES = new Set(["hint", "reteach", "repair"]);
 
 /** One voice branch: the move's shape, and the new question it asks (pinned verbatim — it is content). */
-const renderBranch = (b) => `${b.kind}: ${b.text}${b.ask ? `; the question: "${b.ask}"` : ""}`;
+const renderBranch = (b, posed = (t) => t) => `${b.kind}: ${b.text}${b.ask ? `; the question: "${posed(b.ask)}"` : ""}`;
 
-function branchClause(branches) {
+function branchClause(branches, posed = (t) => t) {
   if (!branches) return "otherwise → nothing new; a short warm close";
   const { cond, right, wrong } = branches;
-  if (!wrong) return `whatever they say → ${renderBranch(right)}`;
+  if (!wrong) return `whatever they say → ${renderBranch(right, posed)}`;
   // Both branches asking the same next question: say it once.
   if (right.ask && right.ask === wrong.ask) {
-    return `${cond} → ${right.kind}: ${right.text}; anything else → ${wrong.kind}: ${wrong.text}; either way then the question: "${right.ask}"`;
+    return `${cond} → ${right.kind}: ${right.text}; anything else → ${wrong.kind}: ${wrong.text}; either way then the question: "${posed(right.ask)}"`;
   }
-  return `${cond} → ${renderBranch(right)}; anything else → ${renderBranch(wrong)}`;
+  return `${cond} → ${renderBranch(right, posed)}; anything else → ${renderBranch(wrong, posed)}`;
 }
 
 /**
@@ -168,7 +179,7 @@ function branchClause(branches) {
  * mid-prompt to "pose the question as written" improvised her own, and the child's answers were judged
  * against a question nobody asked). Voice lane: the check is the branch for the reply being answered.
  */
-function lastParts({ lessonState: s, move, item, branches, ageBand, language, protegeName, lane }) {
+function lastParts({ lessonState: s, move, item, branches, ageBand, language, protegeName, lane, writtenAsk = false }) {
   const n = TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"];
   const voice = lane === "voice";
   const lvl = s.hintLevel;
@@ -183,7 +194,7 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
     check = voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
     shape = "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
   } else if (voice) {
-    check = [`when they reply: ${ESCAPE_VOICE}`, STOP, branchClause(branches), keyRule].filter(Boolean).join("; ");
+    check = [`when they reply: ${ESCAPE_VOICE}`, STOP, branchClause(branches, poser(writtenAsk ? "text" : lane, language, s, ageBand)), keyRule].filter(Boolean).join("; ");
     shape = move.kind === "wrap"
       ? `at most ${n + 8} words. End with a warm goodbye, then stop.`
       : `at most ${n} words. One idea. End by handing the floor back — one question or a try-this — then stop.`;
@@ -229,11 +240,22 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } = 
     { id: "character", parts: characterParts(input.character) },
     { id: "floor", parts: [{ text: floorText(), drop: null }] },
     { id: "brief", parts: [{ text: "CHILD", drop: null }, ...briefRows(input.brief)] },
-    { id: "lesson", parts: lessonParts({ ...input, lane }) },
+    { id: "lesson", parts: lessonParts({ ...input, lane, ageBand }) },
+    // VIBE (COMPREHENSION-ENGINE.md §6.4): ONE key=value row of closed-vocabulary shapes, after LESSON NOW and before
+    // the move; it sheds before anything but the brief's callbacks/wins/interests (drop 4). Pace knobs never go here.
+    { id: "vibe", parts: (input.vibe ?? input.lessonState?.vibe) ? [{ text: vibeRow(input.vibe ?? input.lessonState.vibe), drop: 4 }] : [] },
     { id: "move", parts: moveParts(input.move, voiced) },
     { id: "language", parts: [{ text: languageRule(input.language, ageBand), drop: null }] },
     { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
   ];
+  // The voice branch's next question is posed in spoken notation when it fits the `last` cap; when the reading is
+  // longer than the room (number-heavy items, ~0.1% of kit items), that one line keeps the written form instead —
+  // the item is never dropped for it, and LESSON NOW still carries the spoken question (load gate: checkFits).
+  if (lane === "voice") {
+    const last = sections.at(-1);
+    const est = (parts) => estimateTokens(parts.map((p) => voiceSafe(p.text, input.language)).join("\n"));
+    if (est(last.parts) > cap.last) last.parts = lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name, writtenAsk: true });
+  }
   if (lane === "voice") for (const sec of sections) sec.parts = sec.parts.map((p) => ({ ...p, text: voiceSafe(p.text, input.language) }));
   const dropped = [];
   const tokensOf = (sec) => estimateTokens(sec.parts.map((p) => p.text).join("\n"));
@@ -298,10 +320,11 @@ export function checkFits(item, { cap = SECTION_CAPS.last - FIT_MARGIN } = {}) {
         { lane: "voice", move: { kind: "hint" }, lessonState: { hintLevel: 3, correction }, branches },
       ];
       for (const v of variants) {
-        let text = lastParts({ ...v, item, ageBand, language, protegeName }).map((p) => p.text).join("\n");
+        let text = lastParts({ ...v, item, ageBand, language, protegeName, writtenAsk: true }).map((p) => p.text).join("\n");
         // The voice clauses gave their helpline number to the floor (ESCAPE_VOICE); the gate still reserves its
         // bytes, so it admits exactly the items it admitted before. Admitting more exposed a real voice branch 6
         // tokens over its simulation (c9-english-ch08-t01-i10, 2026-10-02): FIT_MARGIN is not that wide.
+        // written ask: a spoken reading that does not fit falls back to the written line at compile time (above)
         if (v.lane === "voice") text = voiceSafe(text, language) + ESCAPE_NUMBER_RESERVE;
         if (estimateTokens(text) > cap) return false;
       }

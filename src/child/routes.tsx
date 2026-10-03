@@ -21,6 +21,8 @@ const Doubt = lazy(() => import("./screens/Other.tsx").then((m) => ({ default: m
 const MapScreen = lazy(() => import("./screens/Other.tsx").then((m) => ({ default: m.MapScreen })));
 const Notes = lazy(() => import("./screens/Other.tsx").then((m) => ({ default: m.Notes })));
 const Me = lazy(() => import("./screens/Other.tsx").then((m) => ({ default: m.Me })));
+// avatar-m0 mount point: the tutor picker (C1b / My teacher), lazily loaded from src/avatar.
+const TeacherPick = lazy(() => import("../avatar/picker/TeacherRoute.tsx"));
 
 const s = (el: ReactNode) => <Suspense fallback={null}>{el}</Suspense>;
 
@@ -39,6 +41,7 @@ export const childRoutes: RouteObject[] = [
       { path: "map/:skill", element: s(<MapScreen />) },
       { path: "notes", element: s(<Notes />) },
       { path: "me", element: s(<Me />) },
+      { path: "teacher", element: s(<TeacherPick />) },
     ],
   },
 ];

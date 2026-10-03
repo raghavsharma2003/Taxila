@@ -22,6 +22,25 @@ export class AzureError extends Error {
   constructor(message, status = 0, code = "") { super(message); this.status = status; this.code = code; }
 }
 
+/**
+ * The Azure content filter blocked the request or its completion. Every shape it arrives in:
+ * - HTTP 400 with error.code "content_filter" (OpenAI deployments; innererror ResponsibleAIPolicyViolation),
+ * - HTTP 400 with choices[0].finish_reason "content_filter" and no top-level error (non-OpenAI Foundry models,
+ *   context/rejected.md#router-s-filter-artifact),
+ * - HTTP 200 with finish_reason "content_filter" (a filtered completion).
+ * On a child's turn a block is itself a distress signal: callers on the safety path fail CLOSED on it.
+ */
+export const CONTENT_FILTER = "content_filter";
+export const isContentFilter = (e) => !!e && (e.code === CONTENT_FILTER || e?.cause?.code === CONTENT_FILTER);
+/** Does an Azure error/response body say the content filter fired? Exported for tests. */
+export function bodyIsContentFilter(text) {
+  let j;
+  try { j = typeof text === "string" ? JSON.parse(text) : text; } catch { return /content[_ ]filter|ResponsibleAIPolicyViolation/i.test(String(text)); }
+  const e = j?.error ?? {};
+  return e.code === CONTENT_FILTER || e.innererror?.code === "ResponsibleAIPolicyViolation" || e.code === "ResponsibleAIPolicyViolation"
+    || j?.choices?.some?.((c) => c?.finish_reason === CONTENT_FILTER) || /content management policy|content_filter/i.test(String(e.message ?? ""));
+}
+
 /** The v1 base URL (no trailing slash). Not a secret: the browser posts its SDP offer under it. */
 export function endpoint() {
   const e = (process.env.AZURE_OPENAI_ENDPOINT || "").replace(/\/+$/, "");
@@ -71,7 +90,8 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
         out = binary ? Buffer.from(await res.arrayBuffer()) : await res.json();
         usage = out?.usage;
       } else {
-        err = new AzureError(`${kind} ${deployment} HTTP ${status}: ${excerpt(await res.text())}`, status);
+        const body = await res.text();
+        err = new AzureError(`${kind} ${deployment} HTTP ${status}: ${excerpt(body)}`, status, bodyIsContentFilter(body) ? CONTENT_FILTER : "");
       }
     } catch (e) {
       err = e?.name === "AbortError"
@@ -114,6 +134,8 @@ export async function chat(deployment, messages, opts = {}) {
   const choice = j?.choices?.[0];
   const text = choice?.message?.content ?? "";
   const finishReason = choice?.finish_reason;
+  // A filtered completion is never an answer (empty or partial content): it surfaces as a content_filter error.
+  if (finishReason === CONTENT_FILTER) throw new AzureError(`chat ${deployment} completion blocked by the content filter`, 200, CONTENT_FILTER);
   if (!opts.schema) return { text, finishReason, usage: j?.usage };
   if (choice?.message?.refusal) throw new AzureError(`chat ${deployment} refused: ${String(choice.message.refusal).slice(0, 200)}`, 200, "refusal");
   if (finishReason === "length") throw new AzureError(`chat ${deployment} JSON truncated at max tokens`, 200, "truncated");

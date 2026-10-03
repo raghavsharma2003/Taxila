@@ -21,7 +21,21 @@ import * as SH from "./shapes.js";
 import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT } from "./items.js";
 import { planModule } from "./modules.js";
 import { frustrationLoop, initialAffect, nextAffect, wheelSpinning } from "../learner/affect.js";
-import { applyEvidence, newSkillState } from "../learner/bkt.js";
+import {
+  newProbeSession, openSession, recordTurn, nextProbe, markAsked, fits, bandOf, shapeById, testWeight,
+  reteachTrigger, reteachPlan, armsFromKit, newPersonaState, personaStep, personaKnobs, turnSignals,
+} from "../comprehension/index.js";
+import { skillSess } from "../comprehension/budget.js";
+
+/**
+ * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
+ * ideas: classify's why mode for the move, the blind closed-label grader for the facet). The scheduler picks among
+ * these only (schedule.js `allow`); errorspot / transfer / predict / mcq shapes need graders the live lane does not
+ * run yet (decision integration-live-probe-subset).
+ */
+export const LIVE_PROBE_SHAPES = new Set(["C03", "C06", "C09", "C10", "C12", "C14"]);
+/** Graded items on a skill after an engine re-teach before its trigger may fire again (the re-check, spec §5.4). */
+export const RETEACH_COOLDOWN = 2;
 
 export const LIMITS = {
   warmupMax: 3,            // rule 18: 2-4 retrieval items open each session
@@ -65,8 +79,14 @@ function isNovice(kit, skills) {
  *   protege: { name: string, what: string }, ageBand: "6-9"|"10-15", lang: string, interests: string[],
  *   firstMeeting: boolean, hasCallback: boolean, topicTitle: string, nextTitle?: string }, seed: number, now?: number }} a
  */
-export function initLessonState({ topicId, kit, skills = {}, history = {}, warmupItems = [], activeMisconceptionIds = [], ctx, seed, now = Date.now() }) {
+export function initLessonState({ topicId, kit, skills = {}, history = {}, warmupItems = [], activeMisconceptionIds = [], ctx, seed, now = Date.now(), openers = [], comp }) {
   const novice = isNovice(kit, skills);
+  const classLevel = ctx.classLevel ?? (ctx.ageBand === "6-9" ? 3 : 6);
+  const band = bandOf(classLevel);
+  // The probe session (COMPREHENSION-ENGINE.md §3.4): test-load budget, spacing, novelty and the mandatory triggers;
+  // openers (delayed checks due at session open) are its first pending triggers.
+  const probeSess = openSession(newProbeSession({ sessionId: ctx.sessionId ?? String(seed >>> 0), band, lessonSeed: seed >>> 0,
+    targets: kit.skills.map((sk) => sk.id), surface: { visual: true } }), openers);
   return {
     v: 1, phase: "warmup", topicId, turn: 0, minutes: 0, startedAt: now, seed: seed >>> 0, ctx,
     hintLevel: 0, itemsDone: [], skipped: [], activeItemId: undefined, pendingWhy: undefined, lastMove: undefined, lastContent: [],
@@ -86,6 +106,11 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, warmu
     moveVoiced: false,
     // Items whose key a teacher turn stated before they were posed: their answers are not evidence.
     spoiled: [],
+    // Comprehension engine (session-only): the probe session, the probe being answered, the beliefs the scheduler
+    // reads (compact; set by the route from the ledger before each step), engine re-teach bookkeeping, and the
+    // vibe persona whose knobs compile into the VIBE row. Voice/vibe never enter a belief (CE8).
+    probeSess, pendingProbe: undefined, comp: comp ?? null, reteachCool: {}, armsUsed: [], failsPostRung3: {}, lastReteach: null, parked: [],
+    persona: newPersonaState({ band, classLevel, medium: ctx.schoolMedium ?? "english" }), vibe: null, turnsSinceError: 99,
   };
 }
 
@@ -94,6 +119,26 @@ export function shouldAskWhy(s, item, skill) {
   if (["why", "teachback", "retrieval"].includes(item.kind)) return false;
   if (!skill?.generativePass) return true;
   return rand(s.seed, s.turn) < LIMITS.whyConsolidating;
+}
+
+/**
+ * The probe for the answer just given right (INTEGRATION.md §2: shouldAskWhy → nextProbe). Scoped to THIS item's
+ * skill and its pending triggers (the why is about the question just answered). A kit with no key ideas, or a state
+ * the route gave no beliefs, falls back to the rule-3 sampling (LIMITS.whyConsolidating), which a voice
+ * followUpProbe may move to "ask now" when the budget allows (CE8 (a)).
+ * @returns {null | { skillId: string, shapeId: string|null, facet: string, mandatory: boolean, reason: string, testWeight: number, family?: string, cls?: string, longForm?: boolean }}
+ */
+export function probePlanFor(s, item, kit, voice) {
+  if (["why", "teachback", "retrieval"].includes(item.kind)) return null;
+  const ideas = item.expectations ?? kit.expectations ?? [];
+  const sk = s.comp?.[item.skillId];
+  const sess = s.probeSess;
+  if (!sk || !ideas.length || !sess) {
+    const ask = shouldAskWhy(s, item, s.skills[item.skillId]) || (!!voice?.followUpProbe && (!sess || fits(sess, 1)));
+    return ask ? { skillId: item.skillId, shapeId: null, facet: "U", mandatory: false, reason: "fallback", testWeight: 1, cls: "probe.why" } : null;
+  }
+  const scoped = { ...sess, pending: sess.pending.filter((t) => t.skillId === item.skillId) };
+  return nextProbe({ [item.skillId]: sk }, scoped, { currentSkill: item.skillId, voice, skin: s.vibe?.probeSkin ?? null, allow: LIVE_PROBE_SHAPES });
 }
 
 /** "right" | "wrong" | "stuck" (don't know / just tell me) | "off" | "unclear". */
@@ -119,6 +164,12 @@ const optionChips = (item) => (item?.diagnostic && item.options.length <= 4
 
 function activate(s, item) {
   s.activeItemId = item.id; s.hintLevel = 0; s.tries = 0; s.unclear = 0; s.pendingWhy = undefined;
+  // A warm-up item on an opener skill IS that skill's delayed check (C31, callback in passing): it clears the trigger.
+  if (item.kind === "retrieval" && s.probeSess?.pending.some((t) => t.skillId === item.skillId && t.reason === "delayed_check")) {
+    const plan = { skillId: item.skillId, shapeId: "C31", facet: "D", mandatory: true, reason: "delayed_check", testWeight: testWeight(shapeById("C31")), family: "H", cls: "item.open" };
+    s.probeSess = markAsked(s.probeSess, plan, s.comp?.[item.skillId]?.belief ?? null);
+    s.pendingProbe = plan;
+  }
 }
 
 /** Content lines for one part of the worked example (content is posed; it is not persona). */
@@ -225,6 +276,8 @@ function practice(s, input, item) {
   }
   if (s.pendingWhy === item.id) return afterWhy(s, input, item);
   const v = verdict(cls);
+  const engine = engineReteach(s, input, item, v);
+  if (engine) return engine;
   if (v === "right") return afterCorrect(s, input, item);
   if (v === "wrong" || v === "stuck") return afterMiss(s, input, item);
   return unclear(s, input, item, v, () => afterMiss(s, input, item));
@@ -249,12 +302,17 @@ function afterCorrect(s, input, item) {
     if (p) return p;
   }
   if (unaided && cls?.reason === "right") return poseNext(s, input, SH.CONFIRM.whyGood);
-  if (unaided && shouldAskWhy(s, item, s.skills[item.skillId])) {
+  const probePlan = unaided ? probePlanFor(s, item, kit, input.voice) : null;
+  if (probePlan) {
     s.pendingWhy = item.id;
+    s.pendingProbe = probePlan;
+    if (probePlan.reason !== "fallback") s.probeSess = markAsked(s.probeSess, probePlan, s.comp?.[item.skillId]?.belief ?? null);
     // Only a belief this item can actually surface is offered as the wrong reason; an unrelated one
     // pulled the teacher into a different question (measured in evals/director-sim.mjs).
     const mis = (item.misconceptions ?? kit.misconceptions).find((m) => m.id === item.targetsMisconception);
-    return plan("probe", SH.why({ ageBand: s.ctx.ageBand, contrast: !!mis }), {
+    const shape = probePlan.shapeId ? shapeById(probePlan.shapeId) : null;
+    return plan("probe", shape ? SH.probe({ shape, ageBand: s.ctx.ageBand, contrast: !!mis, skin: s.vibe?.probeSkin, protege: s.ctx.protege })
+      : SH.why({ ageBand: s.ctx.ageBand, contrast: !!mis }), {
       item, probe: "P2",
       content: [`key idea (right reason): ${whyKey(kit, item.skillId) ?? item.answer}`, ...(mis ? [`wrong belief to listen for: ${mis.belief}`] : [])],
     });
@@ -288,8 +346,65 @@ function afterMiss(s, input, item) {
     s.hintLevel = Math.min(3, s.hintLevel + 1);   // a re-teach spends a rung but never reaches the assertion
     return plan("reteach", SH.reteach({ ...m.remediation, again: true }), { item, representation: m.remediation.representation });
   }
+  if (s.hintLevel >= 3) s.failsPostRung3 = { ...s.failsPostRung3, [item.skillId]: (s.failsPostRung3?.[item.skillId] ?? 0) + 1 };
   s.hintLevel = Math.min(4, s.hintLevel + 1);
-  return plan("hint", SH.hint({ level: s.hintLevel, rungShape: item.hints[s.hintLevel - 1], askedForAnswer: cls?.flags?.asksForAnswer }), { item });
+  // Voice gentlerHint (CE8 / features.js: ≥ 3 hesitation cues on a wrong answer): the rung's CONTENT is one gentler
+  // (pump instead of hint) — the hint count, the key gate and the C-outcome are unchanged. Never at the assertion.
+  const gentle = !!input.voice?.gentlerHint && s.hintLevel >= 2 && s.hintLevel < 4;
+  const shown = gentle ? s.hintLevel - 1 : s.hintLevel;
+  return plan("hint", SH.hint({ level: shown, rungShape: item.hints[shown - 1], askedForAnswer: cls?.flags?.asksForAnswer }), { item });
+}
+
+const GENERIC_REP = { manipulative: "objects they can hold or imagine moving", diagram: "a simple drawing on the whiteboard",
+  worked_steps: "a worked example, one step at a time", story: "a short everyday story", same_in_hindi: "the same idea in simple Hindi" };
+
+/**
+ * The comprehension engine's re-teach (INTEGRATION.md §2; COMPREHENSION-ENGINE.md §5): on a graded answer, the
+ * belief's trigger (a confirmed misconception, delayed fail, two fails past rung 3, wheel-spin, U low after
+ * practice) picks an arm with selectReteach, deterministic from the state. A cooldown of RETEACH_COOLDOWN graded
+ * items on the skill follows every engine re-teach (the re-check), so a trigger that still holds cannot fire again
+ * at once (rejected: reteach-without-cooldown, 21-32 re-teaches per child). Voice may only order a two-way pick.
+ * The kit's own once-per-misconception re-teach (afterMiss / trap) is unchanged.
+ */
+function engineReteach(s, input, item, v) {
+  if (!["right", "wrong", "stuck"].includes(v) || s.hintLevel >= 4) return null;
+  const k = item.skillId;
+  if ((s.reteachCool?.[k] ?? 0) > 0) { s.reteachCool = { ...s.reteachCool, [k]: s.reteachCool[k] - 1 }; return null; }
+  const sk = s.comp?.[k];
+  if (!sk?.belief) return null;
+  const trig = reteachTrigger(sk.belief, { uProbes: skillSess(s.probeSess, k).uFamilies.length, wheelSpin: sk.wheelSpin, failsPostRung3: s.failsPostRung3?.[k] ?? 0 });
+  if (!trig || (trig === "wheel_spin" && s.changedApproach.includes(k))) return null;
+  const { kit } = input;
+  const mis = sk.belief.misconception?.mId ? kit.misconceptions.find((m) => m.id === sk.belief.misconception.mId) : null;
+  const kitArms = armsFromKit(mis);
+  const d = reteachPlan({ trigger: trig, skillId: k, misId: mis?.id ?? null, kitArms, band: s.probeSess?.band, seed: String(s.seed), pL: sk.belief.pL,
+    lessonArmsUsed: s.armsUsed ?? [], failedArmsThisSession: [], hindiObserved: s.ctx.lang !== "english", safetyFired: !!s.safeguard,
+    voiceTie: !!(input.voice?.gentlerHint || input.voice?.slowerPace), now: new Date(input.now ?? 0).toISOString() });
+  if (!d || d.move === "none") return null;
+  s.reteachCool = { ...s.reteachCool, [k]: RETEACH_COOLDOWN };
+  s.lastReteach = { ...d, turn: s.turn };
+  if (d.armId) s.armsUsed = [...(s.armsUsed ?? []), d.armId];
+  if (d.move === "park") {
+    // Seam: the Conductor schedules a spaced re-teach (CONDUCTOR.md); the lesson moves on without a verdict.
+    s.parked = [...(s.parked ?? []), k];
+    s.skipped.push(item.id);
+    return poseNext(s, input, "leave this one for another day; no verdict on it");
+  }
+  if (d.move === "prereq_descent") {
+    s.changedApproach.push(k);
+    s.hintLevel = Math.min(3, s.hintLevel + 1);
+    const we = kit.workedExample;
+    return plan("reteach", SH.changeApproach(), { item, skillId: k, content: we ? workedContent(we, 1, 1) : [] });
+  }
+  const arm = kitArms.find((a) => a.id === d.armId);
+  const representation = arm?.representationId && arm.primary ? arm.representationId : GENERIC_REP[d.representation] ?? d.representation ?? "a different picture of the same idea";
+  const moveShape = arm?.shape ?? (d.move === "recap" ? "recap the way that worked before, in short" : "show it, then let them try one step");
+  if (v === "right") {
+    s.itemsDone.push(item.id); s.practiced += 1; s.activeItemId = undefined;
+    return plan("reteach", SH.reteach({ representation, moveShape, again: false }), { skillId: k, representation });
+  }
+  s.hintLevel = Math.min(3, s.hintLevel + 1);
+  return plan("reteach", SH.reteach({ representation, moveShape, again: true }), { item, skillId: k, representation });
 }
 
 /** Unclear transcript or off-topic: re-ask (no evidence either way); after a few, `giveUp`. */
@@ -302,6 +417,8 @@ function unclear(s, input, item, v, giveUp) {
 
 function enterTeachback(s, prefix) {
   s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
+  // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
+  s.pendingProbe = { skillId: s.introduced[0] ?? null, shapeId: "C01", facet: "U", mandatory: true, reason: "lesson_teachback", testWeight: testWeight(shapeById("C01")), family: "A", cls: "probe.teachback", longForm: true };
   return plan("teachback", join(prefix, SH.teachback({ protege: s.ctx.protege })), { probe: "P1", format: "F7" });
 }
 
@@ -404,8 +521,41 @@ export function step(prev, input) {
   if (input.event === "turn") {
     s.affect = nextAffect(s.affect, { read: input.cls?.flags ?? {}, outcome: input.cls?.outcome, itemId: s.activeItemId, answer: input.answer });
   }
+  if (input.comp) s.comp = input.comp;
   const active = findItem(s, input.kit, s.activeItemId);
   const reacting = input.event === "module" && !input.cls;
+  const childTurn = input.event === "turn" || (input.event === "module" && !!input.cls);
+  const asked = s.pendingProbe;
+  if (childTurn && s.probeSess) {
+    // Every child turn spends its test weight (budget.js): the answer to a probe at the probe's weight, a plain
+    // item at 1 (0.25 once the window is near its cap: the covert C21 role-play form), teaching talk at 0.
+    s.probeSess = asked
+      ? recordTurn(s.probeSess, { kind: "probe", weight: asked.testWeight, shapeId: asked.shapeId ?? undefined, skillId: asked.skillId ?? undefined,
+        facet: asked.facet, family: asked.family, cls: asked.cls, longForm: asked.longForm, mandatory: asked.mandatory })
+      : active ? recordTurn(s.probeSess, { kind: "item", weight: fits(s.probeSess, 1) ? 1 : 0.25, skillId: active.skillId })
+        : recordTurn(s.probeSess, { kind: "teach", weight: 0 });
+    s.probeSess = { ...s.probeSess, engagement: frustrationLoop(s.affect) ? "strained" : "ok", safetyFired: !!(s.safeguard || input.cls?.flags?.distress) };
+    s.pendingProbe = undefined;
+  }
+  if (input.event === "turn" && s.persona) {
+    const v = verdict(input.cls);
+    s.turnsSinceError = v === "wrong" ? 0 : (s.turnsSinceError ?? 99) + 1;
+    // Vibe signals (persona/signals.js): what the child said and did, plus the voice PACE signals only (slowerPace,
+    // onset z on a think question). Pace knobs, never a belief (CE8).
+    s.persona = personaStep(s.persona, turnSignals({ text: input.text ?? input.answer ?? "", bargeIn: !!input.bargeIn,
+      afterError: s.lastMove?.kind === "hint", retried: v !== "unclear", onsetZ: input.voiceZ?.onsetMs ?? null,
+      slowerPace: !!input.voice?.slowerPace, thinkQuestion: !!s.pendingWhy }), { minute: s.minutes });
+  }
+  // A scheduler trigger to verify a misconception (noteOutcome) uses the kit's spoken diagnostic for it, through
+  // the same verify path a voiced belief takes (poseNext / upcomingItem read s.verify).
+  if (s.phase === "practice" && !s.verify && s.probeSess) {
+    const t = s.probeSess.pending.find((x) => x.reason === "verify_misconception" && x.kitRefs?.[0]
+      && !s.itemsDone.includes(`diag:${x.kitRefs[0]}`) && !s.skipped.includes(`diag:${x.kitRefs[0]}`) && findItem(s, input.kit, `diag:${x.kitRefs[0]}`));
+    if (t) {
+      s.verify = t.kitRefs[0];
+      s.probeSess = markAsked(s.probeSess, { skillId: t.skillId, shapeId: null, facet: "M", mandatory: true, reason: t.reason }, s.comp?.[t.skillId]?.belief ?? null);
+    }
+  }
   const p = reacting ? moduleReaction(s, input, active) : decide(s, input, active);
   if (!p) {
     return { state: s, move: s.lastMove, moduleCommands: [], ui: s.lastUi ?? { status: "your_turn" }, end: s.phase === "done", hold: true, ...describe(s, input.kit) };
@@ -419,6 +569,10 @@ export function step(prev, input) {
   if (p.format) move.format = p.format;
   s.lastMove = move;
   s.moveVoiced = false;
+  if (s.persona) {
+    s.vibe = personaKnobs(s.persona, { reteach: move.kind === "reteach", strained: frustrationLoop(s.affect),
+      transferProbe: s.pendingProbe?.facet === "T", turnsSinceError: s.turnsSinceError });
+  }
   // A reaction keeps the step's content (e.g. the worked example the teacher is in the middle of) and the
   // activity on screen.
   if (!reacting || p.content) s.lastContent = p.content ?? [];
@@ -452,14 +606,18 @@ export function upcomingItem(s, kit) {
   return verifying ?? queued ?? selectNext(s, kit);
 }
 
-/** Fold evidence rows into the state's skill snapshot and outcome history (BKT with forgetting, pure). */
-export function foldEvidence(s, evidence, kit, now) {
+/**
+ * Fold evidence rows into the state's skill SNAPSHOT counters and outcome history, for the voice branches'
+ * synthetic replies (pure). The knowledge estimate is the ledger's (server/learner/live.js) and is never
+ * re-derived here: only the counters step() reads move (attempts, unaided correct, a generative pass).
+ */
+const GENERATIVE = new Set(["P1", "P2", "P3", "P4", "P13", "P14"]);
+export function foldEvidence(s, evidence) {
   for (const ev of evidence) {
-    const snap = s.skills[ev.skillId];
-    const before = snap
-      ? { skillId: ev.skillId, ...snap, delayedPass: false, lastSeen: new Date(now).toISOString() }
-      : newSkillState(ev.skillId, kit.topicType, now);
-    s.skills[ev.skillId] = snapshotSkill(applyEvidence(before, ev, { topicType: kit.topicType, now, lessonStartedAt: s.startedAt }));
+    const snap = s.skills[ev.skillId] ?? { pKnown: 0.1, status: "introduced", attempts: 0, correctUnaided: 0, generativePass: false };
+    const unaided = ev.outcome === "correct" && ev.hintsUsed === 0;
+    s.skills[ev.skillId] = { ...snap, status: snap.status === "unseen" || snap.status === "introduced" ? "practising" : snap.status, attempts: snap.attempts + 1,
+      correctUnaided: snap.correctUnaided + (unaided ? 1 : 0), generativePass: snap.generativePass || (unaided && GENERATIVE.has(ev.probe)) };
     s.history[ev.skillId] = [...(s.history[ev.skillId] ?? []), ev.outcome].slice(-10);
   }
 }
@@ -490,7 +648,7 @@ export function branchesFor(s, kit) {
     const right = outcome === "correct";
     const cls = { outcome, confidence: 1, source: "branch", flags: NO_FLAGS,
       ...(teachingBack ? { covered: right ? kit.expectations : [], missing: right ? [] : kit.expectations } : {}) };
-    foldEvidence(pre, evidenceFrom(pre, cls, kit), kit, now);
+    foldEvidence(pre, evidenceFrom(pre, cls, kit));
     return step(pre, { event: "turn", kit, cls, now });
   };
   const render = (r) => {

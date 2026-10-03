@@ -1,0 +1,542 @@
+{
+ "date": "2026-10-03",
+ "seeds": 30,
+ "personas": 24,
+ "concepts": 6,
+ "sessions": 5,
+ "method": "code-played children from hidden truth bits + behaviour params (personas.mjs), separate generative model from the engine's emission tables; real engine code; author-set response probabilities => gates mechanics, not efficacy",
+ "label": "simulated · gains=author · scope=compliance · not evidence of learning",
+ "families": {
+  "bkt2": {
+   "policies": {
+    "engine": {
+     "n_child_concepts": 4320,
+     "CE_M1_macro_acc_final": 0.637,
+     "CE_M1_macro_acc_after3": 0.574,
+     "CE_M2_understood_detected_final": 0.542,
+     "CE_M2_median_sessions_to_detect_understood": 2,
+     "CE_M2_understood_never_detected": 0.458,
+     "CE_M3_false_mastery": 0.023,
+     "CE_M3_false_mastery_shallow": 0.001,
+     "CE_M4_missed_understanding_verbal_gap_pp": 16.074,
+     "probes_per_concept_session": 4.39,
+     "CE_M5_load_per10_mean": 2.255,
+     "CE_M5_session_weight_over_cap": 0,
+     "CE_M5_lexicon_hits": 0,
+     "CE_M5_repeat_questions": 0,
+     "reteaches_per_child": 10.838,
+     "woven_per_child": 2.081,
+     "callbacks_per_child": 5.65,
+     "probe_shape": {
+      "concept_sessions_probed": 11631,
+      "p50": 3,
+      "p95": 5,
+      "max": 7,
+      "mandatory_share": 0.463,
+      "u_probes_over_3": 0.012,
+      "by_reason": {
+       "voi": 0.537,
+       "coincident_why": 0.187,
+       "verify_first_correct": 0.145,
+       "delayed_check": 0.107,
+       "partial_followup": 0.02,
+       "verify_misconception": 0.004
+      }
+     },
+     "by_type": {
+      "not_yet": {
+       "n": 358,
+       "acc_final": 0.785,
+       "acc_after3": 0.626,
+       "dist_final": {
+        "not_yet": 0.785,
+        "shallow": 0.212,
+        "fragile": 0.003
+       }
+      },
+      "shallow": {
+       "n": 1406,
+       "acc_final": 0.772,
+       "acc_after3": 0.815,
+       "dist_final": {
+        "not_yet": 0.233,
+        "shallow": 0.734,
+        "fragile": 0.033,
+        "understood": 0.001
+       }
+      },
+      "fragile_bound": {
+       "n": 757,
+       "acc_final": 0.376,
+       "acc_after3": 0.453,
+       "dist_final": {
+        "not_yet": 0.324,
+        "shallow": 0.225,
+        "fragile": 0.376,
+        "understood": 0.075
+       }
+      },
+      "fragile_forgets": {
+       "n": 390,
+       "acc_final": 0.708,
+       "acc_after3": 0.526,
+       "dist_final": {
+        "not_yet": 0.015,
+        "shallow": 0.256,
+        "fragile": 0.708,
+        "understood": 0.021
+       }
+      },
+      "understood": {
+       "n": 1409,
+       "acc_final": 0.542,
+       "acc_after3": 0.448,
+       "dist_final": {
+        "not_yet": 0.001,
+        "shallow": 0.218,
+        "fragile": 0.239,
+        "understood": 0.542
+       }
+      }
+     },
+     "by_archetype": {
+      "understander": {
+       "acc_final": 0.725,
+       "false_mastery": null,
+       "certified": 0.725
+      },
+      "correct_wrong_reasons": {
+       "acc_final": 0.35,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "fluent_shallow": {
+       "acc_final": 0.811,
+       "false_mastery": 0.011,
+       "certified": 0.011
+      },
+      "shy_understands": {
+       "acc_final": 0.45,
+       "false_mastery": null,
+       "certified": 0.45
+      },
+      "guesser": {
+       "acc_final": 0.633,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "not_yet": {
+       "acc_final": 0.761,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "slow_learner": {
+       "acc_final": 0.55,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "forgetter": {
+       "acc_final": 0.708,
+       "false_mastery": 0.022,
+       "certified": 0.022
+      },
+      "bound_instance": {
+       "acc_final": 0.617,
+       "false_mastery": 0.183,
+       "certified": 0.244
+      },
+      "deferential_understander": {
+       "acc_final": 0.272,
+       "false_mastery": null,
+       "certified": 0.272
+      },
+      "confident_misconception": {
+       "acc_final": 0.367,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "gamer": {
+       "acc_final": 0.856,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "answer_seeker": {
+       "acc_final": 0.783,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "mixed": {
+       "acc_final": 0.697,
+       "false_mastery": 0.036,
+       "certified": 0.389
+      },
+      "late_bloomer": {
+       "acc_final": 0.744,
+       "false_mastery": 0.012,
+       "certified": 0.022
+      },
+      "hindi_medium_understander": {
+       "acc_final": 0.628,
+       "false_mastery": null,
+       "certified": 0.628
+      }
+     }
+    }
+   }
+  },
+  "cfrag": {
+   "policies": {
+    "engine": {
+     "n_child_concepts": 4320,
+     "CE_M1_macro_acc_final": 0.47,
+     "CE_M1_macro_acc_after3": 0.446,
+     "CE_M2_understood_detected_final": 0.251,
+     "CE_M2_median_sessions_to_detect_understood": 3,
+     "CE_M2_understood_never_detected": 0.749,
+     "CE_M3_false_mastery": 0.04,
+     "CE_M3_false_mastery_shallow": 0.03,
+     "CE_M4_missed_understanding_verbal_gap_pp": 14.949,
+     "probes_per_concept_session": 4.566,
+     "CE_M5_load_per10_mean": 2.235,
+     "CE_M5_session_weight_over_cap": 0,
+     "CE_M5_lexicon_hits": 0,
+     "CE_M5_repeat_questions": 0,
+     "reteaches_per_child": 11.139,
+     "woven_per_child": 2.169,
+     "callbacks_per_child": 6.81,
+     "probe_shape": {
+      "concept_sessions_probed": 12153,
+      "p50": 3,
+      "p95": 5,
+      "max": 8,
+      "mandatory_share": 0.447,
+      "u_probes_over_3": 0.016,
+      "by_reason": {
+       "voi": 0.553,
+       "coincident_why": 0.153,
+       "verify_first_correct": 0.146,
+       "delayed_check": 0.124,
+       "partial_followup": 0.017,
+       "verify_misconception": 0.006
+      }
+     },
+     "by_type": {
+      "not_yet": {
+       "n": 862,
+       "acc_final": 0.463,
+       "acc_after3": 0.428,
+       "dist_final": {
+        "not_yet": 0.463,
+        "shallow": 0.452,
+        "fragile": 0.082,
+        "understood": 0.002
+       }
+      },
+      "shallow": {
+       "n": 1213,
+       "acc_final": 0.58,
+       "acc_after3": 0.675,
+       "dist_final": {
+        "not_yet": 0.275,
+        "shallow": 0.541,
+        "fragile": 0.154,
+        "understood": 0.03
+       }
+      },
+      "fragile_bound": {
+       "n": 467,
+       "acc_final": 0.495,
+       "acc_after3": 0.493,
+       "dist_final": {
+        "not_yet": 0.101,
+        "shallow": 0.296,
+        "fragile": 0.495,
+        "understood": 0.109
+       }
+      },
+      "fragile_forgets": {
+       "n": 390,
+       "acc_final": 0.562,
+       "acc_after3": 0.421,
+       "dist_final": {
+        "not_yet": 0.021,
+        "shallow": 0.349,
+        "fragile": 0.562,
+        "understood": 0.069
+       }
+      },
+      "understood": {
+       "n": 1388,
+       "acc_final": 0.251,
+       "acc_after3": 0.214,
+       "dist_final": {
+        "not_yet": 0.036,
+        "shallow": 0.38,
+        "fragile": 0.334,
+        "understood": 0.251
+       }
+      }
+     },
+     "by_archetype": {
+      "understander": {
+       "acc_final": 0.367,
+       "false_mastery": null,
+       "certified": 0.367
+      },
+      "correct_wrong_reasons": {
+       "acc_final": 0.336,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "fluent_shallow": {
+       "acc_final": 0.597,
+       "false_mastery": 0.061,
+       "certified": 0.061
+      },
+      "shy_understands": {
+       "acc_final": 0.197,
+       "false_mastery": null,
+       "certified": 0.197
+      },
+      "guesser": {
+       "acc_final": 0.322,
+       "false_mastery": 0.003,
+       "certified": 0.003
+      },
+      "not_yet": {
+       "acc_final": 0.494,
+       "false_mastery": 0.006,
+       "certified": 0.006
+      },
+      "slow_learner": {
+       "acc_final": 0.417,
+       "false_mastery": 0.006,
+       "certified": 0.006
+      },
+      "forgetter": {
+       "acc_final": 0.558,
+       "false_mastery": 0.064,
+       "certified": 0.064
+      },
+      "bound_instance": {
+       "acc_final": 0.539,
+       "false_mastery": 0.147,
+       "certified": 0.142
+      },
+      "deferential_understander": {
+       "acc_final": 0.156,
+       "false_mastery": null,
+       "certified": 0.156
+      },
+      "confident_misconception": {
+       "acc_final": 0.683,
+       "false_mastery": 0,
+       "certified": 0
+      },
+      "gamer": {
+       "acc_final": 0.756,
+       "false_mastery": 0.045,
+       "certified": 0.044
+      },
+      "answer_seeker": {
+       "acc_final": 0.722,
+       "false_mastery": 0.011,
+       "certified": 0.011
+      },
+      "mixed": {
+       "acc_final": 0.472,
+       "false_mastery": 0.051,
+       "certified": 0.194
+      },
+      "late_bloomer": {
+       "acc_final": 0.283,
+       "false_mastery": 0.019,
+       "certified": 0.028
+      },
+      "hindi_medium_understander": {
+       "acc_final": 0.272,
+       "false_mastery": null,
+       "certified": 0.272
+      }
+     }
+    }
+   }
+  }
+ },
+ "policies": {
+  "engine": {
+   "n_child_concepts": 4320,
+   "CE_M1_macro_acc_final": 0.637,
+   "CE_M1_macro_acc_after3": 0.574,
+   "CE_M2_understood_detected_final": 0.542,
+   "CE_M2_median_sessions_to_detect_understood": 2,
+   "CE_M2_understood_never_detected": 0.458,
+   "CE_M3_false_mastery": 0.023,
+   "CE_M3_false_mastery_shallow": 0.001,
+   "CE_M4_missed_understanding_verbal_gap_pp": 16.074,
+   "probes_per_concept_session": 4.39,
+   "CE_M5_load_per10_mean": 2.255,
+   "CE_M5_session_weight_over_cap": 0,
+   "CE_M5_lexicon_hits": 0,
+   "CE_M5_repeat_questions": 0,
+   "reteaches_per_child": 10.838,
+   "woven_per_child": 2.081,
+   "callbacks_per_child": 5.65,
+   "probe_shape": {
+    "concept_sessions_probed": 11631,
+    "p50": 3,
+    "p95": 5,
+    "max": 7,
+    "mandatory_share": 0.463,
+    "u_probes_over_3": 0.012,
+    "by_reason": {
+     "voi": 0.537,
+     "coincident_why": 0.187,
+     "verify_first_correct": 0.145,
+     "delayed_check": 0.107,
+     "partial_followup": 0.02,
+     "verify_misconception": 0.004
+    }
+   },
+   "by_type": {
+    "not_yet": {
+     "n": 358,
+     "acc_final": 0.785,
+     "acc_after3": 0.626,
+     "dist_final": {
+      "not_yet": 0.785,
+      "shallow": 0.212,
+      "fragile": 0.003
+     }
+    },
+    "shallow": {
+     "n": 1406,
+     "acc_final": 0.772,
+     "acc_after3": 0.815,
+     "dist_final": {
+      "not_yet": 0.233,
+      "shallow": 0.734,
+      "fragile": 0.033,
+      "understood": 0.001
+     }
+    },
+    "fragile_bound": {
+     "n": 757,
+     "acc_final": 0.376,
+     "acc_after3": 0.453,
+     "dist_final": {
+      "not_yet": 0.324,
+      "shallow": 0.225,
+      "fragile": 0.376,
+      "understood": 0.075
+     }
+    },
+    "fragile_forgets": {
+     "n": 390,
+     "acc_final": 0.708,
+     "acc_after3": 0.526,
+     "dist_final": {
+      "not_yet": 0.015,
+      "shallow": 0.256,
+      "fragile": 0.708,
+      "understood": 0.021
+     }
+    },
+    "understood": {
+     "n": 1409,
+     "acc_final": 0.542,
+     "acc_after3": 0.448,
+     "dist_final": {
+      "not_yet": 0.001,
+      "shallow": 0.218,
+      "fragile": 0.239,
+      "understood": 0.542
+     }
+    }
+   },
+   "by_archetype": {
+    "understander": {
+     "acc_final": 0.725,
+     "false_mastery": null,
+     "certified": 0.725
+    },
+    "correct_wrong_reasons": {
+     "acc_final": 0.35,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "fluent_shallow": {
+     "acc_final": 0.811,
+     "false_mastery": 0.011,
+     "certified": 0.011
+    },
+    "shy_understands": {
+     "acc_final": 0.45,
+     "false_mastery": null,
+     "certified": 0.45
+    },
+    "guesser": {
+     "acc_final": 0.633,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "not_yet": {
+     "acc_final": 0.761,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "slow_learner": {
+     "acc_final": 0.55,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "forgetter": {
+     "acc_final": 0.708,
+     "false_mastery": 0.022,
+     "certified": 0.022
+    },
+    "bound_instance": {
+     "acc_final": 0.617,
+     "false_mastery": 0.183,
+     "certified": 0.244
+    },
+    "deferential_understander": {
+     "acc_final": 0.272,
+     "false_mastery": null,
+     "certified": 0.272
+    },
+    "confident_misconception": {
+     "acc_final": 0.367,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "gamer": {
+     "acc_final": 0.856,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "answer_seeker": {
+     "acc_final": 0.783,
+     "false_mastery": 0,
+     "certified": 0
+    },
+    "mixed": {
+     "acc_final": 0.697,
+     "false_mastery": 0.036,
+     "certified": 0.389
+    },
+    "late_bloomer": {
+     "acc_final": 0.744,
+     "false_mastery": 0.012,
+     "certified": 0.022
+    },
+    "hindi_medium_understander": {
+     "acc_final": 0.628,
+     "false_mastery": null,
+     "certified": 0.628
+    }
+   }
+  }
+ },
+ "ms": 63186
+}

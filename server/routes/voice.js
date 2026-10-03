@@ -9,7 +9,7 @@ import { one } from "../db.js";
 import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
 import { AzureError, endpoint, mintRealtimeSecret } from "../azure.js";
 import { bad, need, notFound, forbidden, unauthorized, HttpError } from "../http.js";
-import { teacherFor } from "../compiler/characters/index.js";
+import { teacherFor, teacherForLesson } from "../compiler/characters/index.js";
 import { allowSpeech, MAX_TTS_CHARS, DEFAULT_VOICE } from "./tts.js";
 import { ageBandOf, sttPrompt, sttSession } from "../voice/stt.js";
 import { PCM_RATE, speakChunk, speechStyle, transcribeClip } from "../voice/speech.js";
@@ -72,9 +72,11 @@ function limiter(max) {
  * speakChunk() speaks with it is rendered by ttsInput(), so numerals and helplines reach the voice spoken.
  * @param {any} child  child row
  * @param {string} [ageBand]  the lesson's band (state.ctx.ageBand) when the caller has it; else from class_level
+ * @param {string} [pinnedTeacherId]  the lesson's teacher (state.ctx.teacherId); else the child's current pick
  */
-export function styleForChild(child, ageBand) {
-  const teacher = teacherFor(child);
+export function styleForChild(child, ageBand, pinnedTeacherId) {
+  // The lesson's pinned teacher (state.ctx.teacherId) wins, so a tutor switch never changes an open lesson's voice.
+  const teacher = pinnedTeacherId ? teacherForLesson(child, pinnedTeacherId) : teacherFor(child);
   return speechStyle(teacher, VOICES.has(teacher.voice) ? teacher.voice : DEFAULT_VOICE, spokenOptsForChild(child, ageBand));
 }
 
@@ -170,7 +172,7 @@ async function ttsStream(req, res, body) {
     return streamParts(res, { parts: warm.parts, jobs: warm.jobs, startUpTo: (i) => warm.startUpTo(i), abort: warm.abort, t0, setupMs: Math.round(performance.now() - t0), prewarmed: Math.round(performance.now() - warm.at) });
   }
   // Driven from the session, so an expired session is a 401 before anything about the turn is revealed.
-  const row = await one(`select s.guardian_id as session_guardian, t.text as turn_text, t.seq as turn_seq, c.*
+  const row = await one(`select s.guardian_id as session_guardian, t.text as turn_text, t.seq as turn_seq, l.state->'ctx'->>'teacherId' as lesson_teacher, c.*
       from (select $3::text as h) k
       left join auth_session s on s.token_hash = k.h and s.expires_at > now()
       left join lesson l on l.id = $1
@@ -181,11 +183,11 @@ async function ttsStream(req, res, body) {
   if (row.guardian_id !== row.session_guardian) throw forbidden("child not found for this account");
   const guardian = { id: row.session_guardian };
   if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
-  const { turn_text: turnText, session_guardian: _sg, turn_seq: _seq, ...child } = row;
+  const { turn_text: turnText, session_guardian: _sg, turn_seq: _seq, lesson_teacher: lessonTeacher, ...child } = row;
   const text = String(turnText ?? "").trim();
   if (!text) throw notFound("no teacher turn to speak");
   if (text.length > MAX_TTS_CHARS) throw bad(`teacher turn is longer than ${MAX_TTS_CHARS} characters`);
-  const style = styleForChild(child);
+  const style = styleForChild(child, undefined, lessonTeacher);
   const parts = splitSentences(text);
 
   const abort = new AbortController();

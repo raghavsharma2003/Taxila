@@ -21,6 +21,8 @@ import { topicStatus } from "../content/next-topic.js";
 import { AzureError, tts } from "../azure.js";
 import { allowSpeech, DEFAULT_VOICE, MAX_TTS_CHARS } from "./tts.js";
 import { MIN_DELAY_MS } from "../learner/bkt.js";
+import { loadLive } from "../learner/live.js";
+import { beliefFor, conceptCard } from "../comprehension/index.js";
 
 export const PIN_RE = /^\d{4,6}$/;
 export const PIN_MAX_TRIES = 5;
@@ -499,12 +501,13 @@ async function evidence(req, res) {
   const { child } = await requireParentChild(req, sp.get("childId"));
   const skill = sp.get("skill");
   if (!skill || skill.length > 120) throw bad("invalid skill");
-  const [state, rows, dcs] = await Promise.all([
+  const [state, rows, dcs, live] = await Promise.all([
     one("select * from skill_state where child_id = $1 and skill_id = $2", [child.id, skill]),
     q(`select e.id, e.at, e.probe, e.outcome, e.misconception_id, e.hints_used, e.lesson_id, t.text as child_text, t.speaker
          from evidence e left join turn t on t.id = e.turn_id
         where e.child_id = $1 and e.skill_id = $2 order by e.at desc limit 40`, [child.id, skill]),
     delayedCheckMap(child.id, [skill]),
+    loadLive(child).catch(() => null),
   ]);
   const beliefs = new Map();
   for (const r of rows) {
@@ -518,12 +521,31 @@ async function evidence(req, res) {
     skill: { id: skill, title: (await skillTitle(skill)) ?? skill, outcomes: topic?.outcomes ?? [], topic: topic ? { id: topic.id, title: topic.title, chapter: topic.chapter.title } : null },
     state: state ? { ...parentState(state, dcs.get(skill)), nextReview: state.next_review, attempts: state.attempts, correctUnaided: state.correct_unaided,
       generativePass: state.generative_pass, delayedPass: state.delayed_pass } : { ...parentState(null), nextReview: null },
+    // "How we know" from the comprehension engine (COMPREHENSION-ENGINE.md §7): evidence rows and chips, never a
+    // verdict or a state name; conceptCard throws on a banned word, and a card that throws is not shown.
+    comprehension: await comprehensionCard(child, live, skill),
     rows: rows.map((r) => ({
       id: String(r.id), at: r.at, kind: PROBE_KIND[r.probe] ?? "practice", probe: r.probe, outcome: r.outcome, hintsUsed: r.hints_used,
       lessonId: r.lesson_id, words: r.speaker === "child" ? quote(r.child_text) : null,
       misconception: r.misconception_id ? beliefs.get(r.misconception_id) ?? null : null,
     })),
   });
+}
+
+const CARD_LANG = { english: "en", hinglish: "hinglish", hindi: "hi" };
+/** The concept card for one skill, or null (no evidence yet, or a row the lexicon gate refused). k7 stays false. */
+async function comprehensionCard(child, live, skill) {
+  if (!live) return null;
+  const b = beliefFor(skill, { ...live.state, now: new Date().toISOString() });
+  if (!b) return null;
+  let mis = null;
+  if (b.misconception?.mId) { try { mis = (await misconceptionById(b.misconception.mId))?.belief ?? null; } catch { mis = null; } }
+  try {
+    return conceptCard(b, { concept: (await skillTitle(skill)) ?? skill, belief: mis ?? undefined, lang: CARD_LANG[child.language_pref] ?? "en", k7: false });
+  } catch (e) {
+    console.warn(`[parent] concept card withheld for ${skill}: ${e.message}`);
+    return null;
+  }
 }
 
 /** GET /api/parent/lessons?childId= → reverse-chronological lesson list (§6.6). */

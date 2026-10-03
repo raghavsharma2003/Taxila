@@ -3,5 +3,6 @@
 import { createRoot } from "react-dom/client";
 import { FrameApp } from "./bootstrap.tsx";
 import "./frame.css";
+import "./kit/kit.css";
 
 createRoot(document.getElementById("root")!).render(<FrameApp />);

@@ -69,6 +69,21 @@ export function weaveStmts(child, q) {
   ];
 }
 
+/**
+ * Enqueue ONE skill that just reached learned_today (weave.enqueue's entry), leaving every other open entry as it
+ * is: the live turn has not loaded the queue, so it must not replace it (weaveStmts would close the others).
+ * Idempotent while an entry for (child, skill, kind) is open (the partial unique index).
+ */
+export function weaveEnqueueStmt(child, e) {
+  const mode = gate(child);
+  return {
+    text: `insert into weave_queue (child_id, skill_id, kind, anchor_at, earliest_at, due_at, topics_since, host_candidates, host, status, legal_mode_at_write)
+      values ($1,$2,$3,$4,$5,$6,0,$7,null,'queued',$8)
+      on conflict (child_id, skill_id, kind) where status in ('queued','hosted') do nothing`,
+    params: [child.id, e.skillId, e.kind ?? "woven", e.anchorAt, e.earliestAt, e.dueAt, e.hostCandidates ?? [], mode],
+  };
+}
+
 /** Population posterior update (no child id). */
 export const armPosteriorStmt = (armId, cluster, reward) => ({
   text: `insert into arm_posteriors (arm_id, cluster, a, b, n) values ($1,$2,1+$3::double precision,2-$3::double precision,1)

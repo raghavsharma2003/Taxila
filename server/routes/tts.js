@@ -7,7 +7,7 @@ import { one } from "../db.js";
 import { requireChild } from "../auth.js";
 import { AzureError, tts } from "../azure.js";
 import { bad, need, notFound, HttpError } from "../http.js";
-import { teacherFor } from "../compiler/characters/index.js";
+import { teacherForLesson } from "../compiler/characters/index.js";
 import { toSpoken, spokenOptsForChild } from "../voice/spoken.js";
 
 /** Teacher replies are a few sentences; anything longer is a bug upstream, not a reply. */
@@ -36,7 +36,7 @@ export async function speak(req, res, body) {
   const { lessonId, seq } = need(body, "lessonId", "seq");
   if (!/^[0-9a-f-]{36}$/i.test(String(lessonId))) throw bad("invalid lessonId");
   if (!Number.isInteger(seq) || seq < 1) throw bad("invalid seq");
-  const lesson = await one("select child_id from lesson where id = $1", [lessonId]);
+  const lesson = await one("select child_id, state->'ctx'->>'teacherId' as teacher_id from lesson where id = $1", [lessonId]);
   if (!lesson) throw notFound("lesson not found");
   const { guardian, child } = await requireChild(req, lesson.child_id);
   if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
@@ -44,7 +44,9 @@ export async function speak(req, res, body) {
   const text = turn?.text?.trim();
   if (!text) throw notFound("no teacher turn to speak");
   if (text.length > MAX_TTS_CHARS) throw bad(`teacher turn is longer than ${MAX_TTS_CHARS} characters`);
-  const { voice } = teacherFor(child);
+  // The lesson's own teacher (pinned at start), never the child's CURRENT pick: a switch between turns of an
+  // open lesson must not change the voice under the same persona and face.
+  const { voice } = teacherForLesson(child, lesson.teacher_id);
   let audio;
   try {
     // No delivery `instructions`: the teacher's voice is chosen by blind ear, not by an unmeasured prompt.

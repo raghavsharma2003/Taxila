@@ -1,6 +1,7 @@
 // VENDORED COPY of docs/research/content/genui-scene-dsl.mjs (scene@1 validator v1.3, 2026-10-02) for server/forge.
 // The Docker image ships server/ but not docs/, so the live G1 gate needs its own copy. The content workstream owns
-// the DSL: change it there first, then re-copy (tests/forge-scene.test.mjs pins the version string).
+// the DSL: change it there first, then re-copy. tests/forge-g1.test.mjs diffs this file against the docs source
+// (ignoring these 3 header lines and the --emit guard below), so a docs-side change fails the test until re-copied.
 // scene@1 — Taxila's T2 scene DSL: reference implementation for genui-reliability.md (2026-10-02).
 // Single source of truth: the zod schema below. `node genui-scene-dsl.mjs --emit` writes the JSON Schema
 // (genui-scene-dsl.schema.json) and the strict wire schema used for Azure structured outputs.

@@ -76,6 +76,18 @@ export interface EvidenceEvent {
   /** A misconception-graded why/teach-back updates the misconception layer ('mis', default) OR the skill LR ('skill'), never both. */
   misRoute?: "mis" | "skill";
   paramsVersion?: string;
+  // ── comprehension-engine contract additions (COMPREHENSION-ENGINE.md §1.4; kt_evidence columns from 007) ──
+  /** Evidence source: K is tempered ×0.5 for game, ×0.75 for module (kt/bktr.js SOURCE_WEIGHT); U/T by facets.js W_SRC. */
+  via?: "dialogue" | "game" | "module" | "callback" | "weave";
+  ebo?: string;
+  /** The probe shape (C01-C36) that elicited the answer. */
+  shapeId?: string;
+  weaveHost?: string;
+  coincident?: boolean;
+  unfamiliarContext?: boolean;
+  deferenceDiscount?: boolean;
+  /** E6: a positive "llm" verdict moves U/T only when its quoted span was checked in code (fails closed when absent). */
+  spanOk?: boolean;
 }
 
 export type Display = "unseen" | "introduced" | "practising" | "learned_today" | "mastered" | "durable";

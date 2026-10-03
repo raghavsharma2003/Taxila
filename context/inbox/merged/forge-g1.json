@@ -1,0 +1,274 @@
+{
+ "nodes": [
+  {
+   "id": "forge-g1-live-t1-t2a",
+   "kind": "decision",
+   "title": "Until reviewed tgk@1 library cores exist, Forge G1 serves T1 engine fills (fraction-bars@1) and T2a scene@1 template fills (choice-card@1, sequence-steps@1) derived in code from the verified kit item, personalised by skin/band/language/error-replay order; scene fills are gated and cached but not mounted until a frame scene@1 renderer ships (FORGE_SCENE_RENDERER=1)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-flavour-enums",
+   "kind": "decision",
+   "title": "The only model in G1 is one taxila-fast (effort none, strict schema) flavour pick of skin, title-row id and decor sprite inside closed enums, made only when the caller's budget leaves >= 500 ms after a 1.5 s reserve: the turn path (needByMs 2000) never calls it and ships the code pick, which a background full-budget pick upgrades in the cache for the next request; prefetch (10 s) gets the model pick up front. The gate runs first on the code pick, so a doomed activity costs no model call, and a model pick that fails the gate falls back to the code pick",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-gate",
+   "kind": "decision",
+   "title": "G1 gate = trusted code over data, child-free: Q0 schema (engine param table pinned to the EngineDef; scene@1 validator, no autofix allowed) + size <= 56 KiB; Q4 solver; Q5 truth re-derived from the payload alone vs the kit (KitMath for fractions, exact kit option text for diagnostics, case/punctuation-preserving for English); leak (director revealsAnswer + any key form in a non-question string); Q8 strings in kit strings + pre-cleared table, tiered blocklist, PII. The child's first name is checked at serve time on NON-kit strings only (childNameClash), never inside the cached / dead-key verdict",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-cache-layout",
+   "kind": "decision",
+   "title": "G1 fills are cached by a child-free identity key (versions of forge/gate/prompt/model/kit + item + activity + skin set + lang + band; g1@2 since the review fixes): memory LRU -> Neon asset_cache kind g1_fill (grade table + gradeEvent binding, private) -> Blob taxilaforge/forge/g1/<sha256>.json (render payload only, immutable). First writer wins except that a model flavour pick replaces a code pick (same truth); results are structuredClone copies; gaps are demand rows (kind forge_gap, per hashed child, capped at 200 children) until the forge_job queue lands",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-latency-2026-10-03",
+   "kind": "measurement",
+   "title": "Forge G1 requestFill, PREFETCH configuration (needByMs 10 000, learner passed in; NOT the turn path), live Azure + Neon + Blob, n=30 real kit items (10 maths / 10 science+EVS / 10 English, c4-c7), re-run after the review fixes: cold p50 1094 ms / p95 1558 / max 2129 (flavour model p50 1040 / p95 1360, gate p50 5 / max 26); Neon hit p50 46 / p95 450; memory hit p50 0 / max 1; repeated gap 45 ms. Builder run before fixes: 1180 / 1542",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-gate-pass-2026-10-03",
+   "kind": "measurement",
+   "title": "G1 gate on the same n=30 (re-run): 29/30 shipped (96.7%), 29/29 first try with the model's flavour (0 model picks rejected); the 1 reject is build.option_too_long (a science diagnostic option > 80 chars, the scene@1 string cap). Mutant battery: 14/14 operators caught by their target check, 0 false alarms on clean fills (tests/forge-g1.test.mjs)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-render-2026-10-03",
+   "kind": "measurement",
+   "title": "Headless render + solution replay of every T1 fill in the production frame (dist/modules.html, meta CSP, opaque-origin iframe, Chromium 1194), re-run: 5/5 boot, labels match params, solution reaches goal_met, compare wrong-then-right verdicts match the gate; boot 112-149 ms (dev container, no throttle). Scene fills NOT render-checked (the scene@1 renderer landed mid-review; render-check.mjs covers fraction-bars@1 only)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-coverage-2026-10-03",
+   "kind": "measurement",
+   "title": "G1 coverage over every item + diagnostic of the c4-c7 maths/science/EVS/English kits (4,944): an activity derives for maths 446/2289 (19.5%), science+EVS 349/1764 (19.8%), English 229/891 (25.7%); mountable TODAY (fraction-bars@1 only) maths 30/2289 (1.3%), science 0, English 0",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-strings-cleared-2026-10-03",
+   "kind": "measurement",
+   "title": "Azure AI Content Safety (text:analyze 2024-09-01, FourSeverityLevels) over all 84 strings-table rows (27 hooks + 1 template row, x en/hi/hi_latn): max severity 0, 0 errors",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "kitmath-fraction-agreement-2026-10-03",
+   "kind": "measurement",
+   "title": "KitMath recompute vs kit answers on every value-keyed fraction item of c4-c7 maths: 23 items, 0 disagreements; misconception rules reproduce the kit diagnostic distractor 2/2 where the diagnostic poses a fraction task",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-single-tier-blocklist",
+   "kind": "rejection",
+   "title": "One blocklist over every child-visible string flagged 11 verified kit strings (science: 'farmers kill snakes', 'fat and protein'); replaced by SEVERE (all strings) + MILD (non-kit strings only)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-case-folded-keys",
+   "kind": "rejection",
+   "title": "Comparing English keys after lower-casing and stripping apostrophes made 2 grammar diagnostics (capital letters, apostrophe plural) look like two right options; keys now compare exactly (diagnostics) or case/punctuation-preserving (contrast items)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-model-before-gate",
+   "kind": "rejection",
+   "title": "Calling the flavour model before checking that the activity can pass the gate spent ~1 s per doomed item on every request (memory-hit pass p95 987 ms, n=27); replaced by a code-pick pre-gate plus a dead-key memo (repeated gap 45 ms)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-serve-time-child-check",
+   "kind": "decision",
+   "title": "The child-name PII check is child-DEPENDENT, so it runs at serve time on every hit and fresh fill, over non-kit strings only (kits name characters constantly; verified kit text is exempt); a clash skips that activity for that child only and writes no dead key and no gap row",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-turn-path",
+   "kind": "decision",
+   "title": "Call site 2 (turn path) is requestFill(..., needByMs: 2000) with no learner argument: the learner comes from a per-lesson memo (15 min, primed by the lesson-start prefetch or primeLearner), the flavour model is never on the request path, and a cold fill ships the code pick and is upgraded to a model pick in the background",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-grade-event",
+   "kind": "decision",
+   "title": "One pure gradeEvent(grade, moduleEvent) in server/forge/grade.js maps G1 module events to evidence: the produced value is recovered from the event's choice index / option id / order through a server-side binding built from the gated payload and compared with the GradeEntry key; the module's own correct/misc flags are never read",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-prefetch-planned",
+   "kind": "decision",
+   "title": "Lesson-start prefetch walks error replays, active-misconception diagnostics, then the Director's buildPracticeQueue order, and PLANS each candidate (pure, ms) before it takes one of the max=6 slots; prefetch writes no forge_gap rows",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-turn-path-2026-10-03",
+   "kind": "measurement",
+   "title": "Turn path as wired (needByMs 2000, no learner arg, DATABASE_URL set, neon-http from the US dev container), 8 topics / 23 queue turns per arm (7 English + 1 maths topic, scene path included): cold p50 62 / p95 448 / max 575 ms (first turn of a lesson p50 109, learner read p50 52 / max 493; later turns p50 55 / max 100, learner 0); Neon warm p50 49 / p95 99; after an awaited prefetch p50 0 / p95 1 / max 47, 23/23 memory hits. Model calls on the request path 0/69; 23/23 cold code picks upgraded to model picks in the background",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-prefetch-hitrate-2026-10-03",
+   "kind": "measurement",
+   "title": "Prefetch hit rate on real lesson queues (all 303 c4-c7 maths/science/EVS/English topics, buildPracticeQueue, plan-level, offline): bars only (today) old 13/24 (54%) vs planned 21/24 (88%); with scene@1 old 39/375 (10%) vs planned 372/375 (99%); slots spent on gaps old 1805 / 1779 of 1818 vs 0",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-scene-grade-agreement-2026-10-03",
+   "kind": "measurement",
+   "title": "gradeEvent vs the scene@1 renderer's own probeOutcome (src/modules/frame/scene/runtime.ts) over every G1 scene fill of c4-c7 maths/science/EVS/English: 964 fills, 2587 verdicts (every choice option incl. trap -> kit misconception, right and reversed order), 0 disagreements",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-child-name-in-cached-gate",
+   "kind": "rejection",
+   "title": "The child's first name inside the child-free gate verdict (over kit strings too, memoised in deadKeys) disabled an activity for every child once one child shared a kit character's name (c5-english-ch02-t01-i06, Chintu then Riya) and served a fill cached for one child to another without the check",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-prefetch-unplanned",
+   "kind": "rejection",
+   "title": "Prefetching the first 6 non-teach-back kit items without planning them spent 1805 of 1818 slots on gaps (bars only) and warmed 54% of the mountable queue items (10% with scenes), writing a forge_gap row per gap",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "forge-g1-learner-read-per-turn",
+   "kind": "rejection",
+   "title": "Reading the learner view (4 Neon selects, 1.5 s timeout) before the cache on every requestFill without a learner put a DB round trip on every module turn including memory hits; the published 0 ms / 47 ms hit numbers were measured with the learner passed in and did not describe the wired path",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "forge-g1-live-t1-t2a",
+   "rel": "part_of",
+   "dst": "forge-live-is-g1-fill"
+  },
+  {
+   "src": "content-live-tiers",
+   "rel": "constrains",
+   "dst": "forge-g1-live-t1-t2a"
+  },
+  {
+   "src": "forge-g1-live-t1-t2a",
+   "rel": "measured_by",
+   "dst": "forge-g1-coverage-2026-10-03"
+  },
+  {
+   "src": "forge-g1-flavour-enums",
+   "rel": "measured_by",
+   "dst": "forge-g1-latency-2026-10-03"
+  },
+  {
+   "src": "forge-g1-flavour-enums",
+   "rel": "supersedes",
+   "dst": "forge-g1-model-before-gate"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "part_of",
+   "dst": "forge-qa-ladder"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "measured_by",
+   "dst": "forge-g1-gate-pass-2026-10-03"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "measured_by",
+   "dst": "forge-g1-render-2026-10-03"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "measured_by",
+   "dst": "forge-g1-strings-cleared-2026-10-03"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "measured_by",
+   "dst": "kitmath-fraction-agreement-2026-10-03"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "supersedes",
+   "dst": "forge-g1-single-tier-blocklist"
+  },
+  {
+   "src": "forge-g1-gate",
+   "rel": "supersedes",
+   "dst": "forge-g1-case-folded-keys"
+  },
+  {
+   "src": "content-safety-sole-gate",
+   "rel": "constrains",
+   "dst": "forge-g1-gate"
+  },
+  {
+   "src": "forge-g1-cache-layout",
+   "rel": "part_of",
+   "dst": "forge-play-delivery-csp"
+  },
+  {
+   "src": "forge-g1-cache-layout",
+   "rel": "measured_by",
+   "dst": "forge-g1-latency-2026-10-03"
+  },
+  {
+   "src": "forge-g1-serve-time-child-check",
+   "rel": "supersedes",
+   "dst": "forge-g1-child-name-in-cached-gate"
+  },
+  {
+   "src": "forge-g1-serve-time-child-check",
+   "rel": "part_of",
+   "dst": "forge-g1-gate"
+  },
+  {
+   "src": "forge-g1-turn-path",
+   "rel": "supersedes",
+   "dst": "forge-g1-learner-read-per-turn"
+  },
+  {
+   "src": "forge-g1-turn-path",
+   "rel": "measured_by",
+   "dst": "forge-g1-turn-path-2026-10-03"
+  },
+  {
+   "src": "forge-g1-turn-path",
+   "rel": "part_of",
+   "dst": "forge-g1-flavour-enums"
+  },
+  {
+   "src": "forge-g1-prefetch-planned",
+   "rel": "supersedes",
+   "dst": "forge-g1-prefetch-unplanned"
+  },
+  {
+   "src": "forge-g1-prefetch-planned",
+   "rel": "measured_by",
+   "dst": "forge-g1-prefetch-hitrate-2026-10-03"
+  },
+  {
+   "src": "forge-g1-prefetch-planned",
+   "rel": "measured_by",
+   "dst": "forge-g1-turn-path-2026-10-03"
+  },
+  {
+   "src": "forge-g1-grade-event",
+   "rel": "measured_by",
+   "dst": "forge-g1-scene-grade-agreement-2026-10-03"
+  },
+  {
+   "src": "forge-g1-grade-event",
+   "rel": "part_of",
+   "dst": "forge-g1-live-t1-t2a"
+  }
+ ],
+ "md": {
+  "decisions": "## forge-g1-live-t1-t2a\n**Forge G1 (2026-10-03) ships before any library core: `server/forge/` fills a kit item as a T1 engine (fraction-bars@1 params) or a T2a scene@1 template (`choice-card@1` from a diagnostic or a two-way contrast item, `sequence-steps@1` from a lettered order item or a 3-6 word English answer sentence). Every truth-bearing field (operands, target, options, the correct id, step order, traps with kit misconception ids) is derived by code from the verified kit; personalisation is the child's skin (closed InterestId from their interests ∩ the kit's interestContexts), band, language, and prefetch order (recent wrong items first, then diagnostics of active misconceptions). The Director calls `requestFill({lessonId, childId, item, move})`; a gap is a normal answer.** Scene fills are gated and cached but NOT mounted until the frame has a scene@1 renderer (`FORGE_SCENE_RENDERER=1`); today only maths fraction items mount (30/2289 c4-c7 maths items + diagnostics).\n- Rationale: FACTORY §2.3a's live path is a G1 fill of a reviewed tgk@1 core, and no core, kit or archetype exists yet; `content-live-tiers` says the live path is data for tested code, routed by deterministic server code. T1/T2a are the tested code we have.\n- Reverse if: the first reviewed `numberline-jump` core (MP4) passes MP5 — then G1 fills it first and T1/T2a become its fallbacks (the planner already ranks by renderer availability); or blind-rated fills show the interest skin adds nothing over the generic skin (drop the flavour call).\n\n## forge-g1-flavour-enums\n**One `taxila-fast` call per cold fill (effort none, strict json_schema, retries 0, ≤ 3.5 s): skin, title-row id and decor sprite, each an enum of pre-cleared rows. The gate runs first on the deterministic code pick; only a viable activity gets the model call; a model pick that fails the gate ships the code pick. The call is made only when the caller's budget leaves ≥ 500 ms after a 1.5 s reserve: at the turn path's needByMs 2000 it is never made (`flavour.error = \"no_time\"`), the code pick ships, and a background full-budget pick replaces it in the cache for the next request (a model pick may replace a code pick; nothing else overwrites).** Measured (prefetch configuration, needByMs 10 000) n=30: model p50 1040 / p95 1360 ms, 29/29 picks passed the gate. Turn path: 0/69 request-path model calls; 23/23 cold code picks upgraded in the background.\n- Rationale: FACTORY §1.1 G1 \"optional ≤ 3 s taxila-fast flavour pick inside enums\" + §5.1 Q8 for G1 \"strings-table ids only\"; t1-effort-none. Free text from a model never reaches a child on the live path. The upgrade exists because the fill key excludes the flavour: without it the first (code) pick written by a turn would have been permanent.\n- Reverse if: a blind rating (n ≥ 30 fills, 2 raters) finds the model's pick no better than the code pick (drop the call and the upgrade); or the same child sees a title change on a re-mount of one item within a lesson and a parent/child panel calls it confusing (pin the first-served body per lesson).\n\n## forge-g1-gate\n**The G1 gate is trusted code: Q0 schema (fraction-bars param table pinned by test to the EngineDef in `fractionBars.tsx`; scene@1 through the vendored validator with autofix treated as a failure, because shipped bytes must be the gated bytes) and ≤ 56 KiB; Q4 solver (bars: parts-for-target integer and not pre-solved; scenes: DSL solver S4); Q5 truth RE-DERIVED from the payload alone and compared with the kit (KitMath exact rationals; diagnostics by exact option text; English contrast items case- and punctuation-preserving); leak (the director's `revealsAnswer` plus: any key form in a non-question string is a leak, even one the question names); Q8 every visible string ∈ kit strings ∪ strings table ∪ template constants, SEVERE blocklist on all strings, MILD only on non-kit strings, PII patterns. The verdict is child-free (it is cached and memoised as a dead key); the child's first name is checked separately, see forge-g1-serve-time-child-check. Q2 render is sampled async per FACTORY §5.1 (`server/forge/render-check.mjs`, Playwright, solution + one wrong path), not on the request path.**\n- Rationale: FACTORY §5.1 G1 column, QA R15 (\"G1 skips the solver\" fixed), `content-safety-sole-gate` (Content Safety does not cover Hindi, so the live gate is membership; Content Safety clears the table offline: 81 rows, max severity 0).\n- Reverse if: the mutant battery (tests/forge-g1.test.mjs, 14 operators) misses a class in a future change (add the check), or live telemetry shows an item answered wrong by ≥ 70% of children with mastery ≥ 0.8 (n ≥ 10) — quarantine the fill and re-run truth (FACTORY §5.6).\n\n## forge-g1-cache-layout\n**Fill identity is child-free: sha256 over canonical JSON of {g1@1, g1-gate@1, g1-flavour@1, DEPLOY.fast, kit hash, topic, item, renderer, template, sorted skin set, lang, band}. Memory LRU (2,000) → Neon `asset_cache` kind `g1_fill` (body holds the GradeTable and misconception map; never sent to the client) → Blob `taxilaforge/forge/g1/<sha256(payload)>.json` (render payload only, `If-None-Match: *`, immutable 1-year cache). Writes run after the response; first writer wins except that a model flavour pick replaces a code pick (`on conflict ... where body.flavour.by = 'code' and excluded.by = 'model'`); `requestFill` hands out structuredClone copies (the cached body is shared by every child); a gap writes `asset_cache` kind `forge_gap` with demand counted per hashed child, capped at 200 children per row (demand saturates there). Identity version g1@2 since the review fixes (the body now carries the gradeEvent binding).**\n- Rationale: FACTORY §6.3 (fill per child in Neon, never in Blob — what goes to Blob here is child-free), inherited \"identity in cache keys\"; no new migration while other workstreams own 008.\n- Reverse if: the forge_job queue migration (G2 milestone, FACTORY §2.4) lands — move gaps to forge_job(kind g1.domain_widen / catalogue); or Neon hit p95 (453 ms here over neon-http from the dev container) stays > 300 ms on the pg pool in production (add a per-lesson prefetch into memory, which `prefetchLessonFills` already does).\n\n## forge-g1-serve-time-child-check\n**The child-name PII check is not part of the gate's cached verdict. `childNameClash(fill, item, kit, firstName)` runs on every served fill (memory hit, Neon hit and fresh build) over the fill's NON-kit child-visible strings only (title rows, template constants); a clash skips that activity for that child (next fallback, else a gap) and writes no dead key and no forge_gap row.**\n- Rationale: kits name characters constantly (c4-c7: Chintu 154, Ravi 123, Riya 104, Meena 89, Asha 69 occurrences); verified kit text is child-free by construction. The name check exists for text G1 adds, and anything child-dependent must never enter child-free state (the fill cache, the dead-key memo, the catalogue).\n- Reverse if: G1 ever adds generated free text to a fill (G2+ cores with model-written lines) — then the name check (and Q8 as a whole) must also run on that text at build time, still outside the child-free key.\n\n## forge-g1-turn-path\n**Call site 2 is `requestFill({ lessonId, childId, kit, item, move, needByMs: TURN_NEED_BY_MS /* 2000 */ })`, no learner argument. The learner comes from a per-lesson memo (child × topic, 15 min; failures are never memoised) that the lesson-start `prefetchLessonFills` loads, or that the caller seeds with `primeLearner(childId, topicId, view)`; on a memo miss the read is bounded by min(1.5 s, budget − 400 ms) and falls back to the default profile.** Measured: learner read on later turns 0 ms (15/15 per arm); first turn of a lesson without prefetch p50 52 / max 493 ms.\n- Rationale: the learner view is 4 Neon reads and it determines the fill key (skins, band, language), so it cannot follow the cache; a lesson's class/language/interests do not change mid-lesson. Recent-wrong order matters only to the prefetch, which reads fresh.\n- Reverse if: the turn path's first-turn p95 on the production pg pool from India exceeds 300 ms (make lesson.js prime the memo from the child row it already loads), or interests become editable mid-lesson.\n\n## forge-g1-grade-event\n**`gradeEvent(grade, moduleEvent)` (server/forge/grade.js, pure) is the only mapping from a G1 module event to evidence. fraction-bars@1 shade: `goal_met` with this fill's goal → correct (shade has no wrong commit). Compare: `answer` → the server binding's fraction for `choice` (the client's `fractions` echo is ignored), judged by KitMath against key / distractors; its `goal_met` is ignored. scene@1: `answer` with `kind: \"sc.commit\"` → `vars[binding.var]` (choice-card) or `order[binding.orderNode]` (sequence-steps); a trap option maps to its kit misconception id; the renderer's `correct` and `misc` are claims and never read; its `goal_met` is ignored. A wrong moduleId, probe or shape → null (not evidence).**\n- Rationale: the reviewer found the event → key mapping unspecified, which is exactly where a forged correct:true would get in; one tested function removes the integrator's choice.\n- Reverse if: a renderer's commit payload changes shape (the agreement test against src/modules/frame/scene/runtime.ts fails), or classify gains a generic module re-grader that subsumes this.\n\n## forge-g1-prefetch-planned\n**`prefetchLessonFills` loads the learner snapshot once, then walks error replays, active-misconception diagnostics, then `practiceOrder(kit)` (the Director's `buildPracticeQueue`, then the rest of the kit), and runs `plan()` (pure, ms) on each candidate before it takes one of the `max` (6) slots. Prefetch writes no forge_gap rows (demand counts only items a lesson actually reaches).**\n- Rationale: only ~20% of items can become an activity (1.3% of maths with bars only); unplanned slots went to gaps.\n- Reverse if: the Director's item order stops being `buildPracticeQueue` (re-point `practiceOrder`), or plan-level hit rate stops predicting real hits (B3 of `forge-g1-turn-path-2026-10-03` drops below 90% memory hits).\n",
+  "measurements": "## forge-g1-latency-2026-10-03\n**Configuration caveat (review, 2026-10-03): needByMs 10 000 with the learner passed in — the PREFETCH configuration, not the turn path; the turn path is `forge-g1-turn-path-2026-10-03`. Re-run after the review fixes (same command, 2026-10-03T01:54Z): cold p50 1094 / p95 1558 / max 2129 ms; flavour p50 1040 / p95 1360; Neon hit p50 46 / p95 450; memory hit p50 0 / max 1; repeated gap 45; learner-view probe (random UUIDs, empty results) 562 (cold connection), 50-54 ms. The builder's run below is kept for provenance.**\n**Forge G1 `requestFill` end to end, live Azure (taxila-fast), Neon asset_cache and Blob (`evals/forge-g1.mjs --n-per-subject 10 --seed 3 --fresh`, 2026-10-03T00:47Z, dev container in the US build region over the agent proxy; no India RTT).**\nMethod: 30 real kit items with a derivable activity, stratified 10 maths (5 T1 fraction items in classes 4-6, 5 diagnostics) / 10 science+EVS (classes 4-7) / 10 English (classes 4-7); synthetic learner profile per subject (no child row); renderers = fraction-bars@1 + scene@1 so the scene path is exercised; three passes: cold (asset_cache g1_fill rows dropped first), Neon hit (memory cleared), memory hit.\n| pass | n | p50 | p95 | max |\n|---|---|---|---|---|\n| cold (all) | 30 | 1180 ms | 1542 | 1594 |\n| cold maths / science / English | 10 / 10 / 10 | 1055 / 1193 / 1063 | 1594 / 1317 / 1542 | |\n| Neon asset_cache hit | 29 | 47 | 453 | 576 |\n| memory hit | 29 | 0 | 0 | 1 |\n| repeated gap (dead-key memo) | 2 | 45 | 47 | |\nFlavour call p50 1126 / p95 1489 ms (29/29 model, 0 timeouts); gate p50 5 ms, max 28 ms; learner-view read (4 parallel selects, neon-http) 47-512 ms, first call 512 ms (cold connection). Target ≤ 10 s p95: met with 6.5× headroom; the flavour call is 95% of cold time.\n\n## forge-g1-gate-pass-2026-10-03\n**Same run: 29/30 fills shipped (96.7%); 29/29 shipped on the first try with the model's flavour pick.** The one reject: `diag:c7-science-ch02-t01-m2`, `build.option_too_long` (an option > 80 characters, the scene@1 L10n cap). Templates shipped: choice-card@1 23, fraction-bars@1 5, sequence-steps@1 1. Caveat: the 30 were drawn from items that HAVE a derivable activity; across all items see forge-g1-coverage. Gate mutants (tests/forge-g1.test.mjs, 2026-10-03): 14/14 operators caught by their target check (bars target off by one, compare question swapped, unknown param, 13 parts, starts solved, choice key moved, invented trap misconception, sequence starts solved, key order shuffled, uncleared title, child name, decor outside skin, title names the answer, payload > 56 KiB), 0 false alarms on the clean set (real items from 6 topics).\n\n## forge-g1-render-2026-10-03\n**Re-run after the review: 5/5 pass, boot 112-149 ms. Scene fills are not render-checked: the scene@1 renderer (`src/modules/frame/scene/`) landed in the frame registry during the review and render-check.mjs drives fraction-bars@1 only.** **Every T1 fill of the run (n=5) booted in the production frame (`dist/modules.html`, its meta CSP, `sandbox=\"allow-scripts\"` iframe, fresh iframe per mount, Chromium 1194 headless): 5/5 pass — bar count and `n of d parts shaded` labels equal the params, the solution replay by pointer reaches `goal_met` with goal `g1:<itemId>`, compare fills give wrong=false then right=true (engine verdicts = gate key), no console errors, no off-origin requests, one `ready`.** Boot 140-168 ms (no CPU throttle; not a phone number).\n\n## forge-g1-coverage-2026-10-03\n**Every item and diagnostic in the c4-c7 maths, science, EVS and English kits (4,944), through `activitiesFor` (2026-10-03):** an activity derives for maths 446/2289 (19.5%), science+EVS 349/1764 (19.8%), English 229/891 (25.7%) — mostly diagnostics as choice cards. Mountable today with only fraction-bars@1 in the frame: maths 30 (1.3%), science 0, English 0. Of 140 c4-c7 maths items with a '/' in the prompt, 24 parse as a KitMath task (add/sub/compare/equivalence); the rest are fraction-of-quantity, number-line placement, ordering of three, mixed numbers and explanations.\n\n## forge-g1-strings-cleared-2026-10-03\n**Re-run after the review: 84 rows (the 81 hook rows plus the 3 `TEMPLATE_STRINGS` \"Check\" rows, which the first clearance missed), max severity 0, 0 errors.** **Azure AI Content Safety text:analyze (api 2024-09-01, FourSeverityLevels, same AIServices resource as AOAI) over all 81 strings-table rows: max severity 0 in all four categories, 0 errors.** ~780 ms per call (n=2 probe). Hindi is outside the harm models' tested languages (`content-safety-sole-gate`), so this clears English and romanised rows only by Microsoft's own statement; the Devanagari rows were reviewed as table entries in code review.\n\n## kitmath-fraction-agreement-2026-10-03\n**KitMath (exact rationals) recompute of every value-keyed fraction item in c4-c7 maths: 23 items, 0 disagreements with the kit `answer`/`acceptable`.** Misconception rules (add-across, change-only-den, bigger-denominator/whole-number bias, add-same/one-side) reproduce their kit diagnostic's distractor 2/2 where the diagnostic poses a fraction task (`tests/forge-g1.test.mjs`). FACTORY's census said every fraction topic is blind-unverified; for the 23 computable items the kit keys are right.\n\n## forge-g1-turn-path-2026-10-03\n**The turn path exactly as call site 2 wires it: `requestFill({ lessonId, childId, kit, item, move: \"practice\", needByMs: 2000 })`, no learner argument, DATABASE_URL set (neon-http driver, US dev container over the agent proxy; no India RTT; the production pg pool not measured). `evals/forge-g1-turn.mjs --topics 8 --seed 5`, 2026-10-03, `evals/results/forge-g1-turn-2026-10-03.json`.** Method: 8 topics drawn (seed 5) from topics with ≥ 2 mountable queue items when scene@1 is mountable (7 English, 1 maths: the sample is scene-heavy because bars-only topics are few), walking each topic's Director practice queue in order (23 turns per arm); child ids are random UUIDs with no child row (the 4 learner selects still run; the profile falls back to defaults); renderers fraction-bars@1 + scene@1.\n| arm | n | p50 | p95 | max | cache | learner read |\n|---|---|---|---|---|---|---|\n| B1 cold (nothing warmed) | 23 | 62 ms | 448 | 575 | 23 miss | first turn p50 52 / max 493; later 0 |\n| B1 first turn of a lesson | 8 | 109 | 575 | 575 | | |\n| B1 later turns | 15 | 55 | 100 | 100 | | 0 |\n| B2 Neon warm (new process, new child) | 23 | 49 | 99 | 100 | 23 db | first turn p50 49 / max 52 |\n| B3 after an awaited lesson-start prefetch | 23 | 0 | 1 | 47 | 23 memory | 0 |\nPrefetch itself (awaited here; fire-and-forget in production): p50 1275 / max 2955 ms per lesson (model picks included). Model calls on the request path: 0/69. B1 shipped 23/23 code picks (`no_time`); by B2 all 23 had been upgraded to model picks by the background upgrade.\n\n## forge-g1-prefetch-hitrate-2026-10-03\n**Plan-level prefetch hit rate on real lesson item sequences (`evals/forge-g1-turn.mjs` part A, offline, 2026-10-03): all 303 c4-c7 maths/science/EVS/English topics; the items a lesson reaches = the Director's `buildPracticeQueue` (≤ 12 per topic, 3,632 queue items); hit rate = mountable queue items warmed by a max-6 prefetch / mountable queue items.**\n| renderers | mountable queue items | old (first 6 kit items, unplanned) | planned (queue order) | slots on gaps old / new |\n|---|---|---|---|---|\n| fraction-bars@1 (today) | 24 (6 topics) | 13 (54%) | 21 (88%) | 1805 / 0 of 1818 |\n| + scene@1 | 375 (303 topics) | 39 (10%) | 372 (99%) | 1779 / 0 |\nPlan-level: an item that plans can still fail the gate (1/30 in forge-g1-gate-pass); the live B3 arm measured 23/23 memory hits.\n\n## forge-g1-scene-grade-agreement-2026-10-03\n**gradeEvent vs the scene@1 renderer's own verdict function (`probeOutcome` in src/modules/frame/scene/runtime.ts, the code the frame runs), offline, 2026-10-03 (`tests/forge-g1-serve.test.mjs`): every G1 scene fill (choice-card@1, sequence-steps@1) of every item and diagnostic in the c4-c7 maths/science/EVS/English kits, band B3, seed 11 — 964 fills, 2587 verdicts (every choice option, traps mapped through miscMap to the kit misconception id; the correct and the reversed order), 0 disagreements.** Also: fraction-bars compare with a forged `correct: true` on a wrong bar grades incorrect (unit test).\n",
+  "rejected": "## forge-g1-single-tier-blocklist\n**Tried (2026-10-03, G1 gate v0): one blocklist (violence, drugs, insults incl. 'fat', romance words) over every child-visible string.** What broke: on the c4-c7 coverage survey it rejected 11 verified kit strings — science diagnostics such as 'Farmers in a village kill all the snakes', 'Groundnuts contain both fat and protein', 'The more fat you eat, the stronger you get'. Kits legitimately discuss these (FACTORY §5.1 Q8 'per-topic curriculum allowance'). Replaced by SEVERE (sexual, romance/companion register, slurs, self-harm) on all strings and MILD only on non-kit strings.\n\n## forge-g1-case-folded-keys\n**Tried (2026-10-03): comparing English answer keys after the director's `norm()`-style folding (lower-case, quotes and apostrophes stripped).** What broke: `diag:c6-english-ch13-t01-m-capital-proper` ('Chitra lives in Kerala.' vs 'kerala') and `diag:c7-english-ch14-t01-m-apostrophe-plural` ('soldiers' vs \"soldier's\") read as two correct options — in grammar items the capital or the apostrophe IS the answer. Fixed: diagnostics compare exact option text; contrast items fold only spacing, curly quotes and a final full stop.\n\n## forge-g1-model-before-gate\n**Tried (2026-10-03, first eval run): flavour model call first, gate after.** What broke: an activity that fails for flavour-independent reasons (option too long, template does not fit the band) paid ~1 s of taxila-fast on every request and was never cached, so the memory-hit pass had p95 987 ms (n=27, 4 gap items). Replaced by a gate on the code pick before the call and a bounded dead-key memo: repeated gaps 45 ms, memory hits ≤ 1 ms.\n\n## forge-g1-child-name-in-cached-gate\n**Tried (G1 v1, 2026-10-03): the child's first name as a Q8 check inside `gateFill`, run over every child-visible string including kit strings, with a failure memoised in the process-wide, child-free `deadKeys` map.** What broke (review, reproduced): c5-english-ch02-t01-i06 scrambles 'Yesterday Chintu ran after the scooter.'; child 'Chintu' got a gap (`safety.child_name`) and a `gate_failed` forge_gap row, then child 'Riya' got the same gap from the dead key — one child disabled the activity for everyone until restart. The reverse order also failed: a fill built for Riya was served to Chintu from the cache with no name check at all. Kits name characters constantly (Chintu 154, Ravi 123, Riya 104 occurrences in c4-c7). Replaced by `forge-g1-serve-time-child-check`. Lesson: anything that depends on the child must stay out of child-free state.\n\n## forge-g1-prefetch-unplanned\n**Tried (G1 v1): lesson-start prefetch of the first 6 candidates (recent wrong, diagnostics, then kit order) without planning them.** What broke: with bars only, 1805 of 1818 slots across 303 topics went to items that cannot become an activity, each writing a forge_gap row; it warmed 54% of the mountable queue items (10% once scenes mount). Replaced by `forge-g1-prefetch-planned` (88% / 99%, 0 slots on gaps).\n\n## forge-g1-learner-read-per-turn\n**Tried (G1 v1): `requestFill` read the learner view (4 Neon selects, 1.5 s timeout) before checking the memory cache whenever no learner was passed — which is how call site 2 was written.** What broke: every module turn, memory hits included, paid a DB round trip, and the report's 0 ms memory / 47 ms Neon hit figures were measured with the learner passed in (`timings.learner = 0`), so they did not describe the wired path. Replaced by the per-lesson memo in `forge-g1-turn-path` (later turns 0 ms learner read, measured).\n"
+ }
+}

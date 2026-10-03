@@ -50,7 +50,8 @@ export function eig(p, cls, grader, x = 1, j = 1, R = 1) {
  * Is this shape usable for this skill right now (§3.3 step 3)?
  * @param {any} shape @param {{ belief: any, topicType?: string, kitInputs?: string[], delayDays?: number }} sk @param {any} sess
  */
-export function eligible(shape, sk, sess, { allowDelayed = false } = {}) {
+export function eligible(shape, sk, sess, { allowDelayed = false, allow = null } = {}) {
+  if (allow && !allow.has(shape.id)) return false;                      // the caller's lane can grade only these shapes
   const b = sk.belief;
   const disp = b?.display ?? "unseen";
   if (!shape.bands.includes(sess.band)) return false;
@@ -91,15 +92,15 @@ const DELAYED_SHAPES = ["C32", "C31", "C33"];
 
 /** Mandatory trigger → plan (§3.2). Fixed order: delayed check (warm-up) > verify > coincident why > first-correct why > partial. */
 const MANDATORY_ORDER = ["delayed_check", "verify_misconception", "coincident_why", "verify_first_correct", "partial_followup"];
-function mandatoryPlan(sess, skills) {
+function mandatoryPlan(sess, skills, allow = null) {
   const pend = [...sess.pending].sort((a, b) => MANDATORY_ORDER.indexOf(a.reason) - MANDATORY_ORDER.indexOf(b.reason));
   for (const t of pend) {
     const sk = skills[t.skillId] ?? { belief: null };
     let shape = null, facet = "U";
-    if (t.reason === "delayed_check") { shape = cheapest(DELAYED_SHAPES, sk, sess, [], { allowDelayed: true }); facet = "D"; }
-    else if (t.reason === "verify_misconception") { shape = cheapest(VERIFY_SHAPES, sk, sess, t.avoid ?? []); facet = "M"; }
-    else if (t.reason === "partial_followup") shape = cheapest([...WHY_SHAPES, "C09", "C16", "C04", "C07", "C15", "C01"], sk, sess, t.avoid ?? []);
-    else shape = cheapest(WHY_SHAPES, sk, sess);
+    if (t.reason === "delayed_check") { shape = cheapest(DELAYED_SHAPES, sk, sess, [], { allowDelayed: true, allow }); facet = "D"; }
+    else if (t.reason === "verify_misconception") { shape = cheapest(VERIFY_SHAPES, sk, sess, t.avoid ?? [], { allow }); facet = "M"; }
+    else if (t.reason === "partial_followup") shape = cheapest([...WHY_SHAPES, "C09", "C16", "C04", "C07", "C15", "C01"], sk, sess, t.avoid ?? [], { allow });
+    else shape = cheapest(WHY_SHAPES, sk, sess, [], { allow });
     if (shape) return { plan: planOf(shape, t.skillId, facet, true, t.reason, { kitRefs: t.kitRefs }), trigger: t };
   }
   return null;
@@ -110,13 +111,14 @@ function mandatoryPlan(sess, skills) {
  * @param {Record<string, { belief: any, topicType?: string, kitInputs?: string[], delayDays?: number, urgency?: number, weave?: boolean, due?: boolean }>} skills
  *   candidate skills (taught or practised this session, weave candidates the current item can host, due skills)
  * @param {any} sess the probe session (budget.js)
- * @param {{ currentSkill?: string, voice?: { followUpProbe?: boolean }, skin?: string|null, freezeLow?: boolean }} [o]
+ * @param {{ currentSkill?: string, voice?: { followUpProbe?: boolean }, skin?: string|null, freezeLow?: boolean, allow?: Set<string>|null }} [o]
+ *   allow: the shape ids the caller's lane can pose AND grade (the live lane: routes/lesson.js); default every shape
  * @returns {null | ReturnType<typeof planOf>}
  */
 export function nextProbe(skills, sess, o = {}) {
   if (sess.safetyFired) return null;
   if (!sess.lastTurnWasProbe) {
-    const m = mandatoryPlan(sess, skills);
+    const m = mandatoryPlan(sess, skills, o.allow ?? null);
     if (m) return { ...m.plan, skin: o.skin ?? null };
   }
   if (sess.lastTurnWasProbe || sess.childTurns < 3) return null;
@@ -138,7 +140,7 @@ export function nextProbe(skills, sess, o = {}) {
       if (f === "T" && (ps.t >= caps.maxTPerConcept || b.pL < 0.5)) continue;
       for (const shape of SHAPES) {
         if (!shape.facets.includes(f) || !FAMILIES_FOR[f].includes(shape.family)) continue;
-        if (!eligible(shape, sk, sess)) continue;
+        if (!eligible(shape, sk, sess, { allow: o.allow ?? null })) continue;
         if (f === "U" && ps.uFamilies.includes(shape.family)) continue;  // two U probes: different families
         if (f === "U" && shape.longForm && ps.longForm) continue;
         const w = testWeight(shape);

@@ -38,6 +38,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "student_event", "conductor_state", "decision_log", "brief_snapshot", "day_plan",
   // comprehension engine (007_comprehension.sql): academic record derived from answers
   "comp_facet_state", "reteach_attempts", "rep_fluency", "weave_queue", "probe_log", "grade_audit",
+  // 008_tutor_choice.sql: the child's tutor-switch analytics (choice history + time to choose) — history, not a layer
+  "tutor_switch",
 ]);
 
 /**

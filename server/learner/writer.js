@@ -143,15 +143,20 @@ export function ktEvidenceStmt(child, ev) {
   if (unwritable(ev)) throw new Error(`kt_evidence ${ev.id}: ${dropReason(ev)} events are never written`);
   return stmt("kt", `with ins as (insert into kt_evidence(id, child_id, session_id, session_start_at, episode_id, occurred_at, skill_ids, cls, outcome,
        grader, grader_version, item_key, teach, assisted, controller_easy, gaming_window, pre_attempt_help, form, target,
-       topic_type, misconception_id, discriminates, mis_route, entry_rung, contaminated, kit_verified, params_version, legal_mode_at_write)
-     values ($1,$2,$3,$4,$5,$6,$7::text[],$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28)
+       topic_type, misconception_id, discriminates, mis_route, entry_rung, contaminated, kit_verified, params_version, legal_mode_at_write,
+       via, ebo, shape_id, weave_host, coincident, unfamiliar_context, deference_discount, span_ok)
+     values ($1,$2,$3,$4,$5,$6,$7::text[],$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,
+       $29,$30,$31,$32,$33,$34,$35,$36)
      on conflict do nothing returning seq)
      select (select seq from ins) as seq,
        1 / ((select count(*) from ins) + (select count(*) from kt_evidence k where k.child_id = $2 and k.id = $1)) as ok`,
   [ev.id, c.id, ev.sessionId, ev.sessionStartAt ?? ev.at, ev.episodeId, ev.at ?? ev.sessionStartAt, ev.skillIds, ev.teach ? "teach" : ev.cls, ev.teach ? -1 : ev.outcome,
     ev.grader ?? "code", ev.graderVersion ?? "v0", ev.itemKey ?? "", !!ev.teach, ev.assisted ?? null, !!ev.controllerEasy, !!ev.gamingWindowKt,
     !!ev.preAttemptHelp, ev.form ?? null, ev.target ?? null, ev.topicType ?? null, ev.misconceptionId ?? null, ev.discriminates ?? null,
-    ev.misRoute ?? null, ev.entryRung ?? 0, !!ev.contaminated, ev.kitVerified ?? null, ev.paramsVersion ?? "kt-launch-2026-10-02", legalModeOf(c)]);
+    ev.misRoute ?? null, ev.entryRung ?? 0, !!ev.contaminated, ev.kitVerified ?? null, ev.paramsVersion ?? "kt-launch-2026-10-02", legalModeOf(c),
+    // CE contract fields (007_comprehension.sql): the facet fold reads them on replay, so they are the log too.
+    ev.via ?? null, ev.ebo ?? null, ev.shapeId ?? null, ev.weaveHost ?? null, !!ev.coincident, !!ev.unfamiliarContext, !!ev.deferenceDiscount,
+    typeof ev.spanOk === "boolean" ? ev.spanOk : null]);
 }
 
 /** kt_skill_state upsert from a ledger skill (the cached fold; kt_evidence is the truth). */

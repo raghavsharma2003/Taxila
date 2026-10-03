@@ -1,0 +1,248 @@
+{
+ "nodes": [
+  {
+   "id": "integration-ledger-live-path",
+   "kind": "decision",
+   "title": "The live lesson folds on the BKT-R ledger + facets: Director evidence → learner/live.js answerEvents → fuseEvidence → noteOutcome → beliefs into step() → closeEvents → fuse; kt_evidence is the event source (inserted in the turn's one transaction, child advisory lock + legal-mode guard first); kt_skill_state/comp_facet_state are the cache; skill_state is a projection of the ledger and the 001 evidence rows stay as the verdict log for the parent corner and lesson-end facts",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "integration-ledger-cache",
+   "kind": "decision",
+   "title": "In-process folded learner state per child keyed by the highest kt_evidence seq; each turn reads only rows after it (in parallel with classify); a commit keeps the online fold only if its inserts got exactly the next seqs, else the cache is evicted and the next turn replays",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "integration-episode-close-carries-misconception",
+   "kind": "decision",
+   "title": "An open item's wrong answers are not KT events until the episode closes (correct → C0-C4 by tries/rungs; left or assertion → C4); a misconception the child showed in the episode rides on the closing event; options items grade the first try only; the teach-back is ONE probe.teachback event over ≤3 taught skills",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "integration-held-why-graded-off-path",
+   "kind": "decision",
+   "title": "A why / teach-back answer moves the Director at once on classify's label, but its KT event is held one turn while the blind closed-label grader (DeepSeek-V4-Pro → taxila-brain) runs in the background after commit; the next turn (or lesson end, ≤6 s wait) folds it with the grader's outcome and the code span check, else with classify's outcome and spanOk:false (K only, E6)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "integration-live-probe-subset",
+   "kind": "decision",
+   "title": "The live scheduler (schedule.js nextProbe, new `allow` option) may pick only why-class shapes C03/C06/C09/C10/C12/C14 (LIVE_PROBE_SHAPES) for a correct answer on the current item; mandatory triggers scoped to that skill; verify_misconception uses the kit diagnostic via s.verify; warm-up openers are C31 delayed checks; the lesson teach-back is C01",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "integration-voice-tiebreak-race",
+   "kind": "decision",
+   "title": "Voice tie-breakers (features.js signalsFrom) reach the plan only if turnVoice has resolved by the time classify has: followUpProbe → scheduler gap −1 / fallback why draw, gentlerHint → one gentler rung CONTENT (count unchanged), slowerPace/onset z → persona pace knobs (TurnResponse.pace); zero belief weight (CE8), test-pinned",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "integration-engine-reteach-cooldown",
+   "kind": "decision",
+   "title": "Engine re-teach (reteachTrigger → selectReteach) on graded item answers, after the kit's own once-per-misconception re-teach; 2 graded items of cooldown per skill; park → skip item + Conductor seam (no-op); prereq_descent → changeApproach (no cross-kit prerequisite item yet)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "integration-vibe-row",
+   "kind": "decision",
+   "title": "compile() gains a VIBE section (cap 60, drop 4) between LESSON NOW and the move: vibeRow(personaKnobs(...)) computed by the Director every step; pace knobs never in the prompt",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "integration-voice-spoken-ask",
+   "kind": "decision",
+   "title": "The voice lane poses the item via toSpoken() in LESSON NOW and in the branch question; the key line, the text lane, captions and every guard keep the written form; a voice compile whose spoken branch question overflows the `last` cap falls back to the written line (the load gate stays on the written form)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "safety-content-filter-fails-closed",
+   "kind": "decision",
+   "title": "An Azure content-filter block (400 error.code content_filter / ResponsibleAIPolicyViolation, 400 with choices[].finish_reason content_filter, 200 finish_reason content_filter) on any call carrying the child's words is a distress signal: classify (grok and taxila-fast), its hedged duplicate (a block on either request wins at once), the low-ASR distress backup, and the teacher reply all fail CLOSED → safeguard move, incident row (source content_filter), speakNow interrupt on voice",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "safety-predicate-passive-ideation-hinglish",
+   "kind": "decision",
+   "title": "The deterministic self-harm predicate now catches Hinglish/Devanagari passive ideation ('gayab ho jaana chahta', 'hamesha ke liye chali jaana chahti', 'गायब हो जाना चाहती'); the predicate runs before every model call",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "ledger-source-weight",
+   "kind": "decision",
+   "title": "bktr.js temper(): K evidence ×0.5 for via game, ×0.75 for via module (= facets W_SRC; spec §1.1)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "ledger-mis-session-cap",
+   "kind": "decision",
+   "title": "Misconception log-evidence clamped at ±log 50 per (misconception, session) in the ledger (spendMis), as K's budget; hits still counted",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "hook-like-with-like",
+   "kind": "decision",
+   "title": "Hook shape carries a like-with-like note (a shape, not a line) and the text-lane reply guards carry a code predicate (director/units.js mixedUnitComparison: a comparing question whose quantities span kinds with ≥1 measure) → one rewrite, then the comparing question is cut; voice-lane teacher turns are flagged meta.unitMix",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "tutor-switch-m0-history",
+   "kind": "decision",
+   "title": "008's tutor_switch (choice history + ms_to_choose) classified as an M0 history table in learner/mode.js (deleted on the M0 ratchet); it was unclassified, which failed the ratchet test",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "comp-sim-integration-2026-10-03",
+   "kind": "measurement",
+   "title": "Comprehension sim, 30 seeds (4,320 child-concepts per family), engine policy: bkt2 macro acc 0.640→0.659, false mastery 0.025→0.023, load/10 2.256→2.258; cfrag 0.475→0.480, 0.043→0.039, 2.235→2.236; not_yet acc fell (bkt2 0.779→0.746, cfrag 0.470→0.418); source weight alone ≈ neutral (bkt2 0.637, cfrag 0.470)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "cascade-latency-integration-2026-10-03",
+   "kind": "measurement",
+   "title": "Cascade latency n=12 before/after the integration (grok classify): Director median 1488→1562 ms, p90 2206→2328 (model variance); per phase plan 1→2 ms, store 60→64.5 ms median (max 71→101), no added serial model calls",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "hook-units-2026-10-03",
+   "kind": "measurement",
+   "title": "Hook turns, c5-maths-ch01-t01, taxila-fast: cross-kind comparison 0/32 without the new constraint (12 with a cricket interest, 20 without), 0/32 with it, 0/32 after the guard; the prod bug did not reproduce at this n (95% upper bound ~9%)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "integration-gates-2026-10-03",
+   "kind": "measurement",
+   "title": "lesson-api-e2e 40/40 on real Neon+Azure (new: replay of kt_evidence = kt_skill_state, skill_state = projection); conductor-db 14/14 on the test branch; npm test 779/780 (migrations-applied: 008 not applied); kit budget 108/10815 dropped (unchanged)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "spoken-ask-in-load-gate",
+   "kind": "rejection",
+   "title": "Rendering the voice branch question in spoken notation inside the load gate (checkFits): 122/10815 items dropped (1.13%, gate ≤1%; baseline 108), and an item dropped from EVERY lane for a voice-only rendering",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "integration-learner-open-2026-10-03",
+   "kind": "open",
+   "title": "Open after the learner/comprehension integration: no kt backfill (live now), grade_audit spans never kept, TurnResponse.pace unconsumed, weave hosting seam, arm posteriors, CompState types, persona state in lesson.state, held-verdict settle rate unmeasured, 008 migration",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "integration-ledger-live-path",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "integration-ledger-live-path",
+   "rel": "part_of",
+   "dst": "comprehension-facet-belief"
+  },
+  {
+   "src": "integration-ledger-cache",
+   "rel": "part_of",
+   "dst": "integration-ledger-live-path"
+  },
+  {
+   "src": "integration-episode-close-carries-misconception",
+   "rel": "part_of",
+   "dst": "integration-ledger-live-path"
+  },
+  {
+   "src": "integration-held-why-graded-off-path",
+   "rel": "part_of",
+   "dst": "comprehension-grading-closed-label"
+  },
+  {
+   "src": "integration-live-probe-subset",
+   "rel": "part_of",
+   "dst": "comprehension-probe-budget-scheduler"
+  },
+  {
+   "src": "integration-voice-tiebreak-race",
+   "rel": "constrains",
+   "dst": "comprehension-voice-zero-weight"
+  },
+  {
+   "src": "integration-engine-reteach-cooldown",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "integration-vibe-row",
+   "rel": "part_of",
+   "dst": "comprehension-engine-program"
+  },
+  {
+   "src": "integration-voice-spoken-ask",
+   "rel": "part_of",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "integration-voice-spoken-ask",
+   "rel": "supersedes",
+   "dst": "spoken-ask-in-load-gate"
+  },
+  {
+   "src": "safety-content-filter-fails-closed",
+   "rel": "part_of",
+   "dst": "learner-safety-gate-first"
+  },
+  {
+   "src": "safety-content-filter-fails-closed",
+   "rel": "caused_by",
+   "dst": "router-s-filter-artifact"
+  },
+  {
+   "src": "safety-predicate-passive-ideation-hinglish",
+   "rel": "part_of",
+   "dst": "learner-safety-gate-first"
+  },
+  {
+   "src": "ledger-source-weight",
+   "rel": "supersedes",
+   "dst": "ledger-game-full-weight"
+  },
+  {
+   "src": "ledger-source-weight",
+   "rel": "measured_by",
+   "dst": "comp-sim-integration-2026-10-03"
+  },
+  {
+   "src": "ledger-mis-session-cap",
+   "rel": "measured_by",
+   "dst": "comp-sim-integration-2026-10-03"
+  },
+  {
+   "src": "ledger-mis-session-cap",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "hook-like-with-like",
+   "rel": "measured_by",
+   "dst": "hook-units-2026-10-03"
+  },
+  {
+   "src": "integration-ledger-live-path",
+   "rel": "measured_by",
+   "dst": "cascade-latency-integration-2026-10-03"
+  },
+  {
+   "src": "integration-ledger-live-path",
+   "rel": "measured_by",
+   "dst": "integration-gates-2026-10-03"
+  },
+  {
+   "src": "integration-learner-open-2026-10-03",
+   "rel": "blocks",
+   "dst": "learner-no-kt-backfill"
+  }
+ ],
+ "md": {
+  "decisions": "## integration-ledger-live-path\n**The live lesson runs on the BKT-R ledger and the comprehension facets; the legacy bkt.js fold is gone from the turn and end handlers and from the Director.** `server/routes/lesson.js planTurn`: Director evidence (`evidenceFrom`, unchanged) → `server/learner/live.js answerEvents` (the adapter seam, with the facts only the route knows: episode, tries before, grader from classify's source, options, via, coincident, leaked/spoiled → preAttemptHelp, gaming → gamingWindowKt, ASR conf) → `fuseEvidence` (ledger K/D/M/θ + facets U/T in ONE fold, `LIVE_FOLD_CTX = {}` online and on replay) → `noteOutcome` per event → compact beliefs (`state.comp`) and ledger snapshots (`state.skills`) into `step()` → `closeEvents` (episode closed without a correct answer, teach events for explain / worked example / re-teach) → fuse again. Writes, in the turn's single transaction with `pg_advisory_xact_lock(child)` + `modeGuardStmt` FIRST (the writer's contract; the M0 ratchet takes the same lock first): `ledgerStmts` (kt_evidence in foldOrder, kt_skill_state, kt_misconception, kt_ability*), `facetStmts` for beliefs that moved, `probe_log` for a probe asked, `reteach_attempts` for an engine re-teach, `weave_queue` enqueue when a skill first reaches learned_today, `grade_audit` for carried verdicts, and — so the 001 readers (parent corner, brief, next-topic, Conductor view) stay consistent — `skill_state` as a PROJECTION of the ledger (`legacySkillState`: pKnown = pL, status from display, nextReview from the ledger) plus the 001 `evidence` rows as the verdict log (parent \"Kaise pata?\", lesson-end facts). misconception_state flag/resolve rows are kept as before. The lesson start reads the Director's snapshot and active misconceptions from the ledger, and its openers from it (below). The end handler flushes the last held event. Pinned by tests/learner-live.test.mjs (replay of the staged rows = online fold through the real planTurn over a 21-turn lesson; rows round-trip through the kt_evidence columns incl. the CE fields) and the e2e (replay of the REAL kt_evidence rows = kt_skill_state, skill_state = projection). **Reverse (drop the projection) when** parent.js, brief.js, next-topic.js and conductor/view.js read kt_skill_state / comp_facet_state directly; **reverse the in-route fold if** a turn's fold cost (fuse over the touched skills) exceeds 10 ms p90 on a production-size ledger.\n\n## integration-ledger-cache\nThe folded learner state is cached in-process per child, keyed by the highest kt_evidence seq it contains. Each turn reads only `seq > cached` (one indexed query, started with the kit read, resolved before classify returns: plan phase +1 ms median in the latency run). After the commit the online fold is kept only if the inserts got exactly the next seqs (`commitLive`); any gap (another writer interleaved, e.g. two lessons of one child) evicts, and the next read replays from the log, so the cache can never drift from kt_evidence. A replica that never saw the child replays. **Reverse if** full replays on cold replicas cost > 200 ms p90 (measure loadLive on the largest ledger) — then persist a fold snapshot at seq N.\n\n## integration-episode-close-carries-misconception\nAn open item's wrong answer is not a KT event (the hint ladder continues, adapter openOutcome); the episode emits ONE event when it closes: the correct answer (C0 first try, C1 later try, C2/C3/C4 by rungs) or C4 when the Director leaves the item or the assertion (rung 4) is reached. A misconception shown in the episode is carried on the closing event (otherwise a misconception answer on an open item never reached the misconception layer). Options items grade the first try only (retries carry no evidence); the teach-back is one probe.teachback event over ≤3 taught skills (conjunctive), never one per skill. Teach events are one transition per (lesson, move kind, skill) episode. **Reverse if** the ledger gets a misconception-only class, or the sim shows a hit on a later-corrected episode misattributes (false misconception alarms > 1 per hit).\n\n## integration-held-why-graded-off-path\nA why or teach-back answer moves the Director immediately on classify's label; its evidence event is HELD in the lesson state (`state.kt.deferred`) and graded blind after the commit by `server/comprehension/later.js` (gradeClosed R-EXP, one kit target per call: ≤4 key ideas for a why, each expectation for a teach-back; echo texts = topic title + the teacher's last line, used by code only). The next turn folds it first (arrival order) with the grader's outcome and spanOk; if the verdict is not in (still running, another replica, a restart) it lands with classify's outcome and spanOk:false — K evidence, no U/T (E6 fails closed). Lesson end waits ≤6 s. A why takes its best-supported idea (present > partial > contradicted > absent); the misconception id is kept only on contradicted. No serial model call is added to any turn. **Reverse if** the settle rate at the next turn (not yet measured in production; `debug.carried[].graded`) is < 70%, or a code operator replaces R-EXP for whys.\n\n## integration-live-probe-subset\nThe scheduler replaces `shouldAskWhy` (`director/state.js probePlanFor`): after an unaided correct answer, `nextProbe` over THIS item's skill only, with its pending triggers only, `allow = LIVE_PROBE_SHAPES` = why-class shapes C03, C06, C09, C10, C12, C14 (probe.why, R-EXP): the only family the live lane both poses (a why move, move shape from the shape record's name and family — a note, never a line) and grades (classify why mode for the move; the blind grader for the facet). Errorspot / transfer / predict / mcq shapes need graders not running live, so they are never picked. A kit with no key ideas, or a state without beliefs, falls back to the rule-3 draw. verify_misconception triggers are served by the kit's spoken diagnostic through `s.verify`; warm-up openers are C31 delayed checks (clearing delayed_check); the lesson teach-back is C01; every child turn is recorded in the probe session budget (probe weight / item 1 or 0.25 near the cap / teach 0). **Reverse (widen the set) when** R-CATCH, R-INST and R-OPT run on the live lane with their own blind requests.\n\n## integration-voice-tiebreak-race\nVoice features ride on the turn (unchanged), and their capped tie-breakers reach the plan only if turnVoice has resolved by the time classify has (never awaited: the turn does not wait on a DB write for a tie-breaker). Uses, exactly per spec §1.3 / CE8: followUpProbe → the scheduler's gap shortened one slot for the current skill (or the fallback why draw → ask now if the budget fits); gentlerHint → the hint rung's CONTENT one gentler (the hint count, key gate and C-outcome unchanged); slowerPace and the onset z on a think question → persona pace knobs (`TurnResponse.pace`), voiceTie may only order a re-teach pick. Zero belief weight: the same lesson with and without signals folds byte-identically (tests/learner-live.test.mjs). A speculative reply was planned without signals, so a non-empty signal set can only miss it. **Reverse if** measured availability of the signals at classification time is < 50% (then score them from baselines read in parallel, before the write).\n\n## integration-engine-reteach-cooldown\nOn a graded item answer the belief's re-teach trigger (confirmed misconception, delayed fail, two fails past rung 3, wheel-spin, U low after 2 U probes) picks an arm with selectReteach (kit arms from remediation + generic arms, deterministic), mapped to reteach / recap (SH.reteach with the arm's representation) / prereq_descent (changeApproach: no cross-kit prerequisite item yet) / park (skip the item, Conductor seam no-op). A cooldown of 2 graded items per skill follows (rejected: reteach-without-cooldown). The kit's once-per-misconception re-teach (afterMiss / trap) is unchanged. **Reverse if** pilot lessons show > 2 engine re-teaches per child-session.\n\n## integration-vibe-row\n`compile()` has a VIBE section (cap 60 tokens, drop priority 4) between LESSON NOW and the move: `vibeRow(personaKnobs(persona, { reteach, strained, transferProbe, turnsSinceError }))`, computed by the Director each step from `personaStep(turnSignals(...))` once per child turn. Pace knobs go to `TurnResponse.pace`, never the prompt. The row passes checkVibeRow; TURN SHAPE stays last; kit budget unchanged (108/10815). **Reverse if** G1 shows the row displaces a pedagogy/safety attribute.\n\n## integration-voice-spoken-ask\nThe voice lane poses the item in spoken notation (`toSpoken`, mode × school medium × age band) in LESSON NOW and in the branch question; the key line (\"for checking only\"), the text lane, captions and every answer-leak guard keep the WRITTEN form. When the spoken branch question would overflow the `last` cap (number-heavy items: 9 items of 10,815 at the load gate's worst case) that one line falls back to written; LESSON NOW still carries the spoken question. The load gate (checkFits) stays on the written form, so no item is dropped from any lane for a voice rendering. **Reverse if** a listener check shows the written fallback line is read wrongly often enough to matter, or the `last` cap is raised.\n\n## safety-content-filter-fails-closed\n**The Azure content filter blocking a child's turn is a distress signal, never 'safe'.** `server/azure.js` surfaces every block shape as `AzureError(code 'content_filter')`: HTTP 400 with error.code content_filter or innererror ResponsibleAIPolicyViolation (OpenAI deployments), HTTP 400 with choices[].finish_reason content_filter and no top-level error (non-OpenAI Foundry models; router-s-filter-artifact), and HTTP 200 finish_reason content_filter. Fail-closed paths: classify on any deployment (grok, taxila-fast) → flags.distress, source content_filter, no second call on the same words; the hedged duplicate (a block on EITHER request decides at once — a later 'safe' from the other cannot overrule it); the low-ASR distress backup → true; the teacher-reply call (text/cascade) → the turn is re-planned as a disclosure (safeguard move, incident row source content_filter) and the fixed helpline line is sent with no further model call. Voice lane: the classify block makes the move safeguard → speakNow interrupt. The deterministic predicate runs before any model call (a filter block is never the only line). Tests: tests/safety-content-filter.test.mjs (13: each shape × both classify deployments, hedge, low-ASR, outage-is-not-distress, reply on both deployments). **Reverse:** never (the shapes recognised may grow).\n\n## safety-predicate-passive-ideation-hinglish\nThe self-harm predicate (director/safety.js) catches 'gayab ho jaana chahta/chahti', 'hamesha ke liye chala/chali jaana chahta/chahti' and Devanagari 'गायब हो जाना चाहत' / 'हमेशा के लिए चली जाना चाहत' (the passive-ideation case the filter blocked in router-bench S). Red-team table extended; the idiom table still passes. **Reverse if** the false-alarm rate on lesson talk measured in pilots is > 1 per 200 child turns for these patterns.\n\n## ledger-source-weight\n`server/learner/kt/bktr.js temper()` starts from `SOURCE_WEIGHT[ev.via] ?? 1` (game 0.5, module 0.75), the spec §1.1 weights already applied to U/T by facets.js. The sim effect alone is ~neutral (macro acc bkt2 0.640→0.637, cfrag 0.475→0.470; false mastery 0.025→0.023, 0.043→0.040); the earlier 0.62→0.75 not_yet claim (open ledger-game-full-weight) did not reproduce on this simulator version. Kept because it is the spec and removes a double standard between K and the facets. **Reverse if** the 50-session module agreement gate passes (module → 1).\n\n## ledger-mis-session-cap\n`misconception.js spendMis` + `ledger.js` clamp Σ log LR per (misconception, session) at ±log 50, as K's budget; hits are still counted. Five hits in one lesson now reach logit ≤ prior + 3.91 (was +9.66) and resolution needs ≤ 6 discriminating correct answers (was ≥ 16); test-pinned. Sim: macro acc up under both families, but not_yet accuracy down (see the measurement). comprehension/fuse.js MIS_SATURATE (drop a hit at p ≥ 0.95) is left in place: with the cap it rarely fires. **Reverse if** a sim with a misconception-holder persona shows not_yet accuracy loss > 5 pp attributable to the cap (re-tune per SIM6 rules, never to the simulator).\n\n## hook-like-with-like\nHook shape (`director/shapes.js hook`) adds: \"any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds\" (a note). The text-lane reply guards add `units` (`director/units.js mixedUnitComparison`: a question sentence with a comparative, whose quantities — in it, or in the two sentences before it — span ≥ 2 kinds with at least one measure: length, mass, volume, time, money, temperature, percent, area; two counts of different things and one dimension in two units pass); one rewrite, then the comparing question is cut (`withoutMixedUnits`). The kit's own posed question is excluded. Voice-lane teacher turns (written by the realtime model) are flagged `meta.unitMix` for review. **Reverse (narrow the predicate) if** its false-positive rate on hook turns is measured > 5%.\n\n## tutor-switch-m0-history\n`tutor_switch` (008_tutor_choice.sql: from/to tutor, source, shown, ms_to_choose) is classified in learner/mode.js M0_HISTORY_TABLES, so the M0 ratchet deletes it; it was unclassified and failed tests/learner-mode.test.mjs. **Reverse if** the owner rules the tutor-choice history an account setting kept in every mode (then KEPT_TABLES with that reason).",
+  "measurements": "## comp-sim-integration-2026-10-03\n**Comprehension simulator, the two ledger fixes, 2026-10-03.** `node evals/comprehension-sim/run.mjs --seeds 30` (24 personas × 30 seeds × 6 topics × 5 sessions; 4,320 child-concepts per family; code-played, real engine), before vs after `ledger-source-weight` + `ledger-mis-session-cap`, plus an ablation with the source weight only (cap disabled in a scratch copy, engine policy). Results: `evals/comprehension-sim/results/comp-sim-2026-10-03-integration-{before,after,srcweight-only}.json`. Engine policy (macro acc final | after 3 sessions | false mastery | load per 10 turns | re-teaches/child | per-type acc not_yet / shallow / fragile_bound / fragile_forgets / understood):\n\n| family | run | macro | after3 | false mastery | load/10 | reteach | not_yet | shallow | frag_bound | frag_forgets | understood |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| bkt2 | before | 0.640 | 0.579 | 0.025 | 2.256 | 10.79 | 0.779 | 0.770 | 0.376 | 0.721 | 0.553 |\n| bkt2 | src weight only | 0.637 | 0.574 | 0.023 | 2.255 | 10.84 | 0.785 | 0.772 | 0.376 | 0.708 | 0.542 |\n| bkt2 | both | 0.659 | 0.589 | 0.023 | 2.258 | 10.33 | 0.746 | 0.836 | 0.466 | 0.708 | 0.538 |\n| cfrag | before | 0.475 | 0.444 | 0.043 | 2.235 | 11.12 | 0.470 | 0.563 | 0.478 | 0.600 | 0.265 |\n| cfrag | src weight only | 0.470 | 0.446 | 0.040 | 2.235 | 11.14 | 0.463 | 0.580 | 0.495 | 0.562 | 0.251 |\n| cfrag | both | 0.480 | 0.452 | 0.039 | 2.236 | 10.74 | 0.418 | 0.644 | 0.525 | 0.562 | 0.252 |\n\nReading: the cap carries the macro gain (shallow and fragile-bound children are no longer held at not_yet by a saturated misconception) and costs not_yet accuracy (−3.3 pp bkt2, −5.2 pp cfrag); the source weight alone is within noise. mut_vc4_game_full_weight still does not fail (bkt2 0.673 ≥ engine 0.659): the mutant flips the facet weight only, and game evidence is ~2 commits per topic (comprehension-review-open-2026-10-02). Validity: simulated, author gains; compliance scope only, not evidence of learning. Each run ~10 min CPU.\n\n## cascade-latency-integration-2026-10-03\n**Cascade lane latency, before vs after the integration, 2026-10-03.** `NODE_USE_ENV_PROXY=1 DEPLOY_CLASSIFY=grok-4-1-fast-non-reasoning node evals/cascade-latency.mjs --turns 12` (in-process API, Neon + Azure from the sandbox; synthetic child speech), n = 12 turns each; results `evals/results/cascade-latency-2026-10-03-integration-{before,after}.json`. Director median 1488 → 1562 ms, p90 2206 → 2328 ms; total (speech end → first audio byte) median 3056 → 3206, p90 3890 → 3900; speculation 10/12 → 11/12 hits. Per phase (from the @marks): classify median 674 → 571 ms; plan (classified → planned: the fold, the beliefs, step, compile) 1 → 2 ms (max 1 → 5); reply 652 → 760 ms (model time, 2 rewrite turns in each run); store (replied → stored, the one transaction now with the advisory lock, mode guard, kt rows, facets) 60 → 64.5 ms median, p90 65 → 76, max 71 → 101. No serial model call was added: reply-phase calls per turn identical in shape (1, or 2 on a rewrite). The Director median difference is reply-model variance, not the integration (plan + store add ~6 ms median).\n\n## hook-units-2026-10-03\n**Hook turns comparing across kinds, 2026-10-03.** `NODE_USE_ENV_PROXY=1 node evals/hook-units.mjs --n 12 --interest cricket` and `--n 20 --interest none`, kit c5-maths-ch01-t01 (contexts: highway distances, cricket stadium crowds, train route km …), DEPLOY_REPLY taxila-fast, text lane, the real compiled hook instructions. Arms: A without the new like-with-like note, B with it, B-guarded = the full textReply. Flagged by `mixedUnitComparison`: A 0/32, B 0/32, B-guarded 0/32 (all 96 texts printed in `evals/results/hook-units-2026-10-03-{cricket,no-interest}.json` and read by hand: no cross-kind comparison present, so no missed positive either). The prod bug did NOT reproduce at this n (rule-of-three 95% upper bound ≈ 9% per hook turn), so the shape note's effect is not measured; the predicate's recall rests on the reconstructed prod sentence and 5 constructed positives / 8 negatives in tests/units-guard.test.mjs. Read by hand (not counted): with the note, more B drafts posed a bigger/smaller comparison, all same-kind; whether the note invites comparisons is not measured.\n\n## integration-gates-2026-10-03\n`npx tsc -b` clean; `npx vite build` OK; `npm test` 779/780 (the failure is tests/migrations-applied: 008_tutor_choice.sql not applied to Neon — another workstream's migration, not applied by this one); kit budget 108/10815 dropped (= baseline); `NODE_USE_ENV_PROXY=1 node tests/lesson-api-e2e.mjs` 40/40 on real Neon + Azure (3 new: 6 kt_evidence rows written — teach, item.open, probe.why; replay of the real rows in DB seq = kt_skill_state for every skill to 1e-12 and same display; skill_state = the ledger's projection); `node tests/conductor-db.test.mjs` 14/14 on the CONDUCTOR_TEST_DATABASE_URL branch. The e2e needed the account password on core_tutoring withdrawal and child delete (account.js has required it since the parent-gate work; the test was stale).",
+  "rejected": "## spoken-ask-in-load-gate\n**Tried (2026-10-03):** rendering the voice branch's next question in spoken notation inside the kit load gate too (compile.js checkFits on the spoken ask). **Broke:** 122/10815 items dropped for the prompt budget (1.13%; the gate is ≤ 1%, baseline 108 = 0.999%), and normalizeKit drops an item from EVERY lane, so a voice-only reading would have removed number-heavy items (c7-sst timelines, c8-sst census bars, c4-maths money word problems) from text lessons too. Hindi-mode readings render digits as Devanagari number words ('एक हज़ार नौ सौ इक्यावन'), +7 to +22 estimated tokens on such items. **Instead:** the gate stays on the written form, and a voice compile falls back to the written branch line only when the spoken one does not fit (integration-voice-spoken-ask).",
+  "open": "## integration-learner-open-2026-10-03\n- **learner-no-kt-backfill is now live.** Every existing child cold-starts in the kt ledger, and the first turn that touches a skill overwrites its skill_state row with the ledger projection (a legacy learned_today becomes practising/introduced). Its reversal condition (backfill through kt/adapter.js before the first real family) now applies to the next release.\n- **grade_audit never keeps the span**: keepSpan is false everywhere; the transcripts_retention consent lookup (conductor latestConsent) is not wired into the turn.\n- **TurnResponse.pace** (waitNudgeSec, endpointSilenceMs) is sent but no client consumes it; the realtime session's turn detection is minted once per token.\n- **Weave hosting**: onTopicPlanned runs at lesson start and the queue is persisted, but a hosted woven sub-step has no host item (Forge/engine seam `forgeSeam.wovenSubStep`, no-op in routes/lesson.js); entries expire into C31 callbacks. The Conductor's planner does not call planChecks (lesson start does).\n- **Re-teach outcomes and arm posteriors**: reteach_attempts rows are written, never resolved (reteachOutcomeStmt/armPosteriorStmt unused); prereq_descent has no cross-kit prerequisite item.\n- **Voice branches** (branchesFor) simulate on the beliefs held in state before the reply, not after a synthetic fold, so a scheduler trigger the reply would add (verify_first_correct) is not in the branch.\n- **shared/learner.ts**: EvidenceEvent CE fields added; CompState / FacetState / ComprehensionBelief / ProbePlan / WeaveEntry / VibeDirective types (INTEGRATION §6) not yet.\n- **NM-3 question**: the vibe persona state (signal log, knobs) lives in lesson.state like the affect state does; lesson rows are M0 history. Whether session-only processing in the lesson row satisfies NM-3 is for the owner/counsel.\n- **Held-verdict settle rate** at the next turn is unmeasured in production (debug.carried[].graded); the e2e saw the held why flushed at end.\n- **008_tutor_choice.sql** is not applied to the Neon database (tests/migrations-applied fails); owner: the tutor-choice workstream.\n- **not_yet accuracy** fell with the misconception cap (comp-sim-integration-2026-10-03); mut_vc4 still does not fail."
+ }
+}

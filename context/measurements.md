@@ -656,3 +656,178 @@ Method: scripts/prod-smoke.mjs cascade, from the sandbox; n=1 lesson, 3 turns. s
 
 ## prod-cascade-director-169d555 (2026-10-03)
 scripts/prod-smoke.mjs cascade × 6 lessons from the sandbox against rev s169d555, so each figure includes the sandbox↔eastus2 round trip. n=18 Director turns: p50 1,214 ms, p90 1,605 ms, min 1,085, max 2,687; 0 FAIL. This supersedes the n=3 reading in prod-smoke-169d555, which was noise: no regression against s32090f6.
+
+
+<!-- merged from inbox/voice-models.json -->
+## voice-v2-azure-sweep-2026-10-02
+2026-10-02. n=5 clips per arm (one take per passage), 37 arms (6 MAI-2.1 HD, 6 MAI-2.1-Flash, 6 en-IN DragonHD plain + 6 lang-tagged, Swara plain/styled, hi-IN Diya Dragon, 6 DragonHDOmni, gpt-4o-mini-tts coral/sage/shimmer/marin) x 5 passages = 185 clips. Method: Node fetch from the US container via proxy to eastus2 REST v1, mp3 24 kHz 96 kbps, 2 workers; TTFB = first body chunk; ASR round trip via taxila-transcribe (gpt-4o-transcribe, lenient folding, 0.34 per-word tolerance); loudness ffmpeg ebur128 (2026-10-03, all 282 v2 clips). Results: TTFB median / p90 / total median ms: MAI-Flash 321 / 530 / 730; MAI HD 935 / 1523 / 1446 (flat across 160-319 chars); DragonHD plain 253 / 692 / 3728, lang 244 / 285 / 3713; Omni 593 / 4958 / 2573 (max 8734); Swara 645 (styled 1164); 4o-mini-tts 302 / 732 / 2762. Chars/s at rate 0.95: DragonHD 15.2, MAI 9.9-10.7, Swara 9.7, 4o-mini-tts 11.5 (no rate control). WER mean <= 0.041 every arm, 160/185 at 0 (saturated; MAI HD 10/30 clips > 0 vs Flash 2/30, Fisher p = 0.021 on single draws). Lang tags on DragonHD: WER 0.002 vs 0.004, TTFB identical. Loudness over 282 clips: -32.4 to -14.6 LUFS, median -22.0. Prices [V]: Neural $15/M, Neural HD $22/M, gpt-4o-mini-tts $12/M audio tokens (~$21.7/M chars equivalent); no MAI or Omni meter. Upper-bound latency; re-measure from Central India, n >= 20, first sentence. Source: docs/research/voice/v2/azure-speech-voices.md (+ Review).
+
+
+<!-- merged from inbox/avatar-m0.json -->
+## avatar-m0-lip-bench-2026-10-03
+**The real `src/avatar/lip.ts` LipDriver on the committed Hindi/English viseme ground truth (`docs/research/avatar/bench/stim/*.json`), scored as `bench/bench.mjs` (2026-10-03).**
+- Method: `evals/avatar/lip-bench.mjs`. 14 utterances (10 hi-IN Swara/Madhur, 4 en-IN Neerja/Prabhat; 84 hi + 34 en bilabial segments). The WAVs were regenerated from the same text + voice with Azure Speech REST (`evals/avatar/gen-stim-rest.mjs`) because only the JSON was committed; the bench's own RMS arm reproduces its committed r exactly (0.563 hi / 0.697 en at 60 fps), so the audio aligns. Causal, 2048-sample window per render instant, one lag per arm × language × fps (sweep −100…+250 ms). Results file: `evals/avatar/results/lip-bench-2026-10-03.json`.
+- Results (30 fps = the tier-B cap; r vs smoothed GT / vs unsmoothed GT, bilabial closures hi, vowel false-close hi):
+
+| arm | r hi | r en | r hi unsmoothed | closures hi | vowel false-close hi |
+|---|---|---|---|---|---|
+| fixed-gain RMS (bench baseline) | 0.546 | 0.681 | 0.453 | 27/84 | 17.4% |
+| M0 normalised (shipped) | 0.537 | 0.673 | 0.447 | 23/84 | 15.9% |
+| M0, τ 30 ms | 0.482 | 0.598 | 0.418 | 52/84 | 27.5% |
+| fixed-gain RMS at −10.5 dB | 0.503 | 0.619 | 0.418 | 75/84 | **72.4%** |
+| **M0 normalised at −10.5 dB** | **0.538** | **0.679** | 0.445 | 25/84 | **17.3%** |
+
+- Reading (revised after review): at the bench's own level the shipped driver is slightly WORSE than fixed-gain RMS (r −0.009 hi / −0.008 en; 4 fewer Hindi closures). It ships for robustness to an unknown received level (−10.5 dB: vowel false-close 17.3% vs 72.4%), not as better lip-sync; closures are M1's job.
+- Best lag: +33 ms at 30 fps, +50 ms at 60 fps for every arm (my rerun; the committed summary reports the RMS arm's r at lag 0 as its best-openness figure).
+- Sweep (n = 14 each, 30 fps, hi): gate/scale/curve variants traded r for closures monotonically (e.g. refScale 2: r 0.440, closures 72/84, false-close 48.1%); the shipped defaults were the best r at a false-close no worse than baseline.
+- Caveats: Azure Neural TTS audio, not received Opus/WebRTC audio (E-3 still owed); speech-only r (unsmoothed) is low for every arm (0.09–0.14 hi): openness inside speech is tracked poorly by any envelope.
+
+## avatar-m0-fps-headless-2026-10-03
+**The procedural head in headless Chromium 1194 (Playwright), ANGLE → SwiftShader (Vulkan, software; NO GPU), 4-vCPU container, 2026-10-03.**
+- Method: `evals/avatar/fps-headless.mjs` on `/dev/avatar` (vite dev server), 1.5 s warm-up then a 10 s window per arm; the stage's own stats (TH-1-capped loop) plus an independent rAF counter; the 2 s probe enabled. A full `npm test` run was executing on the same machine during the measurement (conservative).
+- Results:
+
+| arm | frames / 10 s | fps p50 | interval p95 | main-thread work p95 | rAF |
+|---|---|---|---|---|---|
+| B speaking, 1280×800 (Asha) | 299 | 30.0 | 33.4 ms | 0.8 ms | 57.8 |
+| B speaking, 360×640 (Arjun) | 300 | 30.0 | 33.4 ms | 0.7 ms | 58.7 |
+| B your_turn, 360×640 (Uma) | 301 | 30.0 | 33.4 ms | 0.6 ms | 60.0 |
+| B-lite speaking, 360×640 | 200 | 20.0 | 50.1 ms | 0.9 ms | 59.9 |
+
+- Scene: 19,114–22,846 triangles, 16 meshes = 16 draw calls; compile 111–217 ms, first render 61–96 ms (renderer.info, `ready` events).
+- Tier B / B-lite were FORCED with `?face=` (dev build): on SwiftShader the shipped static tier picks D. Re-run after the review fixes (`fps-headless-2026-10-03-fix.json`, B-lite now without MSAA): 300 / 300 / 301 / 201 frames, same p50 and p95; SwiftShader cannot show the MSAA saving.
+- **M0 acceptance is NOT met as specified:** AVATAR M0 requires one Helio G85 phone; none was run.
+- "Work" is main-thread JS + GL submission; SwiftShader rasterises on its own threads, so this is NOT a GPU-time or phone number. No phone was measured (E-P3/E-P5 on the device lab are still owed).
+
+## avatar-m0-bundle-2026-10-03
+**`npx vite build` before and after (2026-10-03; sizes from dist/, gz level 9 and brotli via node zlib).**
+- New lazy chunk `stage3d-*.js` (three.js 0.180.0 named imports + head + stage + lip/behaviour/compositor/tier): 523,069 B raw / 133,455 B gz / 110,179 B br. Within AVATAR §1.1's separate avatar line (≤ 230 KB br).
+- New lazy chunk `TeacherRoute-*.js` (picker + TutorFace wrapper + 2D plate + lip/tap): 26,126 B raw / 10,197 B gz.
+- `main-*.js`: 39,543 → 39,757 B raw (+214; +64 B gz): two lazy route entries. Lesson chunk `Other-*.js`: 105,241 → 105,410 B raw (+169; +50 B gz): `LevelMeter.onTap`. No three.js in main or the lesson chunk (grep).
+- Caveat: the baseline build was taken at the start of this workstream; other workstreams edit the tree concurrently, so small deltas in shared chunks may include their edits.
+
+## avatar-m0-picker-order-2026-10-03
+**Position fairness of the per-child shuffle (`seededShuffle(seedOf(child.id))`), 2026-10-03.** Method: `tests/avatar-tutors.test.mjs`, 4,000 synthetic child ids, two-tutor offer (wide ranges, class 3). Result: Asha first in 50% ± 3 pp (asserted |share − 0.5| < 0.03). Same id → same order (stable across visits).
+
+
+## avatar-m0-context-churn-2026-10-03
+**WebGL context churn in the tutor picker, before vs after the dispose fix (2026-10-03).**
+- Method: `evals/avatar/context-churn.mjs` — headless Chromium (Playwright), SwiftShader WebGL2, `/dev/avatar?view=picker&class=8&face=B` (Arjun + Uma preview), 40 clicks alternating tiles (each unmounts one live head and mounts another), 150 ms dwell after the new head's canvas mounts, 1.5 s settle; reads the session's counted losses (`faceContextLosses()`), canvases in the DOM, the live tile's tier, and the browser's "Too many active WebGL contexts" warnings. n = 1 run per arm (deterministic count).
+- Before (old dispose: no `forceContextLoss`, listener kept): 24 browser evictions, **24 losses counted** (≥ 2 → every later TutorFace starts at D for the session, the lesson included; the live tile still showed B only because `?face=B` bypasses the static tier). `evals/avatar/results/context-churn-2026-10-03-before.json`.
+- After: **0 evictions, 0 counted**, 1 canvas, live tier B. `evals/avatar/results/context-churn-2026-10-03-after.json`.
+- Not measured: Android Chrome's lower context cap (same mechanism; the fix frees each context on unmount, so the cap is never approached).
+
+
+<!-- merged from inbox/engines-v1.json -->
+## engines-v1-coverage-2026-10-03
+Kit topics (classes 4-7, all 18 kit files, 385 topics) whose `formats.engineHints` resolve to a built engine through `shared/engine-catalog.js` resolveHint, by `evals/engines-coverage.mjs` (static, no network), 2026-10-03:
+| set | before (engineId(hints[0]) registered) | any hint resolves | + topic map fallback |
+|---|---|---|---|
+| all subjects | 4/385 (1.0%) | 132/385 (34.3%) | 146/385 (37.9%) |
+| maths + science + EVS | 4/250 (1.6%) | 132/250 (52.8%) | 146/250 (58.4%) |
+| maths | | 105/141 (74.5%) | 109/141 (77.3%) |
+| science | | 21/69 (30.4%) | 26/69 (37.7%) |
+| EVS | | 6/40 (15.0%) | 11/40 (27.5%) |
+| English / Hindi / SST | | 0/135 | 0/135 |
+By class (any hint): c4 24/75 (32.0%), c5 29/74 (39.2%), c6 39/112 (34.8%), c7 40/124 (32.3%). If only the FIRST hint is aliased (modules.js picking hints[0]): 87/385 (22.6%). Topics per engine: number-line 20, data-graphs 16, geoboard 15, measure 14, multiply-divide 14, sky 13, patterns 13, place-value 12, water-cycle 9, motion-lab 8, fraction-bars 5, fractions 4, collections 3. Top unresolved hints are language/SST (read-along 91, role-play 78, word-builder 66, picture-word-match 60, story-sequencing 57) and v1.1 maths (clock-hands 6, shopping-bill-builder 6, protractor-fan 5, balance-scale 4). Result file: `evals/results/engines-v1-coverage-2026-10-03.json`.
+
+## engines-v1-item-binding-2026-10-03
+`planEngine` over every item of the c4-c7 kits (5,082 items; 1,932 in topics with an engine; 355 of those have a single-value key), 2026-10-03, same eval: 76 items bind (multiply-divide 16, data-graphs 15, number-line 12, fractions 10, geoboard 9, place-value 7, patterns 5, fraction-bars 3). Each bound plan is replayed through the FRAME's pure logic (normalize(params) + the engine's verdict on the kit key): 76/76 right, and 76/76 wrong on a perturbed key. The first replay found 6 disagreements, all in the planner or replay (fixed-parts equivalents keyed by numerator, a 3-blank sequence keyed by its last term, rectangles taller than the default 6-row grid), none in an engine. Bound share = 76/355 single-value items (21%) = 76/1,932 covered items (3.9%): most items are arithmetic, explanation or free text the engines do not grade.
+
+## engines-v1-browser-2026-10-03
+`tests/engines-browser.test.mjs` (in `npm test` when Chromium is installed), 2026-10-03: mounts each engine in the real sandboxed frame (`modules.html`, opaque origin, the host.tsx port handshake) at a 360×900 viewport, drives it with taps like a child, and checks the event stream (interactions, then answer{correct} — the scripted wrong first commit graded wrong where scripted — then exactly one goal_met; stuck on the scripted two-wrong path; misconception facts on the wrong path that names them). 53 scenarios: 45 engine paths across the 13 engines and their modes (3 at the 6-9 band's 64 px, Hindi and Hinglish label runs, reduced motion for the sims), 5 mounts planned from real kit items, 3 host-command runs (highlight, reveal, set_param starting a new goal, reset; scene reveal; bad params → params_adjusted). Dev server: 53/53, ~25 s. Production build (`ENGINES_PROD=1`, strict meta CSP, `sandbox allow-scripts` HTTP header, CORS on hashed assets): 53/53, 0 console errors or CSP violations. Touch audit on mount: 0 buttons below the band's hit size, 0 px horizontal overflow. The console check caught one React key-spread warning in fractions@1 (fixed).
+
+## engines-v1-mount-2026-10-03
+`evals/engines-mount.mjs`, production build, headless Chromium in the dev container, 360×800, n=5 mounts per engine, ms from iframe creation to the engine root visible (includes frame boot, React, the engine chunk): no throttle p50 67-90 ms across the 13 engines (max 144); 4× CPU throttle p50 208-256 ms (max 389). Bundles: engine chunks 3.1-5.3 kB gz each, scene@1 12.5 kB gz, kit (ui + math) 4.4 kB gz, frame CSS 3.7 kB gz. This is NOT the V15 reference-phone measurement (₹8-10k, 3 GB device) that decides `engines-in-sandbox-frame-v1` / `engines-v1-react-in-frame`. Result file: `evals/results/engines-v1-mount-2026-10-03.json`.
+
+## scene-port-parity-2026-10-03
+`tests/scene-runtime.test.mjs`, 2026-10-03: the frame's EXPR@1 port gives the same AST and the same value as the normative validator on 40 expressions (precedence, right-associative ^, tolerant comparisons, state functions, ternaries, trig), and both refuse the same 6 malformed ones; the layout port gives identical node boxes and repeat-instance boxes on all 7 validator-clean templates (sort-bins, sequence-steps, compare-choice, predict-reveal, slider-explore, count-group, and a Forge G1 choice-card). Runtime verdicts: solved states correct, trap states carry their MC token, reveal finds the unique right option / order. `tests/engines-logic.test.mjs` also checks geoboard `construct()` against an exhaustive enumeration of every connected shape up to area 7 on the 6×8 grid: every achievable (area, perimeter) is constructed, none of the impossible ones.
+
+## engines-v1-item-binding-2026-10-03 (fixer re-run)
+`evals/engines-coverage.mjs`, 2026-10-03, after the review fixes. **c4-c7** (comparable with the builder's figure): 5,082 items, 1,932 in covered topics, **65 bound** (data-graphs 13, number-line 12, fractions 10, geoboard 9, place-value 7, multiply-divide 6, patterns 5, fraction-bars 3). **c1-c9** (every kit): 10,815 items, 3,577 covered, **103 bound** (multiply-divide 24 product entries, place-value 19, number-line 19, data-graphs 14, fractions 10, geoboard 9, patterns 5, fraction-bars 3). Replay now models the child-side action the view grades (the typed product; the typed numeral for given pieces; build only from a number NAME; array dimensions and share deals replay false): **103/103 right on the kit key, 103/103 wrong on a perturbed key, 0 disagreements** (the all-kits run first found 1, an eval bug: "₹15" keys were not stripped). Newly unbound vs the builder: 9 share (12 c1-c9) and 3 bar differences between gridlines (4 c1-c9); rounding-already-a-multiple and zero-landing jumps had no kit instances. The builder's "76/76 replay right / reject a perturbed key" is withdrawn: its array replay compared the plan's params with themselves (`rj-replay-against-own-params`). Restated claim: bound plans are those whose graded child action must produce the item's key.
+
+## engines-v1-unbound-fallback-2026-10-03
+Same eval, 2026-10-03. A fallback mount (no adapter matched) is "demo default" when the engine's own normalize gives the same config with and without the item's numbers/fractions. Before the fix (values merged, no gate): 296/1,013 c4-c7 maths fallbacks (data-graphs 96, measure 58, number-line 52, fraction-bars 47, patterns 13, place-value 12, fractions 8, geoboard 8, multiply-divide 2). After the CONSUMES gate: **6/655 c4-c7** (geoboard 3, fraction-bars 2, measure 1) and **13/1,138 c1-c9**; 561 c4-c7 (1,164 c1-c9) covered items now mount nothing. "Not demo" means only that the item's values changed what the engine shows, not that the activity fits the item (teacher review not done).
+
+## engines-v1-mount-2026-10-03 (re-run with first mounts)
+`evals/engines-mount.mjs --n 5`, production build, headless Chromium, dev container, 2026-10-03: p50 67-90 ms (1×), 209-263 ms (4× CPU). The FIRST mount of the session (cold frame boot + React + chunk) is the one a lesson gets: 146 ms at 1×, 406 ms at 4× (number-line, mounted first). The first mount of each later engine (its chunk cold, the frame runtime warm): 63-96 ms (1×), 197-274 ms (4×). Not the V15 reference-phone measurement.
+
+## engines-v1-browser-2026-10-03 (re-run)
+`tests/engines-browser.test.mjs`, 2026-10-03: 60 scenarios (53 + 7 new: "7 × 8" product entry with Check disabled until a total is typed and a wrong total graded wrong; trays-of-6 word problem with no expression on screen; c1 "4 tens and 6 ones" read with 4 ten-rods shown and 46 never shown; fractions compare, multiply-divide product and number-line place hiding their answer-bearing aid under predict; the bar view's 0-6 value axis). 60/60 dev server, 60/60 production build (`ENGINES_PROD=1`), 0 console errors.
+
+
+<!-- merged from inbox/forge-g1.json -->
+## forge-g1-latency-2026-10-03
+**Configuration caveat (review, 2026-10-03): needByMs 10 000 with the learner passed in — the PREFETCH configuration, not the turn path; the turn path is `forge-g1-turn-path-2026-10-03`. Re-run after the review fixes (same command, 2026-10-03T01:54Z): cold p50 1094 / p95 1558 / max 2129 ms; flavour p50 1040 / p95 1360; Neon hit p50 46 / p95 450; memory hit p50 0 / max 1; repeated gap 45; learner-view probe (random UUIDs, empty results) 562 (cold connection), 50-54 ms. The builder's run below is kept for provenance.**
+**Forge G1 `requestFill` end to end, live Azure (taxila-fast), Neon asset_cache and Blob (`evals/forge-g1.mjs --n-per-subject 10 --seed 3 --fresh`, 2026-10-03T00:47Z, dev container in the US build region over the agent proxy; no India RTT).**
+Method: 30 real kit items with a derivable activity, stratified 10 maths (5 T1 fraction items in classes 4-6, 5 diagnostics) / 10 science+EVS (classes 4-7) / 10 English (classes 4-7); synthetic learner profile per subject (no child row); renderers = fraction-bars@1 + scene@1 so the scene path is exercised; three passes: cold (asset_cache g1_fill rows dropped first), Neon hit (memory cleared), memory hit.
+| pass | n | p50 | p95 | max |
+|---|---|---|---|---|
+| cold (all) | 30 | 1180 ms | 1542 | 1594 |
+| cold maths / science / English | 10 / 10 / 10 | 1055 / 1193 / 1063 | 1594 / 1317 / 1542 | |
+| Neon asset_cache hit | 29 | 47 | 453 | 576 |
+| memory hit | 29 | 0 | 0 | 1 |
+| repeated gap (dead-key memo) | 2 | 45 | 47 | |
+Flavour call p50 1126 / p95 1489 ms (29/29 model, 0 timeouts); gate p50 5 ms, max 28 ms; learner-view read (4 parallel selects, neon-http) 47-512 ms, first call 512 ms (cold connection). Target ≤ 10 s p95: met with 6.5× headroom; the flavour call is 95% of cold time.
+
+## forge-g1-gate-pass-2026-10-03
+**Same run: 29/30 fills shipped (96.7%); 29/29 shipped on the first try with the model's flavour pick.** The one reject: `diag:c7-science-ch02-t01-m2`, `build.option_too_long` (an option > 80 characters, the scene@1 L10n cap). Templates shipped: choice-card@1 23, fraction-bars@1 5, sequence-steps@1 1. Caveat: the 30 were drawn from items that HAVE a derivable activity; across all items see forge-g1-coverage. Gate mutants (tests/forge-g1.test.mjs, 2026-10-03): 14/14 operators caught by their target check (bars target off by one, compare question swapped, unknown param, 13 parts, starts solved, choice key moved, invented trap misconception, sequence starts solved, key order shuffled, uncleared title, child name, decor outside skin, title names the answer, payload > 56 KiB), 0 false alarms on the clean set (real items from 6 topics).
+
+## forge-g1-render-2026-10-03
+**Re-run after the review: 5/5 pass, boot 112-149 ms. Scene fills are not render-checked: the scene@1 renderer (`src/modules/frame/scene/`) landed in the frame registry during the review and render-check.mjs drives fraction-bars@1 only.** **Every T1 fill of the run (n=5) booted in the production frame (`dist/modules.html`, its meta CSP, `sandbox="allow-scripts"` iframe, fresh iframe per mount, Chromium 1194 headless): 5/5 pass — bar count and `n of d parts shaded` labels equal the params, the solution replay by pointer reaches `goal_met` with goal `g1:<itemId>`, compare fills give wrong=false then right=true (engine verdicts = gate key), no console errors, no off-origin requests, one `ready`.** Boot 140-168 ms (no CPU throttle; not a phone number).
+
+## forge-g1-coverage-2026-10-03
+**Every item and diagnostic in the c4-c7 maths, science, EVS and English kits (4,944), through `activitiesFor` (2026-10-03):** an activity derives for maths 446/2289 (19.5%), science+EVS 349/1764 (19.8%), English 229/891 (25.7%) — mostly diagnostics as choice cards. Mountable today with only fraction-bars@1 in the frame: maths 30 (1.3%), science 0, English 0. Of 140 c4-c7 maths items with a '/' in the prompt, 24 parse as a KitMath task (add/sub/compare/equivalence); the rest are fraction-of-quantity, number-line placement, ordering of three, mixed numbers and explanations.
+
+## forge-g1-strings-cleared-2026-10-03
+**Re-run after the review: 84 rows (the 81 hook rows plus the 3 `TEMPLATE_STRINGS` "Check" rows, which the first clearance missed), max severity 0, 0 errors.** **Azure AI Content Safety text:analyze (api 2024-09-01, FourSeverityLevels, same AIServices resource as AOAI) over all 81 strings-table rows: max severity 0 in all four categories, 0 errors.** ~780 ms per call (n=2 probe). Hindi is outside the harm models' tested languages (`content-safety-sole-gate`), so this clears English and romanised rows only by Microsoft's own statement; the Devanagari rows were reviewed as table entries in code review.
+
+## kitmath-fraction-agreement-2026-10-03
+**KitMath (exact rationals) recompute of every value-keyed fraction item in c4-c7 maths: 23 items, 0 disagreements with the kit `answer`/`acceptable`.** Misconception rules (add-across, change-only-den, bigger-denominator/whole-number bias, add-same/one-side) reproduce their kit diagnostic's distractor 2/2 where the diagnostic poses a fraction task (`tests/forge-g1.test.mjs`). FACTORY's census said every fraction topic is blind-unverified; for the 23 computable items the kit keys are right.
+
+## forge-g1-turn-path-2026-10-03
+**The turn path exactly as call site 2 wires it: `requestFill({ lessonId, childId, kit, item, move: "practice", needByMs: 2000 })`, no learner argument, DATABASE_URL set (neon-http driver, US dev container over the agent proxy; no India RTT; the production pg pool not measured). `evals/forge-g1-turn.mjs --topics 8 --seed 5`, 2026-10-03, `evals/results/forge-g1-turn-2026-10-03.json`.** Method: 8 topics drawn (seed 5) from topics with ≥ 2 mountable queue items when scene@1 is mountable (7 English, 1 maths: the sample is scene-heavy because bars-only topics are few), walking each topic's Director practice queue in order (23 turns per arm); child ids are random UUIDs with no child row (the 4 learner selects still run; the profile falls back to defaults); renderers fraction-bars@1 + scene@1.
+| arm | n | p50 | p95 | max | cache | learner read |
+|---|---|---|---|---|---|---|
+| B1 cold (nothing warmed) | 23 | 62 ms | 448 | 575 | 23 miss | first turn p50 52 / max 493; later 0 |
+| B1 first turn of a lesson | 8 | 109 | 575 | 575 | | |
+| B1 later turns | 15 | 55 | 100 | 100 | | 0 |
+| B2 Neon warm (new process, new child) | 23 | 49 | 99 | 100 | 23 db | first turn p50 49 / max 52 |
+| B3 after an awaited lesson-start prefetch | 23 | 0 | 1 | 47 | 23 memory | 0 |
+Prefetch itself (awaited here; fire-and-forget in production): p50 1275 / max 2955 ms per lesson (model picks included). Model calls on the request path: 0/69. B1 shipped 23/23 code picks (`no_time`); by B2 all 23 had been upgraded to model picks by the background upgrade.
+
+## forge-g1-prefetch-hitrate-2026-10-03
+**Plan-level prefetch hit rate on real lesson item sequences (`evals/forge-g1-turn.mjs` part A, offline, 2026-10-03): all 303 c4-c7 maths/science/EVS/English topics; the items a lesson reaches = the Director's `buildPracticeQueue` (≤ 12 per topic, 3,632 queue items); hit rate = mountable queue items warmed by a max-6 prefetch / mountable queue items.**
+| renderers | mountable queue items | old (first 6 kit items, unplanned) | planned (queue order) | slots on gaps old / new |
+|---|---|---|---|---|
+| fraction-bars@1 (today) | 24 (6 topics) | 13 (54%) | 21 (88%) | 1805 / 0 of 1818 |
+| + scene@1 | 375 (303 topics) | 39 (10%) | 372 (99%) | 1779 / 0 |
+Plan-level: an item that plans can still fail the gate (1/30 in forge-g1-gate-pass); the live B3 arm measured 23/23 memory hits.
+
+## forge-g1-scene-grade-agreement-2026-10-03
+**gradeEvent vs the scene@1 renderer's own verdict function (`probeOutcome` in src/modules/frame/scene/runtime.ts, the code the frame runs), offline, 2026-10-03 (`tests/forge-g1-serve.test.mjs`): every G1 scene fill (choice-card@1, sequence-steps@1) of every item and diagnostic in the c4-c7 maths/science/EVS/English kits, band B3, seed 11 — 964 fills, 2587 verdicts (every choice option, traps mapped through miscMap to the kit misconception id; the correct and the reversed order), 0 disagreements.** Also: fraction-bars compare with a forged `correct: true` on a wrong bar grades incorrect (unit test).
+
+
+<!-- merged from inbox/integration-learner-comp.json -->
+## comp-sim-integration-2026-10-03
+**Comprehension simulator, the two ledger fixes, 2026-10-03.** `node evals/comprehension-sim/run.mjs --seeds 30` (24 personas × 30 seeds × 6 topics × 5 sessions; 4,320 child-concepts per family; code-played, real engine), before vs after `ledger-source-weight` + `ledger-mis-session-cap`, plus an ablation with the source weight only (cap disabled in a scratch copy, engine policy). Results: `evals/comprehension-sim/results/comp-sim-2026-10-03-integration-{before,after,srcweight-only}.json`. Engine policy (macro acc final | after 3 sessions | false mastery | load per 10 turns | re-teaches/child | per-type acc not_yet / shallow / fragile_bound / fragile_forgets / understood):
+
+| family | run | macro | after3 | false mastery | load/10 | reteach | not_yet | shallow | frag_bound | frag_forgets | understood |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| bkt2 | before | 0.640 | 0.579 | 0.025 | 2.256 | 10.79 | 0.779 | 0.770 | 0.376 | 0.721 | 0.553 |
+| bkt2 | src weight only | 0.637 | 0.574 | 0.023 | 2.255 | 10.84 | 0.785 | 0.772 | 0.376 | 0.708 | 0.542 |
+| bkt2 | both | 0.659 | 0.589 | 0.023 | 2.258 | 10.33 | 0.746 | 0.836 | 0.466 | 0.708 | 0.538 |
+| cfrag | before | 0.475 | 0.444 | 0.043 | 2.235 | 11.12 | 0.470 | 0.563 | 0.478 | 0.600 | 0.265 |
+| cfrag | src weight only | 0.470 | 0.446 | 0.040 | 2.235 | 11.14 | 0.463 | 0.580 | 0.495 | 0.562 | 0.251 |
+| cfrag | both | 0.480 | 0.452 | 0.039 | 2.236 | 10.74 | 0.418 | 0.644 | 0.525 | 0.562 | 0.252 |
+
+Reading: the cap carries the macro gain (shallow and fragile-bound children are no longer held at not_yet by a saturated misconception) and costs not_yet accuracy (−3.3 pp bkt2, −5.2 pp cfrag); the source weight alone is within noise. mut_vc4_game_full_weight still does not fail (bkt2 0.673 ≥ engine 0.659): the mutant flips the facet weight only, and game evidence is ~2 commits per topic (comprehension-review-open-2026-10-02). Validity: simulated, author gains; compliance scope only, not evidence of learning. Each run ~10 min CPU.
+
+## cascade-latency-integration-2026-10-03
+**Cascade lane latency, before vs after the integration, 2026-10-03.** `NODE_USE_ENV_PROXY=1 DEPLOY_CLASSIFY=grok-4-1-fast-non-reasoning node evals/cascade-latency.mjs --turns 12` (in-process API, Neon + Azure from the sandbox; synthetic child speech), n = 12 turns each; results `evals/results/cascade-latency-2026-10-03-integration-{before,after}.json`. Director median 1488 → 1562 ms, p90 2206 → 2328 ms; total (speech end → first audio byte) median 3056 → 3206, p90 3890 → 3900; speculation 10/12 → 11/12 hits. Per phase (from the @marks): classify median 674 → 571 ms; plan (classified → planned: the fold, the beliefs, step, compile) 1 → 2 ms (max 1 → 5); reply 652 → 760 ms (model time, 2 rewrite turns in each run); store (replied → stored, the one transaction now with the advisory lock, mode guard, kt rows, facets) 60 → 64.5 ms median, p90 65 → 76, max 71 → 101. No serial model call was added: reply-phase calls per turn identical in shape (1, or 2 on a rewrite). The Director median difference is reply-model variance, not the integration (plan + store add ~6 ms median).
+
+## hook-units-2026-10-03
+**Hook turns comparing across kinds, 2026-10-03.** `NODE_USE_ENV_PROXY=1 node evals/hook-units.mjs --n 12 --interest cricket` and `--n 20 --interest none`, kit c5-maths-ch01-t01 (contexts: highway distances, cricket stadium crowds, train route km …), DEPLOY_REPLY taxila-fast, text lane, the real compiled hook instructions. Arms: A without the new like-with-like note, B with it, B-guarded = the full textReply. Flagged by `mixedUnitComparison`: A 0/32, B 0/32, B-guarded 0/32 (all 96 texts printed in `evals/results/hook-units-2026-10-03-{cricket,no-interest}.json` and read by hand: no cross-kind comparison present, so no missed positive either). The prod bug did NOT reproduce at this n (rule-of-three 95% upper bound ≈ 9% per hook turn), so the shape note's effect is not measured; the predicate's recall rests on the reconstructed prod sentence and 5 constructed positives / 8 negatives in tests/units-guard.test.mjs. Read by hand (not counted): with the note, more B drafts posed a bigger/smaller comparison, all same-kind; whether the note invites comparisons is not measured.
+
+## integration-gates-2026-10-03
+`npx tsc -b` clean; `npx vite build` OK; `npm test` 779/780 (the failure is tests/migrations-applied: 008_tutor_choice.sql not applied to Neon — another workstream's migration, not applied by this one); kit budget 108/10815 dropped (= baseline); `NODE_USE_ENV_PROXY=1 node tests/lesson-api-e2e.mjs` 40/40 on real Neon + Azure (3 new: 6 kt_evidence rows written — teach, item.open, probe.why; replay of the real rows in DB seq = kt_skill_state for every skill to 1e-12 and same display; skill_state = the ledger's projection); `node tests/conductor-db.test.mjs` 14/14 on the CONDUCTOR_TEST_DATABASE_URL branch. The e2e needed the account password on core_tutoring withdrawal and child delete (account.js has required it since the parent-gate work; the test was stale).

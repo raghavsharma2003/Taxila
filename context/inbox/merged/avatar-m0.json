@@ -1,0 +1,190 @@
+{
+ "nodes": [
+  {
+   "id": "avatar-m0-procedural-head",
+   "kind": "decision",
+   "title": "M0 3D tutor = a procedural three.js 0.180.0 head generated in code from the shared cast look (no GLB, no TalkingHead yet), driven by ARKit-named weights so a factory GLB swaps in behind the same rig contract",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-m0-tap-chain",
+   "kind": "decision",
+   "title": "Lip tap = one analysis-only AnalyserNode hung off the EXISTING teacher meter's analyser via LevelMeter.onTap (no link file changes); serves the cascade PCM lane, the realtime lane and the text lane alike",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-m0-lip-normalised",
+   "kind": "decision",
+   "title": "M0 jaw = level-normalised RMS (gate 0.06x and full-open at 0.7x the running p90 voiced RMS, linear, one-pole tau 50 ms); matches the fixed-gain RMS arm's r within 0.005 and survives a -10.5 dB received level",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-tutor-offer-sheet-ranges",
+   "kind": "decision",
+   "title": "The picker offers a tutor only inside its persona sheet's class range and only when the sheet + voice exist: today one tutor per class, so the picker is skipped (no fake one-tile choice); AVATAR §5.1 widened ranges sit behind TAXILA_TUTOR_OFFER=wide; Uma is a draft",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-tutor-choice-store",
+   "kind": "decision",
+   "title": "Tutor choice = child.teacher_id + child.tutor_chosen_at (migration 008) + an analytics-only tutor_switch log written in the SAME statement as the update (from_id = previous teacher, always); 409 while any lesson is open with activity in the last 6 h; the lesson pins its own teacher; B2-B4 switch free, B1 switch (or a first pick over a parent-set teacher) needs the Parent-corner unlock",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-m0-tiers-governor",
+   "kind": "decision",
+   "title": "Static tier sends software rasterisers (SwiftShader/llvmpipe) and pre-2017 mobile GPUs to the 2D plate (D); the governor's long-frame threshold is cap-aware (max(50 ms, 1000/cap + 17 ms)); ?face= honoured only in dev / VITE_DEV_ROUTES builds; MSAA off at a static B-lite start; battery + the child's voice-only presentation now wired",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-m0-lip-bench-2026-10-03",
+   "kind": "measurement",
+   "title": "M0 lip driver on the Hindi/English viseme bench: at the bench level it is slightly WORSE than fixed-gain RMS (r 0.537 vs 0.546 hi, 0.673 vs 0.681 en; closures 23/84 vs 27/84); its win is robustness to quiet audio (-10.5 dB: vowel false-close 17% vs 72%)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-m0-fps-headless-2026-10-03",
+   "kind": "measurement",
+   "title": "Procedural head in headless Chromium (SwiftShader, no GPU): tier B holds its 30 fps cap (300/300 frames in 10 s, interval p95 33.4 ms, main-thread work p95 0.6-0.9 ms); B-lite holds 20 fps (tier B FORCED: on SwiftShader the shipped tier logic picks D; no phone run, so M0 acceptance 'one G85 phone' is NOT met)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-m0-bundle-2026-10-03",
+   "kind": "measurement",
+   "title": "Bundle delta: three.js + the head + the stage load as one lazy chunk (523 KB raw / 133 KB gz / 110 KB br); the picker route chunk is 26 KB raw / 10 KB gz; main +0.2 KB raw, lesson chunk +0.2 KB raw (LevelMeter.onTap)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-m0-picker-order-2026-10-03",
+   "kind": "measurement",
+   "title": "Per-child seeded shuffle: Asha first for 50% +/- 3 pp of 4,000 simulated child ids with a two-tutor offer (no position bias by construction)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-m0-dead-ends",
+   "kind": "rejection",
+   "title": "Three M0 traps: absolute-mode morph deltas shrink the head; a fixed-gain RMS jaw at an unknown received level; a fixed 50 ms long-frame bar under a 20 fps cap",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-teacher-pinned-bounded",
+   "kind": "decision",
+   "title": "teacherFor bounds a saved teacher_id by the persona sheet's classes (or the wide ranges under TAXILA_TUTOR_OFFER=wide) on every read and falls back to the class default with a log; teacherForLesson pins speech to the lesson's state.ctx.teacherId (wired in /api/tts; voice.js tts-stream and the realtime token still read the child's current pick)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-m0-context-churn-2026-10-03",
+   "kind": "measurement",
+   "title": "Picker WebGL churn, 40 selection flips in headless Chromium: before the fix the browser evicted 24 contexts and the session COUNTED 24 losses (>= 2 sends every later face to tier D for the session); after (listener removed + forceContextLoss + disposed guard) 0 evictions, 0 counted, 1 canvas left",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "avatar-m0-review-traps",
+   "kind": "rejection",
+   "title": "Two M0 review traps: three r180 WebGLRenderer.dispose() does not free the GL context (stale contextlost listeners then poisoned the session tier); a 15-minute activity window as 'lesson is live' let a paused lesson switch teacher mid-lesson",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "avatar-m0-procedural-head",
+   "rel": "part_of",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "avatar-m0-procedural-head",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "avatar-m0-procedural-head",
+   "rel": "measured_by",
+   "dst": "avatar-m0-fps-headless-2026-10-03"
+  },
+  {
+   "src": "avatar-m0-procedural-head",
+   "rel": "measured_by",
+   "dst": "avatar-m0-bundle-2026-10-03"
+  },
+  {
+   "src": "avatar-m0-tap-chain",
+   "rel": "part_of",
+   "dst": "avatar-lipsync-rms-jaw"
+  },
+  {
+   "src": "avatar-m0-lip-normalised",
+   "rel": "part_of",
+   "dst": "avatar-lipsync-rms-jaw"
+  },
+  {
+   "src": "avatar-m0-lip-normalised",
+   "rel": "measured_by",
+   "dst": "avatar-m0-lip-bench-2026-10-03"
+  },
+  {
+   "src": "avatar-m0-lip-normalised",
+   "rel": "caused_by",
+   "dst": "avatar-m0-dead-ends"
+  },
+  {
+   "src": "avatar-tutor-offer-sheet-ranges",
+   "rel": "part_of",
+   "dst": "avatar-tutor-selection"
+  },
+  {
+   "src": "avatar-tutor-choice-store",
+   "rel": "part_of",
+   "dst": "avatar-tutor-selection"
+  },
+  {
+   "src": "avatar-tutor-choice-store",
+   "rel": "measured_by",
+   "dst": "avatar-m0-picker-order-2026-10-03"
+  },
+  {
+   "src": "avatar-m0-tiers-governor",
+   "rel": "part_of",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "avatar-m0-tiers-governor",
+   "rel": "caused_by",
+   "dst": "avatar-m0-dead-ends"
+  },
+  {
+   "src": "avatar-m0-dead-ends",
+   "rel": "measured_by",
+   "dst": "avatar-m0-lip-bench-2026-10-03"
+  },
+  {
+   "src": "avatar-teacher-pinned-bounded",
+   "rel": "part_of",
+   "dst": "avatar-tutor-selection"
+  },
+  {
+   "src": "avatar-teacher-pinned-bounded",
+   "rel": "constrains",
+   "dst": "avatar-tutor-offer-sheet-ranges"
+  },
+  {
+   "src": "avatar-tutor-choice-store",
+   "rel": "caused_by",
+   "dst": "avatar-m0-review-traps"
+  },
+  {
+   "src": "avatar-m0-tiers-governor",
+   "rel": "measured_by",
+   "dst": "avatar-m0-context-churn-2026-10-03"
+  },
+  {
+   "src": "avatar-m0-review-traps",
+   "rel": "measured_by",
+   "dst": "avatar-m0-context-churn-2026-10-03"
+  }
+ ],
+ "md": {
+  "decisions": "## avatar-m0-procedural-head\n**AVATAR.md M0 ships a procedural three.js 0.180.0 head (`src/avatar/three/head.ts`), generated in code from the shared cast look (`shared/tutors.js`), instead of TalkingHead b3e277b + the CC0 `mpfb.glb`. The rig is driven only by ARKit-named weights (jawOpen, mouthSmileLeft/Right, eyeBlinkLeft/Right, browInnerUp, …), head [pitch, yaw, roll] and eye gaze, so a factory GLB later replaces `head.ts` and nothing upstream (lip driver, behaviour, compositor, tiers, React wrapper).** (2026-10-03)\n- Rationale:\n  - The task needs a child-facing tutor selection now, and AVATAR M0 itself says `mpfb.glb` is a realistic MakeHuman that \"never reaches children\". No other ready GLB is licence-clean (§1.5 denylist).\n  - A head generated in code has no licence to clear, no download beyond the JS, and draws the cast's actual looks (Asha ponytail + denim jacket, Arjun curls + round glasses, Uma low side bun + painted pallu) in the S2 direction: slightly large head, eyes ×1.15 with painted iris and a catch-light, Lambert shading, solid hair shell, no cloth simulation.\n  - TalkingHead's value (Mixamo skeleton, dynamic bones, breathing, moods) needs a GLB with that skeleton; with a procedural rig it would be dead weight (+36 KB).\n- Not met (honest): tier-B budgets are GLB budgets. The procedural head is 19–23k triangles and 16 draw calls (budget ≤ 15k, ≤ 4) [M, renderer.info]. It is not an S2 character and must not be read as one in M-AV-1.\n- Reverse when: the factory's S2 `asha` GLB passes G1–G12 (M4) → load it through the same rig contract and vendor TalkingHead only if a measured benefit (E-B1) needs its skeleton features; or earlier if M-AV-1 pilots rate the procedural head \"weird\" above 15% in any band.\n\n## avatar-m0-tap-chain\n**The 3D face's lip tap is one analysis-only `AnalyserNode` (fftSize 2048, smoothing 0) connected to the OUTPUT of the teacher LevelMeter's existing analyser (an AnalyserNode passes its input through), found through a new `LevelMeter.onTap(fn)` that fires on attach (every reconnect), immediately if attached, and with null on detach. No link file changed; the tap's node is never connected onward. The same path serves the cascade PCM lane (PcmStreamPlayer output), the realtime WebRTC lane (VoiceLink's MediaStreamSource) and the text lane (MediaElementSource).** (2026-10-03)\n- Rationale: AVATAR §2.2 proposed `LevelMeter.attach(analyser, source)` edits in each link; chaining off the meter's analyser gives the same signal with a 15-line change in `src/lesson/level.ts` and none in VoiceLink, TextLink or CascadeLink (all under active edit by other workstreams). Contract tests 1 (static + runtime spy) and 3 (reconnect re-attaches in one read, old tap disconnected) are in `tests/avatar-face.test.mjs`.\n- Reverse when: the phase-2 AudioWorklet `lipTap` (E-P1/E-P2) lands, or an AF check (§10 b-d) shows any difference with the tap attached.\n\n## avatar-m0-lip-normalised\n**The M0 jaw is RMS over the last 512 samples, gated at 0.06× and fully open at 0.7× a running voiced-level reference (p90 of voiced-frame RMS over ~10 s), linear, then the benched symmetric one-pole τ = 50 ms, × jawCeiling 0.85. Her onset = 2 voiced frames; her offset = ≥ 250 ms unvoiced. A spectral-tilt \"wide / round\" shape hint rides on top at shapeGain 0.35, gated by the jaw (unbenched; M1 replaces it with HeadAudio classes).** (2026-10-03)\n- Rationale: `avatar-m0-lip-bench-2026-10-03`: at the bench's level the normalised driver is within 0.009 r of the fixed-gain RMS arm (0.537 vs 0.546 hi, 0.673 vs 0.681 en at 30 fps) with fewer vowel false-closures (15.9% vs 17.4% hi), and at −10.5 dB it holds (0.538 / 17.3%) where the fixed-gain arm collapses (0.503 / 72.4% of Hindi vowel frames closed). The received level after Opus/AGC/TTS gain is unknown (GR-9), so normalisation is the safe default. The M1 bar \"r(open) within 0.02 of RMS-only\" is met.\n- Cost: bilabial closures 23/84 vs 27/84 (hi, 30 fps). Closure recall is M1's job (shapes, N-1 clamp), not the jaw's.\n- Reverse when: E-3 (received gpt-realtime / cascade audio through a real PeerConnection) ranks the arms differently, or M1's shape classes need a different jaw curve.\n\n## avatar-tutor-offer-sheet-ranges\n**`eligibleTutors()` (`shared/tutors.js`, used by server and client) offers a tutor only inside its persona sheet's class range (asha.js 1–4, arjun.js 5–9) and only when that sheet and its voice exist on the server (`CHARACTERS`). Today that is one tutor per class, so the picker is skipped (\"Your teacher\", no fake one-tile choice) and the class default stands. AVATAR §5.1's widened ranges (asha 1–6, arjun 1–9, uma 7–9) are behind `TAXILA_TUTOR_OFFER=wide`. Uma is in the cast as a `draft`: no `server/compiler/characters/uma.js`, no probed low-register voice, so she is never offered and the server refuses her with 403.** (2026-10-03)\n- Rationale: the sheets are band-bound (\"an AI teacher character for young Indian children\", \"classes 5-9\"); offering Asha to a class-8 child would compile a 6-9-year-old register for a 13-year-old. AVATAR §5.1 says pedagogy should be the band layer, not the character, but that split has not landed. A character, its voice and its face are one unit (VOICE-TEACHER §6), so a face without a sheet must not be choosable: `teacherFor()` would silently fall back to another character's voice.\n- Reverse when: (a) the band layer carries register and the sheets are person-only → set `TAXILA_TUTOR_OFFER=wide` (picker appears for classes 1–6 with Asha + Arjun); (b) `uma.js` lands and her voice passes the ear test → set her status `live` (picker appears for 7–9 with Arjun + Uma). Owner decision VOICE-TEACHER §12.1/§12.3.\n\n## avatar-tutor-choice-store\n**The choice is stored on the child: `child.teacher_id` (exists since 001) plus `child.tutor_chosen_at` (migration 008, additive), so a class default never reads as a choice. `POST /api/tutors/choose` is ONE SQL statement (`CHOOSE_SQL`: open-lesson check → `update child … where not exists (live)` → `insert into tutor_switch … from upd`), so the teacher never changes without its log row and the update cannot slip past the live check inside the statement; `tutor_switch.from_id` is always the previous `teacher_id` (class default or parent pick on a first pick; the first row per child IS the first pick). 409 while any lesson for the child is open (`ended_at is null`) with activity in the last 6 h (`LIVE_HOURS`; the client keeps no lesson across a page load, so an older open row is an abandoned tab). 403 for a tutor not offered. No reason column.** (2026-10-03, revised after review)\n- **Parent-control policy CHANGE (stated, not silent):** `account.js` PATCH puts every `teacher_id` write behind `requireParentIfPinSet`; this route lets a B2–B4 child pick AND switch with only `requireChild` (AVATAR §7.1 \"free\" for older bands). In B1 (classes 1–2) a switch needs the Parent-corner unlock once a PIN exists, and a first pick counts as a switch when the current `teacher_id` is not the class default (`effectivelyChosen`: a teacher the parent set at onboarding or via PATCH is treated as chosen).\n- **Teacher pinned per lesson:** compile() already reads `state.ctx.teacherId`; `/api/tts` now speaks through `teacherForLesson(child, state.ctx.teacherId)`. Not yet pinned (forbidden files this workstream): `server/routes/voice.js styleForChild(child)` (tts-stream + prewarm) and `server/routes/lesson.js realtimeToken`'s `teacherFor(child).voice`. Until those two read the pin, a switch next to an open lesson idle > 6 h can still change the voice under that lesson's persona.\n- Race not closed: a lesson START that read `teacherFor` before the pick and inserts its row after it. With the pin that lesson is consistently the old teacher (persona, face, text-lane voice); the two unpinned voice paths above are the residue.\n- Rationale: AVATAR §7.4/§7.5 and tutor-selection-ux §5.3. Memory needs no migration: no memory row is keyed by teacher_id today.\n- Measured: `tests/tutor-db-e2e.mjs` on the Neon test branch (ep-winter-tooth), 9/9 on 2026-10-03, including a 61-minute pause → 409 (the old 15-minute window allowed it) and a 7 h idle open row → not live; `tests/avatar-tutor-routes.test.mjs` (7, in `npm test`) covers auth, the one-statement write, the no-row → 409 path and the B1 gate with a stubbed db.\n- Not built (open): `parent_tutor_policy` (allow-list + free/ask/locked), the parent approval card, `child_tutor_pair.address_term`.\n- Reverse when: the parent policy table lands → replace the B1 rule and the B2–B4 \"free\" default with the stored policy; or the owner rules that every teacher change needs the parent (then route through `requireParentIfPinSet` for all bands); or voice.js + realtime read the pin → `LIVE_HOURS` can drop back to a short UX-only window.\n\n## avatar-teacher-pinned-bounded\n**`teacherFor(child)` (server/compiler/characters/index.js) uses the saved `teacher_id` only when `servesClass(id, class_level)`: the persona sheet's own `classes` (asha 1–4, arjun 5–9), or AVATAR §5.1's wide ranges only while `TAXILA_TUTOR_OFFER=wide`. Otherwise it returns the class default and logs once per child/teacher/class per process; the row is NOT rewritten (a later class or mode can honour the child's pick). `teacherForLesson(child, pinnedId)` returns the lesson's pinned character. The manifest's sheet-mode `offerClasses` are asserted equal to the sheets' `classes`.** (2026-10-03)\n- Rationale (review finding): nothing re-validated a saved pick against the class or the offer mode, so (a) under `wide` a class-1 child could get Arjun's 5–9 register, (b) switching `wide` off left every wide-era pick in place, (c) a class change kept an out-of-range register. Computing the bound on every read fixes all three with no `class_change` job and no data migration. Found on the test branch: a child row inserted without a teacher gets the column default `asha`, so a class-8 child created that way was being taught in Asha's 6–9-year-old register; the bound now gives them Arjun.\n- Cost: a parent's explicit out-of-range pick (e.g. Arjun for class 3 in sheet mode) is now overridden at lesson start. This was never offered in the picker and is the register floor, not a preference.\n- Reverse when: the band layer carries register and sheets become person-only (then bound by `serveClasses`, or drop the bound); or the owner decides a parent may pick across bands (then exempt `source='parent'` picks, which needs the parent pick recorded).\n\n## avatar-m0-tiers-governor\n**Stage-1 tiering sends software rasterisers (SwiftShader, llvmpipe, softpipe, Microsoft Basic Render) and pre-2017 mobile GPUs (Mali-4xx/T6-8xx, Adreno 3xx-5xx, PowerVR SGX/GE8100/GE8300) to tier D, GE8320 / Mali-G31/G51/G52 MC1 / Adreno 610-613 to B-lite, everything else to B; `failIfMajorPerformanceCaveat`, two context losses or battery < 15% → D; battery < 10% or the voice-only presentation → E. The governor counts a frame as long past max(50 ms, 1000/cap + 17 ms).** (2026-10-03)\n- Rationale: a phone without a GPU path cannot hold B, and a desktop on SwiftShader is the same case; the 2D plate of the same person is the right face there. The fixed 50 ms bar demoted a healthy 20 fps B-lite face within 10 s (`avatar-m0-dead-ends` #3).\n- Revised after review (2026-10-03): `?face=` is honoured only when `import.meta.env.DEV` or `VITE_DEV_ROUTES=1` (production builds can no longer force B on a known-bad GPU); the renderer is created with `antialias: false` when the static tier is B-lite (a later runtime demotion keeps its context, so MSAA stays on there); battery is read once via `navigator.getBattery()` at module load (applies to decisions after it resolves) and `TutorFace voiceOnly` (= the child's `prefs.face === \"voice\"`) feeds the tier-E rule, so neither branch is dead code any more. `Stage3D.dispose()` removes its `webglcontextlost` listener, then `renderer.dispose()` + `renderer.forceContextLoss()`; a disposed stage never reports a loss (`avatar-m0-context-churn-2026-10-03`).\n- Reverse when: E-P5 lab data shows a listed GPU holding B at minute 30, or a non-listed one failing it.\n",
+  "measurements": "## avatar-m0-lip-bench-2026-10-03\n**The real `src/avatar/lip.ts` LipDriver on the committed Hindi/English viseme ground truth (`docs/research/avatar/bench/stim/*.json`), scored as `bench/bench.mjs` (2026-10-03).**\n- Method: `evals/avatar/lip-bench.mjs`. 14 utterances (10 hi-IN Swara/Madhur, 4 en-IN Neerja/Prabhat; 84 hi + 34 en bilabial segments). The WAVs were regenerated from the same text + voice with Azure Speech REST (`evals/avatar/gen-stim-rest.mjs`) because only the JSON was committed; the bench's own RMS arm reproduces its committed r exactly (0.563 hi / 0.697 en at 60 fps), so the audio aligns. Causal, 2048-sample window per render instant, one lag per arm × language × fps (sweep −100…+250 ms). Results file: `evals/avatar/results/lip-bench-2026-10-03.json`.\n- Results (30 fps = the tier-B cap; r vs smoothed GT / vs unsmoothed GT, bilabial closures hi, vowel false-close hi):\n\n| arm | r hi | r en | r hi unsmoothed | closures hi | vowel false-close hi |\n|---|---|---|---|---|---|\n| fixed-gain RMS (bench baseline) | 0.546 | 0.681 | 0.453 | 27/84 | 17.4% |\n| M0 normalised (shipped) | 0.537 | 0.673 | 0.447 | 23/84 | 15.9% |\n| M0, τ 30 ms | 0.482 | 0.598 | 0.418 | 52/84 | 27.5% |\n| fixed-gain RMS at −10.5 dB | 0.503 | 0.619 | 0.418 | 75/84 | **72.4%** |\n| **M0 normalised at −10.5 dB** | **0.538** | **0.679** | 0.445 | 25/84 | **17.3%** |\n\n- Reading (revised after review): at the bench's own level the shipped driver is slightly WORSE than fixed-gain RMS (r −0.009 hi / −0.008 en; 4 fewer Hindi closures). It ships for robustness to an unknown received level (−10.5 dB: vowel false-close 17.3% vs 72.4%), not as better lip-sync; closures are M1's job.\n- Best lag: +33 ms at 30 fps, +50 ms at 60 fps for every arm (my rerun; the committed summary reports the RMS arm's r at lag 0 as its best-openness figure).\n- Sweep (n = 14 each, 30 fps, hi): gate/scale/curve variants traded r for closures monotonically (e.g. refScale 2: r 0.440, closures 72/84, false-close 48.1%); the shipped defaults were the best r at a false-close no worse than baseline.\n- Caveats: Azure Neural TTS audio, not received Opus/WebRTC audio (E-3 still owed); speech-only r (unsmoothed) is low for every arm (0.09–0.14 hi): openness inside speech is tracked poorly by any envelope.\n\n## avatar-m0-fps-headless-2026-10-03\n**The procedural head in headless Chromium 1194 (Playwright), ANGLE → SwiftShader (Vulkan, software; NO GPU), 4-vCPU container, 2026-10-03.**\n- Method: `evals/avatar/fps-headless.mjs` on `/dev/avatar` (vite dev server), 1.5 s warm-up then a 10 s window per arm; the stage's own stats (TH-1-capped loop) plus an independent rAF counter; the 2 s probe enabled. A full `npm test` run was executing on the same machine during the measurement (conservative).\n- Results:\n\n| arm | frames / 10 s | fps p50 | interval p95 | main-thread work p95 | rAF |\n|---|---|---|---|---|---|\n| B speaking, 1280×800 (Asha) | 299 | 30.0 | 33.4 ms | 0.8 ms | 57.8 |\n| B speaking, 360×640 (Arjun) | 300 | 30.0 | 33.4 ms | 0.7 ms | 58.7 |\n| B your_turn, 360×640 (Uma) | 301 | 30.0 | 33.4 ms | 0.6 ms | 60.0 |\n| B-lite speaking, 360×640 | 200 | 20.0 | 50.1 ms | 0.9 ms | 59.9 |\n\n- Scene: 19,114–22,846 triangles, 16 meshes = 16 draw calls; compile 111–217 ms, first render 61–96 ms (renderer.info, `ready` events).\n- Tier B / B-lite were FORCED with `?face=` (dev build): on SwiftShader the shipped static tier picks D. Re-run after the review fixes (`fps-headless-2026-10-03-fix.json`, B-lite now without MSAA): 300 / 300 / 301 / 201 frames, same p50 and p95; SwiftShader cannot show the MSAA saving.\n- **M0 acceptance is NOT met as specified:** AVATAR M0 requires one Helio G85 phone; none was run.\n- \"Work\" is main-thread JS + GL submission; SwiftShader rasterises on its own threads, so this is NOT a GPU-time or phone number. No phone was measured (E-P3/E-P5 on the device lab are still owed).\n\n## avatar-m0-bundle-2026-10-03\n**`npx vite build` before and after (2026-10-03; sizes from dist/, gz level 9 and brotli via node zlib).**\n- New lazy chunk `stage3d-*.js` (three.js 0.180.0 named imports + head + stage + lip/behaviour/compositor/tier): 523,069 B raw / 133,455 B gz / 110,179 B br. Within AVATAR §1.1's separate avatar line (≤ 230 KB br).\n- New lazy chunk `TeacherRoute-*.js` (picker + TutorFace wrapper + 2D plate + lip/tap): 26,126 B raw / 10,197 B gz.\n- `main-*.js`: 39,543 → 39,757 B raw (+214; +64 B gz): two lazy route entries. Lesson chunk `Other-*.js`: 105,241 → 105,410 B raw (+169; +50 B gz): `LevelMeter.onTap`. No three.js in main or the lesson chunk (grep).\n- Caveat: the baseline build was taken at the start of this workstream; other workstreams edit the tree concurrently, so small deltas in shared chunks may include their edits.\n\n## avatar-m0-picker-order-2026-10-03\n**Position fairness of the per-child shuffle (`seededShuffle(seedOf(child.id))`), 2026-10-03.** Method: `tests/avatar-tutors.test.mjs`, 4,000 synthetic child ids, two-tutor offer (wide ranges, class 3). Result: Asha first in 50% ± 3 pp (asserted |share − 0.5| < 0.03). Same id → same order (stable across visits).\n\n\n## avatar-m0-context-churn-2026-10-03\n**WebGL context churn in the tutor picker, before vs after the dispose fix (2026-10-03).**\n- Method: `evals/avatar/context-churn.mjs` — headless Chromium (Playwright), SwiftShader WebGL2, `/dev/avatar?view=picker&class=8&face=B` (Arjun + Uma preview), 40 clicks alternating tiles (each unmounts one live head and mounts another), 150 ms dwell after the new head's canvas mounts, 1.5 s settle; reads the session's counted losses (`faceContextLosses()`), canvases in the DOM, the live tile's tier, and the browser's \"Too many active WebGL contexts\" warnings. n = 1 run per arm (deterministic count).\n- Before (old dispose: no `forceContextLoss`, listener kept): 24 browser evictions, **24 losses counted** (≥ 2 → every later TutorFace starts at D for the session, the lesson included; the live tile still showed B only because `?face=B` bypasses the static tier). `evals/avatar/results/context-churn-2026-10-03-before.json`.\n- After: **0 evictions, 0 counted**, 1 canvas, live tier B. `evals/avatar/results/context-churn-2026-10-03-after.json`.\n- Not measured: Android Chrome's lower context cap (same mechanism; the fix frees each context on unmount, so the cap is never approached).\n",
+  "rejected": "## avatar-m0-dead-ends\nThree traps hit while building M0 (2026-10-03):\n\n1. **Morph targets as deltas with three.js's default absolute mode.**\n   - **Tried:** `geometry.morphAttributes.position` filled with per-vertex DELTAS and `morphTargetsRelative` left false.\n   - **Broke:** three computes base × (1 − Σw) + Σ w·target, so two cheek weights of 0.064 shrank the whole head to ~0.87 and the hair shell (0.9 × head inside the face) covered the face. Diagnosed with a red-recolour probe in the browser. Fix: `morphTargetsRelative = true`. Any factory GLB loader must keep relative morphs.\n2. **A fixed-gain RMS jaw on audio of unknown level.**\n   - **Tried:** the bench's fixed gate 0.01 / gain 6 at −10.5 dB (a plausible received level after Opus/AGC).\n   - **Broke:** 72.4% of Hindi vowel frames had a closed mouth (vs 17.4% at the bench's level). The level-normalised driver held 17.3%. Reverse if: the received level is measured stable to ±2 dB across lanes and devices.\n3. **A fixed 50 ms \"long frame\" bar under a 20 fps cap.**\n   - **Tried:** the governor counting frames > 50 ms as long at every cap.\n   - **Broke:** at a 20 fps B-lite cap the nominal interval is 50 ms, so 39 of 200 frames in 10 s counted as long and the governor demoted DPR on a healthy face. Fix: long = max(50, 1000/cap + 17) ms (`avatar-m0-tiers-governor`).\n\n\n## avatar-m0-review-traps\nTwo traps found in review of M0 (2026-10-03):\n\n1. **Trusting `WebGLRenderer.dispose()` to free the context.**\n   - **Tried:** `renderer.dispose()` + removing the canvas on unmount, with the stage's own `webglcontextlost` listener left attached.\n   - **Broke:** three r180's dispose frees programs/buffers but not the GL context. The picker builds a stage per selection, so 40 flips evicted 24 contexts; the detached canvases' stale listeners reported each eviction and the session counted 24 losses, which sends every later face (the lesson's too) to the 2D plate. Fix: remove the listener, `dispose()` then `forceContextLoss()`, ignore losses after dispose (`avatar-m0-context-churn-2026-10-03`).\n2. **\"Live lesson\" = a turn in the last 15 minutes.**\n   - **Tried:** `lessonLive()` counting an open lesson as live only with activity in the last 15 min, checked in one query and written in another.\n   - **Broke:** a lesson paused > 15 min (still open, still resumable) could switch teacher; the lesson kept Asha's compiled persona and face while `/api/tts` re-read `child.teacher_id` and spoke in Arjun's voice. Fix: the lesson pins its teacher (`teacherForLesson`), live = open with activity in 6 h, check + update + log in one statement. Reverse if: every speech path reads the pin, then the window is UX only.\n"
+ }
+}

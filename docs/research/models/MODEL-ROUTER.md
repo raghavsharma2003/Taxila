@@ -1,4 +1,9 @@
-# Model router: which Foundry model for which Taxila task (2026-10-02/03)
+# Model router: which Foundry model for which Taxila task (FINAL, 2026-10-03)
+
+**Status.** Final after the adversarial review at the end of this file. §1 is the one routing table; every row
+already applies the review's corrections, and the "changed from draft" column says what moved and why. The draft
+table (2026-10-02) is superseded; its numbers survive in the notes below and in `router-tables.md`.
+Voice choice detail lives in `../voice/v2/VOICE-CHOICE.md`; STT detail in `../voice/v2/stt-hinglish.md`.
 
 **Scope.** Every model here is Azure-billed (Azure OpenAI, or a Foundry model on an Azure meter). OpenRouter arms
 (`or:*`) are **reference only**. They stand in for catalogue models that are not deployed yet, so their quality
@@ -18,28 +23,35 @@ Raw data and harnesses (all in this folder unless noted):
 
 ---
 
-## 1. Routing table
+## 1. Routing table (final)
 
-$/1k = measured mean tokens × Azure retail Global Standard price (prices API, read 2026-10-02). Latency was measured
-from the US build sandbox to eastus2 Global Standard, with other workloads sharing the deployments, so treat it as
-indicative.
+Rules applied: **performance first**, cost decides only between results tied within noise; a model is eligible for a
+production slot only if it bills on a **Direct-from-Azure** meter (`azure-billed-open-models`); every child-facing
+fallback comes from a different model family where one qualifies. $/1k = measured mean tokens x Azure retail Global
+Standard price (read 2026-10-02). Latency: US sandbox -> eastus2, shared deployments, indicative only.
 
-| task | PRIMARY (deployed today) | FALLBACK (different vendor where possible) | why: quality · p50 · $/1k calls | upgrade path (deploy + re-measure) |
-|---|---|---|---|---|
-| **Live teacher reply** (Hinglish, ≤25 words, effort none, streamed) | **`gpt-5.6-terra`** | **`taxila-ds41`** (DeepSeek-V4.1-Flash) | terra: judged overall 4.20 / 3.70 (sol / grok judge), pedagogy 4.05 (best deployed), 0 leaks, 20/20 end on a question; TTFT 1.20 s p50 / 1.47 s p90; $0.81. ds41: 3.50 / 3.80, naturalness 4.40 (joint best), TTFT 1.24 s (p90 2.70 s), $0.14. The current `taxila-fast` (luna): 3.40 / 3.50, TTFT 0.98 s, $0.08 | **gpt-6.1-sol** (reference 4.90 / 3.20, the best mean across both judges) and **gpt-6-luna** (4.40 / 3.10 at $0.06). Re-run T on Azure for TTFT before switching |
-| **Answer classification** vs verified key (JSON) | **`taxila-fast`** (strict schema already in production) | **`grok-4-20-non-reasoning`** | Ceiling: 9 models scored 40/40 (20 cases × 2). fast 1.0 s p50, $0.06. grok-4-20-nr 373 ms p50 / 440 ms p90, $0.25. ds41 40/40 at 0.73 s, $0.09 is a third option | Needs a harder item set to separate models (`evals/classify-accuracy.mjs`). Open models' strict `json_schema` support is unverified |
-| **Distress / safety classification** (Hindi, Hinglish, English) | **`taxila-fast`** (production prompt; the predicate stays the floor) | **`taxila-ds41`** | Distress recall: fast 16/16, terra 16/16, brain 16/16, ds41 16/16. **DeepSeek-V4-Pro, grok-4.3, grok-4-1-fast and gpt-oss all missed "I just want to disappear forever" 2/2.** False alarms: fast 2/16 ("bhook se mar rahi hoon", the fail-safe direction), terra 1/16. fast 0.97 s | terra as a second opinion on borderline turns (31/32, 1.09 s) |
-| **Director planning** (next move, JSON) | **`taxila-fast`** (effort low) | **`taxila-oss120`** / `taxila-ds41` | Ceiling: fast, brain, ds41, oss120, grok-4.3, kimi-code, gpt-6.1-sol and gpt-6-luna all scored 16/16 (or 8/8). fast 1.43 s, $0.12; oss120 0.79 s, $0.18 | Session-level planning (not per-turn) → gpt-6.1-sol. The scenario set needs harder cases |
-| **Lesson / summary / parent-report writing** (Hindi + English) | **`taxila-brain`** (gpt-5.6-sol) | **`gpt-5.6-terra`** | brain 5/5 on faithfulness, language and overall from both judges in both languages; 0 invented facts. terra 5/5 in Hindi, 4/4 in English, 3.9 s, $3.0/1k vs brain $16.6/1k. Not chosen: DeepSeek-V4-Pro and kimi-k3 (invented facts), grok-4.3 (5 flags in English), Cohere (wrong child name, wrong numbers) | **gpt-6.1-sol**: 5/5 both languages (reference) at about $4.8/1k, a third of brain's cost. Switch after an Azure run |
-| **Diagram / visualisation code** (single HTML/SVG/JS) | **`taxila-codex`** (gpt-5.3-codex) | **`taxila-brain`** | Re-judged A, 3 diagrams (n=1): codex correctness 4.00, judge sum 12.33, interactive 2/3, 22 s p50. brain 4.00 / 13.00, 0/3 interactive, 46 s. fast 3.67 / 12.33 at 18 s. grok-4.6 timed out 3/3 (180 s) | Pinned-geometry SVG stays the live default (`diagrams-images` decision: sol 12/12 exact [M-prior]). gpt-6.1-sol as builder candidate |
-| **Game code (Phaser 4/TS) + repair loop** | **`taxila-codex`** (Responses, harness tools) | **`DeepSeek-V4-Pro`** | Phaser 4 single-file probe, 2 tasks × n=3: codex 6/6 functional, 24 s. DeepSeek-V4-Pro 6/6, **9.9 s**, ~$0.004/gen. ds41 6/6 in 5.7 s. brain 6/6 in 39 s. grok-4.3 6/6. **terra 4/6, kimi-code 4/6 (95 s, a wrong Phaser API).** Earlier codex result: 8/8 Phaser 4 [M-prior] | These tasks are easy, so most models hit the ceiling; the agentic M-F1 bake-off decides. Candidates: **gpt-6.1-sol** (DeepSWE 75.2 vs gpt-6-sol 68.8 [S]) and **Kimi-K3** (#1 Frontend Code Arena [S]) |
-| **Image: labelled diagrams, classroom scenes** | **`taxila-image`** (gpt-image-2, medium) | none for text-bearing images | Judge (verified by eye): gpt-image-2 got 5/5 on all five criteria for all 3 prompts; labels correct. FLUX.2-pro: 4 of 5 plant labels on leaves; fractions on the board malformed. Kontext: gibberish caption. gpt-image-2 37-47 s, $0.053 per image | gpt-image-2.5-flare / -sunburst, MAI-Image-2.6. Hindi labels: never bake them in; overlay SVG text (gpt-image-2 got Hindi images fully correct only 1/6 [M-prior]) |
-| **Image: characters / text-free illustrations** | **`taxila-flux2`** (FLUX.2-pro) | `taxila-image` | FLUX.2-pro tutor character 5/5 on all criteria in **6.2 s** at about $0.03 per 1 MP, vs gpt-image-2 5/5 in 37 s at $0.053. Its classroom scene scored 4/2/5/4/5 only because of the requested board text | Needs more than 1 RPM capacity (the deployment is at 1 RPM). Kontext-pro only for edits (untested here) |
-| **Vision: homework-photo OCR** (Hindi/English handwriting) | **`taxila-brain`** | **`grok-4-20-non-reasoning`** | Synthetic handwriting fonts (Kalam/Caveat with jitter, blur and perspective), 4 images: mean CER grok-4-20-nr 0.000 (0.94 s, $0.64/1k), terra 0.007, brain 0.009 (2.0 s, $2.75/1k), fast 0.035, Azure DI Read 0.045 (it misread Hindi+numbers at 0.167). **Mistral-Large-3 failed the English page (CER 1.0).** The test is at the ceiling; real children's handwriting decides. brain is primary because grok-4-20 had 0 fabrications in the earlier `vision-fab` run [M-prior] but brain is on the trusted Azure OpenAI path | mistral-ocr-4-0 and a real handwriting set of ≥ 30 photos. Never luna/terra for screenshots (`vision-fab`: 1-2 fabrications in 32) |
-| **Embeddings** (cross-lingual retrieval) | `text-embedding-3-small` (the only one deployed) | none | **Weak:** Hinglish query → English doc R@1 6/12 (MRR 0.67); Devanagari 6/12 (MRR 0.64). $0.02/1M | Deploy **text-embedding-3-large**, **Cohere-Embed-V5-Pro** (or embed-v-4-0) and re-run M |
-| **Not for child-facing tasks** | — | — | **Mistral-Large-3:** 42.7 s TTFT p50 today (overloaded; 5/20 errors). **grok-4.6:** 51 s replies, A timeouts. **grok-4.3:** 12.6 s TTFT (it reasons). **Cohere command-a-plus:** reasons by default, read "maarte" as "kill", distress recall 9/16, wrong facts in the Hindi report. **gpt-oss-120b:** JSON-mode output corrupted on Foundry; naturalness 2.25 | — |
+| task | PRIMARY | FALLBACK | evidence (quality · p50 · $/1k) | changed from draft | upgrade path (deploy + re-measure) |
+|---|---|---|---|---|---|
+| **Live teacher reply**, cascade lane (Hinglish, <= 25 words, effort none, streamed) | **`taxila-fast`** (gpt-5.6-luna) | **`DeepSeek-V4-Pro`** (Direct, "Azure Deepseek Models") | fast: overall 3.40 / 3.50 (sol / grok judge), natural 4.35, 0/20 leaks, TTFT 0.98 s (p90 1.21), $0.08. V4-Pro: 3.30 / 3.60, 0 leaks, 20/20 end on a question, TTFT 1.19 s (p90 2.79), $0.49. Candidate terra 4.20 / 3.70: lead over fast +0.50 (95% CI 0.05-1.00) almost all from the same-family judge, +220 ms TTFT, ~10x cost (~₹41/h with speculation vs ~₹4) | primary terra -> fast (review R3); fallback ds41 -> V4-Pro (ds41 bills only on a Fireworks meter, R5) | `gpt-6-luna`; re-run T with the production `compile()` prompt, multi-turn, neutral third judge + Hindi ear panel before any switch |
+| **Premium voice lane** (speech-to-speech, budgeted minutes) | **`taxila-realtime`** (gpt-realtime-2.1, native `marin` / `cedar`, v1) | the cascade lane (outage) | 25 words/turn with the brevity rule last, correct misconception handling (n=6) [M-prior]; first audio 776 ms median [M-prior] | new row (review R5: voice was unrouted) | Voice Live lane B (gpt-realtime-2.1 + the character's DragonHD voice) in the blind panel: same voice as the cascade, ~$0.042 vs $0.082/min (VOICE-CHOICE §4) |
+| **Cascade TTS** (teacher's mouth) | **Azure Speech `en-IN-Diya:DragonHDLatestNeural`** (Asha), `en-IN-Arjun` (Arjun), `en-IN-Meera` (Uma), lang-tagged SSML, PCM: *proposed, pending the panel pilot* | **gpt-4o-mini-tts** `marin` / `cedar` (today's code) | Diya: GA, AI-judge proxy 4.70 (0 leak), TTFB 244 ms, $22/M [V] = same $ per lesson text as gpt-4o-mini-tts; gpt-4o-mini-tts judged on 1 clip (3.5). MAI-Voice-2.1 Priya 4.85 / Dhruv 4.65 are Preview: not for minors | new row | MAI-Voice-2.1 at GA; Azure Professional Voice if the panel finds no stock voice human enough (VOICE-CHOICE §7) |
+| **STT live** (child's speech) | **`taxila-live-transcribe`** + per-lesson `keywords` (**lesson terms only, never the answer numbers**) + script-only prompt | **Azure Speech real-time**, continuous LID hi-IN + en-IN | synthetic n=180: CER 0.026, numbers 92/96, 0 hallucination; Azure RT CER 0.071, ~0.5 s faster to final text (0.82-0.88 vs 1.32 s after speech end), ~$1.30/h with LID [V]. Second opinion on answer turns: Azure Fast Transcription | new row (from `stt-routing.md`, with stt review R2/R3/R6 applied) | gpt-transcribe, gpt-realtime-whisper-2, MAI-Transcribe-2 (Central India); E1 real children decides |
+| **Answer classification** vs verified key (JSON) | **`taxila-fast`** (strict schema) | **`grok-4-20-non-reasoning`** | ceiling: 9 models 40/40. fast 1.0 s, $0.06; grok-4-20-nr 373 ms / 440 ms p90, $0.25; DeepSeek-V4-Flash 40/40 at 625 ms, $0.04 is the third (Direct) option. A pick among ties, by latency | ds41 dropped as third option (R5) | harder item set (`evals/classify-accuracy.mjs`); verify strict `json_schema` on the open models |
+| **Distress / safety** (Hindi, Hinglish, English) | **predicate floor first, then `taxila-fast`** (production prompt) | **`DeepSeek-V4-Pro`** | rescored with filter blocks counted as distress: V4-Pro 16/16 recall, 0/16 false alarms (32/32); fast 16/16, 2 false alarms (hunger phrase, the fail-safe direction); 771 / 969 ms. **Production bug to fix first: a content-filter block on a self-harm turn fails OPEN in `distressCheck()`** (`open-distress-check-fails-open-on-filter`) | fallback ds41 -> V4-Pro; "V4-Pro / grok / oss miss passive ideation" deleted (harness artifact, R1) | re-run S with filter-blocked items separated and paraphrases that do not trip the filter |
+| **Director planning** (next move, JSON) | **`taxila-fast`** (effort low) | **`taxila-oss120`** (plain-text JSON parse, never `json_object` mode) | ceiling: 8 models 16/16. fast 1.43 s, $0.12; oss120 0.79 s, $0.18 | ds41 dropped (R5) | session-level planning on `gpt-6-sol` / `gpt-6.1-sol`; harder scenarios |
+| **Parent reports, lesson summaries** (Hindi + English) | **`taxila-brain`** (gpt-5.6-sol) | **`taxila-fast`** | tie at the ceiling on one fact sheet: brain, fast and gpt-6.1-sol (ref) 5/5 overall in both languages, 0 invented facts. brain kept for a low-volume, high-stakes text (~$0.017 vs ~$0.0005 per report), noting brain also judged itself | fallback terra -> fast (terra 4/4 in English, below fast; R4) | harder W battery (more facts, a conflicting fact, a sensitive mood note), then `gpt-6-sol` ($2 / $10, metered today) |
+| **Diagram / visualisation code** | **`taxila-codex`** (gpt-5.3-codex) | **`taxila-brain`** | re-judged A (n=1 per diagram): codex correctness 4.00, 2/3 interactive, 22 s; brain 4.00, 0/3 interactive, 46 s | unchanged | pinned-geometry SVG stays the live default; `gpt-6.1-sol` as builder arm |
+| **Game code** (Phaser 4/TS + repair loop) | **`taxila-codex`** | **`DeepSeek-V4-Pro`** | 2 tasks x 3: codex 6/6 (24 s), V4-Pro 6/6 (9.9 s, ~$0.004/gen); terra and kimi-code 4/6. Ceiling | unchanged | agentic M-F1 bake-off decides; arms `gpt-6.1-sol`, `MAI-Code-1.1-Flash`, Kimi-K3 (after billing check) |
+| **Images with text** (labelled diagrams, classroom scenes) | **`taxila-image`** (gpt-image-2, medium) | none for text-bearing images | 5/5 on all criteria, 3 prompts (OpenAI judge on OpenAI images: add human spot checks), 37-47 s, $0.053. Hindi labels: never baked in; SVG overlay | unchanged | `gpt-image-2.5-flare` / `-sunburst`, `MAI-Image-2.6` |
+| **Images without text** (characters, illustrations) | **`taxila-flux2`** (FLUX.2-pro, Foundry only; dev weights are non-commercial) | `taxila-image` | tutor character 5/5 in 6.2 s at ~$0.03 vs 37 s / $0.053 | unchanged | raise the 1 RPM quota |
+| **Homework-photo OCR** | **`taxila-brain`** | **`grok-4-20-non-reasoning`** | synthetic handwriting fonts, ceiling: CER grok 0.000 (0.94 s), brain 0.009 (2.0 s), Azure DI 0.045; Mistral-Large-3 failed English (CER 1.0) | unchanged | `mistral-ocr-4-0` on >= 30 consented real children's photos |
+| **Embeddings** (cross-lingual retrieval) | `text-embedding-3-small` (only one deployed) | none | weak: Hinglish -> English R@1 6/12, Devanagari 6/12 | unchanged | `text-embedding-3-large` and Cohere `embed-v-4-0` (Embed-V5-Pro has no eastus2 meter) |
+| **Not for child-facing use** | - | - | Mistral-Large-3 (42.7 s TTFT, overloaded); grok-4.6 (timeouts) and grok-4.3 (12.6 s TTFT) for anything live; Cohere command-a-plus (misread "maarte", real distress misses 2/16, wrong facts); gpt-oss in `json_object` mode (corrupt JSON); `taxila-ds41` and Kimi-K3 in any production slot until their Fireworks meter is confirmed as Direct | Cohere recall 9/16 -> 14/16 (R1) | - |
 
-### Notes on the measurements behind the table
+Experiment-only models (never product): OpenRouter reference arms (`or:*`), the audio judge `gemini-3.1-pro-preview`
+(`audio-judge-models.md`), and Gemini/other reference voices.
+
+### Notes on the measurements behind the table (draft run, 2026-10-02; read with the Review corrections)
 
 **T (live teacher reply).** 13 Azure models plus 3 reference models answered 10 child turns (6 Hinglish, 3 English,
 1 Devanagari). Each model ran twice on Azure and once on OpenRouter, with production settings: reasoning effort
@@ -164,40 +176,34 @@ gpt-4.1-mini (0.40 / 1.60) is taken from the public list price; its meter was no
 
 ---
 
-## 4. MODELS THE OWNER SHOULD DEPLOY (exact Foundry catalogue names, from `GET /openai/v1/models` 2026-10-02)
+## 4. ASKS FOR THE OWNER (exact Foundry catalogue names, `GET /openai/v1/models` 2026-10-02), in priority order
 
-In priority order. Each item names the battery that decides it, and every battery is already scripted here.
+**A. Billing confirmations (no deployment; they unblock production slots).**
+1. Is the **"Azure Fireworks Models"** meter Direct-from-Azure and covered by the credits? It is the only meter for
+   `taxila-ds41` (DeepSeek-V4.1-Flash) and Kimi-K3. Until yes, neither appears in any production slot.
+2. Which models bill on the unnamed **"Azure Kimi | Model 6 / Model 7"** meters (effective 2026-08-01)? One may be K3.
+3. Which meter **MAI-Voice-2.1** (HD / Flash) bills on (no retail meter exists): read one day of Cost Management.
 
-1. **`gpt-6.1-sol`** (version `2026-09-29`). This is the newest flagship.
-   - Reference runs: T best mean across both judges (4.90 / 3.20, pedagogy 4.10), D 8/8, W 5/5 in Hindi and English.
-   - Public: DeepSWE 75.2 vs 68.8 for gpt-6-sol.
-   - At about $2 / $10 it would replace `taxila-brain` (gpt-5.6-sol, $4 / $20) for writing, planning and vision
-     judging at half the price, and become the codex-alternative builder in M-F1.
-   - Re-run `router-bench.mjs T,W,D` plus the game probe.
-2. **`gpt-6-luna`** (version `2026-09-22`).
-   - Candidate to replace `taxila-fast`: T 4.40 / 3.10 vs fast's 3.40 / 3.50 at a lower price ($0.10 / $0.50).
-   - Decided by Azure TTFT (it must stay ≤ 1.2 s p50 with effort none) and by S recall 16/16.
-3. **`text-embedding-3-large`** and **`Cohere-Embed-V5-Pro`** (or `embed-v-4-0`). Retrieval over Hinglish and
-   Devanagari is half-broken on `text-embedding-3-small` (R@1 6/12). Re-run task M.
-4. **`gpt-image-2.5-flare`** and **`gpt-image-2.5-sunburst`** (`2026-09-08`), and **`MAI-Image-2.6`**
-   (`2026-07-31`).
-   - These are newer image models with separate quota pools (the RPM ceiling is the real constraint on images,
-     `asset-pipeline.md` PR3).
-   - Re-run `image-bench.mjs`, add arms, and run the Hindi-label probe.
-   - Also raise **`taxila-flux2` from 1 RPM**: it is the fast lane for text-free art.
-5. **`Kimi-K3`** (`2026-07-29`).
-   - Reference T: highest naturalness from the non-GPT judge (4.10 overall).
-   - Public: #1 frontend code arena. It is the builder candidate from outside OpenAI.
-   - **First confirm billing.** Its only price meter is "Azure Fireworks Models", which may not count as "Direct
-     from Azure". The same question applies to `taxila-ds41` (DeepSeek-V4.1-Flash) already in production
-     candidacy.
-6. **`mistral-ocr-4-0`** (or `mistral-document-ai-2512`). A dedicated OCR model for homework photos, to compare
-   against brain and grok-4-20 on a **real** handwriting set (≥ 30 photos from children, consented).
-7. *Optional:* **`MAI-Thinking-1`** (`2026-06-01`, $2 / $8). Microsoft first-party reasoning, for a W/D arm.
-   **`DeepSeek-V4-Flash-0731`** is the newer V4-Flash snapshot.
+**B. Deploy and measure.**
+1. **`gpt-6-luna`** (`2026-09-22`, $0.10 / $0.50): live-reply and classifier candidate. Gate: Azure TTFT <= 1.2 s p50 at
+   effort none, S recall 16/16, T under a neutral judge >= `taxila-fast` (under the grok judge it scored 3.10 vs 3.50).
+2. **`gpt-6-sol`** (metered $2 / $10, deployable today) and **`gpt-6.1-sol`** (`2026-09-29`, no Azure meter yet):
+   writing, session planning, builder arm. T verdict is split (sol judge 4.90, grok judge 3.20) and 6.1-sol had 3/20
+   answer-leak flags; deploy on recency, price and D 8/8 / W 5/5, not on T.
+3. **`DeepSeek-V4-Flash-0731`** (Direct, $0.44 / $1.32): run T and S; it is the cheap Direct replacement for ds41.
+4. **Voice:** `gpt-4o-mini-tts` snapshot **`2025-12-15`** if the current deployment is the 03-20 preview; a **Speech
+   resource in Central India** (MAI-Transcribe-2, TTS round trip); **`gpt-transcribe`** and **`gpt-realtime-whisper-2`**
+   for the STT rerun; check whether **Mistral Voxtral TTS** is sold Direct on Foundry; submit the **Azure Professional
+   Voice Limited Access** application now (lead time unknown; needed only if the panel finds no stock voice human enough).
+5. **`text-embedding-3-large`** and **`embed-v-4-0`** (Cohere): re-run task M.
+6. **`gpt-image-2.5-flare`**, **`gpt-image-2.5-sunburst`** (`2026-09-08`), **`MAI-Image-2.6`** (`2026-07-31`); raise
+   **`taxila-flux2`** above 1 RPM.
+7. **`mistral-ocr-4-0`** (or `mistral-document-ai-2512`) plus a consented real handwriting set (>= 30 photos).
+8. Optional first-party arms: **`MAI-Code-1.1-Flash`** ($0.2 / $1.2), **`MAI-Thinking-1`** ($2 / $8). **`Kimi-K3`** only
+   after A1/A2.
 
-**Do not deploy for child-facing use:** Cohere-command-a-plus, Mistral-Large-3 (unless the latency recovers),
-grok-4.6 / grok-4.3 for anything live.
+**Do not deploy for child-facing use:** Cohere-command-a-plus, Mistral-Large-3 (unless latency recovers), grok-4.6 /
+grok-4.3 for anything live.
 
 ---
 

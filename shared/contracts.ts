@@ -142,6 +142,11 @@ export interface TurnResponse {
    */
   speakNow?: "interrupt" | "when_free";
   end?: boolean;
+  /**
+   * Pace knobs from the vibe persona (COMPREHENSION-ENGINE.md §6.4): session config for the voice runtime, never
+   * prompt text. waitNudgeSec: silence before a gentle nudge; endpointSilenceMs: end-of-speech silence.
+   */
+  pace?: { waitNudgeSec: number; endpointSilenceMs: number };
   debug?: Record<string, unknown>;
 }
 

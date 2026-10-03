@@ -10,8 +10,8 @@ const ACTOR_HI = "papa|mummy|mumma|mammi|maa|pitaji|mata\\s*ji|bhai|bhaiya|didi|
 const FAMILIES = {
   self_harm: [
     /\b(kill|hurt|cut|harm)\s*(myself|me)\b|\b(want(?:\s*to|na)?|wanna)\s*(die|disappear)\b|\b(don'?t|dont|do\s*not)\s*want\s*to\s*(live|be\s*alive)\b|\bend\s*my\s*life\b|\bsuicid/i,
-    /\b(mar\s*ja(a)?na|marna\s*chaht[ai]|marne\s*ka\s*(mann|man)|mar\s*jaa?(?:u|o|oo)n?g[aie]|khud\s*ko\s*(maar|hurt|chot|kaat)|jee?na\s*nahi+n?\s*(chaht|hai)|zinda\s*nahi+n?\s*rehna)/i,
-    /(मर\s*जाना|मरना\s*चाहत|मर\s*जाऊं?ग[ीा]|खुद\s*को\s*(मार|चोट|काट)|आत्महत्या|जीना\s*नहीं)/,
+    /\b(mar\s*ja(a)?na|marna\s*chaht[ai]|marne\s*ka\s*(mann|man)|mar\s*jaa?(?:u|o|oo)n?g[aie]|khud\s*ko\s*(maar|hurt|chot|kaat)|jee?na\s*nahi+n?\s*(chaht|hai)|zinda\s*nahi+n?\s*rehna|gaa?yab\s*ho\s*jaa?n[ae]\s*(chaht|hai)|hamesha\s*ke\s*liye\s*(chala|chali|chale)\s*jaa?n[ae]\s*(chaht|hai))/i,
+    /(मर\s*जाना|मरना\s*चाहत|मर\s*जाऊं?ग[ीा]|खुद\s*को\s*(मार|चोट|काट)|आत्महत्या|जीना\s*नहीं|गायब\s*हो\s*जाना\s*चाहत|हमेशा\s*के\s*लिए\s*चल[ाी]\s*जाना\s*चाहत)/,
   ],
   abuse: [
     // A named actor keeps idioms out ("beats me" = no idea; "it hurts me" = a sore arm).

@@ -7,6 +7,10 @@ import * as SH from "../server/director/shapes.js";
 import { initLessonState, step, branchesFor } from "../server/director/state.js";
 import { instructionsFor, instructionsAfter } from "../server/compiler/instructions.js";
 import { kit, CTX, BRIEF, cls } from "./fixtures/kit.mjs";
+import { promptFor } from "../server/director/items.js";
+import { toSpoken } from "../server/voice/spoken.js";
+import { vibeRow, checkVibeRow } from "../server/persona/adapter.js";
+import { INTERESTS } from "../server/persona/signals.js";
 
 const K = kit();
 const TOPIC = { title: "Fractions as equal shares", classLevel: 4, subject: "maths" };
@@ -67,10 +71,37 @@ test("lanes share every byte except the voice-only branch lines", () => {
   assert.ok(check.startsWith("ONE MORE CHECK: when they reply:"), check);
   assert.match(check, /it matches the key → /, "the branch for the active item is the voice lane's last check");
   assert.doesNotMatch(text, /when they reply/);
-  // The voice lane adds its branch check and the next turn's content lines, and says the helpline numbers as
-  // digit words (voiceSafe); every other byte is shared.
+  // The voice lane adds its branch check and the next turn's content lines, says the helpline numbers as digit
+  // words (voiceSafe) and POSES the question in spoken notation (toSpoken); every other byte is shared.
   const strip = (t) => t.split("\n").filter((l) => !l.startsWith("ONE MORE CHECK") && !l.startsWith("- for your next turn")).join("\n");
-  assert.equal(strip(voice), voiceSafe(strip(text), input.language));
+  const written = promptFor(input.item, input.language);
+  const spoken = toSpoken(written, { mode: input.language, ageBand: input.brief.ageBand });
+  assert.equal(strip(voice), voiceSafe(strip(text).split(`"${written}"`).join(`"${spoken}"`), input.language));
+});
+
+test("voice lane poses the item in spoken notation; the key line, the text lane and the guards keep the written form", () => {
+  const input = inputAfter(toFirstItem());
+  const numeric = { ...input.item, prompt_hi: "3/4 aur 1/2 mein kaun bada hai?", prompt_en: "Which is bigger, 3/4 or 1/2?", answer: "3/4" };
+  const voice = compile({ ...input, item: numeric, lane: "voice", branches: null });
+  const text = compile({ ...input, item: numeric, lane: "text" });
+  assert.match(text, /"3\/4 aur 1\/2 mein kaun bada hai\?"/, "text lane: written");
+  assert.doesNotMatch(voice, /"3\/4 aur 1\/2/, "voice lane: never the written fraction as the posed question");
+  assert.ok(voice.includes(toSpoken("3/4 aur 1/2 mein kaun bada hai?", { mode: "hinglish", ageBand: input.brief.ageBand })));
+  assert.match(voice, /key, for checking only: 3\/4/, "the key stays written (answer-leak guards compare against it)");
+});
+
+test("VIBE row: one closed-vocabulary line after LESSON NOW, before the move; TURN SHAPE stays last", () => {
+  const input = inputAfter(toFirstItem());
+  assert.ok(input.lessonState.vibe, "the Director computed a vibe directive");
+  const row = vibeRow(input.lessonState.vibe);
+  assert.deepEqual(checkVibeRow(row, INTERESTS), []);
+  for (const lane of ["text", "voice"]) {
+    const lines = compile({ ...input, lane }).split("\n");
+    const at = lines.indexOf(row);
+    assert.ok(at > lines.findIndex((l) => l === "LESSON NOW"), `${lane}: after LESSON NOW`);
+    assert.ok(at < lines.findIndex((l) => l.startsWith("YOUR MOVE THIS TURN") || l.startsWith("YOUR LAST TURN")), `${lane}: before the move`);
+    assert.ok(lines.at(-1).startsWith(TURN_SHAPE_PREFIX));
+  }
 });
 
 test("voice lane: helplines are digit words in the mode, never numerals; the text lane keeps the numerals", () => {
