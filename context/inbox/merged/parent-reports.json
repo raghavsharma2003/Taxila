@@ -1,0 +1,359 @@
+{
+ "nodes": [
+  {
+   "id": "reports-lane-a-evidence-rows",
+   "kind": "decision",
+   "title": "Parent daily notes and weekly letters are Lane A only: every line is a reviewed template (en / Hinglish / hi) on typed slots built in code from ledger rows (kt_evidence, lesson, kt_skill_state, memory), each claim carrying its factIds; v1 admits L0 counts and L1 ledger facts only (no L2/L3)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-gate-throws",
+   "kind": "decision",
+   "title": "server/reports/gate.js: the banned-word + overclaim + numeric + structure gate THROWS (ReportGateError) on the assembled report; candidates are screened before assembly with the same predicates and every screen is logged; caps and the spoken-script budget (words and ≤ 1200 chars) are enforced by throwing, never by trimming",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-k7-locked-words",
+   "kind": "decision",
+   "title": "Mastery words (pakka, mastered, learned, understood, can do, समझ गया, …) are locked behind CALIBRATION.k7Passed (false); only the st.pakka shape may use them after K7, and only on ≥ 2 delayed successes on distinct items ≥ 1 day apart; until then rows state evidence ('right again d days later, first try, no help')",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-curriculum-span-mask",
+   "kind": "decision",
+   "title": "Curriculum slot values (kit skill titles, kit misconception beliefs) are masked for the full lexicon and checked against a severe list only; the rest of every line gets the full lexicon (14.2% of kit titles would otherwise screen out a valid line)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-lane-b-brain-ordering",
+   "kind": "decision",
+   "title": "Lane B on taxila-brain (fallback taxila-fast) only orders Lane A segments and picks approved connective ids for the spoken script; output is ids, validated in code, script assembled from our strings; invalid twice → Lane A order; budget pre-checked per call against job.budget_micro_usd − spent",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-end-of-day-jobs",
+   "kind": "decision",
+   "title": "Conductor job kinds report.daily:{child}:{day} (active days only, pull-only X11) and parent.letter:{child}:{isoWeek} (Sunday fold, X8) are enqueued by decide.js foldNight, run after 04:00 local + 10 min, purpose core_tutoring, dropped in safety_hold, budgets 25k / 40k µ$, idempotent on the job key and on parent_report(child, cadence, period, render_version)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-growth-edge-next-lessons",
+   "kind": "decision",
+   "title": "A growth edge needs an action part: a kt_skill_state.next_review_at date, or (no date: FSRS sets one only once learned) a not-learned display, worded as the placement rule 'comes back to it, or to the step before it, in the next lessons' (next-topic.js pickTopic)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-voice-features-excluded",
+   "kind": "decision",
+   "title": "No parent line rests on voice features: facts.js never reads voice_feature/voice_baseline (COMPREHENSION-ENGINE §7.3, PARENT-REPORT §3 lists none); a test scans the loader",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-sim-week-2026-10-03",
+   "kind": "measurement",
+   "title": "3 STUDENT-SIM personas (p02 Hinglish understander, p18 confident misconception, p24 Hindi-medium) × one week (5 lesson days, 353 kt_evidence rows via the real writer) on the test branch: 18/18 reports stored, 0 gate throws; independent checker 78/78 claims supported (100%), 450/450 rendered lines mapped; 240/240 claim mutants caught",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-lane-b-brain-2026-10-03",
+   "kind": "measurement",
+   "title": "Lane B on taxila-brain, n = 18 reports (19 calls incl. the job run): 18/18 valid first call, 0 fallbacks; call latency p50 2,950 ms / p90 3,642 ms; mean $0.0074 per report (7,412 µ$; 133,416 µ$ total); end-to-end generate p50 3.3 s, max 6.5 s (per child-month figure corrected in reports-laneb-tokens-2026-10-03)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-conductor-job-e2e-2026-10-03",
+   "kind": "measurement",
+   "title": "parent.letter through the real job queue on the test branch (enqueue → duplicate enqueue no-op → claim → runJob → complete_job): status done, result_ref parent_report:<id>, spent_micro_usd 7,600, job.done ingested 1, re-claim 0; 5.9 s",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-kit-title-lexicon-2026-10-03",
+   "kind": "measurement",
+   "title": "Full parent lexicon over every kit skill title: 424/2,991 (14.2%) trip it (knows 73, test 44, exam 29, understand* 21, voice 21, tone 20, must 19, top 12, habit 12, marks 11); severe list: 3 strings (2 titles, 1+ beliefs: sex ratio, sexual reproduction, disability)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-gate-fuzz-2026-10-03",
+   "kind": "measurement",
+   "title": "Gate unit batteries (tests/reports-gate.test.mjs): TEMPLATE DIGIT HYGIENE fuzz 2,000 random slot sets × 3 languages, 0 stray digits (not numeric correctness: set membership passes swapped slots); lexicon recall every BANNED/LOCKED entry inflected and embedded in 3 frames, 100%; every template × 3 languages passes its own gate",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-date-slot-object-leak",
+   "kind": "rejection",
+   "title": "Rejected: passing a date slot object straight to the template — rendered 'It comes back on [object Object]' and the gate PASSED it (it re-renders the same template); fix: renderShape formats typed slots, and a template_bug predicate refuses [object / undefined / NaN / null / {slot}",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-prefix-lexicon-overmatch",
+   "kind": "rejection",
+   "title": "Rejected: prefix entries exam*, habit*, मंद*, dar* — they screened 'Taxila will use it in examples' (exam*), would hit 'habitat', 'मंदिर' (temple), 'darwaza'; whole-word entries with English inflections instead",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-tricky-needs-review-date",
+   "kind": "rejection",
+   "title": "Rejected: requiring kt_skill_state.next_review_at for every growth edge — practising skills never have one, so the confident-misconception persona (7 of 8 answers on the comma mix-up) got NO tricky line in any report",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-no-interest-line",
+   "kind": "decision",
+   "title": "No interest line in parent reports: memory.text (kind=interest) is free taxila-fast paraphrase from the lesson-end writer, not a typed value, so no reviewed template may carry it; facts.js no longer reads memory and the drawer shows no 'What they told Taxila'",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-safety-hold-read-side",
+   "kind": "decision",
+   "title": "The Conductor safety hold also holds the parent report READ side (routes/parent.js reportHold): no live preview, no Listen, no note stored after the hold began, no preview evidence; notes stored before the hold stay readable as text",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-delayed-copy-last-came-up",
+   "kind": "decision",
+   "title": "Delayed-success copy says the topic was right on the first try without help 'd days after it last came up' / 'd din baad phir aaya' — never 'right again' / 'baad bhi sahi', because the previous contact may be a teach row or a wrong, helped or contaminated answer",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-recheck-date-ahead",
+   "kind": "decision",
+   "title": "A growth-edge re-check date is stated only when kt_skill_state.next_review_at ≥ max(window end, generation time); otherwise the _next wording (not-learned skills) or no growth-edge line; the checker enforces the same against created_at",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-how-copy-not-rule",
+   "kind": "decision",
+   "title": "The evidence drawer's 'How this line is counted' shows reviewed per-shape copy (templates.js HOW, en/hinglish/hi, lexicon- and lock-clean by test); the internal claim.rule string never leaves the server",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-gate-final-pregate",
+   "kind": "decision",
+   "title": "Lane A is gated before the Lane B writer is paid; a ReportGateError in a job is FinalJobError (dead, no retry) and audited with rule names only; a Lane B call that fails after sending is charged its usage or its worst case",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-late-activity-daily",
+   "kind": "decision",
+   "title": "Activity after the night fold (≈02:00-03:00) but before the learning day ends (04:00) enqueues that day's daily note from markActive (same idem key, at most once)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-header-open-lessons",
+   "kind": "decision",
+   "title": "Header minutes count an open lesson (ended_at null) up to its last evidence row in the window (cited), or to now in a preview; a daily window with evidence and no lesson gets header.nolesson instead of '0 lessons · 0 min'",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-list-newest-render",
+   "kind": "decision",
+   "title": "listReports returns one row per (cadence, period), the newest render, so a RENDER_VERSION re-render does not duplicate 'Earlier notes'",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-interest-from-memory-text",
+   "kind": "rejection",
+   "title": "Rejected: an interest line filled from memory.text (≤ 4 letters-only words) — real rows are model paraphrase ('loves cricket' → 'said they like loves cricket'), English inside hi/hinglish reports, labelled as the child's words; the sim only inserted hand-picked single words so 3/3 interest lines never exercised it",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-hold-job-path-only",
+   "kind": "rejection",
+   "title": "Rejected: enforcing the safety hold only on the job path — GET /api/parent/report built a live preview on every request and stored scripts stayed playable during a safety incident",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-right-again-copy",
+   "kind": "rejection",
+   "title": "Rejected: 'right again d days later' / 'd din baad bhi sahi' — the previous contact counted by derive.js can be a teach row or a wrong answer, and the checker re-derived the same rule, so 78/78 support could not see that the WORDING overclaimed",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-recheck-date-window-start",
+   "kind": "rejection",
+   "title": "Rejected: dating the growth edge when next_review_at ≥ window START — jobs run after the window closes, so a same-day 15:00 re-check read 'It comes back on 3 Oct' in a note stored 4 Oct",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-rule-string-in-drawer",
+   "kind": "rejection",
+   "title": "Rejected: showing claim.rule to parents — internal English with the LOCKED word 'learned', 'calibration gate passed', '2k < n', untranslated on hi/hinglish screens, and no gate ran on it",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-sim-week-2026-10-03b",
+   "kind": "measurement",
+   "title": "Sim-week re-run after the review fixes (RENDER_VERSION pr-2): 18/18 stored, 0 gate throws; claim support 75/75; lines mapped 441/441; 0 lines quoting the 3 model-shaped memory rows; checker mutants 420/420 caught incl. swap_n_k 21/21, other_slot+1 60/60, slot-1 99/99",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-laneb-tokens-2026-10-03",
+   "kind": "measurement",
+   "title": "Lane B token use on taxila-brain, n = 18 calls: prompt p50 646 / max 806 tokens, completion p50 229 / max 456; mean cost daily 7,047 µ$, weekly 9,297 µ$; latency p50 3,141 ms / p90 3,929 ms; per child-month ≈ 7,047 × A + 9,297 × 4.35 µ$ = $0.18 at A = 20 active days, $0.25 at A = 30 (A unmeasured)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "reports-route-hold-2026-10-03",
+   "kind": "measurement",
+   "title": "Route test under a safety hold (tests/reports-routes-db.run.mjs, real API in-process on the Neon test branch, n = 1 child): preview null + held, weekly preview null, post-hold note unlisted and 404, pre-hold note readable with voice null, speak what=report 409, preview evidence 404, stored evidence carries 'how' and no 'rule'; hold cleared → preview back",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "psych-claim-tiers",
+   "rel": "constrains",
+   "dst": "reports-lane-a-evidence-rows"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "constrains",
+   "dst": "reports-lane-a-evidence-rows"
+  },
+  {
+   "src": "reports-gate-throws",
+   "rel": "part_of",
+   "dst": "reports-lane-a-evidence-rows"
+  },
+  {
+   "src": "open-learner-calibration-gate",
+   "rel": "constrains",
+   "dst": "reports-k7-locked-words"
+  },
+  {
+   "src": "reports-curriculum-span-mask",
+   "rel": "measured_by",
+   "dst": "reports-kit-title-lexicon-2026-10-03"
+  },
+  {
+   "src": "model-router-v2",
+   "rel": "constrains",
+   "dst": "reports-lane-b-brain-ordering"
+  },
+  {
+   "src": "reports-lane-b-brain-ordering",
+   "rel": "measured_by",
+   "dst": "reports-lane-b-brain-2026-10-03"
+  },
+  {
+   "src": "reports-end-of-day-jobs",
+   "rel": "measured_by",
+   "dst": "reports-conductor-job-e2e-2026-10-03"
+  },
+  {
+   "src": "conductor-code-reducer",
+   "rel": "constrains",
+   "dst": "reports-end-of-day-jobs"
+  },
+  {
+   "src": "reports-lane-a-evidence-rows",
+   "rel": "measured_by",
+   "dst": "reports-sim-week-2026-10-03"
+  },
+  {
+   "src": "reports-gate-throws",
+   "rel": "measured_by",
+   "dst": "reports-gate-fuzz-2026-10-03"
+  },
+  {
+   "src": "voice-features-longitudinal",
+   "rel": "constrains",
+   "dst": "reports-voice-features-excluded"
+  },
+  {
+   "src": "reports-growth-edge-next-lessons",
+   "rel": "supersedes",
+   "dst": "reports-tricky-needs-review-date"
+  },
+  {
+   "src": "reports-gate-throws",
+   "rel": "supersedes",
+   "dst": "reports-date-slot-object-leak"
+  },
+  {
+   "src": "reports-curriculum-span-mask",
+   "rel": "supersedes",
+   "dst": "reports-prefix-lexicon-overmatch"
+  },
+  {
+   "src": "reports-no-interest-line",
+   "rel": "supersedes",
+   "dst": "reports-interest-from-memory-text"
+  },
+  {
+   "src": "reports-safety-hold-read-side",
+   "rel": "supersedes",
+   "dst": "reports-hold-job-path-only"
+  },
+  {
+   "src": "reports-delayed-copy-last-came-up",
+   "rel": "supersedes",
+   "dst": "reports-right-again-copy"
+  },
+  {
+   "src": "reports-recheck-date-ahead",
+   "rel": "supersedes",
+   "dst": "reports-recheck-date-window-start"
+  },
+  {
+   "src": "reports-how-copy-not-rule",
+   "rel": "supersedes",
+   "dst": "reports-rule-string-in-drawer"
+  },
+  {
+   "src": "reports-no-interest-line",
+   "rel": "part_of",
+   "dst": "reports-lane-a-evidence-rows"
+  },
+  {
+   "src": "reports-safety-hold-read-side",
+   "rel": "part_of",
+   "dst": "reports-end-of-day-jobs"
+  },
+  {
+   "src": "reports-late-activity-daily",
+   "rel": "part_of",
+   "dst": "reports-end-of-day-jobs"
+  },
+  {
+   "src": "reports-gate-final-pregate",
+   "rel": "part_of",
+   "dst": "reports-gate-throws"
+  },
+  {
+   "src": "reports-header-open-lessons",
+   "rel": "part_of",
+   "dst": "reports-lane-a-evidence-rows"
+  },
+  {
+   "src": "reports-recheck-date-ahead",
+   "rel": "part_of",
+   "dst": "reports-growth-edge-next-lessons"
+  },
+  {
+   "src": "reports-lane-a-evidence-rows",
+   "rel": "measured_by",
+   "dst": "reports-sim-week-2026-10-03b"
+  },
+  {
+   "src": "reports-sim-week-2026-10-03b",
+   "rel": "supersedes",
+   "dst": "reports-sim-week-2026-10-03"
+  },
+  {
+   "src": "reports-lane-b-brain-ordering",
+   "rel": "measured_by",
+   "dst": "reports-laneb-tokens-2026-10-03"
+  },
+  {
+   "src": "reports-safety-hold-read-side",
+   "rel": "measured_by",
+   "dst": "reports-route-hold-2026-10-03"
+  }
+ ],
+ "md": {
+  "decisions": "## reports-lane-a-evidence-rows\n**Parent reports v1 are Lane A (PARENT-REPORT §10.2): every parent line is a reviewed template per (shape × language) on typed slots computed in code from ledger rows, and every claim stores the rows behind it (`factIds`: `kt_evidence:<id>`, `lesson:<uuid>`, `kt_skill_state:<skill>`, `memory:<id>`).** Shapes: header (lessons · days · min), strength (delayed success · explained in own words · transfer · error-spot · an earlier delayed success on a zero-lesson week), rows ('Practised “title”: n questions, k right on the first try without help'), growth edge (task feature · hedged mix-up only past a diagnostic set of ≥ 3 discriminating / ≥ 2 matching answers · Taxila's action), interest (memory kind=interest, daily; RETIRED 2026-10-03 by reports-no-interest-line), home activity (weekly, from a skill with first-try successes, never the growth-edge skill). Fixed priority per section, caps daily 1/2/1/1/0 and weekly 1/2/1/0/1 (≤ 5 body lines). No frequency words (counts only), no L2/L3 lines, no percentages. Hindi/Hinglish are gender-neutral by construction (ने / respectful plural) because the child row has no pronoun. (2026-10-03)\n- Rationale: RR-D2 fact-first; the false-claim budget has nothing to admit while no L2/L3 menu exists; comprehension §7 'evidence, not verdicts'.\n- Reverse if: an L2/L3 menu item is pre-registered and passes E-R1/E-R2 (two-groups pooling) — then it enters through the G-h budget, not as a template; or PRM1 shows parents misread the count rows (> 20% read-back errors).\n\n## reports-gate-throws\n**The assembled report is gated in every language and the gate throws; it never trims.** Predicates per line: exact re-render of the template on the claim's slots (no free text can ride in), full lexicon (BANNED, 16 categories, EN + Devanagari nukta-insensitive + Roman Hindi) on the line with curriculum/name/object spans masked, severe list on curriculum and child spans, locked words unless K7 and the pakka shape, every digit equals a numeric or date slot, a template-bug detector, the name slot is the child's name. Report-level: every claim rendered exactly once per language, every line maps to a claim or a registered fixed copy, one header, caps, exactly one home activity weekly, growth-edge shape family, spoken script rebuilt from its order and ≤ 110/200 words and ≤ 1,200 chars (one /api/tts request; the report speak path refuses a longer script instead of slicing it). Candidate screening before assembly uses the same line predicates and is logged in meta.screened; the Lane A spoken order drops only in the declared order (second row, first row, interest, tricky) and then throws. (2026-10-03)\n- Rationale: inherited 'truncation is silent → budget gates throw'; PARENT-REPORT §8.2 'a failure blocks the send'.\n- Reverse if: never for throwing. Revisit the screening (vs throwing) only if meta.screened shows a template, not data, being screened.\n\n## reports-k7-locked-words\n**'Mastered' and every mastery word are locked behind the calibration gate.** `server/reports/config.js CALIBRATION.k7Passed = false`. Until it is set (with a measurements.md K7 entry: delayed accuracy ≥ 0.9 at 1 and 4 weeks, ECE ≤ 0.05, n ≥ 200 children), the LOCKED list (pakka, mastered, master*, learned, learnt, understood, understand*, can do, can now, knows, secure, durable, got it, aa gaya, seekh liya, samajh gaya/gayi/liya, पक्का, सीख लिया, समझ गया/गई, समझ लिया, आ गया) is an overclaim violation anywhere. After K7 only `st.pakka` may say it, and only on ≥ 2 delayed successes on distinct items ≥ 1 day apart (RRI17). (2026-10-03)\n- Rationale: comprehension §7.1 (no row says mastered / learned / understood / can do before K7); open-learner-calibration-gate.\n- Reverse if: K7 passes on real children.\n\n## reports-curriculum-span-mask\n**Kit skill titles and kit misconception beliefs are 'curriculum' slots: masked for the full lexicon, checked against a severe list (sexual/romance, self-harm, slurs/insults, diagnosis words).** They are quoted in every template (“title”) so they read as the topic name. (2026-10-03)\n- Rationale: 424/2,991 kit titles (14.2%) trip the full lexicon on outcome language about the topic ('Knows the story words…', 'Test objects with a magnet…', 'Understands the story's point of view…'); screening them would drop valid lines and bias reports away from science/English topics.\n- Reverse if: a parent-comprehension test (PRM1) shows quoted outcome titles that start with 'Knows/Understands' are read as verdicts about the child — then titles get a parent-facing short name in the kit, and the mask goes.\n\n## reports-lane-b-brain-ordering\n**Lane B is taxila-brain (fallback taxila-fast), effort low, max 800 completion tokens, JSON schema `{order: [{kind, id}]}` with a 7-rule shape-only prompt (no example sentences). It orders segments and picks connective ids (c.next, c.also, c.good, c.tricky); code validates (frame first/last, mustKeep present, no adjacent connectives, home just before close, tricky after strength/rows, word and char budgets) and assembles the text from our strings. One order for the child's language is re-validated per language; a language it does not fit gets the Lane A order. Budget: worst-case cost (input chars/3 × in-price + 800 × out-price) is checked BEFORE each call; spend is written to job.spent_micro_usd fenced by attempt.** (2026-10-03)\n- Rationale: MODEL-ROUTER 'Parent reports' row (brain primary); PARENT-REPORT §10.2 Lane B jobs.\n- Reverse if: MODEL-ROUTER R4 is accepted (fast ties brain on W at 1/31 the cost) — Lane B is ordering ids, so move daily notes to taxila-fast first; or if Lane B's order shows no parent-comprehension gain over the Lane A order in PRM1, drop the call.\n\n## reports-end-of-day-jobs\n**End-of-day jobs (server/conductor/config.js JOB_KINDS, decide.js foldNight → enqueueReports): `report.daily:{child}:{day}` when the folded day was active (counters.lastActiveDay / activeDays), `parent.letter:{child}:{isoWeek}` when the folded day is a Sunday (ISO week Mon-Sun); runAfter = next day 04:00 local + REPORT_GRACE_MIN (10); purpose core_tutoring (guarded in decide and re-checked at claim); allowedIn paused and in_lesson, dropped in safety_hold; budgets 25,000 / 40,000 µ$; maxAttempts 4, lease 120 s.** Handlers in server/reports/jobs.js (imported by conductor/handlers.js): a stored report short-circuits before any model call; a bad period is final; a quiet day is `skipped:no_activity`; a cancel requested before the model call stops the job. (2026-10-03)\n- Rationale: X8 (letter idempotency per child-week), X11 (daily note pull-only in v1), CONDUCTOR §7.3, X36 (night fold once per learning day, re-armed only within 14 days of activity).\n- Reverse if: the Notifier (M1) needs the letter at the parent's chosen day/hour (pl PA-9) — then a `weekly_letter` wakeup (parent-chosen, kept for dormant children per X36) enqueues parent.letter instead of the Sunday fold; or daily notes go unread (> 80% unopened in PRM8) — then stop generating them.\n\n## reports-growth-edge-next-lessons\n**A growth edge (S11) is admitted only with an action part: `tricky.work` / `tricky.mixup` carry the kt_skill_state.next_review_at date; when no date exists and the skill's display is unseen/introduced/practising, `tricky.work_next` / `tricky.mixup_next` say 'Taxila comes back to it, or to the step before it, in the next lessons' — the placement rule (content/next-topic.js pickTopic: first not-done topic, back-chained to a prerequisite). A learned skill with no date gets no growth-edge line.** (2026-10-03)\n- Rationale: FSRS sets next_review_at only once a skill is learned; requiring a date hid every not-yet-learned difficulty (rejected: reports-tricky-needs-review-date).\n- Reverse if: the Director/planner changes placement so a not-done topic is not continued (then the wording is false), or a per-skill re-check schedule for practising skills exists (then use its date).\n\n## reports-voice-features-excluded\n**Voice features never reach a parent report.** facts.js reads only consent, lesson, kt_evidence, kt_skill_state, kt_misconception and memory (interest rows under memory consent); `voice` words (voice, pause*, hesitat*, pitch, tone, speech rate, WCPM, awaaz) are in the banned lexicon; tests/reports-gate.test.mjs scans the loader source. (2026-10-03)\n- Rationale: COMPREHENSION-ENGINE §7.3 bans 'voice-feature anything' in parent text; PARENT-REPORT §3 maps no voice construct to any section; ct-no-voice-emotion-inference.\n- Reverse if: CD-orf (oral reading fluency) is built on equated, human-audited passages (PARENT-REPORT §4.3) — then a term-only S3 subrow may cite read-aloud WCPM.\n\n## reports-no-interest-line\n**No interest line in parent reports (fixer pass, 2026-10-03).** memory.text for kind=interest is written by taxila-fast at lesson end (server/routes/lesson.js: \"at most 3 harmless things the child SAID\", ≤ 14 words, no fixed format), so it is model paraphrase, not a typed value; a reviewed template cannot carry it (a real row 'loves cricket' rendered 'Aarav said they like loves cricket', English inside hi/hinglish reports, under a drawer label 'What they told Taxila'). The shape, the cap (daily interest 0), the memory read in facts.js, the checker case and the drawer section are removed; RENDER_VERSION → pr-2.\n- Rationale: \"every line is a reviewed template on typed values\" and \"no model writes text a parent reads\" are the report's contract; a word-list filter on paraphrase cannot tell 'hates cricket' from 'loves cricket'.\n- Reverse if: memory stores a typed interest (a topic/category id from a reviewed list with per-language labels), then the line returns as a template on that id, with a sim run on rows produced by the real lesson-end writer.\n\n## reports-safety-hold-read-side\n**The safety hold holds the report read side too.** `reportHold(childId)` reads conductor_state (mode, state.modeSince). During safety_hold: GET /api/parent/report with cadence → `{ report: null, skipped: 'held', held: true }` (no live preview, daily or weekly); GET /api/parent/reports lists only notes created before the hold began (`held: true`); a stored note by id is served only if created before the hold, with every spoken script nulled; GET /api/parent/speak?what=report → 409; preview evidence → 404; stored-note evidence (pre-hold) stays. The client shows fixed neutral copy ('No new note right now.') and no Listen. No conductor_state row or table = no hold; any other DB error propagates (never read as 'no hold').\n- Rationale: guards.js drops the report jobs in a hold because 'the protocol decides what reaches the family'; the preview path built the same content on demand. Notes from before the hold were already with the family; withdrawing them is a visible act the safeguarding protocol should own, not this route.\n- Reverse if: the safeguarding protocol (not built) specifies a different read-side rule (e.g. hide all notes, or show a protocol message) — then this route defers to it; or a hold must also hide pre-hold notes for a reason this pass did not see.\n\n## reports-delayed-copy-last-came-up\n**Delayed-success copy no longer says 'again'.** en: '“title”: right on the first try without help, d days after it last came up.'; hinglish: 'd din baad phir aaya, aur pehli baar mein bina madad ke sahi.'; hi: 'd दिन बाद फिर आया, और पहली बार में बिना मदद के सही।' Same for st.delayed_before and the K7-locked st.pakka. The evidence rule (derive.js delayedSuccesses: previous contact on the skill, any row, in another session ≥ 20 h earlier) is unchanged.\n- Rationale: the previous contact can be a teach row, a wrong, helped or contaminated answer; 'right again' / 'baad bhi sahi' asserts it was right. A checker that re-derives the generator's rule verifies consistency, not the meaning a parent reads — wording needs its own test (fixture whose previous contact is C2).\n- Reverse if: the rule is tightened to require a clean first-try success as the previous contact (then 'again' is true), or PRM read-back shows parents read 'after it last came up' as 'was wrong before' (> 20%).\n\n## reports-recheck-date-ahead\n**'It comes back on <date>' only for a date still ahead.** buildClaims takes `now` (generation time; default the window end); dated iff next_review_at ≥ max(window end, now). Else: _next wording for a not-learned skill, or no growth-edge line (never a stale promise). check.js: the date must be ≥ max(window_to, created_at).\n- Rationale: jobs run after the window closes (daily 04:10 next day, weekly Monday) and previews later still; the old test (≥ window start) let a same-day 15:00 re-check and a five-days-past Wednesday through, and the checker shared the rule.\n- Reverse if: reports describe the actual re-check event when it already happened (an L1 'came back on <date>: right / not yet' shape), which would replace the _next fallback for past dates.\n\n## reports-how-copy-not-rule\n**The drawer shows reviewed 'how this line is counted' copy, never claim.rule.** templates.js `HOW[shapeId] = { en, hinglish, hi }` for every shape; `evidenceClaimOut` sends `{ id, section, shapeId, how }`. A test runs every HOW string and every label string in src/parent/Report.tsx through the full lexicon and the lock list (this caught 'behind' / 'peeche' / 'पीछे' (prediction list) and 'not sure' (certainty) in the drawer labels, reworded). The rule strings stay for the checker and audit.\n- Reverse if: rule strings become reviewed, translated parent copy themselves (then HOW is generated from them under the same test).\n\n## reports-gate-final-pregate\n**Gate before paying, final on failure, charge failed calls.** compose() gates the Lane A render before the writer is called and the full report (with voice) after; runReportJob turns ReportGateError into FinalJobError (dead + job.failed{final}) and writes audit `parent_report.gate_failed` with `lang:rule` names only; orderForVoice charges a failed call its returned usage, else the worst-case estimate, through onSpend.\n- Rationale: the gate is deterministic on a snapshot, so retries repeat the failure and re-pay taxila-brain; an uncharged timeout made spent_micro_usd under-count and let the fallback think it had more room.\n- Reverse if: the gate gains a time- or model-dependent predicate (then a retry can succeed), or Azure is shown never to bill a timed-out call (then charge 0 on transport errors).\n\n## reports-late-activity-daily\n**A lesson after the night fold still gets its day's note.** markActive(s, day, H): when `s.adapt.foldedDay === day` and the job is not already pending, it enqueues `report.daily:{child}:{day}` (runAfter 04:10 next day) with rule `report_daily_late`.\n- Rationale: the fold wakes at 02:00 + ≤ 1 h jitter; the learning day runs to 04:00, so a 03:10 lesson on an otherwise quiet day got no note. Enqueuing every fold was the alternative (the job already skips no_activity) but costs one job row per child per quiet day.\n- Reverse if: the night fold moves after 04:00 local (then foldNight sees the whole day).\n\n## reports-header-open-lessons\n**Open lessons and lesson-less days in the header.** An open lesson (ended_at null) counts to its last evidence row in the window (session_id = lesson id; that row is cited), else 0 min; a preview counts a running lesson to now. A daily window with evidence and no lesson renders header.nolesson ('No lesson started; some time with Taxila outside a lesson.'). check.js re-derives both from rows.\n- Reverse if: lessons get a reliable server-side close (ended_at always set, e.g. by the Conductor's stale-lesson close) — then the last-row rule is unneeded.\n\n## reports-list-newest-render\n**'Earlier notes' shows one entry per day/week.** listReports: `distinct on (cadence, period)` newest created_at; reportById still serves any stored version by id.\n- Reverse if: parents need to compare renders (no such use known).",
+  "measurements": "## reports-sim-week-2026-10-03\n**Parent reports on simulated children, end to end, on the Neon test branch.** (2026-10-03)\n- Method: `server/reports/eval/sim-week.mjs`. Personas p02 (understander, Hinglish), p18 (confident misconception, English), p24 (Hindi-medium understander, Hindi) from evals/comprehension-sim; the 6 real kit concepts of world.mjs; ISO week 2026-W39, lessons Mon/Tue/Wed/Fri/Sat at 17:00 IST; per session: callbacks (C31) on earlier learned skills, teach, 4-6 items (std/disc/coinc), teach-back C01, why C06, transfer C13 and error-spot C05 on revisits, the kit diagnostic (mcq3) on revisits; answers code-played (no LLM child). Written through the REAL learner writer (ledgerStmts + facetStmts + commit): 353 kt_evidence rows, plus lesson, memory (one interest each, cited turn) and consent rows. Generated 5 daily notes + 1 weekly letter per child (18), Lane B on taxila-brain. Checker: `server/reports/check.js`, which imports nothing from the generator and re-reads every cited row by SQL, re-derives every slot, and checks completeness (a count cites every qualifying row in the window).\n- n: 18 reports, 78 claims, 450 rendered lines (3 languages).\n- Results: 18/18 stored, 0 gate throws, 0 screened; **claim-support 78/78 = 100%**; lines mapped 450/450; shapes header.daily 15, header.weekly 3, row.work 33, st.delayed 10, st.explained 4, st.transfer 1, tricky.mixup_next 6 (all p18), interest 3, home.skill 3.\n- Checker sensitivity: 240 single-claim mutants (count +1: 72, a foreign child's row: 57, a dropped supporting row: 54, another skill's title: 57) → 240/240 flagged. An earlier run (before the checker required completeness for home.skill) missed 3/51 dropped-row mutants on home lines.\n- Not covered: real children, real transcripts, LLM-played child turns, a parent reading anything (PRM1-PRM3), Hindi skill titles (kits carry English titles, so Hindi reports quote English titles).\n\n## reports-lane-b-brain-2026-10-03\n**Lane B (ordering + connective ids) on taxila-brain.** (2026-10-03) Method: the 18 sim reports above + 1 job run; JSON-schema output, effort low. n = 19 calls: 19/19 valid on the first call (0 fallbacks to fast, 0 Lane A); call latency p50 2,950 ms, p90 3,642 ms (n = 18 direct); cost mean 7,412 µ$ ($0.0074) per report from returned usage at $4/$20 per 1M; whole generate (facts load + Lane A + Lane B + gate + store) p50 3.3 s, max 6.5 s. At ~25 daily notes + 4 letters a month that is ≈ $0.21/child-month on brain (assumption of 25 active days was not sourced; see reports-laneb-tokens-2026-10-03 for the per-cadence formula).\n\n## reports-conductor-job-e2e-2026-10-03\n**parent.letter through the real job queue (server/conductor jobs.js) on the test branch.** (2026-10-03) enqueueJob → a second enqueue of the same idem key returned null (no-op) → claimJobs(fast, kinds=[parent.letter]) claimed 1 → runJob (consent re-check at claim, handler, complete_job) → status done, result_ref parent_report:<id>, spent_micro_usd 7,600 written fenced by attempt, 1 job.done event ingested, a second claim got 0. n = 1, 5.9 s. decide() enqueue rules are unit-tested (tests/reports-conductor.test.mjs, 6 tests): active-day daily at 04:10 IST next day, quiet days none, Sunday letter keyed by ISO week, consent and safety-hold blocks logged, a missed night caught up once.\n\n## reports-kit-title-lexicon-2026-10-03\n**How many kit skill titles the full parent lexicon would refuse.** (2026-10-03) Method: bannedHits + lockedHits over every `skills[].title` in data/kits/*.json. n = 2,991 titles: 424 hit (14.2%). Top entries: knows 73, test* 44, exam* 29 (before the exam* fix), understand* 21, voice 21, tone 20, must 19, top 12, habit* 12 (before the habit fix), marks 11. Severe list over titles + beliefs: 3 strings (c8-science 'asexual from sexual reproduction', c8-sst 'sex ratio' title and belief; c7/c9-english beliefs about disability). Drives reports-curriculum-span-mask.\n\n## reports-gate-fuzz-2026-10-03\n**Gate unit batteries.** (2026-10-03, tests/reports-gate.test.mjs, 18 tests) TEMPLATE DIGIT HYGIENE (renamed 2026-10-03 fixer pass: this is not numeric correctness — each line is checked against its own slots and the digit check is set membership, so swapped n/k passes; numeric fidelity is measured by the checker mutants in reports-sim-week-2026-10-03b): 2,000 random slot sets over every unlocked shape × 3 languages → 0 violations; a changed digit is caught (number_not_in_slots + text_mismatch). Lexicon recall (E-R4 lite): every BANNED and LOCKED entry, inflected, in 3 frames (mid-sentence, upper case, parenthesised) → 100%. Every template and fixed copy in every language passes its own gate. Same snapshot → byte-identical Lane A renders and claim ids (E-R9). Not built: P-SEM (semantic classifier) and P-CHILD classifier; E-R5/E-R6 hand-labelled sets.\n\n## reports-sim-week-2026-10-03b\n**Sim-week re-run after the review fixes.** (2026-10-03, run 177b2a48, `NODE_USE_ENV_PROXY=1 node --env-file=.env.local server/reports/eval/sim-week.mjs`, results in server/reports/eval/results/sim-week-2026-10-03.json — overwrites the first run's file, whose numbers are kept in reports-sim-week-2026-10-03.)\n- Method: as reports-sim-week-2026-10-03, RENDER_VERSION pr-2, with each child's memory row now shaped like the real lesson-end writer's output ('loves cricket', 'Enjoys drawing animals with her sister', 'kabaddi khelna pasand hai', memory consent granted). New mutants: swap n↔k, +1 on every numeric slot after the first, −1 on every numeric slot > 1, date +1 day.\n- n: 3 children, 353 kt_evidence rows, 18 reports, 75 claims, 441 lines.\n- Results: 18/18 stored, 0 gate throws, 0 screened; claim support 75/75 (was 78/78: the 3 interest claims are gone); lines mapped 441/441; lines quoting a memory row 0. Mutants 420/420 caught: count+1 72/72, other_slot+1 60/60, slot-1 99/99, swap_n_k 21/21, foreign_row 57/57, dropped_row 54/54, other_skill_title 57/57; date+1 had no subject (no dated claim in this week; covered by unit fixtures). Shapes: header.daily 15, header.weekly 3, row.work 33, st.delayed 10 (new copy), st.explained 4, st.transfer 1, tricky.mixup_next 6, home.skill 3. Job queue: 1 parent.letter done, duplicate enqueue ignored, 7,716 µ$ recorded, reclaim 0.\n- Not covered: rows from the real lesson-end writer (the sim inserts memory rows directly), real children or parents, a dated growth edge in the sim (unit tests only), header.nolesson in the sim.\n\n## reports-laneb-tokens-2026-10-03\n**Lane B tokens and cost per cadence.** (2026-10-03, same run, usage returned by Azure per call) n = 18 calls on taxila-brain, 18/18 valid first call: prompt tokens p50 646, max 806; completion p50 229, max 456; latency p50 3,141 ms, p90 3,929 ms; mean spend daily 7,047 µ$ (n = 15), weekly 9,297 µ$ (n = 3). Per child-month ≈ 7,047 µ$ × A + 9,297 µ$ × 4.35, A = days with activity: $0.18 at A = 20, $0.25 at A = 30. A is not measured on real families. The JOB_BUDGET worst case (chars/3 × 4 + 800 × 20 µ$) is ≈ 19k µ$ for these prompts vs a measured max of 12.3k µ$ (806 × 4 + 456 × 20).\n\n## reports-route-hold-2026-10-03\n**Report routes under a safety hold.** (2026-10-03, tests/reports-routes-db.run.mjs, spawned by tests/reports-routes-db.test.mjs in its own process; real API in-process, Neon test branch, guardian/session/PIN rows inserted directly, n = 1 child with 3 lesson days) Before a hold: today's preview returned. After inserting conductor_state mode safety_hold and generating a note after the hold began: daily and weekly preview null (held), post-hold note unlisted and 404 by id, pre-hold note 200 with all three voice scripts null, speak what=report 409, preview evidence 404, stored evidence has `how` (3 languages) and no `rule` or `memories`; after the hold clears, the preview returns. 2/2 subtests pass; also passes inside `npm test`.",
+  "rejected": "## reports-date-slot-object-leak\n**Tried (2026-10-03, first smoke run):** templates received the raw date slot object `{ y, m, d }`. **Broke:** every growth-edge line rendered 'It comes back on [object Object]' in all three languages, and the gate passed it, because its exact-re-render check re-rendered the same buggy template and the lexicon has no entry for it. **Instead:** `renderShape` formats typed slots (date via fmtDate, object via the home catalogue) and refuses a missing slot; a `template_bug` predicate refuses '[object ', undefined, NaN, null and '{slot}' in any line. Lesson: a gate that re-renders to compare inherits the renderer's bugs — it needs predicates that do not go through the renderer.\n\n## reports-prefix-lexicon-overmatch\n**Tried (2026-10-03):** prefix entries `exam*`, `habit*`, `मंद*`, `dar*` in the parent lexicon. **Broke:** `exam*` screened the interest line 'Taxila will use it in examples' (examples) for every child; `habit*` matches 'habitat', `मंद*` matches 'मंदिर' (temple), `dar*` matches 'darwaza' and 'dard'. **Instead:** whole-word entries with English inflections (exam, exams, examination*; habit, habits; मंदबुद्धि; darr*, dar lag*, darta, darti) and a false-hit test list.\n\n## reports-tricky-needs-review-date\n**Tried (2026-10-03, first --no-llm sim):** a growth edge required kt_skill_state.next_review_at ≥ the window start as its 'Taxila action + re-check date'. **Broke:** FSRS sets next_review_at only once a skill is learned, so practising skills have none; the confident-misconception persona p18 (answers like 7 of 8 matching the comma mix-up) got no growth-edge line in any of its 6 reports — the one child the section exists for. **Instead:** reports-growth-edge-next-lessons.\n\n## reports-interest-from-memory-text\n**Tried (2026-10-03, builder pass):** an interest line ('{name} said they like {interest}; Taxila will use it in examples.') filled from memory.text when ≤ 4 letters-only words. **Broke (review):** memory.text is taxila-fast paraphrase at lesson end, not the child's word; 'loves cricket' renders 'said they like loves cricket'; hi/hinglish reports carry an English paraphrase; the drawer labelled it 'What they told Taxila'. The sim inserted hand-picked single words straight into memory, so its 3/3 interest lines and 78/78 support said nothing about real rows. **Instead:** reports-no-interest-line. Lesson: a sim that writes the input a component expects, instead of the input the upstream writer produces, measures the fixture.\n\n## reports-hold-job-path-only\n**Tried (2026-10-03, builder pass):** the safety hold enforced by guards.js on report.daily / parent.letter only. **Broke (review):** GET /api/parent/report computed a live preview on every request without reading the Conductor mode, and stored scripts stayed playable, so during an incident the family still got an auto-generated report on demand. **Instead:** reports-safety-hold-read-side. Lesson: a hold that only blocks writers leaves every on-demand reader open.\n\n## reports-right-again-copy\n**Tried (2026-10-03, builder pass):** 'right again {d} days later' / '{d} din baad bhi sahi' / '{d} दिन बाद भी सही' for a delayed success. **Broke (review):** the previous contact may be a teach row or a wrong/helped/contaminated answer, so a child wrong on Monday and right on Thursday read 'right again 3 days later'. check.js re-derived the same rule, so 78/78 support could not catch it. **Instead:** reports-delayed-copy-last-came-up.\n\n## reports-recheck-date-window-start\n**Tried (2026-10-03, builder pass):** dated growth edge when next_review_at ≥ window start. **Broke (review):** the job runs after the window closes, so a same-day re-check read 'It comes back on 3 Oct' stored on 4 Oct, and a weekly letter could promise a past Wednesday; the checker shared the rule; no sim report had a dated tricky line. **Instead:** reports-recheck-date-ahead (+ unit fixtures for a date inside a closed window and a date past at generation).\n\n## reports-rule-string-in-drawer\n**Tried (2026-10-03, builder pass):** the drawer rendered claim.rule under 'How this line is counted'. **Broke (review):** internal English with the LOCKED word 'learned', 'calibration gate passed', '2k < n', 'date = kt_skill_state.next_review_at', untranslated on hi/hinglish, never gated. **Instead:** reports-how-copy-not-rule."
+ }
+}

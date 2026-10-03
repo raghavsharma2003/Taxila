@@ -1193,3 +1193,214 @@ https://claude.ai/artifact/WTiPAMzbiXscxKHodwbaHm hosts docs/research/voice/v2/b
 <!-- merged from inbox/owner-design-directive.json -->
 ## owner-design-v2-directive (2026-10-03)
 The owner rates product design, UI and UX as extremely weak. Signalling and the user flows must be excellent. UI chrome and labels are English only, and images carry no text; the teacher still speaks Hindi, English or Hinglish. The owner will bulk-generate images with a Codex prompt that we supply, saved under public/assets/gen/. The teacher should be video if costs allow, otherwise a highly detailed, expressive, human-like 3D face covering speak, listen, think and emotions. Prior evidence (video-avatar-v2.md): full live video costs about $23 per student-month self-hosted (MuseTalk) or about $450 on the Azure TTS avatar, against a $0.69-2.30 avatar budget, so video fits only for moments. Executed by workflow wf_de24e56b-2d9, which writes docs/design/**. **Reverse** the English-only rule if parent or child testing shows that Hindi-medium children can't navigate English chrome; then add a localisation layer, keeping language a parameter.
+
+
+<!-- merged from inbox/design-v2.json -->
+## design-v2-product-design (2026-10-03)
+**The final UI/UX spec is `docs/design/PRODUCT-DESIGN-V2.md`.** It uses Calm Mastery (`docs/design/directions/calm-mastery.md`) as the base and grafts in the best of Child-First Wonder (`child-first-wonder.md`). It answers `owner-design-v2-directive` and the 25-problem production audit (`docs/design/audit/AUDIT.md`). It replaces the UI sections of v1 `docs/research/design/PRODUCT-DESIGN.md` wherever they disagree. Everything it does not mention in v1 still holds: the dp-budget method, ReactionGate, the ledger, the parent PX rules, the voice ladder and safety.
+- Rationale: the design director's weighted scorecard (spec §1) gave CM 56.6 and CFW 50.9 out of 62.5. CM wins on:
+  - signalling: one lamp target, and the card kept separate from the caption;
+  - buildability: 2 geometries instead of 11, the existing auth, and a first week that needs no art;
+  - low-end performance: flat tier D, synthesised earcons, ≈ 86 KB of fonts;
+  - flow: class first, so the parent meets the actual teacher.
+
+  CFW wins on delight for ages 6–9 and on robustness details, which are grafted in. Those grafts are the heard/showing/yielding states, the IndexedDB outbox, the Board tray, the concept payoffs, the painted courtyard and rooftop, the protégé, the plan-404 fallback, the parent locked-out flows, the `--d5-haldi` defect and the ask-parity gate.
+- Build: phases B1–B4, each with acceptance checks and a Playwright visual battery (spec §13.2, §14).
+- Reverse if: V2-M1 (whose turn) or V2-M2 (what's the question) at n = 20 per band shows no gain over the v1 layouts. Also reverse if V-LAYOUT-1 cannot fit at font scale 2.0. If V2-M11 delight for ages 6–9 stays below 60% after two iterations, move the Young lesson toward CFW's full-stage world, starting with a lit vs dusk arm.
+
+## design-v2-desk-layout (2026-10-03)
+**The lesson is laid out as the Desk.** It has four zones that never overlap:
+- the TeacherWindow (Face geometry) or the SpeechRow (Work geometry);
+- the pinned QuestionCard;
+- the WorkTray, rendered only when `ui.tray` is module, board, tiles or pad;
+- the AnswerDock.
+
+Face, Work and Keyboard replace L1–L5. The dp-budget method of `ds-layout-dp-budget` is kept: every column sums to 584, 744 and 1280×720, and geometry changes only at phase boundaries. The face is never a PiP over content, and no placeholder ever reaches a child.
+- Rationale: audit problems 1, 5 and 23. With the card pinned and the PiP gone, five geometries collapse into two, which means fewer reflows on tier C.
+- Gate: B1-A2 (column sums and minimums), V-LAYOUT-1/2.
+- Reverse if: V2-M1/M2 show no gain over the L-layouts at n = 20 per band, or V-LAYOUT-1 fails at font scale 2.0.
+
+## design-v2-lamp-on-dock (2026-10-03)
+**Marigold `#FFB21E` lights exactly one element: `AnswerDock[data-floor="your_turn"]`.** It is drawn as `--lamp-wash` plus a 3 dp `--lamp-ring`, with the visible word "Your turn". The chime, the 20 ms haptic and her lean-in fire from the same transition on the same frame. Marigold never appears on buttons (which use `--nib`), in the parent corner, onboarding, landing or generated art. On a child screen, no colour with saturation ≥ 35% may sit within 12° of hue of the lamp.
+- Rationale: the audit found marigold carrying four meanings and turn state carried by mic colour alone. One target gives the child one place to look.
+- Gate: G-LAMP-1 (static) and V-SIG-2 (≤ 1 `[data-lamp]` per frame, 0 on parent/onboarding/landing).
+- Reverse if: V2-M1 shows that ringing the tile group beats ringing the dock by ≥ 5 pp for B2.
+
+## design-v2-ask-pinned (2026-10-03)
+**Every hand-over in {answer, choice, judge} carries `ui.ask`.** It is the question in written form, ≤ 120 characters, in the lesson's script, produced by the same Director move as her speech and the board. The QuestionCard pins it from her first audio frame until the item resolves. Hints and follow-ups add lines under the ask and never replace it. "Hear the question" replays the ask itself, from the client buffer.
+- Rationale: audit problem 1 (the caption showed only the tail of her turn at the child's turn) and problem 6 (board, voice and screen contradicted each other).
+- Gate: G-ASK-1 (presence = 100%), G-ASK-2 (the spoken reply contains the ask's content tokens, re-rendered before TTS), G-SAY-1, G-OBJ-1, V-ASK-1.
+- Reverse if: V2-M2 at n = 20 per band shows no difference vs caption-only.
+
+## design-v2-floor-eight-states (2026-10-03)
+**The floor states are idle, speaking, showing, yielding, your_turn, listening, heard and thinking** (`src/lesson/floor.ts`). Overlays (paused, trouble, help, recorded) suspend the floor, and the lamp is never lit under one. Each state is carried by face, a visible word, a glyph, a sound, a haptic and only then colour (spec §4.2). YOUR TURN requires a pending hand-over: the bug fix to `statusOf()`, which today returns your_turn whenever nothing is pending.
+- Rationale: audit problems 2, 3 and 22. `heard` is the missing receipt; `showing` stops children tapping an inert demo; `yielding` puts every carrier on her offset frame.
+- Gate: B1-A1, V-SIG-1…5 (greyscale and CVD distinctness, same-frame signals).
+- Reverse if: V2-M1 shows the extra states confuse (more than 20% naming errors on heard or showing).
+
+## design-v2-no-silent-failure (2026-10-03)
+**No answer is lost, and nothing fails silently.**
+- Every child answer (spoken, typed, tapped, module or drawn) is written to an IndexedDB outbox keyed (lessonId, turnSeq) before it is sent.
+- It is retried at 1, 3 and 6 s, flushed in order on reconnect, and removed only on the server's acknowledgement.
+- A receipt appears ≤ 150 ms after the answer, and a visible state ≤ 3 s after a failure is detectable (T1 at 8 s for a slow reply).
+- Nine trouble states T1–T9 share one Trouble strip, each with a sentence, ≤ 2 actions and the state of the answer.
+- Raw API strings are never shown.
+- Rationale: audit problem 3 (with the network cut, the typed answer was lost, with no error and no retry) and problem 18.
+- Gate: V-CHAOS-1, with 0 lost answers across 8 cut points plus ASR, mic, output, GL and token failures.
+- Reverse if: never. This is a correctness floor.
+
+## design-v2-face-verdict-neutral (2026-10-03)
+**ReactionGate stands over Calm Mastery's proposal.**
+- Her face plays the same warm-attentive program after correct and wrong commits.
+- The verdict comes from the verified-key classifier only, and lives on the work:
+  - correct: a `--got` tick drawn on the answer chip and the engine's concept payoff;
+  - partly: a half-tick;
+  - not yet: a magnifier and "Let's look again", with no red, no cross and no haptic.
+- Delight fires only on effort or insight tags, ≤ 1 per 5 turns.
+- Praise moves need `verdict = correct` or an effort/insight tag (G-PRAISE-1), which blocks "Bilkul" after a wrong answer.
+- Rationale: audit problem 13 (no feedback channel). A face keyed to correctness is farmable and leaks covert checks (v1 R6).
+- Reverse if: a pilot shows ≥ 20% of children unsure whether they were right after a verdict even with the tick and payoff present. Then add verdict-keyed affect for B1 only, at constant magnitude.
+
+## design-v2-type-atkinson-literata (2026-10-03)
+**Fonts:**
+- Atkinson Hyperlegible Next (34,024 B, `tnum`) for all UI, questions and numerals;
+- Literata (39,260 B, `tnum`) for Older, parent and landing titles at ≥ 22 sp;
+- Mukta only for Devanagari captions, with a unicode-range that excludes ₹;
+- Andika for early-reading content.
+
+Baloo 2 is dropped, which amends the type clause of `ds-band-fork-older`. The Latin cold path is ≈ 86 KB, against ≈ 398 KB. Chrome draws ₹ from an inline SVG.
+- Rationale: CM font measurement 2026-10-03 (n = 1 fetch per family). Clear 1/l/I and 0/O for maths. Lexend and Fraunces have no `tnum`.
+- Reverse if: V2-M14 (Young titles) shows Atkinson rated cold or hard to read more than 15 pp above Baloo 2, or B3/B4 panels rate Literata titles cold or school-y more than 15 pp.
+
+## design-v2-older-position-cues (2026-10-03, gated)
+**Three gated cues for Older children:**
+- the phase line (Warm-up · Learn · Try · Wrap, current in bold, no fill, no count);
+- "Practice · 2 of 5" in Quick practice;
+- the turn chime at −18 dBFS.
+
+They amend `ds-progress-no-meters` and the "earcons off" clause of `ds-band-fork-older`, and they ship behind flags.
+- Rationale: the audit found no sense of arc (§4.4) and no sound for turn changes.
+- Reverse if: V2-M13 (MW-M1) shows lower free-choice persistence or a goal-gradient pattern, or V2-M4 fails (missed turns must drop ≥ 3 pp, with annoyance ≤ 1 in 5).
+
+## design-v2-pause-leads-paused (2026-10-03)
+**The pause sheet is titled "Paused" and leads with Continue and End lesson.** "Need help? Talk to a grown-up" and the Childline 1098 and Tele-MANAS 14416 `tel:` buttons form the third row, visible without scrolling. The Help sheet raised by the safety predicate still leads with help ("You're not in trouble."). This amends v1 §3.14.
+- Rationale: audit problem 14. A child who wanted water was shown helplines as the headline.
+- Reverse if: help taps via pause per 1,000 lessons fall below the v1 layout's rate, with the predicate-raised sheet unchanged.
+
+## design-v2-painted-world (2026-10-03, gated)
+**The art direction is a painted gouache world.** Young children get a sunlit courtyard and Older children a rooftop at dusk. The TeacherWindow's ground is a dusk stage (`--stage #26304A`) with a warm pool behind her, and it "lights down" at lesson start. The Garden and Sky art follow the same style. Chapter seals appear only when the ledger puts every skill in a chapter at Got it or Secure; they are a state of the map, never collected or counted, which answers the owner's badges request.
+- Production: 152 images from one Codex prompt (spec §12.1) into `public/assets/gen/**`. `scripts/gen-assets.mjs` enforces the budgets, an OCR no-text presence check, the lamp-hue pixel lint and provenance, then a human review follows. Tier D gets flat fallbacks. This amends v1 §4.7 (flat fills).
+- Reverse if: V2-M12 shows more than 15% of B4 children rating the art "for little kids", or the budgets cannot be met (≤ 350 KB of art per first-run child screen). Also if the chapter seal behaves like a collectible: a goal-gradient pattern, or return that rises while delayed retention falls.
+
+
+<!-- merged from inbox/harvest-ports.json -->
+## release-gate-verify-release
+`scripts/verify-release.mjs` is the one release gate (harvest port task 1, after html-portfolio's). Order: `tsc -b` → `scripts/check-prompt-budget.mjs` → `node --test tests/kit-budget.test.mjs` → `evals/persona-invariants.mjs` → `evals/never-rules.mjs` → `evals/pii.mjs` → `evals/spoken-preserve.mjs` → `scripts/context.mjs --check` → `vite build` → `npm test` (vite before npm test: tests/engines-browser reads dist/). Every failure is printed with its output tail; the verdict is the exit code. Skips are red unless named in `KNOWN_SKIPS` with a reason (today: the learner Neon suite without TEST_DATABASE_URL; the VOICE_BROWSER=1 Chromium suite). `--live <base>` adds `scripts/live-probes.mjs` (health, db round trip, app shell, six 401 auth fences, JSON 404; no model call) and `scripts/prod-smoke.mjs <base> text`, which now runs every teacher line through `floorViolations`. `--only a,b` is for iterating, never for a release. **Reverse if** CI grows its own runner with the same list (then this file becomes a thin wrapper and a parity test pins the two lists).
+
+## never-rules-floor-violations
+The floor's NEVER rules are checked on the TEACHER's words by code, not trusted to the prompt (`server/director/safety.js floorViolations(text, {content, requireHelpline, goodbye})` → families most severe first; `neverRuleHits` gives `{family, rule}` and never the text). Families = `compile.js FLOOR_FIX` keys (a test pins the identity), so a voice-lane hit becomes `lessonState.correction` and the next compile renders the fix shape first (the producer that FLOOR_FIX was always waiting for: nothing set `correction` before). Port of `api/_never-rules.js@vb` with its two refuted defects fixed: normalisation keeps `\p{M}` (only nukta and chandrabindu are folded), matching is letter-bounded (no 'ass' in "class"). Posed kit content and quoted model sentences are excluded; a question or reported question is not a claim (ai_denial, feelings); `helpline` checks the number beside Childline/Tele-MANAS/"helpline" in numerals, Devanagari digits or digit words; `goodbye` turns treat a question or teaser as a hook; safeguard turns must carry 1098. New FLOOR_FIX keys are <= 25 chars and `checkFits` pins its correction pair, so the kit load gate admits exactly what it did before. **Reverse / demote a family to log-only if** a human-coded out-of-sample battery (>= 300 teacher turns per lane) shows its precision < 0.9; **replace the regex family with a classifier if** its recall there is < 0.5 for ai_denial, romance or exclusivity.
+
+## minor-gates-no-adult-branch
+`server/compiler/gates.js`: `MINOR_GATES` is frozen; `gatesFor(tier)` returns it for every tier ("adult", "verified_adult", "unverified", unknown, null, garbage); `saferGates` only restricts; `assertMinorGates` throws on anything wider; `compile()` asserts it on every call and `neverRuleHits` reads its family list. The source (`src/engine/clock.ts@vy`) defaulted `unverified` to adult gates (romance and engagement mechanics on); here there is no adult branch to fall into, and a test scans server/src/shared for any `romance: true` / `engagementMechanics: true`. A guardian's adult attestation governs parent surfaces only. **Reverse only if** Taxila ships an adult-learner product — and then as a separate kernel on a separate lane, never a tier of this one.
+
+## scrub-pii-cued
+`scrubPii(text, {names})` → `{text, found: kinds}` masks direct identifiers before a child's words reach a provider or a row (harvest port task 7; the Gurukul scrubPii@gp it replaces was refuted). Number shapes match on a Devanagari-digit-folded copy (offsets shared): Aadhaar-shaped 4-4-4 (any first digit) or a 12-run starting 2-9; Indian mobiles with +91/91/0 split at most 3 times; STD landlines; email; PIN after a cue; 10+ digit WORDS in a row (EN, Hinglish, Devanagari). Names, schools and addresses only after a cue the child uses to give one, with capitalised Roman values (Devanagari values need the cue): the child's first name is KEPT (the teacher already uses it; "My name is Riya" is an English kit answer), a surname and family members' names are masked. Contiguous monotone runs (9876543210, the classic largest-number answer) and lists of number groups are exempt. **Reverse a rule if** any kit answer or acceptable is masked by it (evals/pii.mjs counts them: 0 today); **add NER if** a labelled sample of real child turns shows the cue rules miss > 1% of PII-bearing turns.
+
+## floor-core-quote-free
+The compiled CORE is quote-free and bracket-free (VOICE-TEACHER §4 row 3, rejected `voice-prompt-labels-and-brackets`: the floor's quoted 'best friend' / 'only me' were recited in 22/33 attachment replies). floor.js now says "friend-role or only-you claims"; Asha's "no 'baby', no 'dear'" → "no pet names or endearments"; Arjun's "without softening into 'almost'" → "with no softening". `evals/persona-invariants.mjs` lints CORE on all 144 lanes with an in-run control. **Reverse if** a re-run of the char/relational probe shows the unquoted phrasings recited or the romance/exclusivity violation rate rising against the 2026-10-02 baseline.
+
+## never-rules-floor-violations — revised 2026-10-03 (review fixes)
+Four changes after the review. (1) **Content** is removed only as a whole, letter-bounded segment, only when it is >= `CONTENT_MIN` (12) characters AND carries a NEVER hit of its own (`contentRe`), so removal can only take away a hit the verified content itself carries; short kit answers ('no', '8', 'A', 'किसी को नहीं') can neither hide nor create a violation. The call-site recipe (pass prompt, answer, acceptable, hints, options) is therefore safe as written. (2) **Quoted spans are judged**; a quote led by a modelling cue (say/bolo/like this/likho/for example/…, within 24 chars) is judged only for romance and exclusivity (helplines everywhere) — "Say it like this: 'Where do you live?'" is an English lesson, "Main tumhari 'best friend' hoon" is a claim. `normForMatch` drops a ' at a word edge so a quoted phrase reads as words. (3) **Negation guards**: don't/never/not/no need to/mat/nahi before keep-secret and data asks, nahi/mat after Hinglish/Hindi data asks and secret phrases, and safety advice naming a data word ("don't tell anyone your password", "apna password kisi ko mat batana") is not a pact. A helpline number is attributed only to the name it follows, cut at the next helpline name, never 112/100/108, never another helpline's number after or/ya. (4) **Question frame** must end right at the claim (if/whether/kya/you asked if/tumne poocha ki/tumhe lagta hai ki); a hedge earlier in the clause no longer exempts. **Reverse (1)** if a kit ships a verified string that flags on its own AND is shorter than 12 chars and teachers read it out (then lower CONTENT_MIN for that string class with a test); **reverse (2)'s cue exemption** if a modelled-quote violation is found in a recorded reply.
+
+## minor-gates-no-adult-branch — clarified 2026-10-03
+`compile()`'s `assertMinorGates(gatesFor(...))` cannot fail today (gatesFor has one answer). It is structural documentation and a tripwire for a future branch, not a runtime guard; tests/gates.test.mjs pins that it throws for every widened gate set. Nothing in Taxila changes behaviour on gate values. **Reverse** (delete the call) if it is ever mistaken for coverage in a review; keep the kernel.
+
+## scrub-pii-cued — revised 2026-10-03
+Lower-case values are matched after the UNAMBIGUOUS cues only (my name is, mera naam, family-name cues, my school is / school ka naam / mera school, I live in/at/near, mera ghar/pata, main X mein rehta), with a function/describing-word stop list; "i go to school" stays proper-noun-only. A phone after an explicit cue (number/phone/mobile/contact/whatsapp/नंबर/फोन/मोबाइल) is masked however it is split, unless its digits are a monotone run. This is NOT the rejected `scrub-pii-uncued-shapes` (any letter after any cue): kit strings stay at 2/126,863 masked, 0 answers. Coverage is still cue-dependent — a name with no lead-in phrase ("riya sharma here") is not caught. **Reverse** if a lower-case cue rule masks a kit answer or a recorded child answer (the eval gates both).
+
+## fix-load-gate-computed
+`FIX_LOAD_GATE` is computed: the longest FIX_MAX (2) combination of `FLOOR_FIX` values. personal_data and ability were shortened to <= 25 chars so the longest pair is still ai_denial + exclusivity (82 chars) and the kit load gate admits exactly the same items; tests/gates.test.mjs pins both the computation and the <= 25 rule. **Reverse** never silently: lengthening a key now makes the load gate stricter (items may drop at load, which kit-budget reports), never lets a mid-lesson BudgetError through.
+
+
+<!-- merged from inbox/parent-reports.json -->
+## reports-lane-a-evidence-rows
+**Parent reports v1 are Lane A (PARENT-REPORT §10.2): every parent line is a reviewed template per (shape × language) on typed slots computed in code from ledger rows, and every claim stores the rows behind it (`factIds`: `kt_evidence:<id>`, `lesson:<uuid>`, `kt_skill_state:<skill>`, `memory:<id>`).** Shapes: header (lessons · days · min), strength (delayed success · explained in own words · transfer · error-spot · an earlier delayed success on a zero-lesson week), rows ('Practised “title”: n questions, k right on the first try without help'), growth edge (task feature · hedged mix-up only past a diagnostic set of ≥ 3 discriminating / ≥ 2 matching answers · Taxila's action), interest (memory kind=interest, daily; RETIRED 2026-10-03 by reports-no-interest-line), home activity (weekly, from a skill with first-try successes, never the growth-edge skill). Fixed priority per section, caps daily 1/2/1/1/0 and weekly 1/2/1/0/1 (≤ 5 body lines). No frequency words (counts only), no L2/L3 lines, no percentages. Hindi/Hinglish are gender-neutral by construction (ने / respectful plural) because the child row has no pronoun. (2026-10-03)
+- Rationale: RR-D2 fact-first; the false-claim budget has nothing to admit while no L2/L3 menu exists; comprehension §7 'evidence, not verdicts'.
+- Reverse if: an L2/L3 menu item is pre-registered and passes E-R1/E-R2 (two-groups pooling) — then it enters through the G-h budget, not as a template; or PRM1 shows parents misread the count rows (> 20% read-back errors).
+
+## reports-gate-throws
+**The assembled report is gated in every language and the gate throws; it never trims.** Predicates per line: exact re-render of the template on the claim's slots (no free text can ride in), full lexicon (BANNED, 16 categories, EN + Devanagari nukta-insensitive + Roman Hindi) on the line with curriculum/name/object spans masked, severe list on curriculum and child spans, locked words unless K7 and the pakka shape, every digit equals a numeric or date slot, a template-bug detector, the name slot is the child's name. Report-level: every claim rendered exactly once per language, every line maps to a claim or a registered fixed copy, one header, caps, exactly one home activity weekly, growth-edge shape family, spoken script rebuilt from its order and ≤ 110/200 words and ≤ 1,200 chars (one /api/tts request; the report speak path refuses a longer script instead of slicing it). Candidate screening before assembly uses the same line predicates and is logged in meta.screened; the Lane A spoken order drops only in the declared order (second row, first row, interest, tricky) and then throws. (2026-10-03)
+- Rationale: inherited 'truncation is silent → budget gates throw'; PARENT-REPORT §8.2 'a failure blocks the send'.
+- Reverse if: never for throwing. Revisit the screening (vs throwing) only if meta.screened shows a template, not data, being screened.
+
+## reports-k7-locked-words
+**'Mastered' and every mastery word are locked behind the calibration gate.** `server/reports/config.js CALIBRATION.k7Passed = false`. Until it is set (with a measurements.md K7 entry: delayed accuracy ≥ 0.9 at 1 and 4 weeks, ECE ≤ 0.05, n ≥ 200 children), the LOCKED list (pakka, mastered, master*, learned, learnt, understood, understand*, can do, can now, knows, secure, durable, got it, aa gaya, seekh liya, samajh gaya/gayi/liya, पक्का, सीख लिया, समझ गया/गई, समझ लिया, आ गया) is an overclaim violation anywhere. After K7 only `st.pakka` may say it, and only on ≥ 2 delayed successes on distinct items ≥ 1 day apart (RRI17). (2026-10-03)
+- Rationale: comprehension §7.1 (no row says mastered / learned / understood / can do before K7); open-learner-calibration-gate.
+- Reverse if: K7 passes on real children.
+
+## reports-curriculum-span-mask
+**Kit skill titles and kit misconception beliefs are 'curriculum' slots: masked for the full lexicon, checked against a severe list (sexual/romance, self-harm, slurs/insults, diagnosis words).** They are quoted in every template (“title”) so they read as the topic name. (2026-10-03)
+- Rationale: 424/2,991 kit titles (14.2%) trip the full lexicon on outcome language about the topic ('Knows the story words…', 'Test objects with a magnet…', 'Understands the story's point of view…'); screening them would drop valid lines and bias reports away from science/English topics.
+- Reverse if: a parent-comprehension test (PRM1) shows quoted outcome titles that start with 'Knows/Understands' are read as verdicts about the child — then titles get a parent-facing short name in the kit, and the mask goes.
+
+## reports-lane-b-brain-ordering
+**Lane B is taxila-brain (fallback taxila-fast), effort low, max 800 completion tokens, JSON schema `{order: [{kind, id}]}` with a 7-rule shape-only prompt (no example sentences). It orders segments and picks connective ids (c.next, c.also, c.good, c.tricky); code validates (frame first/last, mustKeep present, no adjacent connectives, home just before close, tricky after strength/rows, word and char budgets) and assembles the text from our strings. One order for the child's language is re-validated per language; a language it does not fit gets the Lane A order. Budget: worst-case cost (input chars/3 × in-price + 800 × out-price) is checked BEFORE each call; spend is written to job.spent_micro_usd fenced by attempt.** (2026-10-03)
+- Rationale: MODEL-ROUTER 'Parent reports' row (brain primary); PARENT-REPORT §10.2 Lane B jobs.
+- Reverse if: MODEL-ROUTER R4 is accepted (fast ties brain on W at 1/31 the cost) — Lane B is ordering ids, so move daily notes to taxila-fast first; or if Lane B's order shows no parent-comprehension gain over the Lane A order in PRM1, drop the call.
+
+## reports-end-of-day-jobs
+**End-of-day jobs (server/conductor/config.js JOB_KINDS, decide.js foldNight → enqueueReports): `report.daily:{child}:{day}` when the folded day was active (counters.lastActiveDay / activeDays), `parent.letter:{child}:{isoWeek}` when the folded day is a Sunday (ISO week Mon-Sun); runAfter = next day 04:00 local + REPORT_GRACE_MIN (10); purpose core_tutoring (guarded in decide and re-checked at claim); allowedIn paused and in_lesson, dropped in safety_hold; budgets 25,000 / 40,000 µ$; maxAttempts 4, lease 120 s.** Handlers in server/reports/jobs.js (imported by conductor/handlers.js): a stored report short-circuits before any model call; a bad period is final; a quiet day is `skipped:no_activity`; a cancel requested before the model call stops the job. (2026-10-03)
+- Rationale: X8 (letter idempotency per child-week), X11 (daily note pull-only in v1), CONDUCTOR §7.3, X36 (night fold once per learning day, re-armed only within 14 days of activity).
+- Reverse if: the Notifier (M1) needs the letter at the parent's chosen day/hour (pl PA-9) — then a `weekly_letter` wakeup (parent-chosen, kept for dormant children per X36) enqueues parent.letter instead of the Sunday fold; or daily notes go unread (> 80% unopened in PRM8) — then stop generating them.
+
+## reports-growth-edge-next-lessons
+**A growth edge (S11) is admitted only with an action part: `tricky.work` / `tricky.mixup` carry the kt_skill_state.next_review_at date; when no date exists and the skill's display is unseen/introduced/practising, `tricky.work_next` / `tricky.mixup_next` say 'Taxila comes back to it, or to the step before it, in the next lessons' — the placement rule (content/next-topic.js pickTopic: first not-done topic, back-chained to a prerequisite). A learned skill with no date gets no growth-edge line.** (2026-10-03)
+- Rationale: FSRS sets next_review_at only once a skill is learned; requiring a date hid every not-yet-learned difficulty (rejected: reports-tricky-needs-review-date).
+- Reverse if: the Director/planner changes placement so a not-done topic is not continued (then the wording is false), or a per-skill re-check schedule for practising skills exists (then use its date).
+
+## reports-voice-features-excluded
+**Voice features never reach a parent report.** facts.js reads only consent, lesson, kt_evidence, kt_skill_state, kt_misconception and memory (interest rows under memory consent); `voice` words (voice, pause*, hesitat*, pitch, tone, speech rate, WCPM, awaaz) are in the banned lexicon; tests/reports-gate.test.mjs scans the loader source. (2026-10-03)
+- Rationale: COMPREHENSION-ENGINE §7.3 bans 'voice-feature anything' in parent text; PARENT-REPORT §3 maps no voice construct to any section; ct-no-voice-emotion-inference.
+- Reverse if: CD-orf (oral reading fluency) is built on equated, human-audited passages (PARENT-REPORT §4.3) — then a term-only S3 subrow may cite read-aloud WCPM.
+
+## reports-no-interest-line
+**No interest line in parent reports (fixer pass, 2026-10-03).** memory.text for kind=interest is written by taxila-fast at lesson end (server/routes/lesson.js: "at most 3 harmless things the child SAID", ≤ 14 words, no fixed format), so it is model paraphrase, not a typed value; a reviewed template cannot carry it (a real row 'loves cricket' rendered 'Aarav said they like loves cricket', English inside hi/hinglish reports, under a drawer label 'What they told Taxila'). The shape, the cap (daily interest 0), the memory read in facts.js, the checker case and the drawer section are removed; RENDER_VERSION → pr-2.
+- Rationale: "every line is a reviewed template on typed values" and "no model writes text a parent reads" are the report's contract; a word-list filter on paraphrase cannot tell 'hates cricket' from 'loves cricket'.
+- Reverse if: memory stores a typed interest (a topic/category id from a reviewed list with per-language labels), then the line returns as a template on that id, with a sim run on rows produced by the real lesson-end writer.
+
+## reports-safety-hold-read-side
+**The safety hold holds the report read side too.** `reportHold(childId)` reads conductor_state (mode, state.modeSince). During safety_hold: GET /api/parent/report with cadence → `{ report: null, skipped: 'held', held: true }` (no live preview, daily or weekly); GET /api/parent/reports lists only notes created before the hold began (`held: true`); a stored note by id is served only if created before the hold, with every spoken script nulled; GET /api/parent/speak?what=report → 409; preview evidence → 404; stored-note evidence (pre-hold) stays. The client shows fixed neutral copy ('No new note right now.') and no Listen. No conductor_state row or table = no hold; any other DB error propagates (never read as 'no hold').
+- Rationale: guards.js drops the report jobs in a hold because 'the protocol decides what reaches the family'; the preview path built the same content on demand. Notes from before the hold were already with the family; withdrawing them is a visible act the safeguarding protocol should own, not this route.
+- Reverse if: the safeguarding protocol (not built) specifies a different read-side rule (e.g. hide all notes, or show a protocol message) — then this route defers to it; or a hold must also hide pre-hold notes for a reason this pass did not see.
+
+## reports-delayed-copy-last-came-up
+**Delayed-success copy no longer says 'again'.** en: '“title”: right on the first try without help, d days after it last came up.'; hinglish: 'd din baad phir aaya, aur pehli baar mein bina madad ke sahi.'; hi: 'd दिन बाद फिर आया, और पहली बार में बिना मदद के सही।' Same for st.delayed_before and the K7-locked st.pakka. The evidence rule (derive.js delayedSuccesses: previous contact on the skill, any row, in another session ≥ 20 h earlier) is unchanged.
+- Rationale: the previous contact can be a teach row, a wrong, helped or contaminated answer; 'right again' / 'baad bhi sahi' asserts it was right. A checker that re-derives the generator's rule verifies consistency, not the meaning a parent reads — wording needs its own test (fixture whose previous contact is C2).
+- Reverse if: the rule is tightened to require a clean first-try success as the previous contact (then 'again' is true), or PRM read-back shows parents read 'after it last came up' as 'was wrong before' (> 20%).
+
+## reports-recheck-date-ahead
+**'It comes back on <date>' only for a date still ahead.** buildClaims takes `now` (generation time; default the window end); dated iff next_review_at ≥ max(window end, now). Else: _next wording for a not-learned skill, or no growth-edge line (never a stale promise). check.js: the date must be ≥ max(window_to, created_at).
+- Rationale: jobs run after the window closes (daily 04:10 next day, weekly Monday) and previews later still; the old test (≥ window start) let a same-day 15:00 re-check and a five-days-past Wednesday through, and the checker shared the rule.
+- Reverse if: reports describe the actual re-check event when it already happened (an L1 'came back on <date>: right / not yet' shape), which would replace the _next fallback for past dates.
+
+## reports-how-copy-not-rule
+**The drawer shows reviewed 'how this line is counted' copy, never claim.rule.** templates.js `HOW[shapeId] = { en, hinglish, hi }` for every shape; `evidenceClaimOut` sends `{ id, section, shapeId, how }`. A test runs every HOW string and every label string in src/parent/Report.tsx through the full lexicon and the lock list (this caught 'behind' / 'peeche' / 'पीछे' (prediction list) and 'not sure' (certainty) in the drawer labels, reworded). The rule strings stay for the checker and audit.
+- Reverse if: rule strings become reviewed, translated parent copy themselves (then HOW is generated from them under the same test).
+
+## reports-gate-final-pregate
+**Gate before paying, final on failure, charge failed calls.** compose() gates the Lane A render before the writer is called and the full report (with voice) after; runReportJob turns ReportGateError into FinalJobError (dead + job.failed{final}) and writes audit `parent_report.gate_failed` with `lang:rule` names only; orderForVoice charges a failed call its returned usage, else the worst-case estimate, through onSpend.
+- Rationale: the gate is deterministic on a snapshot, so retries repeat the failure and re-pay taxila-brain; an uncharged timeout made spent_micro_usd under-count and let the fallback think it had more room.
+- Reverse if: the gate gains a time- or model-dependent predicate (then a retry can succeed), or Azure is shown never to bill a timed-out call (then charge 0 on transport errors).
+
+## reports-late-activity-daily
+**A lesson after the night fold still gets its day's note.** markActive(s, day, H): when `s.adapt.foldedDay === day` and the job is not already pending, it enqueues `report.daily:{child}:{day}` (runAfter 04:10 next day) with rule `report_daily_late`.
+- Rationale: the fold wakes at 02:00 + ≤ 1 h jitter; the learning day runs to 04:00, so a 03:10 lesson on an otherwise quiet day got no note. Enqueuing every fold was the alternative (the job already skips no_activity) but costs one job row per child per quiet day.
+- Reverse if: the night fold moves after 04:00 local (then foldNight sees the whole day).
+
+## reports-header-open-lessons
+**Open lessons and lesson-less days in the header.** An open lesson (ended_at null) counts to its last evidence row in the window (session_id = lesson id; that row is cited), else 0 min; a preview counts a running lesson to now. A daily window with evidence and no lesson renders header.nolesson ('No lesson started; some time with Taxila outside a lesson.'). check.js re-derives both from rows.
+- Reverse if: lessons get a reliable server-side close (ended_at always set, e.g. by the Conductor's stale-lesson close) — then the last-row rule is unneeded.
+
+## reports-list-newest-render
+**'Earlier notes' shows one entry per day/week.** listReports: `distinct on (cadence, period)` newest created_at; reportById still serves any stored version by id.
+- Reverse if: parents need to compare renders (no such use known).

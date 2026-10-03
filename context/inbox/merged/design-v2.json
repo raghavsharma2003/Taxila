@@ -1,0 +1,243 @@
+{
+ "nodes": [
+  {
+   "id": "design-v2-product-design",
+   "kind": "decision",
+   "title": "PRODUCT-DESIGN-V2 is the final UI spec: Calm Mastery base (the Desk, the lamp on the dock, Atkinson/Literata) with Child-First Wonder grafts (heard/showing states, outbox, Board tray, painted world, concept payoffs); replaces v1 UI sections where they disagree",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-desk-layout",
+   "kind": "decision",
+   "title": "Lesson = the Desk: TeacherWindow/SpeechRow, pinned QuestionCard, WorkTray only with content (module|board|tiles|pad), AnswerDock; Face/Work/Keyboard geometries replace L1-L5; face never a PiP over content",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-lamp-on-dock",
+   "kind": "decision",
+   "title": "Marigold lamp lights exactly one element, AnswerDock in YOUR TURN, with visible 'Your turn'; chime + haptic + lean-in fire on the same frame; never on buttons, parent, onboarding or art",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-ask-pinned",
+   "kind": "decision",
+   "title": "Every hand-over carries ui.ask; the Question card pins it until the item resolves and 'Hear the question' replays the ask; caption and card are never merged; gates G-ASK-1 presence and G-ASK-2 spoken parity",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-floor-eight-states",
+   "kind": "decision",
+   "title": "Floor machine idle/speaking/showing/yielding/your_turn/listening/heard/thinking, each carried by face, word, glyph, sound, haptic, then colour; YOUR TURN requires a pending hand-over (statusOf fix)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-no-silent-failure",
+   "kind": "decision",
+   "title": "Every child answer goes to an IndexedDB outbox before sending (retries 1/3/6 s); receipt <=150 ms; visible state <=3 s (T1 at 8 s); nine trouble states T1-T9 via one Trouble strip; 0 lost answers is a release gate",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-face-verdict-neutral",
+   "kind": "decision",
+   "title": "ReactionGate kept over Calm Mastery: her face is identical after right and wrong; the verdict is a tick/half-tick/magnifier on the answer chip plus the concept payoff; delight only on effort/insight",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-type-atkinson-literata",
+   "kind": "decision",
+   "title": "Type: Atkinson Hyperlegible Next for UI and numerals, Literata for Older/parent titles, Mukta only for Devanagari captions, Andika for early reading; Baloo 2 dropped; Latin cold path ~86 KB vs ~398 KB",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-older-position-cues",
+   "kind": "decision",
+   "title": "GATED: Older phase line (4 words, current bold, no fill), 'Practice 2 of 5', and the Older turn chime at -18 dBFS; ship only if V2-M13/V2-M4 pass",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-pause-leads-paused",
+   "kind": "decision",
+   "title": "Pause sheet leads with 'Paused' + Continue; helplines are the visible third row; the safety-raised Help sheet still leads with help",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-painted-world",
+   "kind": "decision",
+   "title": "GATED: painted gouache world (Young courtyard, Older rooftop, dusk stage behind the teacher window, Garden/Sky art, chapter seals as map state) via a 152-image Codex pack in public/assets/gen with OCR no-text + lamp-hue pixel lint; flat fallback on tier D",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-tokens-contrast-2026-10-03",
+   "kind": "measurement",
+   "title": "V2 token file: 34 pairs per theme, 0 WCAG failures light and dark; lamp-hue lint with saturation floor flags d5-haldi (2.2 deg), art sand (1.1 deg), old parent your-turn text/fill (6.9/0.2 deg); dark got/trouble dE2000 1.1 deutan",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-rejected-full-lights-down",
+   "kind": "rejection",
+   "title": "Full-screen dusk 'lights down' lesson (CFW) rejected: third theme for light-only Young, dark ground under card/dock for 6-year-olds, per-route backdrop swap on tier C; kept only for the TeacherWindow ground",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-rejected-moving-ring",
+   "kind": "rejection",
+   "title": "Turn ring that moves between Talk button, tile group and module frame (CFW, v1 ds-status-carriers) rejected for the single lamp target (the dock)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-rejected-caption-card-merge",
+   "kind": "rejection",
+   "title": "Caption that becomes the Question card at hand-over (CFW) rejected: a follow-up or hint turn removes the question again, i.e. audit problem 1 reborn",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-rejected-correctness-face",
+   "kind": "rejection",
+   "title": "Calm Mastery's delighted face on correct / curious face on not-yet rejected: violates ReactionGate (farmable face, leaks the covert check)",
+   "at": "2026-10-03"
+  },
+  {
+   "id": "design-v2-rejected-sand-art-tint",
+   "kind": "rejection",
+   "title": "CM Codex 'sand' art tint #D9C7A7 rejected: 1.1 deg from the lamp under the saturation-floored hue lint; replaced by stone #C9C6BE",
+   "at": "2026-10-03"
+  }
+ ],
+ "edges": [
+  {
+   "src": "design-v2-product-design",
+   "rel": "caused_by",
+   "dst": "owner-design-v2-directive"
+  },
+  {
+   "src": "design-v2-desk-layout",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-lamp-on-dock",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-ask-pinned",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-floor-eight-states",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-no-silent-failure",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-face-verdict-neutral",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-type-atkinson-literata",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-older-position-cues",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-pause-leads-paused",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-painted-world",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-desk-layout",
+   "rel": "inherits",
+   "dst": "ds-layout-dp-budget"
+  },
+  {
+   "src": "design-v2-lamp-on-dock",
+   "rel": "inherits",
+   "dst": "ds-status-carriers"
+  },
+  {
+   "src": "design-v2-floor-eight-states",
+   "rel": "inherits",
+   "dst": "ds-status-carriers"
+  },
+  {
+   "src": "design-v2-type-atkinson-literata",
+   "rel": "inherits",
+   "dst": "ds-band-fork-older"
+  },
+  {
+   "src": "design-v2-older-position-cues",
+   "rel": "inherits",
+   "dst": "ds-progress-no-meters"
+  },
+  {
+   "src": "ds-progress-no-meters",
+   "rel": "constrains",
+   "dst": "design-v2-painted-world"
+  },
+  {
+   "src": "design-v2-lamp-on-dock",
+   "rel": "measured_by",
+   "dst": "design-v2-tokens-contrast-2026-10-03"
+  },
+  {
+   "src": "design-v2-painted-world",
+   "rel": "measured_by",
+   "dst": "design-v2-tokens-contrast-2026-10-03"
+  },
+  {
+   "src": "design-v2-lamp-on-dock",
+   "rel": "supersedes",
+   "dst": "design-v2-rejected-moving-ring"
+  },
+  {
+   "src": "design-v2-ask-pinned",
+   "rel": "supersedes",
+   "dst": "design-v2-rejected-caption-card-merge"
+  },
+  {
+   "src": "design-v2-face-verdict-neutral",
+   "rel": "supersedes",
+   "dst": "design-v2-rejected-correctness-face"
+  },
+  {
+   "src": "design-v2-desk-layout",
+   "rel": "supersedes",
+   "dst": "design-v2-rejected-full-lights-down"
+  },
+  {
+   "src": "generated-media-carries-facts",
+   "rel": "constrains",
+   "dst": "design-v2-painted-world"
+  },
+  {
+   "src": "avatar-tutor-selection",
+   "rel": "constrains",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-rejected-sand-art-tint",
+   "rel": "measured_by",
+   "dst": "design-v2-tokens-contrast-2026-10-03"
+  }
+ ],
+ "md": {
+  "decisions": "## design-v2-product-design (2026-10-03)\n**The final UI/UX spec is `docs/design/PRODUCT-DESIGN-V2.md`.** It uses Calm Mastery (`docs/design/directions/calm-mastery.md`) as the base and grafts in the best of Child-First Wonder (`child-first-wonder.md`). It answers `owner-design-v2-directive` and the 25-problem production audit (`docs/design/audit/AUDIT.md`). It replaces the UI sections of v1 `docs/research/design/PRODUCT-DESIGN.md` wherever they disagree. Everything it does not mention in v1 still holds: the dp-budget method, ReactionGate, the ledger, the parent PX rules, the voice ladder and safety.\n- Rationale: the design director's weighted scorecard (spec §1) gave CM 56.6 and CFW 50.9 out of 62.5. CM wins on:\n  - signalling: one lamp target, and the card kept separate from the caption;\n  - buildability: 2 geometries instead of 11, the existing auth, and a first week that needs no art;\n  - low-end performance: flat tier D, synthesised earcons, ≈ 86 KB of fonts;\n  - flow: class first, so the parent meets the actual teacher.\n\n  CFW wins on delight for ages 6–9 and on robustness details, which are grafted in. Those grafts are the heard/showing/yielding states, the IndexedDB outbox, the Board tray, the concept payoffs, the painted courtyard and rooftop, the protégé, the plan-404 fallback, the parent locked-out flows, the `--d5-haldi` defect and the ask-parity gate.\n- Build: phases B1–B4, each with acceptance checks and a Playwright visual battery (spec §13.2, §14).\n- Reverse if: V2-M1 (whose turn) or V2-M2 (what's the question) at n = 20 per band shows no gain over the v1 layouts. Also reverse if V-LAYOUT-1 cannot fit at font scale 2.0. If V2-M11 delight for ages 6–9 stays below 60% after two iterations, move the Young lesson toward CFW's full-stage world, starting with a lit vs dusk arm.\n\n## design-v2-desk-layout (2026-10-03)\n**The lesson is laid out as the Desk.** It has four zones that never overlap:\n- the TeacherWindow (Face geometry) or the SpeechRow (Work geometry);\n- the pinned QuestionCard;\n- the WorkTray, rendered only when `ui.tray` is module, board, tiles or pad;\n- the AnswerDock.\n\nFace, Work and Keyboard replace L1–L5. The dp-budget method of `ds-layout-dp-budget` is kept: every column sums to 584, 744 and 1280×720, and geometry changes only at phase boundaries. The face is never a PiP over content, and no placeholder ever reaches a child.\n- Rationale: audit problems 1, 5 and 23. With the card pinned and the PiP gone, five geometries collapse into two, which means fewer reflows on tier C.\n- Gate: B1-A2 (column sums and minimums), V-LAYOUT-1/2.\n- Reverse if: V2-M1/M2 show no gain over the L-layouts at n = 20 per band, or V-LAYOUT-1 fails at font scale 2.0.\n\n## design-v2-lamp-on-dock (2026-10-03)\n**Marigold `#FFB21E` lights exactly one element: `AnswerDock[data-floor=\"your_turn\"]`.** It is drawn as `--lamp-wash` plus a 3 dp `--lamp-ring`, with the visible word \"Your turn\". The chime, the 20 ms haptic and her lean-in fire from the same transition on the same frame. Marigold never appears on buttons (which use `--nib`), in the parent corner, onboarding, landing or generated art. On a child screen, no colour with saturation ≥ 35% may sit within 12° of hue of the lamp.\n- Rationale: the audit found marigold carrying four meanings and turn state carried by mic colour alone. One target gives the child one place to look.\n- Gate: G-LAMP-1 (static) and V-SIG-2 (≤ 1 `[data-lamp]` per frame, 0 on parent/onboarding/landing).\n- Reverse if: V2-M1 shows that ringing the tile group beats ringing the dock by ≥ 5 pp for B2.\n\n## design-v2-ask-pinned (2026-10-03)\n**Every hand-over in {answer, choice, judge} carries `ui.ask`.** It is the question in written form, ≤ 120 characters, in the lesson's script, produced by the same Director move as her speech and the board. The QuestionCard pins it from her first audio frame until the item resolves. Hints and follow-ups add lines under the ask and never replace it. \"Hear the question\" replays the ask itself, from the client buffer.\n- Rationale: audit problem 1 (the caption showed only the tail of her turn at the child's turn) and problem 6 (board, voice and screen contradicted each other).\n- Gate: G-ASK-1 (presence = 100%), G-ASK-2 (the spoken reply contains the ask's content tokens, re-rendered before TTS), G-SAY-1, G-OBJ-1, V-ASK-1.\n- Reverse if: V2-M2 at n = 20 per band shows no difference vs caption-only.\n\n## design-v2-floor-eight-states (2026-10-03)\n**The floor states are idle, speaking, showing, yielding, your_turn, listening, heard and thinking** (`src/lesson/floor.ts`). Overlays (paused, trouble, help, recorded) suspend the floor, and the lamp is never lit under one. Each state is carried by face, a visible word, a glyph, a sound, a haptic and only then colour (spec §4.2). YOUR TURN requires a pending hand-over: the bug fix to `statusOf()`, which today returns your_turn whenever nothing is pending.\n- Rationale: audit problems 2, 3 and 22. `heard` is the missing receipt; `showing` stops children tapping an inert demo; `yielding` puts every carrier on her offset frame.\n- Gate: B1-A1, V-SIG-1…5 (greyscale and CVD distinctness, same-frame signals).\n- Reverse if: V2-M1 shows the extra states confuse (more than 20% naming errors on heard or showing).\n\n## design-v2-no-silent-failure (2026-10-03)\n**No answer is lost, and nothing fails silently.**\n- Every child answer (spoken, typed, tapped, module or drawn) is written to an IndexedDB outbox keyed (lessonId, turnSeq) before it is sent.\n- It is retried at 1, 3 and 6 s, flushed in order on reconnect, and removed only on the server's acknowledgement.\n- A receipt appears ≤ 150 ms after the answer, and a visible state ≤ 3 s after a failure is detectable (T1 at 8 s for a slow reply).\n- Nine trouble states T1–T9 share one Trouble strip, each with a sentence, ≤ 2 actions and the state of the answer.\n- Raw API strings are never shown.\n- Rationale: audit problem 3 (with the network cut, the typed answer was lost, with no error and no retry) and problem 18.\n- Gate: V-CHAOS-1, with 0 lost answers across 8 cut points plus ASR, mic, output, GL and token failures.\n- Reverse if: never. This is a correctness floor.\n\n## design-v2-face-verdict-neutral (2026-10-03)\n**ReactionGate stands over Calm Mastery's proposal.**\n- Her face plays the same warm-attentive program after correct and wrong commits.\n- The verdict comes from the verified-key classifier only, and lives on the work:\n  - correct: a `--got` tick drawn on the answer chip and the engine's concept payoff;\n  - partly: a half-tick;\n  - not yet: a magnifier and \"Let's look again\", with no red, no cross and no haptic.\n- Delight fires only on effort or insight tags, ≤ 1 per 5 turns.\n- Praise moves need `verdict = correct` or an effort/insight tag (G-PRAISE-1), which blocks \"Bilkul\" after a wrong answer.\n- Rationale: audit problem 13 (no feedback channel). A face keyed to correctness is farmable and leaks covert checks (v1 R6).\n- Reverse if: a pilot shows ≥ 20% of children unsure whether they were right after a verdict even with the tick and payoff present. Then add verdict-keyed affect for B1 only, at constant magnitude.\n\n## design-v2-type-atkinson-literata (2026-10-03)\n**Fonts:**\n- Atkinson Hyperlegible Next (34,024 B, `tnum`) for all UI, questions and numerals;\n- Literata (39,260 B, `tnum`) for Older, parent and landing titles at ≥ 22 sp;\n- Mukta only for Devanagari captions, with a unicode-range that excludes ₹;\n- Andika for early-reading content.\n\nBaloo 2 is dropped, which amends the type clause of `ds-band-fork-older`. The Latin cold path is ≈ 86 KB, against ≈ 398 KB. Chrome draws ₹ from an inline SVG.\n- Rationale: CM font measurement 2026-10-03 (n = 1 fetch per family). Clear 1/l/I and 0/O for maths. Lexend and Fraunces have no `tnum`.\n- Reverse if: V2-M14 (Young titles) shows Atkinson rated cold or hard to read more than 15 pp above Baloo 2, or B3/B4 panels rate Literata titles cold or school-y more than 15 pp.\n\n## design-v2-older-position-cues (2026-10-03, gated)\n**Three gated cues for Older children:**\n- the phase line (Warm-up · Learn · Try · Wrap, current in bold, no fill, no count);\n- \"Practice · 2 of 5\" in Quick practice;\n- the turn chime at −18 dBFS.\n\nThey amend `ds-progress-no-meters` and the \"earcons off\" clause of `ds-band-fork-older`, and they ship behind flags.\n- Rationale: the audit found no sense of arc (§4.4) and no sound for turn changes.\n- Reverse if: V2-M13 (MW-M1) shows lower free-choice persistence or a goal-gradient pattern, or V2-M4 fails (missed turns must drop ≥ 3 pp, with annoyance ≤ 1 in 5).\n\n## design-v2-pause-leads-paused (2026-10-03)\n**The pause sheet is titled \"Paused\" and leads with Continue and End lesson.** \"Need help? Talk to a grown-up\" and the Childline 1098 and Tele-MANAS 14416 `tel:` buttons form the third row, visible without scrolling. The Help sheet raised by the safety predicate still leads with help (\"You're not in trouble.\"). This amends v1 §3.14.\n- Rationale: audit problem 14. A child who wanted water was shown helplines as the headline.\n- Reverse if: help taps via pause per 1,000 lessons fall below the v1 layout's rate, with the predicate-raised sheet unchanged.\n\n## design-v2-painted-world (2026-10-03, gated)\n**The art direction is a painted gouache world.** Young children get a sunlit courtyard and Older children a rooftop at dusk. The TeacherWindow's ground is a dusk stage (`--stage #26304A`) with a warm pool behind her, and it \"lights down\" at lesson start. The Garden and Sky art follow the same style. Chapter seals appear only when the ledger puts every skill in a chapter at Got it or Secure; they are a state of the map, never collected or counted, which answers the owner's badges request.\n- Production: 152 images from one Codex prompt (spec §12.1) into `public/assets/gen/**`. `scripts/gen-assets.mjs` enforces the budgets, an OCR no-text presence check, the lamp-hue pixel lint and provenance, then a human review follows. Tier D gets flat fallbacks. This amends v1 §4.7 (flat fills).\n- Reverse if: V2-M12 shows more than 15% of B4 children rating the art \"for little kids\", or the budgets cannot be met (≤ 350 KB of art per first-run child screen). Also if the chapter seal behaves like a collectible: a goal-gradient pattern, or return that rises while delayed retention falls.\n",
+  "measurements": "## design-v2-tokens-contrast-2026-10-03\n**Contrast and CVD for the V2 token file (spec §7.1, §7.6).**\n- Method: `python3 docs/design/v2/tokens-check.py docs/design/v2/tokens-check-2026-10-03.json`. WCAG 2 contrast over 34 text and non-text pairs per theme, and CIEDE2000 between the 6 state carriers under Machado 2009 severity-1.0 protan, deutan and tritan simulation (the same maths as `visual-identity-contrast.py`). It also runs a lamp-hue lint over 26 saturated token and art colours, applied only to HSL S ≥ 35% and L 20–85%, with a 12° bar. Run 2026-10-03, n = 1 deterministic run.\n- Results:\n  - **0 contrast failures, light and dark.** Selected pairs:\n    - ink on paper 15.37 / 15.91;\n    - lamp-ring on lamp-wash 6.93 / 7.45;\n    - lamp-ink on lamp-wash 9.63 / 9.44;\n    - lamp on stage 7.26;\n    - stage-ink on stage 11.69;\n    - chalk on board 10.86.\n  - **CVD pairs below ΔE 15**, each carried by glyph and word: light lamp-ring/trouble 4.3 (deutan), listen/think 6.0 (protan), got/trouble 5.1 (deutan); dark got/trouble 1.1 (deutan).\n  - **Hue lint failures, 4:**\n    - `--d5-haldi #946B0E` at 2.2°, replaced by rose `#B4466A` (59.1° away);\n    - CM's art sand `#D9C7A7` at 1.1°, replaced by stone `#C9C6BE` (below the saturation floor);\n    - the old parent `--p-yourturn-text #8A4B00` at 6.9°, deleted;\n    - the old parent `--p-yourturn-fill #FFD27A` at 0.2°, deleted.\n  - The skin ramp passes narrowly: skin-3 12.2°, skin-4 12.9°.\n",
+  "rejected": "## design-v2-rejected-full-lights-down\n**Tried:** Child-First Wonder's full-screen \"lights down\", where the whole lesson screen turns dusk blue `#26304A`, as proposed on paper (2026-10-03). Never built.\n**What broke, in design review:**\n- It creates a third theme for Young children, who are light-only (`ds-band-fork-older`).\n- It puts the Question card and the dock on a dark ground for 6-year-olds.\n- It needs a per-route backdrop swap and full-bleed bitmaps on tier C.\n**Instead:** only the TeacherWindow's ground goes to dusk, with a warm pool (`--stage`, `--stage-pool`).\n**Revisit if:** a lit vs dusk arm shows recognition that the lesson has started below 80% for ages 6–9 (CFW WD-M17).\n\n## design-v2-rejected-moving-ring\n**Tried:** v1 `ds-status-carriers` and CFW: the YOUR TURN ring moves between the Talk button, the answer-tile group and the module frame.\n**What broke, in review against the audit:**\n- The child must find the ring before finding the answer.\n- The audit showed children already miss the single mic glow.\n**Instead:** the lamp always sits on the AnswerDock, and its mode line points at the tiles (\"Tap a picture above\").\n**Revisit if:** V2-M1 shows tile-group ringing beats the dock by ≥ 5 pp for B2.\n\n## design-v2-rejected-caption-card-merge\n**Tried:** CFW's single element with two modes: the caption becomes the Question card at the hand-over and returns to caption mode on her next audio frame.\n**What broke, in review:** any follow-up, hint or re-ask turn puts the card back into caption mode, so the question disappears exactly as in audit problem 1.\n**Instead:** a separate Caption and a pinned QuestionCard. The ask stays until the item resolves.\n\n## design-v2-rejected-correctness-face\n**Tried:** Calm Mastery's feedback table: a warm or delighted face on `verdict = correct` and a curious face on `not_yet`.\n**What broke:** it violates ReactionGate (v1 R6, PD-G7). A correctness-keyed face is a farmable social reward, and a face change before the resolution leaks covert checks (why-probes, planted mistakes).\n**Instead:** the face is verdict-neutral, and the verdict lives on the answer chip, the board and the concept payoff (`design-v2-face-verdict-neutral`).\n\n## design-v2-rejected-sand-art-tint\nCM's Codex palette included a \"sand\" disc tint, `#D9C7A7`. Under the hue lint with its saturation floor (S 40%, L 75%) it sits 1.1° from the lamp, so it would put a second gold on child screens. It is replaced by stone `#C9C6BE`, which sits below the saturation floor (`design-v2-tokens-contrast-2026-10-03`).\n"
+ }
+}

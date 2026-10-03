@@ -2500,6 +2500,559 @@
    "title": "Owner 2026-10-03: design/UI/UX overhaul, English-only UI copy, Codex-generated imagery, hyper-detailed expressive 3D teacher unless video is affordable",
    "at": "2026-10-03",
    "source": "inbox/owner-design-directive.json"
+  },
+  {
+   "id": "design-v2-product-design",
+   "kind": "decision",
+   "title": "PRODUCT-DESIGN-V2 is the final UI spec: Calm Mastery base (the Desk, the lamp on the dock, Atkinson/Literata) with Child-First Wonder grafts (heard/showing states, outbox, Board tray, painted world, concept payoffs); replaces v1 UI sections where they disagree",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-desk-layout",
+   "kind": "decision",
+   "title": "Lesson = the Desk: TeacherWindow/SpeechRow, pinned QuestionCard, WorkTray only with content (module|board|tiles|pad), AnswerDock; Face/Work/Keyboard geometries replace L1-L5; face never a PiP over content",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-lamp-on-dock",
+   "kind": "decision",
+   "title": "Marigold lamp lights exactly one element, AnswerDock in YOUR TURN, with visible 'Your turn'; chime + haptic + lean-in fire on the same frame; never on buttons, parent, onboarding or art",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-ask-pinned",
+   "kind": "decision",
+   "title": "Every hand-over carries ui.ask; the Question card pins it until the item resolves and 'Hear the question' replays the ask; caption and card are never merged; gates G-ASK-1 presence and G-ASK-2 spoken parity",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-floor-eight-states",
+   "kind": "decision",
+   "title": "Floor machine idle/speaking/showing/yielding/your_turn/listening/heard/thinking, each carried by face, word, glyph, sound, haptic, then colour; YOUR TURN requires a pending hand-over (statusOf fix)",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-no-silent-failure",
+   "kind": "decision",
+   "title": "Every child answer goes to an IndexedDB outbox before sending (retries 1/3/6 s); receipt <=150 ms; visible state <=3 s (T1 at 8 s); nine trouble states T1-T9 via one Trouble strip; 0 lost answers is a release gate",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-face-verdict-neutral",
+   "kind": "decision",
+   "title": "ReactionGate kept over Calm Mastery: her face is identical after right and wrong; the verdict is a tick/half-tick/magnifier on the answer chip plus the concept payoff; delight only on effort/insight",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-type-atkinson-literata",
+   "kind": "decision",
+   "title": "Type: Atkinson Hyperlegible Next for UI and numerals, Literata for Older/parent titles, Mukta only for Devanagari captions, Andika for early reading; Baloo 2 dropped; Latin cold path ~86 KB vs ~398 KB",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-older-position-cues",
+   "kind": "decision",
+   "title": "GATED: Older phase line (4 words, current bold, no fill), 'Practice 2 of 5', and the Older turn chime at -18 dBFS; ship only if V2-M13/V2-M4 pass",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-pause-leads-paused",
+   "kind": "decision",
+   "title": "Pause sheet leads with 'Paused' + Continue; helplines are the visible third row; the safety-raised Help sheet still leads with help",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-painted-world",
+   "kind": "decision",
+   "title": "GATED: painted gouache world (Young courtyard, Older rooftop, dusk stage behind the teacher window, Garden/Sky art, chapter seals as map state) via a 152-image Codex pack in public/assets/gen with OCR no-text + lamp-hue pixel lint; flat fallback on tier D",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-tokens-contrast-2026-10-03",
+   "kind": "measurement",
+   "title": "V2 token file: 34 pairs per theme, 0 WCAG failures light and dark; lamp-hue lint with saturation floor flags d5-haldi (2.2 deg), art sand (1.1 deg), old parent your-turn text/fill (6.9/0.2 deg); dark got/trouble dE2000 1.1 deutan",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-rejected-full-lights-down",
+   "kind": "rejection",
+   "title": "Full-screen dusk 'lights down' lesson (CFW) rejected: third theme for light-only Young, dark ground under card/dock for 6-year-olds, per-route backdrop swap on tier C; kept only for the TeacherWindow ground",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-rejected-moving-ring",
+   "kind": "rejection",
+   "title": "Turn ring that moves between Talk button, tile group and module frame (CFW, v1 ds-status-carriers) rejected for the single lamp target (the dock)",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-rejected-caption-card-merge",
+   "kind": "rejection",
+   "title": "Caption that becomes the Question card at hand-over (CFW) rejected: a follow-up or hint turn removes the question again, i.e. audit problem 1 reborn",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-rejected-correctness-face",
+   "kind": "rejection",
+   "title": "Calm Mastery's delighted face on correct / curious face on not-yet rejected: violates ReactionGate (farmable face, leaks the covert check)",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "design-v2-rejected-sand-art-tint",
+   "kind": "rejection",
+   "title": "CM Codex 'sand' art tint #D9C7A7 rejected: 1.1 deg from the lamp under the saturation-floored hue lint; replaced by stone #C9C6BE",
+   "at": "2026-10-03",
+   "source": "inbox/design-v2.json"
+  },
+  {
+   "id": "release-gate-verify-release",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "scripts/verify-release.mjs is the single release gate: tsc -b, prompt budget, kit budget, persona invariants, never-rules, pii, spoken-preserve, context --check, vite build, npm test, in that order, every failure printed, verdict by exit code; skipped tests are red unless named in KNOWN_SKIPS; --live <base> adds free live probes (health, db, app shell, 401 fences) and prod-smoke (text lane, every teacher line through floorViolations)",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "never-rules-floor-violations",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "Teacher output is checked by a code predicate for the floor's NEVER rules (server/director/safety.js floorViolations: ai_denial, helpline, romance, exclusivity, personal_data, guilt, shaming, ability, feelings), \\p{M} kept, letter-bounded matching; verified content removed only as a whole segment of >= 12 chars that carries a hit of its own; quoted spans judged (modelling-cue quotes for romance/exclusivity/helpline only); negation guards on secret/data rules; its families are compile.js FLOOR_FIX keys, so a hit becomes lessonState.correction",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "minor-gates-no-adult-branch",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "server/compiler/gates.js: one frozen MINOR_GATES; gatesFor(any tier, including adult/unverified/unknown) returns it; saferGates only restricts. compile()'s assertMinorGates call is structural documentation with NO runtime effect (gatesFor has one answer); it is a tripwire for a future branch, pinned by tests/gates.test.mjs",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "scrub-pii-cued",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "scrubPii (server/director/safety.js): Aadhaar-shaped, Indian mobile (+91/0, split at most 3 times; ANY split after an explicit number/phone/mobile cue), landline, email, PIN after a cue, digit-word phone runs, and names/schools/addresses only after a giving cue (lower case allowed after the unambiguous cues only); first name kept; contiguous monotone runs and number-group lists exempt. Coverage is cue-dependent: a name with no lead-in phrase is not caught",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "floor-core-quote-free",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "The compiled CORE (character sheets + floor) is quote-free and bracket-free: floor.js 'best friend'/'only me' → friend-role or only-you claims; asha 'baby'/'dear' → pet names or endearments; arjun 'almost' → no softening. Linted by evals/persona-invariants.mjs; behaviour A/B on the live voice model: no measurable change (floor-relational-ab-2026-10-03)",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "never-rules-battery-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "never-rules: authored red-team 86/86 positives (first run 83/86), 44/44 negatives quiet, goodbye 5/5, safeguard 3/3; relational probe blind codes n=108 IN-SAMPLE any-violation caught 20/22 false 2/86 (first pass 15/22, 1/86); kit strings flagged unless passed as content 86/126,863 (0.068%), as content 0; other recorded teacher turns 0/308; 31 µs/call; \\p{M}-stripped control 0/20 Devanagari positives",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "pii-battery-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "scrubPii: authored identifiers 29/29 (first run 27/29), lesson answers 36/36 untouched (first 34/36); kit strings masked 114/126,863 on the first pass (incl. kit answers) → 2/126,863 (0 answers, 2 Hindi story lines); recorded child utterances 0/228 masked; 36 µs/call; Gurukul-style contiguous-digit scrub control catches 0/4 refuting shapes",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "prompt-budget-worst-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "check-prompt-budget: 4,344 worst-case compiles (60 longest of 9,884 items, both lanes × 3 langs × 2 bands × rung 0/3 × no/longest/all corrections + safeguard/wrap) worst 1,614/2,600 tokens, last section 359/360; --all (118,632 compiles, every item, longest correction pair exclusivity+personal_data 88 chars) 0 over budget, last 360/360",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "persona-invariants-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "persona invariants: 2 characters × 72 compiled lanes × 18 checks + 16 negative controls = 70/70 pass; on HEAD before the quote-free rewrite the CORE quote check failed 72/72 lanes for each character",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "spoken-preserve-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "spoken-preserve: toSpoken over every kit prompt/hint/diagnostic × 3 modes, 229,605 renderings: 0 empty, 0 unexplained word losses (112 by design: min, lakh/crore read in Hindi, formula and point names spelled); the 5 port-plan corruption probes read right; 11 µs/rendering; empty-seam and word-drop controls caught — '[a, b]' and 'x -> y' are returned UNCHANGED (TTS still gets the bracket/arrow): preserved, not read out",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "rel-state-trust-drop-dryrun-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "Dry run on the CONDUCTOR_TEST_DATABASE_URL branch (never production): drop rel_state.trust + last_trust_update inside a DO block rolled back by a raise, 465 ms, columns after = child_id,stage,sessions,open_rupture,updated_at; rollback verified",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "scrub-pii-uncued-shapes",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: PII rules matching lowercase cue values and bare number markers: 'I go to school' → 'I go to [school]' (a kit ANSWER), '1 h 20 min' and 'H 4, T 0' → [address], '3012 3120 3201 3210' → [aadhaar], '6 3 10 5 16 8 4 2 1' → [phone]; 114/126,863 kit strings masked, which would grade right answers wrong",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "never-rules-on-raw-content",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: running the never-rules predicate over teacher text without excluding the verified kit content it was given: 86/126,863 kit strings fire (71 ai_denial: first-person model sentences in language kits such as 'My mother is a teacher'); call sites must pass the posed item as content",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "main-yahin-hoon-as-exclusivity",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: 'main yahin hoon' (I'm right here) as an exclusivity rule: it fired 4/308 on the attune probe's distress replies, where it is exactly the floor's 'Stay with them' instruction",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "open-never-rules-wiring",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "lesson.js does not call floorViolations yet (tests/never-rules.test.mjs reports a TODO): text-lane reply guard (problems → rewrite → fallback) and voice/cascade transcript post-check (→ state.correction + incident); scrubPii is not called anywhere yet — now printed as a TODO in every verify-release verdict",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "open-never-rules-out-of-sample",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "The never-rules recall/precision numbers are in-sample (authored or tuned on the relational probe); a human-coded out-of-sample battery of >=300 real teacher turns per lane is needed before any family is trusted to block rather than correct",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "open-checkfits-fix-pair",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "checkFits renders the ai_denial+exclusivity correction (82 chars); the longest real pair is exclusivity+personal_data (88). Measured 0 over budget in 118,632 compiles, but the load gate does not prove it",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "open-lesson-lookup-before-auth",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "Unauthenticated POST /api/lesson/turn, /api/tts and /api/realtime/token with an unknown lesson id answer 404 'lesson not found' before checking the session (live probe 2026-10-03), so lesson existence is observable without a session; low risk (uuid ids) but the session check should come first",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "live-probes-prod-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "scripts/live-probes.mjs against taxila-web (2026-10-03, n=1 run): health 200 in 245-483 ms, db round trip 5×select 1 ok, app shell 200, lesson/start, parent/overview and /api/me 401 without a session, lesson/turn, tts and realtime/token 404 'lesson not found' for a random id, unknown route JSON 404; prod-smoke (text lane, Arjun, c5-maths-ch01-t01): start 1530 ms, 3 turns 1152-1205 ms, end 1703 ms, 4/4 teacher lines keep the floor (floorViolations empty)",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "never-rules-battery-2026-10-03-fixed",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "never-rules after the review fixes (2026-10-03): authored 92/92 positives, 50/50 negatives, goodbye 7/7, safeguard 3/3; NEW call-site measure 0/26,576 posed kit questions flagged in a teacher draft with the item as content; short-content collapse 92/92 positives still fire and 33/33 safeguard replies clean with 23,110 short kit strings as content; safeguard register 33/33 clean (en 14 / hl 13 / hi 6); coded probe n=108 in-sample 20/22 caught, 2/86 false (unchanged); 0/308 recorded turns; kit strings alone 149/126,863 (was 86: quoted spans are judged now); 34 µs/call",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "pii-battery-2026-10-03-fixed",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "scrubPii after the review fixes (2026-10-03): authored identifiers 40/40 (adds 11 lower-case-after-cue and pair/digit-split phone shapes the first set lacked), lesson answers 45/45 untouched; kit strings 2/126,863 masked (0 answers, unchanged); recorded child utterances 0/228 (precision only, not recall); 68 µs/call (was 36)",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "floor-relational-ab-2026-10-03",
+   "kind": "measurement",
+   "at": "2026-10-03",
+   "title": "Live A/B of the quote-free floor (evals/floor-relational.mjs, taxila-realtime, real compiled voice prompt Asha/Hinglish/6-9, 12 relational scenarios × 3 reps × 2 arms = 72 replies, 0 errors, coded blind): relational violations (friend/excl/love_miss/secret/human/feel) OLD 0/36, NEW 0/36; desired move 24/36 both; hooks 6/36 both; literal 'best friend' OLD 3 NEW 2 (all negated). No measurable regression; at n=36 the NEW rate's 95% upper bound is ~8%",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "fix-load-gate-computed",
+   "kind": "decision",
+   "at": "2026-10-03",
+   "title": "compile.js FIX_LOAD_GATE is computed as the longest FIX_MAX-key FLOOR_FIX combination (not pinned); personal_data → 'no personal questions', ability → 'name the step, no labels' (<= 25 chars), so the longest pair stays ai_denial + exclusivity (82) and the kit load gate admits exactly what it did",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "never-rules-quoted-span-exemption",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: exempting every quoted span of 2+ words from the never-rules matcher: \"Main tumhari 'best friend' hoon!\", 'I am your \"best friend\", always.', '\"I am a real person,\" I promise you.' all passed, and the quoted shape is exactly what the model recites (22/33)",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "never-rules-substring-content",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: removing verified content as a raw substring: content ['no'] turned 'I am not a robot' into a pass, ['o'] hid 'I love you', ['8'] made a correct safeguard reply read as missing 1098 — kits hold hundreds of such short answers",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "never-rules-content-length-only",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: a length-only floor (>= 12 chars) for content removal: the 12-character kit answer 'किसी को नहीं' (nobody) still cut the violation out of 'मैं किसी को नहीं बताऊंगी' (short-content collapse eval, 91/92)",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "never-rules-hedge-as-question",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected: treating think/thought/soch/ask/kya ANYWHERE earlier in a clause as a question lead: 'I think I'm a real human, not a bot.' was exempt",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "never-rules-teaser-continue-next-time",
+   "kind": "rejection",
+   "at": "2026-10-03",
+   "title": "Rejected (for now): extending the goodbye-teaser rule to 'we can continue next time' / 'hum fir se continue karenge': it took the floor-relational hooks 1/12 → 12/12 but added 2 false flags against the 2026-10-02 blind codes (2/86 → 4/86), whose coder did not code that shape as a hook",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "open-goodbye-continue-policy",
+   "kind": "open",
+   "at": "2026-10-03",
+   "title": "Is 'we can continue next time' at a goodbye a hook? The rubric says continuing content is; the 2026-10-02 coder did not code it (and coded the same shape once elsewhere); the 2026-10-03 coder did (12 of 72 replies). Owner call; then align the codes and GOODBYE_TEASER together",
+   "source": "inbox/harvest-ports.json"
+  },
+  {
+   "id": "reports-lane-a-evidence-rows",
+   "kind": "decision",
+   "title": "Parent daily notes and weekly letters are Lane A only: every line is a reviewed template (en / Hinglish / hi) on typed slots built in code from ledger rows (kt_evidence, lesson, kt_skill_state, memory), each claim carrying its factIds; v1 admits L0 counts and L1 ledger facts only (no L2/L3)",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-gate-throws",
+   "kind": "decision",
+   "title": "server/reports/gate.js: the banned-word + overclaim + numeric + structure gate THROWS (ReportGateError) on the assembled report; candidates are screened before assembly with the same predicates and every screen is logged; caps and the spoken-script budget (words and ≤ 1200 chars) are enforced by throwing, never by trimming",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-k7-locked-words",
+   "kind": "decision",
+   "title": "Mastery words (pakka, mastered, learned, understood, can do, समझ गया, …) are locked behind CALIBRATION.k7Passed (false); only the st.pakka shape may use them after K7, and only on ≥ 2 delayed successes on distinct items ≥ 1 day apart; until then rows state evidence ('right again d days later, first try, no help')",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-curriculum-span-mask",
+   "kind": "decision",
+   "title": "Curriculum slot values (kit skill titles, kit misconception beliefs) are masked for the full lexicon and checked against a severe list only; the rest of every line gets the full lexicon (14.2% of kit titles would otherwise screen out a valid line)",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-lane-b-brain-ordering",
+   "kind": "decision",
+   "title": "Lane B on taxila-brain (fallback taxila-fast) only orders Lane A segments and picks approved connective ids for the spoken script; output is ids, validated in code, script assembled from our strings; invalid twice → Lane A order; budget pre-checked per call against job.budget_micro_usd − spent",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-end-of-day-jobs",
+   "kind": "decision",
+   "title": "Conductor job kinds report.daily:{child}:{day} (active days only, pull-only X11) and parent.letter:{child}:{isoWeek} (Sunday fold, X8) are enqueued by decide.js foldNight, run after 04:00 local + 10 min, purpose core_tutoring, dropped in safety_hold, budgets 25k / 40k µ$, idempotent on the job key and on parent_report(child, cadence, period, render_version)",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-growth-edge-next-lessons",
+   "kind": "decision",
+   "title": "A growth edge needs an action part: a kt_skill_state.next_review_at date, or (no date: FSRS sets one only once learned) a not-learned display, worded as the placement rule 'comes back to it, or to the step before it, in the next lessons' (next-topic.js pickTopic)",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-voice-features-excluded",
+   "kind": "decision",
+   "title": "No parent line rests on voice features: facts.js never reads voice_feature/voice_baseline (COMPREHENSION-ENGINE §7.3, PARENT-REPORT §3 lists none); a test scans the loader",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-sim-week-2026-10-03",
+   "kind": "measurement",
+   "title": "3 STUDENT-SIM personas (p02 Hinglish understander, p18 confident misconception, p24 Hindi-medium) × one week (5 lesson days, 353 kt_evidence rows via the real writer) on the test branch: 18/18 reports stored, 0 gate throws; independent checker 78/78 claims supported (100%), 450/450 rendered lines mapped; 240/240 claim mutants caught",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-lane-b-brain-2026-10-03",
+   "kind": "measurement",
+   "title": "Lane B on taxila-brain, n = 18 reports (19 calls incl. the job run): 18/18 valid first call, 0 fallbacks; call latency p50 2,950 ms / p90 3,642 ms; mean $0.0074 per report (7,412 µ$; 133,416 µ$ total); end-to-end generate p50 3.3 s, max 6.5 s (per child-month figure corrected in reports-laneb-tokens-2026-10-03)",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-conductor-job-e2e-2026-10-03",
+   "kind": "measurement",
+   "title": "parent.letter through the real job queue on the test branch (enqueue → duplicate enqueue no-op → claim → runJob → complete_job): status done, result_ref parent_report:<id>, spent_micro_usd 7,600, job.done ingested 1, re-claim 0; 5.9 s",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-kit-title-lexicon-2026-10-03",
+   "kind": "measurement",
+   "title": "Full parent lexicon over every kit skill title: 424/2,991 (14.2%) trip it (knows 73, test 44, exam 29, understand* 21, voice 21, tone 20, must 19, top 12, habit 12, marks 11); severe list: 3 strings (2 titles, 1+ beliefs: sex ratio, sexual reproduction, disability)",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-gate-fuzz-2026-10-03",
+   "kind": "measurement",
+   "title": "Gate unit batteries (tests/reports-gate.test.mjs): TEMPLATE DIGIT HYGIENE fuzz 2,000 random slot sets × 3 languages, 0 stray digits (not numeric correctness: set membership passes swapped slots); lexicon recall every BANNED/LOCKED entry inflected and embedded in 3 frames, 100%; every template × 3 languages passes its own gate",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-date-slot-object-leak",
+   "kind": "rejection",
+   "title": "Rejected: passing a date slot object straight to the template — rendered 'It comes back on [object Object]' and the gate PASSED it (it re-renders the same template); fix: renderShape formats typed slots, and a template_bug predicate refuses [object / undefined / NaN / null / {slot}",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-prefix-lexicon-overmatch",
+   "kind": "rejection",
+   "title": "Rejected: prefix entries exam*, habit*, मंद*, dar* — they screened 'Taxila will use it in examples' (exam*), would hit 'habitat', 'मंदिर' (temple), 'darwaza'; whole-word entries with English inflections instead",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-tricky-needs-review-date",
+   "kind": "rejection",
+   "title": "Rejected: requiring kt_skill_state.next_review_at for every growth edge — practising skills never have one, so the confident-misconception persona (7 of 8 answers on the comma mix-up) got NO tricky line in any report",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-no-interest-line",
+   "kind": "decision",
+   "title": "No interest line in parent reports: memory.text (kind=interest) is free taxila-fast paraphrase from the lesson-end writer, not a typed value, so no reviewed template may carry it; facts.js no longer reads memory and the drawer shows no 'What they told Taxila'",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-safety-hold-read-side",
+   "kind": "decision",
+   "title": "The Conductor safety hold also holds the parent report READ side (routes/parent.js reportHold): no live preview, no Listen, no note stored after the hold began, no preview evidence; notes stored before the hold stay readable as text",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-delayed-copy-last-came-up",
+   "kind": "decision",
+   "title": "Delayed-success copy says the topic was right on the first try without help 'd days after it last came up' / 'd din baad phir aaya' — never 'right again' / 'baad bhi sahi', because the previous contact may be a teach row or a wrong, helped or contaminated answer",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-recheck-date-ahead",
+   "kind": "decision",
+   "title": "A growth-edge re-check date is stated only when kt_skill_state.next_review_at ≥ max(window end, generation time); otherwise the _next wording (not-learned skills) or no growth-edge line; the checker enforces the same against created_at",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-how-copy-not-rule",
+   "kind": "decision",
+   "title": "The evidence drawer's 'How this line is counted' shows reviewed per-shape copy (templates.js HOW, en/hinglish/hi, lexicon- and lock-clean by test); the internal claim.rule string never leaves the server",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-gate-final-pregate",
+   "kind": "decision",
+   "title": "Lane A is gated before the Lane B writer is paid; a ReportGateError in a job is FinalJobError (dead, no retry) and audited with rule names only; a Lane B call that fails after sending is charged its usage or its worst case",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-late-activity-daily",
+   "kind": "decision",
+   "title": "Activity after the night fold (≈02:00-03:00) but before the learning day ends (04:00) enqueues that day's daily note from markActive (same idem key, at most once)",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-header-open-lessons",
+   "kind": "decision",
+   "title": "Header minutes count an open lesson (ended_at null) up to its last evidence row in the window (cited), or to now in a preview; a daily window with evidence and no lesson gets header.nolesson instead of '0 lessons · 0 min'",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-list-newest-render",
+   "kind": "decision",
+   "title": "listReports returns one row per (cadence, period), the newest render, so a RENDER_VERSION re-render does not duplicate 'Earlier notes'",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-interest-from-memory-text",
+   "kind": "rejection",
+   "title": "Rejected: an interest line filled from memory.text (≤ 4 letters-only words) — real rows are model paraphrase ('loves cricket' → 'said they like loves cricket'), English inside hi/hinglish reports, labelled as the child's words; the sim only inserted hand-picked single words so 3/3 interest lines never exercised it",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-hold-job-path-only",
+   "kind": "rejection",
+   "title": "Rejected: enforcing the safety hold only on the job path — GET /api/parent/report built a live preview on every request and stored scripts stayed playable during a safety incident",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-right-again-copy",
+   "kind": "rejection",
+   "title": "Rejected: 'right again d days later' / 'd din baad bhi sahi' — the previous contact counted by derive.js can be a teach row or a wrong answer, and the checker re-derived the same rule, so 78/78 support could not see that the WORDING overclaimed",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-recheck-date-window-start",
+   "kind": "rejection",
+   "title": "Rejected: dating the growth edge when next_review_at ≥ window START — jobs run after the window closes, so a same-day 15:00 re-check read 'It comes back on 3 Oct' in a note stored 4 Oct",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-rule-string-in-drawer",
+   "kind": "rejection",
+   "title": "Rejected: showing claim.rule to parents — internal English with the LOCKED word 'learned', 'calibration gate passed', '2k < n', untranslated on hi/hinglish screens, and no gate ran on it",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-sim-week-2026-10-03b",
+   "kind": "measurement",
+   "title": "Sim-week re-run after the review fixes (RENDER_VERSION pr-2): 18/18 stored, 0 gate throws; claim support 75/75; lines mapped 441/441; 0 lines quoting the 3 model-shaped memory rows; checker mutants 420/420 caught incl. swap_n_k 21/21, other_slot+1 60/60, slot-1 99/99",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-laneb-tokens-2026-10-03",
+   "kind": "measurement",
+   "title": "Lane B token use on taxila-brain, n = 18 calls: prompt p50 646 / max 806 tokens, completion p50 229 / max 456; mean cost daily 7,047 µ$, weekly 9,297 µ$; latency p50 3,141 ms / p90 3,929 ms; per child-month ≈ 7,047 × A + 9,297 × 4.35 µ$ = $0.18 at A = 20 active days, $0.25 at A = 30 (A unmeasured)",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
+  },
+  {
+   "id": "reports-route-hold-2026-10-03",
+   "kind": "measurement",
+   "title": "Route test under a safety hold (tests/reports-routes-db.run.mjs, real API in-process on the Neon test branch, n = 1 child): preview null + held, weekly preview null, post-hold note unlisted and 404, pre-hold note readable with voice null, speak what=report 409, preview evidence 404, stored evidence carries 'how' and no 'rule'; hold cleared → preview back",
+   "at": "2026-10-03",
+   "source": "inbox/parent-reports.json"
   }
  ],
  "edges": [
@@ -4492,6 +5045,446 @@
    "src": "integration-learner-open-2026-10-03",
    "rel": "blocks",
    "dst": "learner-no-kt-backfill"
+  },
+  {
+   "src": "design-v2-product-design",
+   "rel": "caused_by",
+   "dst": "owner-design-v2-directive"
+  },
+  {
+   "src": "design-v2-desk-layout",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-lamp-on-dock",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-ask-pinned",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-floor-eight-states",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-no-silent-failure",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-face-verdict-neutral",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-type-atkinson-literata",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-older-position-cues",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-pause-leads-paused",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-painted-world",
+   "rel": "part_of",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-desk-layout",
+   "rel": "inherits",
+   "dst": "ds-layout-dp-budget"
+  },
+  {
+   "src": "design-v2-lamp-on-dock",
+   "rel": "inherits",
+   "dst": "ds-status-carriers"
+  },
+  {
+   "src": "design-v2-floor-eight-states",
+   "rel": "inherits",
+   "dst": "ds-status-carriers"
+  },
+  {
+   "src": "design-v2-type-atkinson-literata",
+   "rel": "inherits",
+   "dst": "ds-band-fork-older"
+  },
+  {
+   "src": "design-v2-older-position-cues",
+   "rel": "inherits",
+   "dst": "ds-progress-no-meters"
+  },
+  {
+   "src": "ds-progress-no-meters",
+   "rel": "constrains",
+   "dst": "design-v2-painted-world"
+  },
+  {
+   "src": "design-v2-lamp-on-dock",
+   "rel": "measured_by",
+   "dst": "design-v2-tokens-contrast-2026-10-03"
+  },
+  {
+   "src": "design-v2-painted-world",
+   "rel": "measured_by",
+   "dst": "design-v2-tokens-contrast-2026-10-03"
+  },
+  {
+   "src": "design-v2-lamp-on-dock",
+   "rel": "supersedes",
+   "dst": "design-v2-rejected-moving-ring"
+  },
+  {
+   "src": "design-v2-ask-pinned",
+   "rel": "supersedes",
+   "dst": "design-v2-rejected-caption-card-merge"
+  },
+  {
+   "src": "design-v2-face-verdict-neutral",
+   "rel": "supersedes",
+   "dst": "design-v2-rejected-correctness-face"
+  },
+  {
+   "src": "design-v2-desk-layout",
+   "rel": "supersedes",
+   "dst": "design-v2-rejected-full-lights-down"
+  },
+  {
+   "src": "generated-media-carries-facts",
+   "rel": "constrains",
+   "dst": "design-v2-painted-world"
+  },
+  {
+   "src": "avatar-tutor-selection",
+   "rel": "constrains",
+   "dst": "design-v2-product-design"
+  },
+  {
+   "src": "design-v2-rejected-sand-art-tint",
+   "rel": "measured_by",
+   "dst": "design-v2-tokens-contrast-2026-10-03"
+  },
+  {
+   "src": "persona-invariants-2026-10-03",
+   "rel": "measured_by",
+   "dst": "floor-core-quote-free"
+  },
+  {
+   "src": "floor-core-quote-free",
+   "rel": "caused_by",
+   "dst": "voice-prompt-labels-and-brackets"
+  },
+  {
+   "src": "floor-core-quote-free",
+   "rel": "part_of",
+   "dst": "voice-teacher-spec"
+  },
+  {
+   "src": "never-rules-battery-2026-10-03",
+   "rel": "measured_by",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "never-rules-on-raw-content",
+   "rel": "constrains",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "main-yahin-hoon-as-exclusivity",
+   "rel": "constrains",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "open-never-rules-wiring",
+   "rel": "blocks",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "open-never-rules-out-of-sample",
+   "rel": "blocks",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "pii-battery-2026-10-03",
+   "rel": "measured_by",
+   "dst": "scrub-pii-cued"
+  },
+  {
+   "src": "scrub-pii-uncued-shapes",
+   "rel": "constrains",
+   "dst": "scrub-pii-cued"
+  },
+  {
+   "src": "prompt-budget-worst-2026-10-03",
+   "rel": "measured_by",
+   "dst": "release-gate-verify-release"
+  },
+  {
+   "src": "spoken-preserve-2026-10-03",
+   "rel": "measured_by",
+   "dst": "voice-tts-spoken-render"
+  },
+  {
+   "src": "open-checkfits-fix-pair",
+   "rel": "constrains",
+   "dst": "kit-fit-margin"
+  },
+  {
+   "src": "rel-state-trust-drop-dryrun-2026-10-03",
+   "rel": "measured_by",
+   "dst": "learner-nm3-legacy-columns"
+  },
+  {
+   "src": "minor-gates-no-adult-branch",
+   "rel": "part_of",
+   "dst": "release-gate-verify-release"
+  },
+  {
+   "src": "never-rules-floor-violations",
+   "rel": "part_of",
+   "dst": "release-gate-verify-release"
+  },
+  {
+   "src": "scrub-pii-cued",
+   "rel": "part_of",
+   "dst": "release-gate-verify-release"
+  },
+  {
+   "src": "live-probes-prod-2026-10-03",
+   "rel": "measured_by",
+   "dst": "release-gate-verify-release"
+  },
+  {
+   "src": "open-lesson-lookup-before-auth",
+   "rel": "caused_by",
+   "dst": "live-probes-prod-2026-10-03"
+  },
+  {
+   "src": "never-rules-battery-2026-10-03-fixed",
+   "rel": "supersedes",
+   "dst": "never-rules-battery-2026-10-03"
+  },
+  {
+   "src": "never-rules-battery-2026-10-03-fixed",
+   "rel": "measured_by",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "pii-battery-2026-10-03-fixed",
+   "rel": "supersedes",
+   "dst": "pii-battery-2026-10-03"
+  },
+  {
+   "src": "pii-battery-2026-10-03-fixed",
+   "rel": "measured_by",
+   "dst": "scrub-pii-cued"
+  },
+  {
+   "src": "floor-relational-ab-2026-10-03",
+   "rel": "measured_by",
+   "dst": "floor-core-quote-free"
+  },
+  {
+   "src": "fix-load-gate-computed",
+   "rel": "supersedes",
+   "dst": "open-checkfits-fix-pair"
+  },
+  {
+   "src": "fix-load-gate-computed",
+   "rel": "constrains",
+   "dst": "kit-fit-margin"
+  },
+  {
+   "src": "never-rules-quoted-span-exemption",
+   "rel": "constrains",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "never-rules-substring-content",
+   "rel": "constrains",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "never-rules-content-length-only",
+   "rel": "constrains",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "never-rules-hedge-as-question",
+   "rel": "constrains",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "never-rules-teaser-continue-next-time",
+   "rel": "constrains",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "open-goodbye-continue-policy",
+   "rel": "blocks",
+   "dst": "never-rules-floor-violations"
+  },
+  {
+   "src": "psych-claim-tiers",
+   "rel": "constrains",
+   "dst": "reports-lane-a-evidence-rows"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "constrains",
+   "dst": "reports-lane-a-evidence-rows"
+  },
+  {
+   "src": "reports-gate-throws",
+   "rel": "part_of",
+   "dst": "reports-lane-a-evidence-rows"
+  },
+  {
+   "src": "open-learner-calibration-gate",
+   "rel": "constrains",
+   "dst": "reports-k7-locked-words"
+  },
+  {
+   "src": "reports-curriculum-span-mask",
+   "rel": "measured_by",
+   "dst": "reports-kit-title-lexicon-2026-10-03"
+  },
+  {
+   "src": "model-router-v2",
+   "rel": "constrains",
+   "dst": "reports-lane-b-brain-ordering"
+  },
+  {
+   "src": "reports-lane-b-brain-ordering",
+   "rel": "measured_by",
+   "dst": "reports-lane-b-brain-2026-10-03"
+  },
+  {
+   "src": "reports-end-of-day-jobs",
+   "rel": "measured_by",
+   "dst": "reports-conductor-job-e2e-2026-10-03"
+  },
+  {
+   "src": "conductor-code-reducer",
+   "rel": "constrains",
+   "dst": "reports-end-of-day-jobs"
+  },
+  {
+   "src": "reports-lane-a-evidence-rows",
+   "rel": "measured_by",
+   "dst": "reports-sim-week-2026-10-03"
+  },
+  {
+   "src": "reports-gate-throws",
+   "rel": "measured_by",
+   "dst": "reports-gate-fuzz-2026-10-03"
+  },
+  {
+   "src": "voice-features-longitudinal",
+   "rel": "constrains",
+   "dst": "reports-voice-features-excluded"
+  },
+  {
+   "src": "reports-growth-edge-next-lessons",
+   "rel": "supersedes",
+   "dst": "reports-tricky-needs-review-date"
+  },
+  {
+   "src": "reports-gate-throws",
+   "rel": "supersedes",
+   "dst": "reports-date-slot-object-leak"
+  },
+  {
+   "src": "reports-curriculum-span-mask",
+   "rel": "supersedes",
+   "dst": "reports-prefix-lexicon-overmatch"
+  },
+  {
+   "src": "reports-no-interest-line",
+   "rel": "supersedes",
+   "dst": "reports-interest-from-memory-text"
+  },
+  {
+   "src": "reports-safety-hold-read-side",
+   "rel": "supersedes",
+   "dst": "reports-hold-job-path-only"
+  },
+  {
+   "src": "reports-delayed-copy-last-came-up",
+   "rel": "supersedes",
+   "dst": "reports-right-again-copy"
+  },
+  {
+   "src": "reports-recheck-date-ahead",
+   "rel": "supersedes",
+   "dst": "reports-recheck-date-window-start"
+  },
+  {
+   "src": "reports-how-copy-not-rule",
+   "rel": "supersedes",
+   "dst": "reports-rule-string-in-drawer"
+  },
+  {
+   "src": "reports-no-interest-line",
+   "rel": "part_of",
+   "dst": "reports-lane-a-evidence-rows"
+  },
+  {
+   "src": "reports-safety-hold-read-side",
+   "rel": "part_of",
+   "dst": "reports-end-of-day-jobs"
+  },
+  {
+   "src": "reports-late-activity-daily",
+   "rel": "part_of",
+   "dst": "reports-end-of-day-jobs"
+  },
+  {
+   "src": "reports-gate-final-pregate",
+   "rel": "part_of",
+   "dst": "reports-gate-throws"
+  },
+  {
+   "src": "reports-header-open-lessons",
+   "rel": "part_of",
+   "dst": "reports-lane-a-evidence-rows"
+  },
+  {
+   "src": "reports-recheck-date-ahead",
+   "rel": "part_of",
+   "dst": "reports-growth-edge-next-lessons"
+  },
+  {
+   "src": "reports-lane-a-evidence-rows",
+   "rel": "measured_by",
+   "dst": "reports-sim-week-2026-10-03b"
+  },
+  {
+   "src": "reports-sim-week-2026-10-03b",
+   "rel": "supersedes",
+   "dst": "reports-sim-week-2026-10-03"
+  },
+  {
+   "src": "reports-lane-b-brain-ordering",
+   "rel": "measured_by",
+   "dst": "reports-laneb-tokens-2026-10-03"
+  },
+  {
+   "src": "reports-safety-hold-read-side",
+   "rel": "measured_by",
+   "dst": "reports-route-hold-2026-10-03"
   }
  ]
 }

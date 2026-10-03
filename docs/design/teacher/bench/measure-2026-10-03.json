@@ -1,0 +1,278 @@
+{
+ "date": "2026-10-03",
+ "method": "headless Chromium (Playwright 1.63.0), ANGLE SwiftShader WebGL2, 4 vCPU container. M0: /dev/avatar forced tier B, synthetic voice, 1.5 s warm-up, 10 s capped-loop window (stage stats) then the stage loop is stopped and 90 frames are rendered back to back, each followed by a 1-pixel readPixels (a full pipeline sync; gl.finish() did not block under ANGLE/SwiftShader and read 0.1 ms), x3. Proxy: docs/design/teacher/bench/hero-proxy.html, same uncapped timing x3.",
+ "m0": [
+  {
+   "arm": "M0 asha B speaking 360x640 medium",
+   "disposed": false,
+   "uncapped": [
+    {
+     "p50": 33.4,
+     "p95": 45.9
+    },
+    {
+     "p50": 30.3,
+     "p95": 46.9
+    },
+    {
+     "p50": 34,
+     "p95": 52.2
+    }
+   ],
+   "calls": 16,
+   "triangles": 19114,
+   "meshes": 16,
+   "materials": [
+    "MeshLambertMaterial",
+    "MeshBasicMaterial"
+   ],
+   "morphMeshes": 1,
+   "morphTargets": 3,
+   "morphVerts": 3187,
+   "canvasPx": 127680,
+   "canvas": [
+    336,
+    380
+   ],
+   "capped": {
+    "fpsP50": 30,
+    "intervalP95": 66.6,
+    "long50": 20,
+    "workP95": 1.1,
+    "frames": 313,
+    "framesInWindow": 274
+   },
+   "tierEvents": [
+    {
+     "type": "pixels",
+     "pixelRatio": 0.85
+    }
+   ]
+  },
+  {
+   "arm": "M0 arjun B speaking 360x640 close",
+   "disposed": false,
+   "uncapped": [
+    {
+     "p50": 46.7,
+     "p95": 71.6
+    },
+    {
+     "p50": 38,
+     "p95": 56
+    },
+    {
+     "p50": 35.7,
+     "p95": 66.7
+    }
+   ],
+   "calls": 16,
+   "triangles": 22846,
+   "meshes": 16,
+   "materials": [
+    "MeshLambertMaterial",
+    "MeshBasicMaterial"
+   ],
+   "morphMeshes": 1,
+   "morphTargets": 3,
+   "morphVerts": 3187,
+   "canvasPx": 100800,
+   "canvas": [
+    336,
+    300
+   ],
+   "capped": {
+    "fpsP50": 20,
+    "intervalP95": 116.6,
+    "long50": 17,
+    "workP95": 2.8,
+    "frames": 60,
+    "framesInWindow": 33
+   },
+   "tierEvents": [
+    {
+     "type": "tier",
+     "from": "B",
+     "to": "D",
+     "reason": "probe failed (work p90 2.1 ms)"
+    }
+   ]
+  },
+  {
+   "arm": "M0 asha B speaking 1280x800 medium",
+   "disposed": false,
+   "uncapped": [
+    {
+     "p50": 32.1,
+     "p95": 50.8
+    },
+    {
+     "p50": 20.7,
+     "p95": 39.9
+    },
+    {
+     "p50": 20.6,
+     "p95": 27.4
+    }
+   ],
+   "calls": 16,
+   "triangles": 19114,
+   "meshes": 16,
+   "materials": [
+    "MeshLambertMaterial",
+    "MeshBasicMaterial"
+   ],
+   "morphMeshes": 1,
+   "morphTargets": 3,
+   "morphVerts": 3187,
+   "canvasPx": 212800,
+   "canvas": [
+    560,
+    380
+   ],
+   "capped": {
+    "fpsP50": 15,
+    "intervalP95": 166.7,
+    "long50": 34,
+    "workP95": 2.6,
+    "frames": 60,
+    "framesInWindow": 40
+   },
+   "tierEvents": [
+    {
+     "type": "tier",
+     "from": "B",
+     "to": "D",
+     "reason": "probe failed (work p90 1.9 ms)"
+    }
+   ]
+  }
+ ],
+ "proxy": [
+  {
+   "arm": "Hero proxy, physical skin + wrinkle fetches, DPR 1.5, MSAA",
+   "uncapped": [
+    {
+     "p50": 750.2,
+     "p95": 865
+    },
+    {
+     "p50": 554.5,
+     "p95": 615.1
+    },
+    {
+     "p50": 558.8,
+     "p95": 822.3
+    }
+   ],
+   "calls": 6,
+   "triangles": 45024,
+   "programs": 9,
+   "textures": 10,
+   "geometries": 17,
+   "canvasPx": 324000,
+   "maskVerts": 4295,
+   "headVerts": 10449
+  },
+  {
+   "arm": "Hero proxy geometry, Lambert, DPR 1.5, MSAA",
+   "uncapped": [
+    {
+     "p50": 101.5,
+     "p95": 111.7
+    },
+    {
+     "p50": 143.8,
+     "p95": 197.4
+    },
+    {
+     "p50": 127.6,
+     "p95": 185.9
+    }
+   ],
+   "calls": 6,
+   "triangles": 45024,
+   "programs": 4,
+   "textures": 3,
+   "geometries": 5,
+   "canvasPx": 324000,
+   "maskVerts": 4295,
+   "headVerts": 10449
+  },
+  {
+   "arm": "B+ proxy, standard + normal + wrinkle fetches, DPR 1.24, MSAA",
+   "uncapped": [
+    {
+     "p50": 71.9,
+     "p95": 109.1
+    },
+    {
+     "p50": 72.4,
+     "p95": 92.2
+    },
+    {
+     "p50": 76.2,
+     "p95": 102.4
+    }
+   ],
+   "calls": 6,
+   "triangles": 19680,
+   "programs": 5,
+   "textures": 7,
+   "geometries": 5,
+   "canvasPx": 221216,
+   "maskVerts": 1695,
+   "headVerts": 4161
+  },
+  {
+   "arm": "B+ proxy geometry, Lambert, DPR 1.24, MSAA",
+   "uncapped": [
+    {
+     "p50": 44.1,
+     "p95": 49.1
+    },
+    {
+     "p50": 44.1,
+     "p95": 50
+    },
+    {
+     "p50": 44.2,
+     "p95": 49.7
+    }
+   ],
+   "calls": 6,
+   "triangles": 19680,
+   "programs": 4,
+   "textures": 3,
+   "geometries": 5,
+   "canvasPx": 221216,
+   "maskVerts": 1695,
+   "headVerts": 4161
+  },
+  {
+   "arm": "B+ proxy, standard + normal + wrinkle fetches, DPR 1.0, no MSAA (B-lite knobs)",
+   "uncapped": [
+    {
+     "p50": 33.6,
+     "p95": 45.7
+    },
+    {
+     "p50": 32.5,
+     "p95": 37.8
+    },
+    {
+     "p50": 32.6,
+     "p95": 41.8
+    }
+   ],
+   "calls": 6,
+   "triangles": 19680,
+   "programs": 5,
+   "textures": 7,
+   "geometries": 5,
+   "canvasPx": 144000,
+   "maskVerts": 1695,
+   "headVerts": 4161
+  }
+ ]
+}

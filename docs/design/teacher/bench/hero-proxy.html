@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hero proxy bench</title>
+<style>html,body{margin:0;background:#202020}canvas{display:block}</style>
+</head>
+<body>
+<!--
+  Synthetic stand-in for the TEACHER-VISUAL.md runtime budgets (NOT a character: geometry and textures are noise).
+  It reproduces the COST shape of each tier: triangle count, draw calls, morph-target count and morphed vertex count,
+  material model, texture fetches, hair alpha-to-coverage, MSAA and canvas pixels.
+  Served by the vite dev server from the repo root; driven by bench/measure.mjs.
+  URL params: arm=hero|bplus|bplus_lambert|hero_lambert  w,h (CSS px)  dpr  msaa=0|1
+-->
+<script type="module">
+import * as THREE from "/node_modules/three/build/three.module.js";
+import { RoomEnvironment } from "/node_modules/three/examples/jsm/environments/RoomEnvironment.js";
+
+const q = new URLSearchParams(location.search);
+const ARM = q.get("arm") || "hero";
+const W = +(q.get("w") || 360), H = +(q.get("h") || 400), DPR = +(q.get("dpr") || 1.5), MSAA = q.get("msaa") !== "0";
+
+// Budgets per arm (TEACHER-VISUAL.md section 6).
+const ARMS = {
+  hero:          { headSeg: [128, 80], morphs: 78, hairCards: 1500, bodySeg: [64, 32], tex: 1024, physical: true },
+  hero_lambert:  { headSeg: [128, 80], morphs: 78, hairCards: 1500, bodySeg: [64, 32], tex: 1024, physical: false, lambert: true },
+  bplus:         { headSeg: [72, 56],  morphs: 52, hairCards: 500,  bodySeg: [40, 20], tex: 1024, physical: false },
+  bplus_lambert: { headSeg: [72, 56],  morphs: 52, hairCards: 500,  bodySeg: [40, 20], tex: 1024, physical: false, lambert: true },
+};
+const A = ARMS[ARM];
+
+const renderer = new THREE.WebGLRenderer({ antialias: MSAA, alpha: false, powerPreference: ARM.startsWith("hero") ? "high-performance" : "low-power" });
+renderer.setPixelRatio(DPR);
+renderer.setSize(W, H);
+renderer.toneMapping = A.lambert ? THREE.NoToneMapping : THREE.NeutralToneMapping;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color("#e9e1d6");
+const camera = new THREE.PerspectiveCamera(24, W / H, 0.1, 50);
+camera.position.set(0, 0.05, 4.2);
+scene.add(new THREE.HemisphereLight(0xfff4e8, 0x8a7a6a, 0.9));
+const key = new THREE.DirectionalLight(0xffffff, 2.0); key.position.set(1.5, 2, 3); scene.add(key);
+if (!A.lambert && A.physical) {
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; // small prefiltered env, as the tier-A spec allows
+}
+
+let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+function noiseTex(size, normal) {
+  const d = new Uint8Array(size * size * 4);
+  for (let i = 0; i < size * size; i++) {
+    const n = rnd();
+    d.set(normal ? [128 + (n - 0.5) * 40, 128 + (rnd() - 0.5) * 40, 255, 255] : [180 + n * 40, 130 + n * 30, 110 + n * 20, 255], i * 4);
+  }
+  const t = new THREE.DataTexture(d, size, size, THREE.RGBAFormat);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter;
+  t.needsUpdate = true; return t;
+}
+const albedo = noiseTex(A.tex, false), normal = noiseTex(A.tex, true), rough = noiseTex(A.tex / 2, false);
+const wrinkleA = noiseTex(A.tex / 2, true), wrinkleB = noiseTex(A.tex / 2, true), mask = noiseTex(A.tex / 4, false);
+
+// Skin: the hero arm adds the planned skin terms to MeshPhysical (clearcoat as the second specular lobe, sheen as
+// peach fuzz) and injects two wrinkle-normal fetches + one mask fetch + a wrap/back-scatter diffuse term.
+function skinMaterial() {
+  if (A.lambert) return new THREE.MeshLambertMaterial({ map: albedo });
+  const m = A.physical
+    ? new THREE.MeshPhysicalMaterial({ map: albedo, normalMap: normal, roughnessMap: rough, roughness: 0.55, clearcoat: 0.25, clearcoatRoughness: 0.35, sheen: 0.4, sheenRoughness: 0.6, sheenColor: new THREE.Color("#ffb7a0") })
+    : new THREE.MeshStandardMaterial({ map: albedo, normalMap: normal, roughness: 0.6 });
+  m.onBeforeCompile = (s) => {
+    s.uniforms.wrinkleA = { value: wrinkleA }; s.uniforms.wrinkleB = { value: wrinkleB }; s.uniforms.wmask = { value: mask };
+    s.uniforms.wweights = { value: new THREE.Vector3(0.3, 0.2, 0.1) };
+    s.fragmentShader = "uniform sampler2D wrinkleA; uniform sampler2D wrinkleB; uniform sampler2D wmask; uniform vec3 wweights;\n" + s.fragmentShader
+      .replace("#include <normal_fragment_maps>", `#include <normal_fragment_maps>
+        { vec3 mk = texture2D(wmask, vNormalMapUv).rgb; vec3 wa = texture2D(wrinkleA, vNormalMapUv).xyz * 2.0 - 1.0; vec3 wb = texture2D(wrinkleB, vNormalMapUv).xyz * 2.0 - 1.0;
+          normal = normalize(normal + (wa * mk.r * wweights.x + wb * mk.g * wweights.y) * 0.3); }`)
+      .replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
+        { float wrap = max(0.0, (dot(normal, normalize(vec3(0.4,0.6,0.7))) + 0.5) / 1.5); reflectedLight.directDiffuse += vec3(0.08,0.02,0.01) * wrap * diffuseColor.rgb; }`);
+  };
+  return m;
+}
+
+// Head: a dense sphere with A.morphs RELATIVE position-only targets on the front-facing ("mask") vertices only.
+const headGeo = new THREE.SphereGeometry(0.62, A.headSeg[0], A.headSeg[1]);
+const pos = headGeo.attributes.position, nV = pos.count;
+const targets = [];
+let maskVerts = 0;
+for (let v = 0; v < nV; v++) if (pos.getZ(v) > 0.05) maskVerts++;
+for (let k = 0; k < A.morphs; k++) {
+  const a = new Float32Array(nV * 3);
+  for (let v = 0; v < nV; v++) if (pos.getZ(v) > 0.05) { a[v * 3] = (rnd() - 0.5) * 0.004; a[v * 3 + 1] = (rnd() - 0.5) * 0.004; a[v * 3 + 2] = rnd() * 0.003; }
+  targets.push(new THREE.BufferAttribute(a, 3));
+}
+headGeo.morphAttributes.position = targets; headGeo.morphTargetsRelative = true;
+headGeo.computeTangents?.();
+const head = new THREE.Mesh(headGeo, skinMaterial());
+head.updateMorphTargets(); head.position.y = 0.35; scene.add(head);
+
+// Eyes (2 draws in a merged mesh would be 1; keep 1 draw), teeth+tongue (1 draw).
+const eyeMat = A.lambert ? new THREE.MeshLambertMaterial({ color: 0xf4f0ea }) : new THREE.MeshPhysicalMaterial({ color: 0xf4f0ea, roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.02 });
+const eyeGeo = new THREE.SphereGeometry(0.06, 32, 24);
+const eyes = new THREE.Mesh(eyeGeo, eyeMat); eyes.position.set(0.17, 0.42, 0.53); scene.add(eyes);
+const eyes2 = eyes.clone(); eyes2.position.x = -0.17; scene.add(eyes2);
+const teeth = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.03, 16, 48, Math.PI), A.lambert ? new THREE.MeshLambertMaterial({ color: 0xeeeeee }) : new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: 0.3 }));
+teeth.position.set(0, 0.12, 0.42); scene.add(teeth);
+
+// Hair cards: A.hairCards quads (2 tris each, x2 for both sides of a cluster strip of 4 segments) alpha-to-coverage.
+const cards = [];
+for (let i = 0; i < A.hairCards; i++) {
+  const g = new THREE.PlaneGeometry(0.05, 0.35, 1, 4);
+  const th = rnd() * Math.PI * 2, ph = rnd() * 1.2;
+  g.rotateX(-0.3 + rnd() * 0.3); g.translate(0, 0, 0.66);
+  g.rotateX(-ph); g.rotateY(th);
+  cards.push(g);
+}
+const { mergeGeometries } = await import("/node_modules/three/examples/jsm/utils/BufferGeometryUtils.js");
+const hairGeo = mergeGeometries(cards);
+const hairAlpha = noiseTex(256, false);
+const hairMat = A.lambert
+  ? new THREE.MeshLambertMaterial({ color: 0x1c140f, alphaMap: hairAlpha, alphaTest: 0.5, side: THREE.DoubleSide })
+  : new THREE.MeshPhysicalMaterial({ color: 0x1c140f, alphaMap: hairAlpha, alphaTest: 0.5, alphaToCoverage: MSAA, side: THREE.DoubleSide, roughness: 0.45, anisotropy: A.physical ? 0.8 : 0, sheen: A.physical ? 0.3 : 0 });
+const hair = new THREE.Mesh(hairGeo, hairMat); hair.position.y = 0.4; scene.add(hair);
+
+// Body + garment (1 draw, normal-mapped on non-lambert arms).
+const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.75, 0.6, A.bodySeg[1], A.bodySeg[0]), A.lambert ? new THREE.MeshLambertMaterial({ map: albedo }) : new THREE.MeshStandardMaterial({ map: albedo, normalMap: normal, roughness: 0.8 }));
+body.position.y = -1.15; body.scale.set(1.2, 0.8, 0.7); scene.add(body);
+
+const infl = head.morphTargetInfluences;
+let frame = 0;
+function animate() {
+  frame++;
+  for (let k = 0; k < 14; k++) infl[(k * 5) % A.morphs] = 0.5 + 0.5 * Math.sin(frame * 0.07 + k);
+  head.rotation.y = 0.08 * Math.sin(frame * 0.02);
+}
+renderer.compile(scene, camera);
+renderer.render(scene, camera); // warm-up (morph texture packing happens on the first render)
+
+window.__bench = {
+  arm: ARM, maskVerts, headVerts: nV,
+  info() { return { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, programs: renderer.info.programs.length, textures: renderer.info.memory.textures, geometries: renderer.info.memory.geometries }; },
+  // Uncapped: render n frames back to back with a 1-pixel readPixels (full sync) so the CPU rasteriser's cost lands in the timing.
+  timed(n) {
+    const gl = renderer.getContext(); const t = []; const px = new Uint8Array(4);
+    for (let i = 0; i < n; i++) { const t0 = performance.now(); animate(); renderer.render(scene, camera); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); t.push(performance.now() - t0); }
+    t.sort((a, b) => a - b); return { p50: t[Math.floor(n * 0.5)], p95: t[Math.floor(n * 0.95)], n };
+  },
+  canvasPx() { return renderer.domElement.width * renderer.domElement.height; },
+};
+window.__ready = true;
+</script>
+</body>
+</html>

@@ -413,3 +413,87 @@ Two traps found in review of M0 (2026-10-03):
 <!-- merged from inbox/integration-learner-comp.json -->
 ## spoken-ask-in-load-gate
 **Tried (2026-10-03):** rendering the voice branch's next question in spoken notation inside the kit load gate too (compile.js checkFits on the spoken ask). **Broke:** 122/10815 items dropped for the prompt budget (1.13%; the gate is ≤ 1%, baseline 108 = 0.999%), and normalizeKit drops an item from EVERY lane, so a voice-only reading would have removed number-heavy items (c7-sst timelines, c8-sst census bars, c4-maths money word problems) from text lessons too. Hindi-mode readings render digits as Devanagari number words ('एक हज़ार नौ सौ इक्यावन'), +7 to +22 estimated tokens on such items. **Instead:** the gate stays on the written form, and a voice compile falls back to the written branch line only when the spoken one does not fit (integration-voice-spoken-ask).
+
+
+<!-- merged from inbox/design-v2.json -->
+## design-v2-rejected-full-lights-down
+**Tried:** Child-First Wonder's full-screen "lights down", where the whole lesson screen turns dusk blue `#26304A`, as proposed on paper (2026-10-03). Never built.
+**What broke, in design review:**
+- It creates a third theme for Young children, who are light-only (`ds-band-fork-older`).
+- It puts the Question card and the dock on a dark ground for 6-year-olds.
+- It needs a per-route backdrop swap and full-bleed bitmaps on tier C.
+**Instead:** only the TeacherWindow's ground goes to dusk, with a warm pool (`--stage`, `--stage-pool`).
+**Revisit if:** a lit vs dusk arm shows recognition that the lesson has started below 80% for ages 6–9 (CFW WD-M17).
+
+## design-v2-rejected-moving-ring
+**Tried:** v1 `ds-status-carriers` and CFW: the YOUR TURN ring moves between the Talk button, the answer-tile group and the module frame.
+**What broke, in review against the audit:**
+- The child must find the ring before finding the answer.
+- The audit showed children already miss the single mic glow.
+**Instead:** the lamp always sits on the AnswerDock, and its mode line points at the tiles ("Tap a picture above").
+**Revisit if:** V2-M1 shows tile-group ringing beats the dock by ≥ 5 pp for B2.
+
+## design-v2-rejected-caption-card-merge
+**Tried:** CFW's single element with two modes: the caption becomes the Question card at the hand-over and returns to caption mode on her next audio frame.
+**What broke, in review:** any follow-up, hint or re-ask turn puts the card back into caption mode, so the question disappears exactly as in audit problem 1.
+**Instead:** a separate Caption and a pinned QuestionCard. The ask stays until the item resolves.
+
+## design-v2-rejected-correctness-face
+**Tried:** Calm Mastery's feedback table: a warm or delighted face on `verdict = correct` and a curious face on `not_yet`.
+**What broke:** it violates ReactionGate (v1 R6, PD-G7). A correctness-keyed face is a farmable social reward, and a face change before the resolution leaks covert checks (why-probes, planted mistakes).
+**Instead:** the face is verdict-neutral, and the verdict lives on the answer chip, the board and the concept payoff (`design-v2-face-verdict-neutral`).
+
+## design-v2-rejected-sand-art-tint
+CM's Codex palette included a "sand" disc tint, `#D9C7A7`. Under the hue lint with its saturation floor (S 40%, L 75%) it sits 1.1° from the lamp, so it would put a second gold on child screens. It is replaced by stone `#C9C6BE`, which sits below the saturation floor (`design-v2-tokens-contrast-2026-10-03`).
+
+
+<!-- merged from inbox/harvest-ports.json -->
+## scrub-pii-uncued-shapes
+**Tried (2026-10-03, scrubPii first pass):** school, name and address cues followed by ANY letter token (the `i` flag made `\p{Lu}` match lower case), bare house/flat/block/h markers with a number, a grouped 4-4-4 Aadhaar shape with no group boundary, a mobile shape split at every digit. **Broke:** 114/126,863 kit strings masked, including kit answers — "I go to school" → "I go to [school]", "My name is Riya" → "[name]", "1 h 20 min" and "H 4, T 0, O 6" → "[address]", "3012 3120 3201 3210" → "[aadhaar]", the Collatz line "6 3 10 5 16 8 4 2 1" → "[phone]". A scrub that ran before grading would mark those right answers wrong. **Instead:** `scrub-pii-cued` (capitalised values after a giving cue, first name kept, explicit number markers, no digit group before/after, at most 3 splits): 2/126,863, 0 answers.
+
+## never-rules-on-raw-content
+**Tried (2026-10-03):** the never-rules predicate over kit strings as if they were the teacher's own words. **Broke:** 86/126,863 fire — 71 ai_denial from first-person model sentences the language kits teach ("My mother is a teacher in a school.", "मेरी माँ ने मुझे सच बोलना सिखाया।", "जब मैं छोटी थी…"), plus a story's "किसी को मत बताना". Posing them is not a claim. **Instead:** call sites pass the posed item (prompt, options, answer, acceptables, hints) as `content`, which is removed before matching (0/126,863), and quoted model sentences of 2+ words are skipped.
+
+## main-yahin-hoon-as-exclusivity
+**Tried (2026-10-03):** "main yahin hoon" (I'm right here) as an exclusivity rule, because the relational probe's coder marked it `excl` in a lonely-child reply. **Broke:** it fired on 4/308 attune-probe distress replies ("Main yahin hoon, but pehle kisi bade ke paas jao…"), where staying is exactly what the floor's distress rule asks ("Stay with them"). **Instead:** dropped; "I'm always here for you" / "main hamesha tumhare saath hoon" stay (the always/only framing is the exclusivity).
+
+## never-rules-quoted-span-exemption
+**Tried (2026-10-03, harvest-ports build):** removing every quoted span of 2+ words before matching, so modelled language ("say: 'My papa drives the bus.'") is not a claim. **Broke (review repro):** "Main tumhari 'best friend' hoon!", 'I am your "best friend", always.' and '"I am a real person," I promise you.' all → []; the quoted shape is exactly the one the model recites (22/33). **Instead:** quotes are judged; only a modelling-cue quote is exempt, and even then romance/exclusivity/helpline are judged.
+
+## never-rules-substring-content
+**Tried:** `raw.split(content).join(' . ')` for every content string. **Broke:** kits carry 'no' (302), digits, 'do', 'A'/'b'; content ['no'] made "I am not a robot." pass, ['o'] hid "I love you so much!", ['so'] hid "You are so smart", ['8'] turned a correct "Childline 1098" safeguard reply into missing_childline. The builder's own call-site recipe would have disabled the predicate on hundreds of items. **Instead:** whole-segment removal, >= 12 chars, content that carries its own hit.
+
+## never-rules-content-length-only
+**Tried (fixer, first pass):** whole-segment removal of any content >= 12 characters. **Broke:** the short-content collapse gate: 'किसी को नहीं' (a 12-code-unit Devanagari answer, "nobody") cut the violation out of 'मैं किसी को नहीं बताऊंगी।' — 91/92. Character length is a poor proxy in Devanagari. **Instead:** content is removed only if it carries a NEVER hit on its own (92/92).
+
+## never-rules-hedge-as-question
+**Tried:** QUESTION_LEAD = think|thought|soch*|ask|kya|… anywhere earlier in the clause suppresses ai_denial/feelings. **Broke:** "I think I'm a real human, not a bot." → []. **Instead:** a frame that ends right at the claim (QUESTION_FRAME); "Main sochti hoon main insaan hoon" fires.
+
+## never-rules-teaser-continue-next-time
+**Tried (fixer):** extending GOODBYE_TEASER with "we can continue …", "phir se milkar practice karenge", "hum fir se continue karenge", after the floor A/B coded those as hooks. **Broke:** the coded-corpus gate: false flags 2/86 → 4/86, because the 2026-10-02 blind coder did not code that shape (rows 69, 90). Two coders disagree on the rubric, so tuning the matcher to either is premature. **Instead:** reverted; logged as open-goodbye-continue-policy.
+
+
+<!-- merged from inbox/parent-reports.json -->
+## reports-date-slot-object-leak
+**Tried (2026-10-03, first smoke run):** templates received the raw date slot object `{ y, m, d }`. **Broke:** every growth-edge line rendered 'It comes back on [object Object]' in all three languages, and the gate passed it, because its exact-re-render check re-rendered the same buggy template and the lexicon has no entry for it. **Instead:** `renderShape` formats typed slots (date via fmtDate, object via the home catalogue) and refuses a missing slot; a `template_bug` predicate refuses '[object ', undefined, NaN, null and '{slot}' in any line. Lesson: a gate that re-renders to compare inherits the renderer's bugs — it needs predicates that do not go through the renderer.
+
+## reports-prefix-lexicon-overmatch
+**Tried (2026-10-03):** prefix entries `exam*`, `habit*`, `मंद*`, `dar*` in the parent lexicon. **Broke:** `exam*` screened the interest line 'Taxila will use it in examples' (examples) for every child; `habit*` matches 'habitat', `मंद*` matches 'मंदिर' (temple), `dar*` matches 'darwaza' and 'dard'. **Instead:** whole-word entries with English inflections (exam, exams, examination*; habit, habits; मंदबुद्धि; darr*, dar lag*, darta, darti) and a false-hit test list.
+
+## reports-tricky-needs-review-date
+**Tried (2026-10-03, first --no-llm sim):** a growth edge required kt_skill_state.next_review_at ≥ the window start as its 'Taxila action + re-check date'. **Broke:** FSRS sets next_review_at only once a skill is learned, so practising skills have none; the confident-misconception persona p18 (answers like 7 of 8 matching the comma mix-up) got no growth-edge line in any of its 6 reports — the one child the section exists for. **Instead:** reports-growth-edge-next-lessons.
+
+## reports-interest-from-memory-text
+**Tried (2026-10-03, builder pass):** an interest line ('{name} said they like {interest}; Taxila will use it in examples.') filled from memory.text when ≤ 4 letters-only words. **Broke (review):** memory.text is taxila-fast paraphrase at lesson end, not the child's word; 'loves cricket' renders 'said they like loves cricket'; hi/hinglish reports carry an English paraphrase; the drawer labelled it 'What they told Taxila'. The sim inserted hand-picked single words straight into memory, so its 3/3 interest lines and 78/78 support said nothing about real rows. **Instead:** reports-no-interest-line. Lesson: a sim that writes the input a component expects, instead of the input the upstream writer produces, measures the fixture.
+
+## reports-hold-job-path-only
+**Tried (2026-10-03, builder pass):** the safety hold enforced by guards.js on report.daily / parent.letter only. **Broke (review):** GET /api/parent/report computed a live preview on every request without reading the Conductor mode, and stored scripts stayed playable, so during an incident the family still got an auto-generated report on demand. **Instead:** reports-safety-hold-read-side. Lesson: a hold that only blocks writers leaves every on-demand reader open.
+
+## reports-right-again-copy
+**Tried (2026-10-03, builder pass):** 'right again {d} days later' / '{d} din baad bhi sahi' / '{d} दिन बाद भी सही' for a delayed success. **Broke (review):** the previous contact may be a teach row or a wrong/helped/contaminated answer, so a child wrong on Monday and right on Thursday read 'right again 3 days later'. check.js re-derived the same rule, so 78/78 support could not catch it. **Instead:** reports-delayed-copy-last-came-up.
+
+## reports-recheck-date-window-start
+**Tried (2026-10-03, builder pass):** dated growth edge when next_review_at ≥ window start. **Broke (review):** the job runs after the window closes, so a same-day re-check read 'It comes back on 3 Oct' stored on 4 Oct, and a weekly letter could promise a past Wednesday; the checker shared the rule; no sim report had a dated tricky line. **Instead:** reports-recheck-date-ahead (+ unit fixtures for a date inside a closed window and a date past at generation).
+
+## reports-rule-string-in-drawer
+**Tried (2026-10-03, builder pass):** the drawer rendered claim.rule under 'How this line is counted'. **Broke (review):** internal English with the LOCKED word 'learned', 'calibration gate passed', '2k < n', 'date = kt_skill_state.next_review_at', untranslated on hi/hinglish, never gated. **Instead:** reports-how-copy-not-rule.

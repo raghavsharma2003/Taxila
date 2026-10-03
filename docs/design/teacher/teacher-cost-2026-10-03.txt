@@ -1,0 +1,67 @@
+## Prices re-pulled 2026-10-03 (Azure Retail Prices API)
+- az_avatar_std_rt: 0.5
+- az_avatar_hd_rt: 0.7
+- az_avatar_custom_rt: 0.6
+- az_avatar_custom_host_h: 0.6
+- az_avatar_std_batch: 1.0
+- az_avatar_custom_batch: 2.0
+- a100_vm_h: 5.142
+- a100_spot_h: 0.950242
+- a10_vm_h: 4.48
+- rtx6000_quarter_h: 1.582
+- aca_a100_s: 0.000741
+- aca_t4_s: 0.000102
+- egress_gb: 0.11
+- sora2_s: 0.1
+- sora2pro_s: 0.3
+- derived: 4.31 MB per video-minute; egress $0.00046/min
+
+## A. Live video per student-month (marginal; no warm floor)
+| renderer | $/session-min | full lessons (900 min) | hybrid: live = tier's dialog minutes (299 / 699 / 999 / 1499) | moments (40 min) | licence |
+|---|---|---|---|---|---|
+| Azure TTS avatar, standard, real-time | 0.5000 | $450.00 | $46.00 / $194.00 / $305.00 / $490.00 | $20.00 | Azure first-party; does NOT take our audio (renders its own TTS voice) [R] |
+| Azure TTS avatar, HD, real-time | 0.7000 | $630.00 | $64.40 / $271.60 / $427.00 / $686.00 | $28.00 | same |
+| Azure TTS avatar, custom, real-time (+$0.60/h hosting each) | 0.6000 | $540.00 | $55.20 / $232.80 / $366.00 / $588.00 | $24.00 | limited access; actor video; same voice problem |
+| MuseTalk 1.5, A100 VM, pinned 2 sessions/GPU | 0.0433 | $38.98 | $3.98 / $16.81 / $26.42 / $42.45 | $1.73 | MIT code + weights: clean [R] |
+| MuseTalk 1.5, A100 VM, pooled 3.5 sessions/GPU | 0.0249 | $22.45 | $2.30 / $9.68 / $15.22 / $24.45 | $1.00 | clean; needs the per-utterance GPU-pool scheduler (3-4 wk) [R] |
+| MuseTalk 1.5, ACA serverless A100 (centralindia row), pinned 2 | 0.0227 | $20.42 | $2.09 / $8.80 / $13.84 / $22.24 | $0.91 | NOT AVAILABLE: price row exists but the ACA doc (2026-09-24) lists Central India A100 = No (nearest: Australia East); no UDP ingress |
+| MuseTalk 1.5, 1/4 RTX PRO 6000 slice, 1 session | 0.0268 | $24.15 | $2.47 / $10.41 / $16.37 / $26.29 | $1.07 | clean; NVENC in a vGPU slice unmeasured (E-13) [U] |
+| MuseTalk 1.5, A10 VM, 1 session (throughput unmeasured) | 0.0751 | $67.62 | $6.91 / $29.15 / $45.83 / $73.63 | $3.01 | clean [U] |
+| Ditto, A100 VM, pinned 1 session | 0.0862 | $77.55 | $7.93 / $33.43 / $52.56 / $84.44 | $3.45 | NOT clean: InsightFace detector + HF weights with no licence [R] |
+| LivePortrait driven by our FaceFrame, A100 VM, 2 sessions (renders every frame) | 0.0433 | $38.98 | $3.98 / $16.81 / $26.42 / $42.45 | $1.73 | NOT clean until InsightFace is swapped; retarget model is research [R] |
+
+## B. What a tier earns and what share a video teacher would take
+| tier | net revenue/mo | 5% of net | 20% of net | MuseTalk pooled hybrid | as % of net | MuseTalk pinned moments | % | Azure std moments | % |
+|---|---|---|---|---|---|---|---|---|---|
+| Rs299 | $2.64 | $0.13 | $0.53 | $2.30 | 87% | $1.73 | 66% | $20.00 | 758% |
+| Rs699 | $6.17 | $0.31 | $1.23 | $9.68 | 157% | $1.73 | 28% | $20.00 | 324% |
+| Rs999 | $8.82 | $0.44 | $1.76 | $15.22 | 173% | $1.73 | 20% | $20.00 | 227% |
+| Rs1499 | $13.23 | $0.66 | $2.65 | $24.45 | 185% | $1.73 | 13% | $20.00 | 151% |
+
+## C. Pre-rendered, shared clips (one-time per character; every child sees the same clip)
+| renderer | $/video-min | 40-min moments library | 30,000-min narration library |
+|---|---|---|---|
+| MuseTalk 1.5 offline, Spot A100 (1.2x real time, 2 streams) [R, throughput U] | 0.0066 | $0.26 | $197.97 |
+| LatentSync-class diffusion, Spot A100 (0.1x) [R; InsightFace trap] | 0.1584 | $6.33 | $4,751.21 |
+| Azure TTS avatar batch, standard (stock avatar, Azure voice) | 1.0000 | $40.00 | $30,000.00 |
+| Azure TTS avatar batch, custom (actor-trained) | 2.0000 | $80.00 | $60,000.00 |
+| Sora 2 (eastus2 global), 1 take [faces rejected; own audio; retiring] | 6.0000 | $240.00 | $180,000.00 |
+| Sora 2 Pro, 1 take | 18.0000 | $720.00 | $540,000.00 |
+
+Streaming 15 min of pre-rendered narration x 20 lessons = 1.26 GB/child-month -> $0.14 egress; the parent's data plan carries the same GB.
+
+## D. Fleet floor for live MuseTalk (A100 VMs held for a 5 h evening window, pinned 2 sessions/GPU)
+| paying students on the video tier | mode | peak sessions | GPUs | $/month | $/student |
+|---|---|---|---|---|---|
+| 100 | hybrid (Rs999 dialog minutes) | 13 | 7 | $5,399.10 | $53.99 |
+| 100 | full | 19 | 10 | $7,713.00 | $77.13 |
+| 600 | hybrid (Rs999 dialog minutes) | 76 | 39 | $30,080.70 | $50.13 |
+| 600 | full | 112 | 57 | $43,964.10 | $73.27 |
+| 1,000 | hybrid (Rs999 dialog minutes) | 127 | 64 | $49,363.20 | $49.36 |
+| 1,000 | full | 188 | 94 | $72,502.20 | $72.50 |
+| 10,000 | hybrid (Rs999 dialog minutes) | 1,271 | 636 | $490,546.80 | $49.05 |
+| 10,000 | full | 1,875 | 938 | $723,479.40 | $72.35 |
+
+## E. The 3D teacher (for comparison)
+- runtime compute: $0 (renders on the child's phone). Delivery: 4.0 MB once = $0.00 per device.
+- one-time build per character: artist + art-director time (section 9 of TEACHER-VISUAL.md), not GPU.
