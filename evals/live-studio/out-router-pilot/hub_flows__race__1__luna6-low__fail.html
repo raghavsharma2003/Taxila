@@ -1,0 +1,163 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8e9;color:#33463d}
+#app{width:360px;height:320px;padding:7px 10px;display:flex;flex-direction:column;gap:3px}
+h1{height:24px;margin:0;text-align:center;font-size:17px;line-height:24px;color:#315a47}
+#scene{display:block;width:340px;height:147px;flex:none;background:#f5edda;border-radius:20px}
+text{font-family:system-ui,sans-serif;fill:#33463d}
+.label{font-size:12px;font-weight:700}
+.flow-label{font-size:11px;font-weight:700}
+.particle{fill:#f2a541;stroke:#fff8e9;stroke-width:1.5}
+.entity-shape{transition:filter .25s}
+#controls{height:52px;display:flex;align-items:center;justify-content:center;gap:7px;flex:none}
+button{font:650 14px system-ui,sans-serif;color:#315a47;background:#e4efdd;border:2px solid #c6ddc0;border-radius:16px;min-width:58px;height:52px;padding:0 10px;cursor:pointer;transition:transform .15s,background .2s}
+button:active{transform:scale(.94)}
+#caption{min-width:115px;max-width:165px;text-align:center;font-size:13px;font-weight:650;color:#5b6d55}
+#ask{height:24px;flex:none;text-align:center;font-size:13px;font-weight:650;line-height:24px;color:#594c39}
+#options{display:flex;justify-content:center;gap:7px;flex:none}
+.option{flex:1;max-width:104px;height:52px;padding:0 4px;background:#fff;border-color:#e5d7b8;font-size:12px}
+.option.chosen{background:#f8dfa8;border-color:#e8ae53}
+#feedback{height:16px;text-align:center;font-size:12px;font-weight:700;color:#4c7650}
+#scene.step-1 [data-flow="water"],#scene.step-2 [data-flow="co2"],#scene.step-3 [data-flow="o2"]{filter:drop-shadow(0 0 4px #ecaa43)}
+#scene.step-1 [data-label="water"],#scene.step-2 [data-label="co2"],#scene.step-3 [data-label="o2"]{fill:#a76517}
+#scene.step-1 [data-entity="leaf"],#scene.step-2 [data-entity="leaf"],#scene.step-3 [data-entity="leaf"]{filter:drop-shadow(0 0 5px #78b66b)}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <svg id="scene" viewBox="0 0 340 147" role="img">
+    <g id="drawing"></g>
+  </svg>
+  <div id="controls">
+    <button id="play" data-action="play" type="button"></button>
+    <div id="caption" data-caption></div>
+    <button id="next" data-action="next" type="button"></button>
+  </div>
+  <div id="ask"></div>
+  <div id="options"></div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const svgNS="http://";
+  const scene=document.getElementById("scene");
+  const drawing=document.getElementById("drawing");
+  const caption=document.querySelector("[data-caption]");
+  const playButton=document.querySelector('[data-action="play"]');
+  const options=document.getElementById("options");
+  const feedback=document.getElementById("feedback");
+  let playing=true,step=1,phase=0,last=performance.now(),completed=false;
+
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("ask").textContent=Studio.t("ask");
+  playButton.textContent=Studio.t("pause");
+  document.querySelector('[data-action="next"]').textContent=Studio.t("next");
+
+  function add(tag,attrs){
+    const el=document.createElementNS(svgNS,tag);
+    for(const [key,value] of Object.entries(attrs)) el.setAttribute(key,value);
+    drawing.appendChild(el);
+    return el;
+  }
+  function label(key,x,y,flow=false){
+    const el=add("text",{x,y,"text-anchor":"middle","data-label":key,class:flow?"flow-label":"label"});
+    el.textContent=Studio.t(key);
+  }
+
+  const positions={};
+  positions[p.hub]={x:170,y:67};
+  p.entities.forEach((key,index)=>{
+    positions[key]=index===0?{x:63,y:37}:{x:63,y:111};
+  });
+
+  p.entities.forEach((key,index)=>{
+    const pos=positions[key],x=pos.x,y=pos.y;
+    if(index===0){
+      add("circle",{cx:x,cy:y,r:15,fill:"#f5bd50",stroke:"#e39b37","stroke-width":3,"data-entity":key,class:"entity-shape"});
+      for(let i=0;i<8;i++){
+        const a=i*Math.PI/4;
+        add("line",{x1:x+19*Math.cos(a),y1:y+19*Math.sin(a),x2:x+24*Math.cos(a),y2:y+24*Math.sin(a),stroke:"#e9a743","stroke-width":3,"stroke-linecap":"round"});
+      }
+      label(key,x,14);
+    }else{
+      add("path",{d:`M${x-25} ${y-3} Q${x-12} ${y-13} ${x} ${y-3} Q${x+13} ${y-13} ${x+25} ${y-3} L${x+21} ${y+7} Q${x+9} ${y+2} ${x} ${y+9} Q${x-12} ${y+2} ${x-23} ${y+8}Z`,fill:"#b98255",stroke:"#88603f","stroke-width":2,"data-entity":key,class:"entity-shape"});
+      add("path",{d:`M${x} ${y+7}v12 m-9-4 9 4 9-4`,stroke:"#88603f","stroke-width":2,fill:"none"});
+      label(key,x,143);
+    }
+  });
+
+  const hub=positions[p.hub],hx=hub.x,hy=hub.y;
+  add("path",{d:`M${hx-24} ${hy+8} C${hx-25} ${hy-19} ${hx+10} ${hy-24} ${hx+25} ${hy-9} C${hx+18} ${hy+15} ${hx-8} ${hy+22} ${hx-24} ${hy+8}Z`,fill:"#77b96a",stroke:"#477b4a","stroke-width":3,"data-entity":p.hub,class:"entity-shape"});
+  add("path",{d:`M${hx-18} ${hy+10} Q${hx} ${hy+1} ${hx+16} ${hy-10}`,fill:"none",stroke:"#e8f1c9","stroke-width":3,"stroke-linecap":"round"});
+  label(p.hub,hx,24);
+
+  function endpoints(dir){
+    if(dir==="up_in") return {start:[hx,hy+52],end:[hx,hy+11],label:[hx+48,hy+47]};
+    if(dir==="out") return {start:[hx+29,hy],end:[292,hy],label:[265,hy-12]};
+    return {start:[47,hy],end:[hx-29,hy],label:[108,hy-12]};
+  }
+  p.flows.forEach(flow=>{
+    const path=endpoints(flow.dir);
+    label(flow.key,path.label[0],path.label[1],true);
+    for(let i=0;i<3;i++){
+      add("circle",{r:5,"data-flow":flow.key,class:"particle","data-index":i,
+        "data-start":path.start.join(","),"data-end":path.end.join(",")});
+    }
+  });
+
+  function showStep(){
+    scene.setAttribute("class","step-"+step);
+    caption.textContent=Studio.t("step"+step);
+  }
+  showStep();
+  document.querySelector('[data-action="next"]').addEventListener("click",()=>{
+    step=step%p.steps+1;
+    showStep();
+    Studio.event("step",{step});
+  });
+  playButton.addEventListener("click",()=>{
+    playing=!playing;
+    playButton.textContent=Studio.t(playing?"pause":"play");
+    Studio.event("play",{playing:playing?1:0});
+  });
+
+  p.options.forEach(key=>{
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="option";
+    button.dataset.option=key;
+    button.textContent=Studio.t(key);
+    button.addEventListener("click",()=>{
+      document.querySelectorAll(".option").forEach(el=>el.classList.remove("chosen"));
+      button.classList.add("chosen");
+      feedback.textContent="";
+      Studio.event("answer",{option:key});
+      Studio.answer(key);
+    });
+    options.appendChild(button);
+  });
+  Studio.onVerdict(result=>{
+    feedback.textContent=Studio.t(result.correct?"right":"wrong");
+    if(result.correct&&!completed){completed=true;Studio.done();}
+  });
+
+  function animate(now){
+    const dt=Math.min(40,now-last);
+    last=now;
+    if(playing) phase=(phase+dt*.00055)%1;
+    drawing.querySelectorAll(".particle").forEach(el=>{
+      const start=el.getAttribute("data-start").split(",").map(Number);
+      const end=el.getAttribute("data-end").split(",").map(Number);
+      const q=(phase+Number(el.getAttribute("data-index"))/3)%1;
+      el.setAttribute("cx",start[0]+(end[0]-start[0])*q);
+      el.setAttribute("cy",start[1]+(end[1]-start[1])*q);
+    });
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+  Studio.ready();
+})();
+
+</script>

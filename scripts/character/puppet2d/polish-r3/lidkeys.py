@@ -97,7 +97,10 @@ for s, b in ELL.items():
             cov = np.clip(bs[None, :] + 0.5 - yy, 0, 1)
             span = (xx >= xs.min()) & (xx <= xs.max())
             # below the lash and outside the opening (corners, lower lid) keep c-front's own surface: transparent
-            a = border * np.where(span, cov, 0.0)
+            # soft ends: the painted lid fades into the live lid over 8 px at each end of its span (a hard vertical cut
+            # showed as a white notch in a squinted playful eye)
+            endf = np.clip(np.minimum(xx - xs.min(), xs.max() - xx) / 8.0, 0, 1)
+            a = border * np.where(span, cov, 0.0) * endf
             # above the lash: everywhere in the ellipse (crease, lid skin)
             a = np.maximum(a, border * (yy < bs[None, :] - 1) * ((xx < xs.min()) | (xx > xs.max())) * 0)
             out["mid"] = save(f"lidmid{s}", im2, a)

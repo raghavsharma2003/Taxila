@@ -1,0 +1,119 @@
+<style>
+*{box-sizing:border-box}body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif}#stage{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(160deg,#fff7df 0%,#ffe9bd 100%);color:#563d2d}#sky{position:absolute;inset:0;width:360px;height:320px;pointer-events:none}.sun{fill:#ffd26c}.cloud{fill:#fffaf0;opacity:.8}.leaf{fill:#9fcf80;opacity:.4}#header{position:absolute;left:14px;top:9px;width:332px;text-align:center;z-index:2}#title{font-size:21px;font-weight:800;line-height:24px;color:#75452f;letter-spacing:.1px}#instr{margin-top:2px;font-size:13px;font-weight:650;color:#8b6247;line-height:16px}#rack{position:absolute;top:54px;left:18px;width:324px;height:108px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:52px 52px;gap:4px 5px;z-index:3}.slot{display:flex;align-items:center;justify-content:center;min-width:0;min-height:52px}.card{width:102px;height:52px;border:0;border-radius:16px;background:#fffdf7;box-shadow:0 4px 0 #deb981,0 7px 12px rgba(117,69,47,.16);color:#583b2c;font:800 15px system-ui,sans-serif;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,opacity .25s ease;position:relative;padding:4px 7px}.card:after{content:"";position:absolute;left:12px;right:12px;bottom:7px;height:3px;border-radius:4px;background:#f5d9a7;opacity:.7}.card:active{transform:scale(.94)}.card[data-selected="true"]{transform:translateY(-7px) scale(1.045);background:#fff4c8;box-shadow:0 7px 0 #d79d58,0 0 0 4px rgba(255,190,74,.35),0 12px 17px rgba(117,69,47,.22);animation:glow .9s ease-in-out infinite alternate}.card.returning{animation:shake .38s ease}.ghost{opacity:0;transform:scale(.65)}#message{position:absolute;top:163px;left:18px;width:324px;height:16px;text-align:center;font-size:13px;font-weight:800;color:#946044;z-index:3;transition:transform .2s ease,opacity .2s ease}.bins{position:absolute;left:14px;top:184px;width:332px;height:125px;display:flex;gap:8px;z-index:2}.bin{position:relative;flex:1;height:125px;border:0;border-radius:22px 22px 17px 17px;background:linear-gradient(#d7efc9,#b9dfa8);box-shadow:inset 0 0 0 3px rgba(81,128,75,.17),0 5px 0 #89bb7c,0 8px 13px rgba(92,105,57,.16);cursor:pointer;padding:10px 7px 7px;transition:transform .18s ease,filter .18s ease}.bin:nth-child(2){background:linear-gradient(#d7e9f7,#b9d4ec);box-shadow:inset 0 0 0 3px rgba(73,119,156,.16),0 5px 0 #88afd0,0 8px 13px rgba(69,92,123,.15)}.bin:active{transform:translateY(3px)}.bin.ready{filter:brightness(1.06);animation:binpulse .7s ease-in-out infinite alternate}.binname{position:relative;z-index:1;display:block;text-align:center;font-size:15px;font-weight:850;color:#41633d;line-height:20px}.bin:nth-child(2) .binname{color:#3d6180}.placed{display:inline-flex;align-items:center;justify-content:center;vertical-align:top;width:calc(50% - 3px);height:28px;margin:5px 1px 0;border-radius:10px;background:#fffdf5;color:#5a4030;font-size:11px;font-weight:800;box-shadow:0 2px 0 rgba(98,71,51,.16);animation:land .38s cubic-bezier(.2,1.4,.4,1)}#finish{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(255,247,223,.76);z-index:8}.finishbubble{min-width:230px;min-height:70px;padding:17px 22px;border-radius:28px;background:#fffdf5;box-shadow:0 7px 0 #dfbd83,0 12px 20px rgba(95,62,38,.18);text-align:center;color:#75452f;font-size:20px;font-weight:850;animation:land .45s cubic-bezier(.2,1.4,.4,1)}#finish.show{display:flex}@keyframes glow{to{box-shadow:0 7px 0 #d79d58,0 0 0 7px rgba(255,190,74,.17),0 12px 17px rgba(117,69,47,.22)}}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px) rotate(-2deg)}55%{transform:translateX(7px) rotate(2deg)}78%{transform:translateX(-3px)}}@keyframes binpulse{to{transform:translateY(-2px);filter:brightness(1.1)}}@keyframes land{0%{transform:scale(.35);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+</style>
+<div id="stage">
+  <svg id="sky" viewBox="0 0 360 320" aria-hidden="true">
+    <circle class="sun" cx="325" cy="25" r="25"></circle>
+    <path class="cloud" d="M16 35c5-12 22-12 26 0 12-4 20 4 20 13H7c0-8 3-11 9-13z"></path>
+    <ellipse class="leaf" cx="18" cy="278" rx="26" ry="11" transform="rotate(-28 18 278)"></ellipse>
+    <ellipse class="leaf" cx="345" cy="166" rx="22" ry="9" transform="rotate(31 345 166)"></ellipse>
+  </svg>
+  <div id="header"><div id="title"></div><div id="instr"></div></div>
+  <div id="rack"></div>
+  <div id="message"></div>
+  <div class="bins" id="bins"></div>
+  <div id="finish"><div class="finishbubble" id="donetext"></div></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, rack=document.getElementById('rack'), binsEl=document.getElementById('bins');
+  var message=document.getElementById('message'), selected=null, waiting=false, placed=0, finished=false;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  document.getElementById('donetext').textContent=Studio.t('done');
+
+  p.cards.forEach(function(key){
+    var slot=document.createElement('div'), card=document.createElement('button');
+    slot.className='slot';
+    card.className='card';
+    card.type='button';
+    card.dataset.card=key;
+    card.dataset.selected='false';
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',function(){
+      if(waiting||finished)return;
+      if(selected===card){
+        card.dataset.selected='false';
+        selected=null;
+        p.bins.forEach(function(k){document.querySelector('[data-bin="'+k+'"]').classList.remove('ready');});
+        return;
+      }
+      if(selected)selected.dataset.selected='false';
+      selected=card;
+      card.dataset.selected='true';
+      p.bins.forEach(function(k){document.querySelector('[data-bin="'+k+'"]').classList.add('ready');});
+      Studio.event('pick',{card:key});
+    });
+    slot.appendChild(card);
+    rack.appendChild(slot);
+  });
+
+  p.bins.forEach(function(key){
+    var bin=document.createElement('button'), name=document.createElement('span');
+    bin.type='button';
+    bin.className='bin';
+    bin.dataset.bin=key;
+    name.className='binname';
+    name.textContent=Studio.t(key);
+    bin.appendChild(name);
+    bin.addEventListener('click',function(){
+      if(!selected||waiting||finished)return;
+      waiting=true;
+      p.bins.forEach(function(k){document.querySelector('[data-bin="'+k+'"]').classList.remove('ready');});
+      Studio.event('drop',{bin:key});
+      Studio.answer({card:selected.dataset.card,bin:key});
+    });
+    binsEl.appendChild(bin);
+  });
+
+  Studio.onVerdict(function(v){
+    if(!waiting||!selected)return;
+    var card=selected;
+    waiting=false;
+    if(v.correct){
+      var target=document.querySelector('[data-bin="'+Object.keys({})+'"]');
+      target=document.querySelector('[data-bin="'+p.bins.filter(function(k){return document.querySelector('[data-bin="'+k+'"]')===document.activeElement;})+'"]')||null;
+      var chosen=null;
+      p.bins.forEach(function(k){
+        var el=document.querySelector('[data-bin="'+k+'"]');
+        if(el && el.contains(document.activeElement))chosen=el;
+      });
+      if(!chosen){
+        var all=document.querySelectorAll('.bin');
+        for(var i=0;i<all.length;i++){if(all[i].classList.contains('lasttap'))chosen=all[i];}
+      }
+      if(!chosen)chosen=document.querySelector('.bin');
+      var placedCard=document.createElement('div');
+      placedCard.className='placed';
+      placedCard.dataset.placed=chosen.dataset.bin;
+      placedCard.textContent=card.textContent;
+      chosen.appendChild(placedCard);
+      card.parentNode.classList.add('ghost');
+      card.remove();
+      message.textContent=Studio.t('right');
+      placed++;
+      selected=null;
+      if(placed===p.cards.length){
+        finished=true;
+        setTimeout(function(){document.getElementById('finish').classList.add('show');Studio.done();},360);
+      }
+    }else{
+      message.textContent=Studio.t('wrong');
+      card.dataset.selected='false';
+      card.classList.add('returning');
+      selected=null;
+      setTimeout(function(){card.classList.remove('returning');message.textContent='';},650);
+    }
+  });
+
+  document.querySelectorAll('.bin').forEach(function(bin){
+    bin.addEventListener('click',function(){
+      document.querySelectorAll('.bin').forEach(function(x){x.classList.remove('lasttap');});
+      bin.classList.add('lasttap');
+    });
+  });
+  Studio.ready();
+}());
+
+</script>

@@ -1,0 +1,105 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff5e8;font-family:system-ui,sans-serif;color:#503b40}
+  .scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 35px 28px,#ffe4c2 0 64px,transparent 65px),#fff5e8}
+  .title{position:absolute;top:12px;left:18px;right:18px;font-size:21px;font-weight:800}
+  .ask{position:absolute;top:48px;left:18px;right:18px;font-size:15px;font-weight:600}
+  svg{position:absolute;left:0;top:0;width:360px;height:320px;pointer-events:none}
+  [data-axis]{stroke:#ad8174;stroke-width:5;stroke-linecap:round}
+  .join{stroke:#c3917f;stroke-width:2.5;stroke-linecap:round}
+  .marker{fill:#e68763;stroke:#fff5e8;stroke-width:3}
+  .card{position:absolute;width:96px;height:64px;border:2px solid #e9ae91;border-radius:17px;background:#fffdf7;color:#503b40;box-shadow:0 4px 0 #e7c5ad;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:700 16px system-ui,sans-serif;cursor:pointer;transition:transform .22s,background .22s,box-shadow .22s}
+  .card span:last-child{font-size:13px;color:#966655}
+  .card:active{transform:scale(.94)}
+  .card.chosen{background:#ffe0b9;transform:scale(1.03);box-shadow:0 5px 0 #dfad8c}
+  .feedback{position:absolute;left:18px;right:18px;top:278px;text-align:center;font-size:17px;font-weight:800;color:#835748}
+  .feedback.pop{animation:pop .35s ease-out}
+  @keyframes pop{from{transform:scale(.85);opacity:.3}to{transform:scale(1);opacity:1}}
+</style>
+<div class="scene">
+  <div class="title" id="title"></div>
+  <div class="ask" id="ask"></div>
+  <svg viewBox="0 0 360 320" aria-hidden="true">
+    <line data-axis x1="34" y1="174" x2="326" y2="174"></line>
+    <g id="links"></g>
+    <g id="markers"></g>
+  </svg>
+  <div id="cards"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const events=[...Studio.params.events].sort((a,b)=>a.year-b.year);
+  const first=events[0].year,last=events[events.length-1].year;
+  const links=document.getElementById('links');
+  const markers=document.getElementById('markers');
+  const cards=document.getElementById('cards');
+  const feedback=document.getElementById('feedback');
+  const svgNS=markers.namespaceURI;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+
+  function shape(tag,attrs){
+    const el=document.createElementNS(svgNS,tag);
+    for(const [key,value] of Object.entries(attrs))el.setAttribute(key,value);
+    return el;
+  }
+
+  let selected=null,finished=false;
+  const occupied=[[],[]];
+  events.forEach((event,index)=>{
+    const x=first===last?180:34+(event.year-first)*292/(last-first);
+    let best=null;
+    for(let row=0;row<2;row++){
+      for(let left=10;left<=250;left++){
+        if(occupied[row].some(other=>left<other+100&&left+96>other))continue;
+        const cost=Math.abs(left+48-x)+(row===index%2?0:10);
+        if(!best||cost<best.cost)best={row,left,cost};
+      }
+    }
+    if(!best)best={row:index%2,left:Math.max(10,Math.min(250,x-48))};
+    occupied[best.row].push(best.left);
+    const top=best.row===0?84:204;
+    links.appendChild(shape('line',{class:'join',x1:x,y1:174,x2:best.left+48,y2:best.row===0?top+64:top}));
+    markers.appendChild(shape('circle',{class:'marker',cx:x,cy:174,r:8,'data-event':event.key,'data-year':event.year}));
+
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.setAttribute('data-card',event.key);
+    card.style.left=best.left+'px';
+    card.style.top=top+'px';
+    const name=document.createElement('span');
+    const year=document.createElement('span');
+    name.textContent=Studio.t(event.key);
+    year.textContent=String(event.year);
+    card.append(name,year);
+    card.addEventListener('click',()=>{
+      if(finished)return;
+      if(selected)selected.classList.remove('chosen');
+      selected=card;
+      card.classList.add('chosen');
+      feedback.textContent='';
+      Studio.answer(event.key);
+    });
+    cards.appendChild(card);
+  });
+
+  Studio.onVerdict(({correct})=>{
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.add('pop');
+    if(correct&&!finished){
+      finished=true;
+      setTimeout(()=>{
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },650);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

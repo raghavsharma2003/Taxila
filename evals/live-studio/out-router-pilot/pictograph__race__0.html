@@ -1,0 +1,86 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff5e8;color:#533d40}
+  .board{width:360px;height:320px;padding:6px 12px 8px;overflow:hidden;background:radial-gradient(circle at 92% 0%,#ffe0bd 0,transparent 42%),#fff5e8}
+  .title{height:27px;margin:0;font-size:20px;font-weight:800;line-height:27px}
+  .ask{height:31px;margin:0;font-size:15px;font-weight:650;line-height:31px;color:#805663}
+  .key{height:40px;display:flex;align-items:center;gap:8px;padding:3px 12px;border-radius:16px;background:#ffe6cf;font-size:14px;font-weight:700}
+  .key svg{width:30px;height:30px;flex:none}
+  .chart{height:208px;display:flex;flex-direction:column}
+  .row{width:100%;height:52px;flex:none;display:flex;align-items:center;padding:4px 8px;border:2px solid transparent;border-radius:15px;background:#fffdf7;color:inherit;cursor:pointer;text-align:left;transition:transform .18s,background .2s,border-color .2s}
+  .row:active{transform:scale(.97)}
+  .row:focus-visible{outline:3px solid #a45b72;outline-offset:-3px}
+  .row.chosen{border-color:#c77b91}
+  .row.good{background:#dcf2de;border-color:#66a877}
+  .name{width:57px;flex:none;font-size:15px;font-weight:800}
+  .symbols{display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .symbols svg{width:30px;height:30px;flex:none;animation:pop .35s backwards}
+  @keyframes pop{from{transform:scale(.55) rotate(-18deg);opacity:.35}to{transform:scale(1) rotate(0);opacity:1}}
+</style>
+<div class="board">
+  <h1 class="title" id="title"></h1>
+  <p class="ask" id="ask" aria-live="polite"></p>
+  <div class="key" data-key>
+    <svg viewBox="0 0 32 32" aria-hidden="true"><g fill="#ed9b66"><circle cx="16" cy="6" r="5"/><circle cx="25" cy="11" r="5"/><circle cx="25" cy="21" r="5"/><circle cx="16" cy="26" r="5"/><circle cx="7" cy="21" r="5"/><circle cx="7" cy="11" r="5"/></g><circle cx="16" cy="16" r="6" fill="#f7cf68"/></svg>
+    <span id="keytext"></span><span id="keynumber"></span>
+  </div>
+  <div class="chart" id="chart"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params;
+  const chart=document.getElementById('chart');
+  const ask=document.getElementById('ask');
+  const icon=document.querySelector('[data-key] svg');
+  document.getElementById('title').textContent=Studio.t('title');
+  ask.textContent=Studio.t('ask');
+  document.getElementById('keytext').textContent=Studio.t('keytext');
+  document.getElementById('keynumber').textContent=p.symbolValue;
+  let waiting=false, finished=false, selected=null;
+  p.rows.forEach(row => {
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='row';
+    button.setAttribute('data-row',row.key);
+    const name=document.createElement('span');
+    name.className='name';
+    name.textContent=Studio.t(row.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    for(let i=0;i<row.value/p.symbolValue;i++){
+      const symbol=icon.cloneNode(true);
+      symbol.setAttribute('data-symbol','');
+      symbol.style.animationDelay=(i*45)+'ms';
+      symbols.appendChild(symbol);
+    }
+    button.append(name,symbols);
+    button.addEventListener('click',()=>{
+      if(waiting||finished)return;
+      waiting=true;
+      selected=button;
+      button.classList.add('chosen');
+      Studio.event('row_tap',{row:row.key});
+      Studio.answer(row.key);
+    });
+    chart.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!selected||finished)return;
+    if(correct){
+      finished=true;
+      selected.classList.remove('chosen');
+      selected.classList.add('good');
+      ask.textContent=Studio.t('right');
+      setTimeout(()=>{ask.textContent=Studio.t('done');Studio.done()},450);
+    }else{
+      ask.textContent=Studio.t('wrong');
+      selected.classList.remove('chosen');
+      selected=null;
+      waiting=false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

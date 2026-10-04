@@ -1,0 +1,100 @@
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#24413d;background:#fff8ea}
+body{width:360px;height:320px;margin:0;overflow:hidden}
+main{width:360px;height:320px;padding:10px 14px;display:flex;flex-direction:column;gap:5px}
+h1{height:27px;margin:0;text-align:center;font-size:19px;line-height:27px;color:#315e53}
+.readings{height:30px;display:flex;align-items:center;justify-content:center;gap:20px;font-size:15px;font-weight:700}
+.readings span{white-space:nowrap}
+.scene{height:52px;display:flex;align-items:center;justify-content:center;border-radius:16px;background:#e7f3e9;overflow:hidden}
+.track{width:170px;height:30px;display:flex;align-items:center;justify-content:flex-start}
+.visual{height:22px;width:0;max-width:none;border-radius:0 12px 12px 0;background:linear-gradient(90deg,#f2a65a,#ed7658);box-shadow:0 3px 8px #bd654444;transition:width .35s cubic-bezier(.2,.8,.2,1);transform-origin:left center}
+.controls{height:54px;display:flex;justify-content:center;gap:12px}
+button{font:700 16px system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;border:0;border-radius:16px;cursor:pointer;touch-action:manipulation;transition:transform .13s,filter .13s,box-shadow .13s;box-shadow:0 3px 0 #0002}
+button:active{transform:scale(.94);filter:brightness(1.08)}
+button:focus-visible{outline:3px solid #24413d;outline-offset:2px}
+.step{width:130px;height:54px;background:#4c8879}
+.prompt{height:31px;text-align:center;font-size:14px;font-weight:700;line-height:31px;white-space:nowrap}
+.options{height:54px;display:flex;justify-content:center;gap:10px}
+.option{width:92px;height:54px;background:#ed9464;font-size:18px}
+.feedback{height:24px;text-align:center;font-size:14px;font-weight:700;line-height:24px;color:#477768}
+.pop{animation:pop .32s ease-out}
+@keyframes pop{50%{transform:scale(1.09)}}
+</style>
+<main>
+  <h1 id="title"></h1>
+  <div class="readings">
+    <span id="xread"></span>
+    <span id="yread" data-output data-value=""></span>
+  </div>
+  <div class="scene" aria-hidden="true">
+    <div class="track"><div class="visual" data-visual data-dim="w" data-value=""></div></div>
+  </div>
+  <div class="controls">
+    <button class="step" data-action="dec" id="less"></button>
+    <button class="step" data-action="inc" id="more"></button>
+  </div>
+  <div class="prompt" id="prompt"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params, t=Studio.t;
+  let x=p.x.start, completed=false;
+  const fmt=n=>Number.isInteger(n)?String(n):String(Number(n.toFixed(8)));
+  const title=document.getElementById("title");
+  const xread=document.getElementById("xread");
+  const yread=document.getElementById("yread");
+  const visual=document.querySelector("[data-visual]");
+  const feedback=document.getElementById("feedback");
+  title.textContent=t("title");
+  document.getElementById("less").textContent=t("less");
+  document.getElementById("more").textContent=t("more");
+  const yname=t("yname"), xname=t("xname");
+  document.getElementById("prompt").textContent=t("ask")+" "+xname+" = "+fmt(p.ask.x)+"?";
+  function render(){
+    const y=p.law.k*x+p.law.b;
+    xread.textContent=xname+" = "+fmt(x);
+    yread.textContent=yname+" = "+fmt(y);
+    yread.dataset.value=fmt(y);
+    xread.dataset.x=fmt(x);
+    visual.dataset.value=fmt(y);
+    visual.style.width=(y*p.y.unitsPer)+"px";
+  }
+  document.querySelector('[data-action="dec"]').addEventListener("click",()=>{
+    if(x-p.x.step>=p.x.min){x-=p.x.step;render();Studio.event("change",{direction:"less"});}
+  });
+  document.querySelector('[data-action="inc"]').addEventListener("click",()=>{
+    if(x+p.x.step<=p.x.max){x+=p.x.step;render();Studio.event("change",{direction:"more"});}
+  });
+  p.ask.options.forEach(value=>{
+    const b=document.createElement("button");
+    b.className="option";
+    b.type="button";
+    b.textContent=fmt(value);
+    b.dataset.option=fmt(value);
+    b.addEventListener("click",()=>{
+      if(completed)return;
+      Studio.event("answer",{value:fmt(value)});
+      Studio.answer({value});
+    });
+    document.getElementById("options").appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=correct?t("right"):t("wrong");
+    feedback.classList.remove("pop");
+    void feedback.offsetWidth;
+    feedback.classList.add("pop");
+    if(correct&&!completed){
+      completed=true;
+      feedback.textContent=t("done");
+      Studio.done();
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

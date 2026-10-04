@@ -455,16 +455,16 @@ var C = class {
 			x(this.nod.x * j + w[0] * S - 3 * this.leanV - O * .2 * p, -20, 20),
 			x(this.headYaw + w[1] * S, -20, 20),
 			x(this.tilt + w[2] * S * .6, -20, 20)
-		], N = this.brow, P = (e - N.t0) * 1e3, ee = P < 0 ? 0 : P < 80 ? N.amp * P / 80 : P < 320 ? N.amp : P < 520 ? N.amp * (1 - (P - 320) / 200) : 0, te = this.reduced ? .3 : 1, F = {}, ne = (e, t) => {
+		], N = this.brow, P = (e - N.t0) * 1e3, ee = P < 0 ? 0 : P < 80 ? N.amp * P / 80 : P < 320 ? N.amp : P < 520 ? N.amp * (1 - (P - 320) / 200) : 0, te = this.reduced ? .3 : 1, F = {}, I = (e, t) => {
 			F[e + "Left"] = (F[e + "Left"] ?? 0) + t * this.asym, F[e + "Right"] = (F[e + "Right"] ?? 0) + t / this.asym;
 		};
 		if (T) for (let [e, t] of Object.entries(T.bs)) {
 			let n = t * _ * te;
-			e === "mouthSmile" && (n *= this.smileGain / .7), this.gentle && h.has(e) && (n *= .5), e.startsWith("brow") && (n *= this.browGain), e === "browInnerUp" ? F.browInnerUp = (F.browInnerUp ?? 0) + n : ne(e, n);
+			e === "mouthSmile" && (n *= this.smileGain / .7), this.gentle && h.has(e) && (n *= .5), e.startsWith("brow") && (n *= this.browGain), e === "browInnerUp" ? F.browInnerUp = (F.browInnerUp ?? 0) + n : I(e, n);
 		}
-		ne("mouthSmile", (this.state === "thinking" ? .03 : this.state === "speaking" ? .06 : .1) * this.smileGain * (this.gentle ? .5 : 1)), ne("browOuterUp", ee * this.browGain), F.browInnerUp = (F.browInnerUp ?? 0) + (ee * .8 + (this.state === "listening" ? .08 : 0)) * this.browGain;
-		let I = Math.max(F.eyeSquintLeft ?? 0, F.eyeSquintRight ?? 0) * .3, L = Math.max(f, I);
-		F.eyeBlinkLeft = L, F.eyeBlinkRight = L;
+		I("mouthSmile", (this.state === "thinking" ? .03 : this.state === "speaking" ? .06 : .1) * this.smileGain * (this.gentle ? .5 : 1)), I("browOuterUp", ee * this.browGain), F.browInnerUp = (F.browInnerUp ?? 0) + (ee * .8 + (this.state === "listening" ? .08 : 0)) * this.browGain;
+		let L = Math.max(F.eyeSquintLeft ?? 0, F.eyeSquintRight ?? 0) * .3, R = Math.max(f, L);
+		F.eyeBlinkLeft = R, F.eyeBlinkRight = R;
 		for (let e in F) F[e] = b(F[e]);
 		return {
 			t: e,
@@ -546,7 +546,7 @@ function F(e, t, n) {
 		u: i
 	};
 }
-var ne = class {
+var I = class {
 	constructor(e, { clear: t = [
 		.98,
 		.9,
@@ -638,8 +638,8 @@ var ne = class {
 		};
 		i(0, "uSclera", t.sclera.tex, t.sclera.rect, "uScleraRect"), i(1, "uIris", t.iris.tex, t.iris.rect, "uIrisRect"), i(2, "uCatch", t.catch.tex, t.catch.rect, "uCatchRect"), n.uniform2fv(r.u.uIrisC, t.irisC), n.uniform2fv(r.u.uIrisScale, t.irisScale), n.uniform2fv(r.u.uIrisScr, t.irisScr), n.uniform2fv(r.u.uCatchScr, t.catchScr), n.uniform2fv(r.u.uCatchC, t.catchC), n.uniform1f(r.u.uIrisK, t.irisK), n.uniform1f(r.u.uCatchA, t.catchA), n.uniform1f(r.u.uLidShade, t.lidShade), n.uniform1f(r.u.uTopY, t.topY), n.bindVertexArray(e.vao), n.drawElements(n.TRIANGLES, e.count, n.UNSIGNED_SHORT, 0), this.draws++, this.tris += e.count / 3;
 	}
-}, I = (e, t, n) => e < t ? t : e > n ? n : e, L = (e) => I(e, 0, 1), R = (e, t, n) => {
-	let r = L((n - e) / (t - e));
+}, L = (e, t, n) => e < t ? t : e > n ? n : e, R = (e) => L(e, 0, 1), ne = (e, t, n) => {
+	let r = R((n - e) / (t - e));
 	return r * r * (3 - 2 * r);
 }, re = 448, z = [
 	585,
@@ -859,12 +859,12 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 		}, this.shift = 0, this.first = !0;
 	}
 	solve(e, t) {
-		let n = (t) => e[t] ?? 0, r = L(n("jawOpen") / .85), i = Math.max(n("mouthFunnel"), n("mouthPucker")), a = (n("mouthStretchLeft") + n("mouthStretchRight")) / 2, o = {
+		let n = (t) => e[t] ?? 0, r = R(n("jawOpen") / .85), i = Math.max(n("mouthFunnel"), n("mouthPucker")), a = (n("mouthStretchLeft") + n("mouthStretchRight")) / 2, o = {
 			...V,
 			g: 30 * r,
 			up: .28,
 			wid: -18 * i + 6 * a,
-			round: L(i * 1.2 + .2 * r),
+			round: R(i * 1.2 + .2 * r),
 			T: .35 + .5 * r,
 			TL: .1 + .3 * a,
 			th: .25
@@ -881,11 +881,11 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 		if (s > 0) for (let e of H) c[e] /= s;
 		let u = Math.min(1, s);
 		for (let e of H) l[e] = s > 0 ? o[e] * (1 - u) + c[e] * u : o[e];
-		s > 0 && (l.g *= .85 + .35 * L(r / .45));
+		s > 0 && (l.g *= .85 + .35 * R(r / .45));
 		let d = (n("eyeWideLeft") + n("eyeWideRight")) / 2;
 		s < .2 && d > .45 && (l.round = Math.max(l.round, .95), l.wid -= 18, l.T = .3, l.up = .32, l.g *= 1.15);
-		let f = L(((n("mouthSmileLeft") + n("mouthSmileRight")) / 2 - .35) / .4) * L(r / .18);
-		f > 0 && (l.g += 16 * f * (1 - Math.min(1, s)), l.up *= 1 - .6 * f, l.T = Math.max(l.T, .9 * f), l.th = Math.max(l.th, .35 * f)), this.surprised = +(s < .2 && d > .45), l.tip = L(Math.max(l.tip, n("tongueTipUp"))), l.curl = L(Math.max(l.curl, n("tongueCurl"))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 13), l.up = .38), l.tip > .3 && (l.TL = Math.min(l.TL, .15)), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = L(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
+		let f = R(((n("mouthSmileLeft") + n("mouthSmileRight")) / 2 - .35) / .4) * R(r / .18);
+		f > 0 && (l.g += 16 * f * (1 - Math.min(1, s)), l.up *= 1 - .6 * f, l.T = Math.max(l.T, .9 * f), l.th = Math.max(l.th, .35 * f)), this.surprised = +(s < .2 && d > .45), l.tip = R(Math.max(l.tip, n("tongueTipUp"))), l.curl = R(Math.max(l.curl, n("tongueCurl"))), l.curl > .3 && (l.T = Math.min(l.T, .5), l.TL = 0, l.g = Math.max(l.g, 13), l.up = .38), l.tip > .3 && (l.TL = Math.min(l.TL, .15)), n("tongueWide") > .2 && (l.th = Math.max(l.th, .35)), l.press = R(Math.max(l.press, (n("mouthPressLeft") + n("mouthPressRight")) / 2 * 1.4));
 		let p = this.p;
 		for (let e of H) {
 			if (this.first) {
@@ -900,13 +900,13 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 		}, h = {
 			L: n("mouthFrownRight"),
 			R: n("mouthFrownLeft")
-		}, g = L((n("mouthFrownLeft") + n("mouthFrownRight")) / 2 * 4 + Math.max(0, n("browInnerUp") - .5) * 1.2), _ = (e) => .22 * (1 - g) + .23 * L(e / .045) + .6 * L((e - .045) / .8), v = n("mouthLeft") - n("mouthRight");
+		}, g = R((n("mouthFrownLeft") + n("mouthFrownRight")) / 2 * 4 + Math.max(0, n("browInnerUp") - .5) * 1.2), _ = (e) => .22 * (1 - g) + .23 * R(e / .045) + .6 * R((e - .045) / .8), v = n("mouthLeft") - n("mouthRight");
 		for (let e of ["L", "R"]) {
-			let n = _(m[e]), r = 1 - .45 * p.round, i = (n - .45) * 13 * r + p.wid, a = -(n - .45) * 19 * (1 - .3 * p.round) * (1 - .7 * (this.surprised || 0)) + h[e] * 9 + p.press * 1.5, o = L((n - .16) / .29) * (1 - .6 * p.round), s = this.side[e], c = this.first ? 1 : 1 - Math.exp(-t / .06);
+			let n = _(m[e]), r = 1 - .45 * p.round, i = (n - .45) * 13 * r + p.wid, a = -(n - .45) * 19 * (1 - .3 * p.round) * (1 - .7 * (this.surprised || 0)) + h[e] * 9 + p.press * 1.5, o = R((n - .16) / .29) * (1 - .6 * p.round), s = this.side[e], c = this.first ? 1 : 1 - Math.exp(-t / .06);
 			s.wid += c * (i - s.wid), s.dy += c * (a - s.dy), s.crease += c * (o - s.crease);
 		}
-		let y = I(v * 1.6, -1, 1) * 13;
-		return this.shift += (this.first ? 1 : 1 - Math.exp(-t / .08)) * (y - this.shift), this.first = !1, this.sideTilt = I(v * 1.6, -1, 1), this;
+		let y = L(v * 1.6, -1, 1) * 13;
+		return this.shift += (this.first ? 1 : 1 - Math.exp(-t / .08)) * (y - this.shift), this.first = !1, this.sideTilt = L(v * 1.6, -1, 1), this;
 	}
 	lowerDrop() {
 		return this.p.g * (1 - this.p.up);
@@ -1035,22 +1035,22 @@ var ae = (e) => (e - B.cx) / (e < B.cx ? B.hwL : B.hwR), oe = (e) => e >= 1 ? 0 
 			let e = m > 0 ? s / m : 0;
 			g = d, _ = f + c * e * (h - 1) * m;
 		} else {
-			let e = 1 - R(m, m + (c < 0 ? 26 : 46), s);
+			let e = 1 - ne(m, m + (c < 0 ? 26 : 46), s);
 			g = d * e, _ = (f + c * (h - 1) * m) * e;
 		}
 		let v = Math.abs(ae(a));
 		if (v > 1.2) {
-			let e = 1 - R(1.2, 1.6, v);
+			let e = 1 - ne(1.2, 1.6, v);
 			g *= e, _ *= e;
 		}
 		r[0] = a + g, r[1] = o + _;
 	}
 	alphaOf(e, t, n, r) {
 		let i = n % t.R, a = t.rest[n * 2], o = 1;
-		i === 0 && (o = 1 - L((r - 1) / 1.2));
+		i === 0 && (o = 1 - R((r - 1) / 1.2));
 		let s = ae(a), c = s < 0 ? this.solCache.side.L : this.solCache.side.R;
 		if (Math.abs(s) > .9 && t.d[n] < 20) {
-			let e = R(.9, 1.08, Math.abs(s)) * (1 - R(8, 20, t.d[n]));
+			let e = ne(.9, 1.08, Math.abs(s)) * (1 - ne(8, 20, t.d[n]));
 			o *= 1 - e * (1 - c.crease);
 		}
 		return o;
@@ -1232,7 +1232,7 @@ var he = class {
 		})), new e(t, i, null, o, r);
 	}
 	constructor(e, t, n, r, i) {
-		this.g = t, this.M = n, this.R = new ne(e, {
+		this.g = t, this.M = n, this.R = new I(e, {
 			clear: i.clear || [
 				251.4 / 255,
 				229.4 / 255,
@@ -1498,8 +1498,8 @@ var he = class {
 				return Math.abs(t - n) < .12 ? (t + n) / 2 : s(e + r);
 			}, a = this.lid[e], o = i("eyeSquint"), c = s("eyeWide" + r), l = i("cheekSquint"), u = i("mouthSmile");
 			for (let r = 0; r <= t.xb - t.xa; r++) {
-				let i = n.top[r], s = n.bot[r], d = s - i, f = r / (t.xb - t.xa), p = Math.max(0, Math.sin(Math.PI * f)) ** .7, m = (o * .3 + l * .2 + u * .06) * d * p ** 1.4, h = s - m, g = (_ * .14 - v * .02) * d * p, y = i + .72 * (s - i) - Math.min(m, .25 * d), b = i + g - c * .13 * d * p, x = this.g.lidKeys ? this.g.lidKeys[e].midLash : null, S = x ? x.y[Math.min(x.y.length - 1, r)] : y;
-				b += (Math.max(b, S - 1) - b) * W(a / .5), b > h && (b = h), t.top[r] = b, t.bot[r] = h;
+				let i = n.top[r], s = n.bot[r], d = s - i, f = r / (t.xb - t.xa), p = Math.max(0, Math.sin(Math.PI * f)) ** .7, m = .16 * G(.25, .55, a), h = (o * .3 + l * .2 + u * .06 + m) * d * p ** 1.4, g = s - h + c * .05 * d * p, y = (_ * .14 - v * .02) * d * p, b = i + .72 * (s - i) - Math.min(h, .25 * d), x = i + y - c * .2 * d * p, S = this.g.lidKeys ? this.g.lidKeys[e].midLash : null, C = S ? S.y[Math.min(S.y.length - 1, r)] : b;
+				x += (Math.max(x, C - 1) - x) * W(a / .5), x > g && (x = g), t.top[r] = x, t.bot[r] = g;
 			}
 			t.blink = a;
 		}
@@ -1925,9 +1925,9 @@ var he = class {
 			cheekSquintLeft: .5,
 			browOuterUpLeft: 1,
 			browDownRight: .45,
-			eyeSquintRight: .6,
+			eyeSquintRight: .3,
 			eyeBlinkRight: .5,
-			cheekSquintRight: .45,
+			cheekSquintRight: .25,
 			eyeSquintLeft: .05
 		},
 		head: [

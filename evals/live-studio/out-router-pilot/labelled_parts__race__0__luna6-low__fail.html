@@ -1,0 +1,79 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{background:#fff8e9;color:#315044;font-family:system-ui,sans-serif}
+#app{width:360px;height:320px;padding:6px 12px;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+#title{height:24px;flex:none;text-align:center;font-size:17px;font-weight:750;line-height:24px;color:#42674c}
+#ask{height:36px;flex:none;border-radius:14px;background:#f5e7c9;text-align:center;padding:6px 5px;font-size:14px;font-weight:700;color:#5c5742}
+#picture{width:336px;height:190px;flex:none;display:block}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .25s,transform .18s}
+.part:active{transform:scale(.96)}
+.part:focus{outline:none;filter:drop-shadow(0 0 5px #edb957)}
+.part.glow{filter:drop-shadow(0 0 8px #ffbd38);animation:bloom .65s ease-in-out infinite alternate}
+@keyframes bloom{to{filter:drop-shadow(0 0 13px #ffc928)}}
+.leader{stroke:#8a9177;stroke-width:1.5;fill:none;stroke-linecap:round}
+.label{font-size:12px;font-weight:700;fill:#435c4c}
+#feedback{height:20px;flex:none;text-align:center;font-size:13px;font-weight:700;color:#68774e;line-height:20px}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="ask" data-ask></div>
+  <svg id="picture" viewBox="0 0 336 190" aria-hidden="true">
+    <g id="drawing"></g>
+  </svg>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, drawing=document.getElementById("drawing");
+  const svgNS="http://";
+  const positions=[
+    {fill:"#f4a94d",d:"M123 8 C141 3 151 18 143 32 C158 20 175 32 165 47 C157 61 142 58 132 50 C143 67 129 79 116 70 C103 62 107 49 113 41 C96 50 84 35 96 22 C103 13 114 17 121 27 Z",label:[190,23],line:[164,27,187,25]},
+    {fill:"#a95542",d:"M119 14 C137 11 150 26 147 43 C144 60 126 68 112 57 C98 46 102 25 119 14 Z",label:[190,59],line:[146,53,187,61]},
+    {fill:"#4c9a58",d:"M111 67 Q137 62 163 67 L163 151 Q137 157 111 151 Z",label:[181,111],line:[162,108,178,108]},
+    {fill:"#58a85f",d:"M112 91 C87 69 53 76 32 101 C47 130 80 140 112 117 Z",label:[8,124],line:[39,104,50,116]},
+    {fill:"#9a7049",d:"M109 145 Q137 152 165 145 L184 158 L160 157 L176 174 L151 167 L137 190 L124 167 L98 179 L111 158 L88 164 Z",label:[188,177],line:[169,165,185,174]}
+  ];
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("ask").textContent=Studio.t("ask")+" "+Studio.t(p.ask);
+  p.parts.forEach((key,i)=>{
+    const q=positions[i%positions.length];
+    const line=document.createElementNS(svgNS,"path");
+    line.setAttribute("class","leader");
+    line.setAttribute("d",`M${q.line[0]} ${q.line[1]} L${q.line[2]} ${q.line[3]}`);
+    drawing.appendChild(line);
+    const shape=document.createElementNS(svgNS,"path");
+    shape.setAttribute("d",q.d);
+    shape.setAttribute("fill",q.fill);
+    shape.setAttribute("stroke","#fff8e9");
+    shape.setAttribute("stroke-width","2");
+    shape.setAttribute("class","part");
+    shape.setAttribute("data-part",key);
+    shape.setAttribute("tabindex","0");
+    shape.setAttribute("role","button");
+    drawing.appendChild(shape);
+    const label=document.createElementNS(svgNS,"text");
+    label.setAttribute("x",q.label[0]);
+    label.setAttribute("y",q.label[1]);
+    label.setAttribute("class","label");
+    label.setAttribute("data-label",key);
+    label.textContent=Studio.t(key);
+    drawing.appendChild(label);
+    const choose=()=>{Studio.event("tap",{part:key});Studio.answer(key)};
+    shape.addEventListener("click",choose);
+    shape.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose()}});
+  });
+  Studio.onVerdict(v=>{
+    const feedback=document.getElementById("feedback");
+    if(v.correct){
+      const target=Array.from(drawing.querySelectorAll("[data-part]")).find(el=>el.getAttribute("data-part")===p.ask);
+      if(target)target.classList.add("glow");
+      feedback.textContent=Studio.t("right")+" "+Studio.t("done");
+      Studio.done();
+    }else feedback.textContent=Studio.t("wrong");
+  });
+  Studio.ready();
+})();
+
+</script>

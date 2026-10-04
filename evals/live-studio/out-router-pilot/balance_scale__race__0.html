@@ -1,0 +1,104 @@
+<style>
+*{box-sizing:border-box}
+.stage{width:360px;height:320px;overflow:hidden;background:#fff8ed;color:#493b36;font-family:system-ui,sans-serif;position:relative;padding:10px 12px}
+h1{font-size:18px;line-height:22px;margin:0;text-align:center;color:#68473b}
+#instr{font-size:13px;line-height:16px;margin:2px 0 0;text-align:center;color:#806b5b;height:18px}
+.scene{height:177px;position:relative;margin-top:0}
+.balance{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#beam{transform-box:view-box;transform-origin:180px 76px;transition:transform .65s cubic-bezier(.2,.8,.2,1)}
+#beam[data-tilt="left"]{transform:rotate(12deg)}
+#beam[data-tilt="right"]{transform:rotate(-12deg)}
+#beam[data-tilt="level"]{transform:rotate(0deg)}
+.pan{position:absolute;top:96px;width:112px;min-height:62px;border:3px solid #d19a57;border-top:0;border-radius:0 0 28px 28px;background:#f6dfb7;display:flex;align-content:flex-start;justify-content:center;align-items:center;flex-wrap:wrap;gap:3px;padding:3px 4px;transition:transform .65s cubic-bezier(.2,.8,.2,1),background .2s}
+#leftPan{left:18px;transform:translateY(0)}
+#rightPan{right:18px;transform:translateY(0)}
+#leftPan[data-total="0"]{background:#f9e9ce}
+#rightPan[data-total="0"]{background:#f9e9ce}
+.weight{min-width:30px;height:27px;border-radius:10px;background:#f0a95f;color:#503e32;display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:750;box-shadow:inset 0 -3px #d88741,0 2px 3px #79543b33}
+#options{height:62px;display:flex;justify-content:center;gap:10px;align-items:center}
+.option{width:92px;height:56px;border:2px solid #d99b5b;border-radius:17px;background:#fff0d6;color:#68473b;font-size:20px;font-weight:750;box-shadow:0 3px 0 #d9b17f;cursor:pointer;transition:transform .15s,background .2s,box-shadow .15s}
+.option:active{transform:scale(.94);box-shadow:0 1px 0 #d9b17f}
+.option:disabled{opacity:.5;cursor:default}
+#message{height:22px;margin-top:3px;text-align:center;font-size:15px;font-weight:700;color:#a5663d}
+#message.pop{animation:pop .42s ease}
+@keyframes pop{50%{transform:scale(1.13);color:#d47d35}}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <div id="instr"></div>
+  <div class="scene">
+    <svg class="balance" viewBox="0 0 360 177" aria-hidden="true">
+      <path d="M180 72 L180 143 M148 145 L212 145 L180 83Z" fill="#d9a45f" stroke="#a87541" stroke-width="3" stroke-linejoin="round"/>
+      <g id="beam" data-beam data-tilt="level">
+        <path d="M56 76 L304 76" stroke="#80553d" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="180" cy="76" r="10" fill="#f3bf71" stroke="#80553d" stroke-width="4"/>
+        <path d="M72 76 L72 105 M288 76 L288 105" stroke="#a87541" stroke-width="3"/>
+      </g>
+    </svg>
+    <div class="pan" id="leftPan" data-pan="left" data-total="0"></div>
+    <div class="pan" id="rightPan" data-pan="right" data-total="0"></div>
+  </div>
+  <div id="options"></div>
+  <div id="message" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+ const items=Studio.params.items;
+ const title=document.getElementById("title"), instr=document.getElementById("instr");
+ const leftPan=document.getElementById("leftPan"), rightPan=document.getElementById("rightPan");
+ const beam=document.getElementById("beam"), optionsBox=document.getElementById("options"), message=document.getElementById("message");
+ title.textContent=Studio.t("title"); instr.textContent=Studio.t("instr");
+ let index=0, locked=false, completed=false;
+ const total=a=>a.reduce((s,n)=>s+n,0);
+ function weight(value){
+   const el=document.createElement("span"); el.className="weight"; el.dataset.weight=String(value); el.textContent=String(value); return el;
+ }
+ function tilt(left,right){
+   leftPan.dataset.total=String(total(left)); rightPan.dataset.total=String(total(right));
+   const side=total(left)>total(right)?"left":total(right)>total(left)?"right":"level";
+   beam.dataset.tilt=side;
+   leftPan.style.transform="translateY("+(side==="left"?10:side==="right"?-6:0)+"px)";
+   rightPan.style.transform="translateY("+(side==="right"?10:side==="left"?-6:0)+"px)";
+ }
+ function paint(){
+   const item=items[index]; leftPan.replaceChildren(...item.left.map(weight)); rightPan.replaceChildren(...item.right.map(weight));
+   optionsBox.replaceChildren(); message.textContent=""; message.classList.remove("pop");
+   tilt(item.left,item.right); locked=false;
+   item.options.forEach(value=>{
+     const button=document.createElement("button"); button.type="button"; button.className="option"; button.dataset.option=String(value); button.textContent=String(value);
+     button.addEventListener("click",()=>choose(value,button)); optionsBox.appendChild(button);
+   });
+ }
+ function choose(value,button){
+   if(locked||completed)return;
+   locked=true; button.disabled=true;
+   const item=items[index], proposed=item.right.concat([value]);
+   rightPan.appendChild(weight(value)); tilt(item.left,proposed);
+   Studio.event("choose",{item:index,value:value});
+   Studio.answer({value:value});
+ }
+ Studio.onVerdict(({correct})=>{
+   if(!locked||completed)return;
+   if(correct){
+     message.textContent=Studio.t("right"); message.classList.remove("pop"); void message.offsetWidth; message.classList.add("pop");
+     setTimeout(()=>{
+       index++;
+       if(index>=items.length){completed=true; message.textContent=Studio.t("done"); optionsBox.replaceChildren(); instr.textContent=""; Studio.done();}
+       else paint();
+     },850);
+   }else{
+     message.textContent=Studio.t("wrong");
+     setTimeout(()=>{
+       const value=Number(rightPan.lastElementChild&&rightPan.lastElementChild.dataset.weight);
+       if(rightPan.lastElementChild)rightPan.lastElementChild.remove();
+       tilt(items[index].left,items[index].right);
+       const button=optionsBox.querySelector('[data-option="'+value+'"]'); if(button)button.disabled=false;
+       locked=false; message.textContent="";
+     },700);
+   }
+ });
+ paint(); Studio.ready();
+})();
+
+</script>

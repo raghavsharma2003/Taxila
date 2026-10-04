@@ -1,0 +1,110 @@
+<style>
+  #timeline-app{width:360px;height:320px;overflow:hidden;position:relative;background:linear-gradient(145deg,#fff6df 0%,#ffe9c4 100%);font-family:Arial,sans-serif;color:#5e3b2b}
+  .glow{position:absolute;border-radius:50%;pointer-events:none;opacity:.55}
+  .glow.one{width:118px;height:118px;left:-38px;top:-30px;background:#ffd47e}
+  .glow.two{width:92px;height:92px;right:-25px;bottom:-28px;background:#f6b6a0}
+  .top{position:absolute;left:18px;right:18px;top:13px;text-align:center;z-index:3}
+  #title{font-size:21px;font-weight:800;line-height:24px;color:#9a5036;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #ask{margin-top:4px;font-size:14px;font-weight:700;color:#765143;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #scene{position:absolute;inset:0;z-index:1}
+  #axisSvg{position:absolute;inset:0;width:360px;height:320px;overflow:visible}
+  [data-axis]{stroke:#9a6250;stroke-width:4;stroke-linecap:round}
+  .connector{stroke:#d49b72;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:3 4}
+  .marker{fill:#f58a67;stroke:#fff8e8;stroke-width:3;filter:drop-shadow(0 2px 1px rgba(102,57,40,.18))}
+  .marker.picked{fill:#7cbaa7;animation:markerPop .5s ease}
+  .card{position:absolute;width:104px;height:58px;box-sizing:border-box;border:0;border-radius:18px;background:#fffdf6;box-shadow:0 5px 0 #e9c8a5,0 8px 14px rgba(103,63,43,.12);padding:8px 8px 6px;z-index:2;cursor:pointer;color:#704735;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;-webkit-tap-highlight-color:transparent}
+  .card:active{transform:scale(.94);box-shadow:0 2px 0 #e9c8a5}
+  .card.selected{background:#e5f4ed;box-shadow:0 5px 0 #b9ddcf,0 8px 14px rgba(61,109,91,.16);transform:scale(1.04)}
+  .event-name{max-width:92px;font-size:13px;line-height:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .event-year{font-size:12px;line-height:15px;color:#b06b51;font-weight:700}
+  #feedback{position:absolute;left:24px;right:24px;bottom:8px;min-height:19px;text-align:center;font-size:13px;font-weight:800;color:#8a5745;z-index:4;transition:transform .25s ease,opacity .25s ease}
+  #feedback.show{animation:feedbackPop .42s ease}
+  #feedback.good{color:#39826c}
+  #feedback.bad{color:#c45f50}
+  .sprig{position:absolute;pointer-events:none;z-index:0;opacity:.72}
+  @keyframes markerPop{50%{r:10;fill:#ffbd67}}
+  @keyframes feedbackPop{0%{transform:translateY(5px);opacity:0}65%{transform:translateY(-2px);opacity:1}100%{transform:translateY(0)}}
+</style>
+<div id="timeline-app">
+  <div class="glow one"></div><div class="glow two"></div>
+  <div class="top"><div id="title"></div><div id="ask"></div></div>
+  <svg class="sprig" style="left:13px;top:244px;width:46px;height:45px" viewBox="0 0 46 45" aria-hidden="true">
+    <path d="M8 39C16 31 21 20 24 5" fill="none" stroke="#b98062" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M16 27c-8-6-10-13-4-14 7 2 8 9 4 14Z" fill="#9bc7a9"/>
+    <path d="M20 20c7-6 14-5 14 1-3 6-10 6-14-1Z" fill="#f3aa79"/>
+  </svg>
+  <div id="scene">
+    <svg id="axisSvg" viewBox="0 0 360 320" aria-hidden="true">
+      <line data-axis x1="0" y1="167" x2="360" y2="167"></line>
+      <g id="links"></g>
+      <g id="markers"></g>
+    </svg>
+    <div id="cards"></div>
+  </div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, events=p.events.slice(), cards=document.getElementById('cards');
+  var svg=document.getElementById('axisSvg'), axis=svg.querySelector('[data-axis]');
+  var links=document.getElementById('links'), markers=document.getElementById('markers');
+  var feedback=document.getElementById('feedback'), width=document.getElementById('timeline-app').clientWidth;
+  var height=document.getElementById('timeline-app').clientHeight, axisY=height*0.522, margin=width*0.09;
+  var cardW=width*0.289, cardH=height*0.181, upperY=height*0.242, lowerY=height*0.644;
+  var min=events[0].year, max=events[0].year;
+  events.forEach(function(e){min=Math.min(min,e.year);max=Math.max(max,e.year);});
+  axis.setAttribute('x1',margin);axis.setAttribute('x2',width-margin);
+  axis.setAttribute('y1',axisY);axis.setAttribute('y2',axisY);
+  events.sort(function(a,b){return a.year-b.year;});
+  function pos(year){
+    var span=max-min;
+    return span ? margin+(year-min)*(width-margin-margin)/span : width/2;
+  }
+  events.forEach(function(ev,index){
+    var x=pos(ev.year), upper=index%2===0, y=upper?upperY:lowerY;
+    var left=Math.max(width*0.022,Math.min(width-cardW-width*0.022,x-cardW/2));
+    var ns='http://';
+    var line=document.createElementNS(ns,'line');
+    var edgeY=upper?y+cardH:y;
+    var edgeX=Math.max(left+cardW*0.22,Math.min(left+cardW*0.78,x));
+    line.setAttribute('class','connector');
+    line.setAttribute('x1',x);line.setAttribute('y1',axisY);
+    line.setAttribute('x2',edgeX);line.setAttribute('y2',edgeY);
+    links.appendChild(line);
+    var dot=document.createElementNS(ns,'circle');
+    dot.setAttribute('class','marker');
+    dot.setAttribute('data-event',ev.key);dot.setAttribute('data-year',String(ev.year));
+    dot.setAttribute('cx',x);dot.setAttribute('cy',axisY);dot.setAttribute('r',7);
+    markers.appendChild(dot);
+    var card=document.createElement('button');
+    card.className='card';card.type='button';card.setAttribute('data-card',ev.key);
+    card.style.left=left+'px';card.style.top=y+'px';
+    var name=document.createElement('span');name.className='event-name';name.textContent=Studio.t(ev.key);
+    var year=document.createElement('span');year.className='event-year';year.textContent=String(ev.year);
+    card.appendChild(name);card.appendChild(year);cards.appendChild(card);
+    card.addEventListener('click',function(){
+      if(card.disabled)return;
+      Array.prototype.forEach.call(cards.children,function(c){c.classList.remove('selected');});
+      Array.prototype.forEach.call(markers.children,function(m){m.classList.remove('picked');});
+      card.classList.add('selected');dot.classList.add('picked');
+      feedback.textContent='';feedback.className='';
+      Studio.event('event_tap',{year:ev.year});
+      Studio.answer(ev.key);
+    });
+  });
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  Studio.onVerdict(function(result){
+    feedback.className='show '+(result.correct?'good':'bad');
+    feedback.textContent=result.correct?Studio.t('right')+' ✦ '+Studio.t('done'):Studio.t('wrong');
+    Studio.event('verdict',{correct:result.correct?1:0});
+    if(result.correct){
+      Array.prototype.forEach.call(cards.children,function(c){c.disabled=true;});
+      Studio.done();
+    }
+  });
+  Studio.ready();
+}());
+
+</script>

@@ -1,0 +1,131 @@
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;width:360px;height:320px;overflow:hidden}
+  #activity{position:relative;width:360px;height:320px;overflow:hidden;background:#fff7e9;color:#594432;font-family:system-ui,sans-serif}
+  #title{position:absolute;top:8px;left:12px;width:336px;text-align:center;font-size:20px;font-weight:750}
+  #scene{position:absolute;top:38px;left:0;width:360px;height:150px}
+  .stage circle{fill:#fffdf7;stroke:#d9a979;stroke-width:3;transition:fill .3s,stroke .3s,filter .3s}
+  .stage.live circle{fill:#ffe39b;stroke:#ed924e;filter:drop-shadow(0 0 8px #ffc86c)}
+  .stage text{fill:#594432;font-size:12px;font-weight:700;text-anchor:middle}
+  .arrow{fill:none;stroke:#c78665;stroke-width:3;stroke-linecap:round}
+  #token{fill:#e9695b;stroke:#fff;stroke-width:3;filter:drop-shadow(0 2px 2px #9e7060)}
+  button{border:0;border-radius:16px;background:#eaa36a;color:#49372c;font:700 15px system-ui,sans-serif;cursor:pointer;transition:transform .16s,background .16s}
+  button:active{transform:scale(.92)}
+  button:disabled{opacity:.55;cursor:default}
+  #next{position:absolute;top:159px;left:151px;width:58px;height:52px}
+  #feedback{position:absolute;top:191px;left:12px;width:336px;text-align:center;font-size:13px;font-weight:700;color:#ad6048}
+  #question{position:absolute;top:215px;left:12px;width:336px;text-align:center;font-size:15px;font-weight:650}
+  #options{position:absolute;top:251px;left:10px;width:340px;height:58px;display:flex;gap:8px}
+  #options button{flex:1;min-width:0;height:58px;background:#f6d9ad}
+</style>
+<div id="activity">
+  <div id="title"></div>
+  <svg id="scene" viewBox="0 0 360 150" aria-hidden="true">
+    <defs><marker id="tip" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#c78665" stroke-width="1.8"/></marker></defs>
+    <path d="M0 140 Q90 128 180 140 T360 140" fill="none" stroke="#f8e5cb" stroke-width="13"/>
+    <g id="arrows"></g><g id="stages"></g>
+    <circle id="token" data-token r="9" cx="40" cy="65"/>
+  </svg>
+  <button id="next" data-action="next"></button>
+  <div id="feedback" aria-live="polite"></div>
+  <div id="question"></div>
+  <div id="options"></div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params,root=document.getElementById('activity');
+  const ns='http://';
+  const make=(tag,attrs,parent)=>{
+    const e=document.createElementNS(ns,tag);
+    for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);
+    parent.appendChild(e);
+    return e;
+  };
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('question').textContent=Studio.t('ask');
+  const next=document.getElementById('next'),feedback=document.getElementById('feedback');
+  next.textContent=Studio.t('next');
+  const stages=p.stages,n=stages.length;
+  const pos=stages.map((_,i)=>{
+    if(n<=4)return {x:n===1?180:43+i*274/(n-1),y:65};
+    const cols=Math.ceil(n/2),row=Math.floor(i/cols),col=i%cols;
+    return {x:cols===1?180:43+(row?cols-1-col:col)*274/(cols-1),y:row?105:37};
+  });
+  const arrowLayer=document.getElementById('arrows'),stageLayer=document.getElementById('stages'),paths=[];
+  for(let i=0;i<n-(p.cycle?0:1);i++){
+    const j=(i+1)%n,a=pos[i],b=pos[j],dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1;
+    const d=p.cycle&&j===0&&n>1
+      ?`M ${a.x} ${a.y-29} Q 180 -24 ${b.x} ${b.y-29}`
+      :`M ${a.x+dx*29/len} ${a.y+dy*29/len} L ${b.x-dx*31/len} ${b.y-dy*31/len}`;
+    paths[i]=make('path',{d,class:'arrow','data-arrow':stages[i]+'>'+stages[j],'marker-end':'url(#tip)'},arrowLayer);
+  }
+  const groups=stages.map((key,i)=>{
+    const g=make('g',{class:'stage','data-stage':key},stageLayer);
+    make('circle',{cx:pos[i].x,cy:pos[i].y,r:25},g);
+    const label=make('text',{x:pos[i].x,y:pos[i].y+40,'data-label':key},g);
+    label.textContent=Studio.t(key);
+    return g;
+  });
+  const token=document.getElementById('token');
+  let index=0,moving=false,finished=false;
+  function active(){
+    root.setAttribute('data-active',stages[index]);
+    groups.forEach((g,i)=>g.classList.toggle('live',i===index));
+  }
+  function place(x,y){token.setAttribute('cx',x);token.setAttribute('cy',y)}
+  active();
+  place(pos[0].x,pos[0].y);
+  next.disabled=!paths[0];
+  next.addEventListener('click',()=>{
+    if(moving||finished||!paths[index])return;
+    moving=true;
+    next.disabled=true;
+    Studio.event('next',{stage:stages[index]});
+    const path=paths[index],length=path.getTotalLength(),from=pos[index],to=pos[(index+1)%n],start=performance.now();
+    function frame(now){
+      const t=Math.min(1,(now-start)/780);
+      let x,y;
+      if(t<.16){
+        const q=path.getPointAtLength(0),f=t/.16;
+        x=from.x+(q.x-from.x)*f;y=from.y+(q.y-from.y)*f;
+      }else if(t<.84){
+        const q=path.getPointAtLength(length*(t-.16)/.68);
+        x=q.x;y=q.y;
+      }else{
+        const q=path.getPointAtLength(length),f=(t-.84)/.16;
+        x=q.x+(to.x-q.x)*f;y=q.y+(to.y-q.y)*f;
+      }
+      place(x,y);
+      if(t<1)requestAnimationFrame(frame);
+      else{
+        place(to.x,to.y);
+        index=(index+1)%n;
+        active();
+        moving=false;
+        next.disabled=!paths[index];
+      }
+    }
+    requestAnimationFrame(frame);
+  });
+  const options=document.getElementById('options');
+  p.options.forEach(key=>{
+    const b=document.createElement('button');
+    b.setAttribute('data-option',key);
+    b.textContent=Studio.t(key);
+    b.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    options.appendChild(b);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      next.disabled=true;
+      options.querySelectorAll('button').forEach(b=>b.disabled=true);
+      setTimeout(()=>{feedback.textContent=Studio.t('done');Studio.done()},450);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

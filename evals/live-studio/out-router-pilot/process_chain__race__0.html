@@ -1,0 +1,106 @@
+<style>
+  *{box-sizing:border-box}
+  #activity{position:relative;width:360px;height:320px;overflow:hidden;background:#fff7e9;color:#513b36;font-family:system-ui,sans-serif}
+  #heading{position:absolute;top:13px;left:15px;width:260px;font-size:19px;font-weight:750;line-height:1.2}
+  #next{position:absolute;top:8px;right:10px;width:65px;height:52px;border:0;border-radius:17px;background:#f5ad64;color:#513b36;font:700 14px system-ui;box-shadow:0 4px 0 #d9894e;cursor:pointer;transition:transform .15s}
+  #next:active,.option:active{transform:scale(.93)}
+  #next:disabled{opacity:.65}
+  #scene{position:absolute;top:47px;left:0;width:360px;height:174px}
+  .arrow{fill:none;stroke:#c99580;stroke-width:4;stroke-linecap:round}
+  .stage rect{fill:#fffdf6;stroke:#d8b6a1;stroke-width:2;transition:fill .2s,stroke .2s,filter .2s}
+  .stage.active rect{fill:#ffe1a7;stroke:#ed9761;filter:drop-shadow(0 0 8px #ffba67)}
+  .stage text{fill:#513b36;font:650 12px system-ui;text-anchor:middle;dominant-baseline:middle}
+  #traveller{fill:#f27e72;stroke:#fffaf0;stroke-width:3;filter:drop-shadow(0 2px 2px #aa6a63)}
+  #prompt{position:absolute;top:222px;left:12px;width:336px;text-align:center;font-size:15px;font-weight:650}
+  #choices{position:absolute;top:254px;left:8px;width:344px;display:flex;gap:6px}
+  .option{flex:1;min-width:0;height:56px;border:2px solid #dfb69c;border-radius:15px;background:#fffdf6;color:#513b36;font:650 12px system-ui;cursor:pointer;transition:transform .15s,background .2s}
+  .option:focus-visible,#next:focus-visible{outline:3px solid #8a645f;outline-offset:2px}
+</style>
+<div id="activity">
+  <div id="heading"></div>
+  <button id="next" data-action="next" type="button"></button>
+  <svg id="scene" viewBox="0 0 360 174" aria-hidden="true">
+    <defs><marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L9 5 L1 9 Z" fill="#c99580"/></marker></defs>
+    <g id="arrows"></g>
+    <g id="stages"></g>
+    <circle id="traveller" data-token r="9"/>
+  </svg>
+  <div id="prompt"></div>
+  <div id="choices"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,keys=p.stages,scene=document.getElementById('scene');
+  const root=document.getElementById('activity'),arrows=document.getElementById('arrows');
+  const stages=document.getElementById('stages'),token=document.getElementById('traveller');
+  const prompt=document.getElementById('prompt'),next=document.getElementById('next');
+  const points=keys.map((_,i)=>{
+    const angle=-3*Math.PI/4+i*2*Math.PI/keys.length;
+    return {x:180+124*Math.cos(angle),y:87+59*Math.sin(angle)};
+  });
+  function make(tag,attrs,parent){
+    const el=document.createElementNS(scene.namespaceURI,tag);
+    Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+    parent.appendChild(el);
+    return el;
+  }
+  for(let i=0;i<keys.length-(p.cycle?0:1);i++){
+    const a=points[i],b=points[(i+1)%keys.length];
+    const dx=b.x-a.x,dy=b.y-a.y;
+    const cut=Math.min(0.32,Math.max(31/Math.abs(dy||1),59/Math.abs(dx||1)));
+    const start={x:a.x+dx*cut,y:a.y+dy*cut};
+    const end={x:b.x-dx*cut,y:b.y-dy*cut};
+    make('path',{class:'arrow','data-arrow':keys[i]+'>'+keys[(i+1)%keys.length],
+      d:`M ${start.x} ${start.y} L ${end.x} ${end.y}`,'marker-end':'url(#tip)'},arrows);
+  }
+  keys.forEach((key,i)=>{
+    const q=points[i],g=make('g',{class:'stage','data-stage':key},stages);
+    make('rect',{x:q.x-56,y:q.y-22,width:112,height:44,rx:15},g);
+    const label=make('text',{'data-label':key,x:q.x,y:q.y+5},g);
+    label.textContent=Studio.t(key);
+  });
+  document.getElementById('heading').textContent=Studio.t('title');
+  next.textContent=Studio.t('next');
+  prompt.textContent=Studio.t('ask')+' '+Studio.t(p.askAfter);
+  const choices=document.getElementById('choices');
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.type='button';button.className='option';button.dataset.option=key;
+    button.textContent=Studio.t(key);
+    button.addEventListener('click',()=>{Studio.event('answer',{option:key});Studio.answer(key)});
+    choices.appendChild(button);
+  });
+  let index=0,moving=false,finished=false;
+  function position(x,y){token.setAttribute('cx',x);token.setAttribute('cy',y-13)}
+  function active(){
+    root.dataset.active=keys[index];
+    stages.querySelectorAll('.stage').forEach((g,i)=>g.classList.toggle('active',i===index));
+  }
+  position(points[0].x,points[0].y);active();
+  next.addEventListener('click',()=>{
+    if(moving||finished||(!p.cycle&&index===keys.length-1))return;
+    const to=(index+1)%keys.length,a=points[index],b=points[to];
+    moving=true;next.disabled=true;
+    Studio.event('next',{stage:keys[to]});
+    const start=performance.now();
+    function frame(now){
+      const t=Math.min(1,(now-start)/480),ease=t*t*(3-2*t);
+      position(a.x+(b.x-a.x)*ease,a.y+(b.y-a.y)*ease);
+      if(t<1)requestAnimationFrame(frame);
+      else{index=to;active();moving=false;next.disabled=false}
+    }
+    requestAnimationFrame(frame);
+  });
+  Studio.onVerdict(({correct})=>{
+    prompt.textContent=Studio.t(correct?'right':'wrong');
+    if(correct&&!finished){
+      finished=true;next.disabled=true;
+      choices.querySelectorAll('button').forEach(b=>b.disabled=true);
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,99 @@
+<style>
+  *{box-sizing:border-box}
+  body{width:360px;height:320px;margin:0;overflow:hidden;background:#fff7eb;color:#513e38;font-family:system-ui,sans-serif}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(155deg,#fffaf1,#ffeddb)}
+  .title{position:absolute;top:10px;left:16px;right:16px;font-size:20px;font-weight:800;line-height:25px}
+  .ask{position:absolute;top:43px;left:16px;right:16px;font-size:16px;font-weight:650;line-height:23px}
+  .axis-title{position:absolute;top:76px;left:16px;right:16px;color:#82675b;font-size:12px;font-weight:700}
+  .chart{position:absolute;top:96px;left:0;width:360px;height:195px}
+  .gridline{position:absolute;left:69px;width:280px;height:1px;background:#e7d5c5}
+  .gridline.zero{height:2px;background:#a78b7b}
+  .tick{position:absolute;left:17px;width:43px;text-align:right;transform:translateY(-50%);color:#79665d;font-size:11px;line-height:16px}
+  .columns{position:absolute;top:0;left:69px;width:280px;height:195px;display:flex}
+  .column{position:relative;flex:1;height:195px;min-width:0;cursor:pointer;touch-action:manipulation}
+  .bar{position:absolute;left:21%;width:58%;bottom:40px;background:#dc896a;border-radius:7px 7px 0 0;transform-origin:center bottom;animation:grow .75s cubic-bezier(.18,.8,.25,1) both}
+  .column:active .bar{filter:brightness(.91);transform:scale(.96)}
+  .name{position:absolute;top:159px;left:0;width:100%;height:30px;display:flex;align-items:center;justify-content:center;text-align:center;color:#513e38;font-size:10px;font-weight:750;line-height:12px;overflow-wrap:anywhere}
+  .feedback{position:absolute;left:12px;right:12px;bottom:5px;height:23px;text-align:center;color:#a65443;font-size:17px;font-weight:800}
+  .feedback.show{animation:pop .3s ease-out}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes pop{from{opacity:.35;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+</style>
+<div class="card">
+  <div class="title" id="title"></div>
+  <div class="ask" id="ask"></div>
+  <div class="axis-title" id="axis-title"></div>
+  <div class="chart" id="chart"><div class="columns" id="columns"></div></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const data=Studio.params.data;
+  const chart=document.getElementById('chart');
+  const columns=document.getElementById('columns');
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('axis-title').textContent=Studio.t('yaxis');
+
+  const highest=Math.max(1,...data.map(d=>d.value));
+  const rough=highest/5;
+  const power=Math.pow(10,Math.floor(Math.log10(rough)));
+  const step=[1,2,5,10].map(n=>n*power).find(n=>n>=rough);
+  const ceiling=Math.ceil(highest/step)*step;
+  const plotHeight=155;
+  const baseline=plotHeight;
+  for(let value=0;value<=ceiling;value+=step){
+    const y=baseline-plotHeight*value/ceiling;
+    const line=document.createElement('div');
+    line.className='gridline'+(value===0?' zero':'');
+    line.style.top=y+'px';
+    chart.appendChild(line);
+    const tick=document.createElement('div');
+    tick.className='tick';
+    tick.dataset.tick=String(value);
+    tick.style.top=y+'px';
+    tick.textContent=String(value);
+    chart.appendChild(tick);
+  }
+
+  let finished=false;
+  data.forEach(item=>{
+    const column=document.createElement('div');
+    column.className='column';
+    column.dataset.column=item.key;
+    const bar=document.createElement('div');
+    bar.className='bar';
+    bar.dataset.bar=item.key;
+    bar.dataset.value=String(item.value);
+    bar.style.height=(plotHeight*item.value/ceiling)+'px';
+    const name=document.createElement('div');
+    name.className='name';
+    name.textContent=Studio.t(item.key);
+    column.append(bar,name);
+    columns.appendChild(column);
+    column.addEventListener('click',()=>{
+      if(finished)return;
+      Studio.event('column_tap',{key:item.key});
+      Studio.answer(item.key);
+    });
+  });
+
+  Studio.onVerdict(({correct})=>{
+    feedback.classList.remove('show');
+    void feedback.offsetWidth;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.add('show');
+    if(correct){
+      finished=true;
+      setTimeout(()=>{
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },550);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

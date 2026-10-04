@@ -1,0 +1,139 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#493d35;background:#fff8ec}
+#app{width:360px;height:320px;padding:10px 14px;position:relative;overflow:hidden}
+h1{font-size:18px;line-height:22px;margin:0;color:#684d3d;text-align:center}
+#instruction{font-size:13px;line-height:17px;text-align:center;height:22px;color:#78685b}
+#scene{height:158px;position:relative}
+svg{display:block;width:100%;height:158px;overflow:visible}
+.beam{transform-box:fill-box;transform-origin:center;transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.beam[data-tilt="left"]{transform:rotate(-9deg)}
+.beam[data-tilt="right"]{transform:rotate(9deg)}
+.beam[data-tilt="level"]{transform:rotate(0deg)}
+.pan-group{transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.weight{fill:#f1b85d;stroke:#bd8142;stroke-width:2}
+.weight-number{font:700 15px system-ui,sans-serif;fill:#493d35;text-anchor:middle;dominant-baseline:middle}
+.pan-shape{fill:#f7d8a3;stroke:#bd8142;stroke-width:2}
+#options{display:flex;justify-content:center;gap:12px;align-items:center;height:70px}
+.option{width:60px;height:60px;border:2px solid #c88d50;border-radius:17px;background:#ffe3ad;color:#493d35;font:700 19px system-ui,sans-serif;box-shadow:0 4px 0 #d8b17c;cursor:pointer;transition:transform .15s,background .2s,box-shadow .15s}
+.option:active{transform:scale(.92) translateY(2px);box-shadow:0 1px 0 #d8b17c}
+.option:disabled{cursor:default;opacity:.65}
+.option[hidden]{display:none}
+#message{height:22px;text-align:center;font-size:15px;font-weight:700;color:#66835b}
+.pulse{animation:pulse .55s ease-in-out 2}
+@keyframes pulse{50%{transform:scale(1.04)}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="instruction"></div>
+  <div id="scene">
+    <svg viewBox="0 0 332 158" aria-hidden="true">
+      <path d="M166 40 L131 135 L201 135 Z" fill="#d9a86b" stroke="#bd8142" stroke-width="2"/>
+      <g id="beam" class="beam" data-beam data-tilt="level">
+        <rect x="53" y="31" width="226" height="12" rx="6" fill="#bd8142"/>
+      </g>
+      <g id="left-pan" data-pan="left" data-total="0">
+        <path d="M70 40 L70 84 M48 85 Q70 105 92 85" fill="none" stroke="#bd8142" stroke-width="3"/>
+        <path class="pan-shape" d="M43 85 Q70 111 97 85 Z"/>
+        <g id="left-weights"></g>
+      </g>
+      <g id="right-pan" data-pan="right" data-total="0">
+        <path d="M262 40 L262 84 M240 85 Q262 105 284 85" fill="none" stroke="#bd8142" stroke-width="3"/>
+        <path class="pan-shape" d="M235 85 Q262 111 289 85 Z"/>
+        <g id="right-weights"></g>
+      </g>
+    </svg>
+  </div>
+  <div id="options"></div>
+  <div id="message"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const items=p.items;
+  const title=document.getElementById("title");
+  const instruction=document.getElementById("instruction");
+  const message=document.getElementById("message");
+  const beam=document.getElementById("beam");
+  const leftPan=document.getElementById("left-pan");
+  const rightPan=document.getElementById("right-pan");
+  const leftWeights=document.getElementById("left-weights");
+  const rightWeights=document.getElementById("right-weights");
+  const options=document.getElementById("options");
+  title.textContent=Studio.t("title");
+  instruction.textContent=Studio.t("instr");
+  let index=0, pending=false, verdictHandler=false;
+  function sum(a){return a.reduce((x,y)=>x+y,0)}
+  function weightMarkup(value,x,y){
+    return '<g data-weight="'+value+'"><rect class="weight" x="'+(x-17)+'" y="'+(y-11)+'" width="34" height="22" rx="8"/><text class="weight-number" x="'+x+'" y="'+y+'">'+value+'</text></g>';
+  }
+  function render(item, added){
+    const left=item.left.slice(), right=item.right.slice();
+    if(added!==undefined) right.push(added);
+    leftWeights.innerHTML=left.map((v,i)=>weightMarkup(v,70,79-i*22)).join("");
+    rightWeights.innerHTML=right.map((v,i)=>weightMarkup(v,262,79-i*22)).join("");
+    const lt=sum(left), rt=sum(right);
+    leftPan.dataset.total=String(lt);
+    rightPan.dataset.total=String(rt);
+    const tilt=lt>rt?"left":rt>lt?"right":"level";
+    beam.dataset.tilt=tilt;
+    leftPan.setAttribute("transform","translate(0 "+(tilt==="left"?9:tilt==="right"?-9:0)+")");
+    rightPan.setAttribute("transform","translate(0 "+(tilt==="right"?9:tilt==="left"?-9:0)+")");
+  }
+  function showItem(){
+    pending=false;
+    message.textContent="";
+    options.innerHTML="";
+    if(index>=items.length){
+      instruction.textContent=Studio.t("done");
+      document.getElementById("scene").classList.add("pulse");
+      Studio.done();
+      return;
+    }
+    const item=items[index];
+    render(item);
+    item.options.forEach(function(value){
+      const b=document.createElement("button");
+      b.type="button";
+      b.className="option";
+      b.dataset.option=String(value);
+      b.textContent=String(value);
+      b.addEventListener("click",function(){
+        if(pending)return;
+        pending=true;
+        options.querySelectorAll("button").forEach(function(button){button.disabled=true});
+        render(item,value);
+        Studio.event("choose",{value:value});
+        Studio.answer({value:value});
+      });
+      options.appendChild(b);
+    });
+  }
+  Studio.onVerdict(function(result){
+    if(!pending)return;
+    const item=items[index];
+    if(result.correct){
+      message.textContent=Studio.t("right");
+      beam.dataset.tilt="level";
+      document.getElementById("scene").classList.add("pulse");
+      setTimeout(function(){
+        document.getElementById("scene").classList.remove("pulse");
+        index++;
+        showItem();
+      },850);
+    }else{
+      message.textContent=Studio.t("wrong");
+      setTimeout(function(){
+        render(item);
+        options.querySelectorAll("button").forEach(function(button){button.disabled=false});
+        pending=false;
+      },850);
+    }
+  });
+  showItem();
+  Studio.ready();
+})();
+
+</script>

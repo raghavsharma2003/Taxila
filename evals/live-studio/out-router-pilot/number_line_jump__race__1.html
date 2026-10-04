@@ -1,0 +1,132 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#294a48;background:#fff8eb}
+#app{width:360px;height:320px;padding:10px 14px;display:flex;flex-direction:column;gap:5px}
+header{height:42px;display:flex;align-items:center;justify-content:center;background:#e1f3e9;border-radius:14px;color:#285d55;font-size:18px;font-weight:750}
+#prompt{min-height:34px;display:flex;align-items:center;justify-content:center;gap:5px;color:#47645e;font-size:14px}
+#target{font-size:19px;font-weight:800;color:#d56c48}
+#track{height:108px;position:relative;margin:0 4px}
+#rail{position:absolute;left:6px;right:6px;top:40px;height:5px;border-radius:5px;background:#8ec4ad}
+#ticks{position:absolute;inset:0}
+.tick{position:absolute;top:32px;width:2px;height:21px;background:#52786d;transform:translateX(-50%);border-radius:2px}
+.tick-label{position:absolute;top:57px;transform:translateX(-50%);font-size:11px;color:#527068;white-space:nowrap}
+#marker{position:absolute;z-index:2;top:23px;width:23px;height:23px;border:4px solid #fff;background:#e8845d;border-radius:50%;box-shadow:0 2px 7px #78442b55;transform:translateX(-50%);transition:left .22s cubic-bezier(.2,.8,.3,1),top .22s}
+#marker.hop{top:12px}
+#controls{display:flex;gap:8px;height:54px}
+button{border:0;border-radius:15px;background:#e2f1e7;color:#285d55;font:700 15px system-ui,sans-serif;min-width:0;min-height:52px;flex:1;box-shadow:0 3px 0 #b8d8c4;cursor:pointer;transition:transform .12s,background .12s}
+button:active{transform:scale(.94)}
+#check{background:#f2ad78;color:#503b30;box-shadow:0 3px 0 #d68b5d}
+#feedback{flex:1;min-height:34px;display:flex;align-items:center;justify-content:center;color:#527068;font-size:15px;font-weight:700;text-align:center}
+#feedback.wrong{color:#b9654e;animation:nudge .25s ease}
+@keyframes nudge{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
+<div id="app">
+  <header id="title"></header>
+  <div id="prompt"><span id="instr"></span><span id="target" data-target></span></div>
+  <div id="track">
+    <div id="rail"></div>
+    <div id="ticks"></div>
+    <div id="marker" data-marker data-value=""></div>
+  </div>
+  <div id="controls">
+    <button id="left" data-action="left" type="button"></button>
+    <button id="right" data-action="right" type="button"></button>
+    <button id="check" data-action="check" type="button"></button>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const $=id=>document.getElementById(id);
+  const min=p.min,max=p.max,step=p.step;
+  const count=Math.round((max-min)/step);
+  let itemIndex=0,k=Math.round((p.start-min)/step),locked=false,finished=false;
+  const clean=n=>Number((Math.round((n+Number.EPSILON)*1e6)/1e6).toFixed(6));
+  const valueAt=i=>clean(min+i*step);
+  const format=n=>{
+    n=clean(n);
+    if(p.format==="fraction"){
+      const s=String(n),parts=s.split("."),places=parts[1]?parts[1].length:0;
+      const den=10**places;
+      let num=Math.round(n*den),a=Math.abs(num),b=den;
+      while(b){const r=a%b;a=b;b=r}
+      const gcd=a||1;
+      return (num/gcd)+"/"+(den/gcd);
+    }
+    return String(n);
+  };
+  $("title").textContent=Studio.t("title");
+  $("instr").textContent=Studio.t("instr");
+  $("left").textContent=Studio.t("left");
+  $("right").textContent=Studio.t("right_btn");
+  $("check").textContent=Studio.t("check");
+  const ticks=$("ticks"), marker=$("marker");
+  const xFor=i=>6+(i/count)*(($("track").clientWidth)-12);
+  for(let i=0;i<=count;i++){
+    const v=valueAt(i),tick=document.createElement("div");
+    tick.className="tick";
+    tick.dataset.tick=String(v);
+    tick.style.left=xFor(i)+"px";
+    ticks.appendChild(tick);
+    if(i%p.labelEvery===0){
+      const label=document.createElement("div");
+      label.className="tick-label";
+      label.textContent=format(v);
+      label.style.left=xFor(i)+"px";
+      ticks.appendChild(label);
+    }
+  }
+  const render=()=>{
+    const item=p.items[itemIndex];
+    $("app").dataset.item=item.id;
+    $("target").textContent=format(item.target);
+    marker.dataset.value=String(valueAt(k));
+    marker.style.left=xFor(k)+"px";
+  };
+  const setFeedback=(text,wrong=false)=>{
+    const f=$("feedback");
+    f.textContent=text;
+    f.classList.toggle("wrong",wrong);
+  };
+  $("left").addEventListener("click",()=>{
+    if(locked||finished)return;
+    k=Math.max(0,k-1);render();setFeedback("");
+    Studio.event("move",{direction:"left"});
+  });
+  $("right").addEventListener("click",()=>{
+    if(locked||finished)return;
+    k=Math.min(count,k+1);render();setFeedback("");
+    Studio.event("move",{direction:"right"});
+  });
+  $("check").addEventListener("click",()=>{
+    if(locked||finished)return;
+    locked=true;
+    Studio.answer({value:valueAt(k)});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    if(!correct){locked=false;setFeedback(Studio.t("wrong"),true);return}
+    setFeedback(Studio.t("right"));
+    marker.classList.add("hop");
+    setTimeout(()=>{
+      marker.classList.remove("hop");
+      itemIndex++;
+      if(itemIndex>=p.items.length){
+        finished=true;
+        $("target").textContent="";
+        setFeedback(Studio.t("done"));
+        Studio.done();
+      }else{
+        k=Math.round((p.start-min)/step);
+        locked=false;render();
+      }
+    },360);
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

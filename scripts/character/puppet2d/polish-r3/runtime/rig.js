@@ -302,11 +302,14 @@ export class Puppet2DRig {
         const T = e.top[i], B = e.bot[i], H = B - T;
         const u = i / (E.xb - E.xa);
         const hump = Math.pow(Math.max(0, Math.sin(Math.PI * u)), 0.7);
-        const rise = (q * 0.3 + c * 0.2 + sm * 0.06) * H * Math.pow(hump, 1.4);
-        let bot = B - rise;
+        // r3: in a blink the lower lid comes up a little too (both lids move: a squeeze, not a heavy upper lid), so a
+        // mid-blink frame reads as motion, never as a sleepy hold
+        const blinkSq = 0.16 * smooth(0.25, 0.55, b);
+        const rise = (q * 0.3 + c * 0.2 + sm * 0.06 + blinkSq) * H * Math.pow(hump, 1.4);
+        let bot = B - rise + w * 0.05 * H * hump;
         const follow = (lookDown * 0.14 - lookUp * 0.02) * H * hump;
         const closed = T + 0.72 * (B - T) - Math.min(rise, 0.25 * H);   // the lids meet ~70% down (Memoji)
-        let top = T + follow - w * 0.13 * H * hump;
+        let top = T + follow - w * 0.2 * H * hump;   // r3: surprise opens the eye more (0.13 -> 0.2)
         // blink: the upper lid travels to the meeting line, the lower lid rises the last part (eased: fast close)
         // r3: the live lid only travels to the PAINTED mid lid's lash line (l = 0.5); beyond it the painted keys take
         // over (drawEye: lidmid / lidshut), so the lid skin is never stretched into a smear

@@ -1,0 +1,92 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:Arial,sans-serif;color:#513d37}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;border:3px solid #f0ddc5;border-radius:22px;background:radial-gradient(circle at 50% 40%,#fffef8,#fff4e5)}
+  .title{position:absolute;top:8px;left:12px;right:12px;text-align:center;font-size:16px;font-weight:700;color:#87634e}
+  [data-ask]{position:absolute;top:34px;left:12px;right:12px;text-align:center;font-size:20px;font-weight:800}
+  svg{position:absolute;inset:0;width:100%;height:100%}
+  .leader{fill:none;stroke:#a99580;stroke-width:2;stroke-linecap:round;pointer-events:none}
+  [data-label]{font-size:15px;font-weight:700;fill:#58483e;pointer-events:none}
+  [data-part]{cursor:pointer;stroke:#fff9ef;stroke-width:3;transition:filter .25s,transform .25s;transform-box:fill-box;transform-origin:center}
+  [data-part]:active{transform:scale(.92)}
+  [data-part].glow{filter:drop-shadow(0 0 10px #ffc34e);stroke:#ffd66d;stroke-width:5}
+  [data-part].try-again{animation:wiggle .35s ease}
+  @keyframes wiggle{25%{transform:rotate(-5deg)}70%{transform:rotate(5deg)}}
+  .feedback{position:absolute;top:59px;left:50%;transform:translateX(-50%) scale(.9);opacity:0;padding:5px 14px;border-radius:15px;background:#fff0d1;color:#694632;font-size:14px;font-weight:700;white-space:nowrap;pointer-events:none;transition:opacity .2s,transform .2s}
+  .feedback.show{opacity:1;transform:translateX(-50%) scale(1)}
+</style>
+<div class="card">
+  <div class="title" id="title"></div>
+  <div data-ask></div>
+  <svg viewBox="0 0 354 314" aria-hidden="true">
+    <g class="leader">
+      <path d="M 68 88 L 79 96"/>
+      <path d="M 212 106 L 204 110"/>
+      <path d="M 207 158 L 199 163"/>
+      <path d="M 281 207 L 270 201"/>
+      <path d="M 220 273 L 211 268"/>
+    </g>
+    <ellipse data-part="petal" cx="105" cy="112" rx="38" ry="33" fill="#ef7992"/>
+    <circle data-part="centre" cx="177" cy="112" r="30" fill="#f5b94f"/>
+    <rect data-part="stem" x="149" y="145" width="54" height="80" rx="24" fill="#70aa70"/>
+    <ellipse data-part="leaf" cx="243" cy="190" rx="38" ry="31" fill="#86bb79"/>
+    <ellipse data-part="root" cx="175" cy="260" rx="44" ry="30" fill="#b88968"/>
+    <text data-label="petal" x="12" y="83"></text>
+    <text data-label="centre" x="213" y="110"></text>
+    <text data-label="stem" x="208" y="160"></text>
+    <text data-label="leaf" x="282" y="213"></text>
+    <text data-label="root" x="221" y="279"></text>
+  </svg>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(() => {
+  const parts=Studio.params.parts;
+  const feedback=document.getElementById('feedback');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.querySelector('[data-ask]').textContent=Studio.t('ask');
+  let pending=false,finished=false,selected=null;
+
+  document.querySelectorAll('[data-part]').forEach(shape=>{
+    const key=shape.getAttribute('data-part');
+    const label=document.querySelector('[data-label="'+key+'"]');
+    if(!parts.includes(key)){
+      shape.style.display='none';
+      if(label)label.style.display='none';
+      return;
+    }
+    if(label)label.textContent=Studio.t(key);
+    shape.addEventListener('click',()=>{
+      if(pending||finished)return;
+      pending=true;
+      selected=shape;
+      feedback.classList.remove('show');
+      Studio.event('part_tap',{part:key});
+      Studio.answer(key);
+    });
+  });
+
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    pending=false;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.classList.add('show');
+    if(correct){
+      finished=true;
+      selected.classList.add('glow');
+      setTimeout(()=>{
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },650);
+    }else{
+      selected.classList.remove('try-again');
+      void selected.getBoundingClientRect();
+      selected.classList.add('try-again');
+      setTimeout(()=>feedback.classList.remove('show'),1100);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

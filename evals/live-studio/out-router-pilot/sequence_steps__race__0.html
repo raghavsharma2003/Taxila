@@ -1,0 +1,194 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:Arial,sans-serif}
+  #app{
+    position:relative;width:360px;height:320px;overflow:hidden;
+    background:linear-gradient(180deg,#fff7e8 0%,#ffe9c7 100%);
+    color:#5a3524;
+  }
+  .steam{
+    position:absolute;left:28px;top:5px;width:88px;height:58px;opacity:.55;
+    animation:float 3s ease-in-out infinite;
+  }
+  .steam path{fill:none;stroke:#d99172;stroke-width:5;stroke-linecap:round}
+  .steam path:nth-child(2){animation:fade 2.2s ease-in-out infinite}
+  .steam path:nth-child(3){animation:fade 2.2s .7s ease-in-out infinite}
+  @keyframes float{50%{transform:translateY(-5px)}}
+  @keyframes fade{50%{opacity:.28}}
+  .kettle{
+    position:absolute;right:13px;top:7px;width:83px;height:65px;
+    filter:drop-shadow(0 4px 0 rgba(127,72,46,.12));
+  }
+  #title{
+    position:absolute;left:22px;top:16px;width:220px;
+    font-size:23px;font-weight:800;line-height:1.05;color:#7a3f27;
+  }
+  #instruction{
+    position:absolute;left:22px;top:49px;width:235px;
+    font-size:13px;font-weight:700;color:#996247;
+  }
+  #track{
+    position:absolute;left:18px;top:80px;width:324px;height:66px;
+    display:flex;gap:5px;justify-content:center;
+  }
+  .slot{
+    position:relative;width:77px;height:64px;border-radius:17px;
+    background:#fffaf0;border:2px dashed #efbd88;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 0 rgba(137,76,40,.08);
+    overflow:visible;
+  }
+  .slotnum{
+    width:25px;height:25px;border-radius:50%;
+    background:#f4c272;color:#78411f;display:flex;
+    align-items:center;justify-content:center;
+    font-size:13px;font-weight:800;
+  }
+  .slot .slotnum{position:absolute;left:5px;top:4px}
+  #cards{
+    position:absolute;left:25px;top:165px;width:310px;
+    display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;
+  }
+  .card{
+    width:148px;height:58px;border:0;border-radius:18px;
+    background:linear-gradient(145deg,#ffbe70,#f48e52);
+    color:#fffdf7;font-size:16px;font-weight:800;
+    box-shadow:0 5px 0 #ce6b3e,0 8px 14px rgba(126,67,36,.18);
+    cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,opacity .18s ease;
+    display:flex;align-items:center;justify-content:center;
+    padding:6px;text-align:center;line-height:1.05;
+  }
+  .card:active{transform:translateY(4px) scale(.96);box-shadow:0 1px 0 #ce6b3e}
+  .card.waiting{pointer-events:none;opacity:.68;transform:scale(.97)}
+  .card.shake{animation:shake .42s ease both}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    22%{transform:translateX(-7px) rotate(-2deg)}
+    45%{transform:translateX(6px) rotate(2deg)}
+    68%{transform:translateX(-4px) rotate(-1deg)}
+  }
+  .slot .card{
+    width:70px;height:42px;min-height:42px;border-radius:12px;
+    font-size:10px;line-height:1.03;box-shadow:0 3px 0 #ce6b3e;
+    padding:3px;animation:place .36s cubic-bezier(.2,1.5,.5,1) both;
+    pointer-events:none;
+  }
+  .slot.filled{border-style:solid;border-color:#efb46f;background:#fff1d8}
+  .slot.filled .slotnum{
+    width:17px;height:17px;font-size:9px;left:3px;top:3px;z-index:2;
+  }
+  @keyframes place{0%{transform:scale(.45) rotate(-8deg)}70%{transform:scale(1.1) rotate(2deg)}100%{transform:scale(1)}}
+  #feedback{
+    position:absolute;left:20px;bottom:15px;width:320px;height:24px;
+    text-align:center;font-size:15px;font-weight:800;color:#a55d3d;
+    opacity:0;transform:translateY(5px);transition:.25s ease;
+  }
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #feedback.good{color:#548149}
+  .spark{
+    position:absolute;border-radius:50%;background:#ffd778;opacity:.65;
+    animation:twinkle 1.8s ease-in-out infinite;
+  }
+  .s1{width:7px;height:7px;left:10px;top:141px}.s2{width:5px;height:5px;right:17px;top:153px;animation-delay:.5s}.s3{width:6px;height:6px;left:12px;bottom:49px;animation-delay:1s}
+  @keyframes twinkle{50%{transform:scale(1.7);opacity:.2}}
+</style>
+<div id="app">
+  <svg class="steam" viewBox="0 0 88 58" aria-hidden="true">
+    <path d="M18 48 C3 34 33 24 18 8"></path>
+    <path d="M45 53 C29 38 61 28 45 10"></path>
+    <path d="M72 47 C57 32 85 24 70 5"></path>
+  </svg>
+  <svg class="kettle" viewBox="0 0 100 80" aria-hidden="true">
+    <path d="M27 31 C9 31 7 48 16 57 C20 61 27 61 32 57" fill="none" stroke="#a95135" stroke-width="8" stroke-linecap="round"/>
+    <path d="M34 22 L79 22 L86 35 L28 35 Z" fill="#f3aa59"/>
+    <path d="M35 30 C35 62 45 70 62 70 C79 70 88 59 84 32 Z" fill="#e87745"/>
+    <path d="M82 35 L98 29 L91 43 L83 46 Z" fill="#c95d39"/>
+    <path d="M44 17 C46 7 66 7 70 17" fill="none" stroke="#a95135" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="51" cy="47" r="5" fill="#ffd47e"/>
+  </svg>
+  <div id="title"></div>
+  <div id="instruction"></div>
+  <div id="track"></div>
+  <div id="cards"></div>
+  <div class="spark s1"></div><div class="spark s2"></div><div class="spark s3"></div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var shown=p.shown;
+  var track=document.getElementById("track");
+  var cards=document.getElementById("cards");
+  var feedback=document.getElementById("feedback");
+  var selected=null;
+  var placed=0;
+  var finished=false;
+
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("instruction").textContent=Studio.t("instr");
+
+  function message(key,good){
+    feedback.textContent=Studio.t(key);
+    feedback.className="show"+(good?" good":"");
+  }
+
+  shown.forEach(function(key,index){
+    var slot=document.createElement("div");
+    slot.className="slot";
+    slot.setAttribute("data-position",String(index+1));
+    var n=document.createElement("div");
+    n.className="slotnum";
+    n.textContent=String(index+1);
+    slot.appendChild(n);
+    track.appendChild(slot);
+
+    var card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.setAttribute("data-step",key);
+    card.textContent=Studio.t(key);
+    card.addEventListener("click",function(){
+      if(selected||finished){return}
+      selected=card;
+      card.classList.add("waiting");
+      Studio.event("tap",{});
+      Studio.answer({key:key});
+    });
+    cards.appendChild(card);
+  });
+
+  Studio.onVerdict(function(result){
+    if(!selected||finished){return}
+    var card=selected;
+    selected=null;
+    if(result.correct){
+      var slot=track.children[placed];
+      card.classList.remove("waiting");
+      slot.classList.add("filled");
+      slot.appendChild(card);
+      placed+=1;
+      card.setAttribute("data-placed",String(placed));
+      message("right",true);
+      Studio.event("placed",{});
+      if(placed===shown.length){
+        finished=true;
+        window.setTimeout(function(){
+          message("done",true);
+          Studio.done();
+        },260);
+      }
+    }else{
+      card.classList.remove("waiting");
+      card.classList.remove("shake");
+      void card.offsetWidth;
+      card.classList.add("shake");
+      message("wrong",false);
+      Studio.event("retry",{});
+    }
+  });
+
+  Studio.ready();
+}());
+
+</script>

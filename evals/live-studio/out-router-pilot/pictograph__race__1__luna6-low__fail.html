@@ -1,0 +1,89 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#493b35;background:#fff8ec}
+.stage{width:360px;height:320px;padding:12px 14px;overflow:hidden;background:radial-gradient(ellipse at 90% 0%,#fff0d3 0%,transparent 48%),#fff8ec}
+h1{margin:0 0 5px;font-size:20px;line-height:25px;font-weight:800;color:#653f32}
+.ask{margin:0 0 8px;font-size:14px;line-height:18px;color:#74594c}
+.key{height:52px;margin-bottom:7px;padding:5px 10px;display:flex;align-items:center;gap:9px;border:1px solid #efd6ae;border-radius:15px;background:#fffdf8;box-shadow:0 2px 0 #f3e5d0}
+.key-icon{width:32px;height:32px;display:grid;place-items:center;flex:none}
+.key-copy{display:flex;align-items:baseline;gap:7px;font-size:13px;line-height:18px;color:#765544}
+.key-number{font-weight:800;font-size:17px;color:#a95032}
+.rows{display:flex;flex-direction:column;gap:5px}
+.row{width:100%;height:56px;min-height:56px;padding:0 8px;display:flex;align-items:center;gap:7px;border:2px solid #f0dfc6;border-radius:15px;background:#fffefa;color:inherit;text-align:left;cursor:pointer;transition:transform .16s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease;touch-action:manipulation}
+.row:active{transform:scale(.98)}
+.row:hover{border-color:#e8bd84;background:#fff6e7}
+.row:focus-visible{outline:3px solid #d99554;outline-offset:1px}
+.row-name{width:64px;flex:none;font-size:14px;font-weight:750;color:#67483c}
+.symbols{display:flex;align-items:center;gap:2px;white-space:nowrap}
+.symbol{width:23px;height:23px;flex:none;display:block;transition:transform .18s ease}
+.row:hover .symbol{transform:translateY(-2px)}
+.feedback{height:25px;margin-top:6px;padding-left:4px;font-size:14px;line-height:22px;font-weight:750;color:#9d5739}
+.feedback.good{color:#447858;animation:pop .35s ease}
+.feedback.bad{color:#a8523d;animation:nudge .28s ease}
+@keyframes pop{50%{transform:scale(1.08)}}
+@keyframes nudge{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<main class="stage">
+  <h1 id="title"></h1>
+  <p class="ask" id="ask"></p>
+  <div class="key" id="key">
+    <span class="key-icon" id="key-icon" data-key aria-hidden="true"></span>
+    <div class="key-copy"><span id="keytext"></span><strong class="key-number" id="key-number"></strong></div>
+  </div>
+  <div class="rows" id="rows"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const $=id=>document.getElementById(id);
+  const t=key=>Studio.t(key);
+  const icon=()=>'<svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><path d="M16 2.5 20 8l6.2-.2-1.4 6 4 4.7-5.8 2.3-2 6-5-3.5-5.1 3.5-1.8-6-5.9-2.3 4-4.7-1.3-6L12 8z" fill="#efa94f" stroke="#bd7139" stroke-width="1.5" stroke-linejoin="round"/><circle cx="13" cy="14" r="1.1" fill="#704637"/><circle cx="19" cy="14" r="1.1" fill="#704637"/><path d="M13.5 18q2.5 2.5 5 0" fill="none" stroke="#704637" stroke-width="1.2" stroke-linecap="round"/></svg>';
+  $('title').textContent=t('title');
+  $('ask').textContent=t('ask');
+  $('keytext').textContent=t('keytext');
+  $('key-number').textContent=String(p.symbolValue);
+  $('key-icon').innerHTML=icon();
+  const rows=$('rows'), feedback=$('feedback');
+  p.rows.forEach(row=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='row';
+    button.setAttribute('data-row',row.key);
+    const name=document.createElement('span');
+    name.className='row-name';
+    name.textContent=t(row.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    for(let i=0;i<row.value/p.symbolValue;i++){
+      const symbol=document.createElement('span');
+      symbol.className='symbol';
+      symbol.setAttribute('data-symbol','');
+      symbol.innerHTML=icon();
+      symbols.appendChild(symbol);
+    }
+    button.append(name,symbols);
+    button.addEventListener('click',()=>{
+      feedback.textContent='';
+      feedback.className='feedback';
+      Studio.event('row_tap',{key:row.key});
+      Studio.answer(row.key);
+    });
+    rows.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    feedback.textContent=t(correct?'right':'wrong');
+    feedback.className='feedback '+(correct?'good':'bad');
+    if(correct){
+      rows.querySelectorAll('button').forEach(button=>button.disabled=true);
+      feedback.textContent=t('done');
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -1,0 +1,108 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#49352b;background:#fff8e9}
+#app{width:360px;height:320px;padding:9px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+#title{font-size:17px;line-height:22px;font-weight:800;color:#75472f}
+#instr{font-size:13px;line-height:17px;color:#745c4d}
+#item{width:100%;height:234px;display:flex;flex-direction:column;align-items:center;gap:4px}
+#target{height:32px;min-width:70px;padding:2px 10px;border-radius:12px;background:#ffedc9;color:#75472f;font-size:20px;line-height:28px;font-weight:800;letter-spacing:1px}
+#parts{width:100%;display:grid;justify-content:center;align-content:center;gap:5px;min-height:112px}
+.part{display:block;width:52px;height:52px;border:2px solid #d9a766;border-radius:8px;background:#fffdf7;cursor:pointer;transform-origin:center;transition:transform .16s ease,background .2s ease,border-color .2s ease}
+.part[data-shaded="true"]{background:#f2a84b;border-color:#ce7134}
+.part:active{transform:scale(.88)}
+.part.pulse{animation:pop .32s ease}
+@keyframes pop{50%{transform:scale(1.13)}}
+#check{height:56px;min-width:116px;padding:0 20px;border:0;border-radius:18px;background:#588a62;color:white;font:700 17px system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 0 #3e6d49;transition:transform .15s,background .2s}
+#check:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #3e6d49}
+#feedback{min-height:24px;font-size:14px;line-height:20px;font-weight:700;color:#588a62}
+#feedback.wrong{color:#b3624b}
+#done{display:none;flex:1;align-items:center;justify-content:center;color:#75472f;font-size:22px;font-weight:800;animation:pop .45s ease}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="instr"></div>
+  <div id="item">
+    <div id="target" data-target></div>
+    <div id="parts"></div>
+    <button id="check" data-action="check" type="button"></button>
+    <div id="feedback"></div>
+  </div>
+  <div id="done"></div>
+</div>
+<script>
+
+(()=>{
+  const items=Studio.params.items;
+  let at=0,shaded=[],locked=false,finished=false;
+  const title=document.getElementById("title"),instr=document.getElementById("instr"),itemBox=document.getElementById("item"),target=document.getElementById("target"),parts=document.getElementById("parts"),check=document.getElementById("check"),feedback=document.getElementById("feedback"),done=document.getElementById("done");
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+  check.textContent=Studio.t("check");
+  done.textContent=Studio.t("done");
+  function draw(){
+    const x=items[at];
+    itemBox.dataset.item=x.id;
+    target.textContent=x.n+"/"+x.d;
+    shaded=Array(x.d).fill(false);
+    feedback.textContent="";
+    feedback.className="";
+    parts.style.gridTemplateColumns="repeat("+Math.min(x.d,4)+",52px)";
+    parts.replaceChildren();
+    for(let i=0;i<x.d;i++){
+      const part=document.createElement("div");
+      part.className="part";
+      part.dataset.part=String(i);
+      part.dataset.shaded="false";
+      part.setAttribute("role","button");
+      part.setAttribute("tabindex","0");
+      const toggle=()=>{
+        if(locked||finished)return;
+        shaded[i]=!shaded[i];
+        part.dataset.shaded=String(shaded[i]);
+        part.classList.remove("pulse");
+        void part.offsetWidth;
+        part.classList.add("pulse");
+        Studio.event("part",{index:i,shaded:shaded[i]});
+      };
+      part.addEventListener("click",toggle);
+      part.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle()}});
+      parts.appendChild(part);
+    }
+    Studio.event("item",{index:at});
+  }
+  check.addEventListener("click",()=>{
+    if(locked||finished)return;
+    locked=true;
+    Studio.answer({n:shaded.filter(Boolean).length,d:items[at].d});
+  });
+  Studio.onVerdict(v=>{
+    if(finished)return;
+    if(v.correct){
+      feedback.className="";
+      feedback.textContent=Studio.t("right");
+      locked=true;
+      setTimeout(()=>{
+        at++;
+        if(at>=items.length){
+          itemBox.style.display="none";
+          instr.style.display="none";
+          done.style.display="flex";
+          finished=true;
+          Studio.done();
+        }else{
+          locked=false;
+          draw();
+        }
+      },850);
+    }else{
+      feedback.className="wrong";
+      feedback.textContent=Studio.t("wrong");
+      locked=false;
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

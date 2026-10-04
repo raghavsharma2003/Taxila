@@ -1,0 +1,159 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#355047}
+  #card{width:360px;height:320px;overflow:hidden;background:linear-gradient(#fffaf0,#f1f6e8)}
+  svg{display:block;width:360px;height:190px}
+  .flowline{fill:none;stroke-width:4;stroke-linecap:round;opacity:.48;transition:opacity .3s,stroke-width .3s}
+  .flowline.active{opacity:1;stroke-width:6}
+  .label{font-size:12px;font-weight:750;fill:#355047;paint-order:stroke;stroke:#fffaf0;stroke-width:3px;stroke-linejoin:round}
+  .particle{opacity:.9}
+  .controls{height:56px;display:flex;align-items:center;gap:8px;padding:3px 8px}
+  button{border:0;border-radius:17px;font:700 13px system-ui,sans-serif;color:#355047;cursor:pointer;transition:transform .16s,background .2s}
+  button:active{transform:scale(.91)}
+  .control{height:52px;min-width:70px;background:#dcebd8}
+  #caption{flex:1;text-align:center;font-size:13px;font-weight:700;line-height:1.2}
+  #question{height:20px;text-align:center;font-size:14px;font-weight:700;line-height:20px}
+  #options{height:54px;display:flex;gap:6px;padding:1px 8px}
+  #options button{height:52px;flex:1;min-width:0;background:#ffe2a7}
+  button:focus-visible{outline:3px solid #438a76;outline-offset:-3px}
+</style>
+<div id="card">
+  <svg viewBox="0 0 360 190" aria-hidden="true">
+    <path id="inPath" class="flowline" d="M37 107 Q85 103 128 91" stroke="#69a9a0"/>
+    <path id="upPath" class="flowline" d="M180 151 L180 112" stroke="#64a9d4"/>
+    <path id="outPath" class="flowline" d="M229 82 Q270 76 322 57" stroke="#dda05b"/>
+    <circle id="sunshape" cx="43" cy="38" r="24" fill="#ffc969" stroke="#e9a648" stroke-width="3"/>
+    <path id="rootshape" d="M180 130 L180 158 M180 147 Q160 152 150 165 M180 147 Q199 152 211 166 M169 156 L162 174 M195 157 L202 174" fill="none" stroke="#9b765e" stroke-width="8" stroke-linecap="round"/>
+    <ellipse id="hubshape" cx="180" cy="88" rx="53" ry="29" transform="rotate(-13 180 88)" fill="#82c98c" stroke="#438a76" stroke-width="4"/>
+    <path d="M138 99 Q180 87 224 76" fill="none" stroke="#e4f3c4" stroke-width="3" stroke-linecap="round" pointer-events="none"/>
+    <g id="particles"></g>
+    <g id="labels" class="label"></g>
+  </svg>
+  <div class="controls">
+    <button class="control" data-action="play"></button>
+    <div id="caption" data-caption></div>
+    <button class="control" data-action="next"></button>
+  </div>
+  <div id="question"></div>
+  <div id="options"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const ns='http://';
+  const put=(element,key)=>{element.textContent=Studio.t(key)};
+  const labels=document.querySelector('#labels');
+  function label(key,x,y){
+    const node=document.createElementNS(ns,'text');
+    node.setAttribute('data-label',key);
+    node.setAttribute('x',x);
+    node.setAttribute('y',y);
+    put(node,key);
+    labels.append(node);
+  }
+
+  document.querySelector('#hubshape').setAttribute('data-entity',p.hub);
+  label(p.hub,160,49);
+  const entityPositions=[
+    {shape:'#sunshape',x:76,y:41},
+    {shape:'#rootshape',x:120,y:184}
+  ];
+  p.entities.forEach((key,i)=>{
+    const pos=entityPositions[i];
+    if(!pos)return;
+    document.querySelector(pos.shape).setAttribute('data-entity',key);
+    label(key,pos.x,pos.y);
+  });
+
+  const routes={
+    up_in:{start:[180,151],end:[180,112],label:[197,145],path:'#upPath',color:'#399aca'},
+    in:{start:[37,107],end:[128,91],label:[54,129],path:'#inPath',color:'#459e94'},
+    out:{start:[229,82],end:[322,57],label:[276,100],path:'#outPath',color:'#d88742'}
+  };
+  const dots=[];
+  const particleLayer=document.querySelector('#particles');
+  p.flows.forEach(flow=>{
+    const route=routes[flow.dir];
+    if(!route)return;
+    label(flow.key,route.label[0],route.label[1]);
+    for(let i=0;i<4;i++){
+      const dot=document.createElementNS(ns,'circle');
+      dot.setAttribute('class','particle');
+      dot.setAttribute('data-flow',flow.key);
+      dot.setAttribute('r','4');
+      dot.setAttribute('fill',route.color);
+      particleLayer.append(dot);
+      dots.push({dot,route,phase:i/4});
+    }
+  });
+
+  const play=document.querySelector('[data-action="play"]');
+  const next=document.querySelector('[data-action="next"]');
+  const caption=document.querySelector('[data-caption]');
+  const question=document.querySelector('#question');
+  let playing=true,step=0,progress=0,last=0,finished=false;
+
+  function showStep(){
+    put(caption,'step'+(step+1));
+    document.querySelectorAll('.flowline').forEach(line=>line.classList.remove('active'));
+    if(step===0){
+      document.querySelectorAll('.flowline').forEach(line=>line.classList.add('active'));
+    }else{
+      const flow=p.flows[(step-1)%p.flows.length];
+      const route=flow&&routes[flow.dir];
+      if(route)document.querySelector(route.path).classList.add('active');
+    }
+  }
+  function tick(time){
+    if(last&&playing)progress+=(time-last)*.00032;
+    last=time;
+    dots.forEach(({dot,route,phase})=>{
+      const t=(progress+phase)%1;
+      dot.setAttribute('cx',route.start[0]+(route.end[0]-route.start[0])*t);
+      dot.setAttribute('cy',route.start[1]+(route.end[1]-route.start[1])*t);
+      dot.style.opacity=playing?'0.9':'0.55';
+    });
+    requestAnimationFrame(tick);
+  }
+
+  put(play,'pause');
+  put(next,'next');
+  put(question,'ask');
+  showStep();
+  play.addEventListener('click',()=>{
+    playing=!playing;
+    put(play,playing?'pause':'play');
+    Studio.event('play',{playing:playing?1:0});
+  });
+  next.addEventListener('click',()=>{
+    step=(step+1)%p.steps;
+    showStep();
+    Studio.event('step',{step:step+1});
+  });
+
+  const options=document.querySelector('#options');
+  p.options.forEach(key=>{
+    const button=document.createElement('button');
+    button.setAttribute('data-option',key);
+    put(button,key);
+    button.addEventListener('click',()=>{if(!finished)Studio.answer(key)});
+    options.append(button);
+  });
+  let feedbackTimeout;
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    put(question,correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      Studio.done();
+    }else{
+      clearTimeout(feedbackTimeout);
+      feedbackTimeout=setTimeout(()=>put(question,'ask'),1400);
+    }
+  });
+  requestAnimationFrame(tick);
+  Studio.ready();
+})();
+
+</script>

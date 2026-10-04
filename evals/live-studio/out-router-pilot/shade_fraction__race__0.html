@@ -1,0 +1,112 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden}
+  .game{position:relative;width:360px;height:320px;overflow:hidden;background:#fff7e9;color:#633c31;font-family:system-ui,sans-serif;text-align:center}
+  .game::before{content:"";position:absolute;left:45px;top:55px;width:270px;height:235px;border-radius:50%;background:#ffe9cf}
+  .content{position:relative;height:320px;display:flex;flex-direction:column;align-items:center}
+  h1{height:27px;line-height:27px;margin:5px 8px 0;font-size:19px}
+  .instruction{height:24px;line-height:24px;font-size:14px}
+  .target{height:43px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800}
+  .fraction{display:inline-flex;flex-direction:column;min-width:28px;font-size:20px;line-height:19px}
+  .fraction b:first-child{border-bottom:2px solid currentColor}
+  .art{display:block;width:300px;height:160px;flex:none;touch-action:manipulation}
+  .part{fill:#ffe0a6;stroke:#fff8ed;stroke-width:3;cursor:pointer;transition:fill .2s,filter .2s}
+  .part[data-shaded="true"]{fill:#e77a53}
+  .part:active{filter:brightness(1.12)}
+  .controls{height:61px;width:100%;display:flex;align-items:center;justify-content:center;gap:12px}
+  button{min-width:112px;min-height:52px;padding:8px 17px;border:0;border-radius:18px;background:#805344;color:#fff8ee;font:800 16px system-ui,sans-serif;box-shadow:0 4px 0 #603b31;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  button:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #603b31}
+  button:disabled{opacity:.7}
+  .feedback{width:105px;font-size:14px;font-weight:700;text-align:left}
+  .celebrate .art{animation:hop .5s ease}
+  .celebrate .feedback{color:#318368}
+  .retry .feedback{color:#a65348}
+  @keyframes hop{50%{transform:translateY(-7px) scale(1.035)}}
+  .finished .instruction,.finished .target,.finished .art,.finished .controls{display:none}
+  .finished h1{height:auto;margin:auto;font-size:28px}
+</style>
+<div class="game" id="game">
+  <div class="content" id="item" data-item="">
+    <h1 id="title"></h1>
+    <div class="instruction" id="instruction"></div>
+    <div class="target" data-target><span class="fraction"><b id="numerator"></b><b id="denominator"></b></span></div>
+    <svg class="art" id="art" viewBox="0 0 300 160"></svg>
+    <div class="controls"><button type="button" data-action="check" id="check"></button><div class="feedback" id="feedback" aria-live="polite"></div></div>
+  </div>
+</div>
+<script>
+
+(() => {
+  const p=Studio.params, get=id=>document.getElementById(id);
+  const game=get('game'), box=get('item'), art=get('art'), feedback=get('feedback'), check=get('check');
+  get('title').textContent=Studio.t('title');
+  get('instruction').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  let index=0, waiting=false, finished=false;
+  function draw(){
+    const item=p.items[index];
+    box.dataset.item=item.id;
+    get('numerator').textContent=item.n;
+    get('denominator').textContent=item.d;
+    feedback.textContent='';
+    game.classList.remove('celebrate','retry');
+    let shapes='';
+    for(let i=0;i<item.d;i++){
+      if(p.picture==='bar'){
+        const w=300/item.d;
+        shapes+=`<rect class="part" data-part="${i}" data-shaded="false" x="${i*w}" y="35" width="${w}" height="90" rx="3"/>`;
+      }else if(item.d===1){
+        shapes+=`<circle class="part" data-part="${i}" data-shaded="false" cx="150" cy="80" r="73"/>`;
+      }else{
+        const a=-Math.PI/2+i*2*Math.PI/item.d, b=-Math.PI/2+(i+1)*2*Math.PI/item.d;
+        const x=t=>150+73*Math.cos(t), y=t=>80+73*Math.sin(t);
+        shapes+=`<path class="part" data-part="${i}" data-shaded="false" d="M 150 80 L ${x(a)} ${y(a)} A 73 73 0 ${b-a>Math.PI?1:0} 1 ${x(b)} ${y(b)} Z"/>`;
+      }
+    }
+    art.innerHTML=shapes;
+    art.querySelectorAll('[data-part]').forEach(shape=>{
+      shape.addEventListener('click',()=>{
+        if(waiting||finished)return;
+        shape.dataset.shaded=shape.dataset.shaded==='true'?'false':'true';
+        feedback.textContent='';
+        game.classList.remove('retry');
+        Studio.event('part',{index:Number(shape.dataset.part)});
+      });
+    });
+  }
+  check.addEventListener('click',()=>{
+    if(waiting||finished)return;
+    waiting=true;
+    check.disabled=true;
+    const n=art.querySelectorAll('[data-shaded="true"]').length;
+    Studio.event('check',{n,d:p.items[index].d});
+    Studio.answer({n,d:p.items[index].d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting||finished)return;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    game.classList.add(correct?'celebrate':'retry');
+    if(!correct){
+      waiting=false;
+      check.disabled=false;
+      return;
+    }
+    setTimeout(()=>{
+      index++;
+      if(index<p.items.length){
+        waiting=false;
+        check.disabled=false;
+        draw();
+      }else{
+        finished=true;
+        game.classList.add('finished');
+        get('title').textContent=Studio.t('done');
+        Studio.done();
+      }
+    },650);
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

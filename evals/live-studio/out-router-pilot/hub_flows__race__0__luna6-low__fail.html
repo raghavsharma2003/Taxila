@@ -1,0 +1,77 @@
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:360px;height:320px;overflow:hidden}body{font-family:system-ui,sans-serif;color:#31534d;background:#fff8e9}#app{width:360px;height:320px;padding:4px 10px;display:flex;flex-direction:column;align-items:center;gap:2px}.title{height:18px;line-height:18px;font-size:16px;font-weight:800;color:#31534d}.scene{width:340px;height:118px;border-radius:20px;background:#f2f6df;display:block}.label{font:700 12px system-ui,sans-serif;fill:#31534d;text-anchor:middle}.shape{transition:filter .25s,transform .25s;transform-box:fill-box;transform-origin:center}.shape.active{filter:drop-shadow(0 0 7px #f1a94b);transform:scale(1.07)}.flow-label.active{fill:#c27735}.caption{height:22px;width:340px;border-radius:12px;background:#fff0d4;text-align:center;font-size:14px;font-weight:700;line-height:22px;color:#825523}.controls{height:52px;display:flex;gap:8px;align-items:center}.btn{height:52px;min-width:76px;padding:0 14px;border:0;border-radius:17px;background:#d9edcf;color:#31534d;font:700 14px system-ui,sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .13s,background .2s}.btn:active,.btn.tap{transform:scale(.92);background:#b9d9a8}.ask{height:18px;line-height:18px;font-size:14px;font-weight:700;color:#31534d}.options{height:52px;display:flex;gap:8px}.option{width:106px;height:52px;padding:0 4px;border:2px solid #d2dfc5;border-radius:16px;background:#fff;color:#31534d;font:700 14px system-ui,sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .13s,background .2s,border-color .2s}.option:active,.option.tap{transform:scale(.93)}.option.selected{background:#e9f3e2;border-color:#87ae76}.feedback{height:16px;line-height:16px;font-size:13px;font-weight:700;color:#527b50}
+</style>
+<div id="app">
+  <div class="title" id="title"></div>
+  <svg class="scene" id="scene" viewBox="0 0 340 118" role="img">
+    <g id="drawings"></g>
+    <g id="particles"></g>
+    <g id="labels"></g>
+  </svg>
+  <div class="caption" data-caption id="caption"></div>
+  <div class="controls">
+    <button class="btn" type="button" data-action="play" id="play"></button>
+    <button class="btn" type="button" data-action="next" id="next"></button>
+  </div>
+  <div class="ask" id="ask"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params,t=k=>Studio.t(k),svgNS="http://";
+const $=id=>document.getElementById(id);
+$("title").textContent=t("title");$("ask").textContent=t("ask");
+let playing=true,step=0,done=false;
+const hub=p.hub,entities=p.entities||[],flows=p.flows||[];
+const centers={leaf:[170,53],sun:[48,29],roots:[48,91]};
+function el(tag,attrs,parent){const e=document.createElementNS(svgNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent.appendChild(e);return e}
+function txt(parent,key,x,y,extra={}){const e=el("text",{x,y,class:"label", "data-label":key,...extra},parent);e.textContent=t(key);return e}
+const drawings=$("drawings"),labels=$("labels");
+function makeEntity(key,isHub,i){
+ const [x,y]=isHub?[170,53]:(centers[key]||[48,29+i*55]);
+ if(key==="leaf"){
+  el("path",{d:`M${x-32} ${y+7} Q${x-29} ${y-31} ${x+15} ${y-25} Q${x+35} ${y-20} ${x+27} ${y+5} Q${x+15} ${y+28} ${x-11} ${y+20} Q${x-27} ${y+17} ${x-32} ${y+7}Z`,fill:"#79b85d",stroke:"#477d45","stroke-width":"3",class:"shape","data-entity":key,id:"entity-"+key});
+  el("path",{d:`M${x-23} ${y+10} Q${x-3} ${y-1} ${x+20} ${y-17}`,fill:"none",stroke:"#eaf2bf","stroke-width":"3","stroke-linecap":"round"},drawings);
+ }else if(key==="sun"){
+  el("circle",{cx:x,cy:y,r:14,fill:"#f6bd56",stroke:"#e49739","stroke-width":"3",class:"shape","data-entity":key,id:"entity-"+key});
+  for(let a=0;a<8;a++){const ang=a*Math.PI/4;el("line",{x1:x+19*Math.cos(ang),y1:y+19*Math.sin(ang),x2:x+23*Math.cos(ang),y2:y+23*Math.sin(ang),stroke:"#e9a743","stroke-width":"3","stroke-linecap":"round"},drawings)}
+ }else{
+  el("path",{d:`M${x-22} ${y-6} Q${x} ${y-22} ${x+22} ${y-6} L${x+17} ${y+2} L${x+10} ${y+2} L${x+7} ${y+18} L${x+1} ${y+2} L${x-5} ${y+19} L${x-10} ${y+2} L${x-18} ${y+2}Z`,fill:"#a97750",stroke:"#805a3c","stroke-width":"2",class:"shape","data-entity":key,id:"entity-"+key});
+ }
+ txt(labels,key,x,isHub?91:key==="sun"?11:114);
+}
+makeEntity(hub,true,0);entities.forEach((k,i)=>makeEntity(k,false,i));
+function flowPoints(f){
+ if(f.dir==="up_in")return {start:[170,115],end:[170,78],label:[235,108]};
+ if(f.dir==="out")return {start:[202,53],end:[270,53],label:[282,57]};
+ return {start:[270,42],end:[204,49],label:[265,30]};
+}
+flows.forEach(f=>{const pt=flowPoints(f);txt(labels,f.key,pt.label[0],pt.label[1],{class:"label flow-label","data-label":f.key,id:"label-"+f.key})});
+const dots=[];
+flows.forEach((f,i)=>{const pt=flowPoints(f);for(let j=0;j<3;j++){
+ const c=el("circle",{r:4.2,fill:f.dir==="up_in"?"#4c9bd0":f.dir==="out"?"#d88c62":"#76a8d4","data-flow":f.key},$("particles"));
+ dots.push({el:c,flow:i,phase:j/3});
+}});
+function updateCaption(){
+ const n=step+1;$("caption").textContent=t("step"+n);
+ document.querySelectorAll(".shape").forEach(e=>e.classList.remove("active"));
+ document.querySelectorAll(".flow-label").forEach(e=>e.classList.remove("active"));
+ const flow=flows[step%flows.length];if(flow){const label=$("label-"+flow.key);if(label)label.classList.add("active")}
+ const entity=document.getElementById("entity-"+hub);if(entity)entity.classList.add("active");
+}
+$("play").textContent=t("pause");$("next").textContent=t("next");updateCaption();
+p.options.forEach(key=>{const b=document.createElement("button");b.type="button";b.className="option";b.dataset.option=key;b.textContent=t(key);b.addEventListener("click",()=>{b.classList.add("tap","selected");setTimeout(()=>b.classList.remove("tap"),150);Studio.answer(key)});$("options").appendChild(b)});
+$("play").addEventListener("click",e=>{playing=!playing;e.currentTarget.textContent=t(playing?"pause":"play");e.currentTarget.classList.add("tap");setTimeout(()=>e.currentTarget.classList.remove("tap"),150);Studio.event("play",{playing:playing?1:0})});
+$("next").addEventListener("click",e=>{step=(step+1)%p.steps;updateCaption();e.currentTarget.classList.add("tap");setTimeout(()=>e.currentTarget.classList.remove("tap"),150);Studio.event("next",{step:step+1})});
+Studio.onVerdict(v=>{ $("feedback").textContent=t(v.correct?"right":"wrong");if(v.correct&&!done){done=true;Studio.done()}});
+let last=0;
+function animate(now){
+ if(playing&&now-last>30){last=now;dots.forEach(d=>{const f=flows[d.flow],pt=flowPoints(f),q=(now/1800+d.phase)%1;d.el.setAttribute("cx",pt.start[0]+(pt.end[0]-pt.start[0])*q);d.el.setAttribute("cy",pt.start[1]+(pt.end[1]-pt.start[1])*q)})}
+ requestAnimationFrame(animate)
+}
+requestAnimationFrame(animate);Studio.ready();
+})();
+
+</script>

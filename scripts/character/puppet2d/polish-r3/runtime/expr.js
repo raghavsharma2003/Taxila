@@ -49,7 +49,7 @@ export const EXPRESSIONS = {
   // playful: lopsided smirk, one brow up, the other eye squinting, head cocked
   playful: {
     bs: { mouthSmileLeft: 0.75, mouthSmileRight: 0.05, cheekSquintLeft: 0.5, browOuterUpLeft: 1.0, browDownRight: 0.45,
-      eyeSquintRight: 0.6, eyeBlinkRight: 0.5, cheekSquintRight: 0.45, eyeSquintLeft: 0.05 },
+      eyeSquintRight: 0.3, eyeBlinkRight: 0.5, cheekSquintRight: 0.25, eyeSquintLeft: 0.05 },
     head: [-2, 7, -9], gaze: [-6, 3], env: [0.25, 0, 0.45],
   },
 };

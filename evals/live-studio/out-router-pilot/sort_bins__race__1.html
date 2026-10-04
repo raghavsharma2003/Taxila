@@ -1,0 +1,126 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#49372f}
+  #game{position:relative;width:360px;height:320px;overflow:hidden;padding:12px;background:radial-gradient(circle at 92% 8%,#ffe3b5 0 38px,transparent 39px),#fff8ed}
+  .top{height:66px;position:relative}
+  h1{margin:0;font-size:20px;line-height:26px;font-weight:800;letter-spacing:-.4px}
+  #instr{margin:3px 0 0;font-size:13px;line-height:18px;color:#765d51}
+  .doodle{position:absolute;right:5px;top:0;width:52px;height:48px;pointer-events:none}
+  #cards{height:122px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,52px);gap:8px;padding:2px 1px}
+  .card{min-width:0;min-height:52px;border:2px solid #d9ad89;border-radius:15px;background:#fffdf8;color:#49372f;font:700 16px system-ui,sans-serif;box-shadow:0 4px 0 #ecd6bd,0 7px 13px #986f4a19;cursor:pointer;transition:transform .22s ease,box-shadow .22s ease,background .22s ease}
+  .card:active,.bin:active{transform:scale(.96)}
+  .card[data-selected="true"]{transform:translateY(-5px) rotate(-2deg);background:#fff3d6;box-shadow:0 7px 0 #e7bd83,0 0 0 4px #ffdf9d,0 12px 20px #986f4a35}
+  #status{height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:750;color:#946044}
+  #status.good{color:#347b66}
+  #bins{height:92px;display:flex;gap:7px}
+  .bin{flex:1;min-width:0;min-height:92px;border:2px solid #c99b7d;border-radius:13px 13px 19px 19px;background:#f5dfca;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:7px 3px 4px;gap:4px;cursor:pointer;box-shadow:inset 0 -5px 0 #e9c8a8;transition:transform .2s,background .2s}
+  .bin:nth-child(2){background:#dceee5;border-color:#94bda9;box-shadow:inset 0 -5px 0 #bddac9}
+  .bin:nth-child(3){background:#e6e2f4;border-color:#aea1cf;box-shadow:inset 0 -5px 0 #d0c8e6}
+  .bin-name{font-size:13px;font-weight:800;line-height:17px;text-align:center;overflow-wrap:anywhere}
+  .placed{max-width:100%;padding:3px 6px;border-radius:8px;background:#fffdf8;border:1px solid #d9ad89;font-size:11px;font-weight:700;line-height:14px;overflow-wrap:anywhere;text-align:center;animation:arrive .35s ease-out both}
+  .shake{animation:shake .38s ease}
+  .fly{position:absolute;z-index:5;margin:0;pointer-events:none;transition:transform .4s cubic-bezier(.2,.8,.2,1),opacity .4s}
+  @keyframes shake{20%,60%{transform:translateX(-5px) rotate(-2deg)}40%,80%{transform:translateX(5px) rotate(2deg)}}
+  @keyframes arrive{from{transform:scale(.6);opacity:.3}to{transform:scale(1);opacity:1}}
+</style>
+<div id="game">
+  <div class="top">
+    <h1 id="title"></h1>
+    <p id="instr"></p>
+    <svg class="doodle" viewBox="0 0 52 48" aria-hidden="true"><path d="M9 28c3-9 11-15 20-14 8 1 13 8 12 16" fill="none" stroke="#e6a56b" stroke-width="4" stroke-linecap="round"/><path d="M14 37l-5-9 10-1" fill="none" stroke="#e6a56b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37" cy="9" r="4" fill="#98bea7"/></svg>
+  </div>
+  <div id="cards"></div>
+  <div id="status" aria-live="polite"></div>
+  <div id="bins"></div>
+</div>
+<script>
+
+(()=>{
+  const root=document.getElementById('game'),cards=document.getElementById('cards'),bins=document.getElementById('bins'),status=document.getElementById('status');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  let selected=null,busy=false,finished=0;
+  const total=Studio.params.cards.length;
+  Studio.params.bins.forEach(key=>{
+    const bin=document.createElement('div');
+    bin.className='bin';
+    bin.dataset.bin=key;
+    const name=document.createElement('span');
+    name.className='bin-name';
+    name.textContent=Studio.t(key);
+    bin.append(name);
+    bin.addEventListener('click',()=>{
+      if(busy||!selected)return;
+      busy=true;
+      const card=selected,cardKey=card.dataset.card;
+      Studio.answer({card:cardKey,bin:key});
+      Studio.event('sort',{card:cardKey,bin:key});
+    });
+    bins.append(bin);
+  });
+  Studio.params.cards.forEach(key=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.card=key;
+    card.dataset.selected='false';
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(busy)return;
+      if(selected)selected.dataset.selected='false';
+      selected=selected===card?null:card;
+      if(selected)selected.dataset.selected='true';
+      status.textContent='';
+      status.className='';
+      Studio.event('pick',{card:key});
+    });
+    cards.append(card);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!busy||!selected)return;
+    const card=selected;
+    if(correct){
+      status.textContent=Studio.t('right');
+      status.className='good';
+      const target=document.querySelector('[data-bin="'+CSS.escape(lastBin())+'"]');
+      const start=card.getBoundingClientRect(),end=target.getBoundingClientRect(),base=root.getBoundingClientRect();
+      const ghost=card.cloneNode(true);
+      ghost.removeAttribute('data-card');
+      ghost.removeAttribute('data-selected');
+      ghost.className='card fly';
+      ghost.style.left=(start.left-base.left)+'px';
+      ghost.style.top=(start.top-base.top)+'px';
+      ghost.style.width=start.width+'px';
+      ghost.style.height=start.height+'px';
+      root.append(ghost);
+      card.style.visibility='hidden';
+      requestAnimationFrame(()=>{ghost.style.transform='translate('+(end.left+end.width/2-start.left-start.width/2)+'px,'+(end.top+end.height/2-start.top-start.height/2)+'px) scale(.55)';ghost.style.opacity='.4'});
+      setTimeout(()=>{
+        const placed=document.createElement('span');
+        placed.className='placed';
+        placed.dataset.placed=target.dataset.bin;
+        placed.textContent=card.textContent;
+        target.append(placed);
+        ghost.remove();card.remove();selected=null;busy=false;
+        finished++;
+        if(finished===total){status.textContent=Studio.t('done');Studio.done()}
+      },410);
+    }else{
+      status.textContent=Studio.t('wrong');
+      status.className='';
+      card.dataset.selected='false';
+      card.classList.add('shake');
+      selected=null;
+      setTimeout(()=>{card.classList.remove('shake');busy=false},400);
+    }
+  });
+  let pendingBin=null;
+  function lastBin(){return pendingBin}
+  bins.addEventListener('click',e=>{
+    const bin=e.target.closest('[data-bin]');
+    if(bin&&selected&&!busy)pendingBin=bin.dataset.bin;
+  },true);
+  Studio.ready();
+})();
+
+</script>

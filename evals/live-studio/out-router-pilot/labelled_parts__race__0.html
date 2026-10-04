@@ -1,0 +1,106 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ec;font-family:system-ui,sans-serif}
+  .card{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(#fff9ee,#f5efdf)}
+  header{height:65px;padding:8px 12px 0;text-align:center}
+  h1{margin:0;color:#624b3c;font-size:19px;line-height:24px}
+  [data-ask]{margin:2px 0;color:#875f47;font-size:16px;font-weight:700;line-height:23px}
+  #feedback{position:absolute;top:65px;left:0;width:360px;text-align:center;color:#397b58;font-size:14px;font-weight:800;pointer-events:none}
+  svg{display:block;width:360px;height:255px}
+  .leader{fill:none;stroke:#aa967d;stroke-width:2;stroke-linecap:round}
+  .part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .22s ease,filter .25s ease}
+  .part:active{transform:scale(.94)}
+  .part.glow{filter:drop-shadow(0 0 9px #f6bb50);animation:happy .65s ease-in-out infinite alternate}
+  .part.try{animation:wiggle .35s ease}
+  text{font:700 14px system-ui,sans-serif;fill:#604b3d;paint-order:stroke;stroke:#fff9ee;stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+  @keyframes happy{to{transform:scale(1.06)}}
+  @keyframes wiggle{25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+</style>
+<div class="card">
+  <header><h1 id="title"></h1><p data-ask></p></header>
+  <div id="feedback" aria-live="polite"></div>
+  <svg viewBox="0 0 360 255" role="img">
+    <ellipse cx="178" cy="243" rx="112" ry="9" fill="#e7ddc6"/>
+
+    <g data-part="root" class="part">
+      <path d="M151 189 Q169 198 192 190 Q194 207 211 211 L238 217 Q244 220 239 226 Q236 230 228 229 L199 224 Q212 235 215 240 Q215 246 207 246 Q196 244 180 231 L174 242 Q170 248 163 243 L161 229 Q145 239 133 241 Q125 242 126 235 L147 218 L115 228 Q106 230 105 222 Q106 217 114 215 L143 207Z" fill="#a97752"/>
+    </g>
+    <path class="leader" d="M217 211 L204 216"/><text data-label="root" x="219" y="207"></text>
+
+    <g data-part="stem" class="part">
+      <path d="M174 107 Q168 149 174 199" fill="none" stroke="#579d68" stroke-width="55" stroke-linecap="round"/>
+      <path d="M174 113 Q171 151 174 194" fill="none" stroke="#69ad74" stroke-width="35" stroke-linecap="round"/>
+      <rect x="145" y="105" width="58" height="99" rx="25" fill="transparent"/>
+    </g>
+    <path class="leader" d="M143 140 L155 140"/><text data-label="stem" x="99" y="145"></text>
+
+    <g data-part="leaf" class="part">
+      <path d="M185 169 Q221 113 278 135 Q265 193 185 169Z" fill="#74bb79"/>
+      <path d="M193 169 Q231 163 267 139" fill="none" stroke="#47945e" stroke-width="3" stroke-linecap="round"/>
+      <rect x="185" y="122" width="94" height="70" rx="20" fill="transparent"/>
+    </g>
+    <path class="leader" d="M255 181 L243 171"/><text data-label="leaf" x="258" y="195"></text>
+
+    <g data-part="petal" class="part" fill="#ed8994">
+      <path d="M175 79 C138 74 118 51 134 28 C147 10 167 24 175 43 C184 14 208 12 220 30 C234 52 209 77 175 79Z"/>
+      <path d="M169 78 C130 103 111 79 124 57 C135 40 154 49 169 78Z"/>
+      <path d="M181 78 C219 102 237 77 225 56 C215 40 195 49 181 78Z"/>
+    </g>
+    <path class="leader" d="M124 47 L135 51"/><text data-label="petal" x="79" y="43"></text>
+
+    <g data-part="centre" class="part">
+      <circle cx="176" cy="82" r="30" fill="#f5c566"/>
+      <circle cx="166" cy="76" r="3" fill="#d58e48"/>
+      <circle cx="186" cy="86" r="3" fill="#d58e48"/>
+    </g>
+    <path class="leader" d="M207 88 L203 85"/><text data-label="centre" x="209" y="94"></text>
+  </svg>
+</div>
+<script>
+
+  const params=Studio.params;
+  document.getElementById('title').textContent=Studio.t('title');
+  document.querySelector('[data-ask]').textContent=Studio.t('ask');
+  document.querySelectorAll('[data-label]').forEach(el=>{
+    el.textContent=Studio.t(el.dataset.label);
+    if(!params.parts.includes(el.dataset.label)){
+      el.style.display='none';
+      el.previousElementSibling.style.display='none';
+    }
+  });
+  const feedback=document.getElementById('feedback');
+  let pending=null;
+  let finished=false;
+  document.querySelectorAll('[data-part]').forEach(el=>{
+    if(!params.parts.includes(el.dataset.part)){
+      el.style.display='none';
+      return;
+    }
+    el.addEventListener('click',()=>{
+      if(pending||finished)return;
+      pending=el;
+      Studio.answer(el.dataset.part);
+    });
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending||finished)return;
+    const selected=pending;
+    pending=null;
+    if(correct){
+      finished=true;
+      selected.classList.add('glow');
+      feedback.textContent=Studio.t('right');
+      setTimeout(()=>{
+        feedback.textContent=Studio.t('done');
+        Studio.done();
+      },650);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      selected.classList.remove('try');
+      void selected.getBoundingClientRect();
+      selected.classList.add('try');
+    }
+  });
+  Studio.ready();
+
+</script>

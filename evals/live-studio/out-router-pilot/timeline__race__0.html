@@ -1,0 +1,103 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;color:#493c34;background:#fff8ed}
+#app{position:relative;width:360px;height:320px;overflow:hidden;padding:12px}
+h1{margin:0 0 4px;font-size:19px;line-height:24px;color:#704630}
+#question{margin:0;font-size:14px;line-height:18px;color:#68574a}
+#timeline{position:absolute;inset:0}
+[data-axis]{position:absolute;left:18px;top:166px;width:324px;height:4px;border-radius:4px;background:#d5a66c}
+[data-axis]:before,[data-axis]:after{content:"";position:absolute;top:-5px;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent}
+[data-axis]:before{left:-1px;border-right:9px solid #d5a66c}
+[data-axis]:after{right:-1px;border-left:9px solid #d5a66c}
+.event{position:absolute;inset:0;pointer-events:none}
+.marker{position:absolute;top:157px;width:22px;height:22px;margin-left:-11px;border:4px solid #fff8ed;border-radius:50%;background:#d98252;box-shadow:0 0 0 2px #d98252;z-index:2}
+.connector{position:absolute;width:2px;background:#d5a66c;transform-origin:top center;z-index:1}
+.card{position:absolute;width:82px;min-height:64px;padding:7px 5px;border:2px solid #e7bd8a;border-radius:14px;background:#fffdf7;color:#493c34;font:600 12px/15px system-ui,sans-serif;text-align:center;cursor:pointer;pointer-events:auto;box-shadow:0 3px 0 #ead8bd;transition:transform .16s,background .16s,border-color .16s}
+.card span{display:block;font-size:11px;color:#946447}
+.card:active{transform:scale(.94)}
+.card:focus-visible{outline:3px solid #d98252;outline-offset:2px}
+#feedback{position:absolute;left:12px;right:12px;bottom:9px;min-height:30px;padding:5px 8px;border-radius:12px;text-align:center;font-size:14px;font-weight:700;color:#704630}
+#feedback.wrong{background:#f9e4d8}
+#feedback.correct{background:#e6f1df}
+#feedback.done{background:#e6f1df;animation:appear .3s ease-out}
+@keyframes appear{from{transform:scale(.9);opacity:.4}to{transform:scale(1);opacity:1}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <p id="question"></p>
+  <div id="timeline">
+    <div data-axis></div>
+    <div id="events"></div>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(()=>{
+  const p=Studio.params, events=p.events;
+  const title=document.getElementById("title");
+  const question=document.getElementById("question");
+  const layer=document.getElementById("events");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  question.textContent=Studio.t("ask");
+  const min=Math.min(...events.map(e=>e.year)), max=Math.max(...events.map(e=>e.year));
+  const xFor=e=>18+(max===min?162:(e.year-min)/(max-min)*324);
+  const lanes=[[],[]];
+  events.forEach((e,i)=>{
+    const x=xFor(e), lane=i%2, card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.dataset.card=e.key;
+    card.innerHTML="";
+    const name=document.createElement("span");
+    name.textContent=Studio.t(e.key);
+    const year=document.createElement("span");
+    year.textContent=String(e.year);
+    card.append(name,year);
+    const cardW=82, top=lane===0?75:193;
+    let left=Math.max(2,Math.min(276,x-cardW/2));
+    for(const prev of lanes[lane]){
+      if(Math.abs(left-prev)<cardW+5) left=Math.min(276,prev+cardW+5);
+    }
+    if(left>276) left=Math.max(2,Math.min(276,x-cardW/2-cardW-5));
+    lanes[lane].push(left);
+    card.style.left=left+"px";
+    card.style.top=top+"px";
+    const marker=document.createElement("div");
+    marker.className="marker";
+    marker.dataset.event=e.key;
+    marker.dataset.year=String(e.year);
+    marker.style.left=x+"px";
+    const line=document.createElement("div");
+    line.className="connector";
+    const cx=left+cardW/2, cy=lane===0?top+64:top;
+    const dy=lane===0?157-(top+64):cy-168;
+    line.style.left=x+"px";
+    line.style.top=(lane===0?top+64:168)+"px";
+    line.style.height=Math.abs(dy)+"px";
+    line.style.transform=`translateX(${cx-x}px)`;
+    card.addEventListener("click",()=>{
+      feedback.textContent="";
+      feedback.className="";
+      Studio.event("tap",{key:e.key});
+      Studio.answer(e.key);
+    });
+    layer.append(line,marker,card);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=Studio.t("right");
+      feedback.className="correct";
+      question.textContent=Studio.t("done");
+      Studio.done();
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      feedback.className="wrong";
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

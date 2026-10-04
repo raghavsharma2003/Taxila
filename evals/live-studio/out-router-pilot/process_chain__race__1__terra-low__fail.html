@@ -1,0 +1,178 @@
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:360px;height:320px;overflow:hidden;font-family:Arial,sans-serif;background:#fff7e8;color:#70442f}
+#app{position:relative;width:360px;height:320px;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 18px 24px,#ffe4a8 0 11px,transparent 12px),radial-gradient(circle at 336px 38px,#ffd6b8 0 14px,transparent 15px),linear-gradient(150deg,#fffaf0,#ffe8d0)}
+#title{position:absolute;top:7px;left:8px;width:344px;height:29px;text-align:center;font-size:20px;font-weight:800;line-height:29px;color:#79452d}
+#scene{position:absolute;left:0;top:37px;width:360px;height:157px}
+#arrows,#stages{position:absolute;inset:0}
+.arrow{position:absolute;height:5px;border-radius:8px;background:#d98d57;transform-origin:left center;z-index:1}
+.arrow:after{content:"";position:absolute;right:-9px;top:50%;transform:translateY(-50%);border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:13px solid #d98d57}
+.stage{position:absolute;width:66px;height:66px;padding:5px;border:3px solid #e8b276;border-radius:22px;background:#fffdf6;box-shadow:0 5px 0 #f2cf9b,0 9px 14px rgba(115,66,38,.13);display:flex;align-items:center;justify-content:center;text-align:center;z-index:3;transition:transform .32s ease,background .32s ease,border-color .32s ease,box-shadow .32s ease}
+.stage [data-label]{font-size:12px;line-height:1.08;font-weight:800;color:#70442f;overflow-wrap:anywhere}
+.stage.active{transform:translateY(-5px) scale(1.08);background:#fff0bc;border-color:#ee9c47;box-shadow:0 7px 0 #edbd74,0 12px 19px rgba(169,91,40,.23)}
+.stage.active:after{content:"";position:absolute;inset:-9px;border:2px solid #f1be62;border-radius:29px;animation:halo 1.25s ease-in-out infinite}
+@keyframes halo{50%{transform:scale(1.1);opacity:.18}}
+#token{position:absolute;width:28px;height:28px;border:3px solid #fff9e9;border-radius:55% 45% 52% 48%;background:#ff9169;box-shadow:0 3px 0 #d8684d,0 6px 10px rgba(100,53,33,.2);z-index:6;pointer-events:none;transition:left .78s cubic-bezier(.31,.03,.15,1),top .78s cubic-bezier(.31,.03,.15,1)}
+#token:before,#token:after{content:"";position:absolute;top:8px;width:4px;height:4px;border-radius:50%;background:#704035}
+#token:before{left:6px}#token:after{right:6px}
+#token.fly{animation:wobble .2s linear infinite}
+@keyframes wobble{50%{transform:rotate(13deg) scale(1.1)}}
+#next{position:absolute;left:145px;top:202px;width:70px;height:52px;border:0;border-radius:18px;background:#f39b53;color:#fffdf5;font-size:15px;font-weight:800;box-shadow:0 5px 0 #c96b36,0 8px 12px rgba(130,70,35,.18);transition:transform .15s,opacity .2s}
+#next:active,.option:active{transform:translateY(3px) scale(.96)}
+#next:disabled{opacity:.55}
+#question{position:absolute;left:8px;right:8px;top:201px;height:113px;padding:7px;border:2px solid #efd09e;border-radius:20px;background:#fffdf6;box-shadow:0 5px 12px rgba(122,73,39,.1);opacity:0;transform:translateY(15px);pointer-events:none;transition:opacity .3s,transform .3s}
+#question.show{opacity:1;transform:translateY(0);pointer-events:auto}
+#askline{height:28px;text-align:center;white-space:nowrap;font-size:14px;font-weight:800;line-height:28px;color:#76452e}
+#after{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:10px;background:#ffe7ae;color:#8d5532}
+#options{display:flex;justify-content:center;gap:7px}
+.option{width:104px;height:54px;border:2px solid #e7b980;border-radius:17px;background:#fff8e8;color:#70422e;font-size:13px;font-weight:800;box-shadow:0 3px 0 #e8c18d;transition:transform .15s,background .2s}
+.option.pulse{animation:tap .42s ease}
+@keyframes tap{50%{transform:scale(1.07);background:#fff0c7}}
+#feedback{position:absolute;left:70px;right:70px;bottom:1px;height:23px;text-align:center;font-size:13px;font-weight:800;color:#a45b38;opacity:0;transform:translateY(5px);transition:opacity .2s,transform .2s}
+#feedback.show{opacity:1;transform:translateY(0)}
+#feedback.good{color:#57935b}
+.hidden{display:none!important}
+</style>
+<div id="app" data-active="">
+  <div id="title"></div>
+  <div id="scene">
+    <div id="arrows"></div>
+    <div id="stages"></div>
+    <div id="token" data-token></div>
+  </div>
+  <button id="next" type="button" data-action="next"></button>
+  <div id="question">
+    <div id="askline"><span id="ask"></span><span id="after"></span></div>
+    <div id="options"></div>
+  </div>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params, stages=p.stages, root=document.getElementById('app');
+  var holder=document.getElementById('stages'), arrows=document.getElementById('arrows');
+  var token=document.getElementById('token'), next=document.getElementById('next');
+  var question=document.getElementById('question'), options=document.getElementById('options');
+  var feedback=document.getElementById('feedback'), pos=[], active=0, moving=false, answering=false, finished=false;
+
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('ask').textContent=Studio.t('ask');
+  document.getElementById('after').textContent=Studio.t(p.askAfter);
+  next.textContent=Studio.t('next');
+
+  function positions(){
+    var n=stages.length,i,x,y;
+    if(p.cycle&&n>1){
+      for(i=0;i<n;i++){
+        x=180+Math.cos(-Math.PI/2+Math.PI*2*i/n)*116;
+        y=78+Math.sin(-Math.PI/2+Math.PI*2*i/n)*54;
+        pos.push({x:x,y:y});
+      }
+    }else if(n<=4){
+      for(i=0;i<n;i++)pos.push({x:38+i*(284/Math.max(1,n-1)),y:80});
+    }else{
+      for(i=0;i<n;i++)pos.push({x:42+(i%4)*92,y:42+Math.floor(i/4)*78});
+    }
+  }
+  function arrow(a,b,key){
+    var dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+    var start=37,end=39, line=document.createElement('div');
+    line.className='arrow';
+    line.setAttribute('data-arrow',key);
+    line.style.left=(a.x+dx/d*start)+'px';
+    line.style.top=(a.y+dy/d*start-2.5)+'px';
+    line.style.width=Math.max(8,d-start-end)+'px';
+    line.style.transform='rotate('+Math.atan2(dy,dx)+'rad)';
+    arrows.appendChild(line);
+  }
+  function setActive(i){
+    active=i;
+    root.setAttribute('data-active',stages[i]);
+    Array.prototype.forEach.call(holder.children,function(el,j){el.classList.toggle('active',j===i);});
+  }
+  function moveToken(i,travel){
+    if(travel){
+      token.classList.add('fly');
+      setTimeout(function(){token.classList.remove('fly');},790);
+    }
+    token.style.left=(pos[i].x-14)+'px';
+    token.style.top=(pos[i].y-14)+'px';
+  }
+  function showQuestion(){
+    next.classList.add('hidden');
+    question.classList.add('show');
+    Studio.event('question',{stage:active});
+  }
+
+  positions();
+  stages.forEach(function(key,i){
+    var stage=document.createElement('div'), label=document.createElement('span');
+    stage.className='stage';
+    stage.setAttribute('data-stage',key);
+    stage.style.left=(pos[i].x-33)+'px';
+    stage.style.top=(pos[i].y-33)+'px';
+    label.setAttribute('data-label',key);
+    label.textContent=Studio.t(key);
+    stage.appendChild(label);
+    holder.appendChild(stage);
+  });
+  for(var i=0;i<stages.length-1;i++)arrow(pos[i],pos[i+1],stages[i]+'>'+stages[i+1]);
+  if(p.cycle&&stages.length>1)arrow(pos[stages.length-1],pos[0],stages[stages.length-1]+'>'+stages[0]);
+
+  setActive(0);
+  moveToken(0,false);
+
+  next.addEventListener('click',function(){
+    if(moving)return;
+    var target=active+1;
+    if(target>=stages.length){
+      if(p.cycle)target=0;
+      else{showQuestion();return;}
+    }
+    moving=true;
+    next.disabled=true;
+    Studio.event('next',{from:active,to:target});
+    moveToken(target,true);
+    setTimeout(function(){
+      setActive(target);
+      moving=false;
+      next.disabled=false;
+      if(!p.cycle&&target===stages.length-1)setTimeout(showQuestion,230);
+    },790);
+  });
+
+  p.options.forEach(function(key){
+    var button=document.createElement('button');
+    button.type='button';
+    button.className='option';
+    button.setAttribute('data-option',key);
+    button.textContent=Studio.t(key);
+    button.addEventListener('click',function(){
+      if(answering||finished)return;
+      answering=true;
+      button.classList.add('pulse');
+      Studio.event('answer',{option:key});
+      Studio.answer(key);
+      setTimeout(function(){button.classList.remove('pulse');},440);
+    });
+    options.appendChild(button);
+  });
+
+  Studio.onVerdict(function(verdict){
+    answering=false;
+    feedback.classList.remove('show','good');
+    feedback.textContent=verdict.correct?Studio.t('right'):Studio.t('wrong');
+    feedback.classList.add('show');
+    if(verdict.correct){
+      finished=true;
+      feedback.classList.add('good');
+      setTimeout(function(){Studio.done();},450);
+    }else{
+      setTimeout(function(){feedback.classList.remove('show');},850);
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

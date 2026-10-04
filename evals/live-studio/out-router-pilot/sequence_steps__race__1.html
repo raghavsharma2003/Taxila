@@ -1,0 +1,72 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8ec;color:#493b35}
+#app{width:360px;height:320px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+h1{margin:0;font-size:19px;line-height:24px;color:#694b3e}
+#instr{margin:0;min-height:34px;font-size:13px;line-height:17px;color:#75645a}
+#slots{display:flex;gap:7px;justify-content:center}
+.slot{height:56px;flex:1;max-width:100px;border:2px dashed #e4c7a7;border-radius:15px;background:#fffdf8;display:flex;align-items:center;justify-content:center;position:relative}
+.slot-num{position:absolute;top:3px;left:7px;color:#ba9271;font-size:12px;font-weight:700}
+.slot.filled{border-style:solid;border-color:#9cc9ad;background:#eff8ee}
+#cards{display:flex;gap:8px;justify-content:center;align-items:center;min-height:66px}
+.card{height:58px;min-width:94px;max-width:104px;flex:1;border:0;border-radius:16px;background:#f3d39d;color:#563f32;font:700 16px/1.1 system-ui,sans-serif;box-shadow:0 4px 0 #d4ad74;cursor:pointer;transition:transform .16s,background .2s,box-shadow .16s}
+.card:active{transform:scale(.94);box-shadow:0 1px 0 #d4ad74}
+.card.shake{animation:shake .28s ease}
+.card:disabled{cursor:default}
+.slot .card{height:42px;min-width:0;width:calc(100% - 12px);padding:3px;font-size:13px;box-shadow:none;background:#cce6cd}
+#message{height:29px;text-align:center;font-size:15px;font-weight:700;color:#598269;display:flex;align-items:center;justify-content:center}
+#message.bad{color:#a96955}
+svg{position:absolute;right:8px;bottom:7px;opacity:.55}
+@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <section id="slots" aria-live="polite"></section>
+  <section id="cards"></section>
+  <div id="message" aria-live="polite"></div>
+  <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path d="M15 2c7 0 12 5 12 12S22 27 15 27 3 21 3 14 8 2 15 2Z" fill="#f1d8aa"/><path d="M10 13h.1M20 13h.1M10 18c3 3 7 3 10 0" fill="none" stroke="#8b6950" stroke-width="2" stroke-linecap="round"/></svg>
+</main>
+<script>
+
+(()=>{
+const p=Studio.params, keys=p.shown, slots=document.getElementById('slots'), cards=document.getElementById('cards'), msg=document.getElementById('message');
+document.getElementById('title').textContent=Studio.t('title');
+document.getElementById('instr').textContent=Studio.t('instr');
+const cardMap={};
+keys.forEach((key)=>{
+ const s=document.createElement('div');s.className='slot';
+ const n=document.createElement('span');n.className='slot-num';n.textContent=String(slots.children.length+1);s.appendChild(n);slots.appendChild(s);
+ const b=document.createElement('button');b.className='card';b.type='button';b.dataset.step=key;b.textContent=Studio.t(key);cardMap[key]=b;cards.appendChild(b);
+});
+let position=0,pending=null,locked=false;
+Studio.ready();
+keys.forEach(key=>cardMap[key].addEventListener('click',()=>{
+ if(locked||cardMap[key].dataset.placed)return;
+ locked=true;pending=key;msg.className='';msg.textContent='';
+ Studio.event('tap',{step:key});
+ Studio.answer({key});
+}));
+Studio.onVerdict(({correct})=>{
+ if(!pending)return;
+ const b=cardMap[pending];
+ if(correct){
+  position++;
+  b.dataset.placed=String(position);
+  slots.children[position-1].classList.add('filled');
+  slots.children[position-1].appendChild(b);
+  b.disabled=true;
+  msg.className='';msg.textContent=Studio.t('right');
+  Studio.event('placed',{position});
+  if(position===keys.length){msg.textContent=Studio.t('done');Studio.done();}
+ }else{
+  b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
+  msg.className='bad';msg.textContent=Studio.t('wrong');
+  Studio.event('miss',{step:pending});
+ }
+ pending=null;locked=false;
+});
+})();
+
+</script>

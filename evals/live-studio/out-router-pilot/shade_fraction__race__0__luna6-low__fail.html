@@ -1,0 +1,148 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ed;color:#49372e}
+#app{width:360px;height:320px;position:relative;padding:12px 16px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:19px;line-height:24px;margin:0;color:#704634;font-weight:800}
+#instr{font-size:13px;line-height:17px;text-align:center;margin:2px 0 5px;color:#765f50}
+#play{width:100%;display:flex;flex-direction:column;align-items:center}
+#target{font-size:24px;line-height:30px;font-weight:800;color:#a44f37;background:#ffead7;border-radius:14px;padding:0 14px;min-width:74px;text-align:center}
+#whole{width:240px;height:142px;display:block;margin:3px auto 4px;overflow:visible}
+.part{fill:#f5d9a9;stroke:#fff8ed;stroke-width:4;cursor:pointer;transition:fill .18s ease,filter .18s ease,transform .16s ease;transform-box:fill-box;transform-origin:center}
+.part[data-shaded="true"]{fill:#e88755}
+.part:active{filter:brightness(1.08);transform:scale(.96)}
+#message{height:22px;margin:0;font-size:14px;line-height:20px;font-weight:700;color:#795c48;text-align:center}
+#message.good{color:#37815f;animation:bop .42s ease}
+#message.bad{color:#a44f37}
+#check{border:0;border-radius:17px;min-width:148px;height:54px;padding:0 22px;background:#cf7049;color:white;font:800 17px system-ui;box-shadow:0 4px 0 #a95334;cursor:pointer;transition:transform .12s,box-shadow .12s,background .2s}
+#check:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 #a95334}
+#check:disabled{opacity:.75;cursor:default}
+#app.celebrate #whole{animation:pop .5s ease}
+#doneScreen{display:none;flex:1;align-items:center;justify-content:center;text-align:center;color:#37815f;font-size:23px;font-weight:800;padding:16px}
+#app.finished #play{display:none}
+#app.finished #doneScreen{display:flex}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.08) rotate(-2deg)}100%{transform:scale(1)}}
+@keyframes bop{0%{transform:scale(.85)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+</style>
+<main id="app">
+  <h1 id="title"></h1>
+  <p id="instr"></p>
+  <section id="play" data-item="">
+    <div id="target" data-target></div>
+    <svg id="whole" viewBox="0 0 240 142" aria-hidden="true">
+      <g id="pieces"></g>
+    </svg>
+    <p id="message"></p>
+    <button id="check" data-action="check" type="button"></button>
+  </section>
+  <section id="doneScreen"></section>
+</main>
+<script>
+
+(()=>{
+  const items=Studio.params.items;
+  const picture=Studio.params.picture;
+  const app=document.getElementById('app');
+  const play=document.getElementById('play');
+  const target=document.getElementById('target');
+  const svg=document.getElementById('whole');
+  const pieces=document.getElementById('pieces');
+  const message=document.getElementById('message');
+  const check=document.getElementById('check');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  document.getElementById('doneScreen').textContent=Studio.t('done');
+  let index=0, shaded=[], waiting=false, finished=false;
+  const ns='http://';
+  const polar=(cx,cy,r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  function addPart(shape,i){
+    shape.setAttribute('class','part');
+    shape.setAttribute('data-part',String(i));
+    shape.setAttribute('data-shaded','false');
+    shape.addEventListener('click',()=>toggle(i,shape));
+    pieces.appendChild(shape);
+  }
+  function draw(){
+    const item=items[index];
+    play.setAttribute('data-item',String(item.id));
+    target.textContent=String(item.n)+'/'+String(item.d);
+    message.textContent='';
+    message.className='';
+    check.disabled=false;
+    waiting=false;
+    shaded=Array(item.d).fill(false);
+    pieces.replaceChildren();
+    if(picture==='pizza'){
+      svg.setAttribute('viewBox','0 0 240 142');
+      svg.style.width='240px';
+      svg.style.height='142px';
+      const cx=120,cy=71,r=66;
+      for(let i=0;i<item.d;i++){
+        const a0=-Math.PI/2+i*2*Math.PI/item.d;
+        const a1=-Math.PI/2+(i+1)*2*Math.PI/item.d;
+        const p0=polar(cx,cy,r,a0),p1=polar(cx,cy,r,a1);
+        const path=document.createElementNS(ns,'path');
+        path.setAttribute('d',`M ${cx} ${cy} L ${p0[0]} ${p0[1]} A ${r} ${r} 0 ${item.d>2?0:1} 1 ${p1[0]} ${p1[1]} Z`);
+        addPart(path,i);
+      }
+    }else{
+      svg.setAttribute('viewBox','0 0 300 100');
+      svg.style.width='300px';
+      svg.style.height='100px';
+      for(let i=0;i<item.d;i++){
+        const rect=document.createElementNS(ns,'rect');
+        const w=284/item.d;
+        rect.setAttribute('x',String(8+i*w));
+        rect.setAttribute('y','14');
+        rect.setAttribute('width',String(w));
+        rect.setAttribute('height','72');
+        rect.setAttribute('rx','8');
+        addPart(rect,i);
+      }
+    }
+  }
+  function toggle(i,shape){
+    if(waiting||finished)return;
+    shaded[i]=!shaded[i];
+    shape.setAttribute('data-shaded',String(shaded[i]));
+    Studio.event('part',{index:i,shaded:shaded[i]});
+  }
+  check.addEventListener('click',()=>{
+    if(waiting||finished)return;
+    waiting=true;
+    check.disabled=true;
+    let n=0;
+    for(const value of shaded)if(value)n++;
+    Studio.event('check',{count:n});
+    Studio.answer({n:n,d:items[index].d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    if(correct){
+      message.textContent=Studio.t('right');
+      message.className='good';
+      app.classList.add('celebrate');
+      waiting=true;
+      setTimeout(()=>{
+        app.classList.remove('celebrate');
+        index++;
+        if(index>=items.length){
+          finished=true;
+          app.classList.add('finished');
+          Studio.done();
+        }else draw();
+      },650);
+    }else{
+      message.textContent=Studio.t('wrong');
+      message.className='bad';
+      waiting=false;
+      check.disabled=false;
+      Studio.event('verdict',{result:'wrong'});
+    }
+  });
+  draw();
+  Studio.ready();
+})();
+
+</script>

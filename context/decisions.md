@@ -3088,3 +3088,5 @@ streams' legitimate Director changes would move).
 
 ## Merged inbox entries (write-up from the entry text)
 - `voice-next-situation-delivery-2026-10-04` (2026-10-04): After round 2, voice work moves from engine search to situation-specific spoken-register lines plus per-clause delivery planning on DragonHD Diya, then a custom professional voice from a consented Indian teacher recorded talking to children. Reverse if a new engine beats Diya by >= 0.5 equal-weight in a blind round.
+
+- `owner-duplex-liveliness-2026-10-04` (2026-10-04): owner directive to crack full-duplex liveliness (listen, think, speak and build in parallel; early answer vs wait; backchannels; barge-in) at research level for children; workstream wf_3622f8d6-318 produces research, architecture, a measured prototype and a ship plan.

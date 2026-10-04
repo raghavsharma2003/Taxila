@@ -126,16 +126,24 @@ save("browR", br)
 # under the brow at rest and show the moment the brow lifts. Within 8 px of either brow, any pixel darker than its
 # 11 px median by > 18 takes the median colour.
 fc = load("face", L)
-zoneb = np.zeros((1024, 1024), bool)
+# under each brow the r2 membrane fill left a brow-shaped ridge (the hole's outline) and a dark tail pixel: both show
+# when the brow lifts. Re-fill the brow footprint (+7 px) as a harmonic membrane from the skin around it.
 for n in ("browL", "browR"):
-    zoneb |= ndi.binary_dilation(load(n, L)[..., 3] > 10, iterations=8)
-lum_f = 0.299 * fc[..., 0] + 0.587 * fc[..., 1] + 0.114 * fc[..., 2]
-medc = np.dstack([ndi.median_filter(fc[..., c], 11) for c in range(3)])
-lum_m = 0.299 * medc[..., 0] + 0.587 * medc[..., 1] + 0.114 * medc[..., 2]
-dk = zoneb & (lum_f < lum_m - 18) & (fc[..., 3] > 128)
-dk[330:370, 505:550] = False                                 # the bindi is meant to be dark
-fc[..., :3] = np.where(dk[..., None], medc, fc[..., :3])
-report["face_specks_px"] = int(dk.sum())
+    ba = load(n, L)[..., 3] > 5
+    ys_, xs_ = np.where(ba)
+    y0, y1, x0, x1 = ys_.min() - 14, ys_.max() + 15, xs_.min() - 14, xs_.max() + 15
+    zone_ = ndi.binary_dilation(ba, iterations=7)[y0:y1, x0:x1]
+    zone_ &= fc[y0:y1, x0:x1, 3] > 200                       # only where the face itself is opaque (not the hair edge)
+    sub = fc[y0:y1, x0:x1, :3].copy()
+    for c in range(3):
+        ch = sub[..., c]
+        ch[zone_] = ch[~zone_ & (fc[y0:y1, x0:x1, 3] > 200)].mean()
+        for _ in range(600):
+            avg = 0.25 * (np.roll(ch, 1, 0) + np.roll(ch, -1, 0) + np.roll(ch, 1, 1) + np.roll(ch, -1, 1))
+            ch[zone_] = avg[zone_]
+        sub[..., c] = ch
+    fc[y0:y1, x0:x1, :3] = sub
+    report[f"face_refill_{n}_px"] = int(zone_.sum())
 save("face", fc)
 
 # ---- 3. rest consistency (judge r2: "skin-coloured overscan triangles beside both earrings at the jaw"). The ear's

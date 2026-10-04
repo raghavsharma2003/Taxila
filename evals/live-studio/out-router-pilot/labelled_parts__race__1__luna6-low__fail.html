@@ -1,0 +1,101 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;background:#fff8eb;color:#385044}
+.card{width:360px;height:320px;padding:8px 10px;background:linear-gradient(145deg,#fffaf0,#f0f8e9);overflow:hidden}
+h1{height:24px;margin:0;text-align:center;font-size:17px;line-height:24px;font-weight:800;color:#38664d}
+#question{height:34px;margin:2px 0 0;text-align:center;font-size:15px;line-height:18px;font-weight:700;color:#654f38}
+svg{display:block;width:340px;height:216px;margin:0 auto}
+.part{cursor:pointer;transition:filter .24s,transform .18s;transform-box:fill-box;transform-origin:center}
+.part:active{transform:scale(.94)}
+.part:focus{outline:none;filter:drop-shadow(0 0 5px #ffd45e)}
+.hit{fill:transparent;stroke:transparent;pointer-events:all}
+.shape{stroke:#58754d;stroke-width:2;stroke-linejoin:round;transition:filter .25s}
+.glow .shape{filter:drop-shadow(0 0 8px #ffca40)}
+.label{font-size:12px;font-weight:700;fill:#435d48}
+.leader{stroke:#8c9a74;stroke-width:1.5;stroke-linecap:round}
+#message{height:22px;text-align:center;font-size:14px;line-height:20px;font-weight:800;color:#50784b}
+@keyframes sway{50%{transform:translateY(-2px)}}
+#plant{transform-origin:170px 145px;animation:sway 3s ease-in-out infinite}
+</style>
+<div class="card">
+  <h1 id="title"></h1>
+  <p id="question" data-ask></p>
+  <svg viewBox="0 0 340 216" role="img" aria-label="">
+    <g id="plant">
+      <line class="leader" x1="217" y1="47" x2="199" y2="61"/>
+      <line class="leader" x1="217" y1="78" x2="195" y2="83"/>
+      <line class="leader" x1="217" y1="128" x2="193" y2="132"/>
+      <line class="leader" x1="91" y1="133" x2="116" y2="133"/>
+      <line class="leader" x1="217" y1="187" x2="198" y2="187"/>
+
+      <g class="part" tabindex="0" role="button" transform="translate(140 35)">
+        <rect class="hit" x="-4" y="-2" width="66" height="64" rx="20"/>
+        <path class="shape" fill="#ef9aaa" d="M29 2C20 7 14 17 15 28c1 13 9 22 15 29 7-7 15-17 15-29 0-11-6-21-16-26Z"/>
+      </g>
+      <g class="part" tabindex="0" role="button" transform="translate(140 58)">
+        <rect class="hit" x="-4" y="-3" width="66" height="62" rx="20"/>
+        <path class="shape" fill="#f5c85b" d="M29 3C44 3 54 13 54 27S44 51 29 51 4 41 4 27 14 3 29 3Z"/>
+      </g>
+      <g class="part" tabindex="0" role="button" transform="translate(141 101)">
+        <rect class="hit" x="-4" y="-2" width="66" height="66" rx="20"/>
+        <path class="shape" fill="#77a85f" d="M19 4Q30 0 41 4L41 57Q30 63 19 57Z"/>
+      </g>
+      <g class="part" tabindex="0" role="button" transform="translate(93 105)">
+        <rect class="hit" x="-3" y="-2" width="66" height="62" rx="20"/>
+        <path class="shape" fill="#6eae66" d="M5 31C15 4 43 2 59 14 52 40 29 56 5 31Z"/>
+      </g>
+      <g class="part" tabindex="0" role="button" transform="translate(140 158)">
+        <rect class="hit" x="-4" y="-2" width="72" height="58" rx="20"/>
+        <path class="shape" fill="#a47750" d="M5 5Q31 14 58 5L48 21 38 26 32 49 27 29 16 22Z"/>
+      </g>
+
+      <text class="label" x="220" y="51"></text>
+      <text class="label" x="220" y="82"></text>
+      <text class="label" x="220" y="132"></text>
+      <text class="label" x="14" y="137"></text>
+      <text class="label" x="220" y="191"></text>
+    </g>
+  </svg>
+  <div id="message" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const title=document.getElementById('title');
+  const question=document.getElementById('question');
+  const message=document.getElementById('message');
+  title.textContent=Studio.t('title');
+  question.textContent=Studio.t('ask');
+  question.setAttribute('data-ask',p.ask);
+  const parts=[...document.querySelectorAll('.part')];
+  const labels=[...document.querySelectorAll('.label')];
+  p.parts.forEach((key,i)=>{
+    const shape=parts[i],label=labels[i];
+    shape.setAttribute('data-part',key);
+    label.setAttribute('data-label',key);
+    label.textContent=Studio.t(key);
+    const activate=()=>{
+      Studio.event('part_tap',{part:key});
+      Studio.answer(key);
+    };
+    shape.addEventListener('click',activate);
+    shape.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();activate()}
+    });
+  });
+  Studio.onVerdict(v=>{
+    if(v.correct){
+      const target=parts[p.parts.indexOf(p.ask)];
+      if(target)target.classList.add('glow');
+      message.textContent=Studio.t('right')+' '+Studio.t('done');
+      Studio.done();
+    }else{
+      message.textContent=Studio.t('wrong');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

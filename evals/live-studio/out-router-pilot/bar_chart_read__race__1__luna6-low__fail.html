@@ -1,0 +1,92 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{background:#fff8ec;color:#493b32;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{width:360px;height:320px;padding:7px 0;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+#title{height:23px;line-height:23px;font-size:17px;font-weight:750;color:#744b32;text-align:center}
+#ask{height:20px;line-height:20px;font-size:14px;font-weight:600;text-align:center}
+#chartwrap{position:relative;width:360px;height:235px;flex:none}
+#chart{display:block;width:360px;height:235px}
+.grid{stroke:#eadfce;stroke-width:1}
+.axis{stroke:#9f8e7a;stroke-width:1.5}
+.ticklabel{font-size:11px;fill:#766758;text-anchor:end;dominant-baseline:middle}
+.bar{fill:#e89a57;transform-box:fill-box;transform-origin:center bottom;transform:scaleY(0);transition:transform 680ms cubic-bezier(.2,.8,.2,1)}
+.bar.grow{transform:scaleY(1)}
+.column{fill:transparent;cursor:pointer}
+.column:active{fill:rgba(232,154,87,.12)}
+.barname{font-size:11px;fill:#57483b;text-anchor:middle;dominant-baseline:hanging;pointer-events:none}
+#yaxis{position:absolute;left:0;top:38px;height:112px;width:20px;writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;font-weight:650;color:#766758;text-align:center;pointer-events:none}
+#feedback{height:24px;line-height:22px;font-size:14px;font-weight:700;text-align:center;color:#85563a}
+#feedback.right{color:#397454}
+#feedback.wrong{color:#a65343}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <div id="chartwrap">
+    <div id="yaxis"></div>
+    <svg id="chart" viewBox="0 0 360 235" aria-label="">
+      <g id="gridlines"></g>
+      <g id="bars"></g>
+      <g id="columns"></g>
+    </svg>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params,data=p.data,t=Studio.t;
+  document.getElementById("title").textContent=t("title");
+  document.getElementById("ask").textContent=t("ask");
+  document.getElementById("yaxis").textContent=t("yaxis");
+  const svg=document.getElementById("chart"),grid=document.getElementById("gridlines");
+  const bars=document.getElementById("bars"),columns=document.getElementById("columns");
+  const left=49,right=357,top=12,bottom=177,plotHeight=bottom-top;
+  const maxValue=Math.max.apply(null,data.map(d=>d.value));
+  const step=Math.max(1,Math.ceil(maxValue/4));
+  const scaleMax=Math.ceil(maxValue/step)*step;
+  function el(tag,attrs,parent){
+    const n=document.createElementNS(svg.namespaceURI,tag);
+    for(const k in attrs)n.setAttribute(k,attrs[k]);
+    parent.appendChild(n);
+    return n;
+  }
+  for(let v=0;v<=scaleMax;v+=step){
+    const y=bottom-(v/scaleMax)*plotHeight;
+    el("line",{x1:left,y1:y,x2:right,y2:y,class:v===0?"axis":"grid"},grid);
+    const label=el("text",{x:left-7,y:y,class:"ticklabel","data-tick":String(v)},grid);
+    label.textContent=String(v);
+  }
+  const slot=(right-left)/data.length;
+  data.forEach((d,i)=>{
+    const cx=left+slot*(i+.5),w=Math.min(34,slot*.58),h=(d.value/scaleMax)*plotHeight;
+    el("rect",{x:cx-w/2,y:bottom-h,width:w,height:h,rx:5,class:"bar","data-bar":d.key,"data-value":String(d.value)},bars);
+    const name=el("text",{x:cx,y:bottom+8,class:"barname"},bars);
+    name.textContent=t(d.key);
+    const hit=el("rect",{x:left+i*slot,y:top,width:slot,height:210-top,class:"column","data-column":d.key});
+    hit.addEventListener("click",function(){
+      if(hit.getAttribute("aria-disabled")==="true")return;
+      columns.querySelectorAll(".column").forEach(c=>c.setAttribute("aria-disabled","true"));
+      Studio.event("bar_tap",{key:d.key});
+      Studio.answer(d.key);
+    });
+  });
+  requestAnimationFrame(()=>requestAnimationFrame(()=>bars.querySelectorAll(".bar").forEach(b=>b.classList.add("grow"))));
+  const feedback=document.getElementById("feedback");
+  Studio.onVerdict(function(result){
+    feedback.className="";
+    if(result.correct){
+      feedback.classList.add("right");
+      feedback.textContent=t("right")+" "+t("done");
+      Studio.done();
+    }else{
+      feedback.textContent=t("wrong");
+      feedback.classList.add("wrong");
+      columns.querySelectorAll(".column").forEach(c=>c.removeAttribute("aria-disabled"));
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

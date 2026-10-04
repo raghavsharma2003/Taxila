@@ -1,0 +1,110 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff7e9;color:#473329}
+  #card{position:relative;width:360px;height:320px;overflow:hidden;background:linear-gradient(160deg,#fffaf0,#ffefd9)}
+  #card:before{content:"";position:absolute;width:130px;height:130px;right:-48px;top:-65px;border-radius:50%;background:#ffe3ba}
+  #title{position:absolute;top:10px;left:18px;right:18px;font-size:20px;font-weight:800;line-height:26px}
+  #ask{position:absolute;top:43px;left:18px;right:18px;min-height:48px;font-size:16px;font-weight:650;line-height:21px}
+  #viz{position:absolute;left:0;top:105px;width:360px;height:180px}
+  #axisTitle{position:absolute;left:3px;top:29px;height:106px;width:18px;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-size:12px;font-weight:700;color:#80634e}
+  #ticks,#grid,#columns{position:absolute;inset:0}
+  .tick{position:absolute;left:24px;width:32px;text-align:right;transform:translateY(-50%);font-size:11px;font-weight:650;color:#826b59}
+  .gridline{position:absolute;left:64px;width:280px;height:1px;background:#e9d9c4}
+  .gridline.zero{height:2px;background:#ac9078}
+  #columns{left:64px;width:280px;display:flex}
+  .column{position:relative;flex:1;height:180px;min-width:52px;border:0;padding:0;background:transparent;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .column:focus-visible{outline:2px solid #704b8a;outline-offset:-2px;border-radius:10px}
+  .bar{position:absolute;bottom:40px;left:8px;right:8px;border-radius:9px 9px 0 0;background:#d97855;transform-origin:bottom;animation:rise .7s cubic-bezier(.2,.8,.2,1) both;box-shadow:inset -4px 0 #c76647}
+  .bar:after{content:"";position:absolute;top:7px;left:7px;width:5px;bottom:6px;border-radius:5px;background:#ffffff36}
+  .name{position:absolute;top:143px;left:0;right:0;height:32px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;font-weight:700;color:#654a3a;overflow-wrap:anywhere}
+  .column:active .bar{filter:brightness(1.12)}
+  .column:active{transform:scale(.97)}
+  #feedback{position:absolute;left:13px;right:13px;top:287px;min-height:27px;text-align:center;font-size:15px;font-weight:750;color:#76543c}
+  #feedback.pop{animation:pop .32s ease-out}
+  @keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes pop{from{transform:scale(.88);opacity:.3}to{transform:scale(1);opacity:1}}
+  @media(prefers-reduced-motion:reduce){.bar,#feedback.pop{animation:none}}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <div id="viz">
+    <div id="axisTitle"></div>
+    <div id="grid"></div>
+    <div id="ticks"></div>
+    <div id="columns"></div>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(() => {
+  const data = Studio.params.data;
+  const title = document.getElementById('title');
+  const ask = document.getElementById('ask');
+  const axisTitle = document.getElementById('axisTitle');
+  const grid = document.getElementById('grid');
+  const ticks = document.getElementById('ticks');
+  const columns = document.getElementById('columns');
+  const feedback = document.getElementById('feedback');
+  title.textContent = Studio.t('title');
+  ask.textContent = Studio.t('ask');
+  axisTitle.textContent = Studio.t('yaxis');
+
+  const largest = Math.max(0, ...data.map(item => item.value));
+  const magnitude = Math.pow(10, Math.floor(Math.log10(Math.max(1, largest))));
+  const step = [1, 2, 5, 10].map(n => n * magnitude).find(n => largest / n <= 6) || 10 * magnitude;
+  const ceiling = Math.max(step, Math.ceil(largest / step) * step);
+  const plotHeight = 140;
+  for (let value = 0; value <= ceiling; value += step) {
+    const y = plotHeight * (1 - value / ceiling);
+    const line = document.createElement('div');
+    line.className = 'gridline' + (value === 0 ? ' zero' : '');
+    line.style.top = y + 'px';
+    grid.appendChild(line);
+    const tick = document.createElement('div');
+    tick.className = 'tick';
+    tick.dataset.tick = String(value);
+    tick.style.top = y + 'px';
+    tick.textContent = String(value);
+    ticks.appendChild(tick);
+  }
+
+  let finished = false;
+  data.forEach(item => {
+    const column = document.createElement('button');
+    column.type = 'button';
+    column.className = 'column';
+    column.dataset.column = item.key;
+    const bar = document.createElement('span');
+    bar.className = 'bar';
+    bar.dataset.bar = item.key;
+    bar.dataset.value = String(item.value);
+    bar.style.height = (plotHeight * item.value / ceiling) + 'px';
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = Studio.t(item.key);
+    column.append(bar, name);
+    column.addEventListener('click', () => {
+      if (finished) return;
+      feedback.textContent = '';
+      Studio.answer(item.key);
+    });
+    columns.appendChild(column);
+  });
+  Studio.onVerdict(({correct}) => {
+    feedback.classList.remove('pop');
+    void feedback.offsetWidth;
+    feedback.classList.add('pop');
+    if (correct) {
+      finished = true;
+      feedback.textContent = Studio.t('right') + ' ' + Studio.t('done');
+      Studio.done();
+    } else {
+      feedback.textContent = Studio.t('wrong');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>
