@@ -90,7 +90,7 @@ export function personaStep(st, sig, { minute = 0 } = {}) {
   if (sig.explicitSlower) { k.waitExtra = Math.min(waitCap, Math.max(k.waitExtra, (explicit.waitExtra ?? 0)) + 1); explicit.waitExtra = k.waitExtra; explicit.pace = "slow"; }
   else if (sig.explicitFaster) { k.waitExtra = 0; explicit.waitExtra = 0; explicit.pace = "brisk"; k.endpointBoostTurns = 0; }
   else if (explicit.waitExtra != null) k.waitExtra = Math.max(k.waitExtra, explicit.waitExtra);
-  if (sig.slowerPace || sig.explicitSlower) k.endpointBoostTurns = 6; else k.endpointBoostTurns = Math.max(0, k.endpointBoostTurns - 1);
+  if (sig.slowerPace || sig.explicitSlower || explicit.pace === "slow") k.endpointBoostTurns = 6; else k.endpointBoostTurns = Math.max(0, k.endpointBoostTurns - 1);
   k.mixObserved = 0.7 * k.mixObserved + 0.3 * (sig.hindiShare ?? 0);
   return { ...st, turn, knobs: k, explicit, pendingExplicit, log, lastStepMin, harder };
 }
