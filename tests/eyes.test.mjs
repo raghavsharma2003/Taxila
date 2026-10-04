@@ -87,3 +87,49 @@ test("health: shallow by default; ?ready=1 checks the database and answers 503 w
   } finally { if (saved !== undefined) process.env.DATABASE_URL = saved; console.warn = origWarn; }
   assert.equal(typeof register, "function");
 });
+
+test("route errors: the stderr line carries the class and server frames, never the message", async () => {
+  const { handle: h3, register: r3 } = await import("../server/router.js?errline=1");
+  r3({ "POST /api/x/leak": async () => { const e = new RangeError("child text here: Meera ne kaha"); e.code = "E42"; throw e; } });
+  const seen = [];
+  const origErr = console.error;
+  console.error = (...a) => { seen.push(a.map(String).join(" ")); };
+  try { await h3(req("POST", "/api/x/leak", {}), fakeRes()); } finally { console.error = origErr; }
+  const line = seen.find((l) => l.startsWith("route error"));
+  assert.ok(line, "a route error line was written");
+  assert.ok(line.includes("RangeError:E42"));
+  assert.ok(!/Meera|child text/.test(line), `no message text: ${line}`);
+  assert.ok(!line.includes("/home/"), "no absolute paths");
+});
+
+test("ipOf keys on the rightmost x-forwarded-for hop (the one ACA's ingress appended)", async () => {
+  const { ipOf } = await import("../server/router.js");
+  assert.equal(ipOf({ headers: { "x-forwarded-for": "1.2.3.4, 9.9.9.9" }, socket: {} }), "9.9.9.9");
+  assert.equal(ipOf({ headers: { "x-forwarded-for": "spoofed-1, spoofed-2, 20.1.1.1" }, socket: {} }), "20.1.1.1");
+  assert.equal(ipOf({ headers: {}, socket: { remoteAddress: "10.0.0.1" } }), "10.0.0.1");
+});
+
+test("forced 500: an operator key is required and at most 4 fire per hour per replica", async () => {
+  const { boomAllowed } = await import("../server/router.js?boom=1");
+  const t = 1_000_000;
+  assert.deepEqual([1, 2, 3, 4, 5].map((i) => boomAllowed(t + i)), [true, true, true, true, false]);
+  assert.equal(boomAllowed(t + 3_600_001), true, "a new hour, a new budget");
+});
+
+test("gate: a dirty run never shadows the sha's evidence; image tags must name a commit", async () => {
+  const { shaOfTag, writeStamp, STAMPS } = await import("../infra/gate.mjs");
+  const { existsSync, rmSync } = await import("fs");
+  const fake = "f".repeat(40);
+  try {
+    writeStamp(fake, { pass: false, dirty: true, results: [] });
+    assert.ok(existsSync(`${STAMPS}${fake}-dirty.json`), "a dirty run is keyed <sha>-dirty");
+    assert.ok(!existsSync(`${STAMPS}${fake}.json`), "and never under the sha itself");
+  } finally { rmSync(`${STAMPS}${fake}-dirty.json`, { force: true }); }
+  assert.equal(shaOfTag("local-abc123"), null);
+  assert.equal(shaOfTag("latest"), null);
+  assert.equal(shaOfTag("zzzzzzz"), null);
+  const { execSync } = await import("child_process");
+  const head = execSync("git rev-parse HEAD").toString().trim();
+  assert.equal(shaOfTag(head.slice(0, 7)), head);
+  assert.equal(shaOfTag(`${head.slice(0, 7)}-local-x1`), null, "a working-tree build is not the commit");
+});

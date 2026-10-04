@@ -22,6 +22,13 @@ const files = readdirSync(DIR)
 if (!files.length) { console.log(`no prod tests for wave ≤ ${wave}${only ? ` matching "${only}"` : ""}`); process.exit(0); }
 
 const env = { ...process.env, ...(base ? { TAXILA_BASE: base } : {}) };
+// A LOCAL target's DB checks default to the Neon TEST branch (BUILD-PLAN W1-D item 3); a remote target's DB is only
+// ever the one TAXILA_DB_URL names explicitly (the main loop sets production for a prod run).
+const target = env.TAXILA_BASE || "";
+if (!env.TAXILA_DB_URL && /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(target)) {
+  const test = env.CONDUCTOR_TEST_DATABASE_URL || env.TEST_DATABASE_URL;
+  if (test) { env.TAXILA_DB_URL = test; console.log("local target: TAXILA_DB_URL = the Neon test branch"); }
+}
 const outcome = [];
 for (const f of files) {
   const t0 = Date.now();

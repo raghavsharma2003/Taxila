@@ -47,10 +47,10 @@ export function done() {
  */
 export function apiClient(base = BASE) {
   let cookie = "";
-  async function api(method, path, body, expect = [200, 201]) {
+  async function api(method, path, body, expect = [200, 201], headers = {}) {
     const t = performance.now();
     const res = await fetch(base + path, {
-      method, headers: { "content-type": "application/json", ...(cookie ? { cookie } : {}) },
+      method, headers: { "content-type": "application/json", ...(cookie ? { cookie } : {}), ...headers },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
     const set = res.headers.get("set-cookie");
@@ -71,11 +71,19 @@ export function apiClient(base = BASE) {
 // ───────────────────────────── test accounts ─────────────────────────────
 
 /**
+ * The target's database url: TAXILA_DB_URL when given (the main loop sets it to production for a prod run, explicitly);
+ * for a LOCAL target, the Neon TEST branch by default (BUILD-PLAN W1-D item 3); for a remote target with no
+ * TAXILA_DB_URL, none (DB checks skip with a WARN). Never production by default.
+ */
+export const targetDbUrl = (env = process.env) =>
+  env.TAXILA_DB_URL || (isLocal ? env.CONDUCTOR_TEST_DATABASE_URL || env.TEST_DATABASE_URL || null : null);
+
+/**
  * Leftover @taxila.test guardians (BUILD-PLAN §1.7: counted before and after). Needs a DB url for the target
  * (TAXILA_DB_URL; the API has no such count); null when none is configured.
  */
 export async function countTestGuardians() {
-  const url = process.env.TAXILA_DB_URL;
+  const url = targetDbUrl();
   if (!url) return null;
   const { neon } = await import("@neondatabase/serverless");
   const rows = await neon(url).query("select count(*)::int as n from guardian where email like '%@taxila.test'");
@@ -88,7 +96,7 @@ export async function countTestGuardians() {
  * @returns {Promise<any[] | null>}
  */
 export async function dbq(text, params = []) {
-  const url = process.env.TAXILA_DB_URL;
+  const url = targetDbUrl();
   if (!url) return null;
   const { neon } = await import("@neondatabase/serverless");
   return neon(url).query(text, params);

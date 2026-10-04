@@ -13,10 +13,11 @@
 //   test targets:  --app NAME (default taxila-worker; jobs are prefixed by it) --db test (the Neon TEST branch,
 //                  CONDUCTOR_TEST_DATABASE_URL) --local (build the WORKING TREE, uploaded; only with --db test)
 //
-// Production (`--db` not test) needs HEAD pushed AND a passing gate for HEAD (infra/gate.mjs), exactly like the web.
+// Production (`--db` not test) needs HEAD pushed AND a passing gate for HEAD (infra/gate.mjs), exactly like the web,
+// AND every migration of HEAD applied on the target database (migrationsGate; --local test builds skip it).
 // Freeze: deploys that touch the Conductor are refused 18:00-21:30 IST (X37); --force overrides.
 import { ROOT, acrBuild, arm, loadEnv, sleep } from "../infra/azure.mjs";
-import { REPO, branchName, gateEvidence, headSha } from "../infra/gate.mjs";
+import { REPO, branchName, gateEvidence, headSha, migrationsGate } from "../infra/gate.mjs";
 import { directUrl } from "../server/conductor/pg.js";
 import { createRequire } from "module";
 const require_ = createRequire(import.meta.url);
@@ -77,9 +78,16 @@ const pooled = TEST_DB ? process.env.CONDUCTOR_TEST_DATABASE_URL
   : process.env.DATABASE_URL_DIRECT || (webDbRef?.secretRef ? secretVal(webDbRef.secretRef) : webDbRef?.value) || process.env.DATABASE_URL;
 if (!pooled) throw new Error(TEST_DB ? "no CONDUCTOR_TEST_DATABASE_URL in .env.local" : "no DATABASE_URL on taxila-web or in .env.local");
 secrets.push({ name: "database-url-direct", value: directUrl(pooled) });
+// The target database must hold every migration of the sha being deployed, whatever the gate evidence was (a CI run
+// cannot check production's schema_migrations). The worker's own boot check would refuse to start anyway; this
+// refuses before a revision or a job is created.
+if (!LOCAL) {
+  try { await migrationsGate(pooled, full); console.log(`migrations: every db/migrations file of ${sha} is applied on the target database`); }
+  catch (e) { if (!DRY) throw e; console.log(`WARN ${e.message} (dry run continues)`); }
+}
 
 // taxila-web's env minus what is the worker's own (DB, role, host knobs): models + storage for report and Forge jobs.
-const OWN = new Set(["DATABASE_URL", "NODE_ENV", "TAXILA_ROLE", "GIT_SHA", "ACCESS_LOG", "WORKER_HEALTH_PORT", "CONDUCTOR_STATEMENT_TIMEOUT_MS", "DB_DRIVER", "TAXILA_HOST"]);
+const OWN = new Set(["DATABASE_URL", "NODE_ENV", "TAXILA_ROLE", "GIT_SHA", "ACCESS_LOG", "WORKER_HEALTH_PORT", "CONDUCTOR_STATEMENT_TIMEOUT_MS", "DB_DRIVER", "TAXILA_HOST", "TAXILA_OPS_KEY"]);
 const env = [];
 for (const e of webEnv) {
   if (OWN.has(e.name)) continue;

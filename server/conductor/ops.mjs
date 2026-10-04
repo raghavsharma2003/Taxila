@@ -5,8 +5,11 @@
 //   node server/conductor/ops.mjs --nightly   once a day (22:40 UTC = 04:10 IST): the day's rollup + the test sweep
 // Each run writes ONE JSON line (kind "conductor_canary" / "conductor_rollup") that Log Analytics keeps; a failed
 // canary also fails its job execution, which the "failed job executions" alert emails (infra/eyes.mjs).
-// Read-only except --nightly's sweep of @taxila.test accounts older than 1 h (scripts/sweep-test-accounts.mjs).
+// Read-only except --nightly's sweep of @taxila.test accounts older than 1 h (./sweep.js: inside server/, because the
+// job runs on the worker image, which has no scripts/ or infra/; an import from there failed every night).
 import { configure, closePool, directUrl, q } from "./pg.js";
+import { dbUrl } from "../db.js";
+import { sweepTestAccounts } from "./sweep.js";
 
 /** Canary thresholds [U: design defaults; the worker polls 1-5 s and fires wakeups every 15 s]. */
 export const CANARY = { dirtyStaleMin: 5, wakeupLateMin: 15, jobLateMin: 30, deadJobsDay: 10 };
@@ -43,7 +46,7 @@ export async function rollup(query = q) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const raw = process.env.DATABASE_URL_DIRECT || process.env.DATABASE_URL;
+  const raw = dbUrl(process.env, { direct: true });
   if (!raw) { console.error("[ops] DATABASE_URL not set"); process.exit(1); }
   await configure({ url: directUrl(raw), max: 2, statementTimeoutMs: 15_000 });
   const line = (o) => process.stdout.write(JSON.stringify({ at: new Date().toISOString(), rev: process.env.GIT_SHA || null, ...o }) + "\n");
@@ -56,7 +59,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
     if (process.argv.includes("--nightly")) {
       line({ kind: "conductor_rollup", ...(await rollup()) });
-      const { sweepTestAccounts } = await import("../../scripts/sweep-test-accounts.mjs");
       const s = await sweepTestAccounts({ url: raw, olderThanMin: 60, limit: 500, apply: true, log: () => {} });
       line({ kind: "test_account_sweep", ...s });
       if (s.failed) code = 1;

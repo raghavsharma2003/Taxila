@@ -1,7 +1,11 @@
 # The release gates on every push (BUILD-PLAN §1.1, W1-D item 1). scripts/deploy-azure.mjs accepts a successful run of
 # this workflow's `gates` job for a sha as deploy evidence (infra/gate.mjs gateEvidence), as it accepts a local stamp.
 # No production secrets here: DB-backed tests skip without a database url, and a test branch url may be supplied as
-# the TEST_DATABASE_URL repository secret (never the production DATABASE_URL).
+# the TEST_DATABASE_URL / CONDUCTOR_TEST_DATABASE_URL repository secrets (never the production DATABASE_URL). So this
+# run cannot prove `migrations-applied` for production: the deploy scripts check the TARGET database's
+# schema_migrations themselves (infra/gate.mjs migrationsGate) before any revision is created.
+# Chromium is installed into PLAYWRIGHT_BROWSERS_PATH so the browser suites (engines-browser, module-tray-geometry,
+# forge-g2, voice-features-browser) RUN here instead of skipping.
 name: gates
 on:
   push:
@@ -19,6 +23,8 @@ jobs:
     env:
       CI: "1"
       TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+      CONDUCTOR_TEST_DATABASE_URL: ${{ secrets.CONDUCTOR_TEST_DATABASE_URL }}
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.pw-browsers
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,6 +32,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --no-audit --no-fund
+      - name: chromium for the browser suites
+        run: npx playwright install --with-deps chromium
       - name: tsc
         run: npx tsc -b
       - name: vite build

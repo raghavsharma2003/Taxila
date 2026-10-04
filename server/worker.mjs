@@ -13,6 +13,7 @@
 import { createServer } from "http";
 import { hostname } from "os";
 import { configure, directUrl, q, sessionClient, closePool } from "./conductor/pg.js";
+import { dbUrl } from "./db.js";
 import { step } from "./conductor/step.js";
 import { fireDue } from "./conductor/timers.js";
 import { claimJobs, runJob } from "./conductor/jobs.js";
@@ -33,7 +34,7 @@ const LOCK_CHECK_MS = 60_000;                          // a leader re-confirms i
 const STALL_MS = { ticker: 6 * TICK_MS, dirty: 180_000, fast: 120_000, slow: 120_000 };
 const HEALTH_PORT = Number(process.env.WORKER_HEALTH_PORT || 8081);
 
-const raw = process.env.DATABASE_URL_DIRECT || process.env.DATABASE_URL;
+const raw = dbUrl(process.env, { direct: true });   // TAXILA_DB=test → the test branch (server/db.js)
 if (!raw) { console.error("[worker] DATABASE_URL not set"); process.exit(1); }
 const URL_ = directUrl(raw);                            // never the pooler: it drops session advisory locks
 // statement_timeout on every pool connection and the session client: one hung query can never block a loop forever

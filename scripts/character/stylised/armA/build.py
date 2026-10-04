@@ -91,6 +91,11 @@ def build():
     bm, loops, _ = HD.build_head(PH, G['N'], G['warp'], G['K_eye'], G['K_mouth'], G['eye_patch'], G['mouth_patch'])
     meta = HD.place(bm, loops, sdf, PH | {k: PP[k] for k in ('ball_tuck', 'ball_tuck_deg', 'ball_tuck_ramp') if k in PP})
     bm.verts.index_update()
+    tk = set(loops['eye_L_tuck'][0]) | set(loops['eye_R_tuck'][0])
+    vs = [v for v in bm.verts if v not in tk]
+    Xp = HD.push_out(np.array([v.co[:] for v in vs]), PH | PP)
+    for v, x in zip(vs, Xp):
+        v.co = x.tolist()
     L = {k: [[v.index for v in r] for r in rs] for k, rs in loops.items()}
     M = {k: {"t": [float(x) for x in t], "upper": [bool(u) for u in up]} for k, (t, up) in meta.items()}
 

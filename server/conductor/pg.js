@@ -4,6 +4,7 @@
 //   - DB_DRIVER=pg (Azure Container Apps): node-postgres over TCP, the same driver as server/db.js;
 //   - otherwise: @neondatabase/serverless Pool over WebSocket (pg-compatible API, works through HTTPS proxies).
 // The worker passes the DIRECT (unpooled) URL: Neon's pooler drops session advisory locks (X1).
+import { dbUrl } from "../db.js";
 
 /** @typedef {{ query: (text: string, params?: unknown[]) => Promise<{ rows: any[], rowCount: number }>, release: (e?: unknown) => void }} PgClient */
 
@@ -26,7 +27,8 @@ const withTimeout = (pool) => {
 /** The unpooled Neon endpoint for a pooled URL (host `ep-x-pooler.…` → `ep-x.…`). */
 export const directUrl = (url) => url.replace(/(ep-[a-z0-9-]+?)-pooler\./, "$1.");
 
-const urlNow = () => cfg.url || process.env.DATABASE_URL;
+// unconfigured (the web process): the same database server/db.js resolved, TAXILA_DB=test included
+const urlNow = () => cfg.url || dbUrl();
 const driverNow = () => cfg.driver || (process.env.DB_DRIVER === "pg" ? "pg" : "neon-ws");
 
 async function makePool() {

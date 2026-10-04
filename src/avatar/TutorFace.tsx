@@ -12,8 +12,10 @@
 // face.rig ON (./flags.ts, default off; BUILD-PLAN W1-F): the tutor's look (shared/tutors.js lookId) replaces both
 // pre-rig faces on every tier — B / B-lite → the look's GLB (B+ / B-lite) over the look's own plate; D → that plate
 // alone (PlatePerson); E unchanged. The plate paints at t = 0; the GLB loads after mount when the page is idle
-// (off the cold path), times out at 8 s (stay on the plate this lesson, retry next lesson), and cross-fades in only
-// in her silence. Any rig failure falls to D, which is the SAME look: no fallback ever changes the face.
+// (off the cold path), times out at 8 s, and cross-fades in only in her silence. A rig that failed (timeout, load
+// error, chunk error, demotion to D) is remembered for the rest of the PAGE by look id (rigFailedThisPage), so a
+// remount (the desk changing layout) stays on the plate instead of re-downloading the GLB against her TTS audio;
+// a new page load (the next lesson) tries again. Any rig failure falls to D, which is the SAME look: no fallback ever changes the face.
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { defaultTutorFor, tutorById, type TutorCharacter } from "../../shared/tutors.js";
 import { p as copy } from "./picker/copy.ts";
@@ -59,6 +61,9 @@ let cachedFacts: ReturnType<typeof detectStaticFacts> | null = null;
 let contextLosses = 0;
 /** WebGL contexts lost by LIVE stages this page (a disposed stage never reports one). */
 export const faceContextLosses = () => contextLosses;
+/** Look ids whose rig failed or was demoted to D on this page: later mounts start on the plate (tier D). */
+const rigFailedThisPage = new Set<string>();
+export const faceRigFailed = (lookId: string) => rigFailedThisPage.has(lookId);
 if (import.meta.env?.DEV && typeof window !== "undefined") (window as unknown as { __faceContextLosses?: () => number }).__faceContextLosses = faceContextLosses;
 
 /** `?face=` is a dev/test override: honoured only in dev builds or with VITE_DEV_ROUTES=1, never in production. */
@@ -116,7 +121,13 @@ const bandKey = (b: string): BandKey => (b === "b1" || b === "b2" || b === "b3" 
 export function TutorFace(p: TutorFaceProps) {
   const tutor: TutorCharacter = faceTutor(p.tutorId, String(p.band));
   const label = `${tutor.displayName.roman}, ${copy("aiTeacher", p.lang ?? "english")}`;
-  const initial = useMemo(() => decideTier(p.tier, { voiceOnly: p.voiceOnly }), [p.tier, p.voiceOnly]);
+  const look = useMemo(() => rigLookFor(tutor), [tutor.id]);
+  const initial = useMemo(() => {
+    const d = decideTier(p.tier, { voiceOnly: p.voiceOnly });
+    return !p.tier && look && rigFailedThisPage.has(look.id) && (d.tier === "B" || d.tier === "Blite")
+      ? { ...d, tier: "D" as FaceTier, why: [...d.why, "rig failed earlier this page"] }
+      : d;
+  }, [p.tier, p.voiceOnly, look]);
   const [tier, setTier] = useState<FaceTier>(initial.tier);
   useEffect(() => setTier(initial.tier), [initial]); // presentation pref / forced tier changed
   const host = useRef<HTMLDivElement>(null);
@@ -125,7 +136,6 @@ export function TutorFace(p: TutorFaceProps) {
   live.current = { status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle, mic: p.mic };
   const onEvent = useRef(p.onEvent);
   onEvent.current = p.onEvent;
-  const look = useMemo(() => rigLookFor(tutor), [tutor.id]);
   const [face, setFace] = useState<"plate" | "rig">("plate");
 
   const srcKey = sourcesKey(p.teacher);
@@ -140,6 +150,7 @@ export function TutorFace(p: TutorFaceProps) {
     setFace("plate");
     const fail = (reason: string) => {
       if (cancelled) return;
+      if (look) rigFailedThisPage.add(look.id);
       onEvent.current?.({ type: "fallback", to: "D", reason: reason.slice(0, 160) });
       setTier("D");
     };
@@ -156,7 +167,10 @@ export function TutorFace(p: TutorFaceProps) {
             if (e.type === "contextlost") {
               contextLosses++;
               setTier("D");
-            } else if (e.type === "tier" && (e.to === "D" || e.to === "E")) setTier(e.to);
+            } else if (e.type === "tier" && (e.to === "D" || e.to === "E")) {
+              if (look) rigFailedThisPage.add(look.id);
+              setTier(e.to);
+            }
             else if (e.type === "reveal") setFace("rig");
           },
         });
@@ -209,7 +223,7 @@ export function TutorFace(p: TutorFaceProps) {
     return (
       <div ref={host} className={cls} style={p.style} data-tier={tier} data-tutor={tutor.id} data-look={look.id} data-look-rev={look.rev} data-face={shown}
         role="img" aria-label={label}>
-        <PlatePerson tutor={tutor} look={look} sources={sources} reducedMotion={p.reducedMotion} decorative lang={p.lang} />
+        <PlatePerson tutor={tutor} look={look} sources={sources} reducedMotion={p.reducedMotion} decorative lang={p.lang} paused={shown === "rig"} />
       </div>
     );
   }

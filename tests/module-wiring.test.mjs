@@ -21,7 +21,7 @@ test("the turn handler imports and calls noteModuleEvents before it reads the mo
   assert.match(src, /import\s*\{[^}]*\bnoteModuleEvents\b[^}]*\}\s*from\s*"\.\.\/director\/modules\.js"/, "noteModuleEvents is imported");
   const note = src.search(/\bnoteModuleEvents\(\s*state\s*,\s*moduleEvents\s*\)/);
   const answer = src.search(/\bmoduleAnswerOf\(\s*state\s*,\s*moduleEvents\s*\)/);
-  assert.ok(note >= 0, "noteModuleEvents(state, moduleEvents) is called (see context/inbox/w1-b-lesson-wiring.patch)");
+  assert.ok(note >= 0, "noteModuleEvents(state, moduleEvents) is called (see server/forge/seam-patches/w1b-lesson-wiring.patch)");
   assert.ok(answer < 0 || note < answer, "noteModuleEvents runs before the module answer is read");
 });
 

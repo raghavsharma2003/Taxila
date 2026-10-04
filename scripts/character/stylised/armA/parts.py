@@ -348,7 +348,7 @@ def _catmull(ctrl, n, upow=1.0):
     return np.array(out)
 
 
-def hair_shell(P, sdf, side, nv=54, nu=40):
+def hair_shell(P, sdf, side, nv=54, nu=30):
     """One half of the swept shell (side +1 her left). v: parting front -> back; u: parting -> bun."""
     H = np.array(P["hair_centre"], float)
     bunA = np.array(P["bun_attach"], float)

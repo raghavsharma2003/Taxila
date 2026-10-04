@@ -43,9 +43,14 @@ export const POLICIES = Object.freeze({
   live: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, live: true, settle: "w1c" },
   // production before W1-C: an unsettled verdict was simply lost (no wait, no correction)
   live_presettle: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, live: true, settle: "none" },
-  // X1 oracle-prober: every shape, every kit field, and a grader that returns the TRUE label — the ceiling the engine's
-  // ladder reaches on this simulator; every other row is also reported as a fraction of it
-  oracle: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, perfect: true },
+  // X1 oracle-prober: every shape, every kit field, a grader that returns the TRUE label, AND probes chosen from the
+  // hidden truth — the scheduler is only offered the facets whose belief is still wrong about the child (|p − truth bit|
+  // > ORACLE_SETTLED), so no probe is spent confirming what the engine already has right, and the same test-load budget
+  // and eligibility rules hold. The ceiling the engine's ladder reaches on this simulator; every row is also reported
+  // as a fraction of it.
+  oracle: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, perfect: true, oracleProbe: true },
+  // the engine with a perfect grader only (the old "oracle", kept to separate grading noise from probe choice)
+  engine_perfect_grader: { probes: true, delayed: true, games: true, voice: true, rule: "ladder", reteach: true, e9: true, perfect: true },
   // X7 gamer / rank-exploit control: a tutor that farms game wins (the child replays the trap level until it passes,
   // so ~80% of commits are wins whatever the child knows) instead of items and probes. Must fail at least one bar.
   gamer: { probes: false, delayed: true, games: true, rule: "ladder", reteach: false, gamer: true },
@@ -78,18 +83,29 @@ export const FAMILIES = Object.freeze(["bkt2", "cfrag"]);
 const STRENGTH = { hi: [0.65, 0.95], lo: [0.05, 0.40], cut: 0.6, forget: 0.35 };
 
 /**
- * Settle-latency model for the held why / teach-back verdict (later.js; W1-C #2) [U until production measures it]: the
- * blind grade's latency is lognormal around GRADE_MEDIAN_MS; the next turn arrives after the reply is heard and the
- * child answers (a base, more for a hesitant child, plus jitter); awaitSettled then waits up to 600 ms. The verdict
- * settles iff latency ≤ gap + wait. Override the median with SIM_GRADE_MEDIAN_MS.
+ * Settle-latency model for the held why / teach-back verdict (later.js; W1-C #2, with seam-patches/
+ * w1c-lesson-early-grade.patch applied): the blind grade starts when the turn is PLANNED (not after commit) and its
+ * latency (the slowest R-EXP target) is lognormal around gradeMedianMs; the next turn arrives after the reply is written,
+ * heard and answered (a base, more for a hesitant child, plus jitter); the settle then runs BESIDE the next turn's
+ * classifier: at least waitMs, as long as the classifier (lognormal around classifyMedianMs), at most capMs. The verdict
+ * settles iff latency ≤ gap + that wait.
+ * Provenance: gradeMedianMs / gradeSigma are FITTED (lognormal, n = 46 held events) to the local acceptance runs'
+ * grader latencies with the hedge on (later.js HEDGE_MS; pending_grade results[].ms, the slowest target per event;
+ * measurements w1c-settle-local-2): median 1219 ms, σ 0.35, p90 2.4 s, max 3.0 s. Unhedged the same runs gave median
+ * 1440 ms, σ 0.63, max 11 s. The sandbox, not production, so [M-local];
+ * the gap and the classifier terms are [U] until production [settle] lines exist. Override with SIM_GRADE_MEDIAN_MS.
  */
-export const SETTLE = Object.freeze({ gradeMedianMs: Number(process.env.SIM_GRADE_MEDIAN_MS ?? 2500), gradeSigma: 0.5,
-  gapBaseMs: 2500, gapHesitationMs: 4000, gapJitterMs: 3000, waitMs: 600 });
+export const SETTLE = Object.freeze({ gradeMedianMs: Number(process.env.SIM_GRADE_MEDIAN_MS ?? 1220), gradeSigma: 0.35,
+  gapBaseMs: 2500, gapHesitationMs: 4000, gapJitterMs: 3000, waitMs: 600, classifyMedianMs: 700, classifySigma: 0.5, capMs: 2500 });
+const normal = (r) => Math.sqrt(-2 * Math.log(r() || 1e-12)) * Math.cos(2 * Math.PI * r());
 function settles(P, r) {
-  const z = Math.sqrt(-2 * Math.log(r() || 1e-12)) * Math.cos(2 * Math.PI * r());
-  const latency = SETTLE.gradeMedianMs * Math.exp(SETTLE.gradeSigma * z);
-  return latency <= SETTLE.gapBaseMs + P.hesitation * SETTLE.gapHesitationMs + r() * SETTLE.gapJitterMs + SETTLE.waitMs;
+  const latency = SETTLE.gradeMedianMs * Math.exp(SETTLE.gradeSigma * normal(r));
+  const classify = SETTLE.classifyMedianMs * Math.exp(SETTLE.classifySigma * normal(r));
+  const wait = Math.min(SETTLE.capMs, Math.max(SETTLE.waitMs, classify));
+  return latency <= SETTLE.gapBaseMs + P.hesitation * SETTLE.gapHesitationMs + r() * SETTLE.gapJitterMs + wait;
 }
+/** X1: a facet whose belief is within this of the hidden truth bit is "already right" and is not offered to the scheduler. */
+const ORACLE_SETTLED = 0.3;
 /** Kit item kind → the evidence class production emits for it (director/items.js PROBE_FOR_KIND → kt/adapter.js). */
 const KIT_KIND_CLASS = Object.freeze({ predict: "probe.predict", near_transfer: "probe.transfer.near", far_transfer: "probe.transfer.far", error_spot: "probe.errorspot" });
 
@@ -169,6 +185,24 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
       return out;
     };
 
+    // X1 oracle-prober: offer the scheduler only the facets the belief still has WRONG about the child (the hidden truth,
+    // after forgetting, read without drawing from the child's RNG); a facet already right looks settled (above its stop line)
+    const truthNow = (k) => {
+      const t = truth[k], inf = info[k];
+      const forgot = !t.keep && inf.learnedSession !== null && inf.learnedSession < si && inf.refreshed < si;
+      if (cf) { const f = forgot ? STRENGTH.forget : 1; return { U: +(t.mU * f >= STRENGTH.cut), T: +(t.mT * f >= STRENGTH.cut) }; }
+      return forgot ? { U: 0, T: 0 } : { U: t.U, T: t.T };
+    };
+    const steer = (map) => {
+      const out = {};
+      for (const [k, sk] of Object.entries(map)) {
+        const tb = truthNow(k), b = { ...sk.belief };
+        for (const f of ["U", "T"]) if (Math.abs((b[f] ?? 0.2) - tb[f]) <= ORACLE_SETTLED) b[f] = 0.99;
+        out[k] = { ...sk, belief: b };
+      }
+      return out;
+    };
+
     // ---- serve one probe plan ----
     let lastChar = null;                                                   // E9: the character statement this probe made
     const serve = async (pl) => {
@@ -222,7 +256,7 @@ export async function runChild({ persona: P, seed, policy: polName, llm = null, 
     const askProbe = async (current, voice) => {
       if (!pol.probes) return false;
       flushLate();
-      const pl = nextProbe(skillsMap(current), sess, { currentSkill: current, voice: pol.voice ? voice : undefined, freezeLow: !!pol.freezeLow, ...(pol.live ? { allow: LIVE_PROBE_SHAPES } : {}) });
+      const pl = nextProbe(pol.oracleProbe ? steer(skillsMap(current)) : skillsMap(current), sess, { currentSkill: current, voice: pol.voice ? voice : undefined, freezeLow: !!pol.freezeLow, ...(pol.live ? { allow: LIVE_PROBE_SHAPES } : {}) });
       if (!pl) return false;
       if (!pol.delayed && pl.reason === "delayed_check") { sess = { ...sess, pending: sess.pending.filter((x) => x.reason !== "delayed_check") }; return false; }
       const ev = await serve(pl);

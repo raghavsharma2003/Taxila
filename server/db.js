@@ -11,17 +11,23 @@ let _driver;
  */
 const IDLE_MS = Number(process.env.DB_POOL_IDLE_MS || 600_000);
 /**
- * TAXILA_DB=test points this process at the Neon TEST branch (CONDUCTOR_TEST_DATABASE_URL, else TEST_DATABASE_URL)
- * whatever DATABASE_URL says (BUILD-PLAN W1-D item 3: test scripts default to the test branch; a test run against prod
- * is recoverable only for the PITR window). Production never sets it.
+ * THE one place a server process resolves its database (BUILD-PLAN W1-D item 3). server/db.js, the Conductor pool
+ * (conductor/pg.js), the worker and the ops jobs all call this, so one knob moves all of them together:
+ *   TAXILA_DB=test   the Neon TEST branch (CONDUCTOR_TEST_DATABASE_URL, else TEST_DATABASE_URL), whatever
+ *                    DATABASE_URL / DATABASE_URL_DIRECT say. Throws if no test url is set: never falls back to prod.
+ *   otherwise        DATABASE_URL (direct: DATABASE_URL_DIRECT first). Production never sets TAXILA_DB.
+ * Before this, only db.js honoured TAXILA_DB, so a process with TAXILA_DB=test wrote lessons to the test branch while
+ * its Conductor read and stepped production (W1-D fixer review).
+ * @param {NodeJS.ProcessEnv} [env] @param {{ direct?: boolean }} [o]
  */
-export function dbUrl(env = process.env) {
+export function dbUrl(env = process.env, { direct = false } = {}) {
   if (env.TAXILA_DB === "test") {
     const u = env.CONDUCTOR_TEST_DATABASE_URL || env.TEST_DATABASE_URL;
     if (!u) throw new Error("TAXILA_DB=test but no CONDUCTOR_TEST_DATABASE_URL / TEST_DATABASE_URL is set");
     return u;
   }
-  return env.DATABASE_URL;
+  if (env.TAXILA_DB && env.TAXILA_DB !== "prod") throw new Error(`TAXILA_DB=${env.TAXILA_DB}: expected test or prod`);
+  return (direct && env.DATABASE_URL_DIRECT) || env.DATABASE_URL;
 }
 async function driver() {
   if (_driver) return _driver;

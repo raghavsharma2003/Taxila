@@ -110,7 +110,18 @@ const t0 = Date.now();
 const result = { date: new Date().toISOString().slice(0, 10), seeds: SEEDS, personas: PERSONAS.length, concepts: 6, sessions: 5,
   method: "code-played children from hidden truth bits + behaviour params (personas.mjs), separate generative model from the engine's emission tables; real engine code; author-set response probabilities => gates mechanics, not efficacy",
   label: "simulated · gains=author · scope=compliance · not evidence of learning", families: {} };
-for (const fam of FAMS) {
+// --merge a.json,b.json: no simulation; the policy tables of earlier runs (same seeds, disjoint policies or families) are
+// merged and the analysis below (bars, battery, oracle fractions, divergence) runs on the union. A full run takes
+// ~14 min, longer than one shell may run here, so it is run in chunks and merged.
+const MERGE = opt("--merge", null);
+if (MERGE) {
+  for (const f of String(MERGE).split(",")) {
+    const r = JSON.parse(readFileSync(f, "utf8"));
+    if (r.seeds !== SEEDS) throw new Error(`--merge: ${f} ran ${r.seeds} seeds, not ${SEEDS}`);
+    for (const [fam, { policies }] of Object.entries(r.families)) Object.assign(((result.families[fam] ??= { policies: {} }).policies), policies);
+  }
+}
+for (const fam of MERGE ? [] : FAMS) {
   console.log(`simulated · family=${fam}${fam === "cfrag" ? " (cfrag-lite)" : " (matched: upper bound)"} · gains=author · scope=compliance · not evidence of learning`);
   const policies = (result.families[fam] = { policies: {} }).policies;
   for (const pol of POLS) {
@@ -134,12 +145,14 @@ const BARS = {
 /** Rows that must FAIL at least one bar, or the battery cannot see what they stand for (§8.3; X7). */
 const MUST_FAIL = ["mut_vc2_partial_as_full", "mut_vc4_game_full_weight", "quiz_bot", "samjha", "lecture", "why_every_turn", "gamer"];
 /**
- * Why `engine` and `live` may differ by more than 0.03 (macro accuracy, final). A divergence with no entry here FAILS
- * the run: the published engine number must never drift from the deployed one silently.
+ * Why `engine` and `live` may differ by more than 0.03 (macro accuracy, final), and BY HOW MUCH. A divergence with no
+ * entry here FAILS the run, and so does one outside its entry's expected band: a reason string excuses the gap it was
+ * written for, never a new one (fixer finding: a fixed string passed any future regression of live against engine).
+ * Re-pin `expected` only with a measured run and a changed reason.
  */
 const DIVERGENCE_REASONS = {
-  bkt2: "live poses 6 of 36 shapes (LIVE_PROBE_SHAPES: why-class only; R-CATCH / predict / transfer shapes need graders the live lane lacks), real kits carry none of characterView/myth/counterfactual/instances/representations/weaveHosts/solver, kit error-spot and most transfer answers are llm-graded with no span (no U/T), and woven sub-steps have no host item. Closing it is W3-A (code-graded R-CATCH, verbal-fair grading) and W3-B (kit fields, CMP probes).",
-  cfrag: "same causes as bkt2 (live shape subset, kit fields absent, llm-graded kit items carry no U/T, no woven hosting); W3-A and W3-B close it.",
+  bkt2: { expected: 0.185, tolerance: 0.03, reason: "live poses 6 of 36 shapes (LIVE_PROBE_SHAPES: why-class only; R-CATCH / predict / transfer shapes need graders the live lane lacks), real kits carry none of characterView/myth/counterfactual/instances/representations/weaveHosts/solver, kit error-spot and most transfer answers are llm-graded with no span (no U/T), and woven sub-steps have no host item. Closing it is W3-A (code-graded R-CATCH, verbal-fair grading) and W3-B (kit fields, CMP probes)." },
+  cfrag: { expected: 0.040, tolerance: 0.03, reason: "same causes as bkt2 (live shape subset, kit fields absent, llm-graded kit items carry no U/T, no woven hosting); W3-A and W3-B close it." },
 };
 let runFails = false;
 result.headline = { policy: "live", note: "THE comprehension number: the deployed configuration; engine is the spec configuration", families: {} };
@@ -170,10 +183,13 @@ for (const [fam, { policies: P }] of Object.entries(result.families)) {
   }
   if (P.live && P.engine) {
     const gap = Math.abs(P.engine.CE_M1_macro_acc_final - P.live.CE_M1_macro_acc_final);
-    const reason = gap > 0.03 ? DIVERGENCE_REASONS[fam] ?? null : null;
-    (result.divergence ??= {})[fam] = { engine: P.engine.CE_M1_macro_acc_final, live: P.live.CE_M1_macro_acc_final, gap: r3(gap), reason };
-    if (gap > 0.03 && !reason) { runFails = true; console.error(`FAIL ${fam}: engine ${P.engine.CE_M1_macro_acc_final} vs live ${P.live.CE_M1_macro_acc_final} diverge by ${r3(gap)} > 0.03 with no logged reason (DIVERGENCE_REASONS)`); }
-    else if (gap > 0.03) console.log(`${fam} engine-vs-live divergence ${r3(gap)} > 0.03, logged reason: ${reason}`);
+    const entry = gap > 0.03 ? DIVERGENCE_REASONS[fam] ?? null : null;
+    const inBand = !!entry && Math.abs(gap - entry.expected) <= entry.tolerance;
+    (result.divergence ??= {})[fam] = { engine: P.engine.CE_M1_macro_acc_final, live: P.live.CE_M1_macro_acc_final, gap: r3(gap),
+      reason: entry?.reason ?? null, expected: entry ? [r3(entry.expected - entry.tolerance), r3(entry.expected + entry.tolerance)] : null, in_band: entry ? inBand : null };
+    if (gap > 0.03 && !entry) { runFails = true; console.error(`FAIL ${fam}: engine ${P.engine.CE_M1_macro_acc_final} vs live ${P.live.CE_M1_macro_acc_final} diverge by ${r3(gap)} > 0.03 with no logged reason (DIVERGENCE_REASONS)`); }
+    else if (gap > 0.03 && !inBand) { runFails = true; console.error(`FAIL ${fam}: engine-vs-live divergence ${r3(gap)} is outside its logged band ${entry.expected}±${entry.tolerance}: a new divergence, not the one the reason explains`); }
+    else if (gap > 0.03) console.log(`${fam} engine-vs-live divergence ${r3(gap)} > 0.03, in its logged band ${entry.expected}±${entry.tolerance}: ${entry.reason}`);
   }
 }
 

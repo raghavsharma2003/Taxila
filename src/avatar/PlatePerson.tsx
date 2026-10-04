@@ -25,12 +25,14 @@ export interface PlatePersonProps {
   focusY?: number;
   /** Inside a host that already carries role="img" and the "<name>, AI teacher" name. */
   decorative?: boolean;
+  /** The revealed GLB covers this plate: stop the loop and the audio tap (Stage3D runs its own). Resumes on a fall to D. */
+  paused?: boolean;
 }
 
 export const PLATE_FOCUS_Y = 0.4;
 const NO_SOURCES: TapSource[] = [];
 
-export function PlatePerson({ tutor, look, sources = NO_SOURCES, reducedMotion = false, still = false, className, lang = "english", focusY = PLATE_FOCUS_Y, decorative = false }: PlatePersonProps) {
+export function PlatePerson({ tutor, look, sources = NO_SOURCES, reducedMotion = false, still = false, className, lang = "english", focusY = PLATE_FOCUS_Y, decorative = false, paused = false }: PlatePersonProps) {
   const host = useRef<HTMLDivElement>(null);
   const mouth = useRef<HTMLDivElement>(null);
   const blink = useRef<HTMLImageElement>(null);
@@ -51,6 +53,7 @@ export function PlatePerson({ tutor, look, sources = NO_SOURCES, reducedMotion =
   }, [pw, ph, focusY]);
 
   useEffect(() => {
+    if (paused) return; // nobody can see the plate: no rAF, no second analysis of the same meters
     let raf = 0, last = 0, cell = 0, nextBlink = performance.now() + 2500, blinkT = -1, shownCell = -1;
     const tap = still ? null : new TeacherTap(sources);
     const buf = new Float32Array(2048);
@@ -89,7 +92,7 @@ export function PlatePerson({ tutor, look, sources = NO_SOURCES, reducedMotion =
       cancelAnimationFrame(raf);
       tap?.dispose();
     };
-  }, [sources, still, reducedMotion, meta.mouthCells]);
+  }, [sources, still, reducedMotion, meta.mouthCells, paused]);
 
   const pct = (r: [number, number, number, number]) => ({
     left: `${(r[0] / pw) * 100}%`, top: `${(r[1] / ph) * 100}%`, width: `${((r[2] - r[0]) / pw) * 100}%`, height: `${((r[3] - r[1]) / ph) * 100}%`,

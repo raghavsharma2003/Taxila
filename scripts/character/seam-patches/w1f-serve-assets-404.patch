@@ -1,0 +1,14 @@
+--- a/server/serve.mjs
++++ b/server/serve.mjs
+@@ -74,5 +74,11 @@
+     return sendFile(res, file, path.startsWith("/assets/") ? assetHeaders(path) : file === frame ? FRAME : {}, req);
+   }
+   if (path === "/modules" || path.startsWith("/modules.")) return sendFile(res, frame, FRAME, req);
++  // A missing static asset is a 404, never the app shell: removed files (the bake-off identities, old unversioned
++  // look URLs) must not answer 200, and a stale hashed chunk must fail as a chunk, not parse index.html as JS.
++  if (path.startsWith("/assets/")) {
++    res.writeHead(404, { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" });
++    return res.end("not found");
++  }
+   sendFile(res, join(ROOT, "index.html"), {}, req); // SPA fallback
+ }).listen(PORT, () => console.log(`taxila on :${PORT}`));

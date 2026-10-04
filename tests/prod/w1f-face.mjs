@@ -9,7 +9,12 @@
 //             the tutor's own look loads, the canvas is revealed (data-face=rig) at data-tier=B.
 //   fallback  the same, with every .glb request failed: the face falls to D and shows THE SAME LOOK (its own plate),
 //             never the code-drawn SVG (V-FACE: every face on the page is a pickable face).
+//   timeout   the same, with every .glb held past RIG_TIMEOUT_MS (8 s): D with the same look, never revealed.
+//   surfaces  flag on: the landing, Hello, the teacher screen and the child home show only look faces (V-FACE).
 //   off       face.rig OFF (the default): no .glb is requested and the pre-rig face is unchanged.
+//   teal      a class-2 child (Asha → teal, the placeholder look): the rig arm again on the other look.
+// The 404 checks need server/serve.mjs to stop the SPA fallback under /assets/ (W1-D's file; the patch is
+// scripts/character/seam-patches/w1f-serve-assets-404.patch): until integration applies it they FAIL, on purpose.
 // SwiftShader frames are correctness evidence only, never a performance number (teacher-anim §1).
 import { withTestAccount, launch, ok, warn, done, BASE } from "./lib.mjs";
 import { tutorById, defaultTutorFor } from "../../shared/tutors.js";
@@ -37,7 +42,7 @@ async function head(path) {
 }
 
 /** Open the lesson desk for the child in a fresh context; returns the page, the .glb requests and console errors. */
-async function openDesk(api, child, { flag, spoof = true, failGlb = false }) {
+async function openDesk(api, child, { flag, spoof = true, failGlb = false, delayGlbMs = 0, path }) {
   const h = await launch({ cookieFrom: api, viewport: { width: 412, height: 860 }, launch: { args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] } });
   const glb = [];
   const events = [];
@@ -47,7 +52,8 @@ async function openDesk(api, child, { flag, spoof = true, failGlb = false }) {
   await h.context.addInitScript(({ key, on }) => { try { if (on === null) localStorage.removeItem(key); else localStorage.setItem(key, on ? "1" : "0"); } catch {} }, { key: FLAG, on: flag });
   if (spoof) await h.context.addInitScript(SPOOF);
   if (failGlb) await h.page.route("**/*.glb", (route) => route.abort("failed"));
-  await h.page.goto(`${BASE}/c/${child.id}/lesson/new`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+  if (delayGlbMs) await h.page.route("**/*.glb", (route) => setTimeout(() => route.continue().catch(() => {}), delayGlbMs));
+  await h.page.goto(`${BASE}${path ?? `/c/${child.id}/lesson/new`}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
   return { ...h, glb, events };
 }
 
@@ -58,19 +64,14 @@ const faceAttrs = (page) => page.evaluate(() => [...document.querySelectorAll(".
   plateLoaded: (() => { const i = e.querySelector(".tx-plateperson img"); return !!i && i.complete && i.naturalWidth > 0; })(),
 })));
 
-await withTestAccount(async ({ api, child }) => {
-  // ───────── hygiene ─────────
-  const bake = await head("/assets/teacher-bakeoff/merged/teal/Bplus.glb");
-  ok(!bake.glb && !/gltf/.test(bake.type), `bake-off identities are not served: /assets/teacher-bakeoff/merged/teal/Bplus.glb → ${bake.status} ${bake.type.split(";")[0]} (not a GLB)`);
-  if (bake.status !== 404) warn(`/assets/teacher-bakeoff/* answers ${bake.status} via the SPA fallback (server/serve.mjs); a strict 404 for missing /assets/* is a serve.mjs change outside W1-F`);
-  const old = await head("/assets/teacher/teal/Bplus.glb");
-  ok(!old.glb, `the unversioned look URL is gone: /assets/teacher/teal/Bplus.glb → ${old.status} (not a GLB)`);
-
+function lookOf(child) {
   const tutor = tutorById(child.tutorId) ?? tutorById(defaultTutorFor({ class_level: child.classLevel ?? child.class_level ?? 5 }));
-  const expectLook = tutor?.lookId;
-  ok(!!expectLook, `the child's tutor (${tutor?.id}) has a lookId (${expectLook})`);
+  ok(!!tutor?.lookId, `the child's tutor (${tutor?.id}) has a lookId (${tutor?.lookId})`);
+  return tutor?.lookId;
+}
 
-  // ───────── rig on, GPU-spoof arm ─────────
+/** Rig on, GPU-spoof arm: the look's plate first, its GLB loads, revealed at data-tier=B. */
+async function rigArm(api, child, expectLook) {
   {
     const d = await openDesk(api, child, { flag: true });
     try {
@@ -91,6 +92,20 @@ await withTestAccount(async ({ api, child }) => {
       if (d.events.length) warn(`console errors: ${d.events.slice(0, 3).join(" | ")}`);
     } finally { await d.browser.close(); }
   }
+}
+
+await withTestAccount(async ({ api, child }) => {
+  // ───────── hygiene ─────────
+  const bake = await head("/assets/teacher-bakeoff/merged/teal/Bplus.glb");
+  ok(!bake.glb && !/gltf/.test(bake.type), `bake-off identities are not served: /assets/teacher-bakeoff/merged/teal/Bplus.glb → ${bake.status} ${bake.type.split(";")[0]} (not a GLB)`);
+  ok(bake.status === 404, `/assets/teacher-bakeoff/* returns 404 (got ${bake.status}${bake.status === 200 ? ": the SPA fallback; apply w1f-serve-assets-404.patch to server/serve.mjs" : ""})`);
+  const old = await head("/assets/teacher/teal/Bplus.glb");
+  ok(!old.glb && old.status === 404, `the unversioned look URL is gone: /assets/teacher/teal/Bplus.glb → ${old.status} (expected 404, not a GLB)`);
+  const page = await head("/c/x/teacher");
+  ok(page.status === 200 && page.type.startsWith("text/html"), `SPA routes still fall back to the app (${page.status} ${page.type.split(";")[0]})`);
+
+  const expectLook = lookOf(child);
+  await rigArm(api, child, expectLook);
 
   // ───────── forced load failure → D, same look ─────────
   {
@@ -104,6 +119,40 @@ await withTestAccount(async ({ api, child }) => {
       ok(!!f?.plateLoaded && !!f?.plateSrc?.startsWith(`/assets/teacher/${expectLook}/`), `the D face is the look's own rendered plate (${f?.plateSrc}, loaded ${f?.plateLoaded})`);
       ok(all.every((x) => x.look && !x.drawnSvg), `V-FACE: every face on the page is a pickable look (${all.map((x) => `${x.tutor}:${x.look}`).join(", ")})`);
       ok(d.glb.some((g) => g.failed), `the GLB request was attempted and failed as forced (${d.glb.length} request(s))`);
+      // A failed rig is remembered for the page: a later mount (the desk changing layout) must not refetch the GLB.
+      const n = d.glb.length;
+      await d.page.setViewportSize({ width: 1280, height: 860 });
+      await d.page.waitForTimeout(3000);
+      await d.page.setViewportSize({ width: 412, height: 860 });
+      await d.page.waitForTimeout(3000);
+      const after = await faceAttrs(d.page);
+      ok(d.glb.length === n && after.every((x) => x.look === expectLook && x.tier === "D"), `after relayouts the face stays on D with no new GLB request (${n} → ${d.glb.length}; ${after.map((x) => `${x.tier}:${x.look}`).join(", ")})`);
+    } finally { await d.browser.close(); }
+  }
+
+  // ───────── GLB slower than the 8 s timeout → D, same look, never revealed ─────────
+  {
+    const d = await openDesk(api, child, { flag: true, delayGlbMs: 11_000 });
+    try {
+      await d.page.waitForSelector(".tx-tutorface[data-look]", { timeout: 45_000 });
+      const fell = await d.page.waitForSelector('.tx-tutorface[data-tier="D"][data-look]', { timeout: 30_000 }).then(() => true, () => false);
+      await d.page.waitForTimeout(4000); // past the held response: a late GLB must not be revealed
+      const f = (await faceAttrs(d.page))[0];
+      ok(fell && f?.look === expectLook && f?.face === "plate" && !f?.canvas, `a GLB slower than 8 s leaves her on D with the same look, never revealed (tier ${f?.tier}, look ${f?.look}, face ${f?.face}, canvas ${f?.canvas})`);
+    } finally { await d.browser.close(); }
+  }
+
+  // ───────── V-FACE on the other surfaces, flag on ─────────
+  for (const path of ["/", `/c/${child.id}/hello`, `/c/${child.id}/teacher`, `/c/${child.id}`]) {
+    const d = await openDesk(api, child, { flag: true, spoof: false, path });
+    try {
+      await d.page.waitForTimeout(4000);
+      const v = await d.page.evaluate(() => ({
+        looks: [...document.querySelectorAll(".tx-plateperson[data-look]")].map((e) => e.getAttribute("data-look")),
+        drawn: document.querySelectorAll('svg[viewBox="0 0 200 240"], svg.tx-tutorface-plate').length,
+        bareFace: document.querySelectorAll(".tx-tutorface:not([data-look]):not([data-tier=\"E\"])").length,
+      }));
+      ok(v.drawn === 0 && v.bareFace === 0, `V-FACE ${path}: only look faces (${v.looks.length} look face(s): ${[...new Set(v.looks)].join(",") || "-"}; drawn ${v.drawn}; pre-rig ${v.bareFace})`);
     } finally { await d.browser.close(); }
   }
 
@@ -118,4 +167,11 @@ await withTestAccount(async ({ api, child }) => {
     } finally { await d.browser.close(); }
   }
 }, { tag: "w1f-face" });
+
+// ───────── teal (the placeholder look): a class-2 child → Asha ─────────
+await withTestAccount(async ({ api, child }) => {
+  const expectLook = lookOf(child);
+  ok(expectLook === "teal", `a class-2 child's tutor wears teal (${expectLook})`);
+  await rigArm(api, child, expectLook);
+}, { tag: "w1f-face-teal", child: { classLevel: 2 } });
 done();

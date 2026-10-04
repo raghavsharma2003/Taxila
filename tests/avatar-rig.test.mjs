@@ -64,7 +64,8 @@ test("each published runtime.json follows the contract and names only published 
   }
 });
 
-test("each published GLB decodes with the runtime's loader set and carries the contract's meshes and bones", () => {
+// The GLB JSON chunk only: KTX2 transcoding needs a browser (tests/prod/w1f-face.mjs loads the real thing).
+test("each published GLB's JSON follows the contract (meshes, bones, ARKit morph names)", () => {
   for (const [id, e] of Object.entries(index.looks)) {
     for (const [t, m] of Object.entries(e.tiers)) {
       const j = glbJson(join(ROOT, "public", e.base, m.file));
@@ -72,6 +73,30 @@ test("each published GLB decodes with the runtime's loader set and carries the c
       const face = j.meshes.find((x) => x.name === "face");
       const names = face.extras?.targetNames ?? face.primitives[0].extras?.targetNames ?? [];
       if (names.length) assert.ok(names.includes("jawOpen") && names.includes("eyeBlinkLeft"), `${id} ${t}: ARKit morph names`);
+    }
+  }
+});
+
+test("each published GLB's meshopt-compressed buffer views really decode with the runtime's MeshoptDecoder", async () => {
+  const { MeshoptDecoder } = await import("three/examples/jsm/libs/meshopt_decoder.module.js");
+  await MeshoptDecoder.ready;
+  for (const [id, e] of Object.entries(index.looks)) {
+    for (const [t, m] of Object.entries(e.tiers)) {
+      const b = readFileSync(join(ROOT, "public", e.base, m.file));
+      const jsonLen = b.readUInt32LE(12);
+      const j = JSON.parse(b.subarray(20, 20 + jsonLen).toString());
+      const binStart = 20 + jsonLen + 8; // the BIN chunk header
+      const bin = b.subarray(binStart, binStart + b.readUInt32LE(20 + jsonLen));
+      let decoded = 0;
+      for (const bv of j.bufferViews ?? []) {
+        const x = bv.extensions?.EXT_meshopt_compression;
+        if (!x) continue;
+        const source = new Uint8Array(bin.buffer, bin.byteOffset + (x.byteOffset ?? 0), x.byteLength);
+        const target = new Uint8Array(x.count * x.byteStride);
+        MeshoptDecoder.decodeGltfBuffer(target, x.count, x.byteStride, source, x.mode, x.filter ?? "NONE"); // throws on corrupt data
+        decoded++;
+      }
+      if ((j.extensionsUsed ?? []).includes("EXT_meshopt_compression")) assert.ok(decoded > 0, `${id} ${t}: meshopt declared but nothing decoded`);
     }
   }
 });
@@ -169,11 +194,31 @@ test("audio floor: the rig, the plate and the stage never create or route audio"
   }
 });
 
-test("face.rig is off by default and switched only by the build env or this device's storage", () => {
+test("face.rig is off by default and switched only by the build env or this device's storage (?facerig= writes it)", () => {
   const s = src("src/avatar/flags.ts");
+  assert.match(s, /get\("facerig"\)/);
   assert.match(s, /VITE_FACE_RIG === "1"/);
   assert.match(s, /"tx\.flag\.face\.rig"/);
   assert.ok(!existsSync(join(ROOT, ".env.production")) || !/VITE_FACE_RIG=1/.test(src(".env.production")), "not on in a committed production env");
+});
+
+test("publish-look refuses a source without a complete plate, before writing anything", async () => {
+  const { mkdtempSync, cpSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { spawnSync } = await import("node:child_process");
+  const dir = mkdtempSync(join(tmpdir(), "look-noplate-"));
+  try {
+    const from = join(ROOT, "art/character/looks-out/teal");
+    for (const f of ["runtime.json", "Bplus.glb", "Blite.glb"]) cpSync(join(from, f), join(dir, f));
+    const before = src("src/avatar/looks.gen.json");
+    const r = spawnSync(process.execPath, [join(ROOT, "scripts/character/publish-look.mjs"), "--src", dir, "--look", "zz-noplate"], { encoding: "utf8", timeout: 60_000 });
+    assert.equal(r.status, 1, r.stderr);
+    assert.match(r.stderr, /no complete plate/);
+    assert.equal(src("src/avatar/looks.gen.json"), before, "the index is untouched");
+    assert.ok(!existsSync(join(ROOT, "public/assets/teacher/zz-noplate")), "nothing published");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test("asset hygiene: no bake-off identity and no unversioned look file is under public/", () => {

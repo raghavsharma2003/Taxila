@@ -511,7 +511,6 @@ def place(bm, loops, sdf, P):
         d = pts - H
         d /= np.linalg.norm(d, axis=1, keepdims=True)
         pr = march_out(sdf, H, d)
-        pr = push_out(pr, P, P.get('push_margin', 0.0008) + 0.0006)
         for v, q in zip(band, pr):
             v.co = Vector(q)
     return meta

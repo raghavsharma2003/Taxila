@@ -3,7 +3,7 @@
   {
    "id": "w1f-rig-runtime-behind-flag",
    "kind": "decision",
-   "title": "The GLB rig runtime is ported into src/avatar/three/{rig,shaders,presets,contract}.ts behind HeadRig and the flag face.rig (default off; localStorage tx.flag.face.rig per device, VITE_FACE_RIG at build): opaque WebGL2 context, the look's own light rig, plate at t = 0, GLB after idle, 8 s timeout, reveal only in her silence >= 300 ms, every failure falls to the SAME look's plate",
+   "title": "The GLB rig runtime is ported into src/avatar/three/{rig,shaders,presets,contract}.ts behind HeadRig and the flag face.rig (default off; localStorage tx.flag.face.rig per device, VITE_FACE_RIG at build; any URL with ?facerig=1|0|default writes the device key, so the owner can see the rig for O1 without DevTools; a per-account flag needs a server field): opaque WebGL2 context, the look's own light rig, plate at t = 0, GLB after idle, 8 s timeout, reveal only in her silence >= 300 ms, every failure falls to the SAME look's plate",
    "at": "2026-10-04"
   },
   {
@@ -27,7 +27,31 @@
   {
    "id": "w1f-rejected-spa-404",
    "kind": "rejection",
-   "title": "'/assets/teacher-bakeoff/* returns 404' cannot be met from the asset side: server/serve.mjs answers every missing path (including /assets/*) with index.html 200, so moved assets read as 200 text/html. The identities are unreachable (no GLB served); a strict 404 needs serve.mjs to stop the SPA fallback under /assets/",
+   "title": "(superseded by w1f-assets-404) Builder pass: '/assets/teacher-bakeoff/* returns 404' looked unmeetable from the asset side because server/serve.mjs answers every missing path, /assets/* included, with index.html 200; the builder weakened the check to 'not a GLB' + WARN, which reported PASS while the criterion failed",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1f-assets-404",
+   "kind": "decision",
+   "title": "A missing /assets/* path is a 404, never the SPA shell: removed identities and old unversioned look URLs must not answer 200, and a stale hashed chunk fails as a chunk. serve.mjs is W1-D's file, so the change ships as scripts/character/seam-patches/w1f-serve-assets-404.patch for integration to apply; tests/prod/w1f-face.mjs asserts a strict 404 and FAILS until it is applied. Reverse if some client path depends on index.html under /assets/ (none found)",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1f-rig-failure-remembered-per-page",
+   "kind": "decision",
+   "title": "A rig failure (8 s timeout, GLB/chunk error, governor or probe demotion to D) is remembered per page by look id (TutorFace rigFailedThisPage): later TutorFace mounts start at D on the same look's plate instead of re-downloading ~1.9 MB against her TTS audio on every desk relayout; a new page load retries. Reverse if field data shows transient failures where a same-page retry would usually succeed",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1f-publish-requires-plate",
+   "kind": "decision",
+   "title": "publish-look.mjs refuses (exit 1, before writing) a source without plate/plate.json + plate/mouth/blink webp unless --no-plate: rigLookFor() needs the plate, so a plate-less publish silently sent a tutor back to the procedural head with face.rig on (seen on candidate c4). Backdrop comes from --backdrop, then plate.json/runtime.json 'backdrop', then the pipeline default with a warning",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "w1f-fixer-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "Fixer pass, local serve.mjs with the 404 patch (scratch copy) + Neon test branch, Chromium SwiftShader GPU-spoof: w1f-face 30/30 (n = 1 run): strict 404 for bake-off and old unversioned URLs; slate and teal (class-2 Asha) each load B+ and reveal at data-tier=B; forced GLB failure -> D same look and no new GLB request across two relayouts (a remount was not separately confirmed); GLB held 11 s -> D same look, never revealed; flag-on landing / Hello / teacher / child home show only look faces (0 drawn SVG, 0 pre-rig); flag off -> no .glb. avatar-rig unit 16/16 incl. a real MeshoptDecoder decode of all 113 compressed buffer views per GLB (KTX2 not decoded in node)",
    "at": "2026-10-04"
   }
  ],
@@ -76,6 +100,31 @@
    "src": "w1f-rig-runtime-behind-flag",
    "rel": "constrains",
    "dst": "b4-rejected-rig-plates-on-landing"
+  },
+  {
+   "src": "w1f-assets-404",
+   "rel": "supersedes",
+   "dst": "w1f-rejected-spa-404"
+  },
+  {
+   "src": "w1f-assets-404",
+   "rel": "part_of",
+   "dst": "w1f-versioned-look-urls"
+  },
+  {
+   "src": "w1f-rig-failure-remembered-per-page",
+   "rel": "part_of",
+   "dst": "w1f-rig-runtime-behind-flag"
+  },
+  {
+   "src": "w1f-publish-requires-plate",
+   "rel": "constrains",
+   "dst": "w1f-versioned-look-urls"
+  },
+  {
+   "src": "w1f-rig-runtime-behind-flag",
+   "rel": "measured_by",
+   "dst": "w1f-fixer-acceptance-2026-10-04"
   }
  ],
  "md": {

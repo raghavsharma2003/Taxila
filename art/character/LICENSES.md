@@ -316,3 +316,21 @@ Build tools: `bpy` 4.2 (GPL tool, output ours; Cycles for the colour bake and th
 (MIT), meshoptimizer (MIT), KTX-Software 4.4.0 (Apache-2.0), numpy / scipy / pillow. Counsel note carried from
 TECH-PLAN §12.3: the Hunyuan territory clause may be read to reach assets "built this way"; the shipped mesh is our
 template fitted to the sculpt. Step1X-3D (Apache-2.0) was not run in this pass.
+
+### Style C, Arm A (procedural, no image-to-3D at all; 2026-10-04)
+
+`art/character/stylised/armA/teacher.glb` is generated entirely by our scripts in `scripts/character/stylised/armA/`
+from the numbers in `params.json`: an analytic SDF head (`sdf.py`), a cube-sphere quad grid ray-cast onto it with
+inset ring patches for the eyes and mouth (`head.py`), procedural parts (`parts.py`: eyeballs, cornea shells, iris
+texture drawn by numpy, liner, brows, teeth, tongue, ears, studs, bindi, swept hair shells, bun, locks, lofted kurta),
+the shape rig and its 82 baked keys (`keys.py`), and the HeadRig skeleton (`export.py`). No third-party mesh, texture,
+model weight or generated 3D asset is used. The refs and the concept were only looked at (by eye, and as overlay
+outlines for placement); no pixel of them ships.
+
+| input | used for | source | licence | evidence |
+|---|---|---|---|---|
+| `bpy` 4.2.0 wheel (PyPI) | headless build, Cycles evidence renders, glTF export | pypi.org/project/bpy | GPL-3.0 tool; outputs are ours | `bpy/__init__.so` sha256 `ea1bb1bdf79ceff2f8f3bd79d0bfc1d20c151250586d08e85f25fad68631d6f6` |
+| gltf-transform, meshoptimizer | meshopt compression in `armA/finish.mjs` | npm (in `$CHAR_TOOLS`) | MIT / MIT | as already listed above |
+| numpy, scipy, pillow | geometry, gates, sheets | PyPI (in `$CHAR_HOME/bpyenv`) | BSD / BSD / HPND | as above |
+
+No GPU was used for Arm A (CPU Cycles in the container).

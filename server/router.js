@@ -13,6 +13,8 @@ import * as account from "./routes/account.js";
 import { realNow, runRequestClock } from "./comprehension/testclock.js";
 
 const REVISION = process.env.CONTAINER_APP_REVISION || null;
+/** The operator key (a Container App secret, deploy-azure.mjs SECRET_ENV): fresh health numbers, the forced 500. */
+const OPS_KEY = () => process.env.HEALTH_KEY || process.env.TAXILA_OPS_KEY || null;
 
 // ───────────────────────────── health ─────────────────────────────
 
@@ -36,7 +38,7 @@ async function dbReady() {
 
 /**
  * ?db=1 (5 sequential `select 1`, scripts/live-probes.mjs) was an unauthenticated 5-query lever (smooth G10). Now: a
- * caller with the x-taxila-health key (HEALTH_KEY) gets a fresh measurement; anyone else gets the last one, re-measured
+ * caller with the x-taxila-health key (HEALTH_KEY, else TAXILA_OPS_KEY) gets a fresh measurement; anyone else gets the last one, re-measured
  * at most every 30 s per replica. The probe still sees dbMs; a flood costs at most 5 queries / 30 s.
  */
 let dbProbe = { at: 0, ms: null, p: null };
@@ -61,7 +63,7 @@ async function health(req, res) {
     if (!r.ok) return send(res, 503, { ...out, ok: false });
   }
   if (url.searchParams.get("db") === "1") {
-    const key = process.env.HEALTH_KEY;
+    const key = OPS_KEY();
     out.dbMs = await dbMs(!!key && req.headers?.["x-taxila-health"] === key);
   }
   send(res, 200, out);
@@ -69,7 +71,14 @@ async function health(req, res) {
 
 // ───────────────────────────── the client error beacon ─────────────────────────────
 
-const ipOf = (req) => String(req.headers?.["x-forwarded-for"] || req.socket?.remoteAddress || "?").split(",")[0].trim();
+/**
+ * The caller's address: the RIGHTMOST x-forwarded-for hop, the one ACA's ingress appended from the connection it saw.
+ * The leftmost is whatever the client sent, so keying a rate limit on it let anyone pick a fresh address per request.
+ */
+export const ipOf = (req) => {
+  const hops = String(req.headers?.["x-forwarded-for"] || "").split(",").map((h) => h.trim()).filter(Boolean);
+  return hops.at(-1) || req.socket?.remoteAddress || "?";
+};
 /** Fixed-window rate limits: 10 beacons / min per address, 300 / min per replica. Over the limit: 204, dropped. */
 const BEACON = { perIp: 10, global: 300, windowMs: 60_000 };
 let beaconWin = { start: 0, total: 0, byIp: new Map() };
@@ -90,6 +99,10 @@ export function beaconAllowed(ip, now = Date.now()) {
 export function scrubMessage(s) {
   return String(s ?? "").replace(/(["'`]).*?\1/g, "“…”").replace(/\S+@\S+/g, "<email>").replace(/https?:\/\/\S+/g, "<url>")
     .replace(/\d{3,}/g, "<n>").replace(/[^\x20-\x7E“”…]/g, "").replace(/\s+/g, " ").trim().slice(0, 160);
+}
+/** Server stack frames as `server/…/file.js:line` only (no absolute paths, no message text). */
+export function serverFrames(s) {
+  return [...String(s ?? "").matchAll(/(server\/[\w./-]+\.m?js):(\d+)/g)].slice(0, 6).map((m) => `${m[1]}:${m[2]}`);
 }
 export function scrubStack(s) {
   return [...String(s ?? "").matchAll(/\/(assets\/[\w.-]+\.(?:m?js)):(\d+):(\d+)/g)].slice(0, 8).map((m) => `${m[1]}:${m[2]}:${m[3]}`);
@@ -116,11 +129,27 @@ async function clientError(req, res, body) {
 
 // ───────────────────────────── a forced 500 (test accounts only) ─────────────────────────────
 
-/** GET /api/test/boom: throws, so the 5xx path (access log, alert) can be proven on prod. @taxila.test sessions only. */
+/**
+ * GET /api/test/boom: throws, so the 5xx path (access log, alert email) can be proven on prod. Three locks, because
+ * signup is open to any …@taxila.test address and every 500 can email the owner: an @taxila.test session, the
+ * operator key in x-taxila-ops (TAXILA_OPS_KEY; no key configured = refused), and at most BOOM.max per hour per
+ * replica (over it: 429, no 500).
+ */
+const BOOM = { max: 4, windowMs: 3_600_000 };
+let boomWin = { start: 0, n: 0 };
+export function boomAllowed(now = Date.now()) {
+  if (now - boomWin.start >= BOOM.windowMs) boomWin = { start: now, n: 0 };
+  if (boomWin.n >= BOOM.max) return false;
+  boomWin.n++;
+  return true;
+}
 async function boom(req) {
   const { requireGuardian } = await import("./auth.js");
   const g = await requireGuardian(req);
   if (!/@taxila\.test$/i.test(String(g.email ?? ""))) throw new HttpError(403, "test accounts only");
+  const key = OPS_KEY();
+  if (!key || req.headers?.["x-taxila-ops"] !== key) throw new HttpError(403, "operator key required");
+  if (!boomAllowed()) throw new HttpError(429, "forced-500 budget used up for this hour");
   throw new Error("forced test error (GET /api/test/boom)");
 }
 
@@ -173,7 +202,11 @@ export async function handle(req, res) {
   } catch (e) {
     if (e instanceof HttpError) return send(res, e.status, { error: e.message, ...(e.extra || {}) });
     ctx.err = e;
-    console.error("route error", key, e);
+    // the class (+ code) and server frames only, never the message: this line ships to Log Analytics like the access
+    // log, and a model or DB error message can quote a child's words, romanised Hinglish included, which no scrubber
+    // can tell from code text. TAXILA_LOG_FULL_ERRORS=1 (refused under NODE_ENV=production) prints the whole error.
+    if (process.env.TAXILA_LOG_FULL_ERRORS === "1" && process.env.NODE_ENV !== "production") console.error("route error", key, e);
+    else console.error("route error", key, errClass(e), serverFrames(e?.stack).join(" < "));
     if (!res.headersSent) send(res, 500, { error: "internal error" });
     else res.end?.();
   }

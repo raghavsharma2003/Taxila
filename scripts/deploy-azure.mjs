@@ -5,12 +5,16 @@
 //   node scripts/deploy-azure.mjs --dry-run [--gate] every check (pushed, gate stamp, app readable), then the plan; no write
 //   node scripts/deploy-azure.mjs --rollback         move 100% of traffic back to the previous revision (timed)
 //   flags: --app NAME (default taxila-web) · --image-tag TAG (deploy an image already in ACR; skips the build and the
-//          pushed check, still needs a gate stamp for the sha in the tag unless --stamp-sha says which) · --keep N
+//          pushed check). TAG must be a commit sha prefix (the tags this script builds are); the gate is checked for
+//          EXACTLY that commit, never for HEAD, and --stamp-sha, if given, must name the same commit. Any other tag is
+//          refused: an image whose commit cannot be named has no gate to check.
 //
 // The deploy:
 //   1) gate: a stamp for the exact sha (node_modules/.cache/taxila-gate/<sha>.json, written by --gate after
 //      `npx tsc -b && npx vite build && npm test && node scripts/check-prompt-budget.mjs` passed on a CLEAN tree), or a
 //      successful `gates` GitHub Actions run for that sha (.github/workflows/gates.yml);
+//   1b) migrations: every db/migrations/*.sql of that sha is in the TARGET database's schema_migrations (taxila-web's
+//      own DATABASE_URL secret), whichever evidence was used; a CI run cannot check this (no production url there);
 //   2) ACR builds the image from the GitHub branch (push first: ACR builds what is on GitHub, not the working tree);
 //   3) the app runs in MULTIPLE revision mode: the new revision is created at 0% traffic, labelled `canary`, and must be
 //      Running + Healthy (readiness = /api/health?ready=1, one DB round trip);
@@ -23,7 +27,7 @@
 import { execSync, spawnSync } from "child_process";
 import { mkdirSync, writeFileSync } from "fs";
 import { ROOT, acrBuild, arm, loadEnv, until } from "../infra/azure.mjs";
-import { REPO, gateEvidence, runGates } from "../infra/gate.mjs";
+import { REPO, gateEvidence, migrationsGate, runGates, shaOfTag } from "../infra/gate.mjs";
 
 loadEnv();
 const argv = process.argv.slice(2);
@@ -43,8 +47,13 @@ const LOG = ROOT + "node_modules/.cache/taxila-deploys.jsonl";
  * SINGLE revision mode [V: Azure docs "Session affinity", and the ARM refusal measured on the scratch app,
  * context/inbox/w1-d.json]; this script needs Multiple mode for the 0% canary. So affinity is requested only when the
  * environment says it is allowed (STICKY=1) and is otherwise reported, not silently dropped.
+ *
+ * Without affinity the only correct setting is ONE replica (decision w1d-web-single-replica, context/inbox/w1-d.json):
+ * the revision is pinned to min 1 / max 1 until that per-process state is shared (W2-A's half of G10) or affinity
+ * works with the canary. TAXILA_MAX_REPLICAS overrides it, deliberately, once that is true.
  */
 const STICKY = process.env.TAXILA_STICKY === "1";
+const MAX_REPLICAS = Math.max(1, Math.floor(Number(process.env.TAXILA_MAX_REPLICAS || 1)));
 const sh = (cmd) => execSync(cmd, { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] }).toString().trim();
 const t0 = Date.now();
 const elapsed = () => `${((Date.now() - t0) / 1000).toFixed(1)} s`;
@@ -103,7 +112,14 @@ async function rollback() {
 
 async function deploy() {
   const branch = sh("git rev-parse --abbrev-ref HEAD");
-  const full = opt("--stamp-sha", null) || sh("git rev-parse HEAD");
+  // The commit being deployed: the one the image tag names (an --image-tag deploy), else --stamp-sha, else HEAD.
+  const stampSha = opt("--stamp-sha", null);
+  let full;
+  if (IMAGE_TAG && !LOCAL) {
+    full = shaOfTag(IMAGE_TAG);
+    if (!full) throw new Error(`--image-tag ${IMAGE_TAG} does not name a commit (a sha prefix): its gate cannot be checked. Refusing to deploy.`);
+    if (stampSha && !full.startsWith(stampSha) && !stampSha.startsWith(full)) throw new Error(`--stamp-sha ${stampSha} is not the commit image ${IMAGE_TAG} was built from (${full.slice(0, 7)})`);
+  } else full = stampSha || sh("git rev-parse HEAD");
   const sha = IMAGE_TAG || full.slice(0, 7);
   if (!IMAGE_TAG) {
     const remote = sh(`git ls-remote origin refs/heads/${branch}`).slice(0, 40);
@@ -123,6 +139,13 @@ async function deploy() {
 
   const app = await getApp();
   const cfg = app.properties.configuration;
+  if (scratch) console.log("migrations: SCRATCH APP, not checked");
+  else {
+    const dbEnv = app.properties.template.containers[0].env.find((e) => e.name === "DATABASE_URL");
+    const dbUrl = dbEnv?.secretRef ? ((await arm("POST", `${APP_PATH}/listSecrets?${API}`)).value || []).find((x) => x.name === dbEnv.secretRef)?.value : dbEnv?.value;
+    await migrationsGate(dbUrl, full);
+    console.log(`migrations: every db/migrations file of ${full.slice(0, 7)} is applied on ${APP}'s database`);
+  }
   const domain = cfg.ingress.fqdn.split(".").slice(1).join(".");
   // The revision SERVING now: after a --rollback that is not the latest-ready one (found on the scratch app, 2026-10-04:
   // taking latestReady here pinned 100% back onto the rolled-back revision for the canary phase).
@@ -139,6 +162,8 @@ async function deploy() {
   }
   // 1 vCPU / 2 GiB (smooth G10: signup's scrypt is CPU-bound at 0.5 vCPU, 1.44 s p50 at 10 concurrent)
   c0.resources = { ...c0.resources, cpu: 1, memory: "2Gi" };
+  // one replica until per-process state is shared (MAX_REPLICAS above); live taxila-web had max 5 at 50 concurrent
+  tpl.scale = { ...(tpl.scale || {}), minReplicas: 1, maxReplicas: STICKY ? Math.max(MAX_REPLICAS, tpl.scale?.maxReplicas || 1) : MAX_REPLICAS };
   // Liveness stays shallow (a Neon blip must not restart-loop the replica); readiness adds one DB round trip.
   c0.probes = [
     { type: "Liveness", httpGet: { path: "/api/health", port: 8080 }, periodSeconds: 30, timeoutSeconds: 5, failureThreshold: 3 },
@@ -146,7 +171,9 @@ async function deploy() {
   ];
   // Secrets from .env.local that the image reads, stored as Container App secrets (never plain env). A PATCH that
   // touches configuration.secrets must restate every secret's value, so the current ones are listed first.
-  const SECRET_ENV = { FORGE_G2_CHILD_SALT: "forge-g2-child-salt" };
+  // TAXILA_OPS_KEY: the operator key for /api/test/boom and fresh ?db=1 numbers (server/router.js); without it on the
+  // app the forced-500 route refuses everyone.
+  const SECRET_ENV = { FORGE_G2_CHILD_SALT: "forge-g2-child-salt", TAXILA_OPS_KEY: "taxila-ops-key" };
   const missing = Object.entries(SECRET_ENV).filter(([envName, ref]) => process.env[envName] && !(c0.env.find((x) => x.name === envName)?.secretRef === ref));
   const configuration = { activeRevisionsMode: "Multiple", maxInactiveRevisions: 20,
     ingress: { ...cfg.ingress, traffic: [{ revisionName: prev, weight: 100, label: "current" }], ...(STICKY ? { stickySessions: { affinity: "sticky" } } : {}) } };
@@ -160,7 +187,7 @@ async function deploy() {
     configuration.secrets = secrets;
   }
 
-  console.log(`plan: ${APP} ${cfg.activeRevisionsMode} → Multiple; new revision ${newRev} (image ${c0.image}, 1 vCPU/2Gi, readiness ?ready=1) at 0% as \`canary\`;`);
+  console.log(`plan: ${APP} ${cfg.activeRevisionsMode} → Multiple; new revision ${newRev} (image ${c0.image}, 1 vCPU/2Gi, replicas ${tpl.scale.minReplicas}-${tpl.scale.maxReplicas}, readiness ?ready=1) at 0% as \`canary\`;`);
   console.log(`      smoke https://${APP}---canary.${domain}; then 100% → ${newRev}, ${prev} kept as \`previous\`${STICKY ? "; sticky sessions" : ""}`);
   if (DRY) { console.log(`dry run: all checks passed, nothing changed (${elapsed()})`); return; }
 

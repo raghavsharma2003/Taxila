@@ -10,13 +10,15 @@ import { withTestAccount, ok, warn, done } from "./lib.mjs";
 import { driveLesson, targetDb, advanceClock } from "./_w1c.mjs";
 
 const N = Number(process.env.W1C_SETTLE_LESSONS ?? 8);
-const DELAYS = [0, 1000, 2000, 4000];
+// W1C_SETTLE_DELAYS=0,1000 runs a subset (each file run must fit the harness timeout; the plan's run covers all four)
+const DELAYS = String(process.env.W1C_SETTLE_DELAYS ?? "0,1000,2000,4000").split(",").map(Number);
 const TOPICS = ["c5-maths-ch01-t01", "c5-maths-ch02-t01", "c5-maths-ch01-t02", "c5-maths-ch03-t01"];
 const db = await targetDb();
 if (!db) warn("TAXILA_DB_URL is not set: lessons run, but the settle rate cannot be read (pending_grade rows)");
 
 const tally = Object.fromEntries(DELAYS.map((d) => [d, { held: 0, settled: 0, late: 0, lessons: 0, errors: 0 }]));
 const perDelay = Math.max(1, Math.round(N / DELAYS.length));
+const latencies = [];
 
 for (const delay of DELAYS) {
   // one account per delay; its lessons run one after another (a child has one open lesson at a time)
@@ -25,16 +27,19 @@ for (const delay of DELAYS) {
     for (let i = 0; i < perDelay; i++) {
       try {
         if (i > 0) await advanceClock(api, 1);                               // one lesson a learning day ("done for today")
-        const d = await driveLesson(api, child.id, { topicId: TOPICS[(i + DELAYS.indexOf(delay)) % TOPICS.length], maxTurns: 14, delayMs: delay, explain: true });
+        const d = await driveLesson(api, child.id, { topicId: TOPICS[(i + [0, 1000, 2000, 4000].indexOf(delay) + 4) % TOPICS.length], maxTurns: 14, delayMs: delay, explain: true });
         lessonIds.push(d.lessonId);
         tally[delay].lessons++;
       } catch (e) { tally[delay].errors++; warn(`delay ${delay} ms lesson ${i + 1}: ${e.message}`); }
     }
     if (!db || !lessonIds.length) return;
     await new Promise((r) => setTimeout(r, 4000));                       // late verdicts land and are corrected
-    const rows = await db(`select event_id, results is not null as graded, fallback_at is not null as fallback, corrected_at is not null as corrected
+    const rows = await db(`select event_id, results is not null as graded, fallback_at is not null as fallback, corrected_at is not null as corrected, results
       from pending_grade where lesson_id = any($1::uuid[])`, [lessonIds]);
     for (const r of rows) {
+      // the grader's own latency per event (the slowest target; what the settle has to cover), for the simulator's settle model
+      const ms = (r.results ?? []).map((x) => Number(x.ms)).filter((x) => x > 0);
+      if (ms.length) latencies.push(Math.max(...ms));
       tally[delay].held++;
       if (!r.fallback && r.graded) tally[delay].settled++;
       if (r.fallback && r.corrected) tally[delay].late++;
@@ -46,6 +51,11 @@ const all = Object.values(tally).reduce((a, t) => ({ held: a.held + t.held, sett
 for (const d of DELAYS) {
   const t = tally[d];
   console.log(`delay ${d / 1000} s: ${t.lessons} lessons, held ${t.held}, settled ${t.settled}${t.held ? ` (${Math.round((100 * t.settled) / t.held)}%)` : ""}, late-corrected ${t.late}${t.errors ? `, ${t.errors} errors` : ""}`);
+}
+if (latencies.length) {
+  const q = (p) => [...latencies].sort((a, b) => a - b)[Math.min(latencies.length - 1, Math.floor(p * latencies.length))];
+  console.log(`grader latency per held event (slowest target, ms): n ${latencies.length} p50 ${q(0.5)} p90 ${q(0.9)} max ${Math.max(...latencies)}`);
+  console.log(`GRADER_MS ${JSON.stringify(latencies)}`);
 }
 ok(Object.values(tally).every((t) => t.lessons > 0), `lessons ran at every delay (${DELAYS.map((d) => tally[d].lessons).join("/")})`);
 if (db) {

@@ -68,6 +68,10 @@ class Rig:
         self.L = L; self.M = M
         self.frames = {1: HD.eye_frame(self.PH, 1), -1: HD.eye_frame(self.PH, -1)}
         self.head_attrs = self._head_attrs(head_rest)
+        nt = np.ones(len(head_rest), bool)
+        for key in ('eye_L_tuck', 'eye_R_tuck'):
+            nt[self.L[key][0]] = False
+        self.not_tuck = nt
 
     # ---------------------------------------------------------------- lid curves
     def lid_curves(self, t):
@@ -177,8 +181,8 @@ class Rig:
         a0 = PH['mouth_a'][0]
         front = (X[:, 1] < 0.02).astype(float)
         A['mouth'] = gauss(X[:, [0, 2]], [0, mz], [0.026, 0.017]) * front
-        A['cornerL'] = gauss(X[:, [0, 2]], [a0, mz + PH['mouth_rest_smile']], [0.0085, 0.0085]) * front
-        A['cornerR'] = gauss(X[:, [0, 2]], [-a0, mz + PH['mouth_rest_smile']], [0.0085, 0.0085]) * front
+        A['cornerL'] = gauss(X[:, [0, 2]], [a0, mz + PH['mouth_rest_smile']], [0.011, 0.0095]) * front
+        A['cornerR'] = gauss(X[:, [0, 2]], [-a0, mz + PH['mouth_rest_smile']], [0.011, 0.0095]) * front
         A['sideL'] = smooth(-0.004, 0.004, X[:, 0]); A['sideR'] = 1 - A['sideL']
         A['cheekL'] = gauss(X[:, [0, 2]], [0.036, -0.024], [0.014, 0.012]) * front
         A['cheekR'] = gauss(X[:, [0, 2]], [-0.036, -0.024], [0.014, 0.012]) * front
@@ -203,7 +207,8 @@ class Rig:
         t = tt[mask]
         eu, el, ec = self.lid_curves(t)
         R = self.R
-        du = (g('eyeBlink') * (ec - eu) + g('eyeWide') * math.radians(R.get('wide_deg', 9))
+        ov = math.radians(R.get('blink_overlap_deg', 1.5))
+        du = (g('eyeBlink') * (ec - ov - eu) + g('eyeWide') * math.radians(R.get('wide_deg', 9))
               + g('eyeLookUp') * math.radians(R.get('lookup_up_deg', 7)) - g('eyeLookDown') * math.radians(R.get('lookdown_up_deg', 11))
               + g('eyeSquint') * 0.12 * (ec - eu))
         dl = (g('eyeBlink') * (ec - el) + g('eyeSquint') * R.get('squint_lo', 0.5) * (ec - el) + g('cheekSquint') * 0.25 * (ec - el)
@@ -211,7 +216,7 @@ class Rig:
               - g('eyeWide') * math.radians(R.get('wide_lo_deg', 2)) + w.get('mouthSmile' + tag, 0.0) * 0.12 * (ec - el))
         if clamp:
             # the margins never cross the closing line (upper stays above, lower stays below)
-            du = np.maximum(du, (ec - eu) - 0.0)
+            du = np.maximum(du, (ec - ov - eu))
             dl = np.minimum(dl, (ec - el) + 0.0)
         da = (g('eyeLookIn') * -1 + g('eyeLookOut')) * math.radians(R.get('lookside_deg', 3))
         wuM = wu[mask]; wlM = wl[mask]
@@ -232,7 +237,7 @@ class Rig:
             cw = A['corner' + ('L' if s > 0 else 'R')]; ch = A['cheek' + ('L' if s > 0 else 'R')]
             side = A['side' + ('L' if s > 0 else 'R')]
             sm = g('mouthSmile' + tag)
-            D += sm * (cw[:, None] * np.array([s * 0.0032, 0.0018, 0.0042]) + ch[:, None] * np.array([s * 0.0006, -0.0012, 0.0026]))
+            D += sm * (cw[:, None] * np.array([s * 0.0040, 0.0026, 0.0062]) + ch[:, None] * np.array([s * 0.0008, -0.0016, 0.0034]))
             D += g('mouthFrown' + tag) * cw[:, None] * np.array([s * 0.0005, -0.0004, -0.0042])
             D += g('mouthDimple' + tag) * cw[:, None] * np.array([s * 0.001, 0.0022, 0.0002])
             D += g('mouthStretch' + tag) * (cw[:, None] * np.array([s * 0.0042, 0.0012, -0.0012]) + (A['lipU'] + A['lipL'])[:, None] * side[:, None] * np.array([s * 0.0012, 0.0004, 0]))
@@ -261,27 +266,35 @@ class Rig:
         D += pk * lipsum[:, None] * np.array([0, -0.0042, 0]) + pk * A['mouth'][:, None] * np.array([0, -0.0012, 0])
         D[:, 0] += (g('mouthLeft') - g('mouthRight')) * 0.0052 * A['mouth']
         D += g('cheekPuff') * (A['cheekL'][:, None] * np.array([0.004, -0.0012, 0]) + A['cheekR'][:, None] * np.array([-0.004, -0.0012, 0]))
-        D += g('mouthClose') * lipsum[:, None] * np.array([0, -0.0005, 0])
         X = X + D
-        # ---- jaw (rotation), mouthClose counter-rotates the lower lip toward the upper (the seal)
-        ja = g('jawOpen')
-        th = math.radians(R.get('jaw_deg', 22)) * ja
+        # ---- jaw (rotation). mouthClose (ARKit meaning): the lips close against an open jaw, so the key itself carries
+        # minus the lower-lip part of the full jawOpen displacement; jaw w + close w then seals linearly.
         piv = np.array(R.get('jaw_pivot', [0.0, 0.048, -0.018]))
         wj = A['jaw']
-        if th != 0 or g('jawForward') or g('jawLeft') or g('jawRight'):
-            ang = th * wj
-            close = g('mouthClose') * A['lipL'] * (1 - A['inner'] * 0.0)
-            ang = ang - th * np.clip(close, 0, 1) * R.get('close_gain', 0.92)
-            q = X - piv
+        thf = math.radians(R.get('jaw_deg', 22))
+
+        def rot(Xa, ang):
+            q = Xa - piv
             c, s_ = np.cos(ang), np.sin(ang)
-            y2 = q[:, 1] * c - q[:, 2] * s_
-            z2 = q[:, 1] * s_ + q[:, 2] * c
-            X = np.stack([X[:, 0], y2 + piv[1], z2 + piv[2]], 1)
+            return np.stack([Xa[:, 0], q[:, 1] * c - q[:, 2] * s_ + piv[1], q[:, 1] * s_ + q[:, 2] * c + piv[2]], 1)
+        cl = g('mouthClose')
+        if cl:
+            lipw = np.clip(A['lipL'], 0, 1) * (1 - 0.5 * (A['lipU'] > 0))
+            Dfull = rot(X, thf * wj) - X
+            X = X - cl * Dfull * lipw[:, None] * R.get('close_gain', 1.0)
+            # the upper lip comes down a touch to meet it
+            X[:, 2] -= cl * 0.0006 * A['lipU'] * (A['lipL'] == 0)
+        th = thf * g('jawOpen')
+        if th != 0 or g('jawForward') or g('jawLeft') or g('jawRight'):
+            X = rot(X, th * wj)
             X[:, 1] += -g('jawForward') * 0.004 * wj
             X[:, 0] += (g('jawLeft') - g('jawRight')) * 0.004 * wj
         # ---- lids
         for s in (1, -1):
             X = self.lids(X, w, s, A[('lidU', s)], A[('lidL', s)], A[('lidT', s)])
+        # ---- lid-over-eyeball push-out on every pose (tucks excepted)
+        Xp = HD.push_out(X[self.not_tuck], self.PH | self.PP)
+        X[self.not_tuck] = Xp
         # ---- forehead skin follows the brows (30%)
         bd = self.brow_disp(X0, w, follow=True)
         X = X + bd * (A['fore'] * R.get('fore_follow', 0.3))[:, None]
@@ -295,10 +308,11 @@ class Rig:
         sp = np.clip((np.abs(X[:, 0]) - x0) / (x1 - x0), 0, 1)
         g = lambda k: w.get(k, 0.0)
         iu = g('browInnerUp')
-        D[:, 2] += iu * 0.0072 * (1 - sp) ** 1.3
-        D[:, 0] += iu * -sgn * 0.0007 * (1 - sp)
+        D[:, 2] += iu * 0.0095 * (1 - sp) ** 1.2
+        D[:, 0] += iu * -(2 * smooth(-0.003, 0.003, X[:, 0]) - 1) * 0.0007 * (1 - sp)
+        sideL = smooth(-0.003, 0.003, X[:, 0])
         for s, tag in ((1, 'Left'), (-1, 'Right')):
-            m = (sgn == s).astype(float)
+            m = sideL if s > 0 else 1 - sideL
             bdn = g('browDown' + tag) * m
             D[:, 2] += bdn * (-0.0035 - 0.0025 * (1 - sp))
             D[:, 0] += bdn * (-s * 0.0025 * (1 - sp) ** 1.5)

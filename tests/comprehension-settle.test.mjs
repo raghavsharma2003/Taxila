@@ -225,3 +225,50 @@ test("a late correction keeps its held event's source weight (game / module), ne
   assert.deepEqual([temper(dlg), temper(mod), temper(game)], [1, 0.75, 0.5]);
   assert.equal(temper({ via: "module", id: "x" }), 0.75, "an ordinary event: its own via, as before");
 });
+
+test("pregrade: a grade started before the turn is classified is adopted by gradeLater, never run twice", quiet(async () => {
+  const s = memStore(); _setStore(s);
+  const { pregrade } = await import("../server/comprehension/later.js");
+  let calls = 0;
+  const grade = () => { calls++; return new Promise((r) => setTimeout(() => r(PRESENT[0]), 300)); };
+  const ev = why();
+  assert.equal(pregrade(LESSON, req, { grade }), true);
+  assert.equal(pregrade(LESSON, req, { grade }), true, "a resend does not start a second grade");
+  await new Promise((r) => setTimeout(r, 200));                   // the classifier and the plan take 200 ms
+  gradeLater(ev, req, { grade });
+  assert.equal(calls, 1, "one R-EXP call for the one target: the pregrade's");
+  const t0 = Date.now();
+  const r = await settleHeld([ev.id], 600);
+  assert.equal(r.settled, 1);
+  assert.ok(Date.now() - t0 < 250, "it lands ~100 ms after the plan: the 200 ms before it were already graded");
+  // a different answer text is a different request: graded on its own
+  const ev2 = why();
+  gradeLater(ev2, { ...req, childText: "something else entirely" }, { grade });
+  assert.equal(calls, 2);
+  assert.equal(pregrade(LESSON, { childText: "", targets: req.targets }, { grade }), false, "nothing to grade: nothing started");
+}));
+
+test("hedge: a grader call still out after HEDGE_MS is sent once more; the first real verdict wins", quiet(async () => {
+  const s = memStore(); _setStore(s);
+  const { HEDGE_MS, gradeHedgeStats } = await import("../server/comprehension/later.js");
+  const h0 = gradeHedgeStats();
+  let n = 0;
+  // the first call hangs in the tail (6 s); the hedge answers in 200 ms
+  const grade = () => { n++; const ms = n === 1 ? 6000 : 200; return new Promise((r) => setTimeout(() => r({ ...PRESENT[0], model: `call${n}` }), ms)); };
+  const ev = why();
+  const t0 = Date.now();
+  const res = await gradeLater(ev, req, { grade });
+  const took = Date.now() - t0;
+  assert.equal(n, 2, "one hedge");
+  assert.equal(res[0].model, "call2"); assert.equal(res[0].hedged, true);
+  assert.ok(took >= HEDGE_MS && took < HEDGE_MS + 600, `lands at ≈ HEDGE_MS + 200 ms (${took} ms), not at 6 s`);
+  assert.ok(res[0].ms >= HEDGE_MS, "ms runs from the first call");
+  const h1 = gradeHedgeStats();
+  // (≥: earlier tests' deliberately slow grades are still in flight and hedge in this window too)
+  assert.ok(h1.hedged - h0.hedged >= 1 && h1.hedgeWon - h0.hedgeWon >= 1, JSON.stringify([h0, h1]));
+  // a fast call is never hedged
+  n = 10;
+  const fast = () => { n++; return new Promise((r) => setTimeout(() => r(PRESENT[0]), 50)); };
+  await gradeLater(why(), req, { grade: fast });
+  assert.equal(n, 11);
+}));

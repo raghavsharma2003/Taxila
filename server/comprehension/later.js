@@ -99,13 +99,84 @@ export function gradeLater(ev, { childText, targets, echo = [], lang = "en" }, {
   const ts = (targets ?? []).filter((t) => t?.id && t?.textEn).slice(0, MAX_TARGETS);
   if (!text || !ts.length) return null;
   const entry = { at: realNow(), settled: false, results: null, fallback: false, partial: ts.map(() => null), decided: false, cls: ev.cls };
-  entry.promise = Promise.all(ts.map((target, i) => grade({ op: "R-EXP", childSpan: text, target, lang }, { echo })
-    .catch(() => ({ label: "NA", spanOk: false, op: "R-EXP", targetId: target.id, graderVersion: GRADER_VERSION, model: null, ms: 0, span: null }))
+  // a grade the turn already started BEFORE classifying (pregrade: the child was answering a why) is adopted, not re-run
+  const lessonId = lessonOfEvent(ev.id) ?? ev.sessionId;
+  const preKey = lessonId ? `${lessonId}|${fingerprint(text, ts, lang)}` : null;
+  const pre = preKey ? PRE.get(preKey) : null;
+  if (pre) PRE.delete(preKey);
+  const runs = pre?.runs ?? runTargets(text, ts, lang, echo, grade);
+  entry.pregraded = !!pre;
+  entry.promise = Promise.all(runs.map((run, i) => run
     .then((res) => { entry.partial[i] = res; if (!entry.decided && decides(entry)) entry.decided = true; return res; })))
     .then((results) => { entry.results = results; entry.settled = true; return results; });
   PENDING.set(ev.id, entry);
   entry.persisted = entry.promise.then((results) => landed(ev, results)).catch((e) => console.warn("[settle] verdict not stored:", String(e?.message ?? e).slice(0, 160)));
   return entry.promise;
+}
+
+/**
+ * The grader's tail is long (local acceptance run: p50 ≈ 1.3 s, but 4.6 s / 7.0 s / 11.0 s outliers on the same
+ * deployment and prompt), and a verdict that slow misses every settle window. A call still out after HEDGE_MS is HEDGED:
+ * the identical request is sent once more to the same chain, and whichever real verdict comes back first is used (the
+ * other is dropped). Same model, same prompt, so the hedge changes when a verdict lands, never what it is; the extra
+ * call is spent only on the slow tail. The result says `hedged: true` and its `ms` runs from the FIRST call.
+ */
+export const HEDGE_MS = 1800;
+const NA_OF = (target) => ({ label: "NA", spanOk: false, op: "R-EXP", targetId: target.id, graderVersion: GRADER_VERSION, model: null, ms: 0, span: null });
+const hedgeStats = { calls: 0, hedged: 0, hedgeWon: 0 };
+/** Hedge counters since process start (probes and tests). */
+export const gradeHedgeStats = () => ({ ...hedgeStats });
+function hedgedGrade(req, opts, grade, target, hedgeMs) {
+  hedgeStats.calls++;
+  const t0 = realNow();
+  const call = () => grade(req, opts).catch(() => NA_OF(target));
+  return new Promise((resolve) => {
+    let done = false, out = 0, timer = null, firstNA = null;
+    const take = (res, second) => {
+      out--;
+      if (done) return;
+      if (res?.label === "NA" && out > 0) { firstNA = res; return; }        // wait for the other call's real verdict
+      done = true; clearTimeout(timer);
+      if (second) hedgeStats.hedgeWon++;
+      resolve(second || timer === "fired" ? { ...res, hedged: true, ms: realNow() - t0 } : res ?? firstNA);
+    };
+    out++; call().then((r) => take(r, false));
+    timer = setTimeout(() => {
+      if (done) return;
+      timer = "fired"; hedgeStats.hedged++;
+      out++; call().then((r) => take(r, true));
+    }, hedgeMs);
+  });
+}
+/** One R-EXP call per target, in parallel (each hedged past HEDGE_MS); a failed call is an NA verdict (never a rejection). */
+function runTargets(text, ts, lang, echo, grade, hedgeMs = HEDGE_MS) {
+  return ts.map((target) => hedgedGrade({ op: "R-EXP", childSpan: text, target, lang }, { echo }, grade, target, hedgeMs));
+}
+const fingerprint = (text, ts, lang) => JSON.stringify([String(text).trim(), lang ?? "en", ts.map((t) => [t.id, t.textEn])]);
+
+// Grades started before the turn is classified, by lesson × request (see pregrade). Short-lived: adopted by gradeLater
+// within the same turn, or swept.
+const PRE = new Map();
+const PRE_TTL_MS = 60_000;
+
+/**
+ * Start the blind grade of a why answer BEFORE the turn is classified (seam-patches/w1c-lesson-early-grade.patch): the
+ * child is answering a pending why, so the turn will almost certainly hold a probe.why on the active item with exactly
+ * this request (lesson.js gradeRequestFor). The grader then runs beside the classifier and the reply instead of after
+ * them; gradeLater adopts the running calls when the plan holds the event (matched by lesson and request, never by a
+ * guessed event id). When the classifier decides it was not a why answer, the calls are simply dropped (≤ 4 R-EXP calls).
+ * @param {string} lessonId @param {{ childText: string, targets: { id: string, textEn: string }[], echo?: string[], lang?: string }} r
+ */
+export function pregrade(lessonId, { childText, targets, echo = [], lang = "en" } = {}, { grade = gradeClosed } = {}) {
+  const now = realNow();
+  for (const [k, v] of PRE) if (now - v.at > PRE_TTL_MS) PRE.delete(k);
+  const text = String(childText ?? "").trim();
+  const ts = (targets ?? []).filter((t) => t?.id && t?.textEn).slice(0, MAX_TARGETS);
+  if (!lessonId || !text || !ts.length) return false;
+  const key = `${lessonId}|${fingerprint(text, ts, lang)}`;
+  if (PRE.has(key)) return true;
+  PRE.set(key, { at: now, runs: runTargets(text, ts, lang, echo, grade) });
+  return true;
 }
 
 async function landed(ev, results) {

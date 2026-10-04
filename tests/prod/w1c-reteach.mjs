@@ -38,8 +38,13 @@ await withTestAccount(async ({ api, child }) => {
   console.log(`state: failedArms ${JSON.stringify(failed)} lastArmBySkill ${JSON.stringify(last)} parked ${JSON.stringify(parked)}`);
   const twoFailed = Object.keys(failed).filter((k) => (failed[k] ?? []).length >= 2);
   ok(twoFailed.length > 0, `two arms failed on one skill in the lesson (${Object.entries(failed).map(([k, a]) => `${k.split("-").pop()}:[${a.join(",")}]`).join(" ") || "no failedArms in the state: seam-patches/w1c-state-reteach.patch is not applied"})`);
-  const descended = twoFailed.filter((k) => String(last[k] ?? "").startsWith("descent:") || parked.includes(k));
-  ok(descended.length > 0, `…and the next decision on it is a prerequisite descent or a park (${twoFailed.map((k) => `${k.split("-").pop()} → ${parked.includes(k) ? "park" : last[k] ?? "none"}`).join("; ") || "none"})`);
+  // (TOPIC's skill has a cross-topic prerequisite the new child never touched: pL 0.3 < 0.5, so descent MUST fire; a
+  // descent that did not repair it counts as the third failure, and the next decision parks the skill)
+  const descentOf = (k) => [...(failed[k] ?? []), last[k] ?? ""].find((a) => String(a).startsWith("descent:")) ?? null;
+  const descended = twoFailed.filter((k) => descentOf(k));
+  ok(descended.length > 0, `…and the next decision on it is a prerequisite descent (${twoFailed.map((k) => `${k.split("-").pop()} → ${descentOf(k) ?? "no descent"}`).join("; ") || "none"})`);
+  const thenParked = descended.filter((k) => parked.includes(k) || String(last[k] ?? "").startsWith("descent:"));
+  ok(thenParked.length === descended.length, `…after which the skill is parked, or the descent is still being tried (${descended.map((k) => `${k.split("-").pop()}: ${parked.includes(k) ? "parked" : "descent in progress"}`).join("; ")})`);
 
   // population posteriors before the resolution (the test account must not move them)
   const arms = [...new Set(rows.map((r) => r.arm_id))];

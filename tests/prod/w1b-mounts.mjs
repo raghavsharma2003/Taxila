@@ -10,7 +10,7 @@
 //     own: the row's outcome mirrors the claim, open item engines-v1-server-recheck);
 //   - a G1 fill is graded by the SERVER's binding, never the frame's claim, both ways: a WRONG commit claiming
 //     correct:true writes an incorrect via='module' row, and the RIGHT commit claiming correct:false writes a correct
-//     one (needs the W1-B lesson.js call sites, context/inbox/w1-b-lesson-wiring.patch).
+//     one (needs the W1-B lesson.js call sites, server/forge/seam-patches/w1b-lesson-wiring.patch).
 //   The row checks need TAXILA_DB_URL for the target's DB; without it they are skipped with a WARN and only the turn's
 //   acceptance is checked through the API. Maths lessons report catalog-bound (goal item:) and G1 (goal g1:) mounts
 //   separately; the acceptance counts either as item-bound and WARNs when a maths lesson had only G1.
@@ -19,6 +19,7 @@ import { withTestAccount, ok, warn, done, isLocal } from "./lib.mjs";
 import { ENGINES } from "../../shared/engine-catalog.js";
 import { getKit } from "../../server/content/index.js";
 import { diagnosticItems } from "../../server/forge/derive.js";
+import { outcomeName } from "../../server/learner/kt/outcomes.js";
 
 // The local fill check below builds the fill offline exactly as the server does (code pick, gate), touching no DB/Blob.
 process.env.FORGE_FLAVOUR = "off"; process.env.FORGE_DB_CACHE = "off"; process.env.FORGE_BLOB = "off";
@@ -65,7 +66,8 @@ function commitValue(sc, which) {
   return { kind: "sc.commit", probe: pr.id, probe_kind: pr.kind, via: "tap", vars: {}, order: { [ord[1]]: which === "right" ? right : wrong } };
 }
 
-for (const topicId of TOPICS) {
+const g1Seen = { wrong: 0, right: 0 };
+for (const [ti, topicId] of TOPICS.entries()) {
   const classLevel = Number(topicId.match(/^c(\d)/)[1]);
   await withTestAccount(async ({ api, child }) => {
     const K = await kitOf(topicId);
@@ -97,12 +99,16 @@ for (const topicId of TOPICS) {
         bound.accepted = ans.status === 200;
         bound.rows = since === null ? null : await rowsAfter(child.id, since);
       }
-      // a G1 fill on the item being asked: first commit a WRONG answer claiming correct:true, then the RIGHT one claiming
-      // correct:false (on the same mount when it stays up, else on the lesson's next G1 mount). The server grades both
-      // from its own binding (gradeEvent): the kt_evidence rows' outcomes are the binding's, never the claim's.
-      for (const phase of ["wrong", "right"]) {
-        if (g1Checks[phase] || (phase === "right" && !g1Checks.wrong)) continue;
-        const g = [...mounted.values()].find((c) => c.engine === "scene@1" && c.goal === `g1:${asked}`);
+      // a G1 fill on the item being asked: commit a WRONG answer claiming correct:true and the RIGHT one claiming
+      // correct:false, one per G1 posing (a diagnostic item is asked once, so a lesson often has a single posing); the
+      // order alternates by topic so the battery sees both directions. The server grades from its own binding
+      // (gradeEvent): the kt_evidence rows' outcomes are the binding's, never the claim's.
+      const order = ti % 2 ? ["right", "wrong"] : ["wrong", "right"];
+      for (const phase of order) {
+        if (g1Checks[phase] || (phase === order[1] && !g1Checks[order[0]])) continue;
+        // a NEW posing: an mcq item counts only its first attempt (first_correct / wrong), so a second commit on an item
+        // already answered is no evidence by design
+        const g = [...mounted.values()].find((c) => c.engine === "scene@1" && c.goal === `g1:${asked}` && !Object.values(g1Checks).some((x) => x?.item === asked));
         const value = g && commitValue(g.params.scene, phase);
         if (!value) break;
         const since = await maxSeq(child.id);
@@ -110,7 +116,7 @@ for (const topicId of TOPICS) {
           moduleEvents: [{ moduleId: g.moduleId, engine: "scene@1", type: "answer", name: "answer", data: { value, correct: phase === "wrong" }, at: Date.now() }] });
         cmds.push(...(ans.moduleCommands ?? []));
         for (const c of ans.moduleCommands ?? []) track(c);
-        asked = ans.ui?.ask?.itemId ?? asked;
+        asked = ans.ui?.ask?.itemId ?? null;
         g1Checks[phase] = { item: g.goal.slice(3), accepted: ans.status === 200, rows: since === null ? null : await rowsAfter(child.id, since) };
       }
       if (r.end) break;
@@ -143,19 +149,32 @@ for (const topicId of TOPICS) {
       ok(x.accepted, `${topicId}: the G1 ${phase} commit (item ${x.item}, claim correct:${phase === "wrong"}) was accepted`);
       if (x.rows === null) return warn(`${topicId}: TAXILA_DB_URL not set; the G1 ${phase} commit's kt_evidence row not read`);
       const mod = x.rows.filter((row) => row.via === "module");
-      ok(mod.length > 0 && mod.every((row) => row.cls === want),
-        `${topicId}: the G1 ${phase} commit claiming correct:${phase === "wrong"} wrote a via 'module' row graded ${want} by the server (${mod.map((row) => row.cls).join(",") || "no module row"})`);
+      // kt_evidence.outcome is an index into the class's outcome list (server/learner/kt/outcomes.js OUTCOMES)
+      const names = mod.map((row) => outcomeName(row.cls, row.outcome));
+      // unambiguous names only: mcq first_correct / wrong, and item.open C0 (right first try). item.open C3/C4 is also
+      // "right after 2+/4+ hint rungs", so a wrong commit graded on an open class is reported, not asserted
+      const RIGHT = new Set(["first_correct", "C0"]);
+      if (want === "wrong" && mod.length && !mod.every((row) => /^item\.mcq/.test(row.cls))) return warn(`${topicId}: the G1 wrong commit graded as ${mod.map((row, i) => `${row.cls}:${names[i]}`).join(",")}: not an mcq class, direction not asserted`);
+      if (mod.length) g1Seen[phase]++;
+      ok(mod.length > 0 && names.every((n) => (want === "correct" ? RIGHT.has(n) : n === "wrong")),
+        `${topicId}: the G1 ${phase} commit claiming correct:${phase === "wrong"} wrote a via 'module' row graded ${want} from the server's binding (${mod.map((row, i) => `${row.cls}:${names[i]}`).join(",") || "no module row"})`);
     };
-    g1Row("wrong", "incorrect");
+    g1Row("wrong", "wrong");
     g1Row("right", "correct");
-    if (g1Checks.wrong && !g1Checks.right) warn(`${topicId}: no second G1 posing for the right-answer commit`);
+    if (!!g1Checks.wrong !== !!g1Checks.right) warn(`${topicId}: the lesson posed one G1 fill; only the ${g1Checks.wrong ? "wrong" : "right"} commit was sent`);
     if (bound) {
       ok(bound.accepted, `${topicId}: the bound module answer (${bound.engine}, item ${bound.params.itemId}) was accepted`);
       if (bound.rows === null) warn(`${topicId}: TAXILA_DB_URL not set; kt_evidence via='module' not read`);
-      else ok(bound.rows.some((row) => row.via === "module" && row.cls === "correct"),
-        `${topicId}: the bound answer wrote a correct via 'module' row (the engine's own verdict; server re-check is open) (${bound.rows.map((row) => `${row.via}:${row.cls}`).join(",") || "no rows"})`);
+      // the engine's own verdict (server re-check is the open item engines-v1-server-recheck): the row is the acceptance;
+      // its outcome is reported (an item.open C4 after the hint ladder is "right after 4+ rungs", not a miss)
+      else ok(bound.rows.some((row) => row.via === "module" && !["IDK", "NA"].includes(outcomeName(row.cls, row.outcome))),
+        `${topicId}: the bound answer wrote a graded via 'module' row (${bound.rows.map((row) => `${row.via}:${row.cls}:${outcomeName(row.cls, row.outcome)}`).join(",") || "no rows"})`);
     }
   }, { tag: "w1b-mounts", child: { classLevel, firstName: "Riya" } });
+}
+if (db) {
+  ok(g1Seen.wrong > 0, `the battery graded a forged correct:true on a wrong G1 commit (${g1Seen.wrong} lesson(s))`);
+  ok(g1Seen.right > 0, `the battery graded a right G1 commit claiming correct:false (${g1Seen.right} lesson(s))`);
 }
 const anyBound = all.some((x) => x.itemBound > 0);
 ok(anyBound, `item-bound mounts seen across the battery (${all.map((x) => `${x.topicId.replace(/-t\d+$/, "")}:${x.catalogBound}+${x.g1}g1`).join(" ")})`);

@@ -372,7 +372,8 @@ export class Stage3D {
     // Skip the GPU when nothing moved (idle between blinks); the first frames and a hidden canvas always render.
     let sig = b.head[0] * 1.3 + b.head[1] * 1.7 + b.head[2] * 1.9 + b.gaze[0] * 2.3 + b.gaze[1] * 2.9 + b.lean * 3.1 + breath * 3.7;
     for (const k in bs) sig += bs[k] * (k.length + 1) * 0.37;
-    if (force || sig !== this.lastSig || !this.revealed) {
+    const rendered = force || sig !== this.lastSig || !this.revealed;
+    if (rendered) {
       this.lastSig = sig;
       this.rig.apply(bs, b.head, b.gaze, b.lean, breath);
       this.renderer.render(this.scene, this.camera);
@@ -389,12 +390,13 @@ export class Stage3D {
     if (this.lastFrame >= 0 && !force) {
       const iv = now - this.lastFrame;
       this.intervals.push(iv);
-      this.work.push(work);
+      // Work samples only from frames that drew: a skipped idle frame costs ~0 and would make a weak GPU look fast.
+      if (rendered) this.work.push(work);
       if (this.intervals.length > 600) this.intervals.shift();
       if (this.work.length > 600) this.work.shift();
       this.governor.frame(t, iv);
       this.frames++;
-      if (this.probe) {
+      if (this.probe && rendered) {
         this.probe.intervals.push(iv);
         this.probe.work.push(work);
         if (this.probe.intervals.length >= 60) {
