@@ -1697,3 +1697,9 @@ Nothing reads it yet. The order is SIGNALS-SPEC §8.2 steps 1-14, plus the verif
 - Take `f0EndSlopeStPerS` out of `signalsFrom` until SG-M1 passes: every non-final Hindi phrase rises by grammar.
 - Rollout: shadow first (`TAXILA_SIGNALS=shadow`). Text states go live after shadow. Audio-derived states wait for the real-child study and Microsoft's written answer on Code of Conduct restriction 12.
 - The safety floor's four missing shapes are fixed in `scanSafety` (3e68277). After the Wave 2 merge, re-run `node --test tests/safety.test.mjs` in case a stream rewrote that file.
+
+## Voice v4 (workstream wf_1b466ff4-f6b done 2026-10-04) — what ships when
+- Round-3 blind page is published at https://claude.ai/artifact/AXgkuvgNxG9Gets3PvhuCu. It has the same db rules as round 2, and raters need Contributor access. Score it against `docs/research/voice/v4/blind/blind-key.json`; never publish that key.
+- `docs/research/voice/v4/prompt-patch.diff` (a superset of `talking-rules.patch`) is NOT applied. Apply it after the round-3 ratings, if arm C (new line plus delivery plan) beats arm A, by the thresholds in TALKING-RULES §6. It touches say.js, compile.js, shapes.js, dhd.js, moment.js and two persona sheets, so re-check it against the Wave 2 tree first.
+- **Blocker for any live voice gain:** the Hinglish lane writes Hindi in Roman letters, and Diya then mispronounces Hindi number words (पैंतीस → "पेंटीज", 4/4 takes). Rounds 1-3 were rendered from Devanagari the Director never writes. A Roman → Devanagari step before TTS is a Wave 2.5 voice item. When it lands, the -35% rate decision's reversal condition fires (that rate was measured on Roman script).
+- The rule placing the spoken-register note mid-prompt needs a fire-rate test on the cascade lane, because the last section has no room left (position is mechanism).

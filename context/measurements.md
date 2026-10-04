@@ -1963,6 +1963,68 @@ W2-B acceptance run locally against `node server/serve.mjs` (dist built) on the 
 - `m-b1-prefix-commit-2026-10-04` (2026-10-04): M-B1 (duplex Study B, 2026-10-04): committing to a child's numeric answer mid-utterance (first value confirmed by one following non-number word) grades the wrong value on 5/13 reference stimuli [80% Wilson 0.23-0.56], 35/78 production D4 transcripts [0.38-0.52] and 30/78 MAI-Tx-2-Streaming transcripts [0.32-0.46]; an oracle that knew the final value saves median 0 words (mean 0.85) because the answer is the last content (Hindi verb tails ~2 words). Method: word-prefix replay through the repo's extractValues()/answerOK rule, deterministic, synthetic child TTS stimuli (stimuli.mjs, 13 gradable), 6 transcripts per stimulus so effective n=13; text prefixes understate real partial-revision error. Harness evals/duplex/prefix-commit.mjs, results evals/duplex/results/prefix-commit-2026-10-04.json. Re-run on E1 streaming partials (X6).
 - `smart-turn-unproven-vs-silence-2026-10-04` (2026-10-04): External (Voice-Light 2609.20995, locked test, 1,673 real English silence candidates, HOLD n=37): Smart Turn v3.2 (threshold 0.95) 13.51% false cut-offs and 20.72% EOT recall vs a tuned Silero 640 ms silence policy 2.70% and 95.60% (LiveKit v1-mini 2.70%/91.50%). Small HOLD n and possible training overlap; caution on wb-predictive-endpoint: keep tuned silence as the floor and adopt a learned scorer only if it beats Silero-640 on child HOLDs (duplex X1).
 
+## W2-F: Studio build system (2026-10-04)
+
+### w2f-router-bench-2026-10-04
+2026-10-04, method: `evals/live-studio/router-bench.mjs --n 30 --mode race --write` (the SERVER code path: `build.js buildRace`
+with stream guard, fixers, ≤ 2 repairs, the race of taxila-gpt6 low + gpt-5.6-terra low + taxila-gpt6-luna low opportunistic,
+codex on 429), fixed truth and strings from `evals/live-studio/goldens/goldens.json` with params and held-out params
+alternating, the gate in a LOCAL Chromium (`STUDIO_QA_LOCAL=1`), concurrency 4, US sandbox → eastus2, shared deployments.
+P(pass by lead) counted at the fixed 90 s bench lead; 80% Wilson. Time to playable includes any wait in the background quota
+bucket (taxila-gpt6 is not in `server/lanes.js TPM`, so it is capped at 30% of an assumed 200k TPM), so the times are an upper
+bound. 11 races lost to a container restart were re-run (`rj-w2f-network-as-build-failure`). Rows:
+`evals/live-studio/out-router-bench-2026-10-04/results-race.json`; per-archetype nodes in `context/inbox/w2-f-router-bench.json`.
+
+| archetype | first try | after repair | by 90 s lead | 80% Wilson | p50 / p90 s | $ per pass | live |
+|---|---|---|---|---|---|---|---|
+| shade_fraction | 23/30 | 30/30 | 30/30 | 0.948-1 | 29.1 / 43.0 | 0.066 | yes |
+| bar_chart_read | 25/30 | 30/30 | 30/30 | 0.948-1 | 18.7 / 32.6 | 0.046 | yes |
+| hub_flows | 23/30 | 30/30 | 30/30 | 0.948-1 | 27.5 / 45.0 | 0.070 | yes |
+| number_line_jump | 30/30 | 30/30 | 30/30 | 0.948-1 | 20.3 / 31.2 | 0.049 | yes |
+| balance_scale | 20/30 | 25/30 | 25/30 | 0.729-0.903 | 23.1 / 35.6 | 0.069 | no (library-only) |
+| sort_bins | 26/30 | 30/30 | 30/30 | 0.948-1 | 18.7 / 34.9 | 0.044 | yes |
+| sequence_steps | 30/30 | 30/30 | 30/30 | 0.948-1 | 15.1 / 23.3 | 0.032 | yes |
+| slider_law | 27/30 | 30/30 | 30/30 | 0.948-1 | 17.4 / 29.8 | 0.034 | yes |
+| process_chain | 19/30 | 30/30 | 30/30 | 0.948-1 | 31.8 / 60.8 | 0.071 | yes |
+| labelled_parts | 0/30 | 26/30 | 26/30 | 0.768-0.927 | 47.6 / 60.9 | 0.138 | no (also human_review) |
+| pictograph | 28/30 | 30/30 | 30/30 | 0.948-1 | 17.3 / 28.6 | 0.041 | yes |
+| timeline | 29/30 | 30/30 | 30/30 | 0.948-1 | 17.6 / 22.8 | 0.029 | yes |
+
+balance_scale's top failing checks: G6.tilt_tells_truth 18, G7.state_graph 15; labelled_parts': G4.labels_anchored 46,
+G4.targets_min 31. Not directly comparable with LIVE-STUDIO §14 (that probe built at 360 x 640 portrait;
+`rj-w2f-probe-portrait-viewport`). Spend for the whole n = 30 table ≈ $20 (sum of `usd` over 360 races).
+
+### w2f-mutant-suite-2026-10-04
+2026-10-04, method: `evals/live-studio/mutants.mjs --goldens-dir evals/live-studio/out-router-bench-2026-10-04` (local gate,
+perf on). Recall **51/51** (shade_fraction 17, bar_chart_read 17, hub_flows 17 seeded mutants: wrong part count, water flowing
+down, O₂ into the leaf, label overlap, a stray English word, a fetch call, a hard-coded Studio.answer, done never called,
+overflow at the design box, ...). False alarms **0/9** goldens (the hand golden + the first 2 bench winners per kind).
+
+### w2f-gate-on-azure-2026-10-04
+2026-10-04, method: `tests/prod/w2f-studio-gate.mjs` part A against the deployed `studio-qa` app (image wt-66d1a6f9d19b,
+1 vCPU / 2 GiB, concurrency 2), sequential calls from the US sandbox → eastus2. 24/24 hand goldens pass at params and held-out
+params; 3/3 seeded mutants refused (shade_fraction hard-coded answer, bar_chart_read sqrt heights, hub_flows water reversed); an
+unauthenticated call → 401. Gate time over n = 30: **p50 5689 ms, p90 8968 ms** (bar p50 ≤ 12 s, p90 ≤ 18 s). Not from Central
+India and not under concurrent load.
+
+### w2f-whiteboard-bench-2026-10-04
+2026-10-04, method: `evals/live-studio/whiteboard-bench.mjs` (30 production teacher lines on explain / worked-example / repair /
+hint moves, classes 4-7, maths + science + EVS → `plan.js planWhiteboard` → `qa/whiteboard.js`), concurrency 6, bench budget
+20 s, US sandbox → eastus2. Re-run on the current tree after the checkpoint changes to plan.js / qa/whiteboard.js:
+- `taxila-gpt6-luna` none, lane cap lifted (`TAXILA_TPM={"taxila-gpt6-luna":1e7}`): **24/30** passed (14 first try, 24 after
+  ≤ 1 repair), 1 nothing-to-draw, 29 drawn; p50 3028 ms / p90 5894 ms; $0.00035 per line. Fails: W2 overlap 2, W3 anchor 1,
+  W5 words 1, W4 numbers 1. Output `out-whiteboard-2026-10-04c`.
+- the same with today's lane cap: 21/30; 4 lines failed on `deadline` because the background bucket queued them
+  (taxila-gpt6-luna is not in `lanes.js TPM`: 30% of an assumed 200k TPM ≈ 15 calls per minute at the 4000-token estimate).
+  Output `out-whiteboard-2026-10-04b`. Open item for W2-E.
+- earlier run (18:46, previous tree): luna none 22/30 (p50 2.4 s / p90 4.8 s); luna low 26/30 (p50 5.6 s / p90 13.1 s, outside
+  the 7 s live budget); `taxila-fast` none 6/30 (`rj-w2f-wb-taxila-fast-none`).
+
+### w2f-acceptance-local-2026-10-04
+`tests/prod/w2f-studio-gate.mjs` part B against `node server/serve.mjs` (dist built, Neon test branch): 4 lessons ran, accounts
+deleted (leftover @taxila.test guardians 4 → 4), **no whiteboard artifact reached the client** (WARN): W2-E asks
+`studioSeam.requestIntent`, which W2-H has not added yet, so the planner is never called in a lesson.
+
 ## W2-G: human voice (2026-10-04)
 - `w2g-tts-pace-2026-10-04`: `evals/tts-pace.mjs`, Azure Speech centralindia called from the US sandbox, 10 Roman-script
   Hinglish teacher lines per cell, rendered with the production `plainSsml` + `azureTts.js`, speech-only seconds (edges at

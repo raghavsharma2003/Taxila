@@ -1,0 +1,22 @@
+{
+ "nodes": [
+  {
+   "id": "voice-blind-r3-page",
+   "kind": "decision",
+   "title": "Blind round 3 page (docs/research/voice/v4/blind/index.html, 20 MP3s, key blind-key.json not published, version taxila-voice-blind-r3/v1, localStorage prefix taxila-voice-blind-r3:): the round-2 scenes as 5 cards x 4 arms from v4/renders/manifest.json (A = the round-2 Diya clip as anchor, B = Diya with the v4 spoken-register line in plain SSML, C = the same line plus the per-clause delivery plan, D = Nova 2 Sonic kiara with the line and the situation prompt; the L3 A-reserve renders are left out). Takes come from the manifest's rule, written before screening; every arm-line is take 1. Each clip is encoded from its raw source with round 2's own encode(), imported rather than copied: outputs -26.4 to -26.5 LUFS, true peak <= -4.2 dBFS (n=20). The format is the same as round 2: name gate, per-name db docs, a 1-5 score on 'real teacher talking to me' unlocked after 80% heard, notes per voice and per card. Changes: each voice shows its own words, because arm A says the round-2 line; the text separates A exactly as the audio already does and says nothing about B vs C vs D. Three failure boxes are appended after round 2's eight (mood: 'feeling does not fit this moment', fades: 'feeling fades after the start', choppy: 'too many pauses'), taken from the round-2 rater notes. A name's db doc is read and merged before the first write, so a second device or a late runtime cannot overwrite earlier scores. Publish with the same capabilities as round 2: db rules ratings owner/owner and ratings/{self} interact/interact, plus user. Reverse if raters cannot finish 20 clips, or if the per-voice words prove to bias scores (then hide the text and keep only scene + child).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "voice-blind-r3-page-check-2026-10-04",
+   "kind": "measurement",
+   "title": "Round-3 page functional check (headless Chromium 1194, Playwright, 29 assertions, all passed, 2026-10-04). Covered: 5 cards x 4 voices, words shown on every clip, scores locked until listened, 11 failure boxes; with storage blocked and no runtime, status text plus a ratings-text export that carries v, who, score and ticks; with a mock db, the db score, local score and card note merge, names are indexed, switching person keeps both docs separate with no reload, and a runtime that resolves late after start does not overwrite an earlier device's scores and adopts its seed; with a null runtime, the on-device status shows; no horizontal scroll at 360 px. Not exercised: the real claude.ai db/user runtime, which is checked after publish with an ArtifactData list of ratings.",
+   "at": "2026-10-04"
+  }
+ ],
+ "edges": [
+  {"src": "voice-blind-r2-page", "rel": "informs", "dst": "voice-blind-r3-page"},
+  {"src": "voice-next-situation-delivery-2026-10-04", "rel": "informs", "dst": "voice-blind-r3-page"},
+  {"src": "rj-loudnorm-dynamic-for-stimuli", "rel": "informs", "dst": "voice-blind-r3-page"},
+  {"src": "voice-blind-r3-page-check-2026-10-04", "rel": "informs", "dst": "voice-blind-r3-page"}
+ ]
+}
