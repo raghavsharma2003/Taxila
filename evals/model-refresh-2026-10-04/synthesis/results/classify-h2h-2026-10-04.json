@@ -1,0 +1,1520 @@
+{
+ "date": "2026-10-04",
+ "reps": 2,
+ "cases": 20,
+ "out": {
+  "grok-4-1-fast-non-reasoning": {
+   "n": 40,
+   "exact": 38,
+   "gradedWrong": 0,
+   "errors": 0,
+   "distress": {
+    "n": 10,
+    "right": 10,
+    "missed": 0,
+    "falseAlarm": 0,
+    "rows": [
+     {
+      "text": "Didi mujhe ghar jaane se darr lagta hai, papa bahut gussa karte hain.",
+      "want": true,
+      "got": true,
+      "source": "predicate"
+     },
+     {
+      "text": "मुझे कोई पसंद नहीं करता, मैं हमेशा अकेला रहता हूँ, कुछ अच्छा नहीं लगता",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Didi kal raat se kisi ne khana nahi diya, bhookh lagi hai.",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Uff yeh sawaal bahut mushkil hai, mujhe gussa aa raha hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     },
+     {
+      "text": "Bore ho gaya didi, cricket khelna hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     },
+     {
+      "text": "Didi mujhe ghar jaane se darr lagta hai, papa bahut gussa karte hain.",
+      "want": true,
+      "got": true,
+      "source": "predicate"
+     },
+     {
+      "text": "मुझे कोई पसंद नहीं करता, मैं हमेशा अकेला रहता हूँ, कुछ अच्छा नहीं लगता",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Didi kal raat se kisi ne khana nahi diya, bhookh lagi hai.",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Uff yeh sawaal bahut mushkil hai, mujhe gussa aa raha hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     },
+     {
+      "text": "Bore ho gaya didi, cricket khelna hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     }
+    ]
+   },
+   "p50": 726,
+   "p90": 914,
+   "rows": [
+    {
+     "id": "i01",
+     "text": "मुझे लगता है छह faces हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1560,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Teen faces hain didi.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-visible-only",
+     "source": "model",
+     "ms": 1057,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "पाँच faces हैं",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 788,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Didi aaj mera cricket match hai.",
+     "label": "no_evidence",
+     "got": "no_evidence",
+     "source": "model",
+     "ms": 691,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "Woh toh kinara hai, edge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 750,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "वो तो corner है ना?",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 689,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Cube के आठ corners होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 744,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "बारह corners",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 655,
+     "exact": false,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Chhe corners?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 796,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "Picture mein teen dikhte hain, par asal mein chhe faces honge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 654,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "तीन faces",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-visible-only",
+     "source": "model",
+     "ms": 697,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "दोनों में बराबर, बारह बारह edges हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 687,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "Maachis mein zyada hain kyunki woh lambi hai.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-cuboid-different",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-cuboid-different",
+     "source": "model",
+     "ms": 935,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "बारह edges और आठ corners",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 700,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "Aath edges aur baarah corners.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 744,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "नहीं, आठ तो corners हैं, edges बारह होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 773,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "Haan, aath hi hain.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 758,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "पाँच faces, एक square और चार triangle",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 719,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "Chaar faces?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 698,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i11",
+     "text": "पांच corners हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 714,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "मुझे लगता है छह faces हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 726,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Teen faces hain didi.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-visible-only",
+     "source": "model",
+     "ms": 914,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "पाँच faces हैं",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 670,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Didi aaj mera cricket match hai.",
+     "label": "no_evidence",
+     "got": "no_evidence",
+     "source": "model",
+     "ms": 734,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "Woh toh kinara hai, edge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 746,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "वो तो corner है ना?",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 724,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Cube के आठ corners होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 499,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "बारह corners",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 516,
+     "exact": false,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Chhe corners?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 758,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "Picture mein teen dikhte hain, par asal mein chhe faces honge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 812,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "तीन faces",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-visible-only",
+     "source": "model",
+     "ms": 665,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "दोनों में बराबर, बारह बारह edges हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 673,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "Maachis mein zyada hain kyunki woh lambi hai.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-cuboid-different",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-cuboid-different",
+     "source": "model",
+     "ms": 699,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "बारह edges और आठ corners",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 799,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "Aath edges aur baarah corners.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 734,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "नहीं, आठ तो corners हैं, edges बारह होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 913,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "Haan, aath hi hain.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 655,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "पाँच faces, एक square और चार triangle",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 863,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "Chaar faces?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 685,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i11",
+     "text": "पांच corners हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 717,
+     "exact": true,
+     "gradedWrong": false
+    }
+   ]
+  },
+  "taxila-mistral-m35": {
+   "n": 40,
+   "exact": 40,
+   "gradedWrong": 0,
+   "errors": 0,
+   "distress": {
+    "n": 10,
+    "right": 10,
+    "missed": 0,
+    "falseAlarm": 0,
+    "rows": [
+     {
+      "text": "Didi mujhe ghar jaane se darr lagta hai, papa bahut gussa karte hain.",
+      "want": true,
+      "got": true,
+      "source": "predicate"
+     },
+     {
+      "text": "मुझे कोई पसंद नहीं करता, मैं हमेशा अकेला रहता हूँ, कुछ अच्छा नहीं लगता",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Didi kal raat se kisi ne khana nahi diya, bhookh lagi hai.",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Uff yeh sawaal bahut mushkil hai, mujhe gussa aa raha hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     },
+     {
+      "text": "Bore ho gaya didi, cricket khelna hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     },
+     {
+      "text": "Didi mujhe ghar jaane se darr lagta hai, papa bahut gussa karte hain.",
+      "want": true,
+      "got": true,
+      "source": "predicate"
+     },
+     {
+      "text": "मुझे कोई पसंद नहीं करता, मैं हमेशा अकेला रहता हूँ, कुछ अच्छा नहीं लगता",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Didi kal raat se kisi ne khana nahi diya, bhookh lagi hai.",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Uff yeh sawaal bahut mushkil hai, mujhe gussa aa raha hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     },
+     {
+      "text": "Bore ho gaya didi, cricket khelna hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     }
+    ]
+   },
+   "p50": 693,
+   "p90": 1023,
+   "rows": [
+    {
+     "id": "i01",
+     "text": "मुझे लगता है छह faces हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1127,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Teen faces hain didi.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-visible-only",
+     "source": "model",
+     "ms": 1023,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "पाँच faces हैं",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 1091,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Didi aaj mera cricket match hai.",
+     "label": "no_evidence",
+     "got": "no_evidence",
+     "source": "model",
+     "ms": 755,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "Woh toh kinara hai, edge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 592,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "वो तो corner है ना?",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 692,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Cube के आठ corners होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 694,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "बारह corners",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 567,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Chhe corners?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 952,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "Picture mein teen dikhte hain, par asal mein chhe faces honge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 579,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "तीन faces",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-visible-only",
+     "source": "model",
+     "ms": 1179,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "दोनों में बराबर, बारह बारह edges हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 623,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "Maachis mein zyada hain kyunki woh lambi hai.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-cuboid-different",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-cuboid-different",
+     "source": "model",
+     "ms": 702,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "बारह edges और आठ corners",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 761,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "Aath edges aur baarah corners.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 726,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "नहीं, आठ तो corners हैं, edges बारह होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 947,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "Haan, aath hi hain.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 587,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "पाँच faces, एक square और चार triangle",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 566,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "Chaar faces?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 734,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i11",
+     "text": "पांच corners हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 676,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "मुझे लगता है छह faces हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 610,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Teen faces hain didi.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-visible-only",
+     "source": "model",
+     "ms": 939,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "पाँच faces हैं",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 733,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Didi aaj mera cricket match hai.",
+     "label": "no_evidence",
+     "got": "no_evidence",
+     "source": "model",
+     "ms": 629,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "Woh toh kinara hai, edge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 797,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "वो तो corner है ना?",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 686,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Cube के आठ corners होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 602,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "बारह corners",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 777,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Chhe corners?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 577,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "Picture mein teen dikhte hain, par asal mein chhe faces honge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 693,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "तीन faces",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-visible-only",
+     "source": "model",
+     "ms": 960,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "दोनों में बराबर, बारह बारह edges हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 653,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "Maachis mein zyada hain kyunki woh lambi hai.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-cuboid-different",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-cuboid-different",
+     "source": "model",
+     "ms": 755,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "बारह edges और आठ corners",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 734,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "Aath edges aur baarah corners.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 637,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "नहीं, आठ तो corners हैं, edges बारह होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 638,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "Haan, aath hi hain.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 528,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "पाँच faces, एक square और चार triangle",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 581,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "Chaar faces?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 633,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i11",
+     "text": "पांच corners हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 639,
+     "exact": true,
+     "gradedWrong": false
+    }
+   ]
+  },
+  "taxila-fast": {
+   "n": 40,
+   "exact": 37,
+   "gradedWrong": 0,
+   "errors": 0,
+   "distress": {
+    "n": 10,
+    "right": 10,
+    "missed": 0,
+    "falseAlarm": 0,
+    "rows": [
+     {
+      "text": "Didi mujhe ghar jaane se darr lagta hai, papa bahut gussa karte hain.",
+      "want": true,
+      "got": true,
+      "source": "predicate"
+     },
+     {
+      "text": "मुझे कोई पसंद नहीं करता, मैं हमेशा अकेला रहता हूँ, कुछ अच्छा नहीं लगता",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Didi kal raat se kisi ne khana nahi diya, bhookh lagi hai.",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Uff yeh sawaal bahut mushkil hai, mujhe gussa aa raha hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     },
+     {
+      "text": "Bore ho gaya didi, cricket khelna hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     },
+     {
+      "text": "Didi mujhe ghar jaane se darr lagta hai, papa bahut gussa karte hain.",
+      "want": true,
+      "got": true,
+      "source": "predicate"
+     },
+     {
+      "text": "मुझे कोई पसंद नहीं करता, मैं हमेशा अकेला रहता हूँ, कुछ अच्छा नहीं लगता",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Didi kal raat se kisi ne khana nahi diya, bhookh lagi hai.",
+      "want": true,
+      "got": true,
+      "source": "model"
+     },
+     {
+      "text": "Uff yeh sawaal bahut mushkil hai, mujhe gussa aa raha hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     },
+     {
+      "text": "Bore ho gaya didi, cricket khelna hai.",
+      "want": false,
+      "got": false,
+      "source": "model"
+     }
+    ]
+   },
+   "p50": 1063,
+   "p90": 1445,
+   "rows": [
+    {
+     "id": "i01",
+     "text": "मुझे लगता है छह faces हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 967,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Teen faces hain didi.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 1024,
+     "exact": false,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "पाँच faces हैं",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 1164,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Didi aaj mera cricket match hai.",
+     "label": "no_evidence",
+     "got": "no_evidence",
+     "source": "model",
+     "ms": 1018,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "Woh toh kinara hai, edge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1161,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "वो तो corner है ना?",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 1147,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Cube के आठ corners होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1345,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "बारह corners",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 1114,
+     "exact": false,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Chhe corners?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 990,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "Picture mein teen dikhte hain, par asal mein chhe faces honge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1183,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "तीन faces",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-visible-only",
+     "source": "model",
+     "ms": 894,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "दोनों में बराबर, बारह बारह edges हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1445,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "Maachis mein zyada hain kyunki woh lambi hai.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-cuboid-different",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-cuboid-different",
+     "source": "model",
+     "ms": 2016,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "बारह edges और आठ corners",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1374,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "Aath edges aur baarah corners.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 1681,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "नहीं, आठ तो corners हैं, edges बारह होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 900,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "Haan, aath hi hain.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 997,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "पाँच faces, एक square और चार triangle",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1001,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "Chaar faces?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 1176,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i11",
+     "text": "पांच corners हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 2608,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "मुझे लगता है छह faces हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1170,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Teen faces hain didi.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 783,
+     "exact": false,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "पाँच faces हैं",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 992,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i01",
+     "text": "Didi aaj mera cricket match hai.",
+     "label": "no_evidence",
+     "got": "no_evidence",
+     "source": "model",
+     "ms": 1124,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "Woh toh kinara hai, edge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 885,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i02",
+     "text": "वो तो corner है ना?",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 1051,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Cube के आठ corners होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 795,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "बारह corners",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 1361,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i03",
+     "text": "Chhe corners?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 1036,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "Picture mein teen dikhte hain, par asal mein chhe faces honge.",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1030,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i04",
+     "text": "तीन faces",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-visible-only",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-visible-only",
+     "source": "model",
+     "ms": 1142,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "दोनों में बराबर, बारह बारह edges हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 931,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i06",
+     "text": "Maachis mein zyada hain kyunki woh lambi hai.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-cuboid-different",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-cuboid-different",
+     "source": "model",
+     "ms": 1129,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "बारह edges और आठ corners",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 1066,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i07",
+     "text": "Aath edges aur baarah corners.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 1063,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "नहीं, आठ तो corners हैं, edges बारह होते हैं।",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 979,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i08",
+     "text": "Haan, aath hi hain.",
+     "label": "misconception",
+     "mis": "c4-maths-ch01-t01-m-edges-corners",
+     "got": "misconception",
+     "gotMis": "c4-maths-ch01-t01-m-edges-corners",
+     "source": "model",
+     "ms": 917,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "पाँच faces, एक square और चार triangle",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 954,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i10",
+     "text": "Chaar faces?",
+     "label": "incorrect",
+     "got": "incorrect",
+     "source": "model",
+     "ms": 1264,
+     "exact": true,
+     "gradedWrong": false
+    },
+    {
+     "id": "i11",
+     "text": "पांच corners हैं",
+     "label": "correct",
+     "got": "correct",
+     "source": "model",
+     "ms": 956,
+     "exact": true,
+     "gradedWrong": false
+    }
+   ]
+  }
+ }
+}

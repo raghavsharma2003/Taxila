@@ -50,8 +50,8 @@ mkvenv() {   # mkvenv <name> <lock>
 T "fetch weights (background), then verify sha256"
 mkvenv dl req-dl.lock
 [ -f /opt/venv-dl.ok ] || { T "download venv failed"; cat $LG/venv-dl.log; exit 6; }
-( /opt/venv-dl/bin/python fetch_open.py weights.expected.json $W
-  /opt/venv-dl/bin/python fetch_open.py weights.expected.json $W --verify $P/weights-sha256.json ) > $LG/fetch.log 2>&1 &
+( /opt/venv-dl/bin/python fetch_open.py weights.expected.json $W ${FETCH_ONLY:+--only $FETCH_ONLY}
+  /opt/venv-dl/bin/python fetch_open.py weights.expected.json $W ${FETCH_ONLY:+--only $FETCH_ONLY} --verify $P/weights-sha256.json ) > $LG/fetch.log 2>&1 &
 FETCH=$!
 /opt/venv-dl/bin/python - <<PY 2>&1 | tail -2
 from huggingface_hub import snapshot_download
@@ -77,7 +77,7 @@ run_arm() {  # run_arm <arm> <venv> "<weight keys>" <budget-min>
   export ARM_DEADLINE_EPOCH=$(( t + budget * 60 < DEADLINE_EPOCH - 600 ? t + budget * 60 : DEADLINE_EPOCH - 600 ))
   T "=== $arm (budget $budget min, $left min left in the job)"
   /opt/venv-$venv/bin/python render_open.py $arm --weights $W --out $R --refs /opt/refs --space /opt/src/chatterbox-space --takes 3 2>&1 \
-    | tee $LG/$arm.log | grep -v -E "it/s\]|s/it\]|^\s*$" | tail -n +1
+    | tee $LG/$arm.log | grep --line-buffered -v -E "it/s\]|s/it\]|^\s*$"
   local rc=${PIPESTATUS[0]}
   echo "$arm $rc $(( $(date +%s) - t ))" >> $OUT/arms.txt
   T "$arm rc $rc after $(( $(date +%s) - t )) s; $(ls $R/$arm 2>/dev/null | grep -c wav) wav"
@@ -85,14 +85,23 @@ run_arm() {  # run_arm <arm> <venv> "<weight keys>" <budget-min>
   aws s3 cp --only-show-errors $LG/$arm.log "s3://$BUCKET/${S3_PREFIX}renders/logs/$arm.log" || true
 }
 
-run_arm veena orph "veena snac" 25
+# ARMS (env) limits a re-run to some arms, e.g. ARMS="chatterbox-hi vibevoice-hindi-1.5b". A re-run that skips voxcpm2
+# takes the designed references from inputs/refs/voxcpm2-design-{F,M}.wav (the earlier job's voxcpm2 outputs).
+ARMS=${ARMS:-"veena voxcpm2 svara chatterbox-hi vibevoice-hindi-7b vibevoice-hindi-1.5b"}
+want() { case " $ARMS " in *" $1 "*) return 0;; esac; return 1; }
+if [ -f inputs/refs/voxcpm2-design-F.wav ] && [ -f inputs/refs/voxcpm2-design-M.wav ]; then
+  cp inputs/refs/voxcpm2-design-*.wav /opt/refs/
+  printf '{"refs": {"F": "/opt/refs/voxcpm2-design-F.wav", "M": "/opt/refs/voxcpm2-design-M.wav"}, "from": "inputs/refs (earlier job)"}' > /opt/refs/refs.json
+  sha256sum /opt/refs/*.wav | tee $P/refs-sha256.txt
+fi
+want veena && run_arm veena orph "veena snac" 25
 waitfor /opt/ffmpeg.ok /nonexistent 300 || T "WARNING: ffmpeg not installed; torchcodec may fail"
-run_arm voxcpm2 voxcpm "voxcpm2" 25
-run_arm svara orph "svara snac" 25
+want voxcpm2 && run_arm voxcpm2 voxcpm "voxcpm2" 25
+want svara && run_arm svara orph "svara snac" 25
 if [ -f /opt/refs/refs.json ]; then
-  run_arm chatterbox-hi cb "chatterbox-hi chatterbox-base" 20
-  run_arm vibevoice-hindi-7b vv "vibevoice-hindi-7b qwen2.5-7b-tok" 30
-  run_arm vibevoice-hindi-1.5b vv "vibevoice-hindi-1.5b qwen2.5-7b-tok" 15
+  want chatterbox-hi && run_arm chatterbox-hi cb "chatterbox-hi chatterbox-base" 20
+  want vibevoice-hindi-7b && run_arm vibevoice-hindi-7b vv "vibevoice-hindi-7b qwen2.5-7b-tok" 30
+  want vibevoice-hindi-1.5b && run_arm vibevoice-hindi-1.5b vv "vibevoice-hindi-1.5b qwen2.5-7b-tok" 15
 else
   T "no designed references (voxcpm2 failed): Chatterbox and VibeVoice have no consented voice to clone, so they are NOT rendered"
   echo "chatterbox-hi no-reference 0" >> $OUT/arms.txt; echo "vibevoice-hindi-7b no-reference 0" >> $OUT/arms.txt
