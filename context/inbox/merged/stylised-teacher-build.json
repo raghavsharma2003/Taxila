@@ -1,0 +1,129 @@
+{
+ "nodes": [
+  {
+   "id": "stylised-c-owner-directive",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "OWNER DIRECTIVE 2026-10-04: the teacher is concept STYLE C (Memoji/Bitmoji-style 3D cartoon human: warm Indian woman teacher, late 20s, big brown eyes, thick soft brows, small bindi, gold studs, solid sculpted hair with a low bun and soft loose locks, teal kurta with orange piping; docs/design/teacher/stylised/concepts/c-*.webp). BUILT IN-HOUSE: no artist, no outsourcing, no purchased characters or paid assets; GPU as useful (AWS build GPU, cap USD 150 for the workflow), Foundry for refs and vision judging, open-source models only under commercial-use licences recorded in art/character/LICENSES.md. 3D first; if 3D clearly fails the owner's bar after the polish loop, the fallback is a high-quality 2D puppet of the SAME character on the same rig contract (ARKit-52 + 15 visemes + 3 Hindi tongue keys via HeadRig, flag face.rig). Bar: side by side with c-front at thumbnail AND full size, 'the same character, rendered in 3D, Memoji-quality'. Reversal: the owner names a different concept, accepts a commissioned/purchased asset, or rejects the 2D puppet of C as well (then the look itself is re-opened, not the build route)."
+  },
+  {
+   "id": "stylised-c-two-arm-method",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Style C build method (TECH-PLAN.md): 19 gpt-image-2 edits of c-front as refs (front is authority, side views soft guides); Arm A = procedural headless Blender (analytic SDF of rounded forms, our quad head with named eye/mouth rings, ~60 shape params fitted to ref outlines); Arm B = open image-to-3D (Hunyuan3D-2mv/2.1 on AWS) as a SHAPE TARGET only, wrapped by our own template mesh. In both arms every shipped vertex is ours, so the 'no image-to-3D in shipped assets' rule holds. Shape keys are rig-then-bake (82: ARKit 52 + 15 visemes + 3 tongue + 12 correctives); kill rule TECH-PLAN s10. Reversal: a method that reaches the bar faster (e.g. a scripted subdivision cage) replaces the SDF arm."
+  },
+  {
+   "id": "stylised-c-arm-a-wins",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Judge round 1 picked Arm A (procedural Blender) over Arm B (Hunyuan3D-2mv sculpt + our skin): eye 2.0 vs 1.5, Foundry forced choice 4/4 for A. Polish continued on A only, with B's engineering parts (lid push-out, product-rule correctives) ported. Base of record after the polish loop: art/character/stylised/polish-r2/teacher.glb (24,583 tris H, 82 shapes; B+ 10,604 tris). Reversal: a new build of either arm beating polish-r2 on a section-8 run at 128 and 1024 px."
+  },
+  {
+   "id": "stylised-c-3d-failing-verdict",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "VERDICT after 4 judge rounds: the in-house style-C 3D teacher FAILS the owner's bar. It is the same character at 128 px (identity cues all present) but 'cheap game' at full size: flat painted mouth with slab teeth (poke through in viseme_U), vanished nose, faceted lumpy skin, oversized staring eyes with pinched lids, helmet hair with crown seam, face too wide, doubled neckline piping. Score stalled at ~2.0-2.3 across rounds 2-4. Under TECH-PLAN s10 the default next step is the 2D puppet of character C (not started; owner's call). No further SDF polish loop. A last 3D attempt only if the owner explicitly asks, and only with a method change (scripted ~2.5k-quad subdivision cage, Catmull-Clark L2). Reversal: the owner looks at owner-sheet.webp and says it is the same character at Memoji quality, or asks for the cage retry and it scores mean >= 3.5 with same-character >= 90% at both sizes on two judge families."
+  },
+  {
+   "id": "meas-stylised-c-refs-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Style C reference sheet: 19 gpt-image-2 (Foundry) edits of c-front (neutral, ortho front, 3/4 x2, profile x2, back, top, turnaround, eye and hair close-ups, 8 mouth shapes A/O/E/U/MBP/FV/S/TL), 19/19 calls ok, n=1 per view, judged by eye: identity holds on all 19; defects: bun position drifts across views, skull depth differs between profiles, F/V weak, T/L shows no tongue, 'top' came out as a head tilted down. scripts/character/stylised/gen-refs.mjs; refs/refs.json; refs/SHEET.webp."
+  },
+  {
+   "id": "meas-stylised-c-judge-r1",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Judge round 1 (Arm A vs Arm B, front-neutral stimuli at 1024 and 128 px, Cycles renders): n=1 art-director judge by eye + 1 vision model (Foundry DEPLOY_BRAIN gpt-5.6-sol, blind, 4 order-swapped trials). A: eye 2.0, model 2,3,2,2 (mean 2.25); B: eye 1.5, model 2,2,2,2 (mean 2.0); forced choice closer to c-front A 4/4. Items same-character / Memoji register / not uncanny: A 0/4, 2/4, 1/4; B 0/4, 0/4, 0/4. Builders' self-scores A 2.5, B 2.5. Not a full section-8 run. JUDGE-r1.md, judge-r1.json."
+  },
+  {
+   "id": "meas-stylised-c-judge-r2",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Judge round 2 (polish-r2, Arm A after one full polish iteration on fixes 1-6): judge eye 2/5; blind vision model DEPLOY_BRAIN n=4 trials 2,3,2,2 (mean 2.25). Builder's section-8 run (n=18 replies, GPT 12 + Grok 6, sanity-gated families): mean 2.17 (GPT 2.42, Grok 1.67; 128 px 2.83, 1024 px 1.83); same character 17% (128 px 50%), Memoji register 28%, not uncanny 0%, no artefacts 0%, bun reads 78%, state reads 44%. Kill rule (3+ after one iteration) tripped. JUDGE-r2.md, judge-r2-blind.json, build/polish-r2/README.md."
+  },
+  {
+   "id": "meas-stylised-c-judge-r3",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Judge round 3: no new asset (builder halted on the blocking owner-decision fix); re-judge of polish-r2 renders. Judge eye 2/5; blind vision model DEPLOY_BRAIN n=2 trials 2,3 (mean 2.5); same character yes 2/2, Memoji no 2/2. Replicate on an unchanged asset, not a new build. JUDGE-r3.md, judge-r3-blind.json."
+  },
+  {
+   "id": "meas-stylised-c-judge-r4",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Judge round 4: no new asset (second consecutive halt); judge eye 2/5 on front + happy vs c-front/c-happy at 1024 px; blind vision model DEPLOY_BRAIN n=1: same character yes, Memoji no, uncanny/cheap yes, score 2. Running blind tally rounds 2-4: n=7, mean 2.29, same character 7/7, Memoji quality 0/7, one judge family. JUDGE-r4.md, judge-r4-blind.json, scripts/character/stylised/judge/r4/judge_r4.py."
+  },
+  {
+   "id": "meas-stylised-c-budget-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Style C geometry budget (GLB stats, n=1 build each): Arm A H 24,512 tris, 82 shapes, 0.63 MB; Arm B H 23,499 tris, 8 draws, 82 morphs, 656 KB (morph texture ~6.5 MB), B+ 13,203 tris / 58 morphs / 399 KB (above the 10-11k target); polish-r2 H 24,583 tris in 7 meshes (head 8,544, hair 8,967, bust 1,952, browlash 1,968, mouth 896, eyes 2x1,128), 1.31 MB; B+ 10,604 tris, 58 morphs, 0.70 MB. All under the 25k H cap. FPS on a Mali-G52-class phone: NOT MEASURED (no device run; evidence renders are Blender Cycles, the three.js TaxilaToon shader does not exist yet)."
+  },
+  {
+   "id": "meas-stylised-c-gates-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Style C geometric gates (scripted, n=1 build): Arm A: 82/82 names, mirror error 0.0 mm, blink (+ look-down / squint / cheek-squint) 0.0% rays reach the eyeball, rest and PP 0% mouth-interior rays, 0 skin verts inside the eyeball, jaw 0.3 + close 0.3 leaks 1.5% (bar 0, open). Arm B: 82/82, mirror 0.0 mm, lip gap rest 0.24 mm / PP 1.56 mm / jaw0.3+close0.3 2.0 mm; aperture-ray G4 not run. Partial-weight checks not run on A. build/armA/gates.json, art/character/stylised/armB/report.json, build/polish-r2/gates-H.json."
+  },
+  {
+   "id": "meas-stylised-c-spend-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Style C build spend: AWS one job stylised3d-20261004-074736-d124 (g6.2xlarge spot, 3,439.6 s, USD 0.9172; Hunyuan3D-2.1 x5 seeds + 2mv x4 + paint) against a USD 150 workflow cap; Arm A and all polish/judge rounds USD 0 GPU (CPU Cycles in the container). scripts/gpu/status.py ledger total USD 1.953 over 9 runs since 2026-10-03 (includes earlier face3d runs). Foundry: 19 ref edits + ~30 vision-judge calls. At the end of the workflow 0 stylised instances were live (one voice-workstream instance i-0ae8a44d0fd704042 under its own 180-min self-termination cap)."
+  },
+  {
+   "id": "rj-stylised-c-arm-b-sculpt-target",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Arm B lost round 1 (eye 1.5 vs 2.0, forced choice 0/4): wrapping our template onto a Hunyuan3D-2mv sculpt inherits the sculpt's REALISTIC proportions, not the concept's: long face and small chin (chin warp +10 mm, cheeks +8.5% not enough), long nose bridge, flat slack mouth, wavy crusty hairline with dark sculpt debris around the ears, decimated smooth hair with none of c-front's broad grooves, ears hidden, glassy 'dead doll' eyes (judge 4/4). Every defect came from the AI sculpt; the shape target fights the stylisation instead of supplying it. Its rig/eye/lid parts were reusable."
+  },
+  {
+   "id": "rj-stylised-c-sdf-surface-ceiling",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Arm A's SDF-blend head (smooth union of rounded forms, ~60 params fitted to ref outlines) converges on identity and silhouette but tops out at ~2.2/5 on surface craft: one full polish iteration moved 2.0 -> 2.17 (section-8) / 2.25 (blind). Outlines fit within ~3 mm, but the surfaces BETWEEN fitted outlines (cheek planes, nose, lips, profile around the mouth) are not controlled: painted-stripe mouth, slab teeth, vanished nose, faceted skin with dents, helmet hair with seams. The plan's s3.4 risk was real. Evidence for rj-agent-authored-stylised-face (in-house faces again 2-2.5/5). Do not run another SDF polish loop; any 3D retry needs a subdivision quad cage."
+  },
+  {
+   "id": "rj-stylised-c-arm-a-traps",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Arm A pipeline traps: (1) sphere tracing does not converge on the ellipsoid SDF, use step + bisection; (2) inset ring patches need angle-matched monotone parameters along each ring or transition rings fold; (3) Cycles needs light linking so only the catchlight reflects in the cornea, and the world must render black for glossy rays; (4) ARKit mouthClose must carry the lower-lip part of the full jawOpen move or jaw 0.3 + close 0.3 leaks ~26%; (5) a hard sign(x) in brow fields breaks the mirror at midline verts with x = -0.0."
+  },
+  {
+   "id": "rj-stylised-c-arm-b-traps",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Arm B traps: (1) Hunyuan3D-2.1 single-view puts the bun on one side of the head; Hunyuan3D-2mv (front + left + right + back) placed it correctly (hmv_A_s1, front IoU 0.967, profile 0.936); (2) linear lid morphs cut through the eyeball at half weight (iris shows through the lid at half blink) unless the closed lid position is pushed outward so the linear path stays outside the ball (G-partial)."
+  }
+ ],
+ "edges": [
+  { "from": "stylised-c-owner-directive", "to": "teacher-stylised-face-commissioned", "kind": "supersedes" },
+  { "from": "stylised-c-owner-directive", "to": "character-built-in-house", "kind": "supersedes" },
+  { "from": "stylised-c-owner-directive", "to": "teacher-human-first-gpu", "kind": "supersedes" },
+  { "from": "stylised-c-owner-directive", "to": "teacher-bakeoff-verdict", "kind": "supersedes" },
+  { "from": "stylised-c-owner-directive", "to": "gnm-adopted-identity-base", "kind": "supersedes" },
+  { "from": "stylised-c-owner-directive", "to": "teacher-polished-verdict", "kind": "supersedes" },
+  { "from": "stylised-c-owner-directive", "to": "teacher-stylised-3d-glb", "kind": "supersedes" },
+  { "from": "stylised-c-owner-directive", "to": "open-stylised-panel", "kind": "supersedes" },
+  { "from": "stylised-c-owner-directive", "to": "stylised-concepts-2026-10-04", "kind": "measured_by" },
+  { "from": "stylised-c-two-arm-method", "to": "stylised-c-owner-directive", "kind": "caused_by" },
+  { "from": "stylised-c-two-arm-method", "to": "meas-stylised-c-refs-2026-10-04", "kind": "measured_by" },
+  { "from": "stylised-c-arm-a-wins", "to": "meas-stylised-c-judge-r1", "kind": "measured_by" },
+  { "from": "stylised-c-arm-a-wins", "to": "stylised-c-two-arm-method", "kind": "part_of" },
+  { "from": "rj-stylised-c-arm-b-sculpt-target", "to": "meas-stylised-c-judge-r1", "kind": "caused_by" },
+  { "from": "stylised-c-3d-failing-verdict", "to": "meas-stylised-c-judge-r2", "kind": "measured_by" },
+  { "from": "stylised-c-3d-failing-verdict", "to": "meas-stylised-c-judge-r3", "kind": "measured_by" },
+  { "from": "stylised-c-3d-failing-verdict", "to": "meas-stylised-c-judge-r4", "kind": "measured_by" },
+  { "from": "stylised-c-3d-failing-verdict", "to": "meas-stylised-c-budget-2026-10-04", "kind": "measured_by" },
+  { "from": "stylised-c-3d-failing-verdict", "to": "rj-stylised-c-sdf-surface-ceiling", "kind": "caused_by" },
+  { "from": "stylised-c-3d-failing-verdict", "to": "stylised-c-owner-directive", "kind": "constrains" },
+  { "from": "stylised-3d-halt-r4-owner-decision", "to": "stylised-c-3d-failing-verdict", "kind": "caused_by" },
+  { "from": "meas-stylised-c-judge-r4", "to": "meas-stylised-polish-r2-blind-replicate", "kind": "supersedes" },
+  { "from": "rj-stylised-c-sdf-surface-ceiling", "to": "meas-stylised-c-judge-r2", "kind": "caused_by" },
+  { "from": "rj-agent-authored-stylised-face", "to": "meas-stylised-c-judge-r2", "kind": "measured_by" },
+  { "from": "rj-stylised-c-arm-a-traps", "to": "meas-stylised-c-gates-2026-10-04", "kind": "caused_by" },
+  { "from": "rj-stylised-c-arm-b-traps", "to": "meas-stylised-c-spend-2026-10-04", "kind": "caused_by" }
+ ],
+ "notes": "Edges to stylised-3d-halt-r4-owner-decision and meas-stylised-polish-r2-blind-replicate need context/inbox/stylised-polish-r4-halt.json merged first (it replaces the r3 halt). Every node id is written up in docs/design/teacher/stylised/build/BUILD-LOG.md (section 'Context log, 2026-10-04'); the main loop should copy decisions into context/decisions.md, measurements into measurements.md and rejections into rejected.md on merge so --check finds prose."
+}

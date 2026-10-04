@@ -110,7 +110,8 @@ await step("ssl_min_protocol_version", () => cfg("ssl_min_protocol_version", "TL
 await step(`database ${N.db}`, async () => {
   const p = `${pgPath}/databases/${N.db}?api-version=${V.pg}`;
   if (await get(p)) return "exists";
-  await arm("PUT", p, { properties: { charset: "UTF8", collation: "en_US.utf8" } });
+  // collation "C" = Neon prod's builtin C.UTF-8 sort order (codepoint); ARM refuses "C.UTF-8" (400, 2026-10-04)
+  await arm("PUT", p, { properties: { charset: "UTF8", collation: "C" } });
   for (let i = 0; i < 40; i++) { await sleep(10000); if (await get(p)) return "created"; }
   throw new Error("database did not appear");
 });

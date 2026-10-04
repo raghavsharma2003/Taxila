@@ -1,13 +1,14 @@
 // score2.mjs — numSeq2: the v2 number-sequence metric with the scorer artefacts from stt-hinglish review R4
 // removed. Primary tables keep v2's numSeq (comparability with 2026-10-02); numSeq2 is reported beside it.
 // Changes vs v2 extractValues:
-//   - Devanagari-transliterated English numerals count (सेवन = 7, एट्स = 8, फिफ्टी सिक्स = 56, ...)
-//   - "सत्ते" (x7 in a recited times table) counts as 7 on BOTH sides, so "8 7 56" for "आठ सत्ते छप्पन" passes
+//   - Devanagari-transliterated English numerals count (सेवन = 7, एट = 8, फिफ्टी सिक्स = 56, ...)
+//   - "सत्ते" (x7 in a recited times table) and its homophone spellings सप्त/सत्य count as 7 on BOTH sides,
+//     so "8 7 56" for "आठ सत्ते छप्पन" passes; plural multipliers ("eights", "एट्स") stay uncounted as in v2
 //   - decimals ("0.5") and "half" are not counted as numbers on either side (m09 "half pizza" → "0.5 पिज़्ज़ा")
 import { normText } from "../../../docs/research/voice/asr-e0/score.mjs";
 import { NUM } from "../../../docs/research/voice/v2/stt/stimuli.mjs";
 
-const EXTRA = { 1: ["वन"], 2: ["टू"], 3: ["थ्री"], 4: ["फोर", "फ़ोर"], 5: ["फाइव"], 6: ["सिक्स"], 7: ["सेवन", "सत्ते", "sevens"], 8: ["एट", "एट्स", "eights"],
+const EXTRA = { 1: ["वन"], 2: ["टू"], 3: ["थ्री"], 4: ["फोर", "फ़ोर"], 5: ["फाइव"], 6: ["सिक्स"], 7: ["सेवन", "सत्ते", "सप्त", "सत्य"], 8: ["एट"],
   21: ["ट्वेंटी वन"], 24: ["ट्वेंटी फोर"], 56: ["फिफ्टी सिक्स", "fifty-six"] };
 const ALIAS = {};
 for (const [v, forms] of Object.entries(NUM)) ALIAS[v] = [...new Set([...forms, ...(EXTRA[v] || []), String(v)].map(normText))];

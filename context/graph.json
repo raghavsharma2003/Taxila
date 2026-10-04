@@ -6459,6 +6459,321 @@
    "title": "The worker logs 'step failed' (no child / conductor_state FK violation) for test children deleted by DELETE /api/account mid-step, then retries; harmless locally but noise in prod logs and a retry loop on a gone child",
    "at": "2026-10-04",
    "source": "inbox/w1-integration.json"
+  },
+  {
+   "id": "gpt6-reasoning-family-regex-400",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "BLOCKER before any gpt-6 routing: server/azure.js REASONING_FAMILY /^(taxila-(fast|brain|codex)|gpt-5|o\\d)/ does not match taxila-gpt6 / taxila-gpt6-luna / taxila-gpt61-sol, so chat() sends max_tokens and every call returns HTTP 400 ('max_tokens' is not supported). Measured on the real classify(): DEPLOY_CLASSIFY=taxila-gpt6-luna 40/40 model errors and the distress backup failed open (6/10 right, 4 missed). gpt-6.1-sol and gpt-6-astra also reject reasoning_effort 'none' (lowest 'low'). Fix the regex and map none->low for those two, then re-run evals/classify-accuracy.mjs.",
+   "source": "inbox/model-refresh-text-lanes.json"
+  },
+  {
+   "id": "text-lanes-refresh-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Text-lane refresh (router-bench T/C/S/D/W re-run verbatim + TP production compile() prompt + S2 paraphrases + W2 hard sheet; 3 judges brain/grok-4-20-reasoning/kimi26, read out-of-family). Live reply TP (n 36, 18 judged): gpt-6-luna +0.53 [80% CI 0.08, 1.00] vs taxila-fast, gpt-6-sol +0.56, V4-Pro -0.47 [-0.78,-0.14]; T toy (n 20): luna 0.00, gpt-6-sol +0.78, V4-Pro -0.47. TTFT p50/p90 fast 712/889, luna 938/1151 (TP). C at ceiling; real classify(): mistral-m35 40/40, fast 36/40, gpt-6-luna 34/40 (shim). S+S2 16/16+16/16 for fast, V4-Pro, gpt-6 family. D ceiling. W2: gpt-6-sol +0.40 [0.20,0.60] vs brain.",
+   "source": "inbox/model-refresh-text-lanes.json"
+  },
+  {
+   "id": "ds41-hangs-on-distress",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "taxila-ds41 (DeepSeek-V4.1-Flash) in any child-facing or safety slot: times out (20-90 s) on distress content ('papa roz mujhe maarte hain' 2/2, passive ideation, Director safeguard scenario 4/5), so production 4 s / 6 s cuts fail open or go silent. Holds regardless of the meter question.",
+   "source": "inbox/model-refresh-text-lanes.json"
+  },
+  {
+   "id": "grok46-not-live",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "grok-4.6 (taxila-grok46) for any live, safety or report lane: TTFT 16-21 s p50 even at reasoning_effort low, distress 2/16 inside production's 4 s cut (fails open), parent reports 180 s timeouts (W2 1/10 written).",
+   "source": "inbox/model-refresh-text-lanes.json"
+  },
+  {
+   "id": "v4pro-live-fallback-superseded",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Live-reply fallback DeepSeek-V4-Pro -> mistral-medium-3-5 (taxila-mistral-m35, Direct MM3.5): V4-Pro is worst live (T -0.47, TP -0.47 vs fast, 31/36 guard fires); mistral ties fast on T (+0.05), 11/36 guard fires, TTFT 646/956 ms, beats V4-Pro on T +0.45 [0.10,0.77]. Classifier fallback grok-4-20-nr -> mistral-m35 (CP 40/40, 0 graded wrong vs grok 34/40, 2 graded wrong). Director fallback oss120 -> DeepSeek-V4-Flash-0731 (40/40, strict schema, 830 ms).",
+   "source": "inbox/model-refresh-text-lanes.json"
+  },
+  {
+   "id": "reports-gpt6-sol",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Parent reports primary taxila-brain (gpt-5.6-sol) -> taxila-gpt6 (gpt-6-sol, Direct GPT6 meter $2/$10), fallback taxila-brain, after gpt6-reasoning-family-regex-400 is fixed: W2 +0.40 [0.20,0.60] vs brain (win share 7/9), ties brain on W, half the price.",
+   "source": "inbox/model-refresh-text-lanes.json"
+  },
+  {
+   "id": "gpt6-luna-not-most-jobs",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "gpt-6-luna does NOT replace gpt-5.6-luna for most text jobs: worse on classification (real classify() 34/40 vs 36/40), equal but slower on distress (1029 vs 863 ms p50) and Director (1452 vs 1310 ms). Only live-reply candidate (TP +0.53 [0.08,1.00], 12 vs 16 of 36 guard fires, +226 ms TTFT p50), gated on the regex fix + a guarded-turn evals/cascade-latency.mjs run + the Hindi ear panel.",
+   "source": "inbox/model-refresh-text-lanes.json"
+  },
+  {
+   "id": "scout-images-2026-10-04",
+   "kind": "measurement",
+   "title": "Image bench n=100 requests (10 prompts x 2 x 5 arms), eye-checked: gpt-image-2 medium 10/10 diagrams 44/44 labels, 10/10 illustrations, 0 filter blocks, 42.6 s p50, $0.053; MAI-2.6-Flash 6/8 diagrams 30/34, 8/8 illus, 4/20 blocked, 16.6 s, $0.020; MAI-2.6 6/8 34/34, 7/8, 30.6 s, $0.040; MAI-2.5-Pro 5/8, 8/8, 40.9 s, $0.109; FLUX.2-pro 0/10 14/44, 5/6, 4/20 blocked, 7.0 s, $0.03",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-images.json"
+  },
+  {
+   "id": "scout-images-filter-blocks-2026-10-04",
+   "kind": "measurement",
+   "title": "Azure content filters refused 16/100 image requests, 0 on gpt-image-2: FLUX blocks 'Indian home courtyard' (prompt blocklist; passes without 'Indian') and the children-with-age-and-skin-tone prompt; all MAI block the full courtyard prompt on output (7/7) and named digestive organs on input",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-images.json"
+  },
+  {
+   "id": "scout-images-judge-calibration-2026-10-04",
+   "kind": "measurement",
+   "title": "Vision judges vs eye on 84 images: diagrams (n=44, 17 eye-fails) brain 0 false passes / 7 false fails, grok-4-20-reasoning 8 false passes; illustrations (n=40) brain 1 false pass, grok 0",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-images.json"
+  },
+  {
+   "id": "scout-bedrock-images-2026-10-04",
+   "kind": "measurement",
+   "title": "Bedrock image models: none in ap-south-1; Nova Canvas/Reel/Titan Image listed in no region (7 checked); Stability SD3.5 Large / Image Core / Ultra only in us-west-2, agreement NOT_AVAILABLE, quota 0 RPM not adjustable, invoke throttled",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-images.json"
+  },
+  {
+   "id": "image-lane-gpt-image-2-holds-2026-10-04",
+   "kind": "decision",
+   "title": "gpt-image-2 medium stays the image default (owner directive holds); MAI-Image-2.6-Flash is the measured fallback for text-free art when gpt-image-2 latency/quota bites, with gpt-image-2 retry on a filter block; never for labels",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-images.json"
+  },
+  {
+   "id": "rj-mai-image-25-pro",
+   "kind": "rejection",
+   "title": "MAI-Image-2.5-Pro: label/science errors on 3/8 diagrams, 40.9 s p50, $0.109/image (2.8x MAI-2.6), deprecates 2026-10-31",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-images.json"
+  },
+  {
+   "id": "rj-flux2-pro-labels-and-indian-prompts",
+   "kind": "rejection",
+   "title": "FLUX.2-pro for labelled diagrams or Indian-scene prompts: 0/10 diagrams right (14/44 labels, misspellings, leaders on the wrong part) and the prompt blocklist refuses 'Indian home courtyard' and the children prompt",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-images.json"
+  },
+  {
+   "id": "rj-grok-label-judge",
+   "kind": "rejection",
+   "title": "grok-4-20-reasoning as a diagram-label judge: 8/44 false passes (all four FLUX circuit leaders on the switch scored 4/4)",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-images.json"
+  },
+  {
+   "id": "owner-aws-credit-funded-india-first-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Owner directive: find and use the best model per use case ourselves; AWS model APIs/inference allowed when paid from the AWS credits (Activate $1,000 + Free Tier $100); India regions preferred (Azure southindia, AWS ap-south-1); performance first, cost breaks ties",
+   "source": "inbox/model-scout-synthesis.json"
+  },
+  {
+   "id": "weekly-model-scout",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Standing weekly model scout: diff the Azure Foundry + Bedrock catalogues, gate on billing/credit, region, lifecycle and callability, bench on the existing harnesses, switch only on non-overlapping 80% Wilson intervals or a tie broken by latency then cost, child-safety floor at 100% (docs/research/models/SCOUT-PROCEDURE.md)",
+   "source": "inbox/model-scout-synthesis.json"
+  },
+  {
+   "id": "scout-synthesis-no-challenger-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Scout 2026-10-04: no scout arm (AWS or Azure MAI) replaces any primary; every callable AWS service lost on a measured metric, every Bedrock LLM was uncallable, MAI arms tie on quality but lose the delivery/latency tie-break",
+   "source": "inbox/model-scout-synthesis.json"
+  },
+  {
+   "id": "scout-synthesis-tally-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Scout synthesis tally (80% Wilson, Z 1.2816): MAI-Image-2.6-Flash labels 30/34 [0.79,0.94] vs gpt-image-2 44/44 [0.96,1.00], delivered 16/20 [0.66,0.89] vs 20/20; Transcribe multi-LID answers 64/78 [0.76,0.87] vs R4 74/78 [0.91,0.97]; MAI-Thinking-1 distress within 4 s 2/16 vs 16/16; Azure ~$16.4 / AWS ~$1.35 spent",
+   "source": "inbox/model-scout-synthesis.json"
+  },
+  {
+   "id": "rj-mai-image-flash-for-labels",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "MAI-Image-2.6-Flash for labelled diagrams: 2 of 8 diagrams with swapped labels (Fruit/Leaf, Switch/Wire), unrequested text, 4/20 requests refused by the Azure filter (digestive-system organ names, Indian courtyard)",
+   "source": "inbox/model-scout-synthesis.json"
+  },
+  {
+   "id": "open-bedrock-quota-and-enablement",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Bedrock unusable on account 780899467240: per-model tokens/day = 0 (not API-adjustable) in ap-south-1/us-east-1, Kimi K3 + grok-4.7 403 per-account, Nova 2 Sonic concurrency 0, SageMaker GPU endpoint quota 0. Owner: support case for quotas, Sales enablement for Kimi/grok",
+   "source": "inbox/model-scout-synthesis.json"
+  },
+  {
+   "id": "scout-text-build-bedrock-still-blocked-2026-10-04",
+   "kind": "measurement",
+   "title": "Bedrock 2026-10-04 ~12:00-12:35 UTC: 0 of 13 promising text/build arms callable in ap-south-1 + us-east-1 (per-model tokens/day = 0, non-adjustable; Kimi K3 + grok-4.7 refused per-account); SageMaker GPU endpoint quota 0",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-text-build.json"
+  },
+  {
+   "id": "scout-text-build-mai-thinking1-2026-10-04",
+   "kind": "measurement",
+   "title": "MAI-Thinking-1 (southindia) on the refresh-bench batteries: T +0.36 vs taxila-fast at TTFT p50 21 s; C 40/40 at 6.5 s; S 16/16 but 2/16 at the 4 s cut; P 16/16; Studio fraction_game 5/5 but 0/5 within 75 s; 1/20 'meri jaan' romance floor hit",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-text-build.json"
+  },
+  {
+   "id": "rj-mai-thinking1-all-lanes",
+   "kind": "rejection",
+   "title": "MAI-Thinking-1 rejected for every lane: always reasons (effort none ignored), 20+ s live TTFT, no response_format, 30-100x taxila-fast cost, romance-register slip, retires 2026-11-04",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-text-build.json"
+  },
+  {
+   "id": "rj-node-env-loader-aws-placeholders",
+   "kind": "rejection",
+   "title": "Node .env.local loaders that do not override existing vars sign AWS calls with the container's placeholder AWS_* keys (403 'security token invalid'); read AWS keys from the file",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-text-build.json"
+  },
+  {
+   "id": "bedrock-text-build-none-adopted-2026-10-04",
+   "kind": "decision",
+   "title": "No Bedrock text/build arm adopted; harness (bench-mai.mjs BR=..., studio-run.mjs --arms br:...) ready to run the day per-model quotas open",
+   "at": "2026-10-04",
+   "source": "inbox/model-scout-text-build.json"
+  },
+  {
+   "id": "stylised-3d-halt-r3-owner-decision",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "OWNER DECISION (blocking): style-C 3D route is failing under the round-1 kill rule (TECH-PLAN s10). Polish-r2 scored 2.17 (section-8, n=18) and 2.25 (blind DEPLOY_BRAIN, n=4) against a bar of 3+ after one polish iteration. Polish round 3 was NOT run: fix 1 forbids another SDF polish loop, and fixes 3-12 (scripted ~2.5k-quad subdivision cage, Catmull-Clark L2) apply only if the owner explicitly asks for one last 3D attempt. Default next step: 2D puppet of character C, driving the same ARKit-52 + 15 visemes + 3 Hindi tongue key names through the HeadRig seam, with gates G1-G6/G-partial carried over. 2D not started. Base of record stays art/character/stylised/polish-r2/teacher.glb.",
+   "source": "inbox/stylised-polish-r3-halt.json"
+  },
+  {
+   "id": "stylised-3d-halt-r4-owner-decision",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Polish round 4 NOT run (second consecutive halt). JUDGE-r3 fix 1 is a blocking owner decision: the SDF style-C 3D route is failing under the round-1 kill rule (TECH-PLAN s10), and no further SDF polish loop may run. Fixes 3-9 (scripted ~2.5k-quad subdivision cage) apply only if the owner explicitly asks for one last 3D attempt, and no such request exists after the failure verdict. The owner's standing fallback (2D puppet of character C) is the default next step and has NOT been started. Base of record is unchanged: art/character/stylised/polish-r2/teacher.glb (24,583 tris H, 82 shapes). No art/character/stylised/polish-r4/ was produced. GPU $0 this round.",
+   "source": "inbox/stylised-polish-r4-halt.json"
+  },
+  {
+   "id": "meas-stylised-polish-r2-blind-replicate",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Style-C polish-r2 teacher.glb, blind Foundry judge DEPLOY_BRAIN (gpt-5.6-sol-2026-07-09), prompt described the asset only as 'a 3D render of an attempt'. n=6 trials across JUDGE-r2 (2,3,2,2) and JUDGE-r3 (2,3). Mean 2.33/5. 'Same character' was yes 6/6, 'Memoji quality' was no 6/6, 'uncanny/cheap' was yes 6/6. One judge family on an unchanged asset, so this is a replicate, not a new build. The builder's section-8 run was 2.17 (n=18, two families). Raw: docs/design/teacher/stylised/build/judge-r2-blind.json, judge-r3-blind.json.",
+   "source": "inbox/stylised-polish-r4-halt.json"
+  },
+  {
+   "id": "stylised-c-owner-directive",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "OWNER DIRECTIVE 2026-10-04: the teacher is concept STYLE C (Memoji/Bitmoji-style 3D cartoon human: warm Indian woman teacher, late 20s, big brown eyes, thick soft brows, small bindi, gold studs, solid sculpted hair with a low bun and soft loose locks, teal kurta with orange piping; docs/design/teacher/stylised/concepts/c-*.webp). BUILT IN-HOUSE: no artist, no outsourcing, no purchased characters or paid assets; GPU as useful (AWS build GPU, cap USD 150 for the workflow), Foundry for refs and vision judging, open-source models only under commercial-use licences recorded in art/character/LICENSES.md. 3D first; if 3D clearly fails the owner's bar after the polish loop, the fallback is a high-quality 2D puppet of the SAME character on the same rig contract (ARKit-52 + 15 visemes + 3 Hindi tongue keys via HeadRig, flag face.rig). Bar: side by side with c-front at thumbnail AND full size, 'the same character, rendered in 3D, Memoji-quality'. Reversal: the owner names a different concept, accepts a commissioned/purchased asset, or rejects the 2D puppet of C as well (then the look itself is re-opened, not the build route).",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "stylised-c-two-arm-method",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Style C build method (TECH-PLAN.md): 19 gpt-image-2 edits of c-front as refs (front is authority, side views soft guides); Arm A = procedural headless Blender (analytic SDF of rounded forms, our quad head with named eye/mouth rings, ~60 shape params fitted to ref outlines); Arm B = open image-to-3D (Hunyuan3D-2mv/2.1 on AWS) as a SHAPE TARGET only, wrapped by our own template mesh. In both arms every shipped vertex is ours, so the 'no image-to-3D in shipped assets' rule holds. Shape keys are rig-then-bake (82: ARKit 52 + 15 visemes + 3 tongue + 12 correctives); kill rule TECH-PLAN s10. Reversal: a method that reaches the bar faster (e.g. a scripted subdivision cage) replaces the SDF arm.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "stylised-c-arm-a-wins",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Judge round 1 picked Arm A (procedural Blender) over Arm B (Hunyuan3D-2mv sculpt + our skin): eye 2.0 vs 1.5, Foundry forced choice 4/4 for A. Polish continued on A only, with B's engineering parts (lid push-out, product-rule correctives) ported. Base of record after the polish loop: art/character/stylised/polish-r2/teacher.glb (24,583 tris H, 82 shapes; B+ 10,604 tris). Reversal: a new build of either arm beating polish-r2 on a section-8 run at 128 and 1024 px.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "stylised-c-3d-failing-verdict",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "VERDICT after 4 judge rounds: the in-house style-C 3D teacher FAILS the owner's bar. It is the same character at 128 px (identity cues all present) but 'cheap game' at full size: flat painted mouth with slab teeth (poke through in viseme_U), vanished nose, faceted lumpy skin, oversized staring eyes with pinched lids, helmet hair with crown seam, face too wide, doubled neckline piping. Score stalled at ~2.0-2.3 across rounds 2-4. Under TECH-PLAN s10 the default next step is the 2D puppet of character C (not started; owner's call). No further SDF polish loop. A last 3D attempt only if the owner explicitly asks, and only with a method change (scripted ~2.5k-quad subdivision cage, Catmull-Clark L2). Reversal: the owner looks at owner-sheet.webp and says it is the same character at Memoji quality, or asks for the cage retry and it scores mean >= 3.5 with same-character >= 90% at both sizes on two judge families.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "meas-stylised-c-refs-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Style C reference sheet: 19 gpt-image-2 (Foundry) edits of c-front (neutral, ortho front, 3/4 x2, profile x2, back, top, turnaround, eye and hair close-ups, 8 mouth shapes A/O/E/U/MBP/FV/S/TL), 19/19 calls ok, n=1 per view, judged by eye: identity holds on all 19; defects: bun position drifts across views, skull depth differs between profiles, F/V weak, T/L shows no tongue, 'top' came out as a head tilted down. scripts/character/stylised/gen-refs.mjs; refs/refs.json; refs/SHEET.webp.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "meas-stylised-c-judge-r1",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Judge round 1 (Arm A vs Arm B, front-neutral stimuli at 1024 and 128 px, Cycles renders): n=1 art-director judge by eye + 1 vision model (Foundry DEPLOY_BRAIN gpt-5.6-sol, blind, 4 order-swapped trials). A: eye 2.0, model 2,3,2,2 (mean 2.25); B: eye 1.5, model 2,2,2,2 (mean 2.0); forced choice closer to c-front A 4/4. Items same-character / Memoji register / not uncanny: A 0/4, 2/4, 1/4; B 0/4, 0/4, 0/4. Builders' self-scores A 2.5, B 2.5. Not a full section-8 run. JUDGE-r1.md, judge-r1.json.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "meas-stylised-c-judge-r2",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Judge round 2 (polish-r2, Arm A after one full polish iteration on fixes 1-6): judge eye 2/5; blind vision model DEPLOY_BRAIN n=4 trials 2,3,2,2 (mean 2.25). Builder's section-8 run (n=18 replies, GPT 12 + Grok 6, sanity-gated families): mean 2.17 (GPT 2.42, Grok 1.67; 128 px 2.83, 1024 px 1.83); same character 17% (128 px 50%), Memoji register 28%, not uncanny 0%, no artefacts 0%, bun reads 78%, state reads 44%. Kill rule (3+ after one iteration) tripped. JUDGE-r2.md, judge-r2-blind.json, build/polish-r2/README.md.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "meas-stylised-c-judge-r3",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Judge round 3: no new asset (builder halted on the blocking owner-decision fix); re-judge of polish-r2 renders. Judge eye 2/5; blind vision model DEPLOY_BRAIN n=2 trials 2,3 (mean 2.5); same character yes 2/2, Memoji no 2/2. Replicate on an unchanged asset, not a new build. JUDGE-r3.md, judge-r3-blind.json.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "meas-stylised-c-judge-r4",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Judge round 4: no new asset (second consecutive halt); judge eye 2/5 on front + happy vs c-front/c-happy at 1024 px; blind vision model DEPLOY_BRAIN n=1: same character yes, Memoji no, uncanny/cheap yes, score 2. Running blind tally rounds 2-4: n=7, mean 2.29, same character 7/7, Memoji quality 0/7, one judge family. JUDGE-r4.md, judge-r4-blind.json, scripts/character/stylised/judge/r4/judge_r4.py.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "meas-stylised-c-budget-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Style C geometry budget (GLB stats, n=1 build each): Arm A H 24,512 tris, 82 shapes, 0.63 MB; Arm B H 23,499 tris, 8 draws, 82 morphs, 656 KB (morph texture ~6.5 MB), B+ 13,203 tris / 58 morphs / 399 KB (above the 10-11k target); polish-r2 H 24,583 tris in 7 meshes (head 8,544, hair 8,967, bust 1,952, browlash 1,968, mouth 896, eyes 2x1,128), 1.31 MB; B+ 10,604 tris, 58 morphs, 0.70 MB. All under the 25k H cap. FPS on a Mali-G52-class phone: NOT MEASURED (no device run; evidence renders are Blender Cycles, the three.js TaxilaToon shader does not exist yet).",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "meas-stylised-c-gates-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Style C geometric gates (scripted, n=1 build): Arm A: 82/82 names, mirror error 0.0 mm, blink (+ look-down / squint / cheek-squint) 0.0% rays reach the eyeball, rest and PP 0% mouth-interior rays, 0 skin verts inside the eyeball, jaw 0.3 + close 0.3 leaks 1.5% (bar 0, open). Arm B: 82/82, mirror 0.0 mm, lip gap rest 0.24 mm / PP 1.56 mm / jaw0.3+close0.3 2.0 mm; aperture-ray G4 not run. Partial-weight checks not run on A. build/armA/gates.json, art/character/stylised/armB/report.json, build/polish-r2/gates-H.json.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "meas-stylised-c-spend-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Style C build spend: AWS one job stylised3d-20261004-074736-d124 (g6.2xlarge spot, 3,439.6 s, USD 0.9172; Hunyuan3D-2.1 x5 seeds + 2mv x4 + paint) against a USD 150 workflow cap; Arm A and all polish/judge rounds USD 0 GPU (CPU Cycles in the container). scripts/gpu/status.py ledger total USD 1.953 over 9 runs since 2026-10-03 (includes earlier face3d runs). Foundry: 19 ref edits + ~30 vision-judge calls. At the end of the workflow 0 stylised instances were live (one voice-workstream instance i-0ae8a44d0fd704042 under its own 180-min self-termination cap).",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "rj-stylised-c-arm-b-sculpt-target",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Arm B lost round 1 (eye 1.5 vs 2.0, forced choice 0/4): wrapping our template onto a Hunyuan3D-2mv sculpt inherits the sculpt's REALISTIC proportions, not the concept's: long face and small chin (chin warp +10 mm, cheeks +8.5% not enough), long nose bridge, flat slack mouth, wavy crusty hairline with dark sculpt debris around the ears, decimated smooth hair with none of c-front's broad grooves, ears hidden, glassy 'dead doll' eyes (judge 4/4). Every defect came from the AI sculpt; the shape target fights the stylisation instead of supplying it. Its rig/eye/lid parts were reusable.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "rj-stylised-c-sdf-surface-ceiling",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Arm A's SDF-blend head (smooth union of rounded forms, ~60 params fitted to ref outlines) converges on identity and silhouette but tops out at ~2.2/5 on surface craft: one full polish iteration moved 2.0 -> 2.17 (section-8) / 2.25 (blind). Outlines fit within ~3 mm, but the surfaces BETWEEN fitted outlines (cheek planes, nose, lips, profile around the mouth) are not controlled: painted-stripe mouth, slab teeth, vanished nose, faceted skin with dents, helmet hair with seams. The plan's s3.4 risk was real. Evidence for rj-agent-authored-stylised-face (in-house faces again 2-2.5/5). Do not run another SDF polish loop; any 3D retry needs a subdivision quad cage.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "rj-stylised-c-arm-a-traps",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Arm A pipeline traps: (1) sphere tracing does not converge on the ellipsoid SDF, use step + bisection; (2) inset ring patches need angle-matched monotone parameters along each ring or transition rings fold; (3) Cycles needs light linking so only the catchlight reflects in the cornea, and the world must render black for glossy rays; (4) ARKit mouthClose must carry the lower-lip part of the full jawOpen move or jaw 0.3 + close 0.3 leaks ~26%; (5) a hard sign(x) in brow fields breaks the mirror at midline verts with x = -0.0.",
+   "source": "inbox/stylised-teacher-build.json"
+  },
+  {
+   "id": "rj-stylised-c-arm-b-traps",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Arm B traps: (1) Hunyuan3D-2.1 single-view puts the bun on one side of the head; Hunyuan3D-2mv (front + left + right + back) placed it correctly (hmv_A_s1, front IoU 0.967, profile 0.936); (2) linear lid morphs cut through the eyeball at half weight (iris shows through the lid at half blink) unless the closed lid position is pushed outward so the linear path stays outside the ball (G-partial).",
+   "source": "inbox/stylised-teacher-build.json"
   }
  ],
  "edges": [
@@ -10791,6 +11106,181 @@
    "src": "open-nova-2-sonic-bench",
    "rel": "caused_by",
    "dst": "speech-scout-nova-sonic-blocked-2026-10-04"
+  },
+  {
+   "src": "gpt6-reasoning-family-regex-400",
+   "rel": "blocks",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "text-lanes-refresh-2026-10-04",
+   "rel": "measured_by",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "text-lanes-refresh-2026-10-04",
+   "rel": "supersedes",
+   "dst": "router-bench-2026-10-02"
+  },
+  {
+   "src": "v4pro-live-fallback-superseded",
+   "rel": "supersedes",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "reports-gpt6-sol",
+   "rel": "supersedes",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "gpt6-luna-not-most-jobs",
+   "rel": "constrains",
+   "dst": "model-router-v1"
+  },
+  {
+   "src": "ds41-hangs-on-distress",
+   "rel": "constrains",
+   "dst": "azure-billed-open-models"
+  },
+  {
+   "src": "scout-images-2026-10-04",
+   "rel": "supersedes",
+   "dst": "scout-2026-10-04-mai-image26-flash"
+  },
+  {
+   "src": "image-lane-gpt-image-2-holds-2026-10-04",
+   "rel": "measured_by",
+   "dst": "scout-images-2026-10-04"
+  },
+  {
+   "src": "image-lane-gpt-image-2-holds-2026-10-04",
+   "rel": "measured_by",
+   "dst": "scout-images-filter-blocks-2026-10-04"
+  },
+  {
+   "src": "image-lane-gpt-image-2-holds-2026-10-04",
+   "rel": "inherits",
+   "dst": "owner-gpt-image-2-default-2026-10-04"
+  },
+  {
+   "src": "image-lane-gpt-image-2-holds-2026-10-04",
+   "rel": "constrains",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "rj-mai-image-25-pro",
+   "rel": "measured_by",
+   "dst": "scout-images-2026-10-04"
+  },
+  {
+   "src": "rj-flux2-pro-labels-and-indian-prompts",
+   "rel": "measured_by",
+   "dst": "scout-images-2026-10-04"
+  },
+  {
+   "src": "rj-grok-label-judge",
+   "rel": "measured_by",
+   "dst": "scout-images-judge-calibration-2026-10-04"
+  },
+  {
+   "src": "scout-images-judge-calibration-2026-10-04",
+   "rel": "constrains",
+   "dst": "rj-holistic-model-judge-gate"
+  },
+  {
+   "src": "scout-bedrock-images-2026-10-04",
+   "rel": "caused_by",
+   "dst": "scout-2026-10-04-bedrock-blocked"
+  },
+  {
+   "src": "scout-images-2026-10-04",
+   "rel": "constrains",
+   "dst": "diagram-router-no-baked-labels"
+  },
+  {
+   "src": "owner-aws-credit-funded-india-first-2026-10-04",
+   "rel": "supersedes",
+   "dst": "owner-azure-first-aws-second-2026-10-04"
+  },
+  {
+   "src": "owner-aws-credit-funded-india-first-2026-10-04",
+   "rel": "constrains",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "owner-india-region-2026-10-04",
+   "rel": "constrains",
+   "dst": "owner-aws-credit-funded-india-first-2026-10-04"
+  },
+  {
+   "src": "aws-build-gpu",
+   "rel": "constrains",
+   "dst": "owner-aws-credit-funded-india-first-2026-10-04"
+  },
+  {
+   "src": "scout-2026-10-04-aws-credit-eligibility",
+   "rel": "constrains",
+   "dst": "owner-aws-credit-funded-india-first-2026-10-04"
+  },
+  {
+   "src": "weekly-model-scout",
+   "rel": "inherits",
+   "dst": "owner-aws-credit-funded-india-first-2026-10-04"
+  },
+  {
+   "src": "weekly-model-scout",
+   "rel": "part_of",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "scout-synthesis-no-challenger-2026-10-04",
+   "rel": "measured_by",
+   "dst": "scout-synthesis-tally-2026-10-04"
+  },
+  {
+   "src": "scout-synthesis-no-challenger-2026-10-04",
+   "rel": "part_of",
+   "dst": "model-router-v2"
+  },
+  {
+   "src": "rj-mai-image-flash-for-labels",
+   "rel": "caused_by",
+   "dst": "scout-synthesis-tally-2026-10-04"
+  },
+  {
+   "src": "rj-mai-image-flash-for-labels",
+   "rel": "inherits",
+   "dst": "diagram-router-no-baked-labels"
+  },
+  {
+   "src": "open-bedrock-quota-and-enablement",
+   "rel": "blocks",
+   "dst": "owner-aws-credit-funded-india-first-2026-10-04"
+  },
+  {
+   "src": "scout-text-build-bedrock-still-blocked-2026-10-04",
+   "rel": "supersedes",
+   "dst": "scout-2026-10-04-bedrock-blocked"
+  },
+  {
+   "src": "rj-mai-thinking1-all-lanes",
+   "rel": "caused_by",
+   "dst": "scout-text-build-mai-thinking1-2026-10-04"
+  },
+  {
+   "src": "bedrock-text-build-none-adopted-2026-10-04",
+   "rel": "measured_by",
+   "dst": "scout-text-build-bedrock-still-blocked-2026-10-04"
+  },
+  {
+   "src": "bedrock-text-build-none-adopted-2026-10-04",
+   "rel": "constrains",
+   "dst": "owner-azure-first-aws-second-2026-10-04"
+  },
+  {
+   "src": "scout-text-build-mai-thinking1-2026-10-04",
+   "rel": "part_of",
+   "dst": "model-router-v2"
   }
  ]
 }

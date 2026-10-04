@@ -196,12 +196,12 @@ function make(frag, kind, o = {}) {
 // material name (from the GLB) -> TaxilaToon material
 export function toonFor(name, src, tier = "H") {
   const C = {
-    skin: [240, 158, 86], hair: [66, 62, 62], brow: [52, 42, 38], lash: [18, 12, 10], bindi: [110, 30, 34],
+    skin: [240, 158, 86], hair: [66, 62, 62], brow: [38, 30, 28], lash: [18, 12, 10], bindi: [110, 30, 34],
     gold: [236, 184, 96], kurta: [18, 108, 118], piping: [200, 102, 48], teeth: [246, 240, 230], tongue: [190, 80, 72],
   };
   switch (name) {
-    case "skin": return make(FRAG_SURF, 0, { vcol: true, uv: true, sss: 0.38, rim: 0.22, spec: 0.35, rough: 0.6, wrap: 0.45, aoLift: 0.75 });
-    case "skin_ear": return make(FRAG_SURF, 1, { base: lin(C.skin), sss: 0.38, rim: 0.22, spec: 0.3, wrap: 0.5 });
+    case "skin": return make(FRAG_SURF, 0, { vcol: true, uv: true, sss: 0.38, rim: 0.4, spec: 0.35, rough: 0.6, wrap: 0.45, aoLift: 0.75 });
+    case "skin_ear": return make(FRAG_SURF, 1, { base: lin(C.skin), sss: 0.38, rim: 0.4, spec: 0.3, wrap: 0.5 });
     case "eye": return make(FRAG_EYE, 4, { map: src.map, uv: true });
     case "cornea": return make(FRAG_CORNEA, 5, { transparent: true });
     case "hair": return make(tier === "H" ? FRAG_HAIR : FRAG_SURF, 2, { base: lin(C.hair), vcol: true, uv: tier === "H", spec: 0.4, rim: 0.3, wrap: 0.5 });

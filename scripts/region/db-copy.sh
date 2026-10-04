@@ -33,7 +33,9 @@ if [ "$MODE" != "migrations" ]; then
   S_INFO="$S_INFO|client:$S_TLS"
 fi
 
-TABLES_SQL="select tablename from pg_tables where schemaname = 'public' order by 1"
+# every ORDER BY on text is COLLATE "C": source (Neon, C.UTF-8) and target may differ in collation, and a list sorted
+# by each side's own collation compares unequal with identical contents (seen 2026-10-04: 004_conductor vs _notification)
+TABLES_SQL="select tablename from pg_tables where schemaname = 'public' order by tablename collate \"C\""
 SNAP=""
 if [ "$MODE" = "copy" ]; then
   # one snapshot for the dump AND the source checksums: hold an exporting read-only transaction open on a fifo
@@ -75,10 +77,10 @@ sums() { # $1 = src|dst  $2 = snapshot or ""
   sql=""
   [ -n "$snap" ] && sql="begin isolation level repeatable read read only; set transaction snapshot '$snap';"
   for t in $tables; do
-    sql="$sql select '$t' || '|' || count(*) || '|' || coalesce(md5(string_agg(h, '' order by h)), '-') from (select md5(x::text) h from public.\"$t\" x) s;"
+    sql="$sql select '$t' || '|' || count(*) || '|' || coalesce(md5(string_agg(h, '' order by h collate \"C\")), '-') from (select md5(x::text) h from public.\"$t\" x) s;"
   done
-  sql="$sql select '#seq|' || coalesce(string_agg(sequencename || '=' || coalesce(last_value::text, 'null'), ',' order by sequencename), '') from pg_sequences where schemaname = 'public';"
-  sql="$sql select '#mig|' || coalesce((select string_agg(name, ',' order by name) from schema_migrations), '');"
+  sql="$sql select '#seq|' || coalesce(string_agg(sequencename || '=' || coalesce(last_value::text, 'null'), ',' order by sequencename collate \"C\"), '') from pg_sequences where schemaname = 'public';"
+  sql="$sql select '#mig|' || coalesce((select string_agg(name, ',' order by name collate \"C\") from schema_migrations), '');"
   [ -n "$snap" ] && sql="$sql commit;"
   printf '%s\n' "$sql" | $side -f -
 }

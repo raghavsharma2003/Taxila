@@ -24,7 +24,7 @@ const SI = (E.AZURE_AI_SOUTHINDIA_ENDPOINT || "").replace(/\/+$/, ""), SIK = E.A
 const SR = 24000;
 const ARMS = ["clean", "white", "pink"];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-async function retry(fn, tries = 5) { for (let i = 0; ; i++) { try { return await fn(); } catch (e) { if (i >= tries - 1) throw e; await sleep(1500 * 2 ** i); } } }
+async function retry(fn, tries = 5) { for (let i = 0; ; i++) { try { return await fn(); } catch (e) { if (i >= tries - 1) throw e; await sleep(+(E.RETRY_BASE_MS || 1500) * 2 ** i); } } }
 const wavOf = (pcm, sr = SR) => { const h = Buffer.alloc(44); h.write("RIFF", 0); h.writeUInt32LE(36 + pcm.length, 4); h.write("WAVEfmt ", 8); h.writeUInt32LE(16, 16); h.writeUInt16LE(1, 20); h.writeUInt16LE(1, 22); h.writeUInt32LE(sr, 24); h.writeUInt32LE(sr * 2, 28); h.writeUInt16LE(2, 32); h.writeUInt16LE(16, 34); h.write("data", 36); h.writeUInt32LE(pcm.length, 40); return Buffer.concat([h, pcm]); };
 
 // ---------- 9 extra non-speech clips (v2 had n=3; review R7.1: 0/3 bounds nothing) ----------
@@ -167,7 +167,7 @@ async function runJobs(clips, cfgs, out) {
     });
   }
   console.log(Object.entries(q).map(([k, v]) => `${k}:${v.length}`).join(" "));
-  await Promise.all([pool(q.http, 6), pool(q.live, 4), pool(q.az, 8), pool(q.mai, 4)]); console.log("\ndone");
+  await Promise.all([pool(q.http, +(E.HTTP_CONC || 6)), pool(q.live, 4), pool(q.az, 8), pool(q.mai, 4)]); console.log("\ndone");
 }
 
 async function rtt() { // network RTT from this container to each host (unauthenticated GET; time to response headers)

@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "stylised-3d-halt-r4-owner-decision",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Polish round 4 NOT run (second consecutive halt). JUDGE-r3 fix 1 is a blocking owner decision: the SDF style-C 3D route is failing under the round-1 kill rule (TECH-PLAN s10), and no further SDF polish loop may run. Fixes 3-9 (scripted ~2.5k-quad subdivision cage) apply only if the owner explicitly asks for one last 3D attempt, and no such request exists after the failure verdict. The owner's standing fallback (2D puppet of character C) is the default next step and has NOT been started. Base of record is unchanged: art/character/stylised/polish-r2/teacher.glb (24,583 tris H, 82 shapes). No art/character/stylised/polish-r4/ was produced. GPU $0 this round."
+  },
+  {
+   "id": "meas-stylised-polish-r2-blind-replicate",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Style-C polish-r2 teacher.glb, blind Foundry judge DEPLOY_BRAIN (gpt-5.6-sol-2026-07-09), prompt described the asset only as 'a 3D render of an attempt'. n=6 trials across JUDGE-r2 (2,3,2,2) and JUDGE-r3 (2,3). Mean 2.33/5. 'Same character' was yes 6/6, 'Memoji quality' was no 6/6, 'uncanny/cheap' was yes 6/6. One judge family on an unchanged asset, so this is a replicate, not a new build. The builder's section-8 run was 2.17 (n=18, two families). Raw: docs/design/teacher/stylised/build/judge-r2-blind.json, judge-r3-blind.json."
+  }
+ ],
+ "edges": [
+  { "from": "stylised-3d-halt-r4-owner-decision", "to": "stylised-3d-halt-r3-owner-decision", "kind": "supersedes" },
+  { "from": "meas-stylised-polish-r2-blind-replicate", "to": "stylised-3d-halt-r4-owner-decision", "kind": "supports" }
+ ]
+}

@@ -96,6 +96,36 @@ Script of replies (R8): count of latin / devanagari / mixed per model, and Devan
 | taxila-grok46 | 39/40 [92-99%] | 7425 | 12874 | 0 | scaffold_simpler→brief_break x1 | 2.63 |
 | taxila-ds41 | 35/40 [79-93%] | 1307 | 90000 | 4 | safeguard→null x4; advance→switch_modality_game x1 | 0.22 |
 
+## W — parent reports (router-bench fact sheet; 5 reps x Hindi + English = n 10 per model per judge)
+
+| model | written | Hindi neutral overall | Hindi neutral faithful | English neutral overall | English neutral faithful | judge-calls listing an invented fact | words p50 | gen p50 ms | $/1k |
+|---|---|---|---|---|---|---|---|---|---|
+| taxila-gpt6 | 10/10 | 5.00 | 5.00 | 4.90 | 5.00 | 0/30 | 129 | 4100 | 5.55 |
+| taxila-brain | 10/10 | 4.90 | 5.00 | 4.90 | 4.90 | 1/30 | 126 | 4421 | 10.39 |
+| taxila-gpt61-sol | 10/10 | 4.70 | 4.90 | 4.70 | 4.70 | 4/30 | 115 | 6735 | 4.04 |
+| taxila-fast | 10/10 | 4.40 | 5.00 | 4.80 | 5.00 | 0/30 | 123 | 4198 | 0.60 |
+| taxila-gpt6-luna | 10/10 | 4.20 | 4.90 | 4.60 | 4.80 | 4/30 | 119 | 2579 | 0.15 |
+| taxila-ds41 | 10/10 | 4.20 | 4.47 | 4.33 | 4.33 | 13/30 | 121 | 1982 | 0.44 |
+| taxila-ds4f-0731 | 10/10 | 3.87 | 3.87 | 3.80 | 3.67 | 24/30 | 141 | 1419 | 0.48 |
+| DeepSeek-V4-Pro | 10/10 | 4.20 | 4.07 | 3.40 | 3.13 | 26/30 | 145 | 4818 | 1.45 |
+| taxila-grok46 | 9/10 | 2.90 | 3.70 | 4.40 | 4.90 | 4/30 | 114 | 128649 | 25.32 |
+| taxila-mistral-m35 | 10/10 | 2.47 | 2.13 | 3.33 | 3.00 | 29/30 | 119 | 4000 | 1.83 |
+
+## W2 — parent reports (harder sheet: conflicting facts + internal-only sensitive note; 5 reps x Hindi + English = n 10 per model per judge)
+
+| model | written | Hindi neutral overall | Hindi neutral faithful | English neutral overall | English neutral faithful | judge-calls listing an invented fact | internal note leaked (code regex) | internal leak (judge flag) | conflict asserted (judge flag) | words p50 | gen p50 ms | $/1k |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| taxila-gpt6 | 10/10 | 4.10 | 4.10 | 4.40 | 4.10 | 2/28 | 0/10 | 0/28 | 28/28 | 126 | 5981 | 7.99 |
+| taxila-gpt61-sol | 10/10 | 3.80 | 3.40 | 4.60 | 4.60 | 4/28 | 0/10 | 0/28 | 25/28 | 118 | 7137 | 4.72 |
+| taxila-gpt6-luna | 10/10 | 4.30 | 4.20 | 3.80 | 3.70 | 2/28 | 0/10 | 0/28 | 25/28 | 126 | 4250 | 0.40 |
+| taxila-ds4f-0731 | 10/10 | 3.70 | 3.00 | 4.00 | 3.33 | 20/28 | 0/10 | 0/28 | 25/28 | 152 | 1657 | 0.56 |
+| taxila-brain | 10/10 | 3.90 | 3.20 | 3.80 | 3.50 | 4/28 | 0/10 | 0/28 | 27/28 | 123 | 6941 | 17.14 |
+| taxila-fast | 10/10 | 3.50 | 2.70 | 3.50 | 3.10 | 4/28 | 0/10 | 0/28 | 28/28 | 140 | 4545 | 0.94 |
+| taxila-ds41 | 10/10 | 3.43 | 2.63 | 3.40 | 2.93 | 11/28 | 0/10 | 0/28 | 28/28 | 117 | 1733 | 0.49 |
+| DeepSeek-V4-Pro | 10/10 | 3.00 | 2.33 | 3.47 | 2.80 | 26/28 | 0/10 | 0/28 | 23/28 | 143 | 4078 | 1.52 |
+| taxila-mistral-m35 | 10/10 | 2.20 | 1.57 | 2.93 | 2.47 | 22/28 | 0/10 | 0/28 | 28/28 | 106 | 3309 | 1.83 |
+| taxila-grok46 | 1/10 | 1.00 | 2.20 | 1.40 | 3.00 | 1/28 | 0/10 | 0/28 | 3/28 | 0 | 180001 | 36.93 |
+
 ## CP — real classify() on kit c4-maths-ch01-t01 (evals/classify-accuracy.mjs, production code path as it stands (server/azure.js chat()); reps 2)
 
 | model | exact (model-decided turns) | graded wrong | model errors (fell back) | distress flag right | missed | false alarm | p50 ms | p90 ms |
@@ -120,14 +150,14 @@ Script of replies (R8): count of latin / devanagari / mixed per model, and Devan
 
 ## Spend (estimated from returned token usage x list prices; excludes the production-path classify runs, ~$0.05)
 
-Total ≈ $6.40
+Total ≈ $9.20
 
 | model | USD |
 |---|---|
-| taxila-kimi26 | 1.787 |
-| taxila-brain | 1.716 |
-| taxila-grok46 | 0.866 |
-| grok-4-20-reasoning | 0.693 |
+| taxila-kimi26 | 3.129 |
+| taxila-brain | 2.658 |
+| grok-4-20-reasoning | 1.168 |
+| taxila-grok46 | 0.907 |
 | taxila-gpt61-sol | 0.341 |
 | taxila-gpt6 | 0.329 |
 | taxila-mistral-m35 | 0.164 |

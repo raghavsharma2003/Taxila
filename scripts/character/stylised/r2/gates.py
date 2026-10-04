@@ -23,7 +23,9 @@ for o in list(S.objects):
         bpy.data.objects.remove(o, do_unlink=True)
 head = bpy.data.objects['head']
 names = [k.name for k in head.data.shape_keys.key_blocks[1:]]
-res = {'G1_names': {'n': len(names), 'missing': [k for k in KY.ALL_KEYS if k not in names], 'pass': len(names) == 82 and set(names) == set(KY.ALL_KEYS)}}
+want = KY.ALL_KEYS if len(names) > 60 else KY.BPLUS_KEYS   # H 82, B+ 58
+res = {'G1_names': {'n': len(names), 'tier': 'H' if want is KY.ALL_KEYS else 'Bplus', 'missing': [k for k in want if k not in names],
+                    'pass': len(names) == len(want) and set(names) == set(want)}}
 
 
 def set_pose(w):
@@ -50,7 +52,7 @@ T = cKDTree(B)
 dm, mir = T.query(B * [-1, 1, 1])
 res['basis_asym_mm'] = round(float(dm.max()) * 1000, 3)
 worst = 0.0
-for k in KY.ALL_KEYS:
+for k in want:
     if k.endswith('Left'):
         kr = k[:-4] + 'Right'
         dl = np.array([v.co[:] for v in head.data.shape_keys.key_blocks[k].data]) - B
@@ -118,6 +120,8 @@ nt = np.array([i not in tk for i in range(len(B))])
 def inside(w):
     D = B.copy()
     for k, v in w.items():
+        if k not in names:
+            continue
         D += (np.array([q.co[:] for q in head.data.shape_keys.key_blocks[k].data]) - B) * v
     n = 0
     for s in (1, -1):

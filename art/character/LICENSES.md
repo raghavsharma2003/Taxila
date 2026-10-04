@@ -334,3 +334,20 @@ outlines for placement); no pixel of them ships.
 | numpy, scipy, pillow | geometry, gates, sheets | PyPI (in `$CHAR_HOME/bpyenv`) | BSD / BSD / HPND | as above |
 
 No GPU was used for Arm A (CPU Cycles in the container).
+
+### Style C, polish round 2 (2026-10-04; `art/character/stylised/polish-r2/`)
+
+Built only by our scripts in `scripts/character/stylised/r2/`, which are an extension of Arm A: the analytic SDF head,
+eye-blend and conform passes, parts, shape rig, AO bake, export, and the TaxilaToon three.js shader in `r2/viewer/`.
+No third-party mesh, texture, model weight or generated 3D asset is used. Arm B contributed code ideas only: the
+G-partial chord push, the B+ LOD, the KTX2 finish and the shoulder bones. It contributed no Arm B geometry.
+
+| item | used for | source | licence | evidence |
+|---|---|---|---|---|
+| `teacher.glb` (H, 24,583 tris) / `teacher_Bplus.glb` (10,604 tris) | outputs | ours | ours | sha256 `d0047ac6d424bd99137c7bd810164e7f748e47fd65b832b4e31590af2f35e449` / `0b3a5cac597777c0cc62b51d2ee5bd0163e32168ef6d90e5aeb9c055dc61d3e4` |
+| three.js 0.180.0 | evidence renders (TaxilaToon), the runtime it targets | npm `three` | MIT | `build/three.module.js` sha256 `c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a` |
+| Playwright 1.63.0 + Chromium (SwiftShader), Vite 8.3.2 | headless render harness (`r2/render3.mjs`) | npm | Apache-2.0 / BSD-3 (Chromium) / MIT | tools only; nothing ships |
+| KTX-Software 4.4.0, gltf-transform, meshoptimizer | `r2/finish.mjs` | as listed for Arm B | Apache-2.0 / MIT / MIT | as above |
+| Foundry `DEPLOY_BRAIN` (GPT) and `grok-4-20-non-reasoning` | advisory vision judges (`r2/judge/judge2.py`); `Mistral-Large-3` and `grok-4-1-fast-non-reasoning` were tried and failed the sanity battery | Azure Foundry Direct | Azure terms; outputs ours | raw replies in `docs/design/teacher/stylised/build/polish-r2/judge-r2.json` |
+
+No GPU was used in this round.

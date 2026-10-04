@@ -22,11 +22,23 @@ loadEnv();
 // SCOUT: route to southindia; MAI Models retail $2 in / $0.2 cached / $8 out per 1M (prices-2026-10-04.json)
 process.env.AZURE_OPENAI_ENDPOINT = process.env.AZURE_AI_SOUTHINDIA_ENDPOINT.replace(/\/+$/, "") + "/openai/v1"; process.env.AZURE_OPENAI_API_KEY = process.env.AZURE_AI_SOUTHINDIA_KEY;
 PRICES["scout-mai-thinking1"] = { in: 2, cached: 0.2, out: 8 };
+// SCOUT: Bedrock arms (opt-in with --arms br:...): ConverseStream through ./bedrock.mjs, mapped to generate()'s shape.
+const { converse, BR_ARMS, BR_PRICE } = await import("./bedrock.mjs");
+for (const [k, [i, o]] of Object.entries(BR_PRICE)) PRICES[k] = { in: i, cached: i, out: o };
+async function generateAny(dep, system, user, opts) {
+  if (!dep.startsWith("br:")) return generate(dep, system, user, opts);
+  const chunks = []; const [region, id] = BR_ARMS[dep];
+  const r = await converse(region, id, [{ role: "system", content: system }, { role: "user", content: user }], { maxTokens: Math.min(opts.maxTokens || 16000, 16000), timeoutMs: 300_000, chunks });
+  return { text: r.text, chunks, ttftMs: r.ttft, firstAnyMs: r.ttft, reasoningChars: 0, served: id, ms: r.ms,
+    usage: r.usage ? { in: r.usage.prompt_tokens, cached: 0, out: r.usage.completion_tokens, reasoning: 0 } : null,
+    error: r.err ? (/timeout|aborted/i.test(r.err) ? "timeout" : `HTTP ${(r.err.match(/http (\d+)/) || [])[1] || "?"}: ${r.err}`) : r.finish === "max_tokens" ? "length" : null };
+}
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
 export const ARMS = { // SCOUT
   "mai-thinking1": { dep: "scout-mai-thinking1" },
+  ...Object.fromEntries(Object.keys(BR_ARMS).map((k) => [k, { dep: k }])), // SCOUT: Bedrock, run only when named in --arms
 };
-const arms = arg("arms", Object.keys(ARMS).join(",")).split(",");
+const arms = arg("arms", "mai-thinking1").split(","); // SCOUT: default = the arm measured 2026-10-04
 const kinds = arg("kinds", Object.keys(KINDS).join(",")).split(",");
 const N = +arg("n", 5), CONC = +arg("conc", 14), PER_ARM = +arg("perArm", 3), REPAIRS = +arg("repairs", 2);
 const OUT = path.join(path.dirname(new URL(import.meta.url).pathname), arg("out", "out"));
@@ -107,7 +119,7 @@ async function one(job) {
   const rec = { id, ...job, dep, effort: effort || null, startedAt: new Date().toISOString(), rounds: [] };
   let prompt = userPrompt(job.kind), wall = 0;
   for (let round = 0; round <= REPAIRS; round++) {
-    const g = await generate(dep, SYSTEM, prompt, { effort, maxTokens: maxTokens || 16000 });
+    const g = await generateAny(dep, SYSTEM, prompt, { effort, maxTokens: maxTokens || 16000 }); // SCOUT
     if (g.error === "timeout") {
       timeouts[job.arm] = (timeouts[job.arm] || 0) + 1;
       if (timeouts[job.arm] >= 2 && !dropped[job.arm]) { dropped[job.arm] = { at: new Date().toISOString(), reason: "2 generation timeouts (300 s)", lastJob: id }; fs.writeFileSync(droppedFile, JSON.stringify(dropped, null, 1)); console.log("DROP ARM", job.arm); }

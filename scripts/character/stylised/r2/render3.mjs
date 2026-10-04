@@ -39,7 +39,7 @@ for (const it of items.length ? items : ["front"]) {
   let file;
   if (it.startsWith("yaw:")) {
     const a = +it.slice(4);
-    await page.evaluate((y) => { TX.pose({}); TX.view("front", y); TX.render(); }, a);
+    await page.evaluate((y) => { TX.pose({}); TX.view("turn", y); TX.render(); }, a);
     file = path.join(out, `tt_${String(a).padStart(3, "0")}.png`);
   } else if (it.startsWith("pose:")) {
     const name = it.slice(5), pz = POSES[name];

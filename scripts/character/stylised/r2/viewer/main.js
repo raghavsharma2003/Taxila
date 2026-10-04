@@ -38,6 +38,7 @@ const VIEWS = {
   eyes: { t: [0, -0.006, 0.02], h: 0.12, yaw: 0 },
   mouth: { t: [0, -0.044, 0.03], h: 0.075, yaw: 0 },
   bust: { t: [0, -0.05, -0.02], h: 0.42, yaw: 0 },
+  turn: { t: [0, -0.0211, -0.035], h: 0.323, yaw: 0 },
   temple: { t: [0.05, 0.0, 0.0], h: 0.13, yaw: 55 },
 };
 function view(name, yawOverride) {

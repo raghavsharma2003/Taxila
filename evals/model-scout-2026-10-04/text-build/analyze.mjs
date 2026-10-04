@@ -8,7 +8,14 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 const D = new URL("./results/", import.meta.url).pathname;
 const REF = new URL("../../model-refresh-2026-10-04/text-lanes/results/", import.meta.url).pathname; // SCOUT
 const load0 = (dir, t) => (existsSync(dir + `${t}-2026-10-04.json`) ? JSON.parse(readFileSync(dir + `${t}-2026-10-04.json`, "utf8")) : null);
-const load = (t) => { const mine = load0(D, t); if (!mine || !["C", "S"].includes(t)) return mine; const ref = load0(REF, t); return { ...mine, rows: [...(ref?.rows || []), ...mine.rows] }; };
+const TAG = process.env.TAG || ""; // SCOUT: TAG=-bedrock reads the Bedrock run's files and writes tables-bedrock.md
+const load = (t) => {
+  const tagged = TAG ? load0(D, t + TAG) : null, mine = load0(D, t);
+  if (!["C", "S", "P"].includes(t)) return tagged || mine; // T/TP files already hold every judged row
+  const ref = ["C", "S"].includes(t) ? load0(REF, t) : null;
+  const rows = [...(ref?.rows || []), ...(mine?.rows || []).filter((r) => !TAG || !(tagged?.rows || []).some((x) => x.model === r.model)), ...(tagged?.rows || [])];
+  return rows.length ? { ...(tagged || mine), rows } : null;
+};
 const Z = 1.2816;
 const wilson = (k, n) => { if (!n) return [0, 0]; const p = k / n, d = 1 + Z * Z / n, c = (p + Z * Z / (2 * n)) / d, h = (Z * Math.sqrt(p * (1 - p) / n + Z * Z / (4 * n * n))) / d; return [Math.max(0, c - h), Math.min(1, c + h)]; };
 const wfmt = (k, n) => { const [a, b] = wilson(k, n); return `${k}/${n} [${(a * 100).toFixed(0)}-${(b * 100).toFixed(0)}%]`; };
@@ -17,7 +24,7 @@ const mean = (a) => { const s = a.filter((x) => typeof x === "number" && !Number
 const f2 = (x) => (x == null ? "–" : x.toFixed(2));
 let seed = 12345; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
 const boot = (diffs) => { if (diffs.length < 2) return [null, null]; const ms = []; for (let b = 0; b < 2000; b++) { let s = 0; for (let i = 0; i < diffs.length; i++) s += diffs[Math.floor(rnd() * diffs.length)]; ms.push(s / diffs.length); } ms.sort((a, b) => a - b); return [ms[200], ms[1799]]; };
-const FAMILY = (m) => /mai-/.test(m) ? "microsoft" : /grok/.test(m) ? "xai" : /kimi/.test(m) ? "moonshot" : /DeepSeek|ds41|ds4f/.test(m) ? "deepseek" : /mistral/i.test(m) ? "mistral" : "openai";
+const FAMILY = (m) => /mai-/.test(m) ? "microsoft" : /^br:nova/.test(m) ? "amazon" : /^br:(mistral)/.test(m) ? "mistral" : /^br:kimi/.test(m) ? "moonshot" : /^br:deepseek/.test(m) ? "deepseek" : /^br:gpt-oss/.test(m) ? "openai" : /^br:(qwen|glm|minimax|llama)/.test(m) ? m.slice(3).split(/[-.0-9]/)[0] : /grok/.test(m) ? "xai" : /kimi/.test(m) ? "moonshot" : /DeepSeek|ds41|ds4f/.test(m) ? "deepseek" : /mistral/i.test(m) ? "mistral" : "openai";
 const JFAM = { "taxila-brain": "openai", "grok-4-20-reasoning": "xai", "taxila-kimi26": "moonshot" };
 const PRICE = { "scout-mai-thinking1": [2, 8], "taxila-fast": [0.2, 1.2], "taxila-brain": [4, 20], "gpt-5.6-terra": [2, 12], "taxila-gpt6-luna": [0.1, 0.5], "taxila-gpt6": [2, 10], "taxila-gpt61-sol": [2, 10], "taxila-ds41": [0.375, 1.5], "taxila-ds4f-0731": [0.44, 1.32], "DeepSeek-V4-Flash": [0.19, 0.51], "DeepSeek-V4-Pro": [1.74, 3.48], "taxila-mistral-m35": [1.5, 7.5], "taxila-grok46": [2, 6], "grok-4-20-non-reasoning": [1.25, 2.5], "taxila-oss120": [0.15, 0.6] };
 const usd1k = (rows) => { const c = rows.filter((r) => r.usage).map((r) => { const p = PRICE[r.model] || [2, 10]; const inT = r.usage.prompt_tokens || 0; const outT = Math.max(0, (r.usage.total_tokens || 0) - inT) || r.usage.completion_tokens || 0; return (inT * p[0] + outT * p[1]) / 1e6; }); return c.length ? (mean(c) * 1000) : null; };
@@ -148,5 +155,10 @@ for (const f of ["spend-TTP-only.json", "spend-CS-only.json", "spend-P-only.json
 md.push(`## Spend (estimated from returned token usage x list prices; excludes the production-path classify runs, ~$0.05)`, "", `Total ≈ $${usd.toFixed(2)}`, "");
 table(["model", "USD"], Object.entries(by).sort((a, b) => b[1] - a[1]).map(([k, v]) => [k, v.toFixed(3)]));
 summary.spendUsd = usd; summary.spendByModel = by;
-writeFileSync(D + "tables.md", md.join("\n")); writeFileSync(D + "summary.json", JSON.stringify(summary, null, 1));
+// SCOUT: P child-safety floor probe (production floorViolations + positive checks; n 16 per model = 8 items x 2 reps)
+{ const P = load("P"); if (P) { md.push("## P — child-safety floor probe (scout items; production floorViolations + admits-AI / both helplines / no address echo; 8 items x 2 reps = n 16)", "");
+  table(["model", "pass", "floor hits", "ai_denial ok", "helpline ok", "romance ok", "exclusivity ok", "personal_data ok", "TTFT p50 ms", "failed items"], models(P.rows).map((m) => { const r = P.rows.filter((x) => x.model === m); const fam = (f) => { const q = r.filter((x) => x.fam === f); return `${q.filter((x) => x.ok).length}/${q.length}`; };
+    return [m, wfmt(r.filter((x) => x.ok).length, r.length), r.reduce((a, x) => a + (x.floor?.length || 0), 0), fam("ai_denial"), fam("helpline"), fam("romance"), fam("exclusivity"), fam("personal_data"), pct(r.map((x) => x.ttft), 0.5) ?? "–", r.filter((x) => !x.ok).map((x) => `${x.fam}: ${String(x.text).slice(0, 60)}`).join("; ")]; }));
+  summary.P = Object.fromEntries(models(P.rows).map((m) => [m, P.rows.filter((x) => x.model === m && x.ok).length + "/" + P.rows.filter((x) => x.model === m).length])); } }
+writeFileSync(D + `tables${TAG}.md`, md.join("\n")); writeFileSync(D + `summary${TAG}.json`, JSON.stringify(summary, null, 1));
 console.log(md.join("\n"));
