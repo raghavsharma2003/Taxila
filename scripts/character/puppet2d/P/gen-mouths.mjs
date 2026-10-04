@@ -36,7 +36,7 @@ export const SHAPES = {
   U: "the 'oo' vowel: lips puckered forward into a small round opening.",
   open_sm: "a small relaxed half-open speaking mouth: lips just parted, a hint of the upper teeth edge.",
   // delight column
-  grin: "a broad warm closed-mouth smile: corners lifted high, lips closed, cheeks lifted.",
+  grin: "smiling widely with the lips together, the corners curving up toward the cheeks.",
   laugh: "a big delighted open smile: mouth open wide in a soft D shape, the upper teeth row visible, tongue low, corners high, cheeks lifted.",
   grin_E: "a broad happy smile while talking: lips parted, both teeth rows visible, corners high.",
   grin_sm: "a happy smile with the lips slightly parted, the upper teeth edge showing, corners high.",

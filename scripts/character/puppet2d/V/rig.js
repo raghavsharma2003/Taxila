@@ -101,7 +101,10 @@ function normals(pl) {
 // ------------------------------------------------------------------ dynamic geometry batch
 class Batch {
   constructor(cap) {
-    this.f = new Float32Array(cap * STRIDE);
+    this.buf = new ArrayBuffer(cap * 16);
+    this.f = new Float32Array(this.buf);
+    this.u8 = new Uint8Array(this.buf);
+    this.cap = cap;
     this.n = 0;
     this.items = [];
     this.zAt = null;
@@ -110,11 +113,11 @@ class Batch {
   begin(mode = 0, ref = 0) { this.items.push({ start: this.n, count: 0, mode, ref }); }
   end() { const it = this.items[this.items.length - 1]; it.count = this.n - it.start; }
   v(x, y, c, a = 1, zoff = 0) {
-    if ((this.n + 1) * STRIDE > this.f.length) return;
-    const o = this.n * STRIDE, f = this.f;
+    if (this.n >= this.cap) return;
+    const o = this.n * 4, f = this.f, u = this.u8, ob = o * 4 + 12;
     f[o] = x; f[o + 1] = y; f[o + 2] = this.zAt(x, y) + zoff;
-    f[o + 3] = c[0] / 255; f[o + 4] = c[1] / 255; f[o + 5] = c[2] / 255; f[o + 6] = (c.length > 3 ? c[3] : 1) * a;
-    f[o + 7] = 0; f[o + 8] = 0; f[o + 9] = 0; f[o + 10] = 0;
+    const al = (c.length > 3 ? c[3] : 1) * a;
+    u[ob] = c[0]; u[ob + 1] = c[1]; u[ob + 2] = c[2]; u[ob + 3] = al <= 0 ? 0 : al >= 1 ? 255 : al * 255;
     this.n++;
   }
   tri(a, b, c, ca, cb, cc, z = 0) {
@@ -122,13 +125,21 @@ class Batch {
   }
   /** Strip between rows of points (rows[k][i]); cols[k] is a colour or a function (i, n) -> colour. */
   rows(rows, cols, z = 0) {
-    const n = rows[0].length;
-    for (let k = 0; k < rows.length - 1; k++) {
-      const A = rows[k], B = rows[k + 1];
+    const n = rows[0].length, R = rows.length;
+    // resolve every row's colours once (a colour or a per-index function)
+    const CC = this._cc || (this._cc = []);
+    for (let k = 0; k < R; k++) {
+      const c = cols[k];
+      let a = CC[k];
+      if (!a || a.length < n) a = CC[k] = new Array(Math.max(n, 64));
+      if (typeof c === "function") for (let i = 0; i < n; i++) a[i] = c(i, n);
+      else for (let i = 0; i < n; i++) a[i] = c;
+    }
+    for (let k = 0; k < R - 1; k++) {
+      const A = rows[k], Bq = rows[k + 1], ca = CC[k], cb = CC[k + 1];
       for (let i = 0; i < n - 1; i++) {
-        const ca0 = colAt(cols[k], i, n), ca1 = colAt(cols[k], i + 1, n), cb0 = colAt(cols[k + 1], i, n), cb1 = colAt(cols[k + 1], i + 1, n);
-        this.tri(A[i], A[i + 1], B[i], ca0, ca1, cb0, z);
-        this.tri(A[i + 1], B[i + 1], B[i], ca1, cb1, cb0, z);
+        this.v(A[i][0], A[i][1], ca[i], 1, z); this.v(A[i + 1][0], A[i + 1][1], ca[i + 1], 1, z); this.v(Bq[i][0], Bq[i][1], cb[i], 1, z);
+        this.v(A[i + 1][0], A[i + 1][1], ca[i + 1], 1, z); this.v(Bq[i + 1][0], Bq[i + 1][1], cb[i + 1], 1, z); this.v(Bq[i][0], Bq[i][1], cb[i], 1, z);
       }
     }
   }
@@ -140,17 +151,9 @@ class Batch {
   }
   /** Concentric rings around a centre: radii[k] with colours cols[k] (colour or fn(angle)). */
   disc(cx, cy, rx, ry, radii, cols, seg = 36, z = 0, rot = 0) {
-    const ring = (r) => {
-      const out = [];
-      for (let i = 0; i <= seg; i++) {
-        const a = (i / seg) * Math.PI * 2;
-        const ca = Math.cos(a), sa = Math.sin(a);
-        const x = ca * rx * r, y = sa * ry * r;
-        out.push([cx + x * Math.cos(rot) - y * Math.sin(rot), cy + x * Math.sin(rot) + y * Math.cos(rot)]);
-      }
-      return out;
-    };
-    const R = radii.map(ring);
+    const U = (this._unit || (this._unit = {}))[seg] || (this._unit[seg] = Array.from({ length: seg + 1 }, (_, i) => [Math.cos((i / seg) * Math.PI * 2), Math.sin((i / seg) * Math.PI * 2)]));
+    const cr = Math.cos(rot), sr = Math.sin(rot);
+    const R = radii.map((r) => U.map(([ca, sa]) => { const x = ca * rx * r, y = sa * ry * r; return [cx + x * cr - y * sr, cy + x * sr + y * cr]; }));
     const C = cols.map((c) => (typeof c === "function" ? (i, n) => c((i / (n - 1)) * Math.PI * 2) : c));
     this.rows(R, C, z);
   }
@@ -213,7 +216,16 @@ export class PuppetV {
     this.staticTris = tris;
     this.batch = new Batch(60000);
     this.batch.zAt = this.zAt;
-    this.dyn = this._vao(this.batch.f, null, true);
+    {
+      const vao = gl.createVertexArray(); gl.bindVertexArray(vao);
+      const vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+      gl.bufferData(gl.ARRAY_BUFFER, this.batch.buf.byteLength, gl.DYNAMIC_DRAW);
+      gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 16, 0);
+      gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 4, gl.UNSIGNED_BYTE, true, 16, 12);
+      gl.disableVertexAttribArray(2); gl.vertexAttrib4f(2, 0, 0, 0, 0);
+      gl.bindVertexArray(null);
+      this.dyn = { vao, vb };
+    }
     this.state = { bs: {}, head: [0, 0, 0], gaze: [0, 0], lean: 0, breath: 0 };
     this.phys = { lockL: { x: 0, v: 0, y: 0, vy: 0 }, lockR: { x: 0, v: 0, y: 0, vy: 0 }, bun: { x: 0, v: 0, y: 0, vy: 0 }, prevYaw: 0, prevRoll: 0, prevPitch: 0, t: 0 };
     this._prepFeatures();
@@ -250,7 +262,7 @@ export class PuppetV {
   _prepFeatures() {
     const F = this.F;
     this.eyes = {};
-    const NE = 26;
+    const NE = 20;
     for (const side of ["SL", "SR"]) {
       const e = F.eyes[side];
       const U0 = resample(catmull([e.inner, ...e.up, e.outer]), NE);
@@ -265,7 +277,7 @@ export class PuppetV {
     this.brows = {};
     for (const side of ["SL", "SR"]) {
       const b = F.brows[side];
-      const c = resample(catmull(b.c), 22);
+      const c = resample(catmull(b.c), 16);
       // thickness by arc fraction (piecewise linear over the control points)
       const thAt = (s) => { const k = s * (b.th.length - 1), i = Math.min(b.th.length - 2, k | 0); return lerp(b.th[i], b.th[i + 1], k - i); };
       this.brows[side] = { c, thAt, dir: Math.sign(b.c[b.c.length - 1][0] - b.c[0][0]) };
@@ -413,13 +425,13 @@ export class PuppetV {
         const lowK = (a, k) => Math.pow(Math.max(0, Math.sin(a)), 1.4) * k;
         const sh = (c, k) => (a) => mix(scale(c, 1 - 0.3 * Math.max(0, -Math.sin(a))), ic.low, lowK(a, k));
         B.disc(cx + e.pupil[0], cy + e.pupil[1], ir * fs, ir, [0, pr - 0.03, pr + 0.03, 0.66, 0.84, 0.94, 1.0, 1.05],
-          [ic.pupil, ic.pupil, sh(ic.inner, 0.35), sh(ic.mid, 0.95), sh(ic.mid, 0.75), sh(ic.outer, 0.25), ic.limbus, alpha(ic.limbus, 0)], 44, -1);
+          [ic.pupil, ic.pupil, sh(ic.inner, 0.35), sh(ic.mid, 0.95), sh(ic.mid, 0.75), sh(ic.outer, 0.25), ic.limbus, alpha(ic.limbus, 0)], 30, -1);
         // lid shadow on the eyeball
         const S1 = U.map((p, i) => [p[0], p[1] + 9]);
         B.rows([U, S1], [[20, 10, 8, 0.42 * open], [20, 10, 8, 0]], -0.5);
         // catchlight (stays with the iris, drifts a little against the gaze: the cornea reads as wet)
         const [kx, ky, kr] = e.catch;
-        B.disc(cx + kx - gx * 0.12, cy + ky - gy * 0.12, kr * fs, kr, [0, 0.82, 1.0, 1.18], [[255, 255, 255, 1], [255, 255, 255, 1], [255, 255, 255, 0.85], [255, 255, 255, 0]], 28, 0);
+        B.disc(cx + kx - gx * 0.12, cy + ky - gy * 0.12, kr * fs, kr, [0, 0.82, 1.0, 1.18], [[255, 255, 255, 1], [255, 255, 255, 1], [255, 255, 255, 0.85], [255, 255, 255, 0]], 18, 0);
         B.end();
       }
       // lower lid soft line + lash line
@@ -428,7 +440,7 @@ export class PuppetV {
       B.rows([L, LL1, LL2], [[120, 60, 40, 0.0], [130, 64, 40, 0.32 * open + 0.1], [130, 64, 40, 0]], 0);
       // lash: the lid edge plus the rest offsets
       const T = U.map((p, i) => {
-        const s = i / (n - 1), k = 1 - 0.25 * blink; // the lash compresses a little as it closes
+        const s = i / (n - 1), k = 1 - 0.5 * blink; // the lash thins as it closes (it folds onto the lower lid)
         return [p[0] + E.off[i][0] * k, p[1] + E.off[i][1] * k];
       });
       const Ub = U.map((p) => [p[0], p[1] + 1.3]); // lash bottom edge slightly inside the opening (no sclera halo)
@@ -498,7 +510,7 @@ export class PuppetV {
   _mouth(ms) {
     const B = this.batch, M = this.F.mouth, C = this.F.colors;
     const s0 = M.restSmile;
-    const N = 41;
+    const N = 29;
     const open = ms.open, round = ms.round, wide = ms.wide, press = ms.press;
     const smile = (ms.smileL + ms.smileR) / 2;
     const halfW = M.halfW * (1 + 0.13 * wide - 0.33 * round + 0.07 * Math.max(0, smile - s0) - 0.04 * press - 0.1 * ms.frown - 0.16 * open * (1 - wide));
@@ -542,8 +554,8 @@ export class PuppetV {
       // tongue: a soft blob resting on the floor of the mouth; Hindi keys lift (dental/alveolar), curl (retroflex),
       // widen (lateral) or push it to the teeth (TH)
       const lift0 = Math.max(ms.tipUp, 0.8 * ms.curl, ms.tongueOut);
-      const teethH = (Math.min(9, gap * 0.3 + 1.5) + 3 * ms.teeth * Math.min(1, gap / 6) + 4 * ms.upperUp) * (1 - 0.35 * lift0);
-      const NT = 21, top = [], hi = [], bot = [];
+      const teethH = (Math.min(9, Math.max(0, gap - 2.5) * 0.3 + 0.5) + 3 * ms.teeth * Math.min(1, gap / 6) + 4 * ms.upperUp) * (1 - 0.35 * lift0);
+      const NT = 15, top = [], hi = [], bot = [];
       const tw = 0.62 + 0.2 * ms.tongueWide - 0.1 * round;
       const th = Math.max(3, gap * 0.34 + 2) * (1 - 0.2 * ms.tongueWide);
       const lift = Math.max(ms.tipUp, 0.8 * ms.curl, ms.tongueOut);
@@ -685,7 +697,7 @@ export class PuppetV {
     this._studs();
     const studItems = this.batch.items.slice(featItems.length);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.dyn.vb);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.batch.f, 0, this.batch.n * STRIDE);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.batch.u8, 0, this.batch.n * 16);
     this.lastDynTris = this.batch.n / 3;
     const drawItems = (items) => {
       setGroup("head");

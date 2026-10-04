@@ -351,3 +351,18 @@ G-partial chord push, the B+ LOD, the KTX2 finish and the shoulder bones. It con
 | Foundry `DEPLOY_BRAIN` (GPT) and `grok-4-20-non-reasoning` | advisory vision judges (`r2/judge/judge2.py`); `Mistral-Large-3` and `grok-4-1-fast-non-reasoning` were tried and failed the sanity battery | Azure Foundry Direct | Azure terms; outputs ours | raw replies in `docs/design/teacher/stylised/build/polish-r2/judge-r2.json` |
 
 No GPU was used in this round.
+
+## 2D puppet, arm P (painted layers), 2026-10-04 (`art/character/puppet2d/P/`, `scripts/character/puppet2d/P/`)
+
+| input / tool | role | licence | note |
+|---|---|---|---|
+| `docs/design/teacher/stylised/concepts/c-front.webp` (our concept, gpt-image-2 on Azure Foundry) | every layer pixel at rest (cut, matted, membrane-filled by our code) | our output under the Azure OpenAI terms | shipped (P) |
+| 30 mouth patches: masked edits of a 4x close-up of c-front's lower face on `taxila-image` (gpt-image-2), c-front's own mouth as the second reference image | the painted mouth set | our output under the Azure OpenAI terms | prompts + usage per call in `art/character/puppet2d/ledger.json` |
+| Own WebGL2 renderer, rig, mouth solver, springs (`scripts/character/puppet2d/P/runtime/*.js`) | runtime | ours | no third-party runtime code; Live2D / Inochi2D / Cartoon Animator / Rive / Spine used as technique references only, nothing copied |
+| `src/avatar/{lip,behaviour,compositor}.ts` + `shared/tutors.js` (rng32) | the demo drives the puppet through them, unchanged | ours | bundled from the real source |
+| numpy, scipy, pillow, opencv-python-headless 5.0 (ECC registration, warp) | build-time cut, matte, fill, registration | BSD-3 / BSD-3 / MIT-CMU / Apache-2.0 | nothing ships |
+| vite 8 (rolldown) | demo bundle | MIT | build-time |
+| Playwright 1.63, Chromium (SwiftShader), ffmpeg | evidence renders, clips, fps proxy | Apache-2.0 / BSD / LGPL | evidence only |
+| voice clip `docs/design/teacher/renders/audio/teal.mp3` (gpt-4o-mini-tts on Azure, voice marin) + its CTC alignment (wav2vec2-base-960h, Apache-2.0) | demo audio + viseme timing | our output / Apache-2.0 model | evidence only |
+
+Not used: Live2D (licence blocked), PixiJS (fallback not needed), Real-ESRGAN (no upscale was needed: the puppet renders at c-front's native 1024 px).
