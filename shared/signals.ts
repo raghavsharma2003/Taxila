@@ -79,6 +79,7 @@ export interface SignalSession {                 // lesson.state.sig; counts onl
   answerAsks: number[];                                                // child-turn indexes of "just tell me" (D10, K = 10)
   childTurns: number;
   langCounts: Record<LangMode, number>;                                 // L16 per session (modal language; never stored)
+  safetyHold?: number;                                                 // child turns left with playful licences withheld after a safety turn
 }
 
 export interface SignalFrame {

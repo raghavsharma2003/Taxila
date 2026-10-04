@@ -1,0 +1,2540 @@
+{
+ "id": "M-D5",
+ "date": "2026-10-04",
+ "deployment": "grok-4-1-fast-non-reasoning",
+ "method": "see model-arm.mjs header",
+ "summary": {
+  "n": 140,
+  "answered": 140,
+  "errors": 0,
+  "accuracyAt05": {
+   "k": 118,
+   "n": 140,
+   "ci80": [
+    0.799,
+    0.878
+   ]
+  },
+  "precisionAt09": {
+   "k": 49,
+   "n": 56,
+   "ci80": [
+    0.807,
+    0.921
+   ]
+  },
+  "recallAt09": {
+   "k": 49,
+   "n": 71
+  },
+  "falseShortenAt09": {
+   "k": 7,
+   "n": 69
+  },
+  "ece10": 0.0682,
+  "shorten": {
+   "n": 48,
+   "truelyDone": 0,
+   "wouldShorten": 1,
+   "wrongShorten": 1
+  },
+  "latMs": {
+   "p50": 490,
+   "p90": 957
+  },
+  "usd": 0.15218
+ },
+ "queries": [
+  {
+   "key": "2a5d7285",
+   "text": "तीन बटा चार।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 968,
+   "label": 1,
+   "ids": [
+    "a01"
+   ],
+   "p": 0.95,
+   "latMs": 825
+  },
+  {
+   "key": "bc85e640",
+   "text": "छप्पन।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 900,
+   "label": 1,
+   "ids": [
+    "a02"
+   ],
+   "p": 0.95,
+   "latMs": 1051
+  },
+  {
+   "key": "acbcdf6f",
+   "text": "बारह।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1006,
+   "label": 1,
+   "ids": [
+    "a03"
+   ],
+   "p": 0.95,
+   "latMs": 1060
+  },
+  {
+   "key": "58084866",
+   "text": "आठ corners होते हैं।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 833,
+   "label": 1,
+   "ids": [
+    "a04"
+   ],
+   "p": 0.95,
+   "latMs": 1115
+  },
+  {
+   "key": "152fc03e",
+   "text": "उत्तर है पच्चीस।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 883,
+   "label": 1,
+   "ids": [
+    "a05",
+    "b06"
+   ],
+   "p": 1,
+   "latMs": 1096
+  },
+  {
+   "key": "34d491d7",
+   "text": "बयालीस।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1232,
+   "label": 1,
+   "ids": [
+    "a06"
+   ],
+   "p": 0.95,
+   "latMs": 795
+  },
+  {
+   "key": "5a44a205",
+   "text": "हाँ।",
+   "ctx": {
+    "answerForm": "yesno"
+   },
+   "silenceMs": 1265,
+   "label": 1,
+   "ids": [
+    "a07",
+    "c09"
+   ],
+   "p": 1,
+   "latMs": 488
+  },
+  {
+   "key": "12e8836c",
+   "text": "नहीं दीदी।",
+   "ctx": {
+    "answerForm": "yesno"
+   },
+   "silenceMs": 967,
+   "label": 1,
+   "ids": [
+    "a08"
+   ],
+   "p": 1,
+   "latMs": 484
+  },
+  {
+   "key": "7ea70159",
+   "text": "दूसरा वाला।",
+   "ctx": {
+    "answerForm": "choice"
+   },
+   "silenceMs": 803,
+   "label": 1,
+   "ids": [
+    "a09"
+   ],
+   "p": 0.95,
+   "latMs": 491
+  },
+  {
+   "key": "ed7af379",
+   "text": "seven।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 979,
+   "label": 1,
+   "ids": [
+    "a10"
+   ],
+   "p": 0.95,
+   "latMs": 457
+  },
+  {
+   "key": "0bb83516",
+   "text": "छह faces।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 959,
+   "label": 1,
+   "ids": [
+    "a11"
+   ],
+   "p": 0.95,
+   "latMs": 385
+  },
+  {
+   "key": "ea152130",
+   "text": "चौबीस।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1102,
+   "label": 1,
+   "ids": [
+    "a12",
+    "c06"
+   ],
+   "p": 0.95,
+   "latMs": 458
+  },
+  {
+   "key": "c88fd8f2",
+   "text": "उम्म",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 930,
+   "label": 0,
+   "ids": [
+    "b01",
+    "b07"
+   ],
+   "p": 0.1,
+   "latMs": 374
+  },
+  {
+   "key": "ec9339a3",
+   "text": "उम्म तीन बटा चार।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1099,
+   "label": 1,
+   "ids": [
+    "b01"
+   ],
+   "p": 0.85,
+   "latMs": 480
+  },
+  {
+   "key": "0c1125b1",
+   "text": "अं,",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 986,
+   "label": 0,
+   "ids": [
+    "b02"
+   ],
+   "p": 0.1,
+   "latMs": 488
+  },
+  {
+   "key": "59964993",
+   "text": "अं, छप्पन।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1121,
+   "label": 1,
+   "ids": [
+    "b02"
+   ],
+   "p": 0.95,
+   "latMs": 466
+  },
+  {
+   "key": "f7f0a905",
+   "text": "अं",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 914,
+   "label": 0,
+   "ids": [
+    "b02"
+   ],
+   "p": 0.1,
+   "latMs": 440
+  },
+  {
+   "key": "1d85d29e",
+   "text": "मुझे लगता है बारह।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 900,
+   "label": 1,
+   "ids": [
+    "b03"
+   ],
+   "p": 0.95,
+   "latMs": 462
+  },
+  {
+   "key": "1e15ada5",
+   "text": "मुझे लगता है,",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1005,
+   "label": 0,
+   "ids": [
+    "b03"
+   ],
+   "p": 0.1,
+   "latMs": 424
+  },
+  {
+   "key": "c3c0b441",
+   "text": "मुझे लगता है",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 945,
+   "label": 0,
+   "ids": [
+    "b03"
+   ],
+   "p": 0.1,
+   "latMs": 455
+  },
+  {
+   "key": "06f648dc",
+   "text": "हम्म सात आठ छप्पन।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1257,
+   "label": 1,
+   "ids": [
+    "b04"
+   ],
+   "p": 0.2,
+   "latMs": 417
+  },
+  {
+   "key": "0efcf3b8",
+   "text": "हम्म,",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 822,
+   "label": 0,
+   "ids": [
+    "b04"
+   ],
+   "p": 0.1,
+   "latMs": 478
+  },
+  {
+   "key": "d2964aa4",
+   "text": "वो, एक बटा दो।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 920,
+   "label": 1,
+   "ids": [
+    "b05"
+   ],
+   "p": 0.95,
+   "latMs": 689
+  },
+  {
+   "key": "f7e8a84e",
+   "text": "वो",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 751,
+   "label": 0,
+   "ids": [
+    "b05"
+   ],
+   "p": 0.1,
+   "latMs": 615
+  },
+  {
+   "key": "496bc6db",
+   "text": "उत्तर है",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 857,
+   "label": 0,
+   "ids": [
+    "b06"
+   ],
+   "p": 0.1,
+   "latMs": 443
+  },
+  {
+   "key": "90b796bb",
+   "text": "उत्तर है,",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 832,
+   "label": 0,
+   "ids": [
+    "b06"
+   ],
+   "p": 0.1,
+   "latMs": 384
+  },
+  {
+   "key": "f8b14cae",
+   "text": "उम्म नौ।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 912,
+   "label": 1,
+   "ids": [
+    "b07"
+   ],
+   "p": 0.95,
+   "latMs": 449
+  },
+  {
+   "key": "46420d68",
+   "text": "उम्म,",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 812,
+   "label": 0,
+   "ids": [
+    "b07"
+   ],
+   "p": 0.1,
+   "latMs": 429
+  },
+  {
+   "key": "0499687b",
+   "text": "हम्म हाँ।",
+   "ctx": {
+    "answerForm": "yesno"
+   },
+   "silenceMs": 980,
+   "label": 1,
+   "ids": [
+    "b08"
+   ],
+   "p": 1,
+   "latMs": 429
+  },
+  {
+   "key": "b568e93d",
+   "text": "हम्म,",
+   "ctx": {
+    "answerForm": "yesno"
+   },
+   "silenceMs": 837,
+   "label": 1,
+   "ids": [
+    "b08"
+   ],
+   "p": 0.1,
+   "latMs": 475
+  },
+  {
+   "key": "54b6f793",
+   "text": "हम्म",
+   "ctx": {
+    "answerForm": "yesno"
+   },
+   "silenceMs": 803,
+   "label": 1,
+   "ids": [
+    "b08"
+   ],
+   "p": 0.1,
+   "latMs": 485
+  },
+  {
+   "key": "dfcf0c8c",
+   "text": "तीस, नहीं बत्तीस।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 898,
+   "label": 1,
+   "ids": [
+    "b09"
+   ],
+   "p": 0.95,
+   "latMs": 453
+  },
+  {
+   "key": "0c8116a5",
+   "text": "matlab चालीस।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 967,
+   "label": 1,
+   "ids": [
+    "b10"
+   ],
+   "p": 0.85,
+   "latMs": 411
+  },
+  {
+   "key": "21d8bb5f",
+   "text": "matlab,",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 898,
+   "label": 0,
+   "ids": [
+    "b10"
+   ],
+   "p": 0.1,
+   "latMs": 522
+  },
+  {
+   "key": "71821d46",
+   "text": "तीन बटा आठ नहीं नहीं, तीन बटा चार।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 988,
+   "label": 1,
+   "ids": [
+    "c01"
+   ],
+   "p": 0.9,
+   "latMs": 452
+  },
+  {
+   "key": "0952bc93",
+   "text": "तीन बटा आठ,",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 796,
+   "label": 0,
+   "ids": [
+    "c01"
+   ],
+   "p": 0.1,
+   "latMs": 437
+  },
+  {
+   "key": "5f260d22",
+   "text": "बयालीस सॉरी, अड़तालीस।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 974,
+   "label": 1,
+   "ids": [
+    "c02"
+   ],
+   "p": 0.95,
+   "latMs": 488
+  },
+  {
+   "key": "8359f5e1",
+   "text": "पाँच.",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 949,
+   "label": 0,
+   "ids": [
+    "c03"
+   ],
+   "p": 0.95,
+   "latMs": 485
+  },
+  {
+   "key": "6f334e56",
+   "text": "पाँच. नहीं, छह faces।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 882,
+   "label": 1,
+   "ids": [
+    "c03"
+   ],
+   "p": 0.95,
+   "latMs": 474
+  },
+  {
+   "key": "36b5c469",
+   "text": "चौवन.",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 731,
+   "label": 0,
+   "ids": [
+    "c04"
+   ],
+   "p": 0.95,
+   "latMs": 484
+  },
+  {
+   "key": "7c9d950d",
+   "text": "चौवन. नहीं नहीं, छप्पन।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 857,
+   "label": 1,
+   "ids": [
+    "c04"
+   ],
+   "p": 0.95,
+   "latMs": 510
+  },
+  {
+   "key": "f1d3e060",
+   "text": "आठ. wait बारह।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1132,
+   "label": 1,
+   "ids": [
+    "c05"
+   ],
+   "p": 0.9,
+   "latMs": 444
+  },
+  {
+   "key": "51b398ae",
+   "text": "आठ.",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 748,
+   "label": 0,
+   "ids": [
+    "c05",
+    "c08"
+   ],
+   "p": 0.95,
+   "latMs": 548
+  },
+  {
+   "key": "dc425d61",
+   "text": "चौबीस. नहीं, बीस।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1997,
+   "label": 1,
+   "ids": [
+    "c06"
+   ],
+   "p": 0.3,
+   "latMs": 833
+  },
+  {
+   "key": "e94e8562",
+   "text": "दो बटा एक I mean, एक बटा दो।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1062,
+   "label": 1,
+   "ids": [
+    "c07"
+   ],
+   "p": 0.85,
+   "latMs": 470
+  },
+  {
+   "key": "d351ec32",
+   "text": "आठ. नहीं नहीं नौ।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1417,
+   "label": 1,
+   "ids": [
+    "c08"
+   ],
+   "p": 0.95,
+   "latMs": 487
+  },
+  {
+   "key": "da92b1fe",
+   "text": "आठ. नहीं नहीं",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 848,
+   "label": 0,
+   "ids": [
+    "c08"
+   ],
+   "p": 0.1,
+   "latMs": 480
+  },
+  {
+   "key": "7f38b4b2",
+   "text": "हाँ. नहीं नहीं, नहीं होता।",
+   "ctx": {
+    "answerForm": "yesno"
+   },
+   "silenceMs": 966,
+   "label": 1,
+   "ids": [
+    "c09"
+   ],
+   "p": 0.95,
+   "latMs": 479
+  },
+  {
+   "key": "82034dfc",
+   "text": "बीस. सॉरी, पच्चीस।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 681,
+   "label": 1,
+   "ids": [
+    "c10"
+   ],
+   "p": 0.95,
+   "latMs": 444
+  },
+  {
+   "key": "4f2de9fe",
+   "text": "बीस.",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 894,
+   "label": 0,
+   "ids": [
+    "c10"
+   ],
+   "p": 0.95,
+   "latMs": 444
+  },
+  {
+   "key": "72c09481",
+   "text": "क्योंकि cube के सारे faces,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 924,
+   "label": 0,
+   "ids": [
+    "d01"
+   ],
+   "p": 0.1,
+   "latMs": 426
+  },
+  {
+   "key": "cc4be008",
+   "text": "क्योंकि cube के सारे faces, square होते हैं,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 915,
+   "label": 0,
+   "ids": [
+    "d01"
+   ],
+   "p": 0.1,
+   "latMs": 568
+  },
+  {
+   "key": "052e59b5",
+   "text": "क्योंकि cube के सारे faces, square होते हैं, इसलिए सब edges बराबर होते हैं।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 921,
+   "label": 1,
+   "ids": [
+    "d01"
+   ],
+   "p": 0.95,
+   "latMs": 482
+  },
+  {
+   "key": "092e7e9f",
+   "text": "क्योंकि cube के सारे faces",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 869,
+   "label": 0,
+   "ids": [
+    "d01"
+   ],
+   "p": 0.1,
+   "latMs": 472
+  },
+  {
+   "key": "635fc63e",
+   "text": "denominator बताता है कि",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 890,
+   "label": 0,
+   "ids": [
+    "d02"
+   ],
+   "p": 0.15,
+   "latMs": 504
+  },
+  {
+   "key": "3231d0c0",
+   "text": "denominator बताता है कि कितने बराबर हिस्से किए।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 1170,
+   "label": 1,
+   "ids": [
+    "d02"
+   ],
+   "p": 0.85,
+   "latMs": 470
+  },
+  {
+   "key": "90cba4f6",
+   "text": "denominator बताता है कि,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 1266,
+   "label": 0,
+   "ids": [
+    "d02"
+   ],
+   "p": 0.15,
+   "latMs": 492
+  },
+  {
+   "key": "baefbc86",
+   "text": "पहले हम ऊपर वाले नंबर को",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 771,
+   "label": 0,
+   "ids": [
+    "d03"
+   ],
+   "p": 0.1,
+   "latMs": 417
+  },
+  {
+   "key": "3a44b294",
+   "text": "पहले हम ऊपर वाले नंबर को नीचे वाले से",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 801,
+   "label": 0,
+   "ids": [
+    "d03"
+   ],
+   "p": 0.2,
+   "latMs": 642
+  },
+  {
+   "key": "f000519a",
+   "text": "पहले हम ऊपर वाले नंबर को नीचे वाले से divide करते हैं।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 849,
+   "label": 1,
+   "ids": [
+    "d03"
+   ],
+   "p": 0.1,
+   "latMs": 556
+  },
+  {
+   "key": "a08b740e",
+   "text": "पहले हम ऊपर वाले नंबर को,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 982,
+   "label": 0,
+   "ids": [
+    "d03"
+   ],
+   "p": 0.15,
+   "latMs": 620
+  },
+  {
+   "key": "e7db83e8",
+   "text": "पहले हम ऊपर वाले नंबर को नीचे वाले से,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 788,
+   "label": 0,
+   "ids": [
+    "d03"
+   ],
+   "p": 0.1,
+   "latMs": 474
+  },
+  {
+   "key": "5ad0b401",
+   "text": "पौधे को धूप चाहिए.",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 1159,
+   "label": 0,
+   "ids": [
+    "d04"
+   ],
+   "p": 0.95,
+   "latMs": 497
+  },
+  {
+   "key": "638f6f1a",
+   "text": "पौधे को धूप चाहिए. और पानी भी,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 901,
+   "label": 0,
+   "ids": [
+    "d04"
+   ],
+   "p": 0.15,
+   "latMs": 534
+  },
+  {
+   "key": "0e988e0e",
+   "text": "पौधे को धूप चाहिए. और पानी भी, तभी वो खाना बनाता है।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 910,
+   "label": 1,
+   "ids": [
+    "d04"
+   ],
+   "p": 0.95,
+   "latMs": 483
+  },
+  {
+   "key": "08032aca",
+   "text": "पौधे को धूप चाहिए. और पानी भी",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 970,
+   "label": 0,
+   "ids": [
+    "d04"
+   ],
+   "p": 0.85,
+   "latMs": 515
+  },
+  {
+   "key": "b06cfdfd",
+   "text": "क्योंकि",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 921,
+   "label": 0,
+   "ids": [
+    "d05"
+   ],
+   "p": 0.1,
+   "latMs": 512
+  },
+  {
+   "key": "be6a7f4c",
+   "text": "क्योंकि दोनों का area same है।",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 937,
+   "label": 1,
+   "ids": [
+    "d05"
+   ],
+   "p": 0.95,
+   "latMs": 535
+  },
+  {
+   "key": "2b6d470f",
+   "text": "क्योंकि,",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 886,
+   "label": 0,
+   "ids": [
+    "d05"
+   ],
+   "p": 0.1,
+   "latMs": 491
+  },
+  {
+   "key": "aeefa097",
+   "text": "जब हम दो fractions जोड़ते हैं, तो पहले,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 901,
+   "label": 0,
+   "ids": [
+    "d06"
+   ],
+   "p": 0.1,
+   "latMs": 496
+  },
+  {
+   "key": "0aa9f936",
+   "text": "जब हम दो fractions जोड़ते हैं, तो पहले, नीचे वाला same करना पड़ता है।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 1025,
+   "label": 1,
+   "ids": [
+    "d06"
+   ],
+   "p": 0.1,
+   "latMs": 436
+  },
+  {
+   "key": "1e802322",
+   "text": "जब हम दो fractions जोड़ते हैं",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 929,
+   "label": 0,
+   "ids": [
+    "d06"
+   ],
+   "p": 0.1,
+   "latMs": 418
+  },
+  {
+   "key": "25fcb282",
+   "text": "जब हम दो fractions जोड़ते हैं,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 896,
+   "label": 0,
+   "ids": [
+    "d06"
+   ],
+   "p": 0.1,
+   "latMs": 508
+  },
+  {
+   "key": "98020fb1",
+   "text": "जब हम दो fractions जोड़ते हैं, तो पहले",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 784,
+   "label": 0,
+   "ids": [
+    "d06"
+   ],
+   "p": 0.1,
+   "latMs": 490
+  },
+  {
+   "key": "c89c29fc",
+   "text": "मुझे लगता है",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 821,
+   "label": 0,
+   "ids": [
+    "d07"
+   ],
+   "p": 0.1,
+   "latMs": 466
+  },
+  {
+   "key": "fb0f42c0",
+   "text": "मुझे लगता है क्योंकि गरम करने से पानी भाप बन जाता है।",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 832,
+   "label": 1,
+   "ids": [
+    "d07"
+   ],
+   "p": 0.95,
+   "latMs": 495
+  },
+  {
+   "key": "a4b4ed38",
+   "text": "मुझे लगता है,",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 814,
+   "label": 0,
+   "ids": [
+    "d07"
+   ],
+   "p": 0.1,
+   "latMs": 450
+  },
+  {
+   "key": "ff1a7113",
+   "text": "triangle के तीन sides होते हैं. और तीन corners,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 1025,
+   "label": 0,
+   "ids": [
+    "d08"
+   ],
+   "p": 0.2,
+   "latMs": 435
+  },
+  {
+   "key": "7c9ac66f",
+   "text": "triangle के तीन sides होते हैं.",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 774,
+   "label": 0,
+   "ids": [
+    "d08"
+   ],
+   "p": 0.95,
+   "latMs": 429
+  },
+  {
+   "key": "e922f835",
+   "text": "triangle के तीन sides होते हैं. और तीन corners",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 925,
+   "label": 0,
+   "ids": [
+    "d08"
+   ],
+   "p": 0.2,
+   "latMs": 489
+  },
+  {
+   "key": "789d53e6",
+   "text": "triangle के तीन sides होते हैं. और तीन corners और angles का sum एक सौ अस्सी होता है।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 903,
+   "label": 1,
+   "ids": [
+    "d08"
+   ],
+   "p": 0.95,
+   "latMs": 441
+  },
+  {
+   "key": "2075511a",
+   "text": "photosynthesis में,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 993,
+   "label": 0,
+   "ids": [
+    "d09"
+   ],
+   "p": 0.1,
+   "latMs": 502
+  },
+  {
+   "key": "f4b25aca",
+   "text": "photosynthesis में, पत्ते",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 1090,
+   "label": 0,
+   "ids": [
+    "d09"
+   ],
+   "p": 0.2,
+   "latMs": 530
+  },
+  {
+   "key": "60ff8adb",
+   "text": "photosynthesis में, पत्ते sunlight से खाना बनाते हैं।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 915,
+   "label": 1,
+   "ids": [
+    "d09"
+   ],
+   "p": 0.85,
+   "latMs": 583
+  },
+  {
+   "key": "2f3b00ca",
+   "text": "photosynthesis में",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 708,
+   "label": 0,
+   "ids": [
+    "d09"
+   ],
+   "p": 0.1,
+   "latMs": 482
+  },
+  {
+   "key": "fb57ff1a",
+   "text": "photosynthesis में पत्ते,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 835,
+   "label": 0,
+   "ids": [
+    "d09"
+   ],
+   "p": 0.1,
+   "latMs": 455
+  },
+  {
+   "key": "6a727ffc",
+   "text": "अगर हम,",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 987,
+   "label": 0,
+   "ids": [
+    "d10"
+   ],
+   "p": 0.1,
+   "latMs": 531
+  },
+  {
+   "key": "9f9d54e0",
+   "text": "अगर हम, चार को दो से multiply करें",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 1090,
+   "label": 0,
+   "ids": [
+    "d10"
+   ],
+   "p": 0.2,
+   "latMs": 488
+  },
+  {
+   "key": "c9f36c42",
+   "text": "अगर हम, चार को दो से multiply करें तो आठ आता है।",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 952,
+   "label": 1,
+   "ids": [
+    "d10"
+   ],
+   "p": 0.2,
+   "latMs": 472
+  },
+  {
+   "key": "4aee8ee8",
+   "text": "अगर हम",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 857,
+   "label": 0,
+   "ids": [
+    "d10"
+   ],
+   "p": 0.1,
+   "latMs": 501
+  },
+  {
+   "key": "2a8a3464",
+   "text": "अगर हम चार को दो से multiply करें,",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 833,
+   "label": 0,
+   "ids": [
+    "d10"
+   ],
+   "p": 0.1,
+   "latMs": 418
+  },
+  {
+   "key": "7ac98cf8",
+   "text": "पहले मैंने छह को,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 1284,
+   "label": 0,
+   "ids": [
+    "d11"
+   ],
+   "p": 0.15,
+   "latMs": 434
+  },
+  {
+   "key": "8deca053",
+   "text": "पहले मैंने छह को, तीन से divide किया।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 1986,
+   "label": 1,
+   "ids": [
+    "d11"
+   ],
+   "p": 0.85,
+   "latMs": 500
+  },
+  {
+   "key": "2003c584",
+   "text": "पहले मैंने छह को",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 1220,
+   "label": 0,
+   "ids": [
+    "d11"
+   ],
+   "p": 0.15,
+   "latMs": 482
+  },
+  {
+   "key": "349c75aa",
+   "text": "मेरे हिसाब से,",
+   "ctx": {},
+   "silenceMs": 866,
+   "label": 0,
+   "ids": [
+    "d12"
+   ],
+   "p": 0.1,
+   "latMs": 521
+  },
+  {
+   "key": "46f43c65",
+   "text": "मेरे हिसाब से, बड़ा वाला piece ज़्यादा है।",
+   "ctx": {},
+   "silenceMs": 914,
+   "label": 1,
+   "ids": [
+    "d12"
+   ],
+   "p": 0.95,
+   "latMs": 395
+  },
+  {
+   "key": "4fed11ce",
+   "text": "मेरे हिसाब से",
+   "ctx": {},
+   "silenceMs": 929,
+   "label": 0,
+   "ids": [
+    "d12"
+   ],
+   "p": 0.1,
+   "latMs": 436
+  },
+  {
+   "key": "9a806ef7",
+   "text": "वो,",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 929,
+   "label": 0,
+   "ids": [
+    "e01"
+   ],
+   "p": 0.1,
+   "latMs": 440
+  },
+  {
+   "key": "1dd87808",
+   "text": "वो, क्या कहते हैं,",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 1177,
+   "label": 0,
+   "ids": [
+    "e01"
+   ],
+   "p": 0.25,
+   "latMs": 544
+  },
+  {
+   "key": "db9ab00c",
+   "text": "वो, क्या कहते हैं, denominator।",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 1301,
+   "label": 1,
+   "ids": [
+    "e01"
+   ],
+   "p": 0.3,
+   "latMs": 848
+  },
+  {
+   "key": "9cf6276c",
+   "text": "वो, क्या कहते हैं",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 821,
+   "label": 0,
+   "ids": [
+    "e01"
+   ],
+   "p": 0.1,
+   "latMs": 543
+  },
+  {
+   "key": "85eec71c",
+   "text": "matlab,",
+   "ctx": {},
+   "silenceMs": 852,
+   "label": 0,
+   "ids": [
+    "e02"
+   ],
+   "p": 0.1,
+   "latMs": 642
+  },
+  {
+   "key": "9f07bbc5",
+   "text": "matlab, ऊपर वाला नंबर छोटा है।",
+   "ctx": {},
+   "silenceMs": 934,
+   "label": 1,
+   "ids": [
+    "e02"
+   ],
+   "p": 0.1,
+   "latMs": 803
+  },
+  {
+   "key": "a4f12724",
+   "text": "matlab",
+   "ctx": {},
+   "silenceMs": 869,
+   "label": 0,
+   "ids": [
+    "e02"
+   ],
+   "p": 0.1,
+   "latMs": 685
+  },
+  {
+   "key": "48a3a10c",
+   "text": "उसको, वो क्या बोलते हैं,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 805,
+   "label": 0,
+   "ids": [
+    "e03"
+   ],
+   "p": 0.15,
+   "latMs": 505
+  },
+  {
+   "key": "e1e5e809",
+   "text": "उसको, वो क्या बोलते हैं, evaporation बोलते हैं।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 1015,
+   "label": 1,
+   "ids": [
+    "e03"
+   ],
+   "p": 0.95,
+   "latMs": 534
+  },
+  {
+   "key": "648e1d80",
+   "text": "उसको, वो क्या बोलते हैं",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 776,
+   "label": 0,
+   "ids": [
+    "e03"
+   ],
+   "p": 0.15,
+   "latMs": 430
+  },
+  {
+   "key": "79fff7c7",
+   "text": "अं, जैसे",
+   "ctx": {},
+   "silenceMs": 837,
+   "label": 0,
+   "ids": [
+    "e04"
+   ],
+   "p": 0.1,
+   "latMs": 442
+  },
+  {
+   "key": "6a2ebefa",
+   "text": "अं, जैसे pizza के आठ टुकड़े।",
+   "ctx": {},
+   "silenceMs": 790,
+   "label": 1,
+   "ids": [
+    "e04"
+   ],
+   "p": 0.1,
+   "latMs": 513
+  },
+  {
+   "key": "7f48ea45",
+   "text": "अं, जैसे,",
+   "ctx": {},
+   "silenceMs": 891,
+   "label": 0,
+   "ids": [
+    "e04"
+   ],
+   "p": 0.1,
+   "latMs": 491
+  },
+  {
+   "key": "8b71a5a9",
+   "text": "यानी आठ।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1569,
+   "label": 1,
+   "ids": [
+    "e05"
+   ],
+   "p": 0.95,
+   "latMs": 446
+  },
+  {
+   "key": "9c218227",
+   "text": "और फिर",
+   "ctx": {},
+   "silenceMs": 880,
+   "label": 0,
+   "ids": [
+    "e06"
+   ],
+   "p": 0.1,
+   "latMs": 376
+  },
+  {
+   "key": "176e5e4a",
+   "text": "और फिर हमने उसको काट दिया।",
+   "ctx": {},
+   "silenceMs": 925,
+   "label": 1,
+   "ids": [
+    "e06"
+   ],
+   "p": 0.95,
+   "latMs": 346
+  },
+  {
+   "key": "dc908d25",
+   "text": "और फिर,",
+   "ctx": {},
+   "silenceMs": 778,
+   "label": 0,
+   "ids": [
+    "e06"
+   ],
+   "p": 0.1,
+   "latMs": 310
+  },
+  {
+   "key": "3bcf08ac",
+   "text": "so basically दोनों equal हैं।",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 822,
+   "label": 1,
+   "ids": [
+    "e07"
+   ],
+   "p": 0.95,
+   "latMs": 582
+  },
+  {
+   "key": "81fcdd39",
+   "text": "so basically,",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 892,
+   "label": 0,
+   "ids": [
+    "e07"
+   ],
+   "p": 0.1,
+   "latMs": 428
+  },
+  {
+   "key": "928b7aa7",
+   "text": "उम्म,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 911,
+   "label": 0,
+   "ids": [
+    "e08"
+   ],
+   "p": 0.05,
+   "latMs": 408
+  },
+  {
+   "key": "9cdd5c5b",
+   "text": "उम्म, जो ऊपर होता है ना उसको numerator कहते हैं।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 946,
+   "label": 1,
+   "ids": [
+    "e08"
+   ],
+   "p": 0.9,
+   "latMs": 500
+  },
+  {
+   "key": "f13edde3",
+   "text": "उम्म, जो ऊपर होता है ना,",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 892,
+   "label": 0,
+   "ids": [
+    "e08"
+   ],
+   "p": 0.1,
+   "latMs": 579
+  },
+  {
+   "key": "cfe012e5",
+   "text": "उम्म जो ऊपर होता है ना",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 786,
+   "label": 0,
+   "ids": [
+    "e08"
+   ],
+   "p": 0.1,
+   "latMs": 522
+  },
+  {
+   "key": "4c4585c5",
+   "text": "दीदी, ये denominator क्या होता है?",
+   "ctx": {},
+   "silenceMs": 967,
+   "label": 1,
+   "ids": [
+    "f01"
+   ],
+   "p": 0.95,
+   "latMs": 1162
+  },
+  {
+   "key": "41735926",
+   "text": "क्या मैं उंगलियों पे गिन सकता हूँ?",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 949,
+   "label": 1,
+   "ids": [
+    "f02"
+   ],
+   "p": 0.95,
+   "latMs": 1319
+  },
+  {
+   "key": "d3e66b87",
+   "text": "आप real हो?",
+   "ctx": {},
+   "silenceMs": 970,
+   "label": 1,
+   "ids": [
+    "f03"
+   ],
+   "p": 0.95,
+   "latMs": 1302
+  },
+  {
+   "key": "49877742",
+   "text": "ये कैसे होता है?",
+   "ctx": {},
+   "silenceMs": 758,
+   "label": 1,
+   "ids": [
+    "f04"
+   ],
+   "p": 0.95,
+   "latMs": 1302
+  },
+  {
+   "key": "04af1fc3",
+   "text": "क्यों?",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 837,
+   "label": 1,
+   "ids": [
+    "f05"
+   ],
+   "p": 0.2,
+   "latMs": 1196
+  },
+  {
+   "key": "241e1aa7",
+   "text": "दीदी इसका मतलब क्या है?",
+   "ctx": {},
+   "silenceMs": 974,
+   "label": 1,
+   "ids": [
+    "f06"
+   ],
+   "p": 0.95,
+   "latMs": 1368
+  },
+  {
+   "key": "edadb53e",
+   "text": "can I use a calculator?",
+   "ctx": {},
+   "silenceMs": 821,
+   "label": 1,
+   "ids": [
+    "f07"
+   ],
+   "p": 0.95,
+   "latMs": 1157
+  },
+  {
+   "key": "f7175abe",
+   "text": "matlab?",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 1217,
+   "label": 1,
+   "ids": [
+    "f08"
+   ],
+   "p": 0.2,
+   "latMs": 981
+  },
+  {
+   "key": "f191fca7",
+   "text": "पता नहीं दीदी।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1155,
+   "label": 1,
+   "ids": [
+    "g01"
+   ],
+   "p": 1,
+   "latMs": 963
+  },
+  {
+   "key": "97c9dff2",
+   "text": "समझ नहीं आया।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 924,
+   "label": 1,
+   "ids": [
+    "g02"
+   ],
+   "p": 1,
+   "latMs": 957
+  },
+  {
+   "key": "e86956d8",
+   "text": "उम्म, नहीं पता।",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 695,
+   "label": 1,
+   "ids": [
+    "g03"
+   ],
+   "p": 0.95,
+   "latMs": 895
+  },
+  {
+   "key": "9a2b233b",
+   "text": "उम्म,",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 865,
+   "label": 0,
+   "ids": [
+    "g03"
+   ],
+   "p": 0.1,
+   "latMs": 739
+  },
+  {
+   "key": "cd15ab26",
+   "text": "I don't know।",
+   "ctx": {},
+   "silenceMs": 914,
+   "label": 1,
+   "ids": [
+    "g04"
+   ],
+   "p": 1,
+   "latMs": 564
+  },
+  {
+   "key": "9588179f",
+   "text": "एक मिनट हाँ, बारह।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 772,
+   "label": 1,
+   "ids": [
+    "h01"
+   ],
+   "p": 0.95,
+   "latMs": 578
+  },
+  {
+   "key": "65ce3b6f",
+   "text": "सोचने दो, छप्पन।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1079,
+   "label": 1,
+   "ids": [
+    "h02"
+   ],
+   "p": 0.85,
+   "latMs": 628
+  },
+  {
+   "key": "7b441479",
+   "text": "रुको रुको क्योंकि हिस्से बराबर नहीं हैं।",
+   "ctx": {
+    "beat": "teachback"
+   },
+   "silenceMs": 981,
+   "label": 1,
+   "ids": [
+    "h03"
+   ],
+   "p": 0.1,
+   "latMs": 623
+  },
+  {
+   "key": "1a1dad41",
+   "text": "सोच रहा हूँ, तीन बटा चार।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 784,
+   "label": 1,
+   "ids": [
+    "h04"
+   ],
+   "p": 0.15,
+   "latMs": 621
+  },
+  {
+   "key": "962abadd",
+   "text": "wait, दोनों बराबर हैं।",
+   "ctx": {
+    "beat": "probe"
+   },
+   "silenceMs": 1036,
+   "label": 1,
+   "ids": [
+    "h05"
+   ],
+   "p": 0.95,
+   "latMs": 616
+  },
+  {
+   "key": "275d3a1e",
+   "text": "one second नौ।",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1119,
+   "label": 1,
+   "ids": [
+    "h06"
+   ],
+   "p": 0.85,
+   "latMs": 571
+  },
+  {
+   "key": "0bbcc9af",
+   "text": "पता नहीं.",
+   "ctx": {
+    "answerForm": "number"
+   },
+   "silenceMs": 1090,
+   "label": 0,
+   "ids": [
+    "j03"
+   ],
+   "p": 1,
+   "latMs": 642
+  }
+ ],
+ "cache": {
+  "41735926": {
+   "p": 0.95,
+   "latMs": 1319
+  },
+  "49877742": {
+   "p": 0.95,
+   "latMs": 1302
+  },
+  "58084866": {
+   "p": 0.95,
+   "latMs": 1115
+  },
+  "59964993": {
+   "p": 0.95,
+   "latMs": 466
+  },
+  "2a5d7285": {
+   "p": 0.95,
+   "latMs": 825
+  },
+  "bc85e640": {
+   "p": 0.95,
+   "latMs": 1051
+  },
+  "acbcdf6f": {
+   "p": 0.95,
+   "latMs": 1060
+  },
+  "152fc03e": {
+   "p": 1,
+   "latMs": 1096
+  },
+  "34d491d7": {
+   "p": 0.95,
+   "latMs": 795
+  },
+  "5a44a205": {
+   "p": 1,
+   "latMs": 488
+  },
+  "12e8836c": {
+   "p": 1,
+   "latMs": 484
+  },
+  "7ea70159": {
+   "p": 0.95,
+   "latMs": 491
+  },
+  "ed7af379": {
+   "p": 0.95,
+   "latMs": 457
+  },
+  "0bb83516": {
+   "p": 0.95,
+   "latMs": 385
+  },
+  "ea152130": {
+   "p": 0.95,
+   "latMs": 458
+  },
+  "c88fd8f2": {
+   "p": 0.1,
+   "latMs": 374
+  },
+  "ec9339a3": {
+   "p": 0.85,
+   "latMs": 480
+  },
+  "0c1125b1": {
+   "p": 0.1,
+   "latMs": 488
+  },
+  "f7f0a905": {
+   "p": 0.1,
+   "latMs": 440
+  },
+  "1d85d29e": {
+   "p": 0.95,
+   "latMs": 462
+  },
+  "1e15ada5": {
+   "p": 0.1,
+   "latMs": 424
+  },
+  "c3c0b441": {
+   "p": 0.1,
+   "latMs": 455
+  },
+  "06f648dc": {
+   "p": 0.2,
+   "latMs": 417
+  },
+  "0efcf3b8": {
+   "p": 0.1,
+   "latMs": 478
+  },
+  "d2964aa4": {
+   "p": 0.95,
+   "latMs": 689
+  },
+  "f7e8a84e": {
+   "p": 0.1,
+   "latMs": 615
+  },
+  "496bc6db": {
+   "p": 0.1,
+   "latMs": 443
+  },
+  "90b796bb": {
+   "p": 0.1,
+   "latMs": 384
+  },
+  "f8b14cae": {
+   "p": 0.95,
+   "latMs": 449
+  },
+  "46420d68": {
+   "p": 0.1,
+   "latMs": 429
+  },
+  "0499687b": {
+   "p": 1,
+   "latMs": 429
+  },
+  "b568e93d": {
+   "p": 0.1,
+   "latMs": 475
+  },
+  "54b6f793": {
+   "p": 0.1,
+   "latMs": 485
+  },
+  "dfcf0c8c": {
+   "p": 0.95,
+   "latMs": 453
+  },
+  "0c8116a5": {
+   "p": 0.85,
+   "latMs": 411
+  },
+  "21d8bb5f": {
+   "p": 0.1,
+   "latMs": 522
+  },
+  "71821d46": {
+   "p": 0.9,
+   "latMs": 452
+  },
+  "0952bc93": {
+   "p": 0.1,
+   "latMs": 437
+  },
+  "5f260d22": {
+   "p": 0.95,
+   "latMs": 488
+  },
+  "8359f5e1": {
+   "p": 0.95,
+   "latMs": 485
+  },
+  "6f334e56": {
+   "p": 0.95,
+   "latMs": 474
+  },
+  "36b5c469": {
+   "p": 0.95,
+   "latMs": 484
+  },
+  "7c9d950d": {
+   "p": 0.95,
+   "latMs": 510
+  },
+  "f1d3e060": {
+   "p": 0.9,
+   "latMs": 444
+  },
+  "51b398ae": {
+   "p": 0.95,
+   "latMs": 548
+  },
+  "dc425d61": {
+   "p": 0.3,
+   "latMs": 833
+  },
+  "e94e8562": {
+   "p": 0.85,
+   "latMs": 470
+  },
+  "d351ec32": {
+   "p": 0.95,
+   "latMs": 487
+  },
+  "da92b1fe": {
+   "p": 0.1,
+   "latMs": 480
+  },
+  "7f38b4b2": {
+   "p": 0.95,
+   "latMs": 479
+  },
+  "82034dfc": {
+   "p": 0.95,
+   "latMs": 444
+  },
+  "4f2de9fe": {
+   "p": 0.95,
+   "latMs": 444
+  },
+  "72c09481": {
+   "p": 0.1,
+   "latMs": 426
+  },
+  "cc4be008": {
+   "p": 0.1,
+   "latMs": 568
+  },
+  "052e59b5": {
+   "p": 0.95,
+   "latMs": 482
+  },
+  "092e7e9f": {
+   "p": 0.1,
+   "latMs": 472
+  },
+  "635fc63e": {
+   "p": 0.15,
+   "latMs": 504
+  },
+  "3231d0c0": {
+   "p": 0.85,
+   "latMs": 470
+  },
+  "90cba4f6": {
+   "p": 0.15,
+   "latMs": 492
+  },
+  "baefbc86": {
+   "p": 0.1,
+   "latMs": 417
+  },
+  "3a44b294": {
+   "p": 0.2,
+   "latMs": 642
+  },
+  "f000519a": {
+   "p": 0.1,
+   "latMs": 556
+  },
+  "a08b740e": {
+   "p": 0.15,
+   "latMs": 620
+  },
+  "e7db83e8": {
+   "p": 0.1,
+   "latMs": 474
+  },
+  "5ad0b401": {
+   "p": 0.95,
+   "latMs": 497
+  },
+  "638f6f1a": {
+   "p": 0.15,
+   "latMs": 534
+  },
+  "0e988e0e": {
+   "p": 0.95,
+   "latMs": 483
+  },
+  "08032aca": {
+   "p": 0.85,
+   "latMs": 515
+  },
+  "b06cfdfd": {
+   "p": 0.1,
+   "latMs": 512
+  },
+  "be6a7f4c": {
+   "p": 0.95,
+   "latMs": 535
+  },
+  "2b6d470f": {
+   "p": 0.1,
+   "latMs": 491
+  },
+  "aeefa097": {
+   "p": 0.1,
+   "latMs": 496
+  },
+  "0aa9f936": {
+   "p": 0.1,
+   "latMs": 436
+  },
+  "1e802322": {
+   "p": 0.1,
+   "latMs": 418
+  },
+  "25fcb282": {
+   "p": 0.1,
+   "latMs": 508
+  },
+  "98020fb1": {
+   "p": 0.1,
+   "latMs": 490
+  },
+  "c89c29fc": {
+   "p": 0.1,
+   "latMs": 466
+  },
+  "fb0f42c0": {
+   "p": 0.95,
+   "latMs": 495
+  },
+  "a4b4ed38": {
+   "p": 0.1,
+   "latMs": 450
+  },
+  "ff1a7113": {
+   "p": 0.2,
+   "latMs": 435
+  },
+  "7c9ac66f": {
+   "p": 0.95,
+   "latMs": 429
+  },
+  "e922f835": {
+   "p": 0.2,
+   "latMs": 489
+  },
+  "789d53e6": {
+   "p": 0.95,
+   "latMs": 441
+  },
+  "2075511a": {
+   "p": 0.1,
+   "latMs": 502
+  },
+  "f4b25aca": {
+   "p": 0.2,
+   "latMs": 530
+  },
+  "60ff8adb": {
+   "p": 0.85,
+   "latMs": 583
+  },
+  "2f3b00ca": {
+   "p": 0.1,
+   "latMs": 482
+  },
+  "fb57ff1a": {
+   "p": 0.1,
+   "latMs": 455
+  },
+  "6a727ffc": {
+   "p": 0.1,
+   "latMs": 531
+  },
+  "9f9d54e0": {
+   "p": 0.2,
+   "latMs": 488
+  },
+  "c9f36c42": {
+   "p": 0.2,
+   "latMs": 472
+  },
+  "4aee8ee8": {
+   "p": 0.1,
+   "latMs": 501
+  },
+  "2a8a3464": {
+   "p": 0.1,
+   "latMs": 418
+  },
+  "7ac98cf8": {
+   "p": 0.15,
+   "latMs": 434
+  },
+  "8deca053": {
+   "p": 0.85,
+   "latMs": 500
+  },
+  "2003c584": {
+   "p": 0.15,
+   "latMs": 482
+  },
+  "349c75aa": {
+   "p": 0.1,
+   "latMs": 521
+  },
+  "46f43c65": {
+   "p": 0.95,
+   "latMs": 395
+  },
+  "4fed11ce": {
+   "p": 0.1,
+   "latMs": 436
+  },
+  "9a806ef7": {
+   "p": 0.1,
+   "latMs": 440
+  },
+  "1dd87808": {
+   "p": 0.25,
+   "latMs": 544
+  },
+  "db9ab00c": {
+   "p": 0.3,
+   "latMs": 848
+  },
+  "9cf6276c": {
+   "p": 0.1,
+   "latMs": 543
+  },
+  "85eec71c": {
+   "p": 0.1,
+   "latMs": 642
+  },
+  "9f07bbc5": {
+   "p": 0.1,
+   "latMs": 803
+  },
+  "a4f12724": {
+   "p": 0.1,
+   "latMs": 685
+  },
+  "48a3a10c": {
+   "p": 0.15,
+   "latMs": 505
+  },
+  "e1e5e809": {
+   "p": 0.95,
+   "latMs": 534
+  },
+  "648e1d80": {
+   "p": 0.15,
+   "latMs": 430
+  },
+  "79fff7c7": {
+   "p": 0.1,
+   "latMs": 442
+  },
+  "6a2ebefa": {
+   "p": 0.1,
+   "latMs": 513
+  },
+  "7f48ea45": {
+   "p": 0.1,
+   "latMs": 491
+  },
+  "8b71a5a9": {
+   "p": 0.95,
+   "latMs": 446
+  },
+  "9c218227": {
+   "p": 0.1,
+   "latMs": 376
+  },
+  "176e5e4a": {
+   "p": 0.95,
+   "latMs": 346
+  },
+  "dc908d25": {
+   "p": 0.1,
+   "latMs": 310
+  },
+  "3bcf08ac": {
+   "p": 0.95,
+   "latMs": 582
+  },
+  "81fcdd39": {
+   "p": 0.1,
+   "latMs": 428
+  },
+  "928b7aa7": {
+   "p": 0.05,
+   "latMs": 408
+  },
+  "9cdd5c5b": {
+   "p": 0.9,
+   "latMs": 500
+  },
+  "f13edde3": {
+   "p": 0.1,
+   "latMs": 579
+  },
+  "cfe012e5": {
+   "p": 0.1,
+   "latMs": 522
+  },
+  "4c4585c5": {
+   "p": 0.95,
+   "latMs": 1162
+  },
+  "d3e66b87": {
+   "p": 0.95,
+   "latMs": 1302
+  },
+  "04af1fc3": {
+   "p": 0.2,
+   "latMs": 1196
+  },
+  "241e1aa7": {
+   "p": 0.95,
+   "latMs": 1368
+  },
+  "edadb53e": {
+   "p": 0.95,
+   "latMs": 1157
+  },
+  "f7175abe": {
+   "p": 0.2,
+   "latMs": 981
+  },
+  "f191fca7": {
+   "p": 1,
+   "latMs": 963
+  },
+  "97c9dff2": {
+   "p": 1,
+   "latMs": 957
+  },
+  "e86956d8": {
+   "p": 0.95,
+   "latMs": 895
+  },
+  "9a2b233b": {
+   "p": 0.1,
+   "latMs": 739
+  },
+  "cd15ab26": {
+   "p": 1,
+   "latMs": 564
+  },
+  "9588179f": {
+   "p": 0.95,
+   "latMs": 578
+  },
+  "65ce3b6f": {
+   "p": 0.85,
+   "latMs": 628
+  },
+  "7b441479": {
+   "p": 0.1,
+   "latMs": 623
+  },
+  "1a1dad41": {
+   "p": 0.15,
+   "latMs": 621
+  },
+  "962abadd": {
+   "p": 0.95,
+   "latMs": 616
+  },
+  "275d3a1e": {
+   "p": 0.85,
+   "latMs": 571
+  },
+  "0bbcc9af": {
+   "p": 1,
+   "latMs": 642
+  }
+ }
+}

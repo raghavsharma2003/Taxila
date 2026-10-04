@@ -133,20 +133,25 @@ void main(){
   float th = uTeeth.z, rp = 12.0 / th;
   float upVis = th * uTeeth.x * contourRows(0.0) / 12.0;          // upper teeth hanging at the centre (px)
   float mound = min(gap * uTongue.x, 7.0 + 0.12 * gap) * pow(max(0.0, 1.0 - pow(vS / 0.85, 2.0)), 0.8);
-  float lw = 0.34;                                                // lobe half-width (s units)
+  float lw = 0.40;                                                // lobe half-width (s units)
   float lob = max(0.0, 1.0 - pow(vS / lw, 2.0));
-  float tipH = max(0.0, gap - upVis * 0.35) * uTongue.y * pow(lob, 0.4);
+  // r4b: a soft DOME (wider at the base), not a flat-sided tombstone
+  float tipH = max(0.0, gap - upVis * 0.35) * uTongue.y * pow(lob, 0.85);
   float curl = gap * 0.78 * uTongue.z * exp(-pow(vS / 0.3, 2.0));
   float h = max(mound, max(tipH, curl));
   if (h > 0.4) {
     float cov = clamp((h - db) / px + 0.5, 0.0, 1.0);
-    vec3 t = rowc(48.0 + clamp(1.0 - db / max(h, 0.5), 0.0, 1.0) * 15.0, u);
-    t *= 0.86 * (1.0 - 0.3 * pow(a / 0.8, 2.0));
     bool isTip = tipH >= max(mound, curl) - 0.01 && uTongue.y > 0.05;
+    // r4b: the lobe samples the strip near its centre (the strip's column texture showed as vertical stripes on it)
+    vec3 t = rowc(48.0 + clamp(1.0 - db / max(h, 0.5), 0.0, 1.0) * 15.0, isTip ? 0.5 + vS * 0.15 : u);
+    // r4b: a pink-red tongue, distinct from the orange lip (it read as a second lower lip)
+    t *= 0.86 * vec3(1.0, 0.80, 0.86) * (1.0 - 0.3 * pow(a / 0.8, 2.0));
+    t *= mix(0.86, 1.04, smoothstep(0.0, 0.7 * max(h, 0.5), h - db));
     if (isTip) {
       // the lobe: lit on top, a soft groove down its middle, shadowed where it meets the cavity at the sides
-      float top = clamp((h - db) / 3.0, 0.0, 1.0);
-      t *= mix(1.12, 1.0, top) * (1.0 - 0.10 * exp(-pow(vS / 0.05, 2.0)) * top) * mix(0.78, 1.0, smoothstep(0.0, 0.45, lob));
+      // r4b: rounded like the Memoji shading: cylindrical falloff to the sides, a soft lit crown, a faint groove
+      float top = clamp((h - db) / 4.0, 0.0, 1.0);
+      t *= mix(1.08, 1.0, top) * mix(0.84, 1.03, sqrt(lob)) * (1.0 - 0.04 * exp(-pow(vS / 0.06, 2.0)) * top);
     }
     if (curl > max(mound, tipH) - 0.01 && uTongue.z > 0.05) {
       vec3 under = t * vec3(0.72, 0.62, 0.68);
@@ -180,7 +185,10 @@ void main(){
   }
   // the upper lip's shadow on whatever sits right under it
   col *= mix(0.78, 1.0, smoothstep(0.0, 2.5, dt));
-  float al = clamp((gap - 0.6) / 1.2, 0.0, 1.0);          // zero-gap columns draw nothing (no dark tick past the corners)
+  // r4b: a near-closed seam is the lip LINE (dark warm brown), fully opaque from gap 0.8 px, so the face layer never
+  // leaks through between the lip sheet's fading inner row and the interior (it showed as orange dots per mesh column)
+  col = mix(vec3(0.36, 0.17, 0.13), col, smoothstep(1.2, 3.5, gap));
+  float al = clamp((gap - 0.25) / 0.55, 0.0, 1.0);        // zero-gap columns (past the corners) still draw nothing
   o = vec4(col * uShadeK * al, al);
 }`;
 

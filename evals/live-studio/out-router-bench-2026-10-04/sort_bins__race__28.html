@@ -1,0 +1,108 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff8ed;color:#493a38}
+  #game{width:360px;height:320px;padding:10px 12px;background:radial-gradient(circle at 90% 5%,#ffe9c9 0,transparent 42%),#fff8ed}
+  h1{margin:0;text-align:center;font-size:20px;line-height:26px;font-weight:800}
+  #message{height:23px;margin:1px 0 5px;text-align:center;font-size:13px;line-height:23px;color:#80645b}
+  #cards{height:113px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,52px);gap:8px}
+  .card{min-width:0;width:100%;height:52px;border:2px solid #e9b995;border-radius:15px;background:#fffdf8;color:#493a38;font:700 16px system-ui,sans-serif;box-shadow:0 3px 0 #e8d1b9;cursor:pointer;transition:transform .24s,box-shadow .24s,opacity .24s}
+  .card:active{transform:scale(.95)}
+  .card[data-selected="true"]{transform:translateY(-5px) scale(1.04);box-shadow:0 8px 0 #e8d1b9,0 0 0 4px #ffe2a4}
+  #bins{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;height:116px}
+  .bin{min-width:0;height:116px;padding:8px;border:2px solid #d9bca4;border-radius:18px;background:#f6e8d8;cursor:pointer;transition:transform .2s,background .2s}
+  .bin:active{transform:scale(.97)}
+  .bin-name{display:block;text-align:center;font-size:15px;font-weight:800;line-height:21px}
+  .contents{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin-top:6px}
+  .placed{min-width:0;height:25px;padding:2px;border-radius:8px;background:#fffdf8;text-align:center;font-size:12px;font-weight:700;line-height:21px;box-shadow:0 2px 0 #dec6ae;transition:transform .3s,opacity .3s}
+  .arriving{animation:land .35s ease-out}
+  .shake{animation:shake .38s ease-in-out}
+  @keyframes shake{25%{transform:translateX(-6px) rotate(-3deg)}50%{transform:translateX(5px) rotate(2deg)}75%{transform:translateX(-3px)}}
+  @keyframes land{from{transform:translateY(-12px) scale(1.12);opacity:.5}to{transform:translateY(0) scale(1);opacity:1}}
+</style>
+<div id="game">
+  <h1 id="title"></h1>
+  <div id="message" aria-live="polite"></div>
+  <div id="cards"></div>
+  <div id="bins"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params;
+  const cards=document.getElementById('cards');
+  const bins=document.getElementById('bins');
+  const message=document.getElementById('message');
+  document.getElementById('title').textContent=Studio.t('title');
+  message.textContent=Studio.t('instr');
+  let selected=null,pending=null,placed=0;
+  p.cards.forEach(key=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.card=key;
+    card.dataset.selected='false';
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(pending)return;
+      if(selected)selected.dataset.selected='false';
+      selected=card;
+      card.dataset.selected='true';
+      message.textContent=Studio.t('instr');
+      Studio.event('pick',{card:key});
+    });
+    cards.append(card);
+  });
+  p.bins.forEach(key=>{
+    const bin=document.createElement('div');
+    bin.className='bin';
+    bin.dataset.bin=key;
+    bin.setAttribute('role','button');
+    bin.tabIndex=0;
+    const name=document.createElement('span');
+    name.className='bin-name';
+    name.textContent=Studio.t(key);
+    const contents=document.createElement('div');
+    contents.className='contents';
+    bin.append(name,contents);
+    const choose=()=>{
+      if(!selected||pending)return;
+      pending={card:selected,bin,key,cardKey:selected.dataset.card};
+      Studio.answer({card:pending.cardKey,bin:key});
+    };
+    bin.addEventListener('click',choose);
+    bin.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}
+    });
+    bins.append(bin);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!pending)return;
+    const {card,bin,key}=pending;
+    pending=null;
+    selected=null;
+    card.dataset.selected='false';
+    if(correct){
+      message.textContent=Studio.t('right');
+      const chip=document.createElement('div');
+      chip.className='placed arriving';
+      chip.dataset.placed=key;
+      chip.textContent=card.textContent;
+      bin.querySelector('.contents').append(chip);
+      card.remove();
+      placed++;
+      if(placed===p.cards.length){
+        message.textContent=Studio.t('done');
+        Studio.done();
+      }
+    }else{
+      message.textContent=Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      card.addEventListener('animationend',()=>card.classList.remove('shake'),{once:true});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

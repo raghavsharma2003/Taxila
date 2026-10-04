@@ -20,10 +20,19 @@ export const CONNECTIVE_END = new Set(["toh", "to", "aur", "phir", "fir", "matla
 export const THINK_ALOUD = compile(["ruko", "ruk jao", "ek minute", "ek second", "sochne do", "soch raha", "soch rahi", "sochta hoon",
   "sochti hoon", "let me think", "wait", "hold on", "रुको", "सोचने दो", "एक मिनट"]);
 /** L7 meta requests. "phir se try" is a retry (I4), not a repeat: repeat needs a speech verb. */
-export const META_SLOW = compile(["dheere", "dhire", "slowly", "slow", "itna fast", "bahut fast", "jaldi mat", "धीरे"]);
+// Request-shaped only (review 2026-10-04): bare "slow" / "dheere" / "break" / "rest" / "baad mein" / "aaram" are also
+// lesson CONTENT ("kachhua dheere chalta hai", "24 ko break karo 20 aur 4 mein", "the rest is half", "aaram se ho jayega",
+// "pehle guna, baad mein jod") and fired paceDown / breakDue(child_said) on ordinary answers.
+export const META_SLOW = compile(["dheere bolo", "dheere boliye", "dheere se bolo", "dheere batao", "dheere padho", "thoda dheere", "dhire bolo",
+  "thoda dhire", "aur dheere", "slowly please", "slowly bolo", "slow bolo", "slow please", "please slow", "slow down", "speak slowly",
+  "more slowly", "too fast", "so fast", "itna fast", "bahut fast", "itni jaldi mat", "jaldi mat", "fast mat", "धीरे बोलो", "धीरे बोलिए", "थोड़ा धीरे"]);
 export const META_REPEAT = compile(["phir se bolo", "fir se bolo", "phir se batao", "dobara bolo", "dobara batao", "repeat", "say again",
   "again please", "kya bola", "kya kaha", "sunai nahi", "फिर से बोलो", "दोबारा बोलो", "क्या बोला"]);
-export const META_BREAK = compile(["break", "thoda ruk", "thodi der", "rest", "aaram", "baad mein", "ब्रेक", "आराम"]);
+export const META_BREAK = compile(["break chahiye", "break chaiye", "break lena", "break le", "break lo", "break de", "break do", "break karna",
+  "break kar", "break please", "break le sakte", "ek break", "chhota break", "chota break", "take a break", "need a break", "want a break",
+  "have a break", "can we break", "break time", "thoda aaram", "aaram karna", "aaram kar", "aaram chahiye", "thoda rest", "rest karna",
+  "rest kar", "rest chahiye", "need rest", "need some rest", "thoda ruk jaate", "thodi der ruk", "thodi der baad", "baad mein karte",
+  "baad mein karenge", "baad mein karein", "ब्रेक चाहिए", "ब्रेक लेना", "ब्रेक दो", "थोड़ा आराम", "आराम करना"]);
 /** L8: hint asks (the "just tell me" half is affect.js JUST_TELL, consumed through readUtterance). */
 export const HINT_ASK = compile(["hint", "clue", "ek hint", "help karo", "help kardo", "madad", "help me", "thoda batao", "संकेत", "मदद"]);
 /** L13 laughter tokens (lexical; the acoustic detector A15 is off). */

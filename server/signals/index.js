@@ -16,10 +16,16 @@ import { derive } from "./states.js";
 import { BAND_PRIORS } from "./priors.js";
 import { fnv1a, numberOf } from "./text.js";
 import { PURE_FILLER } from "./lexicon/discourse.js";
+import { safetyBackstop } from "./backstop.js";
 
 export { newSignalSession } from "./session.js";
+export { safetyBackstop } from "./backstop.js";
 export { SIG_STATES, BAND_PRIORS, MASTERY_NUDGE_CAP, MAX_CONSOLIDATE, VERIFY_EVERY } from "./priors.js";
 
+/** Characters of one child turn the lexicons read (a child's turn is far shorter; this bounds worst-case latency). */
+const MAX_TEXT = 1200;
+/** Child turns after a safety turn during which playful licences (child_joke, choiceDue) are withheld. [U] */
+const SAFETY_HOLD_TURNS = 3;
 const VERDICTS = new Set(["correct", "partial", "not_yet", "ungraded"]);
 const RANK = { not_yet: 0, partial: 1, correct: 2 };
 
@@ -78,9 +84,15 @@ export function step(session, input, opts = {}) {
   const sess = coerceSession(session);
   const off = new Set(opts.off ?? []);
   const childTurns = sess.childTurns + 1;
-  if (input.safety) {
-    return { frame: abstainFrame(input), next: { ...sess, childTurns, turnsSinceVerify: sess.turnsSinceVerify + 1 } };
+  // A child turn is bounded for the lexicons (latency: SL-13). Safety never reads this copy; it reads the full text upstream.
+  if (typeof input.childText === "string" && input.childText.length > MAX_TEXT) input = { ...input, childText: input.childText.slice(0, MAX_TEXT) };
+  // SL-1, plus the abstain-only backstop for distress shapes the floor predicate missed in ES-3 (backstop.js).
+  if (input.safety || safetyBackstop(input.childText)) {
+    return { frame: abstainFrame(input), next: { ...sess, childTurns, turnsSinceVerify: sess.turnsSinceVerify + 1, safetyHold: SAFETY_HOLD_TURNS } };
   }
+  // After a safety turn, playful licences (a teacher laugh, a game/choice offer) stay off for SAFETY_HOLD_TURNS child turns:
+  // RELATIONAL-OS owns the check-in after distress (SL-1), and a laugh one turn after a disclosure is the worst failure.
+  const hold = (sess.safetyHold ?? 0) > 0;
   const verdict = VERDICTS.has(input.verdict) ? input.verdict : "ungraded";
   const graded = verdict !== "ungraded";
   const L = applyOff(readText(input), off);
@@ -129,7 +141,12 @@ export function step(session, input, opts = {}) {
   const thinkAloud = !off.has("I10") && (((input.held ?? 0) >= 1 && L.thinkAloudLex) || (L.thinkAloudLex && !graded && L.words <= 6 && L.toks.length > 0 && !L.idk && !L.question && THINK_EXPLICIT(L)));
 
   // ── session features (G1, G3, G4, G5, L15) ──
-  const nonAnswer = !!L.idk || L.minimal || (verdict === "ungraded" && !!input.item && L.words <= 2 && !L.question && !thinkAloud);
+  // A graded attempt is an answer, however short: a shy child's correct "haan" / "5" / "nahi" on a yes-no item is never a
+  // non-answer (review 2026-10-04: three correct one-word answers fired choiceDue). An empty or tiny transcript over a
+  // second of detected speech is an STT miss, not silence from the child (SL-10: absence is weightless both ways).
+  const answered = graded && (verdict === "correct" || verdict === "partial" || input.item?.form === "choice_spoken");
+  const asrMiss = L.words === 0 && !input.typed && fin(f.durationMs) && f.durationMs >= 600 && (!fin(f.voicedFrac) || f.voicedFrac >= 0.2);
+  const nonAnswer = !answered && !asrMiss && (!!L.idk || L.minimal || (verdict === "ungraded" && !!input.item && L.words <= 2 && !L.question && !thinkAloud));
   // L15 compares answer length only where length can vary: a number or a spoken choice is short for everyone, so those
   // forms never feed it (ES-1 first run: L15 on number items fired choiceDue on ordinary "pata nahi" turns, precision 0.45).
   const wordyForm = ["explain", "word", "read_aloud"].includes(input.item?.form ?? "");
@@ -185,7 +202,7 @@ export function step(session, input, opts = {}) {
     // L6 (consumed): the classify act, or W2-I's self_label predicate. Read as an input name, never emitted.
     ownWordsNeg: input.cls?.signals?.act === "frustration_words" || !!input.relSignals?.selfLabel,
   };
-  const d = derive(F);
+  const d = derive({ ...F, safetyHold: hold });
   const consolidated = d.consolidate && input.item?.skillId ? { ...sess.consolidated, [input.item.skillId]: (sess.consolidated[input.item.skillId] ?? 0) + 1 } : sess.consolidated;
   const next = {
     ...sess,
@@ -194,6 +211,7 @@ export function step(session, input, opts = {}) {
     turnsSinceVerify: d.consumedVerify ? 1 : sess.turnsSinceVerify + 1,   // counts the verifying turn itself: next allowed 4 turns later
     consolidated, graded: gradedList, gradedFirst, gradedN, skillLast, rel,
     breakOffered: d.breakOffered, pendingE: d.pendingE, driftBuf, driftHigh, nonAnswers, lowWords, answerAsks, childTurns, langCounts,
+    safetyHold: hold ? sess.safetyHold - 1 : 0,
   };
   return { frame: d.frame, next };
 }

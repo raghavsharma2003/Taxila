@@ -22,7 +22,7 @@
   .hero { position: relative; border-radius: var(--r-xl); overflow: hidden; aspect-ratio: 4 / 3.4; margin: 6px 0 22px; border: 1px solid var(--line); }
   .hero img { width: 100%; height: 100%; object-fit: cover; }
   .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, var(--bg)); }
-  .grid-cls { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .grid-cls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .opt { min-height: 64px; border-radius: var(--r-md); border: 1px solid var(--line-2); background: var(--bg-1); display: grid; place-items: center; font: 700 22px/1 var(--f-display); color: var(--ink); transition: all var(--m-quick) var(--e-std); }
   .opt small { display: block; font: 600 10px/1 var(--f-mono); letter-spacing: .06em; color: var(--ink-3); margin-top: 4px; text-transform: uppercase; }
   .opt[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: transparent; }
@@ -99,7 +99,7 @@
       <div class="hero"><img src="img/hero-orbit.webp" alt=""></div>
       <div class="brand" style="margin-bottom:14px"><svg class="brand-mark"><use href="#brand"/></svg>Taxila</div>
       <h1 class="h-hero">A teacher who actually listens.</h1>
-      <p class="lede" style="margin-top:12px">Talk to her like a person. She builds the lesson around you — games, animations, the works. Classes 4 to 8.</p>
+      <p class="lede" style="margin-top:12px">Talk to her like a person. She builds the lesson around you — games, animations, the works. Classes 4 to 7.</p>
     </section>
 
     <!-- 1 class + board -->
@@ -112,7 +112,6 @@
         <button class="opt" aria-pressed="false">5<small>class</small></button>
         <button class="opt" aria-pressed="true">6<small>class</small></button>
         <button class="opt" aria-pressed="false">7<small>class</small></button>
-        <button class="opt" aria-pressed="false">8<small>class</small></button>
       </div>
       <div class="lbl">Board</div>
       <div class="seg" role="group" aria-label="Board" id="board"><button aria-pressed="true">CBSE</button><button aria-pressed="false">RBSE</button><button aria-pressed="false">ICSE</button><button aria-pressed="false">Other</button></div>

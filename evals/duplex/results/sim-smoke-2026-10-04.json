@@ -1,0 +1,1123 @@
+{
+ "id": "M-D3",
+ "date": "2026-10-04",
+ "seeds": 4,
+ "audio": "synth",
+ "scenarios": 96,
+ "sttD4": {
+  "name": "D4 live-transcribe",
+  "firstPartialMs": [
+   1743,
+   2048
+  ],
+  "lagMs": [
+   713,
+   1477
+  ],
+  "finalAfterCommit": [
+   915,
+   1311
+  ],
+  "finalAfterVad": [
+   514,
+   888
+  ],
+  "vadOverhead": [
+   500,
+   814
+  ],
+  "calibrated": "M-D2 2026-10-04 n=28"
+ },
+ "sttMAI": {
+  "name": "MAI-Tx-2-Streaming (Chennai)",
+  "firstPartialMs": [
+   2580,
+   3200
+  ],
+  "lagMs": [
+   900,
+   1600
+  ],
+  "finalAfterCommit": [
+   68,
+   75
+  ],
+  "finalAfterVad": [
+   68,
+   75
+  ],
+  "vadOverhead": [
+   130,
+   250
+  ]
+ },
+ "sttCalibratedFrom": "M-D2 2026-10-04 n=28",
+ "draftModel": "M draft-live",
+ "modelCache": "grok-4-1-fast-non-reasoning,taxila-fast",
+ "arms": {
+  "base900": {
+   "note": "today: server VAD 900 ms, every final is a turn",
+   "turns": 308,
+   "gapAfterTrueEnd": {
+    "n": 280,
+    "p50": 1962,
+    "p90": 2397,
+    "mean": 2015
+   },
+   "ttfa": {
+    "n": 280,
+    "p50": 3944,
+    "p90": 5164,
+    "mean": 4099
+   },
+   "ttfaByCat": {
+    "closed_fluent": {
+     "n": 48,
+     "p50": 3769,
+     "p90": 4804,
+     "mean": 3954
+    },
+    "closed_hesitant": {
+     "n": 40,
+     "p50": 4062,
+     "p90": 5355,
+     "mean": 4164
+    },
+    "self_correction": {
+     "n": 40,
+     "p50": 4180,
+     "p90": 5273,
+     "mean": 4225
+    },
+    "explain_pauses": {
+     "n": 48,
+     "p50": 3935,
+     "p90": 4768,
+     "mean": 4022
+    },
+    "fillers_wordsearch": {
+     "n": 32,
+     "p50": 3819,
+     "p90": 5227,
+     "mean": 4141
+    },
+    "question": {
+     "n": 32,
+     "p50": 4103,
+     "p90": 5257,
+     "mean": 4166
+    },
+    "idk": {
+     "n": 16,
+     "p50": 3971,
+     "p90": 6321,
+     "mean": 4338
+    },
+    "hold_request": {
+     "n": 24,
+     "p50": 3865,
+     "p90": 4939,
+     "mean": 3925
+    }
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 48,
+     "p50": 1919,
+     "p90": 2258,
+     "mean": 1952
+    },
+    "closed_hesitant": {
+     "n": 40,
+     "p50": 1964,
+     "p90": 2400,
+     "mean": 2014
+    },
+    "self_correction": {
+     "n": 40,
+     "p50": 1981,
+     "p90": 2530,
+     "mean": 2048
+    },
+    "explain_pauses": {
+     "n": 48,
+     "p50": 1911,
+     "p90": 2400,
+     "mean": 1979
+    },
+    "fillers_wordsearch": {
+     "n": 32,
+     "p50": 1977,
+     "p90": 2592,
+     "mean": 2053
+    },
+    "question": {
+     "n": 32,
+     "p50": 2027,
+     "p90": 2457,
+     "mean": 2017
+    },
+    "idk": {
+     "n": 16,
+     "p50": 2179,
+     "p90": 2415,
+     "mean": 2169
+    },
+    "hold_request": {
+     "n": 24,
+     "p50": 2019,
+     "p90": 2345,
+     "mean": 2010
+    }
+   },
+   "falseTakeover": {
+    "k": 63,
+    "n": 280,
+    "rate": 0.225,
+    "ci80": [
+     0.195,
+     0.259
+    ]
+   },
+   "holdViolation": {
+    "k": 24,
+    "n": 24,
+    "rate": 1,
+    "ci80": [
+     0.936,
+     1
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 108,
+    "n": 280,
+    "rate": 0.3857,
+    "ci80": [
+     0.349,
+     0.424
+    ]
+   },
+   "silentFalseCommitTurns": null,
+   "revokedDuringUptakeTurns": null,
+   "safety": {
+    "n": 28,
+    "missed": 0,
+    "detectAfterDistressSegEnd": {
+     "n": 28,
+     "p50": 2003,
+     "p90": 2939,
+     "mean": 2178
+    },
+    "unsafeLineTurns": 6,
+    "safeguardOverChild": 0,
+    "safeguardTtfa": {
+     "n": 28,
+     "p50": 4146,
+     "p90": 4996,
+     "mean": 3939
+    }
+   },
+   "overlap": {
+    "n": 76,
+    "accuracy": {
+     "k": 48,
+     "n": 76,
+     "rate": 0.6316,
+     "ci80": [
+      0.559,
+      0.699
+     ]
+    },
+    "byExpect": {
+     "resume": {
+      "n": 12,
+      "correct": 12,
+      "got": {
+       "resume": 12
+      }
+     },
+     "repeat": {
+      "n": 16,
+      "correct": 0,
+      "got": {
+       "yield": 16
+      }
+     },
+     "stop": {
+      "n": 8,
+      "correct": 0,
+      "got": {
+       "yield": 8
+      }
+     },
+     "yield": {
+      "n": 24,
+      "correct": 20,
+      "got": {
+       "resume": 4,
+       "yield": 20
+      }
+     },
+     "foldin": {
+      "n": 16,
+      "correct": 16,
+      "got": {
+       "yield": 16
+      }
+     }
+    },
+    "duckMs": {
+     "n": 76,
+     "p50": 80,
+     "p90": 80,
+     "mean": 80
+    },
+    "pauseMs": {
+     "n": 76,
+     "p50": 100,
+     "p90": 100,
+     "mean": 100
+    },
+    "resolveMs": {
+     "n": 76,
+     "p50": 2400,
+     "p90": 3380,
+     "mean": 2547
+    },
+    "resolveByExpect": {
+     "resume": {
+      "n": 12,
+      "p50": 2240,
+      "p90": 2520,
+      "mean": 2262
+     },
+     "repeat": {
+      "n": 16,
+      "p50": 2300,
+      "p90": 2880,
+      "mean": 2338
+     },
+     "stop": {
+      "n": 8,
+      "p50": 2300,
+      "p90": 3400,
+      "mean": 2460
+     },
+     "yield": {
+      "n": 24,
+      "p50": 2940,
+      "p90": 3700,
+      "mean": 2937
+     },
+     "foldin": {
+      "n": 16,
+      "p50": 2400,
+      "p90": 2740,
+      "mean": 2428
+     }
+    },
+    "continuerMisreadAsTurn": {
+     "k": 0,
+     "n": 12,
+     "rate": 0,
+     "ci80": [
+      0,
+      0.12
+     ]
+    },
+    "realTurnSwallowed": {
+     "k": 4,
+     "n": 64,
+     "rate": 0.0625,
+     "ci80": [
+      0.034,
+      0.113
+     ]
+    },
+    "foldinGradedCorrect": {
+     "k": 0,
+     "n": 16,
+     "rate": 0,
+     "ci80": [
+      0,
+      0.093
+     ]
+    }
+   },
+   "nods": {
+    "eligibleTurns": 56,
+    "nods": 0,
+    "perSecond": 0,
+    "secondsPerNod": null,
+    "midWord": {
+     "k": 0,
+     "n": 0,
+     "rate": null,
+     "ci80": [
+      null,
+      null
+     ]
+    },
+    "dipMs": {
+     "n": 0,
+     "p50": null,
+     "p90": null,
+     "mean": null
+    },
+    "turnsWithNoNod": {
+     "k": 56,
+     "n": 56,
+     "rate": 1,
+     "ci80": [
+      0.972,
+      1
+     ]
+    },
+    "closedOrSafetyNods": 0
+   },
+   "drafts": null
+  },
+  "duplex": {
+   "note": "floor manager, code only, W+C drafts",
+   "turns": 308,
+   "gapAfterTrueEnd": {
+    "n": 280,
+    "p50": 1480,
+    "p90": 1805,
+    "mean": 1464
+   },
+   "ttfa": {
+    "n": 280,
+    "p50": 2248,
+    "p90": 3977,
+    "mean": 2634
+   },
+   "ttfaByCat": {
+    "closed_fluent": {
+     "n": 48,
+     "p50": 1853,
+     "p90": 2142,
+     "mean": 1818
+    },
+    "closed_hesitant": {
+     "n": 40,
+     "p50": 1707,
+     "p90": 2122,
+     "mean": 1810
+    },
+    "self_correction": {
+     "n": 40,
+     "p50": 1761,
+     "p90": 2461,
+     "mean": 1899
+    },
+    "explain_pauses": {
+     "n": 48,
+     "p50": 3481,
+     "p90": 4677,
+     "mean": 3638
+    },
+    "fillers_wordsearch": {
+     "n": 32,
+     "p50": 3160,
+     "p90": 4083,
+     "mean": 3149
+    },
+    "question": {
+     "n": 32,
+     "p50": 3399,
+     "p90": 4085,
+     "mean": 3473
+    },
+    "idk": {
+     "n": 16,
+     "p50": 3523,
+     "p90": 4437,
+     "mean": 3604
+    },
+    "hold_request": {
+     "n": 24,
+     "p50": 2051,
+     "p90": 3689,
+     "mean": 2400
+    }
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 48,
+     "p50": 1459,
+     "p90": 1754,
+     "mean": 1432
+    },
+    "closed_hesitant": {
+     "n": 40,
+     "p50": 1341,
+     "p90": 1720,
+     "mean": 1385
+    },
+    "self_correction": {
+     "n": 40,
+     "p50": 1381,
+     "p90": 1907,
+     "mean": 1417
+    },
+    "explain_pauses": {
+     "n": 48,
+     "p50": 1500,
+     "p90": 2018,
+     "mean": 1607
+    },
+    "fillers_wordsearch": {
+     "n": 32,
+     "p50": 1482,
+     "p90": 1959,
+     "mean": 1493
+    },
+    "question": {
+     "n": 32,
+     "p50": 1449,
+     "p90": 1754,
+     "mean": 1413
+    },
+    "idk": {
+     "n": 16,
+     "p50": 1596,
+     "p90": 1951,
+     "mean": 1519
+    },
+    "hold_request": {
+     "n": 24,
+     "p50": 1486,
+     "p90": 1777,
+     "mean": 1447
+    }
+   },
+   "falseTakeover": {
+    "k": 1,
+    "n": 280,
+    "rate": 0.0036,
+    "ci80": [
+     0.001,
+     0.012
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 24,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.064
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 5,
+    "n": 280,
+    "rate": 0.0179,
+    "ci80": [
+     0.01,
+     0.031
+    ]
+   },
+   "silentFalseCommitTurns": {
+    "k": 9,
+    "n": 280,
+    "rate": 0.0321,
+    "ci80": [
+     0.021,
+     0.049
+    ]
+   },
+   "revokedDuringUptakeTurns": {
+    "k": 1,
+    "n": 280,
+    "rate": 0.0036,
+    "ci80": [
+     0.001,
+     0.012
+    ]
+   },
+   "safety": {
+    "n": 28,
+    "missed": 0,
+    "detectAfterDistressSegEnd": {
+     "n": 28,
+     "p50": 462,
+     "p90": 1690,
+     "mean": 824
+    },
+    "unsafeLineTurns": 0,
+    "safeguardOverChild": 0,
+    "safeguardTtfa": {
+     "n": 28,
+     "p50": 2772,
+     "p90": 3221,
+     "mean": 2615
+    }
+   },
+   "overlap": {
+    "n": 76,
+    "accuracy": {
+     "k": 72,
+     "n": 76,
+     "rate": 0.9474,
+     "ci80": [
+      0.904,
+      0.972
+     ]
+    },
+    "byExpect": {
+     "resume": {
+      "n": 12,
+      "correct": 12,
+      "got": {
+       "resume": 12
+      }
+     },
+     "repeat": {
+      "n": 16,
+      "correct": 16,
+      "got": {
+       "repeat": 16
+      }
+     },
+     "stop": {
+      "n": 8,
+      "correct": 6,
+      "got": {
+       "stop": 6,
+       "resume": 2
+      }
+     },
+     "yield": {
+      "n": 24,
+      "correct": 22,
+      "got": {
+       "answer": 7,
+       "resume": 2,
+       "yield": 15
+      }
+     },
+     "foldin": {
+      "n": 16,
+      "correct": 16,
+      "got": {
+       "answer": 16
+      }
+     }
+    },
+    "duckMs": {
+     "n": 76,
+     "p50": 80,
+     "p90": 80,
+     "mean": 80
+    },
+    "pauseMs": {
+     "n": 76,
+     "p50": 100,
+     "p90": 100,
+     "mean": 100
+    },
+    "resolveMs": {
+     "n": 76,
+     "p50": 1700,
+     "p90": 2400,
+     "mean": 1779
+    },
+    "resolveByExpect": {
+     "resume": {
+      "n": 12,
+      "p50": 1480,
+      "p90": 1720,
+      "mean": 1472
+     },
+     "repeat": {
+      "n": 16,
+      "p50": 1740,
+      "p90": 2240,
+      "mean": 1681
+     },
+     "stop": {
+      "n": 8,
+      "p50": 1600,
+      "p90": 2280,
+      "mean": 1663
+     },
+     "yield": {
+      "n": 24,
+      "p50": 2140,
+      "p90": 2960,
+      "mean": 2099
+     },
+     "foldin": {
+      "n": 16,
+      "p50": 1700,
+      "p90": 1940,
+      "mean": 1685
+     }
+    },
+    "continuerMisreadAsTurn": {
+     "k": 0,
+     "n": 12,
+     "rate": 0,
+     "ci80": [
+      0,
+      0.12
+     ]
+    },
+    "realTurnSwallowed": {
+     "k": 4,
+     "n": 64,
+     "rate": 0.0625,
+     "ci80": [
+      0.034,
+      0.113
+     ]
+    },
+    "foldinGradedCorrect": {
+     "k": 16,
+     "n": 16,
+     "rate": 1,
+     "ci80": [
+      0.907,
+      1
+     ]
+    }
+   },
+   "nods": {
+    "eligibleTurns": 56,
+    "nods": 56,
+    "perSecond": 0.185,
+    "secondsPerNod": 5.4,
+    "midWord": {
+     "k": 0,
+     "n": 56,
+     "rate": 0,
+     "ci80": [
+      0,
+      0.028
+     ]
+    },
+    "dipMs": {
+     "n": 56,
+     "p50": 192,
+     "p90": 445,
+     "mean": 241
+    },
+    "turnsWithNoNod": {
+     "k": 8,
+     "n": 56,
+     "rate": 0.1429,
+     "ci80": [
+      0.093,
+      0.213
+     ]
+    },
+    "closedOrSafetyNods": 0
+   },
+   "drafts": {
+    "waitHitRate": {
+     "k": 147,
+     "n": 164,
+     "rate": 0.8963,
+     "ci80": [
+      0.862,
+      0.923
+     ]
+    },
+    "candidateHitRate": {
+     "k": 64,
+     "n": 243,
+     "rate": 0.2634,
+     "ci80": [
+      0.229,
+      0.301
+     ]
+    },
+    "launched": {
+     "wait": 456,
+     "candidate": 351
+    },
+    "promoted": {
+     "wait": 147,
+     "candidate": 64,
+     "commit": 149
+    },
+    "tokensUsed": 420594,
+    "tokensWasted": 1390304,
+    "wastedShare": 0.768,
+    "wastedTokensPerTurn": 3621
+   }
+  },
+  "duplex-mai": {
+   "note": "floor manager on the India STT",
+   "turns": 308,
+   "gapAfterTrueEnd": {
+    "n": 280,
+    "p50": 577,
+    "p90": 1488,
+    "mean": 784
+   },
+   "ttfa": {
+    "n": 280,
+    "p50": 2361,
+    "p90": 3703,
+    "mean": 2180
+   },
+   "ttfaByCat": {
+    "closed_fluent": {
+     "n": 48,
+     "p50": 961,
+     "p90": 993,
+     "mean": 956
+    },
+    "closed_hesitant": {
+     "n": 40,
+     "p50": 1000,
+     "p90": 3206,
+     "mean": 1454
+    },
+    "self_correction": {
+     "n": 40,
+     "p50": 2431,
+     "p90": 3209,
+     "mean": 2429
+    },
+    "explain_pauses": {
+     "n": 48,
+     "p50": 3253,
+     "p90": 4098,
+     "mean": 3260
+    },
+    "fillers_wordsearch": {
+     "n": 32,
+     "p50": 2421,
+     "p90": 3474,
+     "mean": 2532
+    },
+    "question": {
+     "n": 32,
+     "p50": 2620,
+     "p90": 3706,
+     "mean": 2839
+    },
+    "idk": {
+     "n": 16,
+     "p50": 2420,
+     "p90": 3140,
+     "mean": 2636
+    },
+    "hold_request": {
+     "n": 24,
+     "p50": 1159,
+     "p90": 3149,
+     "mean": 1606
+    }
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 48,
+     "p50": 569,
+     "p90": 579,
+     "mean": 570
+    },
+    "closed_hesitant": {
+     "n": 40,
+     "p50": 573,
+     "p90": 798,
+     "mean": 719
+    },
+    "self_correction": {
+     "n": 40,
+     "p50": 794,
+     "p90": 1192,
+     "mean": 890
+    },
+    "explain_pauses": {
+     "n": 48,
+     "p50": 1485,
+     "p90": 1499,
+     "mean": 1223
+    },
+    "fillers_wordsearch": {
+     "n": 32,
+     "p50": 574,
+     "p90": 1482,
+     "mean": 685
+    },
+    "question": {
+     "n": 32,
+     "p50": 572,
+     "p90": 580,
+     "mean": 615
+    },
+    "idk": {
+     "n": 16,
+     "p50": 574,
+     "p90": 579,
+     "mean": 571
+    },
+    "hold_request": {
+     "n": 24,
+     "p50": 576,
+     "p90": 1486,
+     "mean": 760
+    }
+   },
+   "falseTakeover": {
+    "k": 10,
+    "n": 280,
+    "rate": 0.0357,
+    "ci80": [
+     0.024,
+     0.053
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 24,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.064
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 0,
+    "n": 280,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.006
+    ]
+   },
+   "silentFalseCommitTurns": {
+    "k": 38,
+    "n": 280,
+    "rate": 0.1357,
+    "ci80": [
+     0.112,
+     0.164
+    ]
+   },
+   "revokedDuringUptakeTurns": {
+    "k": 10,
+    "n": 280,
+    "rate": 0.0357,
+    "ci80": [
+     0.024,
+     0.053
+    ]
+   },
+   "safety": {
+    "n": 28,
+    "missed": 0,
+    "detectAfterDistressSegEnd": {
+     "n": 28,
+     "p50": 569,
+     "p90": 577,
+     "mean": 562
+    },
+    "unsafeLineTurns": 0,
+    "safeguardOverChild": 0,
+    "safeguardTtfa": {
+     "n": 28,
+     "p50": 1898,
+     "p90": 1943,
+     "mean": 1897
+    }
+   },
+   "overlap": {
+    "n": 76,
+    "accuracy": {
+     "k": 76,
+     "n": 76,
+     "rate": 1,
+     "ci80": [
+      0.979,
+      1
+     ]
+    },
+    "byExpect": {
+     "resume": {
+      "n": 12,
+      "correct": 12,
+      "got": {
+       "resume": 12
+      }
+     },
+     "repeat": {
+      "n": 16,
+      "correct": 16,
+      "got": {
+       "repeat": 16
+      }
+     },
+     "stop": {
+      "n": 8,
+      "correct": 8,
+      "got": {
+       "stop": 8
+      }
+     },
+     "yield": {
+      "n": 24,
+      "correct": 24,
+      "got": {
+       "answer": 8,
+       "yield": 16
+      }
+     },
+     "foldin": {
+      "n": 16,
+      "correct": 16,
+      "got": {
+       "answer": 16
+      }
+     }
+    },
+    "duckMs": {
+     "n": 76,
+     "p50": 80,
+     "p90": 80,
+     "mean": 80
+    },
+    "pauseMs": {
+     "n": 76,
+     "p50": 100,
+     "p90": 100,
+     "mean": 100
+    },
+    "resolveMs": {
+     "n": 76,
+     "p50": 720,
+     "p90": 1680,
+     "mean": 892
+    },
+    "resolveByExpect": {
+     "resume": {
+      "n": 12,
+      "p50": 680,
+      "p90": 720,
+      "mean": 673
+     },
+     "repeat": {
+      "n": 16,
+      "p50": 800,
+      "p90": 1160,
+      "mean": 798
+     },
+     "stop": {
+      "n": 8,
+      "p50": 720,
+      "p90": 800,
+      "mean": 718
+     },
+     "yield": {
+      "n": 24,
+      "p50": 1260,
+      "p90": 2020,
+      "mean": 1203
+     },
+     "foldin": {
+      "n": 16,
+      "p50": 820,
+      "p90": 1000,
+      "mean": 770
+     }
+    },
+    "continuerMisreadAsTurn": {
+     "k": 0,
+     "n": 12,
+     "rate": 0,
+     "ci80": [
+      0,
+      0.12
+     ]
+    },
+    "realTurnSwallowed": {
+     "k": 0,
+     "n": 64,
+     "rate": 0,
+     "ci80": [
+      0,
+      0.025
+     ]
+    },
+    "foldinGradedCorrect": {
+     "k": 16,
+     "n": 16,
+     "rate": 1,
+     "ci80": [
+      0.907,
+      1
+     ]
+    }
+   },
+   "nods": {
+    "eligibleTurns": 56,
+    "nods": 56,
+    "perSecond": 0.185,
+    "secondsPerNod": 5.4,
+    "midWord": {
+     "k": 0,
+     "n": 56,
+     "rate": 0,
+     "ci80": [
+      0,
+      0.028
+     ]
+    },
+    "dipMs": {
+     "n": 56,
+     "p50": 192,
+     "p90": 445,
+     "mean": 241
+    },
+    "turnsWithNoNod": {
+     "k": 8,
+     "n": 56,
+     "rate": 0.1429,
+     "ci80": [
+      0.093,
+      0.213
+     ]
+    },
+    "closedOrSafetyNods": 0
+   },
+   "drafts": {
+    "waitHitRate": {
+     "k": 135,
+     "n": 164,
+     "rate": 0.8232,
+     "ci80": [
+      0.782,
+      0.858
+     ]
+    },
+    "candidateHitRate": {
+     "k": 90,
+     "n": 248,
+     "rate": 0.3629,
+     "ci80": [
+      0.325,
+      0.403
+     ]
+    },
+    "launched": {
+     "wait": 456,
+     "candidate": 477
+    },
+    "promoted": {
+     "wait": 135,
+     "candidate": 90,
+     "commit": 176
+    },
+    "tokensUsed": 497037,
+    "tokensWasted": 1738393,
+    "wastedShare": 0.778,
+    "wastedTokensPerTurn": 4527
+   }
+  }
+ }
+}

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en" data-theme="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taxila · Parent corner</title>
+<link rel="stylesheet" href="v3.css">
+<style>
+  /* Parent corner: Day theme by default (v3 §11). Same tokens, calmer density, no game chrome. */
+  body { background: var(--bg); }
+  .pc { max-width: 1180px; margin: 0 auto; padding: 0 var(--gutter); display: grid; grid-template-columns: minmax(0, 1fr); min-height: 100dvh; }
+  @media (min-width: 980px) { .pc { grid-template-columns: 220px minmax(0, 1fr); gap: 28px; } }
+  .nav { display: none; }
+  @media (min-width: 980px) {
+    .nav { display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100dvh; padding: 18px 0; }
+    .nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; color: var(--ink-2); text-decoration: none; font-weight: 600; font-size: 15px; }
+    .nav a[aria-current="page"] { background: var(--bg-1); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+    .nav .sp { flex: 1; }
+  }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
+  .kid { display: inline-flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: 999px; background: var(--bg-1); border: 1px solid var(--line); font-weight: 600; }
+  .kid .av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: #E7EAFF; color: var(--ion); font: 700 13px/1 var(--f-display); }
+  .kid small { color: var(--ink-3); font-weight: 500; margin-left: 2px; }
+  .lang { display: inline-flex; gap: 2px; padding: 3px; background: var(--bg-3); border-radius: 10px; }
+  .lang button { border: 0; background: transparent; padding: 6px 10px; border-radius: 8px; font-weight: 600; font-size: 13px; color: var(--ink-2); }
+  .lang button[aria-pressed="true"] { background: var(--bg-1); color: var(--ink); box-shadow: 0 1px 2px rgba(14,17,22,.08); }
+
+  .grid { display: grid; gap: 16px; padding-bottom: 40px; }
+  @media (min-width: 980px) { .grid { grid-template-columns: 1.35fr 1fr; align-items: start; } }
+  .col { display: grid; gap: 16px; min-width: 0; }
+  .card { background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: 0 1px 2px rgba(14,17,22,.04); }
+  .pad { padding: 18px; }
+  .sec-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+  .sec-h a, .link { color: var(--ion); font-weight: 600; font-size: 14px; text-decoration: none; background: none; border: 0; padding: 0; }
+
+  .week { padding: 20px; display: grid; gap: 14px; }
+  .week h2 { font: 700 26px/1.15 var(--f-display); letter-spacing: -.02em; margin: 0; }
+  .week h2 em { font-style: normal; background: linear-gradient(transparent 62%, #E3E7FF 62%); }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .fact { padding: 12px; border-radius: 14px; background: var(--bg-3); }
+  .fact b { display: block; font: 700 22px/1 var(--f-display); }
+  .fact span { font-size: 12.5px; color: var(--ink-2); }
+
+  .claim { border-top: 1px solid var(--line); padding: 14px 18px; display: grid; gap: 8px; }
+  .claim-row { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: start; }
+  .claim .mk { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; }
+  .mk.got { background: #E3F5EC; color: var(--mint); } .mk.look { background: #FFF1DC; color: var(--amber); }
+  .mk svg { width: 16px; height: 16px; }
+  .claim b { font-size: 15px; } .claim p { margin: 2px 0 0; font-size: 14px; color: var(--ink-2); }
+  .how { border: 0; background: none; color: var(--ion); font-weight: 600; font-size: 13px; padding: 4px 0; white-space: nowrap; }
+  .ev { display: none; margin-left: 40px; padding: 12px 14px; border-radius: 12px; background: var(--bg-3); font-size: 13.5px; }
+  .ev.on { display: grid; gap: 8px; }
+  .ev dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; }
+  .ev dt { font: 600 11px/1.6 var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); }
+  .ev dd { margin: 0; }
+  .ev q { font-weight: 600; color: var(--ink); }
+
+  /* schedule */
+  .slots { display: grid; gap: 8px; }
+  .slot { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); }
+  .slot .d { font: 700 12px/1.1 var(--f-mono); text-transform: uppercase; text-align: center; color: var(--ink-2); }
+  .slot .d b { display: block; font: 700 20px/1 var(--f-display); color: var(--ink); margin-top: 3px; }
+  .slot .w { font-weight: 600; } .slot .w small { display: block; color: var(--ink-3); font-weight: 500; font-size: 13px; }
+  .slot.moved { border-color: var(--ion); background: #F2F4FF; }
+  .editor { display: none; margin-top: 12px; padding: 14px; border-radius: 16px; background: var(--bg-3); gap: 12px; }
+  .editor.on { display: grid; }
+  .lbl { font: 600 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); display: flex; justify-content: space-between; }
+  .dates { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; scroll-snap-type: x mandatory; }
+  .dates::-webkit-scrollbar { display: none; }
+  .date { flex: none; width: 54px; padding: 8px 0; border-radius: 12px; border: 1px solid var(--line-2); background: var(--bg-1); display: grid; justify-items: center; gap: 2px; scroll-snap-align: start; }
+  .date small { font: 600 10.5px/1 var(--f-mono); text-transform: uppercase; color: var(--ink-3); }
+  .date b { font: 700 18px/1 var(--f-display); }
+  .date[aria-pressed="true"] { background: var(--ink); color: var(--bg-1); border-color: transparent; }
+  .date[aria-pressed="true"] small { color: rgba(255,255,255,.7); }
+  .date:disabled { opacity: .35; cursor: not-allowed; }
+  .times { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .time { min-height: 40px; white-space: nowrap; font-size: 13px !important; border-radius: 10px; border: 1px solid var(--line-2); background: var(--bg-1); font: 600 14px/1 var(--f-mono); }
+  .time[aria-pressed="true"] { background: var(--ink); color: var(--bg-1); border-color: transparent; }
+  .time:disabled { opacity: .35; text-decoration: line-through; cursor: not-allowed; }
+  .confirm { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .confirm span { font-size: 14px; color: var(--ink-2); } .confirm b { color: var(--ink); }
+  .btn-ink { background: var(--ink); color: var(--bg-1); border-color: transparent; }
+
+  .limits { display: grid; gap: 0; }
+  .lim { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 13px 0; }
+  .lim + .lim { border-top: 1px solid var(--line); }
+  .lim b { font-size: 15px; } .lim p { margin: 2px 0 0; font-size: 13px; color: var(--ink-3); }
+  .stepper { display: inline-flex; align-items: center; gap: 4px; padding: 3px; border: 1px solid var(--line-2); border-radius: 12px; }
+  .stepper button { width: 34px; height: 34px; border: 0; border-radius: 9px; background: var(--bg-3); font-weight: 700; font-size: 18px; line-height: 1; }
+  .stepper output { min-width: 74px; text-align: center; font: 600 14px/1 var(--f-mono); }
+  .sw { width: 46px; height: 28px; border-radius: 999px; background: var(--bg-3); border: 1px solid var(--line-2); position: relative; padding: 0; }
+  .sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform var(--m-quick) var(--e-std); }
+  .sw[aria-checked="true"] { background: var(--ion); border-color: transparent; }
+  .sw[aria-checked="true"]::after { transform: translateX(18px); }
+
+  .made { display: grid; grid-template-columns: 76px 1fr; gap: 14px; align-items: center; padding: 12px 18px; }
+  .made + .made { border-top: 1px solid var(--line); }
+  .thumb { width: 76px; height: 56px; border-radius: 10px; overflow: hidden; background: #10131B; display: grid; place-items: center; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .made b { font-size: 15px; } .made p { margin: 2px 0 0; font-size: 13.5px; color: var(--ink-2); }
+
+  .home-task { padding: 18px; display: grid; gap: 8px; background: linear-gradient(135deg, #F2F4FF, var(--bg-1) 70%); }
+  .home-task h3 { margin: 0; font: 700 18px/1.25 var(--f-display); }
+  .home-task p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+
+  .asked { display: grid; gap: 0; }
+  .asked div { padding: 11px 0; font-size: 14.5px; display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+  .asked div + div { border-top: 1px solid var(--line); }
+  .asked small { font: 500 12px/1.5 var(--f-mono); color: var(--ink-3); }
+
+  .safety { padding: 18px; display: grid; gap: 10px; }
+  .safety .row { display: grid; grid-template-columns: 22px 1fr; gap: 10px; font-size: 14px; color: var(--ink-2); }
+  .safety .row svg { color: var(--ion); width: 20px; height: 20px; }
+  .safety b { color: var(--ink); }
+  .tabbar { grid-template-columns: repeat(4, 1fr); margin: 0 calc(var(--gutter) * -1); }
+  @media (min-width: 900px) and (max-width: 979px) { .tabbar { display: grid; } }
+  @media (max-width: 600px) {
+    .claim-row { grid-template-columns: 28px 1fr; }
+    .claim-row .how { grid-column: 2; justify-self: start; padding: 2px 0 0; }
+    .ev { margin-left: 0; }
+  }
+  @media (max-width: 420px) { .facts { grid-template-columns: 1fr 1fr 1fr; } .fact b { font-size: 19px; } .week h2 { font-size: 23px; } }
+</style>
+</head>
+<body>
+<script src="sprite.js"></script>
+<div class="pc">
+  <nav class="nav" aria-label="Parent corner">
+    <div class="brand" style="padding:6px 12px 18px"><svg class="brand-mark"><use href="#brand"/></svg>Taxila</div>
+    <a href="#" aria-current="page"><svg class="icon"><use href="#i-home"/></svg>This week</a>
+    <a href="#"><svg class="icon"><use href="#i-map"/></svg>Progress</a>
+    <a href="#"><svg class="icon"><use href="#i-cal"/></svg>Lessons</a>
+    <a href="#"><svg class="icon"><use href="#i-gear"/></svg>Controls</a>
+    <a href="#"><svg class="icon"><use href="#i-shield"/></svg>Help and safety</a>
+    <span class="sp"></span>
+    <a href="#"><svg class="icon"><use href="#i-lock"/></svg>Lock parent corner</a>
+  </nav>
+
+  <main>
+    <header class="top">
+      <span class="kid"><span class="av">A</span>Aarav <small>Class 6 · CBSE</small></span>
+      <div class="lang" role="group" aria-label="Report language" id="lang"><button aria-pressed="true">English</button><button aria-pressed="false" class="deva">हिंदी</button></div>
+    </header>
+
+    <div class="grid">
+      <div class="col">
+        <!-- this week -->
+        <section class="card">
+          <div class="week">
+            <div class="eyebrow">Week of 28 Sep – 4 Oct</div>
+            <h2 id="wkH">Aarav can now <em>explain why</em> a triangle's area is half its rectangle.</h2>
+            <div class="facts">
+              <div class="fact"><b>4 of 4</b><span>lessons done</span></div>
+              <div class="fact"><b>76 min</b><span>inside your limits</span></div>
+              <div class="fact"><b>11</b><span>questions he asked</span></div>
+            </div>
+          </div>
+          <div class="claim">
+            <div class="claim-row">
+              <span class="mk got"><svg class="icon"><use href="#i-check"/></svg></span>
+              <div><b>Area of a triangle: secure</b><p>Right again on Saturday, two days later, without a hint.</p></div>
+              <button class="how" data-ev="e1">How do we know?</button>
+            </div>
+            <div class="ev" id="e1">
+              <dl><dt>Thu 1 Oct</dt><dd>Explained the half on his own, after being asked "why?"</dd><dt>Sat 3 Oct</dt><dd>2 of 2 new triangles, on his own, first try</dd></dl>
+              <div>In his words: <q>"The outside bits fold in, so it's always half."</q></div>
+            </div>
+          </div>
+          <div class="claim">
+            <div class="claim-row">
+              <span class="mk look"><svg class="icon"><use href="#i-search"/></svg></span>
+              <div><b>Still practising: leaning triangles</b><p>When the height falls outside the shape. Planned for Saturday.</p></div>
+              <button class="how" data-ev="e2">How do we know?</button>
+            </div>
+            <div class="ev" id="e2">
+              <dl><dt>Sat 3 Oct</dt><dd>Measured the slanted side instead of the height, once with a hint</dd></dl>
+              <div>This is normal at this stage. Ira brings it back in a new form; nothing for you to do.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- try at home -->
+        <section class="card home-task">
+          <div class="eyebrow">Try at home · 5 minutes</div>
+          <h3>Ask him to prove it with a sheet of paper.</h3>
+          <p>Fold a rectangle corner-to-top and ask: "Why does the triangle get exactly half?" If he explains with the folds, he owns it. You don't need to know the answer.</p>
+        </section>
+
+        <!-- made for -->
+        <section class="card">
+          <div class="pad" style="padding-bottom:6px"><div class="sec-h"><h2 class="h-3">Made for Aarav this week</h2><a href="#">All 9</a></div></div>
+          <div class="made"><div class="thumb"><svg viewBox="0 0 76 56" width="76" height="56"><rect width="76" height="56" fill="#10131B"/><path d="M14 28l10-5v10z" fill="#CBFF4D"/><rect x="48" y="8" width="14" height="12" rx="3" fill="none" stroke="#8B98FF" stroke-width="1.5"/><rect x="48" y="22" width="14" height="12" rx="3" fill="none" stroke="#3DDC97" stroke-width="1.5"/><rect x="48" y="36" width="14" height="12" rx="3" fill="none" stroke="#8B98FF" stroke-width="1.5"/></svg></div><div><b>Fraction Pilot · a game</b><p>Because he said 6/8 and 3/4 "feel the same" but couldn't say why. 18 clean gates, then he explained it.</p></div></div>
+          <div class="made"><div class="thumb"><img src="img/lesson-leaf.webp" alt=""></div><div><b>Why leaves are green · an animation</b><p>He asked mid-lesson; it was built for his next science lesson.</p></div></div>
+          <div class="made"><div class="thumb"><svg viewBox="0 0 76 56" width="76" height="56"><rect width="76" height="56" fill="#0F141C"/><rect x="14" y="12" width="48" height="32" fill="none" stroke="#EEF2F7" stroke-width="1.5"/><path d="M14 44L32 12L62 44" fill="rgba(139,152,255,.25)" stroke="#CBFF4D" stroke-width="1.5"/></svg></div><div><b>Half a rectangle · whiteboard</b><p>Drawn live while Ira explained. Replayable from his library.</p></div></div>
+        </section>
+      </div>
+
+      <div class="col">
+        <!-- schedule -->
+        <section class="card pad">
+          <div class="sec-h"><h2 class="h-3">Lesson times</h2><span class="small muted mono">IST</span></div>
+          <div class="slots" id="slots">
+            <div class="slot"><div class="d">Mon<b>5</b></div><div class="w">5:30 PM · 20 min<small>Maths · Leaning triangles</small></div><button class="link" data-edit="0">Move</button></div>
+            <div class="slot"><div class="d">Wed<b>7</b></div><div class="w">5:30 PM · 20 min<small>Science · Why leaves are green</small></div><button class="link" data-edit="1">Move</button></div>
+            <div class="slot"><div class="d">Sat<b>10</b></div><div class="w">11:00 AM · 30 min<small>Maths · Fractions on a line</small></div><button class="link" data-edit="2">Move</button></div>
+          </div>
+          <div class="editor" id="editor" aria-live="polite">
+            <div class="lbl"><span>Move <span id="edWhich">Monday's lesson</span> to</span><span id="edMonth">October</span></div>
+            <div class="dates" id="dates" role="listbox" aria-label="Date"></div>
+            <div class="lbl"><span>Time</span><span>Grey = outside lesson hours</span></div>
+            <div class="times" id="times" role="listbox" aria-label="Time"></div>
+            <div class="confirm"><span id="edSum"></span><span style="display:flex;gap:8px"><button class="btn btn-quiet" id="edCancel">Cancel</button><button class="btn btn-ink" id="edSave">Move lesson</button></span></div>
+          </div>
+        </section>
+
+        <!-- limits -->
+        <section class="card pad">
+          <div class="sec-h"><h2 class="h-3">Limits</h2><a href="#">All controls</a></div>
+          <div class="limits">
+            <div class="lim"><div><b>Daily limit</b><p>Ira wraps up warmly when it's reached. She never just cuts off.</p></div><div class="stepper"><button id="limM" aria-label="Less">−</button><output id="limV">45 min</output><button id="limP" aria-label="More">+</button></div></div>
+            <div class="lim"><div><b>Lesson hours</b><p>No lessons outside these times.</p></div><div class="stepper"><button id="endM" aria-label="Earlier">−</button><output id="endV">until 9 PM</output><button id="endP" aria-label="Later">+</button></div></div>
+            <div class="lim"><div><b>Open mic (hands-free)</b><p>Only during lessons. Audio is never stored.</p></div><button class="sw" role="switch" aria-checked="true" aria-label="Open mic"></button></div>
+            <div class="lim"><div><b>Lesson reminder on his phone</b><p>A neutral alert 10 min before. Never guilt, never "she's waiting".</p></div><button class="sw" role="switch" aria-checked="false" aria-label="Lesson reminder"></button></div>
+          </div>
+        </section>
+
+        <!-- asked -->
+        <section class="card pad">
+          <div class="sec-h"><h2 class="h-3">What he was curious about</h2></div>
+          <div class="asked">
+            <div><span>Is 0.999… really equal to 1?</span><small>Parked · decimals</small></div>
+            <div><span>Why do some leaves have parallel veins?</span><small>Saturday</small></div>
+            <div><span>How do rockets steer with nothing to push on?</span><small>Parked · science</small></div>
+          </div>
+        </section>
+
+        <!-- safety -->
+        <section class="card safety">
+          <h2 class="h-3">Safety, plainly</h2>
+          <div class="row"><svg class="icon"><use href="#i-shield"/></svg><span><b>Ira is an AI teacher</b> and says so whenever she is asked. She never plays a friend or a romantic role.</span></div>
+          <div class="row"><svg class="icon"><use href="#i-bell"/></svg><span><b>If Aarav says something worrying</b>, Ira responds calmly, shares Childline 1098 and Tele-MANAS 14416, and we alert you at once without naming the topic on your lock screen.</span></div>
+          <div class="row"><svg class="icon"><use href="#i-lock"/></svg><span><b>You see learning, not a recording.</b> A transcript opens only on request, after your PIN.</span></div>
+        </section>
+      </div>
+    </div>
+    <nav class="tabbar" aria-label="Parent corner">
+      <a href="#" aria-current="page"><svg class="icon"><use href="#i-home"/></svg>This week</a>
+      <a href="#"><svg class="icon"><use href="#i-map"/></svg>Progress</a>
+      <a href="#"><svg class="icon"><use href="#i-cal"/></svg>Lessons</a>
+      <a href="#"><svg class="icon"><use href="#i-gear"/></svg>Controls</a>
+    </nav>
+  </main>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+// evidence sheets
+document.querySelectorAll(".how").forEach((b) => b.onclick = () => { const e = $(b.dataset.ev); const on = !e.classList.contains("on"); e.classList.toggle("on", on); b.textContent = on ? "Hide" : "How do we know?"; });
+// language toggle (report text only; chrome stays English per copy rules)
+$("lang").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; [...$("lang").children].forEach((x) => x.setAttribute("aria-pressed", x === b)); const hi = b.textContent !== "English"; $("wkH").innerHTML = hi ? 'आरव अब <em>समझा सकता है</em> कि त्रिभुज का क्षेत्रफल आयत का आधा क्यों होता है।' : 'Aarav can now <em>explain why</em> a triangle\'s area is half its rectangle.'; $("wkH").classList.toggle("deva", hi); });
+// switches
+document.querySelectorAll(".sw").forEach((s) => s.onclick = () => s.setAttribute("aria-checked", s.getAttribute("aria-checked") !== "true"));
+// limits
+let lim = 45, end = 21 * 60;
+const fmt = (m) => { let h = Math.floor(m / 60), mm = m % 60, ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12; return `${h}${mm ? ":" + String(mm).padStart(2, "0") : ""} ${ap}`; };
+$("limM").onclick = () => { lim = Math.max(15, lim - 15); $("limV").textContent = lim + " min"; };
+$("limP").onclick = () => { lim = Math.min(120, lim + 15); $("limV").textContent = lim + " min"; };
+const endSet = () => { $("endV").textContent = "until " + fmt(end); renderTimes(); };
+$("endM").onclick = () => { end = Math.max(18 * 60, end - 30); endSet(); };
+$("endP").onclick = () => { end = Math.min(22 * 60, end + 30); endSet(); };
+
+// --- reschedule: a real date strip + time grid, no native pickers (owner reset #11) ---
+// "today" is fixed for the mockup so screenshots are stable: Sun 4 Oct 2026, IST.
+const TODAY = new Date(2026, 9, 4);
+const DN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], MN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const lessons = [{ d: new Date(2026, 9, 5), t: 17 * 60 + 30, dur: 20 }, { d: new Date(2026, 9, 7), t: 17 * 60 + 30, dur: 20 }, { d: new Date(2026, 9, 10), t: 11 * 60, dur: 30 }];
+let which = 0, pickD = null, pickT = null;
+const same = (a, b) => a.toDateString() === b.toDateString();
+function renderDates() {
+  let h = "";
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(TODAY); d.setDate(TODAY.getDate() + i);
+    const taken = lessons.some((l, k) => k !== which && same(l.d, d));
+    h += `<button class="date" role="option" data-i="${i}" aria-pressed="${pickD && same(pickD, d)}" ${taken ? "disabled title='Already has a lesson'" : ""}><small>${i === 0 ? "Today" : DN[d.getDay()]}</small><b>${d.getDate()}</b></button>`;
+  }
+  $("dates").innerHTML = h;
+}
+function renderTimes() {
+  if (!$("times")) return; let h = "";
+  const opts = [7 * 60, 11 * 60, 16 * 60 + 30, 17 * 60 + 30, 18 * 60, 19 * 60, 20 * 60, 21 * 60];
+  for (const m of opts) { const dur = lessons[which].dur; const out = m + dur > end; const past = pickD && same(pickD, TODAY) && m <= 19 * 60 + 15; h += `<button class="time" role="option" data-m="${m}" aria-pressed="${pickT === m}" ${out || past ? "disabled" : ""}>${fmt(m)}</button>`; }
+  $("times").innerHTML = h; summary();
+}
+function summary() {
+  const ok = pickD && pickT != null && !$("times").querySelector(`[data-m="${pickT}"]`)?.disabled;
+  $("edSave").disabled = !ok;
+  $("edSum").innerHTML = ok ? `<b>${DN[pickD.getDay()]} ${pickD.getDate()} ${MN[pickD.getMonth()].slice(0, 3)} · ${fmt(pickT)}</b> · Aarav gets a heads-up` : "Pick a day and a time";
+}
+$("slots").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-edit]"); if (!b) return;
+  which = +b.dataset.edit; pickD = new Date(lessons[which].d); pickT = lessons[which].t;
+  $("edWhich").textContent = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][lessons[which].d.getDay()] + "'s lesson";
+  $("editor").classList.add("on"); renderDates(); renderTimes();
+});
+$("dates").addEventListener("click", (e) => { const b = e.target.closest(".date"); if (!b || b.disabled) return; const d = new Date(TODAY); d.setDate(TODAY.getDate() + +b.dataset.i); pickD = d; $("edMonth").textContent = MN[d.getMonth()]; renderDates(); renderTimes(); });
+$("times").addEventListener("click", (e) => { const b = e.target.closest(".time"); if (!b || b.disabled) return; pickT = +b.dataset.m; renderTimes(); });
+$("edCancel").onclick = () => $("editor").classList.remove("on");
+$("edSave").onclick = () => {
+  lessons[which].d = pickD; lessons[which].t = pickT;
+  const row = $("slots").children[which]; row.classList.add("moved");
+  row.querySelector(".d").innerHTML = `${DN[pickD.getDay()]}<b>${pickD.getDate()}</b>`;
+  row.querySelector(".w").firstChild.textContent = `${fmt(pickT)} · ${lessons[which].dur} min`;
+  $("editor").classList.remove("on");
+};
+// gallery deep link: ?edit=1 opens the editor for screenshots
+if (new URLSearchParams(location.search).get("edit")) $("slots").querySelector("[data-edit='0']").click();
+</script>
+</body>
+</html>

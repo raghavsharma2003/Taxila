@@ -27,11 +27,12 @@ export const newSignalSession = () => ({
   answerAsks: [],
   childTurns: 0,
   langCounts: { hi: 0, hinglish: 0, en: 0 },
+  safetyHold: 0,
 });
 
 /** A structurally valid session, or a fresh one (state from an older build, or tampered, never throws downstream). */
 export function coerceSession(s) {
-  if (!s || typeof s !== "object" || s.v !== 1 || !Array.isArray(s.answerWords) || !s.item || !s.rel) return newSignalSession();
+  if (!s || typeof s !== "object" || s.v !== 1 || !Array.isArray(s.answerWords) || !s.item || typeof s.item !== "object" || !Array.isArray(s.item.attempts) || !s.rel) return newSignalSession();
   return { ...newSignalSession(), ...s };
 }
 

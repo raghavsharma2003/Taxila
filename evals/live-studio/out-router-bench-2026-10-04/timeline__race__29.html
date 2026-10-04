@@ -1,0 +1,100 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#43362f;background:#fff8ed}
+#scene{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,#fffdf7 0%,#fff8ed 78%)}
+#title{position:absolute;top:10px;left:14px;right:14px;margin:0;text-align:center;font-size:17px;line-height:22px;font-weight:750;color:#684b37}
+#ask{position:absolute;top:37px;left:14px;right:14px;margin:0;text-align:center;font-size:13px;line-height:17px;color:#806b5d}
+#axis{position:absolute;left:28px;right:28px;top:159px;height:4px;border-radius:9px;background:#d5a875;box-shadow:0 2px 0 #f2dfc6}
+#axis:before,#axis:after{position:absolute;top:-5px;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;content:""}
+#axis:before{left:-2px;border-right:9px solid #d5a875}
+#axis:after{right:-2px;border-left:9px solid #d5a875}
+.card{position:absolute;width:104px;min-height:64px;padding:7px 6px;border:2px solid #e5bd8f;border-radius:15px;background:#fff;color:#594536;box-shadow:0 3px 0 #ecd9c3;text-align:center;cursor:pointer;touch-action:manipulation;transition:transform .16s ease,box-shadow .16s ease,background .2s ease}
+.card:active{transform:scale(.94);box-shadow:0 1px 0 #ecd9c3}
+.card:hover{background:#fffaf1}
+.card-name{display:block;font-size:13px;line-height:16px;font-weight:700;overflow-wrap:anywhere}
+.card-year{display:block;margin-top:3px;font-size:13px;line-height:16px;color:#a06e43;font-weight:750}
+.marker{position:absolute;top:153px;width:16px;height:16px;margin-left:-8px;border:3px solid #fff8ed;border-radius:50%;background:#df895f;box-shadow:0 0 0 2px #df895f;transition:transform .2s ease}
+.connector{position:absolute;width:2px;background:#dfb98f;transform:translateX(-50%);transform-origin:top;transition:height .2s ease}
+#feedback{position:absolute;left:8px;right:8px;bottom:9px;min-height:52px;display:flex;align-items:center;justify-content:center;padding:5px 10px;border-radius:16px;background:#f8ead7;color:#755638;text-align:center;font-size:14px;line-height:18px;font-weight:700;transition:background .2s ease}
+#feedback.good{background:#e1f0dc;color:#486b42}
+#feedback.try{background:#fff0df;color:#8a5e43}
+.card.chosen{border-color:#df895f;animation:pop .3s ease}
+@keyframes pop{50%{transform:scale(1.06)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<div id="scene">
+  <h1 id="title"></h1>
+  <p id="ask"></p>
+  <div id="axis" data-axis aria-hidden="true"></div>
+  <div id="events"></div>
+  <div id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params, scene=document.getElementById("scene");
+  const title=document.getElementById("title"), ask=document.getElementById("ask");
+  const holder=document.getElementById("events"), feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+  feedback.textContent="";
+  const events=p.events.slice().sort((a,b)=>a.year-b.year);
+  const years=events.map(e=>Number(e.year));
+  const min=Math.min.apply(null,years), max=Math.max.apply(null,years);
+  const left=28, right=332, width=right-left;
+  const lanes=[[],[]];
+  const cardWidth=104;
+  events.forEach(function(e){
+    const year=Number(e.year);
+    const x=max===min?(left+right)/2:left+(year-min)/(max-min)*width;
+    const cx=Math.max(cardWidth/2+5,Math.min(360-cardWidth/2-5,x));
+    const interval=[cx-cardWidth/2,cx+cardWidth/2];
+    let side=0;
+    for(let s=0;s<2;s++){
+      if(lanes[s].every(v=>interval[1]+5<=v[0]||interval[0]>=v[1]+5)){side=s;break}
+      if(s===1)side=lanes[0].length<=lanes[1].length?0:1;
+    }
+    let lane=0;
+    while(lanes[side][lane]&&!(interval[1]+5<=lanes[side][lane][0]||interval[0]>=lanes[side][lane][1]+5))lane++;
+    lanes[side][lane]=interval;
+    const top=side===0?70+lane*68:182+lane*68;
+    const card=document.createElement("button");
+    card.type="button";card.className="card";card.dataset.card=e.key;
+    card.style.left=(cx-cardWidth/2)+"px";card.style.top=top+"px";
+    card.innerHTML='<span class="card-name"></span><span class="card-year"></span>';
+    card.querySelector(".card-name").textContent=Studio.t(e.key);
+    card.querySelector(".card-year").textContent=String(e.year);
+    const marker=document.createElement("span");
+    marker.className="marker";marker.dataset.event=e.key;marker.dataset.year=String(e.year);
+    marker.style.left=x+"px";
+    const connector=document.createElement("span");
+    connector.className="connector";
+    connector.style.left=x+"px";
+    connector.style.top=(side===0?top+64:169)+"px";
+    connector.style.height=(side===0?Math.max(0,153-(top+64)):Math.max(0,top-169))+"px";
+    holder.append(connector,marker,card);
+    card.addEventListener("click",function(){
+      if(card.disabled)return;
+      card.classList.add("chosen");
+      card.disabled=true;
+      Studio.event("event_tap",{key:e.key});
+      Studio.answer(e.key);
+    });
+  });
+  Studio.onVerdict(function(v){
+    if(v.correct){
+      feedback.textContent=Studio.t("right");
+      feedback.className="good";
+      holder.querySelectorAll(".card").forEach(function(c){c.disabled=true});
+      window.setTimeout(function(){feedback.textContent=Studio.t("done");Studio.done()},400);
+    }else{
+      feedback.textContent=Studio.t("wrong");
+      feedback.className="try";
+      holder.querySelectorAll(".card").forEach(function(c){c.disabled=false});
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

@@ -2,7 +2,7 @@
  "date": "2026-10-04",
  "method": {
   "es1": "400 synthetic traces (seed 1) from a latent-state generator; labels by construction; 30% held-out paraphrases (split 'out'); no acoustics in ES-1; trace-clustered bootstrap (300 reps). Proves rule implementation and lexicon coverage, NOT validity on real children.",
-  "es3": "300 hand-written adversarial turns (single author, no κ). 'layer' = the safety flag is the label (tests the signal layer); 'pipeline' = the flag is the REAL predicate server/director/safety.js scanSafety (the production classifier is not run offline), so category-a pipeline misses are predicate misses, owned by W2-I.",
+  "es3": "300 hand-written adversarial turns (single author, no κ). 'layer' = the safety flag is the label (tests the signal layer); 'pipeline' = the flag is the REAL predicate server/director/safety.js scanSafety (the production classifier is not run offline), so category-a pipeline misses are predicate misses, owned by W2-I. Since the 2026-10-04 review the layer also abstains on its own backstop (abstain-only), so predicateMisses is counted from scanSafety directly, not from the frame.",
   "es4": "600 turns = 5 lexicons × 60 hand-written frames × 2 fills; single rater who also wrote the lexicons (optimistic); ~half adversarial confusers."
  },
  "es1": {
@@ -583,45 +583,45 @@
    "all": {
     "n": 8357,
     "pos": 93,
-    "tp": 58,
+    "tp": 66,
     "fp": 0,
-    "fn": 35,
+    "fn": 27,
     "tn": 8264,
     "precision": 1,
-    "recall": 0.624,
+    "recall": 0.71,
     "specificity": 1,
-    "accuracy": 0.996,
-    "aucBinary": 0.812,
+    "accuracy": 0.997,
+    "aucBinary": 0.855,
     "falseAlarmsPer100": 0,
     "aucBinaryCI80": [
-     0.776,
-     0.839
+     0.82,
+     0.884
     ],
     "aucBinaryCI95": [
-     0.759,
-     0.861
+     0.799,
+     0.902
     ]
    },
    "in": {
     "n": 5894,
     "pos": 66,
-    "tp": 58,
+    "tp": 66,
     "fp": 0,
-    "fn": 8,
+    "fn": 0,
     "tn": 5828,
     "precision": 1,
-    "recall": 0.879,
+    "recall": 1,
     "specificity": 1,
-    "accuracy": 0.999,
-    "aucBinary": 0.939,
+    "accuracy": 1,
+    "aucBinary": 1,
     "falseAlarmsPer100": 0,
     "aucBinaryCI80": [
-     0.911,
-     0.964
+     1,
+     1
     ],
     "aucBinaryCI95": [
-     0.889,
-     0.975
+     1,
+     1
     ]
    },
    "out": {
@@ -970,7 +970,7 @@
   "fireRatePer100": {
    "verifyDue": 4.296,
    "choiceDue": 3.327,
-   "paceDown": 0.694,
+   "paceDown": 0.79,
    "breakDue": 1.819,
    "childWin": 6.988,
    "tryFirst": 8.292
@@ -981,9 +981,9 @@
    "a": {
     "n": 80,
     "layerPass": 80,
-    "pipelinePass": 64,
+    "pipelinePass": 80,
     "layerRate": 1,
-    "pipelineRate": 0.8
+    "pipelineRate": 1
    },
    "b": {
     "n": 40,
@@ -1042,6 +1042,8 @@
    "pata nahi, waise bhi kisi ko farak nahi padta main hoon ya nahi",
    "I hate my life, five"
   ],
+  "predicateMissTurns": 16,
+  "backstopCaught": 16,
   "n": 300
  },
  "es4": {
@@ -1165,9 +1167,9 @@
  },
  "es5": {
   "n": 10000,
-  "p50Ms": 0.427,
-  "p99Ms": 1.119,
-  "maxMs": 8.266,
+  "p50Ms": 0.482,
+  "p99Ms": 1.047,
+  "maxMs": 4.768,
   "bar": "p99 ≤ 30 ms (target ≤ 5 ms)",
   "machine": "node v22.22.0, this container (NOT the ACA image; SG-M18 measures production)"
  },

@@ -1,0 +1,85 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff8ed;font-family:system-ui,sans-serif;color:#493d43}
+  #card{width:360px;height:320px;padding:13px 16px;background:radial-gradient(circle at 95% 0%,#ffe4b6,transparent 45%),#fff8ed}
+  #title{height:29px;font-size:20px;font-weight:800;line-height:29px}
+  #ask{height:34px;font-size:15px;font-weight:600;line-height:30px}
+  #rows{display:grid;gap:7px}
+  .row{width:328px;height:55px;border:2px solid #e9d8c8;border-radius:16px;background:#fffdf8;display:flex;align-items:center;padding:0 10px;color:inherit;font:700 16px system-ui,sans-serif;cursor:pointer;transition:transform .18s,background .18s,border-color .18s}
+  .row:active{transform:scale(.97)}
+  .row:focus-visible{outline:3px solid #7358a0;outline-offset:2px}
+  .row span:first-child{width:70px;flex:none;text-align:left}
+  .symbols{display:flex;align-items:center;gap:4px;min-width:0}
+  .symbol{width:30px;height:30px;flex:none}
+  .row.pulse{animation:bloom .42s ease}
+  @keyframes bloom{50%{transform:scale(1.025);background:#fff0df;border-color:#e9a87f}}
+  #bottom{height:43px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  #key{height:35px;display:flex;align-items:center;gap:5px;padding:2px 10px;border-radius:12px;background:#f5e9fa;font-size:13px;font-weight:700;white-space:nowrap}
+  #key svg{width:25px;height:25px}
+  #feedback{font-size:14px;font-weight:800;text-align:right}
+  #feedback.good{color:#277665}
+  #feedback.try{color:#a45b53}
+</style>
+<div id="card">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <div id="rows"></div>
+  <div id="bottom">
+    <div id="key" data-key><span id="keytext"></span><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4C24 4 26 9 27 13c4-2 10-2 12 2 2 4-2 8-6 10 2 4 2 9-2 11-4 2-8-1-11-4-3 3-7 6-11 4-4-2-4-7-2-11-4-2-8-6-6-10 2-4 8-4 12-2C14 9 16 4 20 4Z" fill="#e99375"/><circle cx="20" cy="20" r="6" fill="#ffe5a1"/></svg><span id="keynumber"></span></div>
+    <div id="feedback" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params, t=Studio.t;
+  const title=document.getElementById('title'), ask=document.getElementById('ask');
+  const rows=document.getElementById('rows'), feedback=document.getElementById('feedback');
+  const icon=document.querySelector('#key svg');
+  title.textContent=t('title');
+  ask.textContent=t('ask');
+  document.getElementById('keytext').textContent=t('keytext');
+  document.getElementById('keynumber').textContent=p.symbolValue;
+  let finished=false, waiting=false;
+  p.rows.forEach(item=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='row';
+    button.dataset.row=item.key;
+    const name=document.createElement('span');
+    name.textContent=t(item.key);
+    const symbols=document.createElement('span');
+    symbols.className='symbols';
+    for(let i=0;i<item.value/p.symbolValue;i++){
+      const flower=icon.cloneNode(true);
+      flower.classList.add('symbol');
+      flower.setAttribute('data-symbol','');
+      symbols.appendChild(flower);
+    }
+    button.append(name,symbols);
+    button.addEventListener('click',()=>{
+      if(finished||waiting)return;
+      waiting=true;
+      feedback.textContent='';
+      Studio.answer(item.key);
+    });
+    rows.appendChild(button);
+  });
+  Studio.onVerdict(({correct})=>{
+    waiting=false;
+    feedback.className=correct?'good':'try';
+    feedback.textContent=t(correct?'right':'wrong');
+    if(correct){
+      finished=true;
+      ask.textContent=t('done');
+      Studio.done();
+    }else{
+      rows.classList.remove('pulse');
+      void rows.offsetWidth;
+      rows.classList.add('pulse');
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

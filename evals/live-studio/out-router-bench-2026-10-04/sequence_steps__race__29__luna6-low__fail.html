@@ -1,0 +1,100 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8eb;color:#493b32}
+.stage{width:360px;height:320px;padding:12px 14px;display:flex;flex-direction:column;gap:9px;overflow:hidden}
+h1{font-size:19px;line-height:24px;margin:0;color:#654b35}
+.instr{font-size:13px;line-height:17px;margin:0;color:#765f4b;min-height:34px}
+.board{display:flex;flex-direction:column;gap:7px}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card{height:62px;border:2px solid #efc98f;border-radius:15px;background:#fff0d5;color:#664d34;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px;cursor:pointer;box-shadow:0 3px 0 #e5bb7e;transition:transform .18s,background .2s,border-color .2s,box-shadow .18s;user-select:none}
+.card:active{transform:scale(.94)}
+.card:hover{background:#ffe8bf}
+.card:focus-visible{outline:3px solid #588b7d;outline-offset:2px}
+.track .slot{height:69px;border:2px dashed #d9c7aa;border-radius:15px;background:#fffdf8;display:flex;align-items:center;justify-content:center;position:relative;transition:background .25s,border-color .25s}
+.num{position:absolute;top:3px;left:6px;color:#aa8961;font-size:13px;font-weight:800}
+.slot .card{width:100%;height:100%;border-style:solid;box-shadow:0 2px 0 #e5bb7e;animation:arrive .32s ease-out}
+.feedback{height:22px;text-align:center;font-size:14px;font-weight:700;color:#588b7d;line-height:22px}
+.feedback.wrong{color:#a96752}
+.done{color:#588b7d}
+.shake{animation:shake .32s ease-in-out}
+@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+@keyframes arrive{0%{transform:scale(.82)}70%{transform:scale(1.04)}100%{transform:scale(1)}}
+</style>
+<main class="stage">
+  <h1 id="title"></h1>
+  <p class="instr" id="instr"></p>
+  <section class="board" aria-label="">
+    <div class="row cards" id="cards"></div>
+    <div class="row track" id="track"></div>
+  </section>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</main>
+<script>
+
+(function(){
+  const params=Studio.params;
+  const keys=params.shown;
+  const title=document.getElementById("title");
+  const instr=document.getElementById("instr");
+  const cards=document.getElementById("cards");
+  const track=document.getElementById("track");
+  const feedback=document.getElementById("feedback");
+  title.textContent=Studio.t("title");
+  instr.textContent=Studio.t("instr");
+  const slots=[];
+  keys.forEach(function(key,index){
+    const card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    card.addEventListener("click",function(){
+      if(card.disabled||card.dataset.placed)return;
+      card.disabled=true;
+      feedback.className="feedback";
+      feedback.textContent="";
+      Studio.answer({key:key});
+      Studio.onVerdict(function(result){
+        if(result.correct){
+          const position=slots.findIndex(function(slot){return !slot.dataset.filled});
+          if(position<0)return;
+          const slot=slots[position];
+          slot.dataset.filled="true";
+          card.dataset.placed=String(position+1);
+          slot.appendChild(card);
+          slot.style.borderColor="#9bc4a9";
+          slot.style.background="#f1f8ed";
+          feedback.textContent=Studio.t("right");
+          if(position+1===keys.length){
+            feedback.textContent=Studio.t("done");
+            feedback.classList.add("done");
+            Studio.done();
+          }else{
+            card.disabled=false;
+          }
+        }else{
+          card.disabled=false;
+          feedback.textContent=Studio.t("wrong");
+          feedback.classList.add("wrong");
+          card.classList.remove("shake");
+          void card.offsetWidth;
+          card.classList.add("shake");
+          card.addEventListener("animationend",function(){card.classList.remove("shake")},{once:true});
+        }
+      });
+    });
+    cards.appendChild(card);
+    const slot=document.createElement("div");
+    slot.className="slot";
+    const number=document.createElement("span");
+    number.className="num";
+    number.textContent=String(index+1);
+    slot.appendChild(number);
+    track.appendChild(slot);
+    slots.push(slot);
+  });
+  Studio.ready();
+})();
+
+</script>

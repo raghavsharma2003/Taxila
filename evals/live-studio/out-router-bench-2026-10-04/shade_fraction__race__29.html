@@ -1,0 +1,118 @@
+<style>
+*{box-sizing:border-box}
+#scene{width:360px;height:320px;overflow:hidden;padding:12px 18px;background:#fff7e9;color:#573e35;font-family:system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:6px}
+h1{font-size:20px;line-height:24px;margin:0;color:#8d4e35;flex:0 0 24px}
+#instruction{font-size:13px;line-height:16px;margin:0;text-align:center;color:#735d52;flex:0 0 16px}
+#target{font-size:25px;line-height:30px;font-weight:800;color:#a65238;background:#ffe4bf;border-radius:14px;padding:0 14px;min-width:68px;text-align:center;flex:0 0 34px}
+#whole{width:320px;height:124px;overflow:visible;touch-action:manipulation;flex:0 0 124px}
+.part{fill:#f3dcae;stroke:#fff7e9;stroke-width:3;cursor:pointer;transition:fill .18s,transform .16s;transform-box:fill-box;transform-origin:center}
+.part[data-shaded="true"]{fill:#f29b4b}
+.part:active{transform:scale(.94)}
+#feedback{height:22px;flex:0 0 22px;font-size:14px;line-height:20px;font-weight:700;color:#6c8a4b;text-align:center}
+#feedback.bad{color:#b45a47}
+button{border:0;border-radius:18px;background:#66864b;color:white;font:700 17px system-ui,sans-serif;min-width:116px;height:56px;min-height:56px;flex:0 0 56px;padding:0 22px;box-shadow:0 4px 0 #496737;cursor:pointer;transition:transform .15s,background .2s}
+button:active{transform:scale(.94) translateY(2px);box-shadow:0 2px 0 #496737}
+#scene.celebrate{animation:bounce .45s ease}
+@keyframes bounce{50%{transform:scale(1.02)}}
+</style>
+<main id="scene">
+  <h1 id="title"></h1>
+  <p id="instruction"></p>
+  <div id="target" data-target></div>
+  <svg id="whole" viewBox="0 0 320 124" role="img" aria-label=""></svg>
+  <div id="feedback" aria-live="polite"></div>
+  <button id="check" type="button" data-action="check"></button>
+</main>
+<script>
+
+(()=>{
+  const params=Studio.params;
+  const scene=document.getElementById('scene');
+  const title=document.getElementById('title');
+  const instruction=document.getElementById('instruction');
+  const target=document.getElementById('target');
+  const whole=document.getElementById('whole');
+  const feedback=document.getElementById('feedback');
+  const check=document.getElementById('check');
+  title.textContent=Studio.t('title');
+  instruction.textContent=Studio.t('instr');
+  check.textContent=Studio.t('check');
+  let index=0,pending=false,finished=false;
+  let parts=[];
+  function render(){
+    const item=params.items[index];
+    parts=[];
+    pending=false;
+    feedback.textContent='';
+    feedback.classList.remove('bad');
+    target.textContent=item.n+'/'+item.d;
+    scene.dataset.item=item.id;
+    whole.replaceChildren();
+    for(let i=0;i<item.d;i++){
+      let part;
+      if(params.picture==='pizza'){
+        const cx=160,cy=62,r=54;
+        const a1=i/item.d*Math.PI*2-Math.PI/2;
+        const a2=(i+1)/item.d*Math.PI*2-Math.PI/2;
+        const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+        const x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+        part=document.createElementNS('http://www.w3.org/2000/svg','path');
+        part.setAttribute('d',`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`);
+      }else{
+        const gap=3,width=320/item.d;
+        part=document.createElementNS('http://www.w3.org/2000/svg','rect');
+        part.setAttribute('x',String(i*width+gap/2));
+        part.setAttribute('y','14');
+        part.setAttribute('width',String(Math.max(1,width-gap)));
+        part.setAttribute('height','96');
+        part.setAttribute('rx','10');
+      }
+      part.setAttribute('class','part');
+      part.dataset.part=String(i);
+      part.dataset.shaded='false';
+      part.addEventListener('click',()=>{
+        if(!pending)part.dataset.shaded=String(part.dataset.shaded!=='true');
+      });
+      whole.append(part);
+      parts.push(part);
+    }
+  }
+  check.addEventListener('click',()=>{
+    if(pending||finished)return;
+    pending=true;
+    const item=params.items[index];
+    const n=parts.reduce((count,part)=>count+(part.dataset.shaded==='true'?1:0),0);
+    Studio.answer({n,d:item.d});
+  });
+  Studio.onVerdict(({correct})=>{
+    if(finished)return;
+    pending=false;
+    if(correct){
+      feedback.classList.remove('bad');
+      feedback.textContent=Studio.t('right');
+      scene.classList.remove('celebrate');
+      requestAnimationFrame(()=>scene.classList.add('celebrate'));
+      index++;
+      if(index>=params.items.length){
+        finished=true;
+        setTimeout(()=>{
+          title.textContent=Studio.t('done');
+          instruction.textContent='';
+          target.textContent='';
+          whole.replaceChildren();
+          feedback.textContent='';
+          check.style.display='none';
+          scene.removeAttribute('data-item');
+          Studio.done();
+        },550);
+      }else setTimeout(render,550);
+    }else{
+      feedback.textContent=Studio.t('wrong');
+      feedback.classList.add('bad');
+    }
+  });
+  render();
+  Studio.ready();
+})();
+
+</script>

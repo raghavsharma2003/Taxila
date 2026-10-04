@@ -18,7 +18,9 @@
 // Limits: synthetic TTS child voices (no real children, E1 pending); one pass; US container -> eastus2 RTT ~51 ms (an India
 // phone adds ~200 ms RTT); the teacher's own audio is not played (echo-free); partial timing depends on Azure load.
 // Spend: ~60 short TTS clips + 2 x n x ~10 s of transcription: well under USD 1.
-//   NODE_USE_ENV_PROXY=1 node evals/duplex/live-validate.mjs [--only a01,b01] [--conc 4]
+//   NODE_USE_ENV_PROXY=1 node evals/duplex/live-validate.mjs [--only a01,b01] [--conc 4] [--tag v2]
+// v1 (2026-10-04) ran the pre-replay floor policy; v2 the policy after the M-D2 replay fixes (open-tail cap, G5 floor,
+// hold-request spellings, probe-then-decide). Both keep their own result file.
 import fs from "node:fs";
 import path from "node:path";
 import { loadEnv, ROOT, RESULTS, SR, childClip, noise, withNoise, pcmFrames, q, mean, r0 } from "./lib.mjs";
@@ -211,7 +213,8 @@ const result = {
   base: summary.base, duplex: summary.duplex, runs,
 };
 fs.mkdirSync(RESULTS, { recursive: true });
-const out = path.join(RESULTS, `live-validate-${result.date}.json`);
+const TAG = arg("--tag", "");
+const out = path.join(RESULTS, `live-validate-${result.date}${TAG ? `-${TAG}` : ""}.json`);
 fs.writeFileSync(out, JSON.stringify(result, null, 1));
 console.log(JSON.stringify(result.calibration, null, 1));
 console.log(`→ ${path.relative(ROOT, out)}`);

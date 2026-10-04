@@ -162,3 +162,43 @@ export function tw2(key: W2AKey, vars: Record<string, string | number> = {}): st
 /** A subject id in plain words (chrome). */
 export const subjectWords = (s: string | null | undefined): string =>
   (s && (W2A as Record<string, string>)[`subject.${s}`]) || (s ?? "");
+
+/** W2-H: the Studio stage (LIVE-STUDIO §4, STUDENT-FLOW §5.3): the caption chip, the child's controls, skeleton chrome. */
+export const W2H = {
+  // the caption chip while a piece is being made (rotated per lesson so it never becomes a tic)
+  "making.0": "{T} is making this for you",
+  "making.1": "{T} is drawing this for you",
+  "making.2": "{T} is putting this together",
+  // the child's controls on a piece
+  "again": "Show me again",
+  "notThis": "Not this one",
+  "more": "More",
+  // skeleton chrome (used only when the piece has no checked words of its own)
+  "check": "Check",
+  "right": "That's it",
+  "wrong": "Not yet. Look again",
+  "done": "All done",
+  "shade": "Shade {f}",
+  "jump": "Put the marker on {f}",
+  "tap.most": "Tap the biggest",
+  "tap.least": "Tap the smallest",
+  "tap.earliest": "Tap the earliest",
+  "tap.latest": "Tap the latest",
+  "next": "What comes next?",
+  "order": "Tap the steps in order",
+  "sort": "Pick a card, then its box",
+  "balance": "Which weight balances it?",
+  "slider": "Move it, then answer",
+  "find": "Find {p}",
+  "ask": "Which one?",
+  "less": "Less",
+  "moreBtn": "More",
+  "symbol": "1 symbol = {n}",
+} as const;
+
+export type W2HKey = keyof typeof W2H;
+
+/** A W2-H label with its {vars} filled. */
+export function tw2h(key: W2HKey, vars: Record<string, string | number> = {}): string {
+  return W2H[key].replace(/\{(\w+)\}/g, (m, k: string) => (vars[k] === undefined ? m : String(vars[k])));
+}

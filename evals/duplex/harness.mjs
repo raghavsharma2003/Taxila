@@ -82,7 +82,7 @@ const MS_PER_CHAR = 70;
 
 export function runScenario(sc, seed, arm, env = {}) {
   const r = rng(seed * 7919 + sc.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0));
-  const tl = timeline(sc, r, { rate: r.u(0.85, 1.15), segDur: env.segDur?.[sc.id] ?? null, pauseJitter: env.segDur ? 0 : 0.2 });
+  const tl = timeline(sc, r, { rate: r.u(0.85, 1.15), segDur: env.segDur?.[sc.id] ?? null, pauseJitter: env.segDur ? 0 : 0.2, start: env.lead?.[sc.id] ?? null });
   const until = tl.end + 9000;
   const fr = env.frames?.[sc.id] ?? frames(tl, r, { until });
   const stage = () => STAGES[Math.floor(r() * STAGES.length)];
@@ -113,7 +113,11 @@ function runDuplex(sc, r, tl, fr, until, stage, arm, env, rec) {
       if (a.do === "stt_commit") { const at = stt.commit(t); if (at) finalAt = Math.max(finalAt, at); }
       else if (a.do === "candidate") dm?.onCandidate(t, a.text);
       else if (a.do === "cancel_candidate") { if (a.quarantine) dm?.onSafety(t); else dm?.onResume(t); }
-      else if (a.do === "safety_attend") { rec.safety = rec.safety || { at: t, kind: a.kind }; dm?.onSafety(t); if (live) { live.cancelled = true; live = null; } }
+      else if (a.do === "safety_attend") {
+        rec.safety = rec.safety || { at: t, kind: a.kind };
+        dm?.onSafety(t);
+        if (live) { live.cancelled = true; live.cancelledAt = t; live.cancelReason = "safety"; live = null; }
+      }
       else if (a.do === "commit") {
         const ready = Math.max(t, finalAt);
         const grade = a.safety ? null : gradeOf(sc, a.text);

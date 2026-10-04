@@ -15,6 +15,9 @@ import { gateClient } from "./qa/pool.js";
 import { buildRecord, record, sha256 } from "./telemetry.js";
 import { PLAYERS } from "./qa/players/index.js";
 
+/** A builder error that says the wire failed, not the model (azure.js codes: network, ECONNRESET, fetch failed ...). */
+export const isNetworkError = (e) => /network|ECONN|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|socket|fetch failed|UND_ERR/i.test(String(e ?? ""));
+
 /**
  * @param {import("../../shared/studio").BuildPlan} plan
  * @param {{ route?: any, gate?: (job: object) => Promise<any>, band?: string, lang?: string, deadlineMs?: number, signal?: AbortSignal,
@@ -93,7 +96,11 @@ export async function buildRace(plan, o = {}) {
   o.signal?.removeEventListener?.("abort", onExt);
   if (reason === "q8") winner = null;               // a table that failed Q8 never reaches a child, even if a build passed
   const ok = !!winner;
-  breaker.result(ok);
+  // every arm died on the wire before any gate ran (DNS, reset, proxy, container restart): an infrastructure fault, not
+  // a build result. It reveals nothing (the fallback ladder), is not a failed race for the breaker's streak, and the
+  // bench re-runs it instead of counting it (rj-w2f-network-as-build-failure).
+  if (!ok && !reason && records.length && records.every((r) => !r.gate.checks.length && isNetworkError(r.error))) reason = "builder_unreachable";
+  if (reason !== "builder_unreachable") breaker.result(ok);     // a dead gate still counts (it protects spend); a dead wire spent nothing
   const usd = +records.reduce((s, r) => s + r.usd, 0).toFixed(5);
   const ms = Math.round(performance.now() - t0);
   if (winner) winner.record = records.find((r) => r.buildSha === winner.sha256) ?? null;

@@ -12,6 +12,9 @@
 import type { ComponentType } from "react";
 import type { StageSize, StudioArtifact, StudioArtifactKind } from "../../shared/studio.ts";
 import { StudioWhiteboard } from "../modules/whiteboard/StudioWhiteboard.tsx";
+import { StudioFrame } from "./StudioFrame.tsx";
+import { SkeletonRenderer } from "./skeletons.tsx";
+import { ImageRenderer } from "./ImageRenderer.tsx";
 
 /** What a renderer may tell the stage. An answer is host-graded (LIVE-STUDIO §3.10); `correct` is never trusted. */
 export type StudioStageEvent =
@@ -37,6 +40,9 @@ export type ArtifactRenderer<K extends StudioArtifactKind = StudioArtifactKind> 
 /** The registry. One line per kind, added by its owner (see the header). */
 export const RENDERERS: { [K in StudioArtifactKind]?: ArtifactRenderer<K> } = {
   whiteboard: StudioWhiteboard, // W2-B: the drawing-script renderer (src/modules/whiteboard/**)
+  frame: StudioFrame,           // W2-H: a gate-passed build (hash-CSP, opaque origin, host-graded)
+  skeleton: SkeletonRenderer,   // W2-H: the code skeleton (the sketch while making; the activity when the build is not there)
+  image: ImageRenderer,         // W2-H: art only (W3-G's image lane fills it)
 };
 
 export function rendererFor<K extends StudioArtifactKind>(kind: K): ArtifactRenderer<K> | null {

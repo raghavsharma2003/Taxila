@@ -15,6 +15,7 @@ P = "art/character/puppet2d/polish-r4/pack"
 os.makedirs(P, exist_ok=True)
 g = json.load(open(f"{L}/geom.json"))
 names = [n for n in g["rects"] if n != "bg"] + ["interior"]
+names += [f"plate{k}" for k in ("L", "R") if k in g.get("plates", {})]   # r4: the painted 3/4 plates (two-texture yaw keyform)
 HIGH = {"mouth_rest", "irisL", "irisR", "scleraL", "scleraR", "lidL", "lidR", "lowerL", "lowerR", "browL", "browR", "catchL", "catchR",
         "lidmidL", "lidmidR", "lidshutL", "lidshutR", "interior"}
 total = 0

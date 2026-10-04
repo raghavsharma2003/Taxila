@@ -53,12 +53,13 @@ export function gatedEmission(ev, R, confusionOverrides) {
  * Forge module (host-graded until the 50-session agreement gate) ×0.75. Lucky game predictions otherwise carried
  * guessers over the pL 0.6 "does it" line (comprehension sim: not_yet accuracy 0.62 with game evidence, 0.75 without).
  */
-export const SOURCE_WEIGHT = Object.freeze({ game: 0.5, module: 0.75 });
+// studio (W2-H, LIVE-STUDIO D12 §3.10): host-graded Studio answers weigh like modules until ledger-game-full-weight resolves
+export const SOURCE_WEIGHT = Object.freeze({ game: 0.5, module: 0.75, studio: 0.75 });
 /**
  * The source an event's weight comes from: its via, except a late verdict's correction (via 'late',
  * comprehension/later.js lateEvent), which carries its held event's game / module source in its id (`<id>:late:<via>`).
  */
-export const sourceOf = (ev) => (ev.via === "late" ? /:late:(game|module)$/.exec(String(ev.id ?? ""))?.[1] ?? "late" : ev.via);
+export const sourceOf = (ev) => (ev.via === "late" ? /:late:(game|module|studio)$/.exec(String(ev.id ?? ""))?.[1] ?? "late" : ev.via);
 /** Rule 4 tempering exponent: assisted ^0.5, gaming window ^0.25, controllerEasy ^0.5, unverified kit ^0.5, source (game/module). */
 export function temper(ev) {
   let x = SOURCE_WEIGHT[sourceOf(ev)] ?? 1;

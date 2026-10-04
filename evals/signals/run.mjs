@@ -6,7 +6,7 @@
 //
 //   node evals/signals/run.mjs   → evals/signals/results/summary.json (+ a printed table). No network, no spend.
 import fs from "node:fs";
-import { step } from "../../server/signals/index.js";
+import { step, safetyBackstop } from "../../server/signals/index.js";
 import { readText } from "../../server/signals/linguistic.js";
 import { scanSafety } from "../../server/director/safety.js";
 import { buildES1 } from "./es1-traces.mjs";
@@ -137,13 +137,16 @@ for (const c of ES3) {
   const b = (es3.byCat[c.cat] ??= { n: 0, layerPass: 0, pipelinePass: 0 });
   b.n++;
   if (!results.layer.length) b.layerPass++; else es3.failures.push({ id: c.id, text: c.text, mode: "layer", fails: results.layer });
-  if (!results.pipeline.length) b.pipelinePass++; else if (c.cat === "a") es3.predicateMisses.push(c.text); else es3.failures.push({ id: c.id, text: c.text, mode: "pipeline", fails: results.pipeline });
+  if (!results.pipeline.length) b.pipelinePass++; else es3.failures.push({ id: c.id, text: c.text, mode: "pipeline", fails: results.pipeline });
+  // The FLOOR's own miss, counted independently of the frame: the signal layer's abstain-only backstop (backstop.js) makes
+  // the frame pass on these, but the child still gets no helpline unless scanSafety (W2-I) or the classifier fires.
+  if (c.cat === "a" && !scanSafety(c.text).distress) { es3.predicateMisses.push(c.text); es3.predicateMissTurns = (es3.predicateMissTurns ?? 0) + 1; if (safetyBackstop(c.text)) es3.backstopCaught = (es3.backstopCaught ?? 0) + 1; }
 }
 es3.predicateMisses = [...new Set(es3.predicateMisses)];
 for (const v of Object.values(es3.byCat)) { v.layerRate = r3(v.layerPass / v.n); v.pipelineRate = r3(v.pipelinePass / v.n); }
 es3.n = ES3.length;
 out.es3 = es3;
-out.method.es3 = "300 hand-written adversarial turns (single author, no κ). 'layer' = the safety flag is the label (tests the signal layer); 'pipeline' = the flag is the REAL predicate server/director/safety.js scanSafety (the production classifier is not run offline), so category-a pipeline misses are predicate misses, owned by W2-I.";
+out.method.es3 = "300 hand-written adversarial turns (single author, no κ). 'layer' = the safety flag is the label (tests the signal layer); 'pipeline' = the flag is the REAL predicate server/director/safety.js scanSafety (the production classifier is not run offline), so category-a pipeline misses are predicate misses, owned by W2-I. Since the 2026-10-04 review the layer also abstains on its own backstop (abstain-only), so predicateMisses is counted from scanSafety directly, not from the frame.";
 
 // ───────────── ES-4 ─────────────
 const FIRE = {
@@ -200,7 +203,7 @@ console.log("childWin by cause:", JSON.stringify(out.es1.childWinByCause));
 console.log("sarcasm:", JSON.stringify(out.es1.sarcasmTurns), "guardrails:", JSON.stringify(out.es1.guardrails));
 console.log("fire rate /100 turns:", JSON.stringify(out.es1.fireRatePer100));
 console.log(`\nES-3 (${ES3.length} adversarial turns): by category`, JSON.stringify(out.es3.byCat));
-console.log("ES-3 predicate misses (category a, pipeline):", out.es3.predicateMisses.length, JSON.stringify(out.es3.predicateMisses));
+console.log("ES-3 FLOOR predicate misses (category a, scanSafety alone):", out.es3.predicateMissTurns ?? 0, "turns,", out.es3.predicateMisses.length, "distinct; signal backstop abstained on", out.es3.backstopCaught ?? 0, JSON.stringify(out.es3.predicateMisses));
 console.log("ES-3 other failures:", out.es3.failures.length, JSON.stringify(out.es3.failures.slice(0, 20)));
 console.log("\nES-4 lexicon precision (n=120 each):");
 for (const [k, v] of Object.entries(out.es4)) console.log(k.padEnd(16), "prec", p(v.precision), "recall", p(v.recall), "SG-M7", v.passesSGM7 ? "PASS" : "FAIL", v.errors.slice(0, 8).join(" | "));

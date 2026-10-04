@@ -52,7 +52,7 @@ const V = {
   viseme_E: { ...Z, g: 17, up: 0.35, W: 1.1, T: 1, TL: 0.55 },
   viseme_I: { ...Z, g: 9, up: 0.4, W: 1.08, T: 1, TL: 0.75 },
   viseme_O: { ...Z, g: 28, up: 0.4, W: 0.7, flat: 0.85, round: 1, T: 0.35, TL: 0.05 },
-  viseme_U: { ...Z, g: 15, up: 0.45, W: 0.6, flat: 0.9, round: 1, T: 0.1, TL: 0 },
+  viseme_U: { ...Z, g: 20, up: 0.45, W: 0.6, flat: 0.9, round: 1, T: 0, TL: 0, th: 0.3 },
 };
 const KEYS = Object.keys(Z);
 // per-parameter smoothing time constants (s): the opening tracks the phonemes, the width and curvature glide
@@ -338,9 +338,12 @@ export class LipShell {
         const j = q % sh.R;
         if (j <= 2) {
           const gp = this.colL[Math.floor(q / sh.R) * 3 + 2];
-          const sh2 = clamp01(gp / 3) * (sh.sign > 0 ? 2.5 : 1.2) * (j === 2 ? 0.4 : 1);
+          const sh2 = clamp01(gp / 3) * (sh.sign > 0 ? 4.0 : 1.6) * (j === 2 ? 0.4 : 1);
           sh.uv[q * 2 + 1] = sh.uv0[q * 2 + 1] + sh.sign * sh2 / (this.rect[3] - this.rect[1]);
         }
+        // r4b: near-closed lips OVERLAP by up to 0.8 px (the upper sheet, drawn last, rides over the lower one): two
+        // sheets whose shared edge differs by a sub-pixel cracked, and the face layer showed as dots along the seam
+        if (j === 0 && sh.sign < 0) sh.pos[q * 2 + 1] += 0.8 * (1 - clamp01(this.colL[Math.floor(q / sh.R) * 3 + 2] / 1.5)) * (1 - sstep(0.95, 1.15, Math.abs(sOf(sh.rest[q * 2]))));
       }
     }
     // interior strip between the deformed inner edges

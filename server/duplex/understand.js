@@ -71,7 +71,17 @@ const YIELD_Q_TAIL = /(?:होता है|होती है|होते �
 const IDK = /(?:पता नहीं|pata nahi|pata nahin|नहीं पता|nahi pata|समझ नहीं आया|samajh nahi aaya|i don'?t know|dont know|didn'?t understand|मालूम नहीं|nahi aata|नहीं आता)/u;
 const WORD_SEARCH = /(?:क्या कहते हैं|kya kehte hain|क्या बोलते हैं|kya bolte hain|वो क्या|woh kya)$/u;
 /** Explicit requests for time, anchored to the TAIL (the last few words), never anywhere in a long turn. */
-const HOLD_TAIL = /(?:(?:^|\s)(?:एक|ek|one)\s*(?:मिनट|minute|min|सेकंड|second|sec)|(?:^|\s)(?:रुको|रुकिए|ruko|rukiye|wait|hold on)(?:\s+(?:रुको|ruko|दीदी|didi|sir|ma'?am))?|(?:सोच|soch)\s*(?:रहा|रही|raha|rahi)\s*(?:हूँ|हूं|hoon|hu)|(?:सोचने|sochne)\s*(?:दो|do|दीजिए|dijiye)|let me think|i(?:'?m| am) thinking)$/u;
+// "सोच रहा हो/हु": the live transcriber's spelling of "सोच रहा हूँ" (M-D2 h04: the request was missed and the turn committed)
+const HOLD_TAIL = /(?:(?:^|\s)(?:एक|ek|one)\s*(?:मिनट|minute|min|सेकंड|second|sec)|(?:^|\s)(?:रुको|रुकिए|ruko|rukiye|wait|hold on)(?:\s+(?:रुको|ruko|दीदी|didi|sir|ma'?am))?|(?:सोच|soch)\s*(?:रहा|रही|रहे|raha|rahi)\s*(?:हूँ|हूं|हू|हु|हो|hoon|hu|ho)|(?:सोचने|sochne)\s*(?:दो|do|दीजिए|dijiye)|let me think|i(?:'?m| am) thinking)$/u;
+
+/**
+ * Open tails Study C's lexicon does not carry (duplex prototype, M-D2 live replay): a Hindi postposition or a sequencing
+ * adverb last means the clause is not finished ("पहले मैंने छह को…", "तो पहले…"). Shapes, not lines.
+ */
+const OPEN_TAIL_EXTRA = /(?:^|\s)(?:को|ने|तक|लिए|साथ|बाद|बारे|वाले|पहले|फिर से|ko|ne|tak|liye|saath|baad|pehle|pahle|then|first|to the|of the|with)$/u;
+/** A subordinate opener (when / if) with no "then" after it projects a main clause: "जब हम दो fractions जोड़ते हैं…". */
+const PROJECTOR = /(?:^|\s)(?:जब|अगर|यदि|jab|agar|if|when)(?=\s)/u;
+const PROJ_CLOSE = /(?:^|\s)(?:तो|तब|to|toh|tab|then)(?=\s|$)/u;
 
 /** The text after the last explicit hold request: the part the end-of-turn scorer should read (finding F-HOLD, §2 of the write-up). */
 export function afterHold(text) {
@@ -108,7 +118,13 @@ export function understand(text, ctx = {}) {
     else if (m || (vals.length >= 2 && vals[vals.length - 1].v !== vals[vals.length - 2].v)) repaired = true;
   }
   const scored = hold.held && !holdTail ? hold.rest : raw;
-  const lex = holdTail ? { p: 0.02, cue: "hold_request" } : policyScore(scored, { beat: ctx.beat, answerForm: ctx.answerForm });
+  let lex = holdTail ? { p: 0.02, cue: "hold_request" } : policyScore(scored, { beat: ctx.beat, answerForm: ctx.answerForm });
+  if (!holdTail && lex.cue !== "yield" && lex.cue !== "value") {
+    const st = normText(scored);
+    const pm = PROJECTOR.exec(st);
+    if (OPEN_TAIL_EXTRA.test(st)) lex = { p: Math.min(lex.p, 0.12), cue: "open" };
+    else if (pm && !PROJ_CLOSE.test(st.slice(pm.index + pm[0].length))) lex = { p: Math.min(lex.p, 0.3), cue: "projection" };
+  }
   const asks = /[?？]\s*$/.test(raw.trim()) || (QWORD.test(t) && YIELD_Q_TAIL.test(t) && toks.length <= 12) || /(?:^|\s)(?:matlab|मतलब)\s*[?？]\s*$/u.test(raw);
   const lastValue = vals.length ? vals[vals.length - 1].v : null;
   const mis = (ctx.misconceptionValues || []).find((v) => lastValue !== null && String(v) === lastValue) ?? null;

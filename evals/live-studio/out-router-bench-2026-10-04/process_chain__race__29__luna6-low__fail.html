@@ -1,0 +1,114 @@
+<style>
+*{box-sizing:border-box}
+#lesson{width:360px;height:320px;overflow:hidden;position:relative;padding:12px;background:#fff7e9;color:#493b34;font-family:system-ui,sans-serif;border-radius:18px;display:flex;flex-direction:column;gap:8px}
+#lesson h1{font-size:18px;line-height:22px;margin:0;text-align:center;color:#774e3d}
+#scene{height:124px;position:relative;flex:none}
+#stages{position:absolute;inset:28px 0 auto;display:flex;justify-content:center;gap:8px}
+.stage{height:62px;width:72px;flex:none;border:2px solid #e7c99c;border-radius:18px;background:#fffdf7;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;position:relative;z-index:1;transition:background .3s,border-color .3s,box-shadow .3s,transform .3s}
+.stage[data-current="true"]{background:#fff0bd;border-color:#e8a84c;box-shadow:0 0 0 5px #f6d99588;transform:scale(1.04)}
+.stage span{font-size:13px;font-weight:700;line-height:15px}
+#arrows{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#arrows path{fill:none;stroke:#bc9875;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+#arrows marker path{fill:#bc9875;stroke:none}
+#token{position:absolute;z-index:3;width:16px;height:16px;border-radius:50%;background:#55b8ae;border:3px solid #fff;box-shadow:0 2px 7px #5a574566;left:0;top:0;transform:translate(-50%,-50%);transition:left .72s cubic-bezier(.2,.8,.25,1),top .72s cubic-bezier(.2,.8,.25,1);pointer-events:none}
+#controls{display:flex;justify-content:center;align-items:center;min-height:52px}
+button{font:700 15px system-ui,sans-serif;color:#fff;background:#d98252;border:0;border-radius:17px;min-width:112px;min-height:52px;padding:8px 16px;box-shadow:0 3px 0 #ae6240;cursor:pointer;transition:transform .15s,background .2s}
+button:active{transform:scale(.94)}
+#question{display:none;flex-direction:column;align-items:center;gap:5px;min-height:0}
+#prompt{font-size:15px;font-weight:700;text-align:center;color:#774e3d;line-height:18px}
+#options{display:flex;justify-content:center;flex-wrap:wrap;gap:6px}
+#options button{min-width:88px;min-height:52px;padding:6px 10px;background:#6b9b79;box-shadow:0 3px 0 #4e795b;font-size:13px}
+#feedback{height:20px;text-align:center;font-size:14px;font-weight:700;color:#66865c}
+#feedback.bad{color:#bd6952}
+#lesson.complete #controls{display:none}
+#lesson.complete #question{display:flex}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+<div id="lesson">
+  <h1 id="title"></h1>
+  <div id="scene">
+    <svg id="arrows" aria-hidden="true"><defs><marker id="tip" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z"></path></marker></defs><g id="paths"></g></svg>
+    <div id="stages"></div>
+    <div id="token" data-token></div>
+  </div>
+  <div id="controls"><button id="next" data-action="next"></button></div>
+  <div id="question"><div id="prompt"></div><div id="options"></div><div id="feedback" aria-live="polite"></div></div>
+</div>
+<script>
+
+(()=>{
+const p=Studio.params, root=document.getElementById('lesson'), scene=document.getElementById('scene');
+const keys=p.stages, stageBox=document.getElementById('stages'), token=document.getElementById('token');
+const paths=document.getElementById('paths'), svg=document.getElementById('arrows');
+const t=k=>Studio.t(k);
+document.getElementById('title').textContent=t('title');
+document.getElementById('next').textContent=t('next');
+let index=0, asked=false;
+root.dataset.active=keys[0];
+keys.forEach((key,i)=>{
+ const box=document.createElement('div'); box.className='stage'; box.dataset.stage=key;
+ const label=document.createElement('span'); label.dataset.label=key; label.textContent=t(key);
+ box.appendChild(label); stageBox.appendChild(box);
+});
+const edges=keys.slice(0,-1).map((key,i)=>[key,keys[i+1]]);
+if(p.cycle&&keys.length>1) edges.push([keys[keys.length-1],keys[0]]);
+function draw(){
+ const bounds=scene.getBoundingClientRect();
+ paths.replaceChildren();
+ edges.forEach(([from,to])=>{
+  const a=stageBox.querySelector('[data-stage="'+from+'"]').getBoundingClientRect();
+  const b=stageBox.querySelector('[data-stage="'+to+'"]').getBoundingClientRect();
+  let x1=a.left+a.width/2-bounds.left, y1=a.top+a.height/2-bounds.top;
+  let x2=b.left+b.width/2-bounds.left, y2=b.top+b.height/2-bounds.top;
+  let d;
+  if(p.cycle&&from===keys[keys.length-1]&&to===keys[0]){
+   y1=a.top-bounds.top+2; y2=b.top-bounds.top+2;
+   d=`M${x1},${y1} C${x1+30},${y1-30} ${x2-30},${y2-30} ${x2},${y2}`;
+  }else{
+   const dir=x2>=x1?1:-1, start=x1+dir*37, end=x2-dir*37;
+   d=`M${start},${y1} L${end},${y2}`;
+  }
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d',d); path.setAttribute('marker-end','url(#tip)');
+  path.dataset.arrow=from+'>'+to; paths.appendChild(path);
+ });
+ placeToken();
+}
+function placeToken(){
+ const card=stageBox.querySelector('[data-stage="'+keys[index]+'"]');
+ if(!card)return;
+ const a=card.getBoundingClientRect(), b=scene.getBoundingClientRect();
+ token.style.left=(a.left+a.width/2-b.left)+'px';
+ token.style.top=(a.top+a.height/2-b.top)+'px';
+ root.dataset.active=keys[index];
+ stageBox.querySelectorAll('.stage').forEach((el,i)=>el.dataset.current=String(i===index));
+}
+const prompt=document.getElementById('prompt'), options=document.getElementById('options');
+prompt.textContent=t('ask')+' '+t(p.askAfter)+'?';
+p.options.forEach(key=>{
+ const button=document.createElement('button'); button.dataset.option=key; button.textContent=t(key);
+ button.addEventListener('click',()=>{
+  Studio.answer(key);
+  Studio.onVerdict(v=>{
+   const feedback=document.getElementById('feedback');
+   feedback.textContent=t(v.correct?'right':'wrong');
+   feedback.classList.toggle('bad',!v.correct);
+   if(v.correct){root.classList.add('complete');feedback.textContent=t('done');Studio.done();}
+  });
+ });
+ options.appendChild(button);
+});
+function showQuestion(){asked=true;root.classList.add('complete');document.getElementById('controls').style.display='none';document.getElementById('question').style.display='flex';}
+document.getElementById('next').addEventListener('click',()=>{
+ if(asked)return;
+ const nextIndex=(index+1)%keys.length;
+ index=nextIndex;
+ placeToken();
+ Studio.event('stage',{index});
+ if(keys[index]===p.askAfter) setTimeout(showQuestion,760);
+});
+requestAnimationFrame(()=>{draw();Studio.ready();});
+window.addEventListener('resize',draw);
+})();
+
+</script>

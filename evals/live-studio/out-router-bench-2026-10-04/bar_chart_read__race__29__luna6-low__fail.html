@@ -1,0 +1,80 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff8ed;color:#49392d}
+.stage{position:relative;width:360px;height:320px;overflow:hidden;padding:12px 12px 8px}
+h1{margin:0 0 2px;font-size:18px;line-height:23px;font-weight:800;color:#68462e}
+.ask{height:28px;font-size:14px;line-height:20px;color:#795f4c}
+.chart{position:absolute;left:0;top:0;width:360px;height:320px}
+svg{position:absolute;inset:0;width:360px;height:320px;overflow:visible}
+.grid{stroke:#eadbc6;stroke-width:1}
+.axis{stroke:#a98b6b;stroke-width:1.5}
+.ticktext{font-size:11px;fill:#775f4b;text-anchor:end;dominant-baseline:middle}
+.ytitle{font-size:12px;fill:#68462e;font-weight:700;text-anchor:middle}
+.bar{fill:#e7a64c;transform-box:fill-box;transform-origin:center bottom;animation:grow .8s cubic-bezier(.2,.8,.25,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.columns{position:absolute;inset:0}
+.column{position:absolute;top:66px;height:222px;width:60px;padding:0;border:0;background:transparent;border-radius:12px;cursor:pointer;touch-action:manipulation}
+.column:active{transform:scale(.96)}
+.column:focus-visible{outline:3px solid #c47b34;outline-offset:1px}
+.name{position:absolute;top:160px;left:0;width:60px;height:52px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;line-height:12px;font-weight:700;color:#594432;pointer-events:none}
+.feedback{position:absolute;left:12px;top:286px;height:27px;font-size:14px;font-weight:750;line-height:20px;color:#73543a}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <div class="ask" id="ask"></div>
+  <div class="chart">
+    <svg id="drawing" viewBox="0 0 360 320" aria-hidden="true"></svg>
+    <div class="columns" id="columns"></div>
+  </div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,data=p.data,title=document.getElementById("title"),ask=document.getElementById("ask");
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+  const svg=document.getElementById("drawing"),columns=document.getElementById("columns"),feedback=document.getElementById("feedback");
+  const ns="http://www.w3.org/2000/svg",left=50,right=350,top=72,base=226,plotH=base-top;
+  const max=Math.max(...data.map(d=>d.value)),step=max<=6?1:2,ceiling=Math.ceil(max/step)*step;
+  const y=v=>base-(v/ceiling)*plotH;
+  const el=(tag,attrs={})=>{const e=document.createElementNS(ns,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e};
+  for(let v=0;v<=ceiling;v+=step){
+    const yy=y(v);
+    svg.appendChild(el("line",{x1:left,y1:yy,x2:right,y2:yy,class:v===0?"axis":"grid"}));
+    const t=el("text",{x:43,y:yy,class:"ticktext","data-tick":String(v)});
+    t.textContent=String(v);svg.appendChild(t);
+  }
+  svg.appendChild(el("line",{x1:left,y1:top,x2:left,y2:base,class:"axis"}));
+  const yt=el("text",{x:14,y:(top+base)/2,class:"ytitle",transform:`rotate(-90 14 ${(top+base)/2})`});
+  yt.textContent=Studio.t("yaxis");svg.appendChild(yt);
+  const slot=(right-left)/data.length,barW=Math.min(42,slot-10);
+  let locked=false;
+  data.forEach((d,i)=>{
+    const cx=left+slot*(i+.5),h=(d.value/ceiling)*plotH;
+    const bar=el("rect",{x:cx-barW/2,y:base-h,width:barW,height:h,rx:6,class:"bar","data-bar":d.key,"data-value":String(d.value)});
+    bar.style.animationDelay=(i*.06)+"s";svg.appendChild(bar);
+    const hit=document.createElement("button");
+    hit.type="button";hit.className="column";hit.setAttribute("data-column",d.key);
+    hit.style.left=(cx-30)+"px";
+    const name=document.createElement("span");name.className="name";name.textContent=Studio.t(d.key);hit.appendChild(name);
+    hit.addEventListener("click",()=>{
+      if(locked)return;
+      locked=true;feedback.textContent="";
+      Studio.answer(d.key);
+    });
+    columns.appendChild(hit);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(correct){
+      feedback.textContent=Studio.t("right");
+      window.setTimeout(()=>{feedback.textContent=Studio.t("done");Studio.done()},450);
+    }else{
+      feedback.textContent=Studio.t("wrong");locked=false;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

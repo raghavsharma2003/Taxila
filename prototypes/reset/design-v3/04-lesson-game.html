@@ -19,7 +19,7 @@
   .flash { position: absolute; inset: 0; pointer-events: none; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 0 transparent; transition: box-shadow .25s; }
   .flash.good { box-shadow: inset 0 0 60px -10px rgba(61,220,151,.55); }
   .flash.look { box-shadow: inset 0 0 60px -10px rgba(255,181,71,.5); }
-  .hint { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); z-index: 3; font: 600 12px/1 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); background: var(--glass); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; white-space: nowrap; transition: opacity .4s; }
+  .hint { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); z-index: 3; font: 600 12px/1 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); background: var(--glass); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; white-space: nowrap; transition: opacity .4s; pointer-events: none; }
 </style>
 </head>
 <body class="grain">
@@ -116,6 +116,8 @@ cv.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "
 addEventListener("keydown", (e) => { if (e.key === "ArrowUp") { targetY = Math.max(0.40, targetY - 0.23); lastInput = performance.now(); } if (e.key === "ArrowDown") { targetY = Math.min(0.86, targetY + 0.23); lastInput = performance.now(); } });
 $("restart").onclick = reset; $("slower").onclick = () => { speed = Math.max(0.1, speed - 0.04); say("Slowing it down. Same rule: same value, different look."); };
 $("pauseGame").onclick = () => (paused = !paused);
+// stage contract: the coach-mark may never sit over a live gate, so it leaves before the first gate reaches its row
+setTimeout(() => ($("hint").style.opacity = 0), 2600);
 
 function step(dt) {
   const auto = performance.now() - lastInput > 2500;

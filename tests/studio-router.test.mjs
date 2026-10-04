@@ -5,7 +5,7 @@
 // the gate's failures, a dead gate or a failed Q8 reveals nothing, the stream guard runs at token time.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { decide, CAPS, createBreaker, revealable, _setRoutes, loadRoutes, routeFor } from "../server/studio/router.js";
+import { decide, CAPS, createBreaker, revealable, _setRoutes, loadRoutes, routeFor, breaker } from "../server/studio/router.js";
 import { buildRace } from "../server/studio/build.js";
 import { _setStream } from "../server/studio/builders/index.js";
 import { setSink, _clear } from "../server/studio/telemetry.js";
@@ -158,6 +158,22 @@ test("race: a dead gate reveals nothing; a failed Q8 reveals nothing even after 
   const q8 = await buildRace(plan, { route: route([{ name: "a", dep: "taxila-gpt6" }]), gate: async () => ({ pass: true, checks: [] }), q8: async () => ({ ok: false }) });
   assert.equal(q8.ok, false);
   assert.equal(q8.winner, null);
+});
+
+test("race: every arm dead on the wire is an infrastructure fault (builder_unreachable), not a failed race", async () => {
+  const calls = [];
+  _setStream(async (dep) => { calls.push(dep); throw Object.assign(new Error("fetch failed"), { code: "network", partial: { usd: 0 } }); });
+  const before = breaker.state().streak;
+  const r = await buildRace(plan, { route: route([{ name: "a", dep: "taxila-gpt6" }, { name: "b", dep: "gpt-5.6-terra" }]), gate: async () => { throw new Error("gate must not run"); } });
+  assert.equal(r.ok, false);
+  assert.equal(r.reason, "builder_unreachable");
+  assert.equal(breaker.state().streak, before, "a dead wire does not feed the breaker's failure streak");
+  // one arm down on the wire, the other a real gate failure: a real failed race
+  scripted({ "taxila-gpt6": [{ status: 500 }] });
+  const mixed = await buildRace(plan, { route: route([{ name: "a", dep: "taxila-gpt6" }, { name: "b", dep: "gpt-5.6-terra" }]), repairs: 0,
+    gate: async () => ({ pass: false, checks: [{ id: "G6.equal_parts", pass: false }] }) });
+  assert.equal(mixed.reason, "all_failed");
+  assert.equal(calls.length, 2);
 });
 
 test("race: the stream guard runs at token time (partials and the gated file carry no URL or fetch)", async () => {

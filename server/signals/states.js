@@ -89,7 +89,7 @@ export function derive(F) {
   // ── D5: choiceDue ──
   let choiceWanted = false;
   const lowRun = G.lowWordsRun >= 2 && I.nonAnswer;
-  if ((lowRun || F.withdrawal || G.nonAnswersK5 >= 3) && !F.contest) choiceWanted = true;
+  if ((lowRun || F.withdrawal || G.nonAnswersK5 >= 3) && !F.contest && !F.safetyHold) choiceWanted = true;
 
   // Verify budget (SL-12): one verifying move per VERIFY_EVERY child turns across verifyDue and choiceDue.
   let consumedVerify = false;
@@ -121,7 +121,9 @@ export function derive(F) {
     code("breakDue", f);
   } else if (!breakOffered && G.gradedN >= 12 && G.minutes >= G.plannedMinutes * 0.75 && stepState?.s !== "stuck_productive") {
     const driftOk = G.drift != null;
-    const fires = driftOk ? (G.errDrift != null && G.errDrift >= 0.25) || G.driftHigh >= 4 : G.errDrift != null && G.errDrift >= 0.33;
+    // SL-4: G3 (acoustic drift) never fires a break offer alone; it counts only alongside a T worsening (G4 > 0).
+    const tWorse = G.errDrift != null && G.errDrift > 0;
+    const fires = driftOk ? (G.errDrift != null && G.errDrift >= 0.25) || (G.driftHigh >= 4 && tWorse) : G.errDrift != null && G.errDrift >= 0.33;
     if (fires) {
       const f = ["G1", ...(G.errDrift != null && G.errDrift >= 0.25 ? ["G4"] : []), ...(driftOk && G.driftHigh >= 4 ? ["G3"] : [])];
       frame.breakDue = { path: "composite", why: [why(f, f.includes("G3") ? "E" : "T", "high")] };
@@ -137,7 +139,7 @@ export function derive(F) {
     if (verdict === "correct" && L.initiative === "propose_method") causes.push("insight");
     if (verdict === "correct" && L.repairDir === "wrong_to_right") causes.push("self_repair");
     if (verdict === "correct" && I.notYetBefore >= 2 && I.retryUnprompted) causes.push("effort");
-    const laughLicensed = L.laugh && !L.sarcasm && F.lastVerdict !== "not_yet" && verdict !== "not_yet" && F.recentNotYet < 2;
+    const laughLicensed = L.laugh && !L.sarcasm && !F.safetyHold && F.lastVerdict !== "not_yet" && verdict !== "not_yet" && F.recentNotYet < 2;
     if (laughLicensed) causes.push("child_joke");
     if (causes.length) {
       frame.childWin = { causes };

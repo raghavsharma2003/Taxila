@@ -1,0 +1,59 @@
+<style>
+*{box-sizing:border-box}
+html,body{width:360px;height:320px;margin:0;overflow:hidden}
+body{font-family:system-ui,sans-serif;background:#fff8eb;color:#394a3b}
+#frame{width:360px;height:320px;padding:7px 10px;display:flex;flex-direction:column;gap:4px}
+#title{height:25px;min-height:25px;margin:0;text-align:center;font-size:17px;line-height:25px;font-weight:750;color:#315d45}
+#question{height:43px;min-height:43px;padding:5px 8px;border-radius:14px;background:#f6e7c8;text-align:center;font-size:14px;line-height:16px;color:#604d34}
+#question span{font-weight:750;color:#315d45}
+#drawing{width:340px;height:220px;display:block;overflow:hidden}
+.part{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:filter .2s,transform .18s}
+.part:active{transform:scale(.94)}
+.part.glow{filter:drop-shadow(0 0 8px #ffc943);animation:glow .7s ease-in-out 2 alternate}
+.label{font:700 12px system-ui,sans-serif;fill:#465642}
+.leader{stroke:#8d8d68;stroke-width:1.5;stroke-linecap:round}
+#note{height:20px;min-height:20px;text-align:center;font-size:12px;line-height:20px;color:#587151;overflow:hidden}
+@keyframes glow{to{filter:drop-shadow(0 0 11px #ffb21e)}}
+</style>
+<div id="frame">
+  <h1 id="title"></h1>
+  <div id="question" data-ask><span id="prompt"></span> <span id="target"></span></div>
+  <svg id="drawing" viewBox="0 0 340 220" aria-label=""></svg>
+  <div id="note"></div>
+</div>
+<script>
+
+(()=>{
+  const p=Studio.params,svg=document.getElementById("drawing"),ns="http://www.w3.org/2000/svg";
+  const shapes={
+    petal:{tag:"ellipse",a:{cx:170,cy:43,rx:36,ry:30},fill:"#ef9279",lx:75,ly:47,ax:134,ay:43,ex:119},
+    centre:{tag:"circle",a:{cx:170,cy:43,r:28},fill:"#f2c94c",lx:218,ly:47,ax:198,ay:43,ex:213},
+    stem:{tag:"path",a:{d:"M139 67 L201 67 L201 153 L139 153 Z"},fill:"#579653",lx:215,ly:112,ax:201,ay:109,ex:210},
+    leaf:{tag:"path",a:{d:"M145 111 C126 78 76 79 75 108 C74 140 112 157 145 133 Z"},fill:"#80b65c",lx:14,ly:137,ax:75,ay:112,ex:70},
+    root:{tag:"path",a:{d:"M139 147 Q133 166 122 190 Q146 181 157 171 Q151 194 156 207 Q170 190 170 173 Q185 194 195 205 Q203 182 183 167 Q203 177 214 186 Q209 161 201 147 Z"},fill:"#a77a55",lx:218,ly:185,ax:214,ay:169,ex:213}
+  };
+  function el(tag,attrs,parent){const n=document.createElementNS(ns,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);if(parent)parent.appendChild(n);return n}
+  document.getElementById("title").textContent=Studio.t("title");
+  document.getElementById("prompt").textContent=Studio.t("ask");
+  document.getElementById("target").textContent=Studio.t(p.ask);
+  p.parts.forEach(key=>{
+    const s=shapes[key],g=el("g",{"data-part":key,class:"part"},svg);
+    el(s.tag,Object.assign({},s.a,{fill:s.fill,stroke:"#fff8eb","stroke-width":2}),g);
+    el("line",{x1:s.ax,y1:s.ay,x2:s.ex,y2:s.ly-4,class:"leader"},svg);
+    const label=el("text",{x:s.lx,y:s.ly,class:"label","data-label":key},svg);
+    label.textContent=Studio.t(key);
+    g.addEventListener("click",()=>{Studio.event("tap",{part:key});Studio.answer(key)});
+  });
+  Studio.onVerdict(v=>{
+    document.getElementById("note").textContent=Studio.t(v.correct?"right":"wrong");
+    if(v.correct){
+      const chosen=svg.querySelector('[data-part="'+p.ask+'"]');
+      if(chosen)chosen.classList.add("glow");
+      document.getElementById("note").textContent=Studio.t("done");
+      Studio.done();
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

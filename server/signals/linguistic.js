@@ -14,7 +14,7 @@ import { EN, ROMAN_HI } from "./lexicon/lang.js";
 
 const anyHit = (toks, lex, { allowNegated = true } = {}) => findAll(toks, lex).some((h) => allowNegated || !negated(toks, h));
 const RECOVERED = compile(["yaad aaya", "yaad aa gaya", "yaad aa gayi", "yaad aa gya", "याद आया", "याद आ गया", "remembered", "i remember now", "got it now"]);
-const RETRY = compile(["ek aur try", "phir se try", "fir se try", "dobara try", "try again", "let me try again", "ek baar aur", "phir se karti", "phir se karta", "फिर से"]);
+const RETRY = compile(["ek aur try", "phir se try", "fir se try", "dobara try", "try again", "let me try again", "ek baar aur", "phir se karti", "phir se karta", "phir se karun", "phir se karu", "फिर से करता", "फिर से करती", "फिर से करूं", "फिर से try"]);
 
 /**
  * @param {{ childText: string, cls?: any, item?: any, teacherLast3?: string[], langModeHint?: string, verdict?: string }} input

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taxila Design v3</title>
+<link rel="stylesheet" href="v3.css">
+<style>
+  .gal { max-width: 1320px; margin: 0 auto; padding: 0 var(--gutter) 60px; }
+  .intro { display: grid; gap: 16px; padding: 36px 0 28px; }
+  @media (min-width: 900px) { .intro { grid-template-columns: 1.2fr 1fr; align-items: end; gap: 40px; padding: 56px 0 36px; } }
+  .intro p { margin: 0; color: var(--ink-2); font-size: 16px; max-width: 60ch; }
+  .rules { display: flex; flex-wrap: wrap; gap: 8px; }
+  .toggle { display: flex; gap: 10px; align-items: center; margin: 0 0 18px; flex-wrap: wrap; }
+  .grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .shot { display: grid; gap: 10px; text-decoration: none; color: inherit; }
+  .frame { position: relative; width: 100%; aspect-ratio: 390 / 844; border-radius: 26px; overflow: hidden; border: 1px solid var(--line-2); background: var(--bg-1); box-shadow: 0 30px 60px -30px rgba(0,0,0,.8); transition: transform var(--m-base) var(--e-std), border-color var(--m-quick); }
+  .shot:hover .frame { transform: translateY(-3px); border-color: rgba(255,255,255,.3); }
+  .frame iframe { position: absolute; left: 0; top: 0; width: 390px; height: 844px; border: 0; transform-origin: 0 0; pointer-events: none; }
+  .wide .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); }
+  .wide .frame { aspect-ratio: 1440 / 900; border-radius: 18px; }
+  .wide .frame iframe { width: 1440px; height: 900px; }
+  .cap { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+  .cap b { font: 650 17px/1.2 var(--f-display); letter-spacing: -.01em; }
+  .cap span { font: 600 11px/1 var(--f-mono); color: var(--ink-3); letter-spacing: .06em; }
+  .shot p { margin: 0; font-size: 13.5px; color: var(--ink-2); }
+  footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 13px; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  footer code { font-family: var(--f-mono); color: var(--ink-2); }
+</style>
+</head>
+<body class="grain">
+<script src="sprite.js"></script>
+<div class="gal" id="gal">
+  <section class="intro">
+    <div>
+      <div class="brand" style="margin-bottom:18px"><svg class="brand-mark"><use href="#brand"/></svg>Taxila · design v3</div>
+      <h1 class="h-hero">Built for 9 to 15. Nothing here is for babies.</h1>
+    </div>
+    <div style="display:grid;gap:14px">
+      <p>Eight working screens for the owner reset of 4 Oct 2026. Dark by default, one lime "your move" colour per screen, a real-time game in the stage, a working scheduler, and a parent corner that shows evidence instead of scores. Every screen is live HTML: tap through onboarding, fly the game, move a lesson.</p>
+      <div class="rules"><span class="tag">no mascots</span><span class="tag">no stars or coins</span><span class="tag">no streak guilt</span><span class="tag">hands-free voice</span><span class="tag">360 × 640 floor</span></div>
+    </div>
+  </section>
+
+  <div class="toggle">
+    <div class="seg" role="group" aria-label="Device" id="dev" style="width:260px"><button aria-pressed="true" data-v="phone">Phone</button><button aria-pressed="false" data-v="wide">Laptop</button></div>
+    <span class="small muted">Previews are the real pages, scaled. Click one to open it full size.</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <span>Spec: <code>docs/design/reset/DESIGN-V3.md</code></span>
+    <span>Tokens + components: <code>v3.css</code> · icons: <code>sprite.js</code></span>
+    <span>Prototype only. Nothing here is imported by <code>src/</code>.</span>
+  </footer>
+</div>
+<script>
+const S = [
+  ["01-onboarding.html", "Onboarding", "5 steps + welcome", "Class 4–7 and board, name and how she talks, pick a teacher by hearing them, a real scheduler (days, 15-minute rail, length), parent hand-off."],
+  ["02-home.html", "Home", "child", "One clear next lesson built from what he asked, a teacher note about his own thinking, parked questions, things made for him."],
+  ["03-lesson-whiteboard.html", "Lesson · whiteboard", "duplex", "The board draws itself in sync with her line. Captions show what she heard you say. Steer chips: show again, slower, another way."],
+  ["04-lesson-game.html", "Lesson · real-time game", "playable", "Fraction Pilot: steer through the gate equal to the target, at speed. HUD lives in a reserved rail; the game never draws under it."],
+  ["05-diversion.html?proto=1", "Diversion moment", "4 scenarios", "He asks about BGMI mid-lesson: she notices, parks it visibly, returns to the leaf. Also: he insists (in bounds, brief detour), out of bounds (warm decline), and \"end the lesson\" (break or wrap-up, nothing lost)."],
+  ["06-end.html", "End of lesson", "evidence", "What he can now do, in his own words, with timestamps for how we know. The parked question gets its promised two minutes."],
+  ["07-progress.html", "Progress", "mastery", "Chapters and skills with shape-coded states. Secure means right again days later. Then-and-now instead of points."],
+  ["08-parent.html", "Parent corner", "day theme", "One capability per week with 'How do we know?', a 5-minute home task, a working reschedule (date strip + time grid), limits, safety."],
+];
+const grid = document.getElementById("grid");
+function render(v) {
+  document.getElementById("gal").classList.toggle("wide", v === "wide");
+  const W = v === "wide" ? 1440 : 390;
+  grid.innerHTML = S.map(([f, t, k, d]) => `<a class="shot" href="${f}"><div class="frame"><iframe loading="lazy" tabindex="-1" title="${t}" src="${f.replace("?proto=1", "")}"></iframe></div><div class="cap"><b>${t}</b><span>${k.toUpperCase()}</span></div><p>${d}</p></a>`).join("");
+  const fit = () => grid.querySelectorAll(".frame").forEach((fr) => { fr.querySelector("iframe").style.transform = `scale(${fr.clientWidth / W})`; });
+  fit(); addEventListener("resize", fit);
+}
+document.getElementById("dev").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; [...b.parentNode.children].forEach((x) => x.setAttribute("aria-pressed", x === b)); render(b.dataset.v); });
+render("phone");
+</script>
+</body>
+</html>

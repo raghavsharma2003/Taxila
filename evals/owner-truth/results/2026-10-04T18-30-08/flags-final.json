@@ -51,20 +51,6 @@
   "itemId": "c5-maths-ch02-t01-i01"
  },
  {
-  "session": "s01-aarav-c5-maths-ch02-t01",
-  "persona": "aarav",
-  "topicId": "c5-maths-ch02-t01",
-  "lane": "cascade/spoken",
-  "item": 1,
-  "turn": 31,
-  "child": "yes",
-  "teacher": "verdict correct; \"Aarav, aapne “yes” kyun kaha—number line par fraction ko number kyun rakh sakte hain?\"",
-  "why": "a partial answer (first clause only) was graded fully correct (kit key \"Yes, like 1/2 and 1/4, lots of them\")",
-  "auto": "grade_partial_as_correct",
-  "itemId": "diag:c5-maths-ch02-t01-m-not-numbers",
-  "soft": true
- },
- {
   "session": "s02-meher-c6-maths-ch07-t01",
   "persona": "meher",
   "topicId": "c6-maths-ch07-t01",
@@ -255,20 +241,6 @@
   "itemId": "c5-maths-ch02-t01-i01"
  },
  {
-  "session": "s13-aarav-c5-maths-ch02-t01",
-  "persona": "aarav",
-  "topicId": "c5-maths-ch02-t01",
-  "lane": "cascade/spoken",
-  "item": 1,
-  "turn": 15,
-  "child": "0",
-  "teacher": "Aarav, aapne 0 chuna; 1/8, 0 ke paas hota hai, par 0 se thoda aage. Ab doosra mark batayiye. 4 barabar gaps wali 0 se 1 ki line par doosra mark kya hai? Iska koi aur naam bata sakte ho?",
-  "why": "graded correct but the teacher's words say it is wrong",
-  "auto": "words_contradict_verdict",
-  "itemId": "c5-maths-ch02-t01-i05",
-  "soft": true
- },
- {
   "session": "s15-chotu-c4-maths-ch05-t01",
   "persona": "chotu",
   "topicId": "c4-maths-ch05-t01",
@@ -323,18 +295,17 @@
   "soft": true
  },
  {
-  "session": "s18-ishaan-c6-science-ch01-t01",
-  "persona": "ishaan",
-  "topicId": "c6-science-ch01-t01",
-  "lane": "text/typed",
-  "item": 1,
-  "turn": 23,
-  "child": "Any question that can be checked by trying something",
-  "teacher": "verdict correct; \"Bilkul, Ishaan—“check by trying” sahi idea hai. Aapne kaise jaana ki har question experiment se check ho sakta hai?\"",
-  "why": "a partial answer (first clause only) was graded fully correct (kit key \"Any question that can be checked by trying something and observing, for example: 'Does sugar dissolve faster in warm water or cold water?'\")",
-  "auto": "grade_partial_as_correct",
-  "itemId": "c6-science-ch01-t01-i01",
-  "soft": true
+  "session": "s01-aarav-c5-maths-ch02-t01",
+  "persona": "aarav",
+  "topicId": "c5-maths-ch02-t01",
+  "lane": "cascade/spoken",
+  "item": 2,
+  "turn": 3,
+  "child": "hmm",
+  "teacher": "Aarav, 0 se 1 tak equal gaps banaiye; 4 gaps hon, toh pehla mark 1/4 hoga. Whiteboard par 0, 1/4, 1 dikhaiye... (same turn mounts number-line@1 with fractions [[2,5]])",
+  "why": "teacher's words and the stage disagree: talks about quarters while the mounted activity is about 2/5; the related 1/8 number-line mounts render an integer 0-10 line (browser rows), so the child is asked to place a fraction on a line that has no fraction marks",
+  "auto": "review_stage_mismatch",
+  "reviewed": true
  },
  {
   "session": "s01-aarav-c5-maths-ch02-t01",
@@ -637,6 +608,19 @@
   "auto": "garbled"
  },
  {
+  "session": "s18-ishaan-c6-science-ch01-t01",
+  "persona": "ishaan",
+  "topicId": "c6-science-ch01-t01",
+  "lane": "text/typed",
+  "item": 2,
+  "turn": 18,
+  "child": "game khelna hai",
+  "teacher": "Ishaan, theek hai—pehle observation: ball zameen par kitni door jaati hai. ” Aapka question kya hoga?",
+  "why": "stray closing quote (same gutted-template defect as t3/t21 in s06/s18) and a non-sequitur about a ball the lesson never mentioned",
+  "auto": "review_garbled",
+  "reviewed": true
+ },
+ {
   "session": "s01-aarav-c5-maths-ch02-t01",
   "persona": "aarav",
   "topicId": "c5-maths-ch02-t01",
@@ -719,6 +703,19 @@
   "teacher": "409 today's lesson is done (state done)",
   "why": "after the child's end phrase closed the lesson, no lesson can be started again today: one mis-heard 'bas' costs the child the whole day",
   "auto": "day_closed"
+ },
+ {
+  "session": "s04-kabir-c7-maths-ch08-t01",
+  "persona": "kabir",
+  "topicId": "c7-maths-ch08-t01",
+  "lane": "text/typed",
+  "item": 3,
+  "turn": 15,
+  "child": "I'm done",
+  "teacher": "Theek hai, Kabir. Yahin rok dete hain. 3 × 2/5 nikaaliye. (end=false)",
+  "why": "says 'we stop here' and in the same breath re-asks the question: neither a check-in nor an end; the child is told one thing and shown another",
+  "auto": "review_end_contradiction",
+  "reviewed": true
  },
  {
   "session": "s05-zoya-c5-evs-ch01-t01",
@@ -1009,6 +1006,20 @@
   "auto": "ended_unasked"
  },
  {
+  "session": "s15-chotu-c4-maths-ch05-t01",
+  "persona": "chotu",
+  "topicId": "c4-maths-ch05-t01",
+  "lane": "cascade/spoken",
+  "item": 3,
+  "soft": true,
+  "turn": 16,
+  "child": "i'm done",
+  "teacher": "Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya Childline 1098 ya Tele-MANAS 14416 pe call karo. Kya tum abhi theek ho? (kind=safeguard; t17 'nahi nahi chalo continue karte hain' got the helplines again)",
+  "why": "after a 4-turn loop, a class-4 'i'm done' was routed to the disclosure script: 'what you told me is important' presumes a disclosure that never happened, and the child's 'let's continue' re-triggered it. A warm 'are you okay?' check-in on an ambiguous phrase is correct and must stay (child-safety floor); the defect is the disclosure wording and the stickiness, not the check-in. Do NOT fix by narrowing the safeguard predicate.",
+  "auto": "review_safeguard_wording",
+  "reviewed": true
+ },
+ {
   "session": "s16-kabir-c7-maths-ch08-t01",
   "persona": "kabir",
   "topicId": "c7-maths-ch08-t01",
@@ -1129,18 +1140,6 @@
   "auto": "steer_example"
  },
  {
-  "session": "s03-chotu-c4-maths-ch05-t01",
-  "persona": "chotu",
-  "topicId": "c4-maths-ch05-t01",
-  "lane": "cascade/spoken",
-  "item": 4,
-  "turn": 14,
-  "child": "explain it differently",
-  "teacher": "probe: \"Har hissa ek-tihaai tab hota hai jab poora tarbooz 3 barabar tukdon mein bante. Socho ek square kaagaz 4 barabar hisson mein fold hai aur 3 hisse rang diye. Rangin hissa fraction mein batao.\"",
-  "why": "the steering request (differently) was not acted on in the next reply",
-  "auto": "steer_differently"
- },
- {
   "session": "s04-kabir-c7-maths-ch08-t01",
   "persona": "kabir",
   "topicId": "c7-maths-ch08-t01",
@@ -1206,35 +1205,11 @@
   "topicId": "c4-evs-ch01-t01",
   "lane": "text/typed",
   "item": 4,
-  "turn": 5,
-  "child": "story ki tarah batao",
-  "teacher": "worked_example: \"Republic Day se pehle colony ke log park saaf karne lage; sabne kaam baanta aur helpers ko thank you bola. Sabne milkar kya notice kiya?\"",
-  "why": "the steering request (story) was not acted on in the next reply",
-  "auto": "steer_story"
- },
- {
-  "session": "s09-chotu-c4-evs-ch01-t01",
-  "persona": "chotu",
-  "topicId": "c4-evs-ch01-t01",
-  "lane": "text/typed",
-  "item": 4,
   "turn": 12,
   "child": "can we talk about something else",
   "teacher": "wrap: \"Bilkul Golu, ab yahin rukte hain. Jab tum chaho, kisi trusted adult ke saath nayi baat kar lena. Goodbye!\"",
   "why": "the steering request (talk_else) was not acted on in the next reply: the lesson was ENDED instead",
   "auto": "steer_talk_else"
- },
- {
-  "session": "s10-kabir-c7-science-ch01-t01",
-  "persona": "kabir",
-  "topicId": "c7-science-ch01-t01",
-  "lane": "cascade/spoken",
-  "item": 4,
-  "turn": 5,
-  "child": "slowly please",
-  "teacher": "worked_example: \"Bilkul, Kabir. Pehle do same cups aur moong seeds lijiye—sirf light ka difference rakhenge. Ab next step aap batayiye.\"",
-  "why": "the steering request (slowly) was not acted on in the next reply",
-  "auto": "steer_slowly"
  },
  {
   "session": "s10-kabir-c7-science-ch01-t01",
@@ -1278,35 +1253,11 @@
   "topicId": "c6-maths-ch02-t01",
   "lane": "cascade/spoken",
   "item": 4,
-  "turn": 5,
-  "child": "example do",
-  "teacher": "worked_example: \"Ishaan, O se B ki taraf jaane wali ray ka naam ray OB hai. Ab O se A ki taraf wali ray ka naam aap batayiye.\"",
-  "why": "the steering request (example) was not acted on in the next reply",
-  "auto": "steer_example"
- },
- {
-  "session": "s12-ishaan-c6-maths-ch02-t01",
-  "persona": "ishaan",
-  "topicId": "c6-maths-ch02-t01",
-  "lane": "cascade/spoken",
-  "item": 4,
   "turn": 14,
   "child": "hindi mein samjhao",
   "teacher": "repair: \"Ishaan, aap Hindi mein sochiye: ruler ka kinara do siron ke beech hota hai. Aapke ruler ka kinara ek sire se doosre sire tak: line segment, line ya ray?\"",
   "why": "the steering request (hindi) was not acted on in the next reply: told the child to 'think in Hindi' instead of switching",
   "auto": "steer_hindi"
- },
- {
-  "session": "s13-aarav-c5-maths-ch02-t01",
-  "persona": "aarav",
-  "topicId": "c5-maths-ch02-t01",
-  "lane": "cascade/spoken",
-  "item": 4,
-  "turn": 5,
-  "child": "slowly please",
-  "teacher": "worked_example: \"Bilkul, Aarav. Pehle 0 se 1 ke beech 5 equal gaps banaiye. Ab 0 se kitne gaps count karke 2/5 mark karenge?\"",
-  "why": "the steering request (slowly) was not acted on in the next reply",
-  "auto": "steer_slowly"
  },
  {
   "session": "s13-aarav-c5-maths-ch02-t01",
@@ -1355,18 +1306,6 @@
   "teacher": "repair: \"Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?\"",
   "why": "the steering request (cricket) was not acted on in the next reply",
   "auto": "steer_cricket"
- },
- {
-  "session": "s16-kabir-c7-maths-ch08-t01",
-  "persona": "kabir",
-  "topicId": "c7-maths-ch08-t01",
-  "lane": "text/typed",
-  "item": 4,
-  "turn": 14,
-  "child": "slowly please lol",
-  "teacher": "hint: \"Kabir, aapne fraction form try kiya; ab 3 ko 3/1 likhkar 3/1 × 2/5 mein numerators multiply kijiye. 3 × 2/5 nikaaliye.\"",
-  "why": "the steering request (slowly) was not acted on in the next reply",
-  "auto": "steer_slowly"
  },
  {
   "session": "s17-zoya-c5-evs-ch01-t01",
@@ -1537,6 +1476,18 @@
   "auto": "visual_diagram"
  },
  {
+  "session": "s08-meher-c6-science-ch02-t01",
+  "persona": "meher",
+  "topicId": "c6-science-ch02-t01",
+  "lane": "cascade/spoken",
+  "item": 5,
+  "turn": 16,
+  "child": "draw it",
+  "teacher": "probe: \"A mango seed sprouts in your garden. When the sapling is only knee-high, predict: is it a herb or a tree? How did you decide?\"",
+  "why": "the draw request produced nothing new on the stage (no mount, changed whiteboard, studio slot or picture): ignored the request (no acknowledgement)",
+  "auto": "visual_draw"
+ },
+ {
   "session": "s09-chotu-c4-evs-ch01-t01",
   "persona": "chotu",
   "topicId": "c4-evs-ch01-t01",
@@ -1607,6 +1558,18 @@
   "teacher": "repair: \"Ishaan, diagram sochiye: Torch ●────────→ roshni. ● ek endpoint hai, aur arrow ek direction dikhata hai. Torch ki roshni torch se shuru hoti hai aur aage badhti jaati hai. Yeh line segment, line ya ray mein se kiske jaisi hai?\"",
   "why": "the diagram request produced nothing new on the stage (no mount, changed whiteboard, studio slot or picture): typed a text 'diagram' into the reply instead (on the SPOKEN lane, where it is read aloud)",
   "auto": "visual_diagram"
+ },
+ {
+  "session": "s12-ishaan-c6-maths-ch02-t01",
+  "persona": "ishaan",
+  "topicId": "c6-maths-ch02-t01",
+  "lane": "cascade/spoken",
+  "item": 5,
+  "turn": 16,
+  "child": "draw it",
+  "teacher": "retrieval: \"Jaldi! Ray ke kitne endpoints hote hain?\"",
+  "why": "the draw request produced nothing new on the stage (no mount, changed whiteboard, studio slot or picture): ignored the request (no acknowledgement)",
+  "auto": "visual_draw"
  },
  {
   "session": "s13-aarav-c5-maths-ch02-t01",

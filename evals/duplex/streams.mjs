@@ -32,9 +32,10 @@ export function syllables(tok) {
  * `segDur` (optional) = measured voiced duration of each segment from real TTS audio; words then share it by syllables.
  * @returns {{ words: {w:string, seg:number, start:number, end:number}[], segs: {start:number, end:number, contour:string, text:string, pause:number}[], end:number, childStart:number }}
  */
-export function timeline(sc, r, { rate = 1, pauseJitter = 0.2, segDur = null } = {}) {
+export function timeline(sc, r, { rate = 1, pauseJitter = 0.2, segDur = null, start = null } = {}) {
   const words = [], segs = [];
-  let t = sc.teacher ? sc.teacher.childStartMs : 400 + Math.round(r.u(0, 300)); // wait time I before the child speaks [E]
+  const drawn = 400 + Math.round(r.u(0, 300)); // wait time I before the child speaks [E] (always drawn: keeps the stream aligned)
+  let t = start ?? (sc.teacher ? sc.teacher.childStartMs : drawn);
   const childStart = t;
   sc.segs.forEach(([text, pause, contour], si) => {
     const toks = text.split(/\s+/).filter(Boolean);
@@ -186,4 +187,28 @@ export class SttSim {
   }
 
   commit(t) { return this.close(t, this.p.finalAfterCommit); }
+}
+
+/** Lognormal (p50, p90) from a measured stat, guarded (p90 >= 1.05 p50, n >= 5), else null. */
+function ln2(st) {
+  if (!st || !st.n || st.n < 5 || st.p50 === null || st.p90 === null || st.p50 <= 0) return null;
+  return [st.p50, Math.max(st.p90, Math.round(st.p50 * 1.05))];
+}
+
+/**
+ * Calibrate STT.D4 in place from a live-validate (M-D2) result: first partial after onset, partial lag, final after a
+ * client commit, final after server VAD, server-VAD overhead past its silence window. Returns what was applied.
+ */
+export function calibrate(live) {
+  const c = live?.calibration;
+  if (!c) return null;
+  const applied = {};
+  const set = (k, v) => { if (v) { STT.D4[k] = v; applied[k] = v; } };
+  set("firstPartialMs", ln2(c.firstDeltaAfterOnsetMs));
+  set("lagMs", ln2(c.deltaLagMs));
+  set("finalAfterCommit", ln2(c.finalAfterClientCommitMs));
+  set("finalAfterVad", ln2(c.finalAfterVadMs));
+  if (c.vadOverheadMs) set("vadOverhead", ln2(c.vadOverheadMs));
+  STT.D4.calibrated = `${live.id} ${live.date} n=${live.n}`;
+  return { source: STT.D4.calibrated, applied };
 }

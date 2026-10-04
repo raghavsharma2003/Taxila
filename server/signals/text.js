@@ -108,10 +108,12 @@ function matchAt(toks, i, pat, j) {
   return matchAt(toks, i + 1, pat, j + 1);
 }
 
-const NEGATORS = new Set(["nahi", "nahin", "nai", "na", "mat", "not", "no", "never", "dont", "don't", "नहीं", "मत", "न"].map(norm));
-/** A hit is negated when a negator sits within 2 tokens after it (Hindi) or right before it (English "not"). */
+// "na" / "न" is NOT a post-negator: after a verb it is the Hinglish tag particle ("thoda dheere bolo na", "break do na"),
+// and reading it as negation silently dropped real requests (review 2026-10-04). Pre-verbal "na" ("na karo") still counts.
+const NEGATORS = new Set(["nahi", "nahin", "nai", "mat", "not", "no", "never", "dont", "don't", "नहीं", "मत"].map(norm));
+const PRE_NEGATORS = new Set(["not", "never", "dont", "na", "mat", "न", "मत"].map(norm));
+/** A hit is negated when a negator sits within 2 tokens after it (Hindi) or right before it ("not", pre-verbal "na"). */
 export function negated(toks, hit) {
   for (let k = hit.end; k < Math.min(toks.length, hit.end + 2); k++) if (NEGATORS.has(toks[k])) return true;
-  const prev = toks[hit.start - 1];
-  return prev === "not" || prev === "never" || prev === "dont";
+  return PRE_NEGATORS.has(toks[hit.start - 1]);
 }

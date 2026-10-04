@@ -98,8 +98,12 @@ export interface StudioSlot {
 /** Anything the StudioStage can render. Each kind is drawn by a renderer registered in src/studio/renderers.ts. */
 export type StudioArtifact =
   | { kind: "whiteboard"; stage?: StageSize; script: WhiteboardScript }
-  | { kind: "frame"; stage?: StageSize; studioKind: Exclude<StudioKind, "whiteboard" | "image">; src: string; sha256: string; params?: Record<string, unknown> }
-  | { kind: "skeleton"; stage?: StageSize; skeleton: string; params: Record<string, unknown>; strings: Record<string, string> }
+  /** A gate-passed build (W2-H): `src` returns {sha256, fragment}; the host re-hashes the fragment and mounts it with the
+   *  studio-kit@1 runtime under a hash-only CSP in an opaque-origin frame. `params` never hold host-only truth. */
+  | { kind: "frame"; stage?: StageSize; studioKind: Exclude<StudioKind, "whiteboard" | "image">; src: string; sha256: string; params?: Record<string, unknown>;
+      archetype?: string; intentId?: string; strings?: Record<string, string>; skeleton?: string }
+  /** The code skeleton (LIVE-STUDIO D1 §3.4): correct by construction; interactive and host-graded when it is the activity. */
+  | { kind: "skeleton"; stage?: StageSize; skeleton: string; params: Record<string, unknown>; strings: Record<string, string>; archetype?: string; intentId?: string }
   | { kind: "image"; stage?: StageSize; src: string; alt: string };
 export type StudioArtifactKind = StudioArtifact["kind"];
 
@@ -162,3 +166,16 @@ export interface WhiteboardScript {
 }
 /** Bounds the renderer and the gate enforce (documented here so W2-B/F/H agree; enforced in code by the owners). */
 export const WHITEBOARD_LIMITS = Object.freeze({ maxOps: 120, maxPointsPerStroke: 240, maxTextChars: 24, maxDurationMs: 60_000, minBoard: 100, maxBoard: 2000 });
+
+// ───────────────────────────── the Studio routes (W2-H, server/routes/studio.js) ─────────────────────────────
+/** POST /api/studio/answer → the HOST's grade (the frame's own `correct` is never read). */
+export interface StudioAnswerResponse { correct: boolean; complete: boolean; itemId?: string; evidence?: boolean }
+/** POST /api/studio/feedback actions (STUDENT-FLOW §5.3): replay / reset, or retire it (that archetype is excluded for a week). */
+export type StudioFeedbackAction = "again" | "not_this";
+/** GET /api/studio/made-for → one card per revealed piece, newest first (STUDENT-FLOW §9.3; W2-A renders the shelf). */
+export interface MadeForCard {
+  id: string; lessonId: string; intentId: string; kind: StudioKind; archetype: string; title: string; topicId: string | null; skillId: string | null;
+  misconceptionId: string | null; need: StudioIntent["need"] | null; at: string; completed: boolean;
+  /** What "Play again" mounts (a library build or the skeleton), graded by the host. */
+  replay: StudioArtifact | null;
+}

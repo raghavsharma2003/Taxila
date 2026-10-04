@@ -1,0 +1,96 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;font-family:system-ui,sans-serif;background:#fff5e8;color:#49392e}
+  .board{width:360px;height:320px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+  .top{height:54px;display:flex;align-items:center;gap:10px;flex:none}
+  .picture{width:48px;height:48px;flex:none}
+  .heading{min-width:0}
+  h1{font-size:19px;line-height:1.1;margin:0 0 3px;font-weight:800}
+  .instr{font-size:12px;line-height:1.2;margin:0;color:#806753}
+  .play{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:0}
+  .column{display:flex;flex-direction:column;gap:7px;min-height:0}
+  .card,.slot{flex:1;min-height:52px;border-radius:17px;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px 9px;font-size:15px;font-weight:750;line-height:1.15}
+  .card{width:100%;border:2px solid #eaa56d;background:#ffd9a7;color:#49392e;box-shadow:0 4px 0 #d9905d;cursor:pointer;transition:transform .22s,background .22s,box-shadow .22s}
+  .card:active{transform:scale(.94);box-shadow:0 1px 0 #d9905d}
+  .card:focus-visible{outline:3px solid #4a998b;outline-offset:2px}
+  .slot{border:2px dashed #d8bda5;background:#fffaf3;color:#947b68;gap:7px;transition:background .3s,border-color .3s}
+  .slot.filled{padding:3px;border-style:solid;border-color:#74ad9d;background:#e2f4e9;color:#315f53}
+  .slot .card{min-height:0;height:100%;flex:1;border-color:#74ad9d;background:#d2efdd;box-shadow:none;cursor:default;font-size:14px}
+  .number{flex:none;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#f5e6d5;color:#765945;font-size:14px}
+  .filled .number{background:#65a991;color:white}
+  .message{height:30px;flex:none;text-align:center;font-size:15px;font-weight:750;display:grid;place-items:center;color:#387e6c}
+  .message.bad{color:#af655a}
+  .shake{animation:shake .38s ease}
+  .pop{animation:pop .38s ease}
+  @keyframes shake{25%{transform:translateX(-5px) rotate(-2deg)}50%{transform:translateX(5px) rotate(2deg)}75%{transform:translateX(-3px)}}
+  @keyframes pop{50%{transform:scale(1.07)}}
+</style>
+<div class="board">
+  <div class="top">
+    <svg class="picture" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="23" fill="#fbd5a1"/>
+      <path d="M10 31c8-2 10-13 18-13h8" fill="none" stroke="#c27659" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="12" cy="31" r="4" fill="#e88d70"/>
+      <circle cx="25" cy="20" r="4" fill="#7eab95"/>
+      <circle cx="36" cy="18" r="4" fill="#7eab95"/>
+    </svg>
+    <div class="heading"><h1 id="title"></h1><div class="instr" id="instr"></div></div>
+  </div>
+  <div class="play"><div class="column" id="cards"></div><div class="column" id="slots"></div></div>
+  <div class="message" id="message" aria-live="polite"></div>
+</div>
+<script>
+
+  const shown=Studio.params.shown;
+  const cards=document.getElementById('cards');
+  const slots=document.getElementById('slots');
+  const message=document.getElementById('message');
+  document.getElementById('title').textContent=Studio.t('title');
+  document.getElementById('instr').textContent=Studio.t('instr');
+  let placed=0,waiting=false,active=null;
+  shown.forEach((key,index)=>{
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='card';
+    card.dataset.step=key;
+    card.textContent=Studio.t(key);
+    card.addEventListener('click',()=>{
+      if(waiting || card.hasAttribute('data-placed'))return;
+      waiting=true;
+      active=card;
+      Studio.answer({key:key});
+    });
+    cards.appendChild(card);
+    const slot=document.createElement('div');
+    slot.className='slot';
+    const number=document.createElement('span');
+    number.className='number';
+    number.textContent=String(index+1);
+    slot.appendChild(number);
+    slots.appendChild(slot);
+  });
+  Studio.onVerdict(({correct})=>{
+    if(!waiting || !active)return;
+    const card=active;
+    active=null;
+    waiting=false;
+    message.classList.toggle('bad',!correct);
+    if(correct){
+      placed++;
+      card.dataset.placed=String(placed);
+      const slot=slots.children[placed-1];
+      slot.classList.add('filled','pop');
+      slot.appendChild(card);
+      card.disabled=true;
+      message.textContent=placed===shown.length?Studio.t('done'):Studio.t('right');
+      if(placed===shown.length)Studio.done();
+    }else{
+      message.textContent=Studio.t('wrong');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+    }
+  });
+  Studio.ready();
+
+</script>

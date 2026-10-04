@@ -10,6 +10,9 @@ export const CAND_MS = 500;
 const EXPLAINING = new Set(["teachback", "explain", "worked_example", "contrast", "explore_question", "reflect"]);
 export const HOLD_REQUEST_MS = 8000;
 export const SAFETY_SILENCE_MS = 1500; // LateIntent: speak the safeguard only after >= 1.5 s of silence (or a TRP)
+/** G5: on explanation beats she waits >= 1.5 s of silence, deliberately and visibly listening (Rowe wait time II). */
+export const EXPLAIN_MIN_SILENCE_MS = 1500;
+const OPEN_CUES = new Set(["open", "filler", "projection"]);
 
 /** The §3.1 table row for this context: commit threshold and hold window (ms after the candidate). */
 export function rowFor(ctx = {}, note) {
@@ -28,11 +31,12 @@ export function rowFor(ctx = {}, note) {
  * @param {ReturnType<import('./understand.js').understand>} note
  * @param {{ answerForm?:string, beat?:string }} ctx
  * @param {{ falling?:boolean, rising?:boolean, lowPitch?:boolean }} [pros]
- * @param {{ prosody?: boolean, repair?: boolean }} [opts]  ablation switches (default all on)
- * @returns {{ commit: boolean, holdMs: number, p: number, thr: number, cue: string, why: string }}
+ * @param {{ prosody?: boolean, repair?: boolean, openToCap?: boolean, explainMinSilence?: boolean }} [opts]  ablation switches (default all on)
+ * @returns {{ commit: boolean, holdMs: number, p: number, thr: number, cue: string, why: string, floor?: boolean }}
  */
 export function decideEnd(note, ctx = {}, pros = {}, opts = {}) {
   const useProsody = opts.prosody !== false, useRepair = opts.repair !== false;
+  const openToCap = opts.openToCap !== false, explainMin = opts.explainMinSilence !== false;
   if (note.safety?.distress) return { commit: false, holdMs: SAFETY_SILENCE_MS - CAND_MS, p: 0, thr: 1, cue: "safety", why: "safety: speak only after 1.5 s silence" };
   if (note.holdTail) return { commit: false, holdMs: HOLD_REQUEST_MS, p: 0.02, thr: 1, cue: "hold_request", why: "explicit hold request" };
   const row = rowFor(ctx, note);
@@ -46,6 +50,10 @@ export function decideEnd(note, ctx = {}, pros = {}, opts = {}) {
     p = Math.min(p, 0.25); hold = Math.max(hold, 700); why = "closed: no value yet";
   }
   if (useRepair && note.repairOpen) { p = Math.min(p, 0.1); hold = row.cap; why = "self-repair in progress"; }
+  // §3.4 reasoning aloud: a syntactically open tail (connective, postposition, unanswered "jab/agar") holds to the cap
+  if (openToCap && OPEN_CUES.has(note.lex.cue) && ["explain", "probe", "default"].includes(row.name) && !note.asks && !note.idk && !note.stop) {
+    hold = Math.max(hold, row.cap); why = `${why} (open tail: hold to cap)`;
+  }
   if (useProsody) {
     if (pros.falling && pros.lowPitch) p += 0.05;
     else if (pros.rising && !note.asks) p -= 0.05;
@@ -54,5 +62,9 @@ export function decideEnd(note, ctx = {}, pros = {}, opts = {}) {
   const commit = p >= thr && !(useRepair && note.repairOpen) && !note.wordSearch;
   // a corrected value just landed ("…nahi nahi, teen bata chaar"): one more breath before committing [E: 300 ms]
   if (commit && useRepair && note.repaired && !EXPLAINING.has(ctx.beat)) return { commit: false, holdMs: 300, p, thr, cue: note.lex.cue, why: `${why} +repaired` };
+  // G5: an explanation is answered only after >= 1.5 s of silence unless the child asked, gave up or asked to stop
+  if (commit && explainMin && row.name === "explain" && !note.asks && !note.idk && !note.stop) {
+    return { commit: false, holdMs: EXPLAIN_MIN_SILENCE_MS - CAND_MS, p, thr, cue: note.lex.cue, why: `${why} +explain floor 1.5 s`, floor: true };
+  }
   return { commit, holdMs: commit ? 0 : hold, p, thr, cue: note.lex.cue, why };
 }

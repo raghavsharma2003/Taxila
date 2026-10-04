@@ -40,14 +40,26 @@ LM = {
     "faceR": [(719.5, 606), (660, 560), (712.5, 560)],
     "chin": [(527, 710), (515, 655), (575, 649)],
 }
-FILES = ["art/character/puppet2d/polish-r4/c-front.png", f"{K}/yawL-0.png", f"{K}/yawR-0.png"]
+FILES = ["art/character/puppet2d/polish-r4/c-front.png", f"{K}/yawL-0.png", f"{K}/yawR-2.png"]
+# r4 (judge r3 fix 3): yawR-2 = the bun-corrected repaint (gen-keys.mjs yawRbun). Its landmarks are the hand-read yawR-0
+# ones carried through a dense optical-flow registration (regplate.py, face residual 32 -> 9 grey levels); the two
+# points beside the removed left bun (faceL, earringL) sit where the flow is unreliable and take the local -11 px shift.
+import os as _os
+if _os.path.exists(f"{K}/lmR-r4.json"):
+    _m = json.load(open(f"{K}/lmR-r4.json"))
+    _m["faceL"] = [LM["faceL"][2][0], LM["faceL"][2][1] - 11.0]
+    _m["earringL"] = [LM["earringL"][2][0] + 1.0, LM["earringL"][2][1] - 11.0]
+    for _k in LM:
+        LM[_k][2] = tuple(_m[_k])
 
 
 def bgmask(p):
     im = np.asarray(Image.open(p).convert("RGB")).astype(float)
     R, G, B = im[..., 0], im[..., 1], im[..., 2]
     lum = 0.299 * R + 0.587 * G + 0.114 * B
-    return (lum > 205) & (R > 235) & (B > 150) & ((R - B) < 80)
+    # r4: relative to the plate's own backdrop (yawR-2's cream is 6 levels yellower: R-B hit the old fixed 80 cut-off)
+    ref = np.median(np.concatenate([im[:40, :40].reshape(-1, 3), im[:40, -40:].reshape(-1, 3)]), 0)
+    return (np.abs(im - ref).max(-1) < 18) & (lum > 195)
 
 
 def eye_mouth(i):
@@ -68,7 +80,7 @@ def cranium_cx(bg, y0, y1):
 bgs = [bgmask(f) for f in FILES]
 fe, fm = eye_mouth(0)
 fcx = cranium_cx(bgs[0], 80, 300)
-out = {"keyDeg": 16.0,  # the painted plate is reached at the contract's yaw limit (+-20)
+out = {"keyDeg": 20.0,  # r4: the painted plate is reached exactly at the contract's yaw limit (+-20): no extrapolation
        "grid": {"x0": 0, "y0": 0, "step": 32, "n": 33}}
 report = {}
 for ki, name in ((1, "L"), (2, "R")):
@@ -119,6 +131,8 @@ for ki, name in ((1, "L"), (2, "R")):
     wr = (np.array(norm(LM["eyeR_out"][ki])) - np.array(norm(LM["eyeR_in"][ki])))[0] / (LM["eyeR_out"][0][0] - LM["eyeR_in"][0][0])
     report[name]["eye_width_ratio_L_R"] = [round(float(wl), 3), round(float(wr), 3)]
     out[name] = np.round(D, 2).tolist()
+    # r4: the normalisation, so the runtime can sample the painted plate itself (two-texture keyform blend)
+    out.setdefault("norm", {})[name] = {"s": round(float(s), 5), "kcx": round(kcx, 2), "fcx": round(fcx, 2), "ke": round(float(ke), 2), "fe": round(float(fe), 2)}
 print(json.dumps(report, indent=1))
 g = json.load(open(f"{L}/geom.json"))
 g["yawKeys"] = out

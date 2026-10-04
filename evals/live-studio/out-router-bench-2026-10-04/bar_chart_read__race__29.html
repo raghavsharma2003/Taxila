@@ -1,0 +1,152 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e8;font-family:Arial,sans-serif}
+  #app{position:relative;width:360px;height:320px;overflow:hidden;color:#533b2b}
+  #title{position:absolute;left:14px;top:8px;right:14px;height:25px;font-size:20px;font-weight:800;line-height:25px;color:#6b3f25}
+  #ask{position:absolute;left:14px;top:35px;right:14px;height:28px;font-size:15px;font-weight:700;line-height:20px;color:#87583a}
+  #chart{position:absolute;left:0;top:0;width:360px;height:320px;overflow:visible}
+  .panel{fill:#fffdf8;stroke:#f1d6ae;stroke-width:2}
+  .grid{stroke:#ead8bd;stroke-width:1;stroke-dasharray:3 4}
+  .axis{stroke:#9c7051;stroke-width:2;stroke-linecap:round}
+  .tick{fill:#89684e;font-size:11px;font-weight:700}
+  .axisword{fill:#986a49;font-size:11px;font-weight:700}
+  .name{fill:#67462f;font-size:11px;font-weight:800}
+  .bar{fill:#f39a4a;stroke:#d97832;stroke-width:1.5;rx:8;ry:8;transform-box:fill-box;transform-origin:center bottom;transform:scaleY(0);transition:transform 620ms cubic-bezier(.2,.85,.3,1)}
+  .bar.grown{transform:scaleY(1)}
+  .hit{fill:#ffffff;fill-opacity:.001;cursor:pointer}
+  .column{transition:filter 180ms ease}
+  .column.pending .bar{filter:brightness(1.08);transform:scaleY(1) translateY(-2px)}
+  .column.wiggle{animation:wiggle 340ms ease}
+  .column.good .bar{fill:#ef8b3d;stroke:#bf5b2b;animation:happy 640ms ease}
+  #feedback{position:absolute;left:72px;right:9px;bottom:2px;min-height:23px;text-align:center;font-size:13px;font-weight:800;line-height:22px;color:#a15138;opacity:0;transform:translateY(6px);transition:opacity 180ms ease,transform 180ms ease}
+  #feedback.show{opacity:1;transform:translateY(0)}
+  #feedback.good{color:#567d43}
+  #feedback span{margin:0 3px}
+  @keyframes wiggle{0%,100%{transform:translateX(0)}30%{transform:translateX(-3px)}70%{transform:translateX(3px)}}
+  @keyframes happy{0%,100%{filter:none}45%{filter:brightness(1.2);transform:scaleY(1) translateY(-4px)}}
+</style>
+<div id="app">
+  <div id="title"></div>
+  <div id="ask"></div>
+  <svg id="chart" viewBox="0 0 360 320" aria-hidden="true">
+    <rect class="panel" x="7" y="70" width="346" height="216" rx="18"></rect>
+    <circle cx="334" cy="82" r="7" fill="#ffd782" opacity=".75"></circle>
+    <circle cx="317" cy="89" r="4" fill="#f6c26b" opacity=".6"></circle>
+    <g id="gridLayer"></g>
+    <g id="barLayer"></g>
+    <g id="labelLayer"></g>
+  </svg>
+  <div id="feedback"></div>
+</div>
+<script>
+
+(function(){
+  var p=Studio.params;
+  var data=p.data;
+  var ns="http://www.w3.org/2000/svg";
+  var grid=document.getElementById("gridLayer");
+  var bars=document.getElementById("barLayer");
+  var labels=document.getElementById("labelLayer");
+  var feedback=document.getElementById("feedback");
+  var title=document.getElementById("title");
+  var ask=document.getElementById("ask");
+  var base=248, top=84, left=67, width=280, height=base-top;
+  var waiting=false, complete=false, chosen=null;
+
+  title.textContent=Studio.t("title");
+  ask.textContent=Studio.t("ask");
+
+  function make(tag,attrs,parent){
+    var e=document.createElementNS(ns,tag);
+    for(var k in attrs){e.setAttribute(k,attrs[k]);}
+    (parent||grid).appendChild(e);
+    return e;
+  }
+  function niceStep(raw){
+    var power=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10));
+    var fraction=raw/power;
+    var nice=fraction<=1?1:fraction<=2?2:fraction<=5?5:10;
+    return nice*power;
+  }
+  var maxValue=0;
+  for(var i=0;i<data.length;i++){if(data[i].value>maxValue)maxValue=data[i].value;}
+  if(maxValue<=0)maxValue=1;
+  var step=niceStep(maxValue/4);
+  var maxTick=Math.ceil(maxValue/step)*step;
+  var tickCount=Math.round(maxTick/step);
+
+  for(var t=0;t<=tickCount;t++){
+    var value=t*step;
+    var y=base-(value/maxTick)*height;
+    make("line",{x1:left,y1:y,x2:left+width,y2:y,"class":t===0?"axis":"grid"});
+    var tick=make("text",{x:left-9,y:y,"text-anchor":"end","dominant-baseline":"middle","class":"tick","data-tick":String(value)});
+    tick.textContent=String(value);
+  }
+  make("line",{x1:left,y1:top,x2:left,y2:base,"class":"axis"});
+  var axisTitle=make("text",{x:20,y:(top+base)/2,"text-anchor":"middle","class":"axisword",transform:"rotate(-90 20 "+((top+base)/2)+")"});
+  axisTitle.textContent=Studio.t("yaxis");
+
+  var colWidth=width/data.length;
+  for(var j=0;j<data.length;j++){
+    (function(item,index){
+      var cx=left+colWidth*(index+.5);
+      var barWidth=Math.min(31,colWidth-16);
+      var barHeight=(item.value/maxTick)*height;
+      var group=make("g",{"class":"column"},bars);
+      var bar=make("rect",{
+        x:cx-barWidth/2,y:base-barHeight,width:barWidth,height:barHeight,
+        "class":"bar","data-bar":item.key,"data-value":String(item.value)
+      },group);
+      var hit=make("rect",{
+        x:left+index*colWidth,y:76,width:colWidth,height:212,
+        "class":"hit","data-column":item.key
+      },group);
+      var name=make("text",{x:cx,y:275,"text-anchor":"middle","class":"name"},labels);
+      name.textContent=Studio.t(item.key);
+
+      hit.addEventListener("click",function(){
+        if(waiting||complete)return;
+        waiting=true;
+        chosen=group;
+        group.setAttribute("class","column pending");
+        Studio.event("tap",{key:item.key});
+        Studio.answer(item.key);
+      });
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){bar.setAttribute("class","bar grown");});
+      });
+    })(data[j],j);
+  }
+
+  Studio.onVerdict(function(result){
+    if(!chosen||complete)return;
+    if(result.correct){
+      complete=true;
+      chosen.setAttribute("class","column good");
+      feedback.innerHTML="";
+      var a=document.createElement("span");
+      a.textContent=Studio.t("right");
+      var b=document.createElement("span");
+      b.textContent=Studio.t("done");
+      feedback.appendChild(a);
+      feedback.appendChild(b);
+      feedback.setAttribute("class","show good");
+      Studio.done();
+    }else{
+      chosen.setAttribute("class","column wiggle");
+      feedback.textContent=Studio.t("wrong");
+      feedback.setAttribute("class","show");
+      var old=chosen;
+      setTimeout(function(){
+        if(!complete){
+          old.setAttribute("class","column");
+          waiting=false;
+        }
+      },390);
+    }
+  });
+
+  Studio.ready();
+})();
+
+</script>

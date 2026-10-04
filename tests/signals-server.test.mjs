@@ -289,3 +289,65 @@ test("G-SIG-LAT (unit smoke): 2,000 worst-case turns well inside the 30 ms budge
   ts.sort((a, b) => a - b);
   assert.ok(ts[Math.floor(ts.length * 0.99)] < 30, `p99 ${ts[Math.floor(ts.length * 0.99)]}`);
 });
+
+// ───────────── review 2026-10-04: regressions found by the adversarial verify pass ─────────────
+import { safetyBackstop } from "../server/signals/index.js";
+
+test("backstop: the four ES-3 shapes the floor predicate missed force ABSTAIN with no licence (abstain-only)", () => {
+  for (const t of ["paanch hai, mujhe marna hai haha", "answer 5 hai, waise bhi main rahun ya na rahun kya farak",
+    "pata nahi, waise bhi kisi ko farak nahi padta main hoon ya nahi", "I hate my life, five", "मुझे मरना है"]) {
+    assert.ok(safetyBackstop(t), t);
+    const f = step(null, base({ childText: t })).frame;
+    assert.equal(f.abstain, true, t);
+    for (const k of LICENCES) if (k !== "relEvidence") assert.equal(f[k], undefined, `${t}: ${k}`);
+    assert.deepEqual(f.reasons, []);
+  }
+  for (const t of ["5", "mujhe maths pasand hai", "main class mein rahun?", "the answer is half", "pehle guna phir jod", "marks kam aaye"]) assert.equal(safetyBackstop(t), false, t);
+});
+
+test("after a safety turn, playful licences (child_joke, choiceDue) are withheld for 3 child turns", () => {
+  const { frames } = run([{ childText: "x", safety: true }, { childText: "hahaha 5" }, { childText: "hmm", verdict: "ungraded" },
+    { childText: "hmm", verdict: "ungraded" }, { childText: "hmm", verdict: "ungraded" }, { childText: "hahaha 5" }]);
+  assert.equal(frames[1].childWin, undefined);
+  assert.equal(frames[3].choiceDue, undefined);
+  assert.deepEqual(frames[5].childWin?.causes, ["child_joke"]);
+});
+
+test("content words are not meta requests: break/rest/baad mein/aaram/slow/dheere inside an answer fire nothing", () => {
+  for (const t of ["pehle 24 ko break karte hain 20 aur 4 mein", "pehle guna karo, baad mein jod do", "ye toh aaram se ho jayega, 5",
+    "the rest of the pizza is half", "kachhua dheere chalta hai", "the tortoise is slow"]) {
+    const f = step(null, base({ childText: t, verdict: "partial" })).frame;
+    assert.equal(f.breakDue, undefined, t);
+    assert.equal(f.paceDown, undefined, t);
+  }
+  assert.equal(step(null, base({ childText: "didi thoda break chahiye na", verdict: "ungraded" })).frame.breakDue?.path, "child_said");
+  assert.ok(step(null, base({ childText: "thoda dheere bolo na", verdict: "ungraded" })).frame.paceDown, "tag 'na' is not negation");
+});
+
+test("a shy child's correct one-word answers and an STT miss are never non-answers (no choiceDue)", () => {
+  const yn = (i) => ({ id: "y" + i, skillId: "s2", form: "choice_spoken", kitTerms: [] });
+  const shy = run([0, 1, 2, 3, 4].map((i) => ({ childText: i % 2 ? "nahi" : "haan", item: yn(i), verdict: i === 2 ? "not_yet" : "correct" })));
+  assert.ok(shy.frames.every((f) => !f.choiceDue));
+  const miss = run([0, 1, 2, 3, 4].map(() => ({ childText: "", verdict: "ungraded", voice: { f: { durationMs: 1400, voicedFrac: 0.5 }, z: {}, reliable: true } })));
+  assert.ok(miss.frames.every((f) => !f.choiceDue));
+  const real = run([0, 1, 2].map(() => ({ childText: "hmm", verdict: "ungraded" })));
+  assert.ok(real.frames[2].choiceDue, "three real non-answers still offer a choice");
+});
+
+test("SL-4: acoustic drift alone (G3) never fires the composite break offer", () => {
+  let sess = null, fr;
+  const z = { onsetMs: 2.5, articulationWps: -2.5, speechRateWps: -2.5, pauseFrac: 0 };
+  for (let i = 0; i < 24; i++) {
+    const r = step(sess, base({ turn: i + 1, minutes: 30, childText: "5", verdict: "correct", item: { ...ITEM, id: "k" + i },
+      voice: { f: { durationMs: 1800, voicedFrac: 0.6, articulationWps: 2 }, z: i < 4 ? { onsetMs: 0, articulationWps: 0, speechRateWps: 0, pauseFrac: 0 } : z, reliable: true } }));
+    sess = r.next; fr = r.frame;
+    assert.notEqual(fr.breakDue?.path, "composite", `turn ${i + 1}`);
+  }
+});
+
+test("latency guard: a pathological 5,000-token transcript stays far under the 30 ms bar", () => {
+  const t = "'a agar ".repeat(5000);
+  const t0 = performance.now();
+  step(null, base({ childText: t }));
+  assert.ok(performance.now() - t0 < 30);
+});

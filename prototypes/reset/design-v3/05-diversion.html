@@ -32,6 +32,10 @@
   .park-card .w { font-size: 13px; color: var(--ink-2); margin-top: 3px; }
   .park-card.oob .ic { color: var(--amber); }
   .park-card.brief .ic { color: var(--ion); }
+  .later-pill[hidden] { display: none; }
+  .park-card.wide { right: 12px; }
+  .park-card .acts { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .park-card .acts .btn { min-height: 40px; font-size: 14px; padding: 0 14px; }
   /* prototype-only scenario switcher (not product UI) */
   .proto { position: fixed; z-index: 50; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 132px); display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #2a2140; border: 1px dashed #a78bfa; font: 600 11px/1 var(--f-mono); }
   .proto[hidden] { display: none; }
@@ -96,7 +100,7 @@
   </div>
 </div>
 <div class="proto" hidden role="group" aria-label="Prototype scenario (not product UI)">
-  <button data-s="park" aria-pressed="true">Park</button><button data-s="insist">Insists</button><button data-s="oob">Out of bounds</button>
+  <button data-s="park" aria-pressed="true">Park</button><button data-s="insist">Insists</button><button data-s="oob">Out of bounds</button><button data-s="stop">"End it"</button>
 </div>
 <script>
 const $ = (id) => document.getElementById(id);
@@ -116,17 +120,23 @@ const S = {
     cap: "Not my department — stories like that are for your own time. But here's something spookier: this leaf is eating light right now.",
     card: ["oob", "i-shield", "Not for lessons", "“a ghost story”", "Declined kindly · lesson continues."],
   },
+  stop: {
+    me: "can we just end the lesson? I'm so tired",
+    cap: "Fair — long day. Two options: a three-minute break, or we wrap up in two and I save exactly where we are.",
+    card: ["brief", "i-pause", "Your call · nothing lost", "“end the lesson”", "Saved at: green bounces back.", true],
+  },
 };
 function speak(on) { $("pip").classList.toggle("speaking", on); $("tileBig").classList.toggle("speaking", on); $("tileState").textContent = on ? "Talking" : "Listening"; $("wave").className = on ? "wave idle" : "wave child"; $("micT").textContent = on ? "Speak anytime" : "Got it"; }
 let tm = [];
 function run(k) {
   tm.forEach(clearTimeout); tm = []; const s = S[k];
   document.querySelectorAll(".proto button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.s === k));
-  $("meLine").innerHTML = `<span class="heard">heard</span>“${s.me}”`; $("cap").textContent = "…"; speak(false); $("cardSlot").innerHTML = "";
+  $("meLine").innerHTML = `<span class="heard">heard</span>“${s.me}”`; $("cap").textContent = "…"; speak(false); $("cardSlot").innerHTML = ""; $("laterPill").hidden = k !== "park" ? false : true;
   tm.push(setTimeout(() => { speak(true); $("cap").textContent = s.cap; }, 700));
   tm.push(setTimeout(() => {
-    const [cls, ic, k1, q, w] = s.card;
-    $("cardSlot").innerHTML = `<div class="park-card ${cls}" id="card"><span class="ic"><svg class="icon"><use href="#${ic}"/></svg></span><div><div class="k">${k1}</div><div class="q">${q}</div><div class="w">${w}</div></div></div>`;
+    const [cls, ic, k1, q, w, acts] = s.card;
+    const a = acts ? `<div class="acts"><button class="btn">3-min break</button><button class="btn btn-primary">Wrap up in 2</button></div>` : "";
+    $("cardSlot").innerHTML = `<div class="park-card ${cls}${acts ? " wide" : ""}" id="card"><span class="ic"><svg class="icon"><use href="#${ic}"/></svg></span><div><div class="k">${k1}</div><div class="q">${q}</div><div class="w">${w}</div>${a}</div></div>`;
   }, 1300));
   if (k === "park") tm.push(setTimeout(() => { $("card").classList.add("tuck"); $("laterPill").hidden = false; }, 6000));
   tm.push(setTimeout(() => speak(false), 5200));

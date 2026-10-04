@@ -194,7 +194,9 @@ async function main() {
         head = head.map((h, i) => h + P.head[i]);
         gz = [...P.gaze];
       }
+      rig.debug = spec.debug || null;
       for (let i = 0; i < 6; i++) { rig.clock = 1000 + i / 60; rig.resetPhysics(); rig.frame(bs, head, gz, spec.lean || 0, 0); }
+      rig.debug = null;
       return rig.mouth.name;
     },
   };

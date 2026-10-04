@@ -6,7 +6,8 @@ from PIL import Image, ImageDraw
 d, out = sys.argv[1], sys.argv[2]
 sc = float(sys.argv[3]) if len(sys.argv) > 3 else 1.0
 lab = json.load(open(f"{d}/labels.json"))
-box = (440, 545, 620, 690)
+import os
+box = tuple(int(v) for v in os.environ.get("BOX", "300,425,460,565").split(","))
 w, h = int((box[2] - box[0]) * sc), int((box[3] - box[1]) * sc)
 cols = 12
 rows = (len(lab) + cols - 1) // cols

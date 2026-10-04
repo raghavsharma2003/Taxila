@@ -8,7 +8,7 @@
 //   3. head roll about the neck pivot, breath bob, lean scale
 //   4. secondary motion: locks and bun on damped springs driven by the head's screen acceleration
 import { Renderer } from "./gl.js";
-import { LipSolver, LipShell, jawProfile } from "./lips.js";
+import { LipSolver, LipShell, jawProfile, lineY as lineYAt } from "./lips.js";
 
 const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
 const clamp01 = (x) => clamp(x, 0, 1);
@@ -109,7 +109,7 @@ export class Puppet2DRig {
     const j = (p) => fetch(base + p).then((r) => r.json());
     const geom = await j("geom.json");
     const mouths = null;
-    const names = Object.keys(geom.rects).filter((n) => n !== "bg").concat(["interior"]);
+    const names = Object.keys(geom.rects).filter((n) => n !== "bg").concat(["interior"], ["L", "R"].filter((k) => geom.plates && geom.plates[k]).map((k) => "plate" + k));
     const imgs = {};
     await Promise.all(names.map(async (n) => {
       const im = new Image();
@@ -244,6 +244,47 @@ export class Puppet2DRig {
     const I = this.shell.inner;
     I.proj = new Float32Array(I.pos.length);
     this.innerMesh = this.R.mesh(this.R.inner, { aPos: { data: I.proj, size: 2, dynamic: true }, aS: { data: I.s, size: 1 }, aDT: { data: I.dt, size: 1, dynamic: true }, aGap: { data: I.gap, size: 1, dynamic: true } }, I.idx);
+    // r4 METHOD CHANGE, turn: the two-texture keyform. A grid over frontal rest space; its vertices go through the same
+    // field + projection as every layer (positions), its UVs sample the painted 3/4 plate at denorm(q + D(q)), so at the
+    // key the plate sits exactly where it was painted (far-cheek compression, nose-bridge occlusion, turned nose and
+    // jaw are the painting's own), and below the key it is pulled back through the field while it cross-dissolves in.
+    // Holes (rest space, feathered) leave the live eyes / brows / mouth showing: they sit exactly where their layers are.
+    this.plates = {};
+    if (geom.plates && geom.yawKeys && geom.yawKeys.norm) {
+      const RX = [290, 170, 780, 700], cell = 8;
+      const gr = grid(RX, cell);
+      const K = geom.yawKeys, st = K.grid.step, nG = K.grid.n;
+      // holes: rounded rectangles (plates.py writes them; the colour band around them was matched there)
+      const holes = geom.plates.holes || [];
+      const holeA = (x, y) => {
+        let h = 1;
+        for (const H of holes) {
+          const qx = Math.abs(x - H.c[0]) - (H.h[0] - H.r), qy = Math.abs(y - H.c[1]) - (H.h[1] - H.r);
+          const d = Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - H.r;
+          h *= smooth(-H.f, 0, d);
+        }
+        // below the mouth the chin stays the aligned frontal one (the plate's jaw edge showed as a soft seam)
+        return h * (1 - smooth(640, 690, y));
+      };
+      for (const sd of ["L", "R"]) {
+        const D = K[sd], N = K.norm[sd], pr = geom.plates[sd].rect;
+        const uv = new Float32Array(gr.n * 2), hole = new Float32Array(gr.n), z = new Float32Array(gr.n);
+        for (let i = 0; i < gr.n; i++) {
+          const x = gr.rest[i * 2], y = gr.rest[i * 2 + 1];
+          const gx = clamp(x / st, 0, nG - 1.001), gy = clamp(y / st, 0, nG - 1.001), ii = Math.floor(gx), jj = Math.floor(gy), u = gx - ii, v = gy - jj;
+          const a = D[jj][ii], b = D[jj][ii + 1], c = D[jj + 1][ii], d = D[jj + 1][ii + 1];
+          const X = x + (a[0] * (1 - u) + b[0] * u) * (1 - v) + (c[0] * (1 - u) + d[0] * u) * v;
+          const Y = y + (a[1] * (1 - u) + b[1] * u) * (1 - v) + (c[1] * (1 - u) + d[1] * u) * v;
+          const px = (X - N.fcx) / N.s + N.kcx, py = (Y - N.fe) / N.s + N.ke;
+          uv[i * 2] = (px - pr[0]) / (pr[2] - pr[0]); uv[i * 2 + 1] = (py - pr[1]) / (pr[3] - pr[1]);
+          hole[i] = holeA(x, y);
+          z[i] = zHead(x, y);
+        }
+        const pos = new Float32Array(gr.rest), alpha = new Float32Array(gr.n), light = new Float32Array(gr.n).fill(1);
+        const mesh = this.R.mesh(this.R.lip, { aPos: { data: pos, size: 2, dynamic: true }, aUv: { data: uv, size: 2 }, aA: { data: alpha, size: 1, dynamic: true }, aL: { data: light, size: 1 } }, gr.idx);
+        this.plates[sd] = { rect: pr, rest: gr.rest, n: gr.n, pos, alpha, hole, z, mesh };
+      }
+    }
     this.prevAnchor = null;
     this.prevVel = { L: [0, 0], R: [0, 0], bun: [0, 0] };
     this.st = null;
@@ -271,7 +312,7 @@ export class Puppet2DRig {
     };
     // yaw keyform: side + weight (an ease-in so small drifts stay subtle and the key is reached at +-keyDeg)
     if (this.g.yawKeys) {
-      const K = this.g.yawKeys, f = clamp(yaw / K.keyDeg, -1.3, 1.3);   // up to 1.25x the painted key at the yaw limit: the turn must read at thumbnail size
+      const K = this.g.yawKeys, f = clamp(yaw / K.keyDeg, -1, 1);   // r4: the painted key is reached at the yaw limit, never extrapolated (judge r3: the 1.25x was unverified)
       st.yk = f >= 0 ? K.R : K.L;
       st.ykf = Math.abs(f);
       this.yawStep = K.grid.step; this.yawN = K.grid.n;
@@ -525,6 +566,7 @@ export class Puppet2DRig {
     draw("browL");
     draw("browR");
     this.drawMouth(shadeFace);
+    this.drawPlate();
     draw("lockbed", shadeFace);
     draw("hair", shadeHair);
     draw("lockL");
@@ -671,6 +713,36 @@ export class Puppet2DRig {
       R.update(this.shellMesh[n], "aUv", sh.uv);
       R.drawLip(this.shellMesh[n], this.tex.mouth_rest, this.g.rects.mouth_rest, shade);
     }
+  }
+
+  /** r4 two-texture yaw keyform: the painted plate of the turned side, cross-dissolved in with the key weight. */
+  drawPlate() {
+    const s = this.st;
+    if (!s || !s.yk || this.debug && this.debug.noPlate) return;
+    const sd = s.yaw >= 0 ? "R" : "L", P = this.plates[sd];
+    const w = smooth(0.04, 1, s.ykf);   // the dissolve: ~0 for idle drifts (< 1 deg), all plate at the key
+    if (!P || w <= 0.004) return;
+    const sol = this.solver, sp = sol.p, o = this._tmp || (this._tmp = [0, 0]);
+    // the live mouth's hole: the lip band (both lips + the opening + the jaw-carried lower lip), its width and side shift
+    const drop = sol.lowerDrop(), shift = sol.shift || 0;
+    const hwL = 64 * sp.W + Math.max(0, sol.side.L.wid) + 14, hwR = 66 * sp.W + Math.max(0, sol.side.R.wid) + 14;
+    for (let i = 0; i < P.n; i++) {
+      const x = P.rest[i * 2], y = P.rest[i * 2 + 1];
+      const [dx, dy] = this.faceOffset(x, y);
+      this.projectTo(x + dx, y + dy, P.z[i], o);
+      P.pos[i * 2] = o[0]; P.pos[i * 2 + 1] = o[1];
+      let a = w * P.hole[i];
+      if (a > 0 && x > 420 && x < 650 && y > 540 && y < 720) {
+        const xr = x - 530 - shift, ax = xr < 0 ? -xr / hwL : xr / hwR;
+        const ly = lineYAt(x), top = ly - 20 - 0.3 * sp.g, bot = ly + 30 + drop;
+        const d = Math.max((ax - 1) * 60, top - y, y - bot);
+        a *= smooth(-9, 0, d);
+      }
+      P.alpha[i] = a;
+    }
+    this.R.update(P.mesh, "aPos", P.pos);
+    this.R.update(P.mesh, "aA", P.alpha);
+    this.R.drawLip(P.mesh, this.tex["plate" + sd], P.rect, [1, 0, 1, 0]);
   }
 
   resetPhysics() {

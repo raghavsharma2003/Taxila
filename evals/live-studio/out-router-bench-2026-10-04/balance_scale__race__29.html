@@ -1,0 +1,135 @@
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;width:360px;height:320px;overflow:hidden;background:#fff7e9;font-family:system-ui,sans-serif;color:#533c37}
+  #app{position:relative;width:360px;height:320px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#fffdf5,#fff2df)}
+  h1{margin:12px 16px 0;text-align:center;font-size:20px;line-height:25px;font-weight:800}
+  #instr{margin:2px 14px 0;text-align:center;font-size:13px;line-height:19px;color:#79605a}
+  #scene{position:absolute;left:0;top:79px;width:360px;height:153px}
+  #stand{position:absolute;left:154px;top:36px;width:52px;height:123px}
+  #swing{position:absolute;left:65px;top:36px;width:230px;height:0;transform-origin:50% 0;transform:rotate(var(--a,0deg));transition:transform .55s cubic-bezier(.22,1.25,.42,1)}
+  [data-beam] .bar{position:absolute;left:0;top:-5px;width:230px;height:10px;border-radius:10px;background:#bd7958;box-shadow:0 3px 0 #915d4e}
+  .pan{position:absolute;top:0;width:132px;height:111px;transform-origin:50% 0;transform:translateX(-50%) rotate(calc(-1 * var(--a,0deg)));transition:transform .55s cubic-bezier(.22,1.25,.42,1)}
+  .pan.left{left:0}.pan.right{left:230px}
+  .cord{position:absolute;top:3px;width:2px;height:56px;background:#ad856f}
+  .cord.one{left:66px;transform:rotate(37deg)}.cord.two{right:66px;transform:rotate(-37deg)}
+  .tray{position:absolute;left:2px;top:51px;width:128px;height:51px;border-radius:8px 8px 35px 35px;background:#f6bd87;border-bottom:7px solid #cc815b;box-shadow:0 5px 9px #a8765540}
+  .weights{position:absolute;left:6px;top:48px;width:120px;min-height:44px;display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;gap:3px}
+  .weight{display:grid;place-items:center;width:35px;height:34px;border-radius:11px 11px 7px 7px;background:#657fa4;color:white;font-size:17px;font-weight:800;box-shadow:inset 0 -4px 0 #435f85,0 2px 2px #694e4433}
+  .weight.added{animation:pop .42s ease-out}
+  #pivot{position:absolute;left:169px;top:25px;width:22px;height:22px;border-radius:50%;background:#eac681;border:5px solid #a56750;box-shadow:0 2px 3px #73504455}
+  #feedback{position:absolute;top:211px;left:20px;width:320px;height:24px;text-align:center;font-size:16px;font-weight:800;color:#a95756;pointer-events:none}
+  #feedback.good{color:#47866c;animation:pop .45s ease-out}
+  #options{position:absolute;left:34px;top:242px;width:292px;display:flex;justify-content:space-between}
+  [data-option]{width:72px;height:64px;border:0;border-radius:16px;background:#657fa4;color:#fff;font:800 23px system-ui,sans-serif;box-shadow:inset 0 -6px 0 #435f85,0 5px 9px #694e4430;cursor:pointer;transition:transform .16s,opacity .2s}
+  [data-option]:active{transform:scale(.9)}
+  [data-option]:disabled{cursor:default;opacity:.48}
+  #finish{display:none;position:absolute;inset:0;align-items:center;justify-content:center;text-align:center;padding:28px;background:#fff7e9;color:#47866c;font-size:26px;font-weight:800}
+  @keyframes pop{0%{transform:scale(.75)}65%{transform:scale(1.12)}100%{transform:scale(1)}}
+</style>
+<div id="app">
+  <h1 id="title"></h1>
+  <div id="instr"></div>
+  <div id="scene">
+    <svg id="stand" viewBox="0 0 52 123" aria-hidden="true"><path d="M26 2 37 106H15Z" fill="#e7ac79"/><path d="M4 111q22-13 44 0v10H4Z" fill="#ad735b"/></svg>
+    <div id="swing" data-beam data-tilt="level">
+      <div class="bar"></div>
+      <div class="pan left" data-pan="left" data-total="0"><i class="cord one"></i><i class="cord two"></i><div class="tray"></div><div class="weights"></div></div>
+      <div class="pan right" data-pan="right" data-total="0"><i class="cord one"></i><i class="cord two"></i><div class="tray"></div><div class="weights"></div></div>
+    </div>
+    <div id="pivot"></div>
+  </div>
+  <div id="feedback" aria-live="polite"></div>
+  <div id="options"></div>
+  <div id="finish"></div>
+</div>
+<script>
+
+(()=>{
+  const items=Studio.params.items;
+  const swing=document.querySelector('[data-beam]');
+  const left=document.querySelector('[data-pan="left"]');
+  const right=document.querySelector('[data-pan="right"]');
+  const options=document.querySelector('#options');
+  const feedback=document.querySelector('#feedback');
+  let index=0,selected=null,busy=false,turn=0;
+  document.querySelector('#title').textContent=Studio.t('title');
+  document.querySelector('#instr').textContent=Studio.t('instr');
+  const sum=a=>a.reduce((s,n)=>s+Number(n),0);
+  function fill(el,values,added){
+    el.dataset.total=String(sum(values));
+    el.querySelector('.weights').replaceChildren(...values.map((value,i)=>{
+      const chip=document.createElement('span');
+      chip.className='weight'+(i===added?' added':'');
+      chip.dataset.weight=String(value);
+      chip.textContent=String(value);
+      return chip;
+    }));
+  }
+  function balance(){
+    const item=items[index];
+    const rv=selected===null?item.right:[...item.right,selected];
+    const lt=sum(item.left),rt=sum(rv);
+    fill(left,item.left,-1);
+    fill(right,rv,selected===null?-1:rv.length-1);
+    const down=lt>rt?'left':rt>lt?'right':'level';
+    swing.dataset.tilt=down;
+    swing.style.setProperty('--a',down==='left'?'-12deg':down==='right'?'12deg':'0deg');
+  }
+  function makeOptions(){
+    options.replaceChildren(...items[index].options.map(value=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.dataset.option=String(value);
+      button.textContent=String(value);
+      button.addEventListener('click',()=>{
+        if(busy)return;
+        busy=true;
+        selected=value;
+        feedback.textContent='';
+        options.querySelectorAll('button').forEach(b=>{b.disabled=true});
+        balance();
+        Studio.event('choose',{value});
+        Studio.answer({value});
+      });
+      return button;
+    }));
+  }
+  Studio.onVerdict(({correct})=>{
+    if(!busy)return;
+    const current=++turn;
+    feedback.textContent=Studio.t(correct?'right':'wrong');
+    feedback.className=correct?'good':'';
+    if(correct){
+      setTimeout(()=>{
+        if(current!==turn)return;
+        index++;
+        if(index===items.length){
+          document.querySelector('#finish').textContent=Studio.t('done');
+          document.querySelector('#finish').style.display='flex';
+          Studio.done();
+        }else{
+          selected=null;
+          busy=false;
+          feedback.textContent='';
+          feedback.className='';
+          balance();
+          makeOptions();
+        }
+      },900);
+    }else{
+      setTimeout(()=>{
+        if(current!==turn)return;
+        selected=null;
+        balance();
+        busy=false;
+        options.querySelectorAll('button').forEach(b=>{b.disabled=false});
+        feedback.textContent='';
+      },450);
+    }
+  });
+  balance();
+  makeOptions();
+  Studio.ready();
+})();
+
+</script>

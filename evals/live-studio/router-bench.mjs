@@ -83,7 +83,7 @@ await Promise.all(Array.from({ length: CONC }, async () => {
       arms: recs.map((r) => ({ arm: r.arm, pass: r.gate.pass, repairs: r.timings.repairs, ttftMs: r.timings.ttftMs, firstPaintMs: r.timings.firstPaintMs ?? null, genMs: r.timings.genMs, qaMs: r.timings.qaMs, usd: r.usd,
         failed: r.gate.checks.filter((c) => !c.pass).map((c) => c.id), fixes: r.fixes, error: r.error })) };
     // an infrastructure failure (the gate's browser died) is not a build result: not recorded, retried by the next run
-    if (res.reason === "gate_unavailable") { console.log(`${key} SKIPPED: gate unavailable (not counted; re-run to fill)`); continue; }
+    if (res.reason === "gate_unavailable" || res.reason === "builder_unreachable") { console.log(`${key} SKIPPED: ${res.reason} (infrastructure, not counted; re-run to fill)`); continue; }
     if (res.ok) fs.writeFileSync(path.join(OUT, `${key.replace(/\|/g, "__")}.html`), res.winner.html);
     for (const r of recs) if (r.html && !r.gate.pass) fs.writeFileSync(path.join(OUT, `${key.replace(/\|/g, "__")}__${r.arm}__fail.html`), r.html);
     rows.push(row);

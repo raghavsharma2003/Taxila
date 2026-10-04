@@ -15,6 +15,9 @@ import { routes as child } from "./routes/child.js";
 import { routes as testClock } from "./comprehension/testclock.js";
 // W2-D: the mid-sitting realtime → cascade lane switch (POST /api/lesson/lane). One-line seam; the route lives in W2-D's module.
 import { routes as lane } from "./voice/realtimeSession.js";
+// W2-H: the Studio channel (SSE stream, slot, build, host-graded answers, the Made for you feed). One-line seam; the routes
+// live in W2-H's module.
+import { routes as studio } from "./routes/studio.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...lane });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...lane, ...studio });
 export { handle, register };

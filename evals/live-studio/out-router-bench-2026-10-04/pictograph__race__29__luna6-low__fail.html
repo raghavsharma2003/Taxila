@@ -1,0 +1,111 @@
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:360px;height:320px;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#49382f;background:#fff8ed}
+.stage{width:360px;height:320px;padding:12px 14px;background:linear-gradient(145deg,#fffaf2,#ffefd9);overflow:hidden}
+h1{margin:0 0 3px;font-size:20px;line-height:25px;font-weight:800;color:#744a35}
+.ask{min-height:30px;margin:0;font-size:14px;line-height:18px;color:#725e50}
+.key{height:52px;margin:5px 0 7px;padding:5px 10px;display:flex;align-items:center;gap:8px;border:1.5px solid #f0cf9f;border-radius:15px;background:#fffdf8;color:#72533d;font-size:13px;font-weight:650}
+.key-icon{width:32px;height:32px;flex:none}
+.key-number{font-size:15px;font-weight:800;color:#9b6039}
+.rows{display:grid;gap:5px}
+.row{width:100%;height:57px;padding:0 9px;border:1.5px solid #eedbc1;border-radius:15px;background:#fffdf9;display:grid;grid-template-columns:78px 1fr;align-items:center;text-align:left;color:#49382f;cursor:pointer;transition:transform .16s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease;touch-action:manipulation}
+.row:active{transform:scale(.975);background:#fff0d7}
+.row:focus-visible{outline:3px solid #d98e51;outline-offset:1px}
+.name{font-size:15px;font-weight:750;white-space:nowrap}
+.symbols{height:36px;display:flex;align-items:center;gap:3px}
+.symbol{width:27px;height:27px;flex:none;overflow:visible;filter:drop-shadow(0 2px 1px #e7c895);transition:transform .25s ease}
+.row:hover .symbol{transform:translateY(-2px) rotate(-5deg)}
+.feedback{height:31px;margin:7px 2px 0;font-size:14px;line-height:20px;font-weight:750;color:#9b6039}
+.feedback.good{color:#477653}
+.feedback.bad{color:#aa624d;animation:nudge .25s ease}
+.finished .row{pointer-events:none}
+@keyframes nudge{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<div class="stage">
+  <h1 id="title"></h1>
+  <p class="ask" id="ask"></p>
+  <div class="key" id="key"><svg class="key-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.5c2.1 0 2.9 3 4.5 3.6s4.5-1 5.8.7-.6 4.2.1 6.1 3.5 3.1 2.9 5.2-3.7 2.2-5 3.8-.8 4.6-2.8 5.4-4-1.7-6.1-1.7-4.1 2.7-6.1 1.7-1.5-3.8-2.8-5.4-4.4-1.7-5-3.8 2.2-3.3 2.9-5.2-1.2-4.4.1-6.1 4.1-.1 5.8-.7S13.9 2.5 16 2.5Z" fill="#f4b74f" stroke="#d98b3d" stroke-width="1.3"/><circle cx="13" cy="14" r="1.2" fill="#86502d"/><circle cx="19" cy="14" r="1.2" fill="#86502d"/><path d="M13 18q3 3 6 0" fill="none" stroke="#86502d" stroke-width="1.4" stroke-linecap="round"/></svg><span id="keytext"></span><span>=</span><span class="key-number" id="keynumber"></span></div>
+  <div class="rows" id="rows"></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<script>
+
+(function(){
+  const p=Studio.params;
+  const word=k=>Studio.t(k);
+  const title=document.getElementById("title");
+  const ask=document.getElementById("ask");
+  const keytext=document.getElementById("keytext");
+  const keynumber=document.getElementById("keynumber");
+  const rowsEl=document.getElementById("rows");
+  const feedback=document.getElementById("feedback");
+  title.textContent=word("title");
+  ask.textContent=word("ask");
+  keytext.textContent=word("keytext");
+  keynumber.textContent=String(p.symbolValue);
+  function makeSymbol(){
+    const ns="http://www.w3.org/2000/svg";
+    const svg=document.createElementNS(ns,"svg");
+    svg.setAttribute("viewBox","0 0 32 32");
+    svg.setAttribute("class","symbol");
+    svg.setAttribute("aria-hidden","true");
+    const path=document.createElementNS(ns,"path");
+    path.setAttribute("d","M16 2.5c2.1 0 2.9 3 4.5 3.6s4.5-1 5.8.7-.6 4.2.1 6.1 3.5 3.1 2.9 5.2-3.7 2.2-5 3.8-.8 4.6-2.8 5.4-4-1.7-6.1-1.7-4.1 2.7-6.1 1.7-1.5-3.8-2.8-5.4-4.4-1.7-5-3.8 2.2-3.3 2.9-5.2-1.2-4.4.1-6.1 4.1-.1 5.8-.7S13.9 2.5 16 2.5Z");
+    path.setAttribute("fill","#f4b74f");
+    path.setAttribute("stroke","#d98b3d");
+    path.setAttribute("stroke-width","1.3");
+    svg.appendChild(path);
+    const eyes=document.createElementNS(ns,"path");
+    eyes.setAttribute("d","M12 14h.1m7.8 0h.1M13 18q3 3 6 0");
+    eyes.setAttribute("fill","none");
+    eyes.setAttribute("stroke","#86502d");
+    eyes.setAttribute("stroke-width","1.5");
+    eyes.setAttribute("stroke-linecap","round");
+    svg.appendChild(eyes);
+    return svg;
+  }
+  const names={mon:"mon",tue:"tue",wed:"wed"};
+  for(const entry of p.rows){
+    const row=document.createElement("button");
+    row.type="button";
+    row.className="row";
+    row.setAttribute("data-row",entry.key);
+    const name=document.createElement("span");
+    name.className="name";
+    name.textContent=word(names[entry.key]);
+    const symbols=document.createElement("span");
+    symbols.className="symbols";
+    const count=entry.value/p.symbolValue;
+    for(let i=0;i<count;i++){
+      const symbol=makeSymbol();
+      symbol.setAttribute("data-symbol","");
+      symbols.appendChild(symbol);
+    }
+    row.append(name,symbols);
+    row.addEventListener("click",function(){
+      if(rowsEl.classList.contains("finished")) return;
+      Studio.event("row_tap",{row:entry.key});
+      Studio.answer(entry.key);
+    });
+    rowsEl.appendChild(row);
+  }
+  Studio.onVerdict(function(result){
+    if(result.correct){
+      feedback.textContent=word("right")+" "+word("done");
+      feedback.classList.remove("bad");
+      feedback.classList.add("good");
+      rowsEl.classList.add("finished");
+      Studio.done();
+    }else{
+      feedback.textContent=word("wrong");
+      feedback.classList.remove("good");
+      feedback.classList.add("bad");
+      void feedback.offsetWidth;
+    }
+  });
+  Studio.ready();
+})();
+
+</script>

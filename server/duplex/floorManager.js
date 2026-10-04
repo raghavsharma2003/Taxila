@@ -8,7 +8,9 @@
 //
 // It never speaks, grades or calls a model by itself. It emits ACTIONS; the host obeys them:
 //   duck / unduck / pause / resume / yield{heardUpTo} / repeat_from{heardUpTo}     reply channel (SPEAK)
-//   stt_commit                      close the STT item now (the device commit; also the "probe" at a candidate)
+//   stt_commit                      close the STT item now (the device commit; also the "probe" at a candidate: the
+//                                   end-of-turn decision then waits in C_PROBING for the final, because a streaming
+//                                   partial lags the audio by 0.5-1.6 s and a decision on it commits on half an answer)
 //   candidate{text}                 start/refresh C speculation (THINK)      cancel_candidate   stop paying for it
 //   commit{text, why, safety?}      the child's turn is over: plan the reply (revocable until her verdict word)
 //   revoke                          the child resumed before the verdict word: drop the reply, merge, re-plan
@@ -19,7 +21,7 @@
 //   ask_model{gen,text}             optional hold shortener (may only shorten a hold, never trigger speech)
 import { Ear } from "./ear.js";
 import { understand } from "./understand.js";
-import { decideEnd, CAND_MS, HOLD_REQUEST_MS, SAFETY_SILENCE_MS } from "./eot.js";
+import { decideEnd, rowFor, CAND_MS, HOLD_REQUEST_MS, SAFETY_SILENCE_MS } from "./eot.js";
 import { BackchannelPolicy } from "./backchannel.js";
 import { Overlap } from "./bargein.js";
 
@@ -27,10 +29,14 @@ export const DEFAULTS = {
   cand: CAND_MS,
   prosody: true,
   repair: true,
-  sttProbe: true,       // close the STT item at every candidate, so the decision reads a final, not a lagging partial
+  openToCap: true,      // §3.4: an open tail on explain/probe/default turns holds to the row cap
+  explainMinSilence: true, // G5: explanations wait >= 1.5 s of silence
+  sttProbe: true,       // close the STT item at every candidate and decide on the FINAL, never on a lagging partial
+  probeTimeoutMs: 1500, // a final that has not landed by then: decide on the partial (if any words are visible)
+  specOnPartial: true,  // start C speculation on the visible partial while the probe final is in flight
   nods: "bop",          // "bop" | "level" | "off"
   audioMm: false,
-  model: false,         // hold shortener
+  model: false,         // false | true (hold shortener, law 4) | "decide" (REFERENCE ARM ONLY: the model decides every candidate)
   modelMinHoldMs: 800,  // only ask when the hold is at least this long
   modelP: 0.9,
   modelMarginMs: 200,
@@ -63,6 +69,9 @@ export class FloorManager {
     this.holdUntil = null;
     this.holdReq = false;
     this.candidateAt = null;
+    this.probeAt = null;
+    this.pendingFinals = 0;
+    this.sttCommitAt = -Infinity;
     this.pausedBefore = false;
     this.committedAt = null;
     this.checkedIn = false;
@@ -83,7 +92,14 @@ export class FloorManager {
     return n;
   }
 
-  act(out, a) { out.push(a); this.log.push({ ...a, state: this.state }); }
+  act(out, a) {
+    if (a.do === "stt_commit") { this.pendingFinals++; this.sttCommitAt = a.t; }
+    out.push(a);
+    this.log.push({ ...a, state: this.state });
+  }
+
+  /** Voice the STT has not been asked to finalise yet (the device heard it after the last commit). */
+  unfinalisedVoice() { return this.ear.lastLoudAt > this.sttCommitAt; }
 
   /** @param {{type:string, t:number}} e */
   step(e) {
@@ -127,9 +143,9 @@ export class FloorManager {
     const it = this.items.get(e.itemId);
     if (it.final && e.type === "partial") return;
     it.text = String(e.text || "").trim();
-    if (e.type === "final") it.final = true;
+    if (e.type === "final") { it.final = true; this.pendingFinals = Math.max(0, this.pendingFinals - 1); }
     if (this.state === "OVERLAP" && this.overlap) { for (const a of this.overlap.step({ type: e.type, t: e.t, text: this.text() })) this.onOverlapAction(a, out); return; }
-    if (this.state === "T_SPEAKING" || this.state === "C_WAITING" && !this.text()) return;
+    if (this.state === "T_SPEAKING" || (this.state === "C_WAITING" && !this.text())) return;
     const n = this.note();
     // 1. safety: on every slice, sticky for the turn
     if (n.safety.distress && !this.safety) {
@@ -144,12 +160,18 @@ export class FloorManager {
       return;
     }
     if (this.safety) return;
+    // the probe final landed: decide on it
+    if (this.state === "C_PROBING") { if (this.allFinal() && this.pendingFinals === 0) this.afterProbe(e.t, out, "candidate"); return; }
     // new words while a hold runs: re-decide on the fresher text
     if (this.state === "C_PAUSED" || this.state === "C_HOLD_REQUESTED") this.decide(e.t, out, n, "text");
   }
 
   onModel(e, out) {
-    if (this.state !== "C_PAUSED" || e.gen !== this.gen || !this.holdUntil) return;
+    if (this.o.model === "decide") {
+      if (this.state === "C_PAUSED" && e.gen === this.gen && e.p >= 0.5) this.commit(e.t, out, "model decided", { p: e.p });
+      return;
+    }
+    if (this.state !== "C_PAUSED" || e.gen !== this.gen || !this.holdUntil || this.holdFloor) return;
     const silenceEnd = this.ear.lastLoudAt + this.o.cand;
     if (e.p >= this.o.modelP && e.t <= this.holdUntil - this.o.modelMarginMs && e.t >= silenceEnd) this.commit(e.t, out, "model shortened hold", { p: e.p });
   }
@@ -162,7 +184,7 @@ export class FloorManager {
       if (f.edge === "onset" && this.reply) {
         if (this.reply.verdictAt !== undefined && t < this.reply.verdictAt && this.revocable) { this.revoke(t, out, "resumed during uptake"); return; }
         this.state = "OVERLAP";
-        this.overlap = new Overlap(this.reply, t);
+        this.overlap = new Overlap({ answerForm: this.ctx.answerForm, ...this.reply }, t);
         this.act(out, { do: "duck", t });
       }
       return;
@@ -175,23 +197,32 @@ export class FloorManager {
       if (f.edge === "onset") this.revoke(t, out, "resumed before her first sound");
       return;
     }
-    const resumed = f.edge === "onset" || (f.loud && this.onsetAt !== null && this.ear.speaking && (this.state === "C_PAUSED" || this.state === "C_HOLD_REQUESTED"));
+    const held = this.state === "C_PAUSED" || this.state === "C_HOLD_REQUESTED" || this.state === "C_PROBING";
+    const resumed = f.edge === "onset" || (f.loud && this.onsetAt !== null && this.ear.speaking && held);
     if (f.edge === "onset" && this.state === "C_WAITING") { this.state = "C_SPEAKING"; this.onsetAt = t; }
     // 1. safety attend: never over the child; the safeguard at >= 1.5 s of silence
     if (this.state === "SAFETY_ATTEND") {
       if (!f.loud && f.silenceMs >= SAFETY_SILENCE_MS && !this.safeguarded) this.commit(t, out, "safeguard after 1.5 s silence", { safety: this.safety });
       return;
     }
-    if (resumed && (this.state === "C_PAUSED" || this.state === "C_HOLD_REQUESTED")) {
-      if (this.state === "C_PAUSED") this.act(out, { do: "cancel_candidate", t, why: "resumed in hold" });
+    if (resumed && held) {
+      if (this.state === "C_PAUSED" || this.state === "C_PROBING") this.act(out, { do: "cancel_candidate", t, why: "resumed in hold" });
       this.state = "C_SPEAKING";
       this.holdUntil = null;
+      this.probeAt = null;
       this.pausedBefore = true;
     }
     if (this.state === "C_SPEAKING" && !f.loud && f.silenceMs >= this.o.cand && this.candidateAt !== this.ear.lastLoudAt) {
       this.candidateAt = this.ear.lastLoudAt;
-      if (this.o.sttProbe) this.act(out, { do: "stt_commit", t, why: "probe at candidate" });
-      this.decide(t, out, this.note(), "candidate");
+      if (this.o.sttProbe && (this.unfinalisedVoice() || this.pendingFinals > 0 || !this.allFinal())) {
+        // close the item and wait for its final; speculation may start on the visible partial meanwhile
+        if (this.unfinalisedVoice()) this.act(out, { do: "stt_commit", t, why: "probe at candidate" });
+        this.state = "C_PROBING";
+        this.probeAt = t;
+        if (this.o.specOnPartial && this.text()) this.act(out, { do: "candidate", t, text: this.text(), partial: true });
+      } else this.afterProbe(t, out, "candidate");
+    } else if (this.state === "C_PROBING" && t - this.probeAt >= this.o.probeTimeoutMs) {
+      this.afterProbe(t, out, "probe timeout");
     } else if (this.state === "C_PAUSED" && this.holdUntil !== null && t >= this.holdUntil) {
       this.commit(t, out, `hold expired (${this.lastDecision?.why})`);
     } else if (this.state === "C_HOLD_REQUESTED") {
@@ -205,20 +236,43 @@ export class FloorManager {
       if (this.nudged === 1 && since >= lad[1]) { this.nudged = 2; this.act(out, { do: "nudge_voice", t }); }
     }
     // 6. backchannel (content-blind)
-    if (this.o.nods !== "off" && (this.state === "C_SPEAKING" || this.state === "C_PAUSED")) {
+    if (this.o.nods !== "off" && (this.state === "C_SPEAKING" || this.state === "C_PAUSED" || this.state === "C_PROBING")) {
       for (const a of this.bc.step(f, this.ear.prosody(), { state: this.state, answerForm: this.ctx.answerForm, safety: !!this.safety, hold: this.holdReq })) this.act(out, a);
     }
   }
 
+  /** The probe is over (final landed, or timed out): no words at all means it was not speech (cough, noise, echo). */
+  afterProbe(t, out, why) {
+    this.probeAt = null;
+    if (!this.text()) {
+      if (this.state === "C_PROBING") this.act(out, { do: "cancel_candidate", t, why: "no words" });
+      this.state = this.onsetAt !== null && this.order.length ? "C_SPEAKING" : "C_WAITING";
+      if (this.state === "C_WAITING") { this.onsetAt = null; this.items.clear(); this.order = []; }
+      return;
+    }
+    this.state = "C_SPEAKING";
+    this.decide(t, out, this.note(), why);
+  }
+
   /** End-of-turn decision at the candidate, or again when fresher text lands inside a hold. */
   decide(t, out, n, why) {
-    const d = decideEnd(n, this.ctx, this.o.prosody ? this.ear.prosody() : {}, { prosody: this.o.prosody, repair: this.o.repair });
+    const d = decideEnd(n, this.ctx, this.o.prosody ? this.ear.prosody() : {}, { prosody: this.o.prosody, repair: this.o.repair, openToCap: this.o.openToCap, explainMinSilence: this.o.explainMinSilence });
     this.lastDecision = d;
     if (d.cue === "hold_request") {
       if (this.state !== "C_HOLD_REQUESTED") { this.state = "C_HOLD_REQUESTED"; this.holdReq = true; this.act(out, { do: "hold_pose", t }); }
       return;
     }
     this.holdReq = false;
+    if (this.o.model === "decide") {
+      // reference arm (measured, not shipped): the model decides; code keeps safety and hold requests and a cap backstop
+      this.gen++;
+      this.act(out, { do: "ask_model", t, gen: this.gen, text: this.text(), ctx: this.ctx, mode: "decide" });
+      this.act(out, { do: "candidate", t, text: this.text() });
+      this.state = "C_PAUSED";
+      this.holdUntil = this.ear.lastLoudAt + this.o.cand + rowFor(this.ctx, n).cap;
+      this.holdFloor = null;
+      return;
+    }
     if (d.commit) { this.commit(t, out, `${why}: ${d.why}`, { p: d.p }); return; }
     const until = this.ear.lastLoudAt + this.o.cand + d.holdMs;
     if (until <= t) { this.commit(t, out, `${why}: hold already elapsed (${d.why})`, { p: d.p }); return; }
@@ -227,14 +281,16 @@ export class FloorManager {
     const wasPaused = this.state === "C_PAUSED";
     this.state = "C_PAUSED";
     this.holdUntil = until;
-    if (this.o.model && d.holdMs >= this.o.modelMinHoldMs && (!wasPaused || why === "text")) {
+    this.holdFloor = d.floor ? until : null; // a G5 floor is a deliberate wait: the model may not shorten it
+    if (this.o.model && !d.floor && d.holdMs >= this.o.modelMinHoldMs && (!wasPaused || why === "text")) {
       this.gen++;
       this.act(out, { do: "ask_model", t, gen: this.gen, text: this.text(), ctx: this.ctx });
     }
   }
 
   commit(t, out, why, extra = {}) {
-    if (!this.o.sttProbe || !this.allFinal()) this.act(out, { do: "stt_commit", t, why: "commit" });
+    if (!this.text() && !extra.safety) return; // never commit on no words
+    if (!this.o.sttProbe || this.unfinalisedVoice()) this.act(out, { do: "stt_commit", t, why: "commit" });
     this.state = "COMMITTED";
     this.committedAt = t;
     this.revocable = this.o.revocableMs > 0 && !extra.safety;
